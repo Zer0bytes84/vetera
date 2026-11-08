@@ -1,0 +1,98 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "clipped-overflow-container",
+        "value": "*",
+        "files": [
+          "outputs/baitari-teaser-2026-10-01/source/composition.html"
+        ],
+        "createdAt": "2026-10-01T22:04:06.016Z",
+        "reason": "Agent: fixed 1080x1920 video canvas and deliberate CSS crops of native screenshots; no escaping menus or tooltips"
+      },
+      {
+        "rule": "buried-raster",
+        "value": "*",
+        "files": [
+          "outputs/baitari-teaser-2026-10-01/source/composition.html"
+        ],
+        "createdAt": "2026-10-01T22:04:06.104Z",
+        "reason": "Agent: countryside is animated from opacity 0 to 1 at 24.5 seconds and remains visible through the outro; verified rendered frames"
+      },
+      {
+        "rule": "overused-font",
+        "value": "instrument serif",
+        "files": [
+          "outputs/baitari-teaser-2026-10-01/source/composition.html"
+        ],
+        "createdAt": "2026-10-01T22:04:06.184Z",
+        "reason": "User-approved Aurora-inspired landing typography is carried into the teaser; Instrument Serif is documented in DESIGN.md for marketing only"
+      },
+      {
+        "rule": "radial-halo",
+        "value": "*",
+        "files": [
+          "outputs/baitari-teaser-2026-10-01/source/composition.html"
+        ],
+        "createdAt": "2026-10-01T22:04:06.267Z",
+        "reason": "Agent: rendered video has a light #f8f9fc canvas and pastel background; detector mistakes dark preview controls for the page background"
+      },
+      {
+        "rule": "clipped-overflow-container",
+        "value": "*",
+        "files": [
+          "outputs/baitari-teaser-facebook-x-2026-10-01/source/composition.html"
+        ],
+        "createdAt": "2026-10-02T00:43:52.638Z",
+        "reason": "Agent: this standalone 1920x1080 video composition intentionally clips its fixed canvas and app preview. It has no product popovers that need to escape; rendered frames are checked for unintended clipping."
+      },
+      {
+        "rule": "buried-raster",
+        "value": "*",
+        "files": [
+          "outputs/baitari-teaser-facebook-x-2026-10-01/source/composition.html"
+        ],
+        "createdAt": "2026-10-02T00:54:31.182Z",
+        "reason": "Agent: the countryside is a timed video layer; it fades to full opacity at 31.2 seconds and is visible in the rendered signature. A static initial-frame scan cannot see the scene."
+      },
+      {
+        "rule": "radial-halo",
+        "value": "*",
+        "files": [
+          "outputs/baitari-teaser-facebook-x-2026-10-01/source/composition.html"
+        ],
+        "createdAt": "2026-10-02T00:54:31.315Z",
+        "reason": "Agent: verified light canvas #f7f8fc with brand pastel mesh matching the approved landing. This is not a dark-page halo; the scanner misclassifies the dark playback controls."
+      },
+      {
+        "rule": "side-tab",
+        "value": "*",
+        "files": [
+          "src/index.css"
+        ],
+        "createdAt": "2026-10-04T18:30:21.195Z",
+        "reason": "Agent review: the five matches already exist in HEAD. The TipTap blockquote border identifies quoted text, not a widget card. The priority-bar selectors and their RTL mirror have no references in src outside their CSS definitions and do not decorate the rendered dashboard. Scope this false-positive exception to side-tab in this file only."
+      },
+      {
+        "rule": "ai-color-palette",
+        "value": "*",
+        "files": [
+          "src/lib/theme-store.ts"
+        ],
+        "createdAt": "2026-10-05T23:41:15.744Z",
+        "reason": "Agent review: existing configurable accent palette, including violet swatch, matches DESIGN.md. Liquid Glass changes only navigation material, not these colors."
+      },
+      {
+        "rule": "layout-transition",
+        "value": "*",
+        "files": [
+          "src/modules/dashboard/v2/studio-dashboard.css"
+        ],
+        "createdAt": "2026-10-16T17:25:21.234Z",
+        "reason": "Agent: the reported .studio-progress-fill selector has no consumers in src after removal of StudioDashboard; this legacy stylesheet cannot animate an active element. Keep this exception confined to the legacy stylesheet."
+      }
+    ]
+  }
+}

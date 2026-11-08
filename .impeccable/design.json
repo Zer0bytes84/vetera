@@ -1,0 +1,702 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-05T19:19:51.424001+00:00",
+  "title": "Design System: Baitari",
+  "extensions": {
+    "colorMeta": {
+      "signal-critical": {
+        "role": "tertiary",
+        "displayName": "Clinical Critical",
+        "tonalRamp": [
+          "#4c0519",
+          "#881337",
+          "#be123c",
+          "#e11d48",
+          "#f43f5e",
+          "#fb7185",
+          "#fecdd3",
+          "#fff1f2"
+        ]
+      },
+      "signal-watch": {
+        "role": "tertiary",
+        "displayName": "Clinical Watch",
+        "tonalRamp": [
+          "#451a03",
+          "#78350f",
+          "#b45309",
+          "#d97706",
+          "#f59e0b",
+          "#fbbf24",
+          "#fde68a",
+          "#fffbeb"
+        ]
+      },
+      "signal-positive": {
+        "role": "primary",
+        "displayName": "Clinical Positive",
+        "tonalRamp": [
+          "#022c22",
+          "#064e3b",
+          "#047857",
+          "#059669",
+          "#10b981",
+          "#34d399",
+          "#a7f3d0",
+          "#ecfdf5"
+        ]
+      },
+      "signal-quiet": {
+        "role": "neutral",
+        "displayName": "Quiet Signal"
+      },
+      "frame": {
+        "role": "neutral",
+        "displayName": "Neutral Frame"
+      },
+      "ambient-sage": {
+        "role": "neutral",
+        "displayName": "Ambient Sage"
+      },
+      "ambient-blue": {
+        "role": "neutral",
+        "displayName": "Ambient Blue"
+      },
+      "ambient-sage-dark": {
+        "role": "neutral",
+        "displayName": "Dark Ambient Sage"
+      },
+      "ambient-blue-dark": {
+        "role": "neutral",
+        "displayName": "Dark Ambient Blue"
+      },
+      "canvas": {
+        "role": "neutral",
+        "displayName": "Clinical Canvas"
+      },
+      "canvas-dark": {
+        "role": "neutral",
+        "displayName": "Dark Clinical Canvas"
+      },
+      "frame-dark": {
+        "role": "neutral",
+        "displayName": "Dark Neutral Frame"
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "Reading Surface",
+        "tonalRamp": [
+          "#09090b",
+          "#18181b",
+          "#27272a",
+          "#3f3f46",
+          "#71717a",
+          "#a1a1aa",
+          "#f4f4f5",
+          "#fafaf9"
+        ]
+      },
+      "surface-dark": {
+        "role": "neutral",
+        "displayName": "Dark Reading Surface"
+      },
+      "surface-raised": {
+        "role": "neutral",
+        "displayName": "Raised Surface",
+        "tonalRamp": [
+          "#09090b",
+          "#18181b",
+          "#27272a",
+          "#3f3f46",
+          "#71717a",
+          "#a1a1aa",
+          "#f4f4f5",
+          "#fafaf9"
+        ]
+      },
+      "surface-raised-dark": {
+        "role": "neutral",
+        "displayName": "Dark Raised Surface"
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Primary Ink"
+      },
+      "ink-dark": {
+        "role": "neutral",
+        "displayName": "Dark Primary Ink"
+      },
+      "ink-muted": {
+        "role": "neutral",
+        "displayName": "Supporting Ink"
+      },
+      "ink-muted-dark": {
+        "role": "neutral",
+        "displayName": "Dark Supporting Ink"
+      },
+      "ink-faint": {
+        "role": "neutral",
+        "displayName": "Quiet Ink"
+      },
+      "ink-faint-dark": {
+        "role": "neutral",
+        "displayName": "Dark Quiet Ink"
+      },
+      "hairline": {
+        "role": "neutral",
+        "displayName": "Structural Hairline"
+      },
+      "hairline-dark": {
+        "role": "neutral",
+        "displayName": "Dark Structural Hairline"
+      },
+      "primary": {
+        "role": "primary",
+        "displayName": "CRM Violet Action"
+      },
+      "primary-dark": {
+        "role": "primary",
+        "displayName": "Dark CRM Violet Action"
+      },
+      "primary-foreground": {
+        "role": "neutral",
+        "displayName": "Primary Action Ink",
+        "tonalRamp": [
+          "#09090b",
+          "#18181b",
+          "#27272a",
+          "#3f3f46",
+          "#71717a",
+          "#a1a1aa",
+          "#f4f4f5",
+          "#fafaf9"
+        ]
+      },
+      "primary-foreground-dark": {
+        "role": "neutral",
+        "displayName": "Dark Primary Action Ink"
+      },
+      "secondary": {
+        "role": "secondary",
+        "displayName": "Neutral Secondary"
+      },
+      "secondary-dark": {
+        "role": "secondary",
+        "displayName": "Dark Neutral Secondary"
+      },
+      "secondary-foreground": {
+        "role": "neutral",
+        "displayName": "Secondary Action Ink"
+      },
+      "secondary-foreground-dark": {
+        "role": "neutral",
+        "displayName": "Dark Secondary Action Ink"
+      },
+      "signal-critical-dark": {
+        "role": "tertiary",
+        "displayName": "Dark Clinical Critical",
+        "tonalRamp": [
+          "#4c0519",
+          "#881337",
+          "#be123c",
+          "#e11d48",
+          "#f43f5e",
+          "#fb7185",
+          "#fecdd3",
+          "#fff1f2"
+        ]
+      },
+      "signal-watch-dark": {
+        "role": "tertiary",
+        "displayName": "Dark Clinical Watch",
+        "tonalRamp": [
+          "#451a03",
+          "#78350f",
+          "#b45309",
+          "#d97706",
+          "#f59e0b",
+          "#fbbf24",
+          "#fde68a",
+          "#fffbeb"
+        ]
+      },
+      "signal-positive-dark": {
+        "role": "primary",
+        "displayName": "Dark Clinical Positive",
+        "tonalRamp": [
+          "#022c22",
+          "#064e3b",
+          "#047857",
+          "#059669",
+          "#10b981",
+          "#34d399",
+          "#a7f3d0",
+          "#ecfdf5"
+        ]
+      },
+      "signal-quiet-dark": {
+        "role": "neutral",
+        "displayName": "Dark Quiet Signal"
+      },
+      "atmosphere-pearl": {
+        "role": "neutral",
+        "displayName": "Opaline Pearl"
+      },
+      "atmosphere-rose": {
+        "role": "neutral",
+        "displayName": "Opaline Rose"
+      },
+      "atmosphere-violet": {
+        "role": "neutral",
+        "displayName": "Opaline Violet"
+      },
+      "sidebar-hover-light": {
+        "role": "neutral",
+        "displayName": "Light Sidebar Interaction",
+        "purpose": "Neutral navigation hover and active surfaces independent of action accent."
+      },
+      "sidebar-hover-dark": {
+        "role": "neutral",
+        "displayName": "Dark Sidebar Interaction",
+        "purpose": "Neutral dark navigation hover and active surfaces independent of action accent."
+      }
+    },
+    "typographyMeta": {
+      "title": {
+        "displayName": "Signal Title",
+        "purpose": "Compact clinical signal labels, up to two lines."
+      },
+      "signal-value": {
+        "displayName": "Signal Value",
+        "purpose": "Approved Geist tabular KPI role; preserve full strings and measured fitting. Classic source inheritance remains a documented verification limit."
+      },
+      "label": {
+        "displayName": "Status Label",
+        "purpose": "Short semantic badge copy."
+      },
+      "supporting": {
+        "displayName": "Supporting Context",
+        "purpose": "Muted explanation in the aligned footer band."
+      },
+      "daily-value": {
+        "displayName": "Daily Value",
+        "purpose": "Approved Geist tabular daily KPI role with measured fitting below a 34px ceiling. The preview applies this role without claiming classic runtime conformance."
+      },
+      "landing-ui": {
+        "displayName": "Marketing UI",
+        "purpose": "Manrope is retained for landing UI and teaser captions; application UI/body uses Inter."
+      },
+      "landing-display": {
+        "displayName": "Marketing Display",
+        "purpose": "Instrument Serif roman and italic headings retain the approved Aurora marketing direction."
+      },
+      "display": {
+        "displayName": "Application Display",
+        "purpose": "Geist patient heading in the clinical Now board; independent of marketing typography."
+      },
+      "heading": {
+        "displayName": "Application Module Heading",
+        "purpose": "Geist clinical widget headings with 16px medium type and 24px line height."
+      },
+      "body": {
+        "displayName": "Application Body",
+        "purpose": "Inter patient and workflow context, typically 13px with a 20px line height."
+      },
+      "ui": {
+        "displayName": "Application UI",
+        "purpose": "Inter medium-weight buttons and interface text."
+      },
+      "insight-heading": {
+        "displayName": "Analytical Insight Heading",
+        "purpose": "Scoped medium-weight analytical headings with -0.015em tracking; existing first KPI typography remains pinned."
+      }
+    },
+    "shadows": [
+      {
+        "name": "identity-menu-light",
+        "value": "0 18px 48px -24px rgba(15, 23, 42, 0.32)",
+        "purpose": "Ambient separation for the transient identity dropdown in light mode."
+      },
+      {
+        "name": "identity-menu-dark",
+        "value": "0 22px 52px -26px rgba(0, 0, 0, 0.7)",
+        "purpose": "Ambient separation for the transient identity dropdown in dark mode."
+      },
+      {
+        "name": "signal-contact",
+        "value": "0 2px 2px rgb(0 0 0 / .025)",
+        "purpose": "Faint contact shadow beneath the clinical inset footer."
+      },
+      {
+        "name": "card-light",
+        "value": "0 0 0 1px var(--hairline), 0 1px 2px rgb(9 9 11 / 0.04), 0 12px 32px -24px rgb(9 9 11 / 0.25)",
+        "purpose": "Shared Surface elevation in the light theme."
+      },
+      {
+        "name": "card-dark",
+        "value": "0 0 0 1px var(--hairline), inset 0 1px 0 rgb(255 255 255 / 0.06)",
+        "purpose": "Shared Surface elevation in the dark theme."
+      },
+      {
+        "name": "float-light",
+        "value": "0 0 0 1px var(--hairline), 0 8px 24px -8px rgb(9 9 11 / 0.18), 0 24px 48px -24px rgb(9 9 11 / 0.22)",
+        "purpose": "Transient raised surfaces in the light theme."
+      },
+      {
+        "name": "float-dark",
+        "value": "0 0 0 1px var(--hairline), inset 0 1px 0 rgb(255 255 255 / 0.06), 0 16px 40px -16px rgb(0 0 0 / 0.5)",
+        "purpose": "Transient raised surfaces in the dark theme."
+      },
+      {
+        "name": "hairline",
+        "value": "0 0 0 1px var(--hairline)",
+        "purpose": "Tonal Panel frame and structural separation."
+      },
+      {
+        "name": "crm-primary-control",
+        "value": "0 2px 3px rgb(42 42 42 / .16), 0 0 0 0.5px rgb(14 14 14 / .32), inset 0 2px 4px rgb(255 255 255 / .16), inset 0 0 0 0.5px rgb(255 255 255 / .12), inset 0 -5px 10px rgb(0 0 0 / .1)",
+        "purpose": "Illuminated inset primary buttons in both themes."
+      },
+      {
+        "name": "insight-panel-light",
+        "value": "inset 0 1px 0 rgb(255 255 255 / .45)",
+        "purpose": "Scoped light analytical insight inset illumination; outer frame uses a token border without a contact shadow."
+      },
+      {
+        "name": "insight-panel-dark",
+        "value": "inset 0 1px 0 rgb(255 255 255 / .04)",
+        "purpose": "Scoped dark analytical insight inset illumination; outer frame uses a token border without a contact shadow."
+      }
+    ],
+    "motion": [
+      {
+        "name": "state-color",
+        "value": "200ms ease",
+        "purpose": "Restrained color transition for clinical card and identity-dock interaction states."
+      },
+      {
+        "name": "sidebar-structure",
+        "value": "300ms cubic-bezier(0.22, 1, 0.36, 1)",
+        "purpose": "Width and position changes for sidebar structure and its header hairline."
+      },
+      {
+        "name": "daily-border",
+        "value": "160ms",
+        "purpose": "Border contrast change on daily KPI hover."
+      },
+      {
+        "name": "protocol-glass",
+        "value": "scrollY 0–72px; light opacity 0.5–0.9; dark opacity 0.2–0.8",
+        "purpose": "Continuous framer-motion transform on the bounded shell scroll container; retain header blur and hairline without a gradient overlay."
+      },
+      {
+        "name": "duration-fast",
+        "value": "150ms",
+        "purpose": "Quick control and row state changes from tokens.css and MOTION.fast."
+      },
+      {
+        "name": "duration-base",
+        "value": "220ms",
+        "purpose": "Standard state and clinical row transitions from tokens.css and MOTION.base."
+      },
+      {
+        "name": "ease-out",
+        "value": "cubic-bezier(0.2, 0, 0, 1)",
+        "purpose": "Shared application easing."
+      },
+      {
+        "name": "ease-drawer",
+        "value": "cubic-bezier(0.32, 0.72, 0, 1)",
+        "purpose": "Drawer curve exposed by the shared source tokens."
+      },
+      {
+        "name": "clinical-entry",
+        "value": "220ms ease-out; 4px displacement; 100ms group stagger",
+        "purpose": "Clinical row-group entry occurs once per browser session; reduced motion removes displacement."
+      },
+      {
+        "name": "skeleton-delay",
+        "value": "150ms delay; 300ms minimum visibility",
+        "purpose": "Reserve local widget space before revealing a skeleton; keep a revealed skeleton visible long enough to avoid flicker."
+      },
+      {
+        "name": "skeleton-pulse",
+        "value": "1.6s ease-in-out infinite; opacity 0.55–1",
+        "purpose": "Local SkeletonBlock pulse; disabled with reduced motion."
+      },
+      {
+        "name": "row-save-flash",
+        "value": "1.2s ease-out",
+        "purpose": "Fade a primary 8% tint after a saved row without moving the list; disabled with reduced motion."
+      },
+      {
+        "name": "theme-icon",
+        "value": "300ms spring; bounce 0",
+        "purpose": "Sun/moon icon transition; reduced motion uses a 150ms opacity transition."
+      },
+      {
+        "name": "patient-intent",
+        "value": "120ms",
+        "purpose": "Patient detail prefetch waits for pointer intent and cancels on leave."
+      },
+      {
+        "name": "save-confirmation",
+        "value": "3000ms",
+        "purpose": "The header briefly reports Enregistré after the native SQLite write completes."
+      },
+      {
+        "name": "undo-window",
+        "value": "5000ms",
+        "purpose": "Task completion exposes the reversible Annuler action."
+      },
+      {
+        "name": "pinned-first-row-hover",
+        "value": "300ms opacity",
+        "purpose": "AGENTS.md retains the first-row layered grid/gradient/inset-ring contract; it is a scoped exception, not a general panel style or a claim of runtime conformance."
+      },
+      {
+        "name": "crm-button-transition",
+        "value": "160ms cubic-bezier(0.2, 0, 0, 1)",
+        "purpose": "Shared Button fill, border, ink, shadow, and press transitions."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "xl",
+        "value": "1280px"
+      },
+      {
+        "name": "signal-two-column-container",
+        "value": "900px"
+      },
+      {
+        "name": "signal-one-column-container",
+        "value": "400px"
+      },
+      {
+        "name": "daily-two-column-container",
+        "value": "740px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      }
+    ],
+    "verification": {
+      "sourceScope": [
+        "src/design-system/tokens.css",
+        "src/components/ui/button.tsx",
+        "src/components/ui/table.tsx",
+        "src/lib/theme-store.ts",
+        "src/components/ui/badge.tsx",
+        "src/index.css",
+        "src/components/MotivationalHeader.tsx"
+      ],
+      "native": "Tauri rendering unverified for the CRM appearance trial.",
+      "browser": "Six captures and checks in outputs/crm-geist-2026-10-04; no browser errors.",
+      "headerControlScope": "Shared defaults and widget actions remain 30px; dashboard, patients, agenda, finances, and stock page actions use 40px/14px; shell search and dashboard customization use 30px; other existing shell icons retain 36px. No global height cap.",
+      "widgetRefinement": {
+        "sourceScope": [
+          "src/modules/dashboard/v2/dashboard-insights.css",
+          "src/modules/dashboard/v2/dashboard-polish.css",
+          "src/modules/dashboard/v2/studio-dashboard.tsx"
+        ],
+        "evidence": "outputs/dashboard-widgets-2026-10-04/final-*.png; exclude overlong final-625-light-insights.",
+        "native": "Native Tauri rendering remains unverified."
+      },
+      "listAndMiniCharts": {
+        "sourceScope": [
+          "src/components/ui/list-controls.tsx",
+          "src/modules/dashboard/v2/studio-dashboard.tsx",
+          "src/modules/dashboard/v2/kpi-mini-chart.tsx",
+          "src/modules/dashboard/v2/dashboard-polish.css",
+          "src/modules/dashboard/v2/kpi-period.tsx",
+          "src/modules/dashboard/v2/financial-model.ts"
+        ],
+        "evidence": [
+          "outputs/dashboard-mini-charts-2026-10-05",
+          "outputs/list-filters-2026-10-05"
+        ],
+        "browser": "Six KPI captures at 1440/1024/625 in light and dark; all card heights 327px, no overflow or browser errors.",
+        "native": "Native invoice-backed values still require live Tauri validation; native rendering and values are not verified.",
+        "periods": "20 period checks passed; TypeScript, ESLint, and six financial-model tests passed. All eight light/dark hover and keyboard checks passed with no browser errors; corrected captures show segment tooltips."
+      },
+      "clinicalWorkspace": {
+        "sourceScope": [
+          "src/modules/dashboard/components/visit-flow-board.tsx",
+          "src/modules/dashboard/components/clinical/",
+          "src/modules/dashboard/model/clinical-dashboard.ts"
+        ],
+        "browser": "1440/1024/625 light/dark QA passed without overflow; visit-flow tests passed.",
+        "native": "Native financial integration remains unverified.",
+        "visitFlowRefinement": "Two independent inset widget frames, desktop 1.45:1 with 14px gap, stacked at <=760px. TypeScript passed; responsive QA rerun ongoing. Recorded no-allergy descriptions remain neutral.",
+        "visitFlowIdentityRefinement": "Neutral bordered species glyph, patient identity left, planned 24px time right with lateness label, real type/room/reason context band, distributed steps; time wraps at <=480px. TypeScript passed; responsive QA running."
+      }
+    }
+  },
+  "components": [
+    {
+      "name": "Clinical Signal Card",
+      "kind": "card",
+      "refersTo": "clinical-signal-card",
+      "description": "An incumbent gray operational frame with an inset value and semantic supporting band. This static preview applies the approved Geist KPI role; inherited classic type is a verification limit.",
+      "html": "<article class=\"ds-signal-card\"><div class=\"ds-signal-head\"><span>Suivi clinique</span><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" aria-hidden=\"true\"><rect x=\"3\" y=\"5\" width=\"18\" height=\"16\" rx=\"2\"/><path d=\"M16 3v4M8 3v4M3 11h18\"/></svg></div><div class=\"ds-signal-body\"><strong>1</strong><div class=\"ds-signal-footer\"><p>Traitements en cours · Patients sous traitement</p><span class=\"ds-signal-status\"><svg width=\"12\" height=\"12\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><path d=\"m12 3 10 18H2L12 3Z M12 9v4 M12 17h.01\"/></svg>À surveiller</span></div></div></article>",
+      "css": ".ds-signal-card{min-width:0;padding:5px;border:1px solid var(--border);border-radius:14px;background:var(--muted);color:var(--foreground);font-family:var(--app-font-sans)}.ds-signal-head{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:38px;padding:6px 11px;font-size:13px;font-weight:500}.ds-signal-head svg{color:var(--muted-foreground);flex:none}.ds-signal-body{border:1px solid var(--border);border-radius:10px;background:var(--card);box-shadow:0 2px 2px rgb(0 0 0 / .025)}.ds-signal-body strong{font-family:var(--app-font-display);display:block;padding:13px 12px 10px;font-size:32px;font-weight:500;line-height:1.2;letter-spacing:-.04em;font-variant-numeric:tabular-nums;white-space:nowrap}.ds-signal-footer{display:flex;flex-wrap:wrap;align-items:start;justify-content:space-between;gap:8px;min-height:48px;padding:0 12px 13px}.ds-signal-footer p{flex:1 1 110px;margin:0;color:var(--muted-foreground);font-size:11px;line-height:16px}.ds-signal-status{display:flex;align-items:center;gap:4px;padding:4px 6px;border-radius:6px;color:#92400e;background:#fffbeb;font-size:10px;font-weight:500;line-height:1.2}"
+    },
+    {
+      "name": "Sidebar Identity Dock",
+      "kind": "nav",
+      "refersTo": "sidebar-identity-dock",
+      "description": "The anchored identity trigger inside the sidebar footer band.",
+      "html": "<div class=\"ds-sidebar-footer\"><button class=\"ds-identity-dock\" type=\"button\" aria-haspopup=\"menu\"><span class=\"ds-avatar\">ZK</span><span class=\"ds-identity-copy\"><strong>Zouhir Kherroubi</strong><small>zouhir.kh@gmail.com</small></span><span class=\"ds-more\" aria-hidden=\"true\">›</span></button></div>",
+      "css": ".ds-sidebar-footer{padding:12px 16px;border-top:1px solid color-mix(in oklab,var(--sidebar-foreground) 12%,transparent);background:transparent;font-family:var(--font-sans)}.ds-identity-dock{display:flex;width:100%;height:48px;min-width:0;align-items:center;gap:8px;padding:0 8px;border:0;border-radius:14px;color:var(--sidebar-foreground);background:transparent;text-align:left;transition:background-color 200ms ease}.ds-identity-dock:hover,.ds-identity-dock[aria-expanded=\"true\"]{background:color-mix(in oklab,var(--sidebar-accent) 75%,transparent)}.ds-identity-dock:focus-visible{outline:2px solid var(--sidebar-ring);outline-offset:2px}.ds-avatar{display:grid;width:32px;height:32px;flex:0 0 32px;place-items:center;border:1px solid color-mix(in oklab,var(--sidebar-foreground) 14%,transparent);border-radius:999px;font-size:11px}.ds-identity-copy{display:grid;min-width:0;flex:1;line-height:1.2}.ds-identity-copy strong,.ds-identity-copy small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ds-identity-copy strong{font-size:13px;font-weight:500;letter-spacing:-.015em}.ds-identity-copy small{margin-top:2px;color:color-mix(in oklab,var(--sidebar-foreground) 55%,transparent);font-size:10.5px}.ds-more{color:color-mix(in oklab,var(--sidebar-foreground) 40%,transparent);font-size:20px}"
+    },
+    {
+      "name": "Identity Dropdown",
+      "kind": "custom",
+      "description": "A compact transient menu that repeats identity before navigation actions.",
+      "html": "<div class=\"ds-identity-menu\" role=\"menu\"><div class=\"ds-menu-identity\"><span class=\"ds-menu-avatar\">ZK</span><span><strong>Zouhir Kherroubi</strong><small>zouhir.kh@gmail.com</small></span></div><hr><button role=\"menuitem\">Mon profil</button><button role=\"menuitem\">Finances</button><button role=\"menuitem\">Notifications</button><button role=\"menuitem\">Paramètres</button></div>",
+      "css": ".ds-identity-menu{width:256px;padding:6px;border:1px solid color-mix(in oklab,var(--border) 80%,transparent);border-radius:16px;color:var(--foreground);background:var(--popover);box-shadow:0 18px 48px -24px rgba(15,23,42,.32);font-family:var(--font-sans)}.ds-menu-identity{display:flex;align-items:center;gap:12px;padding:8px}.ds-menu-avatar{display:grid;width:40px;height:40px;flex:0 0 40px;place-items:center;border:1px solid color-mix(in oklab,var(--border) 70%,transparent);border-radius:999px;font-size:12px}.ds-menu-identity span:last-child{display:grid;min-width:0}.ds-menu-identity strong{font-size:15px;font-weight:500}.ds-menu-identity small{color:color-mix(in oklab,var(--muted-foreground) 80%,transparent);font-size:12px}.ds-identity-menu hr{height:1px;margin:4px -6px;border:0;background:var(--border)}.ds-identity-menu button{display:block;width:100%;height:36px;padding:0 10px;border:0;border-radius:10px;color:inherit;background:transparent;text-align:left;font-size:14px}.ds-identity-menu button:hover{background:var(--accent)}.ds-identity-menu button:focus-visible{outline:2px solid var(--ring);outline-offset:-2px}"
+    },
+    {
+      "name": "Sidebar Header Hairline",
+      "kind": "custom",
+      "description": "A one-pixel theme-aware structural separator immediately below the sidebar header.",
+      "html": "<div class=\"ds-sidebar-header\"><span>Baitari</span><i aria-hidden=\"true\"></i></div>",
+      "css": ".ds-sidebar-header{position:relative;height:64px;padding:0 24px;color:var(--sidebar-foreground);background:transparent;font:600 16px/64px var(--font-sans)}.ds-sidebar-header i{position:absolute;top:100%;right:0;left:0;height:1px;pointer-events:none;background:color-mix(in oklab,var(--sidebar-foreground) 12%,transparent);transition:left 300ms cubic-bezier(.22,1,.36,1),width 300ms cubic-bezier(.22,1,.36,1)}"
+    },
+    {
+      "name": "Daily Dashboard Signal",
+      "kind": "button",
+      "refersTo": "daily-signal-card",
+      "description": "A navigable daily signal with full-string amount fitting in the application. This static preview applies the approved Geist KPI role without asserting classic runtime conformance.",
+      "html": "<button class=\"ds-daily-card\" type=\"button\"><span class=\"ds-daily-heading\"><span>Encaissements</span><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" aria-hidden=\"true\"><rect x=\"3\" y=\"5\" width=\"18\" height=\"16\" rx=\"2\"/><path d=\"M16 3v4M8 3v4M3 11h18\"/></svg></span><span class=\"ds-daily-body\"><strong>12 000 DA</strong><span class=\"ds-daily-context\">aujourd’hui</span><span class=\"ds-daily-detail\">Hier : 10 000 DA</span><span class=\"ds-daily-status ds-daily-positive\">+20% vs hier</span><span class=\"ds-daily-action\">Voir les finances<svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><path d=\"M7 17 17 7M7 7h10v10\"/></svg></span></span></button>",
+      "css": ".ds-daily-card{display:flex;flex-direction:column;width:100%;min-width:0;padding:5px;text-align:left;border:1px solid var(--border);border-radius:14px;background:var(--muted);color:var(--foreground);font-family:var(--app-font-sans);cursor:pointer;transition:border-color 160ms}.ds-daily-card:hover{border-color:var(--muted-foreground)}.ds-daily-card:focus-visible{outline:2px solid var(--primary);outline-offset:3px}.ds-daily-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:44px;padding:6px 10px;font-size:13px;font-weight:500}.ds-daily-heading svg{color:var(--muted-foreground)}.ds-daily-body{display:flex;flex:1;flex-direction:column;gap:6px;padding:16px 13px 12px;border:1px solid var(--border);border-radius:10px;background:var(--card)}.ds-daily-body strong{font-family:var(--app-font-display);font-size:34px;line-height:1.2;font-weight:500;letter-spacing:-.035em;font-variant-numeric:tabular-nums;white-space:nowrap}.ds-daily-body>span{font-size:11px;line-height:1.5;color:var(--muted-foreground)}.ds-daily-body .ds-daily-action{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:9px;padding-top:11px;border-top:1px solid var(--border);font-size:11px;color:var(--foreground)}.ds-daily-body .ds-daily-context{margin-top:-3px;font-size:11px;color:var(--muted-foreground)}.ds-daily-body .ds-daily-detail{margin-top:9px;font-size:12px}.ds-daily-body .ds-daily-status{align-self:start;padding:3px 6px;font-size:10px;line-height:1.4;border-radius:5px;background:var(--muted);color:var(--muted-foreground)}.ds-daily-body .ds-daily-positive{background:#ecfdf5;color:#047857}:host-context(.dark) .ds-daily-positive{background:#10b98115;color:#6ee7b7}"
+    },
+    {
+      "name": "Primary Action",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Shared pill action with configured application typography and visible keyboard focus.",
+      "html": "<button class=\"ds-action ds-action-primary\" type=\"button\">Démarrer la consultation</button>",
+      "css": ".ds-action{display:inline-flex;height:30px;align-items:center;justify-content:center;gap:6px;border:1px solid transparent;border-radius:9999px;padding:0 12px;font-family:var(--app-font-sans);font-size:12px;line-height:1;font-weight:500;transition:background-color 160ms cubic-bezier(.2,0,0,1),color 160ms cubic-bezier(.2,0,0,1),box-shadow 160ms cubic-bezier(.2,0,0,1),scale 160ms cubic-bezier(.2,0,0,1)}.ds-action:focus-visible{outline:none;box-shadow:0 0 0 2px var(--canvas),0 0 0 4px color-mix(in srgb,var(--primary) 40%,transparent)}.ds-action:active{scale:.97}.ds-action:disabled{pointer-events:none;opacity:.5}@media(prefers-reduced-motion:reduce){.ds-action:active{scale:1}}.ds-action-primary{background:var(--primary);color:var(--primary-foreground)}.ds-action-primary:hover{background:color-mix(in srgb,var(--primary) 90%,transparent)}.ds-action-primary{box-shadow:0 2px 3px rgb(42 42 42 / .16), 0 0 0 0.5px rgb(14 14 14 / .32), inset 0 2px 4px rgb(255 255 255 / .16), inset 0 0 0 0.5px rgb(255 255 255 / .12), inset 0 -5px 10px rgb(0 0 0 / .1)}"
+    },
+    {
+      "name": "Quiet Action",
+      "kind": "button",
+      "refersTo": "button-quiet",
+      "description": "Shared pill action with configured application typography and visible keyboard focus.",
+      "html": "<button class=\"ds-action ds-action-quiet\" type=\"button\">Réessayer</button>",
+      "css": ".ds-action{display:inline-flex;height:30px;align-items:center;justify-content:center;gap:6px;border:1px solid transparent;border-radius:9999px;padding:0 12px;font-family:var(--app-font-sans);font-size:12px;line-height:1;font-weight:500;transition:background-color 160ms cubic-bezier(.2,0,0,1),color 160ms cubic-bezier(.2,0,0,1),box-shadow 160ms cubic-bezier(.2,0,0,1),scale 160ms cubic-bezier(.2,0,0,1)}.ds-action:focus-visible{outline:none;box-shadow:0 0 0 2px var(--canvas),0 0 0 4px color-mix(in srgb,var(--primary) 40%,transparent)}.ds-action:active{scale:.97}.ds-action:disabled{pointer-events:none;opacity:.5}@media(prefers-reduced-motion:reduce){.ds-action:active{scale:1}}.ds-action-quiet{background:var(--secondary);color:var(--secondary-foreground);border-color:var(--border)}.ds-action-quiet:hover{background:var(--muted)}"
+    },
+    {
+      "name": "Application Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "The incumbent shared 32px input retains its library radius and theme-aware border, focus, disabled, and invalid states.",
+      "html": "<input class=\"ds-input\" aria-label=\"Nom du patient\" placeholder=\"Rechercher un patient\">",
+      "css": ".ds-input{height:32px;width:100%;min-width:0;padding:4px 10px;border:1px solid var(--input);border-radius:var(--radius);background:transparent;color:var(--ink);font-family:var(--app-font-sans);font-size:16px;outline:none;transition:color 150ms,background-color 150ms,border-color 150ms}.ds-input::placeholder{color:var(--ink-muted)}.ds-input:hover{border-color:var(--input)}.ds-input:focus-visible{border-color:var(--ring);box-shadow:0 0 0 3px color-mix(in srgb,var(--ring) 50%,transparent)}.ds-input:disabled{pointer-events:none;cursor:not-allowed;opacity:.5;background:color-mix(in srgb,var(--input) 50%,transparent)}.ds-input[aria-invalid=\"true\"]{border-color:var(--destructive);box-shadow:0 0 0 3px color-mix(in srgb,var(--destructive) 20%,transparent)}@media(min-width:768px){.ds-input{font-size:14px}}:host-context(.dark) .ds-input{background:color-mix(in srgb,var(--input) 30%,transparent)}"
+    },
+    {
+      "name": "Clinical Signal Badge",
+      "kind": "chip",
+      "description": "A shared semantic watch badge uses Inter, written status, and the source quiet fill.",
+      "html": "<span class=\"ds-signal-badge\">À surveiller</span>",
+      "css": ".ds-signal-badge{display:inline-flex;width:fit-content;align-items:center;gap:6px;border-radius:calc(var(--radius) * .8);padding:4px 8px;background:color-mix(in srgb,var(--signal-watch) 10%,transparent);color:#92400e;font-family:var(--app-font-sans);font-size:11px;font-weight:500;line-height:1}:host-context(.dark) .ds-signal-badge{color:#fcd34d}"
+    },
+    {
+      "name": "Dashboard Mode Selector",
+      "kind": "custom",
+      "refersTo": "dashboard-mode",
+      "description": "Classic is first and default; the optional clinical mode persists through dashboard.version with rollback and retry on failure.",
+      "html": "<div class=\"ds-dashboard-mode\" role=\"group\" aria-label=\"Vue du tableau de bord\"><button type=\"button\" aria-pressed=\"true\">Vue classique</button><button type=\"button\" aria-pressed=\"false\">Journée clinique</button></div>",
+      "css": ".ds-dashboard-mode{display:inline-flex;max-width:100%;align-items:center;padding:4px;border-radius:10px;background:var(--frame);box-shadow:0 0 0 1px var(--hairline);font-family:var(--app-font-sans)}.ds-dashboard-mode button{display:inline-flex;height:32px;align-items:center;justify-content:center;gap:8px;padding:0 12px;border:0;border-radius:7px;background:transparent;color:var(--ink-muted);font:500 12px var(--app-font-sans);transition:color 150ms}.ds-dashboard-mode button[aria-pressed=\"true\"]{background:var(--surface-raised);color:var(--ink);box-shadow:var(--elev-card)}.ds-dashboard-mode button:hover{color:var(--ink)}.ds-dashboard-mode button:focus-visible{outline:none;box-shadow:0 0 0 2px var(--canvas),0 0 0 4px color-mix(in srgb,var(--primary) 40%,transparent)}"
+    },
+    {
+      "name": "Clinical Now Panel",
+      "kind": "card",
+      "refersTo": "app-panel",
+      "description": "The optional Clinical Bento leads with the current patient, context, allergies and next action. This static sample shows its Panel nesting; dependency loading and retry stay local.",
+      "html": "<section class=\"ds-now-panel\" aria-label=\"Maintenant\"><div class=\"ds-now-body\"><span class=\"ds-now-state\">En salle d’attente</span><span class=\"ds-now-time\">09:30</span><h2>Luna</h2><p>Chat · Camille Martin · Contrôle</p><div class=\"ds-now-allergy\"><strong>Allergies : </strong>Pénicilline</div><button class=\"ds-now-action\" type=\"button\">Démarrer la consultation</button></div></section>",
+      "css": ".ds-now-panel{padding:4px;border-radius:16px;background:var(--frame);box-shadow:0 0 0 1px var(--hairline);color:var(--ink);font-family:var(--app-font-sans)}.ds-now-body{padding:20px;border-radius:12px;background:var(--surface)}.ds-now-state{display:inline-flex;align-items:center;padding:4px 8px;border-radius:calc(var(--radius) * .8);background:color-mix(in srgb,var(--signal-positive) 10%,transparent);color:#047857;font-size:11px;font-weight:500;line-height:1}.ds-now-time{margin-left:12px;color:var(--ink-muted);font-size:12px;font-variant-numeric:tabular-nums}.ds-now-body h2{margin:12px 0 0;font-family:var(--app-font-display);font-size:28px;font-weight:500;line-height:1.25;letter-spacing:-.035em}.ds-now-body p{margin:4px 0 12px;color:var(--ink-muted);font-size:13px;line-height:20px}.ds-now-allergy{margin-bottom:12px;padding:8px 12px;border-radius:10px;background:color-mix(in srgb,var(--signal-critical) 10%,transparent);color:#be123c;font-size:12px}.ds-now-action{display:inline-flex;height:36px;align-items:center;padding:0 14px;border:0;border-radius:10px;background:var(--primary);color:var(--primary-foreground);font:500 13px var(--app-font-sans);transition:background-color 150ms cubic-bezier(.2,0,0,1),scale 150ms cubic-bezier(.2,0,0,1)}.ds-now-action:hover{background:color-mix(in srgb,var(--primary) 90%,transparent)}.ds-now-action:focus-visible{outline:none;box-shadow:0 0 0 2px var(--canvas),0 0 0 4px color-mix(in srgb,var(--primary) 40%,transparent)}.ds-now-action:active{scale:.96}.ds-now-action:disabled{pointer-events:none;opacity:.5}@media(prefers-reduced-motion:reduce){.ds-now-action:active{scale:1}}:host-context(.dark) .ds-now-state{color:#6ee7b7}:host-context(.dark) .ds-now-allergy{color:#fda4af}"
+    },
+    {
+      "name": "Neutral Workspace Table",
+      "kind": "custom",
+      "description": "Quiet normal-weight headers and neutral interaction states.",
+      "html": "<table class=\"ds-crm-table\"><thead><tr><th>Patient</th><th>Statut</th></tr></thead><tbody><tr tabindex=\"0\"><td>Luna</td><td>Planifié</td></tr><tr data-state=\"selected\"><td>Milo</td><td>Terminé</td></tr></tbody></table>",
+      "css": ".ds-crm-table{width:100%;border-collapse:collapse;font:14px var(--app-font-sans);font-variant-numeric:tabular-nums;color:var(--foreground)}.ds-crm-table thead{background:var(--background)}.ds-crm-table th{height:44px;padding:0 16px;text-align:left;font-size:12px;font-weight:400;color:var(--muted-foreground)}.ds-crm-table tr{border-bottom:1px solid color-mix(in srgb,var(--border) 60%,transparent);transition:background-color 150ms}.ds-crm-table td{padding:14px 16px}.ds-crm-table tbody tr:hover,.ds-crm-table tbody tr:focus-within{background:color-mix(in srgb,var(--muted) 60%,transparent)}.ds-crm-table tr[data-state=selected]{background:var(--muted)}.ds-crm-table tr:focus-visible{outline:2px solid var(--ring);outline-offset:-2px}"
+    }
+  ],
+  "narrative": {
+    "northStar": "Calm Clinical Signals",
+    "overview": "Baitari presents operational clinical information with quiet precision. Neutral surfaces and compact typography carry the interface; color appears sparingly when a signal changes the user's attention or next action.\n\nOn frequently used non-dashboard pages, the interface behaves like a clinical instrument: concise page names replace motivational headlines, the task surface follows the signal row immediately, and sensitive actions use named in-app confirmations with explicit outcomes.\n\nThe approved application system uses an off-white canvas, gray frames, inset white surfaces, and charcoal equivalents in dark mode. Geist Variable is the default across application UI, body, headings, and tabular KPI values through the configurable application font. The CRM-inspired trial uses illuminated violet primary controls on neutral working surfaces. The chosen Opaline atmosphere remains behind the top content, alongside the dashboard's greeting and selected avatars. The Protocol glass header retains its independent scroll behavior. Animals and floral illustrations do not sit behind working surfaces.\n\nThe dashboard preserves familiar work: Vue classique is first and is the default, while Journée clinique is an optional clinical operating view. Both use the same patient and financial data. This application extension preserves the separate Manrope and Instrument Serif typography of the approved marketing landing and teaser direction.",
+    "keyCharacteristics": [
+      "Four coordinated operational signals in gray frames with inset theme-card bodies.",
+      "Semantic state communicated by icon, text, and color together.",
+      "A sidebar footer band that stays visually anchored while navigation content scrolls independently.",
+      "Fine separators, restrained hover states, and theme-aware neutral surfaces.",
+      "Concise operational page titles without emoji or promotional name gradients outside the dashboard.",
+      "Familiar classic reporting with an optional patient-first Clinical Bento hierarchy.",
+      "Independent widget loading, local recovery, and discreet confirmation of saved work."
+    ],
+    "rules": [
+      {
+        "name": "The Meaning Before Color Rule",
+        "body": "Never communicate a clinical state with color alone; pair it with a distinct icon and written badge.",
+        "section": "colors"
+      },
+      {
+        "name": "The Active Alert Rule",
+        "body": "Critical and watch colors appear only when the associated numeric signal is active. A zero or inactive condition returns to the quiet treatment.",
+        "section": "colors"
+      },
+      {
+        "name": "The Stable Numeral Rule",
+        "body": "Operational values use tabular numerals so changing counts do not create visual jitter.",
+        "section": "typography"
+      },
+      {
+        "name": "The Application Type Rule",
+        "body": "Default to Geist Variable for the application UI, body, headings, and KPI values. UI and body follow the appearance font setting; headings and KPI values retain Geist. Keep the approved marketing typography scoped to landing and teaser work.",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat Signal Rule",
+        "body": "Operational signal cards derive hierarchy from the gray frame and inset body. Preserve the separately pinned first-row KPI hover treatment from AGENTS.md; do not generalize its grid and gradient layers to other operational surfaces.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** preserve gray outer frames and inset theme-card bodies across operational KPI rows.",
+      "**Do** derive semantic tone from the meaning and active value of the signal.",
+      "**Do** pair semantic color with a recognizable icon and explicit label.",
+      "**Do** keep the identity dock inside the anchored sidebar footer band and retain its hairline boundary.",
+      "**Do** preserve light- and dark-theme contrast for borders, text, status badges, and dropdown elevation.",
+      "**Do** fit complete monetary values to available width and retain their currency.",
+      "**Do** keep the ambient mesh behind top content and preserve the continuous Protocol header glass.",
+      "**Do** keep icon-only actions visible on touch layouts and reveal them on keyboard focus as well as hover.",
+      "**Do** provide Enter/Space behavior and a visible focus treatment for interactive records.",
+      "**Do** default to Geist across application UI/body, headings, and tabular KPI values while preserving user font choices and the marketing font scope.",
+      "**Do** keep Vue classique first and default, and persist the user's dashboard choice.",
+      "**Do** reserve skeleton space per widget, use the 150ms delay/300ms minimum, and provide a local retry.",
+      "**Do** retain ready data during revalidation and show optimistic write, rollback, and header save feedback."
+    ],
+    "donts": [
+      "**Don't** add decorative charts or promotional metrics inside operational KPI cards.",
+      "**Don't** use saturated color for quiet or zero-value states.",
+      "**Don't** clip supporting copy or impose the former fixed KPI heights.",
+      "**Don't** restore animals or floral backgrounds behind working content.",
+      "**Don't** scroll the identity dock away with navigation content.",
+      "**Don't** add persistent elevation to the signal cards or sidebar dock.",
+      "**Don't** use native `alert` or `confirm` for clinical, inventory, financial, or access-management operations.",
+      "**Don't** hide a required action behind hover alone.",
+      "**Don't** gate the whole dashboard on an unrelated widget dependency or show a loading source as an empty clinical result.",
+      "**Don't** apply the optional clinical hierarchy to every page or expand trends on initial load."
+    ]
+  }
+}

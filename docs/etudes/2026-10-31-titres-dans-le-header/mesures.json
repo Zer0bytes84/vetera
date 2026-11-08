@@ -1,0 +1,99 @@
+[
+  {
+    "name": "page-dashboard",
+    "header": "✨",
+    "pageTitles": [
+      "Bonjour Capture, ravi de vous retrouver 👋"
+    ],
+    "consoleErrors": []
+  },
+  {
+    "name": "page-patients",
+    "header": "✨",
+    "pageTitles": [
+      "Patients"
+    ],
+    "consoleErrors": []
+  },
+  {
+    "name": "page-agenda",
+    "header": "✨",
+    "pageTitles": [
+      "Agenda"
+    ],
+    "consoleErrors": []
+  },
+  {
+    "name": "page-clinique",
+    "header": "✨",
+    "pageTitles": [
+      "Soins"
+    ],
+    "consoleErrors": []
+  },
+  {
+    "name": "page-flux",
+    "header": "✨",
+    "pageTitles": [
+      "Flux"
+    ],
+    "consoleErrors": []
+  },
+  {
+    "name": "page-taches",
+    "header": "✨",
+    "pageTitles": [
+      "Rappels"
+    ],
+    "consoleErrors": []
+  },
+  {
+    "name": "page-notes",
+    "header": "✨",
+    "pageTitles": [
+      "Documents"
+    ],
+    "consoleErrors": []
+  },
+  {
+    "name": "page-stock",
+    "header": "✨",
+    "pageTitles": [
+      "Produits"
+    ],
+    "consoleErrors": []
+  },
+  {
+    "name": "page-finances",
+    "header": "✨",
+    "pageTitles": [
+      "Finances & Facturation"
+    ],
+    "consoleErrors": []
+  },
+  {
+    "name": "page-equipe",
+    "header": "✨",
+    "pageTitles": [
+      "Équipe & Praticiens"
+    ],
+    "consoleErrors": []
+  },
+  {
+    "name": "page-parametres",
+    "header": "✨",
+    "pageTitles": [
+      "Paramètres"
+    ],
+    "consoleErrors": []
+  },
+  {
+    "name": "page-dossier",
+    "header": "✨",
+    "pageTitles": [
+      "Patients / Kejounti · ID-0010",
+      "Kejounti"
+    ],
+    "consoleErrors": []
+  }
+]
