@@ -155,7 +155,7 @@ export function VaccinationList({
                       <Badge
                         className={cn(
                           "rounded-full px-2 py-0 font-medium t-12",
-                          meta.className
+                          meta.className,
                         )}
                         variant="secondary"
                       >

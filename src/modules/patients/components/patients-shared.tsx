@@ -11,7 +11,13 @@ import {
 } from "@/lib/hugeicons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Bird, Cat, Dog, PawPrint, Rabbit, UserRound } from "@/lib/icons";
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { toast } from "sonner";
 
 import { computeAge, formatAgeFr } from "../lib";
@@ -362,7 +368,7 @@ export function ClinicalNote({
         <span
           className={cn(
             "size-2 rounded-full",
-            tone === "alert" && value ? "bg-rose-500" : "bg-emerald-500"
+            tone === "alert" && value ? "bg-rose-500" : "bg-emerald-500",
           )}
         />
         <p className="font-semibold text-sm">{label}</p>
@@ -370,7 +376,7 @@ export function ClinicalNote({
       <p
         className={cn(
           "mt-2 pl-4 text-sm leading-6",
-          value ? "text-foreground" : "text-muted-foreground"
+          value ? "text-foreground" : "text-muted-foreground",
         )}
       >
         {value || emptyLabel}
@@ -422,7 +428,7 @@ export function PatientDetailsDialog({
 
   const [selectedOwnerId, setSelectedOwnerId] = useState(patient.ownerId);
   const [ownerData, setOwnerData] = useState<Partial<Owner>>(
-    owner ? { ...owner } : {}
+    owner ? { ...owner } : {},
   );
 
   useEffect(() => {
@@ -471,25 +477,25 @@ export function PatientDetailsDialog({
           const rightDate = normalizeDate(right.startTime)?.getTime() ?? 0;
           return rightDate - leftDate;
         }),
-    [appointments, patient.id]
+    [appointments, patient.id],
   );
 
   const currentOwner = useMemo(
     () => allOwners.find((entry) => entry.id === selectedOwnerId),
-    [allOwners, selectedOwnerId]
+    [allOwners, selectedOwnerId],
   );
 
   const ownerFinancialHistory = useMemo(() => {
     const appointmentIds = new Set(
       appointments
         .filter((appointment) => appointment.ownerId === selectedOwnerId)
-        .map((appointment) => appointment.id)
+        .map((appointment) => appointment.id),
     );
     const linkedIncome = transactions.filter(
       (transaction) =>
         transaction.type === "income" &&
         !!transaction.referenceId &&
-        appointmentIds.has(transaction.referenceId)
+        appointmentIds.has(transaction.referenceId),
     );
 
     return {
@@ -505,12 +511,12 @@ export function PatientDetailsDialog({
 
   const usersById = useMemo(
     () => new Map(users.map((entry) => [entry.id, entry])),
-    [users]
+    [users],
   );
 
   const breedSuggestions = useMemo(
     () => getBreedSuggestions(patientData.species),
-    [patientData.species]
+    [patientData.species],
   );
 
   const upcomingAppointment = useMemo(
@@ -530,7 +536,7 @@ export function PatientDetailsDialog({
           const rightDate = normalizeDate(right.startTime)?.getTime() ?? 0;
           return leftDate - rightDate;
         })[0],
-    [history]
+    [history],
   );
 
   const handleCancelEdit = () => {
@@ -603,7 +609,7 @@ export function PatientDetailsDialog({
         // de laisser croire que rien n'a été sauvegardé. L'édition reste
         // ouverte pour réessayer la partie propriétaire.
         toast.error(
-          "Le patient a été enregistré, mais la mise à jour du propriétaire a échoué. Vérifiez puis réessayez."
+          "Le patient a été enregistré, mais la mise à jour du propriétaire a échoué. Vérifiez puis réessayez.",
         );
         return;
       }
@@ -753,7 +759,7 @@ export function PatientDetailsDialog({
 
               <div
                 data-clinical-alert={Boolean(
-                  patient.allergies || patient.chronicConditions
+                  patient.allergies || patient.chronicConditions,
                 )}
                 className="flex min-w-0 items-center gap-3 rounded-2xl bg-muted/30 px-3.5 py-3 text-foreground ring-1 ring-border/40 transition-colors dark:bg-muted/15 dark:ring-border/30"
               >
@@ -798,7 +804,7 @@ export function PatientDetailsDialog({
                     "flex h-10 shrink-0 items-center gap-2.5 rounded-xl px-3 font-medium text-sm transition-colors md:w-full",
                     activeTab === "info"
                       ? "bg-sky-500/10 font-semibold text-sky-700 dark:bg-sky-500/20 dark:text-sky-300"
-                      : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
+                      : "text-muted-foreground hover:bg-muted/60 hover:text-foreground",
                   )}
                   onClick={() => setActiveTab("info")}
                   type="button"
@@ -816,7 +822,7 @@ export function PatientDetailsDialog({
                     "flex h-10 shrink-0 items-center gap-2.5 rounded-xl px-3 font-medium text-sm transition-colors md:w-full",
                     activeTab === "medical"
                       ? "bg-emerald-500/10 font-semibold text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300"
-                      : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
+                      : "text-muted-foreground hover:bg-muted/60 hover:text-foreground",
                   )}
                   onClick={() => setActiveTab("medical")}
                   type="button"
@@ -834,7 +840,7 @@ export function PatientDetailsDialog({
                     "flex h-10 shrink-0 items-center gap-2.5 rounded-xl px-3 font-medium text-sm transition-colors md:w-full",
                     activeTab === "history"
                       ? "bg-amber-500/10 font-semibold text-amber-700 dark:bg-amber-500/20 dark:text-amber-300"
-                      : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
+                      : "text-muted-foreground hover:bg-muted/60 hover:text-foreground",
                   )}
                   onClick={() => setActiveTab("history")}
                   type="button"
@@ -856,7 +862,8 @@ export function PatientDetailsDialog({
                   #{patient.id.slice(0, 8)}
                 </p>
                 <p className="mt-3 line-clamp-2 text-muted-foreground text-xs leading-5">
-                  {formatPhone(currentOwner?.phone) || "Téléphone non renseigné"}
+                  {formatPhone(currentOwner?.phone) ||
+                    "Téléphone non renseigné"}
                 </p>
               </div>
             </aside>
@@ -979,7 +986,7 @@ export function PatientDetailsDialog({
                                       >
                                         {option.label}
                                       </NativeSelectOption>
-                                    )
+                                    ),
                                   )}
                                 </NativeSelect>
                               </Field>
@@ -987,7 +994,8 @@ export function PatientDetailsDialog({
 
                             <Field>
                               <FieldLabel>Date de naissance</FieldLabel>
-                              <DatePicker clearable
+                              <DatePicker
+                                clearable
                                 onChange={(value) =>
                                   setPatientData((current) => ({
                                     ...current,
@@ -1055,7 +1063,8 @@ export function PatientDetailsDialog({
                                     key={entry.id}
                                     value={entry.id}
                                   >
-                                    {formatOwnerName(entry)} · {formatPhone(entry.phone)}
+                                    {formatOwnerName(entry)} ·{" "}
+                                    {formatPhone(entry.phone)}
                                   </NativeSelectOption>
                                 ))}
                               </NativeSelect>
@@ -1224,7 +1233,10 @@ export function PatientDetailsDialog({
                             />
                             <ReadOnlyDetail
                               label="Téléphone"
-                              value={formatPhone(currentOwner?.phone) || "Non renseigné"}
+                              value={
+                                formatPhone(currentOwner?.phone) ||
+                                "Non renseigné"
+                              }
                             />
                             <ReadOnlyDetail
                               label="Email"
@@ -1253,7 +1265,9 @@ export function PatientDetailsDialog({
                               value={
                                 [
                                   currentOwner?.secondaryContactName,
-                                  formatPhone(currentOwner?.secondaryContactPhone),
+                                  formatPhone(
+                                    currentOwner?.secondaryContactPhone,
+                                  ),
                                 ]
                                   .filter(Boolean)
                                   .join(" · ") || "Non renseigné"
@@ -1451,7 +1465,9 @@ export function PatientDetailsDialog({
                                   {appointment.type}
                                 </p>
                                 <p className="truncate text-muted-foreground text-xs">
-                                  {formatPersonName(veterinarian?.displayName) || "Non assigné"}
+                                  {formatPersonName(
+                                    veterinarian?.displayName,
+                                  ) || "Non assigné"}
                                 </p>
                               </div>
                               <Badge
@@ -1466,7 +1482,7 @@ export function PatientDetailsDialog({
                                 label="Créneau"
                                 value={formatVisitTimeRange(
                                   appointment.startTime,
-                                  appointment.endTime
+                                  appointment.endTime,
                                 )}
                               />
                               <ReadOnlyDetail
@@ -1597,7 +1613,7 @@ export function PatientCreateDialog({
 
   const breedSuggestions = useMemo(
     () => getBreedSuggestions(newPatient.species),
-    [newPatient.species]
+    [newPatient.species],
   );
 
   const handleCreate = useCallback(async () => {
@@ -1652,9 +1668,9 @@ export function PatientCreateDialog({
       owners
         .slice()
         .sort((left, right) =>
-          formatOwnerName(left).localeCompare(formatOwnerName(right), "fr")
+          formatOwnerName(left).localeCompare(formatOwnerName(right), "fr"),
         ),
-    [owners]
+    [owners],
   );
 
   const SpeciesIcon = getSpeciesComponent(newPatient.species);
@@ -1775,14 +1791,13 @@ export function PatientCreateDialog({
                     <div className="grid gap-4 sm:grid-cols-2">
                       <Field>
                         <FieldLabel>
-                          Nom{" "}
-                          <span className="modal-required">requis</span>
+                          Nom <span className="modal-required">requis</span>
                         </FieldLabel>
                         <Input
                           aria-invalid={Boolean(
                             formError &&
-                              selectedOwnerId === "new" &&
-                              !newOwner.lastName?.trim()
+                            selectedOwnerId === "new" &&
+                            !newOwner.lastName?.trim(),
                           )}
                           onChange={(event) =>
                             setNewOwner((current) => ({
@@ -1817,8 +1832,8 @@ export function PatientCreateDialog({
                         <Input
                           aria-invalid={Boolean(
                             formError &&
-                              selectedOwnerId === "new" &&
-                              !newOwner.phone?.trim()
+                            selectedOwnerId === "new" &&
+                            !newOwner.phone?.trim(),
                           )}
                           onChange={(event) =>
                             setNewOwner((current) => ({
@@ -1911,7 +1926,7 @@ export function PatientCreateDialog({
                   </FieldLabel>
                   <Input
                     aria-invalid={Boolean(
-                      formError && !newPatient.name?.trim()
+                      formError && !newPatient.name?.trim(),
                     )}
                     autoFocus
                     className="modal-patient-name-input"
@@ -1933,7 +1948,7 @@ export function PatientCreateDialog({
                     </FieldLabel>
                     <Input
                       aria-invalid={Boolean(
-                        formError && !newPatient.species?.trim()
+                        formError && !newPatient.species?.trim(),
                       )}
                       list="new-patient-species-options"
                       onChange={(event) =>
@@ -2006,7 +2021,7 @@ export function PatientCreateDialog({
                           <NativeSelectOption key={value} value={value}>
                             {option.label}
                           </NativeSelectOption>
-                        )
+                        ),
                       )}
                     </NativeSelect>
                   </Field>

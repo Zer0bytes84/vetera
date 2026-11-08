@@ -14,6 +14,7 @@ import {
   CircleNotch,
   FloppyDisk,
   FileText,
+  Notebook,
   Trash,
   XCircle,
 } from "@/lib/icons";
@@ -40,6 +41,9 @@ import {
 } from "../local-ai/soap-schema";
 import { SoapSectionEditor } from "./soap-section-editor";
 import { AssistantBrandAvatar } from "./assistant-brand-avatar";
+import { meaningful } from "@/modules/patients/lib/meaningful";
+import { Shell, ShellHeader } from "@/components/ui/surface";
+import "./soap-surface.css";
 import { ConsultationAssistantPanel } from "./consultation-assistant-panel";
 import { isSoapReviewed, reviewedSoapContent } from "../local-ai/soap-review";
 import { OPEN_SOAP_ASSISTANT_EVENT } from "@/modules/consultation-workspace/consultation-closure";
@@ -130,12 +134,13 @@ export function SoapPanel({
   }, [repo]);
   useEffect(() => {
     if (initialised || repo.loading) return;
+    // A section holding only a placeholder (« Na », « n/a », « - »…) is read as empty; the stored text is left alone until the next real save.
     const value: Payload = existing
       ? {
-          subjective: existing.subjective ?? "",
-          objective: existing.objective ?? "",
-          assessment: existing.assessment ?? "",
-          plan: existing.plan ?? "",
+          subjective: meaningful(existing.subjective),
+          objective: meaningful(existing.objective),
+          assessment: meaningful(existing.assessment),
+          plan: meaningful(existing.plan),
           transcript: existing.transcript,
           aiDraft: existing.aiDraft,
           aiConfidence: existing.aiConfidence,
@@ -313,25 +318,12 @@ export function SoapPanel({
     !samePayload(lastSaved.current, payload) &&
     (hasNote(payload) || !!lastSaved.current);
   return (
-    <div className={cn("soap-panel space-y-5", className)}>
-      <div className="soap-panel-header flex flex-col gap-3 border-b pb-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="min-w-0">
-          <div className="flex flex-wrap items-center gap-2">
-            <h3 className="font-semibold text-base tracking-[-0.02em]">
-              Note clinique structurée
-            </h3>
-            <span aria-live="polite">
-              <SaveStatusPill status={saveStatus} />
-            </span>
-          </div>
-          <p className="mt-1 text-xs leading-5 text-muted-foreground">
-            SOAP : motif, observations, évaluation et plan de soins. Vos
-            saisies sont enregistrées automatiquement ; une dictée IA attend
-            toujours votre validation.
-          </p>
-        </div>
-        <div className="flex shrink-0 flex-wrap items-center gap-2">
+    <Shell className={cn("soap-panel", className)}>
+      <ShellHeader
+        aside={
+          <>
             <Button
+              className="rounded-full px-4"
               disabled={!initialised || dirty || saveStatus === "saving" || !isSoapReviewed(payload)}
               size="sm"
               onClick={() => setDocumentComposerOpen(true)}
@@ -339,6 +331,7 @@ export function SoapPanel({
               <FileText className="size-3.5" /> Générer un document
             </Button>
             <Button
+              className="rounded-full px-4"
               disabled={!initialised || saveStatus === "saving"}
               size="sm"
               variant="outline"
@@ -348,7 +341,7 @@ export function SoapPanel({
               <FileText className="size-3.5" /> Documents
             </Button>
             <Button
-              className="h-10 gap-1.5 px-4 text-xs"
+              className="rounded-full px-4"
               disabled={!dirty || saveStatus === "saving"}
               onClick={() => void saveNow()}
               size="sm"
@@ -358,7 +351,7 @@ export function SoapPanel({
               {t("consultations.soap.meta.save")}
             </Button>
             <Button
-              className="h-10 gap-1.5 px-4 text-xs"
+              className="rounded-full px-4"
               disabled={!initialised || saveStatus === "saving"}
               onClick={() => {
                 clearTimer();
@@ -369,11 +362,11 @@ export function SoapPanel({
               aria-expanded={assistantOpen}
               aria-label="Ouvrir l’assistant de consultation"
             >
-              <AssistantBrandAvatar size={24} /> Assistant
+              <AssistantBrandAvatar size={20} /> Assistant
             </Button>
             <Button
               aria-label="Effacer la note"
-              className="size-10"
+              className="rounded-full"
               disabled={!hasNote(payload) || saveStatus === "saving"}
               onClick={() => setClearDialogOpen(true)}
               size="icon"
@@ -381,9 +374,19 @@ export function SoapPanel({
             >
               <Trash className="size-4" />
             </Button>
-        </div>
-      </div>
-      <div className="soap-editor-grid grid gap-3 lg:grid-cols-2">
+          </>
+        }
+        as="h3"
+        className="soap-panel-header"
+        icon={Notebook}
+        subtitle={
+          <span aria-live="polite" className="inline-flex items-center gap-2">
+            SOAP <SaveStatusPill status={saveStatus} />
+          </span>
+        }
+        title="Note clinique"
+      />
+      <div className="soap-editor-grid grid gap-1.5 lg:grid-cols-2">
           {SOAP_SECTIONS.map(({ key }) => (
             <div key={key} className="space-y-2">
             <SoapSectionEditor
@@ -399,28 +402,33 @@ export function SoapPanel({
                 setSaveStatus("pending");
               }}
             />
-            {key === "plan" && payload.plan.trim() && isSoapReviewed(payload) && !dirty && <PlanCareTasks plan={payload.plan} patientId={patientId} />}
             </div>
           ))}
         </div>
       {hasNote(payload) && (
-        <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground">
-          <span>
-            {isSoapReviewed(payload) && !dirty
-              ? "Note validée pour les documents."
-              : "Validez la version actuelle avant de préparer un document."}
-          </span>
-          <Button
-            disabled={
-              saveStatus === "saving" || (isSoapReviewed(payload) && !dirty)
-            }
-            size="sm"
-            variant="outline"
-            onClick={() => void approveManualNote()}
-          >
-            <CheckCircle className="size-3.5" /> Valider la note pour les
-            documents
-          </Button>
+        <div className="soap-panel-footer flex flex-wrap items-center justify-end gap-2 px-2 pt-3">
+          {payload.plan.trim() && isSoapReviewed(payload) && !dirty ? (
+            <PlanCareTasks patientId={patientId} plan={payload.plan} />
+          ) : null}
+          {isSoapReviewed(payload) && !dirty ? (
+            <span className="inline-flex h-8 items-center gap-1.5 rounded-full px-3 text-[0.8125rem] text-[var(--tone-green)]">
+              <CheckCircle className="size-3.5" /> Note validée pour les documents
+            </span>
+          ) : (
+            <>
+              <span className="mr-auto text-[0.8125rem] text-muted-foreground">
+                Validez la version actuelle avant de préparer un document.
+              </span>
+              <Button
+                className="rounded-full px-4"
+                disabled={saveStatus === "saving"}
+                onClick={() => void approveManualNote()}
+                size="sm"
+              >
+                <CheckCircle className="size-3.5" /> Valider la note pour les documents
+              </Button>
+            </>
+          )}
         </div>
       )}
       {documentsOpen && (
@@ -483,7 +491,7 @@ export function SoapPanel({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+    </Shell>
   );
 }
 function SaveStatusPill({ status }: { status: SaveStatus }) {

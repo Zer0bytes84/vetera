@@ -74,7 +74,7 @@ export function WeightEntryDialog({
 
   const [weight, setWeight] = useState("");
   const [date, setDate] = useState(() =>
-    toDateInputValue(new Date().toISOString())
+    toDateInputValue(new Date().toISOString()),
   );
   const [bcs, setBcs] = useState("");
   const [notes, setNotes] = useState("");
@@ -126,14 +126,14 @@ export function WeightEntryDialog({
         toast.success(
           t("patientDetail.weight.saved", {
             defaultValue: "Poids enregistré.",
-          })
+          }),
         );
       } else {
         const created = await repo.add(
           payload as unknown as Omit<
             WeightEntry,
             "id" | "createdAt" | "updatedAt"
-          >
+          >,
         );
         if (!created) {
           throw new Error("Insert failed");
@@ -141,7 +141,7 @@ export function WeightEntryDialog({
         toast.success(
           t("patientDetail.weight.saved", {
             defaultValue: "Poids enregistré.",
-          })
+          }),
         );
       }
       onOpenChange(false);
@@ -164,7 +164,7 @@ export function WeightEntryDialog({
         toast.success(
           t("patientDetail.weight.deleted", {
             defaultValue: "Mesure supprimée.",
-          })
+          }),
         );
         setConfirmDeleteOpen(false);
         onOpenChange(false);
@@ -176,174 +176,171 @@ export function WeightEntryDialog({
 
   return (
     <>
-    <Dialog onOpenChange={onOpenChange} open={open}>
-      <FormDialogContent size="sm">
-        <FormDialogHeader
+      <Dialog onOpenChange={onOpenChange} open={open}>
+        <FormDialogContent size="sm">
+          <FormDialogHeader
             artwork="weight"
-          description="Une nouvelle mesure pour le suivi du patient."
-          icon={<Scales weight="duotone" />}
-          title={
-            isEditing
-              ? t("patientDetail.weight.editTitle")
-              : t("patientDetail.weight.dialogTitle")
-          }
-          tone="teal"
-        />
+            description="Une nouvelle mesure pour le suivi du patient."
+            icon={<Scales weight="duotone" />}
+            title={
+              isEditing
+                ? t("patientDetail.weight.editTitle")
+                : t("patientDetail.weight.dialogTitle")
+            }
+            tone="teal"
+          />
 
-        <FormDialogBody>
-          <FieldGroup>
-          <Field>
-            <FieldLabel htmlFor="weight-kg">
-              {t("patientDetail.weight.weightLabel")}
-            </FieldLabel>
-            <Input
-              autoFocus
-              id="weight-kg"
-              inputMode="decimal"
-              onChange={(event) => setWeight(event.target.value)}
-              placeholder={t("patientDetail.weight.weightPlaceholder")}
-              step="0.01"
-              type="number"
-              value={weight}
-            />
-          </Field>
+          <FormDialogBody>
+            <FieldGroup>
+              <Field>
+                <FieldLabel htmlFor="weight-kg">
+                  {t("patientDetail.weight.weightLabel")}
+                </FieldLabel>
+                <Input
+                  autoFocus
+                  id="weight-kg"
+                  inputMode="decimal"
+                  onChange={(event) => setWeight(event.target.value)}
+                  placeholder={t("patientDetail.weight.weightPlaceholder")}
+                  step="0.01"
+                  type="number"
+                  value={weight}
+                />
+              </Field>
 
-          <Field>
-            <FieldLabel htmlFor="weight-date">
-              {t("patientDetail.weight.dateLabel")}
-            </FieldLabel>
-            <DatePicker
-              id="weight-date"
-              onChange={(value) => setDate(value)}
-              value={date}
-            />
-          </Field>
+              <Field>
+                <FieldLabel htmlFor="weight-date">
+                  {t("patientDetail.weight.dateLabel")}
+                </FieldLabel>
+                <DatePicker
+                  id="weight-date"
+                  onChange={(value) => setDate(value)}
+                  value={date}
+                />
+              </Field>
 
-          <Field>
-            <FieldLabel htmlFor="weight-bcs">
-              {t("patientDetail.weight.bcsLabel")}
-            </FieldLabel>
-            <NativeSelect
-              className="w-full cursor-pointer"
-              id="weight-bcs"
-              onChange={(event) => setBcs(event.target.value)}
-              value={bcs}
+              <Field>
+                <FieldLabel htmlFor="weight-bcs">
+                  {t("patientDetail.weight.bcsLabel")}
+                </FieldLabel>
+                <NativeSelect
+                  className="w-full cursor-pointer"
+                  id="weight-bcs"
+                  onChange={(event) => setBcs(event.target.value)}
+                  value={bcs}
+                >
+                  {BCS_OPTIONS.map((option) => (
+                    <NativeSelectOption key={option.value} value={option.value}>
+                      {option.value === ""
+                        ? t("patientDetail.weight.bcsNone")
+                        : option.label}
+                    </NativeSelectOption>
+                  ))}
+                </NativeSelect>
+                <FieldDescription>
+                  {t("patientDetail.weight.bcsNone")}
+                </FieldDescription>
+              </Field>
+
+              <Field>
+                <FieldLabel htmlFor="weight-notes">
+                  {t("patientDetail.weight.notesLabel")}
+                </FieldLabel>
+                <Textarea
+                  id="weight-notes"
+                  onChange={(event) => setNotes(event.target.value)}
+                  placeholder={t("patientDetail.weight.notesPlaceholder")}
+                  rows={3}
+                  value={notes}
+                />
+              </Field>
+
+              {error ? (
+                <p
+                  className="text-rose-600 text-sm dark:text-rose-400"
+                  role="alert"
+                >
+                  {error}
+                </p>
+              ) : null}
+            </FieldGroup>
+          </FormDialogBody>
+
+          <FormDialogFooter className="flex w-full items-center justify-between gap-2 sm:justify-between">
+            {isEditing ? (
+              <Button
+                className="cursor-pointer text-rose-600 hover:bg-rose-500/10 hover:text-rose-700 dark:text-rose-400"
+                disabled={isDeleting || isSubmitting}
+                onClick={() => setConfirmDeleteOpen(true)}
+                type="button"
+                variant="ghost"
+              >
+                {isDeleting ? (
+                  <Spinner className="size-4" />
+                ) : (
+                  <Trash className="size-4" weight="duotone" />
+                )}
+                {t("patientDetail.weight.delete")}
+              </Button>
+            ) : (
+              <span />
+            )}
+            <div className="flex items-center gap-2">
+              <Button
+                className="cursor-pointer"
+                disabled={isSubmitting || isDeleting}
+                onClick={() => onOpenChange(false)}
+                type="button"
+                variant="ghost"
+              >
+                {t("patientDetail.weight.cancel")}
+              </Button>
+              <Button
+                className="cursor-pointer"
+                disabled={isSubmitting || isDeleting}
+                onClick={handleSave}
+                type="button"
+                variant="default"
+              >
+                {isSubmitting ? (
+                  <Spinner className="size-4" />
+                ) : (
+                  <Plus className="size-4" weight="duotone" />
+                )}
+                {t("patientDetail.weight.save")}
+              </Button>
+            </div>
+          </FormDialogFooter>
+        </FormDialogContent>
+      </Dialog>
+      <AlertDialog open={confirmDeleteOpen} onOpenChange={setConfirmDeleteOpen}>
+        <AlertDialogContent size="sm">
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {t("patientDetail.weight.confirmDeleteTitle", {
+                defaultValue: "Supprimer cette mesure ?",
+              })}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {t("patientDetail.weight.confirmDeleteMessage", {
+                defaultValue:
+                  "Cette mesure de poids sera définitivement supprimée du dossier. Cette action est irréversible.",
+              })}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>
+              {t("common.cancel", { defaultValue: "Annuler" })}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => void confirmDelete()}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              {BCS_OPTIONS.map((option) => (
-                <NativeSelectOption key={option.value} value={option.value}>
-                  {option.value === ""
-                    ? t("patientDetail.weight.bcsNone")
-                    : option.label}
-                </NativeSelectOption>
-              ))}
-            </NativeSelect>
-            <FieldDescription>
-              {t("patientDetail.weight.bcsNone")}
-            </FieldDescription>
-          </Field>
-
-          <Field>
-            <FieldLabel htmlFor="weight-notes">
-              {t("patientDetail.weight.notesLabel")}
-            </FieldLabel>
-            <Textarea
-              id="weight-notes"
-              onChange={(event) => setNotes(event.target.value)}
-              placeholder={t("patientDetail.weight.notesPlaceholder")}
-              rows={3}
-              value={notes}
-            />
-          </Field>
-
-          {error ? (
-            <p
-              className="text-rose-600 text-sm dark:text-rose-400"
-              role="alert"
-            >
-              {error}
-            </p>
-          ) : null}
-          </FieldGroup>
-        </FormDialogBody>
-
-        <FormDialogFooter className="flex w-full items-center justify-between gap-2 sm:justify-between">
-          {isEditing ? (
-            <Button
-              className="cursor-pointer text-rose-600 hover:bg-rose-500/10 hover:text-rose-700 dark:text-rose-400"
-              disabled={isDeleting || isSubmitting}
-              onClick={() => setConfirmDeleteOpen(true)}
-              type="button"
-              variant="ghost"
-            >
-              {isDeleting ? (
-                <Spinner className="size-4" />
-              ) : (
-                <Trash className="size-4" weight="duotone" />
-              )}
-              {t("patientDetail.weight.delete")}
-            </Button>
-          ) : (
-            <span />
-          )}
-          <div className="flex items-center gap-2">
-            <Button
-              className="cursor-pointer"
-              disabled={isSubmitting || isDeleting}
-              onClick={() => onOpenChange(false)}
-              type="button"
-              variant="ghost"
-            >
-              {t("patientDetail.weight.cancel")}
-            </Button>
-            <Button
-              className="cursor-pointer"
-              disabled={isSubmitting || isDeleting}
-              onClick={handleSave}
-              type="button"
-              variant="default"
-            >
-              {isSubmitting ? (
-                <Spinner className="size-4" />
-              ) : (
-                <Plus className="size-4" weight="duotone" />
-              )}
-              {t("patientDetail.weight.save")}
-            </Button>
-          </div>
-        </FormDialogFooter>
-      </FormDialogContent>
-    </Dialog>
-    <AlertDialog
-      open={confirmDeleteOpen}
-      onOpenChange={setConfirmDeleteOpen}
-    >
-      <AlertDialogContent size="sm">
-        <AlertDialogHeader>
-          <AlertDialogTitle>
-            {t("patientDetail.weight.confirmDeleteTitle", {
-              defaultValue: "Supprimer cette mesure ?",
-            })}
-          </AlertDialogTitle>
-          <AlertDialogDescription>
-            {t("patientDetail.weight.confirmDeleteMessage", {
-              defaultValue:
-                "Cette mesure de poids sera définitivement supprimée du dossier. Cette action est irréversible.",
-            })}
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>
-            {t("common.cancel", { defaultValue: "Annuler" })}
-          </AlertDialogCancel>
-          <AlertDialogAction
-            onClick={() => void confirmDelete()}
-            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-          >
-            {t("common.delete", { defaultValue: "Supprimer" })}
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+              {t("common.delete", { defaultValue: "Supprimer" })}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }

@@ -1,4 +1,3 @@
-import { openPatientPeek } from "../pages/patient-peek";
 import { PawPrint } from "lucide-react";
 import {
   Add01Icon,
@@ -37,11 +36,6 @@ import type { PatientsViewProps } from "../hooks/use-patients-page-model";
 import { PatientsTable } from "./patients-table";
 import "../patients-list.css";
 
-/** Space toggles the peek; the arrows make it follow the cursor. */
-function peekFromList(id: string, reason: "key" | "follow") {
-  openPatientPeek(id, { follow: true, toggle: reason === "key" });
-}
-
 export function PatientsView(props: PatientsViewProps) {
   const {
     appointments,
@@ -79,10 +73,7 @@ export function PatientsView(props: PatientsViewProps) {
     users,
     visiblePatients,
   } = props;
-  const listRef = useListCursor({
-    storageKey: "patients",
-    onPeek: peekFromList,
-  });
+  const listRef = useListCursor({ storageKey: "patients" });
   return (
     <div className="dashboard-stage flex w-full min-w-0 flex-col gap-6 px-4 pt-8 pb-8 lg:px-6">
       <MotivationalHeader
@@ -162,7 +153,6 @@ export function PatientsView(props: PatientsViewProps) {
               ? onNavigateToPatient(patient.id)
               : openPatientDetails(patient, "info")
           }
-          onPeek={(patientId) => openPatientPeek(patientId, { follow: true })}
           onResetFilters={resetFilters}
         />
       )}

@@ -92,23 +92,23 @@ export function PatientPeekView({
     return () => window.clearInterval(interval);
   }, []);
   const lastWeight = [...weights].sort((a, b) =>
-    b.measuredAt.localeCompare(a.measuredAt)
+    b.measuredAt.localeCompare(a.measuredAt),
   )[0];
   const lastVisit = appointments.find(
     (row) =>
-      row.status === "completed" && new Date(row.startTime).getTime() <= now
+      row.status === "completed" && new Date(row.startTime).getTime() <= now,
   );
   const nextVisit = appointments
     .filter((row) =>
       ["scheduled", "confirmed", "arrived", "waiting", "in_progress"].includes(
-        row.status
-      )
+        row.status,
+      ),
     )
     .sort((a, b) => a.startTime.localeCompare(b.startTime))
     .find(
       (row) =>
         new Date(row.startTime).getTime() >= now ||
-        ["arrived", "waiting", "in_progress"].includes(row.status)
+        ["arrived", "waiting", "in_progress"].includes(row.status),
     );
   const nextVaccine = getNextDueVaccination(vaccinations);
   const pending = loading || skeletons.profile;
@@ -338,7 +338,7 @@ export function PatientPeekView({
                         <ul className="medical-visit-list mt-4">
                           {[...vaccinations]
                             .sort((a, b) =>
-                              b.administeredAt.localeCompare(a.administeredAt)
+                              b.administeredAt.localeCompare(a.administeredAt),
                             )
                             .slice(0, 5)
                             .map((row) => (

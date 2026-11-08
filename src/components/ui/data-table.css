@@ -82,3 +82,14 @@
 :root:root:root .tuff-table thead {
   box-shadow: none !important;
 }
+
+/* A right-aligned column (amounts, quantities) keeps its header on the same right edge as its values: the skins force
+   `text-align: left` on every `th`, which left the header text 6 to 11 px short of the figures below it. */
+:root:root:root .tuff-table th.text-right,
+:root:root:root .tuff-table td.text-right {
+  text-align: right !important;
+}
+:root:root:root .tuff-table th.text-left,
+:root:root:root .tuff-table td.text-left {
+  text-align: left !important;
+}

@@ -653,3 +653,9 @@
 :root:root .dashboardWelcome :is(button, [data-slot="button"]) {
   border-radius: 9999px !important;
 }
+
+/* The rule before the account sits 10 px from the icons and 10 px from the avatar, like the one after the sidebar button (the
+   toolbar's own 20 px column gap would put it twice as far). */
+:root:root .shell-toolbar > .shell-header-divider {
+  margin-inline: -10px;
+}

@@ -55,14 +55,16 @@ export function VaccinationDialog({
   const [vaccineName, setVaccineName] = useState("");
   const [vaccineType, setVaccineType] = useState("");
   const [administeredAt, setAdministeredAt] = useState(() =>
-    toDateInputValue(new Date().toISOString())
+    toDateInputValue(new Date().toISOString()),
   );
   const [batchNumber, setBatchNumber] = useState("");
   const [manufacturer, setManufacturer] = useState("");
   const [notes, setNotes] = useState("");
   const [presetId, setPresetId] = useState("");
   const vaccinationDraftId = useRef("");
-  const [proposal, setProposal] = useState<MedicalReminderProposal | null>(null);
+  const [proposal, setProposal] = useState<MedicalReminderProposal | null>(
+    null,
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -127,19 +129,30 @@ export function VaccinationDialog({
         vetId: currentUser?.id,
       };
       if (isTauriRuntime()) {
-        await patientRemindersService.saveVaccination({
-          id: vaccinationDraftId.current, patientId, vaccineName: vaccineName.trim(),
-          vaccineType: vaccineType.trim() || undefined, administeredDate: administeredAt,
-          dueDate: vaccination?.nextDueAt
-            ? toDateInputValue(vaccination.nextDueAt)
-            : undefined,
-          batchNumber: batchNumber.trim() || undefined, manufacturer: manufacturer.trim() || undefined,
-          notes: notes.trim() || undefined,
-        }, currentUser?.id ?? "");
+        await patientRemindersService.saveVaccination(
+          {
+            id: vaccinationDraftId.current,
+            patientId,
+            vaccineName: vaccineName.trim(),
+            vaccineType: vaccineType.trim() || undefined,
+            administeredDate: administeredAt,
+            dueDate: vaccination?.nextDueAt
+              ? toDateInputValue(vaccination.nextDueAt)
+              : undefined,
+            batchNumber: batchNumber.trim() || undefined,
+            manufacturer: manufacturer.trim() || undefined,
+            notes: notes.trim() || undefined,
+          },
+          currentUser?.id ?? "",
+        );
         vaccinationSaved = true;
         emitSQLiteDataChanged("vaccinations");
         announcePatientRemindersChanged();
-        void repo.refresh().catch(() => { toast.warning("La vaccination est enregistrée. Actualisez le carnet si nécessaire."); });
+        void repo.refresh().catch(() => {
+          toast.warning(
+            "La vaccination est enregistrée. Actualisez le carnet si nécessaire.",
+          );
+        });
         if (!isEditing) {
           const nextProposal = await onMedicalActRecorded(
             {
@@ -149,7 +162,7 @@ export function VaccinationDialog({
               patientId,
               type: "vaccin",
             },
-            patientRemindersService
+            patientRemindersService,
           );
           if (nextProposal) {
             setProposal(nextProposal);
@@ -167,7 +180,7 @@ export function VaccinationDialog({
           payload as unknown as Omit<
             Vaccination,
             "id" | "createdAt" | "updatedAt"
-          >
+          >,
         );
         if (!created) {
           throw new Error("La vaccination n’a pas pu être enregistrée.");
@@ -177,9 +190,13 @@ export function VaccinationDialog({
       onOpenChange(false);
     } catch (err) {
       console.error("[VaccinationDialog] save failed", err);
-      setError(vaccinationSaved
-        ? "La vaccination est enregistrée. Le prochain rappel n’a pas pu être préparé. Réessayez ou fermez ce dialogue."
-        : err instanceof Error ? err.message : "L’enregistrement a échoué.");
+      setError(
+        vaccinationSaved
+          ? "La vaccination est enregistrée. Le prochain rappel n’a pas pu être préparé. Réessayez ou fermez ce dialogue."
+          : err instanceof Error
+            ? err.message
+            : "L’enregistrement a échoué.",
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -191,7 +208,10 @@ export function VaccinationDialog({
         key={proposal.acteSourceId}
         onClose={() => onOpenChange(false)}
         onConfirm={async (draft) => {
-          await patientRemindersService.createFromProposal(draft, currentUser?.id ?? "");
+          await patientRemindersService.createFromProposal(
+            draft,
+            currentUser?.id ?? "",
+          );
           announcePatientRemindersChanged();
           emitSQLiteDataChanged("vaccinations");
           void repo.refresh();
@@ -206,10 +226,11 @@ export function VaccinationDialog({
     <Dialog onOpenChange={onOpenChange} open={open}>
       <FormDialogContent size="sm">
         <FormDialogHeader
-            artwork="vaccination"
+          artwork="vaccination"
           description="Vaccin, lot et date d’administration."
           icon={<Syringe strokeWidth={1} />}
-          title={isEditing
+          title={
+            isEditing
               ? t("patientDetail.vaccinations.editTitle")
               : t("patientDetail.vaccinations.dialogTitle")
           }
@@ -218,119 +239,124 @@ export function VaccinationDialog({
 
         <FormDialogBody>
           <FieldGroup>
-          {isEditing ? null : (
-            <Field>
-              <label className="font-medium text-sm" htmlFor="vaccine-preset">
-                {t("patientDetail.vaccinations.presetLabel")}
-              </label>
-              <NativeSelect
-                className="w-full cursor-pointer"
-                id="vaccine-preset"
-                onChange={(event) => handlePresetChange(event.target.value)}
-                value={presetId}
-              >
-                <NativeSelectOption value="">
-                  {t("patientDetail.vaccinations.presetCustom")}
-                </NativeSelectOption>
-                {COMMON_VACCINES.map((preset) => (
-                  <NativeSelectOption key={preset.type} value={preset.type}>
-                    {preset.label}
+            {isEditing ? null : (
+              <Field>
+                <label className="font-medium text-sm" htmlFor="vaccine-preset">
+                  {t("patientDetail.vaccinations.presetLabel")}
+                </label>
+                <NativeSelect
+                  className="w-full cursor-pointer"
+                  id="vaccine-preset"
+                  onChange={(event) => handlePresetChange(event.target.value)}
+                  value={presetId}
+                >
+                  <NativeSelectOption value="">
+                    {t("patientDetail.vaccinations.presetCustom")}
                   </NativeSelectOption>
-                ))}
-              </NativeSelect>
-            </Field>
-          )}
+                  {COMMON_VACCINES.map((preset) => (
+                    <NativeSelectOption key={preset.type} value={preset.type}>
+                      {preset.label}
+                    </NativeSelectOption>
+                  ))}
+                </NativeSelect>
+              </Field>
+            )}
 
-          <Field>
-            <label className="flex items-center justify-between font-medium text-sm" htmlFor="vaccine-name">
-              {t("patientDetail.vaccinations.nameLabel")} <span className="modal-required">requis</span>
-            </label>
-            <Input
-              autoFocus={!isEditing}
-              id="vaccine-name"
-              onChange={(event) => setVaccineName(event.target.value)}
-              placeholder={t("patientDetail.vaccinations.namePlaceholder")}
-              value={vaccineName}
-            />
-          </Field>
-
-          <Field>
-            <label className="font-medium text-sm" htmlFor="vaccine-type">
-              {t("patientDetail.vaccinations.typeLabel")}
-            </label>
-            <Input
-              id="vaccine-type"
-              onChange={(event) => setVaccineType(event.target.value)}
-              placeholder={t("patientDetail.vaccinations.typePlaceholder")}
-              value={vaccineType}
-            />
-          </Field>
-
-          <div className="grid grid-cols-1 gap-3">
             <Field>
               <label
                 className="flex items-center justify-between font-medium text-sm"
-                htmlFor="vaccine-administered"
+                htmlFor="vaccine-name"
               >
-                {t("patientDetail.vaccinations.administeredLabel")} <span className="modal-required">requis</span>
-              </label>
-              <DatePicker
-                id="vaccine-administered"
-                onChange={(value) => setAdministeredAt(value)}
-                value={administeredAt}
-              />
-            </Field>
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            <Field>
-              <label className="font-medium text-sm" htmlFor="vaccine-batch">
-                {t("patientDetail.vaccinations.batchLabel")}
+                {t("patientDetail.vaccinations.nameLabel")}{" "}
+                <span className="modal-required">requis</span>
               </label>
               <Input
-                id="vaccine-batch"
-                onChange={(event) => setBatchNumber(event.target.value)}
-                placeholder="Ex. A1234"
-                value={batchNumber}
+                autoFocus={!isEditing}
+                id="vaccine-name"
+                onChange={(event) => setVaccineName(event.target.value)}
+                placeholder={t("patientDetail.vaccinations.namePlaceholder")}
+                value={vaccineName}
               />
             </Field>
+
             <Field>
-              <label
-                className="font-medium text-sm"
-                htmlFor="vaccine-manufacturer"
-              >
-                {t("patientDetail.vaccinations.manufacturerLabel")}
+              <label className="font-medium text-sm" htmlFor="vaccine-type">
+                {t("patientDetail.vaccinations.typeLabel")}
               </label>
               <Input
-                id="vaccine-manufacturer"
-                onChange={(event) => setManufacturer(event.target.value)}
-                placeholder="Ex. MSD, Zoetis"
-                value={manufacturer}
+                id="vaccine-type"
+                onChange={(event) => setVaccineType(event.target.value)}
+                placeholder={t("patientDetail.vaccinations.typePlaceholder")}
+                value={vaccineType}
               />
             </Field>
-          </div>
 
-          <Field>
-            <label className="font-medium text-sm" htmlFor="vaccine-notes">
-              {t("patientDetail.vaccinations.notesLabel")}
-            </label>
-            <Textarea
-              id="vaccine-notes"
-              onChange={(event) => setNotes(event.target.value)}
-              placeholder={t("patientDetail.vaccinations.notesPlaceholder")}
-              rows={2}
-              value={notes}
-            />
-          </Field>
+            <div className="grid grid-cols-1 gap-3">
+              <Field>
+                <label
+                  className="flex items-center justify-between font-medium text-sm"
+                  htmlFor="vaccine-administered"
+                >
+                  {t("patientDetail.vaccinations.administeredLabel")}{" "}
+                  <span className="modal-required">requis</span>
+                </label>
+                <DatePicker
+                  id="vaccine-administered"
+                  onChange={(value) => setAdministeredAt(value)}
+                  value={administeredAt}
+                />
+              </Field>
+            </div>
 
-          {error ? (
-            <p
-              className="text-rose-600 text-sm dark:text-rose-400"
-              role="alert"
-            >
-              {error}
-            </p>
-          ) : null}
+            <div className="grid grid-cols-2 gap-3">
+              <Field>
+                <label className="font-medium text-sm" htmlFor="vaccine-batch">
+                  {t("patientDetail.vaccinations.batchLabel")}
+                </label>
+                <Input
+                  id="vaccine-batch"
+                  onChange={(event) => setBatchNumber(event.target.value)}
+                  placeholder="Ex. A1234"
+                  value={batchNumber}
+                />
+              </Field>
+              <Field>
+                <label
+                  className="font-medium text-sm"
+                  htmlFor="vaccine-manufacturer"
+                >
+                  {t("patientDetail.vaccinations.manufacturerLabel")}
+                </label>
+                <Input
+                  id="vaccine-manufacturer"
+                  onChange={(event) => setManufacturer(event.target.value)}
+                  placeholder="Ex. MSD, Zoetis"
+                  value={manufacturer}
+                />
+              </Field>
+            </div>
+
+            <Field>
+              <label className="font-medium text-sm" htmlFor="vaccine-notes">
+                {t("patientDetail.vaccinations.notesLabel")}
+              </label>
+              <Textarea
+                id="vaccine-notes"
+                onChange={(event) => setNotes(event.target.value)}
+                placeholder={t("patientDetail.vaccinations.notesPlaceholder")}
+                rows={2}
+                value={notes}
+              />
+            </Field>
+
+            {error ? (
+              <p
+                className="text-rose-600 text-sm dark:text-rose-400"
+                role="alert"
+              >
+                {error}
+              </p>
+            ) : null}
           </FieldGroup>
         </FormDialogBody>
 

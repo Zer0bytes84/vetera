@@ -471,6 +471,8 @@ function AppShellInner() {
       renderView(currentView, {
         onNavigate: handleNavigate,
         onNavigateToPatient: openPatientPeek,
+        // The patients' list goes straight to the full record: no quick-read panel in between.
+        onOpenPatientRecord: handleNavigateToPatient,
         patientId: currentPatientId,
         currentTheme: themeMode,
         onThemeChange: setThemeMode,
@@ -483,6 +485,7 @@ function AppShellInner() {
       currentView,
       currentPatientId,
       handleNavigate,
+      handleNavigateToPatient,
       setThemeMode,
       themeMode,
       currentUser?.displayName,

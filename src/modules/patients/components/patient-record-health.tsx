@@ -58,7 +58,10 @@ export function PatientRecordHealth({
 
   return (
     <section
-      className={cn("medical-record-health p-5 rounded-2xl border border-border/80 bg-card shadow-xs", className)}
+      className={cn(
+        "medical-record-health p-5 rounded-2xl border border-border/80 bg-card shadow-xs",
+        className,
+      )}
       aria-label="Complétude du dossier"
     >
       <div className="medical-health-heading flex items-center justify-between mb-3">
@@ -88,7 +91,11 @@ export function PatientRecordHealth({
 
       {isComplete ? (
         <div className="medical-health-complete flex items-center gap-2.5 p-3 rounded-xl bg-emerald-50/80 text-emerald-800 border border-emerald-200/80 text-xs font-medium dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800/40">
-          <Check size={16} className="text-emerald-600 dark:text-emerald-400 shrink-0" aria-hidden="true" />
+          <Check
+            size={16}
+            className="text-emerald-600 dark:text-emerald-400 shrink-0"
+            aria-hidden="true"
+          />
           <span>Toutes les informations clés sont renseignées.</span>
         </div>
       ) : (
@@ -101,7 +108,11 @@ export function PatientRecordHealth({
               className="medical-health-action flex items-center justify-between p-2.5 px-3 rounded-xl border border-border/70 bg-muted/30 hover:bg-muted/80 hover:border-border text-xs text-foreground font-medium transition duration-160 cursor-pointer group"
             >
               <span>{item.action}</span>
-              <ArrowRight size={14} className="text-muted-foreground group-hover:text-foreground group-hover:translate-x-0.5 transition shrink-0" aria-hidden="true" />
+              <ArrowRight
+                size={14}
+                className="text-muted-foreground group-hover:text-foreground group-hover:translate-x-0.5 transition shrink-0"
+                aria-hidden="true"
+              />
             </button>
           ))}
         </div>

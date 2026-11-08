@@ -52,6 +52,7 @@ import {
 } from "@/components/ui/table";
 
 import { Textarea } from "@/components/ui/textarea";
+import { PatientRecordHeader } from "@/modules/patients/components/patient-header";
 import { SoapPanel } from "@/modules/consultations/components/soap-panel";
 import { OPEN_SOAP_ASSISTANT_EVENT } from "@/modules/consultation-workspace/consultation-closure";
 import { ConsultationProducts } from "@/modules/stock/components/consultation-products";
@@ -687,14 +688,8 @@ export function ConsultationSessionDialog({
     >
       <header className="flex flex-wrap items-start justify-between gap-4 border-b border-border pb-4">
         <div className="flex min-w-0 flex-1 flex-col gap-3">
-          <div className="space-y-1.5">
-            <h2 className="t-18 font-semibold tracking-[-0.04em]">
-              Consultation · {patientName}
-            </h2>
-            <p className="text-sm text-muted-foreground">
-              Examen et suivi du patient.
-            </p>
-          </div>
+          {/* The same header as the patient's record: avatar beside the name, ID and status, then the context line. */}
+          <PatientRecordHeader owner={owner} patient={patient} />
           <div className="flex flex-wrap items-center gap-2">
             <Button
               className="h-8 gap-1.5"

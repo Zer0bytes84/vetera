@@ -1,0 +1,285 @@
+{
+ "res": [
+  {
+   "name": "patients choisis",
+   "ok": true,
+   "extra": "{\"allergic\":\"demo_patient_02\",\"rich\":\"demo_patient_03\",\"empty\":\"demo_patient_05\",\"all\":[\"demo_patient_01\",\"demo_patient_02\",\"demo_patient_03\",\"demo_patient_04\",\"demo_patient_05\"]}"
+  },
+  {
+   "name": "allergie: aucun « Na » affiché",
+   "ok": true,
+   "extra": ""
+  },
+  {
+   "name": "allergie: le contexte n'est jamais tronqué",
+   "ok": true,
+   "extra": "Allergie : Sensibilite digestiveContention non renseignée ·Chat · Europeen · Mâle · 4 ans 2 mois · Nadia Benali · +213 5"
+  },
+  {
+   "name": "allergie: allergie ou mention en premier dans la ligne du patient",
+   "ok": true,
+   "extra": "Allergie : Sensibilite digestiveContenti"
+  },
+  {
+   "name": "allergie: rail de 7 sections",
+   "ok": true,
+   "extra": ""
+  },
+  {
+   "name": "allergie: section active teintée",
+   "ok": true,
+   "extra": "oklab(0.938057 0.0176617 0.00985869)"
+  },
+  {
+   "name": "allergie: pièces alignées à droite sur chaque événement",
+   "ok": true,
+   "extra": "[68,66]"
+  },
+  {
+   "name": "allergie: chaque événement a ses quatre colonnes",
+   "ok": true,
+   "extra": "[4,4]"
+  },
+  {
+   "name": "allergie: aucun grand blanc (événements < 140 px)",
+   "ok": true,
+   "extra": ""
+  },
+  {
+   "name": "allergie: blocs en surfaces",
+   "ok": true,
+   "extra": ""
+  },
+  {
+   "name": "allergie: boutons de la bande de même taille",
+   "ok": true,
+   "extra": "132x32 132x32"
+  },
+  {
+   "name": "allergie: compteurs",
+   "ok": true,
+   "extra": "||||||"
+  },
+  {
+   "name": "vide: aucun « Na » affiché",
+   "ok": true,
+   "extra": ""
+  },
+  {
+   "name": "vide: le contexte n'est jamais tronqué",
+   "ok": true,
+   "extra": "Allergies non renseignées ·Contention non renseignée ·Chien · Labrador · Mâle · 8 ans 4 mois · Yacine Bouras · +213 5 50"
+  },
+  {
+   "name": "vide: allergie ou mention en premier dans la ligne du patient",
+   "ok": true,
+   "extra": "Allergies non renseignées ·Contention no"
+  },
+  {
+   "name": "vide: rail de 7 sections",
+   "ok": true,
+   "extra": ""
+  },
+  {
+   "name": "vide: section active teintée",
+   "ok": true,
+   "extra": "oklab(0.938057 0.0176617 0.00985869)"
+  },
+  {
+   "name": "vide: pièces alignées à droite sur chaque événement",
+   "ok": true,
+   "extra": "[68,66]"
+  },
+  {
+   "name": "vide: chaque événement a ses quatre colonnes",
+   "ok": true,
+   "extra": "[4,4]"
+  },
+  {
+   "name": "vide: aucun grand blanc (événements < 140 px)",
+   "ok": true,
+   "extra": ""
+  },
+  {
+   "name": "vide: blocs en surfaces",
+   "ok": true,
+   "extra": ""
+  },
+  {
+   "name": "vide: boutons de la bande de même taille",
+   "ok": true,
+   "extra": "132x32 132x32"
+  },
+  {
+   "name": "vide: compteurs",
+   "ok": true,
+   "extra": "||||||"
+  },
+  {
+   "name": "rempli: aucun « Na » affiché",
+   "ok": true,
+   "extra": ""
+  },
+  {
+   "name": "rempli: le contexte n'est jamais tronqué",
+   "ok": true,
+   "extra": "Allergies non renseignées ·Contention non renseignée ·Chien · Caniche · Femelle · 6 ans 8 mois · Karim Messaoud · +213 5"
+  },
+  {
+   "name": "rempli: allergie ou mention en premier dans la ligne du patient",
+   "ok": true,
+   "extra": "Allergies non renseignées ·Contention no"
+  },
+  {
+   "name": "rempli: rail de 7 sections",
+   "ok": true,
+   "extra": ""
+  },
+  {
+   "name": "rempli: section active teintée",
+   "ok": true,
+   "extra": "oklab(0.938057 0.0176617 0.00985869)"
+  },
+  {
+   "name": "rempli: pièces alignées à droite sur chaque événement",
+   "ok": true,
+   "extra": "[66,68]"
+  },
+  {
+   "name": "rempli: chaque événement a ses quatre colonnes",
+   "ok": true,
+   "extra": "[4,4]"
+  },
+  {
+   "name": "rempli: aucun grand blanc (événements < 140 px)",
+   "ok": true,
+   "extra": ""
+  },
+  {
+   "name": "rempli: blocs en surfaces",
+   "ok": true,
+   "extra": ""
+  },
+  {
+   "name": "rempli: boutons de la bande de même taille",
+   "ok": true,
+   "extra": "132x32 132x32"
+  },
+  {
+   "name": "rempli: compteurs",
+   "ok": true,
+   "extra": "||||||"
+  },
+  {
+   "name": "bouton Actions et Note présents",
+   "ok": true,
+   "extra": ""
+  },
+  {
+   "name": "Modifier ouvre l’éditeur",
+   "ok": true,
+   "extra": ""
+  },
+  {
+   "name": "Note hors visite ouvre le panneau",
+   "ok": true,
+   "extra": ""
+  },
+  {
+   "name": "Exporter en PDF ouvre le dialogue",
+   "ok": true,
+   "extra": ""
+  },
+  {
+   "name": "Carnet de santé ouvre le dialogue",
+   "ok": true,
+   "extra": ""
+  },
+  {
+   "name": "Ouvrir les soins mène aux soins",
+   "ok": true,
+   "extra": ""
+  },
+  {
+   "name": "Planifier un rendez-vous mène à l’agenda et ouvre le formulaire",
+   "ok": true,
+   "extra": ""
+  },
+  {
+   "name": "onglet Ordonnances s'ouvre",
+   "ok": true,
+   "extra": ""
+  },
+  {
+   "name": "onglet Hospitalisations s'ouvre",
+   "ok": true,
+   "extra": ""
+  },
+  {
+   "name": "onglet Anesthésies s'ouvre",
+   "ok": true,
+   "extra": ""
+  },
+  {
+   "name": "onglet Vaccinations s'ouvre",
+   "ok": true,
+   "extra": ""
+  },
+  {
+   "name": "onglet Poids s'ouvre",
+   "ok": true,
+   "extra": ""
+  },
+  {
+   "name": "onglet Documents s'ouvre",
+   "ok": true,
+   "extra": ""
+  },
+  {
+   "name": "onglet Synthèse s'ouvre",
+   "ok": true,
+   "extra": ""
+  },
+  {
+   "name": "flèche bas passe à la section suivante",
+   "ok": true,
+   "extra": ""
+  },
+  {
+   "name": "clic sur un patient ouvre le dossier complet sans panneau intermédiaire",
+   "ok": true,
+   "extra": ""
+  },
+  {
+   "name": "Documents: première rangée en surface",
+   "ok": true,
+   "extra": ""
+  },
+  {
+   "name": "Documents: un clic ouvre l’éditeur",
+   "ok": true,
+   "extra": ""
+  },
+  {
+   "name": "Documents: retour à la liste",
+   "ok": true,
+   "extra": ""
+  },
+  {
+   "name": "Documents: l’assistant s’ouvre",
+   "ok": true,
+   "extra": ""
+  },
+  {
+   "name": "Documents: les modèles s’ouvrent",
+   "ok": true,
+   "extra": ""
+  },
+  {
+   "name": "Documents: menu de ligne complet",
+   "ok": true,
+   "extra": "Ajouter aux favoris|Épingler|Dupliquer la note|Exporter (.md)|Supprimer"
+  }
+ ],
+ "errs": []
+}

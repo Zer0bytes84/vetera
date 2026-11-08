@@ -1,3 +1,4 @@
+import { meaningful } from "./meaningful";
 import type { Appointment } from "@/types/db";
 
 /**
@@ -5,9 +6,9 @@ import type { Appointment } from "@/types/db";
  * row's own data, so they are not shown as a reason.
  */
 export function visitReason(appointment: Appointment, patientName: string) {
-  const reason = appointment.reason?.trim();
+  const reason = meaningful(appointment.reason);
   if (reason) return reason;
-  const title = appointment.title?.trim() ?? "";
+  const title = meaningful(appointment.title);
   const generated = new RegExp(
     `^${patientName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\s*[-–]\\s*`,
     "i"

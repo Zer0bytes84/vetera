@@ -15,20 +15,39 @@ interface PatientPreventionProps {
 }
 
 /** Boosters and reminders as neutral countdowns; red only once late. */
-export function PatientPrevention({ now, onOpenVaccinations, patientId, vaccinations }: PatientPreventionProps) {
+export function PatientPrevention({
+  now,
+  onOpenVaccinations,
+  patientId,
+  vaccinations,
+}: PatientPreventionProps) {
   const { reminders, types, error } = usePatientReminders();
   const items = useMemo(
-    () => preventionCountdowns({ now: new Date(now), patientId, reminders, types, vaccinations }),
-    [now, patientId, reminders, types, vaccinations]
+    () =>
+      preventionCountdowns({
+        now: new Date(now),
+        patientId,
+        reminders,
+        types,
+        vaccinations,
+      }),
+    [now, patientId, reminders, types, vaccinations],
   );
 
   return (
-    <section className="medical-prevention" aria-labelledby="medical-prevention-title">
+    <section
+      className="medical-prevention"
+      aria-labelledby="medical-prevention-title"
+    >
       <div className="medical-prevention-header patient-summary-heading-row">
         <RecordBlockHeading icon={Bell} id="medical-prevention-title">
           Rappels et prévention
         </RecordBlockHeading>
-        <button className="patient-summary-link" type="button" onClick={onOpenVaccinations}>
+        <button
+          className="patient-summary-link"
+          type="button"
+          onClick={onOpenVaccinations}
+        >
           Vaccinations
         </button>
       </div>
@@ -37,15 +56,23 @@ export function PatientPrevention({ now, onOpenVaccinations, patientId, vaccinat
           {items.map((item) => (
             <li key={item.id} className={cn(item.days < 0 && "is-late")}>
               <span className="medical-prevention-label">{item.label}</span>
-              <span className="medical-prevention-count">{countdownLabel(item.days)}</span>
-              <span className="medical-prevention-date">{recordDate(item.dueDate)}</span>
+              <span className="medical-prevention-count">
+                {countdownLabel(item.days)}
+              </span>
+              <span className="medical-prevention-date">
+                {recordDate(item.dueDate)}
+              </span>
             </li>
           ))}
         </ul>
       ) : (
         <p className="medical-prevention-empty">Aucun rappel prévu.</p>
       )}
-      {error ? <p className="medical-prevention-empty">Les rappels médicaux n’ont pas pu être lus.</p> : null}
+      {error ? (
+        <p className="medical-prevention-empty">
+          Les rappels médicaux n’ont pas pu être lus.
+        </p>
+      ) : null}
     </section>
   );
 }

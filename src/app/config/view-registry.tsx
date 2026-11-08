@@ -38,6 +38,8 @@ interface ViewRegistryProps {
   currentTheme: ThemeMode;
   onNavigate: (view: View) => void;
   onNavigateToPatient?: (patientId: string) => void;
+  /** Opens the full patient record, without the quick-read panel. */
+  onOpenPatientRecord?: (patientId: string) => void;
   onOpenAIAgent?: () => void;
   onCloseAIAgent?: () => void;
   onThemeChange: (mode: ThemeMode) => void;
@@ -128,7 +130,7 @@ export function renderView(view: View, props: ViewRegistryProps) {
       return renderLazyView(<FlowBoardPage onNavigate={props.onNavigate} onNavigateToPatient={props.onNavigateToPatient} />);
     case "patients":
       return renderLazyView(
-        <PatientsPage onNavigateToPatient={props.onNavigateToPatient} />
+        <PatientsPage onNavigateToPatient={props.onOpenPatientRecord ?? props.onNavigateToPatient} />
       );
     case "patient_detail":
       return renderLazyView(

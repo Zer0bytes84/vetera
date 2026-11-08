@@ -1,3 +1,5 @@
+import "@/modules/patients/medical-record.css";
+import "@/modules/patients/patient-record-blocks.css";
 import { useEffect, useRef } from "react";
 
 import { AnesthesiaSheet } from "@/modules/anesthesia";

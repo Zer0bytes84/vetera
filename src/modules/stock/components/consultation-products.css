@@ -1,0 +1,9 @@
+/* « Produits utilisés »: the white card of the form carries its own border, like the cards of the other surfaces. */
+@layer base {
+  :root:root:root:root:root:root .consultation-products .consultation-products-card {
+    border: 1px solid color-mix(in oklab, var(--foreground) 10%, transparent) !important;
+    border-radius: 16px !important;
+    background: var(--card-inset) !important;
+    box-shadow: none !important;
+  }
+}

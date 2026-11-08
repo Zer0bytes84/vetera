@@ -6,6 +6,7 @@ import { AppointmentTypeBadge } from "@/modules/agenda/components/agenda-shared"
 import type { Appointment, ConsultationSoap } from "@/types/db";
 import type { HealthCardTreatment } from "../health-card/health-card-data";
 import { visitReason } from "../lib/visit-reason";
+import { meaningful } from "../lib/meaningful";
 import { isClinicalSignal, recordDate } from "./medical-record-summary";
 import { RecordBlockHeading } from "./record-block-heading";
 
@@ -17,8 +18,7 @@ const OPEN_STATUS_LABELS: Partial<Record<Appointment["status"], string>> = {
 };
 
 function excerpt(value?: string | null) {
-  const text = value?.replace(/\s+/g, " ").trim();
-  return text || "";
+  return meaningful(value);
 }
 
 function treatmentRhythm(treatment: HealthCardTreatment) {
@@ -28,7 +28,9 @@ function treatmentRhythm(treatment: HealthCardTreatment) {
       : treatment.until
         ? `jusqu’au ${recordDate(treatment.until)}`
         : undefined;
-  return [treatment.dose, treatment.frequency, until].filter(Boolean).join(" · ");
+  return [treatment.dose, treatment.frequency, until]
+    .filter(Boolean)
+    .join(" · ");
 }
 
 /**
@@ -49,13 +51,18 @@ export function PatientClinicalSummary({
 }) {
   const chronic = chronicConditions?.trim();
   return (
-    <section className="patient-clinical-summary" aria-labelledby="patient-clinical-summary-title">
+    <section
+      className="patient-clinical-summary"
+      aria-labelledby="patient-clinical-summary-title"
+    >
       <h2 className="sr-only" id="patient-clinical-summary-title">
         Synthèse clinique
       </h2>
       <div className="patient-summary-column">
         <div className="patient-summary-heading-row">
-          <RecordBlockHeading icon={Heartbeat}>Affections suivies</RecordBlockHeading>
+          <RecordBlockHeading icon={Heartbeat}>
+            Affections suivies
+          </RecordBlockHeading>
         </div>
         {isClinicalSignal(chronic) ? (
           <ul className="patient-summary-list">
@@ -69,8 +76,14 @@ export function PatientClinicalSummary({
       </div>
       <div className="patient-summary-column">
         <div className="patient-summary-heading-row">
-          <RecordBlockHeading icon={Pill}>Traitements en cours</RecordBlockHeading>
-          <button className="patient-summary-link" onClick={onOpenPrescriptions} type="button">
+          <RecordBlockHeading icon={Pill}>
+            Traitements en cours
+          </RecordBlockHeading>
+          <button
+            className="patient-summary-link"
+            onClick={onOpenPrescriptions}
+            type="button"
+          >
             Ordonnances
           </button>
         </div>
@@ -79,7 +92,9 @@ export function PatientClinicalSummary({
             {treatments.items.map((treatment) => (
               <li key={`${treatment.name}-${treatment.since}`}>
                 <strong>{treatment.name}</strong>
-                {treatmentRhythm(treatment) ? <span>{treatmentRhythm(treatment)}</span> : null}
+                {treatmentRhythm(treatment) ? (
+                  <span>{treatmentRhythm(treatment)}</span>
+                ) : null}
               </li>
             ))}
             {treatments.hidden ? (
@@ -185,49 +200,49 @@ function LastVisit({
 
   return (
     <section
-        aria-labelledby="overview-last-visit"
-        className="patient-overview-last"
-      >
-        <div className="medical-overview-heading">
-          <h3 id="overview-last-visit">Dernière consultation</h3>
-          <Button
-            onClick={() => onOpenVisit(last.id)}
-            size="sm"
-            variant="outline"
-          >
-            Ouvrir la consultation
-          </Button>
-        </div>
-        <div className="patient-overview-last-meta">
-          <time>{recordDate(last.startTime, true)}</time>
-          <AppointmentTypeBadge type={last.type} />
-          {lastOpenStatus ? (
-            <span className="patient-overview-status">{lastOpenStatus}</span>
+      aria-labelledby="overview-last-visit"
+      className="patient-overview-last"
+    >
+      <div className="medical-overview-heading">
+        <h3 id="overview-last-visit">Dernière consultation</h3>
+        <Button
+          onClick={() => onOpenVisit(last.id)}
+          size="sm"
+          variant="outline"
+        >
+          Ouvrir la consultation
+        </Button>
+      </div>
+      <div className="patient-overview-last-meta">
+        <time>{recordDate(last.startTime, true)}</time>
+        <AppointmentTypeBadge type={last.type} />
+        {lastOpenStatus ? (
+          <span className="patient-overview-status">{lastOpenStatus}</span>
+        ) : null}
+      </div>
+      <p className="patient-overview-reason">
+        {lastReason || "Motif non renseigné"}
+      </p>
+      {assessment || plan ? (
+        <dl className="patient-overview-soap">
+          {assessment ? (
+            <div>
+              <dt>Évaluation</dt>
+              <dd>{assessment}</dd>
+            </div>
           ) : null}
-        </div>
-        <p className="patient-overview-reason">
-          {lastReason || "Motif non renseigné"}
+          {plan ? (
+            <div>
+              <dt>Plan</dt>
+              <dd>{plan}</dd>
+            </div>
+          ) : null}
+        </dl>
+      ) : (
+        <p className="patient-overview-no-note">
+          Pas encore de note rédigée pour cette consultation.
         </p>
-        {assessment || plan ? (
-          <dl className="patient-overview-soap">
-            {assessment ? (
-              <div>
-                <dt>Évaluation</dt>
-                <dd>{assessment}</dd>
-              </div>
-            ) : null}
-            {plan ? (
-              <div>
-                <dt>Plan</dt>
-                <dd>{plan}</dd>
-              </div>
-            ) : null}
-          </dl>
-        ) : (
-          <p className="patient-overview-no-note">
-            Pas encore de note rédigée pour cette consultation.
-          </p>
-        )}
+      )}
     </section>
   );
 }

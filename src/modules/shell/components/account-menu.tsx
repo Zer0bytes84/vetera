@@ -49,6 +49,9 @@ export function AccountMenu({
 }) {
   const src = avatarUrl?.trim() || undefined;
   return (
+    <>
+    {/* The same thin rule as between the sidebar button and the search, between the icons and the account. */}
+    <span aria-hidden="true" className="shell-header-divider" />
     <DropdownMenu>
       <ShortcutTooltip label={`${name} · ${role}`}>
         <DropdownMenuTrigger
@@ -103,5 +106,6 @@ export function AccountMenu({
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
+    </>
   );
 }

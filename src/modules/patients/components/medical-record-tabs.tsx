@@ -35,12 +35,12 @@ export function MedicalRecordTabs({
       setEdges((current) =>
         current.start === start && current.end === end
           ? current
-          : { start, end }
+          : { start, end },
       );
     };
     const revealSelected = () => {
       const selected = rail.querySelector<HTMLButtonElement>(
-        '[role="tab"][aria-selected="true"]'
+        '[role="tab"][aria-selected="true"]',
       );
       if (selected) revealTab(rail, selected);
       updateEdges();
@@ -90,7 +90,7 @@ export function MedicalRecordTabs({
         ref={railRef}
         role="tablist"
         aria-label={label}
-        aria-orientation="horizontal"
+        aria-orientation="vertical"
         className="medical-tabs"
         data-tabs-style="nav"
         onKeyDown={handleRecordTabKeys}

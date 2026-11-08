@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Panel, Shell, ShellHeader } from "@/components/ui/surface";
+import { Package } from "@/lib/icons";
+import "./consultation-products.css";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProductsRepository } from "@/data/repositories";
 import { StockError, parseStockQuantityInput, stockQuantityLabel } from "@/domain/stock";
@@ -32,8 +35,9 @@ export function ConsultationProducts({appointmentId, patientId}: {appointmentId:
   const product = products.data.find(p => p.id === productId);
   const valid = !!product && requested > 0 && !product.archivedAt && (product.stockTracked === false || (!product.availabilityPending && !product.inventoryInvalid && (product.availableQuantity ?? product.quantity) >= requested));
   if (!desktop) return <p className="t-13 text-muted-foreground">L’utilisation des produits et sa facturation sont disponibles dans l’application de bureau.</p>;
-  return <section aria-label="Produits utilisés en consultation" className="space-y-4 rounded-xl border border-border bg-card p-4 sm:p-5">
-    <div><h3 className="text-base font-semibold">Produits utilisés</h3><p className="mt-1 t-12 text-muted-foreground">Validez la quantité réellement utilisée. Le stock et la facture brouillon sont mis à jour ensemble.</p></div>
+  return <Shell aria-label="Produits utilisés en consultation" className="consultation-products" role="region">
+    <ShellHeader icon={Package} subtitle="Quantité réellement utilisée : stock et facture brouillon mis à jour ensemble" title="Produits utilisés" />
+    <Panel className="consultation-products-card space-y-4 p-4 sm:p-5">
     {uses.length > 0 && <ul className="divide-y divide-border t-13">
       {uses.map(use => <li key={use.id} className="flex flex-wrap items-center justify-between gap-3 py-2">
         <div className="min-w-0"><span className="font-medium">{use.product_name}</span><span className="ml-2 tabular-nums text-muted-foreground">{stockQuantityLabel(use.quantity, use.unit)}</span></div>
@@ -41,7 +45,7 @@ export function ConsultationProducts({appointmentId, patientId}: {appointmentId:
       </li>)}
     </ul>}
     {loadError && <p role="alert" className="text-xs text-destructive">Les utilisations précédentes n’ont pas pu être chargées. <button className="underline underline-offset-4" onClick={() => setRevision(value => value + 1)}>Réessayer</button></p>}
-    <form noValidate className="space-y-3 border-t border-border pt-4" onSubmit={async event => {
+    <form noValidate className="space-y-3" onSubmit={async event => {
       event.preventDefault(); if (busy || !valid || !currentUser) return;
       setBusy(true); setError(null);
       try {
@@ -53,7 +57,8 @@ export function ConsultationProducts({appointmentId, patientId}: {appointmentId:
       <ProductStockFields products={products.data} productId={productId} quantity={quantity} disabled={busy}
         onProductChange={id => {setProductId(id); setQuantity("1"); setRequestId(generateId());}} onQuantityChange={value => {setQuantity(value); setRequestId(generateId());}} />
       {error && <p role="alert" className="t-13 text-destructive">{error}</p>}
-      <div className="flex justify-end"><Button type="submit" disabled={busy || !valid || !currentUser}>{busy ? "Enregistrement…" : "Valider l’utilisation"}</Button></div>
+      <div className="flex justify-end"><Button className="rounded-full px-4" size="sm" type="submit" disabled={busy || !valid || !currentUser}>{busy ? "Enregistrement…" : "Valider l’utilisation"}</Button></div>
     </form>
-  </section>;
+    </Panel>
+  </Shell>;
 }

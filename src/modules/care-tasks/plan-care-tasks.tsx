@@ -53,6 +53,7 @@ export function PlanCareTasks({
   return (
     <>
       <Button
+        className="rounded-full px-4"
         variant="outline"
         size="sm"
         onClick={() => {

@@ -1,4 +1,4 @@
-import { ArrowRight, Eye, Users } from "lucide-react";
+import { FolderOpen, Users } from "lucide-react";
 import type { ReactNode, Ref } from "react";
 import {
   DataTable,
@@ -41,6 +41,14 @@ const STATUS_TONE: Record<Patient["status"], StatusTone> = {
   hospitalise: "warning",
   decede: "neutral",
 };
+/** The record's folder takes another hue on each row, in turn. */
+const FOLDER_TONES = [
+  "var(--tone-blue)",
+  "var(--tone-green)",
+  "var(--tone-violet)",
+  "var(--tone-amber)",
+  "var(--tone-rose)",
+];
 const SPECIES_TONE: Record<string, string> = {
   dog: "var(--tone-amber)",
   cat: "var(--tone-green)",
@@ -93,7 +101,6 @@ export function PatientsTable({
   filtersActive,
   onResetFilters,
   onOpen,
-  onPeek,
   listRef,
 }: {
   entries: PatientRecord[];
@@ -101,7 +108,6 @@ export function PatientsTable({
   filtersActive: boolean;
   onResetFilters: () => void;
   onOpen: (patient: Patient) => void;
-  onPeek: (patientId: string) => void;
   listRef: Ref<HTMLDivElement>;
 }) {
   const byId = new Map(entries.map((entry) => [entry.patient.id, entry]));
@@ -230,14 +236,17 @@ export function PatientsTable({
             onClick={(event) => event.stopPropagation()}
           >
             <IconButton
-              icon={Eye}
-              label={`Aperçu du dossier de ${patient.name}`}
-              onClick={() => onPeek(patient.id)}
-            />
-            <IconButton
-              icon={ArrowRight}
+              icon={FolderOpen}
               label={`Ouvrir le dossier de ${patient.name}`}
               onClick={() => onOpen(patient)}
+              style={{
+                color:
+                  FOLDER_TONES[
+                    entries.findIndex(
+                      (entry) => entry.patient.id === patient.id,
+                    ) % FOLDER_TONES.length
+                  ],
+              }}
             />
           </div>
         );

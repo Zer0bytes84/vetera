@@ -30,6 +30,14 @@ const SECTION_ICON: Record<SoapSectionKey, Icon> = {
   plan: ListChecks,
 };
 
+/** Each section keeps its own colour: the chip behind its icon is tinted with it. */
+const SECTION_TONE: Record<SoapSectionKey, string> = {
+  subjective: "var(--tone-blue)",
+  objective: "var(--tone-green)",
+  assessment: "var(--tone-amber)",
+  plan: "var(--tone-violet)",
+};
+
 export function SoapSectionEditor({
   className,
   disabled,
@@ -47,6 +55,7 @@ export function SoapSectionEditor({
   return (
     <div
       data-soap-section={sectionKey}
+      style={{ "--soap-tone": SECTION_TONE[sectionKey] } as React.CSSProperties}
       className={cn(
         "soap-section-editor group relative overflow-hidden rounded-2xl border bg-card p-4 transition-[border-color,box-shadow] duration-200",
         status === "active"
@@ -58,9 +67,7 @@ export function SoapSectionEditor({
     >
       <div className="mb-3 flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
-          <span
-            className="flex size-8 items-center justify-center rounded-xl bg-muted text-foreground"
-          >
+          <span className="soap-section-chip flex size-8 items-center justify-center rounded-xl">
             <SectionIcon aria-hidden className="size-4" weight="duotone" />
           </span>
           <h4 className="font-semibold text-foreground text-sm tracking-[-0.01em]">

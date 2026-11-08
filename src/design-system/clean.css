@@ -1301,7 +1301,7 @@
 
 /* ---------- Paper cards: white, one line, 10 px corners, no lattice ---------- */
 :root[data-skin="clean"] :is(.frame, .board-frame, .surface-card, [data-slot="card"])::before { display: none !important; }
-:root[data-skin="clean"] :is(.card, .hero, .kpis, .section-atlas-grid, .board-frame:not(.sidebar-account-frame), .surface-card:has(table), [data-slot="card"]:has(table), .finance-register) {
+:root[data-skin="clean"] :is(.card, .hero, .kpis, .section-atlas-grid, .board-frame:not(.sidebar-account-frame), .surface-card:has(table), [data-slot="card"]:has(table)) {
   background: var(--clean-surface) !important;
   border-radius: var(--clean-card-radius) !important;
   box-shadow: 0 0 0 1px var(--clean-line) !important;

@@ -1,0 +1,85 @@
+/* The consultation note: a grey surface with its header band, the four SOAP areas as white bordered cards, each with its icon
+   in a chip of its own colour. Rules sit in `base` so that their important declarations beat the skins' (later layers lose). */
+@layer base {
+  /* The section no longer carries a frame of its own: the two surfaces (the note, the products) are its blocks. */
+  :root:root:root:root:root:root #patient-consultation-note {
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+  :root:root:root:root:root:root .soap-panel {
+    padding: 6px 6px 12px !important;
+    border-radius: 22px !important;
+    background: var(--card-band) !important;
+    box-shadow: none !important;
+  }
+  :root:root:root:root:root:root .soap-panel .soap-panel-header {
+    padding: 6px 14px 12px 6px !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    max-width: none !important;
+    gap: 12px;
+  }
+  :root:root:root:root:root:root .soap-panel .soap-panel-header [data-slot="button"] {
+    height: 32px !important;
+    min-height: 32px !important;
+    border-radius: 9999px !important;
+  }
+  /* The skins give the header's first child (here the icon tile) a wide basis: the tile stays a tile, the text takes the room. */
+  :root:root:root:root:root:root .soap-panel .soap-panel-header > div:first-child {
+    flex: 0 0 auto !important;
+    max-width: none !important;
+  }
+  :root:root:root:root:root:root .soap-panel .soap-panel-header > div:nth-child(2) {
+    flex: 1 1 150px !important;
+    min-width: 150px;
+  }
+  :root:root:root:root:root:root .soap-panel .soap-panel-header > div:nth-child(2) :is(h3, p) {
+    overflow: visible !important;
+    text-overflow: clip !important;
+    white-space: nowrap !important;
+  }
+  :root:root:root:root:root:root .soap-panel .soap-panel-header > div:last-child {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    margin-left: auto;
+  }
+  :root:root:root:root:root:root .soap-panel .soap-panel-header {
+    flex-wrap: wrap !important;
+  }
+  :root:root:root:root:root:root .soap-panel .soap-editor-grid {
+    gap: 6px !important;
+  }
+  :root:root:root:root:root:root .soap-panel .soap-section-editor.soap-section-editor {
+    padding: 0 !important;
+    overflow: hidden !important;
+    border: 1px solid color-mix(in oklab, var(--foreground) 10%, transparent) !important;
+    border-radius: 16px !important;
+    background: var(--card-inset) !important;
+    box-shadow: none !important;
+  }
+  :root:root:root:root:root:root .soap-panel .soap-section-editor.soap-section-editor:focus-within {
+    border-color: color-mix(in oklab, var(--soap-tone) 55%, transparent) !important;
+  }
+  :root:root:root:root:root:root .soap-panel .soap-section-editor > div:first-child {
+    margin: 0 !important;
+    padding: 14px 16px 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+  :root:root:root:root:root:root .soap-panel .soap-section-editor .soap-section-chip {
+    width: 28px !important;
+    height: 28px !important;
+    border-radius: 9px !important;
+    background: color-mix(in oklab, var(--soap-tone) 16%, transparent) !important;
+    color: var(--soap-tone) !important;
+  }
+  :root:root:root:root:root:root .soap-panel .soap-section-editor .soap-section-chip svg {
+    color: var(--soap-tone) !important;
+  }
+  :root:root:root:root:root:root .soap-panel .soap-section-editor textarea {
+    min-height: 144px !important;
+    padding: 8px 16px 16px !important;
+    background: transparent !important;
+  }
+}

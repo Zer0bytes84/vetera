@@ -29,7 +29,10 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
-import { useConsultationDocumentsRepository, useNotesRepository } from "@/data/repositories";
+import {
+  useConsultationDocumentsRepository,
+  useNotesRepository,
+} from "@/data/repositories";
 import { readOffVisitNote } from "@/modules/consultations/off-visit-note";
 import { cn } from "@/lib/utils";
 import type { ConsultationDocument } from "@/types/db";
@@ -103,20 +106,24 @@ export function PatientDocumentsList({
   const notesRepo = useNotesRepository();
   const { currentUser } = useAuth();
   const uploadControl = useRef<{ open: () => void }>(null);
-  const [deleteTarget, setDeleteTarget] =
-    useState<ConsultationDocument | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<ConsultationDocument | null>(
+    null,
+  );
 
   const docs = repo.data
     .filter((doc) => doc.patientId === patientId)
     .sort(
       (a, b) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
     );
   // Les écrits du dossier sont visibles par toute l'équipe soignante,
   // pas seulement leur auteur.
   const clinicalNotes = notesRepo.data
     .filter((note) => note.patientId === patientId)
-    .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
+    .sort(
+      (a, b) =>
+        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
+    );
 
   const openNotes = (noteId?: string) => {
     sessionStorage.setItem("documents:open-patient", patientId);
@@ -154,150 +161,200 @@ export function PatientDocumentsList({
 
   return (
     <div className={cn("clinical-surface flex flex-col p-5 sm:p-6", className)}>
-      <PatientDocumentRegistry key={patientId} patientId={patientId} onUpload={onUpload} uploadControl={uploadControl} />
+      <PatientDocumentRegistry
+        key={patientId}
+        patientId={patientId}
+        onUpload={onUpload}
+        uploadControl={uploadControl}
+      />
       <div className="mt-8 border-t border-border pt-5">
-      <div className="mb-4 flex flex-row items-center justify-between gap-2">
-        <div className="flex items-center gap-2.5">
-          <span className="flex size-8 items-center justify-center rounded-xl bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-300">
-            <FileText className="size-4" weight="duotone" />
-          </span>
-          <div>
-            <div className="font-bold t-12 text-muted-foreground uppercase tracking-wider">
-              Pièces jointes antérieures
-            </div>
-            <div className="mt-0.5 text-muted-foreground text-xs">
-              {t("patientDetail.documents.count", { count: docs.length })}
+        <div className="mb-4 flex flex-row items-center justify-between gap-2">
+          <div className="flex items-center gap-2.5">
+            <span className="flex size-8 items-center justify-center rounded-xl bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-300">
+              <FileText className="size-4" weight="duotone" />
+            </span>
+            <div>
+              <div className="font-bold t-12 text-muted-foreground uppercase tracking-wider">
+                Pièces jointes antérieures
+              </div>
+              <div className="mt-0.5 text-muted-foreground text-xs">
+                {t("patientDetail.documents.count", { count: docs.length })}
+              </div>
             </div>
           </div>
+          <Button
+            className="gap-1.5"
+            disabled={!currentUser}
+            onClick={() => uploadControl.current?.open()}
+            size="sm"
+            variant="outline"
+          >
+            <Plus className="size-4" />
+            {t("patientDetail.documents.upload")}
+          </Button>
         </div>
-        <Button className="gap-1.5" disabled={!currentUser} onClick={() => uploadControl.current?.open()} size="sm" variant="outline">
-          <Plus className="size-4" />{t("patientDetail.documents.upload")}
-        </Button>
-      </div>
-      <div className="mb-5 rounded-xl border border-emerald-900/10 bg-emerald-50/45 p-3 dark:border-emerald-200/10 dark:bg-emerald-200/5">
-        <div className="mb-2 flex items-center justify-between gap-2">
-          <div>
-            <p className="font-semibold text-xs">Écrits du dossier</p>
-            <p className="t-12 text-muted-foreground">Notes cliniques rédigées dans Documents</p>
-          </div>
-          <Button className="h-7 rounded-lg text-xs" onClick={() => void createClinicalNote()} size="sm" variant="outline">Rédiger</Button>
-        </div>
-        {clinicalNotes.length ? clinicalNotes.slice(0, 3).map((note) => (
-          <button className="flex w-full items-center justify-between gap-2 border-t border-border/50 py-2 text-left text-xs hover:text-primary" key={note.id} onClick={() => (onOpenOffVisitNote && readOffVisitNote(note) ? onOpenOffVisitNote(note.id) : openNotes(note.id))} type="button">
-            <span className="truncate font-medium">{note.title || "Sans titre"}</span>
-            <span className="shrink-0 text-muted-foreground">{formatDate(note.updatedAt)}</span>
-          </button>
-        )) : <p className="text-xs text-muted-foreground">Aucun écrit pour ce patient.</p>}
-        {clinicalNotes.length > 3 && <button className="mt-1 text-xs font-medium text-primary" onClick={() => openNotes()} type="button">Voir les {clinicalNotes.length} écrits</button>}
-      </div>
-      <div className="flex flex-1 flex-col">
-        {docs.length === 0 ? (
-          <Empty className="min-h-[120px] py-4">
-            <EmptyHeader>
-              <EmptyMedia>
-                <UploadSimple
-                  className="size-7 text-muted-foreground"
-                  weight="duotone"
-                />
-              </EmptyMedia>
-              <EmptyTitle>{t("patientDetail.documents.empty")}</EmptyTitle>
-              <EmptyDescription>
-                {t("patientDetail.documents.upload")}
-              </EmptyDescription>
-            </EmptyHeader>
-          </Empty>
-        ) : (
-          <ul className="divide-y divide-border/40">
-            {docs.map((doc) => {
-              const meta = CATEGORY_META[doc.category] ?? CATEGORY_META.other;
-              const Icon = meta.icon;
-              return (
-                <li
-                  className="flex items-center gap-3 py-3 first:pt-0 last:pb-0"
-                  key={doc.id}
-                >
-                  <span
-                    className={cn(
-                      "flex size-9 shrink-0 items-center justify-center rounded-lg",
-                      meta.className
-                    )}
-                  >
-                    <Icon className="size-4" weight="duotone" />
-                  </span>
-                  <div className="flex min-w-0 flex-1 items-center justify-between gap-2">
-                    <button
-                      className="min-w-0 flex-1 text-left"
-                      onClick={() => handleOpen(doc)}
-                      type="button"
-                    >
-                      <div className="flex items-center gap-2">
-                        <span className="truncate font-medium text-sm">
-                          {doc.fileName}
-                        </span>
-                        <Badge
-                          className="rounded-full px-1.5 py-0 font-medium t-12"
-                          variant="outline"
-                        >
-                          {meta.label}
-                        </Badge>
-                      </div>
-                      <div className="mt-0.5 flex items-center gap-2 t-12 text-muted-foreground">
-                        <span>{formatDate(doc.createdAt)}</span>
-                        <span aria-hidden>·</span>
-                        <span>{formatBytes(doc.sizeBytes)}</span>
-                        {doc.description ? (
-                          <>
-                            <span aria-hidden>·</span>
-                            <span className="truncate">{doc.description}</span>
-                          </>
-                        ) : null}
-                      </div>
-                    </button>
-                    <Button
-                      aria-label="Supprimer le document"
-                      className="size-8 shrink-0 text-muted-foreground hover:text-destructive"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setDeleteTarget(doc);
-                      }}
-                      size="icon"
-                      variant="ghost"
-                    >
-                      <Trash className="size-4" weight="duotone" />
-                    </Button>
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
-        )}
-      </div>
-      <AlertDialog
-        open={deleteTarget !== null}
-        onOpenChange={(open) => {
-          if (!open) setDeleteTarget(null);
-        }}
-      >
-        <AlertDialogContent size="sm">
-          <AlertDialogHeader>
-            <AlertDialogTitle>Supprimer ce document ?</AlertDialogTitle>
-            <AlertDialogDescription>
-              {deleteTarget
-                ? `« ${deleteTarget.fileName} » sera définitivement supprimé du dossier. Cette action est irréversible.`
-                : "Ce document sera définitivement supprimé du dossier."}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Annuler</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => void confirmDelete()}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+        <div className="mb-5 rounded-xl border border-emerald-900/10 bg-emerald-50/45 p-3 dark:border-emerald-200/10 dark:bg-emerald-200/5">
+          <div className="mb-2 flex items-center justify-between gap-2">
+            <div>
+              <p className="font-semibold text-xs">Écrits du dossier</p>
+              <p className="t-12 text-muted-foreground">
+                Notes cliniques rédigées dans Documents
+              </p>
+            </div>
+            <Button
+              className="h-7 rounded-lg text-xs"
+              onClick={() => void createClinicalNote()}
+              size="sm"
+              variant="outline"
             >
-              Supprimer
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+              Rédiger
+            </Button>
+          </div>
+          {clinicalNotes.length ? (
+            clinicalNotes.slice(0, 3).map((note) => (
+              <button
+                className="flex w-full items-center justify-between gap-2 border-t border-border/50 py-2 text-left text-xs hover:text-primary"
+                key={note.id}
+                onClick={() =>
+                  onOpenOffVisitNote && readOffVisitNote(note)
+                    ? onOpenOffVisitNote(note.id)
+                    : openNotes(note.id)
+                }
+                type="button"
+              >
+                <span className="truncate font-medium">
+                  {note.title || "Sans titre"}
+                </span>
+                <span className="shrink-0 text-muted-foreground">
+                  {formatDate(note.updatedAt)}
+                </span>
+              </button>
+            ))
+          ) : (
+            <p className="text-xs text-muted-foreground">
+              Aucun écrit pour ce patient.
+            </p>
+          )}
+          {clinicalNotes.length > 3 && (
+            <button
+              className="mt-1 text-xs font-medium text-primary"
+              onClick={() => openNotes()}
+              type="button"
+            >
+              Voir les {clinicalNotes.length} écrits
+            </button>
+          )}
+        </div>
+        <div className="flex flex-1 flex-col">
+          {docs.length === 0 ? (
+            <Empty className="min-h-[120px] py-4">
+              <EmptyHeader>
+                <EmptyMedia>
+                  <UploadSimple
+                    className="size-7 text-muted-foreground"
+                    weight="duotone"
+                  />
+                </EmptyMedia>
+                <EmptyTitle>{t("patientDetail.documents.empty")}</EmptyTitle>
+                <EmptyDescription>
+                  {t("patientDetail.documents.upload")}
+                </EmptyDescription>
+              </EmptyHeader>
+            </Empty>
+          ) : (
+            <ul className="divide-y divide-border/40">
+              {docs.map((doc) => {
+                const meta = CATEGORY_META[doc.category] ?? CATEGORY_META.other;
+                const Icon = meta.icon;
+                return (
+                  <li
+                    className="flex items-center gap-3 py-3 first:pt-0 last:pb-0"
+                    key={doc.id}
+                  >
+                    <span
+                      className={cn(
+                        "flex size-9 shrink-0 items-center justify-center rounded-lg",
+                        meta.className,
+                      )}
+                    >
+                      <Icon className="size-4" weight="duotone" />
+                    </span>
+                    <div className="flex min-w-0 flex-1 items-center justify-between gap-2">
+                      <button
+                        className="min-w-0 flex-1 text-left"
+                        onClick={() => handleOpen(doc)}
+                        type="button"
+                      >
+                        <div className="flex items-center gap-2">
+                          <span className="truncate font-medium text-sm">
+                            {doc.fileName}
+                          </span>
+                          <Badge
+                            className="rounded-full px-1.5 py-0 font-medium t-12"
+                            variant="outline"
+                          >
+                            {meta.label}
+                          </Badge>
+                        </div>
+                        <div className="mt-0.5 flex items-center gap-2 t-12 text-muted-foreground">
+                          <span>{formatDate(doc.createdAt)}</span>
+                          <span aria-hidden>·</span>
+                          <span>{formatBytes(doc.sizeBytes)}</span>
+                          {doc.description ? (
+                            <>
+                              <span aria-hidden>·</span>
+                              <span className="truncate">
+                                {doc.description}
+                              </span>
+                            </>
+                          ) : null}
+                        </div>
+                      </button>
+                      <Button
+                        aria-label="Supprimer le document"
+                        className="size-8 shrink-0 text-muted-foreground hover:text-destructive"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setDeleteTarget(doc);
+                        }}
+                        size="icon"
+                        variant="ghost"
+                      >
+                        <Trash className="size-4" weight="duotone" />
+                      </Button>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </div>
+        <AlertDialog
+          open={deleteTarget !== null}
+          onOpenChange={(open) => {
+            if (!open) setDeleteTarget(null);
+          }}
+        >
+          <AlertDialogContent size="sm">
+            <AlertDialogHeader>
+              <AlertDialogTitle>Supprimer ce document ?</AlertDialogTitle>
+              <AlertDialogDescription>
+                {deleteTarget
+                  ? `« ${deleteTarget.fileName} » sera définitivement supprimé du dossier. Cette action est irréversible.`
+                  : "Ce document sera définitivement supprimé du dossier."}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Annuler</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={() => void confirmDelete()}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                Supprimer
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </div>
   );

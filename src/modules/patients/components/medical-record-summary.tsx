@@ -54,17 +54,24 @@ export function PatientIdentity({
           "medical-avatar relative shrink-0 transition duration-200 hover:scale-[1.03]",
           speciesTheme.avatarBg,
           speciesTheme.avatarBorder,
-          speciesTheme.avatarGlow
+          speciesTheme.avatarGlow,
         )}
       >
         {patient.avatarUrl ? (
-          <img src={patient.avatarUrl} alt={patient.name} className="h-full w-full object-cover" />
+          <img
+            src={patient.avatarUrl}
+            alt={patient.name}
+            className="h-full w-full object-cover"
+          />
         ) : (
           <HugeiconsIcon
             icon={getSpeciesGlyph(patient.species)}
             size={compact ? 24 : 36}
             strokeWidth={1.5}
-            className={cn("transition-transform duration-200", speciesTheme.avatarIconColor)}
+            className={cn(
+              "transition-transform duration-200",
+              speciesTheme.avatarIconColor,
+            )}
             aria-hidden="true"
           />
         )}
@@ -72,9 +79,14 @@ export function PatientIdentity({
 
       <div className="min-w-0 flex-1">
         <div className="medical-identity-line flex flex-wrap items-center gap-2">
-          <h1 className="medical-identity-name text-2xl font-bold tracking-tight text-foreground">{patient.name}</h1>
+          <h1 className="medical-identity-name text-2xl font-bold tracking-tight text-foreground">
+            {patient.name}
+          </h1>
           {patient.reference ? (
-            <span className="medical-reference" title="Référence patient, attribuée à la création et jamais modifiée">
+            <span
+              className="medical-reference"
+              title="Référence patient, attribuée à la création et jamais modifiée"
+            >
               {patient.reference}
             </span>
           ) : null}
@@ -96,7 +108,9 @@ export function PatientIdentity({
                 ? "Stérilisé"
                 : null,
             ageLabel,
-            !showIdentifiers && patient.chipNumber?.trim() ? `Puce ${patient.chipNumber.trim()}` : null,
+            !showIdentifiers && patient.chipNumber?.trim()
+              ? `Puce ${patient.chipNumber.trim()}`
+              : null,
           ]
             .filter(Boolean)
             .map((part, index) => (
@@ -108,30 +122,44 @@ export function PatientIdentity({
           <p className="medical-identity-owner">
             <span>Propriétaire</span>
             <strong>{`${owner.firstName} ${owner.lastName}`.trim()}</strong>
-            {owner.phone ? <span className="medical-identity-phone">{formatPhone(owner.phone)}</span> : null}
+            {owner.phone ? (
+              <span className="medical-identity-phone">
+                {formatPhone(owner.phone)}
+              </span>
+            ) : null}
           </p>
         ) : null}
 
         {showIdentifiers ? (
-        <div className="medical-record-id flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-          {patient.chipNumber?.trim() ? (
-            <>
-              <span className="font-mono tabular-nums text-foreground/70" title="Puce d’identification">
-                Puce {patient.chipNumber.trim()}
-              </span>
-              <span aria-hidden="true" className="text-muted-foreground/40">·</span>
-            </>
-          ) : null}
-          {patient.tattooNumber?.trim() ? (
-            <>
-              <span className="font-mono tabular-nums text-foreground/70" title="Tatouage">
-                Tatouage {patient.tattooNumber.trim()}
-              </span>
-              <span aria-hidden="true" className="text-muted-foreground/40">·</span>
-            </>
-          ) : null}
-          <span>Enregistré le {recordDate(patient.createdAt)}</span>
-        </div>
+          <div className="medical-record-id flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+            {patient.chipNumber?.trim() ? (
+              <>
+                <span
+                  className="font-mono tabular-nums text-foreground/70"
+                  title="Puce d’identification"
+                >
+                  Puce {patient.chipNumber.trim()}
+                </span>
+                <span aria-hidden="true" className="text-muted-foreground/40">
+                  ·
+                </span>
+              </>
+            ) : null}
+            {patient.tattooNumber?.trim() ? (
+              <>
+                <span
+                  className="font-mono tabular-nums text-foreground/70"
+                  title="Tatouage"
+                >
+                  Tatouage {patient.tattooNumber.trim()}
+                </span>
+                <span aria-hidden="true" className="text-muted-foreground/40">
+                  ·
+                </span>
+              </>
+            ) : null}
+            <span>Enregistré le {recordDate(patient.createdAt)}</span>
+          </div>
         ) : null}
       </div>
     </div>
@@ -185,7 +213,10 @@ export function OwnerContact({ owner }: { owner?: Owner }) {
   const phoneLabel = formatPhone(owner.phone);
 
   return (
-    <section className="medical-owner p-5" aria-label="Coordonnées du propriétaire">
+    <section
+      className="medical-owner p-5"
+      aria-label="Coordonnées du propriétaire"
+    >
       <RecordBlockHeading icon={User}>Propriétaire</RecordBlockHeading>
       <div className="medical-owner-card flex items-center gap-3.5 p-3 rounded-xl bg-muted/40 border border-border/60">
         <div
@@ -240,10 +271,10 @@ export function OwnerContact({ owner }: { owner?: Owner }) {
 }
 
 export function handleRecordTabKeys(event: KeyboardEvent<HTMLDivElement>) {
-  const keys = ["ArrowLeft", "ArrowRight", "Home", "End"];
+  const keys = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"];
   if (!keys.includes(event.key)) return;
   const tabs = Array.from(
-    event.currentTarget.querySelectorAll<HTMLButtonElement>("[role=tab]")
+    event.currentTarget.querySelectorAll<HTMLButtonElement>("[role=tab]"),
   );
   const index = tabs.indexOf(event.target as HTMLButtonElement);
   if (index < 0) return;
@@ -253,7 +284,7 @@ export function handleRecordTabKeys(event: KeyboardEvent<HTMLDivElement>) {
       ? 0
       : event.key === "End"
         ? tabs.length - 1
-        : (index + (event.key === "ArrowRight" ? 1 : -1) + tabs.length) %
+        : (index + (event.key === "ArrowRight" || event.key === "ArrowDown" ? 1 : -1) + tabs.length) %
           tabs.length;
   tabs[next]?.focus();
   tabs[next]?.click();

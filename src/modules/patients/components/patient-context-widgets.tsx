@@ -1,9 +1,5 @@
 import { formatDisplayText, formatNumber } from "@/utils/display-format";
-import {
-  ArrowUpRight,
-  CalendarBlank,
-  ClipboardList,
-} from "@/lib/icons";
+import { ArrowUpRight, CalendarBlank, ClipboardList } from "@/lib/icons";
 import {
   Popover,
   PopoverContent,
@@ -59,11 +55,11 @@ export function PatientContextWidgets({
     );
   });
   const firstVisit = [...visitsToday].sort((a, b) =>
-    a.startTime.localeCompare(b.startTime)
+    a.startTime.localeCompare(b.startTime),
   )[0];
   const visitTime = normalizeDate(firstVisit?.startTime)?.toLocaleTimeString(
     "fr-FR",
-    { hour: "2-digit", minute: "2-digit" }
+    { hour: "2-digit", minute: "2-digit" },
   );
   const visitDetail = appointmentsLoading
     ? "Chargement des rendez-vous"
@@ -77,7 +73,7 @@ export function PatientContextWidgets({
     : tasksError
       ? "Actions indisponibles"
       : formatDisplayText(
-          tasks[0]?.title || "Aucune action en attente pour ce patient"
+          tasks[0]?.title || "Aucune action en attente pour ce patient",
         );
   return (
     <section
@@ -95,16 +91,26 @@ export function PatientContextWidgets({
           <span className="size-7 rounded-md flex items-center justify-center bg-sky-50 text-sky-600 border border-sky-200/60 dark:bg-sky-950/60 dark:text-sky-400 dark:border-sky-800/40 shrink-0 shadow-xs">
             <CalendarBlank size={15} weight="duotone" aria-hidden="true" />
           </span>
-          <span className="text-xs font-medium text-muted-foreground group-hover:text-foreground transition-colors">RDV aujourd’hui</span>
-          <ArrowUpRight size={14} className="ml-auto text-muted-foreground/60 group-hover:text-foreground transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" aria-hidden="true" />
+          <span className="text-xs font-medium text-muted-foreground group-hover:text-foreground transition-colors">
+            RDV aujourd’hui
+          </span>
+          <ArrowUpRight
+            size={14}
+            className="ml-auto text-muted-foreground/60 group-hover:text-foreground transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+            aria-hidden="true"
+          />
         </span>
         <span
           className={cn(
             "patient-context-value text-2xl font-bold tracking-tight text-foreground",
             appointmentsError ? "patient-context-date" : "",
             // A zero is printed as a zero, without the weight of a figure.
-            !appointmentsLoading && !appointmentsError && visitsToday.length === 0 ? "is-zero" : "",
-            visitsToday.length > 0 ? "text-sky-600 dark:text-sky-400" : ""
+            !appointmentsLoading &&
+              !appointmentsError &&
+              visitsToday.length === 0
+              ? "is-zero"
+              : "",
+            visitsToday.length > 0 ? "text-sky-600 dark:text-sky-400" : "",
           )}
         >
           {appointmentsLoading
@@ -113,7 +119,10 @@ export function PatientContextWidgets({
               ? "N/D"
               : formatNumber(visitsToday.length)}
         </span>
-        <span className="patient-context-detail text-xs text-muted-foreground truncate" title={visitDetail}>
+        <span
+          className="patient-context-detail text-xs text-muted-foreground truncate"
+          title={visitDetail}
+        >
           {visitDetail}
         </span>
       </button>
@@ -128,15 +137,23 @@ export function PatientContextWidgets({
             <span className="size-7 rounded-md flex items-center justify-center bg-amber-50 text-amber-600 border border-amber-200/60 dark:bg-amber-950/60 dark:text-amber-400 dark:border-amber-800/40 shrink-0 shadow-xs">
               <ClipboardList size={15} weight="duotone" aria-hidden="true" />
             </span>
-            <span className="text-xs font-medium text-muted-foreground group-hover:text-foreground transition-colors">Actions à suivre</span>
-            <ArrowUpRight size={14} className="ml-auto text-muted-foreground/60 group-hover:text-foreground transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" aria-hidden="true" />
+            <span className="text-xs font-medium text-muted-foreground group-hover:text-foreground transition-colors">
+              Actions à suivre
+            </span>
+            <ArrowUpRight
+              size={14}
+              className="ml-auto text-muted-foreground/60 group-hover:text-foreground transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+              aria-hidden="true"
+            />
           </span>
           <span
             className={cn(
               "patient-context-value text-2xl font-bold tracking-tight text-foreground",
               tasksError ? "patient-context-date" : "",
-              !tasksLoading && !tasksError && tasks.length === 0 ? "is-zero" : "",
-              tasks.length > 0 ? "text-amber-600 dark:text-amber-400" : ""
+              !tasksLoading && !tasksError && tasks.length === 0
+                ? "is-zero"
+                : "",
+              tasks.length > 0 ? "text-amber-600 dark:text-amber-400" : "",
             )}
           >
             {tasksLoading
@@ -145,7 +162,10 @@ export function PatientContextWidgets({
                 ? "N/D"
                 : formatNumber(tasks.length)}
           </span>
-          <span className="patient-context-detail text-xs text-muted-foreground truncate" title={taskDetail}>
+          <span
+            className="patient-context-detail text-xs text-muted-foreground truncate"
+            title={taskDetail}
+          >
             {taskDetail}
           </span>
         </PopoverTrigger>

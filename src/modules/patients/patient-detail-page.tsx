@@ -1,3 +1,6 @@
+import { IdCard, LayoutGrid, Stethoscope } from "lucide-react";
+import { Shell, ShellHeader } from "@/components/ui/surface";
+import "./patient-record-blocks.css";
 import { PatientStays } from "@/modules/hospitalizations/stays/patient-stays";
 import {
   ArrowLeft,
@@ -31,8 +34,11 @@ import { PATIENT_STATUS_META } from "@/config/status-meta";
 import { useAuth } from "@/contexts/AuthContext";
 import { useFocus } from "@/contexts/focus-provider";
 import {
+  useAnesthesiaSheetsRepository,
   useAppointmentsRepository,
+  useConsultationDocumentsRepository,
   useConsultationSoapsRepository,
+  useHospitalizationsRepository,
   useNotesRepository,
   useOwnersRepository,
   usePatientsRepository,
@@ -59,20 +65,19 @@ import type {
   WeightEntry,
 } from "@/types/db";
 import { PatientDocumentsList } from "./components/patient-documents-list";
-import { PatientHeader } from "./components/patient-header";
+import { PatientRecordActions, PatientRecordHeader } from "./components/patient-header";
 import { PatientContextWidgets } from "./components/patient-context-widgets";
-import {
-  OwnerContact,
-  recordDate,
-} from "./components/medical-record-summary";
-import { PatientSafetyZone } from "./components/patient-safety-zone";
+import { OwnerContact, recordDate } from "./components/medical-record-summary";
 import { PatientPrevention } from "./components/patient-prevention";
 import { buildTreatments } from "./health-card/health-card-data";
 import type { TimelinePiece } from "./lib/timeline-pieces";
 import { MedicalRecordTabs } from "./components/medical-record-tabs";
 import { prepareAppointment } from "@/modules/shell/model/clinical-actions";
 import { PatientKpiStrip } from "./components/patient-kpi-strip";
-import { PatientClinicalSummary, PatientOverview } from "./components/patient-overview";
+import {
+  PatientClinicalSummary,
+  PatientOverview,
+} from "./components/patient-overview";
 import { PatientRecordHealth } from "./components/patient-record-health";
 import { RecordBlockHeading } from "./components/record-block-heading";
 import { PatientTimeline } from "./components/patient-timeline";
@@ -83,10 +88,17 @@ import { VaccinationList } from "./components/vaccination-list";
 import { WeightEntryDialog } from "./components/weight-entry-dialog";
 import { WeightEvolutionChart } from "./components/weight-evolution-chart";
 import { DatePicker } from "@/components/ui/date-picker";
-import { PageHeader } from "@/design-system/patterns/page-header";
 
-const HealthCardDialog = lazy(() => import("./health-card/health-card-dialog").then(module => ({ default: module.HealthCardDialog })));
-const PatientRecordExportDialog = lazy(() => import("./export/patient-record-export-dialog").then(module => ({ default: module.PatientRecordExportDialog })));
+const HealthCardDialog = lazy(() =>
+  import("./health-card/health-card-dialog").then((module) => ({
+    default: module.HealthCardDialog,
+  })),
+);
+const PatientRecordExportDialog = lazy(() =>
+  import("./export/patient-record-export-dialog").then((module) => ({
+    default: module.PatientRecordExportDialog,
+  })),
+);
 
 interface PatientDetailPageProps {
   onNavigate: (view: View) => void;
@@ -106,42 +118,49 @@ const PATIENT_RECORD_SECTIONS = [
   {
     value: "overview",
     label: "Synthèse",
+    tone: "var(--tone-rose)",
     icon: FirstAid,
     color: "text-rose-600 dark:text-rose-400",
   },
   {
     value: "prescriptions",
     label: "Ordonnances",
+    tone: "var(--tone-violet)",
     icon: Pill,
     color: "text-violet-600 dark:text-violet-400",
   },
   {
     value: "hospitalizations",
     label: "Hospitalisations",
+    tone: "var(--tone-amber)",
     icon: Hospital,
     color: "text-amber-600 dark:text-amber-400",
   },
   {
     value: "anesthesia",
     label: "Anesthésies",
+    tone: "var(--chart-teal)",
     icon: Syringe,
     color: "text-teal-600 dark:text-teal-400",
   },
   {
     value: "vaccinations",
     label: "Vaccinations",
+    tone: "var(--tone-green)",
     icon: Syringe,
     color: "text-emerald-600 dark:text-emerald-400",
   },
   {
     value: "weight",
     label: "Poids",
+    tone: "var(--chart-indigo)",
     icon: Scales,
     color: "text-indigo-600 dark:text-indigo-400",
   },
   {
     value: "documents",
     label: "Documents",
+    tone: "var(--tone-blue)",
     icon: FileText,
     color: "text-slate-600 dark:text-slate-300",
   },
@@ -150,6 +169,8 @@ const PATIENT_RECORD_SECTIONS = [
   label: string;
   icon: typeof FirstAid;
   color: string;
+  /** The section's own colour: its icon's chip in the rail, and its active row. */
+  tone: string;
 }>;
 
 /** One neutral selected state for every record section (charte: #F5F5F5, #292929, 2 px underline). */
@@ -208,6 +229,9 @@ export function PatientDetailPage({
   const notesRepo = useNotesRepository();
   const ownersRepo = useOwnersRepository();
   const tasksRepo = useTasksRepository();
+  const hospitalizationsRepo = useHospitalizationsRepository();
+  const anesthesiaRepo = useAnesthesiaSheetsRepository();
+  const documentsRepo = useConsultationDocumentsRepository();
 
   const [weightDialogOpen, setWeightDialogOpen] = useState(false);
   const [pdfExportOpen, setPdfExportOpen] = useState(false);
@@ -219,22 +243,25 @@ export function PatientDetailPage({
   const [activeTab, setActiveTab] = useState<PatientRecordSection>("overview");
   const [isProfileEditorOpen, setIsProfileEditorOpen] = useState(false);
   const [profileDraft, setProfileDraft] = useState<PatientProfileDraft | null>(
-    null
+    null,
   );
   const [isSavingProfile, setIsSavingProfile] = useState(false);
   const pageRef = useRef<HTMLDivElement>(null);
   const [soapAppointmentId, setSoapAppointmentId] = useState<string | null>(
-    null
+    null,
   );
   /** "new" writes a note without a visit; a note id reads one. */
   const [offVisitNote, setOffVisitNote] = useState<"new" | string | null>(null);
   // A search result asks for its note: opened once the record's notes are read.
   useEffect(() => {
     const wanted = sessionStorage.getItem("patient:open-note");
-    const note = wanted ? notesRepo.data.find((entry) => entry.id === wanted) : null;
+    const note = wanted
+      ? notesRepo.data.find((entry) => entry.id === wanted)
+      : null;
     if (!note) return;
     sessionStorage.removeItem("patient:open-note");
-    if (note.patientId === patientId && readOffVisitNote(note)) setOffVisitNote(note.id);
+    if (note.patientId === patientId && readOffVisitNote(note))
+      setOffVisitNote(note.id);
   }, [notesRepo.data, patientId]);
 
   const [selectedHospitalization, setSelectedHospitalization] =
@@ -258,7 +285,7 @@ export function PatientDetailPage({
     if (!next) {
       if (autoCreatedAppointmentId) {
         const saved = prescriptionsRepo.forAppointment(
-          autoCreatedAppointmentId
+          autoCreatedAppointmentId,
         );
         if (saved.length === 0) {
           try {
@@ -266,7 +293,7 @@ export function PatientDetailPage({
           } catch (err) {
             console.error(
               "[PatientDetailPage] cleanup auto-created appointment failed",
-              err
+              err,
             );
           }
         }
@@ -286,7 +313,7 @@ export function PatientDetailPage({
 
   const patient = useMemo(
     () => patientsRepo.data.find((p) => p.id === patientId) ?? null,
-    [patientsRepo.data, patientId]
+    [patientsRepo.data, patientId],
   );
 
   useEffect(() => {
@@ -302,34 +329,45 @@ export function PatientDetailPage({
 
   const owner = useMemo(
     () => ownersRepo.data.find((o) => o.id === patient?.ownerId) ?? undefined,
-    [ownersRepo.data, patient?.ownerId]
+    [ownersRepo.data, patient?.ownerId],
   );
 
   const weightEntries = useMemo(
     () => weightsRepo.forPatient(patientId),
-    [weightsRepo, patientId]
+    [weightsRepo, patientId],
   );
   const vaccinations = useMemo(
     () => vaccinationsRepo.forPatient(patientId),
-    [vaccinationsRepo, patientId]
+    [vaccinationsRepo, patientId],
   );
+  // How many items each section holds, for the small counter in the rail (nothing shown at zero).
+  const sectionCounts: Partial<Record<PatientRecordSection, number>> = {
+    prescriptions: prescriptionsRepo.data.filter((row) => row.patientId === patientId).length,
+    hospitalizations: hospitalizationsRepo.forPatient(patientId).length,
+    anesthesia: anesthesiaRepo.forPatient(patientId).length,
+    vaccinations: vaccinations.length,
+    weight: weightEntries.length,
+    documents:
+      documentsRepo.data.filter((doc) => doc.patientId === patientId).length + notesRepo.data.filter((note) => note.patientId === patientId).length,
+  };
   const appointments = useMemo(
     () =>
       appointmentsRepo.data
         .filter((apt) => apt.patientId === patientId)
         .sort(
           (a, b) =>
-            new Date(b.startTime).getTime() - new Date(a.startTime).getTime()
+            new Date(b.startTime).getTime() - new Date(a.startTime).getTime(),
         ),
-    [appointmentsRepo.data, patientId]
+    [appointmentsRepo.data, patientId],
   );
   const lastAppointment = useMemo(
     () =>
       appointments.find(
         (apt) =>
-          apt.status === "completed" && new Date(apt.startTime).getTime() <= now
+          apt.status === "completed" &&
+          new Date(apt.startTime).getTime() <= now,
       ) ?? null,
-    [appointments, now]
+    [appointments, now],
   );
   const nextAppointment = useMemo(
     () =>
@@ -344,13 +382,13 @@ export function PatientDetailPage({
               "in_progress",
             ].includes(apt.status) &&
             (new Date(apt.startTime).getTime() > now ||
-              ["arrived", "waiting", "in_progress"].includes(apt.status))
+              ["arrived", "waiting", "in_progress"].includes(apt.status)),
         )
         .sort(
           (a, b) =>
-            new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
+            new Date(a.startTime).getTime() - new Date(b.startTime).getTime(),
         )[0] ?? null,
-    [appointments, now]
+    [appointments, now],
   );
   // The clinical summary shows what is still being given today.
   const treatments = useMemo(
@@ -363,19 +401,19 @@ export function PatientDetailPage({
             prescriptions: prescriptionsRepo.data,
           })
         : { hidden: 0, items: [] },
-    [now, patient, prescriptionItemsRepo.data, prescriptionsRepo.data]
+    [now, patient, prescriptionItemsRepo.data, prescriptionsRepo.data],
   );
   const clinicalNoteAppointment = useMemo(
     () =>
       appointments.find(
-        (appointment) => appointment.status === "in_progress"
+        (appointment) => appointment.status === "in_progress",
       ) ??
       appointments.find((appointment) => appointment.status === "completed") ??
       null,
-    [appointments]
+    [appointments],
   );
   const patientTasks = tasksRepo.data.filter(
-    (task) => task.patientId === patientId && task.status !== "done"
+    (task) => task.patientId === patientId && task.status !== "done",
   );
 
   useEffect(() => {
@@ -395,7 +433,7 @@ export function PatientDetailPage({
       requestAnimationFrame(() =>
         document
           .getElementById("patient-chronologie")
-          ?.scrollIntoView({ block: "start" })
+          ?.scrollIntoView({ block: "start" }),
       );
     } else {
       setActiveTab(val);
@@ -520,15 +558,19 @@ export function PatientDetailPage({
     }
   };
   const recentVisits = appointments.filter((appointment) =>
-    ["completed", "in_progress"].includes(appointment.status)
+    ["completed", "in_progress"].includes(appointment.status),
   );
   const scrollRecordToTop = () =>
     requestAnimationFrame(() => {
       const scrollPanel = pageRef.current?.closest<HTMLElement>(
-        '[data-slot="shell-scroll-panel"]'
+        '[data-slot="shell-scroll-panel"]',
       );
       if (scrollPanel) scrollPanel.scrollTo({ top: 0, behavior: "instant" });
-      else pageRef.current?.scrollIntoView({ block: "start", behavior: "instant" });
+      else
+        pageRef.current?.scrollIntoView({
+          block: "start",
+          behavior: "instant",
+        });
     });
   const openOffVisitNote = (target: "new" | string) => {
     setSoapAppointmentId(null);
@@ -550,89 +592,123 @@ export function PatientDetailPage({
     setSoapAppointmentId(appointmentId);
     requestAnimationFrame(() => {
       const scrollPanel = pageRef.current?.closest<HTMLElement>(
-        '[data-slot="shell-scroll-panel"]'
+        '[data-slot="shell-scroll-panel"]',
       );
       if (scrollPanel) {
         scrollPanel.scrollTo({ top: 0, behavior: "instant" });
       } else {
-        pageRef.current?.scrollIntoView({ block: "start", behavior: "instant" });
+        pageRef.current?.scrollIntoView({
+          block: "start",
+          behavior: "instant",
+        });
       }
     });
   };
 
   return (
-    <div ref={pageRef} className="patient-record-page dashboard-stage flex w-full min-w-0 flex-col gap-5 px-4 pb-8 lg:px-6">
+    <div
+      ref={pageRef}
+      className="patient-record-page dashboard-stage flex w-full min-w-0 flex-col gap-5 px-4 pb-8 lg:px-6"
+    >
       <div className="mx-auto w-full max-w-7xl space-y-4">
-        <PageHeader
-          className="patient-record-heading"
-          // A trail back to the list: « Patients / Kejounti · ID-0010 ».
-          title={
-            <nav aria-label="Fil d’Ariane" className="patient-record-trail">
-              <button
-                className="patient-record-list-link"
-                onClick={() => onNavigate("patients")}
-                title="Retour à la liste des patients"
-                type="button"
-              >
-                Patients
-              </button>
-              <span aria-hidden="true">/</span>
-              <span aria-current="page">
-                {patient.name}
-                {patient.reference ? ` · ${patient.reference}` : ""}
-              </span>
-            </nav>
-          }
-        />
+        <PatientRecordHeader owner={owner} patient={patient} />
         {soapAppointmentId && (
-          <section id="patient-consultation-note" aria-label={`Note de consultation de ${patient.name}`} className="space-y-4 border-b border-border pb-6">
-            <div className="flex items-center justify-between gap-3">
-              <h2 className="text-lg font-semibold">Consultation · {patient.name}</h2>
-              <Button onClick={() => setSoapAppointmentId(null)} size="sm" variant="ghost">Revenir au dossier</Button>
-            </div>
-            <SoapPanel appointmentId={soapAppointmentId} key={soapAppointmentId} patientId={patientId} />
-            <ConsultationProducts key={`products:${soapAppointmentId}`} appointmentId={soapAppointmentId} patientId={patientId} />
+          <section
+            id="patient-consultation-note"
+            aria-label={`Note de consultation de ${patient.name}`}
+            className="space-y-4"
+          >
+            <SoapPanel
+              appointmentId={soapAppointmentId}
+              key={soapAppointmentId}
+              patientId={patientId}
+            />
+            <ConsultationProducts
+              key={`products:${soapAppointmentId}`}
+              appointmentId={soapAppointmentId}
+              patientId={patientId}
+            />
           </section>
         )}
         {offVisitNote && (
           <OffVisitNotePanel
             key={offVisitNote}
-            note={offVisitNote === "new" ? null : notesRepo.data.find((note) => note.id === offVisitNote) ?? null}
+            note={
+              offVisitNote === "new"
+                ? null
+                : (notesRepo.data.find((note) => note.id === offVisitNote) ??
+                  null)
+            }
             onClose={() => setOffVisitNote(null)}
             onSaved={(note) => setOffVisitNote(note.id)}
             patientId={patientId}
             patientName={patient.name}
           />
         )}
-        <PatientHeader
-          onEditProfile={openProfileEditor}
-          onExportPdf={() => setPdfExportOpen(true)}
-          onHealthCard={() => setHealthCardOpen(true)}
-          onNewAppointment={() => {
-            prepareAppointment(patient.id);
-            onNavigate("agenda");
-          }}
-          onOpenClinicalNote={
-            clinicalNoteAppointment
-              ? () => openSoapForAppointment(clinicalNoteAppointment.id)
-              : undefined
-          }
-          onNewOffVisitNote={() => openOffVisitNote("new")}
-          onOpenCare={() => {
-            requestFocus("care_patient", patientId);
-            onNavigate("clinique");
-          }}
-          owner={owner}
-          patient={patient}
-        />
-        {pdfExportOpen && <Suspense fallback={<p role="status" className="text-sm text-muted-foreground">Ouverture de l’export PDF…</p>}>
-          <PatientRecordExportDialog key={patientId} patientId={patientId} patientName={patient.name} onClose={() => setPdfExportOpen(false)} />
-        </Suspense>}
-        {healthCardOpen && <Suspense fallback={<p role="status" className="text-sm text-muted-foreground">Ouverture du carnet de santé…</p>}>
-          <HealthCardDialog key={patientId} owner={owner} patient={patient} onClose={() => setHealthCardOpen(false)} />
-        </Suspense>}
-        <PatientSafetyZone patient={patient} />
-        <section className="patient-record-indicators" aria-label={`Indicateurs de ${patient.name}`}>
+        {pdfExportOpen && (
+          <Suspense
+            fallback={
+              <p role="status" className="text-sm text-muted-foreground">
+                Ouverture de l’export PDF…
+              </p>
+            }
+          >
+            <PatientRecordExportDialog
+              key={patientId}
+              patientId={patientId}
+              patientName={patient.name}
+              onClose={() => setPdfExportOpen(false)}
+            />
+          </Suspense>
+        )}
+        {healthCardOpen && (
+          <Suspense
+            fallback={
+              <p role="status" className="text-sm text-muted-foreground">
+                Ouverture du carnet de santé…
+              </p>
+            }
+          >
+            <HealthCardDialog
+              key={patientId}
+              owner={owner}
+              patient={patient}
+              onClose={() => setHealthCardOpen(false)}
+            />
+          </Suspense>
+        )}
+        <Shell className="patient-record-summary">
+          <ShellHeader
+            aside={
+              <PatientRecordActions
+                onEditProfile={openProfileEditor}
+                onExportPdf={() => setPdfExportOpen(true)}
+                onHealthCard={() => setHealthCardOpen(true)}
+                onNewAppointment={() => {
+                  prepareAppointment(patient.id);
+                  onNavigate("agenda");
+                }}
+                onNewOffVisitNote={() => openOffVisitNote("new")}
+                onOpenCare={() => {
+                  requestFocus("care_patient", patientId);
+                  onNavigate("clinique");
+                }}
+                onOpenClinicalNote={
+                  clinicalNoteAppointment
+                    ? () => openSoapForAppointment(clinicalNoteAppointment.id)
+                    : undefined
+                }
+              />
+            }
+            as="h2"
+            icon={LayoutGrid}
+            subtitle="Repères du dossier"
+            title="Chiffres clés"
+          />
+        <section
+          className="patient-record-indicators"
+          aria-label={`Indicateurs de ${patient.name}`}
+        >
           <PatientContextWidgets
             patientName={patient.name}
             appointments={appointments}
@@ -647,7 +723,7 @@ export function PatientDetailPage({
               requestAnimationFrame(() =>
                 document
                   .getElementById("record-tab-content")
-                  ?.scrollIntoView({ block: "start" })
+                  ?.scrollIntoView({ block: "start" }),
               );
             }}
             onOpenTask={(taskId) => {
@@ -698,9 +774,8 @@ export function PatientDetailPage({
               weightEntries={weightEntries}
             />
           )}
-
         </section>
-
+        </Shell>
 
         {isProfileEditorOpen && profileDraft ? (
           <section className="rounded-2xl border border-border/80 bg-card/95 shadow-md p-5 sm:p-6 backdrop-blur-xl">
@@ -749,7 +824,7 @@ export function PatientDetailPage({
                     setProfileDraft((current) =>
                       current
                         ? { ...current, name: event.target.value }
-                        : current
+                        : current,
                     )
                   }
                   value={profileDraft.name}
@@ -762,7 +837,7 @@ export function PatientDetailPage({
                     setProfileDraft((current) =>
                       current
                         ? { ...current, species: event.target.value }
-                        : current
+                        : current,
                     )
                   }
                   placeholder="Chien, chat, NAC…"
@@ -776,7 +851,7 @@ export function PatientDetailPage({
                     setProfileDraft((current) =>
                       current
                         ? { ...current, breed: event.target.value }
-                        : current
+                        : current,
                     )
                   }
                   value={profileDraft.breed}
@@ -784,12 +859,11 @@ export function PatientDetailPage({
               </label>
               <label className="grid gap-2 text-sm">
                 <span className="font-medium">Date de naissance</span>
-                <DatePicker clearable
+                <DatePicker
+                  clearable
                   onChange={(value) =>
                     setProfileDraft((current) =>
-                      current
-                        ? { ...current, dateOfBirth: value }
-                        : current
+                      current ? { ...current, dateOfBirth: value } : current,
                     )
                   }
                   value={profileDraft.dateOfBirth ?? ""}
@@ -806,7 +880,7 @@ export function PatientDetailPage({
                             ...current,
                             sex: event.target.value as Patient["sex"],
                           }
-                        : current
+                        : current,
                     )
                   }
                   value={profileDraft.sex}
@@ -826,7 +900,7 @@ export function PatientDetailPage({
                             ...current,
                             status: event.target.value as Patient["status"],
                           }
-                        : current
+                        : current,
                     )
                   }
                   value={profileDraft.status}
@@ -845,7 +919,7 @@ export function PatientDetailPage({
                     setProfileDraft((current) =>
                       current
                         ? { ...current, allergies: event.target.value }
-                        : current
+                        : current,
                     )
                   }
                   placeholder="Aucune allergie connue"
@@ -861,7 +935,7 @@ export function PatientDetailPage({
                     setProfileDraft((current) =>
                       current
                         ? { ...current, chronicConditions: event.target.value }
-                        : current
+                        : current,
                     )
                   }
                   placeholder="Aucun antécédent signalé"
@@ -875,7 +949,7 @@ export function PatientDetailPage({
                     setProfileDraft((current) =>
                       current
                         ? { ...current, restraint: event.target.value }
-                        : current
+                        : current,
                     )
                   }
                   placeholder="Muselière, à deux personnes, sédation avant soins…"
@@ -890,7 +964,7 @@ export function PatientDetailPage({
                     setProfileDraft((current) =>
                       current
                         ? { ...current, generalNotes: event.target.value }
-                        : current
+                        : current,
                     )
                   }
                   placeholder="Informations utiles pour le suivi de ce patient…"
@@ -904,7 +978,7 @@ export function PatientDetailPage({
                     setProfileDraft((current) =>
                       current
                         ? { ...current, chipNumber: event.target.value }
-                        : current
+                        : current,
                     )
                   }
                   placeholder="15 chiffres…"
@@ -918,7 +992,7 @@ export function PatientDetailPage({
                     setProfileDraft((current) =>
                       current
                         ? { ...current, tattooNumber: event.target.value }
-                        : current
+                        : current,
                     )
                   }
                   placeholder="N° de tatouage…"
@@ -933,20 +1007,20 @@ export function PatientDetailPage({
                     setProfileDraft((current) =>
                       current
                         ? { ...current, sterilized: event.target.checked }
-                        : current
+                        : current,
                     )
                   }
                   type="checkbox"
                 />
-                <span className="font-medium">
-                  Animal stérilisé / castré
-                </span>
+                <span className="font-medium">Animal stérilisé / castré</span>
               </label>
             </div>
           </section>
         ) : null}
 
         <div className="medical-workspace">
+          <Shell className="patient-register-shell">
+            <ShellHeader as="h2" icon={Stethoscope} subtitle="Synthèse, ordonnances, soins, poids et documents" title="Dossier médical" />
           <section
             className="medical-register"
             aria-label={`Dossier clinique de ${patient.name}`}
@@ -962,23 +1036,31 @@ export function PatientDetailPage({
                     role="tab"
                     tabIndex={isSelected ? 0 : -1}
                     id={`record-tab-${section.value}`}
+                    style={{ "--section-tone": section.tone } as React.CSSProperties}
                     aria-selected={isSelected}
                     aria-controls="record-tab-content"
                     className={cn(
                       "group cursor-pointer transition",
-                      isSelected && ACTIVE_RECORD_TAB_CLASS
+                      isSelected && ACTIVE_RECORD_TAB_CLASS,
                     )}
                     onClick={() => handleTabChange(section.value)}
                   >
-                    <SectionIcon
-                      className={cn(
-                        "size-4 shrink-0 transition-transform group-hover:scale-110",
-                        section.color
-                      )}
-                      weight="duotone"
-                      aria-hidden="true"
-                    />
-                    <span>{section.label}</span>
+                    <span className="patient-rail-chip" aria-hidden="true">
+                      <SectionIcon
+                        className="size-4 shrink-0"
+                        weight="duotone"
+                        aria-hidden="true"
+                      />
+                    </span>
+                    <span className="patient-rail-label">{section.label}</span>
+                    {sectionCounts[section.value] ? (
+                      <span
+                        className="patient-rail-count"
+                        aria-label={`${sectionCounts[section.value]} élément${sectionCounts[section.value]! > 1 ? "s" : ""}`}
+                      >
+                        {sectionCounts[section.value]}
+                      </span>
+                    ) : null}
                   </button>
                 );
               })}
@@ -998,7 +1080,9 @@ export function PatientDetailPage({
                     prevention={
                       <PatientPrevention
                         now={now}
-                        onOpenVaccinations={() => handleTabChange("vaccinations")}
+                        onOpenVaccinations={() =>
+                          handleTabChange("vaccinations")
+                        }
                         patientId={patientId}
                         vaccinations={vaccinations}
                       />
@@ -1117,7 +1201,7 @@ export function PatientDetailPage({
                     } else {
                       const nowTime = new Date();
                       const endTime = new Date(
-                        nowTime.getTime() + 30 * 60 * 1000
+                        nowTime.getTime() + 30 * 60 * 1000,
                       );
 
                       try {
@@ -1137,16 +1221,16 @@ export function PatientDetailPage({
                           setAutoCreatedAppointmentId(newApt.id);
                           setPrescriptionOpen(true);
                           toast.success(
-                            "Nouvelle session de consultation créée pour l'ordonnance."
+                            "Nouvelle session de consultation créée pour l'ordonnance.",
                           );
                         }
                       } catch (err) {
                         console.error(
                           "Failed to create quick appointment",
-                          err
+                          err,
                         );
                         toast.error(
-                          "Impossible de créer une nouvelle session de consultation."
+                          "Impossible de créer une nouvelle session de consultation.",
                         );
                       }
                     }
@@ -1155,7 +1239,12 @@ export function PatientDetailPage({
                 />
               ) : null}
 
-              {activeTab === "hospitalizations" && <PatientStays patientId={patientId} onOpen={() => onNavigate("clinique")}/>}
+              {activeTab === "hospitalizations" && (
+                <PatientStays
+                  patientId={patientId}
+                  onOpen={() => onNavigate("clinique")}
+                />
+              )}
               {activeTab === "hospitalizations" ? (
                 selectedHospitalization ? (
                   <HospitalizationDetail
@@ -1187,88 +1276,91 @@ export function PatientDetailPage({
               ) : null}
             </div>
           </section>
-
+          </Shell>
         </div>
 
-        <aside
-          className="medical-permanent"
-          aria-labelledby="medical-permanent-title"
-        >
-          <h2 className="medical-permanent-header" id="medical-permanent-title">
-            Informations permanentes
-          </h2>
+        <Shell aria-label="Informations permanentes" className="patient-permanent">
+          <ShellHeader as="h2" icon={IdCard} subtitle="Identité, propriétaire et notes générales" title="Informations permanentes" />
           <div className="medical-permanent-grid">
-          <section>
-            <RecordBlockHeading icon={IdentificationBadge}>Identité</RecordBlockHeading>
-            <dl className="medical-facts">
-              <div>
-                <dt>Date de naissance</dt>
-                <dd>{recordDate(patient.dateOfBirth)}</dd>
-              </div>
-              <div>
-                <dt>Enregistré le</dt>
-                <dd>{recordDate(patient.createdAt)}</dd>
-              </div>
-              {patient.chipNumber ? (
-                <div>
-                  <dt>Puce</dt>
-                  <dd>{patient.chipNumber}</dd>
-                </div>
-              ) : null}
-              {patient.tattooNumber ? (
-                <div>
-                  <dt>Tatouage</dt>
-                  <dd>{patient.tattooNumber}</dd>
-                </div>
-              ) : null}
-            </dl>
-          </section>
-          {ownersRepo.loading ? (
-            <section aria-busy="true">
-              <RecordBlockHeading icon={User}>Propriétaire</RecordBlockHeading>
-              <SkeletonBlock className="h-20" />
-            </section>
-          ) : ownersRepo.error ? (
             <section>
-              <RecordBlockHeading icon={User}>Propriétaire</RecordBlockHeading>
-              <p className="medical-empty">
-                Les coordonnées ne sont pas disponibles.
+              <RecordBlockHeading icon={IdentificationBadge}>
+                Identité
+              </RecordBlockHeading>
+              <dl className="medical-facts">
+                <div>
+                  <dt>Date de naissance</dt>
+                  <dd>{recordDate(patient.dateOfBirth)}</dd>
+                </div>
+                <div>
+                  <dt>Enregistré le</dt>
+                  <dd>{recordDate(patient.createdAt)}</dd>
+                </div>
+                {patient.chipNumber ? (
+                  <div>
+                    <dt>Puce</dt>
+                    <dd>{patient.chipNumber}</dd>
+                  </div>
+                ) : null}
+                {patient.tattooNumber ? (
+                  <div>
+                    <dt>Tatouage</dt>
+                    <dd>{patient.tattooNumber}</dd>
+                  </div>
+                ) : null}
+              </dl>
+            </section>
+            {ownersRepo.loading ? (
+              <section aria-busy="true">
+                <RecordBlockHeading icon={User}>
+                  Propriétaire
+                </RecordBlockHeading>
+                <SkeletonBlock className="h-20" />
+              </section>
+            ) : ownersRepo.error ? (
+              <section>
+                <RecordBlockHeading icon={User}>
+                  Propriétaire
+                </RecordBlockHeading>
+                <p className="medical-empty">
+                  Les coordonnées ne sont pas disponibles.
+                </p>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => void ownersRepo.refresh()}
+                >
+                  Réessayer
+                </Button>
+              </section>
+            ) : (
+              <OwnerContact owner={owner} />
+            )}
+            <section>
+              <RecordBlockHeading icon={Notebook}>
+                Notes générales
+              </RecordBlockHeading>
+              <p className="medical-note">
+                {patient.generalNotes?.trim() ||
+                  "Aucune note générale enregistrée."}
               </p>
               <Button
+                className="mt-3"
                 size="sm"
                 variant="ghost"
-                onClick={() => void ownersRepo.refresh()}
+                onClick={openProfileEditor}
               >
-                Réessayer
+                Modifier les informations
               </Button>
             </section>
-          ) : (
-            <OwnerContact owner={owner} />
-          )}
-          <section>
-            <RecordBlockHeading icon={Notebook}>Notes générales</RecordBlockHeading>
-            <p className="medical-note">
-              {patient.generalNotes?.trim() ||
-                "Aucune note générale enregistrée."}
-            </p>
-            <Button
-              className="mt-3"
-              size="sm"
-              variant="ghost"
-              onClick={openProfileEditor}
-            >
-              Modifier les informations
-            </Button>
-          </section>
-          <PatientRecordHealth
-            onCompleteCheck={completeRecordCheck}
-            owner={owner}
-            patient={patient}
-            vaccinations={vaccinations}
-            weightEntries={weightEntries}
-          />
+            <PatientRecordHealth
+              onCompleteCheck={completeRecordCheck}
+              owner={owner}
+              patient={patient}
+              vaccinations={vaccinations}
+              weightEntries={weightEntries}
+            />
           </div>
-        </aside>
+        </Shell>
       </div>
 
       <WeightEntryDialog

@@ -35,7 +35,7 @@ function buildPoints(entries: WeightEntry[]): WeightChartPoint[] {
   return [...entries]
     .sort(
       (a, b) =>
-        new Date(a.measuredAt).getTime() - new Date(b.measuredAt).getTime()
+        new Date(a.measuredAt).getTime() - new Date(b.measuredAt).getTime(),
     )
     .map((entry) => ({
       date: new Date(entry.measuredAt).toLocaleDateString("fr-FR", {
@@ -197,7 +197,7 @@ export function WeightEvolutionChart({
                           }
                         ).payload;
                         const matched = entries.find(
-                          (entry) => entry.measuredAt === point?.measuredAt
+                          (entry) => entry.measuredAt === point?.measuredAt,
                         );
                         if (matched) {
                           onEditEntry(matched);
