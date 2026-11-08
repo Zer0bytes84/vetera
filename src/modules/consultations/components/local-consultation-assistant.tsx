@@ -118,6 +118,10 @@ export type SoapNoteOrigin = "assistant" | "dictee";
 const WELCOME_WORDS =
   "Dictez ou écrivez vos observations, rubrique par rubrique, puis relisez la note. Rien n’est enregistré sans votre validation.".split(" ");
 
+// The first question, written out right after the welcome (the others appear whole, when their turn comes).
+const FIRST_QUESTION_WORDS = "**S · Motif et antécédents**\n\nQuel est le motif de consultation ? Quels antécédents ou observations du propriétaire souhaitez-vous noter ?".split(" ");
+const OPENING_WORDS = WELCOME_WORDS.length + FIRST_QUESTION_WORDS.length;
+
 // Same text once line breaks and spacing are set aside: nothing was reworded.
 const sameWords = (a: string, b: string) =>
   a.replace(/\s+/gu, " ").trim() === b.replace(/\s+/gu, " ").trim();
@@ -185,18 +189,21 @@ export default function LocalConsultationAssistant({
   const [stepAt, setStepAt] = useState<string[]>(() => [new Date().toISOString()]);
   const [noteAt] = useState(() => new Date().toISOString());
   const { currentUser } = useAuth();
-  // The welcome, and only the welcome, is written out word by word when the panel opens (the words fade in as they come, as
-  // in StreamingMessage). The questions, the answers and the note always appear whole. With reduced motion it is shown whole.
-  const [welcomeWords, setWelcomeWords] = useState(() =>
+  // When the panel opens, the welcome and then the first question are written out word by word (the words fade in as they
+  // come, as in StreamingMessage). The generated answers and the note always appear whole, and so do the later questions.
+  // With reduced motion everything is shown whole.
+  const [openingWords, setOpeningWords] = useState(() =>
     typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches
-      ? WELCOME_WORDS.length
+      ? OPENING_WORDS
       : 1,
   );
   useEffect(() => {
-    if (welcomeWords >= WELCOME_WORDS.length) return;
-    const timer = setTimeout(() => setWelcomeWords((count) => count + 1), 70);
+    if (openingWords >= OPENING_WORDS) return;
+    const timer = setTimeout(() => setOpeningWords((count) => count + 1), 70);
     return () => clearTimeout(timer);
-  }, [welcomeWords]);
+  }, [openingWords]);
+  const welcomeWords = Math.min(openingWords, WELCOME_WORDS.length);
+  const questionWords = Math.max(openingWords - WELCOME_WORDS.length, 0);
   const changeSection = (next: number) => {
     setStepAt((previous) => {
       const grown = [...previous];
@@ -736,6 +743,9 @@ export default function LocalConsultationAssistant({
       ),
     },
     ...sectionPrompts.slice(0, sectionIndex + 1).flatMap((step, index): ThreadMessage[] => {
+      const opening = index === 0 && questionWords < FIRST_QUESTION_WORDS.length && sectionIndex === 0;
+      // The first question waits for the end of the welcome, then writes itself out.
+      if (opening && questionWords === 0) return [];
       const answered = index < sectionIndex;
       const reply = responses[index].trim();
       const edit = answered ? (
@@ -756,7 +766,12 @@ export default function LocalConsultationAssistant({
             <div className="flex flex-col items-start gap-1">
               <StreamingMessage
                 className="assistant-section-prompt max-w-none"
-                data={{ status: "done", content: `**${step.letter} · ${step.title}**\n\n${step.question}` }}
+                data={{
+                  status: opening ? "streaming" : "done",
+                  content: opening
+                    ? FIRST_QUESTION_WORDS.slice(0, questionWords).join(" ")
+                    : `**${step.letter} · ${step.title}**\n\n${step.question}`,
+                }}
                 bubble
                 showActions={false}
                 showHeader={false}
