@@ -1,6 +1,6 @@
 import { Extension } from "@tiptap/core";
 import { ReactRenderer } from "@tiptap/react";
-import Suggestion from "@tiptap/suggestion";
+import Suggestion, { type SuggestionOptions } from "@tiptap/suggestion";
 import tippy, { type Instance } from "tippy.js";
 import { documentNoteTemplateOrder, documentNoteTemplates } from "./document-note-templates";
 import { insertDocumentTable } from "./document-table-presets";
@@ -13,13 +13,14 @@ const SlashCommands = Extension.create({
 
   addOptions() {
     return {
+      // Widened to the suggestion plugin's options: `configure` also passes `items` and `render`.
       suggestion: {
         char: "/",
         command: ({ editor, range, props }: any) => {
           editor.chain().focus().deleteRange(range).run();
           props.command(editor);
         },
-      },
+      } as Partial<SuggestionOptions>,
     };
   },
 
