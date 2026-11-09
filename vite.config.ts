@@ -73,7 +73,7 @@ export default defineConfig(({ command, mode }) => ({
   },
   build: {
     manifest: true,
-    rollupOptions: {
+    rolldownOptions: {
       onwarn(warning, warn) {
         if (
           warning.code === "INVALID_ANNOTATION" &&
@@ -84,27 +84,26 @@ export default defineConfig(({ command, mode }) => ({
         warn(warning);
       },
       output: {
-        // Keep shared dependencies out of lazy vendor chunks: otherwise the
-        // entry imports PDF/editor/chart chunks through their shared modules.
-        onlyExplicitManualChunks: true,
-        manualChunks(id) {
-          if (!id.includes("node_modules")) {
-            return;
-          }
-
-          if (id.includes("jspdf") || id.includes("html2canvas")) {
-            return "vendor-pdf";
-          }
-
-          if (id.includes("recharts") || id.includes("d3-")) {
-            return "vendor-charts";
-          }
-
-          // Let Rollup keep Tiptap and ProseMirror in the same dependency
-          // graph. Splitting only @tiptap creates NotesPro -> vendor-editor
-          // -> NotesPro and a temporal-dead-zone error in packaged builds.
-
-          return;
+        // Keep PDF and chart libraries out of the entry's static imports: they load
+        // on demand. Rolldown replaces Rollup's `manualChunks` + `onlyExplicitManualChunks`:
+        // a group captures only its own modules (`includeDependenciesRecursively: false`),
+        // so shared modules are not pulled into a vendor chunk the entry would then import.
+        // Tiptap and ProseMirror stay out of any group on purpose: splitting only @tiptap
+        // creates NotesPro -> vendor-editor -> NotesPro and a temporal-dead-zone error
+        // in packaged builds.
+        codeSplitting: {
+          groups: [
+            {
+              name: "vendor-pdf",
+              test: /node_modules[\\/](jspdf|html2canvas)/,
+              includeDependenciesRecursively: false,
+            },
+            {
+              name: "vendor-charts",
+              test: /node_modules[\\/](recharts|d3-)/,
+              includeDependenciesRecursively: false,
+            },
+          ],
         },
       },
     },
