@@ -24,7 +24,6 @@ import {
 } from "@/modules/patients/pages/patient-peek";
 import { prepareAppointment } from "./model/clinical-actions";
 import {
-  HelpCircleIcon,
   Logout01Icon,
   Settings01Icon,
   TranslateIcon,
@@ -99,9 +98,7 @@ const ALL_VIEWS: View[] = [
   "equipe",
   "taches",
   "soins",
-  "aide",
   "patient_detail",
-  "assistant",
 ];
 
 const DEFAULT_VIEW: View = "dashboard";
@@ -148,8 +145,7 @@ function AppShellInner() {
     if (typeof window === "undefined") {
       return DEFAULT_VIEW;
     }
-    const initialView = parseRouteFromHash(window.location.hash).currentView;
-    return initialView === "assistant" ? DEFAULT_VIEW : initialView;
+    return parseRouteFromHash(window.location.hash).currentView;
   });
   const [currentPatientId, setCurrentPatientId] = useState<string | null>(
     () => {
@@ -162,12 +158,7 @@ function AppShellInner() {
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const settingsButtonRef = useRef<HTMLButtonElement>(null);
-  const [aiAssistantOpen, setAiAssistantOpen] = useState(() => {
-    if (typeof window === "undefined") {
-      return false;
-    }
-    return parseRouteFromHash(window.location.hash).currentView === "assistant";
-  });
+  const [aiAssistantOpen, setAiAssistantOpen] = useState(false);
   const [isAssistantCollapsed, setIsAssistantCollapsed] = useState(false);
   const sidebarScrollRef = useRef<HTMLDivElement>(null);
   const [peekPatientId, setPeekPatientId] = useState<string | null>(null);
@@ -289,10 +280,6 @@ function AppShellInner() {
   }, [currentView, currentPatientId]);
 
   const handleNavigate = useCallback((view: View) => {
-    if (view === "assistant") {
-      setAiAssistantOpen(true);
-      return;
-    }
     setCurrentView(view);
     setCurrentPatientId(null);
     setNavigationTick((tick) => tick + 1);
@@ -396,12 +383,6 @@ function AppShellInner() {
   useEffect(() => {
     const handleHashChange = () => {
       const next = parseRouteFromHash(window.location.hash);
-      if (next.currentView === "assistant") {
-        setAiAssistantOpen(true);
-        setCurrentView(DEFAULT_VIEW);
-        setCurrentPatientId(null);
-        return;
-      }
       setCurrentView((previousView) =>
         previousView === next.currentView ? previousView : next.currentView
       );
@@ -455,7 +436,7 @@ function AppShellInner() {
         event.key.toLowerCase() === "j"
       ) {
         event.preventDefault();
-        handleNavigate("assistant");
+        setAiAssistantOpen(true);
         return;
       }
 
@@ -508,7 +489,6 @@ function AppShellInner() {
         currentTheme: themeMode,
         onThemeChange: setThemeMode,
         onOpenAIAgent: () => handleNavigate("notes"),
-        userAvatarUrl: resolvedAvatarUrl,
         userDisplayName:
           currentUser?.displayName || currentUser?.email || "Utilisateur",
       }),
@@ -924,18 +904,6 @@ function AppShellInner() {
                             />
                           </div>
                           <span className="font-medium text-sm">Paramètres</span>
-                        </DropdownMenuItem>
-
-                        <DropdownMenuSeparator className="my-1 bg-zinc-100 dark:bg-white/10" />
-
-                        <DropdownMenuItem
-                          className="flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5"
-                          onClick={() => handleNavigate("aide")}
-                        >
-                          <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-muted">
-                            <HugeiconsIcon icon={HelpCircleIcon} size={16} strokeWidth={1.5} />
-                          </div>
-                          <span className="font-medium text-sm">Aide et support</span>
                         </DropdownMenuItem>
 
                         <DropdownMenuSeparator className="my-1 bg-zinc-100 dark:bg-white/10" />

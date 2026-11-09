@@ -1,5 +1,5 @@
 import {
-  Activity, CalendarDays, CircleHelp, ClipboardList, FileText, Hospital,
+  Activity, CalendarDays, ClipboardList, FileText, Hospital,
   LayoutDashboard, Package, Pill, Search, Settings2, SquareKanban, Stethoscope, UsersRound, Wallet,
   type LucideIcon,
 } from "lucide-react";
@@ -20,7 +20,6 @@ const icons: Partial<Record<View, LucideIcon>> = {
   finances_analytics: Activity,
   equipe: UsersRound,
   parametres: Settings2,
-  aide: CircleHelp,
 };
 
 export function PremiumSidebarIcon({

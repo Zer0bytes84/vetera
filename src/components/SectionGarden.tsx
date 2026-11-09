@@ -109,8 +109,6 @@ export function SectionGarden({
     notes: [care, reminders],
     patient_detail: [agenda, reminders],
     parametres: [stock, reminders],
-    aide: [agenda, reminders],
-    assistant: [care, agenda],
   };
   const cards = pairs[view];
   if (!cards) return null;

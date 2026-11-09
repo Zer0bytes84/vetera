@@ -14,7 +14,6 @@ const ClinicalWorkspace = lazy(() => import("@/modules/clinique/pages/clinical-w
 const AgendaPage = lazy(() => import("@/modules/agenda/pages/agenda-page"));
 const FlowBoardPage = lazy(() => import("@/modules/flow-board/flow-board-page"));
 const FinancesPage = lazy(() => import("@/modules/finances/pages/finances-page"));
-const HelpPage = lazy(() => import("@/components/Help"));
 const NotesPage = lazy(() => import("@/components/NotesPro"));
 const ParametresPage = lazy(() => import("@/components/Parametres"));
 const PatientsPage = lazy(() => import("@/modules/patients/pages/patients-page"));
@@ -29,10 +28,6 @@ const PatientDetailPage = lazy(async () => {
   const module = await import("@/modules/patients/patient-detail-page");
   return { default: module.PatientDetailPage };
 });
-const AIAgentChat = lazy(async () => {
-  const module = await import("@/components/AIAgentChat");
-  return { default: module.AIAgentChat };
-});
 
 interface ViewRegistryProps {
   currentTheme: ThemeMode;
@@ -41,10 +36,8 @@ interface ViewRegistryProps {
   /** Opens the full patient record, without the quick-read panel. */
   onOpenPatientRecord?: (patientId: string) => void;
   onOpenAIAgent?: () => void;
-  onCloseAIAgent?: () => void;
   onThemeChange: (mode: ThemeMode) => void;
   patientId?: string | null;
-  userAvatarUrl?: string | null;
   userDisplayName?: string;
 }
 
@@ -161,18 +154,6 @@ export function renderView(view: View, props: ViewRegistryProps) {
       );
     case "taches":
       return renderLazyView(<TasksPage />);
-    case "aide":
-      return renderLazyView(<HelpPage />);
-    case "assistant":
-      return renderLazyView(
-        <AIAgentChat
-          currentView={view}
-          onClose={props.onCloseAIAgent}
-          patientId={props.patientId}
-          userAvatarUrl={props.userAvatarUrl}
-          userDisplayName={props.userDisplayName}
-        />
-      );
     default:
       return <DashboardOrbitPage />;
   }
