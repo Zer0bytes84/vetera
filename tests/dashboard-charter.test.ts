@@ -9,14 +9,12 @@ import { describe, expect, it } from "vitest";
 const CSS_FILES = [
   "src/modules/dashboard/components/premium-analytics.css",
   "src/modules/dashboard/components/focus-trend-chart.css",
-  "src/modules/dashboard/components/activity-heatmap.css",
   "src/modules/dashboard/components/clinical/clinical-workspace.css",
   "src/modules/dashboard/v2/kpi-mini-chart.css",
 ];
 const TSX_FILES = [
   "src/modules/dashboard/components/premium-analytics.tsx",
   "src/modules/dashboard/components/focus-trend-chart.tsx",
-  "src/modules/dashboard/components/activity-heatmap.tsx",
   "src/modules/dashboard/components/dashboard-mode-toggle.tsx",
   "src/modules/dashboard/components/dashboard-layout-manager.tsx",
   "src/modules/dashboard/components/clinical/actions-module.tsx",
