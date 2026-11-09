@@ -5,7 +5,6 @@
   .patient-record-dialog,
   .medical-record-summary,
   .medical-identity,
-  .medical-alerts,
   .medical-owner,
   .medical-tabs,
   .medical-tabs-frame,
@@ -41,7 +40,6 @@
     .patient-record-dialog,
     .medical-record-summary,
     .medical-identity,
-    .medical-alerts,
     .medical-owner,
     .medical-tabs,
     .medical-tabs-frame,
@@ -112,13 +110,11 @@
 }
 
 :is(
-    .medical-header-actions,
     .medical-identity,
     .medical-kpi-heading,
     .medical-kpi-empty,
     .medical-next-visit,
     .medical-kpi-text-action,
-    .medical-alerts,
     .medical-owner,
     .medical-record-health,
     .medical-tabs,
@@ -128,13 +124,11 @@
   )
   svg,
 :is(
-    .medical-header-actions,
     .medical-identity,
     .medical-kpi-heading,
     .medical-kpi-empty,
     .medical-next-visit,
     .medical-kpi-text-action,
-    .medical-alerts,
     .medical-owner,
     .medical-record-health,
     .medical-tabs,
@@ -413,7 +407,7 @@
 }
 
 /* Identité et actions : une seule action primaire, sans effets de verre. */
-.patient-record-page .patient-identity.medical-patient-header,
+
 .medical-patient-header {
   container: patient-summary / inline-size;
   position: relative;
@@ -491,7 +485,7 @@
   line-height: 20px;
 }
 
-:is(.medical-status, .medical-tag-pill, .medical-id-chip, .medical-kpi-status) {
+:is(.medical-status) {
   display: inline-flex;
   align-items: center;
   min-height: 24px;
@@ -516,21 +510,6 @@
 }
 
 /* Species, sex, sterilisation: facts about the animal, in the same grey. */
-.medical-tag {
-  display: inline-flex;
-  flex: none;
-  align-items: center;
-  min-height: 24px;
-  gap: 6px;
-  padding: 0 8px;
-  border-radius: 6px;
-  background: var(--medical-soft);
-  color: var(--medical-muted);
-  font-size: 12px;
-  font-weight: 500;
-  line-height: 20px;
-  white-space: nowrap;
-}
 .medical-identity .medical-identity-meta {
   margin: 4px 0 0;
   gap: 6px;
@@ -556,66 +535,8 @@
 }
 
 /* Right of the card: what the owner owes, then the one primary action. */
-.medical-header-aside {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 12px 16px;
-}
-.patient-record-page .medical-header-aside > p.medical-owner-balance {
-  margin: 0;
-  color: var(--medical-muted);
-  font-size: 13px;
-  line-height: 20px;
-  font-variant-numeric: tabular-nums;
-}
-.medical-owner-balance strong {
-  margin-left: 4px;
-  color: var(--medical-ink);
-  font-weight: 500;
-}
 
 /* The page header holds a trail back to the list, not a second title. */
-.patient-record-trail {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-  color: var(--medical-ink);
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 20px;
-  letter-spacing: 0;
-}
-.patient-record-trail > span[aria-hidden] {
-  color: var(--medical-quiet);
-}
-.patient-record-trail button {
-  border: 0;
-  background: none;
-  color: var(--medical-muted);
-  font: inherit;
-  cursor: pointer;
-  transition: color 160ms ease;
-}
-@media (hover: hover) and (pointer: fine) {
-  .patient-record-trail button:hover {
-    color: var(--medical-ink);
-  }
-}
-
-:is(.medical-tag-pill, .medical-id-chip) {
-  border: 1px solid var(--medical-border);
-  background: var(--medical-soft);
-  color: var(--medical-muted);
-}
-
-.medical-id-chip {
-  max-width: 100%;
-  font-variant-numeric: tabular-nums;
-  overflow-wrap: anywhere;
-}
 
 .medical-record-id {
   display: flex;
@@ -643,20 +564,9 @@
 }
 
 /* The record's actions: a bar of their own under the identity. */
-.medical-header-actions {
-  display: flex;
-  flex: 1 1 100%;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-  margin-inline: -24px;
-  padding: 16px 24px 0;
-  border-top: 1px solid var(--medical-border);
-}
 
 @layer components {
-  .medical-action[data-slot="button"],
-  .medical-action-row [data-slot="button"] {
+  .medical-action[data-slot="button"] {
     /* Les utilitaires importants du bouton global restent dans leur couche. */
     border-radius: 8px !important;
   }
@@ -701,13 +611,8 @@
   background: var(--medical-panel);
   color: var(--medical-ink);
 }
-.medical-action-ghost[data-slot="button"] {
-  background: transparent;
-  color: var(--medical-muted);
-}
 @media (hover: hover) and (pointer: fine) {
-  .medical-action-outline[data-slot="button"]:hover,
-.medical-action-ghost[data-slot="button"]:hover {
+  .medical-action-outline[data-slot="button"]:hover {
     background: var(--medical-soft);
     color: var(--medical-ink);
   }
@@ -868,26 +773,6 @@
   line-height: 20px;
   overflow-wrap: anywhere;
 }
-.medical-kpi-status {
-  flex-shrink: 0;
-  font-weight: 500;
-}
-.pill-neutral {
-  color: var(--medical-muted);
-  background: var(--medical-soft);
-}
-.pill-success {
-  color: var(--medical-success);
-  background: var(--medical-success-bg);
-}
-.pill-warning {
-  color: var(--medical-warning);
-  background: var(--medical-warning-bg);
-}
-.pill-danger {
-  color: var(--medical-danger);
-  background: var(--medical-danger-bg);
-}
 .medical-kpi-empty {
   display: flex;
   flex-direction: column;
@@ -955,53 +840,6 @@
 }
 
 /* Une vraie alerte clinique est la seule surface rouge. */
-.medical-alerts {
-  display: grid;
-  gap: 8px;
-  padding: 16px 24px;
-  border-top: 1px solid var(--medical-border);
-}
-.medical-alert-critical {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  padding: 12px 16px;
-  border: 1px solid var(--medical-danger-border);
-  border-radius: 8px;
-  background: var(--medical-danger-bg);
-  color: var(--medical-danger);
-  font-size: 13px;
-  line-height: 20px;
-  overflow-wrap: anywhere;
-}
-.medical-alert-icon {
-  flex-shrink: 0;
-  margin-top: 2px;
-}
-.medical-alert-critical strong {
-  font-size: 13px;
-  font-weight: 500;
-}
-.medical-alert-critical p {
-  display: inline;
-  margin: 0 0 0 8px;
-}
-.medical-history-note {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 8px;
-  color: var(--medical-muted);
-  font-size: 13px;
-  line-height: 20px;
-}
-.medical-history-note > span {
-  color: var(--medical-quiet);
-  font-size: 12px;
-}
-.medical-history-note p {
-  margin: 0;
-}
 
 /* Dossier clinique et rail propriétaire gardent les mêmes gouttières. */
 .medical-workspace {
@@ -1219,28 +1057,6 @@
   margin-top: 24px;
   padding-top: 24px;
   border-top: 1px solid var(--medical-border);
-}
-.medical-action-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-  margin-top: 16px;
-}
-.medical-action-row [data-slot="button"] {
-  border-color: var(--medical-border);
-  border-radius: 8px !important;
-  background: var(--medical-panel);
-  color: var(--medical-muted);
-  font-size: 12px;
-  font-weight: 400;
-  box-shadow: none;
-}
-@media (hover: hover) and (pointer: fine) {
-  .medical-action-row [data-slot="button"]:hover {
-    background: var(--medical-soft);
-    color: var(--medical-ink);
-  }
 }
 .medical-empty {
   display: flex;
@@ -1681,7 +1497,6 @@
   }
   .medical-header-main,
   .medical-kpi,
-  .medical-alerts,
   .medical-register-header,
   .medical-tab-content,
   .medical-peek-content,
@@ -1700,9 +1515,6 @@
     width: 56px;
     height: 56px;
     border-radius: 12px;
-  }
-  .medical-header-actions {
-    width: 100%;
   }
   .medical-action[data-slot="button"] {
     height: auto;
@@ -1725,10 +1537,6 @@
   }
   .medical-visit time {
     flex-basis: auto;
-  }
-  .medical-alert-critical p {
-    display: block;
-    margin: 8px 0 0;
   }
 }
 
@@ -1844,11 +1652,6 @@
   color: var(--medical-muted);
   box-shadow: 0 0 0 4px var(--medical-panel);
 }
-.patient-timeline-when {
-  display: grid;
-  align-content: start;
-  min-width: 0;
-}
 .patient-timeline-title {
   color: var(--medical-ink);
   font-size: 14px;
@@ -1923,17 +1726,6 @@
   color: var(--medical-muted);
 }
 /* The visit the Synthèse shows in full: one line here. */
-.patient-timeline-event[data-compact] .patient-timeline-when {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 0 10px;
-}
-@container patient-page (min-width: 760px) {
-  .patient-timeline-event[data-compact] .patient-timeline-when {
-    display: grid;
-  }
-}
 /* Planned, and the date has gone by: set apart from what took place. */
 .patient-timeline-event[data-overdue] .patient-timeline-marker {
   border-style: dashed;
@@ -2046,9 +1838,7 @@ button.patient-timeline-piece:focus-visible {
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
 }
-.patient-overview-no-note,
-.patient-overview-empty,
-.patient-overview-more {
+.patient-overview-no-note {
   margin: 12px 0 0;
   color: var(--medical-muted);
   font-size: 13px;
@@ -2112,53 +1902,7 @@ button.patient-timeline-piece:focus-visible {
   border-radius: 12px;
   background: var(--medical-panel);
 }
-.medical-safety-label {
-  margin-right: 6px;
-  color: var(--medical-quiet);
-  font-size: 12px;
-  font-weight: 500;
-  line-height: 20px;
-}
 /* Scoped past Clean, which gives every plain paragraph its body grey. */
-:is(.patient-record-page, .patient-peek-panel) .medical-safety > p.medical-safety-pill {
-  display: inline-flex;
-  align-items: center;
-  max-width: 100%;
-  min-height: 28px;
-  gap: 6px;
-  margin: 0;
-  padding: 3px 10px;
-  border: 1px solid var(--medical-border);
-  border-radius: 8px;
-  background: var(--medical-soft);
-  color: var(--medical-muted);
-  font-size: 13px;
-  line-height: 20px;
-  overflow-wrap: anywhere;
-}
-.medical-safety-pill > span {
-  color: var(--medical-quiet);
-}
-.medical-safety-pill > strong {
-  color: var(--medical-ink);
-  font-weight: 500;
-}
-.medical-safety-pill.is-empty > strong {
-  color: var(--medical-quiet);
-  font-weight: 400;
-}
-:is(.patient-record-page, .patient-peek-panel) .medical-safety > p.medical-safety-pill.is-allergy {
-  border-color: var(--medical-danger-border);
-  background: var(--medical-danger-bg);
-  color: var(--medical-danger);
-}
-.medical-safety-pill.is-allergy > span,
-.medical-safety-pill.is-allergy > strong {
-  color: inherit;
-}
-.medical-safety-pill.is-allergy > strong {
-  font-weight: 600;
-}
 
 /* Synthèse clinique: three calm columns over the last visit. */
 .patient-clinical-summary {

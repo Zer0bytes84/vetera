@@ -246,7 +246,7 @@ describe("polices par thème", () => {
 });
 
 describe("thème Clean : interrupteurs segmentés", () => {
-  const FAMILY = ':is([data-tabs-style="segmented"], .dashboard-mode-toggle, .flow-density, .settings-segmented, .stock-view-toggle)';
+  const FAMILY = ':is([data-tabs-style="segmented"], .dashboard-mode-toggle, .flow-density, .stock-view-toggle)';
 
   it("pose la piste, l'item de 28 px et l'ombre de la vue choisie", () => {
     expect(declarations.get("--clean-segment-track")).toBe("#ededee");
@@ -262,7 +262,7 @@ describe("thème Clean : interrupteurs segmentés", () => {
     expect(base).toContain("height: var(--clean-control)");
     const item = rulesFor(/> :is\(\[data-slot="tabs-trigger"\]/).filter((rule) => rule.selector.includes(".flow-density"));
     expect(item.some((rule) => rule.toString().includes("height: var(--clean-segment-item)"))).toBe(true);
-    const chosen = rulesFor(/\[aria-pressed="true"\][^)]*\.settings-segmented-active\)$/);
+    const chosen = rulesFor(/\[aria-pressed="true"\][^)]*\[aria-current="page"\]\)$/);
     expect(chosen).toHaveLength(1);
     expect(chosen[0].toString()).toContain("var(--clean-segment-active-shadow)");
     expect(chosen[0].toString()).not.toContain("font-weight");
@@ -305,10 +305,9 @@ describe("thème Clean : icônes", () => {
     expect(rulesFor(/\) > \*$/).some((rule) => rule.toString().includes("display: none"))).toBe(true);
   });
 
-  it("pose l'icône de page sur la ligne du titre, avec ou sans date au-dessus", () => {
+  it("pose l'icône de page sur la ligne du titre", () => {
     const tile = rulesFor(/\[data-slot="page-header"\] \.premium-page-icon$/).map((rule) => rule.toString()).join("");
     expect(tile).toContain("height: 28px");
-    expect(rulesFor(/:has\(\.page-header-kicker\) \.premium-page-icon$/)).toHaveLength(1);
   });
 });
 

@@ -238,52 +238,11 @@
   }
 }
 
-.mascot-float {
-  animation: mascot-gentle-float 3.2s ease-in-out infinite;
-  will-change: transform;
-}
-
-.mascot-root {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  user-select: none;
-}
-
 /* Visage en gros plan (portrait avatar close-up) */
-.mascot-3d-image {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transform-origin: 49% 41%;
-  transform: scale(1.36);
-  pointer-events: none;
-  user-select: none;
-  -webkit-user-drag: none;
-  transition: transform 260ms cubic-bezier(0.34, 1.56, 0.64, 1), opacity 90ms ease;
-}
-
-.mascot-3d-blink-layer {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
 
 /* Cadrage complet optionnel */
-.mascot-root[data-framing="full"] .mascot-3d-image {
-  transform: scale(1.05);
-}
 
 /* Micro-squint clignement pour tous les compagnons */
-.mascot-root[data-blinking="true"] .mascot-3d-image {
-  transform: scale(1.36) scaleY(0.92) translateY(2%);
-}
-
-.mascot-root[data-framing="full"][data-blinking="true"] .mascot-3d-image {
-  transform: scale(1.05) scaleY(0.93) translateY(2%);
-}
 
 /* Layer 3: Mood API support — Joyeux, Réflexion, Neutre */
 @keyframes mascot-happy-bounce {
@@ -305,43 +264,6 @@
   50% {
     transform: scale(1.43) rotate(-3deg) translateY(-4%);
   }
-}
-
-.mascot-root[data-mood="happy"] .mascot-3d-image {
-  animation: mascot-happy-bounce 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
-}
-
-.mascot-root[data-mood="thinking"] .mascot-3d-image {
-  animation: mascot-thinking-sway 2.4s ease-in-out infinite;
-}
-
-.mascot-tab-bar {
-  display: flex;
-  gap: 4px;
-  padding: 0 16px 8px;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 8px;
-}
-
-.mascot-tab-button {
-  flex: 1;
-  padding: 5px 8px;
-  border-radius: 8px;
-  font-size: 12px;
-  font-weight: 500;
-  text-align: center;
-  color: var(--muted-foreground);
-  background: transparent;
-  cursor: pointer;
-  transition-property: color, background-color, border-color, box-shadow, opacity, transform;
-  transition-duration: 150ms;
-  transition-timing-function: ease;
-}
-
-.mascot-tab-button[data-active="true"] {
-  background: var(--muted);
-  color: var(--foreground);
-  font-weight: 600;
 }
 
 /* The sidebar's mascot: drawn larger than the trigger's box, centred on it,

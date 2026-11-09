@@ -584,7 +584,7 @@
   text-transform: none !important;
 }
 /* Tabular figures for amounts and tables, so columns of numbers align. */
-:root[data-skin="clean"] :is(table, [data-slot="table"], .kpiValue, .section-atlas-value, .facts dd, .chartTick) {
+:root[data-skin="clean"] :is(table, [data-slot="table"], .kpiValue, .section-atlas-value, .facts dd) {
   font-variant-numeric: tabular-nums;
 }
 :root[data-skin="clean"] :is(.kpiValue, .section-atlas-value) { font-weight: 600 !important; letter-spacing: var(--clean-tracking-title) !important; }
@@ -664,7 +664,7 @@
    choices, notification filters. Track 32 px flush with the controls beside it;
    the chosen item is a white sheet with strong ink, the others stay readable
    grey on the track, no border and no weight change, so nothing shifts. */
-:root[data-skin="clean"] :is([data-tabs-style="segmented"], .dashboard-mode-toggle, .flow-density, .settings-segmented, .stock-view-toggle) {
+:root[data-skin="clean"] :is([data-tabs-style="segmented"], .dashboard-mode-toggle, .flow-density, .stock-view-toggle) {
   height: var(--clean-control) !important;
   min-height: var(--clean-control) !important;
   gap: 2px !important;
@@ -674,7 +674,7 @@
   background: var(--clean-segment-track) !important;
   box-shadow: none !important;
 }
-:root[data-skin="clean"] :is([data-tabs-style="segmented"], .dashboard-mode-toggle, .flow-density, .settings-segmented, .stock-view-toggle) > :is([data-slot="tabs-trigger"], [role="tab"], [data-slot="toggle-group-item"], button, [data-slot="tooltip-trigger"]) {
+:root[data-skin="clean"] :is([data-tabs-style="segmented"], .dashboard-mode-toggle, .flow-density, .stock-view-toggle) > :is([data-slot="tabs-trigger"], [role="tab"], [data-slot="toggle-group-item"], button, [data-slot="tooltip-trigger"]) {
   height: var(--clean-segment-item) !important;
   min-height: var(--clean-segment-item) !important;
   padding-block: 0 !important;
@@ -687,25 +687,25 @@
   font-weight: 500 !important;
   transition: background-color 120ms ease-out, color 120ms ease-out, box-shadow 120ms ease-out !important;
 }
-:root[data-skin="clean"] :is([data-tabs-style="segmented"], .dashboard-mode-toggle, .flow-density, .settings-segmented, .stock-view-toggle) > * svg {
+:root[data-skin="clean"] :is([data-tabs-style="segmented"], .dashboard-mode-toggle, .flow-density, .stock-view-toggle) > * svg {
   width: 16px !important;
   height: 16px !important;
   color: inherit !important;
 }
-:root[data-skin="clean"] :is([data-tabs-style="segmented"], .dashboard-mode-toggle, .flow-density, .settings-segmented, .stock-view-toggle) > * svg * {
+:root[data-skin="clean"] :is([data-tabs-style="segmented"], .dashboard-mode-toggle, .flow-density, .stock-view-toggle) > * svg * {
   color: inherit !important;
 }
 @media (hover: hover) and (pointer: fine) {
-  :root[data-skin="clean"] :is([data-tabs-style="segmented"], .dashboard-mode-toggle, .flow-density, .settings-segmented, .stock-view-toggle) > :not([aria-pressed="true"], [aria-selected="true"], [data-state="active"], [data-state="on"], [data-active=""], [data-active="true"], .settings-segmented-active):hover {
+  :root[data-skin="clean"] :is([data-tabs-style="segmented"], .dashboard-mode-toggle, .flow-density, .stock-view-toggle) > :not([aria-pressed="true"], [aria-selected="true"], [data-state="active"], [data-state="on"], [data-active=""], [data-active="true"], .settings-segmented-active):hover {
     color: var(--clean-ink-strong) !important;
   }
 }
-:root[data-skin="clean"] :is([data-tabs-style="segmented"], .dashboard-mode-toggle, .flow-density, .settings-segmented, .stock-view-toggle) > :is([data-active=""], [data-active="true"], [data-state="active"], [data-state="on"], [data-pressed=""], [data-pressed="true"], [aria-selected="true"], [aria-pressed="true"], [aria-checked="true"], [aria-current="page"], .settings-segmented-active) {
+:root[data-skin="clean"] :is([data-tabs-style="segmented"], .dashboard-mode-toggle, .flow-density, .stock-view-toggle) > :is([data-active=""], [data-active="true"], [data-state="active"], [data-state="on"], [data-pressed=""], [data-pressed="true"], [aria-selected="true"], [aria-pressed="true"], [aria-checked="true"], [aria-current="page"]) {
   background: var(--clean-segment-active) !important;
   color: var(--clean-ink-strong) !important;
   box-shadow: var(--clean-segment-active-shadow) !important;
 }
-:root[data-skin="clean"] :is([data-tabs-style="segmented"], .dashboard-mode-toggle, .flow-density, .settings-segmented, .stock-view-toggle) > * :is(.text-ink, .text-ink-muted) {
+:root[data-skin="clean"] :is([data-tabs-style="segmented"], .dashboard-mode-toggle, .flow-density, .stock-view-toggle) > * :is(.text-ink, .text-ink-muted) {
   color: inherit !important;
 }
 
@@ -755,23 +755,6 @@
 /* Patients list: the table runs edge to edge in its card, like Produits and
    Finances. Filters, table cells and the pager share one 16 px gutter, and the
    filter rule and header rule both reach the card's edges. */
-:root[data-skin="clean"] .dashboard-stage [data-slot="card-content"]:has(.patients-table-wrap) {
-  padding-inline: 0 !important;
-  padding-block-start: 0 !important;
-  gap: 0 !important;
-}
-:root[data-skin="clean"] [data-slot="card-content"]:has(.patients-table-wrap) > .flex-wrap {
-  padding: 12px 16px !important;
-}
-:root[data-skin="clean"] div:has(> .patients-table-wrap) {
-  padding: 0 !important;
-}
-:root[data-skin="clean"] div:has(> .patients-table-wrap) > :not(.patients-table-wrap) {
-  padding: 12px 16px !important;
-  box-shadow: inset 0 1px 0 var(--clean-line-subtle);
-}
-:root[data-skin="clean"] .patients-table-wrap .medical-data-table :is(th, td):first-child { padding-inline-start: 16px !important; }
-:root[data-skin="clean"] .patients-table-wrap .medical-data-table :is(th, td):last-child { padding-inline-end: 16px !important; }
 /* Row actions are ghosts until hovered, like every other row action. */
 :root[data-skin="clean"] .medical-data-table td :is([data-slot="button"], button.group\/button) {
   border-color: transparent !important;
@@ -785,15 +768,9 @@
   }
 }
 /* Rows are flat: the hover step fills the whole row, without a floating pill. */
-:root[data-skin="clean"] .patients-table-wrap .medical-data-table tbody td {
-  border-radius: 0 !important;
-}
 
 /* Patients rows are records to open: the current row takes a step of ink
    firm enough to read in the dark declension too. */
-:root[data-skin="clean"] .patients-table-wrap tr[data-list-row][data-current] > td {
-  background-color: color-mix(in oklab, var(--clean-ink-strong) 6%, var(--clean-surface)) !important;
-}
 
 /* ---------- Agenda month, after Tailwind Plus "month view" ----------
    One-pixel lines, days outside the month on the sheet instead of a heavy
@@ -889,7 +866,6 @@
   padding: 20px 24px !important;
   background: transparent !important;
 }
-:root[data-skin="clean"][data-skin][data-skin] .patient-record-page .medical-header-actions { border-top-color: var(--clean-line-subtle); }
 /* The record's own panel token follows the Clean card, so the timeline's
    markers and their ring sit on the card's exact tone in both modes. */
 :root[data-skin="clean"] :is(.patient-record-page, .patient-peek-panel) { --medical-panel: var(--clean-surface); }
@@ -900,16 +876,6 @@
   box-shadow: none !important;
 }
 /* Header actions: one primary, the others alike (Modifier no longer the odd one). */
-:root[data-skin="clean"][data-skin][data-skin] .patient-record-page .medical-header-actions .medical-action:not(.medical-action-primary) {
-  border: 1px solid var(--clean-line) !important;
-  background: var(--clean-surface) !important;
-  color: var(--clean-ink-strong) !important;
-}
-@media (hover: hover) and (pointer: fine) {
-  :root[data-skin="clean"][data-skin][data-skin] .patient-record-page .medical-header-actions .medical-action:not(.medical-action-primary):hover {
-    background: var(--clean-hover) !important;
-  }
-}
 
 /* Indicators: one card, five cells divided by a subtle rule, all top-aligned. */
 :root[data-skin="clean"][data-skin][data-skin] .patient-record-page .patient-record-indicators { gap: 0 !important; }
@@ -950,16 +916,6 @@
 }
 
 /* History and allergy notice: on the sheet, no gradient band behind it. */
-:root[data-skin="clean"][data-skin][data-skin] :is(.patient-record-page, .patient-peek-panel) .medical-alerts {
-  border-top: 0 !important;
-  background: none !important;
-}
-:root[data-skin="clean"][data-skin][data-skin] .patient-record-page .medical-alerts { padding: 0 !important; }
-:root[data-skin="clean"][data-skin][data-skin] .patient-peek-panel .medical-alerts { box-shadow: inset 0 1px 0 var(--clean-line-subtle); }
-:root[data-skin="clean"][data-skin][data-skin] :is(.patient-record-page, .patient-peek-panel) .medical-alerts > div {
-  border-radius: var(--clean-card-radius) !important;
-  box-shadow: none !important;
-}
 
 /* Tabs: underlined like every navigation tab in Clean. The arrows appear only
    when the row can scroll that way, so they never cover the first tab. */
@@ -1406,7 +1362,7 @@
    inner padding only shifted the label and the field off the column. The
    rubric's bubble, the "Section" label and the field now share the panel
    column's two edges. */
-:root[data-skin="clean"] .assistant-welcome-card,
+
 :root[data-skin="clean"] .assistant-dictation-workspace {
   padding-inline: 0;
 }
@@ -1418,12 +1374,6 @@
 :root[data-skin="clean"] .assistant-dictation-scroll::-webkit-scrollbar { display: none; }
 /* "Précédent" and "Passer cette rubrique": their words sit on the column's
    edges, their hover pill reaching 8 px beyond. */
-:root[data-skin="clean"] .assistant-section-nav > [data-slot="button"] {
-  padding-inline: 8px !important;
-  border-width: 0 !important;
-}
-:root[data-skin="clean"] .assistant-section-nav > [data-slot="button"]:first-child { margin-inline-start: -8px; }
-:root[data-skin="clean"] .assistant-section-nav > [data-slot="button"]:last-child { margin-inline-end: -8px; }
 :root[data-skin="clean"] .assistant-section-prompt {
   width: 100%;
   max-width: 100%;
@@ -1467,9 +1417,6 @@
 :root[data-skin="clean"] [data-slot="page-header"] .premium-page-icon { translate: 4px 0; }
 @media (min-width: 1024px) {
   :root[data-skin="clean"] [data-slot="page-header"] .premium-page-icon { translate: -4px 0; }
-}
-:root[data-skin="clean"] [data-slot="page-header"]:has(.page-header-kicker) .premium-page-icon {
-  margin-top: 19.5px;
 }
 
 /* Error notices pin their icon to the top of the block; it now sits on the

@@ -159,7 +159,7 @@
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .animate-row-flash,
+  
   .animate-skeleton {
     animation: none;
   }

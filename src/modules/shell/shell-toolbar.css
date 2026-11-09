@@ -14,10 +14,6 @@
   transition: background-color var(--speed-highlight-out) ease, color var(--speed-highlight-out) ease;
 }
 
-.shell-toolbar .shell-toolbar-search {
-  flex-shrink: 1;
-}
-
 .shell-toolbar .shell-toolbar-control:focus-visible {
   outline: 2px solid var(--primary);
   outline-offset: 3px;
@@ -53,19 +49,7 @@
   }
 }
 
-@container shell-toolbar (max-width: 520px) {
-  .shell-toolbar-help-label { display: none; }
-  .shell-toolbar-help { width: 36px; padding-inline: 0; }
-}
-
 @container shell-toolbar (max-width: 350px) {
-  .shell-toolbar-search-label,
-  .shell-toolbar-search kbd { display: none; }
-  .shell-toolbar .shell-toolbar-search {
-    flex: 0 0 36px;
-    justify-content: center;
-    padding-inline: 0;
-  }
   .shell-toolbar-actions { gap: 6px; }
 }
 
@@ -284,8 +268,7 @@
   }
 }
 
-:root[data-chrome-style="liquid-glass"] .restored-sidebar [data-slot="sidebar-footer"]::before,
-:root[data-chrome-style="liquid-glass"] .restored-sidebar .sidebar-section-divider {
+:root[data-chrome-style="liquid-glass"] .restored-sidebar [data-slot="sidebar-footer"]::before {
   display: none;
 }
 
@@ -334,18 +317,6 @@
 
 /* Only native Liquid Glass places the toggle on the traffic-light axis.
    Classic chrome keeps the original toggle in the logo row. */
-.sidebar-window-toggle {
-  display: none;
-}
-:root[data-chrome-style="liquid-glass"] .restored-sidebar[data-desktop-runtime="true"] .sidebar-logo-toggle {
-  display: none;
-}
-:root[data-chrome-style="liquid-glass"] .restored-sidebar[data-desktop-runtime="true"] .sidebar-window-toggle {
-  display: inline-flex;
-  top: calc(0px - var(--titlebar-clearance));
-}
-
-.sidebar-icon-mode-toggle { display: none; }
 @media (min-width: 768px) {
   :root[data-chrome-style="liquid-glass"] [data-slot="sidebar-wrapper"]:has(.restored-sidebar[data-desktop-runtime="true"]) {
     --sidebar-width-icon: 80px !important;
@@ -353,14 +324,6 @@
   :root[data-chrome-style="liquid-glass"] [data-collapsible="icon"] .restored-sidebar[data-desktop-runtime="true"] [data-slot="sidebar-header"] {
     height: 106px !important;
     padding-bottom: 32px;
-  }
-  :root[data-chrome-style="liquid-glass"] .restored-sidebar[data-desktop-runtime="true"] .sidebar-icon-mode-toggle {
-    display: inline-flex;
-    bottom: 2px;
-    left: calc(50% - 16px);
-  }
-  :root[data-chrome-style="liquid-glass"] .restored-sidebar[data-desktop-runtime="true"] .sidebar-footer-toggle {
-    display: none;
   }
 }
 

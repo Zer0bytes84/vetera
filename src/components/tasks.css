@@ -14,11 +14,6 @@
   margin-top: 6px;
 }
 
-.reminders-page .section-atlas-compact .section-atlas-action {
-  margin-top: 8px;
-  padding-top: 6px;
-}
-
 /* Groups counted by due date, as in Linear: En retard, Aujourd'hui, Demain… */
 .reminder-group-head {
   display: flex;
