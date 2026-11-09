@@ -34,6 +34,9 @@ export default defineConfig([
       "@typescript-eslint/no-explicit-any": "off",
       "react-hooks/preserve-manual-memoization": "off",
       "react-hooks/incompatible-library": "off",
+      // Les composants que le compilateur React abandonne (try/finally, throw dans try/catch…) ne sont pas analysés par les règles
+      // « compilateur » : cet avertissement les rend visibles au lieu de les laisser muets.
+      "react-hooks/todo": "warn",
       "no-empty": "off",
 
       "@typescript-eslint/no-unused-vars": [
