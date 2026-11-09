@@ -5,7 +5,6 @@ import { consumeConsultationProductInDatabase, dispensePrescriptionInDatabase, t
 function changed() {
   if (typeof window === "undefined") return;
   for (const table of ["products", "stock_movements", "prescriptions", "invoices"]) emitSQLiteDataChanged(table);
-  window.dispatchEvent(new Event("clinical-stock-changed"));
 }
 
 export const clinicalStockService = {

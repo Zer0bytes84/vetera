@@ -64,3 +64,6 @@ graphify-out/
 docs/recus/*/video-presentation/
 # Identifiants de connexion du navigateur de test : ne jamais versionner
 briefs/browser-login-credentials-*.md
+
+# Lien vers la configuration d'un autre outil (chemin personnel), jamais suivi
+.antigravitycli/

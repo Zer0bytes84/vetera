@@ -500,20 +500,14 @@
       "browser": "Six captures and checks in outputs/crm-geist-2026-10-04; no browser errors.",
       "headerControlScope": "Shared defaults and widget actions remain 30px; dashboard, patients, agenda, finances, and stock page actions use 40px/14px; shell search and dashboard customization use 30px; other existing shell icons retain 36px. No global height cap.",
       "widgetRefinement": {
-        "sourceScope": [
-          "src/modules/dashboard/v2/dashboard-insights.css",
-          "src/modules/dashboard/v2/dashboard-polish.css",
-          "src/modules/dashboard/v2/studio-dashboard.tsx"
-        ],
+        "sourceScope": [],
         "evidence": "outputs/dashboard-widgets-2026-10-04/final-*.png; exclude overlong final-625-light-insights.",
         "native": "Native Tauri rendering remains unverified."
       },
       "listAndMiniCharts": {
         "sourceScope": [
           "src/components/ui/list-controls.tsx",
-          "src/modules/dashboard/v2/studio-dashboard.tsx",
           "src/modules/dashboard/v2/kpi-mini-chart.tsx",
-          "src/modules/dashboard/v2/dashboard-polish.css",
           "src/modules/dashboard/v2/kpi-period.tsx",
           "src/modules/dashboard/v2/financial-model.ts"
         ],
