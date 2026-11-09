@@ -30,12 +30,17 @@ describe("recherche dans l'entête", () => {
     expect(SHELL).toContain("onClose={() => setPaletteOpen(false)}");
   });
 
-  it("vit à gauche de l'entête, juste après le bouton de la barre latérale", () => {
+  it("vit à droite de l'entête : après le fil d'Ariane, avant les outils", () => {
     const toggle = SHELL.indexOf("<HeaderSidebarToggle />");
+    const crumb = SHELL.indexOf("<HeaderBreadcrumb");
     const search = SHELL.indexOf("<HeaderSearch ");
+    const tools = SHELL.indexOf("shell-toolbar-actions");
     expect(toggle).toBeGreaterThan(0);
-    expect(search).toBeGreaterThan(toggle);
-    expect(SHELL.slice(toggle, search)).not.toMatch(/<\/div>/);
+    expect(crumb).toBeGreaterThan(toggle);
+    expect(search).toBeGreaterThan(crumb);
+    expect(tools).toBeGreaterThan(search);
+    // Un séparateur fin entre la recherche et les outils.
+    expect(SHELL.slice(search, tools)).toContain('className="shell-header-divider"');
   });
 
   it("n'a plus de champ dans la barre latérale", () => {
@@ -47,6 +52,9 @@ describe("recherche dans l'entête", () => {
     const toggle = readFileSync("src/modules/shell/components/header-sidebar-toggle.tsx", "utf8");
     expect(toggle).toContain("onClick={toggleSidebar}");
     expect(toggle).toContain('shortcut="⌘ B"');
-    expect(toggle).toContain('className="shell-header-divider"');
+    // Le séparateur est posé par l'entête, entre le bouton et le fil d'Ariane.
+    const from = SHELL.indexOf("<HeaderSidebarToggle />");
+    const to = SHELL.indexOf("<HeaderBreadcrumb");
+    expect(SHELL.slice(from, to)).toContain('className="shell-header-divider"');
   });
 });
