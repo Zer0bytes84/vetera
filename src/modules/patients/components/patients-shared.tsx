@@ -460,11 +460,19 @@ export function PatientDetailsDialog({
     setOwnerData(owner ? { ...owner } : {});
   }, [patient, owner]);
 
+  // Charge les champs du propriétaire choisi une seule fois par propriétaire,
+  // pas à chaque rechargement de la liste : sinon la saisie en cours est écrasée.
+  const lastLinkedOwnerId = useRef<string | null>(null);
   useEffect(() => {
-    const linkedOwner = allOwners.find((entry) => entry.id === selectedOwnerId);
-    if (linkedOwner) {
-      setOwnerData({ ...linkedOwner });
+    if (lastLinkedOwnerId.current === selectedOwnerId) {
+      return;
     }
+    const linkedOwner = allOwners.find((entry) => entry.id === selectedOwnerId);
+    if (!linkedOwner) {
+      return;
+    }
+    lastLinkedOwnerId.current = selectedOwnerId;
+    setOwnerData({ ...linkedOwner });
   }, [allOwners, selectedOwnerId]);
 
   const history = useMemo(
@@ -1600,15 +1608,24 @@ export function PatientCreateDialog({
     }
   }, [open]);
 
+  // Charge les champs du propriétaire choisi une seule fois par propriétaire,
+  // pas à chaque rechargement de la liste : sinon la saisie en cours est écrasée.
+  const lastLinkedOwnerId = useRef<string | null>(null);
   useEffect(() => {
     if (selectedOwnerId === "new") {
+      lastLinkedOwnerId.current = null;
+      return;
+    }
+    if (lastLinkedOwnerId.current === selectedOwnerId) {
       return;
     }
 
     const linkedOwner = owners.find((entry) => entry.id === selectedOwnerId);
-    if (linkedOwner) {
-      setNewOwner({ ...linkedOwner });
+    if (!linkedOwner) {
+      return;
     }
+    lastLinkedOwnerId.current = selectedOwnerId;
+    setNewOwner({ ...linkedOwner });
   }, [owners, selectedOwnerId]);
 
   const breedSuggestions = useMemo(

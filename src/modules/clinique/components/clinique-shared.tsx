@@ -489,6 +489,8 @@ export function ConsultationSessionDialog({
   const uploadInputRef = useRef<HTMLInputElement | null>(null);
   const autosaveReadyRef = useRef(false);
   const saveDraftRef = useRef(onSaveDraft);
+  // The latest consultation and patient, read by the reset below without making it depend on them.
+  const sourceRef = useRef({ appointment, patient });
   const [startedAt, setStartedAt] = useState(() => {
     if (typeof window === "undefined") {
       return new Date().toISOString();
@@ -505,21 +507,29 @@ export function ConsultationSessionDialog({
   const [elapsedMs, setElapsedMs] = useState(0);
 
   useEffect(() => {
-    setPatientNameValue(patient.name);
-    setPatientSpecies(patient.species || "Chien");
-    setPatientBreed(patient.breed || "");
-    setPatientSex(patient.sex || "M");
-    setPatientStatus(patient.status || "sante");
-    setAllergies(patient.allergies || "");
-    setChronicConditions(patient.chronicConditions || "");
-    setGeneralNotes(patient.generalNotes || "");
-    setReason(appointment.reason || "");
-    setDiagnosis(appointment.diagnosis || "");
-    setTreatment(appointment.treatment || "");
-    setConsultationNotes(appointment.notes || "");
+    sourceRef.current = { appointment, patient };
+  });
+
+  // The form is filled again only when the consultation or the patient changes
+  // (new id), never when their data reloads: a reload would overwrite what is
+  // being typed and skip the next autosave.
+  useEffect(() => {
+    const { appointment: current, patient: currentPatient } = sourceRef.current;
+    setPatientNameValue(currentPatient.name);
+    setPatientSpecies(currentPatient.species || "Chien");
+    setPatientBreed(currentPatient.breed || "");
+    setPatientSex(currentPatient.sex || "M");
+    setPatientStatus(currentPatient.status || "sante");
+    setAllergies(currentPatient.allergies || "");
+    setChronicConditions(currentPatient.chronicConditions || "");
+    setGeneralNotes(currentPatient.generalNotes || "");
+    setReason(current.reason || "");
+    setDiagnosis(current.diagnosis || "");
+    setTreatment(current.treatment || "");
+    setConsultationNotes(current.notes || "");
     setAutosaveStatus("idle");
     autosaveReadyRef.current = false;
-  }, [appointment, patient]);
+  }, [appointment.id, patient.id]);
 
   useEffect(() => {
     saveDraftRef.current = onSaveDraft;
