@@ -39,8 +39,8 @@ import { addDays } from "../v2/model";
 import { prepareAppointment } from "@/modules/shell/model/clinical-actions";
 import type { ActionFilter } from "../components/clinical/actions-module";
 import { useDashboardVersion } from "../hooks/use-dashboard-version";
-import { useDashboardFinancials } from "../hooks/use-dashboard-financials";
 import { DashboardModeToggle } from "../components/dashboard-mode-toggle";
+import { useDashboardFinancials } from "../hooks/use-dashboard-financials";
 import { PremiumAnalytics } from "../components/premium-analytics";
 import { buildPremiumAnalytics, dashboardPresentationData, type AnalyticsPeriod, type CustomRange, type DashboardPeriod } from "../model/premium-analytics";
 import "../components/premium-analytics.css";
@@ -319,6 +319,16 @@ export function DashboardPage({
         alert.patientId
           ? openPatientPeek(alert.patientId)
           : navigate(alert.source === "stock" ? "stock" : "taches")
+      }
+      viewControl={
+            <DashboardModeToggle
+              value={version}
+              reducedMotion={Boolean(reduced)}
+              onChange={(next) => {
+                setIsCustomizing(false);
+                void setVersion(next);
+              }}
+            />
       }
       onAgenda={() => navigate("agenda")}
       onPatients={() => navigate("patients")}

@@ -1,14 +1,6 @@
 import {
-  Calendar01Icon,
-  CheckListIcon,
   DashboardSquareEditIcon,
-  File01Icon,
-  Hospital01Icon,
-  PackageIcon,
-  Settings02Icon,
   StethoscopeIcon,
-  UserGroupIcon,
-  Wallet01Icon,
 } from "@/lib/hugeicons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Stethoscope } from "lucide-react";
@@ -24,8 +16,6 @@ import { PageDate } from "@/components/PageDate";
 import { PageHeader } from "@/design-system/patterns/page-header";
 
 interface MotivationalHeaderProps {
-  /** Page actions shown on the right of the shared PageHeader. */
-  actions?: React.ReactNode;
   dashboardViewControl?: React.ReactNode;
   isCustomizing?: boolean;
   onCustomize?: () => void;
@@ -49,7 +39,6 @@ const MotivationalHeader: React.FC<MotivationalHeaderProps> = ({
   section,
   title,
   subtitle,
-  actions,
   isCustomizing = false,
   dashboardViewControl,
   onCustomize,
@@ -182,17 +171,6 @@ const MotivationalHeader: React.FC<MotivationalHeaderProps> = ({
 
   // Every section page uses the shared PageHeader, in both visual styles.
   if (!isDashboard) {
-    const iconBySection: Record<string, any> = {
-      patients: StethoscopeIcon,
-      agenda: Calendar01Icon,
-      clinique: Hospital01Icon,
-      stock: PackageIcon,
-      finances: Wallet01Icon,
-      equipe: UserGroupIcon,
-      notes: File01Icon,
-      taches: CheckListIcon,
-      parametres: Settings02Icon,
-    };
     const defaultMeta: Record<string, { title: string; note: string }> = {
       patients: {
         title: "Patients",
@@ -238,17 +216,8 @@ const MotivationalHeader: React.FC<MotivationalHeaderProps> = ({
     };
     const pageTitle = title || sectionMeta.title;
     const pageNote = subtitle || sectionMeta.note;
-    const IconGlyph = iconBySection[section] ?? StethoscopeIcon;
 
-    return (
-      <PageHeader
-        actions={actions}
-        className="motivational-header-root"
-        icon={<HugeiconsIcon icon={IconGlyph} size={20} strokeWidth={1.5} />}
-        subtitle={pageNote || undefined}
-        title={pageTitle}
-      />
-    );
+    return <PageHeader subtitle={pageNote || undefined} title={pageTitle} />;
   }
 
   return (

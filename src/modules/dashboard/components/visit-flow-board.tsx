@@ -12,7 +12,8 @@ import {
 } from "@/lib/icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { getSpeciesGlyph } from "@/lib/species-icons";
-import { ActionButton, Panel, SignalBadge } from "@/design-system/primitives";
+import { ActionButton, SignalBadge } from "@/design-system/primitives";
+import { Panel, Shell, ShellHeader } from "@/components/ui/surface";
 import type { NowSnapshot } from "../model/clinical-dashboard";
 import { formatTime } from "../v2/model";
 import "./clinical/clinical-workspace.css";
@@ -24,9 +25,12 @@ import "./clinical/clinical-workspace.css";
 export function VisitFlowBoard({
   snapshot,
   onFlux,
+  viewControl,
 }: {
   snapshot: NowSnapshot;
   onFlux?: (appointmentId?: string) => void;
+  /** Beside « Ouvrir Flux »: the switch between the dashboard's two views. */
+  viewControl?: React.ReactNode;
 }) {
   const reduced = useReducedMotion();
   const { next, waiting, queue, startsIn, allergies, today, at } = snapshot;
@@ -58,21 +62,27 @@ export function VisitFlowBoard({
           ? `créneau dépassé de ${-startsIn} min`
           : "maintenant";
   return (
-    <section className="visit-flow-widget" aria-labelledby="visit-flow-title">
-      <header className="visit-flow-head">
-        <div className="visit-flow-head-title">
-          <h2 id="visit-flow-title">Maintenant</h2>
-          <span>Mis à jour à {formatTime(at)}</span>
-        </div>
-        <ActionButton
-          className="visit-flow-open"
-          disabled={!onFlux}
-          onClick={() => onFlux?.(next?.appointment.id)}
-        >
-          Ouvrir Flux
-          <ArrowRight size={14} aria-hidden="true" />
-        </ActionButton>
-      </header>
+    <Shell aria-labelledby="visit-flow-title" className="visit-flow-widget">
+      <ShellHeader
+        aside={
+          <>
+            {viewControl}
+            <ActionButton
+              className="visit-flow-open"
+              disabled={!onFlux}
+              onClick={() => onFlux?.(next?.appointment.id)}
+            >
+              Ouvrir Flux
+              <ArrowRight size={14} aria-hidden="true" />
+            </ActionButton>
+          </>
+        }
+        as="h2"
+        icon={Stethoscope}
+        subtitle={`Mis à jour à ${formatTime(at)}`}
+        title="Maintenant"
+        id="visit-flow-title"
+      />
       <div className="visit-flow-board">
         <Panel className="visit-flow-card" aria-label="Prise en charge">
           <div className="visit-flow-main">
@@ -277,6 +287,6 @@ export function VisitFlowBoard({
           </aside>
         </Panel>
       </div>
-    </section>
+    </Shell>
   );
 }

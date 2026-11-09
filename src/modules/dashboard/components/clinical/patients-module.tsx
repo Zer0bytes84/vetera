@@ -1,3 +1,4 @@
+import { PawPrint } from "lucide-react";
 import { KpiSegments } from "../../v2/kpi-mini-chart";
 import { EmptyState, SignalBadge, focusRing } from "@/design-system/primitives";
 import { WidgetShell } from "@/design-system/patterns/widget-shell";
@@ -29,6 +30,7 @@ export function PatientsModule({
 }) {
   return (
     <WidgetShell
+      icon={PawPrint}
       className="clinical-module clinical-patients-module"
       title="Suivi des patients"
       subtitle="Soins en cours, puis dossiers récemment suivis"

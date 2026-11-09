@@ -70,12 +70,15 @@ export function StockView(props: StockViewProps) {
     totalProducts,
   } = props;
   return (
-    <div className="dashboard-stage flex w-full min-w-0 flex-col gap-6 px-4 pt-8 pb-8 lg:px-6">
+    <div className="dashboard-stage flex w-full min-w-0 flex-col gap-6 px-4 pb-8 lg:px-6">
       <MotivationalHeader
-          section="stock"
-          subtitle={`${totalProducts} référence${totalProducts > 1 ? "s" : ""} · ${formatDZD(stockValue)} en stock`}
-        actions={<>
-          <Button className="h-9 px-4" onClick={handleOpenAdd}>
+        section="stock"
+        subtitle={`${totalProducts} référence${totalProducts > 1 ? "s" : ""} · ${formatDZD(stockValue)} en stock`}
+      />
+
+      <StockWorkspace
+        actions={
+          <Button className="h-9 rounded-full px-4" onClick={handleOpenAdd}>
             <HugeiconsIcon
               className="size-4"
               icon={Add01Icon}
@@ -83,10 +86,7 @@ export function StockView(props: StockViewProps) {
             />
             Nouveau produit
           </Button>
-        </>}
-      />
-
-      <StockWorkspace
+        }
         loading={loading}
         movements={movements}
         onAdjust={async (product, quantity, reason) => {

@@ -247,13 +247,14 @@ export function FinancesView(props: FinancesViewProps) {
   );
 
   return (
-    <div className="dashboard-stage flex w-full min-w-0 flex-col gap-6 px-4 pt-8 pb-8 lg:px-6">
-      <MotivationalHeader
-        section="finances"
+    <div className="dashboard-stage flex w-full min-w-0 flex-col gap-6 px-4 pb-8 lg:px-6">
+      <MotivationalHeader section="finances" />
+
+      <SectionCards
         actions={
           <>
             <Button
-              className="h-9 min-w-24 whitespace-nowrap px-4"
+              className="h-9 min-w-24 whitespace-nowrap rounded-full px-4"
               onClick={() => onNavigate?.("finances_analytics")}
               variant="outline"
             >
@@ -265,7 +266,7 @@ export function FinancesView(props: FinancesViewProps) {
               Analyse
             </Button>
             <Button
-              className="h-9 min-w-36 whitespace-nowrap px-4"
+              className="h-9 min-w-36 whitespace-nowrap rounded-full px-4"
               onClick={() =>
                 activeTab === "invoices"
                   ? (setInvoiceDraft(createInvoiceDraft()),
@@ -284,9 +285,6 @@ export function FinancesView(props: FinancesViewProps) {
             </Button>
           </>
         }
-      />
-
-      <SectionCards
         icon={Receipt}
         items={financeSectionCards}
         subtitle="Facturation et règlements"

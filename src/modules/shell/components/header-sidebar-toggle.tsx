@@ -21,7 +21,6 @@ function SidebarGlyph({ open }: { open: boolean }) {
  * The sidebar's slide-out toggle, at the header's left edge before the
  * search, in both sidebar states (and as the menu button on a phone). It is a
  * `topIcon` like the tools on the right, so it takes their button in every skin.
- * A thin rule after it sets the toggle apart from the search field.
  */
 export function HeaderSidebarToggle() {
   const { state, isMobile, toggleSidebar } = useSidebar();
@@ -32,7 +31,6 @@ export function HeaderSidebarToggle() {
       ? "Déployer la barre latérale"
       : "Réduire la barre latérale";
   return (
-    <>
       <ShortcutTooltip label={label} shortcut="⌘ B">
         <button
           aria-label={label}
@@ -45,7 +43,5 @@ export function HeaderSidebarToggle() {
           <SidebarGlyph open={!collapsed} />
         </button>
       </ShortcutTooltip>
-      <span aria-hidden="true" className="shell-header-divider" />
-    </>
   );
 }

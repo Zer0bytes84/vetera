@@ -562,11 +562,7 @@
 @media (prefers-reduced-motion: reduce) {
   .shell-header-search-field:active { transform: none; }
 }
-[data-slot="app-header"] .shell-toolbar-actions .shell-header-search-compact { display: none !important; }
-@container shell-toolbar (max-width: 559px) {
-  .shell-header-search-slot { display: none; }
-  [data-slot="app-header"] .shell-toolbar-actions .shell-header-search-compact { display: grid !important; }
-}
+.shell-header-search-slot { flex: none; }
 
 /* The account: the avatar alone, at the header's right end. */
 .shell-account-trigger {
@@ -659,3 +655,65 @@
 :root:root .shell-toolbar > .shell-header-divider {
   margin-inline: -10px;
 }
+
+/* The breadcrumb, « Page : section »: small, grey, after the slide-out toggle; it takes the room the search leaves and truncates. */
+:root:root .shell-toolbar .shell-toolbar-leading { flex: 1 1 0 !important; min-width: 0; }
+.shell-crumb {
+  display: flex;
+  min-width: 0;
+  flex: 1 1 0;
+  align-items: baseline;
+  gap: 0;
+  white-space: nowrap;
+  font-size: 13px;
+  font-weight: 450;
+  line-height: 20px;
+  letter-spacing: -0.003em;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "kern", "liga", "calt";
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  /* A grey that reads on the header in both modes (about 5:1), softer than the body text. */
+  color: color-mix(in srgb, var(--ink, var(--foreground)) 62%, transparent);
+}
+.shell-crumb > * { overflow: hidden; text-overflow: ellipsis; }
+.shell-crumb-sep { flex: none; white-space: pre; opacity: 0.7; padding-inline: 0.1em; }
+.shell-crumb-page { font-weight: 500; color: color-mix(in srgb, var(--ink, var(--foreground)) 78%, transparent); }
+.shell-crumb-link {
+  flex: 0 1 auto;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  border-radius: 4px;
+}
+.shell-crumb-link:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+@media (hover: hover) and (pointer: fine) {
+  .shell-crumb-link:hover { color: var(--ink, var(--foreground)); text-decoration: underline; text-underline-offset: 3px; }
+}
+
+/* The page's main action, in its band's header: a full pill, above the skins' own button radii. */
+:root:root [data-slot="band-actions"] :is(button, [data-slot="button"]) {
+  border-radius: 9999px !important;
+}
+
+/* The dashboard's greeting, in the bar where the breadcrumb is on other pages: « Bonjour Zouhir 👋 », the first name in blue. */
+.shell-greeting {
+  min-width: 0;
+  flex: 1 1 0;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 20px;
+  letter-spacing: -0.01em;
+  color: var(--ink, var(--foreground));
+  -webkit-font-smoothing: antialiased;
+}
+.shell-greeting-name { color: var(--tone-blue); }
+.shell-greeting .dashboard-greeting-wave { display: inline-block; }

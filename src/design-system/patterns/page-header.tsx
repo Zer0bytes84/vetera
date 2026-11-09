@@ -4,8 +4,7 @@ import {
   useLayoutEffect,
   type ReactNode,
 } from "react";
-import { cn } from "@/lib/utils";
-import "@/design-system/page-header-line.css";
+import { usePageCrumb } from "@/modules/shell/page-crumb";
 
 /**
  * A host (the clinical workspace) can hand a navigation bar to the header of
@@ -18,28 +17,22 @@ export const PageSubnavContext = createContext<{
 } | null>(null);
 
 /**
- * The one page header of the app, on the model of the dashboard's welcome line: one line of text, « Titre : note », the page's
- * actions on the right, no icon tile and no rule under it. Pages keep their own actions and pass them as is.
+ * What a page says about itself, « Titre : note ». It draws nothing of its own: since 9 November 2026 the line lives in the
+ * app's top bar, as a breadcrumb, and the page's main action sits in the grey band of its section. The page keeps calling this
+ * where its title row used to be; it publishes the title and the note to the bar and shows the host's navigation bar, if any.
  * `icon` and `kicker` are accepted for callers that still pass them, and are not drawn.
  */
 export function PageHeader({
   title,
   subtitle,
-  back,
-  actions,
-  className,
 }: {
-  /** @deprecated Not drawn: the header is text only. */
+  /** @deprecated Not drawn. */
   icon?: ReactNode;
-  title: ReactNode;
+  title: string;
   /** The note after the title: a few words, « liste du cabinet ». */
-  subtitle?: ReactNode;
-  /** @deprecated Not drawn: the header is a single line. */
+  subtitle?: string;
+  /** @deprecated Not drawn. */
   kicker?: ReactNode;
-  /** Way back to the parent list, sitting before the title. */
-  back?: ReactNode;
-  actions?: ReactNode;
-  className?: string;
 }) {
   const subnav = useContext(PageSubnavContext);
   const claim = subnav?.claim;
@@ -47,30 +40,6 @@ export function PageHeader({
     claim?.(true);
     return () => claim?.(false);
   }, [claim]);
-  return (
-    <>
-      <div
-        className={cn("page-header page-header-line", className)}
-        data-page-title={typeof title === "string" ? title : undefined}
-        data-slot="page-header"
-      >
-        <div className="page-header-lead">
-          {back && <div className="page-header-back shrink-0">{back}</div>}
-          <h1 className="page-header-title">
-            <span className="page-header-name">{title}</span>
-            {subtitle ? <span className="page-header-note">{" : "}{subtitle}</span> : null}
-          </h1>
-        </div>
-        {actions && (
-          <div
-            className="page-header-actions flex shrink-0 flex-wrap items-center gap-2"
-            data-slot="page-header-actions"
-          >
-            {actions}
-          </div>
-        )}
-      </div>
-      {subnav?.node}
-    </>
-  );
+  usePageCrumb(title, subtitle);
+  return <>{subnav?.node}</>;
 }

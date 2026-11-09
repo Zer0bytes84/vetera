@@ -572,7 +572,7 @@ export function FlowBoardPage({
     ));
 
   return (
-    <div className="flow-board-page dashboard-stage w-full min-w-0 px-4 pt-8 pb-8 lg:px-6">
+    <div className="flow-board-page dashboard-stage w-full min-w-0 px-4 pb-8 lg:px-6">
       {!workspaceOpen && (
         <>
         <PageHeader

@@ -690,9 +690,12 @@ const Tasks: React.FC = () => {
         section="taches"
         title="Rappels"
         subtitle="actions à suivre"
+      />
+
+      <SectionCards
         actions={
-          <>
             <Button
+              className="h-9 rounded-full px-4"
               onClick={() => {
                 const type =
                   patientRemindersModel.types.find(
@@ -723,11 +726,7 @@ const Tasks: React.FC = () => {
               <Plus className="size-4" />
               Rappel médical
             </Button>
-          </>
         }
-      />
-
-      <SectionCards
         icon={ClipboardCheck}
         subtitle="Échéances et actions à suivre"
         items={[

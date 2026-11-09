@@ -62,6 +62,8 @@ export type StatGridProps = {
   icon?: LucideIcon;
   /** On the right of the header: a switch between the widget's views. */
   toolbar?: ReactNode;
+  /** Controls on the header's own line, between the title and the toolbar (the dashboard's period filters). */
+  lead?: ReactNode;
   /** Show sparklines when stats carry a trend. */
   sparklines?: boolean;
   onSelect?: (stat: Stat) => void;
@@ -78,6 +80,7 @@ export function StatGrid({
   subtitle,
   icon,
   toolbar,
+  lead,
   sparklines = true,
   goals = true,
   onSelect,
@@ -87,7 +90,22 @@ export function StatGrid({
   return (
     <MotionConfig reducedMotion="user">
       <Shell className={cn("max-w-2xl", className)}>
-        {(title || toolbar) && <ShellHeader aside={toolbar} icon={icon} subtitle={subtitle} title={title ?? ""} />}
+        {(title || toolbar || lead) && (
+          <ShellHeader
+            aside={
+              lead || toolbar ? (
+                <>
+                  {lead && <div className="min-w-0" data-slot="band-lead">{lead}</div>}
+                  {toolbar}
+                </>
+              ) : undefined
+            }
+            className={lead ? "flex-wrap gap-y-2" : undefined}
+            icon={icon}
+            subtitle={subtitle}
+            title={title ?? ""}
+          />
+        )}
         <div
           className={cn(
             "grid gap-1.5",

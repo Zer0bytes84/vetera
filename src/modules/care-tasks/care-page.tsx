@@ -508,22 +508,6 @@ export default function CarePage({
         </header>
       ) : (
         <PageHeader
-          actions={
-            <>
-              {patientId && onShowAll && (
-                <Button
-                  className="min-h-11"
-                  onClick={onShowAll}
-                  variant="outline"
-                >
-                  Afficher tous les patients
-                </Button>
-              )}
-              <Button className="min-h-11" onClick={() => setCreating(true)}>
-                Planifier un soin
-              </Button>
-            </>
-          }
           icon={
             <HugeiconsIcon icon={InjectionIcon} size={20} strokeWidth={1.5} />
           }
@@ -535,6 +519,22 @@ export default function CarePage({
       {!patientId && (
         <>
           <SectionCards
+            actions={
+              <>
+              {patientId && onShowAll && (
+                <Button
+                  className="h-9 rounded-full px-4"
+                  onClick={onShowAll}
+                  variant="outline"
+                >
+                  Afficher tous les patients
+                </Button>
+              )}
+              <Button className="h-9 rounded-full px-4" onClick={() => setCreating(true)}>
+                Planifier un soin
+              </Button>
+              </>
+            }
             icon={Syringe}
             className="care-summary"
             subtitle="Soins du jour"

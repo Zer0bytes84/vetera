@@ -5,15 +5,15 @@ import {
   ArrowUpRight,
   CalendarDays,
   ClipboardCheck,
+  ChartSpline,
+  Gauge,
   LayoutGrid,
-  Plus,
   Receipt,
-  Stethoscope,
   Wallet,
 } from "lucide-react";
 import React, { useMemo, useState } from "react";
-import { firstNameOf, formatNumber } from "@/utils/display-format";
-import { formatTime, parseDashboardDate, type ScheduleEntry } from "../v2/model";
+import { formatNumber } from "@/utils/display-format";
+import { parseDashboardDate, type ScheduleEntry } from "../v2/model";
 import { receivablesSummary, settlementRate } from "../v2/financial-model";
 import { StatGrid, type Stat } from "@/components/ui/stat-grid";
 import { buildKeyFigures, type KeyFigureId } from "../model/key-figures";
@@ -26,8 +26,6 @@ import {
   type CustomRange,
   type DashboardPeriod,
 } from "../model/premium-analytics";
-import { prepareAppointment } from "@/modules/shell/model/clinical-actions";
-import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Calendar as DateRangeCalendar } from "@/components/ui/calendar";
 import { COMPACT_CALENDAR_CLASS, DatePicker, formatDateValue } from "@/components/ui/date-picker";
@@ -63,6 +61,7 @@ interface PremiumAnalyticsProps {
   onPatients: () => void;
   onActions: () => void;
   onNavigate?: (view: View) => void;
+  /** The switch between the dashboard and its clinical view, on the right of the key figures band. */
   dashboardViewControl?: React.ReactNode;
   presentation?: {
     patients: any[];
@@ -246,8 +245,6 @@ export function PremiumAnalytics({
   onCreateSlot,
   alertSources,
 }: PremiumAnalyticsProps) {
-  const { currentUser } = useAuth();
-  const userName = firstNameOf(currentUser?.displayName, "Docteur");
   const { ranges } = model;
   const updatedAt = now ?? new Date();
 
@@ -265,21 +262,6 @@ export function PremiumAnalytics({
   // The days the two pickers show: the picked ones, else those of the preset in force.
   const pickedFrom = period === "custom" && customRange ? customRange.from : formatDateValue(ranges.current.from);
   const pickedTo = period === "custom" && customRange ? customRange.to : formatDateValue(ranges.current.to);
-
-  const handleNewAppointment = () => {
-    prepareAppointment();
-    onNavigate?.("agenda");
-    setTimeout(() => {
-      window.dispatchEvent(new CustomEvent("vetera:new-appointment"));
-    }, 150);
-  };
-
-  const handleNewPatient = () => {
-    onNavigate?.("patients");
-    setTimeout(() => {
-      window.dispatchEvent(new CustomEvent("vetera:new-patient"));
-    }, 150);
-  };
 
   // The chart's own period, set from its card; it follows the page's period
   // when that one changes (a single day has no curve: a week instead).
@@ -521,82 +503,9 @@ export function PremiumAnalytics({
 
   return (
     <div className="premium-overview-shell flex flex-col gap-6 w-full">
-      {/* 1. Welcome: the greeting alone, at the very top so the figures show on opening; no title, no date.
-          The quick actions and the view switch stay one click away, beside it. */}
-      <section aria-label="Accueil" className="dashboardWelcome">
-          <h1 className="heroTitle">Bonjour <span className="heroName">{userName}</span>, ravi de vous retrouver <span className="dashboard-greeting-wave" aria-hidden="true">👋</span></h1>
-
-          <div className="heroActions">
-            <ShortcutTooltip label="Nouvelle consultation" shortcut="N">
-              <button
-                type="button"
-                className="btn btnPrimary"
-                data-primary-action="true"
-                aria-keyshortcuts="N"
-                onClick={handleNewAppointment}
-              >
-                <Stethoscope size={16} strokeWidth={1.5} aria-hidden="true" />
-                <span>Nouvelle consultation</span>
-              </button>
-            </ShortcutTooltip>
-
-            <button
-              type="button"
-              className="btn btnSecondary"
-              onClick={handleNewPatient}
-            >
-              <Plus size={16} strokeWidth={1.5} aria-hidden="true" />
-              <span>Nouveau patient</span>
-            </button>
-
-            {dashboardViewControl}
-          </div>
-      </section>
-
-      {clinicalView ? <div className="premium-clinical-overview">{clinicalView}</div> : <>
-      {/* 2. Contiguous Period Filters Ribbon (Reference .filters) */}
-      <div className="filters">
-        <div aria-label="Période du tableau de bord" className="filter-segments" data-tabs-style="segmented" role="group">
-        {ANALYTICS_PERIODS.map((opt) => (
-          <button
-            key={opt.value}
-            type="button"
-            className="filter"
-            data-active={period === opt.value}
-            aria-pressed={period === opt.value}
-            onClick={() => onPeriod(opt.value)}
-          >
-            {opt.label}
-          </button>
-        ))}
-        </div>
-        {/* Any two days: the figures and the chart below follow them. */}
-        <div aria-label="Période personnalisée" className="filterDates" data-active={period === "custom" || undefined} role="group">
-          <DatePicker
-            aria-label="Début de la période"
-            className="filterDate"
-            max={pickedTo}
-            onChange={(value) => value && onCustomRange?.({ from: value, to: pickedTo })}
-            value={pickedFrom}
-          />
-          <span aria-hidden="true" className="filterDatesTo">au</span>
-          <DatePicker
-            aria-label="Fin de la période"
-            className="filterDate"
-            min={pickedFrom}
-            onChange={(value) => value && onCustomRange?.({ from: pickedFrom, to: value })}
-            value={pickedTo}
-          />
-        </div>
-        <div className="filterGap" />
-        <div className="filterRange">
-          <CalendarDays size={14} strokeWidth={1} aria-hidden="true" />
-          <span>{rangeLabel}</span>
-          <span aria-hidden="true">·</span>
-          <span>Mis à jour à {formatTime(updatedAt)}</span>
-        </div>
-      </div>
-
+      {clinicalView ? <div className="premium-clinical-overview">
+        {clinicalView}
+      </div> : <>
       {/* 3. The key figures, on one single row: Trésorerie, Rendez-vous, Créances, Actions à suivre. */}
       <div aria-atomic="true" aria-live="polite">
         <StatGrid
@@ -608,23 +517,69 @@ export function PremiumAnalytics({
           sparklines={keyView === "sparklines"}
           subtitle={rangeLabel}
           title="Chiffres clés"
+          lead={
+            <div className="filters">
+              <div aria-label="Période du tableau de bord" className="filter-segments" data-tabs-style="segmented" role="group">
+              {ANALYTICS_PERIODS.map((opt) => (
+                <button
+                  key={opt.value}
+                  type="button"
+                  className="filter"
+                  data-active={period === opt.value}
+                  aria-pressed={period === opt.value}
+                  onClick={() => onPeriod(opt.value)}
+                >
+                  {opt.label}
+                </button>
+              ))}
+              </div>
+              {/* Any two days: the figures and the chart below follow them. */}
+              <div aria-label="Période personnalisée" className="filterDates" data-active={period === "custom" || undefined} role="group">
+                <DatePicker
+                  aria-label="Début de la période"
+                  className="filterDate"
+                  max={pickedTo}
+                  onChange={(value) => value && onCustomRange?.({ from: value, to: pickedTo })}
+                  value={pickedFrom}
+                />
+                <span aria-hidden="true" className="filterDatesTo">au</span>
+                <DatePicker
+                  aria-label="Fin de la période"
+                  className="filterDate"
+                  min={pickedFrom}
+                  onChange={(value) => value && onCustomRange?.({ from: pickedFrom, to: value })}
+                  value={pickedTo}
+                />
+              </div>
+            </div>
+          }
           // The widget's two views, as TuffUI has them, named in French: « Indicateurs » (the cards with their goal bar)
           // and « Mini-graphiques » (the cards with their sparkline).
           toolbar={
-            <div aria-label="Affichage des chiffres clés" className="filter-segments" data-tabs-style="segmented" role="group">
-              {(["kpi", "sparklines"] as const).map((view) => (
-                <button
-                  aria-pressed={keyView === view}
-                  className="filter"
-                  data-active={keyView === view}
-                  key={view}
-                  onClick={() => setKeyView(view)}
-                  type="button"
-                >
-                  {view === "kpi" ? "Indicateurs" : "Mini-graphiques"}
-                </button>
+            <>
+            <div aria-label="Affichage des chiffres clés" className="filter-segments keyViewIcons" data-tabs-style="segmented" role="group">
+              {(
+                [
+                  { view: "kpi", label: "Indicateurs", Icon: Gauge },
+                  { view: "sparklines", label: "Mini-graphiques", Icon: ChartSpline },
+                ] as const
+              ).map(({ view, label, Icon }) => (
+                <ShortcutTooltip key={view} label={label}>
+                  <button
+                    aria-label={label}
+                    aria-pressed={keyView === view}
+                    className="filter keyViewIcon"
+                    data-active={keyView === view}
+                    onClick={() => setKeyView(view)}
+                    type="button"
+                  >
+                    <Icon aria-hidden="true" size={16} strokeWidth={1.5} />
+                  </button>
+                </ShortcutTooltip>
               ))}
             </div>
+            {dashboardViewControl}
+            </>
           }
           onSelect={(stat) =>
             ({

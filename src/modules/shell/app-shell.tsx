@@ -4,6 +4,8 @@ import { ThemeControl } from "./components/theme-control";
 import { ShortcutTooltip } from "@/design-system/patterns/shortcut-tooltip";
 import { ToolbarIcon } from "./components/toolbar-icon";
 import { AccountMenu } from "./components/account-menu";
+import { firstNameOf } from "@/utils/display-format";
+import { HeaderBreadcrumb } from "./components/header-breadcrumb";
 import { HeaderSearch } from "./components/header-search";
 import { HeaderSidebarToggle } from "./components/header-sidebar-toggle";
 import { HeaderQuickActions } from "./components/header-quick-actions";
@@ -634,7 +636,8 @@ function AppShellInner() {
               {isPremium ? (
                 <div className="shell-toolbar-leading flex min-w-0 flex-1 items-center gap-2.5">
                   <HeaderSidebarToggle />
-                  <HeaderSearch onOpen={() => setPaletteOpen(true)} open={paletteOpen} />
+                  <span aria-hidden="true" className="shell-header-divider" />
+                  <HeaderBreadcrumb fallbackTitle={pageTitle} greetingName={currentView === "dashboard" ? firstNameOf(currentUser?.displayName, "Docteur") : undefined} onNavigate={handleNavigate} />
                 </div>
               ) : (
                 <div className="shell-toolbar-leading flex min-w-0 flex-1 sm:flex-initial items-center gap-2.5">
@@ -664,6 +667,14 @@ function AppShellInner() {
 
               {saveState !== "idle" && <div className="premium-header-save-indicator" data-slot="premium-header-save-indicator"><SaveIndicator state={saveState} /></div>}
 
+              {/* 2. Search, then a thin rule, then the tools */}
+              {isPremium && (
+                <>
+                  <HeaderSearch onOpen={() => setPaletteOpen(true)} open={paletteOpen} />
+                  <span aria-hidden="true" className="shell-header-divider" />
+                </>
+              )}
+
               {/* 3. DROITE : Actions */}
               <div className="shell-toolbar-actions flex shrink-0 items-center justify-end gap-2">
                 {isPremium ? (
@@ -673,20 +684,6 @@ function AppShellInner() {
 
                     {/* 1. Theme toggle */}
                     <ThemeControl dark={isDarkMode} onToggle={toggleTheme} />
-
-                    {/* 2. Search, when the header is too narrow for the field */}
-                    <ShortcutTooltip label="Rechercher partout" shortcut="⌘ K">
-                      <button
-                        type="button"
-                        aria-label="Rechercher partout"
-                        aria-haspopup="dialog"
-                        aria-keyshortcuts="Meta+K Control+K"
-                        onClick={() => setPaletteOpen(true)}
-                        className="topIcon shell-header-search-compact"
-                      >
-                        <ToolbarIcon name="search" />
-                      </button>
-                    </ShortcutTooltip>
 
                     {/* 3. Assistant IA */}
                     <ShortcutTooltip label="Assistant IA" shortcut="⌘ J">

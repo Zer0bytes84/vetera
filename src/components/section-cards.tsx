@@ -1,6 +1,7 @@
 "use client";
 
 import { LayoutGrid } from "lucide-react";
+import type { ReactNode } from "react";
 import { StatGrid, type Stat, type StatTone } from "@/components/ui/stat-grid";
 import type { LucideIcon } from "@/lib/icons";
 import {
@@ -116,6 +117,7 @@ export function SectionCards({
   title = "Chiffres clés",
   subtitle,
   icon = LayoutGrid,
+  actions,
   className,
 }: {
   items: SectionCardItem[];
@@ -125,6 +127,8 @@ export function SectionCards({
   subtitle?: string;
   /** The band's icon: each page has its own. */
   icon?: LucideIcon;
+  /** On the right of the band's header: the page's main action, as a pill. */
+  actions?: ReactNode;
   className?: string;
 }) {
   const stats: Stat[] = items.map((item, idx) => {
@@ -170,6 +174,13 @@ export function SectionCards({
         sparklines={false}
         subtitle={subtitle}
         title={title}
+        toolbar={
+          actions ? (
+            <div className="flex items-center gap-2" data-slot="band-actions">
+              {actions}
+            </div>
+          ) : undefined
+        }
       />
     </section>
   );

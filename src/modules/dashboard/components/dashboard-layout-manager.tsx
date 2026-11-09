@@ -400,7 +400,7 @@ export function DashboardLayoutManager({
         sensors={sensors}
       >
         <SortableContext items={order} strategy={verticalListSortingStrategy}>
-          <div className={cn("flex flex-col", isEditing ? "gap-7" : "gap-4")}>
+          <div className={cn("flex flex-col", isEditing ? "gap-7" : "gap-6")}>
             {orderedBlocks.map((block, index) => (
               <SortableDashboardBlock
                 block={block}

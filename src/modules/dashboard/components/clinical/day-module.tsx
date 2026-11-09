@@ -1,3 +1,4 @@
+import { CalendarDays } from "lucide-react";
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -79,6 +80,7 @@ export function DayModule({
   ).length;
   return (
     <WidgetShell
+      icon={CalendarDays}
       className="clinical-module clinical-day-module"
       title="Planning des visites"
       subtitle={date.toLocaleDateString("fr-FR", {

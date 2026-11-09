@@ -90,6 +90,8 @@ import {
 type StockFilter = "all" | "healthy" | "low" | "out" | "expiring" | "expired";
 
 interface StockWorkspaceProps {
+  /** The page's main action, in the figures band's header. */
+  actions?: React.ReactNode;
   loading: boolean;
   movements: StockMovement[];
   onAdjust: (
@@ -548,6 +550,7 @@ function MaybeShell({
 }
 
 export function StockWorkspace({
+  actions,
   loading,
   movements,
   onAdjust,
@@ -703,6 +706,7 @@ export function StockWorkspace({
   return (
     <div className="space-y-4">
       <SectionCards
+        actions={actions}
         icon={Package}
         subtitle="Stock, seuils et péremptions"
         items={[

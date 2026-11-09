@@ -406,14 +406,12 @@ const NotesPro: React.FC = () => {
     return text.trim().split(/\s+/).filter(Boolean).length;
   }, [content]);
 
-  return (
-    <div className="documents-workspace dashboard-stage flex h-full min-h-0 w-full min-w-0 flex-col gap-5 overflow-hidden px-4 pt-4 pb-0 md:pt-5 lg:px-6">
-      <MotivationalHeader section="notes" title="Documents" subtitle="notes cliniques"
-        actions={<>
-          <Button size="sm" variant="outline" onClick={() => setWorkspaceMode(workspaceMode === "assistant" ? "library" : "assistant")}>{workspaceMode === "assistant" ? "Bibliothèque" : "Assistant documents"}</Button>
-          <Button size="sm" variant="ghost" onClick={() => setWorkspaceMode(workspaceMode === "templates" ? "library" : "templates")}>{workspaceMode === "templates" ? "Bibliothèque" : "Modèles"}</Button>
+  const libraryList = workspaceMode === "library" && !(selectedNoteId && activeNote);
+  const documentActions = (<>
+          <Button className="rounded-full" size="sm" variant="outline" onClick={() => setWorkspaceMode(workspaceMode === "assistant" ? "library" : "assistant")}>{workspaceMode === "assistant" ? "Bibliothèque" : "Assistant documents"}</Button>
+          <Button className="rounded-full" size="sm" variant="ghost" onClick={() => setWorkspaceMode(workspaceMode === "templates" ? "library" : "templates")}>{workspaceMode === "templates" ? "Bibliothèque" : "Modèles"}</Button>
           <DropdownMenu>
-              <DropdownMenuTrigger render={<Button className="h-9 gap-2 px-4 text-sm" type="button" />}>
+              <DropdownMenuTrigger render={<Button className="h-9 gap-2 rounded-full px-4 text-sm" type="button" />}>
                 <HugeiconsIcon className="size-4" icon={Add01Icon} strokeWidth={1.5} />
                 Nouveau document
                 <span aria-hidden="true" className="ml-1 flex h-4 items-center border-current/20 border-l pl-2"><ChevronDown className="size-3.5" /></span>
@@ -430,8 +428,14 @@ const NotesPro: React.FC = () => {
                 <DropdownMenuItem onClick={() => void handleCreateNote()}><HugeiconsIcon className="mr-2 size-4" icon={Add01Icon} strokeWidth={1.5} />Page vierge</DropdownMenuItem>
               </DropdownMenuContent>
           </DropdownMenu>
-        </>}
-      />
+  </>);
+
+  return (
+    <div className="documents-workspace dashboard-stage flex h-full min-h-0 w-full min-w-0 flex-col gap-5 overflow-hidden px-4 pb-0 lg:px-6">
+      <MotivationalHeader section="notes" title="Documents" subtitle="notes cliniques" />
+
+      {/* The page's actions sit in the figures band of the library; elsewhere (assistant, templates, an open note) there is no band, so they keep a slim row. */}
+      {!libraryList && <div className="flex flex-wrap items-center justify-end gap-2">{documentActions}</div>}
 
       {/* Main workspace */}
       {workspaceMode !== "library" ? (
@@ -443,6 +447,7 @@ const NotesPro: React.FC = () => {
       ) : !(selectedNoteId && activeNote) ? (
         <div className="min-h-0 flex-1 space-y-6 overflow-y-auto pb-8" ref={libraryRef}>
           <SectionCards
+            actions={documentActions}
             icon={FileText}
             items={[
               { title: "Documents du cabinet", value: ownNotes.length, detailRow: "Notes, comptes-rendus et modèles", icon: FileText },

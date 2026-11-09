@@ -1,13 +1,14 @@
 import { KpiMiniChart } from "../../v2/kpi-mini-chart";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { ArrowDown01Icon, ArrowRight01Icon } from "@/lib/hugeicons";
+import { TrendingUp } from "lucide-react";
 import {
   ActionButton,
   EmptyState,
-  Panel,
   SkeletonBlock,
   focusRing,
 } from "@/design-system/primitives";
+import { Panel, Shell, ShellHeader } from "@/components/ui/surface";
 import type { buildClinicalTrends } from "../../model/clinical-dashboard";
 import type { WidgetState } from "./shared";
 
@@ -27,39 +28,37 @@ export function TrendsModule({
   onPlan: () => void;
 }) {
   return (
-    <Panel
+    <Shell
       aria-label="Tendances"
       className="clinical-module clinical-trends-module"
     >
-      <button
-        type="button"
-        aria-expanded={open}
-        aria-controls="clinical-trends-content"
-        className={`flex w-full items-center justify-between gap-3 rounded-body p-5 text-left ${focusRing}`}
-        onClick={() => onOpen(!open)}
-      >
-        <div>
-          <h2 className="font-display t-16 font-medium tracking-[-0.02em]">
-            Tendances
-          </h2>
-          <p className="mt-1 t-12 text-ink-muted">
-            Activité et actes sur les {model.days} derniers jours
-          </p>
-        </div>
-        <span className="inline-flex items-center gap-2 t-12 text-ink-muted">
-          {open ? "Réduire" : "Explorer"}
-          <HugeiconsIcon
-            icon={open ? ArrowDown01Icon : ArrowRight01Icon}
-            size={16}
-            strokeWidth={1.5}
-          />
-        </span>
-      </button>
+      <ShellHeader
+        aside={
+          <button
+            type="button"
+            aria-expanded={open}
+            aria-controls="clinical-trends-content"
+            className={`inline-flex h-8 items-center gap-2 rounded-full bg-[var(--card-inset)] px-3 t-12 font-medium text-ink-muted hover:text-ink ${focusRing}`}
+            onClick={() => onOpen(!open)}
+          >
+            {open ? "Réduire" : "Explorer"}
+            <HugeiconsIcon
+              icon={open ? ArrowDown01Icon : ArrowRight01Icon}
+              size={14}
+              strokeWidth={1.5}
+            />
+          </button>
+        }
+        as="h2"
+        icon={TrendingUp}
+        subtitle={`Activité et actes sur les ${model.days} derniers jours`}
+        title="Tendances"
+      />
       {open && (
-        <div
+        <Panel
           id="clinical-trends-content"
           aria-busy={state.loading || state.skeleton}
-          className="border-t border-hairline p-5"
+          className="p-5"
         >
           <div
             role="group"
@@ -73,7 +72,7 @@ export function TrendsModule({
                 type="button"
                 aria-pressed={model.days === days}
                 onClick={() => onPeriod(days)}
-                className={`rounded-[7px] px-3 py-1.5 t-12 font-medium ${model.days === days ? "bg-surface shadow-card" : "text-ink-muted hover:text-ink"} ${focusRing}`}
+                className={`rounded-full px-3 py-1.5 t-12 font-medium ${model.days === days ? "bg-surface shadow-card" : "text-ink-muted hover:text-ink"} ${focusRing}`}
               >
                 {days} jours
               </button>
@@ -157,8 +156,8 @@ export function TrendsModule({
               }
             />
           )}
-        </div>
+        </Panel>
       )}
-    </Panel>
+    </Shell>
   );
 }

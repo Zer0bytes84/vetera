@@ -1,3 +1,4 @@
+import { ClipboardList } from "lucide-react";
 import { Loader2 } from "@/lib/icons";
 import { AnimatePresence, motion } from "framer-motion";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -44,6 +45,7 @@ export function ActionsModule({
   const filters = Object.keys(labels) as ActionFilter[];
   return (
     <WidgetShell
+      icon={ClipboardList}
       className="clinical-module clinical-actions-module"
       title="Actions à suivre"
       subtitle={

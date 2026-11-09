@@ -75,12 +75,15 @@ export function PatientsView(props: PatientsViewProps) {
   } = props;
   const listRef = useListCursor({ storageKey: "patients" });
   return (
-    <div className="dashboard-stage flex w-full min-w-0 flex-col gap-6 px-4 pt-8 pb-8 lg:px-6">
-      <MotivationalHeader
-        section="patients"
+    <div className="dashboard-stage flex w-full min-w-0 flex-col gap-6 px-4 pb-8 lg:px-6">
+      <MotivationalHeader section="patients" />
+
+      <SectionCards
         actions={
-          <>
-            <Button className="h-9 px-4" onClick={() => setIsCreateOpen(true)}>
+            <Button
+              className="h-9 rounded-full px-4"
+              onClick={() => setIsCreateOpen(true)}
+            >
               <HugeiconsIcon
                 data-icon="inline-start"
                 icon={Add01Icon}
@@ -88,11 +91,7 @@ export function PatientsView(props: PatientsViewProps) {
               />
               Nouveau patient
             </Button>
-          </>
         }
-      />
-
-      <SectionCards
         icon={PawPrint}
         items={sectionCards}
         subtitle="Dossiers et suivi clinique"

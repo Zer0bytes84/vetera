@@ -264,24 +264,23 @@ export function AgendaView(props: AgendaViewProps) {
     ? normalizeDate(selectedAppointment.startTime)
     : null;
   return (
-    <div className="agenda-workspace dashboard-stage flex w-full min-w-0 flex-col gap-6 px-4 pt-8 pb-8 lg:px-6">
-      <MotivationalHeader
-        section="agenda"
-        actions={
-          <>
-            <Button className="h-9 px-4" onClick={() => handleOpenCreate()}>
-              <HugeiconsIcon
-                data-icon="inline-start"
-                icon={Add01Icon}
-                strokeWidth={1.5}
-              />
-              {t("agenda.newAppointment")}
-            </Button>
-          </>
-        }
-      />
+    <div className="agenda-workspace dashboard-stage flex w-full min-w-0 flex-col gap-6 px-4 pb-8 lg:px-6">
+      <MotivationalHeader section="agenda" />
 
       <SectionCards
+        actions={
+          <Button
+            className="h-9 rounded-full px-4"
+            onClick={() => handleOpenCreate()}
+          >
+            <HugeiconsIcon
+              data-icon="inline-start"
+              icon={Add01Icon}
+              strokeWidth={1.5}
+            />
+            {t("agenda.newAppointment")}
+          </Button>
+        }
         icon={CalendarDays}
         items={sectionCards}
         subtitle="Rendez-vous du jour"

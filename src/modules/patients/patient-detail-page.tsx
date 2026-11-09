@@ -1,5 +1,6 @@
 import { IdCard, LayoutGrid, Stethoscope } from "lucide-react";
 import { Shell, ShellHeader } from "@/components/ui/surface";
+import { usePageCrumb } from "@/modules/shell/page-crumb";
 import "./patient-record-blocks.css";
 import { PatientStays } from "@/modules/hospitalizations/stays/patient-stays";
 import {
@@ -315,6 +316,8 @@ export function PatientDetailPage({
     () => patientsRepo.data.find((p) => p.id === patientId) ?? null,
     [patientsRepo.data, patientId],
   );
+  // The top bar reads « Patients : Rex », the first word taking back to the list.
+  usePageCrumb("Patients", patient?.name, "patients");
 
   useEffect(() => {
     if (

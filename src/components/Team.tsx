@@ -396,25 +396,24 @@ const Team: React.FC = () => {
 
   return (
     <div className="dashboard-stage flex w-full min-w-0 flex-col gap-4 px-4 pb-8 lg:px-6">
-      <MotivationalHeader
-        section="equipe"
-        actions={
-          <>
-            {canManageTeam ? (
-              <Button className="h-9 px-4" onClick={() => handleOpenModal()}>
-                <HugeiconsIcon
-                  className="size-4"
-                  icon={Add01Icon}
-                  strokeWidth={1.5}
-                />
-                <span>Nouveau membre</span>
-              </Button>
-            ) : null}
-          </>
-        }
-      />
+      <MotivationalHeader section="equipe" />
 
       <SectionCards
+        actions={
+          canManageTeam ? (
+            <Button
+              className="h-9 rounded-full px-4"
+              onClick={() => handleOpenModal()}
+            >
+              <HugeiconsIcon
+                className="size-4"
+                icon={Add01Icon}
+                strokeWidth={1.5}
+              />
+              <span>Nouveau membre</span>
+            </Button>
+          ) : undefined
+        }
         icon={UsersRound}
         items={sectionCards}
         subtitle="Praticiens, soignants et accès"

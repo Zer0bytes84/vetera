@@ -14,6 +14,7 @@ export function NowBoardView({
   error,
   onRetry,
   onFlux,
+  viewControl,
 }: {
   snapshot: NowSnapshot;
   loading: boolean;
@@ -21,6 +22,7 @@ export function NowBoardView({
   error?: string | null;
   onRetry: () => void;
   onFlux: (appointmentId?: string) => void;
+  viewControl?: React.ReactNode;
 }) {
   return (
     <div aria-label="Maintenant" aria-busy={loading || skeleton}>
@@ -44,7 +46,7 @@ export function NowBoardView({
           />
         </Panel>
       ) : (
-        <VisitFlowBoard snapshot={snapshot} onFlux={onFlux} />
+        <VisitFlowBoard snapshot={snapshot} onFlux={onFlux} viewControl={viewControl} />
       )}
     </div>
   );

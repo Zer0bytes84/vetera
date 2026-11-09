@@ -1807,3 +1807,12 @@ button:hover .toggleIcon[data-collapsed="true"] .toggleChevron {
 .premium-analytics-dashboard .dashboardWelcome .heroName {
   color: var(--tone-blue);
 }
+
+/* The period filters sit on the « Chiffres clés » band's header line, between its title and the view icons: the band keeps its natural
+   height. Pills and date fields are 28 px, the height of the band's own small controls. */
+[data-slot="band-lead"] .filters { margin: 0; gap: 8px 12px; flex-wrap: nowrap; }
+[data-slot="band-lead"] .filter-segments { align-items: center; }
+[data-slot="band-lead"] .filter:not(.keyViewIcon) { height: 28px; padding: 0 12px; }
+:root:root:root [data-slot="band-lead"] .filterDates button.filterDate { height: 28px !important; min-height: 28px !important; max-height: 28px !important; padding-block: 0 !important; font-size: 13px; }
+/* The view switch is two icons: a grid (indicators) and a small curve (mini-charts). */
+.keyViewIcons .filter.keyViewIcon { padding: 0; width: 36px; height: 32px; justify-content: center; }

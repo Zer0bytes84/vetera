@@ -1,3 +1,4 @@
+import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import { SkeletonBlock } from "../primitives";
 import { Panel, Shell, ShellHeader } from "@/components/ui/surface";
@@ -5,6 +6,7 @@ import { ErrorState } from "./error-state";
 import { cn } from "@/lib/utils";
 
 export function WidgetShell({
+  icon,
   title,
   subtitle,
   actions,
@@ -17,6 +19,8 @@ export function WidgetShell({
   error,
   onRetry,
 }: {
+  /** The tile in the band's header, as on the dashboard's bands. */
+  icon?: LucideIcon;
   title: string;
   subtitle?: ReactNode;
   actions?: ReactNode;
@@ -36,9 +40,9 @@ export function WidgetShell({
     .filter((token) => token && token !== "frame" && token !== "card")
     .join(" ");
   return (
-    <Shell aria-busy={busy} aria-label={title} className={own}>
-      <ShellHeader aside={actions} as="h2" subtitle={subtitle} title={title} />
-      <Panel className={cn("p-5", bodyClassName)}>
+    <Shell aria-busy={busy} aria-label={title} className={cn("flex flex-col", own)}>
+      <ShellHeader aside={actions} as="h2" icon={icon} subtitle={subtitle} title={title} />
+      <Panel className={cn("flex-1 p-5", bodyClassName)}>
         {busy ? (
           <div
             className={cn("min-h-[120px]", !showSkeleton && "opacity-0")}

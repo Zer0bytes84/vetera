@@ -1,3 +1,4 @@
+import { Wallet } from "lucide-react";
 import { ListFilter } from "@/components/ui/list-controls";
 import { KpiSegments } from "../../v2/kpi-mini-chart";
 import { EmptyState, SignalBadge, Stat } from "@/design-system/primitives";
@@ -33,6 +34,7 @@ export function CashModule({
 }) {
   return (
     <WidgetShell
+      icon={Wallet}
       className="clinical-module clinical-cash-module"
       title="Trésorerie"
       subtitle={`${cash.count} mouvement${cash.count > 1 ? "s" : ""} confirmé${cash.count > 1 ? "s" : ""} sur la période`}

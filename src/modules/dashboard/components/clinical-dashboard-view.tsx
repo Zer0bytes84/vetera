@@ -60,6 +60,8 @@ export interface ClinicalDashboardViewProps {
   onPatients: () => void;
   onFinances: () => void;
   onReminders: () => void;
+  /** The dashboard's view switch, shown beside « Ouvrir Flux ». */
+  viewControl?: ReactNode;
   renderRow: (id: string, index: number, content: ReactNode) => ReactNode;
 }
 export function ClinicalDashboardView(p: ClinicalDashboardViewProps) {
@@ -78,6 +80,7 @@ export function ClinicalDashboardView(p: ClinicalDashboardViewProps) {
           error={p.states.now.error}
           onRetry={p.states.now.retry}
           onFlux={p.onFlux}
+          viewControl={p.viewControl}
         />
       ),
     },
@@ -88,7 +91,7 @@ export function ClinicalDashboardView(p: ClinicalDashboardViewProps) {
       content: p.renderRow(
         "clinical-day",
         1,
-        <div className="grid items-start gap-3 xl:grid-cols-[minmax(0,1.65fr)_minmax(300px,1fr)]">
+        <div className="grid items-stretch gap-3 xl:grid-cols-[minmax(0,1.65fr)_minmax(300px,1fr)]">
           <DayModule
             key={p.dayDate.toDateString()}
             rows={p.day}
@@ -126,7 +129,7 @@ export function ClinicalDashboardView(p: ClinicalDashboardViewProps) {
       content: p.renderRow(
         "clinical-followup",
         2,
-        <div className="grid items-start gap-3 lg:grid-cols-2">
+        <div className="grid items-stretch gap-3 lg:grid-cols-2">
           <PatientsModule
             summary={p.followUp}
             rows={p.patientRows}
