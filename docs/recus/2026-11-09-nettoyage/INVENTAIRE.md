@@ -1,5 +1,8 @@
 # Inventaire des choses mortes et cachées (9 novembre 2026)
 
+> **Mise à jour du 9 novembre 2026 :** le temps 2 a été exécuté ; voir `BILAN.md` (lots faits, vérifications, écarts par rapport à cet inventaire, points ouverts). Trois affirmations de cet inventaire sont corrigées par le bilan : `cabinet-floral-lilas.png` existait ; `capture-dictee`, `capture-mascotte` et `dictation-bench` sont des modules importés (section I) ; l'ordre des lots 3 à 6 devait tenir compte de dépendances entre lots.
+
+
 Temps 1 du chantier de nettoyage : **inventaire seulement**. Aucune suppression, aucun code touché (seuls ce dossier et ses annexes sont créés). Périmètre : ce qui n'est pas monté, pas référencé ou sans chemin d'accès. Les fonctionnalités montées sont hors périmètre ; **le thème Premium est exclu** et ses éléments sont signalés à part (aucune proposition de retrait). État analysé : commit `64019a7`.
 
 ## Méthode et niveau de preuve
