@@ -1,0 +1,31 @@
+/* La fenêtre « Quoi de neuf » : une surface vitrée comme l'en-tête et la barre d'actions rapides, sans trait de bordure,
+   R20 ; le panneau intérieur (fond `--card-inset`) est en retrait régulier de 6 px dans son cadre. */
+/* `premium-workspace.css` rend tous les dialogues opaques (`background` et `backdrop-filter` en `!important`) : celui-ci est
+   la seule fenêtre vitrée, il reprend donc la main avec un sélecteur plus précis, limité à sa classe. */
+:root .whats-new-dialog.whats-new-dialog[data-slot="dialog-content"] {
+  width: min(480px, calc(100vw - 32px));
+  max-width: none;
+  gap: 0;
+  padding: 6px;
+  border: 0;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.74) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+  backdrop-filter: blur(24px) saturate(180%) !important;
+  box-shadow: 0 24px 64px -16px rgba(15, 23, 42, 0.22);
+}
+:root.dark .whats-new-dialog.whats-new-dialog[data-slot="dialog-content"] {
+  background: rgba(14, 16, 22, 0.74) !important;
+  box-shadow: 0 24px 64px -16px rgba(0, 0, 0, 0.6);
+}
+.whats-new-dialog .whats-new-head {
+  padding: 18px 18px 18px;
+}
+.whats-new-dialog .whats-new-panel {
+  padding: 24px;
+}
+.whats-new-dialog .whats-new-foot {
+  display: flex;
+  justify-content: flex-end;
+  padding: 12px 6px 6px;
+}

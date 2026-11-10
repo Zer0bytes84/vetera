@@ -20,6 +20,7 @@ import {
   ReceiptTextIcon,
   Refresh01Icon,
   Shield01Icon,
+  SparklesIcon,
   PencilEdit01Icon,
   UserCircle02Icon,
   Wifi01Icon,
@@ -96,6 +97,7 @@ import { updatePassword } from "@/services/sqlite/auth";
 import { AIModelSettings } from "@/modules/consultations/components/ai-model-settings";
 import { ClinicNetworkSettings } from "@/modules/clinic-network/clinic-network-settings";
 import { RoomsSettings } from "@/modules/rooms/rooms-settings";
+import { ReleaseNotesArchive } from "@/modules/release-notes/release-notes-archive";
 import {
   AI_ONBOARDING_OPEN_EVENT,
   AI_SETTINGS_PENDING_KEY,
@@ -259,6 +261,13 @@ const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
         description: "Partager la base entre les postes du cabinet",
         icon: Wifi01Icon,
         keywords: ["réseau", "poste", "accueil", "secrétaire", "partage", "synchronisation", "lan"],
+      },
+      {
+        id: "nouveautes",
+        label: "Nouveautés",
+        description: "Ce qui a changé à chaque version",
+        icon: SparklesIcon,
+        keywords: ["nouveautés", "version", "mise à jour", "quoi de neuf", "notes de version", "changements"],
       },
       {
         id: "apropos",
@@ -1085,6 +1094,8 @@ const Parametres: React.FC<ParametresProps> = ({
         return <RoomsSettings />;
       case "reseau":
         return <ClinicNetworkSettings />;
+      case "nouveautes":
+        return <ReleaseNotesArchive />;
       case "apropos":
         return (
           <SettingsStack>

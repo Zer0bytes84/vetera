@@ -8,12 +8,13 @@ import i18n, { isRtlLanguage } from "@/i18n/config";
 import { acceptLicenseActivation } from "@/services/licenseRuntime";
 import { LicenseGate } from "@/components/LicenseGate";
 import { StartupSplash } from "@/components/startup-splash";
-import { checkAutoBackup } from "@/services/backupService";
+import { checkAutoBackup, getAppVersion } from "@/services/backupService";
 import { isTauriRuntime } from "@/services/browser-store";
 import {
   purgeDemoDataInTauriIfNeeded,
   seedDemoDataIfNeeded,
 } from "@/services/demo-data";
+import { markVersionSeen } from "@/modules/release-notes/release-seen";
 import { createInitialAdmin } from "@/services/sqlite/auth";
 import { startAppUpdateCheck } from "@/services/updateService";
 import { isActivationAdminRoute } from "@/services/activationAdminWindowService";
@@ -180,6 +181,8 @@ function MainApp() {
       displayName: userData.name,
     });
     await appSettingsRepository.markSetupComplete();
+    // Une installation neuve n'a rien « de neuf » à lire : on retient la version tout de suite.
+    markVersionSeen(getAppVersion());
     await login(userData.email, userData.password);
     setNeedsSetup(false);
   };

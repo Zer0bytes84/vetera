@@ -24,6 +24,7 @@ import {
 } from "@/modules/patients/pages/patient-peek";
 import { prepareAppointment } from "./model/clinical-actions";
 import { requestCreation } from "./model/creation-request";
+import { WhatsNewGate } from "@/modules/release-notes/whats-new-dialog";
 import {
   Logout01Icon,
   Settings01Icon,
@@ -553,6 +554,7 @@ function AppShellInner() {
         } as React.CSSProperties
       }
     >
+      <WhatsNewGate />
       {consultationPickerOpen && <Suspense fallback={null}><QuickConsultation open onOpenChange={setConsultationPickerOpen} onNavigate={handleNavigate}/></Suspense>}
       <AppSidebar
         collapsible={collapsible}

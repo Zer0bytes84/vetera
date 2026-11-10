@@ -14,6 +14,7 @@ export const SETTINGS_TABS = [
   "modeles-documents",
   "sauvegarde",
   "reseau",
+  "nouveautes",
   "apropos",
 ] as const;
 
