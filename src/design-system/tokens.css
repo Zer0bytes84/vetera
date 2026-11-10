@@ -22,6 +22,8 @@
   --shadow-float: var(--elev-float);
   --radius-shell: 24px;
   --radius-panel: 16px;
+  /* The band is a frame of this thickness around the panel; its radius is the panel's plus the frame: 16 + 6 = 22px. */
+  --card-frame: 6px;
   --radius-body: 12px;
   --radius-control: 10px;
   --ease-out: cubic-bezier(0.2, 0, 0, 1);

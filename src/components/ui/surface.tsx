@@ -6,9 +6,9 @@ import { cn } from "@/lib/utils";
 /*
  * Adapted for Baitari: the frame, which is also the header's band, is the grey of TuffUI's Chart Card
  * (`--card-band`, one token for the four themes), the panel the inset white / darker grey of the same card (`--card-inset`), icons come from
- * lucide. Depth without borders: a `Shell` holds `Panel`s, a panel holds `Inset`
- * blocks. Layers separate only by background, so these four are all a
- * component needs for its frame.
+ * lucide. A `Shell` holds `Panel`s, a panel holds `Inset` blocks. As in TuffUI there is no border and no shadow: the
+ * edge is only the contrast between the shell's fill and the panel's. The shell is a frame of `--card-frame` (6px) around
+ * the panel, and the radii are concentric: outer = inner + frame (16 + 6 = 22px).
  */
 
 type DivProps = React.ComponentProps<"div">;
@@ -17,7 +17,10 @@ type DivProps = React.ComponentProps<"div">;
 export function Shell({ className, ...props }: React.ComponentProps<"section">) {
   return (
     <section
-      className={cn("@container w-full rounded-[1.375rem] bg-[var(--card-band)] p-1.5 pb-3", className)}
+      className={cn(
+        "@container w-full rounded-[calc(var(--radius-panel)+var(--card-frame))] bg-[var(--card-band)] p-[var(--card-frame)]",
+        className,
+      )}
       {...props}
     />
   );
@@ -25,7 +28,12 @@ export function Shell({ className, ...props }: React.ComponentProps<"section">) 
 
 /** Main content area inside a shell. */
 export function Panel({ className, ...props }: DivProps) {
-  return <div className={cn("rounded-2xl bg-[var(--card-inset)]", className)} {...props} />;
+  return (
+    <div
+      className={cn("rounded-[var(--radius-panel)] bg-[var(--card-inset)]", className)}
+      {...props}
+    />
+  );
 }
 
 /** One level deeper: code, payloads, details inside a panel. */
