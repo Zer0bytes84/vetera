@@ -25,8 +25,8 @@ it("persiste le thème et la police, rien d'autre, et notifie", () => {
   expect(JSON.parse(storage.get("theme-config")!)).toEqual({ skin: "clean", cleanFont: "plex" });
   expect(dispatchEvent.mock.calls[0][0].type).toBe("baitari-theme-config-changed");
 });
-it("limite les presets aux quatre parcours existants", () => {
-  expect(PREMIUM_SHORTCUTS.map(({ id }) => id)).toEqual(["appointment", "consultation", "patient", "care"]);
+it("limite les raccourcis aux sept créations existantes, dans l'ordre du parcours du patient", () => {
+  expect(PREMIUM_SHORTCUTS.map(({ id }) => id)).toEqual(["appointment", "patient", "consultation", "care", "document", "product", "invoice"]);
 });
 it("conserve les actions noires en clair et bleu-violet en sombre", () => {
   const { values } = environment();

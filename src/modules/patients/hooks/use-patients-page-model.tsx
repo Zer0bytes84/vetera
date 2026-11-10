@@ -1,4 +1,5 @@
 import { formatNumber } from "@/utils/display-format";
+import { useCreationRequest } from "@/modules/shell/model/creation-request";
 import {
   useCallback,
   useDeferredValue,
@@ -233,6 +234,8 @@ export function usePatientsPageModel({ onNavigateToPatient }: PatientsProps) {
       window.removeEventListener("vetera:new-patient", handleNewPatient);
     };
   }, []);
+  // The same creation, asked for from the header's quick actions.
+  useCreationRequest("patient", () => setIsCreateOpen(true));
 
   const selectedPatient =
     patients.find((patient) => patient.id === selectedPatientId) ?? null;

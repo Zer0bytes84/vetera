@@ -1,4 +1,5 @@
 import { createUuid } from "@/lib/uuid";
+import { useCreationRequest } from "@/modules/shell/model/creation-request";
 import { draftPriceLines, priceInput } from "../lib/draft-prices";
 import { getInvoiceSettings } from "@/services/invoiceSettingsService";
 
@@ -218,6 +219,13 @@ export function useFinancesPageModel({
     window.addEventListener("vetera:new-invoice", consume);
     return () => window.removeEventListener("vetera:new-invoice", consume);
   }, [owners, invoices, invoicesLoading]);
+
+  // The "Nouvelle facture" button of the page, asked for from the header's quick actions.
+  useCreationRequest("invoice", () => {
+    setActiveTab("invoices");
+    setInvoiceDraft(createInvoiceDraft());
+    setIsInvoiceDialogOpen(true);
+  });
 
   const invoiceStats = useMemo(() => {
     return invoices.reduce(

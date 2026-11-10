@@ -12,6 +12,7 @@ import { toCentimes } from "@/utils/currency";
 import { StockError } from "@/domain/stock";
 import { isTauriRuntime } from "@/services/browser-store";
 import { useAuth } from "@/contexts/AuthContext";
+import { useCreationRequest } from "@/modules/shell/model/creation-request";
 
 export function useStockPageModel() {
   const {currentUser} = useAuth();
@@ -72,6 +73,7 @@ export function useStockPageModel() {
     setExpenseStatus("paid");
     setIsProductModalOpen(true);
   };
+  useCreationRequest("product", handleOpenAdd);
 
   const handleOpenEdit = (product: Product) => {
     setSelectedProduct(product);

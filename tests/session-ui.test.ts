@@ -14,12 +14,15 @@ describe("actions rapides", () => {
   const menu = read("src/modules/shell/components/header-quick-actions.tsx");
   const css = read("src/modules/shell/quick-actions.css");
 
-  it("garde les quatre raccourcis, chacun avec son icône", () => {
+  it("range les sept créations selon le parcours du patient, chacune avec son icône", () => {
     expect(PREMIUM_SHORTCUTS.map((shortcut) => shortcut.id)).toEqual([
       "appointment",
-      "consultation",
       "patient",
+      "consultation",
       "care",
+      "document",
+      "product",
+      "invoice",
     ]);
     for (const shortcut of PREMIUM_SHORTCUTS)
       expect(menu).toMatch(new RegExp(`\\n\\s*${shortcut.id}: `));

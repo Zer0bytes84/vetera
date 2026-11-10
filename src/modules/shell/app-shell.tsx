@@ -23,6 +23,7 @@ import {
   openPatientPeek,
 } from "@/modules/patients/pages/patient-peek";
 import { prepareAppointment } from "./model/clinical-actions";
+import { requestCreation } from "./model/creation-request";
 import {
   Logout01Icon,
   Settings01Icon,
@@ -327,8 +328,13 @@ function AppShellInner() {
   }, []);
 
   const handleQuickAction = useCallback((action: PremiumShortcut) => {
-    if (action === "patient") { setPaletteOpen(true); return; }
     if (action === "consultation") { setConsultationPickerOpen(true); return; }
+    if (action === "patient" || action === "document" || action === "product" || action === "invoice") {
+      const page: Record<typeof action, View> = { patient: "patients", document: "notes", product: "stock", invoice: "finances" };
+      handleNavigate(page[action]);
+      requestCreation(action);
+      return;
+    }
     if (action === "care") sessionStorage.setItem("vetera:pending-care-form", "true");
     else prepareAppointment();
     handleNavigate(action === "care" ? "soins" : "agenda");

@@ -1,17 +1,17 @@
 import {
   CalendarPlus,
   ClipboardList,
+  FilePlus,
+  Package,
   Plus,
-  Search,
+  Receipt,
   Stethoscope,
+  UserPlus,
 } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
@@ -20,20 +20,17 @@ import "@/modules/shell/quick-actions.css";
 
 const ICONS = {
   appointment: CalendarPlus,
+  patient: UserPlus,
   consultation: Stethoscope,
-  patient: Search,
   care: ClipboardList,
+  document: FilePlus,
+  product: Package,
+  invoice: Receipt,
 } satisfies Record<PremiumShortcut, unknown>;
 
-/** Only the shortcuts the shell already binds are shown beside their action. */
-const KEYS: Partial<Record<PremiumShortcut, string>> = {
-  appointment: "N",
-  patient: "⌘ K",
-};
-
 /**
- * The quick actions, behind one "+" in the header, at the same place on every page. It replaces the floating button of the
- * sheet's corner: the same four actions in the same menu, which opens under the button.
+ * The quick actions, behind one "+" in the header, at the same place on every page: one row of creations in the order of the
+ * patient's path through the practice. It opens as a floating glass bar centred under the button.
  */
 export function HeaderQuickActions({
   onAction,
@@ -44,7 +41,7 @@ export function HeaderQuickActions({
   className?: string;
 }) {
   return (
-    <DropdownMenu>
+    <DropdownMenu orientation="horizontal">
       <DropdownMenuTrigger
         aria-label="Actions rapides"
         className={cn("header-quick-actions", className)}
@@ -57,35 +54,26 @@ export function HeaderQuickActions({
         />
       </DropdownMenuTrigger>
       <DropdownMenuContent
-        align="end"
-        className="quick-actions-menu w-80"
+        align="center"
+        aria-label="Actions rapides"
+        className="quick-actions-menu"
+        collisionPadding={16}
         side="bottom"
-        sideOffset={8}
+        sideOffset={10}
       >
-        <DropdownMenuGroup>
-          <DropdownMenuLabel className="quick-actions-menu-label">
-            Actions rapides
-          </DropdownMenuLabel>
-          {PREMIUM_SHORTCUTS.map((shortcut) => {
-            const Icon = ICONS[shortcut.id];
-            return (
-              <DropdownMenuItem
-                className="quick-actions-menu-item"
-                data-tone={shortcut.tone}
-                key={shortcut.id}
-                onClick={() => onAction(shortcut.id)}
-              >
-                <Icon aria-hidden="true" strokeWidth={1.5} />
-                <span>{shortcut.label}</span>
-                {KEYS[shortcut.id] ? (
-                  <DropdownMenuShortcut className="quick-actions-menu-key">
-                    {KEYS[shortcut.id]}
-                  </DropdownMenuShortcut>
-                ) : null}
-              </DropdownMenuItem>
-            );
-          })}
-        </DropdownMenuGroup>
+        {PREMIUM_SHORTCUTS.map((shortcut) => {
+          const Icon = ICONS[shortcut.id];
+          return (
+            <DropdownMenuItem
+              className="quick-actions-menu-item"
+              key={shortcut.id}
+              onClick={() => onAction(shortcut.id)}
+            >
+              <Icon aria-hidden="true" strokeWidth={1.5} />
+              <span>{shortcut.label}</span>
+            </DropdownMenuItem>
+          );
+        })}
       </DropdownMenuContent>
     </DropdownMenu>
   );

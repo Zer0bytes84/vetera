@@ -19,6 +19,7 @@ import {
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Check, ChevronDown, FileText, Hash, Pin, Star } from "@/lib/icons";
 import type React from "react";
+import { useCreationRequest } from "@/modules/shell/model/creation-request";
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Editor from "@/components/Editor";
 import { documentNoteTemplateOrder, documentNoteTemplates, type DocumentNoteTemplate } from "@/components/document-note-templates";
@@ -303,6 +304,7 @@ const NotesPro: React.FC = () => {
       setFilter("all");
     }
   };
+  useCreationRequest("document", () => void handleCreateNote());
 
   const handleCreateTemplate = async (kind: DocumentNoteTemplate, targetPatientId = patientFilter) => {
     if (!currentUser) return;
