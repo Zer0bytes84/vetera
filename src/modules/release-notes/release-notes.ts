@@ -29,7 +29,8 @@ export type ReleaseNote = {
 export const RELEASE_NOTES: ReleaseNote[] = [
   {
     version: "5.0.7",
-    status: "draft",
+    status: "published",
+    date: "2026-11-11",
     highlights: [
       {
         icon: Palette,
