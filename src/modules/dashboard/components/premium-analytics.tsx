@@ -3,14 +3,16 @@
 import {
   ArrowDownRight,
   ArrowUpRight,
-  CalendarDays,
-  ClipboardCheck,
   ChartSpline,
   Gauge,
-  LayoutGrid,
-  Receipt,
-  Wallet,
 } from "lucide-react";
+import {
+  CalendarDaysIcon,
+  ClipboardDocumentCheckIcon,
+  ReceiptPercentIcon,
+  Squares2X2Icon,
+  WalletIcon,
+} from "@heroicons/react/20/solid";
 import React, { useMemo, useState } from "react";
 import { formatNumber } from "@/utils/display-format";
 import { parseDashboardDate, type ScheduleEntry } from "../v2/model";
@@ -207,7 +209,7 @@ export function MiniArea({ values, label }: { values: number[]; label: string })
 type TrendPoint = FocusPoint;
 
 /** The chart's own periods: a single day draws no curve, so « today » is left to the page's. */
-const KEY_FIGURE_ICONS = { cash: Wallet, appointments: CalendarDays, receivables: Receipt, actions: ClipboardCheck } as const;
+const KEY_FIGURE_ICONS = { cash: WalletIcon, appointments: CalendarDaysIcon, receivables: ReceiptPercentIcon, actions: ClipboardDocumentCheckIcon } as const;
 
 type ChartPeriod = Exclude<AnalyticsPeriod, "today"> | "custom";
 
@@ -455,7 +457,7 @@ export function PremiumAnalytics({
           aria-label={`Choisir les dates du graphique : ${chartRangeLabel}`}
           render={<Button className="size-8" size="icon-sm" title={chartRangeLabel} type="button" variant="ghost" />}
         >
-          <CalendarDays aria-hidden="true" size={16} strokeWidth={1.5} />
+          <CalendarDaysIcon aria-hidden="true" className="size-4" />
         </PopoverTrigger>
         <PopoverContent align="end" className="w-auto p-2">
           {/* Two clicks: the first day, then the last. A second range replaces the first. */}
@@ -511,7 +513,7 @@ export function PremiumAnalytics({
         <StatGrid
           className="max-w-none"
           data={keyStats}
-          icon={LayoutGrid}
+          icon={Squares2X2Icon}
           layout="row"
           goals={keyView === "kpi"}
           sparklines={keyView === "sparklines"}

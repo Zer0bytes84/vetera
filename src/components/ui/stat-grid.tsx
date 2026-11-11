@@ -3,6 +3,10 @@
 "use client";
 
 import { ArrowDownRight, ArrowRight, ArrowUpRight, Minus, type LucideIcon } from "lucide-react";
+import type { ComponentType } from "react";
+
+/** Widget icons: a Lucide glyph or a Heroicons solid, both take className and strokeWidth. */
+export type StatIcon = ComponentType<{ className?: string; strokeWidth?: number | string }>;
 import { MotionConfig, motion } from "motion/react";
 import { useId, type CSSProperties, type ReactNode } from "react";
 import { ProgressBar } from "@/components/ui/progress-bar";
@@ -46,7 +50,7 @@ export type Stat = {
   /** The badge's text, when a percentage cannot be (a zero base): `delta` is then read only for its sign. */
   deltaText?: string;
   /** Icon in a tinted chip before the label, and the tone it takes. */
-  icon?: LucideIcon;
+  icon?: StatIcon;
   tone?: StatTone;
   /** The figure takes the tone: a warning. */
   emphasize?: boolean;
@@ -59,7 +63,7 @@ export type StatGridProps = {
   title?: string;
   subtitle?: string;
   /** The header's icon tile. */
-  icon?: LucideIcon;
+  icon?: StatIcon;
   /** On the right of the header: a switch between the widget's views. */
   toolbar?: ReactNode;
   /** Controls on the header's own line, between the title and the toolbar (the dashboard's period filters). */

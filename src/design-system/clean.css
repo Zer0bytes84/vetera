@@ -1434,7 +1434,6 @@
    Rappels. Emergencies are a siren, not a security shield. Recalls are a due
    date. Everything late is the same clock with an alert, on every page. The
    clinical day view is a day of care, not a second "new consultation". */
-:root[data-skin="clean"] [data-slot="page-header"][data-page-title="Patients"] .premium-page-icon svg { --clean-icon: var(--clean-icon-book-heart); }
 :root[data-skin="clean"] .quick-actions-menu [data-tone="orange"] svg { --clean-icon: var(--clean-icon-syringe); }
 :root[data-skin="clean"] [data-kpi="Urgences ouvertes"] .section-atlas-title-icon { --clean-icon: var(--clean-icon-siren); }
 :root[data-skin="clean"] [data-kpi="Relances à prévoir"] .section-atlas-title-icon { --clean-icon: var(--clean-icon-calendar-clock); }

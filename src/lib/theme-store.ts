@@ -24,12 +24,12 @@ export const CLEAN_FONT_SETS: Record<
 > = {
   inter: {
     label: "Inter",
-    description: "Inter partout (ancienne valeur par défaut)",
+    description: "Par défaut : Inter partout",
     sample: "'Inter Clean', 'Inter Variable', sans-serif",
   },
   geist: {
     label: "Geist",
-    description: "Par défaut : Geist, chiffres en Geist Mono",
+    description: "Geist, chiffres en Geist Mono",
     sample: "'Geist Variable', sans-serif",
   },
   plex: {
@@ -44,7 +44,7 @@ export const CLEAN_FONT_SETS: Record<
   },
 };
 
-export const DEFAULT_CLEAN_FONT: CleanFontSet = "geist";
+export const DEFAULT_CLEAN_FONT: CleanFontSet = "inter";
 
 export function normalizeCleanFont(value: unknown): CleanFontSet {
   return typeof value === "string" && value in CLEAN_FONT_SETS
@@ -55,7 +55,7 @@ export function normalizeCleanFont(value: unknown): CleanFontSet {
 export interface ThemeConfig {
   /** Unset means the default skin (DEFAULT_SKIN). Installs from before Clean became the default have it set (keepPreviousAppearanceDefaults). */
   skin?: Skin;
-  /** Clean skin only; unset means the default Geist set (DEFAULT_CLEAN_FONT). */
+  /** Clean skin only; unset means the default Inter set (DEFAULT_CLEAN_FONT). */
   cleanFont?: CleanFontSet;
 }
 
