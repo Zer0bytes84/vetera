@@ -128,6 +128,7 @@ export function applyTheme(config: ThemeConfig, isDark: boolean) {
 
 const PREMIUM_DEFAULT_MIGRATION_KEY = "baitari-premium-default-v1";
 const CLEAN_DEFAULT_MIGRATION_KEY = "baitari-clean-default-v1";
+const CLEAN_FOR_ALL_MIGRATION_KEY = "baitari-clean-default-v2";
 
 /**
  * Clean is the default skin, and light the default mode, for new installs only.
@@ -147,6 +148,26 @@ export function keepPreviousAppearanceDefaults() {
     if (localStorage.getItem("theme") === null) localStorage.setItem("theme", "dark");
   }
   localStorage.setItem(CLEAN_DEFAULT_MIGRATION_KEY, "true");
+}
+
+/**
+ * Clean for everyone (11 November 2026): Premium is being removed, so an
+ * install still carrying the old pinned Premium skin is moved to Clean,
+ * once. The mode, the sidebar tone and the Clean type set are untouched,
+ * and a theme chosen afterwards in Appearance still wins: this is the
+ * default, not a lock.
+ */
+export function movePremiumInstallsToClean() {
+  if (localStorage.getItem(CLEAN_FOR_ALL_MIGRATION_KEY) === "true") return;
+  const stored = localStorage.getItem("theme-config");
+  if (stored !== null) {
+    let parsed: Partial<ThemeConfig> = {};
+    try { parsed = JSON.parse(stored); } catch { /* unreadable config: the defaults apply */ }
+    if (parsed && typeof parsed === "object" && parsed.skin !== "clean") {
+      localStorage.setItem("theme-config", JSON.stringify({ ...parsed, skin: "clean" }));
+    }
+  }
+  localStorage.setItem(CLEAN_FOR_ALL_MIGRATION_KEY, "true");
 }
 
 /** Storage keys of the removed settings and of their one-shot migrations. */
@@ -192,6 +213,7 @@ export function cleanUpRemovedDisplaySettings(): ThemeConfig {
 export function getThemeConfig(): ThemeConfig {
   try {
     keepPreviousAppearanceDefaults();
+    movePremiumInstallsToClean();
   } catch {
     // Storage unavailable: defaults apply.
   }
