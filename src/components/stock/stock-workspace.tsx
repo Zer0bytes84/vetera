@@ -6,7 +6,6 @@ import {
   Archive,
   ArrowDownRight,
   ArrowUpRight,
-  CalendarClock,
   ChevronLeft,
   ChevronRight,
   ClipboardCheck,
@@ -15,10 +14,7 @@ import {
   LayoutGrid,
   List,
   MoreHorizontal,
-  PackageCheck,
-  PackageOpen,
   RefreshCw,
-  WalletCards,
 } from "@/lib/icons";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
@@ -28,7 +24,7 @@ import {
 } from "@/components/ui/data-table";
 import { StatusPill, type StatusTone } from "@/components/ui/status-pill";
 import { QuietButton } from "@/components/ui/tuff-controls";
-import { Package } from "lucide-react";
+import { CheckCircleIcon, ClockIcon, CubeIcon, WalletIcon } from "@heroicons/react/20/solid";
 import { Panel, Shell, ShellHeader } from "@/components/ui/surface";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -368,7 +364,7 @@ function CatalogueTable({
       exportName="produits"
       filters={filters}
       toolbar={toolbar}
-      icon={Package}
+      icon={CubeIcon}
       noun={["référence", "références"]}
       onRowClick={(row) => onOpen(byId.get(row.id)!)}
       pageSize={PAGE_SIZE}
@@ -523,7 +519,7 @@ function TabShell({
 }) {
   return (
     <Shell>
-      <ShellHeader aside={toolbar} as="h2" icon={Package} title={title} />
+      <ShellHeader aside={toolbar} as="h2" icon={CubeIcon} title={title} />
       <Panel className="overflow-hidden">{children}</Panel>
     </Shell>
   );
@@ -707,12 +703,12 @@ export function StockWorkspace({
     <div className="space-y-4">
       <SectionCards
         actions={actions}
-        icon={Package}
+        icon={CubeIcon}
         subtitle="Stock, seuils et péremptions"
         items={[
           {
             title: "Valeur du stock",
-            icon: WalletCards,
+            icon: WalletIcon,
             value: formatDZD(stockValue),
             badge: "Au prix d’achat",
             tone: "quiet",
@@ -727,7 +723,7 @@ export function StockWorkspace({
           },
           {
             title: "À réapprovisionner",
-            icon: PackageOpen,
+            icon: CubeIcon,
             value: formatNumber(reorder.length),
             badge:
               reorder.length > 0 ? "Sous le seuil" : "Au-dessus des seuils",
@@ -745,7 +741,7 @@ export function StockWorkspace({
           },
           {
             title: "Péremptions à surveiller",
-            icon: CalendarClock,
+            icon: ClockIcon,
             value: formatNumber(expiries.length),
             badge:
               expiries.length > 0
@@ -765,7 +761,7 @@ export function StockWorkspace({
           },
           {
             title: "Catalogue actif",
-            icon: PackageCheck,
+            icon: CheckCircleIcon,
             value: formatNumber(products.length),
             badge: `${formatNumber(movements.length)} mouvement${movements.length > 1 ? "s" : ""} enregistré${movements.length > 1 ? "s" : ""}`,
             tone: "quiet",
@@ -822,7 +818,7 @@ export function StockWorkspace({
                         }
                         key={product.id}
                       >
-                        <CalendarClock
+                        <ClockIcon
                           aria-hidden="true"
                           className="size-4 shrink-0"
                         />
@@ -877,7 +873,7 @@ export function StockWorkspace({
               ) : view === "cards" && visibleProducts.length === 0 ? (
                 <Empty className="min-h-56 border-0 bg-transparent py-10">
                   <EmptyHeader>
-                    <EmptyMascot icon={<PackageOpen />} />
+                    <EmptyMascot icon={<CubeIcon />} />
                     <EmptyTitle>Aucun produit dans cette sélection</EmptyTitle>
                     <EmptyDescription>
                       Modifiez la recherche ou les filtres.
@@ -1137,7 +1133,7 @@ export function StockWorkspace({
           <TabShell title="Inventaire" toolbar={tabButtons}>
             <CardContent className="grid gap-4 p-5 md:grid-cols-3">
               <div className="rounded-2xl bg-foreground/[0.04] p-5">
-                <PackageCheck className="size-5 text-emerald-600" />
+                <CheckCircleIcon className="size-5 text-emerald-600" />
                 <p className="mt-5 text-muted-foreground text-xs">
                   Valeur d’acquisition
                 </p>
@@ -1155,7 +1151,7 @@ export function StockWorkspace({
                 </p>
               </div>
               <div className="rounded-2xl bg-foreground/[0.04] p-5">
-                <WalletCards className="size-5 text-sky-600" />
+                <WalletIcon className="size-5 text-sky-600" />
                 <p className="mt-5 text-muted-foreground text-xs">
                   Valeur de vente théorique
                 </p>

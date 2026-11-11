@@ -1,5 +1,5 @@
 import { SearchableSelect } from "@/components/ui/searchable-select";
-import { Receipt } from "lucide-react";
+import { ReceiptPercentIcon } from "@heroicons/react/20/solid";
 import { ListFilter, ListSearch } from "@/components/ui/list-controls";
 import { invoiceDocument } from "@/lib/invoice-document";
 import { InvoicePdfPreview } from "@/modules/invoices/components/invoice-pdf-preview";
@@ -285,7 +285,7 @@ export function FinancesView(props: FinancesViewProps) {
             </Button>
           </>
         }
-        icon={Receipt}
+        icon={ReceiptPercentIcon}
         items={financeSectionCards}
         subtitle="Facturation et règlements"
       />

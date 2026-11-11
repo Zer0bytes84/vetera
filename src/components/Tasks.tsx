@@ -1,5 +1,5 @@
 import { ErrorState } from "@/design-system/patterns/error-state";
-import { ClipboardCheck } from "lucide-react";
+import { BellIcon, CalendarDaysIcon, ClipboardDocumentCheckIcon, ClockIcon, ShieldExclamationIcon } from "@heroicons/react/20/solid";
 import { SearchableSelect } from "@/components/ui/searchable-select";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { usePatientReminders } from "@/modules/patient-reminders/use-patient-reminders";
@@ -21,16 +21,12 @@ import { PatientRemindersContent } from "@/modules/patient-reminders/patient-rem
 import { ListSearch } from "@/components/ui/list-controls";
 import { formatDisplayText, formatNumber } from "@/utils/display-format";
 import {
-  Bell,
-  CalendarDays,
   Check,
   CheckCircle2,
   ChevronDown,
-  Clock3,
   Pencil,
   Plus,
   RotateCcw,
-  ShieldAlert,
   Trash2,
   UserRound,
 } from "lucide-react";
@@ -727,12 +723,12 @@ const Tasks: React.FC = () => {
               Rappel médical
             </Button>
         }
-        icon={ClipboardCheck}
+        icon={ClipboardDocumentCheckIcon}
         subtitle="Échéances et actions à suivre"
         items={[
           {
             title: "En retard",
-            icon: ShieldAlert,
+            icon: ShieldExclamationIcon,
             value: formatNumber(counts.overdue.length),
             badge: counts.overdue.length ? "À relancer" : "À jour",
             tone: counts.overdue.length ? "critical" : "quiet",
@@ -748,7 +744,7 @@ const Tasks: React.FC = () => {
           },
           {
             title: "Dus aujourd’hui",
-            icon: CalendarDays,
+            icon: CalendarDaysIcon,
             value: formatNumber(counts.dueToday.length),
             tone: "quiet",
             trend: "neutral",
@@ -763,7 +759,7 @@ const Tasks: React.FC = () => {
           },
           {
             title: "À traiter",
-            icon: Bell,
+            icon: BellIcon,
             value: formatNumber(counts.today),
             badge: counts.today ? undefined : "À jour",
             tone: "quiet",
@@ -780,7 +776,7 @@ const Tasks: React.FC = () => {
           },
           {
             title: "À venir",
-            icon: Clock3,
+            icon: ClockIcon,
             value: formatNumber(counts.upcoming),
             tone: "quiet",
             trend: "neutral",
@@ -807,7 +803,7 @@ const Tasks: React.FC = () => {
               htmlFor="new-reminder-title"
               className="inline-flex items-center gap-2 text-xs font-medium text-foreground"
             >
-              <Bell aria-hidden="true" className="size-4 shrink-0" />
+              <BellIcon aria-hidden="true" className="size-4 shrink-0" />
               Nouveau rappel
             </label>
             <Input
@@ -1188,7 +1184,7 @@ const Tasks: React.FC = () => {
             type="button"
             variant="ghost"
           >
-            <CalendarDays className="size-4" />
+            <CalendarDaysIcon className="size-4" />
             Reporter à demain
           </Button>
           <Button
@@ -1455,7 +1451,7 @@ function ManualReminderRow({
         </div>
         <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-muted-foreground text-xs">
           <span className="inline-flex items-center gap-1.5">
-            <Clock3 className="size-3.5" />
+            <ClockIcon className="size-3.5" />
             {dateLabel(item.date, view, Boolean(item.task.startTime))}
           </span>
           {item.patient && (
@@ -1477,7 +1473,7 @@ function ManualReminderRow({
       <div className="flex flex-wrap items-center gap-1 sm:justify-end">
         {!completed && (
           <Button onClick={onPostpone} size="sm" type="button" variant="ghost">
-            <CalendarDays className="size-4" />
+            <CalendarDaysIcon className="size-4" />
             Demain
           </Button>
         )}
@@ -1515,7 +1511,7 @@ function AutomaticReminderRow({
   return (
     <article className="flex flex-col gap-4 bg-sky-500/[0.025] p-4 sm:flex-row sm:items-center sm:p-5">
       <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-sky-500/10 text-sky-700 dark:text-sky-300">
-        <Bell className="size-4" />
+        <BellIcon className="size-4" />
       </div>
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-2">
@@ -1533,7 +1529,7 @@ function AutomaticReminderRow({
         </div>
         <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-muted-foreground text-xs">
           <span className="inline-flex items-center gap-1.5">
-            <Clock3 className="size-3.5" />
+            <ClockIcon className="size-3.5" />
             {dateLabel(item.date, view)}
           </span>
           {item.patient && (
@@ -1575,7 +1571,7 @@ function EmptyState({ query, view }: { query: string; view: ReminderView }) {
         {view === "completed" ? (
           <CheckCircle2 className="size-5" />
         ) : (
-          <Clock3 className="size-5" />
+          <ClockIcon className="size-5" />
         )}
       </div>
       <h2 className="mt-4 font-semibold">Rien à traiter</h2>

@@ -1,6 +1,8 @@
 // TUFFUI (https://tuffui.com) · MIT License · Copyright (c) 2026 TUFFUI contributors
 // Free to use. If it helps you, you can support it: https://ko-fi.com/yurigokoryan
-import type { LucideIcon } from "lucide-react";
+
+/** Header and tile icons: a Lucide glyph or a Heroicons solid, both take className. */
+type ShellIcon = import("react").ComponentType<{ className?: string; strokeWidth?: number | string }>;
 import { cn } from "@/lib/utils";
 
 /*
@@ -47,7 +49,7 @@ export function IconTile({
   className,
   children,
   ...props
-}: DivProps & { icon?: LucideIcon }) {
+}: DivProps & { icon?: ShellIcon }) {
   return (
     <div
       aria-hidden="true"
@@ -63,7 +65,7 @@ export function IconTile({
 }
 
 export type ShellHeaderProps = Omit<DivProps, "title"> & {
-  icon?: LucideIcon;
+  icon?: ShellIcon;
   title: React.ReactNode;
   subtitle?: React.ReactNode;
   /** Right side: a stat, a pill or actions. Vertically centered with the title. */

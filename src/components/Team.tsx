@@ -1,5 +1,5 @@
 import { ListSearch } from "@/components/ui/list-controls";
-import { UsersRound } from "lucide-react";
+import { UsersIcon } from "@heroicons/react/20/solid";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -414,7 +414,7 @@ const Team: React.FC = () => {
             </Button>
           ) : undefined
         }
-        icon={UsersRound}
+        icon={UsersIcon}
         items={sectionCards}
         subtitle="Praticiens, soignants et accès"
       />
