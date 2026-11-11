@@ -2,7 +2,7 @@
 // Free to use. If it helps you, you can support it: https://ko-fi.com/yurigokoryan
 "use client";
 
-import { ArrowDownRight, ArrowRight, ArrowUpRight, Minus, type LucideIcon } from "lucide-react";
+import { ArrowDownRight, ArrowRight, ArrowUpRight, Minus } from "lucide-react";
 import type { ComponentType } from "react";
 
 /** Widget icons: a Lucide glyph or a Heroicons solid, both take className and strokeWidth. */
