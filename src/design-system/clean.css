@@ -1701,3 +1701,13 @@
   border: 1px solid rgba(255, 255, 255, 0.07) !important;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4) !important;
 }
+
+/* The sheet's curve follows the frame like the blocks do: the radius equals
+   the frame's thickness (8px), so the band stays even all around the corner
+   instead of swelling on the diagonal. */
+:root[data-skin="clean"][data-skin][data-skin] [data-slot="shell-scroll-panel"] {
+  border-radius: var(--clean-sheet-inset) var(--clean-sheet-inset) 0 0 !important;
+}
+:root[data-skin="clean"][data-skin][data-skin] [data-slot="app-header"] {
+  border-radius: var(--clean-sheet-inset) var(--clean-sheet-inset) 0 0 !important;
+}
