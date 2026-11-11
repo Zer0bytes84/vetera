@@ -45,7 +45,7 @@ afterEach(() => vi.unstubAllGlobals());
 describe("thème Clean : jetons", () => {
   it("pose le cadre, la feuille, le filet, le survol et les quatre gris", () => {
     expect(declarations.get("--clean-frame")).toBe("#ededee");
-    expect(declarations.get("--clean-sheet")).toBe("#fafafa");
+    expect(declarations.get("--clean-sheet")).toBe("#ffffff");
     expect(declarations.get("--clean-surface")).toBe("#ffffff");
     expect(declarations.get("--clean-line")).toBe("#e6e6e8");
     expect(declarations.get("--clean-hover")).toBe("#f0f0f1");
@@ -55,11 +55,11 @@ describe("thème Clean : jetons", () => {
     expect(declarations.get("--clean-ink-disabled")).toBe("#a6a6a6");
   });
 
-  it("fixe les hauteurs : 40 px en listes, 32 px en tableaux et contrôles, 28 px dans la sidebar", () => {
+  it("fixe les hauteurs : 40 px en listes, 32 px en tableaux et contrôles, 34 px dans la sidebar", () => {
     expect(declarations.get("--clean-row-list")).toBe("40px");
     expect(declarations.get("--clean-row-table")).toBe("32px");
     expect(declarations.get("--clean-control")).toBe("32px");
-    expect(declarations.get("--clean-nav-item")).toBe("28px");
+    expect(declarations.get("--clean-nav-item")).toBe("34px");
     const nav = rulesFor(/sidebar-menu-button"\]$/).flatMap((rule) => rule.nodes);
     expect(nav.some((n) => n.type === "decl" && n.prop === "height" && n.value.includes("--clean-nav-item"))).toBe(true);
     const table = rulesFor(/:is\(th, td\)/).flatMap((rule) => rule.nodes);
@@ -282,7 +282,6 @@ describe("thème Clean : interrupteurs segmentés", () => {
 
 describe("thème Clean : icônes", () => {
   const SUBSTITUTIONS: [target: RegExp, icon: string][] = [
-    [/aria-label="Patients"\] svg/, "book-heart"],
     [/data-tone="orange"\] svg/, "syringe"],
     [/data-kpi="Urgences ouvertes"\]/, "siren"],
     [/data-kpi="Relances à prévoir"\]/, "calendar-clock"],
@@ -442,19 +441,19 @@ describe("thème Clean : réglage et défaut", () => {
     expect(storage.get("theme")).toBeUndefined();
   });
 
-  it("une installation existante garde Premium et son mode sombre", () => {
+  it("une installation existante passe à Clean et garde son mode sombre", () => {
     const { storage } = environment();
     storage.set("baitari-premium-default-v1", "true");
     storage.set("theme-config", JSON.stringify({ density: "compact" }));
-    // The removed density setting is dropped; the theme is kept.
-    expect(getThemeConfig()).toEqual({ skin: "premium" });
+    // The removed density setting is dropped; the skin is migrated to Clean.
+    expect(getThemeConfig()).toEqual({ skin: "clean" });
     expect(storage.get("theme")).toBe("dark");
   });
 
-  it("une installation existante sans configuration enregistrée garde aussi Premium", () => {
+  it("une installation existante sans configuration enregistrée passe aussi à Clean", () => {
     const { storage } = environment();
     storage.set("baitari-premium-default-v1", "true");
-    expect(getThemeConfig().skin).toBe("premium");
+    expect(getThemeConfig().skin).toBe("clean");
     expect(storage.get("theme")).toBe("dark");
   });
 

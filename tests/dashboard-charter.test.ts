@@ -27,10 +27,20 @@ const TSX_FILES = [
 
 const stripComments = (text: string) => text.replace(/\/\*[\s\S]*?\*\//g, "");
 
+// Sole exception, deliberate: the Catalyst dosage of 2026-11-11 sets the
+// key-figure labels and values of the overview in zinc-950, light only
+// (:root:not(.dark) rules at the end of premium-analytics.css).
+const DOSAGE_INK = "#09090b";
+
 describe("dashboard uses the charter tokens", () => {
   it.each(CSS_FILES)("%s has no hard-coded colour", (file) => {
     const css = stripComments(readFileSync(file, "utf8"));
-    expect(css.match(/#[0-9a-fA-F]{3,8}\b|rgba?\(|hsla?\(|oklch\(/g) ?? []).toEqual([]);
+    const found = css.match(/#[0-9a-fA-F]{3,8}\b|rgba?\(|hsla?\(|oklch\(/g) ?? [];
+    if (file.endsWith("premium-analytics.css")) {
+      expect(found.map((colour) => colour.toLowerCase())).toEqual([DOSAGE_INK, DOSAGE_INK]);
+    } else {
+      expect(found).toEqual([]);
+    }
   });
 
   it.each(TSX_FILES)("%s has no palette colour or literal", (file) => {

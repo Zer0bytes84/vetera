@@ -39,12 +39,12 @@ it("conserve les actions noires en clair et bleu-violet en sombre", () => {
     expect(values.get("--radius")).toBe("0.5rem");
   }
 });
-it("ramène une ancienne préférence Classique sur Premium", () => {
+it("ramène une ancienne préférence Classique sur Clean", () => {
   const { storage, dataset } = environment();
   storage.set("baitari-premium-default-v1", "true");
   storage.set("theme-config", JSON.stringify({ visualStyle: "classic", skin: "premium", density: "compact" }));
   const config = getThemeConfig();
-  expect(config).toEqual({ skin: "premium" });
+  expect(config).toEqual({ skin: "clean" });
   applyTheme(config, false);
   expect(dataset.visualStyle).toBe("premium");
 });

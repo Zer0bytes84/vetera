@@ -77,6 +77,7 @@
   --clean-glass-blur: 20px;
   /* Segmented switches: a tinted track, a white sheet for the chosen view. */
   --clean-segment-track: #ededee;
+  --clean-segment-track-band: #e4e4e5;
   --clean-segment-item: 28px;
   --clean-segment-radius: 6px;
   --clean-segment-active: var(--clean-surface);
@@ -91,7 +92,6 @@
   /* Icon substitutions (Lucide, drawn as masks over the original icon, so no
      component changes per theme). Each one is listed in the review and can be
      vetoed alone by deleting its line in the substitution block below. */
---clean-icon-book-heart: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M16 8.2A2.22 2.22 0 0 0 13.8 6c-.8 0-1.4.3-1.8.9-.4-.6-1-.9-1.8-.9A2.22 2.22 0 0 0 8 8.2c0 .6.3 1.2.7 1.6A226.652 226.652 0 0 0 12 13a404 404 0 0 0 3.3-3.1 2.413 2.413 0 0 0 .7-1.7'/%3E%3Cpath d='M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20'/%3E%3C/svg%3E");
   --clean-icon-syringe: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m18 2 4 4'/%3E%3Cpath d='m17 7 3-3'/%3E%3Cpath d='M19 9 8.7 19.3c-1 1-2.5 1-3.4 0l-.6-.6c-1-1-1-2.5 0-3.4L15 5'/%3E%3Cpath d='m9 11 4 4'/%3E%3Cpath d='m5 19-3 3'/%3E%3Cpath d='m14 4 6 6'/%3E%3C/svg%3E");
   --clean-icon-siren: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 18v-6a5 5 0 1 1 10 0v6'/%3E%3Cpath d='M5 21a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-1a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2z'/%3E%3Cpath d='M21 12h1'/%3E%3Cpath d='M18.5 4.5 18 5'/%3E%3Cpath d='M2 12h1'/%3E%3Cpath d='M12 2v1'/%3E%3Cpath d='m4.929 4.929.707.707'/%3E%3Cpath d='M12 12v6'/%3E%3C/svg%3E");
   --clean-icon-calendar-clock: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 7.5V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h3.5'/%3E%3Cpath d='M16 2v4'/%3E%3Cpath d='M8 2v4'/%3E%3Cpath d='M3 10h5'/%3E%3Cpath d='M17.5 17.5 16 16.3V14'/%3E%3Ccircle cx='16' cy='16' r='6'/%3E%3C/svg%3E");
@@ -141,6 +141,7 @@
   --clean-accent-hover: #4b33f0;
   --clean-ring: #ffffff;
   --clean-segment-track: rgb(255 255 255 / 0.05);
+  --clean-segment-track-band: rgb(255 255 255 / 0.05);
   --clean-segment-active: rgb(255 255 255 / 0.1);
   --clean-segment-active-shadow: inset 0 0 0 0.5px rgb(255 255 255 / 0.08);
   --clean-sheet-shadow: 0 0 0 0.5px rgb(255 255 255 / 0.07);
@@ -1516,13 +1517,13 @@
   min-height: var(--clean-segment-item) !important;
 }
 
-/* Segmented switches on a band, light only: the track token is the band
-   colour itself (#ededee on the #ededee band, measured on captures), so the
-   grouping vanished and the items floated as loose white pills. Premium
-   reads #e4e4e5 on the same band; on a band the track takes that step down.
-   Dark already contrasts (white 5% track), so it keeps its rule. */
-:root[data-skin="clean"][data-skin][data-skin]:not(.dark) [data-slot="band"] :is([data-tabs-style="segmented"], .dashboard-mode-toggle, .flow-density, .stock-view-toggle) {
-  background: #e4e4e5 !important;
+/* Segmented switches on a band: the track token is the band colour itself
+   (#ededee on the #ededee band, measured on captures), so the grouping
+   vanished and the items floated as loose white pills. On a band the track
+   takes the band step (--clean-segment-track-band: #e4e4e5 in light; in dark
+   the same white 5% as the base track, which already contrasted). */
+:root[data-skin="clean"] [data-slot="band"] {
+  --clean-segment-track: var(--clean-segment-track-band);
 }
 
 /* Radii: the shadcn multipliers of the 8 px base gave 4.8, 6.4, 11.2 and

@@ -2,9 +2,10 @@ import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { expect, it } from "vitest";
 
-// Charte: 12 / 13 / 14 / 16 / 18 / 24 px. Printed A4 layouts and the
-// first-run screens keep their own sizes on purpose.
-const ALLOWED = new Set([12, 13, 14, 16, 18, 24]);
+// Charte: 12 / 13 / 14 / 15 / 16 / 18 / 24 px (15 px: the page description
+// of the Linear scale, measured and adopted on 2026-11-11). Printed A4
+// layouts and the first-run screens keep their own sizes on purpose.
+const ALLOWED = new Set([12, 13, 14, 15, 16, 18, 24]);
 const EXEMPT = /print-layout|SetupWizard|setup-wizard\.css|welcome-artwork\.css/;
 
 function files(dir: string, out: string[] = []): string[] {

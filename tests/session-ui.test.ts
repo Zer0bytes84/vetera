@@ -41,13 +41,14 @@ describe("actions rapides", () => {
 describe("barre latérale", () => {
   const sidebar = read("src/components/app-sidebar.tsx");
 
-  it("pose Paramètres seul dans le footer, sans séparateur ni compte", () => {
+  it("pose le compte dans le footer, façon Catalyst, sans bouton Paramètres séparé", () => {
     const footer = sidebar.slice(
       sidebar.indexOf("<SidebarFooter"),
       sidebar.indexOf("</SidebarFooter>"),
     );
-    expect(footer).toContain('aria-label="Paramètres"');
-    expect(footer).not.toMatch(/border-t|SidebarSeparator|NavUser|Avatar/);
+    expect(footer).toContain("AccountSidebarFooter");
+    expect(footer).not.toContain('aria-label="Paramètres"');
+    expect(footer).not.toMatch(/NavUser|SidebarSeparator/);
   });
 
   it("ne range plus les raccourcis dans la barre : ils vivent dans le « + » de l'entête", () => {

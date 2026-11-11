@@ -94,7 +94,9 @@ describe("barre latérale : charte", () => {
   it("les règles Premium sombre de la barre latérale ont la garde et la variante forcée", () => {
     for (const path of ["src/design-system/premium.css", "src/modules/shell/premium-sidebar.css"]) {
       const darkSidebar = selectors(path).filter((selector) =>
-        /^:root\.dark\[data-visual-style="premium"\]/.test(selector) && /sidebar|nav-link/.test(selector));
+        /^:root\.dark\[data-visual-style="premium"\]/.test(selector) && /sidebar|nav-link/.test(selector)
+        // The active-pill rules scoped to a light-pinned bar are the light case itself, not dark rules leaking onto it.
+        && !selector.includes('[data-sidebar-tone="light"]'));
       expect(darkSidebar.length).toBeGreaterThan(0);
       for (const selector of darkSidebar) {
         expect(selector).toContain(GUARD);

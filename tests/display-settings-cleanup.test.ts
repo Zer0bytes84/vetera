@@ -80,20 +80,20 @@ describe("paramètres d'affichage retirés : migration", () => {
   it("supporte une configuration illisible ou des valeurs inconnues sans erreur", () => {
     const broken = install({ "baitari-premium-default-v1": "true", "baitari-clean-default-v1": "true", "theme-config": "{oops" });
     expect(() => getThemeConfig()).not.toThrow();
-    expect(getThemeConfig()).toEqual({});
-    expect(broken.storage.get("theme-config")).toBe("{oops");
+    expect(getThemeConfig()).toEqual({ skin: "clean" });
+    expect(broken.storage.get("theme-config")).toBe('{"skin":"clean"}');
     vi.unstubAllGlobals();
     install({ "baitari-premium-default-v1": "true", "baitari-clean-default-v1": "true", "theme-config": JSON.stringify({ skin: "neon", cleanFont: "comic", accent: 42 }) });
-    expect(getThemeConfig()).toEqual({});
+    expect(getThemeConfig()).toEqual({ skin: "clean" });
   });
 
-  it("une installation neuve reste sans valeur enregistrée : Clean et Geist par défaut", () => {
+  it("une installation neuve reste sans valeur enregistrée : Clean et Inter par défaut", () => {
     const { storage, dataset } = install({});
     const config = getThemeConfig();
     expect(config).toEqual({});
     expect(storage.has("theme-config")).toBe(false);
     applyTheme(config, false);
-    expect(dataset).toMatchObject({ skin: "clean", cleanFont: "geist" });
+    expect(dataset).toMatchObject({ skin: "clean", cleanFont: "inter" });
   });
 
   it("ne laisse plus aucune trace des réglages retirés dans le code", async () => {

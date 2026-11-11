@@ -9,7 +9,7 @@ import { CLEAN_FONT_SETS, normalizeCleanFont } from "../src/lib/theme-store";
 const CLEAN = readFileSync("src/design-system/clean.css", "utf8");
 const MARK = "Finish of 5 November 2026";
 const FINISH = postcss.parse(CLEAN.slice(CLEAN.lastIndexOf("/*", CLEAN.indexOf(MARK))));
-const SPACE = new Set([0, 2, 4, 6, 8, 12, 16, 20, 24, 32, 40, 48]);
+const SPACE = new Set([0, 2, 4, 6, 8, 10, 12, 16, 20, 24, 32, 40, 48]);
 const RADIUS = new Set([4, 6, 8, 10, 12]);
 const pixels = (value: string) => [...value.matchAll(/(-?\d+(?:\.\d+)?)px/g)].map((match) => Math.abs(Number(match[1])));
 
@@ -21,7 +21,7 @@ describe("thème Clean : finition mesurée", () => {
     });
   });
 
-  it("ne pose aucun espacement hors de l'échelle 2 4 6 8 12 16 20 24 32 40 48", () => {
+  it("ne pose aucun espacement hors de l'échelle 2 4 6 8 10 12 16 20 24 32 40 48", () => {
     const off: string[] = [];
     FINISH.walkDecls(/^(padding|margin|gap|row-gap|column-gap)/, (decl) => {
       for (const px of pixels(decl.value)) if (!SPACE.has(px)) off.push(`${decl.prop}: ${decl.value}`);
@@ -52,10 +52,10 @@ describe("thème Clean : finition mesurée", () => {
 });
 
 describe("thème Clean : jeux de polices", () => {
-  it("prend Geist par défaut et ignore une valeur inconnue", () => {
-    expect(normalizeCleanFont(undefined)).toBe("geist");
-    expect(normalizeCleanFont("comic")).toBe("geist");
-    expect(normalizeCleanFont("inter")).toBe("inter");
+  it("prend Inter par défaut et ignore une valeur inconnue", () => {
+    expect(normalizeCleanFont(undefined)).toBe("inter");
+    expect(normalizeCleanFont("comic")).toBe("inter");
+    expect(normalizeCleanFont("geist")).toBe("geist");
     expect(Object.keys(CLEAN_FONT_SETS)).toEqual(["inter", "geist", "plex", "signature"]);
     const store = readFileSync("src/lib/theme-store.ts", "utf8");
     expect(store).toContain("root.dataset.cleanFont = normalizeCleanFont(config.cleanFont);");
