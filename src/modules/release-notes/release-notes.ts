@@ -1,4 +1,4 @@
-import { Banknote, Building2, FileText, LayoutGrid, MessageSquareText, Plus, type LucideIcon } from "lucide-react";
+import { Banknote, Building2, FileText, LayoutGrid, MessageSquareText, Palette, Plus, Shapes, Type, type LucideIcon } from "lucide-react";
 
 /**
  * Les notes de version : une entrée par version, à remplir à chaque publication.
@@ -27,6 +27,27 @@ export type ReleaseNote = {
 
 /** Les plus récentes en premier. */
 export const RELEASE_NOTES: ReleaseNote[] = [
+  {
+    version: "5.0.7",
+    status: "draft",
+    highlights: [
+      {
+        icon: Palette,
+        title: "Une seule apparence, plus épurée",
+        text: "Baitari adopte partout la même apparence épurée, en clair comme en sombre : chaque page se ressemble, et tout se retrouve plus vite.",
+      },
+      {
+        icon: Type,
+        title: "Des textes plus lisibles",
+        text: "Les titres, les tableaux et les chiffres clés ont été retravaillés : les informations importantes se lisent d'un coup d'œil, du tableau de bord au dossier du patient.",
+      },
+      {
+        icon: Shapes,
+        title: "Des icônes partout pareilles",
+        text: "La même famille d'icônes dans toutes les pages : chaque action se reconnaît immédiatement, où que vous soyez dans l'application.",
+      },
+    ],
+  },
   {
     version: "5.0.6",
     status: "published",
