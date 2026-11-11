@@ -1,4 +1,4 @@
-import { Banknote, Building2, LayoutGrid, MessageSquareText, Plus, type LucideIcon } from "lucide-react";
+import { Banknote, Building2, FileText, LayoutGrid, MessageSquareText, Plus, type LucideIcon } from "lucide-react";
 
 /**
  * Les notes de version : une entrée par version, à remplir à chaque publication.
@@ -29,8 +29,14 @@ export type ReleaseNote = {
 export const RELEASE_NOTES: ReleaseNote[] = [
   {
     version: "5.0.6",
-    status: "draft",
+    status: "published",
+    date: "2026-11-10",
     highlights: [
+      {
+        icon: FileText,
+        title: "Des documents enfin fluides",
+        text: "La page Documents est refaite : vos notes s'enregistrent sans perte, la recherche retrouve aussi le texte à l'intérieur des notes, et les modèles suivent la vraie structure d'une consultation, prêts à remplir.",
+      },
       {
         icon: Plus,
         title: "Actions rapides au bout du +",
