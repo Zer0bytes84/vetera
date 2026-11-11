@@ -1816,3 +1816,17 @@ button:hover .toggleIcon[data-collapsed="true"] .toggleChevron {
 :root:root:root [data-slot="band-lead"] .filterDates button.filterDate { height: 28px !important; min-height: 28px !important; max-height: 28px !important; padding-block: 0 !important; font-size: 13px; }
 /* The view switch is two icons: a grid (indicators) and a small curve (mini-charts). */
 .keyViewIcons .filter.keyViewIcon { padding: 0; width: 36px; height: 32px; justify-content: center; }
+
+
+/* Trial v2 (2026-11-11): Catalyst dosage on the dashboard, light only, the
+   widgets keep their grey band. Stat labels step up to the demo's 14 medium
+   in zinc-950 and the values take the same ink, semibold. */
+:root:not(.dark) .premium-overview-shell [class*="text-[0.8125rem]"] {
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  color: #09090b !important;
+}
+:root:not(.dark) .premium-overview-shell span[class*="text-[1.5rem]"] {
+  font-weight: 600 !important;
+  color: #09090b !important;
+}
