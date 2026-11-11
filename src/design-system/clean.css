@@ -65,7 +65,7 @@
   --clean-online: #22c55e;
   --clean-row-list: 40px;
   --clean-row-table: 32px;
-  --clean-nav-item: 28px;
+  --clean-nav-item: 34px;
   /* Navigation labels: 14 px since 5 November 2026 (13 px before). Read at a
      glance, sometimes from the exam table: +7.7 % x-height, still one line
      and the same 28 px row (measures in docs/recus/2026-11-05/recherche-entete/). */
@@ -435,8 +435,10 @@
   --premium-shortcut-row: var(--clean-nav-item);
 }
 :root[data-skin="clean"][data-skin][data-skin] .app-sidebar [data-slot="sidebar-menu-button"] {
-  height: var(--clean-nav-item) !important;
-  min-height: var(--clean-nav-item) !important;
+  height: 30px !important;
+  min-height: 30px !important;
+  padding: 0 10px !important;
+  gap: 10px;
   border-radius: var(--clean-control-radius);
   color: var(--clean-ink);
   font-size: var(--clean-nav-text);
@@ -486,7 +488,7 @@
 /* Rhythm: 28 px rows on a 34 px pitch, 28 px between groups, so the pages
    fill the column at a calm reading pace instead of huddling at its top. */
 :root[data-skin="clean"][data-skin][data-skin] [data-state="expanded"] .app-sidebar [data-slot="sidebar-content"] > div { gap: 28px; }
-:root[data-skin="clean"][data-skin][data-skin] [data-state="expanded"] .app-sidebar [data-slot="sidebar-menu"] { gap: 6px; }
+:root[data-skin="clean"][data-skin][data-skin] [data-state="expanded"] .app-sidebar [data-slot="sidebar-menu"] { gap: 2px; }
 :root[data-skin="clean"][data-skin][data-skin] [data-state="expanded"] .app-sidebar [data-slot="sidebar-group-label"] { margin-bottom: 8px; }
 :root[data-skin="clean"][data-skin][data-skin] [data-state="expanded"] .app-sidebar .sidebar-subpages { gap: 6px; margin-top: 6px; }
 
@@ -531,15 +533,15 @@
 /* ---------- Icons: one 1.5 stroke, contained size, the label's grey at rest ---------- */
 @layer utilities {
   :root[data-skin="clean"] .app-sidebar .sidebar-nav-icon {
-    width: var(--clean-nav-icon) !important;
-    height: var(--clean-nav-icon) !important;
+    width: 20px !important;
+    height: 20px !important;
   }
   :root[data-skin="clean"] .app-sidebar [data-slot="sidebar-menu-button"] .sidebar-nav-icon svg,
   :root[data-skin="clean"] .app-sidebar [data-slot="sidebar-menu-button"] > svg,
   :root[data-skin="clean"] .premium-shortcut-icon {
-    width: var(--clean-nav-icon) !important;
-    height: var(--clean-nav-icon) !important;
-    flex-basis: var(--clean-nav-icon) !important;
+    width: 20px !important;
+    height: 20px !important;
+    flex-basis: 20px !important;
   }
 }
 :root[data-skin="clean"] :is(.app-sidebar [data-slot="sidebar-menu-button"], .premium-shortcuts button, [data-list-row], [data-slot="table-row"], .medical-data-table tr, .shell-toolbar-actions) svg,
@@ -1432,7 +1434,6 @@
    Rappels. Emergencies are a siren, not a security shield. Recalls are a due
    date. Everything late is the same clock with an alert, on every page. The
    clinical day view is a day of care, not a second "new consultation". */
-:root[data-skin="clean"] .app-sidebar [data-slot="sidebar-menu-button"][aria-label="Patients"] svg,
 :root[data-skin="clean"] [data-slot="page-header"][data-page-title="Patients"] .premium-page-icon svg { --clean-icon: var(--clean-icon-book-heart); }
 :root[data-skin="clean"] .quick-actions-menu [data-tone="orange"] svg { --clean-icon: var(--clean-icon-syringe); }
 :root[data-skin="clean"] [data-kpi="Urgences ouvertes"] .section-atlas-title-icon { --clean-icon: var(--clean-icon-siren); }
@@ -1441,7 +1442,6 @@
 :root[data-skin="clean"] .dashboard-mode-toggle button[value="clinical"] svg { --clean-icon: var(--clean-icon-calendar-heart); }
 /* The mechanism: the substitute is painted in the icon's own colour and box. */
 :root[data-skin="clean"] :is(
-  .app-sidebar [data-slot="sidebar-menu-button"][aria-label="Patients"] svg,
   [data-slot="page-header"][data-page-title="Patients"] .premium-page-icon svg,
   .quick-actions-menu [data-tone="orange"] svg,
   [data-kpi="Urgences ouvertes"] .section-atlas-title-icon,
@@ -1454,7 +1454,6 @@
   mask: var(--clean-icon) center / contain no-repeat;
 }
 :root[data-skin="clean"] :is(
-  .app-sidebar [data-slot="sidebar-menu-button"][aria-label="Patients"] svg,
   [data-slot="page-header"][data-page-title="Patients"] .premium-page-icon svg,
   .quick-actions-menu [data-tone="orange"] svg,
   [data-kpi="Urgences ouvertes"] .section-atlas-title-icon,
@@ -1654,3 +1653,51 @@
 
 /* Assistant panel: the header's rule meets the Clean header's, 68 px from the top of the window. */
 :root[data-skin="clean"] .assistant-panel-header { height: 68px; }
+
+/* ---------- Sidebar: the same skeleton as Premium (2026-11-11) ----------
+   Same headings, same rows, same active pill. Clean keeps its palette and
+   its frame; only the sidebar's structure is shared. */
+:root[data-skin="clean"][data-skin][data-skin] .app-sidebar [data-slot="sidebar-group-label"] {
+  height: 20px !important;
+  min-height: 20px !important;
+  margin: 0 0 4px !important;
+  padding: 0 10px !important;
+  font-size: 12px !important;
+  line-height: 16px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.06em !important;
+  text-transform: uppercase !important;
+}
+:root[data-skin="clean"][data-skin][data-skin] .app-sidebar [data-slot="sidebar-menu-button"],
+:root[data-skin="clean"][data-skin][data-skin] .app-sidebar .sidebar-nav-link {
+  border: 1px solid transparent;
+}
+:root[data-skin="clean"][data-skin][data-skin][data-sidebar-tone="light"] .app-sidebar [data-slot="sidebar-menu-button"][data-active]:not([data-active="false"]),
+:root[data-skin="clean"][data-skin][data-skin][data-sidebar-tone="light"] .app-sidebar .sidebar-nav-link[data-active]:not([data-active="false"]) {
+  background: #ffffff !important;
+  border: 1px solid rgba(0, 0, 0, 0.07) !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06) !important;
+}
+:root[data-skin="clean"][data-skin][data-skin]:where(:not([data-sidebar-tone="light"])) .app-sidebar [data-slot="sidebar-menu-button"][data-active]:not([data-active="false"]),
+:root[data-skin="clean"][data-skin][data-skin]:where(:not([data-sidebar-tone="light"])) .app-sidebar .sidebar-nav-link[data-active]:not([data-active="false"]) {
+  background: #262626 !important;
+  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4) !important;
+}
+
+:root[data-skin="clean"][data-skin][data-skin] .app-sidebar [data-slot="sidebar-content"] > div {
+  gap: 12px;
+}
+
+:root[data-skin="clean"][data-skin][data-skin] .app-sidebar [data-slot="sidebar-menu-button"] {
+  letter-spacing: -0.01em;
+}
+
+/* Forced dark sidebar (any mode): the active item takes the dark pill,
+   its label follows the sidebar's own tokens. */
+:root[data-skin="clean"][data-skin][data-skin][data-sidebar-tone="dark"] .app-sidebar [data-slot="sidebar-menu-button"][data-active]:not([data-active="false"]),
+:root[data-skin="clean"][data-skin][data-skin][data-sidebar-tone="dark"] .app-sidebar .sidebar-nav-link[data-active]:not([data-active="false"]) {
+  background: #262626 !important;
+  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4) !important;
+}

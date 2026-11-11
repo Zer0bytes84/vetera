@@ -68,6 +68,8 @@ export type ShellHeaderProps = Omit<DivProps, "title"> & {
   subtitle?: React.ReactNode;
   /** Right side: a stat, a pill or actions. Vertically centered with the title. */
   aside?: React.ReactNode;
+  /** Overrides the subtitle truncation (a date range must read in full). */
+  subtitleClassName?: string;
   /** Heading level for the title. */
   as?: "h2" | "h3" | "h4";
 };
@@ -80,6 +82,7 @@ export function ShellHeader({
   icon,
   title,
   subtitle,
+  subtitleClassName,
   aside,
   as: Heading = "h3",
   className,
@@ -92,9 +95,11 @@ export function ShellHeader({
     >
       {icon && <IconTile icon={icon} />}
       <div className={cn("min-w-0 flex-1", !icon && "pl-2")}>
-        <Heading className="truncate text-[1rem] font-medium">{title}</Heading>
+        <Heading className="truncate text-sm/6 font-semibold">{title}</Heading>
         {subtitle && (
-          <p className="truncate text-[0.8125rem] text-muted-foreground">{subtitle}</p>
+          <p className={cn("text-[0.8125rem] text-muted-foreground", subtitleClassName ?? "truncate")}>
+            {subtitle}
+          </p>
         )}
       </div>
       {aside && <div className="flex shrink-0 items-center gap-2">{aside}</div>}

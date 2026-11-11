@@ -526,6 +526,7 @@ export function PremiumAnalytics({
                   type="button"
                   className="filter"
                   data-active={period === opt.value}
+                  aria-label={opt.ariaLabel}
                   aria-pressed={period === opt.value}
                   onClick={() => onPeriod(opt.value)}
                 >

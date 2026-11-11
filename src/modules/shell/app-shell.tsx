@@ -3,7 +3,6 @@ import { MedicalActReminderPrompt } from "@/modules/patient-reminders/medical-ac
 import { ThemeControl } from "./components/theme-control";
 import { ShortcutTooltip } from "@/design-system/patterns/shortcut-tooltip";
 import { ToolbarIcon } from "./components/toolbar-icon";
-import { AccountMenu } from "./components/account-menu";
 import { firstNameOf } from "@/utils/display-format";
 import { HeaderBreadcrumb } from "./components/header-breadcrumb";
 import { HeaderSearch } from "./components/header-search";
@@ -25,13 +24,6 @@ import {
 import { prepareAppointment } from "./model/clinical-actions";
 import { requestCreation } from "./model/creation-request";
 import { WhatsNewGate } from "@/modules/release-notes/whats-new-dialog";
-import {
-  Logout01Icon,
-  Settings01Icon,
-  TranslateIcon,
-  User02Icon,
-} from "@/lib/hugeicons";
-import { HugeiconsIcon } from "@hugeicons/react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -49,22 +41,11 @@ const LocalConsultationAssistant = lazy(
 
 import { renderView } from "@/app/config/view-registry";
 import { useThemeMode } from "@/app/hooks/use-theme-mode";
-import Avatar from "@/components/Avatar";
 import Logo from "@/components/Logo";
 import { useIsPremium } from "@/modules/dashboard/v2/use-is-premium";
 import { AppSidebar } from "@/components/app-sidebar";
 import CommandPalette from "@/components/CommandPalette";
 import { SectionGarden } from "@/components/SectionGarden";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import {
   SidebarInset,
   SidebarProvider,
@@ -74,7 +55,6 @@ import { useAuth } from "@/contexts/AuthContext";
 import { FocusProvider } from "@/contexts/focus-provider";
 import { LayoutProvider, useLayout } from "@/contexts/layout-provider";
 import { useTauriDrag } from "@/hooks/use-tauri-drag";
-import { SUPPORTED_LANGUAGES, type SupportedLanguage } from "@/i18n/config";
 import {
   readCachedProfile,
   subscribeToCachedProfile,
@@ -159,7 +139,6 @@ function AppShellInner() {
   );
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
-  const settingsButtonRef = useRef<HTMLButtonElement>(null);
   const [aiAssistantOpen, setAiAssistantOpen] = useState(false);
   const [isAssistantCollapsed, setIsAssistantCollapsed] = useState(false);
   const sidebarScrollRef = useRef<HTMLDivElement>(null);
@@ -515,14 +494,6 @@ function AppShellInner() {
     currentUser?.displayName || currentUser?.email || "Utilisateur";
   const userEmail = currentUser?.email || "local@baitari.app";
 
-  const languageLabelByCode: Record<SupportedLanguage, string> = {
-    fr: t("language.french"),
-    en: t("language.english"),
-    ar: t("language.arabic"),
-    es: t("language.spanish"),
-    pt: t("language.portuguese"),
-    de: t("language.german"),
-  };
 
 
   return (
@@ -556,6 +527,22 @@ function AppShellInner() {
       <WhatsNewGate />
       {consultationPickerOpen && <Suspense fallback={null}><QuickConsultation open onOpenChange={setConsultationPickerOpen} onNavigate={handleNavigate}/></Suspense>}
       <AppSidebar
+        account={{
+          avatarUrl: resolvedAvatarUrl,
+          email: userEmail,
+          name: userDisplayName,
+          role: roleLabel(currentUser?.role, currentUser?.email),
+          unreadCount,
+          onProfile: () => handleNavigate("parametres"),
+          onClinic: () => {
+            requestSettingsSection("mon-cabinet");
+            handleNavigate("parametres");
+          },
+          onFinances: () => handleNavigate("finances"),
+          onNotifications: () => window.setTimeout(() => setNotificationsOpen(true), 0),
+          onSettings: () => handleNavigate("parametres"),
+          onLogout: logout,
+        }}
         collapsible={collapsible}
         currentView={currentView}
         onNavigate={handleNavigate}
@@ -795,167 +782,10 @@ function AppShellInner() {
                     {/* ── Theme button ────────────────────────────────────── */}
                     <ThemeControl dark={isDarkMode} onToggle={toggleTheme} />
 
-                    {/* ── Settings + account dropdown ─────────────────────── */}
-                    <DropdownMenu>
-                      <ShortcutTooltip label="Paramètres et compte">
-                        <DropdownMenuTrigger
-                          ref={settingsButtonRef}
-                          aria-label="Paramètres et compte"
-                          className="shell-toolbar-control flex size-9 items-center justify-center rounded-full"
-                        >
-                          <ToolbarIcon name="settings" />
-                        </DropdownMenuTrigger>
-                      </ShortcutTooltip>
-
-                      <DropdownMenuContent
-                        align="end"
-                        className="w-64 rounded-2xl border border-zinc-200/80 bg-white/95 p-2 shadow-xl backdrop-blur-xl dark:border-white/10 dark:bg-zinc-900/95"
-                        sideOffset={8}
-                      >
-                        {/* User info header */}
-                        <div className="mb-1 flex items-center gap-3 px-3 py-2.5">
-                          <Avatar
-                            className="size-10 shrink-0"
-                            name={userDisplayName}
-                            size="md"
-                            src={resolvedAvatarUrl}
-                          />
-                          <div className="min-w-0">
-                            <p className="truncate font-semibold text-sm text-zinc-900 dark:text-white">
-                              {userDisplayName}
-                            </p>
-                            <p className="truncate text-muted-foreground text-xs">
-                              {userEmail}
-                            </p>
-                          </div>
-                        </div>
-
-                        <DropdownMenuSeparator className="my-1 bg-zinc-100 dark:bg-white/10" />
-
-                        <DropdownMenuItem
-                          className="flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5"
-                          onClick={() => window.setTimeout(() => setNotificationsOpen(true), 0)}
-                        >
-                          <ToolbarIcon name="notifications" />
-                          <span className="font-medium text-sm">Notifications</span>
-                        </DropdownMenuItem>
-
-                        {/* Language submenu */}
-                        <DropdownMenuSub>
-                          <DropdownMenuSubTrigger className="flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 transition-colors hover:bg-zinc-100/80 dark:hover:bg-white/5">
-                            <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg bg-sky-100 dark:bg-sky-500/20">
-                              <HugeiconsIcon
-                                className="size-4 text-sky-600 dark:text-sky-400"
-                                icon={TranslateIcon}
-                                strokeWidth={1.5}
-                              />
-                            </div>
-                            <span className="font-medium text-sm text-zinc-900 dark:text-zinc-100">
-                              Langue
-                            </span>
-                            <span className="ml-auto font-semibold text-muted-foreground text-xs uppercase">
-                              {i18n.language.slice(0, 2)}
-                            </span>
-                          </DropdownMenuSubTrigger>
-                          <DropdownMenuSubContent className="w-48 rounded-xl border border-zinc-200/80 bg-white/95 p-1 shadow-lg backdrop-blur-xl dark:border-white/10 dark:bg-zinc-900/95">
-                            {SUPPORTED_LANGUAGES.map(({ code: lang }) => {
-                              const isSelected = i18n.language === lang;
-                              return (
-                                <DropdownMenuItem
-                                  key={lang}
-                                  className={cn(
-                                    "flex cursor-pointer items-center justify-between rounded-lg px-2.5 py-2 text-sm",
-                                    isSelected && "font-semibold text-primary"
-                                  )}
-                                  onClick={async () => {
-                                    await i18n.changeLanguage(lang);
-                                  }}
-                                >
-                                  <span>{languageLabelByCode[lang]}</span>
-                                  {isSelected && (
-                                    <div className="size-1.5 rounded-full bg-primary" />
-                                  )}
-                                </DropdownMenuItem>
-                              );
-                            })}
-                          </DropdownMenuSubContent>
-                        </DropdownMenuSub>
-
-                        <DropdownMenuSeparator className="my-1 bg-zinc-100 dark:bg-white/10" />
-
-                        {/* Profile */}
-                        <DropdownMenuItem
-                          className="flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5"
-                          onClick={() => handleNavigate("parametres")}
-                        >
-                          <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg bg-zinc-100 dark:bg-white/10">
-                            <HugeiconsIcon
-                              className="size-4 text-zinc-600 dark:text-zinc-400"
-                              icon={User02Icon}
-                              strokeWidth={1.5}
-                            />
-                          </div>
-                          <span className="font-medium text-sm">Mon profil</span>
-                        </DropdownMenuItem>
-
-                        {/* Settings */}
-                        <DropdownMenuItem
-                          className="flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5"
-                          onClick={() => handleNavigate("parametres")}
-                        >
-                          <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg bg-zinc-100 dark:bg-white/10">
-                            <HugeiconsIcon
-                              className="size-4 text-zinc-600 dark:text-zinc-400"
-                              icon={Settings01Icon}
-                              strokeWidth={1.5}
-                            />
-                          </div>
-                          <span className="font-medium text-sm">Paramètres</span>
-                        </DropdownMenuItem>
-
-                        <DropdownMenuSeparator className="my-1 bg-zinc-100 dark:bg-white/10" />
-
-                        {/* Logout */}
-                        <DropdownMenuItem
-                          className="flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 text-rose-600 focus:bg-rose-50 focus:text-rose-600 dark:text-rose-400 dark:focus:bg-rose-500/10"
-                          onClick={async () => {
-                            await logout();
-                          }}
-                        >
-                          <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg bg-rose-100 dark:bg-rose-500/20">
-                            <HugeiconsIcon
-                              className="size-4 text-rose-600 dark:text-rose-400"
-                              icon={Logout01Icon}
-                              strokeWidth={1.5}
-                            />
-                          </div>
-                          <span className="font-medium text-sm">Déconnexion</span>
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
                   </>
                 )}
               </div>
 
-              {/* 4. Le compte : l'avatar, en haut à droite, ouvre le menu du compte */}
-              {isPremium && (
-                <AccountMenu
-                  avatarUrl={resolvedAvatarUrl}
-                  email={userEmail}
-                  name={userDisplayName}
-                  onFinances={() => handleNavigate("finances")}
-                  onLogout={logout}
-                  onNotifications={() => window.setTimeout(() => setNotificationsOpen(true), 0)}
-                  onClinic={() => {
-                    requestSettingsSection("mon-cabinet");
-                    handleNavigate("parametres");
-                  }}
-                  onProfile={() => handleNavigate("parametres")}
-                  onSettings={() => handleNavigate("parametres")}
-                  role={roleLabel(currentUser?.role, currentUser?.email)}
-                  unreadCount={unreadCount}
-                />
-              )}
 
               {/* Windows: the same thin rule between the avatar and the window controls (shown by window-controls.css). */}
               <span aria-hidden="true" className="shell-header-divider window-controls-divider" />

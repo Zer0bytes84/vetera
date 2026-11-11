@@ -1,6 +1,10 @@
 "use client";
 
 import { SidebarIcon } from "@/modules/shell/components/sidebar-icon";
+import {
+  AccountSidebarFooter,
+  type AccountMenuProps,
+} from "@/modules/shell/components/account-menu";
 import { PremiumSidebarIcon } from "@/modules/shell/components/premium-sidebar-icon";
 import { useIsPremium } from "@/modules/dashboard/v2/use-is-premium";
 import "@/modules/shell/premium-sidebar.css";
@@ -16,7 +20,6 @@ import {
   SidebarHeader,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { ShortcutTooltip } from "@/design-system/patterns/shortcut-tooltip";
 import { cn } from "@/lib/utils";
 import {
   CLINIC_TAB_EVENT,
@@ -29,6 +32,8 @@ import type { View } from "@/types";
 type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
   currentView: View;
   onNavigate: (view: View) => void;
+  /** The signed-in account, shown as the sidebar footer's profile block. */
+  account?: AccountMenuProps;
 };
 
 type ClinicTab = "soins" | "hospitalisation";
@@ -46,6 +51,7 @@ function openClinicTab(tab: ClinicTab, currentView: View, onNavigate: (view: Vie
 export function AppSidebar({
   currentView,
   onNavigate,
+  account,
   variant = "sidebar",
   ...props
 }: AppSidebarProps) {
@@ -127,7 +133,7 @@ export function AppSidebar({
     return {
       title: item.view === "notes" ? "Documents" : t(item.labelKey),
       icon: (
-        <NavigationIcon className={isCollapsed ? "size-6!" : "size-[22px]!"} view={item.view} />
+        <NavigationIcon className="size-5!" view={item.view} />
       ),
       isActive:
         currentView === item.view ||
@@ -150,7 +156,6 @@ export function AppSidebar({
     ...(operationsSection?.items ?? []),
   ].map(toNavItem);
 
-  const settingsActive = currentView === "parametres";
 
   return (
     <Sidebar
@@ -220,7 +225,7 @@ export function AppSidebar({
           />
         </div>
       </SidebarContent>
-      {/* Settings alone in the footer: no rule, the spacing sets it apart. */}
+      {/* The account block alone at the very bottom (Catalyst footer): a hairline, the avatar, the name, the email, and the account menu opening upwards. Settings live in that menu now. */}
       <SidebarFooter
         className={cn(
           "sidebar-settings-footer relative z-10 shrink-0",
@@ -229,31 +234,15 @@ export function AppSidebar({
             : "mx-0 mt-auto mb-0 bg-transparent px-4 pt-2 pb-4"
         )}
       >
-        <ShortcutTooltip label="Paramètres" shortcut="⌘ ,">
-          <button
-            aria-label="Paramètres"
-            aria-current={settingsActive ? "page" : undefined}
-            className={cn(
-              "sidebar-settings-button flex items-center text-sidebar-foreground/70 transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring",
-              isCollapsed ? "size-11 justify-center rounded-xl" : "h-[var(--premium-nav-row)] w-full justify-start gap-2.5 rounded-lg px-2.5",
-              settingsActive && "bg-sidebar-accent text-sidebar-foreground"
-            )}
-            data-active={settingsActive ? "true" : undefined}
-            onClick={() => onNavigate("parametres")}
-            type="button"
-          >
-            {isCollapsed ? (
-              <NavigationIcon view="parametres" className="size-6" />
-            ) : (
-              <>
-                <span className="sidebar-nav-icon">
-                  <NavigationIcon view="parametres" className="size-5" />
-                </span>
-                <span className="min-w-0 truncate leading-5">Paramètres</span>
-              </>
-            )}
-          </button>
-        </ShortcutTooltip>
+        {account ? (
+          isCollapsed ? (
+            <AccountSidebarFooter {...account} collapsed />
+          ) : (
+            <div className="mt-2 border-t border-sidebar-border/70 pt-2">
+              <AccountSidebarFooter {...account} />
+            </div>
+          )
+        ) : null}
       </SidebarFooter>
     </Sidebar>
   );

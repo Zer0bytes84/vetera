@@ -145,7 +145,7 @@ export function SettleStatTile({
       <div>
         <div className="flex items-start justify-between gap-4">
           <p
-            className="settle-stat-label m-0 min-w-0 truncate t-13 font-medium uppercase tracking-[0.06em] text-neutral-500 dark:text-neutral-400"
+            className="settle-stat-label m-0 min-w-0 truncate text-sm/6 font-medium text-neutral-900 dark:text-neutral-100"
             title={tip}
           >
             {label}

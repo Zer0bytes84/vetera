@@ -203,7 +203,6 @@
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    letter-spacing: -0.31px;
     text-rendering: optimizeLegibility;
   }
   #root {
@@ -1739,6 +1738,12 @@ button:focus-visible,
   border-radius: 8px;
   color: inherit;
 }
+
+/* Solid sidebar icons: the glyph box is 28px in every theme. */
+.app-sidebar .sidebar-nav-icon svg {
+  width: 20px !important;
+  height: 20px !important;
+}
 @media (hover: hover) and (pointer: fine){
   .sidebar-nav-link:hover {
     background: var(--sidebar-accent);
@@ -2632,3 +2637,13 @@ button:focus-visible,
 /* The assistant panel's header ends on the line of the app's header, so the two rules meet: 60 px from the top of the
    window, 68 in the Clean theme, whose header sits 8 px inside its frame (the 1 px border is part of that height). */
 .assistant-panel-header { box-sizing: border-box; height: 60px; }
+
+/* Forced dark sidebar, both themes: the active item follows the sidebar tone. */
+:root[data-sidebar-tone="dark"] .app-sidebar [data-slot="sidebar-menu-button"][data-active],
+:root[data-sidebar-tone="dark"] .app-sidebar [data-slot="sidebar-menu-button"][data-active="true"],
+:root[data-sidebar-tone="dark"] .app-sidebar .sidebar-nav-link[data-active],
+:root[data-sidebar-tone="dark"] .app-sidebar .sidebar-nav-link[data-active="true"] {
+  background: #262626 !important;
+  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4) !important;
+}

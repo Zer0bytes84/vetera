@@ -7,6 +7,7 @@ import {
   Wallet01Icon,
 } from "@/lib/hugeicons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import { ChevronsUpDown } from "lucide-react";
 import Avatar from "@/components/Avatar";
 import {
   DropdownMenu,
@@ -20,24 +21,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ShortcutTooltip } from "@/design-system/patterns/shortcut-tooltip";
 
-/**
- * The signed-in account at the header's right end, as in the usual software:
- * the avatar confirms at a glance whose session this is, and opens every
- * account action (those of the former sidebar card and settings menu).
- */
-export function AccountMenu({
-  avatarUrl,
-  email,
-  name,
-  role,
-  unreadCount,
-  onProfile,
-  onClinic,
-  onFinances,
-  onNotifications,
-  onSettings,
-  onLogout,
-}: {
+export type AccountMenuProps = {
   avatarUrl?: string | null;
   email: string;
   name: string;
@@ -50,22 +34,64 @@ export function AccountMenu({
   onNotifications: () => void;
   onSettings: () => void;
   onLogout: () => Promise<void> | void;
-}) {
+};
+
+/**
+ * The signed-in account at the bottom of the sidebar, Catalyst style: the
+ * avatar, the name and the email on a quiet row, a chevron, and the full
+ * account menu opening upwards (profile, clinic, notifications, finances,
+ * settings, sign out). Moving it out of the header leaves the
+ * header to the page: breadcrumb, search and the working actions.
+ */
+export function AccountSidebarFooter({
+  collapsed = false,
+  avatarUrl,
+  email,
+  name,
+  role,
+  unreadCount,
+  onProfile,
+  onClinic,
+  onFinances,
+  onNotifications,
+  onSettings,
+  onLogout,
+}: AccountMenuProps & { collapsed?: boolean }) {
   const src = avatarUrl?.trim() || undefined;
   return (
-    <>
-    {/* The same thin rule as between the sidebar button and the search, between the icons and the account. */}
-    <span aria-hidden="true" className="shell-header-divider" />
     <DropdownMenu>
       <ShortcutTooltip label={`${name} · ${role}`}>
-        <DropdownMenuTrigger
-          aria-label={`Ouvrir le menu du compte de ${name}`}
-          className="shell-account-trigger"
-        >
-          <Avatar className="shell-account-avatar" name={name} size="sm" src={src} />
-        </DropdownMenuTrigger>
+        {collapsed ? (
+          <DropdownMenuTrigger
+            aria-label={`Ouvrir le menu du compte de ${name}`}
+            className="flex size-11 items-center justify-center rounded-xl outline-none transition-colors hover:bg-sidebar-accent focus-visible:ring-2 focus-visible:ring-sidebar-ring"
+          >
+            <Avatar className="size-8 shrink-0" name={name} size="sm" src={src} />
+          </DropdownMenuTrigger>
+        ) : (
+          <DropdownMenuTrigger
+            aria-label={`Ouvrir le menu du compte de ${name}`}
+            className="flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left outline-none transition-colors hover:bg-sidebar-accent focus-visible:ring-2 focus-visible:ring-sidebar-ring"
+          >
+            <Avatar className="size-9 shrink-0" name={name} size="sm" src={src} />
+            <span className="grid min-w-0 flex-1">
+              <span className="truncate font-semibold text-sm leading-5 text-sidebar-foreground">
+                {name}
+              </span>
+              <span className="truncate text-[13px] leading-5 text-sidebar-foreground/60">
+                {email}
+              </span>
+            </span>
+            <ChevronsUpDown className="size-4 shrink-0 text-sidebar-foreground/50" />
+          </DropdownMenuTrigger>
+        )}
       </ShortcutTooltip>
-      <DropdownMenuContent align="end" className="shell-account-menu w-64" sideOffset={8}>
+      <DropdownMenuContent
+        align="start"
+        className="shell-account-menu w-64"
+        side="top"
+        sideOffset={8}
+      >
         <DropdownMenuGroup>
           <DropdownMenuLabel className="shell-account-identity">
             <Avatar className="size-8 shrink-0" name={name} size="sm" src={src} />
@@ -114,6 +140,5 @@ export function AccountMenu({
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
-    </>
   );
 }

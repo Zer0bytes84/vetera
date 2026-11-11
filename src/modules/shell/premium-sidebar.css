@@ -317,7 +317,7 @@
   color: var(--nav-ink) !important;
 }
 
-/* Crisp Lucide icons with a consistent 20px optical box. */
+/* Solid sidebar icons with a consistent 24px optical box. */
 [data-visual-style="premium"] .app-sidebar .sidebar-nav-icon {
   display: flex;
   width: 20px;
@@ -331,7 +331,6 @@
   width: 20px !important;
   height: 20px !important;
   transform: none;
-  stroke-width: 1 !important;
   color: var(--nav-muted);
   transition: color 0.16s ease;
 }
@@ -650,4 +649,50 @@
 .app-sidebar .sidebar-subpage-link[data-active] { color: var(--nav-ink, currentColor); }
 @media (prefers-reduced-motion: reduce) {
   .app-sidebar .sidebar-disclosure { transition: none; }
+}
+
+/* -- Essai Catalyst (2026-11-11) : etat actif epure --------------------
+   Plus de pilule remplie pour l'item courant : fond transparent, aucun
+   lisere ni ombre, et un simple trait vertical de 2 px au bord gauche,
+   comme la sidebar de Catalyst. Reversible : supprimer ce bloc. */
+.app-sidebar [data-slot="sidebar-menu-button"][data-active],
+.app-sidebar [data-slot="sidebar-menu-button"][data-active="true"],
+.app-sidebar .sidebar-nav-link[data-active],
+.app-sidebar .sidebar-nav-link[data-active="true"] {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+.app-sidebar [data-slot="sidebar-menu-button"][data-active="true"]::after,
+.app-sidebar .sidebar-nav-link[data-active="true"]::after {
+  content: "";
+  position: absolute;
+  left: -11px;
+  top: 8px;
+  bottom: 8px;
+  width: 2px;
+  border-radius: 999px;
+  background: currentColor;
+}
+
+/* Dark mode with a light sidebar: the active item keeps its light pill
+   (the dark pill rule above reaches it through its unguarded selector). */
+:root.dark[data-visual-style="premium"][data-sidebar-tone="light"] .app-sidebar [data-slot="sidebar-menu-button"][data-active],
+:root.dark[data-visual-style="premium"][data-sidebar-tone="light"] .app-sidebar [data-slot="sidebar-menu-button"][data-active="true"],
+:root.dark[data-visual-style="premium"][data-sidebar-tone="light"] .app-sidebar .sidebar-nav-link[data-active],
+:root.dark[data-visual-style="premium"][data-sidebar-tone="light"] .app-sidebar .sidebar-nav-link[data-active="true"] {
+  background: #ffffff !important;
+  border: 1px solid rgba(0, 0, 0, 0.07) !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06) !important;
+}
+
+/* Forced dark sidebar (any mode): the active item takes the dark pill,
+   its label follows the sidebar's own tokens. */
+:root[data-visual-style="premium"][data-sidebar-tone="dark"] .app-sidebar [data-slot="sidebar-menu-button"][data-active],
+:root[data-visual-style="premium"][data-sidebar-tone="dark"] .app-sidebar [data-slot="sidebar-menu-button"][data-active="true"],
+:root[data-visual-style="premium"][data-sidebar-tone="dark"] .app-sidebar .sidebar-nav-link[data-active],
+:root[data-visual-style="premium"][data-sidebar-tone="dark"] .app-sidebar .sidebar-nav-link[data-active="true"] {
+  background: #262626 !important;
+  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4) !important;
 }

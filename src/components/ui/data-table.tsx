@@ -294,7 +294,7 @@ export function DataTable<R extends DataRow>({
                 exit={{ height: 0, opacity: 0, transition: exit }}
                 initial={{ height: 0, opacity: 0 }}
               >
-                <div className="mx-1 mb-2 flex items-center gap-2 rounded-xl bg-brand/10 py-1.5 pr-1.5 pl-3 text-[0.8125rem]">
+                <div className="mx-1 mb-2 flex items-center gap-2 rounded-xl bg-brand/10 py-1.5 pr-1.5 pl-3 text-sm/6">
                   <span className="text-brand">
                     <RollingNumber value={selected.length} />{" "}
                     {selected.length === 1 ? "sélectionné" : "sélectionnés"}
@@ -311,7 +311,7 @@ export function DataTable<R extends DataRow>({
           </AnimatePresence>
 
           <div className="overflow-hidden" ref={containerRef}>
-            <table className="tuff-table w-full border-separate border-spacing-0 text-[0.8125rem]">
+            <table className="tuff-table w-full border-separate border-spacing-0 text-sm/6">
               <caption className="sr-only">{title}</caption>
               <thead>
                 <tr className="text-muted-foreground">

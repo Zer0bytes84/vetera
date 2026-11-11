@@ -8,6 +8,17 @@
 @utility t-12 { font-size: 12px; }
 @utility t-13 { font-size: 13px; }
 @utility t-14 { font-size: 14px; }
+@utility t-15 { font-size: 15px; }
 @utility t-16 { font-size: 16px; }
 @utility t-18 { font-size: 18px; }
 @utility t-24 { font-size: 24px; }
+
+/* Essai du 2026-11-11 (banc typo valide par l'utilisateur, echelle mesuree
+   chez Linear dans son Chrome) : les titres 24 px prennent le gabarit H2
+   Linear (interligne 31,2 px, tracking -0,48 px, graisse laissee aux composants) et le texte
+   courant garde son tracking normal pour la lisibilite des donnees.
+   Reversible : git checkout sur index.css et ce fichier. */
+.t-24 {
+  line-height: 31.2px;
+  letter-spacing: -0.48px;
+}

@@ -4,11 +4,11 @@ import { addDays, endOfDay, parseDashboardDate, startOfDay, type ClinicalAlert }
 import { buildVisitKinds } from "./dashboard-widgets";
 
 export const ANALYTICS_PERIODS = [
-  { value: "today", label: "Aujourd’hui" },
-  { value: "7d", label: "7 jours" },
-  { value: "30d", label: "30 jours" },
-  { value: "90d", label: "90 jours" },
-  { value: "12m", label: "12 mois" },
+  { value: "today", label: "Aujourd’hui", ariaLabel: "Aujourd’hui" },
+  { value: "7d", label: "7J", ariaLabel: "7 jours" },
+  { value: "30d", label: "30J", ariaLabel: "30 jours" },
+  { value: "90d", label: "90J", ariaLabel: "90 jours" },
+  { value: "12m", label: "12M", ariaLabel: "12 mois" },
 ] as const;
 export type AnalyticsPeriod = (typeof ANALYTICS_PERIODS)[number]["value"];
 export type AnalyticsRange = { from: Date; to: Date };

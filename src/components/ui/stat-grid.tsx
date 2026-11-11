@@ -103,6 +103,7 @@ export function StatGrid({
             className={lead ? "flex-wrap gap-y-2" : undefined}
             icon={icon}
             subtitle={subtitle}
+            subtitleClassName="whitespace-nowrap"
             title={title ?? ""}
           />
         )}

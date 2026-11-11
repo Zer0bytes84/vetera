@@ -10,7 +10,7 @@
   border: 0 !important;
   background: transparent !important;
   box-shadow: none !important;
-  font-size: 0.8125rem !important;
+  font-size: 0.875rem !important; line-height: 1.5rem !important;
   font-weight: 500 !important;
   letter-spacing: 0 !important;
   text-transform: none !important;
@@ -24,7 +24,7 @@
   border: 0 !important;
   background: transparent !important;
   box-shadow: none !important;
-  font-size: 0.8125rem !important;
+  font-size: 0.875rem !important; line-height: 1.5rem !important;
   color: var(--foreground) !important;
 }
 :root:root:root .tuff-table tbody tr {
