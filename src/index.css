@@ -298,6 +298,44 @@
   font-size: 16px;
 }
 
+/* Note sections read as headed blocks, not loose text in the void: each h2
+   carries a quiet band that separates it from what precedes it. Applies to
+   every existing note at once, in the editor and in the preview. */
+.tiptap-editor .ProseMirror h2 {
+  padding: 0.45rem 0.75rem;
+  margin-top: 2rem;
+  margin-right: -0.75rem;
+  margin-left: -0.75rem;
+  background: var(--card-band);
+  border-radius: 0.5rem;
+}
+
+.tiptap-editor .ProseMirror > h2:first-of-type {
+  margin-top: 0.25rem;
+}
+
+.document-rich-content.prose h2 {
+  padding: 0.45rem 0.75rem;
+  margin-top: 2rem;
+  margin-right: -0.75rem;
+  margin-left: -0.75rem;
+  font-size: 1.125rem;
+  background: var(--card-band);
+  border-radius: 0.5rem;
+}
+
+.document-rich-content.prose > h2:first-of-type {
+  margin-top: 0.25rem;
+}
+
+/* The Documents primary action is a pill in every theme. Premium caps all
+   control radii at 8px with an !important rule whose selector outweighs a
+   lone class, so the exception mirrors that selector and adds the class. */
+.documents-pill,
+[data-visual-style="premium"] :is([data-slot="button"], button.group\/button).documents-pill {
+  border-radius: 999px !important;
+}
+
 /* List Formatting */
 .tiptap-editor .ProseMirror ul,
 .tiptap-editor .ProseMirror ol {

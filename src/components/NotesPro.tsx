@@ -17,18 +17,19 @@ import {
   Undo02Icon,
 } from "@/lib/hugeicons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Check, ChevronDown, FileText, Hash, Pin, Star } from "@/lib/icons";
+import { BookOpen, Check, ChevronDown, FileText, Notebook, Pin, Star } from "@/lib/icons";
+import { AssistantBrandAvatar } from "@/modules/consultations/components/assistant-brand-avatar";
 import type React from "react";
 import { useCreationRequest } from "@/modules/shell/model/creation-request";
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Editor from "@/components/Editor";
 import { documentNoteTemplateOrder, documentNoteTemplates, type DocumentNoteTemplate } from "@/components/document-note-templates";
 import { DocumentsTable } from "@/components/documents-table";
+import { Panel, Shell } from "@/components/ui/surface";
 import { SectionCards } from "@/components/section-cards";
 import { Clock } from "lucide-react";
 import MotivationalHeader from "@/components/MotivationalHeader";
 import { useListCursor } from "@/hooks/useListCursor";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -164,6 +165,10 @@ const NotesPro: React.FC = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [saveFailed, setSaveFailed] = useState(false);
+  // The edit still waiting to be written, kept with the note it belongs to.
+  const pendingSaveRef = useRef<{ id: string; title: string; content: string } | null>(null);
+  const [assistantNoteId, setAssistantNoteId] = useState("");
   const requestedNoteIdRef = useRef<string | null>(sessionStorage.getItem("documents:open-note"));
   const [editorInstance, setEditorInstance] = useState<any>(null);
   const [aiStatus, setAiStatus] = useState({
@@ -250,31 +255,59 @@ const NotesPro: React.FC = () => {
       setTitle(note.title);
       setContent(note.content);
       setLastSaved(new Date(note.updatedAt));
+      setSaveFailed(false);
     }
   };
 
-  // Auto-save
+  // Auto-save. The waiting edit is kept with the id of its note, so it can
+  // still be written after the editor moved to another note or closed.
+  const flushSave = useCallback(async () => {
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+      saveTimeoutRef.current = null;
+    }
+    const pending = pendingSaveRef.current;
+    if (!pending) return;
+    pendingSaveRef.current = null;
+    let saved = false;
+    try {
+      saved = await updateNote(pending.id, { title: pending.title, content: pending.content });
+    } catch {
+      saved = false;
+    }
+    if (!saved) {
+      // Keep the edit: the next keystroke or « Réessayer » writes it again.
+      if (!pendingSaveRef.current) pendingSaveRef.current = pending;
+      setIsSaving(false);
+      setSaveFailed(true);
+      return;
+    }
+    if (pendingSaveRef.current) return; // a newer edit is already waiting
+    setIsSaving(false);
+    setSaveFailed(false);
+    setLastSaved(new Date());
+  }, [updateNote]);
+
+  // Leaving a note (another note, the library, another page) writes the waiting edit at once.
+  useEffect(() => () => void flushSave(), [selectedNoteId, flushSave]);
+
   const triggerSave = useCallback(
     (newTitle: string, newContent: string) => {
       if (!selectedNoteId) {
         return;
       }
-
+      if (pendingSaveRef.current && pendingSaveRef.current.id !== selectedNoteId) {
+        void flushSave();
+      }
       if (saveTimeoutRef.current) {
         clearTimeout(saveTimeoutRef.current);
       }
-
+      pendingSaveRef.current = { id: selectedNoteId, title: newTitle, content: newContent };
       setIsSaving(true);
-      saveTimeoutRef.current = setTimeout(async () => {
-        await updateNote(selectedNoteId, {
-          title: newTitle,
-          content: newContent,
-        });
-        setIsSaving(false);
-        setLastSaved(new Date());
-      }, 500);
+      setSaveFailed(false);
+      saveTimeoutRef.current = setTimeout(() => void flushSave(), 500);
     },
-    [selectedNoteId, updateNote]
+    [selectedNoteId, flushSave]
   );
 
   const handleTitleChange = (newTitle: string) => {
@@ -305,6 +338,17 @@ const NotesPro: React.FC = () => {
     }
   };
   useCreationRequest("document", () => void handleCreateNote());
+
+  // Send a note to the documents assistant, which reads it as its source.
+  const handleOpenAssistant = (note: Note) => {
+    void flushSave();
+    if (note.patientId) {
+      setPatientFilter(note.patientId);
+    }
+    setAssistantNoteId(note.id);
+    setSelectedNoteId(null);
+    setWorkspaceMode("assistant");
+  };
 
   const handleCreateTemplate = async (kind: DocumentNoteTemplate, targetPatientId = patientFilter) => {
     if (!currentUser) return;
@@ -362,6 +406,7 @@ const NotesPro: React.FC = () => {
   const handleDeleteNote = async (id: string, e?: React.MouseEvent) => {
     e?.stopPropagation();
     if (window.confirm("Supprimer cette note ?")) {
+      if (pendingSaveRef.current?.id === id) pendingSaveRef.current = null;
       await removeNote(id);
       if (selectedNoteId === id) {
         setSelectedNoteId(null);
@@ -408,15 +453,14 @@ const NotesPro: React.FC = () => {
     return text.trim().split(/\s+/).filter(Boolean).length;
   }, [content]);
 
-  const libraryList = workspaceMode === "library" && !(selectedNoteId && activeNote);
   const documentActions = (<>
-          <Button className="rounded-full" size="sm" variant="outline" onClick={() => setWorkspaceMode(workspaceMode === "assistant" ? "library" : "assistant")}>{workspaceMode === "assistant" ? "Bibliothèque" : "Assistant documents"}</Button>
-          <Button className="rounded-full" size="sm" variant="ghost" onClick={() => setWorkspaceMode(workspaceMode === "templates" ? "library" : "templates")}>{workspaceMode === "templates" ? "Bibliothèque" : "Modèles"}</Button>
+          <Button aria-label={workspaceMode === "assistant" ? "Bibliothèque" : "Assistant documents"} className="rounded-full" size="icon-sm" style={{ borderRadius: 999 }} title={workspaceMode === "assistant" ? "Bibliothèque" : "Assistant documents"} variant="outline" onClick={() => { setAssistantNoteId(""); setWorkspaceMode(workspaceMode === "assistant" ? "library" : "assistant"); }}>{workspaceMode === "assistant" ? <BookOpen className="size-4" /> : <AssistantBrandAvatar size={18} />}</Button>
+          <Button aria-label={workspaceMode === "templates" ? "Bibliothèque" : "Modèles"} className="rounded-full" size="icon-sm" style={{ borderRadius: 999 }} title={workspaceMode === "templates" ? "Bibliothèque" : "Modèles"} variant="ghost" onClick={() => setWorkspaceMode(workspaceMode === "templates" ? "library" : "templates")}>{workspaceMode === "templates" ? <BookOpen className="size-4" /> : <Notebook className="size-4" />}</Button>
           <DropdownMenu>
-              <DropdownMenuTrigger render={<Button className="h-9 gap-2 rounded-full px-4 text-sm" type="button" />}>
+              <DropdownMenuTrigger render={<Button className="documents-pill h-9 gap-2 rounded-full px-5 text-sm" type="button" />}>
                 <HugeiconsIcon className="size-4" icon={Add01Icon} strokeWidth={1.5} />
                 Nouveau document
-                <span aria-hidden="true" className="ml-1 flex h-4 items-center border-current/20 border-l pl-2"><ChevronDown className="size-3.5" /></span>
+                <ChevronDown aria-hidden="true" className="size-3.5 opacity-70" />
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-72 p-1.5">
                 <DropdownMenuLabel className="px-2 pt-2 pb-1.5 t-12 uppercase tracking-[0.08em]">Partir d’un modèle</DropdownMenuLabel>
@@ -437,13 +481,13 @@ const NotesPro: React.FC = () => {
       <MotivationalHeader section="notes" title="Documents" subtitle="notes cliniques" />
 
       {/* The page's actions sit in the figures band of the library; elsewhere (assistant, templates, an open note) there is no band, so they keep a slim row. */}
-      {!libraryList && <div className="flex flex-wrap items-center justify-end gap-2">{documentActions}</div>}
+      {workspaceMode !== "library" && <div className="flex flex-wrap items-center justify-end gap-2">{documentActions}</div>}
 
       {/* Main workspace */}
       {workspaceMode !== "library" ? (
         <div className="min-h-0 flex-1 overflow-y-auto rounded-t-xl border border-b-0 border-border bg-card">
           <Suspense fallback={<p role="status" className="p-6 text-sm text-muted-foreground">Ouverture des documents…</p>}>
-            {workspaceMode === "templates" ? <DocumentTemplateManager /> : <DocumentsWorkspace initialPatientId={patientFilter} />}
+            {workspaceMode === "templates" ? <DocumentTemplateManager /> : <DocumentsWorkspace initialNoteId={assistantNoteId} initialPatientId={patientFilter} />}
           </Suspense>
         </div>
       ) : !(selectedNoteId && activeNote) ? (
@@ -468,51 +512,21 @@ const NotesPro: React.FC = () => {
             onFilter={setFilter}
             onFollowUp={(note) => void handleCreateTemplate("followup", note.patientId ?? "")}
             onOpen={handleSelectNote}
+            onOpenAssistant={handleOpenAssistant}
             onToggleFavorite={toggleFavorite}
             onTogglePin={togglePin}
             patientName={(id) => (id ? patientLookup.get(id)?.name ?? "Dossier patient" : "Cabinet")}
           />
         </div>
       ) : (
-      <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-t-[22px] border border-b-0 border-foreground/10 bg-card md:flex-row">
+      <Shell className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden p-0">
 
         {/* ── EDITOR AREA ── */}
-        <main className="flex min-h-0 min-w-0 flex-1 flex-col bg-muted dark:bg-muted">
-          <div className="flex min-h-12 shrink-0 flex-wrap items-center justify-between gap-x-3 gap-y-1 border-border border-b bg-muted px-4 py-1.5 dark:border-white/10 dark:bg-muted">
-            <span className="flex min-w-0 items-center gap-2 text-xs font-medium text-muted-foreground dark:text-muted-foreground">
-              <HugeiconsIcon aria-hidden="true" className="size-4 shrink-0" icon={Folder01Icon} strokeWidth={1.5} />
-              <span className="truncate">{activeNote?.patientId ? patientLookup.get(activeNote.patientId)?.name ?? "Dossier patient" : "Documents du cabinet"}</span>
-            </span>
-            <div className="document-patient-actions flex min-w-0 flex-wrap items-center gap-1">
-              <PatientPicker
-                kind="filter"
-                onSelect={(patientId) => {
-                  setPatientFilter(patientId);
-                  if (activeNote && patientId && activeNote.patientId !== patientId) setSelectedNoteId(null);
-                }}
-                patients={patients}
-                value={patientFilter}
-              />
-              {activeNote && (
-                <>
-                  <span aria-hidden="true" className="mx-0.5 h-4 w-px bg-muted dark:bg-white/10" />
-                  <PatientPicker
-                    kind="link"
-                    onSelect={(patientId) => {
-                      void updateNote(activeNote.id, { patientId: patientId || null });
-                      if (patientFilter && patientFilter !== patientId) setPatientFilter(patientId);
-                    }}
-                    patients={patients}
-                    value={activeNote.patientId ?? ""}
-                  />
-                </>
-              )}
-            </div>
-          </div>
+        <main className="flex min-h-0 min-w-0 flex-1 flex-col">
           {selectedNoteId && activeNote ? (
             <div className="flex h-full min-h-0 flex-col">
               {/* Document actions */}
-              <div className="sticky top-0 z-10 flex flex-wrap items-center justify-between gap-2 border-border border-b bg-muted/95 px-4 py-2 backdrop-blur-sm dark:border-white/10 dark:bg-muted/95">
+              <div className="flex flex-wrap items-center justify-between gap-2 rounded-t-[22px] rounded-b-[16px] bg-card/50 px-3 py-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.45)] backdrop-blur-xl backdrop-saturate-150 dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]">
                 <div className="flex items-center gap-1.5">
                   {/* Toggle sidebar */}
                   <Button
@@ -526,6 +540,19 @@ const NotesPro: React.FC = () => {
                   </Button>
 
                   <div className="mx-0.5 h-4 w-px bg-foreground/15" />
+
+                  {/* Attach the note to a patient folder, from the bar itself. */}
+                  <PatientPicker
+                    kind="link"
+                    onSelect={(patientId) => {
+                      void updateNote(activeNote.id, { patientId: patientId || null });
+                      if (patientFilter && patientFilter !== patientId) setPatientFilter(patientId);
+                    }}
+                    patients={patients}
+                    value={activeNote.patientId ?? ""}
+                  />
+
+                  <div className="mx-0.5 hidden h-4 w-px bg-foreground/15 md:block" />
 
                   {/* Edit / Preview toggle */}
                   <div className="document-editor-modes flex items-center gap-0.5 rounded-lg bg-muted/60 p-0.5 dark:bg-zinc-800/60">
@@ -600,7 +627,14 @@ const NotesPro: React.FC = () => {
                   <div className="mx-0.5 h-4 w-px bg-foreground/15" />
 
                   {/* Save status */}
-                  {isSaving ? (
+                  {saveFailed ? (
+                    <span role="alert" className="flex items-center gap-1.5 text-xs font-medium text-destructive">
+                      Non enregistré
+                      <Button className="h-6 rounded-full px-2 text-xs" onClick={() => void flushSave()} size="sm" variant="outline">
+                        Réessayer
+                      </Button>
+                    </span>
+                  ) : isSaving ? (
                     <span className="flex items-center gap-1.5 text-xs text-foreground/70">
                       <span className="relative flex size-1.5">
                         <span className="absolute inline-flex size-full animate-ping rounded-full bg-amber-400 opacity-75" />
@@ -627,17 +661,6 @@ const NotesPro: React.FC = () => {
 
                 {/* Right actions */}
                 <div className="flex items-center gap-0.5">
-                  {/* Word / char count badge */}
-                  <Badge
-                    className="hidden h-6 gap-1 border-foreground/15 font-normal text-xs text-foreground/70 tabular-nums xl:flex"
-                    variant="outline"
-                  >
-                    <Hash className="size-2.5" />
-                    {wordCount} mots
-                  </Badge>
-
-                  <div className="mx-1 h-4 w-px bg-foreground/15" />
-
                   <Button
                     className={cn(
                       "size-7 rounded-lg",
@@ -700,6 +723,10 @@ const NotesPro: React.FC = () => {
                         <HugeiconsIcon className="mr-2 size-4" icon={CopyIcon} strokeWidth={1.5} />
                         Dupliquer la note
                       </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleOpenAssistant(activeNote)}>
+                        <HugeiconsIcon className="mr-2 size-4" icon={File01Icon} strokeWidth={1.5} />
+                        Ouvrir dans l'assistant
+                      </DropdownMenuItem>
                       {activeNote.patientId && <DropdownMenuItem onClick={() => void handleCreateTemplate("followup", activeNote.patientId ?? "")}>
                         <HugeiconsIcon className="mr-2 size-4" icon={File01Icon} strokeWidth={1.5} />
                         Nouveau suivi clinique
@@ -732,12 +759,14 @@ const NotesPro: React.FC = () => {
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
+                  <div className="mx-1 h-4 w-px bg-foreground/15" />
+                  <div className="flex items-center gap-2">{documentActions}</div>
                 </div>
               </div>
 
-              {/* Editor content area */}
-              <div
-                className="min-h-0 flex-1 cursor-text select-text overflow-y-auto overscroll-contain bg-muted pb-8 [scrollbar-gutter:stable] dark:bg-muted"
+              {/* Editor content area: the shell's inset panel, the column inside it. */}
+              <Panel
+                className="mx-[var(--card-frame)] mb-[var(--card-frame)] flex min-h-0 flex-1 flex-col overflow-hidden"
                 onClick={(e) => {
                   if (e.target === e.currentTarget) {
                     editorInstance?.commands.focus("end");
@@ -745,13 +774,14 @@ const NotesPro: React.FC = () => {
                 }}
               >
                 <div
-                  className="mx-auto my-5 flex min-h-[calc(100%-40px)] w-[calc(100%-32px)] max-w-[820px] flex-col rounded-2xl border border-border bg-card px-5 py-6 shadow-sm ring-1 ring-border md:my-5 md:w-[calc(100%-40px)] md:px-8 md:py-8"
+                  className="min-h-0 flex-1 cursor-text select-text overflow-y-auto overscroll-contain [scrollbar-gutter:stable]"
                   onClick={(e) => {
                     if (e.target === e.currentTarget) {
                       editorInstance?.commands.focus("end");
                     }
                   }}
                 >
+                  <div className="flex w-full flex-1 flex-col px-5 py-8 md:px-8 md:py-10">
                   {isPreviewMode ? (
                     <div className="document-rich-content prose prose-sm dark:prose-invert max-w-none overflow-x-auto">
                       <h1 className="font-heading text-2xl font-medium tracking-[-0.035em]">
@@ -764,18 +794,21 @@ const NotesPro: React.FC = () => {
                     </div>
                   ) : (
                     <>
-                      {/* Note title */}
-                      <input
-                        aria-label="Titre du document"
-                        className="mb-2.5 w-full bg-transparent font-heading text-2xl font-medium leading-tight tracking-[-0.035em] text-foreground outline-none placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring/30 dark:text-foreground dark:placeholder:text-muted-foreground"
-                        onChange={(e) => handleTitleChange(e.target.value)}
-                        placeholder="Sans titre"
-                        type="text"
-                        value={formatDisplayText(title)}
-                      />
+                      {/* Note title, with the editor's own tools at its right. */}
+                      <div className="mb-2.5 flex items-start gap-3">
+                        <input
+                          aria-label="Titre du document"
+                          className="min-w-0 flex-1 bg-transparent font-heading text-2xl font-medium leading-tight tracking-[-0.035em] text-foreground outline-none placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring/30 dark:text-foreground dark:placeholder:text-muted-foreground"
+                          onChange={(e) => handleTitleChange(e.target.value)}
+                          placeholder="Sans titre"
+                          type="text"
+                          value={formatDisplayText(title)}
+                        />
+                        <div className="flex shrink-0 items-center gap-1.5 pt-0.5" id="note-editor-toolbar-slot" />
+                      </div>
 
                       {/* Meta line below title */}
-                      <div className="mb-9 flex flex-wrap items-center gap-2.5">
+                      <div className="mb-2 flex flex-wrap items-center gap-2.5">
                         <p className="text-xs text-muted-foreground dark:text-muted-foreground">
                           {formatFullDate(activeNote.updatedAt)}
                         </p>
@@ -817,13 +850,14 @@ const NotesPro: React.FC = () => {
                       />
                     </>
                   )}
+                  </div>
                 </div>
-              </div>
+              </Panel>
 
             </div>
           ) : null}
         </main>
-      </div>
+      </Shell>
       )}
     </div>
   );

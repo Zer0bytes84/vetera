@@ -45,6 +45,7 @@ import {
   importLocalModel,
   type LocalModelStatus,
 } from "@/modules/consultations/local-ai/models";
+import { Segmented } from "@/components/ui/segmented-control";
 import { useDocumentTemplates } from "../hooks/use-document-templates";
 import { usePatientDocuments } from "../hooks/use-managed-documents";
 import type { PatientDocument } from "../document-domain";
@@ -113,12 +114,15 @@ export default function ConsultationDocumentsAssistant({
   onClose,
   initialMode = "generate",
   initialDocument,
+  initialNoteId,
 }: {
   appointmentId: string;
   patientId: string;
   onClose?: () => void;
   initialMode?: "generate" | "read";
   initialDocument?: PatientDocument;
+  /** A note to load as the source to read: one of this patient, or one not yet linked to a patient. */
+  initialNoteId?: string;
 }) {
   const { currentUser } = useAuth();
   const patients = useSQLite<Patient>("patients");
@@ -185,6 +189,30 @@ export default function ConsultationDocumentsAssistant({
       controller.current?.abort();
     };
   }, []);
+  const readNote = (note: Note) => {
+    const text = noteText(note);
+    if (!text || text.length > MAX_DOCUMENT_CHARACTERS) {
+      setError("La note est vide ou trop longue pour être lue.");
+      return;
+    }
+    setReading({
+      name: note.title || "Note sans titre",
+      sourceId: note.id,
+      pages: [{ number: 1, text, method: "text" }],
+    });
+  };
+  // The note the user came from is offered even before it is linked to this patient.
+  const offered = (note: Note) =>
+    note.patientId === patientId || (note.id === initialNoteId && !note.patientId);
+  const initialNote = initialNoteId
+    ? notes.data.find((entry) => entry.id === initialNoteId && offered(entry))
+    : undefined;
+  const initialNoteLoaded = useRef(false);
+  useEffect(() => {
+    if (!initialNote || initialNoteLoaded.current) return;
+    initialNoteLoaded.current = true;
+    readNote(initialNote);
+  }, [initialNote]);
   const resetReview = () => {
     setReviewed(false);
     setSaved(false);
@@ -297,29 +325,15 @@ export default function ConsultationDocumentsAssistant({
     const file = files.data.find(
       (entry) => entry.id === value && entry.patientId === patientId
     );
-    const note = notes.data.find(
-      (entry) =>
-        entry.id === value &&
-        entry.patientId === patientId
-    );
+    const note = notes.data.find((entry) => entry.id === value && offered(entry));
     if (file) {
       try {
         void readFile(fileFromAttachment(file), file.id);
       } catch (failure) {
         setError((failure as Error).message);
       }
-    } else if (note) {
-      const text = noteText(note);
-      if (!text || text.length > MAX_DOCUMENT_CHARACTERS) {
-        setError("La note est vide ou trop longue pour être lue.");
-        return;
-      }
-      setReading({
-        name: note.title,
-        sourceId: note.id,
-        pages: [{ number: 1, text, method: "text" }],
-      });
-    } else setReading(null);
+    } else if (note) readNote(note);
+    else setReading(null);
   };
   const ask = async () => {
     if (!reading || controller.current || saving) return;
@@ -423,9 +437,7 @@ export default function ConsultationDocumentsAssistant({
         entry.mimeType
       )
   );
-  const availableNotes = notes.data.filter(
-    (entry) => entry.patientId === patientId
-  );
+  const availableNotes = notes.data.filter(offered);
   const availableManaged = managedDocuments.documents.filter(entry => entry.patientId === patientId && entry.status === "finalise");
   const selectedManaged = availableManaged.find(entry => entry.id === selectedManagedId);
   return (
@@ -455,26 +467,15 @@ export default function ConsultationDocumentsAssistant({
           </Button>
         )}
       </header>
-      <div className="flex gap-2" aria-label="Parcours documents">
-        <Button
-          size="sm"
-          variant={mode === "generate" ? "secondary" : "ghost"}
-          aria-pressed={mode === "generate"}
-          disabled={busy || saving}
-          onClick={() => switchMode("generate")}
-        >
-          Créer un document
-        </Button>
-        <Button
-          size="sm"
-          variant={mode === "read" ? "secondary" : "ghost"}
-          aria-pressed={mode === "read"}
-          disabled={busy || saving}
-          onClick={() => switchMode("read")}
-        >
-          Lire un document
-        </Button>
-      </div>
+      <Segmented
+        label="Parcours documents"
+        options={[
+          { value: "generate", label: "Créer un document" },
+          { value: "read", label: "Lire un document" },
+        ]}
+        value={mode}
+        onValueChange={(next) => switchMode(next)}
+      />
       {unavailable && (
         <p role="alert" className="text-sm text-destructive">
           Une partie du dossier n’a pas pu être chargée. Fermez puis rouvrez les
@@ -490,8 +491,9 @@ export default function ConsultationDocumentsAssistant({
           </ChatMessage>
           {!ready && (
             <p role="status" className="text-sm text-muted-foreground">
-              Validez d’abord la note de cette consultation. Une modification de
-              la note demande une nouvelle validation.
+              {appointment
+                ? "Validez d’abord la note de cette consultation. Une modification de la note demande une nouvelle validation."
+                : "Choisissez une consultation pour créer un document à partir de sa note validée."}
             </p>
           )}
           <Field>
@@ -803,6 +805,11 @@ export default function ConsultationDocumentsAssistant({
                 valeurs, unités et traitements.
               </label>
             </div>
+            {!appointment && !saved && (
+              <p className="text-xs text-muted-foreground">
+                Choisissez une consultation pour enregistrer ce document dans le dossier du patient.
+              </p>
+            )}
             {!saved ? (
               <Button
                 size="sm"

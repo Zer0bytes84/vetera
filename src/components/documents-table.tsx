@@ -1,4 +1,4 @@
-import { Bookmark, Copy, Download, FilePlus, FileText, MoreHorizontal, Pin, Star, Trash2 } from "lucide-react";
+import { BookOpen, Bookmark, Copy, Download, FilePlus, FileText, MoreHorizontal, Pin, Star, Trash2 } from "lucide-react";
 import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { DataTable, type DataColumn, type DataRow } from "@/components/ui/data-table";
@@ -34,6 +34,11 @@ interface DocumentRow extends DataRow {
 const date = (value: string) =>
   new Date(value).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" });
 
+/** The note's text without its HTML tags: the filter field searches this raw
+ * value, so a word from the body finds the note, as the placeholder promises. */
+const notePlainText = (content: string) =>
+  content.replace(/<[^>]*>/g, " ").replace(/&nbsp;/g, " ").replace(/\s+/g, " ").trim();
+
 export function DocumentsTable({
   notes,
   filter,
@@ -41,6 +46,7 @@ export function DocumentsTable({
   patientName,
   onFilter,
   onOpen,
+  onOpenAssistant,
   onToggleFavorite,
   onTogglePin,
   onDuplicate,
@@ -55,6 +61,7 @@ export function DocumentsTable({
   patientName: (patientId?: string | null) => string;
   onFilter: (filter: DocumentFilter) => void;
   onOpen: (noteId: string) => void;
+  onOpenAssistant: (note: Note) => void;
   onToggleFavorite: (note: Note) => void;
   onTogglePin: (note: Note) => void;
   onDuplicate: (note: Note) => void;
@@ -70,7 +77,8 @@ export function DocumentsTable({
     folder: patientName(note.patientId),
     updated: note.updatedAt,
     state: [pinned(note) ? "Épinglé" : "", note.isFavorite ? "Favori" : ""].filter(Boolean).join(" · "),
-    actions: "",
+    // Raw value of the actions column: the note's full text, so the filter field finds words of the content.
+    actions: notePlainText(note.content),
   }));
 
   const columns: DataColumn<DocumentRow>[] = [
@@ -144,6 +152,10 @@ export function DocumentsTable({
                 <DropdownMenuItem onClick={() => onDuplicate(note)}>
                   <Copy className="mr-2 size-4" strokeWidth={1.5} />
                   Dupliquer la note
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onOpenAssistant(note)}>
+                  <BookOpen className="mr-2 size-4" strokeWidth={1.5} />
+                  Ouvrir dans l'assistant
                 </DropdownMenuItem>
                 {note.patientId ? (
                   <DropdownMenuItem onClick={() => onFollowUp(note)}>

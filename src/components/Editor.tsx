@@ -3,9 +3,10 @@ import { TaskItem, TaskList } from "@tiptap/extension-list";
 import { TableKit } from "@tiptap/extension-table";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import { Columns3, ListTodo, PenLine, Plus, Rows3, Table2, Trash2, WandSparkles } from "@/lib/icons";
+import { Columns3, ListTodo, PenLine, Plus, Rows3, Table2, Trash2 } from "@/lib/icons";
 import type React from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
 import {
@@ -73,6 +74,12 @@ const Editor: React.FC<EditorProps> = ({
     selected: boolean;
   } | null>(null);
   const [aiError, setAiError] = useState("");
+  // When the host page offers a slot next to the note's title, the toolbar
+  // renders there instead of above the text (see NotesPro).
+  const [toolbarSlot, setToolbarSlot] = useState<HTMLElement | null>(null);
+  useLayoutEffect(() => {
+    setToolbarSlot(document.getElementById("note-editor-toolbar-slot"));
+  }, []);
   const [isInTable, setIsInTable] = useState(false);
 
   const handleAiAction = async (instruction: string) => {
@@ -246,72 +253,74 @@ const Editor: React.FC<EditorProps> = ({
     );
   }
 
+  const toolbarRow = (
+    <div className={toolbarSlot ? "flex items-center gap-2" : "sticky top-0 z-10 mb-5 flex items-center justify-between gap-2 border-foreground/15 border-b bg-card/95 py-2 backdrop-blur-sm"}>
+      <div className="flex items-center gap-1.5">
+        <DropdownMenu>
+          <DropdownMenuTrigger render={<Button size="sm" variant="outline" className="h-8 gap-1.5 rounded-lg border-foreground/20 font-medium" />}>
+            <Plus className="size-4" /> Ajouter
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className="w-56">
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger>Modèle de note</DropdownMenuSubTrigger>
+              <DropdownMenuSubContent className="w-64">
+                {documentNoteTemplateOrder.map((kind) => (
+                  <DropdownMenuItem key={kind} onClick={() => editor.chain().focus().insertContent(documentNoteTemplates[kind].content).run()}>
+                    {documentNoteTemplates[kind].title}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuSubContent>
+            </DropdownMenuSub>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()}>
+              <Table2 className="mr-2 size-4" />Tableau vierge
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => insertDocumentTable(editor, "vitals")}>
+              <Table2 className="mr-2 size-4" />Suivi des constantes
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => insertDocumentTable(editor, "treatments")}>
+              <Table2 className="mr-2 size-4" />Tableau de traitements
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => editor.chain().focus().toggleTaskList().run()}>
+              <ListTodo className="mr-2 size-4" />Liste à cocher
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+        <DropdownMenu>
+        <DropdownMenuTrigger render={<Button aria-label="Aide à la rédaction" size="icon-sm" title="Aide à la rédaction" variant="ghost" />}>
+          <PenLine className="size-4" />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start" className="w-64">
+          <DropdownMenuItem onClick={() => handleAiAction("Corrige l'orthographe et la grammaire")}>Corriger le texte</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => handleAiAction("Reformule de manière professionnelle")}>Clarifier et reformuler</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => handleAiAction("Résume en points clés")}>Résumer en points clés</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => handleAiAction("__WRITE_MODE__")}>Proposer un brouillon…</DropdownMenuItem>
+        </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+      {isInTable ? (
+        <div aria-label="Modifier le tableau" className="flex flex-wrap items-center gap-1 rounded-lg bg-[#f3f7f1] p-1 dark:bg-white/5">
+          <Button className="h-7 gap-1.5 px-2 text-xs" onClick={() => editor.chain().focus().addRowAfter().run()} size="sm" title="Ajouter une ligne sous la cellule" variant="ghost"><Rows3 className="size-3.5" />Ligne <Plus className="size-3" /></Button>
+          <Button className="h-7 gap-1.5 px-2 text-xs" onClick={() => editor.chain().focus().addColumnAfter().run()} size="sm" title="Ajouter une colonne à droite" variant="ghost"><Columns3 className="size-3.5" />Colonne <Plus className="size-3" /></Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger render={<Button aria-label="Autres actions sur le tableau" className="size-7" size="icon-sm" variant="ghost" />}><Table2 className="size-3.5" /></DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuItem onClick={() => editor.chain().focus().toggleHeaderRow().run()}>Basculer l’en-tête</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => editor.chain().focus().deleteRow().run()}>Supprimer cette ligne</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => editor.chain().focus().deleteColumn().run()}>Supprimer cette colonne</DropdownMenuItem>
+              <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => editor.chain().focus().deleteTable().run()}><Trash2 className="mr-2 size-4" />Supprimer le tableau</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      ) : (
+        <span className="hidden t-12 leading-snug text-foreground/65 xl:inline">Tapez <kbd className="rounded border border-foreground/15 px-1 font-mono">/</kbd> pour rechercher une commande.</span>
+      )}
+    </div>
+  );
+
   return (
     <div className="w-full">
-      {!readOnly && (
-        <div className="sticky top-0 z-10 mb-5 flex items-center justify-between gap-2 border-foreground/15 border-b bg-card/95 py-2 backdrop-blur-sm">
-          <div className="flex items-center gap-1.5">
-            <DropdownMenu>
-              <DropdownMenuTrigger render={<Button size="sm" variant="outline" className="h-8 gap-1.5 rounded-lg border-foreground/20 font-medium" />}>
-                <Plus className="size-4" /> Ajouter
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="w-56">
-                <DropdownMenuSub>
-                  <DropdownMenuSubTrigger>Modèle de note</DropdownMenuSubTrigger>
-                  <DropdownMenuSubContent className="w-64">
-                    {documentNoteTemplateOrder.map((kind) => (
-                      <DropdownMenuItem key={kind} onClick={() => editor.chain().focus().insertContent(documentNoteTemplates[kind].content).run()}>
-                        {documentNoteTemplates[kind].title}
-                      </DropdownMenuItem>
-                    ))}
-                  </DropdownMenuSubContent>
-                </DropdownMenuSub>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()}>
-                  <Table2 className="mr-2 size-4" />Tableau vierge
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => insertDocumentTable(editor, "vitals")}>
-                  <Table2 className="mr-2 size-4" />Suivi des constantes
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => insertDocumentTable(editor, "treatments")}>
-                  <Table2 className="mr-2 size-4" />Tableau de traitements
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => editor.chain().focus().toggleTaskList().run()}>
-                  <ListTodo className="mr-2 size-4" />Liste à cocher
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <DropdownMenu>
-            <DropdownMenuTrigger render={<Button aria-label="Aide à la rédaction" size="icon-sm" title="Aide à la rédaction" variant="ghost" />}>
-              <WandSparkles className="size-4" />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-64">
-              <DropdownMenuItem onClick={() => handleAiAction("Corrige l'orthographe et la grammaire")}>Corriger le texte</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleAiAction("Reformule de manière professionnelle")}>Clarifier et reformuler</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleAiAction("Résume en points clés")}>Résumer en points clés</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleAiAction("__WRITE_MODE__")}>Proposer un brouillon…</DropdownMenuItem>
-            </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-          {isInTable ? (
-            <div aria-label="Modifier le tableau" className="flex flex-wrap items-center gap-1 rounded-lg bg-[#f3f7f1] p-1 dark:bg-white/5">
-              <Button className="h-7 gap-1.5 px-2 text-xs" onClick={() => editor.chain().focus().addRowAfter().run()} size="sm" title="Ajouter une ligne sous la cellule" variant="ghost"><Rows3 className="size-3.5" />Ligne <Plus className="size-3" /></Button>
-              <Button className="h-7 gap-1.5 px-2 text-xs" onClick={() => editor.chain().focus().addColumnAfter().run()} size="sm" title="Ajouter une colonne à droite" variant="ghost"><Columns3 className="size-3.5" />Colonne <Plus className="size-3" /></Button>
-              <DropdownMenu>
-                <DropdownMenuTrigger render={<Button aria-label="Autres actions sur le tableau" className="size-7" size="icon-sm" variant="ghost" />}><Table2 className="size-3.5" /></DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-48">
-                  <DropdownMenuItem onClick={() => editor.chain().focus().toggleHeaderRow().run()}>Basculer l’en-tête</DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => editor.chain().focus().deleteRow().run()}>Supprimer cette ligne</DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => editor.chain().focus().deleteColumn().run()}>Supprimer cette colonne</DropdownMenuItem>
-                  <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => editor.chain().focus().deleteTable().run()}><Trash2 className="mr-2 size-4" />Supprimer le tableau</DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          ) : (
-            <span className="hidden t-12 leading-snug text-foreground/65 xl:inline">Tapez <kbd className="rounded border border-foreground/15 px-1 font-mono">/</kbd> pour rechercher une commande.</span>
-          )}
-        </div>
-      )}
+      {!readOnly && (toolbarSlot ? createPortal(toolbarRow, toolbarSlot) : toolbarRow)}
       <SelectionBubbleMenu editor={editor} onAiAction={handleAiAction} />
       <EditorContent
         className="tiptap-editor prose prose-neutral dark:prose-invert max-w-none focus:outline-none"
@@ -331,7 +340,7 @@ const Editor: React.FC<EditorProps> = ({
             compact
             title="Proposition de rédaction"
             description="Relisez le texte avant de décider de l’ajouter à votre document."
-            icon={<WandSparkles strokeWidth={1.8} />}
+            icon={<PenLine strokeWidth={1.8} />}
           />
           <FormDialogBody>
             <p className="mb-2 text-muted-foreground text-xs">{suggestion?.instruction}</p>
