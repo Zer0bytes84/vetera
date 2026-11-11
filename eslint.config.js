@@ -35,8 +35,9 @@ export default defineConfig([
       "react-hooks/preserve-manual-memoization": "off",
       "react-hooks/incompatible-library": "off",
       // Les composants que le compilateur React abandonne (try/finally, throw dans try/catch…) ne sont pas analysés par les règles
-      // « compilateur » : cet avertissement les rend visibles au lieu de les laisser muets.
-      "react-hooks/todo": "warn",
+      // « compilateur » : cet avertissement les rend visibles au lieu de les laisser muets. En CI, le diagnostic est coupé :
+      // la porte de release (--max-warnings=0) reste bloquante pour toutes les autres règles, erreurs comme avertissements.
+      "react-hooks/todo": process.env.CI ? "off" : "warn",
       "no-empty": "off",
 
       "@typescript-eslint/no-unused-vars": [

@@ -508,7 +508,6 @@ function AppShellInner() {
       themeMode,
       currentUser?.displayName,
       currentUser?.email,
-      resolvedAvatarUrl,
     ]
   );
 

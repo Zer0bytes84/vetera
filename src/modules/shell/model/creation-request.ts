@@ -18,7 +18,9 @@ export function requestCreation(kind: CreationKind) {
 /** On the page that owns the creation: runs the same handler as its button when a request for `kind` is waiting. */
 export function useCreationRequest(kind: CreationKind, open: () => void) {
   const openRef = useRef(open);
-  openRef.current = open;
+  useEffect(() => {
+    openRef.current = open;
+  }, [open ]);
   useEffect(() => {
     const run = () => {
       if (sessionStorage.getItem(KEY) !== kind) return;
