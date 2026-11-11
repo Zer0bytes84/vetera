@@ -1516,6 +1516,15 @@
   min-height: var(--clean-segment-item) !important;
 }
 
+/* Segmented switches on a band, light only: the track token is the band
+   colour itself (#ededee on the #ededee band, measured on captures), so the
+   grouping vanished and the items floated as loose white pills. Premium
+   reads #e4e4e5 on the same band; on a band the track takes that step down.
+   Dark already contrasts (white 5% track), so it keeps its rule. */
+:root[data-skin="clean"][data-skin][data-skin]:not(.dark) [data-slot="band"] :is([data-tabs-style="segmented"], .dashboard-mode-toggle, .flow-density, .stock-view-toggle) {
+  background: #e4e4e5 !important;
+}
+
 /* Radii: the shadcn multipliers of the 8 px base gave 4.8, 6.4, 11.2 and
    14.4 px. Each lands on its step of the scale; component rules keep theirs. */
 :root[data-skin="clean"] :where(.rounded-sm) { border-radius: 4px; }
