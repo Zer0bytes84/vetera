@@ -680,3 +680,9 @@
 }
 .shell-greeting-name { color: var(--tone-blue); }
 .shell-greeting .dashboard-greeting-wave { display: inline-block; }
+
+/* The slideout toggle's circle sits left of the content's left edge;
+   shift the button right so its left edge lines up with the widgets band. */
+.shell-sidebar-toggle {
+  margin-left: 7px;
+}
