@@ -1,22 +1,20 @@
 "use client";
 
-import { LayoutGrid } from "lucide-react";
 import type { ReactNode } from "react";
-import { StatGrid, type Stat, type StatTone } from "@/components/ui/stat-grid";
-import type { LucideIcon } from "@/lib/icons";
+import { StatGrid, type Stat, type StatIcon, type StatTone } from "@/components/ui/stat-grid";
 import {
-  Activity,
-  AlarmClock,
-  Calendar,
-  ClipboardList,
-  Coins,
-  PawPrint,
-  ReceiptText,
-  ShieldAlert,
-  Stethoscope,
-  Users,
-  WalletCards,
-} from "@/lib/icons";
+  BanknotesIcon,
+  CalendarDaysIcon,
+  ChartBarIcon,
+  ClipboardDocumentListIcon,
+  ClockIcon,
+  PlusCircleIcon,
+  ReceiptPercentIcon,
+  ShieldExclamationIcon,
+  Squares2X2Icon,
+  UsersIcon,
+  WalletIcon,
+} from "@heroicons/react/20/solid";
 import { formatNumber } from "@/utils/display-format";
 import { cn } from "@/lib/utils";
 
@@ -27,7 +25,7 @@ export interface SectionCardItem {
   footerDescription?: string;
   footerTitle?: string;
   detailRow?: string;
-  icon?: LucideIcon;
+  icon?: StatIcon;
   sparkData?: number[];
   title: string;
   tone?: "critical" | "positive" | "quiet" | "watch";
@@ -59,17 +57,17 @@ const TONES: Record<NonNullable<SectionCardItem["tone"]>, StatTone> = {
   quiet: "blue",
 };
 
-const iconRules: [pattern: RegExp, icon: LucideIcon][] = [
-  [/patient/i, PawPrint],
-  [/rendez-vous|créneau|visite/i, Calendar],
-  [/consultation|vétérinaire|praticien/i, Stethoscope],
-  [/suivi|traitement|activité|terminé/i, Activity],
-  [/urgence|relance|rupture|alerte|accès à revoir/i, ShieldAlert],
-  [/temps|attente|encours|prochain/i, AlarmClock],
-  [/encaissé|solde|revenu|valeur|panier|ca annuel|stock/i, WalletCards],
-  [/dépensé|décaissement|écriture|facturé/i, ReceiptText],
-  [/équipe|support/i, Users],
-  [/rappel|action/i, ClipboardList],
+const iconRules: [pattern: RegExp, icon: StatIcon][] = [
+  [/patient/i, UsersIcon],
+  [/rendez-vous|créneau|visite/i, CalendarDaysIcon],
+  [/consultation|vétérinaire|praticien/i, PlusCircleIcon],
+  [/suivi|traitement|activité|terminé/i, ChartBarIcon],
+  [/urgence|relance|rupture|alerte|accès à revoir/i, ShieldExclamationIcon],
+  [/temps|attente|encours|prochain/i, ClockIcon],
+  [/encaissé|solde|revenu|valeur|panier|ca annuel|stock/i, WalletIcon],
+  [/dépensé|décaissement|écriture|facturé/i, ReceiptPercentIcon],
+  [/équipe|support/i, UsersIcon],
+  [/rappel|action/i, ClipboardDocumentListIcon],
 ];
 
 function resolveDefaultIcon(title: string, index: number) {
@@ -78,8 +76,8 @@ function resolveDefaultIcon(title: string, index: number) {
     return matchedRule[1];
   }
 
-  const defaultIcons = [Coins, Calendar, Users, ClipboardList];
-  return defaultIcons[index % defaultIcons.length] || Coins;
+  const defaultIcons = [BanknotesIcon, CalendarDaysIcon, UsersIcon, ClipboardDocumentListIcon];
+  return defaultIcons[index % defaultIcons.length] || BanknotesIcon;
 }
 
 /** What the card's badge says: a variation, a rate, a count, or a status text; and whether it reads as good news. */
@@ -116,7 +114,7 @@ export function SectionCards({
   compact = false,
   title = "Chiffres clés",
   subtitle,
-  icon = LayoutGrid,
+  icon = Squares2X2Icon,
   actions,
   className,
 }: {
@@ -126,7 +124,7 @@ export function SectionCards({
   title?: string;
   subtitle?: string;
   /** The band's icon: each page has its own. */
-  icon?: LucideIcon;
+  icon?: StatIcon;
   /** On the right of the band's header: the page's main action, as a pill. */
   actions?: ReactNode;
   className?: string;
