@@ -1,4 +1,4 @@
-import { PawPrint } from "lucide-react";
+import { UsersIcon } from "@heroicons/react/20/solid";
 import {
   Add01Icon,
   Calendar01Icon,
@@ -92,7 +92,7 @@ export function PatientsView(props: PatientsViewProps) {
               Nouveau patient
             </Button>
         }
-        icon={PawPrint}
+        icon={UsersIcon}
         items={sectionCards}
         subtitle="Dossiers et suivi clinique"
       />
