@@ -18,18 +18,20 @@ const note = (version: string, status: ReleaseNote["status"]): ReleaseNote => ({
 });
 
 describe("notes de version", () => {
-  it("contient les notes de la 5.0.5 publiées, et la suite en brouillon", () => {
+  it("contient les notes publiées de la 5.0.6 et de la 5.0.5", () => {
+    const current = releaseNoteFor("5.0.6");
+    expect(current?.status).toBe("published");
+    expect(current?.highlights.map((h) => h.title)).toEqual([
+      "Des documents enfin fluides",
+      "Actions rapides au bout du +",
+      "Des blocs plus doux",
+    ]);
     const published = releaseNoteFor("5.0.5");
     expect(published?.status).toBe("published");
     expect(published?.highlights.map((h) => h.title)).toEqual([
       "Un assistant plus large et plus clair",
       "Paramètres et « Mon cabinet »",
       "Une analyse financière plus riche",
-    ]);
-    const drafts = RELEASE_NOTES.filter((n) => n.status === "draft");
-    expect(drafts.flatMap((n) => n.highlights.map((h) => h.title))).toEqual([
-      "Actions rapides au bout du +",
-      "Des blocs plus doux",
     ]);
   });
 
@@ -42,8 +44,11 @@ describe("notes de version", () => {
   });
 
   it("ne montre ni n'archive jamais un brouillon", () => {
-    expect(releaseNoteFor("5.0.6")).toBeNull();
-    expect(publishedReleaseNotes().map((n) => n.version)).not.toContain("5.0.6");
+    for (const draft of RELEASE_NOTES.filter((n) => n.status === "draft")) {
+      expect(releaseNoteFor(draft.version)).toBeNull();
+      expect(publishedReleaseNotes().map((n) => n.version)).not.toContain(draft.version);
+    }
+    expect(releaseNoteFor("0.0.0")).toBeNull();
   });
 
   it("la version du package a sa note publiée : la mise à jour montre bien quelque chose", () => {
