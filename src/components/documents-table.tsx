@@ -1,4 +1,5 @@
-import { BookOpen, Bookmark, Copy, Download, FilePlus, FileText, MoreHorizontal, Pin, Star, Trash2 } from "lucide-react";
+import { BookOpen, Bookmark, Copy, Download, FilePlus, MoreHorizontal, Pin, Star, Trash2 } from "lucide-react";
+import { DocumentTextIcon } from "@heroicons/react/20/solid";
 import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { DataTable, type DataColumn, type DataRow } from "@/components/ui/data-table";
@@ -88,7 +89,7 @@ export function DocumentsTable({
       sortable: true,
       format: (value) => (
         <span className="flex min-w-0 items-center gap-2.5">
-          <FileText aria-hidden="true" className="size-4 shrink-0 text-muted-foreground" strokeWidth={1.75} />
+          <DocumentTextIcon aria-hidden="true" className="size-4 shrink-0 text-muted-foreground" />
           <span className="max-w-80 truncate text-sm font-medium">{String(value)}</span>
         </span>
       ),
@@ -188,7 +189,7 @@ export function DocumentsTable({
       emptyTitle={filter === "all" ? "Aucun document" : "Aucun document dans cette vue"}
       exportName="documents"
       filters={filters}
-      icon={FileText}
+      icon={DocumentTextIcon}
       noun={["document", "documents"]}
       onRowClick={(row) => onOpen(row.id)}
       pageSize={10}
