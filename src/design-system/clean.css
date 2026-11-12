@@ -1781,3 +1781,9 @@
 :root[data-skin="clean"][data-skin][data-skin] :is(table, [data-slot="table"], .medical-data-table) {
   letter-spacing: 0 !important;
 }
+
+/* Boutons : meme regle. Leurs libelles de 13 px portaient -0,28 px (-2,2 %), le reglage d un
+   titre sur un texte de la taille du corps. */
+:root[data-skin="clean"][data-skin][data-skin] :is([data-slot="button"], button.group\/button, [data-slot="page-header-actions"] button) {
+  letter-spacing: 0 !important;
+}
