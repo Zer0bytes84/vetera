@@ -1808,3 +1808,10 @@
 :root[data-skin="clean"] [data-slot="stat-value"] > * {
   font-weight: 600;
 }
+
+/* Texte selectionne : un voile de l encre au lieu d un aplat de la couleur d action (noir plein
+   en clair, violet plein en sombre), le texte garde sa couleur et reste lisible sous le voile. */
+:root[data-skin="clean"] ::selection {
+  background: color-mix(in srgb, var(--clean-ink-strong) 16%, transparent);
+  color: currentcolor;
+}
