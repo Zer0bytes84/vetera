@@ -91,6 +91,16 @@ function notifyAboutUpdate(update: Update) {
   });
 }
 
+/**
+ * The release feed lists the platforms we ship (macOS, Windows). A build for another one, such as Linux in a test
+ * machine, finds no entry for itself: the plugin raises « None of the fallback platforms … were found ». That is not a
+ * failure, there is simply no update for this system; a network or signature error is still one.
+ */
+export function isPlatformNotInFeedError(error: unknown) {
+  const text = error instanceof Error ? error.message : String(error);
+  return /None of the fallback platforms/i.test(text);
+}
+
 export async function checkForAppUpdates(options?: {
   userInitiated?: boolean;
 }) {
@@ -100,7 +110,19 @@ export async function checkForAppUpdates(options?: {
 
   const userInitiated = options?.userInitiated ?? false;
 
-  const update = await check();
+  let update: Update | null;
+  try {
+    update = await check();
+  } catch (error) {
+    if (!isPlatformNotInFeedError(error)) throw error;
+    if (userInitiated) {
+      toast.info("Aucune mise à jour n’est proposée pour ce système.", {
+        duration: 5000,
+        closeButton: true,
+      });
+    }
+    return null;
+  }
   await setSetting(LAST_CHECKED_AT_KEY, new Date().toISOString());
 
   if (!update) {
