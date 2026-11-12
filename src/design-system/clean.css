@@ -1774,3 +1774,10 @@
       scale 160ms cubic-bezier(0.23, 1, 0.32, 1) !important;
   }
 }
+
+/* Tableaux : le texte de donnees reprend l interlettrage normal de la charte (decision du
+   11 novembre : pas de tracking aux tailles de texte). Il restait -0,02 em de l ancienne base,
+   herite en pixels par les lignes de 12 et 14 px (-0,26 px, jusqu a -2,2 %). */
+:root[data-skin="clean"][data-skin][data-skin] :is(table, [data-slot="table"], .medical-data-table) {
+  letter-spacing: 0 !important;
+}
