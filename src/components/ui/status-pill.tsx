@@ -112,7 +112,8 @@ export function StatusPill({
   return (
     <span
       className={cn(
-        "inline-flex shrink-0 items-center rounded-full font-medium whitespace-nowrap",
+        // Its own tracking: a pill inside a tracked title or table keeps the spacing of its 12-13 px text.
+        "inline-flex shrink-0 items-center rounded-full font-medium tracking-normal whitespace-nowrap",
         sizes[size].pill,
         tones[tone],
         className,
