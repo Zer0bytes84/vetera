@@ -1787,3 +1787,11 @@
 :root[data-skin="clean"][data-skin][data-skin] :is([data-slot="button"], button.group\/button, [data-slot="page-header-actions"] button) {
   letter-spacing: 0 !important;
 }
+
+/* Chiffres tabulaires la ou des chiffres s alignent, pas dans les libelles. Dans le fichier
+   Inter embarque, tnum elargit aussi le trait d union (942 > 1328 unites, +41 %), les
+   parentheses et la ponctuation : « rendez-vous » s ouvrait en « rendez - vous » dans les
+   en-tetes de colonne. Les cellules de donnees gardent leurs chiffres tabulaires. */
+:root[data-skin="clean"] :is(table, [data-slot="table"]) th {
+  font-variant-numeric: normal;
+}
