@@ -28,6 +28,33 @@ export type ReleaseNote = {
 /** Les plus récentes en premier. */
 export const RELEASE_NOTES: ReleaseNote[] = [
   {
+    version: "5.0.9",
+    status: "published",
+    date: "2026-11-12",
+    highlights: [
+      {
+        icon: Banknote,
+        title: "Le Journal de trésorerie fait peau neuve",
+        text: "Il adopte la présentation des Factures : recherche, filtres par sens et montants plus lisibles, pour suivre entrées et sorties d'un coup d'œil.",
+      },
+      {
+        icon: FileText,
+        title: "Documents devient une page libre",
+        text: "Documents, fichiers, images et liens vivent au même endroit. Chaque document part d'une page blanche et se compose par blocs, simplement.",
+      },
+      {
+        icon: CalendarCheck,
+        title: "Des alertes de vaccins fiables",
+        text: "Le tableau de bord lit désormais vos rappels médicaux : seuls les vaccins réellement à venir s'affichent.",
+      },
+      {
+        icon: MessageSquareText,
+        title: "L'assistant et le calendrier soignés",
+        text: "Le sélecteur de patient de l'assistant affiche le bon nom, et le calendrier parle français.",
+      },
+    ],
+  },
+  {
     version: "5.0.8",
     status: "published",
     date: "2026-11-11",
