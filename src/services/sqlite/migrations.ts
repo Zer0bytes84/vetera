@@ -152,6 +152,14 @@ export const SQLITE_MIGRATIONS: readonly SqliteMigration[] = [
     skipIfColumnExists: { table: "patients", column: "restraint" },
     sql: "ALTER TABLE patients ADD COLUMN restraint TEXT;",
   },
+  {
+    // An archived record leaves the daily lists but stays in the base:
+    // the file is a legal trace the clinic must be able to produce.
+    version: "043",
+    name: "patient-archival",
+    skipIfColumnExists: { table: "patients", column: "archived_at" },
+    sql: "ALTER TABLE patients ADD COLUMN archived_at TEXT;",
+  },
 ] as const;
 import { DISPENSING_MIGRATION_SQL } from "@/modules/stock/dispensing-migration";
 import { MOVEMENT_SNAPSHOT_MIGRATION_SQL } from "@/modules/stock/movement-snapshot-migration";

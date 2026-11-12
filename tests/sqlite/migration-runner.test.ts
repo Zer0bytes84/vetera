@@ -118,7 +118,7 @@ describe("runSqliteMigrations", () => {
     expect(noteColumns).toContain("patient_id");
     expect(
       database.connection.prepare("PRAGMA user_version").get()?.user_version
-    ).toBe(42);
+    ).toBe(43);
   });
 
   it("rolls back an entire migration when one statement fails", async () => {
@@ -221,6 +221,7 @@ describe("runSqliteMigrations", () => {
       "040",
       "041",
       "042",
+      "043",
     ]);
 
     const state = database.connection
@@ -349,6 +350,7 @@ describe("runSqliteMigrations", () => {
       "040",
       "041",
       "042",
+      "043",
     ]);
     await database.execute(
       `UPDATE owners
@@ -447,10 +449,11 @@ describe("runSqliteMigrations", () => {
       "040",
       "041",
       "042",
+      "043",
     ]);
     expect(
       database.connection.prepare("PRAGMA user_version").get()?.user_version
-    ).toBe(42);
+    ).toBe(43);
 
     expect(
       database.connection
@@ -713,6 +716,7 @@ describe("runSqliteMigrations", () => {
       "040",
       "041",
       "042",
+      "043",
     ]);
 
     expect(
@@ -989,7 +993,7 @@ describe("runSqliteMigrations", () => {
     const database = createDatabase();
     await runSqliteMigrations(database, SQLITE_MIGRATIONS.filter(migration => Number(migration.version) <= 30));
     await database.execute("INSERT INTO owners (id, first_name, last_name, phone) VALUES ('existing', 'Patient', 'Owner', '000')");
-    expect(await runSqliteMigrations(database, SQLITE_MIGRATIONS)).toEqual(["031", "032", "033", "034", "035", "036", "037", "038", "039", "040", "041", "042"]);
+    expect(await runSqliteMigrations(database, SQLITE_MIGRATIONS)).toEqual(["031", "032", "033", "034", "035", "036", "037", "038", "039", "040", "041", "042", "043"]);
     expect(await runSqliteMigrations(database, SQLITE_MIGRATIONS)).toEqual([]);
     expect(await database.select("SELECT id FROM owners")).toEqual([{ id: "existing" }]);
   });

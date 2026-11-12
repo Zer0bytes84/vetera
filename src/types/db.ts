@@ -38,6 +38,8 @@ export interface Patient {
 
   // Champs Médicaux
   lastVisit?: string; // ISO string
+  /** Dossier archivé : horodatage ISO ; absent ou null tant qu il est actif. */
+  archivedAt?: string | null;
   name: string;
   ownerId: string;
   /** Contention : comment tenir l'animal en sécurité (muselière, à deux…). */

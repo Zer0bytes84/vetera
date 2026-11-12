@@ -271,7 +271,11 @@ export function useAgendaPageModel(onNavigate?: (view: View) => void) {
       return [];
     }
 
-    const matches = findDossiers(patients, ownersById, personSearchTerm);
+    const matches = findDossiers(
+      patients.filter((patient) => !patient.archivedAt),
+      ownersById,
+      personSearchTerm
+    );
 
     // The dossier already chosen stays listed while its pre-filled label is
     // untouched, even if its owner record lacks the words searched for.

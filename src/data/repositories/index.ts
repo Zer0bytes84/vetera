@@ -98,6 +98,7 @@ const rowToPatient = (row: Record<string, unknown>): Patient => ({
   generalNotes: row.general_notes ? String(row.general_notes) : undefined,
   reference: row.reference ? String(row.reference) : undefined,
   restraint: row.restraint ? String(row.restraint) : undefined,
+  archivedAt: row.archived_at ? String(row.archived_at) : undefined,
   createdAt: String(row.created_at ?? new Date().toISOString()),
 });
 
@@ -608,11 +609,21 @@ export function usePatientsRepository() {
     });
   };
 
+  // Archiving keeps the whole record in the base (legal trace); it only
+  // leaves the daily lists. Unarchiving restores it as it was.
+  const archive = async (id: string) =>
+    patientsStore.update(id, { archivedAt: new Date().toISOString() });
+
+  const unarchive = async (id: string) =>
+    patientsStore.update(id, { archivedAt: null });
+
   return {
     ...patientsStore,
     owners: ownersStore.data,
     createWithOwner,
     update,
+    archive,
+    unarchive,
   };
 }
 

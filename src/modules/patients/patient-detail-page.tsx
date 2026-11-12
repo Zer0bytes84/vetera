@@ -21,6 +21,16 @@ import {
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
@@ -237,6 +247,31 @@ export function PatientDetailPage({
   const [weightDialogOpen, setWeightDialogOpen] = useState(false);
   const [pdfExportOpen, setPdfExportOpen] = useState(false);
   const [healthCardOpen, setHealthCardOpen] = useState(false);
+  const [archiveConfirmOpen, setArchiveConfirmOpen] = useState(false);
+
+  const handleArchivePatient = async () => {
+    if (!patient) return;
+    try {
+      await patientsRepo.archive(patient.id);
+      setArchiveConfirmOpen(false);
+      toast.success(
+        "Dossier archivé. Il reste consultable depuis la liste des dossiers archivés."
+      );
+      onNavigate("patients");
+    } catch {
+      toast.error("Le dossier n’a pas pu être archivé.");
+    }
+  };
+
+  const handleUnarchivePatient = async () => {
+    if (!patient) return;
+    try {
+      await patientsRepo.unarchive(patient.id);
+      toast.success("Dossier désarchivé.");
+    } catch {
+      toast.error("Le dossier n’a pas pu être désarchivé.");
+    }
+  };
   const [editingWeight, setEditingWeight] = useState<WeightEntry | null>(null);
   const [vaccinationDialogOpen, setVaccinationDialogOpen] = useState(false);
   const [editingVaccination, setEditingVaccination] =
@@ -680,10 +715,43 @@ export function PatientDetailPage({
             />
           </Suspense>
         )}
+        {patient.archivedAt ? (
+          <p
+            className="rounded-2xl bg-zinc-500/10 px-4 py-3 text-sm text-muted-foreground"
+            role="status"
+          >
+            Dossier archivé : il n’apparaît plus dans les listes, les
+            recherches ni les nouveaux rendez-vous. Rien n’est supprimé,
+            l’historique reste complet et consultable. Pour le remettre en
+            service : Actions, puis Désarchiver ce dossier.
+          </p>
+        ) : null}
+        <AlertDialog open={archiveConfirmOpen} onOpenChange={setArchiveConfirmOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Archiver ce dossier ?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Le dossier de {patient.name} quittera les listes, les
+                recherches et les nouveaux rendez-vous. Rien n’est supprimé :
+                consultations, soins et factures restent conservés, et le
+                dossier pourra être désarchivé à tout moment.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Annuler</AlertDialogCancel>
+              <AlertDialogAction onClick={() => void handleArchivePatient()}>
+                Archiver
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
         <Shell className="patient-record-summary">
           <ShellHeader
             aside={
               <PatientRecordActions
+                archived={Boolean(patient.archivedAt)}
+                onArchive={() => setArchiveConfirmOpen(true)}
+                onUnarchive={() => void handleUnarchivePatient()}
                 onEditProfile={openProfileEditor}
                 onExportPdf={() => setPdfExportOpen(true)}
                 onHealthCard={() => setHealthCardOpen(true)}

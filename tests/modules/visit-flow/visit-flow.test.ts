@@ -128,7 +128,7 @@ describe("mise à niveau", () => {
     // Migration 042 adds the empty restraint column to patients, nothing else.
     expect(snapshot()).toEqual({
       ...before,
-      patients: before.patients.map((row) => ({ ...row, restraint: null })),
+      patients: before.patients.map((row) => ({ ...row, restraint: null, archived_at: null })),
     });
   });
 

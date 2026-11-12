@@ -110,7 +110,7 @@ describe("barre latérale : charte", () => {
   it("Clean garde ses blocs de barre latérale et fait suivre le chrome", () => {
     const clean = selectors("src/design-system/clean.css");
     const sidebar = clean.filter((selector) => selector.includes('[data-sidebar="sidebar"][data-mobile="true"]'));
-    expect(sidebar.length).toBe(4);
+    expect(sidebar.length).toBe(5);
     for (const selector of sidebar) expect(selector.startsWith(`:root[data-skin="clean"]${GUARD}`)).toBe(true);
     let chrome = "";
     css("src/design-system/clean.css").walkRules((rule) => {

@@ -69,8 +69,8 @@ const TRANSITIONS: Record<AppointmentStatus, readonly AppointmentStatus[]> = {
   waiting: ["in_progress", "cancelled", "no_show"],
   in_progress: ["completed", "cancelled"],
   completed: [],
-  cancelled: [],
-  no_show: [],
+  cancelled: ["scheduled"],
+  no_show: ["scheduled"],
 };
 
 export function canTransitionAppointmentStatus(

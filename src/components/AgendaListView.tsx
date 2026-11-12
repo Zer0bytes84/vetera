@@ -24,6 +24,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { getAppointmentTypeMeta } from "@/config/status-meta";
+import { canTransitionAppointmentStatus } from "@/domain/clinical/scheduling";
 import { cn } from "@/lib/utils";
 import {
   AppointmentStatusBadge,
@@ -200,6 +201,18 @@ function AppointmentListItem({
   const typeMeta = getAppointmentTypeMeta(appointment.type);
   const duration = getDurationLabel(appointment);
   const nextAction = getNextAppointmentAction(appointment.status);
+  const canMarkAbsent = canTransitionAppointmentStatus(
+    appointment.status,
+    "no_show"
+  );
+  const canCancel = canTransitionAppointmentStatus(
+    appointment.status,
+    "cancelled"
+  );
+  const canReopen = canTransitionAppointmentStatus(
+    appointment.status,
+    "scheduled"
+  );
   const phone = formatPhone(row.owner?.phone);
   const dateLabel = new Date(appointment.startTime).toLocaleDateString("fr-FR", {
     weekday: "short",
@@ -334,6 +347,33 @@ function AppointmentListItem({
               <DropdownMenuItem onClick={() => onEdit(appointment)}>
                 Modifier
               </DropdownMenuItem>
+              {canMarkAbsent ? (
+                <DropdownMenuItem
+                  onClick={() =>
+                    void onTransitionStatus(appointment, "no_show")
+                  }
+                >
+                  Marquer absent
+                </DropdownMenuItem>
+              ) : null}
+              {canCancel ? (
+                <DropdownMenuItem
+                  onClick={() =>
+                    void onTransitionStatus(appointment, "cancelled")
+                  }
+                >
+                  Annuler le rendez-vous
+                </DropdownMenuItem>
+              ) : null}
+              {canReopen ? (
+                <DropdownMenuItem
+                  onClick={() =>
+                    void onTransitionStatus(appointment, "scheduled")
+                  }
+                >
+                  Rouvrir le rendez-vous
+                </DropdownMenuItem>
+              ) : null}
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 onClick={() => onDelete(appointment)}

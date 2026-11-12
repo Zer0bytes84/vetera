@@ -132,15 +132,20 @@ describe("thème Clean : déclinaison sombre", () => {
 describe("thème Clean : sidebar sombre dans les deux déclinaisons", () => {
   const darkBlock = rulesFor(/\.dark,$|\.dark,\s/).find((rule) => rule.selectors.includes(DARK) && rule.toString().includes("--clean-frame: #0c0d0f"));
 
-  it("reçoit exactement le bloc de jetons de Clean sombre, sans palette à elle", () => {
+  it("reçoit le bloc de jetons de Clean sombre, à deux exceptions près scopées à la sidebar", () => {
     expect(darkBlock?.selectors).toEqual([DARK, SIDEBAR]);
-    const sidebarOnly: string[] = [];
+    const sidebarOnly = new Map<string, string>();
     root.walkRules((rule) => {
       if (rule.selectors.length === 1 && rule.selectors[0] === SIDEBAR) {
-        rule.walkDecls((decl) => { if (decl.prop.startsWith("--")) sidebarOnly.push(decl.prop); });
+        rule.walkDecls((decl) => { if (decl.prop.startsWith("--")) sidebarOnly.set(decl.prop, decl.value); });
       }
     });
-    expect(sidebarOnly).toEqual([]);
+    // Exception sanctionnée (Catalyst, validée à l'œil le 2026-11-11) : la
+    // sidebar seule approfondit son cadre en zinc-950 et son encre forte en
+    // blanc pur ; aucun autre jeton ne lui est propre.
+    expect([...sidebarOnly.keys()].sort()).toEqual(["--clean-frame", "--clean-ink-strong"]);
+    expect(sidebarOnly.get("--clean-frame")).toBe("#09090b");
+    expect(sidebarOnly.get("--clean-ink-strong")).toBe("#ffffff");
   });
 
   it("fait pointer les jetons de Premium et de navigation vers Clean, dans la sidebar aussi", () => {

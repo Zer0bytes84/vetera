@@ -1,12 +1,12 @@
 import "@/design-system/page-header-line.css";
 import { CalendarPlus, FirstAid, Notebook, PencilSimple } from "@/lib/icons";
-import { ChevronDown, Download, HeartPulse, Zap } from "lucide-react";
+import { Archive, ArchiveRestore, ChevronDown, Download, HeartPulse, Zap } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { getSpeciesTheme } from "@/lib/species-theme";
 import { speciesIcon } from "@/lib/species-icon";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { StatusPill, type StatusTone } from "@/components/ui/status-pill";
 import { getPatientStatusMeta } from "@/config/status-meta";
 import { computeAge, formatAgeFr } from "../lib/age";
@@ -202,6 +202,9 @@ export function PatientRecordActions({
   onHealthCard,
   onOpenClinicalNote,
   onNewOffVisitNote,
+  archived,
+  onArchive,
+  onUnarchive,
 }: {
   onEditProfile: () => void;
   onNewAppointment: () => void;
@@ -210,6 +213,9 @@ export function PatientRecordActions({
   onHealthCard?: () => void;
   onOpenClinicalNote?: () => void;
   onNewOffVisitNote?: () => void;
+  archived?: boolean;
+  onArchive?: () => void;
+  onUnarchive?: () => void;
 }) {
   // One primary action: the note of the visit under way, or a note without visit when none is.
   const primary = onOpenClinicalNote
@@ -282,6 +288,24 @@ export function PatientRecordActions({
                 <HeartPulse aria-hidden="true" className="size-4" strokeWidth={1.5} />
                 Carnet de santé
               </DropdownMenuItem>
+            ) : null}
+            {archived && onUnarchive ? (
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem data-testid="patient-unarchive" onClick={onUnarchive}>
+                  <ArchiveRestore aria-hidden="true" className="size-4" />
+                  Désarchiver ce dossier
+                </DropdownMenuItem>
+              </>
+            ) : null}
+            {!archived && onArchive ? (
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem data-testid="patient-archive" onClick={onArchive}>
+                  <Archive aria-hidden="true" className="size-4" />
+                  Archiver ce dossier
+                </DropdownMenuItem>
+              </>
             ) : null}
           </DropdownMenuContent>
         </DropdownMenu>

@@ -44,6 +44,7 @@ export function usePatientsPageModel({ onNavigateToPatient }: PatientsProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [speciesFilter, setSpeciesFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [archiveFilter, setArchiveFilter] = useState("active");
   const [sortKey, setSortKey] = useState<PatientSort>("activity");
   const [currentPage, setCurrentPage] = useState(1);
   const [recentOwnersById, setRecentOwnersById] = useState<
@@ -165,6 +166,12 @@ export function usePatientsPageModel({ onNavigateToPatient }: PatientsProps) {
         if (statusFilter !== "all" && entry.patient.status !== statusFilter) {
           return false;
         }
+        if (archiveFilter === "active" && entry.patient.archivedAt) {
+          return false;
+        }
+        if (archiveFilter === "archived" && !entry.patient.archivedAt) {
+          return false;
+        }
         if (query && !entry.searchIndex.includes(query)) {
           return false;
         }
@@ -180,6 +187,7 @@ export function usePatientsPageModel({ onNavigateToPatient }: PatientsProps) {
     sortKey,
     speciesFilter,
     statusFilter,
+    archiveFilter,
   ]);
 
   useEffect(() => {
@@ -354,6 +362,7 @@ export function usePatientsPageModel({ onNavigateToPatient }: PatientsProps) {
     setSearchTerm("");
     setSpeciesFilter("all");
     setStatusFilter("all");
+    setArchiveFilter("active");
     setSortKey("activity");
     setCurrentPage(1);
   };
@@ -361,6 +370,7 @@ export function usePatientsPageModel({ onNavigateToPatient }: PatientsProps) {
     searchTerm.trim() !== "" ||
     speciesFilter !== "all" ||
     statusFilter !== "all" ||
+    archiveFilter !== "active" ||
     sortKey !== "activity";
 
   const totalPages = Math.max(
@@ -549,6 +559,8 @@ export function usePatientsPageModel({ onNavigateToPatient }: PatientsProps) {
     setSortKey,
     setSpeciesFilter,
     setStatusFilter,
+    setArchiveFilter,
+    archiveFilter,
     speciesFilter,
     speciesOptions,
     sortKey,

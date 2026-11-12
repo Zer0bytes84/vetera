@@ -1,4 +1,4 @@
-import { Banknote, Building2, FileText, LayoutGrid, MessageSquareText, Palette, Plus, Shapes, Type, type LucideIcon } from "lucide-react";
+import { Archive, Banknote, Building2, CalendarCheck, FileText, LayoutGrid, MessageSquareText, Palette, PanelLeft, Plus, Shapes, Type, type LucideIcon } from "lucide-react";
 
 /**
  * Les notes de version : une entrée par version, à remplir à chaque publication.
@@ -27,6 +27,33 @@ export type ReleaseNote = {
 
 /** Les plus récentes en premier. */
 export const RELEASE_NOTES: ReleaseNote[] = [
+  {
+    version: "5.0.8",
+    status: "published",
+    date: "2026-11-11",
+    highlights: [
+      {
+        icon: CalendarCheck,
+        title: "L'agenda gère les imprévus",
+        text: "Un client qui ne vient pas ou un rendez-vous annulé se marque en un clic depuis la liste. Et si le client arrive finalement, le rendez-vous se rouvre et la visite reprend normalement.",
+      },
+      {
+        icon: Archive,
+        title: "Archivez un dossier, sans rien perdre",
+        text: "Un dossier qui ne sert plus quitte les listes et les recherches, tout en restant conservé en entier : consultations, soins et factures. Vous le retrouvez à tout moment parmi les dossiers archivés, prêt à être remis en service.",
+      },
+      {
+        icon: PanelLeft,
+        title: "Une barre latérale plus nette",
+        text: "Fond plus profond et libellés en blanc franc : la navigation se lit mieux d'un coup d'œil, et le pied de la barre a été soigné.",
+      },
+      {
+        icon: LayoutGrid,
+        title: "Le tableau de bord, bien groupé",
+        text: "Les choix de période et d'affichage du tableau de bord sont de nouveau présentés nettement dans leurs bandes, autour des chiffres clés.",
+      },
+    ],
+  },
   {
     version: "5.0.7",
     status: "published",

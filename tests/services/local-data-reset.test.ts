@@ -39,7 +39,7 @@ describe("local reset safety", () => {
       expect(sql.prepare("SELECT COUNT(*) AS n FROM sessions").get()?.n).toBe(0);
       expect(sql.prepare("SELECT COUNT(*) AS n FROM app_settings WHERE key!='managed_document_templates_seeded'").get()?.n).toBe(0);
       expect(mock.backup.mock.invocationCallOrder[0]).toBeLessThan(mock.operation.mock.invocationCallOrder[0]);
-      expect(sql.prepare("SELECT COUNT(*) AS n FROM migrations").get()?.n).toBe(42);
+      expect(sql.prepare("SELECT COUNT(*) AS n FROM migrations").get()?.n).toBe(43);
       expect(sql.prepare("SELECT value FROM app_settings WHERE key='license_activation_token'").get()).toBeUndefined();
       expect(sql.prepare("PRAGMA foreign_keys").get()?.foreign_keys).toBe(1);
       expect(sql.prepare("PRAGMA foreign_key_check").all()).toEqual([]);

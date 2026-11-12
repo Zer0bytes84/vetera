@@ -155,6 +155,29 @@
   --clean-dot-mix: 60%;
 }
 
+/* Sidebar at pure white: on the dark sidebar, the labels take #fff, the
+   crispness of the Catalyst demo. The override is scoped to the sidebar
+   element alone (its tone is dark in both declensions), so the content ink
+   keeps its softer #f3f3f5. */
+:root[data-skin="clean"]:where(:not([data-sidebar-tone="light"])) :is([data-slot="sidebar"], [data-sidebar="sidebar"][data-mobile="true"]) {
+  --clean-ink-strong: #ffffff;
+  --clean-frame: #09090b;
+}
+
+/* Catalyst footer trials, from the kit's source: the hairline above the
+   account block takes the footer's dark border (white at 5 percent; the
+   markup already draws it, but --sidebar-border is transparent), and the
+   footer avatar takes the kit's square radius, 20 percent, not the circle. */
+:root[data-skin="clean"]:where(:not([data-sidebar-tone="light"])) .app-sidebar [data-slot="sidebar-footer"] > div {
+  border-top-color: rgb(255 255 255 / 0.05);
+}
+:root[data-skin="clean"] .app-sidebar [data-slot="sidebar-footer"] :is([data-slot="avatar"], [data-slot="avatar"] img, [data-slot="avatar-fallback"]) {
+  border-radius: 20%;
+}
+:root[data-skin="clean"] .app-sidebar [data-slot="sidebar-footer"] [data-slot="avatar"]::after {
+  border-radius: 20%;
+}
+
 /* Premium's semantic tokens point at the Clean values, in both declensions
    (the .dark selector outranks Premium dark's own token block). */
 :root[data-skin="clean"],
@@ -1524,6 +1547,14 @@
    the same white 5% as the base track, which already contrasted). */
 :root[data-skin="clean"] [data-slot="band"] {
   --clean-segment-track: var(--clean-segment-track-band);
+}
+
+/* The same step, painted directly on every segmented group inside a band:
+   the key figures band showed its period switch (in the lead) and its view
+   switch (in the toolbar) without a track, although the token above should
+   have reached them. */
+:root[data-skin="clean"] [data-slot="band"] [data-tabs-style="segmented"] {
+  background: var(--clean-segment-track-band) !important;
 }
 
 /* Radii: the shadcn multipliers of the 8 px base gave 4.8, 6.4, 11.2 and

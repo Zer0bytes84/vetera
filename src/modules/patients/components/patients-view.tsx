@@ -64,6 +64,8 @@ export function PatientsView(props: PatientsViewProps) {
     setSelectedPatientId,
     setSpeciesFilter,
     setStatusFilter,
+    setArchiveFilter,
+    archiveFilter,
     speciesFilter,
     speciesOptions,
     statusFilter,
@@ -141,6 +143,16 @@ export function PatientsView(props: PatientsViewProps) {
                   ...Object.entries(PATIENT_STATUS_META).map(
                     ([value, option]) => ({ value, label: option.label }),
                   ),
+                ]}
+              />
+              <ListFilter
+                label="Dossiers"
+                value={archiveFilter}
+                onValueChange={setArchiveFilter}
+                options={[
+                  { value: "active", label: "Actifs" },
+                  { value: "archived", label: "Archivés" },
+                  { value: "all", label: "Tous" },
                 ]}
               />
             </>

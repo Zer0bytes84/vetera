@@ -50,7 +50,7 @@ describe("références patient", () => {
     addPatient(db, "deuxieme-a", "2026-04-15 10:00:00");
     addPatient(db, "deuxieme-b", "2026-04-15 10:00:00");
 
-    await expect(runSqliteMigrations(adapter, SQLITE_MIGRATIONS)).resolves.toEqual(["041", "042"]);
+    await expect(runSqliteMigrations(adapter, SQLITE_MIGRATIONS)).resolves.toEqual(["041", "042", "043"]);
 
     expect(references(db)).toEqual([
       { patient_id: "premier", reference: "ID-0001" },
@@ -126,7 +126,7 @@ describe("contention", () => {
     await runSqliteMigrations(adapter, SQLITE_MIGRATIONS.filter(({ version }) => version < "042"));
     db.exec("INSERT INTO owners(id, first_name, last_name, phone) VALUES ('o1', 'Amina', 'Haddad', '')");
     addPatient(db, "rex");
-    await expect(runSqliteMigrations(adapter, SQLITE_MIGRATIONS)).resolves.toEqual(["042"]);
+    await expect(runSqliteMigrations(adapter, SQLITE_MIGRATIONS)).resolves.toEqual(["042", "043"]);
     db.exec("UPDATE patients SET restraint = 'Muselière' WHERE id = 'rex'");
     expect(db.prepare(`${PATIENTS_WITH_REFERENCE_SQL} WHERE patients.id = 'rex'`).get()).toMatchObject({
       name: "rex",
