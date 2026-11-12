@@ -1751,3 +1751,13 @@
   border-radius: var(--clean-sheet-inset) var(--clean-sheet-inset) 0 0 !important;
 }
 
+
+/* ---------- Fraicheur du 12 novembre 2026 (banc banc/fable-fraicheur-2026-11-12) ----------
+   Une proposition par commit, chacune mesuree avant/apres : docs/recus/2026-11-12-fable-fraicheur/BILAN.md. */
+
+/* Focus clavier sur l'entree active de la navigation : l'anneau existait partout sauf la
+   (l'entree active remet outline a zero). Meme anneau que ses voisines : 2 px, decale de 2 px. */
+:root[data-skin="clean"][data-skin][data-skin] .app-sidebar :is([data-slot="sidebar-menu-button"], .sidebar-nav-link)[data-active]:focus-visible {
+  outline: 2px solid var(--nav-ink) !important;
+  outline-offset: 2px !important;
+}
