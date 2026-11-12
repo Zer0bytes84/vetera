@@ -94,6 +94,7 @@
     "typecheck": "tsrs -b",
     "typecheck:tsc": "tsc -b",
     "check:startup": "node scripts/check-startup-bundle.mjs",
+    "harness": "node scripts/test-harness-run.mjs",
     "preview": "vite preview",
     "tauri": "tauri",
     "tauri:dev": "tauri dev",

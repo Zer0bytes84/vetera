@@ -7,6 +7,8 @@ import { defineConfig, configDefaults } from "vitest/config";
 import { localAiRuntimePlugin } from "./scripts/local-ai-runtime-plugin.mjs";
 // @ts-expect-error Build helper is shared with Node integration tests.
 import { licenseBuildConfig } from "./scripts/license-build-config.mjs";
+// @ts-expect-error Development-only test harness, a Node helper (see docs/TEST-HARNESS.md).
+import { testHarnessPlugin } from "./scripts/test-harness-plugin.mjs";
 
 // Cross-origin isolation (SharedArrayBuffer) lets the local search engine run
 // on several threads. Production gets the same headers from tauri.conf.json.
@@ -37,7 +39,7 @@ export default defineConfig(({ command, mode }) => ({
   // Tauri desktop bundles should resolve assets relative to index.html.
   // Keeping "/" here breaks packaged builds with "Importing a module script failed".
   base: process.env.TAURI_ENV_PLATFORM ? "./" : "/",
-  plugins: [crossOriginIsolation(), react(), tailwindcss(), localAiRuntimePlugin()],
+  plugins: [crossOriginIsolation(), react(), tailwindcss(), localAiRuntimePlugin(), ...testHarnessPlugin(command)],
   worker: { format: "es" },
   // Warm worker-only dependencies before the first consultation. Lazy discovery
   // during an inference otherwise invalidates the desktop window's module cache.

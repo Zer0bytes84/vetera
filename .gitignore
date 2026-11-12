@@ -13,6 +13,7 @@ dist-ssr
 .playwright-cli
 .playwright-mcp
 output
+.test-harness
 src-tauri/target
 *.local
 *.db
