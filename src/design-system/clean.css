@@ -1810,8 +1810,9 @@
 }
 
 /* Texte selectionne : un voile de l encre au lieu d un aplat de la couleur d action (noir plein
-   en clair, violet plein en sombre), le texte garde sa couleur et reste lisible sous le voile. */
+   en clair, violet plein en sombre). Le texte selectionne passe a l encre forte : sous le voile,
+   le gris discret tombait a 3,5:1 ; l encre forte tient 10,7:1 en clair et 10,2:1 en sombre. */
 :root[data-skin="clean"] ::selection {
   background: color-mix(in srgb, var(--clean-ink-strong) 16%, transparent);
-  color: currentcolor;
+  color: var(--clean-ink-strong);
 }
