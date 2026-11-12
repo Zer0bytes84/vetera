@@ -1,0 +1,102 @@
+{
+ "files": {
+  "src/modules/finances/finances-premium.css": {
+   "rescoped": 12,
+   "droppedSelectors": [],
+   "droppedRules": 0,
+   "simplifiedIs": 0
+  },
+  "src/modules/prescriptions/components/prescription-templates.css": {
+   "rescoped": 3,
+   "droppedSelectors": [],
+   "droppedRules": 0,
+   "simplifiedIs": 0
+  },
+  "src/modules/prescriptions/components/prescription-safety.css": {
+   "rescoped": 4,
+   "droppedSelectors": [],
+   "droppedRules": 0,
+   "simplifiedIs": 0
+  },
+  "src/modules/care-tasks/care-page.css": {
+   "rescoped": 1,
+   "droppedSelectors": [],
+   "droppedRules": 0,
+   "simplifiedIs": 0
+  },
+  "src/modules/dashboard/components/widget-units.css": {
+   "rescoped": 60,
+   "droppedSelectors": [],
+   "droppedRules": 0,
+   "simplifiedIs": 60
+  },
+  "src/modules/dashboard/components/focus-trend-chart.css": {
+   "rescoped": 41,
+   "droppedSelectors": [],
+   "droppedRules": 0,
+   "simplifiedIs": 39
+  },
+  "src/modules/dashboard/components/premium-analytics.css": {
+   "rescoped": 241,
+   "droppedSelectors": [
+    ":root[data-skin=\"premium\"] .premium-page-icon",
+    ":root[data-skin=\"premium\"] .premium-page-icon",
+    ":root[data-visual-style=\"classic\"] .premium-analytics-dashboard"
+   ],
+   "droppedRules": 3,
+   "simplifiedIs": 236
+  },
+  "src/modules/dashboard/components/dashboard-watch.css": {
+   "rescoped": 26,
+   "droppedSelectors": [],
+   "droppedRules": 0,
+   "simplifiedIs": 26
+  },
+  "src/modules/shell/premium-sidebar.css": {
+   "rescoped": 119,
+   "droppedSelectors": [],
+   "droppedRules": 0,
+   "simplifiedIs": 0
+  },
+  "src/modules/patient-reminders/patient-reminders.css": {
+   "rescoped": 3,
+   "droppedSelectors": [],
+   "droppedRules": 0,
+   "simplifiedIs": 0
+  },
+  "src/index.css": {
+   "rescoped": 1,
+   "droppedSelectors": [
+    ":root:not([data-skin=\"clean\"]) [data-clean-only]"
+   ],
+   "droppedRules": 1,
+   "simplifiedIs": 0
+  },
+  "src/components/mascot/mascot.css": {
+   "rescoped": 0,
+   "droppedSelectors": [
+    ":root[data-skin=\"premium\"]:not(.dark) .sidebar-brand-ai"
+   ],
+   "droppedRules": 1,
+   "simplifiedIs": 0
+  },
+  "src/design-system/clean.css": {
+   "rescoped": 0,
+   "droppedSelectors": [],
+   "droppedRules": 0,
+   "simplifiedIs": 0
+  },
+  "src/design-system/premium.css": {
+   "rescoped": 244,
+   "droppedSelectors": [],
+   "droppedRules": 0,
+   "simplifiedIs": 0
+  },
+  "src/design-system/premium-workspace.css": {
+   "rescoped": 172,
+   "droppedSelectors": [],
+   "droppedRules": 0,
+   "simplifiedIs": 0
+  }
+ }
+}

@@ -1,0 +1,30 @@
+same dark-agenda.png
+same dark-clinique.png
+same dark-dashboard.png
+same dark-dossier-patient.png
+same dark-equipe.png
+same dark-finances-analyse.png
+same dark-finances.png
+same dark-flux.png
+same dark-notes.png
+DIFF dark-parametres-apparence.png pixels: 5955 bbox: (551, 882, 1315, 900)
+same dark-patients.png
+same dark-soins.png
+same dark-stock.png
+same dark-taches.png
+same light-agenda.png
+same light-clinique.png
+same light-dashboard.png
+same light-dossier-patient.png
+same light-equipe.png
+same light-finances-analyse.png
+same light-finances.png
+same light-flux.png
+same light-notes.png
+DIFF light-parametres-apparence.png pixels: 5479 bbox: (551, 882, 1315, 900)
+same light-patients.png
+same light-soins.png
+same light-stock.png
+same light-taches.png
+28 compared, 2 differing
+finished

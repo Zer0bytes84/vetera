@@ -1,5 +1,5 @@
 // Captures of the sidebar mascot, one run per appearance (query =
-// "clean-light,clean-dark,premium-light,premium-dark"): its gaze in four
+// "light,dark"): its gaze in two
 // directions, a blink, each mood, the sidebar folded, the settings' choices.
 // In every state the page measures what must not move or overflow: the menu
 // items' boxes, the header's height, the page's width. A pointer sweep then
@@ -66,15 +66,9 @@ export async function captureMascot(signal: string, appearances: string[]) {
     await writeTextFile(signal, "restored");
     return;
   }
-  const [skin, mode] = appearance.split("-");
-  const config = JSON.parse(
-    localStorage.getItem("theme-config") ?? "{}",
-  ) as Record<string, unknown>;
-  if (config.skin !== skin || localStorage.getItem("theme") !== mode) {
-    localStorage.setItem(
-      "theme-config",
-      JSON.stringify({ ...config, visualStyle: "premium", skin }),
-    );
+  if (appearance.startsWith("premium")) throw new Error("Premium a été retiré : une seule interface (Clean), clair ou sombre.");
+  const mode = appearance.endsWith("dark") ? "dark" : "light";
+  if (localStorage.getItem("theme") !== mode) {
     localStorage.setItem("theme", mode);
     location.reload();
     return;

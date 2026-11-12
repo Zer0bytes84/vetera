@@ -1,6 +1,6 @@
 // Captures of the four ports validated in the copy (27 October): sidebar
 // search, Paramètres label, Consultations curve in Clean, SOAP blocks. One pass
-// per appearance (query = "clean-light,clean-dark,premium-light"); each state is
+// per appearance (query = "light,dark"); each state is
 // photographed by the shell ("ready:<name>" → "done:<name>") and measured in
 // the page: computed sizes and frames, so the screenshots are not the only proof.
 import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
@@ -69,12 +69,11 @@ export async function capturePorts(signal: string, appearances: string[], patien
     await writeTextFile(signal, "restored");
     return;
   }
-  const [skin, mode] = appearance.split("-");
-  const config = JSON.parse(localStorage.getItem("theme-config") ?? "{}") as Record<string, unknown>;
+  if (appearance.startsWith("premium")) throw new Error("Premium a été retiré : une seule interface (Clean), clair ou sombre.");
+  const mode = appearance.endsWith("dark") ? "dark" : "light";
   const toastShown = localStorage.getItem("baitari:ai-models-onboarding-dismissed") !== "true";
   localStorage.setItem("baitari:ai-models-onboarding-dismissed", "true");
-  if (toastShown || config.skin !== skin || localStorage.getItem("theme") !== mode) {
-    localStorage.setItem("theme-config", JSON.stringify({ ...config, visualStyle: "premium", skin }));
+  if (toastShown || localStorage.getItem("theme") !== mode) {
     localStorage.setItem("theme", mode);
     location.reload();
     return;

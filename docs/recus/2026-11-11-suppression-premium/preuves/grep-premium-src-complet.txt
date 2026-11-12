@@ -1,0 +1,224 @@
+src/index.css:12:@import "./design-system/premium.css";
+src/index.css:13:@import "./design-system/premium-workspace.css";
+src/index.css:326:/* The Documents primary action is a pill in every theme. Premium caps all
+src/index.css:1942:/* ─── Premium Protocol Card Global overrides ─── */
+src/modules/agenda/components/agenda-cards.css:19:  /* En Premium, --card est transparent : la carte prend la surface blanche. */
+src/modules/agenda/components/agenda-cards.css:175:  background: var(--premium-tag-color, currentColor);
+src/modules/agenda/components/agenda-cards.css:428:/* Le thème Premium retire le retrait des en-têtes de carte : on l'aligne sur le contenu. */
+src/modules/finances/financial-analytics-page.tsx:13:import { PremiumFinancialAnalysis } from "./components/premium-financial-analysis";
+src/modules/finances/financial-analytics-page.tsx:45:    <PremiumFinancialAnalysis
+src/modules/prescriptions/components/prescription-templates.css:93:  --rx-safety-color: var(--premium-red);
+src/modules/prescriptions/components/prescription-templates.css:97:  border-radius: var(--premium-control-radius);
+src/modules/prescriptions/components/prescription-safety.css:84:  --rx-safety-color: var(--premium-red);
+src/modules/prescriptions/components/prescription-safety.css:88:  border-radius: var(--premium-control-radius);
+src/modules/prescriptions/components/prescription-safety.css:89:  background: color-mix(in oklab, var(--premium-red) 5%, var(--surface));
+src/modules/care-tasks/care-page.tsx:450:              data-premium-status={status}
+src/modules/finances/components/premium-financial-analysis.tsx:72:export function PremiumFinancialAnalysis({ metrics, onNavigate, transactions = [], invoices = [], invoicesUnavailable = false }: {
+src/modules/finances/components/finances-view.tsx:101:import "../finances-premium.css";
+src/modules/care-tasks/care-page.css:14:/* Preserve the 44 px care actions when Premium compacts default buttons. */
+src/modules/dashboard/pages/dashboard-page.tsx:44:import { PremiumAnalytics } from "../components/premium-analytics";
+src/modules/dashboard/pages/dashboard-page.tsx:45:import { buildPremiumAnalytics, dashboardPresentationData, type AnalyticsPeriod, type CustomRange, type DashboardPeriod } from "../model/premium-analytics";
+src/modules/dashboard/pages/dashboard-page.tsx:46:import "../components/premium-analytics.css";
+src/modules/dashboard/pages/dashboard-page.tsx:343:      <div className="dashboard-stage flex w-full min-w-0 flex-col gap-6 px-4 pt-4 pb-12 lg:px-6 premium-analytics-dashboard">
+src/modules/dashboard/pages/dashboard-page.tsx:344:        <PremiumAnalytics
+src/modules/dashboard/pages/dashboard-page.tsx:346:          model={buildPremiumAnalytics({ ...presentation, alerts, reminders: medicalReminders.reminders }, analyticsPeriod, now, customRange)}
+src/modules/dashboard/v2/settle-widgets.tsx:264:        <div className="premium-card-heading flex flex-wrap items-start justify-between gap-4 px-4 pt-4">
+src/modules/dashboard/components/premium-analytics.tsx:27:  type buildPremiumAnalytics,
+src/modules/dashboard/components/premium-analytics.tsx:30:} from "../model/premium-analytics";
+src/modules/dashboard/components/premium-analytics.tsx:50:import "./premium-analytics.css";
+src/modules/dashboard/components/premium-analytics.tsx:52:interface PremiumAnalyticsProps {
+src/modules/dashboard/components/premium-analytics.tsx:53:  model: ReturnType<typeof buildPremiumAnalytics>;
+src/modules/dashboard/components/premium-analytics.tsx:232:export function PremiumAnalytics({
+src/modules/dashboard/components/premium-analytics.tsx:249:}: PremiumAnalyticsProps) {
+src/modules/dashboard/components/premium-analytics.tsx:507:    <div className="premium-overview-shell flex flex-col gap-6 w-full">
+src/modules/dashboard/components/premium-analytics.tsx:508:      {clinicalView ? <div className="premium-clinical-overview">
+src/modules/dashboard/components/dashboard-watch.css:4:  --watch-warning: var(--premium-orange, var(--signal-watch));
+src/modules/dashboard/components/premium-analytics.css:6::root:is([data-skin="clean"], .premium-analytics-dashboard) {
+src/modules/dashboard/components/premium-analytics.css:7:  /* Dashboard aliases: every value comes from the charter tokens (premium.css),
+src/modules/dashboard/components/premium-analytics.css:30:.dark :is([data-skin="clean"], .premium-analytics-dashboard) {
+src/modules/dashboard/components/premium-analytics.css:45:[data-skin="clean"] .premium-overview-shell,
+src/modules/dashboard/components/premium-analytics.css:46:[data-skin="clean"] .premium-analytics-dashboard {
+src/modules/dashboard/components/premium-analytics.css:280:  fill: var(--series-1, var(--premium-blue));
+src/modules/dashboard/components/premium-analytics.css:285:  stroke: var(--series-1, var(--premium-blue));
+src/modules/dashboard/components/premium-analytics.css:324:[data-skin="clean"] .kpiKindsBar > i[data-tone="0"] { --tone: var(--series-1, var(--premium-blue)); }
+src/modules/dashboard/components/premium-analytics.css:358:[data-skin="clean"] .delta[data-sense="watch"] { color: var(--premium-orange); }
+src/modules/dashboard/components/premium-analytics.css:561::root:is([data-skin="clean"], .premium-analytics-dashboard) {
+src/modules/dashboard/components/premium-analytics.css:562:  --series-1: var(--premium-blue);
+src/modules/dashboard/components/premium-analytics.css:563:  --series-1-wash: color-mix(in srgb, var(--premium-blue) 9%, transparent);
+src/modules/dashboard/components/premium-analytics.css:970:  background: var(--premium-orange, var(--signal-watch));
+src/modules/dashboard/components/premium-analytics.css:971:  box-shadow: 0 0 0 3px color-mix(in srgb, var(--premium-orange, var(--signal-watch)) 18%, transparent);
+src/modules/dashboard/components/premium-analytics.css:1003:.premium-analytics-dashboard .premium-overview-shell:has(> .kpis) {
+src/modules/dashboard/components/premium-analytics.css:1008:.premium-analytics-dashboard .premium-overview-shell:has(> .kpis) > .filters {
+src/modules/dashboard/components/premium-analytics.css:1013:.premium-analytics-dashboard .premium-overview-shell:has(> .kpis) > .split {
+src/modules/dashboard/components/premium-analytics.css:1018:.premium-analytics-dashboard .premium-overview-shell:has(> .kpis) > .watchGrid {
+src/modules/dashboard/components/premium-analytics.css:1025:.premium-analytics-dashboard .premium-overview-shell:has(> .kpis) {
+src/modules/dashboard/components/premium-analytics.css:1029:.premium-analytics-dashboard .premium-overview-shell:has(> .kpis) > .filters {
+src/modules/dashboard/components/premium-analytics.css:1033:.premium-analytics-dashboard .premium-overview-shell:has(> .kpis) > :is(.split, .watchGrid) {
+src/modules/dashboard/components/premium-analytics.css:1059:   One small set of accents shared by Clean and Premium, light and dark: the icon of each
+src/modules/dashboard/components/premium-analytics.css:1063:.premium-analytics-dashboard .kpi {
+src/modules/dashboard/components/premium-analytics.css:1066:.premium-analytics-dashboard .kpi[data-tone="green"] { --tone: var(--tone-green); }
+src/modules/dashboard/components/premium-analytics.css:1067:.premium-analytics-dashboard .kpi[data-tone="blue"] { --tone: var(--tone-blue); }
+src/modules/dashboard/components/premium-analytics.css:1068:.premium-analytics-dashboard .kpi[data-tone="violet"] { --tone: var(--tone-violet); }
+src/modules/dashboard/components/premium-analytics.css:1069:.premium-analytics-dashboard .kpi[data-tone="amber"] { --tone: var(--tone-amber); }
+src/modules/dashboard/components/premium-analytics.css:1070:.premium-analytics-dashboard .kpi[data-tone="rose"] { --tone: var(--tone-rose); }
+src/modules/dashboard/components/premium-analytics.css:1072:.premium-analytics-dashboard .kpi[data-tone] .kpiHead > span:first-child > svg {
+src/modules/dashboard/components/premium-analytics.css:1081:/* The figure of a warning tone: premium.css pins .kpiValue to the ink with !important. */
+src/modules/dashboard/components/premium-analytics.css:1082:.premium-analytics-dashboard .kpis .kpi:is([data-tone="amber"], [data-tone="rose"]) .kpiValue {
+src/modules/dashboard/components/premium-analytics.css:1091:.premium-analytics-dashboard .dashboardWelcome {
+src/modules/dashboard/components/premium-analytics.css:1099:.premium-analytics-dashboard .dashboardWelcome .heroTitle {
+src/modules/dashboard/components/premium-analytics.css:1103:.premium-analytics-dashboard .dashboardWelcome .heroName {
+src/modules/dashboard/components/premium-analytics.css:1120::root:not(.dark) .premium-overview-shell [class*="text-[0.8125rem]"] {
+src/modules/dashboard/components/premium-analytics.css:1125::root:not(.dark) .premium-overview-shell span[class*="text-[1.5rem]"] {
+src/modules/dashboard/components/clinical/actions-module.tsx:154:        <dl className="premium-widget-metrics" aria-label="Bilan des actions">
+src/modules/dashboard/components/clinical/shared.tsx:84:            className={`font-display t-18 font-medium tabular-nums ${row.tone === "positive" ? "text-[color:var(--premium-green,var(--signal-positive))]" : row.tone === "watch" ? "text-[color:var(--premium-orange,var(--signal-watch))]" : "text-ink"}`}
+src/modules/dashboard/components/clinical/cash-module.tsx:162:      <dl className="premium-widget-metrics" aria-label="Bilan de trésorerie">
+src/modules/dashboard/model/premium-analytics.ts:146:export function buildPremiumAnalytics(data: {
+src/modules/dashboard/model/key-figures.ts:4:import type { buildPremiumAnalytics } from "./premium-analytics";
+src/modules/dashboard/model/key-figures.ts:61:  model: Pick<ReturnType<typeof buildPremiumAnalytics>, "cash" | "patients" | "actions" | "appointments" | "trend" | "receivablesBefore">,
+src/modules/patients/medical-record.css:2051:   and firm, because Premium and Clean style these titles with strong rules. */
+src/modules/patients/patients-list.css:7:   tokens of the charter (--premium-*), mixed with the surface. */
+src/modules/finances/components/finance-overview.tsx:11:} from "@/modules/dashboard/model/premium-analytics";
+src/modules/dashboard/components/focus-trend-chart.css:123::is(.dark) :is([data-skin="clean"], .premium-analytics-dashboard) .focusGlow,
+src/modules/dashboard/components/focus-trend-chart.css:124:.dark:is([data-skin="clean"], .premium-analytics-dashboard) .focusGlow {
+src/modules/shell/premium-sidebar.css:15:  --premium-nav-row: 34px;
+src/modules/shell/premium-sidebar.css:16:  --premium-shortcut-row: 30px;
+src/modules/shell/premium-sidebar.css:215:[data-skin="clean"] .app-sidebar .premium-shortcuts-heading {
+src/modules/shell/premium-sidebar.css:235:  min-height: var(--premium-nav-row);
+src/modules/shell/premium-sidebar.css:236:  height: var(--premium-nav-row);
+src/modules/shell/premium-sidebar.css:402:  [data-skin="clean"] .app-sidebar .premium-shortcuts-heading {
+src/modules/shell/premium-sidebar.css:527:  top: calc(var(--premium-nav-row, 32px) / 2 - 10px);
+src/modules/release-notes/whats-new.css:3:/* `premium-workspace.css` rend tous les dialogues opaques (`background` et `backdrop-filter` en `!important`) : celui-ci est
+src/modules/dashboard/components/clinical/clinical-workspace.css:8:.visit-flow-symbol-done { background:color-mix(in srgb, var(--premium-green, var(--signal-positive)) 12%, transparent); color:var(--premium-green, var(--signal-positive)); }
+src/modules/dashboard/components/clinical/clinical-workspace.css:13:.visit-flow-allergy { display:flex; align-items:flex-start; gap:7px; margin-top:12px; padding:8px 10px; border-radius:8px; background:color-mix(in srgb, var(--premium-red, var(--signal-critical)) 10%, transparent); color:var(--premium-red, var(--signal-critical)); font-size:12px; width:fit-content; }
+src/modules/dashboard/components/clinical/clinical-workspace.css:19:.visit-flow-steps li[data-state=done]>span { background:color-mix(in srgb, var(--premium-green, var(--signal-positive)) 12%, transparent); color:var(--premium-green, var(--signal-positive)); }
+src/modules/dashboard/components/clinical/clinical-workspace.css:34:.visit-flow-track>span { display:block; height:100%; background:var(--premium-blue, var(--primary)); border-radius:4px; transition:width 220ms ease-out; }
+src/modules/dashboard/components/clinical/clinical-workspace.css:54:.clinical-module { --clinical-green:var(--premium-blue, var(--primary)); --clinical-amber:color-mix(in srgb, var(--premium-blue, var(--primary)) 45%, var(--surface)); }
+src/modules/dashboard/components/clinical/clinical-workspace.css:83:.visit-flow-symbol-done { background:color-mix(in srgb, var(--premium-green, var(--signal-positive)) 12%, transparent); color:var(--premium-green, var(--signal-positive)); }
+src/modules/dashboard/components/clinical/clinical-workspace.css:100:.premium-widget-metrics { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; padding-block:12px; border-top:1px solid var(--border); }
+src/modules/dashboard/components/clinical/clinical-workspace.css:101:.premium-widget-metrics>div { display:flex; flex-direction:column-reverse; align-items:flex-start; gap:4px; min-width:0; }
+src/modules/dashboard/components/clinical/clinical-workspace.css:102:.premium-widget-metrics dd { font-size:24px; line-height:1.2; font-weight:500; letter-spacing:-.02em; font-variant-numeric:tabular-nums; }
+src/modules/dashboard/components/clinical/clinical-workspace.css:103:.premium-widget-metrics dt, .module-totals-item dt { font-size:12px; color:var(--muted-foreground); }
+src/modules/patient-reminders/medical-reminders-widget.tsx:65:              <dd className={`mt-1 font-heading text-2xl font-medium tabular-nums ${dueToday.length ? "text-[var(--premium-blue,var(--interactive-blue))]" : ""}`}>{dueToday.length}</dd>
+src/modules/shell/shell-toolbar.css:447:/* Header search (Premium and Clean), rebuilt on 5 November 2026 when it moved
+src/modules/patient-reminders/patient-reminders.css:186:.patient-reminders-panel .medical-reminder-date.is-due { border-color: color-mix(in srgb, var(--premium-blue, var(--interactive-blue)) 32%, var(--border)); color: var(--premium-blue, var(--interactive-blue)); }
+src/modules/patient-reminders/patient-reminders.css:196:  color: var(--premium-blue, var(--interactive-blue));
+src/lib/theme-store.ts:2: * Clean is the only interface (Premium was removed on 11 November 2026).
+src/lib/theme-store.ts:11: * docs/recus/2026-11-11-suppression-premium/.
+src/lib/theme-store.ts:130:  "baitari-premium-default-v1",
+src/lib/theme-store.ts:137: * moved installs between Premium and Clean.
+src/lib/theme-store.ts:142: *   `skin` from the stored config on every read, so a Premium written by
+src/lib/theme-store.ts:151:    const installed = localStorage.getItem("theme-config") !== null || localStorage.getItem("baitari-premium-default-v1") === "true";
+src/modules/shell/app-shell.tsx:604:              {saveState !== "idle" && <div className="premium-header-save-indicator" data-slot="premium-header-save-indicator"><SaveIndicator state={saveState} /></div>}
+src/config/status-meta.ts:39:    badgeClassName: "premium-status-urgent bg-amber-500/12 text-amber-700 dark:text-amber-300",
+src/config/status-meta.ts:47:    badgeClassName: "premium-status-neutral bg-frame text-ink-muted",
+src/config/status-meta.ts:83:    className: "premium-status-progress bg-blue-500/10 text-blue-700 dark:text-blue-300",
+src/config/status-meta.ts:105:      className: "premium-status-todo bg-amber-500/10 text-amber-700 dark:text-amber-300",
+src/components/app-sidebar.tsx:8:import "@/modules/shell/premium-sidebar.css";
+src/components/ui/data-table.css:1:/* TuffUI's Data Table, drawn as theirs is. The app's table skins (Premium's `td`, `th`, `tr` rules, which apply everywhere
+src/components/auth-clinic.css:25:  /* !important: Premium forces its heading font on every h1. */
+src/design-system/fields.css:8: * ":root:root:root" lifts these rules above older Premium and modal rules.
+src/design-system/tokens.css:14:  /* Names the TuffUI components use, tied to the app's own accent tones (clair et sombre, Clean et Premium). */
+src/design-system/tokens.css:83:     Premium tables sit on the #f5f5f5 canvas, so the step is translucent. */
+src/design-system/page-header-line.css:2:   right, no icon and no rule. It sits above the Premium and Clean engravings, which draw an icon tile and a rule
+src/design-system/tabs.css:7: * ":root:root:root" lifts these rules above the older Premium tab rules.
+src/design-system/premium-workspace.css:121:  background: color-mix(in oklab, var(--premium-blue, var(--primary)) 8%, var(--surface, var(--background))) !important;
+src/design-system/premium-workspace.css:124:  background: var(--premium-blue, var(--primary)) !important;
+src/design-system/premium-workspace.css:295::root[data-skin="clean"] .care-task-row:has([data-premium-status="en_retard"]) {
+src/design-system/premium-workspace.css:296:  box-shadow: inset 3px 0 0 var(--premium-red);
+src/design-system/premium-workspace.css:582:/* Calendars are tables: keep the premium data-table cell styling (padding,
+src/components/mascot/mascot.css:16:  /* The charts' blue and teal, lifted for a dark sidebar (6.6 to 7.8 : 1) and deepened for Premium's light one (4.9 to 5.3 : 1):
+src/design-system/interaction.css:49:/* Premium clears table cells with !important; the current row wins. */
+src/design-system/clean.css:1:/* Clean: a skin over Premium light, built on Linear as measured in the study
+src/design-system/clean.css:3:   Premium light and dark never match it, and no component is forked. Only the
+src/design-system/clean.css:47:  /* Accent and focus ring: Premium's values for each mode, as Clean tokens so
+src/design-system/clean.css:135:  /* Premium dark's status hues, carried by the sidebar dots in both declensions. */
+src/design-system/clean.css:136:  --premium-blue: #88b3ef;
+src/design-system/clean.css:137:  --premium-green: #74c399;
+src/design-system/clean.css:138:  --premium-red: #ec9288;
+src/design-system/clean.css:139:  --premium-orange: #e2b467;
+src/design-system/clean.css:181:/* Premium's semantic tokens point at the Clean values, in both declensions
+src/design-system/clean.css:182:   (the .dark selector outranks Premium dark's own token block). */
+src/design-system/clean.css:229:  /* Premium's navigation tokens, so the sidebar follows the Clean values. */
+src/design-system/clean.css:329:/* Premium sets this control inside a cascade layer, so Clean answers in the same layer. */
+src/design-system/clean.css:458:  --premium-nav-row: var(--clean-nav-item);
+src/design-system/clean.css:459:  --premium-shortcut-row: var(--clean-nav-item);
+src/design-system/clean.css:491:  :root[data-skin="clean"][data-skin][data-skin] .premium-shortcuts button:hover { background: var(--clean-nav-hover) !important; }
+src/design-system/clean.css:493::root[data-skin="clean"][data-skin][data-skin] .premium-shortcuts button { color: var(--clean-ink); font-size: var(--clean-nav-text); }
+src/design-system/clean.css:495::root[data-skin="clean"][data-skin][data-skin] .premium-shortcuts button .premium-shortcut-dot {
+src/design-system/clean.css:496:  background: color-mix(in oklab, var(--premium-shortcut-color) var(--clean-dot-mix), var(--clean-ink-quiet)) !important;
+src/design-system/clean.css:565:  :root[data-skin="clean"] .premium-shortcut-icon {
+src/design-system/clean.css:571::root[data-skin="clean"] :is(.app-sidebar [data-slot="sidebar-menu-button"], .premium-shortcuts button, [data-list-row], [data-slot="table-row"], .medical-data-table tr, .shell-toolbar-actions) svg,
+src/design-system/clean.css:572::root[data-skin="clean"] :is(.app-sidebar [data-slot="sidebar-menu-button"], .premium-shortcuts button, [data-list-row], [data-slot="table-row"], .medical-data-table tr, .shell-toolbar-actions) svg [stroke-width] {
+src/design-system/clean.css:575:/* Premium's sidebar pins these strokes at 1 with !important (premium-sidebar.css): Clean answers in kind. */
+src/design-system/clean.css:576::root[data-skin="clean"] :is(.app-sidebar .sidebar-nav-icon svg, .app-sidebar .premium-shortcut-icon) { stroke-width: var(--clean-icon-stroke) !important; }
+src/design-system/clean.css:605::root[data-skin="clean"] :is(th, .kicker, .nextLabel, .premium-shortcuts-heading, .app-sidebar [data-slot="sidebar-group-label"]) {
+src/design-system/clean.css:659::root[data-skin="clean"] :is([data-slot="badge"], .section-atlas-status, [data-premium-status]) {
+src/design-system/clean.css:827:  color: var(--premium-blue, var(--primary)) !important;
+src/design-system/clean.css:834:  background: var(--premium-blue, var(--primary)) !important;
+src/design-system/clean.css:862:  color: var(--premium-blue, var(--primary)) !important;
+src/design-system/clean.css:881:   is repeated because Premium styles these blocks with strong selectors. */
+src/design-system/clean.css:1068:   in premium-analytics.css for every skin): the running total as a quiet area
+src/design-system/clean.css:1101:   premium-analytics.css. */
+src/design-system/clean.css:1155:  background: var(--series-1, var(--premium-blue));
+src/design-system/clean.css:1160:  background: repeating-linear-gradient(135deg, var(--series-1, var(--premium-blue)) 0 3px, color-mix(in oklab, var(--series-1, var(--premium-blue)) 35%, transparent) 3px 6px);
+src/design-system/clean.css:1218::root[data-skin="clean"] .premium-clinical-overview .visit-flow-symbol {
+src/design-system/clean.css:1226::root[data-skin="clean"] .premium-clinical-overview .visit-flow-name {
+src/design-system/clean.css:1232::root[data-skin="clean"] .premium-clinical-overview .visit-flow-track { background: var(--clean-segment-track) !important; }
+src/design-system/clean.css:1234::root[data-skin="clean"] .premium-clinical-overview :is(.clinical-filter-tabs, .clinical-trends-module [role="group"]) {
+src/design-system/clean.css:1244::root[data-skin="clean"] .premium-clinical-overview :is(.clinical-filter-tabs, .clinical-trends-module [role="group"]) button {
+src/design-system/clean.css:1255::root[data-skin="clean"] .premium-clinical-overview :is(.clinical-filter-tabs, .clinical-trends-module [role="group"]) button[aria-pressed="true"] {
+src/design-system/clean.css:1425::root[data-skin="clean"] .premium-page-icon::before { display: none; }
+src/design-system/clean.css:1426::root[data-skin="clean"] [data-slot="page-header"] .premium-page-icon {
+src/design-system/clean.css:1435::root[data-skin="clean"] [data-slot="page-header"] .premium-page-icon svg {
+src/design-system/clean.css:1442::root[data-skin="clean"] [data-slot="page-header"] .premium-page-icon { translate: 4px 0; }
+src/design-system/clean.css:1444:  :root[data-skin="clean"] [data-slot="page-header"] .premium-page-icon { translate: -4px 0; }
+src/design-system/clean.css:1467:  [data-slot="page-header"][data-page-title="Patients"] .premium-page-icon svg,
+src/design-system/clean.css:1479:  [data-slot="page-header"][data-page-title="Patients"] .premium-page-icon svg,
+src/design-system/clean.css:1492:   x-height than Premium's Space Grotesk (12.7 against 11.8 px at 24 px), so at
+src/design-system/clean.css:1576::root[data-skin="clean"][data-skin] .premium-page-head-main { gap: 12px !important; }
+src/design-system/clean.css:1696:/* ---------- Sidebar: the same skeleton as Premium (2026-11-11) ----------
+src/design-system/premium.css:3:  --premium-space-unit: 4px;
+src/design-system/premium.css:4:  --premium-gutter: 24px;
+src/design-system/premium.css:5:  --premium-control-radius: 8px;
+src/design-system/premium.css:6:  --premium-panel-radius: 0px;
+src/design-system/premium.css:7:  --premium-blue: #3570c4;
+src/design-system/premium.css:8:  --premium-green: #25754b;
+src/design-system/premium.css:9:  --premium-red: #b23c30;
+src/design-system/premium.css:10:  --premium-orange: #986014;
+src/design-system/premium.css:94:  --premium-blue: #88b3ef;
+src/design-system/premium.css:95:  --premium-green: #74c399;
+src/design-system/premium.css:96:  --premium-red: #ec9288;
+src/design-system/premium.css:97:  --premium-orange: #e2b467;
+src/design-system/premium.css:123:/* In premium, cards sit directly on canvas without white card background */
+src/design-system/premium.css:359:[data-skin="clean"] :is([data-slot="badge"], .section-atlas-status, [data-premium-status]) {
+src/design-system/premium.css:360:  --premium-tag-color: var(--ink-muted);
+src/design-system/premium.css:365:  border: 1px solid color-mix(in srgb, var(--premium-tag-color) 16%, transparent);
+src/design-system/premium.css:366:  background: color-mix(in srgb, var(--premium-tag-color) 7%, var(--surface));
+src/design-system/premium.css:367:  color: var(--premium-tag-color);
+src/design-system/premium.css:371:[data-skin="clean"] :is([data-slot="badge"], .section-atlas-status, [data-premium-status])::before {
+src/design-system/premium.css:377:  background: var(--premium-tag-color);
+src/design-system/premium.css:379:[data-skin="clean"] :is([data-slot="badge"], .section-atlas-status, [data-premium-status]):is([data-variant="default"], [class*="bg-blue-"]) { --premium-tag-color: var(--premium-blue); }
+src/design-system/premium.css:380:[data-skin="clean"] :is([data-slot="badge"], .section-atlas-status, [data-premium-status]):is([data-variant="success"], [class*="bg-green-"], [class*="bg-emerald-"]) { --premium-tag-color: var(--premium-green); }
+src/design-system/premium.css:381:[data-skin="clean"] :is([data-slot="badge"], .section-atlas-status, [data-premium-status]):is([data-variant="warning"], [class*="bg-amber-"], [class*="bg-orange-"]) { --premium-tag-color: var(--premium-orange); }
+src/design-system/premium.css:382:[data-skin="clean"] :is([data-slot="badge"], .section-atlas-status, [data-premium-status]):is([data-variant="destructive"], [class*="bg-red-"], [class*="bg-rose-"]) { --premium-tag-color: var(--premium-red); }
+src/design-system/premium.css:385:  --premium-nav-row: clamp(22px, 4dvh, 34px);
+src/design-system/premium.css:386:  --premium-shortcut-row: clamp(22px, 3.4dvh, 28px);
+src/design-system/premium.css:413:  height: var(--premium-nav-row);
+src/design-system/premium.css:414:  min-height: var(--premium-nav-row);
+src/design-system/premium.css:428:    width: var(--premium-nav-row) !important;
+src/design-system/premium.css:429:    height: var(--premium-nav-row) !important;
+src/design-system/premium.css:430:    min-height: var(--premium-nav-row) !important;
+src/design-system/premium.css:443:[data-skin="clean"] :is([data-slot="badge"], .section-atlas-status, [data-premium-status]):is([data-variant="default"], [data-variant="success"], [data-variant="warning"], [data-variant="destructive"], [class*="bg-blue-"], [class*="bg-sky-"], [class*="bg-green-"], [class*="bg-emerald-"], [class*="bg-red-"], [class*="bg-rose-"], [class*="bg-amber-"], [class*="bg-orange-"], [data-premium-status="a_faire"], [data-premium-status="en_cours"], [data-premium-status="en_retard"], [data-premium-status="fait"])::before { content: ""; }
+src/design-system/premium.css:444:[data-skin="clean"] :is([data-premium-status="a_faire"], .premium-status-todo) { --premium-tag-color: var(--premium-blue); }
+src/design-system/premium.css:445:[data-skin="clean"] :is([data-premium-status="en_cours"], .premium-status-progress) { --premium-tag-color: var(--premium-orange); }
+src/design-system/premium.css:446:[data-skin="clean"] :is([data-premium-status="en_retard"], .premium-status-urgent) { --premium-tag-color: var(--premium-red); }
+src/design-system/premium.css:447:[data-skin="clean"] [data-premium-status="fait"] { --premium-tag-color: var(--premium-green); }
+src/design-system/premium.css:449:[data-skin="clean"] [data-slot="badge"].premium-status-neutral { --premium-tag-color: var(--ink-muted); }
+src/design-system/premium.css:450:[data-skin="clean"] [data-slot="badge"].premium-status-neutral::before { content: ""; }
+src/design-system/premium.css:451:[data-skin="clean"] [data-slot="badge"][class*="bg-sky-"] { --premium-tag-color: var(--premium-blue); }
+src/design-system/premium.css:453:   yields in Premium. Removing the root attribute restores it immediately. */
+src/design-system/premium.css:455:  border-radius: var(--premium-control-radius) !important;
+src/design-system/premium.css:760:/* Global button enforcement: NEVER blue in premium */
+src/design-system/premium.css:788:  --ok: var(--premium-green);
+src/design-system/premium.css:789:  --bad: var(--premium-red);
+src/design-system/premium.css:875:[data-skin="clean"] .delta[data-sense="watch"] { color: var(--premium-orange) !important; }

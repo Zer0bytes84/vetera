@@ -1,0 +1,24 @@
+### src/lib/theme-skin.ts
+  master-wt : 4 fichier(s) hors le fichier lui-même
+     - src/lib/theme-store.ts
+     - src/lib/sidebar-tone.ts
+     - src/components/Parametres.tsx
+     - tests/theme-clean-charter.test.ts
+  premium-wt : 0 fichier(s) hors le fichier lui-même
+### src/modules/dashboard/v2/use-is-premium.ts
+  master-wt : 6 fichier(s) hors le fichier lui-même
+     - src/modules/finances/financial-analytics-page.tsx
+     - src/modules/finances/components/finances-view.tsx
+     - src/modules/care-tasks/care-page.tsx
+     - src/modules/shell/app-shell.tsx
+     - src/components/app-sidebar.tsx
+     - src/components/MotivationalHeader.tsx
+  premium-wt : 0 fichier(s) hors le fichier lui-même
+### src/modules/shell/components/premium-sidebar-icon.tsx
+  master-wt : 1 fichier(s) hors le fichier lui-même
+     - src/components/app-sidebar.tsx
+  premium-wt : 0 fichier(s) hors le fichier lui-même
+### src/components/ui/sidebar-slideout-icon.tsx
+  master-wt : 1 fichier(s) hors le fichier lui-même
+     - src/components/ui/sidebar.tsx
+  premium-wt : 0 fichier(s) hors le fichier lui-même

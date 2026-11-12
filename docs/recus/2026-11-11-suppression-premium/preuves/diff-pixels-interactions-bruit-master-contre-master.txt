@@ -1,0 +1,23 @@
+DIFF dark-analyse-survol-carte.png pixels: 1 bbox: (967, 430, 968, 431)
+same dark-barre-repliee.png
+same dark-focus-clavier-recherche.png
+same dark-menu-actions-rapides.png
+same dark-notifications.png
+same dark-palette-commandes.png
+same dark-parametres-survol-sidebar.png
+same dark-patients-focus-ligne.png
+same dark-patients-survol-ligne.png
+same dark-survol-menu-actions.png
+same dark-survol-sidebar-patients.png
+same light-analyse-survol-carte.png
+same light-barre-repliee.png
+same light-focus-clavier-recherche.png
+same light-menu-actions-rapides.png
+same light-notifications.png
+same light-palette-commandes.png
+same light-parametres-survol-sidebar.png
+same light-patients-focus-ligne.png
+same light-patients-survol-ligne.png
+same light-survol-menu-actions.png
+same light-survol-sidebar-patients.png
+22 compared, 1 differing

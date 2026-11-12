@@ -1,0 +1,1937 @@
+{
+ "src/modules/finances/finances-premium.css": [
+  {
+   "line": 9,
+   "selectors": [
+    ":root[data-skin=\"clean\"] .finance-register-heading"
+   ],
+   "dead": [
+    "finance-register-heading"
+   ]
+  },
+  {
+   "line": 14,
+   "selectors": [
+    ":root[data-skin=\"clean\"] .finance-register-heading h2"
+   ],
+   "dead": [
+    "finance-register-heading"
+   ]
+  },
+  {
+   "line": 15,
+   "selectors": [
+    ":root[data-skin=\"clean\"] .finance-register-heading p"
+   ],
+   "dead": [
+    "finance-register-heading"
+   ]
+  },
+  {
+   "line": 22,
+   "selectors": [
+    ":root[data-skin=\"clean\"] .finance-view-toggle:is([data-slot=\"tabs-list\"], [data-slot=\"toggle-group\"])"
+   ],
+   "dead": [
+    "finance-view-toggle"
+   ]
+  },
+  {
+   "line": 36,
+   "selectors": [
+    ":root[data-skin=\"clean\"] .finance-view-toggle :is([data-slot=\"tabs-trigger\"], [data-slot=\"toggle-group-item\"])"
+   ],
+   "dead": [
+    "finance-view-toggle"
+   ]
+  },
+  {
+   "line": 46,
+   "selectors": [
+    ":root[data-skin=\"clean\"] .finance-view-toggle :is([data-slot=\"tabs-trigger\"][aria-selected=\"true\"], [data-slot=\"toggle-group-item\"][aria-pressed=\"true\"])"
+   ],
+   "dead": [
+    "finance-view-toggle"
+   ]
+  },
+  {
+   "line": 52,
+   "selectors": [
+    ":root[data-skin=\"clean\"] .finance-view-toggle [data-slot=\"tabs-trigger\"]::after"
+   ],
+   "dead": [
+    "finance-view-toggle"
+   ]
+  }
+ ],
+ "src/modules/dashboard/components/focus-trend-chart.css": [
+  {
+   "line": 63,
+   "selectors": [
+    "[data-skin=\"clean\"] .focusTabs"
+   ],
+   "dead": [
+    "focusTabs"
+   ]
+  },
+  {
+   "line": 71,
+   "selectors": [
+    "[data-skin=\"clean\"] .focusTabs > button"
+   ],
+   "dead": [
+    "focusTabs"
+   ]
+  },
+  {
+   "line": 80,
+   "selectors": [
+    "[data-skin=\"clean\"] .focusTabs > button[aria-pressed=\"true\"]"
+   ],
+   "dead": [
+    "focusTabs"
+   ]
+  }
+ ],
+ "src/modules/dashboard/components/premium-analytics.css": [
+  {
+   "line": 87,
+   "selectors": [
+    "[data-skin=\"clean\"] .heroMain"
+   ],
+   "dead": [
+    "heroMain"
+   ]
+  },
+  {
+   "line": 96,
+   "selectors": [
+    "[data-skin=\"clean\"] .heroMain > :first-child"
+   ],
+   "dead": [
+    "heroMain"
+   ]
+  },
+  {
+   "line": 122,
+   "selectors": [
+    "[data-skin=\"clean\"] .heroTitle"
+   ],
+   "dead": [
+    "heroTitle"
+   ]
+  },
+  {
+   "line": 132,
+   "selectors": [
+    "[data-skin=\"clean\"] .heroNote"
+   ],
+   "dead": [
+    "heroNote"
+   ]
+  },
+  {
+   "line": 149,
+   "selectors": [
+    "[data-skin=\"clean\"] .nextLabel"
+   ],
+   "dead": [
+    "nextLabel"
+   ]
+  },
+  {
+   "line": 157,
+   "selectors": [
+    "[data-skin=\"clean\"] .nextWhen"
+   ],
+   "dead": [
+    "nextWhen"
+   ]
+  },
+  {
+   "line": 164,
+   "selectors": [
+    "[data-skin=\"clean\"] .nextWho"
+   ],
+   "dead": [
+    "nextWho"
+   ]
+  },
+  {
+   "line": 169,
+   "selectors": [
+    "[data-skin=\"clean\"] .nextWhoLink"
+   ],
+   "dead": [
+    "nextWhoLink"
+   ]
+  },
+  {
+   "line": 182,
+   "selectors": [
+    "[data-skin=\"clean\"] .nextWhoLink:hover"
+   ],
+   "dead": [
+    "nextWhoLink"
+   ]
+  },
+  {
+   "line": 188,
+   "selectors": [
+    "[data-skin=\"clean\"] .heroBand"
+   ],
+   "dead": [
+    "heroBand"
+   ]
+  },
+  {
+   "line": 199,
+   "selectors": [
+    "[data-skin=\"clean\"] .heroActions"
+   ],
+   "dead": [
+    "heroActions"
+   ]
+  },
+  {
+   "line": 240,
+   "selectors": [
+    "[data-skin=\"clean\"] .btnPrimary"
+   ],
+   "dead": [
+    "btnPrimary"
+   ]
+  },
+  {
+   "line": 248,
+   "selectors": [
+    "[data-skin=\"clean\"] .btnPrimary:hover"
+   ],
+   "dead": [
+    "btnPrimary"
+   ]
+  },
+  {
+   "line": 276,
+   "selectors": [
+    "[data-skin=\"clean\"] .liveDot"
+   ],
+   "dead": [
+    "liveDot"
+   ]
+  },
+  {
+   "line": 333,
+   "selectors": [
+    "[data-skin=\"clean\"] .filterGap"
+   ],
+   "dead": [
+    "filterGap"
+   ]
+  },
+  {
+   "line": 357,
+   "selectors": [
+    "[data-skin=\"clean\"] .filterRange"
+   ],
+   "dead": [
+    "filterRange"
+   ]
+  },
+  {
+   "line": 370,
+   "selectors": [
+    "[data-skin=\"clean\"] .kpis"
+   ],
+   "dead": [
+    "kpis"
+   ]
+  },
+  {
+   "line": 379,
+   "selectors": [
+    "[data-skin=\"clean\"] .kpis"
+   ],
+   "dead": [
+    "kpis"
+   ]
+  },
+  {
+   "line": 385,
+   "selectors": [
+    "[data-skin=\"clean\"] .kpis"
+   ],
+   "dead": [
+    "kpis"
+   ]
+  },
+  {
+   "line": 414,
+   "selectors": [
+    "[data-skin=\"clean\"] .kpiHead"
+   ],
+   "dead": [
+    "kpiHead"
+   ]
+  },
+  {
+   "line": 425,
+   "selectors": [
+    "[data-skin=\"clean\"] .kpiHead span"
+   ],
+   "dead": [
+    "kpiHead"
+   ]
+  },
+  {
+   "line": 431,
+   "selectors": [
+    "[data-skin=\"clean\"] .kpiHead svg"
+   ],
+   "dead": [
+    "kpiHead"
+   ]
+  },
+  {
+   "line": 435,
+   "selectors": [
+    "[data-skin=\"clean\"] .kpiGo"
+   ],
+   "dead": [
+    "kpiGo"
+   ]
+  },
+  {
+   "line": 443,
+   "selectors": [
+    "[data-skin=\"clean\"] .kpi:hover .kpiGo"
+   ],
+   "dead": [
+    "kpiGo"
+   ]
+  },
+  {
+   "line": 451,
+   "selectors": [
+    "[data-skin=\"clean\"] .kpiValue"
+   ],
+   "dead": [
+    "kpiValue"
+   ]
+  },
+  {
+   "line": 461,
+   "selectors": [
+    "[data-skin=\"clean\"] .kpiValueRow"
+   ],
+   "dead": [
+    "kpiValueRow"
+   ]
+  },
+  {
+   "line": 469,
+   "selectors": [
+    "[data-skin=\"clean\"] .kpis .kpiValueRow"
+   ],
+   "dead": [
+    "kpis",
+    "kpiValueRow"
+   ]
+  },
+  {
+   "line": 472,
+   "selectors": [
+    "[data-skin=\"clean\"] .kpis .kpi > .kpiValue"
+   ],
+   "dead": [
+    "kpis",
+    "kpiValue"
+   ]
+  },
+  {
+   "line": 536,
+   "selectors": [
+    "[data-skin=\"clean\"] .kpiSub"
+   ],
+   "dead": [
+    "kpiSub"
+   ]
+  },
+  {
+   "line": 555,
+   "selectors": [
+    "[data-skin=\"clean\"] .kpiSub .delta"
+   ],
+   "dead": [
+    "kpiSub"
+   ]
+  },
+  {
+   "line": 560,
+   "selectors": [
+    "[data-skin=\"clean\"] .kpiSub .delta > svg"
+   ],
+   "dead": [
+    "kpiSub"
+   ]
+  },
+  {
+   "line": 565,
+   "selectors": [
+    "[data-skin=\"clean\"] .kpiSub .delta > span:not(.delta-label)"
+   ],
+   "dead": [
+    "kpiSub"
+   ]
+  },
+  {
+   "line": 588,
+   "selectors": [
+    "[data-skin=\"clean\"] .kpiDetailRow"
+   ],
+   "dead": [
+    "kpiDetailRow"
+   ]
+  },
+  {
+   "line": 692,
+   "selectors": [
+    "[data-skin=\"clean\"] .cardActions"
+   ],
+   "dead": [
+    "cardActions"
+   ]
+  },
+  {
+   "line": 698,
+   "selectors": [
+    "[data-skin=\"clean\"] .moreLink"
+   ],
+   "dead": [
+    "moreLink"
+   ]
+  },
+  {
+   "line": 713,
+   "selectors": [
+    "[data-skin=\"clean\"] .moreLink:hover"
+   ],
+   "dead": [
+    "moreLink"
+   ]
+  },
+  {
+   "line": 718,
+   "selectors": [
+    "[data-skin=\"clean\"] .cardBody"
+   ],
+   "dead": [
+    "cardBody"
+   ]
+  },
+  {
+   "line": 824,
+   "selectors": [
+    "[data-skin=\"clean\"] .tileTop"
+   ],
+   "dead": [
+    "tileTop"
+   ]
+  },
+  {
+   "line": 832,
+   "selectors": [
+    "[data-skin=\"clean\"] .tile:hover .tileTop"
+   ],
+   "dead": [
+    "tileTop"
+   ]
+  },
+  {
+   "line": 837,
+   "selectors": [
+    "[data-skin=\"clean\"] .tileText"
+   ],
+   "dead": [
+    "tileText"
+   ]
+  },
+  {
+   "line": 845,
+   "selectors": [
+    "[data-skin=\"clean\"] .tileText strong"
+   ],
+   "dead": [
+    "tileText"
+   ]
+  },
+  {
+   "line": 852,
+   "selectors": [
+    "[data-skin=\"clean\"] .tileText span"
+   ],
+   "dead": [
+    "tileText"
+   ]
+  },
+  {
+   "line": 862,
+   "selectors": [
+    "[data-skin=\"clean\"] .tileCount"
+   ],
+   "dead": [
+    "tileCount"
+   ]
+  },
+  {
+   "line": 876,
+   "selectors": [
+    "[data-skin=\"clean\"] .statusPill"
+   ],
+   "dead": [
+    "statusPill"
+   ]
+  },
+  {
+   "line": 889,
+   "selectors": [
+    "[data-skin=\"clean\"] .statusPill[data-status=\"confirmed\"]"
+   ],
+   "dead": [
+    "statusPill"
+   ]
+  },
+  {
+   "line": 894,
+   "selectors": [
+    "[data-skin=\"clean\"] .statusPill[data-status=\"in_progress\"]"
+   ],
+   "dead": [
+    "statusPill"
+   ]
+  },
+  {
+   "line": 899,
+   "selectors": [
+    "[data-skin=\"clean\"] .iconBtn"
+   ],
+   "dead": [
+    "iconBtn"
+   ]
+  },
+  {
+   "line": 914,
+   "selectors": [
+    "[data-skin=\"clean\"] .iconBtn:hover"
+   ],
+   "dead": [
+    "iconBtn"
+   ]
+  },
+  {
+   "line": 946,
+   "selectors": [
+    "[data-skin=\"clean\"] .premium-page-head"
+   ],
+   "dead": [
+    "premium-page-head"
+   ]
+  },
+  {
+   "line": 958,
+   "selectors": [
+    "[data-skin=\"clean\"] .premium-page-head-main"
+   ],
+   "dead": [
+    "premium-page-head-main"
+   ]
+  },
+  {
+   "line": 967,
+   "selectors": [
+    "[data-skin=\"clean\"] .premium-page-icon"
+   ],
+   "dead": [
+    "premium-page-icon"
+   ]
+  },
+  {
+   "line": 978,
+   "selectors": [
+    "[data-skin=\"clean\"] .premium-page-icon svg"
+   ],
+   "dead": [
+    "premium-page-icon"
+   ]
+  },
+  {
+   "line": 987,
+   "selectors": [
+    "[data-skin=\"clean\"] .premium-page-icon::before"
+   ],
+   "dead": [
+    "premium-page-icon"
+   ]
+  },
+  {
+   "line": 1004,
+   "selectors": [
+    "[data-skin=\"clean\"] .premium-page-title"
+   ],
+   "dead": [
+    "premium-page-title"
+   ]
+  },
+  {
+   "line": 1014,
+   "selectors": [
+    "[data-skin=\"clean\"] .premium-page-note"
+   ],
+   "dead": [
+    "premium-page-note"
+   ]
+  },
+  {
+   "line": 1122,
+   "selectors": [
+    "[data-skin=\"clean\"] .section-atlas-grid"
+   ],
+   "dead": [
+    "section-atlas-grid"
+   ]
+  },
+  {
+   "line": 1134,
+   "selectors": [
+    "[data-skin=\"clean\"] .section-atlas-grid::before"
+   ],
+   "dead": [
+    "section-atlas-grid"
+   ]
+  },
+  {
+   "line": 1153,
+   "selectors": [
+    "[data-skin=\"clean\"] .section-atlas-grid"
+   ],
+   "dead": [
+    "section-atlas-grid"
+   ]
+  },
+  {
+   "line": 1159,
+   "selectors": [
+    "[data-skin=\"clean\"] .section-atlas-grid"
+   ],
+   "dead": [
+    "section-atlas-grid"
+   ]
+  },
+  {
+   "line": 1164,
+   "selectors": [
+    "[data-skin=\"clean\"] .section-atlas-card"
+   ],
+   "dead": [
+    "section-atlas-card"
+   ]
+  },
+  {
+   "line": 1178,
+   "selectors": [
+    "[data-skin=\"clean\"] .section-atlas-card:last-child"
+   ],
+   "dead": [
+    "section-atlas-card"
+   ]
+  },
+  {
+   "line": 1183,
+   "selectors": [
+    "[data-skin=\"clean\"] .section-atlas-card:hover"
+   ],
+   "dead": [
+    "section-atlas-card"
+   ]
+  },
+  {
+   "line": 1188,
+   "selectors": [
+    "[data-skin=\"clean\"] .section-atlas-content"
+   ],
+   "dead": [
+    "section-atlas-content"
+   ]
+  },
+  {
+   "line": 1202,
+   "selectors": [
+    "[data-skin=\"clean\"] .section-atlas-card-heading"
+   ],
+   "dead": [
+    "section-atlas-card-heading"
+   ]
+  },
+  {
+   "line": 1212,
+   "selectors": [
+    "[data-skin=\"clean\"] .section-atlas-label"
+   ],
+   "dead": [
+    "section-atlas-label"
+   ]
+  },
+  {
+   "line": 1224,
+   "selectors": [
+    "[data-skin=\"clean\"] .section-atlas-title-icon"
+   ],
+   "dead": [
+    "section-atlas-title-icon"
+   ]
+  },
+  {
+   "line": 1231,
+   "selectors": [
+    "[data-skin=\"clean\"] .section-atlas-body"
+   ],
+   "dead": [
+    "section-atlas-body"
+   ]
+  },
+  {
+   "line": 1242,
+   "selectors": [
+    "[data-skin=\"clean\"] .section-atlas-value"
+   ],
+   "dead": [
+    "section-atlas-value"
+   ]
+  },
+  {
+   "line": 1255,
+   "selectors": [
+    "[data-skin=\"clean\"] .section-atlas-context"
+   ],
+   "dead": [
+    "section-atlas-context"
+   ]
+  },
+  {
+   "line": 1263,
+   "selectors": [
+    "[data-skin=\"clean\"] .section-atlas-status"
+   ],
+   "dead": [
+    "section-atlas-status"
+   ]
+  },
+  {
+   "line": 1566,
+   "selectors": [
+    "[data-skin=\"clean\"] .whenTime"
+   ],
+   "dead": [
+    "whenTime"
+   ]
+  },
+  {
+   "line": 1571,
+   "selectors": [
+    "[data-skin=\"clean\"] .whenNext"
+   ],
+   "dead": [
+    "whenNext"
+   ]
+  },
+  {
+   "line": 1588,
+   "selectors": [
+    "[data-skin=\"clean\"] table tbody tr:hover .iconBtn"
+   ],
+   "dead": [
+    "iconBtn"
+   ]
+  },
+  {
+   "line": 1615,
+   "selectors": [
+    "[data-skin=\"clean\"] .facts dd.factEmpty"
+   ],
+   "dead": [
+    "factEmpty"
+   ]
+  },
+  {
+   "line": 1623,
+   "selectors": [
+    "[data-skin=\"clean\"] .facts dd.factNote"
+   ],
+   "dead": [
+    "factNote"
+   ]
+  },
+  {
+   "line": 1650,
+   "selectors": [
+    "[data-skin=\"clean\"] .recettesCard .forecast"
+   ],
+   "dead": [
+    "recettesCard"
+   ]
+  },
+  {
+   "line": 1656,
+   "selectors": [
+    "[data-skin=\"clean\"] .recettesCard .forecastLine"
+   ],
+   "dead": [
+    "recettesCard"
+   ]
+  },
+  {
+   "line": 1660,
+   "selectors": [
+    "[data-skin=\"clean\"] .recettesCard .forecastBar"
+   ],
+   "dead": [
+    "recettesCard"
+   ]
+  },
+  {
+   "line": 1666,
+   "selectors": [
+    "[data-skin=\"clean\"] .recettesCard .forecastBar > i:first-child"
+   ],
+   "dead": [
+    "recettesCard"
+   ]
+  },
+  {
+   "line": 1670,
+   "selectors": [
+    "[data-skin=\"clean\"] .recettesCard :is(.forecastBar > i, .forecastKey)[data-part=\"collected\"]"
+   ],
+   "dead": [
+    "recettesCard"
+   ]
+  },
+  {
+   "line": 1674,
+   "selectors": [
+    "[data-skin=\"clean\"] .recettesCard :is(.forecastBar > i, .forecastKey)[data-part=\"projected\"]"
+   ],
+   "dead": [
+    "recettesCard"
+   ]
+  },
+  {
+   "line": 1682,
+   "selectors": [
+    "[data-skin=\"clean\"] .recettesCard .forecastMark"
+   ],
+   "dead": [
+    "recettesCard"
+   ]
+  },
+  {
+   "line": 1692,
+   "selectors": [
+    "[data-skin=\"clean\"] .recettesCard .forecastKey[data-part=\"previous\"]"
+   ],
+   "dead": [
+    "recettesCard"
+   ]
+  },
+  {
+   "line": 1700,
+   "selectors": [
+    "[data-skin=\"clean\"] .recettesCard .forecastMarkLabel",
+    "[data-skin=\"clean\"] .recettesCard .forecastAxis"
+   ],
+   "dead": [
+    "recettesCard"
+   ]
+  },
+  {
+   "line": 1705,
+   "selectors": [
+    "[data-skin=\"clean\"] .recettesCard .forecast .widgetRowName"
+   ],
+   "dead": [
+    "recettesCard"
+   ]
+  },
+  {
+   "line": 1725,
+   "selectors": [
+    "[data-skin=\"clean\"] .weekCard"
+   ],
+   "dead": [
+    "weekCard"
+   ]
+  },
+  {
+   "line": 1729,
+   "selectors": [
+    "[data-skin=\"clean\"] .weekCard .weekDay"
+   ],
+   "dead": [
+    "weekCard"
+   ]
+  },
+  {
+   "line": 1737,
+   "selectors": [
+    "[data-skin=\"clean\"] .weekCard .cardFlush"
+   ],
+   "dead": [
+    "weekCard"
+   ]
+  },
+  {
+   "line": 1742,
+   "selectors": [
+    "[data-skin=\"clean\"] .weekCard .weekDay"
+   ],
+   "dead": [
+    "weekCard"
+   ]
+  },
+  {
+   "line": 1746,
+   "selectors": [
+    "[data-skin=\"clean\"] .weekCard .cardFlush > .widgetFooter"
+   ],
+   "dead": [
+    "weekCard"
+   ]
+  }
+ ],
+ "src/modules/dashboard/components/dashboard-watch.css": [
+  {
+   "line": 163,
+   "selectors": [
+    "[data-skin=\"clean\"] .watchCard .moreLink"
+   ],
+   "dead": [
+    "moreLink"
+   ]
+  }
+ ],
+ "src/modules/shell/premium-sidebar.css": [
+  {
+   "line": 228,
+   "selectors": [
+    "[data-skin=\"clean\"] .app-sidebar [data-slot=\"sidebar-group-label\"] .classic-sidebar-label"
+   ],
+   "dead": [
+    "classic-sidebar-label"
+   ]
+  },
+  {
+   "line": 232,
+   "selectors": [
+    "[data-skin=\"clean\"] .app-sidebar [data-slot=\"sidebar-group-label\"] .premium-sidebar-label"
+   ],
+   "dead": [
+    "premium-sidebar-label"
+   ]
+  },
+  {
+   "line": 339,
+   "selectors": [
+    "[data-skin=\"clean\"] .app-sidebar .sidebar-settings-button"
+   ],
+   "dead": [
+    "sidebar-settings-button"
+   ]
+  },
+  {
+   "line": 347,
+   "selectors": [
+    "[data-skin=\"clean\"] .app-sidebar .premium-shortcuts"
+   ],
+   "dead": [
+    "premium-shortcuts"
+   ]
+  },
+  {
+   "line": 357,
+   "selectors": [
+    "[data-skin=\"clean\"] .app-sidebar .premium-shortcuts-heading"
+   ],
+   "dead": [
+    "premium-shortcuts-heading"
+   ]
+  },
+  {
+   "line": 361,
+   "selectors": [
+    "[data-skin=\"clean\"] .app-sidebar .premium-shortcuts button"
+   ],
+   "dead": [
+    "premium-shortcuts"
+   ]
+  },
+  {
+   "line": 380,
+   "selectors": [
+    "[data-skin=\"clean\"] .app-sidebar .premium-shortcuts button:hover"
+   ],
+   "dead": [
+    "premium-shortcuts"
+   ]
+  },
+  {
+   "line": 386,
+   "selectors": [
+    "[data-skin=\"clean\"] .app-sidebar .premium-shortcut-icon"
+   ],
+   "dead": [
+    "premium-shortcut-icon"
+   ]
+  },
+  {
+   "line": 395,
+   "selectors": [
+    "[data-skin=\"clean\"] .app-sidebar .premium-shortcuts button:hover .premium-shortcut-icon"
+   ],
+   "dead": [
+    "premium-shortcuts",
+    "premium-shortcut-icon"
+   ]
+  },
+  {
+   "line": 401,
+   "selectors": [
+    "[data-skin=\"clean\"] .app-sidebar .premium-shortcut-dot"
+   ],
+   "dead": [
+    "premium-shortcut-dot"
+   ]
+  },
+  {
+   "line": 410,
+   "selectors": [
+    "[data-skin=\"clean\"] .app-sidebar .premium-shortcuts button[data-tone=\"blue\"] .premium-shortcut-dot"
+   ],
+   "dead": [
+    "premium-shortcuts",
+    "premium-shortcut-dot"
+   ]
+  },
+  {
+   "line": 413,
+   "selectors": [
+    "[data-skin=\"clean\"] .app-sidebar .premium-shortcuts button[data-tone=\"green\"] .premium-shortcut-dot"
+   ],
+   "dead": [
+    "premium-shortcuts",
+    "premium-shortcut-dot"
+   ]
+  },
+  {
+   "line": 416,
+   "selectors": [
+    "[data-skin=\"clean\"] .app-sidebar .premium-shortcuts button[data-tone=\"orange\"] .premium-shortcut-dot"
+   ],
+   "dead": [
+    "premium-shortcuts",
+    "premium-shortcut-dot"
+   ]
+  },
+  {
+   "line": 419,
+   "selectors": [
+    "[data-skin=\"clean\"] .app-sidebar .premium-shortcuts button[data-tone=\"amber\"] .premium-shortcut-dot"
+   ],
+   "dead": [
+    "premium-shortcuts",
+    "premium-shortcut-dot"
+   ]
+  },
+  {
+   "line": 487,
+   "selectors": [
+    "[data-skin=\"clean\"] .app-sidebar .premium-shortcuts"
+   ],
+   "dead": [
+    "premium-shortcuts"
+   ]
+  },
+  {
+   "line": 589,
+   "selectors": [
+    "[data-skin=\"clean\"] [data-collapsible=\"icon\"] .app-sidebar [data-slot=\"sidebar-footer\"] .sidebar-account-frame"
+   ],
+   "dead": [
+    "sidebar-account-frame"
+   ]
+  },
+  {
+   "line": 596,
+   "selectors": [
+    "[data-skin=\"clean\"] [data-collapsible=\"icon\"] .sidebar-account-frame .sidebar-user-card"
+   ],
+   "dead": [
+    "sidebar-account-frame",
+    "sidebar-user-card"
+   ]
+  }
+ ],
+ "src/design-system/premium.css": [
+  {
+   "line": 399,
+   "selectors": [
+    ".premium-sidebar-label"
+   ],
+   "dead": [
+    "premium-sidebar-label"
+   ]
+  },
+  {
+   "line": 400,
+   "selectors": [
+    "[data-skin=\"clean\"] .classic-sidebar-label"
+   ],
+   "dead": [
+    "classic-sidebar-label"
+   ]
+  },
+  {
+   "line": 401,
+   "selectors": [
+    "[data-skin=\"clean\"] .premium-sidebar-label"
+   ],
+   "dead": [
+    "premium-sidebar-label"
+   ]
+  },
+  {
+   "line": 403,
+   "selectors": [
+    "[data-skin=\"clean\"] .premium-shortcuts-heading"
+   ],
+   "dead": [
+    "premium-shortcuts-heading"
+   ]
+  },
+  {
+   "line": 438,
+   "selectors": [
+    ".premium-shortcuts"
+   ],
+   "dead": [
+    "premium-shortcuts"
+   ]
+  },
+  {
+   "line": 439,
+   "selectors": [
+    "[data-skin=\"clean\"] .premium-shortcuts"
+   ],
+   "dead": [
+    "premium-shortcuts"
+   ]
+  },
+  {
+   "line": 446,
+   "selectors": [
+    "[data-skin=\"clean\"] [data-collapsible=\"icon\"] .premium-shortcuts"
+   ],
+   "dead": [
+    "premium-shortcuts"
+   ]
+  },
+  {
+   "line": 447,
+   "selectors": [
+    "[data-skin=\"clean\"] .premium-shortcuts button"
+   ],
+   "dead": [
+    "premium-shortcuts"
+   ]
+  },
+  {
+   "line": 460,
+   "selectors": [
+    "[data-skin=\"clean\"] .premium-shortcuts button:hover"
+   ],
+   "dead": [
+    "premium-shortcuts"
+   ]
+  },
+  {
+   "line": 465,
+   "selectors": [
+    "[data-skin=\"clean\"] .premium-shortcut-dot"
+   ],
+   "dead": [
+    "premium-shortcut-dot"
+   ]
+  },
+  {
+   "line": 473,
+   "selectors": [
+    "[data-skin=\"clean\"] .premium-shortcuts [data-tone=\"green\"] .premium-shortcut-dot"
+   ],
+   "dead": [
+    "premium-shortcuts",
+    "premium-shortcut-dot"
+   ]
+  },
+  {
+   "line": 474,
+   "selectors": [
+    "[data-skin=\"clean\"] .premium-shortcuts [data-tone=\"orange\"] .premium-shortcut-dot"
+   ],
+   "dead": [
+    "premium-shortcuts",
+    "premium-shortcut-dot"
+   ]
+  },
+  {
+   "line": 682,
+   "selectors": [
+    "[data-skin=\"clean\"] .premium-shortcuts button"
+   ],
+   "dead": [
+    "premium-shortcuts"
+   ]
+  },
+  {
+   "line": 683,
+   "selectors": [
+    "[data-skin=\"clean\"] .premium-shortcuts [data-tone=\"green\"]"
+   ],
+   "dead": [
+    "premium-shortcuts"
+   ]
+  },
+  {
+   "line": 684,
+   "selectors": [
+    "[data-skin=\"clean\"] .premium-shortcuts [data-tone=\"orange\"]"
+   ],
+   "dead": [
+    "premium-shortcuts"
+   ]
+  },
+  {
+   "line": 685,
+   "selectors": [
+    "[data-skin=\"clean\"] .premium-shortcut-icon"
+   ],
+   "dead": [
+    "premium-shortcut-icon"
+   ]
+  },
+  {
+   "line": 694,
+   "selectors": [
+    "[data-skin=\"clean\"] .premium-shortcuts button"
+   ],
+   "dead": [
+    "premium-shortcuts"
+   ]
+  },
+  {
+   "line": 698,
+   "selectors": [
+    "[data-skin=\"clean\"] .premium-shortcut-icon"
+   ],
+   "dead": [
+    "premium-shortcut-icon"
+   ]
+  },
+  {
+   "line": 704,
+   "selectors": [
+    "[data-skin=\"clean\"] .premium-shortcuts button"
+   ],
+   "dead": [
+    "premium-shortcuts"
+   ]
+  },
+  {
+   "line": 705,
+   "selectors": [
+    "[data-skin=\"clean\"] .premium-shortcut-icon"
+   ],
+   "dead": [
+    "premium-shortcut-icon"
+   ]
+  },
+  {
+   "line": 706,
+   "selectors": [
+    "[data-skin=\"clean\"] .premium-shortcut-dot"
+   ],
+   "dead": [
+    "premium-shortcut-dot"
+   ]
+  },
+  {
+   "line": 874,
+   "selectors": [
+    "[data-skin=\"clean\"] .kpis",
+    "[data-skin=\"clean\"] .section-atlas-grid"
+   ],
+   "dead": [
+    "kpis",
+    "section-atlas-grid"
+   ]
+  },
+  {
+   "line": 887,
+   "selectors": [
+    "[data-skin=\"clean\"] .section-atlas-grid[data-card-count=\"2\"]"
+   ],
+   "dead": [
+    "section-atlas-grid"
+   ]
+  },
+  {
+   "line": 890,
+   "selectors": [
+    "[data-skin=\"clean\"] .section-atlas-grid[data-card-count=\"3\"]"
+   ],
+   "dead": [
+    "section-atlas-grid"
+   ]
+  },
+  {
+   "line": 895,
+   "selectors": [
+    "[data-skin=\"clean\"] .kpis",
+    "[data-skin=\"clean\"] .section-atlas-grid"
+   ],
+   "dead": [
+    "kpis",
+    "section-atlas-grid"
+   ]
+  },
+  {
+   "line": 902,
+   "selectors": [
+    "[data-skin=\"clean\"] .kpis",
+    "[data-skin=\"clean\"] .section-atlas-grid"
+   ],
+   "dead": [
+    "kpis",
+    "section-atlas-grid"
+   ]
+  },
+  {
+   "line": 937,
+   "selectors": [
+    "[data-skin=\"clean\"] .kpiHead"
+   ],
+   "dead": [
+    "kpiHead"
+   ]
+  },
+  {
+   "line": 951,
+   "selectors": [
+    "[data-skin=\"clean\"] .kpiHead span"
+   ],
+   "dead": [
+    "kpiHead"
+   ]
+  },
+  {
+   "line": 957,
+   "selectors": [
+    "[data-skin=\"clean\"] .kpiHead svg"
+   ],
+   "dead": [
+    "kpiHead"
+   ]
+  },
+  {
+   "line": 961,
+   "selectors": [
+    "[data-skin=\"clean\"] .kpiGo"
+   ],
+   "dead": [
+    "kpiGo"
+   ]
+  },
+  {
+   "line": 969,
+   "selectors": [
+    "[data-skin=\"clean\"] .kpi:hover .kpiGo",
+    "[data-skin=\"clean\"] .section-atlas-card:hover .kpiGo"
+   ],
+   "dead": [
+    "kpiGo",
+    "section-atlas-card"
+   ]
+  },
+  {
+   "line": 977,
+   "selectors": [
+    "[data-skin=\"clean\"] .kpiValue",
+    "[data-skin=\"clean\"] .section-atlas-value"
+   ],
+   "dead": [
+    "kpiValue",
+    "section-atlas-value"
+   ]
+  },
+  {
+   "line": 991,
+   "selectors": [
+    "[data-skin=\"clean\"] .kpiSub"
+   ],
+   "dead": [
+    "kpiSub"
+   ]
+  },
+  {
+   "line": 1034,
+   "selectors": [
+    "[data-skin=\"clean\"] .kpiDetailRow",
+    "[data-skin=\"clean\"] .section-atlas-context"
+   ],
+   "dead": [
+    "kpiDetailRow",
+    "section-atlas-context"
+   ]
+  }
+ ],
+ "src/design-system/premium-workspace.css": [
+  {
+   "line": 73,
+   "selectors": [
+    ":root[data-skin=\"clean\"] .engraved-view-tabs[data-slot=\"tabs-list\"]"
+   ],
+   "dead": [
+    "engraved-view-tabs"
+   ]
+  },
+  {
+   "line": 88,
+   "selectors": [
+    ":root[data-skin=\"clean\"] .engraved-view-tabs [data-slot=\"tabs-trigger\"]"
+   ],
+   "dead": [
+    "engraved-view-tabs"
+   ]
+  },
+  {
+   "line": 102,
+   "selectors": [
+    ":root[data-skin=\"clean\"] .engraved-view-tabs [data-slot=\"tabs-trigger\"]:hover"
+   ],
+   "dead": [
+    "engraved-view-tabs"
+   ]
+  },
+  {
+   "line": 108,
+   "selectors": [
+    ":root[data-skin=\"clean\"] .engraved-view-tabs [data-slot=\"tabs-trigger\"][aria-selected=\"true\"]"
+   ],
+   "dead": [
+    "engraved-view-tabs"
+   ]
+  },
+  {
+   "line": 114,
+   "selectors": [
+    ":root[data-skin=\"clean\"] .engraved-view-tabs [data-slot=\"tabs-trigger\"]::after"
+   ],
+   "dead": [
+    "engraved-view-tabs"
+   ]
+  },
+  {
+   "line": 118,
+   "selectors": [
+    ":root[data-skin=\"clean\"] .engraved-view-tabs [data-slot=\"badge\"]"
+   ],
+   "dead": [
+    "engraved-view-tabs"
+   ]
+  },
+  {
+   "line": 131,
+   "selectors": [
+    ":root[data-skin=\"clean\"] .agenda-planner"
+   ],
+   "dead": [
+    "agenda-planner"
+   ]
+  },
+  {
+   "line": 135,
+   "selectors": [
+    ":root[data-skin=\"clean\"] .agenda-planner-heading",
+    ":root[data-skin=\"clean\"] .clinical-activity-heading"
+   ],
+   "dead": [
+    "agenda-planner-heading",
+    "clinical-activity-heading"
+   ]
+  },
+  {
+   "line": 204,
+   "selectors": [
+    ":root[data-skin=\"clean\"] .agenda-toolbar"
+   ],
+   "dead": [
+    "agenda-toolbar"
+   ]
+  },
+  {
+   "line": 212,
+   "selectors": [
+    ":root[data-skin=\"clean\"] .agenda-date-controls"
+   ],
+   "dead": [
+    "agenda-date-controls"
+   ]
+  },
+  {
+   "line": 216,
+   "selectors": [
+    ":root[data-skin=\"clean\"] .agenda-period-navigation"
+   ],
+   "dead": [
+    "agenda-period-navigation"
+   ]
+  },
+  {
+   "line": 222,
+   "selectors": [
+    ":root[data-skin=\"clean\"] .agenda-period-navigation [data-slot=\"button\"]"
+   ],
+   "dead": [
+    "agenda-period-navigation"
+   ]
+  },
+  {
+   "line": 231,
+   "selectors": [
+    ":root[data-skin=\"clean\"] .agenda-period-navigation [data-slot=\"button\"] + [data-slot=\"button\"]"
+   ],
+   "dead": [
+    "agenda-period-navigation"
+   ]
+  },
+  {
+   "line": 235,
+   "selectors": [
+    ":root[data-skin=\"clean\"] .agenda-selected-date"
+   ],
+   "dead": [
+    "agenda-selected-date"
+   ]
+  },
+  {
+   "line": 241,
+   "selectors": [
+    ":root[data-skin=\"clean\"] .clinical-activity-board"
+   ],
+   "dead": [
+    "clinical-activity-board"
+   ]
+  },
+  {
+   "line": 246,
+   "selectors": [
+    ":root[data-skin=\"clean\"] .clinical-activity-icon"
+   ],
+   "dead": [
+    "clinical-activity-icon"
+   ]
+  },
+  {
+   "line": 254,
+   "selectors": [
+    ":root[data-skin=\"clean\"] .clinical-activity-toolbar"
+   ],
+   "dead": [
+    "clinical-activity-toolbar"
+   ]
+  },
+  {
+   "line": 259,
+   "selectors": [
+    ":root[data-skin=\"clean\"] .clinical-activity-spacer"
+   ],
+   "dead": [
+    "clinical-activity-spacer"
+   ]
+  },
+  {
+   "line": 263,
+   "selectors": [
+    ":root[data-skin=\"clean\"] .clinical-activity-toolbar > :last-child"
+   ],
+   "dead": [
+    "clinical-activity-toolbar"
+   ]
+  },
+  {
+   "line": 342,
+   "selectors": [
+    ":root[data-skin=\"clean\"] .document-library-filters"
+   ],
+   "dead": [
+    "document-library-filters"
+   ]
+  },
+  {
+   "line": 349,
+   "selectors": [
+    ":root[data-skin=\"clean\"] .document-library-filters [data-slot=\"toggle-group-item\"]"
+   ],
+   "dead": [
+    "document-library-filters"
+   ]
+  },
+  {
+   "line": 361,
+   "selectors": [
+    ":root[data-skin=\"clean\"] .document-library-filters [aria-pressed=\"true\"]"
+   ],
+   "dead": [
+    "document-library-filters"
+   ]
+  },
+  {
+   "line": 367,
+   "selectors": [
+    ":root[data-skin=\"clean\"] .document-editor-modes"
+   ],
+   "dead": [
+    "document-editor-modes"
+   ]
+  },
+  {
+   "line": 390,
+   "selectors": [
+    ":root[data-skin=\"clean\"] .clinical-activity-toolbar > :last-child"
+   ],
+   "dead": [
+    "clinical-activity-toolbar"
+   ]
+  },
+  {
+   "line": 391,
+   "selectors": [
+    ":root[data-skin=\"clean\"] .engraved-view-tabs [data-slot=\"tabs-trigger\"]"
+   ],
+   "dead": [
+    "engraved-view-tabs"
+   ]
+  },
+  {
+   "line": 392,
+   "selectors": [
+    ":root[data-skin=\"clean\"] .agenda-selected-date"
+   ],
+   "dead": [
+    "agenda-selected-date"
+   ]
+  },
+  {
+   "line": 511,
+   "selectors": [
+    ":root[data-skin=\"clean\"] .clinical-selected-record > [data-slot=\"card-header\"]"
+   ],
+   "dead": [
+    "clinical-selected-record"
+   ]
+  },
+  {
+   "line": 515,
+   "selectors": [
+    ":root[data-skin=\"clean\"] .clinical-selected-record > [data-slot=\"card-content\"]"
+   ],
+   "dead": [
+    "clinical-selected-record"
+   ]
+  },
+  {
+   "line": 518,
+   "selectors": [
+    ":root[data-skin=\"clean\"] .clinical-selected-identity"
+   ],
+   "dead": [
+    "clinical-selected-identity"
+   ]
+  },
+  {
+   "line": 523,
+   "selectors": [
+    ":root[data-skin=\"clean\"] .clinical-selected-record [data-slot=\"tabs-content\"] [data-slot=\"card\"]"
+   ],
+   "dead": [
+    "clinical-selected-record"
+   ]
+  },
+  {
+   "line": 529,
+   "selectors": [
+    ":root[data-skin=\"clean\"] .clinical-selected-record [data-slot=\"tabs-content\"] [data-slot=\"card-header\"]"
+   ],
+   "dead": [
+    "clinical-selected-record"
+   ]
+  },
+  {
+   "line": 533,
+   "selectors": [
+    ":root[data-skin=\"clean\"] .clinical-selected-record [data-slot=\"tabs-content\"] [data-slot=\"card-content\"]"
+   ],
+   "dead": [
+    "clinical-selected-record"
+   ]
+  },
+  {
+   "line": 564,
+   "selectors": [
+    ":root[data-skin=\"clean\"] .patient-record-page .medical-patient-header > [aria-hidden=\"true\"]"
+   ],
+   "dead": [
+    "medical-patient-header"
+   ]
+  },
+  {
+   "line": 567,
+   "selectors": [
+    ":root[data-skin=\"clean\"] .patient-record-page .medical-header-main"
+   ],
+   "dead": [
+    "medical-header-main"
+   ]
+  },
+  {
+   "line": 577,
+   "selectors": [
+    ":root[data-skin=\"clean\"] .patient-record-page .medical-patient-header"
+   ],
+   "dead": [
+    "medical-patient-header"
+   ]
+  },
+  {
+   "line": 591,
+   "selectors": [
+    ":root[data-skin=\"clean\"] .patient-record-page .medical-register-header"
+   ],
+   "dead": [
+    "medical-register-header"
+   ]
+  },
+  {
+   "line": 620,
+   "selectors": [
+    ":root[data-skin=\"clean\"] .patient-record-page .medical-rail"
+   ],
+   "dead": [
+    "medical-rail"
+   ]
+  },
+  {
+   "line": 637,
+   "selectors": [
+    ":root[data-skin=\"clean\"] .patient-timeline-table th:nth-child(1)"
+   ],
+   "dead": [
+    "patient-timeline-table"
+   ]
+  },
+  {
+   "line": 638,
+   "selectors": [
+    ":root[data-skin=\"clean\"] .patient-timeline-table th:nth-child(2)"
+   ],
+   "dead": [
+    "patient-timeline-table"
+   ]
+  },
+  {
+   "line": 639,
+   "selectors": [
+    ":root[data-skin=\"clean\"] .patient-timeline-table th:nth-child(3)"
+   ],
+   "dead": [
+    "patient-timeline-table"
+   ]
+  },
+  {
+   "line": 640,
+   "selectors": [
+    ":root[data-skin=\"clean\"] .patient-timeline-table th:nth-child(4)"
+   ],
+   "dead": [
+    "patient-timeline-table"
+   ]
+  },
+  {
+   "line": 641,
+   "selectors": [
+    ":root[data-skin=\"clean\"] .patient-timeline-table th:nth-child(5)"
+   ],
+   "dead": [
+    "patient-timeline-table"
+   ]
+  },
+  {
+   "line": 642,
+   "selectors": [
+    ":root[data-skin=\"clean\"] .patient-timeline-table :is(th, td)"
+   ],
+   "dead": [
+    "patient-timeline-table"
+   ]
+  },
+  {
+   "line": 647,
+   "selectors": [
+    ":root[data-skin=\"clean\"] .patient-timeline-table td:last-child [data-slot=\"button\"]"
+   ],
+   "dead": [
+    "patient-timeline-table"
+   ]
+  },
+  {
+   "line": 658,
+   "selectors": [
+    ":root[data-skin=\"clean\"] .patient-timeline-table :is(th, td)"
+   ],
+   "dead": [
+    "patient-timeline-table"
+   ]
+  },
+  {
+   "line": 659,
+   "selectors": [
+    ":root[data-skin=\"clean\"] .patient-timeline-table td:last-child [data-slot=\"button\"]"
+   ],
+   "dead": [
+    "patient-timeline-table"
+   ]
+  },
+  {
+   "line": 667,
+   "selectors": [
+    ":root[data-skin=\"clean\"] :is(.patient-record-page, .patient-peek-panel) .medical-rail"
+   ],
+   "dead": [
+    "medical-rail"
+   ]
+  },
+  {
+   "line": 671,
+   "selectors": [
+    ":root[data-skin=\"clean\"] :is(.patient-record-page, .patient-peek-panel) .medical-rail > section"
+   ],
+   "dead": [
+    "medical-rail"
+   ]
+  },
+  {
+   "line": 677,
+   "selectors": [
+    ":root[data-skin=\"clean\"] :is(.patient-record-page, .patient-peek-panel) .medical-rail :is(.medical-section-title, .medical-owner h3)"
+   ],
+   "dead": [
+    "medical-rail"
+   ]
+  },
+  {
+   "line": 745,
+   "selectors": [
+    ":root[data-skin=\"clean\"] .patient-peek-panel .medical-peek-content .medical-section-title"
+   ],
+   "dead": [
+    "medical-section-title"
+   ]
+  },
+  {
+   "line": 850,
+   "selectors": [
+    ":root[data-skin=\"clean\"] .sidebar-account-frame .sidebar-user-card"
+   ],
+   "dead": [
+    "sidebar-account-frame",
+    "sidebar-user-card"
+   ]
+  },
+  {
+   "line": 856,
+   "selectors": [
+    ":root[data-skin=\"clean\"] .sidebar-account-frame .sidebar-user-card:is(:hover, [aria-expanded=\"true\"])"
+   ],
+   "dead": [
+    "sidebar-account-frame",
+    "sidebar-user-card"
+   ]
+  },
+  {
+   "line": 860,
+   "selectors": [
+    ":root[data-skin=\"clean\"] .sidebar-account-frame .sidebar-user-card:focus-visible"
+   ],
+   "dead": [
+    "sidebar-account-frame",
+    "sidebar-user-card"
+   ]
+  },
+  {
+   "line": 861,
+   "selectors": [
+    ":root[data-skin=\"clean\"] .sidebar-account-frame .sidebar-user-name"
+   ],
+   "dead": [
+    "sidebar-account-frame",
+    "sidebar-user-name"
+   ]
+  },
+  {
+   "line": 862,
+   "selectors": [
+    ":root[data-skin=\"clean\"] .sidebar-account-frame .sidebar-user-more"
+   ],
+   "dead": [
+    "sidebar-account-frame",
+    "sidebar-user-more"
+   ]
+  },
+  {
+   "line": 864,
+   "selectors": [
+    ":root[data-skin=\"clean\"] [data-collapsible=\"icon\"] .sidebar-account-frame::before"
+   ],
+   "dead": [
+    "sidebar-account-frame"
+   ]
+  },
+  {
+   "line": 866,
+   "selectors": [
+    ":root[data-skin=\"clean\"] [data-collapsible=\"icon\"] .sidebar-account-frame .sidebar-user-card"
+   ],
+   "dead": [
+    "sidebar-account-frame",
+    "sidebar-user-card"
+   ]
+  },
+  {
+   "line": 884,
+   "selectors": [
+    ":root[data-skin=\"clean\"] .patient-record-page .medical-permanent-header"
+   ],
+   "dead": [
+    "medical-permanent-header"
+   ]
+  }
+ ]
+}

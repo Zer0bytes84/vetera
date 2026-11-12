@@ -1,0 +1,36 @@
+import { launch, newCtx, FIXED } from "./lib/setup.mjs";
+import fs from "fs";
+const [URL, STATE, OUT] = process.argv.slice(2); fs.mkdirSync(OUT, { recursive: true });
+const b = await launch(); const notes = [];
+for (const mode of ["light", "dark"]) {
+  const ctx = await newCtx(b, STATE); const page = await ctx.newPage(); page.setDefaultTimeout(5000);
+  await page.clock.setFixedTime(FIXED);
+  await page.addInitScript(([m]) => { localStorage.setItem("theme-config", JSON.stringify({ skin: "clean" })); localStorage.setItem("theme", m); localStorage.setItem("baitari:last-seen-version", "5.0.9"); let seed = 1234567; Math.random = () => { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; }; }, [mode]);
+  const settle = async (ms = 4500) => { await page.waitForTimeout(ms); await page.addStyleTag({ content: "*,*::before,*::after{animation:none!important;transition:none!important;caret-color:transparent!important}" }); await page.waitForTimeout(400); };
+  const shot = async (n) => { await page.screenshot({ path: `${OUT}/${mode}-${n}.png` }); };
+  const step = async (n, fn) => { try { await fn(); await page.waitForTimeout(500); await shot(n); } catch (e) { notes.push(`${mode} ${n}: ${e.message.split("\n")[0]}`); } };
+  await page.goto(URL + "#/dashboard", { waitUntil: "domcontentloaded" }); await page.reload({ waitUntil: "domcontentloaded" }); await settle();
+  await step("survol-sidebar-patients", () => page.locator('.app-sidebar [data-slot="sidebar-menu-button"]', { hasText: "Patients" }).first().hover());
+  await step("survol-nouvelle-consultation", () => page.locator(".dashboard-primary-action, [data-primary-action=true]").first().hover());
+  await step("focus-clavier-recherche", async () => { await page.mouse.move(1432, 450); await page.keyboard.press("Tab"); await page.keyboard.press("Tab"); await page.keyboard.press("Tab"); });
+  await step("menu-actions-rapides", () => page.locator('[aria-label="Actions rapides"]').first().click());
+  await step("survol-menu-actions", () => page.locator(".quick-actions-menu-item").nth(1).hover());
+  await page.keyboard.press("Escape"); await page.waitForTimeout(400);
+  await step("notifications", () => page.locator('button[aria-label="Notifications"]').first().click());
+  await page.keyboard.press("Escape"); await page.waitForTimeout(400);
+  await step("palette-commandes", async () => { await page.keyboard.press("Control+k"); });
+  await page.keyboard.press("Escape"); await page.waitForTimeout(400);
+  await step("barre-repliee", () => page.locator('button[data-sidebar="trigger"]').first().click());
+  await page.goto(URL + "#/patients", { waitUntil: "domcontentloaded" }); await page.reload({ waitUntil: "domcontentloaded" }); await settle();
+  await step("patients-survol-ligne", () => page.locator("tbody tr").nth(1).hover());
+  await step("patients-focus-ligne", async () => { await page.locator("tbody tr").nth(2).focus(); });
+  await page.goto(URL + "#/finances", { waitUntil: "domcontentloaded" }); await page.reload({ waitUntil: "domcontentloaded" }); await settle();
+  await step("finances-survol-onglet", () => page.locator('[role="tab"]').nth(1).hover());
+  await page.goto(URL + "#/finances_analytics", { waitUntil: "domcontentloaded" }); await page.reload({ waitUntil: "domcontentloaded" }); await settle();
+  await step("analyse-survol-carte", () => page.locator('[data-slot="chart-card"], .frame, [class*="card"]').nth(3).hover());
+  await page.goto(URL + "#/parametres", { waitUntil: "domcontentloaded" }); await page.reload({ waitUntil: "domcontentloaded" }); await settle();
+  await step("parametres-survol-sidebar", () => page.locator('.app-sidebar [data-slot="sidebar-menu-button"]', { hasText: "Finances" }).first().hover());
+  await ctx.close();
+}
+fs.writeFileSync(`${OUT}/notes.txt`, notes.join("\n")); console.log("notes:", notes.length, notes.join(" | ").slice(0, 600));
+await b.close();

@@ -24,12 +24,11 @@ export async function captureAgenda(signal: string, query: string) {
     for (let i = 0; i < 1200 && (await readTextFile(signal).catch(() => "")).trim() !== `done:${appearance}-${name}`; i++) await sleep(250);
   };
   await ensureSession();
-  const [skin, mode] = appearance.split("-");
-  const config = JSON.parse(localStorage.getItem("theme-config") ?? "{}") as Record<string, unknown>;
+  if (appearance.startsWith("premium")) throw new Error("Premium a été retiré : une seule interface (Clean), clair ou sombre.");
+  const mode = appearance.endsWith("dark") ? "dark" : "light";
   localStorage.setItem("baitari:ai-models-onboarding-dismissed", "true");
   if (!sessionStorage.getItem("agenda-themed")) {
     sessionStorage.setItem("agenda-themed", "1");
-    localStorage.setItem("theme-config", JSON.stringify({ ...config, visualStyle: "premium", skin }));
     localStorage.setItem("theme", mode);
     location.reload();
     return;

@@ -1,5 +1,5 @@
 // Captures of the dashboard widgets, before and after a pass: one run per
-// appearance (query = "clean-light,clean-dark,premium-light"), each widget row
+// appearance (query = "light,dark"), each widget row
 // scrolled into view and photographed by the shell (signal "ready:<name>" →
 // "done:<name>"). The small format is the same window with the debug tools
 // docked beside the page; the shell decides which. In every state the page measures what a
@@ -88,10 +88,9 @@ export async function captureDashboard(signal: string, appearances: string[]) {
     await writeTextFile(signal, "restored");
     return;
   }
-  const [skin, mode] = appearance.split("-");
-  const config = JSON.parse(localStorage.getItem("theme-config") ?? "{}") as Record<string, unknown>;
-  if (toastShown || config.skin !== skin || localStorage.getItem("theme") !== mode) {
-    localStorage.setItem("theme-config", JSON.stringify({ ...config, visualStyle: "premium", skin }));
+  if (appearance.startsWith("premium")) throw new Error("Premium a été retiré : une seule interface (Clean), clair ou sombre.");
+  const mode = appearance.endsWith("dark") ? "dark" : "light";
+  if (toastShown || localStorage.getItem("theme") !== mode) {
     localStorage.setItem("theme", mode);
     location.reload();
     return;

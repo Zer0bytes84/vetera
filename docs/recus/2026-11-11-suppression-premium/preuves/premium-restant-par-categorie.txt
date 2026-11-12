@@ -1,0 +1,76 @@
+## 1. Clé de stockage héritée, lue une seule fois par la migration (jamais réécrite): 2 ligne(s)
+     2  src/lib/theme-store.ts
+
+## 2. Commentaire (aucun effet à l'exécution): 40 ligne(s)
+    12  src/design-system/clean.css
+     4  src/lib/theme-store.ts
+     3  src/modules/dashboard/components/premium-analytics.css
+     3  src/design-system/premium.css
+     2  src/index.css
+     2  src/modules/agenda/components/agenda-cards.css
+     2  src/design-system/tokens.css
+     1  src/modules/care-tasks/care-page.css
+     1  src/modules/patients/medical-record.css
+     1  src/modules/release-notes/whats-new.css
+     1  src/modules/shell/shell-toolbar.css
+     1  src/components/ui/data-table.css
+     1  src/components/auth-clinic.css
+     1  src/design-system/fields.css
+     1  src/design-system/page-header-line.css
+     1  src/design-system/tabs.css
+     1  src/design-system/premium-workspace.css
+     1  src/components/mascot/mascot.css
+     1  src/design-system/interaction.css
+
+## 3. Jeton CSS --premium-* (couleurs, espacements) lu par Clean: 84 ligne(s)
+    38  src/design-system/premium.css
+    12  src/design-system/clean.css
+     8  src/modules/dashboard/components/premium-analytics.css
+     6  src/modules/dashboard/components/clinical/clinical-workspace.css
+     5  src/modules/shell/premium-sidebar.css
+     3  src/modules/prescriptions/components/prescription-safety.css
+     3  src/design-system/premium-workspace.css
+     2  src/modules/prescriptions/components/prescription-templates.css
+     2  src/modules/patient-reminders/patient-reminders.css
+     1  src/modules/agenda/components/agenda-cards.css
+     1  src/modules/dashboard/components/dashboard-watch.css
+     1  src/modules/dashboard/components/clinical/shared.tsx
+     1  src/modules/patients/patients-list.css
+     1  src/modules/patient-reminders/medical-reminders-widget.tsx
+
+## 4. Classe CSS premium-* présente dans le DOM de Clean (sélecteur ou className) ou attribut data-premium-status: 77 ligne(s)
+    25  src/modules/dashboard/components/premium-analytics.css
+    25  src/design-system/clean.css
+     4  src/modules/dashboard/components/clinical/clinical-workspace.css
+     4  src/config/status-meta.ts
+     4  src/design-system/premium.css
+     3  src/modules/dashboard/components/premium-analytics.tsx
+     2  src/modules/dashboard/components/focus-trend-chart.css
+     2  src/modules/shell/premium-sidebar.css
+     1  src/modules/care-tasks/care-page.tsx
+     1  src/modules/dashboard/pages/dashboard-page.tsx
+     1  src/modules/dashboard/v2/settle-widgets.tsx
+     1  src/modules/dashboard/components/clinical/actions-module.tsx
+     1  src/modules/dashboard/components/clinical/cash-module.tsx
+     1  src/modules/finances/components/finance-overview.tsx
+     1  src/modules/shell/app-shell.tsx
+     1  src/design-system/premium-workspace.css
+
+## 5. Import ou nom de fichier premium-* qui sert Clean: 10 ligne(s)
+     3  src/modules/dashboard/pages/dashboard-page.tsx
+     2  src/index.css
+     1  src/modules/finances/financial-analytics-page.tsx
+     1  src/modules/finances/components/finances-view.tsx
+     1  src/modules/dashboard/components/premium-analytics.tsx
+     1  src/modules/dashboard/model/key-figures.ts
+     1  src/components/app-sidebar.tsx
+
+## 6. Fonction, composant ou type nommé Premium qui sert Clean: 11 ligne(s)
+     5  src/modules/dashboard/components/premium-analytics.tsx
+     2  src/modules/dashboard/pages/dashboard-page.tsx
+     1  src/modules/finances/financial-analytics-page.tsx
+     1  src/modules/finances/components/premium-financial-analysis.tsx
+     1  src/modules/dashboard/model/premium-analytics.ts
+     1  src/modules/dashboard/model/key-figures.ts
+
+TOTAL 224

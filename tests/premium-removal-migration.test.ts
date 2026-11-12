@@ -155,3 +155,31 @@ describe("équipe rouge : tenter de faire échouer le retour sur Clean", () => {
     expect(storage.has("theme-config")).toBe(false);
   });
 });
+
+describe("garde : plus rien de Premium qui change le rendu", () => {
+  const sources = async () => {
+    const { readFileSync, readdirSync, statSync } = await import("node:fs");
+    const { join } = await import("node:path");
+    const walk = (dir: string): string[] => readdirSync(dir).flatMap((name) => {
+      const path = join(dir, name);
+      return statSync(path).isDirectory() ? walk(path) : /\.(css|tsx?|html)$/.test(name) ? [path] : [];
+    });
+    return walk("src").map((path) => ({ path, text: readFileSync(path, "utf8") }));
+  };
+  it.each([
+    ["l'attribut data-visual-style", /data-visual-style|dataset\.visualStyle/],
+    ["une peau « premium »", /data-skin="premium"|skin:\s*"premium"|skin\s*===\s*"premium"/],
+    ["le hook useIsPremium", /useIsPremium|use-is-premium/],
+    ["le module theme-skin", /theme-skin/],
+    ["un sélecteur réservé à une peau autre que Clean", /:not\(\[data-skin="clean"\]\)/],
+  ])("%s n'apparaît nulle part dans src", async (_name, pattern) => {
+    const found = (await sources()).filter(({ text }) => pattern.test(text)).map(({ path }) => path);
+    expect(found).toEqual([]);
+  });
+
+  it("toute règle CSS qui nomme data-skin vise Clean", async () => {
+    const values = new Set<string>();
+    for (const { text } of await sources()) for (const match of text.matchAll(/data-skin="([^"]*)"/g)) values.add(match[1]);
+    expect([...values]).toEqual(["clean"]);
+  });
+});

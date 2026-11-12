@@ -1,0 +1,31 @@
+$ grep -rn "data-visual-style" src | wc -l
+0
+
+$ grep -rnE "useIsPremium|use-is-premium" src | wc -l
+0
+
+$ grep -rnE "visualStyle|theme-skin|dataset\.skin" src
+src/lib/theme-store.ts:75:  root.dataset.skin = FIXED.skin;
+
+$ valeurs de data-skin dans src (CSS et TS)
+   1050 data-skin="clean"
+
+$ valeurs de skin ecrites par le code (theme-store)
+63:  skin: "clean",
+75:  root.dataset.skin = FIXED.skin;
+
+$ grep -rniE premium src | wc -l
+224
+
+$ git ls-files src | grep -i premium
+src/design-system/premium-workspace.css
+src/design-system/premium.css
+src/modules/dashboard/components/premium-analytics.css
+src/modules/dashboard/components/premium-analytics.tsx
+src/modules/dashboard/model/premium-analytics.ts
+src/modules/finances/components/premium-financial-analysis.tsx
+src/modules/finances/finances-premium.css
+src/modules/shell/premium-sidebar.css
+
+$ grep -rniE premium scripts | wc -l
+11

@@ -1,0 +1,332 @@
+[
+ {
+  "mode": "light",
+  "page": "dashboard",
+  "elements": 1653,
+  "onlyMaster": 4,
+  "onlyBranch": 0,
+  "elementsWithStyleDiff": 0,
+  "styleDiffs": 0,
+  "attrDiffs": 1,
+  "classDiffs": 0,
+  "samples": [
+   ">HTML[0] attrs: [data-chrome-style,data-clean-font,data-header-pattern,data-skin,data-visual-style,dir,lang] -> [data-chrome-style,data-clean-font,data-header-pattern,data-skin,dir,lang]"
+  ],
+  "onlyMasterSamples": [
+   "UL[0]>DIV[0]>SPAN[0] classic-sidebar-label",
+   "UL[0]>DIV[0]>SPAN[1] premium-sidebar-label",
+   "UL[0]>DIV[0]>SPAN[0] classic-sidebar-label",
+   "UL[0]>DIV[0]>SPAN[1] premium-sidebar-label"
+  ]
+ },
+ {
+  "mode": "light",
+  "page": "finances",
+  "elements": 360,
+  "onlyMaster": 4,
+  "onlyBranch": 0,
+  "elementsWithStyleDiff": 0,
+  "styleDiffs": 0,
+  "attrDiffs": 1,
+  "classDiffs": 0,
+  "samples": [
+   ">HTML[0] attrs: [data-chrome-style,data-clean-font,data-header-pattern,data-skin,data-visual-style,dir,lang] -> [data-chrome-style,data-clean-font,data-header-pattern,data-skin,dir,lang]"
+  ],
+  "onlyMasterSamples": [
+   "UL[0]>DIV[0]>SPAN[0] classic-sidebar-label",
+   "UL[0]>DIV[0]>SPAN[1] premium-sidebar-label",
+   "UL[0]>DIV[0]>SPAN[0] classic-sidebar-label",
+   "UL[0]>DIV[0]>SPAN[1] premium-sidebar-label"
+  ]
+ },
+ {
+  "mode": "light",
+  "page": "finances-analyse",
+  "elements": 1074,
+  "onlyMaster": 4,
+  "onlyBranch": 0,
+  "elementsWithStyleDiff": 0,
+  "styleDiffs": 0,
+  "attrDiffs": 1,
+  "classDiffs": 0,
+  "samples": [
+   ">HTML[0] attrs: [data-chrome-style,data-clean-font,data-header-pattern,data-skin,data-visual-style,dir,lang] -> [data-chrome-style,data-clean-font,data-header-pattern,data-skin,dir,lang]"
+  ],
+  "onlyMasterSamples": [
+   "UL[0]>DIV[0]>SPAN[0] classic-sidebar-label",
+   "UL[0]>DIV[0]>SPAN[1] premium-sidebar-label",
+   "UL[0]>DIV[0]>SPAN[0] classic-sidebar-label",
+   "UL[0]>DIV[0]>SPAN[1] premium-sidebar-label"
+  ]
+ },
+ {
+  "mode": "light",
+  "page": "patients",
+  "elements": 723,
+  "onlyMaster": 4,
+  "onlyBranch": 0,
+  "elementsWithStyleDiff": 0,
+  "styleDiffs": 0,
+  "attrDiffs": 1,
+  "classDiffs": 0,
+  "samples": [
+   ">HTML[0] attrs: [data-chrome-style,data-clean-font,data-header-pattern,data-skin,data-visual-style,dir,lang] -> [data-chrome-style,data-clean-font,data-header-pattern,data-skin,dir,lang]"
+  ],
+  "onlyMasterSamples": [
+   "UL[0]>DIV[0]>SPAN[0] classic-sidebar-label",
+   "UL[0]>DIV[0]>SPAN[1] premium-sidebar-label",
+   "UL[0]>DIV[0]>SPAN[0] classic-sidebar-label",
+   "UL[0]>DIV[0]>SPAN[1] premium-sidebar-label"
+  ]
+ },
+ {
+  "mode": "light",
+  "page": "dossier-patient",
+  "elements": 611,
+  "onlyMaster": 4,
+  "onlyBranch": 0,
+  "elementsWithStyleDiff": 0,
+  "styleDiffs": 0,
+  "attrDiffs": 1,
+  "classDiffs": 0,
+  "samples": [
+   ">HTML[0] attrs: [data-chrome-style,data-clean-font,data-header-pattern,data-skin,data-visual-style,dir,lang] -> [data-chrome-style,data-clean-font,data-header-pattern,data-skin,dir,lang]"
+  ],
+  "onlyMasterSamples": [
+   "UL[0]>DIV[0]>SPAN[0] classic-sidebar-label",
+   "UL[0]>DIV[0]>SPAN[1] premium-sidebar-label",
+   "UL[0]>DIV[0]>SPAN[0] classic-sidebar-label",
+   "UL[0]>DIV[0]>SPAN[1] premium-sidebar-label"
+  ]
+ },
+ {
+  "mode": "light",
+  "page": "parametres",
+  "elements": 1125,
+  "onlyMaster": 26,
+  "onlyBranch": 7,
+  "elementsWithStyleDiff": 35,
+  "styleDiffs": 201,
+  "attrDiffs": 1,
+  "classDiffs": 4,
+  "samples": [
+   ">HTML[0] attrs: [data-chrome-style,data-clean-font,data-header-pattern,data-skin,data-visual-style,dir,lang] -> [data-chrome-style,data-clean-font,data-header-pattern,data-skin,dir,lang]",
+   "DIV[2]>DIV[0]>DIV[0] block-size: 1509.42px -> 1444.42px",
+   "DIV[2]>DIV[0]>DIV[0] height: 1509.42px -> 1444.42px",
+   "DIV[2]>DIV[0]>DIV[0] perspective-origin: 592px 754.703px -> 592px 722.203px",
+   "DIV[2]>DIV[0]>DIV[0] transform-origin: 592px 754.711px -> 592px 722.211px",
+   "DIV[0]>DIV[0]>DIV[0] block-size: 1461.42px -> 1396.42px"
+  ],
+  "onlyMasterSamples": [
+   "UL[0]>DIV[0]>SPAN[0] classic-sidebar-label",
+   "UL[0]>DIV[0]>SPAN[1] premium-sidebar-label",
+   "UL[0]>DIV[0]>SPAN[0] classic-sidebar-label",
+   "UL[0]>DIV[0]>SPAN[1] premium-sidebar-label"
+  ]
+ },
+ {
+  "mode": "light",
+  "page": "agenda",
+  "elements": 921,
+  "onlyMaster": 4,
+  "onlyBranch": 0,
+  "elementsWithStyleDiff": 0,
+  "styleDiffs": 0,
+  "attrDiffs": 1,
+  "classDiffs": 0,
+  "samples": [
+   ">HTML[0] attrs: [data-chrome-style,data-clean-font,data-header-pattern,data-skin,data-visual-style,dir,lang] -> [data-chrome-style,data-clean-font,data-header-pattern,data-skin,dir,lang]"
+  ],
+  "onlyMasterSamples": [
+   "UL[0]>DIV[0]>SPAN[0] classic-sidebar-label",
+   "UL[0]>DIV[0]>SPAN[1] premium-sidebar-label",
+   "UL[0]>DIV[0]>SPAN[0] classic-sidebar-label",
+   "UL[0]>DIV[0]>SPAN[1] premium-sidebar-label"
+  ]
+ },
+ {
+  "mode": "light",
+  "page": "clinique",
+  "elements": 398,
+  "onlyMaster": 4,
+  "onlyBranch": 0,
+  "elementsWithStyleDiff": 0,
+  "styleDiffs": 0,
+  "attrDiffs": 1,
+  "classDiffs": 0,
+  "samples": [
+   ">HTML[0] attrs: [data-chrome-style,data-clean-font,data-header-pattern,data-skin,data-visual-style,dir,lang] -> [data-chrome-style,data-clean-font,data-header-pattern,data-skin,dir,lang]"
+  ],
+  "onlyMasterSamples": [
+   "UL[0]>DIV[0]>SPAN[0] classic-sidebar-label",
+   "UL[0]>DIV[0]>SPAN[1] premium-sidebar-label",
+   "UL[0]>DIV[0]>SPAN[0] classic-sidebar-label",
+   "UL[0]>DIV[0]>SPAN[1] premium-sidebar-label"
+  ]
+ },
+ {
+  "mode": "dark",
+  "page": "dashboard",
+  "elements": 1652,
+  "onlyMaster": 4,
+  "onlyBranch": 0,
+  "elementsWithStyleDiff": 0,
+  "styleDiffs": 0,
+  "attrDiffs": 1,
+  "classDiffs": 0,
+  "samples": [
+   ">HTML[0] attrs: [data-chrome-style,data-clean-font,data-header-pattern,data-skin,data-visual-style,dir,lang] -> [data-chrome-style,data-clean-font,data-header-pattern,data-skin,dir,lang]"
+  ],
+  "onlyMasterSamples": [
+   "UL[0]>DIV[0]>SPAN[0] classic-sidebar-label",
+   "UL[0]>DIV[0]>SPAN[1] premium-sidebar-label",
+   "UL[0]>DIV[0]>SPAN[0] classic-sidebar-label",
+   "UL[0]>DIV[0]>SPAN[1] premium-sidebar-label"
+  ]
+ },
+ {
+  "mode": "dark",
+  "page": "finances",
+  "elements": 359,
+  "onlyMaster": 4,
+  "onlyBranch": 0,
+  "elementsWithStyleDiff": 0,
+  "styleDiffs": 0,
+  "attrDiffs": 1,
+  "classDiffs": 0,
+  "samples": [
+   ">HTML[0] attrs: [data-chrome-style,data-clean-font,data-header-pattern,data-skin,data-visual-style,dir,lang] -> [data-chrome-style,data-clean-font,data-header-pattern,data-skin,dir,lang]"
+  ],
+  "onlyMasterSamples": [
+   "UL[0]>DIV[0]>SPAN[0] classic-sidebar-label",
+   "UL[0]>DIV[0]>SPAN[1] premium-sidebar-label",
+   "UL[0]>DIV[0]>SPAN[0] classic-sidebar-label",
+   "UL[0]>DIV[0]>SPAN[1] premium-sidebar-label"
+  ]
+ },
+ {
+  "mode": "dark",
+  "page": "finances-analyse",
+  "elements": 1073,
+  "onlyMaster": 4,
+  "onlyBranch": 0,
+  "elementsWithStyleDiff": 0,
+  "styleDiffs": 0,
+  "attrDiffs": 1,
+  "classDiffs": 0,
+  "samples": [
+   ">HTML[0] attrs: [data-chrome-style,data-clean-font,data-header-pattern,data-skin,data-visual-style,dir,lang] -> [data-chrome-style,data-clean-font,data-header-pattern,data-skin,dir,lang]"
+  ],
+  "onlyMasterSamples": [
+   "UL[0]>DIV[0]>SPAN[0] classic-sidebar-label",
+   "UL[0]>DIV[0]>SPAN[1] premium-sidebar-label",
+   "UL[0]>DIV[0]>SPAN[0] classic-sidebar-label",
+   "UL[0]>DIV[0]>SPAN[1] premium-sidebar-label"
+  ]
+ },
+ {
+  "mode": "dark",
+  "page": "patients",
+  "elements": 722,
+  "onlyMaster": 4,
+  "onlyBranch": 0,
+  "elementsWithStyleDiff": 0,
+  "styleDiffs": 0,
+  "attrDiffs": 1,
+  "classDiffs": 0,
+  "samples": [
+   ">HTML[0] attrs: [data-chrome-style,data-clean-font,data-header-pattern,data-skin,data-visual-style,dir,lang] -> [data-chrome-style,data-clean-font,data-header-pattern,data-skin,dir,lang]"
+  ],
+  "onlyMasterSamples": [
+   "UL[0]>DIV[0]>SPAN[0] classic-sidebar-label",
+   "UL[0]>DIV[0]>SPAN[1] premium-sidebar-label",
+   "UL[0]>DIV[0]>SPAN[0] classic-sidebar-label",
+   "UL[0]>DIV[0]>SPAN[1] premium-sidebar-label"
+  ]
+ },
+ {
+  "mode": "dark",
+  "page": "dossier-patient",
+  "elements": 610,
+  "onlyMaster": 4,
+  "onlyBranch": 0,
+  "elementsWithStyleDiff": 0,
+  "styleDiffs": 0,
+  "attrDiffs": 1,
+  "classDiffs": 0,
+  "samples": [
+   ">HTML[0] attrs: [data-chrome-style,data-clean-font,data-header-pattern,data-skin,data-visual-style,dir,lang] -> [data-chrome-style,data-clean-font,data-header-pattern,data-skin,dir,lang]"
+  ],
+  "onlyMasterSamples": [
+   "UL[0]>DIV[0]>SPAN[0] classic-sidebar-label",
+   "UL[0]>DIV[0]>SPAN[1] premium-sidebar-label",
+   "UL[0]>DIV[0]>SPAN[0] classic-sidebar-label",
+   "UL[0]>DIV[0]>SPAN[1] premium-sidebar-label"
+  ]
+ },
+ {
+  "mode": "dark",
+  "page": "parametres",
+  "elements": 1124,
+  "onlyMaster": 27,
+  "onlyBranch": 8,
+  "elementsWithStyleDiff": 36,
+  "styleDiffs": 234,
+  "attrDiffs": 1,
+  "classDiffs": 6,
+  "samples": [
+   ">HTML[0] attrs: [data-chrome-style,data-clean-font,data-header-pattern,data-skin,data-visual-style,dir,lang] -> [data-chrome-style,data-clean-font,data-header-pattern,data-skin,dir,lang]",
+   "DIV[2]>DIV[0]>DIV[0] block-size: 1509.42px -> 1444.42px",
+   "DIV[2]>DIV[0]>DIV[0] height: 1509.42px -> 1444.42px",
+   "DIV[2]>DIV[0]>DIV[0] perspective-origin: 592px 754.703px -> 592px 722.203px",
+   "DIV[2]>DIV[0]>DIV[0] transform-origin: 592px 754.711px -> 592px 722.211px",
+   "DIV[0]>DIV[0]>DIV[0] block-size: 1461.42px -> 1396.42px"
+  ],
+  "onlyMasterSamples": [
+   "UL[0]>DIV[0]>SPAN[0] classic-sidebar-label",
+   "UL[0]>DIV[0]>SPAN[1] premium-sidebar-label",
+   "UL[0]>DIV[0]>SPAN[0] classic-sidebar-label",
+   "UL[0]>DIV[0]>SPAN[1] premium-sidebar-label"
+  ]
+ },
+ {
+  "mode": "dark",
+  "page": "agenda",
+  "elements": 920,
+  "onlyMaster": 4,
+  "onlyBranch": 0,
+  "elementsWithStyleDiff": 0,
+  "styleDiffs": 0,
+  "attrDiffs": 1,
+  "classDiffs": 0,
+  "samples": [
+   ">HTML[0] attrs: [data-chrome-style,data-clean-font,data-header-pattern,data-skin,data-visual-style,dir,lang] -> [data-chrome-style,data-clean-font,data-header-pattern,data-skin,dir,lang]"
+  ],
+  "onlyMasterSamples": [
+   "UL[0]>DIV[0]>SPAN[0] classic-sidebar-label",
+   "UL[0]>DIV[0]>SPAN[1] premium-sidebar-label",
+   "UL[0]>DIV[0]>SPAN[0] classic-sidebar-label",
+   "UL[0]>DIV[0]>SPAN[1] premium-sidebar-label"
+  ]
+ },
+ {
+  "mode": "dark",
+  "page": "clinique",
+  "elements": 397,
+  "onlyMaster": 4,
+  "onlyBranch": 0,
+  "elementsWithStyleDiff": 0,
+  "styleDiffs": 0,
+  "attrDiffs": 1,
+  "classDiffs": 0,
+  "samples": [
+   ">HTML[0] attrs: [data-chrome-style,data-clean-font,data-header-pattern,data-skin,data-visual-style,dir,lang] -> [data-chrome-style,data-clean-font,data-header-pattern,data-skin,dir,lang]"
+  ],
+  "onlyMasterSamples": [
+   "UL[0]>DIV[0]>SPAN[0] classic-sidebar-label",
+   "UL[0]>DIV[0]>SPAN[1] premium-sidebar-label",
+   "UL[0]>DIV[0]>SPAN[0] classic-sidebar-label",
+   "UL[0]>DIV[0]>SPAN[1] premium-sidebar-label"
+  ]
+ }
+]
