@@ -1,6 +1,5 @@
 import { formatDisplayText } from "@/utils/display-format";
 import {
-  Add01Icon,
   Bookmark01Icon,
   CheckmarkCircle02Icon,
   CopyIcon,
@@ -9,25 +8,20 @@ import {
   EditIcon,
   EyeIcon,
   File01Icon,
-  Folder01Icon,
   MoreVerticalIcon,
-  Redo02Icon,
   SearchIcon,
   StarIcon,
-  Undo02Icon,
 } from "@/lib/hugeicons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { BookOpen, Check, ChevronDown, FileText, Notebook, Pin, Star } from "@/lib/icons";
+import { BookOpen, Check, ChevronDown, Pin, Star } from "@/lib/icons";
 import { AssistantBrandAvatar } from "@/modules/consultations/components/assistant-brand-avatar";
 import type React from "react";
 import { useCreationRequest } from "@/modules/shell/model/creation-request";
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Editor from "@/components/Editor";
-import { documentNoteTemplateOrder, documentNoteTemplates, type DocumentNoteTemplate } from "@/components/document-note-templates";
 import { DocumentsTable } from "@/components/documents-table";
 import { Panel, Shell } from "@/components/ui/surface";
-import { SectionCards } from "@/components/section-cards";
-import { Clock } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import MotivationalHeader from "@/components/MotivationalHeader";
 import { useListCursor } from "@/hooks/useListCursor";
 import { Button } from "@/components/ui/button";
@@ -35,7 +29,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -43,11 +36,9 @@ import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNotesRepository, usePatientsRepository } from "@/data/repositories";
-import { cn } from "@/lib/utils";
 import type { Note, Patient } from "@/types/db";
 
 const DocumentsWorkspace = lazy(() => import("@/modules/documents/components/documents-workspace"));
-const DocumentTemplateManager = lazy(() => import("@/modules/documents/components/document-template-manager"));
 
 // Utils
 const normalizeDate = (dateInput: any): Date =>
@@ -153,7 +144,7 @@ const NotesPro: React.FC = () => {
 
   // State
   const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
-  const [workspaceMode, setWorkspaceMode] = useState<"library" | "assistant" | "templates">("library");
+  const [workspaceMode, setWorkspaceMode] = useState<"library" | "assistant">("library");
   const [searchTerm, setSearchTerm] = useState("");
   // The library follows the shared list cursor: ↑ ↓ move, Enter opens the note.
   const libraryRef = useListCursor({ storageKey: "documents" });
@@ -194,17 +185,6 @@ const NotesPro: React.FC = () => {
   }, [notes]);
 
   const patientLookup = useMemo(() => new Map(patients.map((patient) => [patient.id, patient])), [patients]);
-
-  // The figures of the first row: the user's own documents, the recent ones, the pinned ones, the favourites.
-  const ownNotes = useMemo(() => notes.filter((n) => n.userId === currentUser?.uid), [notes, currentUser]);
-  // « Récents » counts like the Récents filter: modified within the last seven days, as of when the notes last changed.
-  const recentCount = useMemo(() => {
-    const weekAgo = new Date();
-    weekAgo.setDate(weekAgo.getDate() - 7);
-    return ownNotes.filter((n) => new Date(n.updatedAt) > weekAgo).length;
-  }, [ownNotes]);
-  const pinnedCount = ownNotes.filter((n) => (n as any).isPinned).length;
-  const favoriteCount = ownNotes.filter((n) => n.isFavorite).length;
 
   // Filter logic
   const filteredNotes = useMemo(() => {
@@ -329,7 +309,7 @@ const NotesPro: React.FC = () => {
     if (newNote) {
       if (patientFilter) await updateNote(newNote.id, { patientId: patientFilter });
       setSelectedNoteId(newNote.id);
-      setTitle("Nouvelle note");
+      setTitle("");
       setContent("");
       setLastSaved(new Date());
       setIsPreviewMode(false);
@@ -348,24 +328,6 @@ const NotesPro: React.FC = () => {
     setAssistantNoteId(note.id);
     setSelectedNoteId(null);
     setWorkspaceMode("assistant");
-  };
-
-  const handleCreateTemplate = async (kind: DocumentNoteTemplate, targetPatientId = patientFilter) => {
-    if (!currentUser) return;
-    const name = targetPatientId ? patientLookup.get(targetPatientId)?.name : undefined;
-    const title = `${documentNoteTemplates[kind].title}${name ? ` · ${name}` : ""}`;
-    const template = documentNoteTemplates[kind].content;
-    const created = await createEmptyNote(currentUser.uid);
-    if (!created) return;
-    await updateNote(created.id, { title, content: template, patientId: targetPatientId || null });
-    setPatientFilter(targetPatientId);
-    setSearchTerm("");
-    setFilter("all");
-    setSelectedNoteId(created.id);
-    setTitle(title);
-    setContent(template);
-    setLastSaved(new Date());
-    setIsPreviewMode(false);
   };
 
   const handleDuplicateNote = async (note: Note) => {
@@ -453,64 +415,45 @@ const NotesPro: React.FC = () => {
     return text.trim().split(/\s+/).filter(Boolean).length;
   }, [content]);
 
-  const documentActions = (<>
+  // The assistant, as a quiet icon beside the « + » of the list. No templates: a page starts blank.
+  const secondaryPages = (
           <Button aria-label={workspaceMode === "assistant" ? "Bibliothèque" : "Assistant documents"} className="rounded-full" size="icon-sm" style={{ borderRadius: 999 }} title={workspaceMode === "assistant" ? "Bibliothèque" : "Assistant documents"} variant="outline" onClick={() => { setAssistantNoteId(""); setWorkspaceMode(workspaceMode === "assistant" ? "library" : "assistant"); }}>{workspaceMode === "assistant" ? <BookOpen className="size-4" /> : <AssistantBrandAvatar size={18} />}</Button>
-          <Button aria-label={workspaceMode === "templates" ? "Bibliothèque" : "Modèles"} className="rounded-full" size="icon-sm" style={{ borderRadius: 999 }} title={workspaceMode === "templates" ? "Bibliothèque" : "Modèles"} variant="ghost" onClick={() => setWorkspaceMode(workspaceMode === "templates" ? "library" : "templates")}>{workspaceMode === "templates" ? <BookOpen className="size-4" /> : <Notebook className="size-4" />}</Button>
-          <DropdownMenu>
-              <DropdownMenuTrigger render={<Button className="documents-pill h-9 gap-2 rounded-full px-5 text-sm" type="button" />}>
-                <HugeiconsIcon className="size-4" icon={Add01Icon} strokeWidth={1.5} />
-                Nouveau document
-                <ChevronDown aria-hidden="true" className="size-3.5 opacity-70" />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-72 p-1.5">
-                <DropdownMenuLabel className="px-2 pt-2 pb-1.5 t-12 uppercase tracking-[0.08em]">Partir d’un modèle</DropdownMenuLabel>
-                {documentNoteTemplateOrder.map((kind) => (
-                  <DropdownMenuItem key={kind} onClick={() => void handleCreateTemplate(kind)}>
-                    <FileText className="mr-2 size-4 shrink-0" />
-                    <span className="min-w-0"><span className="block font-medium">{documentNoteTemplates[kind].title}</span><span className="block truncate text-muted-foreground text-xs">{documentNoteTemplates[kind].description}</span></span>
-                  </DropdownMenuItem>
-                ))}
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => void handleCreateNote()}><HugeiconsIcon className="mr-2 size-4" icon={Add01Icon} strokeWidth={1.5} />Page vierge</DropdownMenuItem>
-              </DropdownMenuContent>
-          </DropdownMenu>
-  </>);
+  );
 
   return (
     <div className="documents-workspace dashboard-stage flex h-full min-h-0 w-full min-w-0 flex-col gap-5 overflow-hidden px-4 pb-0 lg:px-6">
       <MotivationalHeader section="notes" title="Documents" subtitle="notes cliniques" />
 
       {/* The page's actions sit in the figures band of the library; elsewhere (assistant, templates, an open note) there is no band, so they keep a slim row. */}
-      {workspaceMode !== "library" && <div className="flex flex-wrap items-center justify-end gap-2">{documentActions}</div>}
+      {workspaceMode !== "library" && (
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <Button className="gap-1.5 rounded-full" onClick={() => { setAssistantNoteId(""); setWorkspaceMode("library"); }} size="sm" type="button" variant="ghost">
+            <ArrowLeft aria-hidden="true" className="size-4" />
+            Documents
+          </Button>
+          <div className="flex items-center gap-2">{secondaryPages}</div>
+        </div>
+      )}
 
       {/* Main workspace */}
       {workspaceMode !== "library" ? (
         <div className="min-h-0 flex-1 overflow-y-auto rounded-t-xl border border-b-0 border-border bg-card">
           <Suspense fallback={<p role="status" className="p-6 text-sm text-muted-foreground">Ouverture des documents…</p>}>
-            {workspaceMode === "templates" ? <DocumentTemplateManager /> : <DocumentsWorkspace initialNoteId={assistantNoteId} initialPatientId={patientFilter} />}
+            <DocumentsWorkspace initialNoteId={assistantNoteId} initialPatientId={patientFilter} />
           </Suspense>
         </div>
       ) : !(selectedNoteId && activeNote) ? (
         <div className="min-h-0 flex-1 space-y-6 overflow-y-auto pb-8" ref={libraryRef}>
-          <SectionCards
-            actions={documentActions}
-            icon={FileText}
-            items={[
-              { title: "Documents du cabinet", value: ownNotes.length, detailRow: "Notes, comptes-rendus et modèles", icon: FileText },
-              { title: "Récents", value: recentCount, detailRow: "Modifiés depuis 7 jours", icon: Clock },
-              { title: "Épinglés", value: pinnedCount, detailRow: favoriteCount ? `${favoriteCount} en favori${favoriteCount > 1 ? "s" : ""}` : "Aucun favori", icon: Pin },
-            ]}
-            subtitle="Documents, récents et épinglés"
-          />
           <DocumentsTable
             filter={filter}
+            headerActions={secondaryPages}
+            onCreate={() => void handleCreateNote()}
             filters={<PatientPicker kind="filter" onSelect={setPatientFilter} patients={patients} value={patientFilter} />}
             notes={filteredNotes}
             onDelete={handleDeleteNote}
             onDuplicate={(note) => void handleDuplicateNote(note)}
             onExport={(note) => handleExportNote("md", note)}
             onFilter={setFilter}
-            onFollowUp={(note) => void handleCreateTemplate("followup", note.patientId ?? "")}
             onOpen={handleSelectNote}
             onOpenAssistant={handleOpenAssistant}
             onToggleFavorite={toggleFavorite}
@@ -525,21 +468,20 @@ const NotesPro: React.FC = () => {
         <main className="flex min-h-0 min-w-0 flex-1 flex-col">
           {selectedNoteId && activeNote ? (
             <div className="flex h-full min-h-0 flex-col">
-              {/* Document actions */}
-              <div className="flex flex-wrap items-center justify-between gap-2 rounded-t-[22px] rounded-b-[16px] bg-card/50 px-3 py-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.45)] backdrop-blur-xl backdrop-saturate-150 dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]">
-                <div className="flex items-center gap-1.5">
-                  {/* Toggle sidebar */}
+              {/* One slim bar: the way back, the folder, the save state, one menu. */}
+              <div className="flex flex-wrap items-center justify-between gap-2 px-3 py-1.5">
+                <div className="flex min-w-0 flex-wrap items-center gap-2">
                   <Button
-                    className="size-8 rounded-lg text-foreground/70 hover:bg-muted/70 hover:text-foreground"
+                    className="gap-1.5 rounded-full"
                     onClick={() => setSelectedNoteId(null)}
-                    size="icon-sm"
+                    size="sm"
                     title="Retour à la liste des documents"
+                    type="button"
                     variant="ghost"
                   >
-                    <HugeiconsIcon className="size-3.5" icon={Folder01Icon} strokeWidth={1.5} />
+                    <ArrowLeft aria-hidden="true" className="size-4" />
+                    Documents
                   </Button>
-
-                  <div className="mx-0.5 h-4 w-px bg-foreground/15" />
 
                   {/* Attach the note to a patient folder, from the bar itself. */}
                   <PatientPicker
@@ -552,79 +494,12 @@ const NotesPro: React.FC = () => {
                     value={activeNote.patientId ?? ""}
                   />
 
-                  <div className="mx-0.5 hidden h-4 w-px bg-foreground/15 md:block" />
-
-                  {/* Edit / Preview toggle */}
-                  <div className="document-editor-modes flex items-center gap-0.5 rounded-lg bg-muted/60 p-0.5 dark:bg-zinc-800/60">
-                    <button
-                      className={cn(
-                        "flex items-center gap-1.5 rounded-md px-2.5 py-1 font-medium text-xs transition-colors duration-150",
-                        isPreviewMode
-                          ? "text-foreground/70 hover:text-foreground"
-                          : "bg-white text-foreground shadow-sm dark:bg-zinc-700"
-                      )}
-                      aria-pressed={!isPreviewMode}
-                      type="button"
-                      onClick={() => setIsPreviewMode(false)}
-                    >
+                  {isPreviewMode && (
+                    <Button className="h-8 gap-1.5 rounded-full text-xs" onClick={() => setIsPreviewMode(false)} size="sm" type="button" variant="outline">
                       <HugeiconsIcon className="size-3" icon={EditIcon} strokeWidth={1.5} />
-                      Éditer
-                    </button>
-                    <button
-                      className={cn(
-                        "flex items-center gap-1.5 rounded-md px-2.5 py-1 font-medium text-xs transition-colors duration-150",
-                        isPreviewMode
-                          ? "bg-white text-foreground shadow-sm dark:bg-zinc-700"
-                          : "text-foreground/70 hover:text-foreground"
-                      )}
-                      aria-pressed={isPreviewMode}
-                      type="button"
-                      onClick={() => setIsPreviewMode(true)}
-                    >
-                      <HugeiconsIcon className="size-3" icon={EyeIcon} strokeWidth={1.5} />
-                      Aperçu
-                    </button>
-                  </div>
-
-                  {!isPreviewMode && (
-                    <>
-                      <div className="mx-0.5 h-4 w-px bg-foreground/15" />
-                      <div className="flex items-center gap-0.5">
-                        <Button
-                          className="size-8 rounded-lg text-foreground/70 hover:text-foreground disabled:opacity-40"
-                          disabled={!editorInstance?.can().undo()}
-                          onClick={() =>
-                            editorInstance?.chain().focus().undo().run()
-                          }
-                          size="icon-sm"
-                          title="Annuler (Ctrl+Z)"
-                          variant="ghost"
-                        >
-                          <HugeiconsIcon
-                            className="size-3.5"
-                            icon={Undo02Icon} strokeWidth={1.5}
-                          />
-                        </Button>
-                        <Button
-                          className="size-8 rounded-lg text-foreground/70 hover:text-foreground disabled:opacity-40"
-                          disabled={!editorInstance?.can().redo()}
-                          onClick={() =>
-                            editorInstance?.chain().focus().redo().run()
-                          }
-                          size="icon-sm"
-                          title="Rétablir (Ctrl+Y)"
-                          variant="ghost"
-                        >
-                          <HugeiconsIcon
-                            className="size-3.5"
-                            icon={Redo02Icon} strokeWidth={1.5}
-                          />
-                        </Button>
-                      </div>
-                    </>
+                      Revenir à l’édition
+                    </Button>
                   )}
-
-                  <div className="mx-0.5 h-4 w-px bg-foreground/15" />
 
                   {/* Save status */}
                   {saveFailed ? (
@@ -659,109 +534,61 @@ const NotesPro: React.FC = () => {
                   )}
                 </div>
 
-                {/* Right actions */}
-                <div className="flex items-center gap-0.5">
-                  <Button
-                    className={cn(
-                      "size-7 rounded-lg",
-                      (activeNote as any).isPinned
-                        ? "text-amber-500 hover:text-amber-600"
-                        : "text-foreground/70 hover:text-foreground"
-                    )}
-                    onClick={() => togglePin(activeNote)}
-                    size="icon-sm"
-                    title="Épingler"
-                    variant="ghost"
-                  >
-                    <HugeiconsIcon className="size-3.5" icon={Bookmark01Icon} strokeWidth={1.5} />
-                  </Button>
-                  <Button
-                    className={cn(
-                      "size-7 rounded-lg",
-                      activeNote.isFavorite
-                        ? "text-amber-500 hover:text-amber-600"
-                        : "text-foreground/70 hover:text-foreground"
-                    )}
-                    onClick={() => toggleFavorite(activeNote)}
-                    size="icon-sm"
-                    title="Favori"
-                    variant="ghost"
-                  >
-                    <HugeiconsIcon
-                      className="size-3.5"
-                      fill={activeNote.isFavorite ? "currentColor" : "none"}
-                      icon={StarIcon} strokeWidth={1.5}
-                    />
-                  </Button>
-                  <Button
-                    className="size-8 rounded-lg text-foreground/70 hover:text-foreground"
-                    onClick={handleCopyNote}
-                    size="icon-sm"
-                    title="Copier le contenu"
-                    variant="ghost"
-                  >
-                    <HugeiconsIcon className="size-3.5" icon={CopyIcon} strokeWidth={1.5} />
-                  </Button>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger
-                      render={
-                        <Button
-                          aria-label="Plus d’actions pour cette note"
-                          className="size-8 rounded-lg text-foreground/70 hover:text-foreground"
-                          size="icon-sm"
-                          variant="ghost"
-                        >
-                          <HugeiconsIcon
-                            className="size-3.5"
-                            icon={MoreVerticalIcon} strokeWidth={1.5}
-                          />
-                        </Button>
-                      }
-                    />
-                    <DropdownMenuContent align="end" className="w-48">
-                      <DropdownMenuItem onClick={() => void handleDuplicateNote(activeNote)}>
-                        <HugeiconsIcon className="mr-2 size-4" icon={CopyIcon} strokeWidth={1.5} />
-                        Dupliquer la note
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleOpenAssistant(activeNote)}>
-                        <HugeiconsIcon className="mr-2 size-4" icon={File01Icon} strokeWidth={1.5} />
-                        Ouvrir dans l'assistant
-                      </DropdownMenuItem>
-                      {activeNote.patientId && <DropdownMenuItem onClick={() => void handleCreateTemplate("followup", activeNote.patientId ?? "")}>
-                        <HugeiconsIcon className="mr-2 size-4" icon={File01Icon} strokeWidth={1.5} />
-                        Nouveau suivi clinique
-                      </DropdownMenuItem>}
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={() => handleExportNote("md")}>
-                        <HugeiconsIcon
-                          className="mr-2 size-4"
-                          icon={DownloadIcon} strokeWidth={1.5}
-                        />
-                        Exporter en Markdown
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleExportNote("txt")}>
-                        <HugeiconsIcon
-                          className="mr-2 size-4"
-                          icon={DownloadIcon} strokeWidth={1.5}
-                        />
-                        Exporter en Texte
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem
-                        className="text-destructive focus:text-destructive"
-                        onClick={() => handleDeleteNote(activeNote.id)}
+                <DropdownMenu>
+                  <DropdownMenuTrigger
+                    render={
+                      <Button
+                        aria-label="Plus d’actions pour cette note"
+                        className="size-8 rounded-full text-foreground/70 hover:text-foreground"
+                        size="icon-sm"
+                        variant="ghost"
                       >
-                        <HugeiconsIcon
-                          className="mr-2 size-4"
-                          icon={Delete01Icon} strokeWidth={1.5}
-                        />
-                        Supprimer
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                  <div className="mx-1 h-4 w-px bg-foreground/15" />
-                  <div className="flex items-center gap-2">{documentActions}</div>
-                </div>
+                        <HugeiconsIcon className="size-3.5" icon={MoreVerticalIcon} strokeWidth={1.5} />
+                      </Button>
+                    }
+                  />
+                  <DropdownMenuContent align="end" className="w-52">
+                    <DropdownMenuItem onClick={() => setIsPreviewMode((preview) => !preview)}>
+                      <HugeiconsIcon className="mr-2 size-4" icon={isPreviewMode ? EditIcon : EyeIcon} strokeWidth={1.5} />
+                      {isPreviewMode ? "Éditer" : "Aperçu"}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => togglePin(activeNote)}>
+                      <HugeiconsIcon className="mr-2 size-4" icon={Bookmark01Icon} strokeWidth={1.5} />
+                      {(activeNote as any).isPinned ? "Désépingler" : "Épingler"}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => toggleFavorite(activeNote)}>
+                      <HugeiconsIcon className="mr-2 size-4" icon={StarIcon} strokeWidth={1.5} />
+                      {activeNote.isFavorite ? "Retirer des favoris" : "Ajouter aux favoris"}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={handleCopyNote}>
+                      <HugeiconsIcon className="mr-2 size-4" icon={CopyIcon} strokeWidth={1.5} />
+                      Copier le contenu
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={() => void handleDuplicateNote(activeNote)}>
+                      <HugeiconsIcon className="mr-2 size-4" icon={CopyIcon} strokeWidth={1.5} />
+                      Dupliquer la note
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleOpenAssistant(activeNote)}>
+                      <HugeiconsIcon className="mr-2 size-4" icon={File01Icon} strokeWidth={1.5} />
+                      Ouvrir dans l'assistant
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={() => handleExportNote("md")}>
+                      <HugeiconsIcon className="mr-2 size-4" icon={DownloadIcon} strokeWidth={1.5} />
+                      Exporter en Markdown
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleExportNote("txt")}>
+                      <HugeiconsIcon className="mr-2 size-4" icon={DownloadIcon} strokeWidth={1.5} />
+                      Exporter en Texte
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => handleDeleteNote(activeNote.id)}>
+                      <HugeiconsIcon className="mr-2 size-4" icon={Delete01Icon} strokeWidth={1.5} />
+                      Supprimer
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
 
               {/* Editor content area: the shell's inset panel, the column inside it. */}

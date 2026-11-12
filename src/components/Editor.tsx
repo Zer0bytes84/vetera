@@ -3,9 +3,9 @@ import { TaskItem, TaskList } from "@tiptap/extension-list";
 import { TableKit } from "@tiptap/extension-table";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import { Columns3, ListTodo, PenLine, Plus, Rows3, Table2, Trash2 } from "@/lib/icons";
+import { Columns3, PenLine, Plus, Rows3, Table2, Trash2 } from "@/lib/icons";
 import type React from "react";
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
@@ -20,10 +20,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Spinner } from "@/components/ui/spinner";
@@ -34,9 +30,9 @@ import {
   subscribeToProgress,
 } from "@/services/localTextService";
 import SelectionBubbleMenu from "./SelectionBubbleMenu";
-import { documentNoteTemplateOrder, documentNoteTemplates } from "./document-note-templates";
-import { insertDocumentTable } from "./document-table-presets";
 import SlashCommands, {
+  getSlashCommandItems,
+  type SlashCommandItem,
   createSlashCommandsSuggestion,
 } from "./SlashCommandsExtension";
 
@@ -50,6 +46,66 @@ interface EditorProps {
   onEditorCreated?: (editor: any) => void;
   onUpdate: (content: string) => void;
   readOnly?: boolean;
+}
+
+/** The blocks a page is built from: the same list under the « + » of an empty line and the « Ajouter » button. */
+const BLOCK_TITLES = ["Titre 1", "Titre 2", "Liste à puces", "Liste numérotée", "Liste à cocher", "Citation", "Séparateur", "Tableau vierge", "Suivi des constantes", "Tableau de traitements"];
+
+/** A « + » at the left of the empty line the cursor is on; it opens the blocks. */
+function InlineBlockMenu({ editor, items, rootRef }: { editor: NonNullable<ReturnType<typeof useEditor>>; items: SlashCommandItem[]; rootRef: React.RefObject<HTMLDivElement | null> }) {
+  const [top, setTop] = useState<number | null>(null);
+  const [open, setOpen] = useState(false);
+  useEffect(() => {
+    const update = () => {
+      const root = rootRef.current;
+      const { $from, empty } = editor.state.selection;
+      const onEmptyLine = editor.isEditable && editor.isFocused && empty && $from.depth === 1 && $from.parent.type.name === "paragraph" && $from.parent.content.size === 0;
+      if (!root || !onEmptyLine) {
+        setTop(null);
+        return;
+      }
+      const coords = editor.view.coordsAtPos($from.pos);
+      setTop((coords.top + coords.bottom) / 2 - root.getBoundingClientRect().top - 12);
+    };
+    editor.on("selectionUpdate", update);
+    editor.on("transaction", update);
+    editor.on("focus", update);
+    editor.on("blur", update);
+    return () => {
+      editor.off("selectionUpdate", update);
+      editor.off("transaction", update);
+      editor.off("focus", update);
+      editor.off("blur", update);
+    };
+  }, [editor, rootRef]);
+  if (top === null && !open) return null;
+  return (
+    <div className="absolute -left-9 z-10" style={{ top: top ?? 0 }}>
+      <DropdownMenu onOpenChange={setOpen} open={open}>
+        <DropdownMenuTrigger
+          render={
+            <Button
+              aria-label="Ajouter un bloc"
+              className="size-6 rounded-full text-muted-foreground hover:bg-foreground/[0.06] hover:text-foreground"
+              onMouseDown={(event) => event.preventDefault()}
+              size="icon-sm"
+              type="button"
+              variant="ghost"
+            />
+          }
+        >
+          <Plus className="size-4" />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start" className="w-56">
+          {items.map((item) => (
+            <DropdownMenuItem key={item.title} onClick={() => item.command(editor)}>
+              {item.title}
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+  );
 }
 
 const Editor: React.FC<EditorProps> = ({
@@ -81,6 +137,7 @@ const Editor: React.FC<EditorProps> = ({
     setToolbarSlot(document.getElementById("note-editor-toolbar-slot"));
   }, []);
   const [isInTable, setIsInTable] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
 
   const handleAiAction = async (instruction: string) => {
     if (!editor) {
@@ -195,7 +252,7 @@ const Editor: React.FC<EditorProps> = ({
       TaskItem.configure({ nested: true, a11y: { checkboxLabel: (_node, checked) => checked ? "Marquer comme à faire" : "Marquer comme terminé" } }),
       TableKit.configure({ table: { resizable: true } }),
       Placeholder.configure({
-        placeholder: 'Écrivez librement ou tapez "/" pour les commandes…',
+        placeholder: 'Écrivez ici, ou tapez "/" pour ajouter un bloc…',
       }),
       SlashCommands.configure({
         suggestion: createSlashCommandsSuggestion(handleAiAction),
@@ -253,39 +310,11 @@ const Editor: React.FC<EditorProps> = ({
     );
   }
 
+  const blockItems = getSlashCommandItems(handleAiAction).filter((item) => BLOCK_TITLES.includes(item.title));
+
   const toolbarRow = (
     <div className={toolbarSlot ? "flex items-center gap-2" : "sticky top-0 z-10 mb-5 flex items-center justify-between gap-2 border-foreground/15 border-b bg-card/95 py-2 backdrop-blur-sm"}>
       <div className="flex items-center gap-1.5">
-        <DropdownMenu>
-          <DropdownMenuTrigger render={<Button size="sm" variant="outline" className="h-8 gap-1.5 rounded-lg border-foreground/20 font-medium" />}>
-            <Plus className="size-4" /> Ajouter
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="w-56">
-            <DropdownMenuSub>
-              <DropdownMenuSubTrigger>Modèle de note</DropdownMenuSubTrigger>
-              <DropdownMenuSubContent className="w-64">
-                {documentNoteTemplateOrder.map((kind) => (
-                  <DropdownMenuItem key={kind} onClick={() => editor.chain().focus().insertContent(documentNoteTemplates[kind].content).run()}>
-                    {documentNoteTemplates[kind].title}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuSubContent>
-            </DropdownMenuSub>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()}>
-              <Table2 className="mr-2 size-4" />Tableau vierge
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => insertDocumentTable(editor, "vitals")}>
-              <Table2 className="mr-2 size-4" />Suivi des constantes
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => insertDocumentTable(editor, "treatments")}>
-              <Table2 className="mr-2 size-4" />Tableau de traitements
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => editor.chain().focus().toggleTaskList().run()}>
-              <ListTodo className="mr-2 size-4" />Liste à cocher
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
         <DropdownMenu>
         <DropdownMenuTrigger render={<Button aria-label="Aide à la rédaction" size="icon-sm" title="Aide à la rédaction" variant="ghost" />}>
           <PenLine className="size-4" />
@@ -312,14 +341,13 @@ const Editor: React.FC<EditorProps> = ({
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-      ) : (
-        <span className="hidden t-12 leading-snug text-foreground/65 xl:inline">Tapez <kbd className="rounded border border-foreground/15 px-1 font-mono">/</kbd> pour rechercher une commande.</span>
-      )}
+      ) : null}
     </div>
   );
 
   return (
-    <div className="w-full">
+    <div className="relative w-full" ref={rootRef}>
+      {!readOnly && <InlineBlockMenu editor={editor} items={blockItems} rootRef={rootRef} />}
       {!readOnly && (toolbarSlot ? createPortal(toolbarRow, toolbarSlot) : toolbarRow)}
       <SelectionBubbleMenu editor={editor} onAiAction={handleAiAction} />
       <EditorContent

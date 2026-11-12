@@ -2,7 +2,6 @@ import { Extension } from "@tiptap/core";
 import { ReactRenderer } from "@tiptap/react";
 import Suggestion, { type SuggestionOptions } from "@tiptap/suggestion";
 import tippy, { type Instance } from "tippy.js";
-import { documentNoteTemplateOrder, documentNoteTemplates } from "./document-note-templates";
 import { insertDocumentTable } from "./document-table-presets";
 import SlashCommandMenu, { type SlashCommandItem } from "./SlashCommandMenu";
 
@@ -61,14 +60,6 @@ export const getSlashCommandItems = (
     group: "table",
     command: (editor) => insertDocumentTable(editor, "treatments"),
   },
-  ...documentNoteTemplateOrder.map((kind): SlashCommandItem => ({
-    title: documentNoteTemplates[kind].title,
-    description: documentNoteTemplates[kind].description,
-    icon: kind === "phone" ? "✉" : "▤",
-    keywords: ["modèle", "note", "vétérinaire", kind],
-    group: "template",
-    command: (editor) => editor.chain().focus().insertContent(documentNoteTemplates[kind].content).run(),
-  })),
   {
     title: "Titre 1",
     description: "Grand titre de section",
@@ -193,7 +184,7 @@ export const createSlashCommandsSuggestion = (
     const items = getSlashCommandItems(onAiAction);
     const search = query.trim().toLocaleLowerCase("fr");
     if (!search) {
-      const frequent = new Set(["Note de consultation", "Suivi clinique", "Consignes de sortie", "Tableau vierge", "Liste à cocher"]);
+      const frequent = new Set(["Titre 1", "Titre 2", "Liste à puces", "Liste numérotée", "Liste à cocher", "Citation", "Tableau vierge", "Séparateur"]);
       return items.filter((item) => frequent.has(item.title));
     }
     return items
