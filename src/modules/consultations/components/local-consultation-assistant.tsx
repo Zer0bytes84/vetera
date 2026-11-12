@@ -837,7 +837,11 @@ export default function LocalConsultationAssistant({
                 onValueChange={(val) => setSelectedPatientId(val === "none" || !val ? undefined : val)}
               >
                 <SelectTrigger className="h-6 max-w-[140px] rounded-lg border-border/70 px-2 t-12">
-                  <SelectValue placeholder="Patient…" />
+                  <SelectValue placeholder="Patient…">
+                    {(value: string | null) =>
+                      !value || value === "none" ? "Tous / Général" : (patients.data.find((p) => p.id === value)?.name ?? "Patient…")
+                    }
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="none">Tous / Général</SelectItem>

@@ -146,6 +146,8 @@ export function dashboardPresentationData(data: {
 export function buildPremiumAnalytics(data: {
   appointments: Appointment[]; patients: Patient[]; transactions: Transaction[];
   tasks: Task[]; vaccinations: Vaccination[]; alerts: ClinicalAlert[];
+  /** Medical reminders: the due dates behind the vaccine alerts (the vaccination rows no longer carry them). */
+  reminders?: { echeance: string; id: string }[];
   /** The issued invoices, for the curve of what is still to collect. */
   invoices?: Invoice[];
 }, period: DashboardPeriod, now: Date, custom?: CustomRange | null) {
@@ -172,7 +174,7 @@ export function buildPremiumAnalytics(data: {
   const previousIncome = cashIn(ranges.previous, "income");
   const dates = new Map<string, string | undefined>([
     ...data.tasks.map(t => [`task:${t.id}`, t.dueDate] as const),
-    ...data.vaccinations.map(v => [`vaccine:${v.id}`, v.nextDueAt] as const),
+    ...(data.reminders ?? []).map(r => [`vaccine:${r.id}`, r.echeance] as const),
     ...data.appointments.map(a => [`appointment:${a.id}`, a.startTime] as const),
   ]);
   // Current open actions grouped by their actual due date, never invented past status snapshots.

@@ -4,7 +4,6 @@ import type {
   Hospitalization,
   Patient,
   Transaction,
-  Vaccination,
 } from "../../src/types/db";
 import {
   buildClinicalCash,
@@ -68,18 +67,21 @@ const cash = (
   description: id,
   createdAt: date,
 });
-const vaccine = (
+const reminderTypes = [
+  { id: "vaccination", code: "vaccination", name: "Vaccination" },
+  { id: "antiparasitaire", code: "antiparasitaire", name: "Antiparasitaire" },
+];
+const reminder = (
   id: string,
-  administeredAt: string,
-  nextDueAt: string
-): Vaccination => ({
+  echeance: string,
+  statut: "en_cours" | "termine" | "annule" = "en_cours",
+  type = "vaccination"
+) => ({
   id,
-  administeredAt,
-  nextDueAt,
-  vaccineName: "Rage",
-  patientId: "milo",
-  createdAt: administeredAt,
-  updatedAt: administeredAt,
+  echeance,
+  statut,
+  type,
+  patient_id: "milo",
 });
 
 describe("clinical dashboard decisions", () => {
@@ -216,26 +218,29 @@ describe("clinical dashboard decisions", () => {
     expect(trends.specialties).toEqual([{ label: "Consultation", count: 2 }]);
   });
 
-  it("supersedes an old vaccine reminder after renewal, while retaining overdue reminders", () => {
-    const rows = [
-      vaccine("old", "2024-10-01", "2025-10-01"),
-      vaccine("renewed", "2026-09-30", "2027-09-30"),
-    ];
-    const alerts = (vaccinations: Vaccination[]) =>
+  it("reads vaccine alerts from the medical reminders: a renewal closes the old one, an open overdue one still alerts", () => {
+    const alerts = (reminders: ReturnType<typeof reminder>[]) =>
       buildClinicalAlerts({
         appointments: [],
         patients: [patient],
         products: [],
         tasks: [],
-        vaccinations,
+        reminders,
+        reminderTypes,
         referenceDate: now,
       });
-    expect(alerts(rows)).toEqual([]);
-    expect(alerts([rows[0]])[0]).toMatchObject({
+    // Renewed: the previous reminder is closed, the new one falls beyond the window.
+    expect(
+      alerts([reminder("old", "2025-10-01", "termine"), reminder("renewed", "2027-09-30")])
+    ).toEqual([]);
+    // Still open and overdue: it alerts, from the reminder's due date.
+    expect(alerts([reminder("old", "2025-10-01")])[0]).toMatchObject({
       source: "vaccine",
       patientId: "milo",
     });
-    expect(alerts([rows[0]])[0].detail).toContain("dépassé");
+    expect(alerts([reminder("old", "2025-10-01")])[0].detail).toContain("dépassé");
+    // A non-vaccine reminder never becomes a vaccine alert.
+    expect(alerts([reminder("deworm", "2025-10-01", "en_cours", "antiparasitaire")])).toEqual([]);
   });
 });
 

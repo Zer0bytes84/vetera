@@ -6,7 +6,6 @@ import type {
   Product,
   Task,
   Transaction,
-  Vaccination,
 } from "@/types/db";
 
 const SQLITE_TIMESTAMP_REGEX = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/;
@@ -141,19 +140,30 @@ export interface ClinicalAlert {
   tone: AlertTone;
 }
 
+/** A medical_reminders row, as read by the patient reminders service. */
+export interface ClinicalReminderRow {
+  echeance: string;
+  id: string;
+  patient_id: string;
+  statut: string;
+  type: string;
+}
+
 export function buildClinicalAlerts({
   appointments,
   patients,
   products,
   tasks,
-  vaccinations,
+  reminders,
+  reminderTypes,
   referenceDate,
 }: {
   appointments: Appointment[];
   patients: Patient[];
   products: Product[];
   tasks: Task[];
-  vaccinations: Vaccination[];
+  reminders: ClinicalReminderRow[];
+  reminderTypes: { code?: string; id: string; name: string }[];
   referenceDate: Date;
 }): ClinicalAlert[] {
   const patientById = new Map(patients.map((patient) => [patient.id, patient]));
@@ -202,31 +212,43 @@ export function buildClinicalAlerts({
     ];
   });
 
-  const latestVaccinations = new Map<string,Vaccination>();
-  for (const vaccination of vaccinations) {
-    const key = `${vaccination.patientId}:${vaccination.vaccineName.trim().toLocaleLowerCase()}`;
-    const previous = latestVaccinations.get(key);
-    if (!previous || (parseDashboardDate(vaccination.administeredAt)?.getTime() ?? 0) > (parseDashboardDate(previous.administeredAt)?.getTime() ?? 0)) latestVaccinations.set(key,vaccination);
-  }
-  const vaccineAlerts = [...latestVaccinations.values()].flatMap<ClinicalAlert>((vaccination) => {
-    const dueDate = parseDashboardDate(vaccination.nextDueAt);
+  // Vaccine due dates live on the medical reminders, not on the vaccination
+  // rows: the vaccine form no longer fills nextDueAt, and the dates that were
+  // there were migrated to reminders. One open reminder is one obligation;
+  // the reminder lifecycle (a renewal closes the previous reminder) replaces
+  // the old latest-administration dedupe.
+  const typeById = new Map(reminderTypes.map((type) => [type.id, type]));
+  const isVaccineType = (typeId: string) => {
+    const type = typeById.get(typeId);
+    const label = [typeId, type?.code ?? "", type?.name ?? ""]
+      .map((value) =>
+        value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("fr-FR")
+      )
+      .join(" ");
+    return /\b(vaccin\w*|immunisation)\b/.test(label);
+  };
+  const vaccineAlerts = reminders.flatMap<ClinicalAlert>((reminder) => {
+    if (reminder.statut !== "en_cours" || !isVaccineType(reminder.type)) {
+      return [];
+    }
+    const dueDate = parseDashboardDate(reminder.echeance);
     if (!(dueDate && dueDate <= next30Days)) {
       return [];
     }
-    const patient = patientById.get(vaccination.patientId);
+    const patient = patientById.get(reminder.patient_id);
     if (!patient || patient.status === "decede") return [];
     return [
       {
-        id: `vaccine:${vaccination.id}`,
+        id: `vaccine:${reminder.id}`,
         source: "vaccine",
         tone:
           dueDate <= endOfDay(addDays(referenceDate, 7)) ? "warning" : "info",
-        title: `${patient?.name ?? "Patient"} · ${vaccination.vaccineName}`,
+        title: `${patient.name} · ${typeById.get(reminder.type)?.name ?? "Vaccination"}`,
         detail: `${dueDate < today ? "Rappel dépassé ·" : "Rappel le"} ${dueDate.toLocaleDateString("fr-FR", {
           day: "numeric",
           month: "short",
         })}`,
-        patientId: vaccination.patientId,
+        patientId: reminder.patient_id,
       },
     ];
   });

@@ -7,7 +7,7 @@ const now = new Date(2026, 9, 15, 12);
 const patient = (id: string, name = id): Patient => ({ id, name, species: "Chien", sex: "M", ownerId: "owner", status: "sante", createdAt: "2026-09-20" });
 const visit = (id: string, patientId: string, date: string, status: Appointment["status"] = "completed"): Appointment => ({ id, patientId, ownerId: "owner", vetId: "vet", title: id, type: "Consultation", startTime: date, endTime: date, createdAt: date, status });
 const movement = (id: string, date: string, amount: number, type: Transaction["type"] = "income", status: Transaction["status"] = "paid"): Transaction => ({ id, date, amount, type, status, category: "Consultation", description: "Règlement", method: "cash", createdAt: date });
-const empty = () => ({ appointments: [] as Appointment[], patients: [patient("a"), patient("b")], transactions: [] as Transaction[], tasks: [] as Task[], vaccinations: [] as Vaccination[], alerts: [] as ClinicalAlert[] });
+const empty = () => ({ appointments: [] as Appointment[], patients: [patient("a"), patient("b")], transactions: [] as Transaction[], tasks: [] as Task[], vaccinations: [] as Vaccination[], reminders: [] as { echeance: string; id: string }[], alerts: [] as ClinicalAlert[] });
 
 describe("périodes de la synthèse Premium", () => {
   it.each([["today", 15, 15, 14, 14], ["7d", 9, 15, 2, 8], ["30d", 16, 15, 17, 15]] as const)("borne %s en jours locaux sans chevauchement", (period, from, to, previousFrom, previousTo) => {
@@ -54,7 +54,7 @@ describe("métriques réelles, sans séries de démonstration", () => {
     expect(buildPremiumAnalytics(data, "30d", now).actions.count).toBe(0);
   });
   it("compare les rappels ouverts à leur date d’échéance et ignore les dates invalides", () => {
-    const data = empty(); data.vaccinations = [{ id: "v", patientId: "a", vaccineName: "Rage", nextDueAt: "2026-10-14", administeredAt: "2025-10-14", createdAt: "2025-10-14" }];
+    const data = empty(); data.reminders = [{ id: "v", echeance: "2026-10-14" }];
     data.alerts = [{ id: "vaccine:v", title: "Vaccin", detail: "", source: "vaccine", tone: "warning" }];
     expect(buildPremiumAnalytics(data, "today", now).actions).toMatchObject({ count: 0, previous: 1, change: -100 });
   });

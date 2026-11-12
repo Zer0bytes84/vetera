@@ -160,7 +160,8 @@ export function DashboardPage({
         patients: presentation.patients,
         products: presentation.products.filter((product) => !product.archivedAt),
         tasks: presentation.tasks,
-        vaccinations: presentation.vaccinations,
+        reminders: medicalReminders.reminders,
+        reminderTypes: medicalReminders.types,
         referenceDate: now,
       }),
     [
@@ -168,7 +169,8 @@ export function DashboardPage({
       presentation.patients,
       presentation.products,
       presentation.tasks,
-      presentation.vaccinations,
+      medicalReminders.reminders,
+      medicalReminders.types,
       now,
     ]
   );
@@ -206,18 +208,18 @@ export function DashboardPage({
   const actionsState = useWidgetState(
     tasks.loading ||
       products.loading ||
-      vaccinations.loading ||
+      medicalReminders.loading ||
       appointments.loading ||
       patients.loading,
     tasks.error ||
       products.error ||
-      vaccinations.error ||
+      medicalReminders.error ||
       appointments.error ||
       patients.error,
     () => {
       void tasks.refresh();
       void products.refresh();
-      void vaccinations.refresh();
+      void medicalReminders.refresh();
       void appointments.refresh();
       void patients.refresh();
     }
@@ -341,7 +343,7 @@ export function DashboardPage({
       <div className="dashboard-stage flex w-full min-w-0 flex-col gap-6 px-4 pt-4 pb-12 lg:px-6 premium-analytics-dashboard">
         <PremiumAnalytics
           clinicalView={version === "clinical" ? clinicalView : undefined}
-          model={buildPremiumAnalytics({ ...presentation, alerts }, analyticsPeriod, now, customRange)}
+          model={buildPremiumAnalytics({ ...presentation, alerts, reminders: medicalReminders.reminders }, analyticsPeriod, now, customRange)}
           period={analyticsPeriod}
           onPeriod={(next: AnalyticsPeriod) => setAnalyticsPeriod(next)}
           customRange={customRange}
