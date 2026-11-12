@@ -249,8 +249,8 @@
 
 /* ---------- Frame and sheet ---------- */
 /* The frame, sheet, header and sidebar rules repeat the scope attribute twice
-   ([data-skin][data-skin]): Premium dark styles the same parts with
-   ":root.dark[data-visual-style]" selectors, which would otherwise win in
+   ([data-skin][data-skin]): the base layer styles the same parts in dark with
+   ":root.dark[data-skin]" selectors, which would otherwise win in
    Clean dark (sidebar #111 under a #0C0D0F frame, header without its glass). */
 :root[data-skin="clean"][data-skin][data-skin] body,
 :root[data-skin="clean"][data-skin][data-skin] [data-slot="sidebar-wrapper"] {
@@ -1038,8 +1038,7 @@
 
 /* ---------- Widgets (references: Charles Postiaux, Performance dashboard,
    Portfolio overview, Disk usage) ----------
-   Elements marked data-clean-only exist for Clean only (hidden elsewhere by
-   index.css); elements marked data-clean-hidden are what Clean replaces. */
+   Elements marked data-clean-hidden are what Clean replaces. */
 :root[data-skin="clean"] [data-clean-hidden] { display: none !important; }
 
 /* KPI comparison under the figure: the change as a tinted chip, then the
@@ -1667,7 +1666,7 @@
 :root[data-skin="clean"][data-skin] .flow-planned { padding: 12px !important; }
 
 /* ---------- Type sets: Appearance > Police, Clean only ----------
-   Geist is the default (set by theme-store); [data-clean-font="inter"] keeps
+   Inter is the default (set by theme-store); [data-clean-font="inter"] keeps
    the base Inter tokens, unchanged. Each
    set fills the three roles: interface and body, titles, data (codes,
    references, shortcuts; amounts keep tabular figures of the interface face).

@@ -4,7 +4,7 @@ import {
   CLINIC_TAB_PENDING_KEY,
   takePendingClinicTab,
 } from "../src/modules/clinique/clinic-tab-events";
-import { PREMIUM_SHORTCUTS } from "../src/lib/visual-style";
+import { QUICK_ACTIONS } from "../src/lib/quick-actions";
 
 const read = (path: string) => readFileSync(path, "utf8");
 
@@ -15,7 +15,7 @@ describe("actions rapides", () => {
   const css = read("src/modules/shell/quick-actions.css");
 
   it("range les sept créations selon le parcours du patient, chacune avec son icône", () => {
-    expect(PREMIUM_SHORTCUTS.map((shortcut) => shortcut.id)).toEqual([
+    expect(QUICK_ACTIONS.map((shortcut) => shortcut.id)).toEqual([
       "appointment",
       "patient",
       "consultation",
@@ -24,15 +24,15 @@ describe("actions rapides", () => {
       "product",
       "invoice",
     ]);
-    for (const shortcut of PREMIUM_SHORTCUTS)
+    for (const shortcut of QUICK_ACTIONS)
       expect(menu).toMatch(new RegExp(`\\n\\s*${shortcut.id}: `));
-    expect(menu).toContain("PREMIUM_SHORTCUTS.map");
+    expect(menu).toContain("QUICK_ACTIONS.map");
   });
 
   it("vit dans l'entête, au même endroit sur toutes les pages, et non plus en bouton flottant", () => {
     const shell = read("src/modules/shell/app-shell.tsx");
     expect(shell).not.toContain("QuickActionsFab");
-    expect(shell.match(/<HeaderQuickActions/g)).toHaveLength(2); // une fois par peau, jamais selon la page
+    expect(shell.match(/<HeaderQuickActions/g)).toHaveLength(1); // une seule fois, jamais selon la page
     expect(css).not.toMatch(/position:\s*absolute|quick-actions-fab/);
     expect(menu).toContain('aria-label="Actions rapides"');
   });

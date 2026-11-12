@@ -5,7 +5,6 @@ import {
   applySidebarTone,
   forcedSidebarTone,
   getSidebarTone,
-  nativeSidebarTone,
   saveSidebarTone,
   SIDEBAR_TONES,
 } from "../src/lib/sidebar-tone";
@@ -46,25 +45,14 @@ describe("barre latérale : réglage par utilisateur", () => {
     expect(getSidebarTone("u2")).toBe("light");
   });
 
-  it("Automatique suit le thème : claire en Premium clair, sombre ailleurs", () => {
-    expect(nativeSidebarTone("premium", false)).toBe("light");
-    expect(nativeSidebarTone("premium", true)).toBe("dark");
-    expect(nativeSidebarTone("clean", false)).toBe("dark");
-    expect(nativeSidebarTone("clean", true)).toBe("dark");
-  });
-
-  it("ne force que le choix qui diffère du thème", () => {
-    expect(forcedSidebarTone("auto", "premium", false)).toBeNull();
-    expect(forcedSidebarTone("light", "premium", false)).toBeNull();
-    expect(forcedSidebarTone("dark", "premium", false)).toBe("dark");
-    expect(forcedSidebarTone("light", "premium", true)).toBe("light");
-    expect(forcedSidebarTone("dark", "clean", false)).toBeNull();
-    expect(forcedSidebarTone("light", "clean", false)).toBe("light");
-    expect(forcedSidebarTone("light", "clean", true)).toBe("light");
+  it("ne force que le choix qui diffère de la barre du thème (sombre, en clair comme en sombre)", () => {
+    expect(forcedSidebarTone("auto")).toBeNull();
+    expect(forcedSidebarTone("dark")).toBeNull();
+    expect(forcedSidebarTone("light")).toBe("light");
   });
 
   it("Automatique ne laisse aucune marque sur la racine", () => {
-    const dataset: Record<string, string> = { skin: "premium", sidebarTone: "dark" };
+    const dataset: Record<string, string> = { skin: "clean", sidebarTone: "dark" };
     const removed: string[] = [];
     vi.stubGlobal("document", {
       documentElement: { dataset, classList: { contains: () => false } },
@@ -91,17 +79,17 @@ describe("barre latérale : charte", () => {
     expect(unguarded).toEqual([]);
   });
 
-  it("les règles Premium sombre de la barre latérale ont la garde et la variante forcée", () => {
+  it("les règles de barre latérale du mode sombre ont la garde et la variante forcée", () => {
     for (const path of ["src/design-system/premium.css", "src/modules/shell/premium-sidebar.css"]) {
       const darkSidebar = selectors(path).filter((selector) =>
-        /^:root\.dark\[data-visual-style="premium"\]/.test(selector) && /sidebar|nav-link/.test(selector)
+        /^:root\.dark\[data-skin="clean"\]/.test(selector) && /sidebar|nav-link/.test(selector)
         // The active-pill rules scoped to a light-pinned bar are the light case itself, not dark rules leaking onto it.
         // The light scope is looked for outside the guard, which names it too.
         && !selector.replaceAll(GUARD, "").includes('[data-sidebar-tone="light"]'));
       expect(darkSidebar.length).toBeGreaterThan(0);
       for (const selector of darkSidebar) {
         expect(selector).toContain(GUARD);
-        const forced = selector.replace(`:root.dark[data-visual-style="premium"]${GUARD}`, ':root[data-visual-style="premium"] .dark');
+        const forced = selector.replace(`:root.dark[data-skin="clean"]${GUARD}`, ':root[data-skin="clean"] .dark');
         expect(selectors(path)).toContain(forced);
       }
     }

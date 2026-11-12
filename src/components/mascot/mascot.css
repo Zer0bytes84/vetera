@@ -26,10 +26,6 @@
   -webkit-text-fill-color: transparent;
   transition: background-position 900ms var(--ease-out, cubic-bezier(.22, 1, .36, 1));
 }
-:root[data-skin="premium"]:not(.dark) .sidebar-brand-ai {
-  --brand-ai-blue: #0060c0;
-  --brand-ai-teal: #0f7566;
-}
 @media (hover: hover) and (pointer: fine) {
   .sidebar-brand-home:hover .sidebar-brand-ai { background-position: 100% 50%; }
 }

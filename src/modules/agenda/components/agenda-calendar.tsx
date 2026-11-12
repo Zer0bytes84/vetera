@@ -190,7 +190,7 @@ function TimeGrid({
   const nowMinutes = now.getHours() * 60 + now.getMinutes();
   const total = columns.reduce((sum, column) => sum + column.placed.length, 0);
 
-  // The frame is not a .bg-card: the Premium stylesheet strips border, radius and fill from every
+  // The frame is not a .bg-card: the base stylesheet strips border, radius and fill from every
   // .bg-card with !important, which left only the header band rounded.
   return (
     <div className="overflow-x-auto rounded-[var(--radius-panel)] border border-foreground/15">

@@ -1,20 +1,19 @@
-import { normalizeSkin, type Skin } from "./theme-skin";
-
 /*
- * Appearance keeps four real choices: light or dark mode (theme-provider),
- * the theme (Clean or Premium, `skin`), the Clean type set (`cleanFont`) and
- * the sidebar tone (sidebar-tone.ts, restored the same evening).
+ * Clean is the only interface (Premium was removed on 11 November 2026).
+ * Appearance keeps three real choices: light or dark mode (theme-provider),
+ * the type set (`cleanFont`) and the sidebar tone (sidebar-tone.ts).
  * The decorative settings removed on 5 November 2026 (accent colour, Classic
  * style, Liquid Glass switch, sidebar presentation, glass contrast,
- * and the hidden radius, density, font and header pattern values) are now
- * fixed at their default; `cleanUpRemovedDisplaySettings` drops what an older
- * install stored for them. See docs/recus/2026-11-05/nettoyage-parametres/.
+ * and the hidden radius, density, font and header pattern values) are fixed
+ * at their default, and so is the theme: `cleanUpRemovedDisplaySettings`
+ * drops what an older install stored for them, the old `skin` included.
+ * See docs/recus/2026-11-05/nettoyage-parametres/ and
+ * docs/recus/2026-11-11-suppression-premium/.
  */
 
 /**
- * Type sets of the Clean skin only (interface, titles, data). Kept apart from
- * `font`, which Classic and Premium read, so a choice made in Clean never
- * reaches Premium. Every file is bundled locally (OFL), nothing is fetched.
+ * Type sets of the interface (titles, data and text). Every file is bundled
+ * locally (OFL), nothing is fetched.
  */
 export type CleanFontSet = "inter" | "geist" | "plex" | "signature";
 
@@ -47,15 +46,13 @@ export const CLEAN_FONT_SETS: Record<
 export const DEFAULT_CLEAN_FONT: CleanFontSet = "inter";
 
 export function normalizeCleanFont(value: unknown): CleanFontSet {
-  return typeof value === "string" && value in CLEAN_FONT_SETS
+  return typeof value === "string" && Object.hasOwn(CLEAN_FONT_SETS, value)
     ? (value as CleanFontSet)
     : DEFAULT_CLEAN_FONT;
 }
 
 export interface ThemeConfig {
-  /** Unset means the default skin (DEFAULT_SKIN). Installs from before Clean became the default have it set (keepPreviousAppearanceDefaults). */
-  skin?: Skin;
-  /** Clean skin only; unset means the default Inter set (DEFAULT_CLEAN_FONT). */
+  /** Unset means the default Inter set (DEFAULT_CLEAN_FONT). */
   cleanFont?: CleanFontSet;
 }
 
@@ -63,19 +60,19 @@ export const DEFAULT_THEME: ThemeConfig = {};
 
 /** The fixed values of the removed settings, as every default install had them. */
 const FIXED = {
-  visualStyle: "premium",
+  skin: "clean",
   chromeStyle: "liquid-glass",
   headerPattern: "opaline",
   radius: "0.5rem",
-  font: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+  // The fallback under clean.css, which sets the type tokens of the chosen set.
+  font: "'Inter Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
   // The former "blue" accent: only its muted ink still reaches the charts.
   mutedForeground: { light: "oklch(0.551 0.023 264.364)", dark: "oklch(0.708 0.013 264.364)" },
 } as const;
 
 export function applyTheme(config: ThemeConfig, isDark: boolean) {
   const root = document.documentElement;
-  root.dataset.visualStyle = FIXED.visualStyle;
-  root.dataset.skin = normalizeSkin(config.skin);
+  root.dataset.skin = FIXED.skin;
   root.dataset.chromeStyle = FIXED.chromeStyle;
   const primary = isDark ? "#3b1fe5" : "#191919";
   const mutedForeground = isDark ? FIXED.mutedForeground.dark : FIXED.mutedForeground.light;
@@ -126,48 +123,36 @@ export function applyTheme(config: ThemeConfig, isDark: boolean) {
   root.dataset.headerPattern = FIXED.headerPattern;
 }
 
-const PREMIUM_DEFAULT_MIGRATION_KEY = "baitari-premium-default-v1";
-const CLEAN_DEFAULT_MIGRATION_KEY = "baitari-clean-default-v1";
-const CLEAN_FOR_ALL_MIGRATION_KEY = "baitari-clean-default-v2";
+const CLEAN_ONLY_MIGRATION_KEY = "baitari-clean-only-v1";
+
+/** The markers of the earlier one-shot appearance migrations, replaced by CLEAN_ONLY_MIGRATION_KEY. */
+const LEGACY_MIGRATION_KEYS = [
+  "baitari-premium-default-v1",
+  "baitari-clean-default-v1",
+  "baitari-clean-default-v2",
+] as const;
 
 /**
- * Clean is the default skin, and light the default mode, for new installs only.
- * An install that already ran keeps what it showed: Premium, and dark when no
- * mode was ever chosen. A choice already stored is never touched. Once only.
+ * Clean only (11 November 2026), once. Replaces the three migrations that
+ * moved installs between Premium and Clean.
+ *
+ * - An install that predates the light default (it never ran
+ *   baitari-clean-default-v1) and chose no mode keeps the dark mode it showed.
+ * - The old theme is not touched here: `cleanUpRemovedDisplaySettings` drops
+ *   `skin` from the stored config on every read, so a Premium written by
+ *   hand, or by an older build after this one ran, falls back to Clean too.
+ * - The retired markers are removed.
+ *
+ * The mode, the type set and the sidebar tone are left as they are.
  */
-export function keepPreviousAppearanceDefaults() {
-  if (localStorage.getItem(CLEAN_DEFAULT_MIGRATION_KEY) === "true") return;
-  const stored = localStorage.getItem("theme-config");
-  // Every launch since the Premium default has written this key, with or without a stored config.
-  if (stored !== null || localStorage.getItem(PREMIUM_DEFAULT_MIGRATION_KEY) === "true") {
-    let parsed: Partial<ThemeConfig> = {};
-    try { parsed = stored ? JSON.parse(stored) : {}; } catch { /* unreadable config: keep it as is */ }
-    if (parsed && typeof parsed === "object" && parsed.skin === undefined) {
-      localStorage.setItem("theme-config", JSON.stringify({ ...parsed, skin: "premium" }));
-    }
-    if (localStorage.getItem("theme") === null) localStorage.setItem("theme", "dark");
+export function migrateToCleanOnly() {
+  if (localStorage.getItem(CLEAN_ONLY_MIGRATION_KEY) === "true") return;
+  if (localStorage.getItem("baitari-clean-default-v1") !== "true") {
+    const installed = localStorage.getItem("theme-config") !== null || localStorage.getItem("baitari-premium-default-v1") === "true";
+    if (installed && localStorage.getItem("theme") === null) localStorage.setItem("theme", "dark");
   }
-  localStorage.setItem(CLEAN_DEFAULT_MIGRATION_KEY, "true");
-}
-
-/**
- * Clean for everyone (11 November 2026): Premium is being removed, so an
- * install still carrying the old pinned Premium skin is moved to Clean,
- * once. The mode, the sidebar tone and the Clean type set are untouched,
- * and a theme chosen afterwards in Appearance still wins: this is the
- * default, not a lock.
- */
-export function movePremiumInstallsToClean() {
-  if (localStorage.getItem(CLEAN_FOR_ALL_MIGRATION_KEY) === "true") return;
-  const stored = localStorage.getItem("theme-config");
-  if (stored !== null) {
-    let parsed: Partial<ThemeConfig> = {};
-    try { parsed = JSON.parse(stored); } catch { /* unreadable config: the defaults apply */ }
-    if (parsed && typeof parsed === "object" && parsed.skin !== "clean") {
-      localStorage.setItem("theme-config", JSON.stringify({ ...parsed, skin: "clean" }));
-    }
-  }
-  localStorage.setItem(CLEAN_FOR_ALL_MIGRATION_KEY, "true");
+  for (const key of LEGACY_MIGRATION_KEYS) localStorage.removeItem(key);
+  localStorage.setItem(CLEAN_ONLY_MIGRATION_KEY, "true");
 }
 
 /** Storage keys of the removed settings and of their one-shot migrations. */
@@ -182,8 +167,8 @@ export const REMOVED_DISPLAY_KEYS = [
 
 /**
  * An older install may hold values for settings that no longer exist. Keeps
- * the theme and the type set, drops everything else, never throws: an
- * unreadable config falls back to the defaults. Runs on every read, so it
+ * the type set, drops everything else (the old `skin` included), never
+ * throws: an unreadable config falls back to the defaults and is left alone. Runs on every read, so it
  * also cleans a value written by an older build after an update.
  */
 export function cleanUpRemovedDisplaySettings(): ThemeConfig {
@@ -196,9 +181,8 @@ export function cleanUpRemovedDisplaySettings(): ThemeConfig {
   }
   const config: ThemeConfig = {};
   if (parsed && typeof parsed === "object") {
-    const { skin, cleanFont } = parsed as Record<string, unknown>;
-    if (skin === "clean" || skin === "premium") config.skin = skin;
-    if (typeof cleanFont === "string" && cleanFont in CLEAN_FONT_SETS) config.cleanFont = cleanFont as CleanFontSet;
+    const { cleanFont } = parsed as Record<string, unknown>;
+    if (typeof cleanFont === "string" && Object.hasOwn(CLEAN_FONT_SETS, cleanFont)) config.cleanFont = cleanFont as CleanFontSet;
   }
   try {
     const next = JSON.stringify(config);
@@ -212,25 +196,16 @@ export function cleanUpRemovedDisplaySettings(): ThemeConfig {
 
 export function getThemeConfig(): ThemeConfig {
   try {
-    keepPreviousAppearanceDefaults();
-    movePremiumInstallsToClean();
+    migrateToCleanOnly();
   } catch {
     // Storage unavailable: defaults apply.
   }
-  const config = cleanUpRemovedDisplaySettings();
-  try {
-    localStorage.setItem(PREMIUM_DEFAULT_MIGRATION_KEY, "true");
-  } catch {
-    // Storage unavailable.
-  }
-  return config;
+  return cleanUpRemovedDisplaySettings();
 }
 
 export function saveThemeConfig(config: ThemeConfig) {
   const next: ThemeConfig = {};
-  if (config.skin) next.skin = normalizeSkin(config.skin);
   if (config.cleanFont) next.cleanFont = normalizeCleanFont(config.cleanFont);
-  localStorage.setItem(PREMIUM_DEFAULT_MIGRATION_KEY, "true");
   localStorage.setItem("theme-config", JSON.stringify(next));
   window.dispatchEvent(new Event("baitari-theme-config-changed"));
 }

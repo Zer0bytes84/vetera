@@ -19,7 +19,6 @@ import type { Receivable } from "../v2/financial-model";
 export type { WidgetState } from "./clinical/shared";
 
 export interface ClinicalDashboardViewProps {
-  premiumSummary?: boolean;
   now: NowSnapshot;
   day: ScheduleEntry[];
   dayDate: Date;
@@ -168,7 +167,7 @@ export function ClinicalDashboardView(p: ClinicalDashboardViewProps) {
         />
       ),
     },
-  ].filter(block => !p.premiumSummary || block.id !== "clinical-followup");
+  ];
   return (
     <DashboardLayoutManager
       blocks={blocks}

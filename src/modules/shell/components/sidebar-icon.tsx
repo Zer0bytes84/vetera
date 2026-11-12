@@ -17,10 +17,10 @@ import type { View } from "@/types";
 
 /**
  * The sidebar's icons, Catalyst style: Heroicons in their solid (filled)
- * variant, one glyph per view, shared by both visual themes so the
- * navigation reads the same in Clean and in Premium.
+ * variant, one glyph per view. This map is the only source of the
+ * navigation's icons.
  */
-export const sidebarViewIcons: Partial<
+const sidebarViewIcons: Partial<
   Record<View, ComponentType<SVGProps<SVGSVGElement>>>
 > = {
   dashboard: Squares2X2Icon,
@@ -39,10 +39,7 @@ export const sidebarViewIcons: Partial<
   parametres: Cog6ToothIcon,
 };
 
-export function SidebarIcon({
-  view,
-  ...props
-}: Omit<SVGProps<SVGSVGElement>, "name"> & { view: View }) {
+export function SidebarIcon({ view, className }: { view: View; className?: string }) {
   const Icon = sidebarViewIcons[view] ?? Squares2X2Icon;
-  return <Icon aria-hidden="true" focusable="false" height={20} width={20} {...props} />;
+  return <Icon aria-hidden="true" className={className} height={20} width={20} />;
 }

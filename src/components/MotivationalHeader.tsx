@@ -1,10 +1,6 @@
-import {
-  DashboardSquareEditIcon,
-  StethoscopeIcon,
-} from "@/lib/hugeicons";
+import { DashboardSquareEditIcon } from "@/lib/hugeicons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Stethoscope } from "lucide-react";
-import { useIsPremium } from "@/modules/dashboard/v2/use-is-premium";
 import React from "react";
 import "./dashboard-greeting.css";
 import { ShortcutTooltip } from "@/design-system/patterns/shortcut-tooltip";
@@ -44,7 +40,6 @@ const MotivationalHeader: React.FC<MotivationalHeaderProps> = ({
   onCustomize,
   onNavigate,
 }) => {
-  const isPremium = useIsPremium();
   const { t, i18n } = useTranslation();
   const { currentUser } = useAuth();
   const userName = currentUser?.displayName?.split(" ")[0] || "Docteur";
@@ -256,7 +251,7 @@ const MotivationalHeader: React.FC<MotivationalHeaderProps> = ({
               <Button
                 data-primary-action="true"
                 aria-keyshortcuts="N"
-                className={isPremium ? "dashboard-primary-action h-9 w-auto min-w-0 flex-none rounded-lg px-3.5 t-13 font-medium" : "h-10 w-auto min-w-0 flex-none rounded-full px-5 text-sm"}
+                className="dashboard-primary-action h-9 w-auto min-w-0 flex-none rounded-lg px-3.5 t-13 font-medium"
                 onClick={() => {
                   prepareAppointment();
                   onNavigate("agenda");
@@ -269,19 +264,11 @@ const MotivationalHeader: React.FC<MotivationalHeaderProps> = ({
                   );
                 }}
               >
-                {isPremium ? (
-                  <Stethoscope
-                    className="mr-1.5 size-4"
-                    strokeWidth={1}
-                    aria-hidden="true"
-                  />
-                ) : (
-                  <HugeiconsIcon
-                    data-icon="inline-start"
-                    icon={StethoscopeIcon}
-                    strokeWidth={1.5}
-                  />
-                )}
+                <Stethoscope
+                  className="mr-1.5 size-4"
+                  strokeWidth={1}
+                  aria-hidden="true"
+                />
                 Nouvelle consultation
               </Button>
             </ShortcutTooltip>

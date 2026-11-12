@@ -4,7 +4,7 @@ import { applyTheme, getThemeConfig, REMOVED_DISPLAY_KEYS } from "../src/lib/the
 // Removal of the decorative display settings (5 November 2026,
 // docs/recus/2026-11-05/nettoyage-parametres/): an install that stored values
 // for them must fall back to the defaults on first launch, without error, and
-// keep the preferences that remain (theme, type set, mode).
+// keep the preferences that remain (type set, mode).
 afterEach(() => vi.unstubAllGlobals());
 
 function install(stored: Record<string, string>) {
@@ -52,17 +52,19 @@ describe("paramètres d'affichage retirés : migration", () => {
   it("retombe sur le défaut et garde le thème, la police, le mode et le repli de la barre", () => {
     const { storage, values, dataset } = install(TESTER);
     const config = getThemeConfig();
-    expect(config).toEqual({ skin: "clean", cleanFont: "plex" });
-    expect(JSON.parse(storage.get("theme-config")!)).toEqual({ skin: "clean", cleanFont: "plex" });
+    expect(config).toEqual({ cleanFont: "plex" });
+    expect(JSON.parse(storage.get("theme-config")!)).toEqual({ cleanFont: "plex" });
     for (const key of REMOVED_DISPLAY_KEYS) expect(storage.has(key), key).toBe(false);
-    // Kept: the mode, the collapse behaviour, the sidebar tone, the migration markers.
+    // Kept: the mode, the collapse behaviour, the sidebar tone. The retired markers give way to one.
     expect(storage.get("theme")).toBe("dark");
     expect(storage.get("baitari-sidebar-tone")).toBe(JSON.stringify({ "user-1": "light" }));
     expect(storage.get("layout_collapsible_v7")).toBe("offcanvas");
-    expect(storage.get("baitari-clean-default-v1")).toBe("true");
+    expect(storage.get("baitari-clean-only-v1")).toBe("true");
+    for (const retired of ["baitari-premium-default-v1", "baitari-clean-default-v1", "baitari-clean-default-v2"]) expect(storage.has(retired), retired).toBe(false);
 
     applyTheme(config, true);
-    expect(dataset).toMatchObject({ visualStyle: "premium", skin: "clean", chromeStyle: "liquid-glass", cleanFont: "plex", headerPattern: "opaline" });
+    expect(dataset).toMatchObject({ skin: "clean", chromeStyle: "liquid-glass", cleanFont: "plex", headerPattern: "opaline" });
+    expect(dataset.visualStyle).toBeUndefined();
     expect(dataset.radius).toBeUndefined();
     expect(dataset.density).toBeUndefined();
     expect(values.get("--radius")).toBe("0.5rem");
@@ -73,18 +75,19 @@ describe("paramètres d'affichage retirés : migration", () => {
     const { storage } = install(TESTER);
     getThemeConfig();
     const after = new Map(storage);
-    expect(getThemeConfig()).toEqual({ skin: "clean", cleanFont: "plex" });
+    expect(getThemeConfig()).toEqual({ cleanFont: "plex" });
     expect(storage).toEqual(after);
   });
 
   it("supporte une configuration illisible ou des valeurs inconnues sans erreur", () => {
     const broken = install({ "baitari-premium-default-v1": "true", "baitari-clean-default-v1": "true", "theme-config": "{oops" });
     expect(() => getThemeConfig()).not.toThrow();
-    expect(getThemeConfig()).toEqual({ skin: "clean" });
-    expect(broken.storage.get("theme-config")).toBe('{"skin":"clean"}');
+    expect(getThemeConfig()).toEqual({});
+    // Unreadable: ignored, never rewritten (nothing readable to keep).
+    expect(broken.storage.get("theme-config")).toBe("{oops");
     vi.unstubAllGlobals();
     install({ "baitari-premium-default-v1": "true", "baitari-clean-default-v1": "true", "theme-config": JSON.stringify({ skin: "neon", cleanFont: "comic", accent: 42 }) });
-    expect(getThemeConfig()).toEqual({ skin: "clean" });
+    expect(getThemeConfig()).toEqual({});
   });
 
   it("une installation neuve reste sans valeur enregistrée : Clean et Inter par défaut", () => {
@@ -94,6 +97,7 @@ describe("paramètres d'affichage retirés : migration", () => {
     expect(storage.has("theme-config")).toBe(false);
     applyTheme(config, false);
     expect(dataset).toMatchObject({ skin: "clean", cleanFont: "inter" });
+    expect(dataset.visualStyle).toBeUndefined();
   });
 
   it("ne laisse plus aucune trace des réglages retirés dans le code", async () => {
@@ -102,7 +106,7 @@ describe("paramètres d'affichage retirés : migration", () => {
     expect(existsSync("src/lib/sidebar-tone.ts")).toBe(true);
     expect(existsSync("src/components/ThemeSelector.tsx")).toBe(false);
     const settings = readFileSync("src/components/Parametres.tsx", "utf8");
-    for (const gone of ["Couleur d’accent", "Liquid Glass", "Style Premium", "Présentation de la barre latérale", "Contraste du verre"]) {
+    for (const gone of ["Couleur d’accent", "Liquid Glass", "Style Premium", "Premium clair", "Premium sombre", "Clean clair", "Clean sombre", "Présentation de la barre latérale", "Contraste du verre"]) {
       expect(settings, gone).not.toContain(gone);
     }
     const css = ["src/index.css", "src/design-system/premium.css", "src/design-system/clean.css", "src/modules/shell/premium-sidebar.css"].map((file) => readFileSync(file, "utf8")).join("\n");

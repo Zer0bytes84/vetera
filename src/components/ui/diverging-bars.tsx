@@ -21,7 +21,7 @@ import { cn } from "@/lib/utils";
  * accessible table. What changes: colours are our tokens, never the TuffUI theme (accent blue, chart teal, violet; the hanging
  * series in the rose tone, as their `negative`); gridlines fall on whole numbers because these are counts; the columns have
  * longer names for the tooltip (`titles`) and today's label is drawn darker (`marker`); a footer slot; text is French and
- * never under 12 px; the table is in a section so Premium does not flatten the panel.
+ * never under 12 px; the table is in a section so the base stylesheet does not flatten the panel.
  */
 
 export type DivergingSeries = {

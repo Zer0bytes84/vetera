@@ -3,13 +3,6 @@ import { join } from "node:path";
 import postcss from "postcss";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { applyTheme, DEFAULT_THEME, getThemeConfig } from "../src/lib/theme-store";
-import {
-  APP_THEMES,
-  appThemeSettings,
-  currentAppTheme,
-  DEFAULT_SKIN,
-  normalizeSkin,
-} from "../src/lib/theme-skin";
 
 const CLEAN = readFileSync("src/design-system/clean.css", "utf8");
 const SCOPE = ':root[data-skin="clean"]';
@@ -218,10 +211,10 @@ describe("thème Clean : feuille posée sur le cadre", () => {
 });
 
 describe("polices par thème", () => {
-  const premium = postcss.parse(readFileSync("src/design-system/premium.css", "utf8"));
-  const premiumTokens = new Map<string, string>();
-  premium.walkRules(':root[data-visual-style="premium"]', (rule) =>
-    rule.walkDecls((decl) => premiumTokens.set(decl.prop, decl.value))
+  const base = postcss.parse(readFileSync("src/design-system/premium.css", "utf8"));
+  const baseTokens = new Map<string, string>();
+  base.walkRules(':root[data-skin="clean"]', (rule) =>
+    rule.walkDecls((decl) => baseTokens.set(decl.prop, decl.value))
   );
   const cleanTokens = new Map<string, string>();
   root.walkRules((rule) => {
@@ -229,9 +222,11 @@ describe("polices par thème", () => {
     rule.walkDecls((decl) => cleanTokens.set(decl.prop, `${decl.value}${decl.important ? " !important" : ""}`));
   });
 
-  it("garde Geist et Space Grotesk comme règle de Premium", () => {
-    expect(premiumTokens.get("--app-font-sans")).toMatch(/^"Geist Variable"/);
-    expect(premiumTokens.get("--app-font-heading")).toMatch(/^"Space Grotesk Variable"/);
+  it("met Inter Variable dans les jetons de base, Geist n'y est plus la police par défaut", () => {
+    for (const token of ["--app-font-sans", "--app-font-heading", "--app-font-display", "--font-sans", "--font-heading"]) {
+      expect(baseTokens.get(token), token).toMatch(/Inter Variable|var\(--app-font-(sans|heading)\)/);
+      expect(baseTokens.get(token), token).not.toMatch(/Geist|Space Grotesk/);
+    }
   });
 
   it("passe Clean sur Inter pour l'interface, le corps et les titres", () => {
@@ -330,8 +325,8 @@ describe("thème Clean : titre d'accueil", () => {
 describe("thème Clean : widgets", () => {
   const INDEX = readFileSync("src/index.css", "utf8");
 
-  it("masque partout ailleurs les éléments propres à Clean, et seulement Clean masque ce qu'il remplace", () => {
-    expect(INDEX).toContain(':root:not([data-skin="clean"]) [data-clean-only] { display: none !important; }');
+  it("seul Clean masque ce qu'il remplace, et plus aucun élément n'est réservé à une peau", () => {
+    expect(INDEX).not.toContain("data-clean-only");
     expect(rulesFor(/\[data-clean-hidden\]$/).some((rule) => rule.toString().includes("display: none !important"))).toBe(true);
     const elsewhere = files("src", /\.css$/)
       .filter((file) => !file.endsWith("clean.css"))
@@ -422,7 +417,7 @@ describe("thème Clean : pureté", () => {
 
   it("ne forke aucun composant : aucun code ne teste le thème Clean", () => {
     const forks = files("src", /\.tsx?$/)
-      .filter((file) => !/lib\/theme-(skin|store)\.ts$|lib\/sidebar-tone\.ts$|components\/app-theme-picker\.tsx$|components\/Parametres\.tsx$/.test(file))
+      .filter((file) => !/lib\/theme-store\.ts$|lib\/sidebar-tone\.ts$|components\/app-theme-picker\.tsx$|components\/Parametres\.tsx$/.test(file))
       .filter((file) => /dataset\.skin|data-skin|skin\s*===|"clean"/.test(readFileSync(file, "utf8")));
     expect(forks).toEqual([]);
   });
@@ -438,68 +433,53 @@ describe("thème Clean : réglage et défaut", () => {
     return { storage, dataset };
   }
 
-  it("Clean par défaut sur une installation neuve, un seul réglage décide du défaut", () => {
+  it("Clean et Inter par défaut sur une installation neuve, rien d'enregistré", () => {
     const { storage } = environment();
-    expect(DEFAULT_SKIN).toBe("clean");
-    expect(normalizeSkin(undefined)).toBe(DEFAULT_SKIN);
-    expect(normalizeSkin("premium")).toBe("premium");
-    expect(getThemeConfig().skin).toBeUndefined();
-    expect(normalizeSkin(getThemeConfig().skin)).toBe("clean");
+    expect(getThemeConfig()).toEqual({});
     // Nothing is stored for the mode: the provider's default (light) applies.
     expect(storage.get("theme")).toBeUndefined();
+    expect(storage.has("theme-config")).toBe(false);
   });
 
-  it("une installation existante passe à Clean et garde son mode sombre", () => {
+  it("une installation existante garde son mode sombre", () => {
     const { storage } = environment();
     storage.set("baitari-premium-default-v1", "true");
     storage.set("theme-config", JSON.stringify({ density: "compact" }));
-    // The removed density setting is dropped; the skin is migrated to Clean.
-    expect(getThemeConfig()).toEqual({ skin: "clean" });
+    // The removed density setting is dropped; no skin is stored any more.
+    expect(getThemeConfig()).toEqual({});
     expect(storage.get("theme")).toBe("dark");
   });
 
-  it("une installation existante sans configuration enregistrée passe aussi à Clean", () => {
+  it("une installation existante sans configuration enregistrée garde aussi son mode sombre", () => {
     const { storage } = environment();
     storage.set("baitari-premium-default-v1", "true");
-    expect(getThemeConfig().skin).toBe("clean");
+    expect(getThemeConfig()).toEqual({});
     expect(storage.get("theme")).toBe("dark");
   });
 
   it("n'écrase aucun choix déjà enregistré", () => {
     const { storage } = environment();
     storage.set("baitari-premium-default-v1", "true");
-    storage.set("theme-config", JSON.stringify({ ...DEFAULT_THEME, skin: "clean" }));
+    storage.set("theme-config", JSON.stringify({ ...DEFAULT_THEME, cleanFont: "geist" }));
     storage.set("theme", "light");
-    expect(getThemeConfig().skin).toBe("clean");
+    expect(getThemeConfig()).toEqual({ cleanFont: "geist" });
     expect(storage.get("theme")).toBe("light");
   });
 
-  it("ne fige qu'une fois : un réglage fait ensuite sur une installation neuve reste à Clean", () => {
+  it("ne fige qu'une fois : un réglage fait ensuite sur une installation neuve reste intact", () => {
     const { storage } = environment();
     getThemeConfig();
-    storage.set("theme-config", JSON.stringify({ ...DEFAULT_THEME, accent: "rose" }));
-    expect(normalizeSkin(getThemeConfig().skin)).toBe("clean");
+    storage.set("theme-config", JSON.stringify({ ...DEFAULT_THEME, cleanFont: "plex" }));
+    expect(getThemeConfig()).toEqual({ cleanFont: "plex" });
     expect(storage.get("theme")).toBeUndefined();
   });
 
-  it("pose la peau sur la racine, toujours sur le style Premium", () => {
+  it("pose Clean sur la racine, quoi que la configuration contienne", () => {
     const { dataset } = environment();
-    applyTheme({ ...DEFAULT_THEME, skin: "clean" }, false);
+    applyTheme({ ...DEFAULT_THEME }, false);
     expect(dataset.skin).toBe("clean");
-    expect(dataset.visualStyle).toBe("premium");
-    applyTheme({ ...DEFAULT_THEME, skin: "premium" }, false);
-    expect(dataset.skin).toBe("premium");
-  });
-
-  it("présente les quatre combinaisons et leurs réglages", () => {
-    expect(APP_THEMES.map((theme) => theme.label)).toEqual(["Premium clair", "Premium sombre", "Clean clair", "Clean sombre"]);
-    expect(currentAppTheme("clean", false)).toBe("clean-light");
-    expect(currentAppTheme("clean", true)).toBe("clean-dark");
-    expect(currentAppTheme("premium", false)).toBe("premium-light");
-    expect(currentAppTheme("premium", true)).toBe("premium-dark");
-    expect(appThemeSettings("clean-dark")).toEqual({ skin: "clean", mode: "dark" });
-    expect(appThemeSettings("clean-light")).toEqual({ skin: "clean", mode: "light" });
-    expect(appThemeSettings("premium-dark")).toEqual({ skin: "premium", mode: "dark" });
-    expect(appThemeSettings("premium-light")).toEqual({ skin: "premium", mode: "light" });
+    applyTheme({ ...DEFAULT_THEME, skin: "premium" } as never, true);
+    expect(dataset.skin).toBe("clean");
+    expect(dataset.visualStyle).toBeUndefined();
   });
 });

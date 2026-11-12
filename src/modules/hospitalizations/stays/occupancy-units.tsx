@@ -9,7 +9,7 @@ const STATE_LABEL: Record<OccupancyState, string> = {
 
 /**
  * Capacity at a glance: one unit per active location, then the forecast that
- * planned discharges support. Shown by the Clean skin only (data-clean-only).
+ * planned discharges support.
  */
 export function OccupancyUnits({ compact = false, locations, stays }: {
   /** Inside another card (the dashboard's Hospitalisés): no card of its own. */
@@ -26,7 +26,6 @@ export function OccupancyUnits({ compact = false, locations, stays }: {
     <section
       aria-label="Capacité d’hospitalisation"
       className={compact ? "stay-occupancy stay-occupancy-compact" : "stay-occupancy"}
-      data-clean-only=""
     >
       <p className="stay-occupancy-head">
         <strong>{summary.occupied}</strong>

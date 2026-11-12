@@ -63,12 +63,6 @@ export function getCurrentLocale(language = i18n.language) {
   return "fr-FR";
 }
 
-export function formatCompactInteger(value: number, locale?: string) {
-  return new Intl.NumberFormat(getCurrentLocale(locale)).format(
-    Math.round(value)
-  );
-}
-
 export function formatPercent(value: number) {
   return `${value.toFixed(1)}%`;
 }

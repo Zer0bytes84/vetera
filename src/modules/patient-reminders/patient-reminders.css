@@ -20,9 +20,9 @@
 .medical-reminder-dialog [data-slot="dialog-close"] { min-height: 32px; }
 
 /* Keep the medical controls consistent without resizing controls on other pages. */
-:root[data-visual-style="premium"] .patient-reminders-panel [data-slot="button"],
-:root[data-visual-style="premium"] .medical-reminder-dialog button,
-:root[data-visual-style="premium"] .reminders-page [data-slot="page-header-actions"] :is([data-slot="button"], [data-slot="native-select"]) {
+:root[data-skin="clean"] .patient-reminders-panel [data-slot="button"],
+:root[data-skin="clean"] .medical-reminder-dialog button,
+:root[data-skin="clean"] .reminders-page [data-slot="page-header-actions"] :is([data-slot="button"], [data-slot="native-select"]) {
   height: var(--reminder-control-height) !important;
   min-height: var(--reminder-control-height) !important;
 }

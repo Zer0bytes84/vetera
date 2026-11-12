@@ -44,7 +44,7 @@ describe("carte graphique", () => {
     const html = renderToStaticMarkup(<ChartCard {...base} type="line" />);
     expect((html.match(/<circle/g) ?? []).length).toBe(3);
   });
-  it("le tableau d'accessibilité est dans un <section>, jamais sous un <div> (Premium viderait le panneau)", () => {
+  it("le tableau d'accessibilité est dans un <section>, jamais sous un <div> (la feuille de base viderait le panneau)", () => {
     const html = renderToStaticMarkup(<ChartCard {...base} type="line" />);
     expect(html).toContain('<section class="sr-only"><table');
     expect(html).not.toMatch(/<div[^>]*>\s*<table/);

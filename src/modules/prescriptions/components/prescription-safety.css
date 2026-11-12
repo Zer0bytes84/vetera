@@ -80,20 +80,20 @@
   margin-top: 4px;
 }
 
-:root[data-visual-style="premium"] :is(.rx-safety, .rx-safety-badges) {
+:root[data-skin="clean"] :is(.rx-safety, .rx-safety-badges) {
   --rx-safety-color: var(--premium-red);
 }
 
-:root[data-visual-style="premium"] .rx-safety {
+:root[data-skin="clean"] .rx-safety {
   border-radius: var(--premium-control-radius);
   background: color-mix(in oklab, var(--premium-red) 5%, var(--surface));
   color: var(--ink);
 }
 
-:root[data-visual-style="premium"] :is(.rx-safety-sub, .rx-safety-reason, .rx-safety-source) {
+:root[data-skin="clean"] :is(.rx-safety-sub, .rx-safety-reason, .rx-safety-source) {
   color: var(--ink-soft);
 }
 
-:root[data-visual-style="premium"] .rx-safety-tag:not([data-level="contraindication"]) {
+:root[data-skin="clean"] .rx-safety-tag:not([data-level="contraindication"]) {
   color: var(--surface);
 }

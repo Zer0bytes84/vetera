@@ -89,15 +89,15 @@
   font-size: 13px;
 }
 
-:root[data-visual-style="premium"] .rx-template-alert {
+:root[data-skin="clean"] .rx-template-alert {
   --rx-safety-color: var(--premium-red);
 }
 
-:root[data-visual-style="premium"] :is(.rx-template-chip, .rx-template-row, .rx-template-empty) {
+:root[data-skin="clean"] :is(.rx-template-chip, .rx-template-row, .rx-template-empty) {
   border-radius: var(--premium-control-radius);
 }
 
-:root[data-visual-style="premium"] .rx-template-chip {
+:root[data-skin="clean"] .rx-template-chip {
   background: var(--surface);
   color: var(--ink);
 }

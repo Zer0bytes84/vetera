@@ -2,7 +2,6 @@ import { ErrorState } from "@/design-system/patterns/error-state";
 import { Syringe } from "lucide-react";
 import { careErrorMessage } from "./feedback";
 import "./care-page.css";
-import { useIsPremium } from "@/modules/dashboard/v2/use-is-premium";
 import { useEffect, useState, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -146,7 +145,6 @@ export default function CarePage({
   patientId?: string;
   onNavigateToPatient?: (patientId: string) => void;
 }) {
-  const isPremium = useIsPremium();
   const [selectedDate, setSelectedDate] = useState<Date | null>(() => {
     // A follow-up planned from a SOAP Plan opens the list on its own day, once.
     const day =
@@ -639,11 +637,11 @@ export default function CarePage({
                 ))}
               </div>
             </div>
-            {isPremium && dateControl}
+            {dateControl}
           </div>
         </>
       )}
-      {(!isPremium || patientId) && dateControl}
+      {patientId && dateControl}
       {savedMessage && (
         <p
           role="status"

@@ -32,21 +32,11 @@ export type NavItem = {
 
 export function NavMain({
   title,
-  premiumTitle,
   items,
 }: {
   title?: string;
-  premiumTitle?: string;
   items: NavItem[];
 }) {
-  const label = premiumTitle ? (
-    <>
-      <span className="classic-sidebar-label">{title}</span>
-      <span className="premium-sidebar-label">{premiumTitle}</span>
-    </>
-  ) : (
-    title
-  );
   const groupLabelClass =
     "mb-1.5 px-2.5 font-medium t-12 text-muted-foreground uppercase tracking-[0.08em] antialiased group-data-[collapsible=icon]:hidden";
   return (
@@ -54,7 +44,7 @@ export function NavMain({
       <SidebarGroupContent>
         <SidebarMenu className="gap-1 group-data-[collapsible=icon]:gap-2">
           {title ? (
-            <SidebarGroupLabel className={groupLabelClass}>{label}</SidebarGroupLabel>
+            <SidebarGroupLabel className={groupLabelClass}>{title}</SidebarGroupLabel>
           ) : null}
           {items.map((item) => (
             <SidebarMenuItem className="group/item" key={item.title}>

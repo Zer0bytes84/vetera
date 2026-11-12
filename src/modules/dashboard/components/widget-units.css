@@ -1,6 +1,6 @@
 /* Countable widgets of the dashboard: units, category rows, forecast bar.
    Chart tokens only (ink, soft, faint, series-1), sizes 12, 13 and 24 px. */
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .widgetHero {
+[data-skin="clean"] .widgetHero {
   display: flex;
   align-items: baseline;
   gap: 6px;
@@ -8,7 +8,7 @@
   min-width: 0;
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .widgetHero strong {
+[data-skin="clean"] .widgetHero strong {
   font-size: 24px;
   font-weight: 500;
   line-height: 1;
@@ -17,48 +17,48 @@
   color: var(--ink);
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .widgetHero span {
+[data-skin="clean"] .widgetHero span {
   font-size: 13px;
   color: var(--soft);
 }
 
 /* ------------------------------------------------------------ Units */
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .dayUnits {
+[data-skin="clean"] .dayUnits {
   display: flex;
   flex-direction: column;
   gap: 12px;
   padding: 16px 20px;
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .unitGrid {
+[data-skin="clean"] .unitGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, 20px);
   gap: 5px;
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .unit {
+[data-skin="clean"] .unit {
   display: block;
   aspect-ratio: 1;
   border-radius: 5px;
   background: var(--series-1);
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .unitGrid .unit {
+[data-skin="clean"] .unitGrid .unit {
   cursor: default;
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .unit[data-state="underway"] {
+[data-skin="clean"] .unit[data-state="underway"] {
   background: color-mix(in srgb, var(--series-1) 45%, transparent);
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .unit[data-state="upcoming"] {
+[data-skin="clean"] .unit[data-state="upcoming"] {
   /* Still to come: the dashed outline of a place not yet taken. */
   background: transparent;
   border: 1px dashed color-mix(in srgb, var(--ink) 30%, transparent);
 }
 
 /* ------------------------------------------------------------ Category rows */
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .widgetRows {
+[data-skin="clean"] .widgetRows {
   display: flex;
   flex-direction: column;
   margin: 0;
@@ -66,7 +66,7 @@
   list-style: none;
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .widgetRows li {
+[data-skin="clean"] .widgetRows li {
   display: grid;
   grid-template-columns: 12px minmax(0, 1fr) auto auto;
   align-items: center;
@@ -75,43 +75,43 @@
   font-size: 13px;
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .widgetRowMark {
+[data-skin="clean"] .widgetRowMark {
   display: inline-flex;
   width: 10px;
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .widgetRowMark > i {
+[data-skin="clean"] .widgetRowMark > i {
   display: block;
   width: 10px;
   height: 10px;
   border-radius: 3px;
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .widgetRowName {
+[data-skin="clean"] .widgetRowName {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   color: var(--ink);
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .widgetRowValue,
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .widgetRowShare {
+[data-skin="clean"] .widgetRowValue,
+[data-skin="clean"] .widgetRowShare {
   text-align: right;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .widgetRowValue {
+[data-skin="clean"] .widgetRowValue {
   color: var(--ink);
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .widgetRowShare {
+[data-skin="clean"] .widgetRowShare {
   min-width: 40px;
   color: var(--faint);
 }
 
 /* ------------------------------------------------------------ Forecast bar */
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .forecast {
+[data-skin="clean"] .forecast {
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -119,19 +119,19 @@
   box-shadow: var(--hair-t);
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .forecastLine {
+[data-skin="clean"] .forecastLine {
   margin: 0;
   font-size: 13px;
   line-height: 1.45;
   color: var(--ink);
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .forecastScale {
+[data-skin="clean"] .forecastScale {
   position: relative;
   padding-top: 20px;
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .forecastMarkLabel {
+[data-skin="clean"] .forecastMarkLabel {
   position: absolute;
   top: 0;
   font-size: 12px;
@@ -140,7 +140,7 @@
   color: var(--soft);
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .forecastAxis {
+[data-skin="clean"] .forecastAxis {
   display: flex;
   justify-content: space-between;
   margin-top: 6px;
@@ -149,7 +149,7 @@
   color: var(--faint);
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .forecastBar {
+[data-skin="clean"] .forecastBar {
   position: relative;
   display: flex;
   height: 12px;
@@ -157,15 +157,15 @@
   background: color-mix(in srgb, var(--ink) 6%, transparent);
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .forecastBar > i:first-child {
+[data-skin="clean"] .forecastBar > i:first-child {
   border-radius: 4px 0 0 4px;
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) :is(.forecastBar > i, .forecastKey)[data-part="collected"] {
+[data-skin="clean"] :is(.forecastBar > i, .forecastKey)[data-part="collected"] {
   background: var(--series-1);
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) :is(.forecastBar > i, .forecastKey)[data-part="projected"] {
+[data-skin="clean"] :is(.forecastBar > i, .forecastKey)[data-part="projected"] {
   background: repeating-linear-gradient(
     45deg,
     color-mix(in srgb, var(--series-1) 55%, transparent) 0 2px,
@@ -173,14 +173,14 @@
   );
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .forecastKey[data-part="previous"] {
+[data-skin="clean"] .forecastKey[data-part="previous"] {
   width: 2px !important;
   margin-left: 4px;
   border-radius: 1px !important;
   background: var(--ink);
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .forecastMark {
+[data-skin="clean"] .forecastMark {
   position: absolute;
   top: -3px;
   bottom: -3px;
@@ -190,14 +190,14 @@
   background: var(--ink);
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .forecastNote {
+[data-skin="clean"] .forecastNote {
   margin: 0;
   font-size: 12px;
   color: var(--faint);
 }
 
 /* ------------------------------------------------------------ The widget's single action */
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .pillAction {
+[data-skin="clean"] .pillAction {
   display: inline-flex;
   flex: none;
   align-items: center;
@@ -216,23 +216,23 @@
 }
 
 @media (hover: hover) and (pointer: fine) {
-  :is([data-visual-style="premium"], .premium-analytics-dashboard) .pillAction:hover {
+  [data-skin="clean"] .pillAction:hover {
     background: var(--btn-primary-hover);
   }
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .pillAction:focus-visible {
+[data-skin="clean"] .pillAction:focus-visible {
   outline: 2px solid var(--ring);
   outline-offset: 2px;
 }
 
 /* ------------------------------------------------------------ Rendez-vous du jour */
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .dayUnits {
+[data-skin="clean"] .dayUnits {
   padding-top: 10px;
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .dayRow {
+[data-skin="clean"] .dayRow {
   display: grid;
   grid-template-columns: 44px minmax(0, 1fr) auto;
   align-items: center;
@@ -248,18 +248,18 @@
 }
 
 @media (hover: hover) and (pointer: fine) {
-  :is([data-visual-style="premium"], .premium-analytics-dashboard) .dayRow:hover {
+  [data-skin="clean"] .dayRow:hover {
     background: var(--lift, var(--muted));
   }
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .dayRow:focus-visible {
+[data-skin="clean"] .dayRow:focus-visible {
   outline: 2px solid var(--ring);
   outline-offset: -2px;
 }
 
 /* ------------------------------------------------------------ Card footer: sentence, then the single action */
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .widgetFooter {
+[data-skin="clean"] .widgetFooter {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -269,7 +269,7 @@
   box-shadow: var(--hair-t);
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .widgetFooter > p {
+[data-skin="clean"] .widgetFooter > p {
   min-width: 0;
   margin: 0;
   font-size: 13px;
@@ -277,16 +277,16 @@
 }
 
 /* ------------------------------------------------------------ Rows lit by a hover */
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .widgetRows li {
+[data-skin="clean"] .widgetRows li {
   transition: opacity 160ms var(--ease-out-quint);
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .widgetRows[data-dimmed] li:not([data-active]) {
+[data-skin="clean"] .widgetRows[data-dimmed] li:not([data-active]) {
   opacity: 0.45;
 }
 
 /* ------------------------------------------------------------ Patients par espèce */
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .speciesSplit {
+[data-skin="clean"] .speciesSplit {
   display: grid;
   grid-template-columns: 120px minmax(0, 1fr);
   align-items: center;
@@ -295,63 +295,63 @@
 }
 
 @container (max-width: 300px) {
-  :is([data-visual-style="premium"], .premium-analytics-dashboard) .speciesSplit {
+  [data-skin="clean"] .speciesSplit {
     grid-template-columns: minmax(0, 1fr);
     justify-items: center;
   }
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .speciesTrack {
+[data-skin="clean"] .speciesTrack {
   stroke: color-mix(in srgb, var(--ink) 5%, transparent);
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .speciesArc {
+[data-skin="clean"] .speciesArc {
   cursor: default;
   transition: opacity 160ms var(--ease-out-quint);
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .speciesDonut:has([data-active]) .speciesArc:not([data-active]) {
+[data-skin="clean"] .speciesDonut:has([data-active]) .speciesArc:not([data-active]) {
   opacity: 0.35;
 }
 
 /* The largest species in the accent, the next ones in steps of ink. */
-:is([data-visual-style="premium"], .premium-analytics-dashboard) :is(.speciesArc, .speciesMark) {
+[data-skin="clean"] :is(.speciesArc, .speciesMark) {
   --tone: var(--series-1);
 }
-:is([data-visual-style="premium"], .premium-analytics-dashboard) :is(.speciesArc, .speciesMark)[data-tone="1"] { --tone: color-mix(in srgb, var(--ink) 70%, transparent); }
-:is([data-visual-style="premium"], .premium-analytics-dashboard) :is(.speciesArc, .speciesMark)[data-tone="2"] { --tone: color-mix(in srgb, var(--ink) 46%, transparent); }
-:is([data-visual-style="premium"], .premium-analytics-dashboard) :is(.speciesArc, .speciesMark)[data-tone="3"] { --tone: color-mix(in srgb, var(--ink) 28%, transparent); }
-:is([data-visual-style="premium"], .premium-analytics-dashboard) :is(.speciesArc, .speciesMark)[data-tone="4"] { --tone: color-mix(in srgb, var(--ink) 16%, transparent); }
+[data-skin="clean"] :is(.speciesArc, .speciesMark)[data-tone="1"] { --tone: color-mix(in srgb, var(--ink) 70%, transparent); }
+[data-skin="clean"] :is(.speciesArc, .speciesMark)[data-tone="2"] { --tone: color-mix(in srgb, var(--ink) 46%, transparent); }
+[data-skin="clean"] :is(.speciesArc, .speciesMark)[data-tone="3"] { --tone: color-mix(in srgb, var(--ink) 28%, transparent); }
+[data-skin="clean"] :is(.speciesArc, .speciesMark)[data-tone="4"] { --tone: color-mix(in srgb, var(--ink) 16%, transparent); }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .speciesArc {
+[data-skin="clean"] .speciesArc {
   stroke: var(--tone);
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .widgetRows li:has(.speciesMark) {
+[data-skin="clean"] .widgetRows li:has(.speciesMark) {
   grid-template-columns: 18px minmax(0, 1fr) auto auto;
   min-height: 28px;
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .widgetRowMark:has(.speciesMark) {
+[data-skin="clean"] .widgetRowMark:has(.speciesMark) {
   width: 18px;
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .speciesMark {
+[data-skin="clean"] .speciesMark {
   display: inline-flex;
   color: var(--tone);
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .speciesMark[data-tone="0"] {
+[data-skin="clean"] .speciesMark[data-tone="0"] {
   color: var(--series-1);
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .speciesDonutBox {
+[data-skin="clean"] .speciesDonutBox {
   position: relative;
   width: 120px;
   height: 120px;
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .speciesCenter {
+[data-skin="clean"] .speciesCenter {
   position: absolute;
   inset: 22px;
   display: flex;
@@ -365,7 +365,7 @@
   text-align: center;
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .speciesCenter strong {
+[data-skin="clean"] .speciesCenter strong {
   font-size: 24px;
   font-weight: 500;
   line-height: 1;
@@ -374,7 +374,7 @@
   color: var(--ink);
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .speciesCenter span {
+[data-skin="clean"] .speciesCenter span {
   max-width: 100%;
   overflow: hidden;
   font-size: 12px;

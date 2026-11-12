@@ -588,7 +588,7 @@ export function ChartCard({
             </AnimatePresence>
           </div>
 
-          {/* In a <section>, not bare in the panel: Premium strips background, border and radius from any
+          {/* In a <section>, not bare in the panel: the base stylesheet strips background, border and radius from any
               <div> holding a <table> as a direct child, which flattened the panel into its frame. */}
           <section className="sr-only">
             <table className="sr-only">

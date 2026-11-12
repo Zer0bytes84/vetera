@@ -1,5 +1,5 @@
 /* Rangée « À surveiller » du tableau de bord. Jetons de la charte uniquement. */
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .watchGrid {
+[data-skin="clean"] .watchGrid {
   --watch-critical: var(--bad, var(--signal-critical));
   --watch-warning: var(--premium-orange, var(--signal-watch));
   --watch-neutral: var(--faint);
@@ -9,52 +9,52 @@
   gap: 20px;
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .watchCard {
+[data-skin="clean"] .watchCard {
   display: flex;
   flex-direction: column;
   container-type: inline-size;
 }
 
 @media (max-width: 1100px) {
-  :is([data-visual-style="premium"], .premium-analytics-dashboard) .watchGrid {
+  [data-skin="clean"] .watchGrid {
     grid-template-columns: minmax(0, 1fr);
   }
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .watchTitle {
+[data-skin="clean"] .watchTitle {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 8px;
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .watchIcon {
+[data-skin="clean"] .watchIcon {
   display: inline-flex;
   color: var(--soft);
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .watchSummary {
+[data-skin="clean"] .watchSummary {
   font-size: 12px;
   font-weight: 500;
   letter-spacing: 0;
   color: var(--soft);
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .watchSummary[data-tone="critical"] {
+[data-skin="clean"] .watchSummary[data-tone="critical"] {
   color: var(--watch-critical);
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .watchList {
+[data-skin="clean"] .watchList {
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .watchList > li + li {
+[data-skin="clean"] .watchList > li + li {
   box-shadow: var(--hair-t);
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .watchRow {
+[data-skin="clean"] .watchRow {
   display: grid;
   grid-template-columns: 8px minmax(0, 1fr) auto;
   align-items: center;
@@ -69,40 +69,40 @@
 }
 
 @media (hover: hover) and (pointer: fine) {
-  :is([data-visual-style="premium"], .premium-analytics-dashboard) .watchRow:hover {
+  [data-skin="clean"] .watchRow:hover {
     background: var(--lift, var(--muted));
   }
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .watchRow:focus-visible,
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .watchRetry:focus-visible {
+[data-skin="clean"] .watchRow:focus-visible,
+[data-skin="clean"] .watchRetry:focus-visible {
   outline: 2px solid var(--ring);
   outline-offset: -2px;
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .watchDot {
+[data-skin="clean"] .watchDot {
   width: 8px;
   height: 8px;
   border-radius: 999px;
   background: var(--watch-neutral);
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .watchDot[data-tone="critical"] {
+[data-skin="clean"] .watchDot[data-tone="critical"] {
   background: var(--watch-critical);
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .watchDot[data-tone="warning"] {
+[data-skin="clean"] .watchDot[data-tone="warning"] {
   background: var(--watch-warning);
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .watchText {
+[data-skin="clean"] .watchText {
   display: flex;
   min-width: 0;
   flex-direction: column;
   gap: 2px;
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .watchText strong {
+[data-skin="clean"] .watchText strong {
   overflow: hidden;
   font-size: 14px;
   font-weight: 500;
@@ -111,30 +111,30 @@
   white-space: nowrap;
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .watchText span {
+[data-skin="clean"] .watchText span {
   font-size: 12px;
   line-height: 1.4;
   color: var(--soft);
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .watchMeta {
+[data-skin="clean"] .watchMeta {
   font-size: 12px;
   font-variant-numeric: tabular-nums;
   color: var(--soft);
   white-space: nowrap;
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .watchMeta[data-tone="critical"] {
+[data-skin="clean"] .watchMeta[data-tone="critical"] {
   color: var(--watch-critical);
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .watchMore {
+[data-skin="clean"] .watchMore {
   padding: 8px 20px;
   font-size: 12px;
   color: var(--faint);
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .watchEmpty {
+[data-skin="clean"] .watchEmpty {
   flex: 1;
   margin: 0;
   padding: 24px 22px;
@@ -145,7 +145,7 @@
   text-align: center;
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .watchRetry {
+[data-skin="clean"] .watchRetry {
   border: 0;
   background: none;
   padding: 0;
@@ -155,12 +155,7 @@
   cursor: pointer;
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .watchCard .cardHead {
+[data-skin="clean"] .watchCard .cardHead {
   flex-wrap: nowrap;
   align-items: flex-start;
-}
-
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .watchCard .moreLink {
-  flex-shrink: 0;
-  margin-top: 2px;
 }

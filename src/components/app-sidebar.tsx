@@ -5,8 +5,6 @@ import {
   AccountSidebarFooter,
   type AccountMenuProps,
 } from "@/modules/shell/components/account-menu";
-import { PremiumSidebarIcon } from "@/modules/shell/components/premium-sidebar-icon";
-import { useIsPremium } from "@/modules/dashboard/v2/use-is-premium";
 import "@/modules/shell/premium-sidebar.css";
 import * as React from "react";
 import { useTranslation } from "react-i18next";
@@ -57,8 +55,6 @@ export function AppSidebar({
 }: AppSidebarProps) {
   const { t } = useTranslation();
   const { state } = useSidebar();
-  const isPremium = useIsPremium();
-  const NavigationIcon = isPremium ? PremiumSidebarIcon : SidebarIcon;
   const navigationRef = React.useRef<HTMLDivElement>(null);
   const isCollapsed = state === "collapsed";
   React.useEffect(() => {
@@ -132,9 +128,7 @@ export function AppSidebar({
     const expanded = unfolded[item.view] ?? sub?.open ?? false;
     return {
       title: item.view === "notes" ? "Documents" : t(item.labelKey),
-      icon: (
-        <NavigationIcon className="size-5!" view={item.view} />
-      ),
+      icon: <SidebarIcon className="size-5!" view={item.view} />,
       isActive:
         currentView === item.view ||
         (item.view === "clinique" && currentView === "soins") ||
@@ -216,13 +210,9 @@ export function AppSidebar({
           )}
         >
 
-          <NavMain items={mainItems} title={t("nav.sections.patientJourney")} premiumTitle="Espace de travail" />
+          <NavMain items={mainItems} title="Espace de travail" />
 
-          <NavMain
-            items={managementItems}
-            title={t("nav.sections.operations")}
-            premiumTitle="Gestion du cabinet"
-          />
+          <NavMain items={managementItems} title="Gestion du cabinet" />
         </div>
       </SidebarContent>
       {/* The account block alone at the very bottom (Catalyst footer): a hairline, the avatar, the name, the email, and the account menu opening upwards. Settings live in that menu now. */}

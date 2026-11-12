@@ -4,7 +4,6 @@ import { mergeProps } from "@base-ui/react/merge-props";
 import { useRender } from "@base-ui/react/use-render";
 import { cva, type VariantProps } from "class-variance-authority";
 import * as React from "react";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -317,38 +316,6 @@ function Sidebar({
         {collapsible === "none" ? null : <SidebarRail />}
       </div>
     </div>
-  );
-}
-
-import { SidebarSlideoutIcon } from "@/components/ui/sidebar-slideout-icon";
-
-function SidebarTrigger({
-  className,
-  onClick,
-  ...props
-}: React.ComponentProps<typeof Button>) {
-  const { toggleSidebar, state } = useSidebar();
-  const isCollapsed = state === "collapsed";
-
-  return (
-    <Button
-      className={cn("size-8 rounded-lg", className)}
-      data-sidebar="trigger"
-      data-slot="sidebar-trigger"
-      data-state={state}
-      onClick={(event) => {
-        onClick?.(event);
-        toggleSidebar();
-      }}
-      variant="ghost"
-      {...props}
-    >
-      <SidebarSlideoutIcon
-        collapsed={isCollapsed}
-        className="size-[18px] text-sidebar-foreground/70 transition-colors hover:text-sidebar-foreground"
-      />
-      <span className="sr-only">Toggle Sidebar</span>
-    </Button>
   );
 }
 
@@ -917,6 +884,5 @@ export {
   SidebarProvider,
   SidebarRail,
   SidebarSeparator,
-  SidebarTrigger,
   useSidebar,
 };

@@ -111,7 +111,6 @@ import {
 import type { View } from "@/types";
 import Avatar, { PROFILE_AVATAR_EMOJIS } from "./Avatar";
 import Logo from "./Logo";
-import { APP_THEMES, appThemeSettings, currentAppTheme, normalizeSkin, type AppTheme } from "@/lib/theme-skin";
 import { getSidebarTone, saveSidebarTone, SIDEBAR_TONES, type SidebarTone } from "@/lib/sidebar-tone";
 import { formatPersonName } from "@/utils/display-format";
 import { roleLabel as displayRole } from "@/lib/user-role";
@@ -191,8 +190,6 @@ const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
           "sombre",
           "dark",
           "thème",
-          "clean",
-          "premium",
           "police",
           "font",
           "sidebar",
@@ -775,13 +772,6 @@ const Parametres: React.FC<ParametresProps> = ({
 
   const roleLabel = displayRole(userDoc?.role, currentUser?.email);
 
-  const isDarkNow =
-    currentTheme === "dark" ||
-    (currentTheme === "system" &&
-      typeof window !== "undefined" &&
-      window.matchMedia("(prefers-color-scheme: dark)").matches);
-  const appTheme = currentAppTheme(normalizeSkin(themeConfig.skin), isDarkNow);
-
   const renderContent = () => {
     switch (activeTab) {
       case "modeles-documents":
@@ -924,24 +914,6 @@ const Parametres: React.FC<ParametresProps> = ({
               title="Affichage"
             >
               <SettingsRow
-                detail={`${APP_THEMES.find((theme) => theme.id === appTheme)?.description ?? ""}`}
-                title="Thème"
-              >
-                <Segmented<AppTheme>
-                  label="Thème"
-                  onValueChange={(theme) => {
-                    const { skin, mode } = appThemeSettings(theme);
-                    handleThemeConfigChange({ ...themeConfig, skin });
-                    onThemeChange?.(mode);
-                  }}
-                  options={APP_THEMES.map((theme) => ({
-                    value: theme.id,
-                    label: theme.label,
-                  }))}
-                  value={appTheme}
-                />
-              </SettingsRow>
-              <SettingsRow
                 detail="Suit votre environnement ou reste fixe."
                 title="Mode"
               >
@@ -957,33 +929,31 @@ const Parametres: React.FC<ParametresProps> = ({
                 />
               </SettingsRow>
               <SidebarToneSetting userId={currentUser?.id} />
-              {normalizeSkin(themeConfig.skin) === "clean" && (
-                <SettingsRow
-                  detail={`${CLEAN_FONT_SETS[normalizeCleanFont(themeConfig.cleanFont)].description}. Thème Clean seulement.`}
-                  title="Police"
-                >
-                  <Segmented<CleanFontSet>
-                    label="Police du thème Clean"
-                    onValueChange={(cleanFont) =>
-                      handleThemeConfigChange({ ...themeConfig, cleanFont })
-                    }
-                    options={(
-                      Object.entries(CLEAN_FONT_SETS) as [
-                        CleanFontSet,
-                        (typeof CLEAN_FONT_SETS)[CleanFontSet],
-                      ][]
-                    ).map(([value, set]) => ({
-                      value,
-                      label: (
-                        <span style={{ fontFamily: set.sample }}>
-                          {set.label}
-                        </span>
-                      ),
-                    }))}
-                    value={normalizeCleanFont(themeConfig.cleanFont)}
-                  />
-                </SettingsRow>
-              )}
+              <SettingsRow
+                detail={`${CLEAN_FONT_SETS[normalizeCleanFont(themeConfig.cleanFont)].description}.`}
+                title="Police"
+              >
+                <Segmented<CleanFontSet>
+                  label="Police"
+                  onValueChange={(cleanFont) =>
+                    handleThemeConfigChange({ ...themeConfig, cleanFont })
+                  }
+                  options={(
+                    Object.entries(CLEAN_FONT_SETS) as [
+                      CleanFontSet,
+                      (typeof CLEAN_FONT_SETS)[CleanFontSet],
+                    ][]
+                  ).map(([value, set]) => ({
+                    value,
+                    label: (
+                      <span style={{ fontFamily: set.sample }}>
+                        {set.label}
+                      </span>
+                    ),
+                  }))}
+                  value={normalizeCleanFont(themeConfig.cleanFont)}
+                />
+              </SettingsRow>
             </SettingsSection>
             <SettingsSection
               icon={LayoutDashboard}

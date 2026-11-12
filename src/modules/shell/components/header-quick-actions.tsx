@@ -15,7 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
-import { PREMIUM_SHORTCUTS, type PremiumShortcut } from "@/lib/visual-style";
+import { QUICK_ACTIONS, type QuickAction } from "@/lib/quick-actions";
 import "@/modules/shell/quick-actions.css";
 
 const ICONS = {
@@ -26,7 +26,7 @@ const ICONS = {
   document: FilePlus,
   product: Package,
   invoice: Receipt,
-} satisfies Record<PremiumShortcut, unknown>;
+} satisfies Record<QuickAction, unknown>;
 
 /**
  * The quick actions, behind one "+" in the header, at the same place on every page: one row of creations in the order of the
@@ -36,7 +36,7 @@ export function HeaderQuickActions({
   onAction,
   className,
 }: {
-  onAction: (action: PremiumShortcut) => void;
+  onAction: (action: QuickAction) => void;
   /** The look of the header's own round buttons, which differs between the two skins of the shell. */
   className?: string;
 }) {
@@ -61,7 +61,7 @@ export function HeaderQuickActions({
         side="bottom"
         sideOffset={10}
       >
-        {PREMIUM_SHORTCUTS.map((shortcut) => {
+        {QUICK_ACTIONS.map((shortcut) => {
           const Icon = ICONS[shortcut.id];
           return (
             <DropdownMenuItem

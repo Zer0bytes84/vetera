@@ -1,11 +1,10 @@
 import { useEffect, useSyncExternalStore } from "react";
 import { applyTheme, getThemeConfig } from "./theme-store";
-import type { Skin } from "./theme-skin";
 
 /**
- * The sidebar's tone, chosen in Appearance. "auto" keeps each theme's own
- * sidebar (light in Premium light, dark everywhere else); "light" and "dark"
- * win over the theme and survive theme changes.
+ * The sidebar's tone, chosen in Appearance. "auto" keeps the theme's own
+ * sidebar (dark, in light and in dark mode); "light" and "dark" win over the
+ * theme and survive theme changes.
  */
 export type SidebarTone = "auto" | "light" | "dark";
 
@@ -44,14 +43,12 @@ export function saveSidebarTone(userId: string, tone: SidebarTone) {
   window.dispatchEvent(new Event(SIDEBAR_TONE_EVENT));
 }
 
-/** The tone each theme gives its sidebar on its own. */
-export function nativeSidebarTone(skin: Skin, isDark: boolean): "light" | "dark" {
-  return skin === "premium" && !isDark ? "light" : "dark";
-}
+/** The tone the theme gives its sidebar on its own, in both modes. */
+const NATIVE_SIDEBAR_TONE = "dark";
 
 /** The tone to force: none when the choice is "auto" or the theme's own. */
-export function forcedSidebarTone(tone: SidebarTone, skin: Skin, isDark: boolean): "light" | "dark" | null {
-  return tone !== "auto" && tone !== nativeSidebarTone(skin, isDark) ? tone : null;
+export function forcedSidebarTone(tone: SidebarTone): "light" | "dark" | null {
+  return tone !== "auto" && tone !== NATIVE_SIDEBAR_TONE ? tone : null;
 }
 
 function tokenNames(): string[] {
@@ -103,8 +100,7 @@ function otherModeTokens(dark: boolean): string {
  */
 export function applySidebarTone(tone: SidebarTone) {
   const root = document.documentElement;
-  const skin: Skin = root.dataset.skin === "clean" ? "clean" : "premium";
-  const forced = forcedSidebarTone(tone, skin, root.classList.contains("dark"));
+  const forced = forcedSidebarTone(tone);
   const existing = document.getElementById(STYLE_ID);
   if (!forced) {
     delete root.dataset.sidebarTone;

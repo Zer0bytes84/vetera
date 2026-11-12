@@ -10,7 +10,7 @@ import { HeaderSidebarToggle } from "./components/header-sidebar-toggle";
 import { HeaderQuickActions } from "./components/header-quick-actions";
 import { roleLabel } from "@/lib/user-role";
 import { requestSettingsSection } from "@/lib/settings-navigation";
-import type { PremiumShortcut } from "@/lib/visual-style";
+import type { QuickAction } from "@/lib/quick-actions";
 import { useSidebarTone } from "@/lib/sidebar-tone";
 import { HeroPattern } from "@/components/HeroPattern";
 import { SaveIndicator } from "@/design-system/patterns/save-indicator";
@@ -41,16 +41,10 @@ const LocalConsultationAssistant = lazy(
 
 import { renderView } from "@/app/config/view-registry";
 import { useThemeMode } from "@/app/hooks/use-theme-mode";
-import Logo from "@/components/Logo";
-import { useIsPremium } from "@/modules/dashboard/v2/use-is-premium";
 import { AppSidebar } from "@/components/app-sidebar";
 import CommandPalette from "@/components/CommandPalette";
 import { SectionGarden } from "@/components/SectionGarden";
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { useAuth } from "@/contexts/AuthContext";
 import { FocusProvider } from "@/contexts/focus-provider";
 import { LayoutProvider, useLayout } from "@/contexts/layout-provider";
@@ -120,7 +114,6 @@ export function AppShell() {
 
 function AppShellInner() {
   const { t, i18n } = useTranslation();
-  const isPremium = useIsPremium();
   const isRtl = i18n.dir() === "rtl";
 
   const [currentView, setCurrentView] = useState<View>(() => {
@@ -290,7 +283,7 @@ function AppShellInner() {
   const bgOpacityLight = useTransform(scrollY, [0, 72], [0.5, 0.9]);
   const bgOpacityDark = useTransform(scrollY, [0, 72], [0.2, 0.8]);
 
-  const { unreadCount, criticalCount } = useNotificationCenter();
+  const { unreadCount } = useNotificationCenter();
   const notificationsButtonRef = useRef<HTMLButtonElement | null>(null);
   const pageTitle =
     currentView === "patient_detail"
@@ -307,7 +300,7 @@ function AppShellInner() {
     return () => window.removeEventListener("vetera:quick-consultation", openPicker);
   }, []);
 
-  const handleQuickAction = useCallback((action: PremiumShortcut) => {
+  const handleQuickAction = useCallback((action: QuickAction) => {
     if (action === "consultation") { setConsultationPickerOpen(true); return; }
     if (action === "patient" || action === "document" || action === "product" || action === "invoice") {
       const page: Record<typeof action, View> = { patient: "patients", document: "notes", product: "stock", invoice: "finances" };
@@ -519,7 +512,7 @@ function AppShellInner() {
       dir={isRtl ? "rtl" : "ltr"}
       style={
         {
-          "--header-height": isPremium ? "60px" : "72px",
+          "--header-height": "60px",
           "--titlebar-clearance": isDesktopRuntime ? "20px" : "0px",
         } as React.CSSProperties
       }
@@ -576,10 +569,7 @@ function AppShellInner() {
           <motion.header
             className={cn(
               "sticky top-0 z-40 flex w-full shrink-0 items-center",
-              !isPremium && "border-b border-black/[0.06] dark:border-white/[0.08]",
-              !isPremium && "bg-white/70 dark:bg-zinc-950/70 backdrop-blur-2xl backdrop-saturate-150",
-              !isPremium && "shadow-[inset_0_1px_0_rgba(255,255,255,0.7),0_4px_20px_-2px_rgba(0,0,0,0.03)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_4px_24px_-2px_rgba(0,0,0,0.4)]",
-              isPremium && "!border-none !shadow-none",
+              "!border-none !shadow-none",
               isDesktopRuntime && "cursor-default select-none"
             )}
             data-slot="app-header"
@@ -589,9 +579,7 @@ function AppShellInner() {
               {
                 "--bg-opacity-light": bgOpacityLight,
                 "--bg-opacity-dark": bgOpacityDark,
-                height: isPremium
-                  ? "60px"
-                  : "calc(var(--header-height) + var(--header-content-clearance))",
+                height: "60px",
               } as React.CSSProperties
             }
           >
@@ -600,190 +588,71 @@ function AppShellInner() {
               data-header-page={currentView}
               style={{
                 alignSelf: "stretch",
-                minHeight: isPremium ? "60px" : "72px",
-                height: isPremium ? "60px" : undefined,
-                paddingBlock: isPremium ? "0px" : "12px",
+                minHeight: "60px",
+                height: "60px",
+                paddingBlock: "0px",
                 boxSizing: "border-box",
               }}
             >
-              {/* 1. GAUCHE : Logo & Titre classique de page OU recherche (Premium et Clean) */}
-              {isPremium ? (
-                <div className="shell-toolbar-leading flex min-w-0 flex-1 items-center gap-2.5">
-                  <HeaderSidebarToggle />
-                  <span aria-hidden="true" className="shell-header-divider" />
-                  <HeaderBreadcrumb fallbackTitle={pageTitle} greetingName={currentView === "dashboard" ? firstNameOf(currentUser?.displayName, "Docteur") : undefined} onNavigate={handleNavigate} />
-                </div>
-              ) : (
-                <div className="shell-toolbar-leading flex min-w-0 flex-1 sm:flex-initial items-center gap-2.5">
-                  <SidebarTrigger
-                    aria-label="Menu"
-                    className="shell-toolbar-control size-9 shrink-0 md:hidden"
-                  />
-                  <div className="shell-toolbar-identity flex items-center gap-2.5 min-w-0">
-                    <button
-                      type="button"
-                      onClick={() => handleNavigate("dashboard")}
-                      className="group hidden sm:flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 rounded-lg p-0.5"
-                      aria-label="Aller au tableau de bord Baitari"
-                    >
-                      <Logo collapsed variant="refined" size="sm" className="shrink-0 transition-transform group-hover:scale-105" />
-                    </button>
-                    <div className="hidden sm:block h-4 w-px bg-black/10 dark:bg-white/15 shrink-0" />
-                    <h1 className="truncate font-heading font-semibold t-16 md:t-18 tracking-[-0.02em] text-foreground">
-                      {pageTitle}
-                    </h1>
-                    <div data-slot="header-save-indicator" className="hidden sm:block">
-                      <SaveIndicator state={saveState} />
-                    </div>
-                  </div>
-                </div>
-              )}
+              {/* 1. GAUCHE : bouton de la barre, filet, fil d'Ariane */}
+              <div className="shell-toolbar-leading flex min-w-0 flex-1 items-center gap-2.5">
+                <HeaderSidebarToggle />
+                <span aria-hidden="true" className="shell-header-divider" />
+                <HeaderBreadcrumb fallbackTitle={pageTitle} greetingName={currentView === "dashboard" ? firstNameOf(currentUser?.displayName, "Docteur") : undefined} onNavigate={handleNavigate} />
+              </div>
 
               {saveState !== "idle" && <div className="premium-header-save-indicator" data-slot="premium-header-save-indicator"><SaveIndicator state={saveState} /></div>}
 
               {/* 2. Search, then a thin rule, then the tools */}
-              {isPremium && (
-                <>
-                  <HeaderSearch onOpen={() => setPaletteOpen(true)} open={paletteOpen} />
-                  <span aria-hidden="true" className="shell-header-divider" />
-                </>
-              )}
+              <HeaderSearch onOpen={() => setPaletteOpen(true)} open={paletteOpen} />
+              <span aria-hidden="true" className="shell-header-divider" />
 
               {/* 3. DROITE : Actions */}
               <div className="shell-toolbar-actions flex shrink-0 items-center justify-end gap-2">
-                {isPremium ? (
-                  <>
-                    {/* 0. Quick actions: the same place on every page */}
-                    <HeaderQuickActions className="topIcon" onAction={handleQuickAction} />
+                {/* 0. Quick actions: the same place on every page */}
+                <HeaderQuickActions className="topIcon" onAction={handleQuickAction} />
 
-                    {/* 1. Theme toggle */}
-                    <ThemeControl dark={isDarkMode} onToggle={toggleTheme} />
+                {/* 1. Theme toggle */}
+                <ThemeControl dark={isDarkMode} onToggle={toggleTheme} />
 
-                    {/* 3. Assistant IA */}
-                    <ShortcutTooltip label="Assistant IA" shortcut="⌘ J">
-                      <button
-                        type="button"
-                        aria-label="Ouvrir l'Assistant IA (⌘J)"
-                        aria-haspopup="dialog"
-                        aria-keyshortcuts="Meta+J Control+J"
-                        onClick={() =>
-                          setAiAssistantOpen((prev) => {
-                            const next = !prev;
-                            if (!next) setIsAssistantCollapsed(false);
-                            return next;
-                          })
-                        }
-                        className={cn(
-                          "topIcon",
-                          aiAssistantOpen && "!bg-primary !text-primary-foreground"
-                        )}
-                      >
-                        <ToolbarIcon name="assistant" />
-                      </button>
-                    </ShortcutTooltip>
+                {/* 3. Assistant IA */}
+                <ShortcutTooltip label="Assistant IA" shortcut="⌘ J">
+                  <button
+                    type="button"
+                    aria-label="Ouvrir l'Assistant IA (⌘J)"
+                    aria-haspopup="dialog"
+                    aria-keyshortcuts="Meta+J Control+J"
+                    onClick={() =>
+                      setAiAssistantOpen((prev) => {
+                        const next = !prev;
+                        if (!next) setIsAssistantCollapsed(false);
+                        return next;
+                      })
+                    }
+                    className={cn(
+                      "topIcon",
+                      aiAssistantOpen && "!bg-primary !text-primary-foreground"
+                    )}
+                  >
+                    <ToolbarIcon name="assistant" />
+                  </button>
+                </ShortcutTooltip>
 
-                    <ShortcutTooltip label="Notifications">
-                      <button ref={notificationsButtonRef} type="button" aria-label="Notifications" aria-expanded={notificationsOpen} onClick={() => setNotificationsOpen(current => !current)} className="topIcon relative">
-                        <ToolbarIcon name="notifications" />
-                        {unreadCount > 0 && <span className="absolute -right-1 -top-1 rounded-full bg-primary px-1 t-12 text-primary-foreground">{unreadCount > 9 ? "9+" : unreadCount}</span>}
-                      </button>
-                    </ShortcutTooltip>
+                <ShortcutTooltip label="Notifications">
+                  <button ref={notificationsButtonRef} type="button" aria-label="Notifications" aria-expanded={notificationsOpen} onClick={() => setNotificationsOpen(current => !current)} className="topIcon relative">
+                    <ToolbarIcon name="notifications" />
+                    {unreadCount > 0 && <span className="absolute -right-1 -top-1 rounded-full bg-primary px-1 t-12 text-primary-foreground">{unreadCount > 9 ? "9+" : unreadCount}</span>}
+                  </button>
+                </ShortcutTooltip>
 
-                    <NotificationCenter
-                      hideTrigger
-                      open={notificationsOpen}
-                      onOpenChange={setNotificationsOpen}
-                      anchor={notificationsButtonRef}
-                      onNavigate={handleNavigate}
-                      onNavigateToPatient={handleNavigateToPatient}
-                    />
-                  </>
-                ) : (
-                  <>
-                    {/* Quick actions: the same place on every page */}
-                    <HeaderQuickActions
-                      className="shell-toolbar-control grid size-9 shrink-0 place-items-center rounded-full"
-                      onAction={handleQuickAction}
-                    />
-
-                    {/* Mobile search button */}
-                    <ShortcutTooltip label="Rechercher partout" shortcut="⌘ K">
-                      <button
-                        type="button"
-                        aria-label="Rechercher partout"
-                        aria-haspopup="dialog"
-                        aria-keyshortcuts="Meta+K Control+K"
-                        onClick={() => setPaletteOpen(true)}
-                        className="shell-toolbar-control grid size-9 shrink-0 place-items-center sm:!hidden"
-                      >
-                        <ToolbarIcon name="search" />
-                      </button>
-                    </ShortcutTooltip>
-
-                    {/* Assistant IA button (unique) */}
-                    <ShortcutTooltip label="Assistant IA" shortcut="⌘ J">
-                      <button
-                        type="button"
-                        aria-label="Ouvrir l'Assistant IA (⌘J)"
-                        aria-haspopup="dialog"
-                        aria-keyshortcuts="Meta+J Control+J"
-                        onClick={() =>
-                          setAiAssistantOpen((prev) => {
-                            const next = !prev;
-                            if (!next) setIsAssistantCollapsed(false);
-                            return next;
-                          })
-                        }
-                        className={cn(
-                          "shell-toolbar-control flex size-9 items-center justify-center rounded-full transition",
-                          aiAssistantOpen && "!bg-primary !text-primary-foreground shadow-xs"
-                        )}
-                      >
-                        <ToolbarIcon name="assistant" className="size-4 shrink-0" />
-                      </button>
-                    </ShortcutTooltip>
-
-                    {/* Notifications button with unread count badge */}
-                    <ShortcutTooltip label="Notifications">
-                      <button
-                        ref={notificationsButtonRef}
-                        type="button"
-                        aria-label="Notifications"
-                        onClick={() => setNotificationsOpen((prev) => !prev)}
-                        className={cn(
-                          "shell-toolbar-control relative flex size-9 items-center justify-center rounded-full transition",
-                          notificationsOpen && "!bg-accent !text-accent-foreground"
-                        )}
-                      >
-                        <ToolbarIcon name="notifications" className="size-4 shrink-0" />
-                        {unreadCount > 0 && (
-                          <span
-                            aria-label={`${unreadCount} notifications`}
-                            className={cn(
-                              "absolute -top-0.5 -right-0.5 flex size-4 items-center justify-center rounded-full t-12 font-bold text-white shadow-xs",
-                              criticalCount > 0 ? "bg-rose-500" : "bg-amber-500"
-                            )}
-                          >
-                            {unreadCount > 9 ? "9+" : unreadCount}
-                          </span>
-                        )}
-                      </button>
-                    </ShortcutTooltip>
-
-                    <NotificationCenter
-                      hideTrigger
-                      open={notificationsOpen}
-                      onOpenChange={setNotificationsOpen}
-                      anchor={notificationsButtonRef}
-                      onNavigate={handleNavigate}
-                      onNavigateToPatient={handleNavigateToPatient}
-                    />
-
-                    {/* ── Theme button ────────────────────────────────────── */}
-                    <ThemeControl dark={isDarkMode} onToggle={toggleTheme} />
-
-                  </>
-                )}
+                <NotificationCenter
+                  hideTrigger
+                  open={notificationsOpen}
+                  onOpenChange={setNotificationsOpen}
+                  anchor={notificationsButtonRef}
+                  onNavigate={handleNavigate}
+                  onNavigateToPatient={handleNavigateToPatient}
+                />
               </div>
 
 

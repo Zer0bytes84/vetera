@@ -98,7 +98,6 @@ import {
   getInvoicePatientName,
 } from "@/modules/finances/components/finances-shared";
 import type { FinancesViewProps } from "../hooks/use-finances-page-model";
-import { useIsPremium } from "@/modules/dashboard/v2/use-is-premium";
 import "../finances-premium.css";
 import { DatePicker } from "@/components/ui/date-picker";
 import { useListCursor } from "@/hooks/useListCursor";
@@ -112,7 +111,6 @@ import { EmptyMascot } from "@/components/mascot/empty-mascot";
 import { patientDocumentName } from "@/modules/patients/reference/reference";
 
 export function FinancesView(props: FinancesViewProps) {
-  const isPremium = useIsPremium();
   const invoicesRef = useListCursor({ storageKey: "invoices" });
   const {
     activeTab,
@@ -219,7 +217,7 @@ export function FinancesView(props: FinancesViewProps) {
   const viewToggle = (
     <TabsList
       aria-label="Vue des finances"
-      className={cn(isPremium && "ml-auto shrink-0")}
+      className="ml-auto shrink-0"
       tabsStyle="segmented"
     >
       <TabsTrigger className="px-4" value="invoices">

@@ -1,11 +1,11 @@
-:root[data-visual-style="premium"] :is(h1, h2, h3, h4, [data-slot="card-title"], .font-heading, .font-display) {
+:root[data-skin="clean"] :is(h1, h2, h3, h4, [data-slot="card-title"], .font-heading, .font-display) {
   font-family: var(--app-font-heading) !important;
   font-weight: 500;
   font-synthesis: none;
 }
 
 /* Floating workflows need opaque surfaces even though page cards are transparent. */
-:root[data-visual-style="premium"] :is([data-slot="dialog-content"], [data-slot="alert-dialog-content"], [data-slot="sheet-content"], [data-slot="drawer-content"]) {
+:root[data-skin="clean"] :is([data-slot="dialog-content"], [data-slot="alert-dialog-content"], [data-slot="sheet-content"], [data-slot="drawer-content"]) {
   --card: var(--surface) !important;
   --card-foreground: var(--ink) !important;
   --popover: var(--surface) !important;
@@ -16,18 +16,18 @@
   backdrop-filter: none !important;
 }
 
-:root[data-visual-style="premium"] :is([data-slot="dialog-footer"], [data-slot="alert-dialog-footer"], .modal-medical-body, .modal-medical-header) {
+:root[data-skin="clean"] :is([data-slot="dialog-footer"], [data-slot="alert-dialog-footer"], .modal-medical-body, .modal-medical-header) {
   background: var(--surface) !important;
   -webkit-backdrop-filter: none !important;
   backdrop-filter: none !important;
 }
 
 /* The view switch stays solid over the action band's mesh. */
-:root[data-visual-style="premium"] .dashboard-mode-toggle {
+:root[data-skin="clean"] .dashboard-mode-toggle {
   background: var(--band-bg) !important;
 }
 
-:root[data-visual-style="premium"] .app-sidebar [data-slot="sidebar-menu-button"] > span {
+:root[data-skin="clean"] .app-sidebar [data-slot="sidebar-menu-button"] > span {
   overflow: visible;
   white-space: nowrap;
   word-break: normal;
@@ -35,17 +35,17 @@
 }
 
 /* Breadcrumb and right actions share the content frame's horizontal insets. */
-:root[data-visual-style="premium"] .shell-toolbar {
+:root[data-skin="clean"] .shell-toolbar {
   padding-inline: 16px !important;
 }
 
 @media (min-width: 1024px) {
-  :root[data-visual-style="premium"] .shell-toolbar { padding-inline: 24px !important; }
-  :root[data-visual-style="premium"] .shell-toolbar[data-header-page="dashboard"] { padding-inline: 32px !important; }
+  :root[data-skin="clean"] .shell-toolbar { padding-inline: 24px !important; }
+  :root[data-skin="clean"] .shell-toolbar[data-header-page="dashboard"] { padding-inline: 32px !important; }
 }
 
 /* The slideout glyph is the control. Its frame appears only on hover. */
-:root[data-visual-style="premium"] .app-sidebar [data-sidebar="trigger"] {
+:root[data-skin="clean"] .app-sidebar [data-sidebar="trigger"] {
   width: 36px !important;
   height: 36px !important;
   min-height: 36px !important;
@@ -57,110 +57,44 @@
 }
 
 @media (hover: hover) and (pointer: fine) {
-  :root[data-visual-style="premium"] .app-sidebar [data-sidebar="trigger"]:hover {
+  :root[data-skin="clean"] .app-sidebar [data-sidebar="trigger"]:hover {
     border-color: var(--nav-line) !important;
     background: var(--nav-hover) !important;
   }
 }
 
-:root[data-visual-style="premium"] .app-sidebar [data-sidebar="trigger"] .sidebar-toggle-icon {
+:root[data-skin="clean"] .app-sidebar [data-sidebar="trigger"] .sidebar-toggle-icon {
   width: 22px !important;
   height: 22px !important;
   color: inherit;
 }
 
 /* A shared ruled view selector. Base UI keeps roving focus and arrow navigation. */
-:root[data-visual-style="premium"] .engraved-view-tabs[data-slot="tabs-list"] {
-  display: flex !important;
-  align-items: stretch !important;
-  width: max-content !important;
-  max-width: 100%;
-  height: 40px !important;
-  min-height: 40px !important;
-  gap: 0 !important;
-  padding: 0 !important;
-  border: 0 !important;
-  border-radius: 0 !important;
-  background: transparent !important;
-  box-shadow: var(--hair-t), var(--hair-b), var(--hair-l) !important;
-}
-
-:root[data-visual-style="premium"] .engraved-view-tabs [data-slot="tabs-trigger"] {
-  flex: 0 0 auto !important;
-  height: 40px !important;
-  min-height: 40px !important;
-  padding: 0 16px !important;
-  gap: 8px !important;
-  border-radius: 0 !important;
-  color: var(--soft) !important;
-  background: transparent !important;
-  box-shadow: var(--hair-r) !important;
-  font-size: 13px !important;
-}
-
-@media (hover: hover) and (pointer: fine) {
-  :root[data-visual-style="premium"] .engraved-view-tabs [data-slot="tabs-trigger"]:hover {
-    background: var(--lift) !important;
-    color: var(--ink) !important;
-  }
-}
-
-:root[data-visual-style="premium"] .engraved-view-tabs [data-slot="tabs-trigger"][aria-selected="true"] {
-  background: var(--lift-2) !important;
-  color: var(--ink) !important;
-  box-shadow: var(--hair-r), inset 0 -2px 0 var(--ink) !important;
-}
-
-:root[data-visual-style="premium"] .engraved-view-tabs [data-slot="tabs-trigger"]::after {
-  display: none !important;
-}
-
-:root[data-visual-style="premium"] .engraved-view-tabs [data-slot="badge"] {
-  min-width: 20px !important;
-  margin: 0 !important;
-  padding-inline: 4px !important;
-  background: transparent !important;
-  border: 0 !important;
-  color: inherit !important;
-  font-size: 12px !important;
-  font-variant-numeric: tabular-nums;
-  box-shadow: none !important;
-}
 
 /* Agenda: heading, date controls and view controls share a stable vertical rhythm. */
-:root[data-visual-style="premium"] .agenda-planner {
-  overflow: visible;
-}
 
-:root[data-visual-style="premium"] .agenda-planner-heading,
-:root[data-visual-style="premium"] .clinical-activity-heading {
-  min-height: 64px;
-  align-items: center;
-  padding: 16px 24px !important;
-}
-
-:root[data-visual-style="premium"] :is(.agenda-planner-heading, .clinical-activity-heading) [data-slot="card-title"] {
+:root[data-skin="clean"] :is(.agenda-planner-heading, .clinical-activity-heading) [data-slot="card-title"] {
   font-size: 18px;
   line-height: 24px;
   letter-spacing: -0.02em;
 }
 
 /* The day heading sits inside the frame, aligned with the list and with room above. */
-:root[data-visual-style="premium"] .agenda-day-panel > .agenda-day-heading {
+:root[data-skin="clean"] .agenda-day-panel > .agenda-day-heading {
   padding: 24px 20px 20px !important;
 }
 @media (min-width: 640px) {
-  :root[data-visual-style="premium"] .agenda-day-panel > .agenda-day-heading {
+  :root[data-skin="clean"] .agenda-day-panel > .agenda-day-heading {
     padding-inline: 24px !important;
   }
 }
 
 /* The day toolbar keeps the same inset whether or not it holds the search field. */
-:root[data-visual-style="premium"] .agenda-day-panel .agenda-day-toolbar {
+:root[data-skin="clean"] .agenda-day-panel .agenda-day-toolbar {
   padding: 16px 20px !important;
 }
 @media (min-width: 640px) {
-  :root[data-visual-style="premium"] .agenda-day-panel .agenda-day-toolbar {
+  :root[data-skin="clean"] .agenda-day-panel .agenda-day-toolbar {
     padding-inline: 24px !important;
   }
 }
@@ -195,77 +129,16 @@
 }
 
 /* Agenda: the month calendar and the day list read as two framed blocks. */
-:root[data-visual-style="premium"] .agenda-month-calendar > header,
-:root[data-visual-style="premium"] .agenda-day-panel > [data-slot="card-header"] {
+:root[data-skin="clean"] .agenda-month-calendar > header,
+:root[data-skin="clean"] .agenda-day-panel > [data-slot="card-header"] {
   border: 0;
   box-shadow: var(--hair-b);
-}
-
-:root[data-visual-style="premium"] .agenda-toolbar {
-  align-items: center;
-  gap: 16px 24px;
-  padding: 16px 24px;
-  border: 0;
-  box-shadow: var(--hair-b);
-}
-
-:root[data-visual-style="premium"] .agenda-date-controls {
-  gap: 12px;
-}
-
-:root[data-visual-style="premium"] .agenda-period-navigation {
-  border-radius: 8px;
-  padding: 0;
-  overflow: hidden;
-}
-
-:root[data-visual-style="premium"] .agenda-period-navigation [data-slot="button"] {
-  width: 36px !important;
-  min-width: 36px;
-  padding: 0 !important;
-  border-radius: 0 !important;
-  border: 0 !important;
-  box-shadow: none !important;
-}
-
-:root[data-visual-style="premium"] .agenda-period-navigation [data-slot="button"] + [data-slot="button"] {
-  box-shadow: var(--hair-l) !important;
-}
-
-:root[data-visual-style="premium"] .agenda-selected-date {
-  min-width: 220px;
-  justify-content: flex-start !important;
 }
 
 /* Keep the 10px cross-corners outside the clinical board, not clipped by it. */
-:root[data-visual-style="premium"] .clinical-activity-board {
-  overflow: visible !important;
-  gap: 0;
-}
-
-:root[data-visual-style="premium"] .clinical-activity-icon {
-  width: 24px;
-  height: 24px;
-  color: var(--ink-soft);
-  background: transparent;
-  border-radius: 0;
-}
-
-:root[data-visual-style="premium"] .clinical-activity-toolbar {
-  padding: 16px 24px;
-  gap: 16px 24px;
-}
-
-:root[data-visual-style="premium"] .clinical-activity-spacer {
-  display: none;
-}
-
-:root[data-visual-style="premium"] .clinical-activity-toolbar > :last-child {
-  max-width: 320px;
-}
 
 /* Reminder form: explicit labels, equal-height controls, no floating field fragments. */
-:root[data-visual-style="premium"] .quick-reminder-form {
+:root[data-skin="clean"] .quick-reminder-form {
   container: reminder-form / inline-size;
   border: 0;
   border-radius: 0;
@@ -273,7 +146,7 @@
   box-shadow: var(--hair-t), var(--hair-b);
 }
 
-:root[data-visual-style="premium"] .quick-reminder-fields {
+:root[data-skin="clean"] .quick-reminder-fields {
   display: grid;
   grid-template-columns: minmax(180px, 1fr) minmax(160px, 200px) 156px auto auto;
   align-items: end;
@@ -281,12 +154,12 @@
   padding: 20px 24px;
 }
 
-:root[data-visual-style="premium"] .quick-reminder-fields > div {
+:root[data-skin="clean"] .quick-reminder-fields > div {
   min-width: 0;
   width: auto;
 }
 
-:root[data-visual-style="premium"] .quick-reminder-fields label {
+:root[data-skin="clean"] .quick-reminder-fields label {
   display: block;
   margin-bottom: 8px;
   font-size: 12px;
@@ -295,11 +168,11 @@
   color: var(--ink-soft);
 }
 
-:root[data-visual-style="premium"] .quick-reminder-title > label {
+:root[data-skin="clean"] .quick-reminder-title > label {
   display: flex;
 }
 
-:root[data-visual-style="premium"] .quick-reminder-fields :is(input, [data-slot="input-group"]) {
+:root[data-skin="clean"] .quick-reminder-fields :is(input, [data-slot="input-group"]) {
   height: 36px !important;
   min-height: 36px;
   width: 100%;
@@ -311,18 +184,18 @@
   box-shadow: none !important;
 }
 
-:root[data-visual-style="premium"] .quick-reminder-fields [data-slot="input-group"] {
+:root[data-skin="clean"] .quick-reminder-fields [data-slot="input-group"] {
   padding-inline: 0;
 }
 
-:root[data-visual-style="premium"] .quick-reminder-fields [data-slot="input-group"] input {
+:root[data-skin="clean"] .quick-reminder-fields [data-slot="input-group"] input {
   min-width: 0;
   border: 0 !important;
   border-radius: inherit;
   background: transparent !important;
 }
 
-:root[data-visual-style="premium"] .quick-reminder-fields [data-slot="input-group-button"] {
+:root[data-skin="clean"] .quick-reminder-fields [data-slot="input-group-button"] {
   width: 28px !important;
   min-width: 28px;
   height: 28px !important;
@@ -334,86 +207,50 @@
 }
 
 /* Documents: filters are not primary actions. Keep space around all command groups. */
-:root[data-visual-style="premium"] .documents-workspace [data-slot="page-header-actions"],
-:root[data-visual-style="premium"] .document-patient-actions {
+:root[data-skin="clean"] .documents-workspace [data-slot="page-header-actions"],
+:root[data-skin="clean"] .document-patient-actions {
   gap: 12px !important;
 }
 
-:root[data-visual-style="premium"] .document-library-filters {
-  width: 100%;
-  gap: 6px;
-  padding: 4px;
-  background: var(--fill);
-}
-
-:root[data-visual-style="premium"] .document-library-filters [data-slot="toggle-group-item"] {
-  min-width: 0;
-  height: 32px;
-  padding-inline: 8px;
-  border: 0;
-  border-radius: 6px;
-  background: transparent;
-  color: var(--soft);
-  font-size: 12px;
-  box-shadow: none;
-}
-
-:root[data-visual-style="premium"] .document-library-filters [aria-pressed="true"] {
-  background: var(--surface);
-  color: var(--ink);
-  box-shadow: 0 1px 2px rgb(0 0 0 / 0.08);
-}
-
-:root[data-visual-style="premium"] .document-editor-modes {
-  gap: 8px;
-  padding: 4px;
-}
-
 @container reminder-form (max-width: 900px) {
-  :root[data-visual-style="premium"] .quick-reminder-fields {
+  :root[data-skin="clean"] .quick-reminder-fields {
     grid-template-columns: minmax(0, 1fr) 156px auto;
     align-items: end;
   }
-  :root[data-visual-style="premium"] .quick-reminder-title { grid-column: 1 / -1; }
-  :root[data-visual-style="premium"] .quick-reminder-details { grid-column: 2; }
+  :root[data-skin="clean"] .quick-reminder-title { grid-column: 1 / -1; }
+  :root[data-skin="clean"] .quick-reminder-details { grid-column: 2; }
 }
 
 @container reminder-form (max-width: 520px) {
-  :root[data-visual-style="premium"] .quick-reminder-fields {
+  :root[data-skin="clean"] .quick-reminder-fields {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     padding-inline: 16px;
   }
-  :root[data-visual-style="premium"] .quick-reminder-details { grid-column: 1; }
-}
-
-@media (max-width: 767px) {
-  :root[data-visual-style="premium"] .clinical-activity-toolbar > :last-child { max-width: none; }
-  :root[data-visual-style="premium"] .engraved-view-tabs [data-slot="tabs-trigger"] { padding-inline: 12px !important; }
-  :root[data-visual-style="premium"] .agenda-selected-date { min-width: 0; }
+  :root[data-skin="clean"] .quick-reminder-details { grid-column: 1; }
 }
 
 /* The section tabs sit right under the common page header, one frame for all sections. */
-:root[data-visual-style="premium"] .clinical-workspace [data-slot="page-header"] + [data-slot="tabs-list"] {
+:root[data-skin="clean"] .clinical-workspace [data-slot="page-header"] + [data-slot="tabs-list"] {
   margin-top: 4px;
 }
-:root[data-visual-style="premium"] .clinical-workspace :is(.care-page, .hospitalisation-view) > header {
+:root[data-skin="clean"] .clinical-workspace :is(.care-page, .hospitalisation-view) > header {
   padding-block: 0 20px;
   border-bottom: 1px solid var(--line);
   box-shadow: var(--hair-b);
 }
-:root[data-visual-style="premium"] .clinical-workspace .care-page {
+:root[data-skin="clean"] .clinical-workspace .care-page {
   font-family: var(--app-font-sans);
 }
 
 /* Soins: one toolbar with clear selected states (metrics use SectionCards). */
-:root[data-visual-style="premium"] .care-toolbar {
+:root[data-skin="clean"] .care-toolbar {
   justify-content: flex-start;
   gap: 16px;
   padding-bottom: 20px;
   box-shadow: var(--hair-b);
 }
-:root[data-visual-style="premium"] .care-toolbar-controls { margin-left: auto; align-items: center; }
-:root[data-visual-style="premium"] .care-toolbar [role="group"] {
+:root[data-skin="clean"] .care-toolbar-controls { margin-left: auto; align-items: center; }
+:root[data-skin="clean"] .care-toolbar [role="group"] {
   display: inline-flex;
   gap: 0;
   padding: 3px;
@@ -421,7 +258,7 @@
   border-radius: 8px;
   background: var(--lift);
 }
-:root[data-visual-style="premium"] .care-toolbar [role="group"] [data-slot="button"] {
+:root[data-skin="clean"] .care-toolbar [role="group"] [data-slot="button"] {
   min-height: 34px !important;
   border: 0 !important;
   border-radius: 5px !important;
@@ -430,59 +267,59 @@
   box-shadow: none !important;
   color: var(--soft) !important;
 }
-:root[data-visual-style="premium"] .care-toolbar [role="group"] [aria-pressed="true"] {
+:root[data-skin="clean"] .care-toolbar [role="group"] [aria-pressed="true"] {
   background: var(--surface) !important;
   color: var(--ink) !important;
   box-shadow: 0 1px 3px var(--line) !important;
 }
-:root[data-visual-style="premium"] .care-toolbar input {
+:root[data-skin="clean"] .care-toolbar input {
   height: 40px !important;
   border: 1px solid var(--line) !important;
   border-radius: 8px !important;
   padding-inline: 12px !important;
   background: var(--surface) !important;
 }
-:root[data-visual-style="premium"] .care-task-group {
+:root[data-skin="clean"] .care-task-group {
   padding: 0 !important;
   border: 0 !important;
   border-radius: 0 !important;
   background: transparent !important;
 }
-:root[data-visual-style="premium"] .care-task-group > :is(h2, .care-group-head) { padding: 4px 0 8px; }
-:root[data-visual-style="premium"] .care-task-row {
+:root[data-skin="clean"] .care-task-group > :is(h2, .care-group-head) { padding: 4px 0 8px; }
+:root[data-skin="clean"] .care-task-row {
   background: var(--surface) !important;
   border-color: var(--line) !important;
   border-radius: 8px !important;
   padding: 12px 16px !important;
 }
-:root[data-visual-style="premium"] .care-task-row:has([data-premium-status="en_retard"]) {
+:root[data-skin="clean"] .care-task-row:has([data-premium-status="en_retard"]) {
   box-shadow: inset 3px 0 0 var(--premium-red);
 }
 @media (hover: hover) and (pointer: fine) {
-  :root[data-visual-style="premium"] .care-task-row:hover {
+  :root[data-skin="clean"] .care-task-row:hover {
     border-color: var(--line-strong) !important;
   }
 }
-:root[data-visual-style="premium"] :is(.stay-summary-card, .stay-location-card) {
+:root[data-skin="clean"] :is(.stay-summary-card, .stay-location-card) {
   padding: 20px !important;
   border: 1px solid var(--line) !important;
   border-radius: 8px !important;
   background: var(--surface) !important;
   box-shadow: none !important;
 }
-:root[data-visual-style="premium"] .stay-location-card > div:first-child {
+:root[data-skin="clean"] .stay-location-card > div:first-child {
   padding-bottom: 16px;
   box-shadow: var(--hair-b);
 }
 
-:root[data-visual-style="premium"] .stay-detail > :is(header, section) {
+:root[data-skin="clean"] .stay-detail > :is(header, section) {
   padding: 20px !important;
   border: 1px solid var(--line) !important;
   border-radius: 8px !important;
   background: var(--surface) !important;
 }
-:root[data-visual-style="premium"] .stay-detail > header { background: var(--band) !important; }
-:root[data-visual-style="premium"] .stay-detail > section > :is(h3, div:first-child:has(h3)) {
+:root[data-skin="clean"] .stay-detail > header { background: var(--band) !important; }
+:root[data-skin="clean"] .stay-detail > section > :is(h3, div:first-child:has(h3)) {
   margin: -20px -20px 20px;
   padding: 16px 20px;
   border-radius: 8px 8px 0 0;
@@ -490,17 +327,17 @@
   box-shadow: var(--hair-b);
 }
 @media (max-width: 639px) {
-  :root[data-visual-style="premium"] .care-toolbar-controls { margin-left: 0; width: 100%; }
-  :root[data-visual-style="premium"] .care-task-row { flex-wrap: wrap; }
+  :root[data-skin="clean"] .care-toolbar-controls { margin-left: 0; width: 100%; }
+  :root[data-skin="clean"] .care-task-row { flex-wrap: wrap; }
 }
 
-:root[data-visual-style="premium"] .care-task-group > :is(h2, .care-group-head) {
+:root[data-skin="clean"] .care-task-group > :is(h2, .care-group-head) {
   padding: 14px 16px;
   background: var(--band);
   box-shadow: var(--hair-t), var(--hair-b);
   margin-bottom: 0;
 }
-:root[data-visual-style="premium"] .stay-location-card > div:first-child {
+:root[data-skin="clean"] .stay-location-card > div:first-child {
   margin: -20px -20px 0;
   padding: 16px 20px;
   background: var(--band);
@@ -508,46 +345,21 @@
 }
 
 /* Selected consultation: keep the complete record in the same ruled frame. */
-:root[data-visual-style="premium"] .clinical-selected-record > [data-slot="card-header"] {
-  padding: 20px 24px !important;
-  background: var(--band) !important;
-}
-:root[data-visual-style="premium"] .clinical-selected-record > [data-slot="card-content"] {
-  padding: 24px !important;
-}
-:root[data-visual-style="premium"] .clinical-selected-identity {
-  background: var(--surface) !important;
-  border: 1px solid var(--line) !important;
-  border-radius: 8px !important;
-}
-:root[data-visual-style="premium"] .clinical-selected-record [data-slot="tabs-content"] [data-slot="card"] {
-  border: 1px solid var(--line) !important;
-  border-radius: 8px !important;
-  background: var(--surface) !important;
-  overflow: hidden;
-}
-:root[data-visual-style="premium"] .clinical-selected-record [data-slot="tabs-content"] [data-slot="card-header"] {
-  padding: 18px 20px !important;
-  background: var(--band) !important;
-}
-:root[data-visual-style="premium"] .clinical-selected-record [data-slot="tabs-content"] [data-slot="card-content"] {
-  padding: 20px !important;
-}
 
 /* Patient record: same typography, engraved rules and mesh headings as Clinique. */
-:root[data-visual-style="premium"] .patient-record-page :is(.patient-context-card, .medical-kpi, .medical-patient-header, .medical-register, .medical-rail, .medical-permanent) {
+:root[data-skin="clean"] .patient-record-page :is(.patient-context-card, .medical-kpi, .medical-patient-header, .medical-register, .medical-rail, .medical-permanent) {
   background: transparent;
   border: 0;
   border-radius: 0;
   box-shadow: var(--hair-t), var(--hair-b), var(--hair-l), var(--hair-r);
 }
-:root[data-visual-style="premium"] .patient-record-page :is(.patient-context-widgets, .medical-kpi-strip, .patient-record-indicators) {
+:root[data-skin="clean"] .patient-record-page :is(.patient-context-widgets, .medical-kpi-strip, .patient-record-indicators) {
   gap: 0;
 }
-:root[data-visual-style="premium"] .patient-record-page .patient-context-card {
+:root[data-skin="clean"] .patient-record-page .patient-context-card {
   padding: 20px 24px;
 }
-:root[data-visual-style="premium"] .patient-record-page :is(.patient-context-heading > span:first-child, .medical-kpi-heading > div > div) {
+:root[data-skin="clean"] .patient-record-page :is(.patient-context-heading > span:first-child, .medical-kpi-heading > div > div) {
   width: 24px;
   height: 24px;
   border: 0;
@@ -556,44 +368,19 @@
   background: transparent;
   color: var(--soft);
 }
-:root[data-visual-style="premium"] .patient-record-page :is(.patient-context-value, .medical-kpi-value) {
+:root[data-skin="clean"] .patient-record-page :is(.patient-context-value, .medical-kpi-value) {
   color: var(--ink);
   font-weight: 500;
   font-variant-numeric: tabular-nums;
 }
-:root[data-visual-style="premium"] .patient-record-page .medical-patient-header > [aria-hidden="true"] {
-  display: none;
-}
-:root[data-visual-style="premium"] .patient-record-page .medical-header-main {
-  box-sizing: border-box;
-  width: 100%;
-  max-width: 100%;
-  margin: 0;
-  padding: 24px;
-  background: var(--band);
-  background-clip: padding-box;
-  overflow: hidden;
-}
-:root[data-visual-style="premium"] .patient-record-page .medical-patient-header {
-  min-width: 0;
-  max-width: 100%;
-  overflow: hidden;
-  border: 1px solid var(--line);
-  box-shadow: none;
-}
-:root[data-visual-style="premium"] .patient-record-page .medical-kpi { padding: 20px 24px; }
-:root[data-visual-style="premium"] .patient-record-page .medical-kpi-heading h2 {
+:root[data-skin="clean"] .patient-record-page .medical-kpi { padding: 20px 24px; }
+:root[data-skin="clean"] .patient-record-page .medical-kpi-heading h2 {
   text-transform: none;
   font-size: 13px;
   font-weight: 500;
   letter-spacing: normal;
 }
-:root[data-visual-style="premium"] .patient-record-page .medical-register-header {
-  padding: 20px 24px;
-  background: var(--band);
-  box-shadow: var(--hair-b);
-}
-:root[data-visual-style="premium"] .patient-record-page .medical-tabs {
+:root[data-skin="clean"] .patient-record-page .medical-tabs {
   display: grid !important;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   background: transparent;
@@ -601,7 +388,7 @@
   gap: 0;
   box-shadow: var(--hair-b);
 }
-:root[data-visual-style="premium"] .patient-record-page .medical-tabs [role="tab"] {
+:root[data-skin="clean"] .patient-record-page .medical-tabs [role="tab"] {
   min-height: 44px;
   border: 0 !important;
   border-radius: 0 !important;
@@ -610,90 +397,45 @@
   color: var(--soft) !important;
   box-shadow: var(--hair-r) !important;
 }
-:root[data-visual-style="premium"] .patient-record-page .medical-tabs [aria-selected="true"] {
+:root[data-skin="clean"] .patient-record-page .medical-tabs [aria-selected="true"] {
   background: var(--frame) !important;
   color: var(--ink) !important;
   box-shadow: var(--hair-r), inset 0 -2px 0 var(--ink) !important;
 }
-:root[data-visual-style="premium"] .patient-record-page .medical-tabs [role="tab"] svg { color: inherit; }
-:root[data-visual-style="premium"] .patient-record-page .medical-tab-content { padding: 24px; }
-:root[data-visual-style="premium"] .patient-record-page .medical-rail { padding: 24px; }
+:root[data-skin="clean"] .patient-record-page .medical-tabs [role="tab"] svg { color: inherit; }
+:root[data-skin="clean"] .patient-record-page .medical-tab-content { padding: 24px; }
 
 /* All eight record sections stay reachable on one line: the row scrolls sideways,
    with edge fades and arrow buttons (medical-record.css) showing what is hidden. */
-:root[data-visual-style="premium"] .patient-record-page .medical-tabs {
+:root[data-skin="clean"] .patient-record-page .medical-tabs {
   scroll-padding-inline: 48px;
 }
-:root[data-visual-style="premium"] .patient-record-page .medical-tabs [role="tab"] {
+:root[data-skin="clean"] .patient-record-page .medical-tabs [role="tab"] {
   height: 44px !important;
   white-space: nowrap;
   font-size: 13px !important;
 }
-:root[data-visual-style="premium"] .patient-record-page .medical-tabs-frame { background: transparent; }
-:root[data-visual-style="premium"] .patient-record-page .medical-tabs::after { display: none; }
-:root[data-visual-style="premium"] .patient-record-page .medical-tabs-frame::before { background: linear-gradient(to right, var(--surface) 55%, transparent); }
-:root[data-visual-style="premium"] .patient-record-page .medical-tabs-frame::after { background: linear-gradient(to left, var(--surface) 55%, transparent); }
-:root[data-visual-style="premium"] .patient-record-page .medical-tabs-scroll { background: var(--surface); }
-:root[data-visual-style="premium"] .patient-timeline-table th:nth-child(1) { width: 16%; }
-:root[data-visual-style="premium"] .patient-timeline-table th:nth-child(2) { width: 21%; }
-:root[data-visual-style="premium"] .patient-timeline-table th:nth-child(3) { width: 28%; }
-:root[data-visual-style="premium"] .patient-timeline-table th:nth-child(4) { width: 17%; }
-:root[data-visual-style="premium"] .patient-timeline-table th:nth-child(5) { width: 18%; }
-:root[data-visual-style="premium"] .patient-timeline-table :is(th, td) {
-  padding-inline: 12px !important;
-  overflow-wrap: break-word;
-  word-break: normal;
-}
-:root[data-visual-style="premium"] .patient-timeline-table td:last-child [data-slot="button"] {
-  white-space: nowrap !important;
-  word-break: normal;
-  overflow-wrap: normal;
-  padding-inline: 8px !important;
-  font-size: 12px !important;
-  gap: 4px !important;
-  max-width: 100%;
-}
+:root[data-skin="clean"] .patient-record-page .medical-tabs-frame { background: transparent; }
+:root[data-skin="clean"] .patient-record-page .medical-tabs::after { display: none; }
+:root[data-skin="clean"] .patient-record-page .medical-tabs-frame::before { background: linear-gradient(to right, var(--surface) 55%, transparent); }
+:root[data-skin="clean"] .patient-record-page .medical-tabs-frame::after { background: linear-gradient(to left, var(--surface) 55%, transparent); }
+:root[data-skin="clean"] .patient-record-page .medical-tabs-scroll { background: var(--surface); }
 @media (max-width: 767px) {
-  :root[data-visual-style="premium"] .patient-record-page .medical-tab-content { padding: 12px; }
-  :root[data-visual-style="premium"] .patient-timeline-table :is(th, td) { padding-inline: 6px !important; }
-  :root[data-visual-style="premium"] .patient-timeline-table td:last-child [data-slot="button"] { white-space: normal !important; }
+  :root[data-skin="clean"] .patient-record-page .medical-tab-content { padding: 12px; }
 }
 @container patient-page (max-width: 639px) {
-  :root[data-visual-style="premium"] .patient-record-page .medical-tabs {
+  :root[data-skin="clean"] .patient-record-page .medical-tabs {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
-
-:root[data-visual-style="premium"] :is(.patient-record-page, .patient-peek-panel) .medical-rail {
-  padding: 0;
-  background: var(--surface);
-}
-:root[data-visual-style="premium"] :is(.patient-record-page, .patient-peek-panel) .medical-rail > section {
-  margin: 0;
-  padding: 20px;
-  border: 0;
-  box-shadow: var(--hair-b);
-}
-:root[data-visual-style="premium"] :is(.patient-record-page, .patient-peek-panel) .medical-rail :is(.medical-section-title, .medical-owner h3) {
-  margin: -20px -20px 20px;
-  padding: 16px 20px;
-  background: var(--band);
-  color: var(--ink);
-  font-family: var(--app-font-heading);
-  text-transform: none;
-  font-size: 14px;
-  font-weight: 500;
-  letter-spacing: normal;
-  box-shadow: var(--hair-b);
-}
-:root[data-visual-style="premium"] :is(.patient-record-page, .patient-peek-panel) .medical-owner-card {
+:root[data-skin="clean"] :is(.patient-record-page, .patient-peek-panel) .medical-owner-card {
   padding: 0;
   background: transparent;
   border: 0;
   border-radius: 0;
   gap: 12px;
 }
-:root[data-visual-style="premium"] :is(.patient-record-page, .patient-peek-panel) .medical-owner-avatar {
+:root[data-skin="clean"] :is(.patient-record-page, .patient-peek-panel) .medical-owner-avatar {
   width: 36px;
   height: 36px;
   flex-basis: 36px;
@@ -703,11 +445,11 @@
   background: var(--lift) !important;
   color: var(--ink);
 }
-:root[data-visual-style="premium"] :is(.patient-record-page, .patient-peek-panel) .medical-owner-links {
+:root[data-skin="clean"] :is(.patient-record-page, .patient-peek-panel) .medical-owner-links {
   display: grid;
   gap: 8px;
 }
-:root[data-visual-style="premium"] :is(.patient-record-page, .patient-peek-panel) .medical-owner a {
+:root[data-skin="clean"] :is(.patient-record-page, .patient-peek-panel) .medical-owner a {
   min-height: 40px;
   padding: 8px 0;
   border: 0;
@@ -715,67 +457,55 @@
   background: transparent;
   box-shadow: var(--hair-b);
 }
-:root[data-visual-style="premium"] :is(.patient-record-page, .patient-peek-panel) .medical-note {
+:root[data-skin="clean"] :is(.patient-record-page, .patient-peek-panel) .medical-note {
   padding: 0;
   border: 0;
   border-radius: 0;
   background: transparent;
   box-shadow: none;
 }
-:root[data-visual-style="premium"] :is(.patient-record-page, .patient-peek-panel) .medical-health-action {
+:root[data-skin="clean"] :is(.patient-record-page, .patient-peek-panel) .medical-health-action {
   border-radius: 0;
   background: transparent;
   box-shadow: none;
 }
 
-:root[data-visual-style="premium"] .patient-peek-panel { font-family: var(--app-font-sans); }
-:root[data-visual-style="premium"] .patient-peek-panel > [data-slot="sheet-header"],
-:root[data-visual-style="premium"] .patient-peek-identity {
+:root[data-skin="clean"] .patient-peek-panel { font-family: var(--app-font-sans); }
+:root[data-skin="clean"] .patient-peek-panel > [data-slot="sheet-header"],
+:root[data-skin="clean"] .patient-peek-identity {
   background: var(--band);
   box-shadow: var(--hair-b);
 }
-:root[data-visual-style="premium"] .patient-peek-panel .medical-peek-content { padding: 20px; }
-:root[data-visual-style="premium"] .patient-peek-panel .medical-peek-content > section {
+:root[data-skin="clean"] .patient-peek-panel .medical-peek-content { padding: 20px; }
+:root[data-skin="clean"] .patient-peek-panel .medical-peek-content > section {
   margin: 0 0 20px;
   padding: 20px;
   border: 1px solid var(--line);
   border-radius: 0;
   background: transparent;
 }
-:root[data-visual-style="premium"] .patient-peek-panel .medical-peek-content .medical-section-title {
-  margin: -20px -20px 20px;
-  padding: 14px 20px;
-  background: var(--band);
-  color: var(--ink);
-  font-family: var(--app-font-heading);
-  font-size: 14px;
-  font-weight: 500;
-  letter-spacing: normal;
-  text-transform: none;
-  box-shadow: var(--hair-b);
-}
-:root[data-visual-style="premium"] .patient-peek-panel .medical-tabs {
+:root[data-skin="clean"] .patient-peek-panel .medical-tabs {
   height: auto !important;
   flex-wrap: wrap !important;
 }
-:root[data-visual-style="premium"] .patient-peek-panel .medical-tabs::after { display: none; }
-:root[data-visual-style="premium"] .patient-peek-footer {
+:root[data-skin="clean"] .patient-peek-panel .medical-tabs::after { display: none; }
+:root[data-skin="clean"] .patient-peek-footer {
   background: var(--surface);
   box-shadow: var(--hair-t);
 }
 
-:root[data-visual-style="premium"] :is(.patient-record-page, .patient-peek-panel) :is(.medical-identity, .medical-owner, .medical-peek-content, .medical-tabs) {
+:root[data-skin="clean"] :is(.patient-record-page, .patient-peek-panel) :is(.medical-identity, .medical-owner, .medical-peek-content, .medical-tabs) {
   font-family: var(--app-font-sans);
 }
-:root[data-visual-style="premium"] :is(.patient-record-page, .patient-peek-panel) :is(.medical-tabs, .medical-avatar, .medical-owner-links) svg,
-:root[data-visual-style="premium"] :is(.patient-record-page, .patient-peek-panel) :is(.medical-tabs, .medical-avatar, .medical-owner-links) svg [stroke-width] { stroke-width: 1; }
+:root[data-skin="clean"] :is(.patient-record-page, .patient-peek-panel) :is(.medical-tabs, .medical-avatar, .medical-owner-links) svg,
+:root[data-skin="clean"] :is(.patient-record-page, .patient-peek-panel) :is(.medical-tabs, .medical-avatar, .medical-owner-links) svg [stroke-width] { stroke-width: 1; }
 
 /* SOAP remains the same editor, with four readable writing surfaces. */
-:root[data-visual-style="premium"] #patient-consultation-note {
+:root[data-skin="clean"] #patient-consultation-note {
   border: 1px solid var(--line);
   padding: 0 !important;
 }
-:root[data-visual-style="premium"] #patient-consultation-note > div:first-child {
+:root[data-skin="clean"] #patient-consultation-note > div:first-child {
   margin: 0 !important;
   width: 100%;
   box-sizing: border-box;
@@ -784,26 +514,26 @@
   background: var(--band);
   box-shadow: var(--hair-b);
 }
-:root[data-visual-style="premium"] #patient-consultation-note > .soap-panel { padding: 20px; }
-:root[data-visual-style="premium"] .soap-panel-header {
+:root[data-skin="clean"] #patient-consultation-note > .soap-panel { padding: 20px; }
+:root[data-skin="clean"] .soap-panel-header {
   flex-wrap: wrap;
   gap: 16px;
   padding-block: 0 20px;
   border: 0;
   box-shadow: var(--hair-b);
 }
-:root[data-visual-style="premium"] .soap-panel-header > div:first-child {
+:root[data-skin="clean"] .soap-panel-header > div:first-child {
   flex: 1 1 360px;
   max-width: 680px;
 }
-:root[data-visual-style="premium"] .soap-panel-header [data-slot="button"] {
+:root[data-skin="clean"] .soap-panel-header [data-slot="button"] {
   height: 36px !important;
   min-height: 36px !important;
 }
-:root[data-visual-style="premium"] .soap-editor-grid { gap: 20px; }
+:root[data-skin="clean"] .soap-editor-grid { gap: 20px; }
 /* The class is doubled: the card also carries .bg-card, which the dashboard
    stage strips of border and radius at the same weight, loaded later. */
-:root[data-visual-style="premium"] .soap-section-editor.soap-section-editor {
+:root[data-skin="clean"] .soap-section-editor.soap-section-editor {
   padding: 0 !important;
   overflow: hidden !important;
   border: 1px solid var(--line) !important;
@@ -811,21 +541,21 @@
   background: var(--surface) !important;
   box-shadow: none !important;
 }
-:root[data-visual-style="premium"] .soap-section-editor > div:first-child {
+:root[data-skin="clean"] .soap-section-editor > div:first-child {
   margin: 0 !important;
   padding: 12px 16px;
   border-radius: 16px 16px 0 0;
   background: var(--band);
   box-shadow: none;
 }
-:root[data-visual-style="premium"] .soap-section-editor > div:first-child span {
+:root[data-skin="clean"] .soap-section-editor > div:first-child span {
   width: 24px;
   height: 24px;
   border: 0;
   border-radius: 0;
   background: transparent;
 }
-:root[data-visual-style="premium"] .soap-section-editor textarea {
+:root[data-skin="clean"] .soap-section-editor textarea {
   display: block;
   width: 100%;
   min-height: 168px;
@@ -839,35 +569,19 @@
   line-height: 1.75;
   box-shadow: none !important;
 }
-:root[data-visual-style="premium"] .soap-section-editor.soap-section-editor:focus-within {
+:root[data-skin="clean"] .soap-section-editor.soap-section-editor:focus-within {
   border-color: var(--ink) !important;
   box-shadow: none !important;
 }
 
 /* Footer du compte : un bloc identité posé sur la barre, sans cadre ni filet. */
 /* 15px + 10px of card padding: the avatar lines up with the shortcut icons, the "⋯" with their dots. */
-:root[data-visual-style="premium"] .app-sidebar [data-slot="sidebar-footer"] { padding: 16px 15px 20px !important; }
-:root[data-visual-style="premium"] .sidebar-account-frame .sidebar-user-card {
-  min-height: 48px !important; height: auto !important; padding: 8px 10px !important;
-  gap: 10px !important; border: 0 !important; border-radius: 8px !important;
-  background: transparent !important; box-shadow: none !important; color: var(--ink) !important;
-}
-@media (hover: hover) and (pointer: fine) {
-  :root[data-visual-style="premium"] .sidebar-account-frame .sidebar-user-card:is(:hover, [aria-expanded="true"]) {
-    background: var(--nav-hover) !important;
-  }
-}
-:root[data-visual-style="premium"] .sidebar-account-frame .sidebar-user-card:focus-visible { outline: 2px solid var(--premium-blue); outline-offset: 3px; }
-:root[data-visual-style="premium"] .sidebar-account-frame .sidebar-user-name { font-size: 13px !important; font-weight: 500 !important; line-height: 20px !important; }
-:root[data-visual-style="premium"] .sidebar-account-frame .sidebar-user-more { opacity: .65; stroke-width: 1; }
-:root[data-visual-style="premium"] [data-collapsible="icon"] .app-sidebar [data-slot="sidebar-footer"] { padding-inline: 0 !important; }
-:root[data-visual-style="premium"] [data-collapsible="icon"] .sidebar-account-frame::before { display: none; }
-
-:root[data-visual-style="premium"] [data-collapsible="icon"] .sidebar-account-frame .sidebar-user-card { padding: 0 !important; min-height: 44px !important; }
+:root[data-skin="clean"] .app-sidebar [data-slot="sidebar-footer"] { padding: 16px 15px 20px !important; }
+:root[data-skin="clean"] [data-collapsible="icon"] .app-sidebar [data-slot="sidebar-footer"] { padding-inline: 0 !important; }
 
 /* Calendars are tables: keep the premium data-table cell styling (padding,
    hairlines, row hover) out of their day grid so popovers stay compact. */
-:root[data-visual-style="premium"] [data-slot="calendar"] :is(th, td) {
+:root[data-skin="clean"] [data-slot="calendar"] :is(th, td) {
   padding: 0 !important;
   border: 0 !important;
   box-shadow: none !important;
@@ -875,25 +589,18 @@
   vertical-align: middle !important;
 }
 @media (hover: hover) and (pointer: fine) {
-  :root[data-visual-style="premium"] [data-slot="calendar"] tr:hover > td:not([data-selected="true"]) {
+  :root[data-skin="clean"] [data-slot="calendar"] tr:hover > td:not([data-selected="true"]) {
     background: transparent !important;
   }
 }
 
 /* Permanent information block: one band heading, flat columns, no nested cards. */
-:root[data-visual-style="premium"] .patient-record-page .medical-permanent-header {
-  background: var(--band);
-  border: 0;
-  box-shadow: var(--hair-b);
-  font-family: var(--app-font-heading);
-  color: var(--ink);
-}
-:root[data-visual-style="premium"] .patient-record-page .medical-permanent-grid :is(.medical-section-title, .medical-owner h3, .medical-health-heading h3) {
+:root[data-skin="clean"] .patient-record-page .medical-permanent-grid :is(.medical-section-title, .medical-owner h3, .medical-health-heading h3) {
   color: var(--ink-muted, var(--soft));
   background: none;
   box-shadow: none;
 }
-:root[data-visual-style="premium"] .patient-record-page .medical-permanent-grid .medical-record-health {
+:root[data-skin="clean"] .patient-record-page .medical-permanent-grid .medical-record-health {
   padding: 20px 24px;
   border-top: 0;
   border-right: 0;
