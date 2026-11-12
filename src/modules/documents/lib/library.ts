@@ -179,4 +179,11 @@ export function dataUrlToBlob(dataUrl: string): Blob | null {
 }
 
 /** A file name that cannot climb out of a folder or break a download. */
-export const safeFileName = (name: string) => name.replace(/[\\/:*?"<>|\u0000-\u001f]/g, "_").replace(/^\.+/, "").trim() || "fichier";
+export const safeFileName = (name: string) =>
+  name
+    .replace(/[\\/:*?"<>|]/g, "_")
+    .split("")
+    .map((ch) => (ch.charCodeAt(0) < 32 ? "_" : ch))
+    .join("")
+    .replace(/^\.+/, "")
+    .trim() || "fichier";
