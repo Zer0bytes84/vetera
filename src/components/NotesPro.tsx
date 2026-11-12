@@ -19,7 +19,10 @@ import type React from "react";
 import { useCreationRequest } from "@/modules/shell/model/creation-request";
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Editor from "@/components/Editor";
-import { DocumentsTable } from "@/components/documents-table";
+import { DocumentsLibrary } from "@/components/documents-library";
+import { dataUrlToBlob, entriesFrom, judgeFile, readFileAsDataUrl, safeFileName, type LibraryEntry, type LibraryFilter } from "@/modules/documents/lib/library";
+import { openExternalLink } from "@/modules/documents/lib/open-external";
+import { toast } from "sonner";
 import { Panel, Shell } from "@/components/ui/surface";
 import { ArrowLeft } from "lucide-react";
 import MotivationalHeader from "@/components/MotivationalHeader";
@@ -35,7 +38,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useAuth } from "@/contexts/AuthContext";
-import { useNotesRepository, usePatientsRepository } from "@/data/repositories";
+import { useLibraryItemsRepository, useNotesRepository, usePatientsRepository } from "@/data/repositories";
 import type { Note, Patient } from "@/types/db";
 
 const DocumentsWorkspace = lazy(() => import("@/modules/documents/components/documents-workspace"));
@@ -61,9 +64,6 @@ const formatFullDate = (dateInput: any) => {
     minute: "2-digit",
   });
 };
-
-// Types
-type FilterType = "all" | "favorites" | "recent" | "pinned";
 
 function PatientPicker({
   kind,
@@ -141,14 +141,14 @@ const NotesPro: React.FC = () => {
     remove: removeNote,
   } = useNotesRepository();
   const { data: patients = [] } = usePatientsRepository();
+  const { data: libraryItems = [], add: addItem, update: updateItem, remove: removeItem } = useLibraryItemsRepository();
 
   // State
   const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
   const [workspaceMode, setWorkspaceMode] = useState<"library" | "assistant">("library");
-  const [searchTerm, setSearchTerm] = useState("");
   // The library follows the shared list cursor: ↑ ↓ move, Enter opens the note.
   const libraryRef = useListCursor({ storageKey: "documents" });
-  const [filter, setFilter] = useState<FilterType>("all");
+  const [filter, setFilter] = useState<LibraryFilter>("all");
   const [patientFilter, setPatientFilter] = useState(() => sessionStorage.getItem("documents:open-patient") ?? "");
   const [isPreviewMode, setIsPreviewMode] = useState(false);
   const [title, setTitle] = useState("");
@@ -186,41 +186,14 @@ const NotesPro: React.FC = () => {
 
   const patientLookup = useMemo(() => new Map(patients.map((patient) => [patient.id, patient])), [patients]);
 
-  // Filter logic
-  const filteredNotes = useMemo(() => {
-    let result = notes.filter((n) => n.userId === currentUser?.uid);
-
-    if (filter === "favorites") {
-      result = result.filter((n) => n.isFavorite);
-    } else if (filter === "recent") {
-      const oneWeekAgo = new Date();
-      oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-      result = result.filter((n) => new Date(n.updatedAt) > oneWeekAgo);
-    } else if (filter === "pinned") {
-      result = result.filter((n) => (n as any).isPinned);
-    }
-
-    if (patientFilter) result = result.filter((n) => n.patientId === patientFilter);
-
-    if (searchTerm.trim()) {
-      const term = searchTerm.trim().toLocaleLowerCase("fr");
-      result = result.filter(
-        (n) => {
-          const patient = n.patientId ? patientLookup.get(n.patientId) : null;
-          return `${n.title} ${n.content} ${patient?.name ?? ""} ${patient?.species ?? ""} ${patient?.breed ?? ""}`
-            .toLocaleLowerCase("fr")
-            .includes(term);
-        }
-      );
-    }
-
-    return result.sort(
-      (a, b) =>
-        normalizeDate(b.updatedAt).getTime() -
-        normalizeDate(a.updatedAt).getTime()
-    );
-  }, [notes, filter, patientFilter, searchTerm, currentUser, patientLookup]);
-
+  // The library's rows: the user's notes and items, limited to the chosen folder. The kind filter, the search and the
+  // order are the library's own.
+  const patientName = (id?: string | null) => (id ? patientLookup.get(id)?.name ?? "Dossier patient" : "Cabinet");
+  const entries = useMemo(() => {
+    const ownNotes = notes.filter((n) => n.userId === currentUser?.uid && (!patientFilter || n.patientId === patientFilter));
+    const ownItems = libraryItems.filter((item) => item.userId === currentUser?.uid && (!patientFilter || item.patientId === patientFilter));
+    return entriesFrom(ownNotes, ownItems, (id) => (id ? patientLookup.get(id)?.name ?? "Dossier patient" : "Cabinet"));
+  }, [notes, libraryItems, patientFilter, currentUser, patientLookup]);
 
   const activeNote = useMemo(
     () => notes.find((n) => n.id === selectedNoteId),
@@ -313,7 +286,6 @@ const NotesPro: React.FC = () => {
       setContent("");
       setLastSaved(new Date());
       setIsPreviewMode(false);
-      setSearchTerm("");
       setFilter("all");
     }
   };
@@ -343,7 +315,6 @@ const NotesPro: React.FC = () => {
       patientId: note.patientId ?? null,
     });
     setPatientFilter(note.patientId ?? "");
-    setSearchTerm("");
     setFilter("all");
     setSelectedNoteId(created.id);
     setTitle(copiedTitle);
@@ -362,6 +333,100 @@ const NotesPro: React.FC = () => {
   const togglePin = async (note: Note, e?: React.MouseEvent) => {
     e?.stopPropagation();
     await updateNote(note.id, { isPinned: !(note as any).isPinned } as any);
+  };
+
+  // The library's rows are notes or items: each action goes to the right table.
+  const toggleEntryFavorite = async (entry: LibraryEntry) => {
+    if (entry.note) return toggleFavorite(entry.note);
+    if (entry.item) await updateItem(entry.item.id, { isFavorite: !entry.item.isFavorite });
+  };
+  const toggleEntryPin = async (entry: LibraryEntry) => {
+    if (entry.note) return togglePin(entry.note);
+    if (entry.item) await updateItem(entry.item.id, { isPinned: !entry.item.isPinned });
+  };
+  const deleteEntry = async (entry: LibraryEntry) => {
+    if (entry.note) return handleDeleteNote(entry.note.id);
+    if (!entry.item) return;
+    const what = entry.kind === "link" ? "ce lien" : entry.kind === "image" ? "cette image" : "ce fichier";
+    if (!window.confirm(`Supprimer ${what} ?`)) return;
+    if (!(await removeItem(entry.item.id))) toast.error("La suppression n’a pas abouti.");
+  };
+
+  // Files and images are read here, one by one: a refused one is named and the others go on.
+  const handleAddFiles = async (files: File[], wanted: "file" | "image") => {
+    if (!currentUser) return;
+    let added = 0;
+    for (const file of files) {
+      const verdict = judgeFile(file, wanted);
+      if (!verdict.ok) {
+        toast.error(verdict.reason);
+        continue;
+      }
+      try {
+        const dataUrl = await readFileAsDataUrl(file);
+        const saved = await addItem({
+          userId: currentUser.uid,
+          kind: verdict.kind,
+          title: file.name,
+          mimeType: file.type || null,
+          size: file.size,
+          dataUrl,
+          url: null,
+          patientId: patientFilter || null,
+          isFavorite: false,
+          isPinned: false,
+        });
+        if (saved) added += 1;
+        else toast.error(`« ${file.name} » n’a pas pu être enregistré.`);
+      } catch {
+        toast.error(`« ${file.name} » n’a pas pu être lu.`);
+      }
+    }
+    if (added) toast.success(added === 1 ? "Ajouté à vos documents." : `${added} éléments ajoutés à vos documents.`);
+  };
+
+  const handleAddLink = async (url: string, linkName: string) => {
+    if (!currentUser) return;
+    const saved = await addItem({
+      userId: currentUser.uid,
+      kind: "link",
+      title: linkName,
+      url,
+      mimeType: null,
+      size: null,
+      dataUrl: null,
+      patientId: patientFilter || null,
+      isFavorite: false,
+      isPinned: false,
+    });
+    if (saved) toast.success("Lien ajouté.");
+    else toast.error("Le lien n’a pas pu être enregistré.");
+  };
+
+  const handleDownload = (entry: LibraryEntry) => {
+    const blob = entry.item?.dataUrl ? dataUrlToBlob(entry.item.dataUrl) : null;
+    if (!blob) {
+      toast.error("Ce fichier ne peut pas être relu.");
+      return;
+    }
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = safeFileName(entry.title);
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleOpenLink = async (url: string) => {
+    if (!(await openExternalLink(url))) toast.error("Ce lien n’a pas pu être ouvert.");
+  };
+  const handleCopyLink = async (url: string) => {
+    try {
+      await navigator.clipboard.writeText(url);
+      toast.success("Adresse copiée.");
+    } catch {
+      toast.error("L’adresse n’a pas pu être copiée.");
+    }
   };
 
   // Delete note
@@ -444,21 +509,27 @@ const NotesPro: React.FC = () => {
         </div>
       ) : !(selectedNoteId && activeNote) ? (
         <div className="min-h-0 flex-1 space-y-6 overflow-y-auto pb-8" ref={libraryRef}>
-          <DocumentsTable
+          <DocumentsLibrary
+            entries={entries}
             filter={filter}
             headerActions={secondaryPages}
-            onCreate={() => void handleCreateNote()}
-            filters={<PatientPicker kind="filter" onSelect={setPatientFilter} patients={patients} value={patientFilter} />}
-            notes={filteredNotes}
-            onDelete={handleDeleteNote}
+            onAddFiles={(files, wanted) => void handleAddFiles(files, wanted)}
+            onAddLink={(url, linkName) => void handleAddLink(url, linkName)}
+            onCopyLink={(url) => void handleCopyLink(url)}
+            onCreateDocument={() => void handleCreateNote()}
+            onDelete={(entry) => void deleteEntry(entry)}
+            onDownload={handleDownload}
             onDuplicate={(note) => void handleDuplicateNote(note)}
             onExport={(note) => handleExportNote("md", note)}
             onFilter={setFilter}
-            onOpen={handleSelectNote}
             onOpenAssistant={handleOpenAssistant}
-            onToggleFavorite={toggleFavorite}
-            onTogglePin={togglePin}
-            patientName={(id) => (id ? patientLookup.get(id)?.name ?? "Dossier patient" : "Cabinet")}
+            onOpenDocument={handleSelectNote}
+            onOpenLink={(url) => void handleOpenLink(url)}
+            onToggleFavorite={(entry) => void toggleEntryFavorite(entry)}
+            onTogglePin={(entry) => void toggleEntryPin(entry)}
+            patientActive={Boolean(patientFilter)}
+            patientName={patientName}
+            patientPicker={<PatientPicker kind="filter" onSelect={setPatientFilter} patients={patients} value={patientFilter} />}
           />
         </div>
       ) : (

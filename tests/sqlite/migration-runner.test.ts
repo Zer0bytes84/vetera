@@ -118,7 +118,7 @@ describe("runSqliteMigrations", () => {
     expect(noteColumns).toContain("patient_id");
     expect(
       database.connection.prepare("PRAGMA user_version").get()?.user_version
-    ).toBe(43);
+    ).toBe(45);
   });
 
   it("rolls back an entire migration when one statement fails", async () => {
@@ -222,6 +222,8 @@ describe("runSqliteMigrations", () => {
       "041",
       "042",
       "043",
+      "044",
+      "045",
     ]);
 
     const state = database.connection
@@ -351,6 +353,8 @@ describe("runSqliteMigrations", () => {
       "041",
       "042",
       "043",
+      "044",
+      "045",
     ]);
     await database.execute(
       `UPDATE owners
@@ -450,10 +454,12 @@ describe("runSqliteMigrations", () => {
       "041",
       "042",
       "043",
+      "044",
+      "045",
     ]);
     expect(
       database.connection.prepare("PRAGMA user_version").get()?.user_version
-    ).toBe(43);
+    ).toBe(45);
 
     expect(
       database.connection
@@ -717,6 +723,8 @@ describe("runSqliteMigrations", () => {
       "041",
       "042",
       "043",
+      "044",
+      "045",
     ]);
 
     expect(
@@ -993,7 +1001,7 @@ describe("runSqliteMigrations", () => {
     const database = createDatabase();
     await runSqliteMigrations(database, SQLITE_MIGRATIONS.filter(migration => Number(migration.version) <= 30));
     await database.execute("INSERT INTO owners (id, first_name, last_name, phone) VALUES ('existing', 'Patient', 'Owner', '000')");
-    expect(await runSqliteMigrations(database, SQLITE_MIGRATIONS)).toEqual(["031", "032", "033", "034", "035", "036", "037", "038", "039", "040", "041", "042", "043"]);
+    expect(await runSqliteMigrations(database, SQLITE_MIGRATIONS)).toEqual(["031", "032", "033", "034", "035", "036", "037", "038", "039", "040", "041", "042", "043", "044", "045"]);
     expect(await runSqliteMigrations(database, SQLITE_MIGRATIONS)).toEqual([]);
     expect(await database.select("SELECT id FROM owners")).toEqual([{ id: "existing" }]);
   });
@@ -1012,5 +1020,33 @@ describe("runSqliteMigrations", () => {
     await expect(
       runSqliteMigrations(database, SQLITE_MIGRATIONS)
     ).rejects.toThrow("Installez la dernière version");
+  });
+});
+
+describe("la bibliothèque des Documents (migrations 044 et 045)", () => {
+  it("crée library_items et son horodatage, et donne à notes sa colonne d'épingle", async () => {
+    const database = createDatabase();
+    await runSqliteMigrations(database, SQLITE_MIGRATIONS);
+    const sqlite = database.connection;
+    const cols = (table: string) => sqlite.prepare(`PRAGMA table_info(${table})`).all().map((c) => (c as { name: string }).name);
+    expect(cols("library_items")).toEqual(expect.arrayContaining(["id", "user_id", "kind", "title", "url", "mime_type", "size", "data_url", "patient_id", "is_favorite", "is_pinned"]));
+    expect(cols("notes")).toContain("is_pinned");
+    sqlite.exec("PRAGMA foreign_keys = ON");
+    sqlite.exec("INSERT INTO users(id,email,password_hash,display_name,role,status) VALUES('u1','a@b.c','x','A','admin','active')");
+    sqlite.exec("INSERT INTO library_items(id,user_id,kind,title,url) VALUES('l1','u1','link','Lien','https://exemple.dz')");
+    expect(() => sqlite.exec("INSERT INTO library_items(id,user_id,kind,title) VALUES('l2','u1','exe','x')")).toThrow();
+    sqlite.exec("INSERT INTO notes(id,user_id,title,content) VALUES('n1','u1','t','c')");
+    sqlite.exec("UPDATE notes SET is_pinned = 1 WHERE id = 'n1'");
+    expect(sqlite.prepare("SELECT is_pinned FROM notes WHERE id='n1'").get()).toMatchObject({ is_pinned: 1 });
+    sqlite.exec("UPDATE library_items SET is_favorite = 1 WHERE id = 'l1'");
+    expect(sqlite.prepare("SELECT updated_at FROM library_items WHERE id='l1'").get()).toMatchObject({ updated_at: expect.any(String) });
+    sqlite.exec("DELETE FROM users WHERE id='u1'");
+    expect(sqlite.prepare("SELECT COUNT(*) AS n FROM library_items").get()).toMatchObject({ n: 0 });
+  });
+  it("rejoue sans erreur sur une base où la colonne d'épingle existe déjà", async () => {
+    const database = createDatabase();
+    await runSqliteMigrations(database, SQLITE_MIGRATIONS.filter((m) => m.version < "045"));
+    database.connection.exec("ALTER TABLE notes ADD COLUMN is_pinned INTEGER NOT NULL DEFAULT 0");
+    await expect(runSqliteMigrations(database, SQLITE_MIGRATIONS)).resolves.toEqual(["045"]);
   });
 });

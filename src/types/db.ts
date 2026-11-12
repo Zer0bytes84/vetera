@@ -435,10 +435,30 @@ export interface Note {
   createdAt: string;
   id: string;
   isFavorite: boolean;
+  isPinned?: boolean;
   patientId?: string | null;
   tags?: string; // JSON string
   title: string;
   updatedAt: string;
+  userId: string;
+}
+
+/** A file, an image or a link kept in the Documents library, beside the notes. */
+export interface LibraryItem {
+  createdAt: string;
+  /** Bytes of a file or an image, as a data URL; null for a link. */
+  dataUrl?: string | null;
+  id: string;
+  isFavorite: boolean;
+  isPinned?: boolean;
+  kind: "file" | "image" | "link";
+  mimeType?: string | null;
+  patientId?: string | null;
+  size?: number | null;
+  title: string;
+  updatedAt: string;
+  /** The address of a link; null for a file or an image. */
+  url?: string | null;
   userId: string;
 }
 

@@ -46,6 +46,7 @@ const ALLOWED_TABLES = new Set([
   "transactions",
   "notes",
   "consultation_documents",
+  "library_items",
   "document_templates",
   "tasks",
   "app_settings",
@@ -68,7 +69,8 @@ const ALLOWED_TABLES = new Set([
 
 const BOOLEAN_FIELDS_BY_TABLE: Record<string, string[]> = {
   products: ["stockTracked"],
-  notes: ["isFavorite"],
+  notes: ["isFavorite", "isPinned"],
+  library_items: ["isFavorite", "isPinned"],
   tasks: ["isReminder"],
   patients: ["sterilized"],
 };

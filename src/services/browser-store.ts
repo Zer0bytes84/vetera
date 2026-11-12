@@ -10,6 +10,7 @@ export type BrowserTableName =
   | "transactions"
   | "notes"
   | "consultation_documents"
+  | "library_items"
   | "document_templates"
   | "documents"
   | "document_events"
@@ -56,6 +57,7 @@ const EMPTY_STATE: BrowserDatabaseState = {
     transactions: [],
     notes: [],
     consultation_documents: [],
+    library_items: [],
     document_templates: [],
     documents: [],
     document_events: [],

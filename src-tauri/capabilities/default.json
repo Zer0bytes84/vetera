@@ -48,6 +48,7 @@
         { "path": "$DOCUMENT/**" }
       ]
     },
+    "shell:allow-open",
     "process:allow-exit",
     "process:allow-restart",
     "updater:default"

@@ -29,6 +29,7 @@ import type {
   AppointmentRecurrence,
   AuditLogEntry,
   ConsultationDocument,
+  LibraryItem,
   ConsultationSoap,
   Hospitalization,
   HospitalizationVital,
@@ -852,6 +853,10 @@ export function useNotesRepository() {
     ...notesStore,
     createEmptyNote,
   };
+}
+
+export function useLibraryItemsRepository() {
+  return useSQLite<LibraryItem>("library_items");
 }
 
 export function useConsultationDocumentsRepository() {

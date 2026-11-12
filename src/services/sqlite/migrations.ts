@@ -160,7 +160,17 @@ export const SQLITE_MIGRATIONS: readonly SqliteMigration[] = [
     skipIfColumnExists: { table: "patients", column: "archived_at" },
     sql: "ALTER TABLE patients ADD COLUMN archived_at TEXT;",
   },
+  // Files, images and links kept beside the notes.
+  { version: "044", name: "document-library", sql: LIBRARY_MIGRATION_SQL },
+  {
+    // The pin notes already pretended to have.
+    version: "045",
+    name: "note-pinning",
+    skipIfColumnExists: { table: "notes", column: "is_pinned" },
+    sql: NOTE_PIN_MIGRATION_SQL,
+  },
 ] as const;
+import { LIBRARY_MIGRATION_SQL, NOTE_PIN_MIGRATION_SQL } from "@/modules/documents/library-migration";
 import { DISPENSING_MIGRATION_SQL } from "@/modules/stock/dispensing-migration";
 import { MOVEMENT_SNAPSHOT_MIGRATION_SQL } from "@/modules/stock/movement-snapshot-migration";
 import { STOCK_LOTS_MIGRATION_SQL } from "@/modules/stock/stock-lots-migration";
