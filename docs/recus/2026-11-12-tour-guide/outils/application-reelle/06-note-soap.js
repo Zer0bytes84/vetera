@@ -1,0 +1,10 @@
+const wait=(ms)=>new Promise(r=>setTimeout(r,ms));
+const st0 = JSON.parse(localStorage.getItem('baitari-guided-tour-v1'));
+const textFlux = document.querySelector('.tour-card-text')?.innerText;
+const ta = (al)=>document.querySelector(`textarea[aria-label="${al}"]`);
+H.setVal(ta('Subjectif'), 'ZZ-TEST boiterie depuis hier'); H.setVal(ta('Objectif'), 'ZZ-TEST T 38,6'); H.setVal(ta('Analyse'), 'ZZ-TEST entorse'); H.setVal(ta('Plan'), 'ZZ-TEST repos 5 jours');
+await wait(2500);
+const afterTyping = JSON.parse(localStorage.getItem('baitari-guided-tour-v1')).step;
+const validate = H.byText('button', /Valider la note pour les documents/);
+const hasValidate = !!validate;
+return { st0step: st0.step, textFlux, afterTyping, hasValidate, status: H.text('main', 200) };

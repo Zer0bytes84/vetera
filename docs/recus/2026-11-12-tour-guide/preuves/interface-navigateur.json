@@ -1,0 +1,227 @@
+[
+ {
+  "name": "light 1 invitation vue au premier lancement",
+  "ok": true,
+  "detail": "{\"invitation\":\"shown\",\"status\":\"idle\",\"step\":0,\"startedAt\":null,\"patientId\":null,\"appointmentId\":null}"
+ },
+ {
+  "name": "light 2 invitation montrée une fois : absente au lancement suivant",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "light 3 fermer : disparaît, état fermé, l'app reste libre",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "light 3b fermée : ne revient pas",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "light 4 démarrer : étape 1 sur 4, carte et repère sur « + »",
+  "ok": true,
+  "detail": "{\"invitation\":\"closed\",\"status\":\"running\",\"step\":0,\"startedAt\":\"2026-11-12T19:35:23.337Z\",\"patientId\":null,\"appointmentId\":null}"
+ },
+ {
+  "name": "light 4b le repère entoure le bouton « + »",
+  "ok": true,
+  "detail": "{\"ringBox\":{\"x\":1260,\"y\":20,\"width\":36,\"height\":36},\"plusBox\":{\"x\":1260,\"y\":20,\"width\":36,\"height\":36}}"
+ },
+ {
+  "name": "light 5 menu ouvert : le repère passe sur l'entrée « Patient »",
+  "ok": true,
+  "detail": "{\"itemBox\":{\"x\":882.421875,\"y\":74,\"width\":85.421875,\"height\":61},\"ring2\":{\"x\":882.421875,\"y\":74,\"width\":85.421875,\"height\":61}}"
+ },
+ {
+  "name": "light 6 après le clic : le repère s'efface, la suite s'affiche",
+  "ok": true,
+  "detail": "Étape 1 sur 4\n\nCréez le dossier de votre premier patient\n\nRenseignez l’animal et son propriétaire, puis enregistrez.\n\nPa"
+ },
+ {
+  "name": "light 7 sans création, l'étape 1 reste en cours",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "light 8 patient réellement créé : étape 2, repère retenu",
+  "ok": true,
+  "detail": "{\"invitation\":\"closed\",\"status\":\"running\",\"step\":1,\"startedAt\":\"2026-11-12T19:35:23.337Z\",\"patientId\":\"zz-p1\",\"appointmentId\":null}"
+ },
+ {
+  "name": "light 8b l'étape 2 nomme le patient",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "light 9 rendez-vous créé : étape 3",
+  "ok": true,
+  "detail": "{\"invitation\":\"closed\",\"status\":\"running\",\"step\":2,\"startedAt\":\"2026-11-12T19:35:23.337Z\",\"patientId\":\"zz-p1\",\"appointmentId\":\"zz-a1\"}"
+ },
+ {
+  "name": "light 9b étape 3 : repère sur « Agenda » dans la barre latérale",
+  "ok": {},
+  "detail": ""
+ },
+ {
+  "name": "light 9c dans l'Agenda : le repère s'efface, la consigne se précise",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "light 10 note validée : étape 4",
+  "ok": true,
+  "detail": "{\"invitation\":\"closed\",\"status\":\"running\",\"step\":3,\"startedAt\":\"2026-11-12T19:35:23.337Z\",\"patientId\":\"zz-p1\",\"appointmentId\":\"zz-a1\"}"
+ },
+ {
+  "name": "light 10b étape 4 : « + » puis « Facture »",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "light 11 quitter : carte et repère disparus, état « quit », rien supprimé",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "light 11b après redémarrage : aucun tour, aucune invitation",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "light 12 « Revoir le tour » : depuis le début, sur le tableau de bord",
+  "ok": true,
+  "detail": "{\"invitation\":\"closed\",\"status\":\"running\",\"step\":0,\"startedAt\":\"2026-11-12T19:35:53.168Z\",\"patientId\":null,\"appointmentId\":null}"
+ },
+ {
+  "name": "light 13 « Passer » ×4 : tour terminé, carte de fin",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "light 13b terminer : plus rien ne s'affiche",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "light 13c tour terminé : ne se relance jamais tout seul",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "dark 1 invitation vue au premier lancement",
+  "ok": true,
+  "detail": "{\"invitation\":\"shown\",\"status\":\"idle\",\"step\":0,\"startedAt\":null,\"patientId\":null,\"appointmentId\":null}"
+ },
+ {
+  "name": "dark 2 invitation montrée une fois : absente au lancement suivant",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "dark 3 fermer : disparaît, état fermé, l'app reste libre",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "dark 3b fermée : ne revient pas",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "dark 4 démarrer : étape 1 sur 4, carte et repère sur « + »",
+  "ok": true,
+  "detail": "{\"invitation\":\"closed\",\"status\":\"running\",\"step\":0,\"startedAt\":\"2026-11-12T19:36:28.459Z\",\"patientId\":null,\"appointmentId\":null}"
+ },
+ {
+  "name": "dark 4b le repère entoure le bouton « + »",
+  "ok": true,
+  "detail": "{\"ringBox\":{\"x\":1260,\"y\":20,\"width\":36,\"height\":36},\"plusBox\":{\"x\":1260,\"y\":20,\"width\":36,\"height\":36}}"
+ },
+ {
+  "name": "dark 5 menu ouvert : le repère passe sur l'entrée « Patient »",
+  "ok": true,
+  "detail": "{\"itemBox\":{\"x\":882.421875,\"y\":74,\"width\":85.421875,\"height\":61},\"ring2\":{\"x\":882.421875,\"y\":74,\"width\":85.421875,\"height\":61}}"
+ },
+ {
+  "name": "dark 6 après le clic : le repère s'efface, la suite s'affiche",
+  "ok": true,
+  "detail": "Étape 1 sur 4\n\nCréez le dossier de votre premier patient\n\nRenseignez l’animal et son propriétaire, puis enregistrez.\n\nPa"
+ },
+ {
+  "name": "dark 7 sans création, l'étape 1 reste en cours",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "dark 8 patient réellement créé : étape 2, repère retenu",
+  "ok": true,
+  "detail": "{\"invitation\":\"closed\",\"status\":\"running\",\"step\":1,\"startedAt\":\"2026-11-12T19:36:28.459Z\",\"patientId\":\"zz-p1\",\"appointmentId\":null}"
+ },
+ {
+  "name": "dark 8b l'étape 2 nomme le patient",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "dark 9 rendez-vous créé : étape 3",
+  "ok": true,
+  "detail": "{\"invitation\":\"closed\",\"status\":\"running\",\"step\":2,\"startedAt\":\"2026-11-12T19:36:28.459Z\",\"patientId\":\"zz-p1\",\"appointmentId\":\"zz-a1\"}"
+ },
+ {
+  "name": "dark 9b étape 3 : repère sur « Agenda » dans la barre latérale",
+  "ok": {},
+  "detail": ""
+ },
+ {
+  "name": "dark 9c dans l'Agenda : le repère s'efface, la consigne se précise",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "dark 10 note validée : étape 4",
+  "ok": true,
+  "detail": "{\"invitation\":\"closed\",\"status\":\"running\",\"step\":3,\"startedAt\":\"2026-11-12T19:36:28.459Z\",\"patientId\":\"zz-p1\",\"appointmentId\":\"zz-a1\"}"
+ },
+ {
+  "name": "dark 10b étape 4 : « + » puis « Facture »",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "dark 11 quitter : carte et repère disparus, état « quit », rien supprimé",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "dark 11b après redémarrage : aucun tour, aucune invitation",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "dark 12 « Revoir le tour » : depuis le début, sur le tableau de bord",
+  "ok": true,
+  "detail": "{\"invitation\":\"closed\",\"status\":\"running\",\"step\":0,\"startedAt\":\"2026-11-12T19:36:58.333Z\",\"patientId\":null,\"appointmentId\":null}"
+ },
+ {
+  "name": "dark 13 « Passer » ×4 : tour terminé, carte de fin",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "dark 13b terminer : plus rien ne s'affiche",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "dark 13c tour terminé : ne se relance jamais tout seul",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "aucune erreur console ni de page pendant tout le parcours",
+  "ok": true,
+  "detail": ""
+ }
+]

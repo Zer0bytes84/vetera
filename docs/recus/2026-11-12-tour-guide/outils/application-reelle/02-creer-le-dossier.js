@@ -1,0 +1,10 @@
+const q = (ph) => document.querySelector(`[role=dialog] input[placeholder="${ph}"]`);
+const before = JSON.parse(localStorage.getItem('baitari-guided-tour-v1'));
+H.setVal(q('Nom de famille'), 'ZZ-TEST-Martin'); H.setVal(q('Prénom'), 'ZZ-TEST'); H.setVal(q('Numéro de mobile'), '0555000000');
+H.setVal(q('Nom de l’animal'), 'ZZ-TEST-Rex'); H.setVal(q('Chien, chat…'), 'Chien');
+await new Promise(r=>setTimeout(r,300));
+const stillStep0 = JSON.parse(localStorage.getItem('baitari-guided-tour-v1')).step;
+H.press(H.byText('[role=dialog] button', /^Créer le dossier/));
+await H.waitFor(() => JSON.parse(localStorage.getItem('baitari-guided-tour-v1')).step === 1, 15000, 'étape 2 après la création');
+await new Promise(r=>setTimeout(r,600));
+return { before, stillStep0, tour: JSON.parse(localStorage.getItem('baitari-guided-tour-v1')), card: document.querySelector('.tour-card')?.innerText, toasts: H.toasts() };

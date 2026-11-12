@@ -1,0 +1,11 @@
+const wait=(ms)=>new Promise(r=>setTimeout(r,ms));
+H.press(H.byText('button',/^Terminer$/)); await wait(500);
+const afterTerminer = !!document.querySelector('.tour-card');
+const themeBefore = { cfg: localStorage.getItem('theme-config'), theme: localStorage.getItem('theme') };
+location.hash = '#/parametres'; await wait(2500);
+H.press(H.byText('button', /Apparence/)); await wait(1500);
+const row = [...document.querySelectorAll('*')].find(e=>e.children.length<6 && /Tour guidé/.test(e.innerText||'') && /Revoir le tour de prise en main/.test(e.innerText||'') && (e.innerText||'').length<260);
+const rowText = row?.innerText.replace(/\s+/g,' ');
+const stBefore = JSON.parse(localStorage.getItem('baitari-guided-tour-v1'));
+H.press(H.byText('button', /^Revoir le tour$/)); await wait(1500);
+return { afterTerminer, themeBefore, rowText, stBefore: stBefore.status, st: JSON.parse(localStorage.getItem('baitari-guided-tour-v1')), hash: location.hash, card: document.querySelector('.tour-card')?.innerText };

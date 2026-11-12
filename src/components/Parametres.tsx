@@ -57,6 +57,8 @@ import {
 } from "@/components/settings-section";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLayout } from "@/contexts/layout-provider";
+import { startTour } from "@/modules/tour/tour-state";
+import { tourStore } from "@/modules/tour/tour-store";
 import { useUsersRepository } from "@/data/repositories";
 import { APP_NAME } from "@/lib/brand";
 import { writeCachedProfile } from "@/lib/profile-cache";
@@ -194,6 +196,9 @@ const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
           "font",
           "sidebar",
           "barre latérale",
+          "tour guidé",
+          "prise en main",
+          "tutoriel",
           "peluche",
           "mascotte",
           "compagnon",
@@ -953,6 +958,22 @@ const Parametres: React.FC<ParametresProps> = ({
                   }))}
                   value={normalizeCleanFont(themeConfig.cleanFont)}
                 />
+              </SettingsRow>
+              <SettingsRow
+                detail="Revoir le tour de prise en main, dossier, rendez-vous, consultation, facture"
+                title="Tour guidé"
+              >
+                <Button
+                  className="rounded-full"
+                  onClick={() => {
+                    tourStore.update((current) => startTour(current, new Date()));
+                    onNavigate?.("dashboard");
+                  }}
+                  type="button"
+                  variant="outline"
+                >
+                  Revoir le tour
+                </Button>
               </SettingsRow>
             </SettingsSection>
             <SettingsSection

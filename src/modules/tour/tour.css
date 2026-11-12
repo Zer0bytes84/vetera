@@ -1,0 +1,51 @@
+/* Le tour guidé : les surfaces de l'application (Shell et Panel, la vitre de « Quoi de neuf »), le repère du focus. Aucune
+   couleur, aucune ombre ni aucun mouvement qui n'existent déjà ailleurs. */
+.tour-invitation { width: 100%; }
+.tour-invitation .tour-invitation-panel {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px 16px;
+  padding: 16px 20px;
+}
+.tour-invitation-icon {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  flex: none;
+  place-items: center;
+  border-radius: 12px;
+  background: color-mix(in oklab, var(--foreground) 6%, transparent);
+  color: var(--muted-foreground);
+}
+.tour-invitation-text { min-width: 220px; flex: 1 1 280px; }
+.tour-invitation-title { margin: 0; font-size: 1rem; font-weight: 500; line-height: 1.5rem; }
+.tour-invitation-body { margin: 2px 0 0; font-size: 0.8125rem; line-height: 1.25rem; color: var(--muted-foreground); }
+.tour-invitation-actions { display: flex; align-items: center; gap: 6px; margin-inline-start: auto; }
+
+/* La carte de l'étape : fixée en bas, du côté de la fin de ligne, au-dessus des fenêtres pour rester lisible pendant le geste. */
+.tour-card {
+  position: fixed;
+  inset-block-end: 20px;
+  inset-inline-end: 20px;
+  z-index: 70;
+  width: min(340px, calc(100vw - 32px));
+}
+.tour-card .tour-card-panel { padding: 16px 18px 14px; }
+.tour-card-count { display: flex; align-items: center; gap: 6px; margin: 0; font-size: 0.75rem; line-height: 1rem; color: var(--muted-foreground); }
+.tour-card-count-done { color: var(--tone-green, var(--muted-foreground)); }
+.tour-card-bar { display: flex; gap: 4px; margin: 8px 0 12px; }
+.tour-card-bar span { height: 3px; flex: 1; border-radius: 999px; background: color-mix(in oklab, var(--foreground) 10%, transparent); }
+.tour-card-bar span[data-done], .tour-card-bar span[data-current] { background: var(--primary); }
+.tour-card-bar span[data-current] { opacity: 0.55; }
+.tour-card-title { margin: 0; font-size: 0.9375rem; font-weight: 500; line-height: 1.375rem; }
+.tour-card-text { margin: 6px 0 0; font-size: 0.8125rem; line-height: 1.25rem; color: var(--muted-foreground); }
+.tour-card-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+
+/* Le repère : le même anneau que le focus clavier de l'application (--ring), sans animation. */
+.tour-ring {
+  position: fixed;
+  z-index: 80;
+  pointer-events: none;
+  box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--ring);
+}

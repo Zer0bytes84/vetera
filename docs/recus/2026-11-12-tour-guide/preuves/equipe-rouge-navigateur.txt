@@ -1,0 +1,19 @@
+PASS 1 enregistrement hostile (JSON invalide) : app libre, pas d'invitation intempestive, aucune erreur {"inv":0,"card":0,"errors":[]}
+PASS 1 enregistrement hostile (tableau) : app libre, pas d'invitation intempestive, aucune erreur {"inv":0,"card":0,"errors":[]}
+PASS 1 enregistrement hostile (null) : app libre, pas d'invitation intempestive, aucune erreur {"inv":0,"card":0,"errors":[]}
+PASS 1 enregistrement hostile (statut inconnu) : app libre, pas d'invitation intempestive, aucune erreur {"inv":0,"card":0,"errors":[]}
+PASS 1 enregistrement hostile (running sans heure) : app libre, pas d'invitation intempestive, aucune erreur {"inv":0,"card":0,"errors":[]}
+PASS 1 enregistrement hostile (step démesuré) : app libre, pas d'invitation intempestive, aucune erreur {"inv":0,"card":1,"errors":[]}
+PASS 1 enregistrement hostile (__proto__) : app libre, pas d'invitation intempestive, aucune erreur {"inv":0,"card":0,"errors":[]}
+PASS 1 enregistrement hostile (énorme) : app libre, pas d'invitation intempestive, aucune erreur {"inv":0,"card":0,"errors":[]}
+PASS 2 tour « en cours » sans heure valable : aucune carte, rien relancé 
+PASS 3 une autre fenêtre change le tour : la première le suit (événement storage) 
+PASS 4 fenêtre étroite (700 px) : la carte reste entièrement dans l'écran {"x":340,"y":485,"width":340,"height":195}
+PASS 4b le repère suit le bouton « + » même en fenêtre étroite {"ring":1,"plus":{"x":520,"y":20,"width":36,"height":36}}
+PASS 5 clavier : Entrée sur « Passer » avance ; la carte est une région « Tour guidé » 
+PASS 5b clavier : « Quitter le tour » à la barre d'espace 
+PASS 6 double-clic sur « Faire le tour » : un seul tour, étape 1 ; « Passer » martelé : termine sans dépasser {"s1":{"invitation":"closed","status":"running","step":0,"startedAt":"2026-11-12T19:34:28.450Z","patientId":null,"appointmentId":null},"s2":{"invitation":"closed","status":"done","step":3,"startedAt":"2026-11-12T19:34:28.450Z","patientId":null,"appointmentId":null}}
+PASS 7 patient du tour inconnu (supprimé) : l'étape n'est pas bloquée, un rendez-vous neuf la fait avancer {"invitation":"closed","status":"running","step":2,"startedAt":"2026-11-12T19:33:34.319Z","patientId":"demo_patient_01","appointmentId":"zz-a9"}
+PASS 8 un tour complet ne crée aucune donnée (compteurs identiques) 5,8,4,0,8,2,3 -> 5,8,4,0,8,2,3
+PASS 9 le repère et la carte n'animent rien (aucun nouveau mouvement) {"ra":"none","rt":"0s","ca":"none","ct":"0s"}
+18/18

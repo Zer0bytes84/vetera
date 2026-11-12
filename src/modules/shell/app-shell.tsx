@@ -24,6 +24,7 @@ import {
 import { prepareAppointment } from "./model/clinical-actions";
 import { requestCreation } from "./model/creation-request";
 import { WhatsNewGate } from "@/modules/release-notes/whats-new-dialog";
+import { TourGuide } from "@/modules/tour/tour-guide";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -518,6 +519,7 @@ function AppShellInner() {
       }
     >
       <WhatsNewGate />
+      <TourGuide />
       {consultationPickerOpen && <Suspense fallback={null}><QuickConsultation open onOpenChange={setConsultationPickerOpen} onNavigate={handleNavigate}/></Suspense>}
       <AppSidebar
         account={{

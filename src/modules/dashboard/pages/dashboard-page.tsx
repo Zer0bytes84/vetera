@@ -41,6 +41,7 @@ import type { ActionFilter } from "../components/clinical/actions-module";
 import { useDashboardVersion } from "../hooks/use-dashboard-version";
 import { DashboardModeToggle } from "../components/dashboard-mode-toggle";
 import { useDashboardFinancials } from "../hooks/use-dashboard-financials";
+import { TourInvitation } from "@/modules/tour/tour-invitation";
 import { PremiumAnalytics } from "../components/premium-analytics";
 import { buildPremiumAnalytics, dashboardPresentationData, type AnalyticsPeriod, type CustomRange, type DashboardPeriod } from "../model/premium-analytics";
 import "../components/premium-analytics.css";
@@ -341,6 +342,7 @@ export function DashboardPage({
   );
     return (
       <div className="dashboard-stage flex w-full min-w-0 flex-col gap-6 px-4 pt-4 pb-12 lg:px-6 premium-analytics-dashboard">
+        <TourInvitation />
         <PremiumAnalytics
           clinicalView={version === "clinical" ? clinicalView : undefined}
           model={buildPremiumAnalytics({ ...presentation, alerts, reminders: medicalReminders.reminders }, analyticsPeriod, now, customRange)}
