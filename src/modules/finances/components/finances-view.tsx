@@ -1,14 +1,12 @@
 import { SearchableSelect } from "@/components/ui/searchable-select";
 import { ReceiptPercentIcon } from "@heroicons/react/20/solid";
-import { ListFilter, ListSearch } from "@/components/ui/list-controls";
+import { ListFilter } from "@/components/ui/list-controls";
 import { invoiceDocument } from "@/lib/invoice-document";
 import { InvoicePdfPreview } from "@/modules/invoices/components/invoice-pdf-preview";
 import { FinancialPeriodFilter } from "@/components/financial-period-filter";
 import {
   Add01Icon,
-  ArrowDown01Icon,
   ChartLineData01Icon,
-  ArrowUp01Icon,
   CheckmarkCircle02Icon,
   Clock01Icon,
   CreditCardIcon,
@@ -27,13 +25,6 @@ import { SectionCards } from "@/components/section-cards";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Dialog } from "@/components/ui/dialog";
 import {
   AlertDialog,
@@ -71,14 +62,6 @@ import {
 } from "@/components/ui/native-select";
 
 import { Spinner } from "@/components/ui/spinner";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
 import {
   Table,
   TableBody,
@@ -120,7 +103,11 @@ import "../finances-premium.css";
 import { DatePicker } from "@/components/ui/date-picker";
 import { useListCursor } from "@/hooks/useListCursor";
 import { InvoicesTable } from "./invoices-table";
-import { QuietButton } from "@/components/ui/tuff-controls";
+import { IconButton, QuietButton, SearchField } from "@/components/ui/tuff-controls";
+import { Inset, Panel, Shell, ShellHeader } from "@/components/ui/surface";
+import { StatusPill } from "@/components/ui/status-pill";
+import { RollingNumber } from "@/components/ui/rolling-number";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { EmptyMascot } from "@/components/mascot/empty-mascot";
 import { patientDocumentName } from "@/modules/patients/reference/reference";
 
@@ -295,11 +282,7 @@ export function FinancesView(props: FinancesViewProps) {
         onValueChange={(value) => setActiveTab(value as FinanceTab)}
         value={activeTab}
       >
-        {/* One title, the band's. On the invoices tab the switch lives in the table's band; the journal keeps it above its card. */}
-        {activeTab === "journal" ? (
-          <div className="flex justify-end">{viewToggle}</div>
-        ) : null}
-
+        {/* One title, the band's: on both tabs the switch lives in the table's band. */}
         <TabsContent className="space-y-5" value="invoices">
           {invoicesLoading ? (
             <div className="flex min-h-56 items-center justify-center">
@@ -383,74 +366,74 @@ export function FinancesView(props: FinancesViewProps) {
         </TabsContent>
 
         <TabsContent className="space-y-5" value="journal">
-          <Card className="overflow-hidden rounded-panel border-border/80 shadow-none">
-            <CardHeader className="border-b px-6 py-5">
-              <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-                {!isPremium && (
-                  <div>
-                    <CardTitle className="t-18 tracking-[-0.03em]">
-                      Journal de trésorerie
-                    </CardTitle>
-                    <CardDescription className="mt-1">
-                      Les lignes issues des règlements sont verrouillées
-                    </CardDescription>
-                  </div>
-                )}
-                <div className="flex flex-wrap items-center gap-2">
-                  <ListSearch
-                    className="w-full sm:w-64"
-                    label="Rechercher le journal"
-                    placeholder="Rechercher une écriture…"
-                    value={journalQuery}
-                    onValueChange={setJournalQuery}
-                  />
-                  <ToggleGroup
-                    data-tabs-style="segmented"
-                    multiple={false}
-                    onValueChange={(value) =>
-                      setJournalFilter(
-                        (value[0] as TransactionFilter | undefined) ?? "all",
-                      )
-                    }
-                    size="sm"
-                    spacing={0}
-                    value={[journalFilter]}
-                    variant="outline"
-                  >
-                    <ToggleGroupItem value="all">Toutes</ToggleGroupItem>
-                    <ToggleGroupItem value="income">Entrées</ToggleGroupItem>
-                    <ToggleGroupItem value="expense">Sorties</ToggleGroupItem>
-                  </ToggleGroup>
-                  <Button
-                    aria-expanded={journalAdvancedOpen}
-                    className="list-filter-control h-[30px] rounded-full text-xs"
-                    onClick={() => setJournalAdvancedOpen((open) => !open)}
-                    variant="outline"
-                  >
-                    <HugeiconsIcon icon={FilterIcon} strokeWidth={1.5} />
-                    Avancé
-                    {journalFilterCount > 0 ? (
-                      <Badge
-                        className="ml-1 size-5 justify-center rounded-full px-0"
-                        variant="secondary"
-                      >
-                        {journalFilterCount}
-                      </Badge>
-                    ) : null}
-                  </Button>
-                </div>
+          <Shell>
+            <ShellHeader
+              aside={viewToggle}
+              as="h2"
+              icon={ReceiptPercentIcon}
+              subtitle={
+                <>
+                  <RollingNumber value={filteredTransactions.length} />{" "}
+                  {filteredTransactions.length === 1 ? "écriture" : "écritures"}
+                </>
+              }
+              title="Journal de trésorerie"
+            />
+            <Panel className="p-2">
+              <div className="flex flex-wrap items-center gap-2 p-1 pb-2">
+                <SearchField
+                  className="min-w-48 flex-1"
+                  onChange={(event) => setJournalQuery(event.target.value)}
+                  onClear={() => setJournalQuery("")}
+                  placeholder="Rechercher une écriture…"
+                  value={journalQuery}
+                />
+                <ToggleGroup
+                  data-tabs-style="segmented"
+                  multiple={false}
+                  onValueChange={(value) =>
+                    setJournalFilter(
+                      (value[0] as TransactionFilter | undefined) ?? "all",
+                    )
+                  }
+                  size="sm"
+                  spacing={0}
+                  value={[journalFilter]}
+                  variant="outline"
+                >
+                  <ToggleGroupItem value="all">Toutes</ToggleGroupItem>
+                  <ToggleGroupItem value="income">Entrées</ToggleGroupItem>
+                  <ToggleGroupItem value="expense">Sorties</ToggleGroupItem>
+                </ToggleGroup>
+                <Button
+                  aria-expanded={journalAdvancedOpen}
+                  className="list-filter-control h-[30px] rounded-full text-xs"
+                  onClick={() => setJournalAdvancedOpen((open) => !open)}
+                  variant="outline"
+                >
+                  <HugeiconsIcon icon={FilterIcon} strokeWidth={1.5} />
+                  Avancé
+                  {journalFilterCount > 0 ? (
+                    <Badge
+                      className="ml-1 size-5 justify-center rounded-full px-0"
+                      variant="secondary"
+                    >
+                      {journalFilterCount}
+                    </Badge>
+                  ) : null}
+                </Button>
+                <FinancialPeriodFilter
+                  from={journalFrom}
+                  to={journalTo}
+                  onChange={(from, to) => {
+                    setJournalFrom(from);
+                    setJournalTo(to);
+                    setJournalPage(1);
+                  }}
+                />
               </div>
-              <FinancialPeriodFilter
-                from={journalFrom}
-                to={journalTo}
-                onChange={(from, to) => {
-                  setJournalFrom(from);
-                  setJournalTo(to);
-                  setJournalPage(1);
-                }}
-              />
               {journalAdvancedOpen ? (
-                <div className="flex flex-wrap items-end gap-2 rounded-xl bg-muted/35 p-3">
+                <Inset className="mx-1 mb-2 flex flex-wrap items-end gap-2 p-3">
                   <DateFilter
                     label="Du"
                     onChange={setJournalFrom}
@@ -566,10 +549,9 @@ export function FinancesView(props: FinancesViewProps) {
                       Réinitialiser les filtres
                     </Button>
                   </div>
-                </div>
+                </Inset>
               ) : null}
-            </CardHeader>
-            <CardContent className="p-0">
+
               {transactionsLoading ? (
                 <div className="flex min-h-56 items-center justify-center">
                   <Spinner className="size-6 text-muted-foreground" />
@@ -592,89 +574,99 @@ export function FinancesView(props: FinancesViewProps) {
                   </EmptyHeader>
                 </Empty>
               ) : (
-                <>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Opération</TableHead>
-                        <TableHead>Catégorie</TableHead>
-                        <TableHead>Mode</TableHead>
-                        <TableHead>Origine</TableHead>
-                        <TableHead className="text-right">Montant</TableHead>
-                        <TableHead className="w-[1%]">
-                          <span className="sr-only">Action</span>
-                        </TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {paginatedTransactions.map((transaction) => {
+                <div className="overflow-hidden">
+                  <table className="tuff-table w-full border-separate border-spacing-0 text-sm/6">
+                    <caption className="sr-only">Journal de trésorerie</caption>
+                    <thead>
+                      <tr className="text-muted-foreground">
+                        <th className="px-2 py-2 text-left font-medium" scope="col">
+                          Opération
+                        </th>
+                        <th
+                          className="hidden @md:table-cell px-2 py-2 text-left font-medium"
+                          scope="col"
+                        >
+                          Catégorie
+                        </th>
+                        <th
+                          className="hidden @xl:table-cell px-2 py-2 text-left font-medium"
+                          scope="col"
+                        >
+                          Mode
+                        </th>
+                        <th
+                          className="hidden @xl:table-cell px-2 py-2 text-left font-medium"
+                          scope="col"
+                        >
+                          Origine
+                        </th>
+                        <th className="px-2 py-2 text-right font-medium" scope="col">
+                          Montant
+                        </th>
+                        <th className="px-2 py-2 font-medium" scope="col">
+                          <span className="sr-only">Actions</span>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {paginatedTransactions.map((transaction, index) => {
                         const isIncome = transaction.type === "income";
                         const locked = Boolean(transaction.isLocked);
                         return (
-                          <TableRow key={transaction.id}>
-                            <TableCell>
-                              <div className="flex items-center gap-3">
-                                <span
-                                  className={cn(
-                                    "flex size-9 items-center justify-center rounded-xl",
-                                    isIncome
-                                      ? "bg-emerald-500/10 text-emerald-600"
-                                      : "bg-rose-500/10 text-rose-600",
-                                  )}
-                                >
-                                  <HugeiconsIcon
-                                    icon={
-                                      isIncome ? ArrowUp01Icon : ArrowDown01Icon
-                                    }
-                                    strokeWidth={1.5}
-                                  />
+                          <tr
+                            data-zebra={index % 2 === 1 ? "odd" : undefined}
+                            key={transaction.id}
+                          >
+                            <td className="whitespace-nowrap px-2 py-2.5">
+                              <span className="block max-w-56">
+                                <span className="block truncate text-sm font-medium">
+                                  {transaction.description}
                                 </span>
-                                <div>
-                                  <p className="font-medium">
-                                    {transaction.description}
-                                  </p>
-                                  <p className="text-muted-foreground text-xs">
-                                    {formatDate(transaction.date)}
-                                  </p>
-                                </div>
-                              </div>
-                            </TableCell>
-                            <TableCell>
-                              <Badge variant="outline">
+                                <span className="block text-[0.8125rem] text-muted-foreground">
+                                  {formatDate(transaction.date)}
+                                </span>
+                              </span>
+                            </td>
+                            <td className="hidden whitespace-nowrap px-2 py-2.5 @md:table-cell">
+                              <StatusPill size="sm" tone="neutral">
                                 {transaction.category}
-                              </Badge>
-                            </TableCell>
-                            <TableCell className="text-muted-foreground">
+                              </StatusPill>
+                            </td>
+                            <td className="hidden whitespace-nowrap px-2 py-2.5 text-muted-foreground @xl:table-cell">
                               {PAYMENT_METHOD_LABELS[transaction.method]}
-                            </TableCell>
-                            <TableCell>
+                            </td>
+                            <td className="hidden whitespace-nowrap px-2 py-2.5 @xl:table-cell">
                               {locked ? (
-                                <Badge className="gap-1" variant="secondary">
+                                <StatusPill size="sm" tone="brand">
                                   <HugeiconsIcon
+                                    className="size-3"
                                     icon={LockIcon}
                                     strokeWidth={1.5}
                                   />
                                   Facturation
-                                </Badge>
+                                </StatusPill>
                               ) : (
-                                <Badge variant="outline">Manuelle</Badge>
+                                <StatusPill size="sm" tone="neutral">
+                                  Manuelle
+                                </StatusPill>
                               )}
-                            </TableCell>
-                            <TableCell
-                              className={cn(
-                                "text-right font-semibold tabular-nums",
-                                isIncome
-                                  ? "text-emerald-600 dark:text-emerald-400"
-                                  : "text-rose-600 dark:text-rose-400",
-                              )}
-                            >
-                              {isIncome ? "+" : "-"}
-                              {formatDZD(transaction.amount)}
-                            </TableCell>
-                            <TableCell>
-                              <div className="flex justify-end gap-1">
+                            </td>
+                            <td className="whitespace-nowrap px-2 py-2.5 text-right">
+                              <span
+                                className={cn(
+                                  "font-sans text-[0.8125rem] font-medium tabular-nums",
+                                  isIncome ? "text-positive" : "text-negative",
+                                )}
+                              >
+                                {isIncome ? "+" : "-"}
+                                {formatDZD(transaction.amount)}
+                              </span>
+                            </td>
+                            <td className="whitespace-nowrap px-2 py-2.5">
+                              <div className="flex items-center justify-end gap-1">
                                 <Button
                                   aria-label="Changer le statut"
+                                  className="rounded-full"
                                   disabled={locked}
                                   onClick={() =>
                                     void toggleTransactionStatus(transaction)
@@ -693,6 +685,7 @@ export function FinancesView(props: FinancesViewProps) {
                                 </Button>
                                 <Button
                                   aria-label="Modifier l’écriture"
+                                  className="rounded-full"
                                   disabled={locked}
                                   onClick={() =>
                                     openTransactionEditor(transaction)
@@ -706,76 +699,51 @@ export function FinancesView(props: FinancesViewProps) {
                                   />
                                 </Button>
                               </div>
-                            </TableCell>
-                          </TableRow>
+                            </td>
+                          </tr>
                         );
                       })}
-                    </TableBody>
-                  </Table>
-                  {journalPageCount > 1 ? (
-                    <div className="flex items-center justify-between border-t px-5 py-3">
-                      <p className="text-muted-foreground text-xs">
-                        {filteredTransactions.length} écriture
-                        {filteredTransactions.length > 1 ? "s" : ""}
-                      </p>
-                      <Pagination className="mx-0 w-auto justify-end">
-                        <PaginationContent>
-                          <PaginationItem>
-                            <PaginationPrevious
-                              aria-disabled={journalPage === 1}
-                              className={cn(
-                                journalPage === 1 &&
-                                  "pointer-events-none opacity-40",
-                              )}
-                              onClick={(event) => {
-                                event.preventDefault();
-                                setJournalPage((page) => Math.max(1, page - 1));
-                              }}
-                              text="Précédent"
-                            />
-                          </PaginationItem>
-                          {Array.from(
-                            { length: journalPageCount },
-                            (_, index) => index + 1,
-                          ).map((page) => (
-                            <PaginationItem key={page}>
-                              <PaginationLink
-                                aria-label={`Aller à la page ${page}`}
-                                href={`#journal-page-${page}`}
-                                isActive={journalPage === page}
-                                onClick={(event) => {
-                                  event.preventDefault();
-                                  setJournalPage(page);
-                                }}
-                              >
-                                {page}
-                              </PaginationLink>
-                            </PaginationItem>
-                          ))}
-                          <PaginationItem>
-                            <PaginationNext
-                              aria-disabled={journalPage === journalPageCount}
-                              className={cn(
-                                journalPage === journalPageCount &&
-                                  "pointer-events-none opacity-40",
-                              )}
-                              onClick={(event) => {
-                                event.preventDefault();
-                                setJournalPage((page) =>
-                                  Math.min(journalPageCount, page + 1),
-                                );
-                              }}
-                              text="Suivant"
-                            />
-                          </PaginationItem>
-                        </PaginationContent>
-                      </Pagination>
-                    </div>
-                  ) : null}
-                </>
+                    </tbody>
+                  </table>
+                </div>
               )}
-            </CardContent>
-          </Card>
+            </Panel>
+
+            <footer className="flex items-center justify-between gap-3 py-1.5 pr-1.5 pl-3.5 text-xs text-muted-foreground">
+              <span>
+                {paginatedTransactions.length
+                  ? filteredTransactions.indexOf(paginatedTransactions[0]) + 1
+                  : 0}
+                –
+                {paginatedTransactions.length
+                  ? filteredTransactions.indexOf(paginatedTransactions[0]) +
+                    paginatedTransactions.length
+                  : 0}{" "}
+                sur {filteredTransactions.length}
+              </span>
+              <span className="flex items-center gap-1">
+                <IconButton
+                  disabled={journalPage <= 1}
+                  icon={ChevronLeft}
+                  label="Page précédente"
+                  onClick={() => setJournalPage((page) => Math.max(1, page - 1))}
+                  strokeWidth={3}
+                />
+                <span className="w-14 text-center tabular-nums">
+                  {journalPage} / {journalPageCount}
+                </span>
+                <IconButton
+                  disabled={journalPage >= journalPageCount}
+                  icon={ChevronRight}
+                  label="Page suivante"
+                  onClick={() =>
+                    setJournalPage((page) => Math.min(journalPageCount, page + 1))
+                  }
+                  strokeWidth={3}
+                />
+              </span>
+            </footer>
+          </Shell>
         </TabsContent>
       </Tabs>
 
