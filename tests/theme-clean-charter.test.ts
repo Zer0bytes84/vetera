@@ -37,7 +37,8 @@ const rulesFor = (pattern: RegExp) => {
 const files = (dir: string, ext: RegExp): string[] =>
   readdirSync(dir).flatMap((name) => {
     const path = join(dir, name);
-    return statSync(path).isDirectory() ? files(path, ext) : ext.test(name) ? [path] : [];
+    // Paths are compared to forward-slash literals: normalise the separators join() produces on Windows.
+    return statSync(path).isDirectory() ? files(path, ext) : ext.test(name) ? [path.replace(/\\/g, "/")] : [];
   });
 
 afterEach(() => vi.unstubAllGlobals());
@@ -55,13 +56,15 @@ describe("thème Clean : jetons", () => {
     expect(declarations.get("--clean-ink-disabled")).toBe("#a6a6a6");
   });
 
-  it("fixe les hauteurs : 40 px en listes, 32 px en tableaux et contrôles, 34 px dans la sidebar", () => {
+  it("fixe les hauteurs : 40 px en listes, 32 px en tableaux et contrôles, 30 px pour les boutons de la sidebar", () => {
     expect(declarations.get("--clean-row-list")).toBe("40px");
     expect(declarations.get("--clean-row-table")).toBe("32px");
     expect(declarations.get("--clean-control")).toBe("32px");
     expect(declarations.get("--clean-nav-item")).toBe("34px");
+    // The token stays at 34 px for the subpage links and the Premium rows; the
+    // menu buttons themselves were tightened to a fixed 30 px, validated by eye.
     const nav = rulesFor(/sidebar-menu-button"\]$/).flatMap((rule) => rule.nodes);
-    expect(nav.some((n) => n.type === "decl" && n.prop === "height" && n.value.includes("--clean-nav-item"))).toBe(true);
+    expect(nav.some((n) => n.type === "decl" && n.prop === "height" && n.value === "30px")).toBe(true);
     const table = rulesFor(/:is\(th, td\)/).flatMap((rule) => rule.nodes);
     expect(table.some((n) => n.type === "decl" && n.prop === "height" && n.value.includes("--clean-row-table"))).toBe(true);
   });

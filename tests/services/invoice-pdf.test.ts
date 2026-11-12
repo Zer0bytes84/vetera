@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { buildInvoicePdf, invoiceMoney, type InvoicePdfData } from "@/lib/invoice-pdf";
 import { DEFAULT_INVOICE_SETTINGS, normalizeInvoiceSettings } from "@/services/invoiceSettingsService";
 
@@ -25,8 +27,9 @@ describe("personalized invoice PDFs", () => {
     expect(many.getNumberOfPages()).toBeGreaterThan(2);
     expect(many.output()).toContain("Prestation 75");
     expect(many.output()).toContain("3 500 DA");
-    writeFileSync("/tmp/baitari-invoice-sample.pdf", Buffer.from(single.output("arraybuffer")));
-    writeFileSync("/tmp/baitari-invoice-multipage.pdf", Buffer.from(many.output("arraybuffer")));
+    // Sample dumps for manual inspection: the OS temp dir, not a POSIX-only /tmp.
+    writeFileSync(join(tmpdir(), "baitari-invoice-sample.pdf"), Buffer.from(single.output("arraybuffer")));
+    writeFileSync(join(tmpdir(), "baitari-invoice-multipage.pdf"), Buffer.from(many.output("arraybuffer")));
   });
   it("accounts for credits and refunds without marking a balance as settled", () => {
     const doc = buildInvoicePdf({ ...data, paidAmount: 500000, creditAmount: 100000, refundAmount: 50000, balanceAmount: 150000 }, settings);

@@ -96,7 +96,8 @@ describe("barre latérale : charte", () => {
       const darkSidebar = selectors(path).filter((selector) =>
         /^:root\.dark\[data-visual-style="premium"\]/.test(selector) && /sidebar|nav-link/.test(selector)
         // The active-pill rules scoped to a light-pinned bar are the light case itself, not dark rules leaking onto it.
-        && !selector.includes('[data-sidebar-tone="light"]'));
+        // The light scope is looked for outside the guard, which names it too.
+        && !selector.replaceAll(GUARD, "").includes('[data-sidebar-tone="light"]'));
       expect(darkSidebar.length).toBeGreaterThan(0);
       for (const selector of darkSidebar) {
         expect(selector).toContain(GUARD);
