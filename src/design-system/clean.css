@@ -1795,3 +1795,16 @@
 :root[data-skin="clean"] :is(table, [data-slot="table"]) th {
   font-variant-numeric: normal;
 }
+
+/* Chiffres cles : le dosage essaye le 11 novembre sur le tableau de bord (libelle 14 medium
+   en encre forte, valeur semibold) vaut pour toutes les bandes, en clair comme en sombre.
+   Le meme composant avait deux reglages : 14/500 sur le tableau de bord, 13/450 gris ailleurs. */
+/* Portee courte a dessein : l essai du tableau de bord en clair (#09090b) reste le plus fort. */
+:root[data-skin="clean"] [data-slot="stat-label"] {
+  color: var(--clean-ink-strong) !important;
+  font-size: 14px;
+  font-weight: 500;
+}
+:root[data-skin="clean"] [data-slot="stat-value"] > * {
+  font-weight: 600;
+}

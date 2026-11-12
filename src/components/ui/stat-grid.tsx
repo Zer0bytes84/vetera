@@ -178,7 +178,7 @@ function StatCard({
         grow, so each of them falls on the same line from one card to the next.
       */}
       <Panel className="flex h-full flex-col gap-2 p-4">
-        <p className="flex h-6 items-center gap-2 text-[0.8125rem] text-muted-foreground">
+        <p className="flex h-6 items-center gap-2 text-[0.8125rem] text-muted-foreground" data-slot="stat-label">
           {stat.icon && (
             <span
               aria-hidden="true"
@@ -205,6 +205,7 @@ function StatCard({
         <div className="flex h-8 items-center justify-between gap-3">
           <span
             className="shrink-0 whitespace-nowrap"
+            data-slot="stat-value"
             style={stat.emphasize && stat.tone ? { color: `var(--tone-${stat.tone})` } : undefined}
           >
             <RollingNumber
