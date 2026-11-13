@@ -41,6 +41,8 @@ import {
 import { ARROW_DIRECTIONS, nearestInDirection } from "./spatial-nav";
 import { useFlowBoard } from "./use-flow-board";
 import { WalkInDialog } from "./walk-in-dialog";
+import { QuietDayPanel } from "./quiet-day-panel";
+import { prepareAppointment } from "@/modules/shell/model/clinical-actions";
 import "./flow-board.css";
 
 const PREFS_KEY = "baitari.flow-board.v1";
@@ -360,6 +362,7 @@ function LeftOpen({ cards, children }: { cards: FlowCard[]; children: ReactNode 
 }
 
 export function FlowBoardPage({
+  onNavigate,
   onNavigateToPatient,
 }: {
   onNavigate?: (view: View) => void;
@@ -370,6 +373,7 @@ export function FlowBoardPage({
   const [walkInOpen, setWalkInOpen] = useState(false);
   const {
     appointmentById,
+    appointments,
     board,
     busyId,
     error,
@@ -548,6 +552,8 @@ export function FlowBoardPage({
   const longestWait = board.lanes.waiting.reduce((max, card) => Math.max(max, minutesSince(card.since, now) ?? 0), 0);
   const inRoom = board.lanes.waiting.length;
   const inCare = board.lanes.consultation.length + board.lanes.care.length;
+  // A day with no visit at all, nothing left open and no search: the strip above the lanes says what is next instead.
+  const quietDay = !loading && !error && !query && total === 0 && board.leftOpen.length === 0;
   const todayLabel = now.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" });
 
   const renderCards = (cards: FlowCard[], leftOpen = false) =>
@@ -649,6 +655,23 @@ export function FlowBoardPage({
 
         <DndContext onDragCancel={() => setDragging(null)} onDragEnd={onDragEnd} onDragStart={onDragStart} sensors={sensors}>
           <div className="flow-board" onKeyDown={onKeyDown}>
+            {quietDay && (
+              <QuietDayPanel
+                appointments={appointments}
+                now={now}
+                onAgenda={() => onNavigate?.("agenda")}
+                onNewAppointment={() => {
+                  // The same opening as the dashboard's « planifier »: the agenda reads the marker when it mounts.
+                  prepareAppointment(undefined, new Date());
+                  onNavigate?.("agenda");
+                  window.setTimeout(() => window.dispatchEvent(new CustomEvent("vetera:new-appointment")), 150);
+                }}
+                onWalkIn={() => setWalkInOpen(true)}
+                patients={patients}
+                vetId={prefs.vetId}
+                vets={vets}
+              />
+            )}
             <PlannedStrip cards={board.lanes[PLANNED]}>{renderCards(board.lanes[PLANNED])}</PlannedStrip>
             <LeftOpen cards={board.leftOpen}>{renderCards(board.leftOpen, true)}</LeftOpen>
             <div className="flow-lanes">
