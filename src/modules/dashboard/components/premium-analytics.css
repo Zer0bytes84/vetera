@@ -1126,3 +1126,9 @@ button:hover .toggleIcon[data-collapsed="true"] .toggleChevron {
   font-weight: 600 !important;
   color: #09090b !important;
 }
+
+/* Tableau de bord, finition par contraste de fonds seuls (13 novembre 2026) : le panneau se lit sur sa bande par son
+   fond, sans l'ombre de contact du round 2 du banc, qui reste ailleurs dans l'app. */
+:root[data-skin="clean"] .premium-analytics-dashboard [data-slot="panel"] {
+  box-shadow: none;
+}
