@@ -44,13 +44,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Dialog } from "@/components/ui/dialog";
 import {
   Empty,
@@ -398,33 +391,25 @@ const Team: React.FC = () => {
         subtitle={bandSubtitle}
       />
 
-      {/* Main Card */}
-      <Card className="card-vibrant card-hover-lift flex flex-1 flex-col overflow-hidden rounded-[24px] border border-border bg-card shadow-none">
-        <CardHeader className="border-border border-b px-6 py-5">
-          <CardDescription className="font-mono t-12 uppercase tracking-[0.06em]">
-            Annuaire interne
-          </CardDescription>
-          <CardTitle className="font-normal t-18 tracking-[-0.04em]">
-            Coordination de l'équipe
-          </CardTitle>
-        </CardHeader>
-        {/* Toolbar */}
-        <div className="flex flex-col items-center justify-between gap-4 border-border border-b px-6 py-4 md:flex-row">
+      {/* The directory: no section title block, a tool row as on Flux and Rappels (count on the left, search on the right). */}
+      <section aria-label="Annuaire de l’équipe" className="team-directory flex flex-1 flex-col gap-3">
+        <div className="team-directory-tools flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
+          <p className="text-muted-foreground t-13">
+            <span className="font-medium text-foreground tabular-nums">{formatNumber(filteredUsers.length)}</span>{" "}
+            membre{filteredUsers.length > 1 ? "s" : ""}
+            {searchTerm ? ` sur ${formatNumber(users.length)}` : ""}
+          </p>
           <ListSearch
-            className="w-full md:w-72"
+            className="w-full sm:w-56"
             label="Rechercher un membre"
             placeholder="Rechercher un membre…"
             value={searchTerm}
             onValueChange={setSearchTerm}
           />
-
-          <p className="text-muted-foreground t-13 tabular-nums">
-            {filteredUsers.length} membre{filteredUsers.length > 1 ? "s" : ""}
-          </p>
         </div>
 
         {/* Users List */}
-        <CardContent className="flex-1 overflow-auto p-4 sm:p-6">
+        <div className="flex-1">
           {loading ? (
             <div className="flex items-center justify-center p-6">
               <Spinner />
@@ -589,8 +574,8 @@ const Team: React.FC = () => {
               })}
             </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </section>
 
       <AlertDialog
         onOpenChange={(open) => {
