@@ -1878,3 +1878,17 @@
     display: none;
   }
 }
+
+/* Second endroit qui le merite : l invitation au tour guide, un moment rare (premiere ouverture)
+   qui se ferme d un clic. Meme maille, plus legere, derriere l icone et au bout de la carte. */
+:root[data-skin="clean"] .tour-invitation .tour-invitation-panel {
+  background-image:
+    radial-gradient(34% 190% at 0% 40%, color-mix(in oklab, var(--chart-blue) 16%, transparent), transparent 70%),
+    radial-gradient(30% 170% at 26% 130%, color-mix(in oklab, var(--chart-indigo) 13%, transparent), transparent 70%),
+    radial-gradient(30% 170% at 100% -10%, color-mix(in oklab, var(--chart-teal) 12%, transparent), transparent 70%);
+}
+@media (prefers-contrast: more), (prefers-reduced-transparency: reduce) {
+  :root[data-skin="clean"] .tour-invitation .tour-invitation-panel {
+    background-image: none;
+  }
+}
