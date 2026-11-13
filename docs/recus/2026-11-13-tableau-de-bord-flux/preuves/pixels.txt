@@ -1,0 +1,8 @@
+light-dashboard: 32.8 % des pixels changent (1440x900 -> 1440x900)
+dark-dashboard: 35.5 % des pixels changent (1440x900 -> 1440x900)
+light-dashboard-page: 33.8 % des pixels changent (1440x2231 -> 1440x2449)
+dark-dashboard-page: 44.0 % des pixels changent (1440x2225 -> 1440x2443)
+light-flux: 3.4 % des pixels changent (1440x900 -> 1440x900)
+light-flux-journee-chargee: 1.3 % des pixels changent (1440x900 -> 1440x900)
+dark-flux: 4.5 % des pixels changent (1440x900 -> 1440x900)
+dark-flux-journee-chargee: 1.9 % des pixels changent (1440x900 -> 1440x900)
