@@ -370,11 +370,9 @@ export function DashboardPage({
     return (
       <div className="dashboard-stage flex w-full min-w-0 flex-col gap-6 px-4 pt-4 pb-12 lg:px-6 premium-analytics-dashboard">
         <TourInvitation />
-        {version !== "clinical" && (
-          <MorningWatch items={morning} now={now} onOpen={openMorning} onStatus={setMorningStatus} status={morningStatus} />
-        )}
         <PremiumAnalytics
           clinicalView={version === "clinical" ? clinicalView : undefined}
+          morningWatch={<MorningWatch items={morning} now={now} onOpen={openMorning} onStatus={setMorningStatus} status={morningStatus} />}
           model={buildPremiumAnalytics({ ...presentation, alerts, reminders: medicalReminders.reminders }, analyticsPeriod, now, customRange)}
           period={analyticsPeriod}
           onPeriod={(next: AnalyticsPeriod) => setAnalyticsPeriod(next)}

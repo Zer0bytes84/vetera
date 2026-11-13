@@ -80,6 +80,8 @@ interface PremiumAnalyticsProps {
   /** Shows the visit in Flux, where visits move on. */
   onStartConsultation?: (appointmentId: string) => void;
   clinicalView?: React.ReactNode;
+  /** « À traiter »: the day's anomalies, right under the chart. */
+  morningWatch?: React.ReactNode;
   /** Rangée « À surveiller » (rappels, stock, hospitalisés): plus affichée sur le tableau de bord, qui s'arrête après « Cette semaine ». */
   watch?: React.ReactNode;
   /** Heure courante (horloge de la page), pour repérer le prochain rendez-vous. */
@@ -237,6 +239,7 @@ export function PremiumAnalytics({
   dashboardViewControl,
   presentation,
   clinicalView,
+  morningWatch,
   now,
   vets,
   onCreateSlot,
@@ -606,6 +609,8 @@ export function PremiumAnalytics({
         points={chartPoints}
         rangeLabel={chartRangeLabel}
       />
+
+      {morningWatch}
 
       {/* 5. Under the chart, half and half: the clinic's activity, then Cette semaine. */}
       <div className="pairRow">
