@@ -114,6 +114,7 @@ export function ConsultationAssistantPanel({
         aria-hidden={collapsed || !visible}
         role="complementary"
         aria-label="Assistant de consultation"
+        data-slot="assistant-panel"
         data-state={collapsed ? "collapsed" : visible ? "open" : "closed"}
         className={cn(
           "fixed inset-y-0 right-0 z-50 flex w-full flex-col",
@@ -129,7 +130,7 @@ export function ConsultationAssistantPanel({
           if (!open && event.target === event.currentTarget && event.propertyName === "transform") { setRendered(false); onExited?.(); }
         }}
       >
-        <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+        <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden">
           <PanelControlsContext.Provider
             value={{
               collapse: () => {

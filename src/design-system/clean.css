@@ -1851,3 +1851,30 @@
 :root[data-skin="clean"] [data-slot="panel"] {
   box-shadow: var(--clean-panel-shadow);
 }
+
+/* Degrade en maille, la ou il le merite : le panneau de l assistant, seule surface de l app qui
+   n est pas un outil de saisie mais une presence. Trois halos (bleu, indigo, sarcelle des
+   graphiques) fondus en haut du panneau, eteints avant le premier champ ; rien derriere le texte
+   de travail. Aucune image, aucun mouvement. */
+:root[data-skin="clean"] [data-slot="assistant-panel"] {
+  overflow: clip;
+}
+:root[data-skin="clean"] [data-slot="assistant-panel"]::before {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 220px;
+  border-top-left-radius: inherit;
+  background:
+    radial-gradient(58% 90% at 10% 0%, color-mix(in oklab, var(--chart-blue) 26%, transparent), transparent 72%),
+    radial-gradient(46% 80% at 58% -12%, color-mix(in oklab, var(--chart-indigo) 24%, transparent), transparent 72%),
+    radial-gradient(40% 70% at 100% 4%, color-mix(in oklab, var(--chart-teal) 18%, transparent), transparent 72%);
+  content: "";
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, transparent 100%);
+  pointer-events: none;
+}
+@media (prefers-contrast: more), (prefers-reduced-transparency: reduce) {
+  :root[data-skin="clean"] [data-slot="assistant-panel"]::before {
+    display: none;
+  }
+}
