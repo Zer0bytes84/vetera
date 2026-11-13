@@ -1,5 +1,5 @@
 import { ListSearch } from "@/components/ui/list-controls";
-import { UsersIcon } from "@heroicons/react/20/solid";
+import { MagnifyingGlassIcon, UsersIcon } from "@heroicons/react/20/solid";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -45,12 +45,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
-import {
-  Empty,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyTitle,
-} from "@/components/ui/empty";
+import { Shell, ShellHeader } from "@/components/ui/surface";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import {
   FormDialogBody,
@@ -415,14 +410,31 @@ const Team: React.FC = () => {
               <Spinner />
             </div>
           ) : filteredUsers.length === 0 ? (
-            <Empty>
-              <EmptyHeader>
-                <EmptyTitle>Aucun membre trouvé</EmptyTitle>
-                <EmptyDescription>
-                  Aucun membre ne correspond à votre recherche.
-                </EmptyDescription>
-              </EmptyHeader>
-            </Empty>
+            // Composed as the Rappels' empty search: the page's band, one true line, and the way out.
+            <Shell>
+              <ShellHeader
+                aside={
+                  searchTerm ? (
+                    <Button onClick={() => setSearchTerm("")} size="sm" type="button" variant="outline">
+                      Effacer la recherche
+                    </Button>
+                  ) : canManageTeam ? (
+                    <Button onClick={() => handleOpenModal()} size="sm" type="button" variant="outline">
+                      <PlusIcon aria-hidden="true" className="size-4" />
+                      Nouveau membre
+                    </Button>
+                  ) : undefined
+                }
+                as="h2"
+                icon={searchTerm ? MagnifyingGlassIcon : UsersIcon}
+                subtitle={
+                  searchTerm
+                    ? `Aucun membre ne correspond à « ${searchTerm} ».`
+                    : "Aucun membre n’est enregistré pour ce cabinet."
+                }
+                title={searchTerm ? "Aucun résultat" : "Aucun membre"}
+              />
+            </Shell>
           ) : (
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
               {filteredUsers.map((user) => {
