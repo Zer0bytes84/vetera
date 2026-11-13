@@ -105,6 +105,7 @@
   /* Round 2 (banc du 12 novembre 2026) : une ombre de contact sous les panneaux blancs poses sur
      leur bande, et l ombre du panneau assistant en trois couches fines au lieu d une seule large. */
   --clean-panel-shadow: 0 0 0 0.5px rgb(0 0 0 / 0.06), 0 1px 2px rgb(0 0 0 / 0.05), 0 6px 12px -6px rgb(0 0 0 / 0.1);
+  --clean-slideout-shadow: -0.5px 0 0 rgb(0 0 0 / 0.08), -8px 0 24px -8px rgb(0 0 0 / 0.08), -24px 0 48px -24px rgb(0 0 0 / 0.12);
   /* Type: Inter for interface, body and titles. Titles have their own token so
      the mixed variant (Space Grotesk titles) stays a one-value change. */
   --clean-font-ui: "Inter Clean", "Inter Variable", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -150,6 +151,7 @@
   --clean-sheet-shadow: 0 0 0 0.5px rgb(255 255 255 / 0.07);
   --clean-float-shadow: 0 0 0 0.5px rgb(255 255 255 / 0.1);
   --clean-panel-shadow: inset 0 1px 0 rgb(255 255 255 / 0.07);
+  --clean-slideout-shadow: -0.5px 0 0 rgb(255 255 255 / 0.1);
   --clean-glass-top: rgb(23 23 25 / 0.76);
   --clean-glass-bottom: rgb(17 18 20 / 0.6);
   --clean-glass-edge: rgb(255 255 255 / 0.06);

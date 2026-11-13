@@ -119,7 +119,7 @@ export function ConsultationAssistantPanel({
           "fixed inset-y-0 right-0 z-50 flex w-full flex-col",
           "sm:max-w-[var(--assistant-width)]",
           "border-l border-border bg-[var(--card-band)] rounded-tl-[20px]",
-          "shadow-[-16px_0_48px_-12px_rgba(0,0,0,0.18)]",
+          "shadow-[var(--clean-slideout-shadow,-16px_0_48px_-12px_rgba(0,0,0,0.18))]",
           "transition-transform motion-reduce:transition-none",
           visible && !collapsed
             ? "translate-x-0 duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]"
