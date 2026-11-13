@@ -124,11 +124,10 @@ export function StatGrid({
                 : "grid-cols-1 @md:grid-cols-2",
           )}
         >
-          {data.map((stat, i) => (
+          {data.map((stat) => (
             <StatCard
               key={stat.id}
               stat={stat}
-              index={i}
               sparkline={sparklines}
               showGoal={goals}
               showBadge={badges}
@@ -143,14 +142,12 @@ export function StatGrid({
 
 function StatCard({
   stat,
-  index,
   sparkline,
   showGoal,
   showBadge,
   onSelect,
 }: {
   stat: Stat;
-  index: number;
   sparkline: boolean;
   showGoal: boolean;
   showBadge: boolean;
@@ -169,9 +166,7 @@ function StatCard({
       type={onSelect ? "button" : undefined}
       onClick={onSelect ? () => onSelect(stat) : undefined}
       aria-label={onSelect ? stat.ariaLabel : undefined}
-      initial={{ opacity: 0, y: 6 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.24, ease: EASE_OUT, delay: index * 0.05 }}
+      // No entrance: a band read every morning is simply there, and a filter that changes a figure rolls the figure only.
       className={cn(
         "group min-w-0 text-left",
         onSelect &&
@@ -183,7 +178,14 @@ function StatCard({
         right, level with it), badge, one short line, and the goal bar at the foot. No row can wrap or
         grow, so each of them falls on the same line from one card to the next.
       */}
-      <Panel className="flex h-full flex-col gap-2 p-4">
+      <Panel
+        className={cn(
+          "flex h-full flex-col gap-2 p-4",
+          // A clickable card answers the pointer by its fill alone: no border, no shadow.
+          onSelect &&
+            "transition-[background-color] duration-150 ease-out group-hover:bg-[color-mix(in_oklab,var(--card-inset),var(--foreground)_3%)] group-active:bg-[color-mix(in_oklab,var(--card-inset),var(--foreground)_5%)]",
+        )}
+      >
         <p className="flex h-6 items-center gap-2 text-[0.8125rem] text-muted-foreground" data-slot="stat-label">
           {stat.icon && (
             <span
