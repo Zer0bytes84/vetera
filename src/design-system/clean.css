@@ -1816,3 +1816,25 @@
   background: color-mix(in srgb, var(--clean-ink-strong) 16%, transparent);
   color: var(--clean-ink-strong);
 }
+
+/* ---------- Round 2 : mouvement, profondeur, matiere ---------- */
+
+/* Pression : les entrees de navigation et les onglets segmentes ne repondaient pas a l appui
+   (mesure : meme etat presse que survole). Le fond de l entree active des l appui pour la
+   navigation, un retrait a 0,97 pour l onglet ; 160 ms, cubic-bezier(0.23, 1, 0.32, 1). */
+:root[data-skin="clean"][data-skin][data-skin] .app-sidebar :is([data-slot="sidebar-menu-button"], [data-slot="sidebar-menu-sub-button"]):active {
+  background-color: var(--clean-nav-active) !important;
+  transition-duration: 0ms !important;
+}
+:root[data-skin="clean"] [data-tabs-style="segmented"] [data-slot="tabs-trigger"]:active {
+  scale: 0.97;
+}
+@media (prefers-reduced-motion: no-preference) {
+  :root[data-skin="clean"] [data-tabs-style="segmented"] [data-slot="tabs-trigger"] {
+    transition:
+      background-color 120ms ease-out,
+      color 120ms ease-out,
+      box-shadow 120ms ease-out,
+      scale 160ms cubic-bezier(0.23, 1, 0.32, 1);
+  }
+}
