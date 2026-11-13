@@ -1,8 +1,11 @@
 /* Tableau de flux : charte Baitari, jetons existants uniquement. */
 
+/* The page takes the view's whole height: a light day fills it as well as a full one, the five lanes reaching
+   down to the key hints instead of stopping at mid-screen over an empty half. */
 .flow-board-page {
   display: flex;
   min-width: 0;
+  min-height: 100%;
   flex-direction: column;
   gap: 16px;
 }
@@ -10,14 +13,16 @@
 .flow-board {
   display: flex;
   min-width: 0;
+  flex: 1;
   flex-direction: column;
   gap: 12px;
 }
 
 .flow-lanes {
   display: grid;
+  flex: 1;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  align-items: start;
+  align-items: stretch;
   gap: 10px;
 }
 
@@ -90,11 +95,9 @@
   color: color-mix(in oklch, var(--signal-watch) 75%, var(--ink));
 }
 
+/* An empty lane says so in one quiet line under its title: five dashed boxes in a row were noise. */
 .flow-lane-empty {
-  border: 1px dashed var(--hairline);
-  border-radius: var(--radius-body);
-  padding: 14px 10px;
-  text-align: center;
+  padding: 0 4px;
   font-size: 12px;
   color: var(--ink-faint);
 }
@@ -532,7 +535,6 @@
 }
 
 .dark .flow-board-page .flow-lane-empty {
-  border-color: var(--line-strong, rgb(255 255 255 / 0.16));
   color: var(--ink-muted);
 }
 
