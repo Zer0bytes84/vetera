@@ -107,14 +107,24 @@ export function AppSidebar({
   const operationsSection = navigationSections[2];
 
   const inClinic = currentView === "clinique" || currentView === "soins";
-  const subPages: Partial<Record<View, { open: boolean; children: NavItem["children"] }>> = {
-    clinique: {
-      open: inClinic,
-      children: [
-        { title: "Soins", isActive: inClinic && clinicTab === "soins", onClick: () => openClinicTab("soins", currentView, onNavigate) },
-        { title: "Hospitalisation", isActive: inClinic && clinicTab === "hospitalisation", onClick: () => openClinicTab("hospitalisation", currentView, onNavigate) },
-      ],
+  // « Clinique » is a section title in the sidebar, not a page: its two
+  // pages are direct entries under it, one click each, still driven by
+  // the same clinic tab underneath.
+  const clinicItems: NavItem[] = [
+    {
+      title: "Soins",
+      icon: <SidebarIcon className="size-5!" view="soins" />,
+      isActive: inClinic && clinicTab === "soins",
+      onClick: () => openClinicTab("soins", currentView, onNavigate),
     },
+    {
+      title: "Hospitalisation",
+      icon: <SidebarIcon className="size-5!" view="clinique" />,
+      isActive: inClinic && clinicTab === "hospitalisation",
+      onClick: () => openClinicTab("hospitalisation", currentView, onNavigate),
+    },
+  ];
+  const subPages: Partial<Record<View, { open: boolean; children: NavItem["children"] }>> = {
     finances: {
       open: currentView === "finances" || currentView === "finances_analytics",
       children: [
@@ -140,9 +150,10 @@ export function AppSidebar({
     };
   };
 
-  const mainItems = [
+  const workspaceItems = [
     ...(overviewSection?.items ?? []),
-    ...(patientSection?.items.slice(0, 5) ?? []),
+    ...(patientSection?.items.slice(0, 2) ?? []),
+    ...(patientSection?.items.slice(3, 5) ?? []),
   ].map(toNavItem);
 
   const managementItems = [
@@ -210,7 +221,9 @@ export function AppSidebar({
           )}
         >
 
-          <NavMain items={mainItems} title="Espace de travail" />
+          <NavMain items={workspaceItems} title="Espace de travail" />
+
+          <NavMain items={clinicItems} title="Clinique" />
 
           <NavMain items={managementItems} title="Gestion du cabinet" />
         </div>
