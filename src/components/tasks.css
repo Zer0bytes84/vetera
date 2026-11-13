@@ -65,3 +65,8 @@ article[data-selected] { background: color-mix(in oklab, var(--primary) 6%, tran
   font-size: 13px;
   transform: translateX(-50%);
 }
+
+/* Finition par contraste de fonds seuls, comme le tableau de bord : pas d'ombre de contact sous les panneaux. */
+:root[data-skin="clean"] .reminders-page [data-slot="panel"] {
+  box-shadow: none;
+}

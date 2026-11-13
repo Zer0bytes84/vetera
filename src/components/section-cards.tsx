@@ -116,9 +116,12 @@ export function SectionCards({
   subtitle,
   icon = Squares2X2Icon,
   actions,
+  badges = true,
   className,
 }: {
   items: SectionCardItem[];
+  /** `false`: no badge row, for a band of counts whose state is carried by the tone (Rappels). */
+  badges?: boolean;
   compact?: boolean;
   /** The band's title, as on the dashboard (« Chiffres clés »), and a few words under it saying what the figures cover. */
   title?: string;
@@ -159,6 +162,7 @@ export function SectionCards({
       )}
     >
       <StatGrid
+        badges={badges}
         className="max-w-none"
         data={stats}
         goals={false}

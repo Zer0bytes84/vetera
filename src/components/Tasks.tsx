@@ -675,6 +675,16 @@ const Tasks: React.FC = () => {
     },
   ];
 
+  const readAt = new Date();
+  const readDay = readAt.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" });
+  const bandSubtitle = `${readDay[0].toLocaleUpperCase("fr-FR")}${readDay.slice(1)} · état à ${readAt.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })} · ${
+    counts.overdue.length
+      ? `${formatNumber(counts.overdue.length)} en retard`
+      : counts.today
+        ? `${formatNumber(counts.today)} à traiter aujourd’hui`
+        : "rien à traiter"
+  }`;
+
   return (
     <div
       className={cn(
@@ -723,15 +733,16 @@ const Tasks: React.FC = () => {
               Rappel médical
             </Button>
         }
+        badges={false}
         icon={ClipboardDocumentCheckIcon}
-        subtitle="Échéances et actions à suivre"
+        subtitle={bandSubtitle}
         items={[
           {
             title: "En retard",
             icon: ShieldExclamationIcon,
             value: formatNumber(counts.overdue.length),
-            badge: counts.overdue.length ? "À relancer" : "À jour",
-            tone: counts.overdue.length ? "critical" : "quiet",
+            // The dashboard's « À traiter » reading: rose when late, amber when due, green at zero.
+            tone: counts.overdue.length ? "critical" : "positive",
             trend: "neutral",
             detailRow:
               sourceBreakdown(counts.overdue) || "Aucune échéance dépassée",
@@ -746,7 +757,7 @@ const Tasks: React.FC = () => {
             title: "Dus aujourd’hui",
             icon: CalendarDaysIcon,
             value: formatNumber(counts.dueToday.length),
-            tone: "quiet",
+            tone: counts.dueToday.length ? "watch" : "positive",
             trend: "neutral",
             detailRow:
               sourceBreakdown(counts.dueToday) || "Aucune échéance aujourd’hui",
@@ -761,8 +772,7 @@ const Tasks: React.FC = () => {
             title: "À traiter",
             icon: BellIcon,
             value: formatNumber(counts.today),
-            badge: counts.today ? undefined : "À jour",
-            tone: "quiet",
+            tone: counts.overdue.length ? "critical" : counts.today ? "watch" : "positive",
             trend: "neutral",
             detailRow: counts.today
               ? `${formatNumber(counts.overdue.length)} en retard · ${formatNumber(counts.dueToday.length)} aujourd’hui`
