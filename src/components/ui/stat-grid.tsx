@@ -73,6 +73,8 @@ export type StatGridProps = {
   onSelect?: (stat: Stat) => void;
   /** Draw the goal bar of the stats that carry a `goal`. */
   goals?: boolean;
+  /** `false`: no badge row at all, for a grid whose cards carry no change (counts of what is to do). */
+  badges?: boolean;
   /** `row`: every card on one single row, scrolling sideways when the window is too narrow. */
   layout?: "grid" | "row";
   className?: string;
@@ -87,6 +89,7 @@ export function StatGrid({
   lead,
   sparklines = true,
   goals = true,
+  badges = true,
   onSelect,
   layout = "grid",
   className,
@@ -128,6 +131,7 @@ export function StatGrid({
               index={i}
               sparkline={sparklines}
               showGoal={goals}
+              showBadge={badges}
               onSelect={onSelect}
             />
           ))}
@@ -142,12 +146,14 @@ function StatCard({
   index,
   sparkline,
   showGoal,
+  showBadge,
   onSelect,
 }: {
   stat: Stat;
   index: number;
   sparkline: boolean;
   showGoal: boolean;
+  showBadge: boolean;
   onSelect?: (stat: Stat) => void;
 }) {
   const { delta, higherIsBetter = true } = stat;
@@ -220,7 +226,7 @@ function StatCard({
             />
           )}
         </div>
-        <div className="flex h-5 items-center">
+        {showBadge && <div className="flex h-5 items-center">
           {delta !== undefined && (
             <StatusPill
               size="sm"
@@ -234,7 +240,7 @@ function StatCard({
               </span>
             </StatusPill>
           )}
-        </div>
+        </div>}
         <p className="h-4 truncate text-xs leading-4 text-muted-foreground">{stat.hint}</p>
         {showGoal && stat.goal && (
           <div className="mt-auto flex flex-col gap-1.5 pt-1">
