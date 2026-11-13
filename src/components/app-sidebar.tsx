@@ -9,6 +9,7 @@ import "@/modules/shell/premium-sidebar.css";
 import * as React from "react";
 import { useTranslation } from "react-i18next";
 import { navigationSections } from "@/app/config/navigation";
+import { prefetchView } from "@/app/config/view-registry";
 import { SidebarBrand } from "@/components/mascot/sidebar-brand";
 import { NavMain, type NavItem } from "@/components/nav-main";
 import {
@@ -146,6 +147,7 @@ export function AppSidebar({
         (item.view === "clinique" && currentView === "soins") ||
         (item.view === "finances" && currentView === "finances_analytics"),
       onClick: () => onNavigate(item.view),
+      onIntent: () => prefetchView(item.view),
       children: sub?.children,
       expanded,
       onToggle: () => setToggled({ view: currentView, open: { ...unfolded, [item.view]: !expanded } }),

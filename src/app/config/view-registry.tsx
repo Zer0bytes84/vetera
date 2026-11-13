@@ -10,24 +10,61 @@ import { Spinner } from "@/components/ui/spinner";
 import { DashboardOrbitPage } from "@/modules/dashboard/dashboard-orbit-page";
 import type { View } from "@/types";
 
-const ClinicalWorkspace = lazy(() => import("@/modules/clinique/pages/clinical-workspace"));
-const AgendaPage = lazy(() => import("@/modules/agenda/pages/agenda-page"));
-const FlowBoardPage = lazy(() => import("@/modules/flow-board/flow-board-page"));
-const FinancesPage = lazy(() => import("@/modules/finances/pages/finances-page"));
-const NotesPage = lazy(() => import("@/components/NotesPro"));
-const ParametresPage = lazy(() => import("@/components/Parametres"));
-const PatientsPage = lazy(() => import("@/modules/patients/pages/patients-page"));
-const StockPage = lazy(() => import("@/modules/stock/pages/stock-page"));
-const TasksPage = lazy(() => import("@/components/Tasks"));
-const TeamPage = lazy(() => import("@/components/Team"));
+// Each page's code is fetched once, by the first of two callers: the page itself when it opens, or
+// `prefetchView` when the pointer or the keyboard reaches its navigation entry. The entry is then
+// already there at the click, and the loading line below has nothing to announce.
+const loadClinicalWorkspace = () => import("@/modules/clinique/pages/clinical-workspace");
+const loadAgendaPage = () => import("@/modules/agenda/pages/agenda-page");
+const loadFlowBoardPage = () => import("@/modules/flow-board/flow-board-page");
+const loadFinancesPage = () => import("@/modules/finances/pages/finances-page");
+const loadNotesPage = () => import("@/components/NotesPro");
+const loadParametresPage = () => import("@/components/Parametres");
+const loadPatientsPage = () => import("@/modules/patients/pages/patients-page");
+const loadStockPage = () => import("@/modules/stock/pages/stock-page");
+const loadTasksPage = () => import("@/components/Tasks");
+const loadTeamPage = () => import("@/components/Team");
+const loadFinancialAnalyticsPage = () => import("@/modules/finances/financial-analytics-page");
+const loadPatientDetailPage = () => import("@/modules/patients/patient-detail-page");
+
+const ClinicalWorkspace = lazy(loadClinicalWorkspace);
+const AgendaPage = lazy(loadAgendaPage);
+const FlowBoardPage = lazy(loadFlowBoardPage);
+const FinancesPage = lazy(loadFinancesPage);
+const NotesPage = lazy(loadNotesPage);
+const ParametresPage = lazy(loadParametresPage);
+const PatientsPage = lazy(loadPatientsPage);
+const StockPage = lazy(loadStockPage);
+const TasksPage = lazy(loadTasksPage);
+const TeamPage = lazy(loadTeamPage);
 const FinancialAnalyticsPage = lazy(async () => {
-  const module = await import("@/modules/finances/financial-analytics-page");
+  const module = await loadFinancialAnalyticsPage();
   return { default: module.FinancialAnalyticsV2Page };
 });
 const PatientDetailPage = lazy(async () => {
-  const module = await import("@/modules/patients/patient-detail-page");
+  const module = await loadPatientDetailPage();
   return { default: module.PatientDetailPage };
 });
+
+const VIEW_LOADERS: Partial<Record<View, () => Promise<unknown>>> = {
+  soins: loadClinicalWorkspace,
+  clinique: loadClinicalWorkspace,
+  agenda: loadAgendaPage,
+  flux: loadFlowBoardPage,
+  patients: loadPatientsPage,
+  patient_detail: loadPatientDetailPage,
+  notes: loadNotesPage,
+  stock: loadStockPage,
+  finances: loadFinancesPage,
+  finances_analytics: loadFinancialAnalyticsPage,
+  taches: loadTasksPage,
+  equipe: loadTeamPage,
+  parametres: loadParametresPage,
+};
+
+/** Fetches a page's code ahead of the click. Safe to call many times; a failed fetch is retried by the page itself. */
+export function prefetchView(view: View) {
+  void VIEW_LOADERS[view]?.().catch(() => undefined);
+}
 
 interface ViewRegistryProps {
   currentTheme: ThemeMode;
@@ -43,7 +80,7 @@ interface ViewRegistryProps {
 
 function ViewLoadingState() {
   return (
-    <div className="flex min-h-[40vh] items-center justify-center px-6 py-10">
+    <div className="view-loading flex min-h-[40vh] items-center justify-center px-6 py-10">
       <div className="flex items-center gap-3 text-muted-foreground text-sm">
         <Spinner className="size-4" />
         Chargement du module...

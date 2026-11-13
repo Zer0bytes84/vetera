@@ -528,6 +528,16 @@
   }
 }
 
+/* The loading line of a page waits 150 ms before it shows: a page that arrives sooner (the usual
+   case, and always once its entry was pointed at) never flashes it. */
+.view-loading {
+  animation: view-loading-reveal 0s linear 150ms both;
+}
+@keyframes view-loading-reveal {
+  from { visibility: hidden; }
+  to { visibility: visible; }
+}
+
 /* ─── View container ─── */
 /* Changing page is done tens of times a day: the new view is simply there. */
 .app-view-enter {
