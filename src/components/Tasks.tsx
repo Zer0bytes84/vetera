@@ -975,7 +975,7 @@ const Tasks: React.FC = () => {
             onRetry={() => void patientRemindersModel.refresh()}
           />
         )}
-        <div className="reminders-filter-bar flex flex-wrap items-center gap-x-3 gap-y-2 border-border/70 border-b pb-3">
+        <div className="reminders-filter-bar flex flex-wrap items-center gap-x-3 gap-y-2">
           <div
             className="reminder-segments"
             data-tabs-style="segmented"
@@ -1018,7 +1018,7 @@ const Tasks: React.FC = () => {
             <TabsList
               aria-label="Vues des rappels"
               data-tabs-inline=""
-              tabsStyle="nav"
+              tabsStyle="segmented"
             >
               {tabs.map((tab) => (
                 <TabsTrigger key={tab.id} value={tab.id}>
