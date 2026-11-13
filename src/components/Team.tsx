@@ -334,62 +334,36 @@ const Team: React.FC = () => {
     [users, searchTerm],
   );
 
+  // One short, true line at the foot of every card, read by readTeam with the page's own rules.
   const sectionCards = useMemo<SectionCardItem[]>(() => {
-    const activeUsers = users.filter((user) => user.status === "active").length;
-    const vets = users.filter((user) =>
-      ["vet_principal", "vet_adjoint"].includes(user.role || ""),
-    ).length;
-    const support = users.filter((user) =>
-      ["assistant", "stagiaire"].includes(user.role || ""),
-    ).length;
-    const accessReview = users.filter(
-      (user) => user.status !== "active",
-    ).length;
-
+    const team = readTeam(users);
     return [
       {
         title: "Équipe active",
-        value: formatNumber(activeUsers),
-        badge:
-          activeUsers === users.length
-            ? "Effectif complet"
-            : `${activeUsers}/${users.length} en poste`,
-        tone: "positive",
-        trend: "up",
-        detailRow: `${vets} praticien${vets > 1 ? "s" : ""} · ${support} soignant${support > 1 ? "s" : ""} · Coordination active`,
+        value: formatNumber(team.active),
+        tone: team.pending ? "watch" : "positive",
+        detailRow: team.lines.active,
         actionLabel: "Voir l'équipe active",
       },
       {
         title: "Vétérinaires",
-        value: formatNumber(vets),
-        badge: `${Math.round(users.length > 0 ? (vets / users.length) * 100 : 0)} % effectif`,
+        value: formatNumber(team.vets),
         tone: "quiet",
-        trend: "neutral",
-        detailRow: "Praticiens titulaires et remplaçants · Actes & soins",
+        detailRow: team.lines.vets,
         actionLabel: "Voir les praticiens",
       },
       {
         title: "Support & soignants",
-        value: formatNumber(support),
-        badge: "ASV & internes",
+        value: formatNumber(team.support),
         tone: "quiet",
-        trend: "neutral",
-        detailRow: "Assistants, infirmiers vétérinaires et stagiaires",
+        detailRow: team.lines.support,
         actionLabel: "Voir le support clinique",
       },
       {
         title: "Accès & statut",
-        value: formatNumber(accessReview),
-        change: accessReview,
-        changeKind: "count",
-        changeLabel: accessReview > 0 ? "comptes inactifs" : "droits conformes",
-        inverse: true,
-        tone: accessReview > 0 ? "critical" : "positive",
-        trend: accessReview > 0 ? "down" : "neutral",
-        detailRow:
-          accessReview > 0
-            ? `${accessReview} compte${accessReview > 1 ? "s" : ""} inactif${accessReview > 1 ? "s" : ""} ou permissions en attente`
-            : "Tous les profils et habilitations sont conformes",
+        value: formatNumber(team.pending),
+        tone: team.pending ? "critical" : "positive",
+        detailRow: team.lines.access,
         actionLabel: "Vérifier les accès",
       },
     ];
@@ -423,6 +397,7 @@ const Team: React.FC = () => {
             </Button>
           ) : undefined
         }
+        badges={false}
         icon={UsersIcon}
         items={sectionCards}
         subtitle={bandSubtitle}
