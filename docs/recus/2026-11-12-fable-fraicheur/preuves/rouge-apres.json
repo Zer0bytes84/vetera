@@ -1,0 +1,180 @@
+{
+ "1440/tableau-de-bord": {
+  "n": 2,
+  "ex": [
+   "H2.font-heading font-medium t-24 leading-tight : Palette de commandes (242>1)",
+   "P.text-muted-foreground text-sm *:[a]:underline *:[a : Recherche rapide, navigation e (309>1)"
+  ],
+  "pageX": false
+ },
+ "1440/patients": {
+  "n": 2,
+  "ex": [
+   "H2.font-heading font-medium t-24 leading-tight : Palette de commandes (242>1)",
+   "P.text-muted-foreground text-sm *:[a]:underline *:[a : Recherche rapide, navigation e (309>1)"
+  ],
+  "pageX": false
+ },
+ "1440/dossier-patient": {
+  "n": 2,
+  "ex": [
+   "H2.font-heading font-medium t-24 leading-tight : Palette de commandes (242>1)",
+   "P.text-muted-foreground text-sm *:[a]:underline *:[a : Recherche rapide, navigation e (309>1)"
+  ],
+  "pageX": false
+ },
+ "1440/agenda": {
+  "n": 2,
+  "ex": [
+   "H2.font-heading font-medium t-24 leading-tight : Palette de commandes (242>1)",
+   "P.text-muted-foreground text-sm *:[a]:underline *:[a : Recherche rapide, navigation e (309>1)"
+  ],
+  "pageX": false
+ },
+ "1440/factures": {
+  "n": 2,
+  "ex": [
+   "H2.font-heading font-medium t-24 leading-tight : Palette de commandes (242>1)",
+   "P.text-muted-foreground text-sm *:[a]:underline *:[a : Recherche rapide, navigation e (309>1)"
+  ],
+  "pageX": false
+ },
+ "1440/journal": {
+  "n": 2,
+  "ex": [
+   "H2.font-heading font-medium t-24 leading-tight : Palette de commandes (242>1)",
+   "P.text-muted-foreground text-sm *:[a]:underline *:[a : Recherche rapide, navigation e (309>1)"
+  ],
+  "pageX": false
+ },
+ "1440/documents": {
+  "n": 2,
+  "ex": [
+   "H2.font-heading font-medium t-24 leading-tight : Palette de commandes (242>1)",
+   "P.text-muted-foreground text-sm *:[a]:underline *:[a : Recherche rapide, navigation e (309>1)"
+  ],
+  "pageX": false
+ },
+ "1440/assistant": {
+  "n": 2,
+  "ex": [
+   "H2.font-heading font-medium t-24 leading-tight : Palette de commandes (242>1)",
+   "P.text-muted-foreground text-sm *:[a]:underline *:[a : Recherche rapide, navigation e (309>1)"
+  ],
+  "pageX": false
+ },
+ "1440/parametres": {
+  "n": 2,
+  "ex": [
+   "H2.font-heading font-medium t-24 leading-tight : Palette de commandes (242>1)",
+   "P.text-muted-foreground text-sm *:[a]:underline *:[a : Recherche rapide, navigation e (309>1)"
+  ],
+  "pageX": false
+ },
+ "pires-cas": {
+  "n": 2,
+  "ex": [
+   "H2.font-heading font-medium t-24 leading-tight : Palette de commandes (242>1)",
+   "P.text-muted-foreground text-sm *:[a]:underline *:[a : Recherche rapide, navigation e (309>1)"
+  ],
+  "pageX": false
+ },
+ "chiffre-roule": [
+  {
+   "texte": "11001234",
+   "depasseParent": false,
+   "hauteur": 24,
+   "largeur": 30
+  },
+  {
+   "texte": "10012345",
+   "depasseParent": false,
+   "hauteur": 24,
+   "largeur": 15
+  },
+  {
+   "texte": "00012345",
+   "depasseParent": false,
+   "hauteur": 24,
+   "largeur": 15
+  },
+  {
+   "texte": "30012345",
+   "depasseParent": false,
+   "hauteur": 24,
+   "largeur": 15
+  }
+ ],
+ "1024/tableau-de-bord": {
+  "n": 2,
+  "ex": [
+   "H2.font-heading font-medium t-24 leading-tight : Palette de commandes (242>1)",
+   "P.text-muted-foreground text-sm *:[a]:underline *:[a : Recherche rapide, navigation e (309>1)"
+  ],
+  "pageX": false
+ },
+ "1024/patients": {
+  "n": 2,
+  "ex": [
+   "H2.font-heading font-medium t-24 leading-tight : Palette de commandes (242>1)",
+   "P.text-muted-foreground text-sm *:[a]:underline *:[a : Recherche rapide, navigation e (309>1)"
+  ],
+  "pageX": false
+ },
+ "1024/dossier-patient": {
+  "n": 2,
+  "ex": [
+   "H2.font-heading font-medium t-24 leading-tight : Palette de commandes (242>1)",
+   "P.text-muted-foreground text-sm *:[a]:underline *:[a : Recherche rapide, navigation e (309>1)"
+  ],
+  "pageX": false
+ },
+ "1024/agenda": {
+  "n": 2,
+  "ex": [
+   "H2.font-heading font-medium t-24 leading-tight : Palette de commandes (242>1)",
+   "P.text-muted-foreground text-sm *:[a]:underline *:[a : Recherche rapide, navigation e (309>1)"
+  ],
+  "pageX": false
+ },
+ "1024/factures": {
+  "n": 2,
+  "ex": [
+   "H2.font-heading font-medium t-24 leading-tight : Palette de commandes (242>1)",
+   "P.text-muted-foreground text-sm *:[a]:underline *:[a : Recherche rapide, navigation e (309>1)"
+  ],
+  "pageX": false
+ },
+ "1024/journal": {
+  "n": 2,
+  "ex": [
+   "H2.font-heading font-medium t-24 leading-tight : Palette de commandes (242>1)",
+   "P.text-muted-foreground text-sm *:[a]:underline *:[a : Recherche rapide, navigation e (309>1)"
+  ],
+  "pageX": false
+ },
+ "1024/documents": {
+  "n": 2,
+  "ex": [
+   "H2.font-heading font-medium t-24 leading-tight : Palette de commandes (242>1)",
+   "P.text-muted-foreground text-sm *:[a]:underline *:[a : Recherche rapide, navigation e (309>1)"
+  ],
+  "pageX": false
+ },
+ "1024/assistant": {
+  "n": 2,
+  "ex": [
+   "H2.font-heading font-medium t-24 leading-tight : Palette de commandes (242>1)",
+   "P.text-muted-foreground text-sm *:[a]:underline *:[a : Recherche rapide, navigation e (309>1)"
+  ],
+  "pageX": false
+ },
+ "1024/parametres": {
+  "n": 2,
+  "ex": [
+   "H2.font-heading font-medium t-24 leading-tight : Palette de commandes (242>1)",
+   "P.text-muted-foreground text-sm *:[a]:underline *:[a : Recherche rapide, navigation e (309>1)"
+  ],
+  "pageX": false
+ }
+}

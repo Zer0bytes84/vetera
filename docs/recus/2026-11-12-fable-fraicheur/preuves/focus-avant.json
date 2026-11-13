@@ -1,0 +1,126 @@
+{
+ "tableau-de-bord": {
+  "arrets": 58,
+  "perdus": [
+   {
+    "sig": "button.peer/menu-button.group/menu-button.flex \"Tableau de bord\"",
+    "same": true,
+    "known": true,
+    "fv": true,
+    "x": 14,
+    "y": 120,
+    "w": 220,
+    "h": 30
+   }
+  ]
+ },
+ "patients": {
+  "arrets": 66,
+  "perdus": [
+   {
+    "sig": "button.peer/menu-button.group/menu-button.flex \"Patients\"",
+    "same": true,
+    "known": true,
+    "fv": true,
+    "x": 14,
+    "y": 152,
+    "w": 220,
+    "h": 30
+   }
+  ]
+ },
+ "dossier-patient": {
+  "arrets": 45,
+  "perdus": []
+ },
+ "agenda": {
+  "arrets": 44,
+  "perdus": [
+   {
+    "sig": "button.peer/menu-button.group/menu-button.flex \"Agenda\"",
+    "same": true,
+    "known": true,
+    "fv": true,
+    "x": 14,
+    "y": 184,
+    "w": 220,
+    "h": 30
+   }
+  ]
+ },
+ "factures": {
+  "arrets": 70,
+  "perdus": [
+   {
+    "sig": "button.peer/menu-button.group/menu-button.flex \"Finances\"",
+    "same": true,
+    "known": true,
+    "fv": true,
+    "x": 14,
+    "y": 428,
+    "w": 220,
+    "h": 30
+   }
+  ]
+ },
+ "journal": {
+  "arrets": 32,
+  "perdus": [
+   {
+    "sig": "button.peer/menu-button.group/menu-button.flex \"Finances\"",
+    "same": true,
+    "known": true,
+    "fv": true,
+    "x": 14,
+    "y": 428,
+    "w": 220,
+    "h": 30
+   }
+  ]
+ },
+ "documents": {
+  "arrets": 70,
+  "perdus": [
+   {
+    "sig": "button.peer/menu-button.group/menu-button.flex \"Documents\"",
+    "same": true,
+    "known": true,
+    "fv": true,
+    "x": 14,
+    "y": 364,
+    "w": 220,
+    "h": 30
+   }
+  ]
+ },
+ "assistant": {
+  "arrets": 70,
+  "perdus": [
+   {
+    "sig": "button.peer/menu-button.group/menu-button.flex \"Patients\"",
+    "same": true,
+    "known": true,
+    "fv": true,
+    "x": 14,
+    "y": 152,
+    "w": 220,
+    "h": 30
+   }
+  ]
+ },
+ "parametres": {
+  "arrets": 50,
+  "perdus": [
+   {
+    "sig": "button.group/button.rounded-lg.inline-flex \"Fermer l’assistant\"",
+    "same": true,
+    "known": true,
+    "fv": true,
+    "x": 1396,
+    "y": 18,
+    "w": 32,
+    "h": 32
+   }
+  ]
+ }
+}
