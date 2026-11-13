@@ -36,8 +36,12 @@ import { ConsultationAssistantPanel } from "@/modules/consultations/components/c
 
 const QuickConsultation = lazy(() => import("@/modules/clinique/components/quick-consultation"));
 
+// Fetched once: when the panel opens, or as soon as the pointer or the keyboard reaches its button,
+// so the panel arrives with its content instead of a waiting line.
+const loadConsultationAssistant = () => import("@/modules/consultations/components/local-consultation-assistant");
+const prefetchConsultationAssistant = () => void loadConsultationAssistant().catch(() => undefined);
 const LocalConsultationAssistant = lazy(
-  () => import("@/modules/consultations/components/local-consultation-assistant")
+  loadConsultationAssistant
 );
 
 import { renderView } from "@/app/config/view-registry";
@@ -135,6 +139,11 @@ function AppShellInner() {
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [aiAssistantOpen, setAiAssistantOpen] = useState(false);
   const [isAssistantCollapsed, setIsAssistantCollapsed] = useState(false);
+  // The panel's content outlives `aiAssistantOpen` by the time of the exit: the panel leaves with
+  // what it showed, not as an empty slab, and lets go of it once gone (onExited).
+  const [assistantContentMounted, setAssistantContentMounted] = useState(false);
+  if (aiAssistantOpen && !assistantContentMounted) setAssistantContentMounted(true);
+  const releaseAssistantContent = useCallback(() => setAssistantContentMounted(false), []);
   const sidebarScrollRef = useRef<HTMLDivElement>(null);
   const [peekPatientId, setPeekPatientId] = useState<string | null>(null);
   const [peekFollows, setPeekFollows] = useState(false);
@@ -624,6 +633,8 @@ function AppShellInner() {
                     aria-label="Ouvrir l'Assistant IA (⌘J)"
                     aria-haspopup="dialog"
                     aria-keyshortcuts="Meta+J Control+J"
+                    onFocus={prefetchConsultationAssistant}
+                    onPointerEnter={prefetchConsultationAssistant}
                     onClick={() =>
                       setAiAssistantOpen((prev) => {
                         const next = !prev;
@@ -717,8 +728,9 @@ function AppShellInner() {
       <ConsultationAssistantPanel
         open={aiAssistantOpen}
         onCollapsedChange={setIsAssistantCollapsed}
+        onExited={releaseAssistantContent}
       >
-        {aiAssistantOpen && (
+        {(aiAssistantOpen || assistantContentMounted) && (
           <Suspense
             fallback={
               <div className="flex h-full items-center justify-center p-6 text-xs text-muted-foreground">
