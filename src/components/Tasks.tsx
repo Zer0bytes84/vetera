@@ -1,5 +1,6 @@
 import { ErrorState } from "@/design-system/patterns/error-state";
-import { BellIcon, CalendarDaysIcon, ClipboardDocumentCheckIcon, ClockIcon, ShieldExclamationIcon } from "@heroicons/react/20/solid";
+import { BellIcon, CalendarDaysIcon, CheckBadgeIcon, CheckCircleIcon, ClipboardDocumentCheckIcon, ClockIcon, MagnifyingGlassIcon, ShieldExclamationIcon } from "@heroicons/react/20/solid";
+import { ArrowRightIcon, PlusIcon } from "@heroicons/react/16/solid";
 import { SearchableSelect } from "@/components/ui/searchable-select";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { usePatientReminders } from "@/modules/patient-reminders/use-patient-reminders";
@@ -54,6 +55,8 @@ import {
 import { cn } from "@/lib/utils";
 import type { Appointment, Patient, Reminder, Task } from "@/types/db";
 import "./tasks.css";
+import { buildReminderQuiet, type ReminderQuiet } from "./reminder-quiet";
+import { Panel, Shell, ShellHeader } from "@/components/ui/surface";
 import {
   groupReminders,
   reminderBucket,
@@ -675,6 +678,48 @@ const Tasks: React.FC = () => {
     },
   ];
 
+  const openMedicalDraft = () => {
+                const type =
+                  patientRemindersModel.types.find(
+                    (entry) => entry.active && entry.id === "vaccin",
+                  ) ??
+                  patientRemindersModel.types.find(
+                    (entry) => entry.active && isMedicalReminderType(entry),
+                  );
+                if (!type) {
+                  toast.error("Activez un type de rappel dans les paramètres.");
+                  return;
+                }
+                setMedicalDraft({
+                  acteSourceId: "",
+                  clientId: null,
+                  dateActe: localToday(),
+                  echeance: addCalendarMonths(
+                    localToday(),
+                    type.interval_months,
+                  ),
+                  intervalleMois: type.interval_months,
+                  patientId: "",
+                  type: type.id,
+                  typeLabel: type.name,
+                });
+  };
+  const quiet = buildReminderQuiet(
+    sourceItems.map((item) => ({
+      item,
+      kind: item.kind,
+      date: item.date,
+      completed: itemIsCompleted(item),
+      title:
+        item.kind === "manual"
+          ? item.task.title
+          : item.kind === "medical"
+            ? (patientRemindersModel.types.find((type) => type.id === item.reminder.type)?.name ?? "Rappel médical")
+            : (item.reminder.message || item.appointment?.title || "Rappel de rendez-vous"),
+      patientName: item.patient?.name,
+    })),
+    new Date(),
+  );
   const readAt = new Date();
   const readDay = readAt.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" });
   const bandSubtitle = `${readDay[0].toLocaleUpperCase("fr-FR")}${readDay.slice(1)} · état à ${readAt.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })} · ${
@@ -702,32 +747,7 @@ const Tasks: React.FC = () => {
         actions={
             <Button
               className="h-9 rounded-full px-4"
-              onClick={() => {
-                const type =
-                  patientRemindersModel.types.find(
-                    (entry) => entry.active && entry.id === "vaccin",
-                  ) ??
-                  patientRemindersModel.types.find(
-                    (entry) => entry.active && isMedicalReminderType(entry),
-                  );
-                if (!type) {
-                  toast.error("Activez un type de rappel dans les paramètres.");
-                  return;
-                }
-                setMedicalDraft({
-                  acteSourceId: "",
-                  clientId: null,
-                  dateActe: localToday(),
-                  echeance: addCalendarMonths(
-                    localToday(),
-                    type.interval_months,
-                  ),
-                  intervalleMois: type.interval_months,
-                  patientId: "",
-                  type: type.id,
-                  typeLabel: type.name,
-                });
-              }}
+              onClick={openMedicalDraft}
             >
               <Plus className="size-4" />
               Rappel médical
@@ -1068,7 +1088,16 @@ const Tasks: React.FC = () => {
             embedded
           />
         ) : visibleItems.length === 0 ? (
-          <EmptyState query={query} view={activeView} />
+          <EmptyState
+            onClearQuery={() => setQuery("")}
+            onCompleted={() => setActiveView("completed")}
+            onMedical={openMedicalDraft}
+            onNewReminder={() => document.getElementById("new-reminder-title")?.focus()}
+            onUpcoming={() => setActiveView("upcoming")}
+            query={query}
+            quiet={quiet}
+            view={activeView}
+          />
         ) : (
           <div
             className="clinical-surface divide-y divide-border/70 overflow-hidden"
@@ -1566,27 +1595,118 @@ function AutomaticReminderRow({
   );
 }
 
-function EmptyState({ query, view }: { query: string; view: ReminderView }) {
-  let copy = "Aucun rappel terminé pour le moment.";
+/**
+ * « Rien à traiter » : composé comme la journée vide du Flux, dans le langage des bandes de la page. Le prochain rappel
+ * ouvert (sur deux colonnes), où en sont les rappels (sur deux), et les deux gestes qui existent déjà sur la page
+ * (écrire un nouveau rappel, créer un rappel médical). Une recherche sans résultat garde une ligne et de quoi l'effacer.
+ */
+function EmptyState({
+  query,
+  view,
+  quiet,
+  onUpcoming,
+  onCompleted,
+  onNewReminder,
+  onMedical,
+  onClearQuery,
+}: {
+  query: string;
+  view: ReminderView;
+  quiet: ReminderQuiet<{ kind: "manual" | "medical" | "automatic"; date: Date | null; completed: boolean; title: string; patientName?: string; item: ReminderItem }>;
+  onUpcoming: () => void;
+  onCompleted: () => void;
+  onNewReminder: () => void;
+  onMedical: () => void;
+  onClearQuery: () => void;
+}) {
   if (query) {
-    copy = "Aucun rappel ne correspond à cette recherche.";
-  } else if (view === "today") {
-    copy = "Tout est à jour pour aujourd'hui.";
-  } else if (view === "upcoming") {
-    copy = "Aucun rappel à venir.";
+    return (
+      <Shell className="reminders-quiet">
+        <ShellHeader
+          aside={
+            <Button onClick={onClearQuery} size="sm" type="button" variant="outline">
+              Effacer la recherche
+            </Button>
+          }
+          as="h2"
+          icon={MagnifyingGlassIcon}
+          subtitle={`Aucun rappel ne correspond à « ${query} ».`}
+          title="Aucun résultat"
+        />
+      </Shell>
+    );
   }
+  const copy =
+    view === "today"
+      ? "Tout est à jour pour aujourd’hui."
+      : view === "upcoming"
+        ? "Aucun rappel à venir."
+        : "Aucun rappel terminé pour le moment.";
+  const next = quiet.next;
   return (
-    <div className="clinical-subtle-surface flex min-h-56 flex-col items-center justify-center px-6 text-center">
-      <div className="flex size-12 items-center justify-center rounded-2xl bg-background text-muted-foreground shadow-xs">
-        {view === "completed" ? (
-          <CheckCircle2 className="size-5" />
-        ) : (
-          <ClockIcon className="size-5" />
-        )}
+    <Shell className="reminders-quiet">
+      <ShellHeader as="h2" icon={view === "completed" ? CheckCircleIcon : CheckBadgeIcon} subtitle={copy} title="Rien à traiter" />
+      <div className="reminders-quiet-grid">
+        <Panel className="reminders-quiet-cell reminders-quiet-wide">
+          <h3 className="reminders-quiet-label">Prochain rappel</h3>
+          {next ? (
+            <>
+              <p className="reminders-quiet-when">{dateLabel(next.date, "upcoming", itemHasTime(next.item))}</p>
+              <p className="reminders-quiet-what">
+                <strong>{next.title}</strong>
+                {next.patientName ? <span> · {next.patientName}</span> : null}
+              </p>
+              <p className="reminders-quiet-meta">{next.kind === "medical" ? "Médical" : next.kind === "manual" ? "Manuel" : "Automatique"}</p>
+            </>
+          ) : (
+            <p className="reminders-quiet-when">Aucun rappel à venir</p>
+          )}
+          {view !== "upcoming" && next ? (
+            <Button className="reminders-quiet-link" onClick={onUpcoming} size="sm" type="button" variant="ghost">
+              Voir les rappels à venir
+              <ArrowRightIcon aria-hidden="true" className="size-3.5" />
+            </Button>
+          ) : view !== "completed" ? (
+            <Button className="reminders-quiet-link" onClick={onCompleted} size="sm" type="button" variant="ghost">
+              Voir les rappels terminés
+              <ArrowRightIcon aria-hidden="true" className="size-3.5" />
+            </Button>
+          ) : null}
+        </Panel>
+        <Panel className="reminders-quiet-cell reminders-quiet-wide">
+          <h3 className="reminders-quiet-label">Rappels ouverts et terminés</h3>
+          <dl className="reminders-quiet-facts">
+            <div>
+              <dt>Manuels</dt>
+              <dd>{formatNumber(quiet.openManual)}</dd>
+            </div>
+            <div>
+              <dt>Médicaux</dt>
+              <dd>{formatNumber(quiet.openMedical)}</dd>
+            </div>
+            <div>
+              <dt>D’ici 7 jours</dt>
+              <dd>{formatNumber(quiet.week)}</dd>
+            </div>
+            <div>
+              <dt>Terminés</dt>
+              <dd>{formatNumber(quiet.completed)}</dd>
+            </div>
+          </dl>
+        </Panel>
+        <Panel className="reminders-quiet-cell">
+          <h3 className="reminders-quiet-label">Actions</h3>
+          <Button onClick={onNewReminder} size="sm" type="button">
+            <PlusIcon aria-hidden="true" className="size-4" />
+            Nouveau rappel
+          </Button>
+          <Button onClick={onMedical} size="sm" type="button" variant="outline">
+            <PlusIcon aria-hidden="true" className="size-4" />
+            Rappel médical
+          </Button>
+        </Panel>
       </div>
-      <h2 className="mt-4 font-semibold">Rien à traiter</h2>
-      <p className="mt-1 text-muted-foreground text-sm">{copy}</p>
-    </div>
+    </Shell>
   );
 }
 

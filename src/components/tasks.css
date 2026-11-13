@@ -100,3 +100,97 @@ article[data-selected] { background: color-mix(in oklab, var(--primary) 6%, tran
   line-height: 16px;
   color: var(--ink-soft);
 }
+
+/*
+ * « Rien à traiter », composé comme la journée vide du Flux : la bande de la page, son en-tête, puis trois panneaux
+ * sur une grille de cinq colonnes (prochain rappel sur deux, état des rappels sur deux, actions sur une).
+ */
+:root[data-skin="clean"] .reminders-page .reminders-quiet-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: var(--card-frame);
+}
+
+:root[data-skin="clean"] .reminders-page .reminders-quiet-cell {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px;
+}
+
+:root[data-skin="clean"] .reminders-page .reminders-quiet-wide {
+  grid-column: span 2;
+}
+
+:root[data-skin="clean"] .reminders-page .reminders-quiet-label {
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+  color: var(--ink-muted);
+}
+
+/* No tabular figures in text: the embedded Inter widens the hyphen of « rendez-vous » by 41 %. */
+:root[data-skin="clean"] .reminders-page .reminders-quiet-when {
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--ink);
+}
+
+:root[data-skin="clean"] .reminders-page .reminders-quiet-what {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14px;
+  color: var(--ink);
+}
+
+:root[data-skin="clean"] .reminders-page .reminders-quiet-what strong {
+  font-weight: 600;
+}
+
+:root[data-skin="clean"] .reminders-page .reminders-quiet-meta {
+  font-size: 12px;
+  color: var(--ink-muted);
+}
+
+:root[data-skin="clean"] .reminders-page .reminders-quiet-link {
+  align-self: flex-start;
+  margin-top: auto;
+  margin-left: -8px;
+}
+
+:root[data-skin="clean"] .reminders-page .reminders-quiet-facts {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin: 2px 0 auto;
+}
+
+:root[data-skin="clean"] .reminders-page .reminders-quiet-facts dt {
+  font-size: 12px;
+  color: var(--ink-muted);
+}
+
+:root[data-skin="clean"] .reminders-page .reminders-quiet-facts dd {
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 1180px) {
+  :root[data-skin="clean"] .reminders-page .reminders-quiet-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  :root[data-skin="clean"] .reminders-page .reminders-quiet-wide {
+    grid-column: auto;
+  }
+
+  :root[data-skin="clean"] .reminders-page .reminders-quiet-cell:last-child {
+    grid-column: span 2;
+  }
+}
