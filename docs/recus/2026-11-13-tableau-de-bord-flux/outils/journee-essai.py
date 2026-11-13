@@ -11,4 +11,10 @@ for i, (s, e, st) in enumerate(slots):
     r = copy.deepcopy(ref[i % len(ref)]); r["id"] = f"banc-essai-{i}"; r["status"] = st
     r["startTime"] = f"2026-11-12T{s}:00.000Z"; r["endTime"] = f"2026-11-12T{e}:00.000Z"
     r["title"] = r["title"].split(" - ")[0] + " - Consultation"; A.append(r)
+# Rappels manuels d'essai (page Rappels) : un en retard, un du jour, deux a venir.
+T = d["tables"]["tasks"]; ref_task = T[-1]
+for i, (title, due, prio) in enumerate([("Relancer le paiement de la consultation", "2026-11-10", "high"),
+        ("Appeler pour le contrôle post-opératoire", "2026-11-12", "medium"),
+        ("Commander les vaccins antirabiques", "2026-11-14", "medium"), ("Préparer le dossier de la ferme pilote", "2026-11-18", "low")]):
+    r = copy.deepcopy(ref_task); r.update(id=f"banc-essai-tache-{i}", title=title, dueDate=due, status="todo", priority=prio, description="", startTime=None); T.append(r)
 json.dump(d, open(out, "w"), ensure_ascii=False)

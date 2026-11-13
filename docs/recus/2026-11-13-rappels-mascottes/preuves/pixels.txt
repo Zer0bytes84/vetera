@@ -1,0 +1,6 @@
+light-rappels: 14.0 % des pixels changent
+dark-rappels: 31.8 % des pixels changent
+light-rappels-rappels-essai: 9.0 % des pixels changent
+dark-rappels-rappels-essai: 18.2 % des pixels changent
+light-rappels-vide-avec-prochain: 14.2 % des pixels changent
+dark-rappels-vide-avec-prochain: 35.6 % des pixels changent
