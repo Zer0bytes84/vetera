@@ -13,21 +13,20 @@ import {
   formatPhone,
 } from "@/utils/display-format";
 import {
-  Add01Icon,
-  Briefcase01Icon,
-  Cancel01Icon,
-  CheckmarkCircle02Icon,
-  Delete01Icon,
-  Edit01Icon,
-  GraduationScrollIcon,
-  Key01Icon,
-  MailIcon,
-  MoreHorizontalIcon,
-  Shield01Icon,
-  SmartPhone01Icon,
-  StethoscopeIcon,
-} from "@/lib/hugeicons";
-import { HugeiconsIcon } from "@hugeicons/react";
+  AcademicCapIcon,
+  BriefcaseIcon,
+  CheckCircleIcon,
+  DevicePhoneMobileIcon,
+  EllipsisHorizontalIcon,
+  EnvelopeIcon,
+  KeyIcon,
+  PencilIcon,
+  PlusCircleIcon,
+  PlusIcon,
+  ShieldCheckIcon,
+  TrashIcon,
+  XMarkIcon,
+} from "@heroicons/react/16/solid";
 import type React from "react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -83,37 +82,37 @@ import { readTeam } from "./team-reading";
 
 const ROLE_CONFIG: Record<
   UserRole | string,
-  { label: string; color: string; bg: string; icon: typeof Shield01Icon }
+  { label: string; color: string; bg: string; icon: typeof ShieldCheckIcon }
 > = {
   admin: {
     label: "Administrateur",
     color: "text-purple-600 dark:text-purple-400",
     bg: "bg-purple-100 dark:bg-purple-500/20",
-    icon: Shield01Icon,
+    icon: ShieldCheckIcon,
   },
   vet_principal: {
     label: "Vétérinaire Principal",
     color: "text-amber-600 dark:text-amber-400",
     bg: "bg-amber-100 dark:bg-amber-500/20",
-    icon: StethoscopeIcon,
+    icon: PlusCircleIcon,
   },
   vet_adjoint: {
     label: "Vétérinaire Adjoint",
     color: "text-blue-600 dark:text-blue-400",
     bg: "bg-blue-100 dark:bg-blue-500/20",
-    icon: StethoscopeIcon,
+    icon: PlusCircleIcon,
   },
   assistant: {
     label: "Assistant(e)",
     color: "text-emerald-600 dark:text-emerald-400",
     bg: "bg-emerald-100 dark:bg-emerald-500/20",
-    icon: Briefcase01Icon,
+    icon: BriefcaseIcon,
   },
   stagiaire: {
     label: "Stagiaire",
     color: "text-muted-foreground",
     bg: "bg-muted/50",
-    icon: GraduationScrollIcon,
+    icon: AcademicCapIcon,
   },
 };
 
@@ -388,11 +387,7 @@ const Team: React.FC = () => {
               className="h-9 rounded-full px-4"
               onClick={() => handleOpenModal()}
             >
-              <HugeiconsIcon
-                className="size-4"
-                icon={Add01Icon}
-                strokeWidth={1.5}
-              />
+              <PlusIcon aria-hidden="true" className="size-4" />
               <span>Nouveau membre</span>
             </Button>
           ) : undefined
@@ -450,7 +445,7 @@ const Team: React.FC = () => {
                   user.email === "zohir.kh@gmail.com" ? "admin" : user.role;
                 const config =
                   ROLE_CONFIG[effectiveRole] || ROLE_CONFIG["stagiaire"];
-                const RoleIcon = config.icon || GraduationScrollIcon;
+                const RoleIcon = config.icon || AcademicCapIcon;
                 const isCurrentUserRow =
                   user.email?.trim().toLowerCase() ===
                   currentUser?.email?.trim().toLowerCase();
@@ -510,11 +505,7 @@ const Team: React.FC = () => {
                             {isResetting ? (
                               <Spinner className="size-4" />
                             ) : (
-                              <HugeiconsIcon
-                                className="size-4"
-                                icon={MoreHorizontalIcon}
-                                strokeWidth={1.5}
-                              />
+                              <EllipsisHorizontalIcon aria-hidden="true" className="size-4" />
                             )}
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
@@ -522,19 +513,13 @@ const Team: React.FC = () => {
                               disabled={isResetting}
                               onClick={() => setPasswordResetTarget(user)}
                             >
-                              <HugeiconsIcon
-                                icon={Key01Icon}
-                                strokeWidth={1.5}
-                              />
+                              <KeyIcon aria-hidden="true" className="size-4" />
                               Réinitialiser le mot de passe
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               onClick={() => handleOpenModal(user)}
                             >
-                              <HugeiconsIcon
-                                icon={Edit01Icon}
-                                strokeWidth={1.5}
-                              />
+                              <PencilIcon aria-hidden="true" className="size-4" />
                               Modifier le rôle / statut
                             </DropdownMenuItem>
                             {user.email !== "zohir.kh@gmail.com" && (
@@ -542,10 +527,7 @@ const Team: React.FC = () => {
                                 onClick={() => setMemberPendingDelete(user)}
                                 variant="destructive"
                               >
-                                <HugeiconsIcon
-                                  icon={Delete01Icon}
-                                  strokeWidth={1.5}
-                                />
+                                <TrashIcon aria-hidden="true" className="size-4" />
                                 Supprimer définitivement
                               </DropdownMenuItem>
                             )}
@@ -563,11 +545,7 @@ const Team: React.FC = () => {
                           config.color,
                         )}
                       >
-                        <HugeiconsIcon
-                          className="size-3"
-                          icon={RoleIcon}
-                          strokeWidth={1.5}
-                        />
+                        <RoleIcon aria-hidden="true" className="size-3" />
                         {config.label}
                       </Badge>
                     </div>
@@ -575,21 +553,13 @@ const Team: React.FC = () => {
                     {/* Contact Info */}
                     <div className="mt-auto space-y-2 border-border/50 border-t pt-4">
                       <div className="flex items-center gap-2 text-muted-foreground text-sm">
-                        <HugeiconsIcon
-                          className="size-3.5 text-muted-foreground"
-                          icon={MailIcon}
-                          strokeWidth={1.5}
-                        />
+                        <EnvelopeIcon aria-hidden="true" className="size-3.5 text-muted-foreground" />
                         <span className="truncate">
                           {user.email || "Pas d'email"}
                         </span>
                       </div>
                       <div className="flex items-center gap-2 text-muted-foreground text-sm">
-                        <HugeiconsIcon
-                          className="size-3.5 text-muted-foreground"
-                          icon={SmartPhone01Icon}
-                          strokeWidth={1.5}
-                        />
+                        <DevicePhoneMobileIcon aria-hidden="true" className="size-3.5 text-muted-foreground" />
                         <span>
                           {formatPhone(user.phone) || "Non renseigné"}
                         </span>
@@ -606,15 +576,7 @@ const Team: React.FC = () => {
                           ].className,
                         )}
                       >
-                        <HugeiconsIcon
-                          className="size-2.5"
-                          icon={
-                            user.status === "active"
-                              ? CheckmarkCircle02Icon
-                              : Cancel01Icon
-                          }
-                          strokeWidth={1.5}
-                        />{" "}
+                        {user.status === "active" ? <CheckCircleIcon aria-hidden="true" className="size-3" /> : <XMarkIcon aria-hidden="true" className="size-3" />}{" "}
                         {
                           TEAM_STATUS_META[
                             user.status === "active" ? "active" : "inactive"
@@ -706,7 +668,7 @@ const Team: React.FC = () => {
           <FormDialogHeader
             artwork="credentials"
             description="Copiez-le maintenant et transmettez-le par un canal sécurisé. Il disparaîtra à la fermeture."
-            icon={<HugeiconsIcon icon={Key01Icon} strokeWidth={1.5} />}
+            icon={<KeyIcon aria-hidden="true" />}
             title="Mot de passe temporaire"
             tone="violet"
           />
@@ -750,7 +712,7 @@ const Team: React.FC = () => {
                 ? "Identité, rôle et accès."
                 : "Identité, rôle et accès."
             }
-            icon={<HugeiconsIcon icon={Briefcase01Icon} strokeWidth={1.5} />}
+            icon={<BriefcaseIcon aria-hidden="true" />}
             title={editingId ? "Modifier le membre" : "Ajouter un membre"}
             tone="rose"
           />
