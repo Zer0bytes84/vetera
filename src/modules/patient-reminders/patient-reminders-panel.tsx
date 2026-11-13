@@ -13,17 +13,17 @@ import {
   useUsersRepository,
 } from "@/data/repositories";
 import {
-  CalendarDays,
-  ArrowDown,
-  CheckCircle2,
-  Clock3,
-  History,
-  Phone,
-  Printer,
-  RotateCcw,
-  ShieldAlert,
-  XCircle,
-} from "lucide-react";
+  ArchiveBoxIcon as History,
+  ArrowDownIcon as ArrowDown,
+  ArrowUturnLeftIcon as RotateCcw,
+  CalendarDaysIcon as CalendarDays,
+  CheckCircleIcon as CheckCircle2,
+  ClockIcon as Clock3,
+  PhoneIcon as Phone,
+  PrinterIcon as Printer,
+  ShieldExclamationIcon as ShieldAlert,
+  XCircleIcon as XCircle,
+} from "@heroicons/react/16/solid";
 import { formatPhone, formatPersonName } from "@/utils/display-format";
 import { isMedicalReminderType, isReminderOverdue, localToday } from "./domain";
 import { callsCsv, callsPrintHtml, type CallRow } from "./export";

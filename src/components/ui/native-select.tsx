@@ -1,4 +1,4 @@
-import { ChevronDownIcon } from "@/lib/icons";
+import { ChevronDownIcon } from "@heroicons/react/16/solid";
 import type * as React from "react";
 import { cn } from "@/lib/utils";
 

@@ -55,6 +55,9 @@ import {
 } from "../model/dashboard-watch";
 import { buildSpeciesSplit } from "../model/dashboard-widgets";
 import { usePatientReminders } from "@/modules/patient-reminders/use-patient-reminders";
+import { useHospitalizationEnabled } from "@/modules/clinique/clinic-services";
+import { MorningWatch } from "../components/morning-watch";
+import { buildMorningWatch, type MorningItem, type MorningStatus } from "../model/morning-watch";
 
 export interface DashboardPageProps {
   onNavigate?: (view: View) => void;
@@ -114,6 +117,30 @@ export function DashboardPage({
   const pending = useRef(new Set<string>());
   const now = useNowTick(30_000);
   const alertCare = useAlertCare(now);
+  const hospitalization = useHospitalizationEnabled();
+  const [morningStatus, setMorningStatus] = useState<MorningStatus>("late");
+  const morning = useMemo(
+    () =>
+      buildMorningWatch({
+        now,
+        status: morningStatus,
+        careTasks: alertCare.tasks,
+        careUnavailable: Boolean(alertCare.error),
+        appointments: presentation.appointments,
+        reminders: medicalReminders.reminders,
+        remindersUnavailable: Boolean(medicalReminders.error),
+        patients: presentation.patients,
+        invoices: presentation.invoices,
+        stays: stays.data,
+        hospitalization,
+      }),
+    [now, morningStatus, alertCare.tasks, alertCare.error, presentation.appointments, medicalReminders.reminders, medicalReminders.error, presentation.patients, presentation.invoices, stays.data, hospitalization]
+  );
+  const openMorning = (item: MorningItem) => {
+    // The Rappels view opens on the medical reminders, as the « À surveiller » row did.
+    if (item.id === "reminders") window.sessionStorage.setItem("baitari:reminders-source", "medical");
+    navigate(item.view);
+  };
   const createSlot = (slot: FreeSlot) => {
     prepareAppointment(undefined, slot.startsAt, slot.start, slot.vetId);
     navigate("agenda");
@@ -345,6 +372,7 @@ export function DashboardPage({
         <TourInvitation />
         <PremiumAnalytics
           clinicalView={version === "clinical" ? clinicalView : undefined}
+          morningWatch={<MorningWatch items={morning} now={now} onOpen={openMorning} onStatus={setMorningStatus} status={morningStatus} />}
           model={buildPremiumAnalytics({ ...presentation, alerts, reminders: medicalReminders.reminders }, analyticsPeriod, now, customRange)}
           period={analyticsPeriod}
           onPeriod={(next: AnalyticsPeriod) => setAnalyticsPeriod(next)}

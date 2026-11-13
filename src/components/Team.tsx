@@ -1,5 +1,5 @@
 import { ListSearch } from "@/components/ui/list-controls";
-import { UsersIcon } from "@heroicons/react/20/solid";
+import { MagnifyingGlassIcon, UsersIcon } from "@heroicons/react/20/solid";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,21 +13,20 @@ import {
   formatPhone,
 } from "@/utils/display-format";
 import {
-  Add01Icon,
-  Briefcase01Icon,
-  Cancel01Icon,
-  CheckmarkCircle02Icon,
-  Delete01Icon,
-  Edit01Icon,
-  GraduationScrollIcon,
-  Key01Icon,
-  MailIcon,
-  MoreHorizontalIcon,
-  Shield01Icon,
-  SmartPhone01Icon,
-  StethoscopeIcon,
-} from "@/lib/hugeicons";
-import { HugeiconsIcon } from "@hugeicons/react";
+  AcademicCapIcon,
+  BriefcaseIcon,
+  CheckCircleIcon,
+  DevicePhoneMobileIcon,
+  EllipsisHorizontalIcon,
+  EnvelopeIcon,
+  KeyIcon,
+  PencilIcon,
+  PlusCircleIcon,
+  PlusIcon,
+  ShieldCheckIcon,
+  TrashIcon,
+  XMarkIcon,
+} from "@heroicons/react/16/solid";
 import type React from "react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -45,20 +44,8 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Dialog } from "@/components/ui/dialog";
-import {
-  Empty,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyTitle,
-} from "@/components/ui/empty";
+import { Shell, ShellHeader } from "@/components/ui/surface";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import {
   FormDialogBody,
@@ -79,40 +66,41 @@ import { cn } from "@/lib/utils";
 import { hashPassword, updatePassword } from "@/services/sqlite/auth";
 import type { User, UserRole } from "@/types/db";
 import Avatar from "./Avatar";
+import { readTeam } from "./team-reading";
 
 const ROLE_CONFIG: Record<
   UserRole | string,
-  { label: string; color: string; bg: string; icon: typeof Shield01Icon }
+  { label: string; color: string; bg: string; icon: typeof ShieldCheckIcon }
 > = {
   admin: {
     label: "Administrateur",
     color: "text-purple-600 dark:text-purple-400",
     bg: "bg-purple-100 dark:bg-purple-500/20",
-    icon: Shield01Icon,
+    icon: ShieldCheckIcon,
   },
   vet_principal: {
     label: "Vétérinaire Principal",
     color: "text-amber-600 dark:text-amber-400",
     bg: "bg-amber-100 dark:bg-amber-500/20",
-    icon: StethoscopeIcon,
+    icon: PlusCircleIcon,
   },
   vet_adjoint: {
     label: "Vétérinaire Adjoint",
     color: "text-blue-600 dark:text-blue-400",
     bg: "bg-blue-100 dark:bg-blue-500/20",
-    icon: StethoscopeIcon,
+    icon: PlusCircleIcon,
   },
   assistant: {
     label: "Assistant(e)",
     color: "text-emerald-600 dark:text-emerald-400",
     bg: "bg-emerald-100 dark:bg-emerald-500/20",
-    icon: Briefcase01Icon,
+    icon: BriefcaseIcon,
   },
   stagiaire: {
     label: "Stagiaire",
     color: "text-muted-foreground",
     bg: "bg-muted/50",
-    icon: GraduationScrollIcon,
+    icon: AcademicCapIcon,
   },
 };
 
@@ -333,66 +321,48 @@ const Team: React.FC = () => {
     [users, searchTerm],
   );
 
+  // One short, true line at the foot of every card, read by readTeam with the page's own rules.
   const sectionCards = useMemo<SectionCardItem[]>(() => {
-    const activeUsers = users.filter((user) => user.status === "active").length;
-    const vets = users.filter((user) =>
-      ["vet_principal", "vet_adjoint"].includes(user.role || ""),
-    ).length;
-    const support = users.filter((user) =>
-      ["assistant", "stagiaire"].includes(user.role || ""),
-    ).length;
-    const accessReview = users.filter(
-      (user) => user.status !== "active",
-    ).length;
-
+    const team = readTeam(users);
     return [
       {
         title: "Équipe active",
-        value: formatNumber(activeUsers),
-        badge:
-          activeUsers === users.length
-            ? "Effectif complet"
-            : `${activeUsers}/${users.length} en poste`,
-        tone: "positive",
-        trend: "up",
-        detailRow: `${vets} praticien${vets > 1 ? "s" : ""} · ${support} soignant${support > 1 ? "s" : ""} · Coordination active`,
+        value: formatNumber(team.active),
+        tone: team.pending ? "watch" : "positive",
+        detailRow: team.lines.active,
         actionLabel: "Voir l'équipe active",
       },
       {
         title: "Vétérinaires",
-        value: formatNumber(vets),
-        badge: `${Math.round(users.length > 0 ? (vets / users.length) * 100 : 0)} % effectif`,
+        value: formatNumber(team.vets),
         tone: "quiet",
-        trend: "neutral",
-        detailRow: "Praticiens titulaires et remplaçants · Actes & soins",
+        detailRow: team.lines.vets,
         actionLabel: "Voir les praticiens",
       },
       {
         title: "Support & soignants",
-        value: formatNumber(support),
-        badge: "ASV & internes",
+        value: formatNumber(team.support),
         tone: "quiet",
-        trend: "neutral",
-        detailRow: "Assistants, infirmiers vétérinaires et stagiaires",
+        detailRow: team.lines.support,
         actionLabel: "Voir le support clinique",
       },
       {
         title: "Accès & statut",
-        value: formatNumber(accessReview),
-        change: accessReview,
-        changeKind: "count",
-        changeLabel: accessReview > 0 ? "comptes inactifs" : "droits conformes",
-        inverse: true,
-        tone: accessReview > 0 ? "critical" : "positive",
-        trend: accessReview > 0 ? "down" : "neutral",
-        detailRow:
-          accessReview > 0
-            ? `${accessReview} compte${accessReview > 1 ? "s" : ""} inactif${accessReview > 1 ? "s" : ""} ou permissions en attente`
-            : "Tous les profils et habilitations sont conformes",
+        value: formatNumber(team.pending),
+        tone: team.pending ? "critical" : "positive",
+        detailRow: team.lines.access,
         actionLabel: "Vérifier les accès",
       },
     ];
   }, [users]);
+
+  // The band's state line reads the team as the dashboard and Rappels read theirs: day, time, then what is true now.
+  const team = readTeam(users);
+  const readAt = new Date();
+  const readDay = readAt.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" });
+  const bandSubtitle = loading
+    ? "Lecture de l’équipe…"
+    : `${readDay[0].toLocaleUpperCase("fr-FR")}${readDay.slice(1)} · état à ${readAt.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })} · ${team.state}`;
 
   return (
     <div className="dashboard-stage flex w-full min-w-0 flex-col gap-4 px-4 pb-8 lg:px-6">
@@ -405,60 +375,66 @@ const Team: React.FC = () => {
               className="h-9 rounded-full px-4"
               onClick={() => handleOpenModal()}
             >
-              <HugeiconsIcon
-                className="size-4"
-                icon={Add01Icon}
-                strokeWidth={1.5}
-              />
+              <PlusIcon aria-hidden="true" className="size-4" />
               <span>Nouveau membre</span>
             </Button>
           ) : undefined
         }
+        badges={false}
         icon={UsersIcon}
         items={sectionCards}
-        subtitle="Praticiens, soignants et accès"
+        subtitle={bandSubtitle}
       />
 
-      {/* Main Card */}
-      <Card className="card-vibrant card-hover-lift flex flex-1 flex-col overflow-hidden rounded-[24px] border border-border bg-card shadow-none">
-        <CardHeader className="border-border border-b px-6 py-5">
-          <CardDescription className="font-mono t-12 uppercase tracking-[0.06em]">
-            Annuaire interne
-          </CardDescription>
-          <CardTitle className="font-normal t-18 tracking-[-0.04em]">
-            Coordination de l'équipe
-          </CardTitle>
-        </CardHeader>
-        {/* Toolbar */}
-        <div className="flex flex-col items-center justify-between gap-4 border-border border-b px-6 py-4 md:flex-row">
+      {/* The directory: no section title block, a tool row as on Flux and Rappels (count on the left, search on the right). */}
+      <section aria-label="Annuaire de l’équipe" className="team-directory flex flex-1 flex-col gap-3">
+        <div className="team-directory-tools flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
+          <p className="text-muted-foreground t-13">
+            <span className="font-medium text-foreground tabular-nums">{formatNumber(filteredUsers.length)}</span>{" "}
+            membre{filteredUsers.length > 1 ? "s" : ""}
+            {searchTerm ? ` sur ${formatNumber(users.length)}` : ""}
+          </p>
           <ListSearch
-            className="w-full md:w-72"
+            className="w-full sm:w-56"
             label="Rechercher un membre"
             placeholder="Rechercher un membre…"
             value={searchTerm}
             onValueChange={setSearchTerm}
           />
-
-          <p className="text-muted-foreground t-13 tabular-nums">
-            {filteredUsers.length} membre{filteredUsers.length > 1 ? "s" : ""}
-          </p>
         </div>
 
         {/* Users List */}
-        <CardContent className="flex-1 overflow-auto p-4 sm:p-6">
+        <div className="flex-1">
           {loading ? (
             <div className="flex items-center justify-center p-6">
               <Spinner />
             </div>
           ) : filteredUsers.length === 0 ? (
-            <Empty>
-              <EmptyHeader>
-                <EmptyTitle>Aucun membre trouvé</EmptyTitle>
-                <EmptyDescription>
-                  Aucun membre ne correspond à votre recherche.
-                </EmptyDescription>
-              </EmptyHeader>
-            </Empty>
+            // Composed as the Rappels' empty search: the page's band, one true line, and the way out.
+            <Shell>
+              <ShellHeader
+                aside={
+                  searchTerm ? (
+                    <Button onClick={() => setSearchTerm("")} size="sm" type="button" variant="outline">
+                      Effacer la recherche
+                    </Button>
+                  ) : canManageTeam ? (
+                    <Button onClick={() => handleOpenModal()} size="sm" type="button" variant="outline">
+                      <PlusIcon aria-hidden="true" className="size-4" />
+                      Nouveau membre
+                    </Button>
+                  ) : undefined
+                }
+                as="h2"
+                icon={searchTerm ? MagnifyingGlassIcon : UsersIcon}
+                subtitle={
+                  searchTerm
+                    ? `Aucun membre ne correspond à « ${searchTerm} ».`
+                    : "Aucun membre n’est enregistré pour ce cabinet."
+                }
+                title={searchTerm ? "Aucun résultat" : "Aucun membre"}
+              />
+            </Shell>
           ) : (
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
               {filteredUsers.map((user) => {
@@ -466,7 +442,7 @@ const Team: React.FC = () => {
                   user.email === "zohir.kh@gmail.com" ? "admin" : user.role;
                 const config =
                   ROLE_CONFIG[effectiveRole] || ROLE_CONFIG["stagiaire"];
-                const RoleIcon = config.icon || GraduationScrollIcon;
+                const RoleIcon = config.icon || AcademicCapIcon;
                 const isCurrentUserRow =
                   user.email?.trim().toLowerCase() ===
                   currentUser?.email?.trim().toLowerCase();
@@ -526,11 +502,7 @@ const Team: React.FC = () => {
                             {isResetting ? (
                               <Spinner className="size-4" />
                             ) : (
-                              <HugeiconsIcon
-                                className="size-4"
-                                icon={MoreHorizontalIcon}
-                                strokeWidth={1.5}
-                              />
+                              <EllipsisHorizontalIcon aria-hidden="true" className="size-4" />
                             )}
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
@@ -538,19 +510,13 @@ const Team: React.FC = () => {
                               disabled={isResetting}
                               onClick={() => setPasswordResetTarget(user)}
                             >
-                              <HugeiconsIcon
-                                icon={Key01Icon}
-                                strokeWidth={1.5}
-                              />
+                              <KeyIcon aria-hidden="true" className="size-4" />
                               Réinitialiser le mot de passe
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               onClick={() => handleOpenModal(user)}
                             >
-                              <HugeiconsIcon
-                                icon={Edit01Icon}
-                                strokeWidth={1.5}
-                              />
+                              <PencilIcon aria-hidden="true" className="size-4" />
                               Modifier le rôle / statut
                             </DropdownMenuItem>
                             {user.email !== "zohir.kh@gmail.com" && (
@@ -558,10 +524,7 @@ const Team: React.FC = () => {
                                 onClick={() => setMemberPendingDelete(user)}
                                 variant="destructive"
                               >
-                                <HugeiconsIcon
-                                  icon={Delete01Icon}
-                                  strokeWidth={1.5}
-                                />
+                                <TrashIcon aria-hidden="true" className="size-4" />
                                 Supprimer définitivement
                               </DropdownMenuItem>
                             )}
@@ -579,11 +542,7 @@ const Team: React.FC = () => {
                           config.color,
                         )}
                       >
-                        <HugeiconsIcon
-                          className="size-3"
-                          icon={RoleIcon}
-                          strokeWidth={1.5}
-                        />
+                        <RoleIcon aria-hidden="true" className="size-3" />
                         {config.label}
                       </Badge>
                     </div>
@@ -591,21 +550,13 @@ const Team: React.FC = () => {
                     {/* Contact Info */}
                     <div className="mt-auto space-y-2 border-border/50 border-t pt-4">
                       <div className="flex items-center gap-2 text-muted-foreground text-sm">
-                        <HugeiconsIcon
-                          className="size-3.5 text-muted-foreground"
-                          icon={MailIcon}
-                          strokeWidth={1.5}
-                        />
+                        <EnvelopeIcon aria-hidden="true" className="size-3.5 text-muted-foreground" />
                         <span className="truncate">
                           {user.email || "Pas d'email"}
                         </span>
                       </div>
                       <div className="flex items-center gap-2 text-muted-foreground text-sm">
-                        <HugeiconsIcon
-                          className="size-3.5 text-muted-foreground"
-                          icon={SmartPhone01Icon}
-                          strokeWidth={1.5}
-                        />
+                        <DevicePhoneMobileIcon aria-hidden="true" className="size-3.5 text-muted-foreground" />
                         <span>
                           {formatPhone(user.phone) || "Non renseigné"}
                         </span>
@@ -622,15 +573,7 @@ const Team: React.FC = () => {
                           ].className,
                         )}
                       >
-                        <HugeiconsIcon
-                          className="size-2.5"
-                          icon={
-                            user.status === "active"
-                              ? CheckmarkCircle02Icon
-                              : Cancel01Icon
-                          }
-                          strokeWidth={1.5}
-                        />{" "}
+                        {user.status === "active" ? <CheckCircleIcon aria-hidden="true" className="size-3" /> : <XMarkIcon aria-hidden="true" className="size-3" />}{" "}
                         {
                           TEAM_STATUS_META[
                             user.status === "active" ? "active" : "inactive"
@@ -643,8 +586,8 @@ const Team: React.FC = () => {
               })}
             </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </section>
 
       <AlertDialog
         onOpenChange={(open) => {
@@ -722,7 +665,7 @@ const Team: React.FC = () => {
           <FormDialogHeader
             artwork="credentials"
             description="Copiez-le maintenant et transmettez-le par un canal sécurisé. Il disparaîtra à la fermeture."
-            icon={<HugeiconsIcon icon={Key01Icon} strokeWidth={1.5} />}
+            icon={<KeyIcon aria-hidden="true" />}
             title="Mot de passe temporaire"
             tone="violet"
           />
@@ -766,7 +709,7 @@ const Team: React.FC = () => {
                 ? "Identité, rôle et accès."
                 : "Identité, rôle et accès."
             }
-            icon={<HugeiconsIcon icon={Briefcase01Icon} strokeWidth={1.5} />}
+            icon={<BriefcaseIcon aria-hidden="true" />}
             title={editingId ? "Modifier le membre" : "Ajouter un membre"}
             tone="rose"
           />

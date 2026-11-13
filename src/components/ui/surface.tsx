@@ -34,6 +34,7 @@ export function Panel({ className, ...props }: DivProps) {
   return (
     <div
       className={cn("rounded-[var(--radius-panel)] bg-[var(--card-inset)]", className)}
+      data-slot="panel"
       {...props}
     />
   );

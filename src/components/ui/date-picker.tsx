@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { CalendarDays } from "@/lib/icons";
+import { CalendarDaysIcon } from "@heroicons/react/16/solid";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -74,7 +74,7 @@ export function DatePicker({
           />
         }
       >
-        <CalendarDays aria-hidden="true" className="size-4 shrink-0 text-muted-foreground" />
+        <CalendarDaysIcon aria-hidden="true" className="size-4 shrink-0 text-muted-foreground" />
         <span className="truncate tabular-nums">
           {selected ? selected.toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit", year: "numeric" }) : placeholder}
         </span>

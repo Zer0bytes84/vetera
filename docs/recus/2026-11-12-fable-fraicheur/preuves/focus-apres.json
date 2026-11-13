@@ -1,0 +1,38 @@
+{
+ "tableau-de-bord": {
+  "arrets": 58,
+  "perdus": []
+ },
+ "patients": {
+  "arrets": 66,
+  "perdus": []
+ },
+ "dossier-patient": {
+  "arrets": 45,
+  "perdus": []
+ },
+ "agenda": {
+  "arrets": 44,
+  "perdus": []
+ },
+ "factures": {
+  "arrets": 70,
+  "perdus": []
+ },
+ "journal": {
+  "arrets": 32,
+  "perdus": []
+ },
+ "documents": {
+  "arrets": 70,
+  "perdus": []
+ },
+ "assistant": {
+  "arrets": 70,
+  "perdus": []
+ },
+ "parametres": {
+  "arrets": 39,
+  "perdus": []
+ }
+}

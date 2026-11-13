@@ -369,7 +369,7 @@ export function AgendaCalendar({
               </PopoverContent>
             </Popover>
           </div>
-          <h2 className="truncate font-medium text-[18px] capitalize tracking-[-0.02em]">{title(view, selectedDate, weekDays)}</h2>
+          <h2 className="truncate font-medium text-[18px] first-letter:uppercase tracking-[-0.02em]">{title(view, selectedDate, weekDays)}</h2>
         </div>
         <Tabs onValueChange={(value) => onViewChange(value as CalendarView)} value={view}>
           <TabsList aria-label="Affichage du calendrier" tabsStyle="segmented">

@@ -528,10 +528,32 @@
   }
 }
 
+/* The loading line of a page waits 150 ms before it shows: a page that arrives sooner (the usual
+   case, and always once its entry was pointed at) never flashes it. */
+.view-loading {
+  animation: view-loading-reveal 0s linear 150ms both;
+}
+@keyframes view-loading-reveal {
+  from { visibility: hidden; }
+  to { visibility: visible; }
+}
+
 /* ─── View container ─── */
-/* Changing page is done tens of times a day: the new view is simply there. */
+/* Changing page is done tens of times a day: the new view does not move, slide or grow. It only
+   settles in opacity over 120 ms, so the cut from one page to the next is not a hard flash.
+   Nothing under « reduce motion », nothing where @starting-style is unknown. */
 .app-view-enter {
   min-width: 0;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .app-view-enter {
+    transition: opacity 120ms cubic-bezier(0.23, 1, 0.32, 1);
+  }
+  @starting-style {
+    .app-view-enter {
+      opacity: 0;
+    }
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -38,10 +38,15 @@ export function AssistantSlideoutIcon() {
   );
 }
 
+/** The panel answers a click: it arrives in 300 ms on the drawer curve and leaves faster, in 200 ms. */
+const EXIT_MS = 200;
+
 interface Props {
   open: boolean;
   children: ReactNode;
   onCollapsedChange?: (collapsed: boolean) => void;
+  /** The exit has played and the panel is gone: the caller can let go of its content. */
+  onExited?: () => void;
 }
 
 /**
@@ -57,6 +62,7 @@ export function ConsultationAssistantPanel({
   open,
   children,
   onCollapsedChange,
+  onExited,
 }: Props) {
   const [rendered, setRendered] = useState(open);
   const [visible, setVisible] = useState(false);
@@ -90,9 +96,11 @@ export function ConsultationAssistantPanel({
     }
     setVisible(false);
     onCollapsedChange?.(false);
-    const timer = setTimeout(() => setRendered(false), 300);
+    // Unmounts when the exit has played (see onTransitionEnd); the timer only covers the cases where
+    // no transition runs: reduced motion, or a panel closed while collapsed and already off screen.
+    const timer = setTimeout(() => { setRendered(false); onExited?.(); }, EXIT_MS + 150);
     return () => clearTimeout(timer);
-  }, [open, onCollapsedChange]);
+  }, [open, onCollapsedChange, onExited]);
   /* eslint-enable react-hooks/set-state-in-effect */
 
   if (!rendered || typeof document === "undefined") return null;
@@ -106,18 +114,23 @@ export function ConsultationAssistantPanel({
         aria-hidden={collapsed || !visible}
         role="complementary"
         aria-label="Assistant de consultation"
+        data-slot="assistant-panel"
         data-state={collapsed ? "collapsed" : visible ? "open" : "closed"}
         className={cn(
           "fixed inset-y-0 right-0 z-50 flex w-full flex-col",
           "sm:max-w-[var(--assistant-width)]",
           "border-l border-border bg-[var(--card-band)] rounded-tl-[20px]",
-          "shadow-[-16px_0_48px_-12px_rgba(0,0,0,0.18)]",
-          "transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]",
-          "motion-reduce:transition-none",
-          visible && !collapsed ? "translate-x-0" : "translate-x-full"
+          "shadow-[var(--clean-slideout-shadow,-16px_0_48px_-12px_rgba(0,0,0,0.18))]",
+          "transition-transform motion-reduce:transition-none",
+          visible && !collapsed
+            ? "translate-x-0 duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]"
+            : "translate-x-full duration-200 ease-[cubic-bezier(0.23,1,0.32,1)]"
         )}
+        onTransitionEnd={(event) => {
+          if (!open && event.target === event.currentTarget && event.propertyName === "transform") { setRendered(false); onExited?.(); }
+        }}
       >
-        <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+        <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden">
           <PanelControlsContext.Provider
             value={{
               collapse: () => {

@@ -2,7 +2,7 @@
 // Free to use. If it helps you, you can support it: https://ko-fi.com/yurigokoryan
 "use client";
 
-import { CalendarDays } from "lucide-react";
+import { CalendarDaysIcon } from "@heroicons/react/20/solid";
 import { AnimatePresence, MotionConfig, motion } from "motion/react";
 import { useRef, useState, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
@@ -83,7 +83,7 @@ export function SlotPicker({
   return (
     <MotionConfig reducedMotion="user">
       <Shell aria-label={title} className={cn("flex h-full flex-col", className)}>
-        <ShellHeader as="h2" icon={CalendarDays} subtitle={subtitle} title={title} />
+        <ShellHeader as="h2" icon={CalendarDaysIcon} subtitle={subtitle} title={title} />
         <Panel className="flex flex-1 flex-col p-3">
           <div
             aria-label="Créneaux libres"

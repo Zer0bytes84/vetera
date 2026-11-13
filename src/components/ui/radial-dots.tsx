@@ -2,7 +2,7 @@
 // Free to use. If it helps you, you can support it: https://ko-fi.com/yurigokoryan
 "use client";
 
-import { ChartPie } from "lucide-react";
+import { ChartPieIcon } from "@heroicons/react/20/solid";
 import { MotionConfig, motion, useReducedMotion } from "motion/react";
 import { useState, type ReactNode } from "react";
 import { Panel, Shell, ShellHeader } from "@/components/ui/surface";
@@ -138,7 +138,7 @@ export function RadialDots({
   return (
     <MotionConfig reducedMotion="user">
       <Shell className={cn("flex h-full flex-col", className)}>
-        <ShellHeader aside={toolbar} as="h2" icon={ChartPie} subtitle={subtitle} title={title} />
+        <ShellHeader aside={toolbar} as="h2" icon={ChartPieIcon} subtitle={subtitle} title={title} />
         <Panel className="flex flex-1 flex-col p-4">
           <div
             aria-label={`${title}. Les flèches du clavier lisent chaque secteur.`}

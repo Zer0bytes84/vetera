@@ -2,7 +2,7 @@
 // Free to use. If it helps you, you can support it: https://ko-fi.com/yurigokoryan
 "use client";
 
-import { Hexagon } from "lucide-react";
+import { CalendarIcon } from "@heroicons/react/20/solid";
 import {
   AnimatePresence,
   MotionConfig,
@@ -253,7 +253,7 @@ export function HexDensity({
       <Shell className={cn("flex h-full flex-col", className)}>
         <ShellHeader
           aside={toolbar}
-          icon={Hexagon}
+          icon={CalendarIcon}
           subtitle={subtitle}
           title={title}
           as="h2"

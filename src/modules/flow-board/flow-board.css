@@ -1,8 +1,11 @@
 /* Tableau de flux : charte Baitari, jetons existants uniquement. */
 
+/* The page takes the view's whole height: a light day fills it as well as a full one, the five lanes reaching
+   down to the key hints instead of stopping at mid-screen over an empty half. */
 .flow-board-page {
   display: flex;
   min-width: 0;
+  min-height: 100%;
   flex-direction: column;
   gap: 16px;
 }
@@ -10,14 +13,16 @@
 .flow-board {
   display: flex;
   min-width: 0;
+  flex: 1;
   flex-direction: column;
   gap: 12px;
 }
 
 .flow-lanes {
   display: grid;
+  flex: 1;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  align-items: start;
+  align-items: stretch;
   gap: 10px;
 }
 
@@ -90,11 +95,9 @@
   color: color-mix(in oklch, var(--signal-watch) 75%, var(--ink));
 }
 
+/* An empty lane says so in one quiet line under its title: five dashed boxes in a row were noise. */
 .flow-lane-empty {
-  border: 1px dashed var(--hairline);
-  border-radius: var(--radius-body);
-  padding: 14px 10px;
-  text-align: center;
+  padding: 0 4px;
   font-size: 12px;
   color: var(--ink-faint);
 }
@@ -532,7 +535,6 @@
 }
 
 .dark .flow-board-page .flow-lane-empty {
-  border-color: var(--line-strong, rgb(255 255 255 / 0.16));
   color: var(--ink-muted);
 }
 
@@ -545,4 +547,106 @@
 
 .dark .flow-board-page .flow-card-stage {
   background: rgb(255 255 255 / 0.06);
+}
+
+/*
+ * A day with no visit: in the place of « Prévus aujourd'hui », on the lanes' own five-column grid, what is next. The
+ * next appointment over two columns, the day's summary over two, the actions in the last: the cells line up with the
+ * lanes below. The same frame as a lane, and no decoration.
+ */
+:root[data-skin="clean"] .flow-board-page .flow-quiet {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+}
+
+:root[data-skin="clean"] .flow-board-page .flow-quiet-cell {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 6px;
+  border-radius: var(--radius-panel);
+  background: var(--frame);
+  box-shadow: var(--shadow-hairline);
+  padding: 14px 16px;
+}
+
+:root[data-skin="clean"] .flow-board-page .flow-quiet-cell:nth-child(-n + 2) {
+  grid-column: span 2;
+}
+
+:root[data-skin="clean"] .flow-board-page .flow-quiet-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink-muted);
+}
+
+/* No tabular figures here: in the embedded Inter they widen the hyphen of « rendez-vous » by 41 %. */
+:root[data-skin="clean"] .flow-board-page .flow-quiet-when {
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--ink);
+}
+
+:root[data-skin="clean"] .flow-board-page .flow-quiet-what {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14px;
+  color: var(--ink);
+}
+
+:root[data-skin="clean"] .flow-board-page .flow-quiet-what strong {
+  font-weight: 600;
+}
+
+:root[data-skin="clean"] .flow-board-page .flow-quiet-meta {
+  font-size: 12px;
+  color: var(--ink-muted);
+}
+
+:root[data-skin="clean"] .flow-board-page .flow-quiet-link {
+  align-self: flex-start;
+  margin-top: auto;
+  margin-left: -8px;
+}
+
+:root[data-skin="clean"] .flow-board-page .flow-quiet-facts {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin: 2px 0 auto;
+}
+
+:root[data-skin="clean"] .flow-board-page .flow-quiet-facts dt {
+  font-size: 12px;
+  color: var(--ink-muted);
+}
+
+:root[data-skin="clean"] .flow-board-page .flow-quiet-facts dd {
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+:root[data-skin="clean"] .flow-board-page .flow-quiet-actions .flow-quiet-label {
+  margin-bottom: 2px;
+}
+
+@media (max-width: 1180px) {
+  :root[data-skin="clean"] .flow-board-page .flow-quiet {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  :root[data-skin="clean"] .flow-board-page .flow-quiet-cell:nth-child(-n + 2) {
+    grid-column: auto;
+  }
+
+  :root[data-skin="clean"] .flow-board-page .flow-quiet-actions {
+    grid-column: span 2;
+  }
 }

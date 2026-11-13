@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  ArrowDownRight,
-  ArrowUpRight,
-  ChartSpline,
-  Gauge,
-} from "lucide-react";
+import { ArrowDownRightIcon, ArrowUpRightIcon, PresentationChartBarIcon, PresentationChartLineIcon } from "@heroicons/react/16/solid";
 import {
   CalendarDaysIcon,
   ClipboardDocumentCheckIcon,
@@ -85,6 +80,8 @@ interface PremiumAnalyticsProps {
   /** Shows the visit in Flux, where visits move on. */
   onStartConsultation?: (appointmentId: string) => void;
   clinicalView?: React.ReactNode;
+  /** « À traiter »: the day's anomalies, right under the chart. */
+  morningWatch?: React.ReactNode;
   /** Rangée « À surveiller » (rappels, stock, hospitalisés): plus affichée sur le tableau de bord, qui s'arrête après « Cette semaine ». */
   watch?: React.ReactNode;
   /** Heure courante (horloge de la page), pour repérer le prochain rendez-vous. */
@@ -132,7 +129,7 @@ export function DeltaBadge({
 
   const positive = computed !== 0 && (inverse ? computed < 0 : computed > 0);
   const negative = computed !== 0 && !positive;
-  const Icon = computed < 0 ? ArrowDownRight : ArrowUpRight;
+  const Icon = computed < 0 ? ArrowDownRightIcon : ArrowUpRightIcon;
   const formattedPercent = `${computed > 0 ? "+" : ""}${formatNumber(computed, { maximumFractionDigits: 1 })} %`;
 
   return (
@@ -140,7 +137,7 @@ export function DeltaBadge({
       className="delta"
       data-sense={positive ? "good" : negative ? "bad" : "neutral"}
     >
-      {computed !== 0 && <Icon size={13} strokeWidth={1.5} aria-hidden="true" />}
+      {computed !== 0 && <Icon aria-hidden="true" className="size-3" />}
       <span>{formattedPercent}</span>
       <span className="delta-label">
         {previousLabel
@@ -242,6 +239,7 @@ export function PremiumAnalytics({
   dashboardViewControl,
   presentation,
   clinicalView,
+  morningWatch,
   now,
   vets,
   onCreateSlot,
@@ -563,8 +561,8 @@ export function PremiumAnalytics({
             <div aria-label="Affichage des chiffres clés" className="filter-segments keyViewIcons" data-tabs-style="segmented" role="group">
               {(
                 [
-                  { view: "kpi", label: "Indicateurs", Icon: Gauge },
-                  { view: "sparklines", label: "Mini-graphiques", Icon: ChartSpline },
+                  { view: "kpi", label: "Indicateurs", Icon: PresentationChartBarIcon },
+                  { view: "sparklines", label: "Mini-graphiques", Icon: PresentationChartLineIcon },
                 ] as const
               ).map(({ view, label, Icon }) => (
                 <ShortcutTooltip key={view} label={label}>
@@ -576,7 +574,7 @@ export function PremiumAnalytics({
                     onClick={() => setKeyView(view)}
                     type="button"
                   >
-                    <Icon aria-hidden="true" size={16} strokeWidth={1.5} />
+                    <Icon aria-hidden="true" className="size-4" />
                   </button>
                 </ShortcutTooltip>
               ))}
@@ -611,6 +609,8 @@ export function PremiumAnalytics({
         points={chartPoints}
         rangeLabel={chartRangeLabel}
       />
+
+      {morningWatch}
 
       {/* 5. Under the chart, half and half: the clinic's activity, then Cette semaine. */}
       <div className="pairRow">

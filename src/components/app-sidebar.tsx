@@ -9,6 +9,7 @@ import "@/modules/shell/premium-sidebar.css";
 import * as React from "react";
 import { useTranslation } from "react-i18next";
 import { navigationSections } from "@/app/config/navigation";
+import { prefetchView } from "@/app/config/view-registry";
 import { SidebarBrand } from "@/components/mascot/sidebar-brand";
 import { NavMain, type NavItem } from "@/components/nav-main";
 import {
@@ -24,6 +25,7 @@ import {
   CLINIC_TAB_OPEN_EVENT,
   CLINIC_TAB_PENDING_KEY,
 } from "@/modules/clinique/clinic-tab-events";
+import { type ClinicTab, isClinicTabVisible, useHospitalizationEnabled } from "@/modules/clinique/clinic-services";
 import { isTauriRuntime } from "@/services/browser-store";
 import type { View } from "@/types";
 
@@ -33,8 +35,6 @@ type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
   /** The signed-in account, shown as the sidebar footer's profile block. */
   account?: AccountMenuProps;
 };
-
-type ClinicTab = "soins" | "hospitalisation";
 
 /** Opens a section of Soins & hospitalisation, mounted or not. */
 function openClinicTab(tab: ClinicTab, currentView: View, onNavigate: (view: View) => void) {
@@ -107,23 +107,23 @@ export function AppSidebar({
   const operationsSection = navigationSections[2];
 
   const inClinic = currentView === "clinique" || currentView === "soins";
-  // « Clinique » is a section title in the sidebar, not a page: its two
-  // pages are direct entries under it, one click each, still driven by
-  // the same clinic tab underneath.
-  const clinicItems: NavItem[] = [
-    {
-      title: "Soins",
-      icon: <SidebarIcon className="size-5!" view="soins" />,
-      isActive: inClinic && clinicTab === "soins",
-      onClick: () => openClinicTab("soins", currentView, onNavigate),
-    },
-    {
-      title: "Hospitalisation",
-      icon: <SidebarIcon className="size-5!" view="clinique" />,
-      isActive: inClinic && clinicTab === "hospitalisation",
-      onClick: () => openClinicTab("hospitalisation", currentView, onNavigate),
-    },
-  ];
+  // « Clinique » is a section title in the sidebar, not a page: its pages are direct entries under it,
+  // one click each, still driven by the same clinic tab underneath. A practice without hospitalization
+  // (Paramètres > Mon cabinet) does not see that entry: the same rule as the Soins page and the palette.
+  const hospitalizationEnabled = useHospitalizationEnabled();
+  const clinicItems: NavItem[] = (
+    [
+      { tab: "soins", title: "Soins", view: "soins" },
+      { tab: "hospitalisation", title: "Hospitalisation", view: "clinique" },
+    ] satisfies { tab: ClinicTab; title: string; view: View }[]
+  )
+    .filter((entry) => isClinicTabVisible(entry.tab, hospitalizationEnabled))
+    .map((entry) => ({
+      title: entry.title,
+      icon: <SidebarIcon className="size-5!" view={entry.view} />,
+      isActive: inClinic && clinicTab === entry.tab,
+      onClick: () => openClinicTab(entry.tab, currentView, onNavigate),
+    }));
   const subPages: Partial<Record<View, { open: boolean; children: NavItem["children"] }>> = {
     finances: {
       open: currentView === "finances" || currentView === "finances_analytics",
@@ -144,6 +144,7 @@ export function AppSidebar({
         (item.view === "clinique" && currentView === "soins") ||
         (item.view === "finances" && currentView === "finances_analytics"),
       onClick: () => onNavigate(item.view),
+      onIntent: () => prefetchView(item.view),
       children: sub?.children,
       expanded,
       onToggle: () => setToggled({ view: currentView, open: { ...unfolded, [item.view]: !expanded } }),

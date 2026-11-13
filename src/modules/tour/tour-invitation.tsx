@@ -1,6 +1,6 @@
 "use client";
 
-import { Route, X } from "lucide-react";
+import { MapIcon, XMarkIcon } from "@heroicons/react/16/solid";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Panel, Shell } from "@/components/ui/surface";
@@ -30,7 +30,7 @@ export function TourInvitation() {
       <Shell>
         <Panel className="tour-invitation-panel">
           <span aria-hidden="true" className="tour-invitation-icon">
-            <Route className="size-4" />
+            <MapIcon className="size-4" />
           </span>
           <div className="tour-invitation-text">
             <h2 className="tour-invitation-title">{TOUR_INVITATION_COPY.title}</h2>
@@ -41,7 +41,7 @@ export function TourInvitation() {
               {TOUR_INVITATION_COPY.start}
             </Button>
             <Button aria-label={TOUR_INVITATION_COPY.close} className="rounded-full" onClick={() => tourStore.update(closeInvitation)} size="icon-sm" type="button" variant="ghost">
-              <X aria-hidden="true" className="size-4" />
+              <XMarkIcon aria-hidden="true" className="size-4" />
             </Button>
           </div>
         </Panel>

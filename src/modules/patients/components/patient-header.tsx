@@ -113,12 +113,13 @@ export function PatientRecordHeader({
           Allergie : {allergy}
         </span>
       ) : (
-        <span className="patient-record-allergy-note mr-2 text-muted-foreground/80">
-          {allergyText ? "Aucune allergie connue" : "Allergies non renseignées"} ·
+        <span className="patient-record-allergy-note text-muted-foreground/80">
+          {allergyText ? "Aucune allergie connue" : "Allergies non renseignées"} ·{" "}
         </span>
       )}
-      <span className={restraint ? "mr-2" : "mr-2 text-muted-foreground/80"}>
-        {restraint ? `Contention : ${restraint}` : "Contention non renseignée"} ·
+      {/* Same separator as the facts that follow: a middle dot between two word spaces, no extra margin. */}
+      <span className={restraint ? undefined : "text-muted-foreground/80"}>
+        {restraint ? `Contention : ${restraint}` : "Contention non renseignée"} ·{" "}
       </span>
       {facts.join(" · ")}
       {ownerFacts.length ? (

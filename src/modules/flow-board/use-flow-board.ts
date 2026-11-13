@@ -190,6 +190,7 @@ export function useFlowBoard(vetId: string, query = "") {
 
   return {
     appointmentById,
+    appointments: appointments.data,
     board,
     completeWithBilling: appointments.completeWithBilling,
     owners: patients.owners,

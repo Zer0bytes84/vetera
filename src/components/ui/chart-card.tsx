@@ -2,7 +2,7 @@
 // Free to use. If it helps you, you can support it: https://ko-fi.com/yurigokoryan
 "use client";
 
-import { ChartArea, ChartColumn, ChartLine, ChartPie } from "lucide-react";
+import { ArrowTrendingUpIcon, ChartBarIcon, ChartPieIcon, PresentationChartLineIcon } from "@heroicons/react/20/solid";
 import { AnimatePresence, MotionConfig, motion, useReducedMotion } from "motion/react";
 import { useId, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { RollingNumber } from "@/components/ui/rolling-number";
@@ -76,7 +76,7 @@ const palette = [
   "var(--tone-amber)",
   "var(--tone-rose)",
 ];
-const icons = { bar: ChartColumn, line: ChartLine, area: ChartArea, donut: ChartPie };
+const icons = { bar: ChartBarIcon, line: ArrowTrendingUpIcon, area: PresentationChartLineIcon, donut: ChartPieIcon };
 const PAD = { top: 8, bottom: 24, left: 40 };
 const STEPS = 5;
 const MAX_MARKERS = 31;

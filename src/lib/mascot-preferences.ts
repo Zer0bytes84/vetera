@@ -1,4 +1,4 @@
-/** The twelve line mascots, in the order they are offered. */
+/** The fifteen line mascots, in the order they are offered. */
 export const MASCOT_CHOICE_KEYS = [
   "chien",
   "chat",
@@ -12,6 +12,10 @@ export const MASCOT_CHOICE_KEYS = [
   "perroquet",
   "herisson",
   "tortue",
+  // Added on 13 November 2026, after the twelve: the dog stays the default, nothing is replaced.
+  "chouette",
+  "ane",
+  "furet",
 ] as const;
 
 /** Names saved by earlier versions, read back as one of the twelve. */

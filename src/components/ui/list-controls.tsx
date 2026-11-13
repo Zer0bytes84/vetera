@@ -1,5 +1,5 @@
 import { useState, type ComponentProps } from "react";
-import { ChevronDown, Search, X } from "@/lib/icons";
+import { ChevronDownIcon as ChevronDown, MagnifyingGlassIcon as Search, XMarkIcon as X } from "@heroicons/react/16/solid";
 import { cn } from "@/lib/utils";
 import { Button } from "./button";
 import { Input } from "./input";

@@ -33,6 +33,10 @@ export interface LineAnimal {
   eyeY: number;
   eyeDx: number;
   pupil?: "dot" | "bar";
+  /** Eyes drawn larger than the others' (the owl's discs); 1 by default. */
+  eyeScale?: number;
+  /** Eye outline when the eyes sit on a black patch (the ferret's mask): paper, or they are lost in it. */
+  eyeStroke?: string;
   /** Mouth line height; null for a beak. */
   mouthY: number | null;
   cheeks?: boolean;
@@ -294,6 +298,85 @@ export const LINE_ANIMALS = {
     eyeDx: 11,
     mouthY: 94,
   },
+  // Added on 13 November 2026, from the bench's proposals of the 12th (docs/recus/2026-11-12-fable-fraicheur/round2/mascottes).
+  chouette: {
+    label: "Chouette",
+    earL: <path d="M40 48 L29 24 L52 39 Z" fill={INK} />,
+    earR: <path d="M80 48 L91 24 L68 39 Z" fill={INK} />,
+    head: "M24 72 C24 50 40 38 60 38 C80 38 96 50 96 72 C96 94 80 106 60 106 C40 106 24 94 24 72 Z",
+    // The facial discs, then the feathers of the brow and the breast.
+    marks: (
+      <>
+        <circle cx={44} cy={69} fill={PAPER} r={15.5} strokeWidth={2.4} />
+        <circle cx={76} cy={69} fill={PAPER} r={15.5} strokeWidth={2.4} />
+        <path d="M53 45 L60 54 L67 45" strokeWidth={2.4} />
+        <path d="M50 97 q3 4 6 0 M57 99 q3 4 6 0 M64 97 q3 4 6 0" strokeWidth={2} />
+      </>
+    ),
+    muzzle: <path d="M55.5 78 H64.5 L60 88 Z" fill={INK} />,
+    eyeY: 69,
+    eyeDx: 16,
+    eyeScale: 1.3,
+    mouthY: null,
+    cheeks: true,
+  },
+  ane: {
+    label: "Âne",
+    earL: (
+      <>
+        <path d="M45 46 C34 32 31 12 37 1 C47 11 54 29 55 42 Z" fill={INK} />
+        <path d="M43.5 36 C39.5 28 38.5 18 40 11 C44.5 18 47.5 27 48.5 35 Z" fill={PAPER} stroke="none" />
+      </>
+    ),
+    // The other ear lies down on the side.
+    earR: (
+      <>
+        <path d="M68 44 C73 30 91 22 109 27 C104 42 91 51 78 52 Z" fill={INK} />
+        <path d="M77 42 C82 34 92 30 100 31 C96 39 89 44 81 46 Z" fill={PAPER} stroke="none" />
+      </>
+    ),
+    earPivot: [48, 44, 72, 46],
+    head: "M34 64 C34 48 46 40 60 40 C74 40 86 48 86 64 L84 90 C84 102 74 110 60 110 C46 110 36 102 36 90 Z",
+    // The forelock, between the ears.
+    marks: <path d="M50 47 C49 38 56 36 60 42 C64 36 71 38 70 47 C64 43 56 43 50 47 Z" fill={INK} strokeWidth={2} />,
+    muzzle: (
+      <>
+        <path d="M37 94 C37 83 47 79 60 79 C73 79 83 83 83 94 C83 104 73 110 60 110 C47 110 37 104 37 94 Z" fill={PAPER} />
+        <ellipse cx={51.5} cy={90.5} fill={INK} rx={2.6} ry={3.4} stroke="none" />
+        <ellipse cx={68.5} cy={90.5} fill={INK} rx={2.6} ry={3.4} stroke="none" />
+      </>
+    ),
+    eyeY: 66,
+    eyeDx: 14,
+    mouthY: 100,
+  },
+  furet: {
+    label: "Furet",
+    earL: <path d="M36 54 C27 44 19 50 23 60 C26 66 33 64 39 60 Z" fill={PAPER} />,
+    earR: <path d="M84 54 C93 44 101 50 97 60 C94 66 87 64 81 60 Z" fill={PAPER} />,
+    earPivot: [36, 58, 84, 58],
+    head: "M27 74 C27 54 42 42 60 42 C78 42 93 54 93 74 C93 94 79 106 60 106 C41 106 27 94 27 74 Z",
+    // The mask, from one temple to the other.
+    marks: (
+      <path
+        d="M30 67 C36 58 50 59 60 65 C70 59 84 58 90 67 C90 78 78 82 69 77 C65 75 63 73 60 73 C57 73 55 75 51 77 C42 82 30 78 30 67 Z"
+        fill={INK}
+        stroke="none"
+      />
+    ),
+    muzzle: (
+      <>
+        <path d="M47 89 C47 81 73 81 73 89 C73 97 66 101 60 101 C54 101 47 97 47 89 Z" fill={PAPER} />
+        <path d={nose(85)} fill={INK} />
+      </>
+    ),
+    front: <path d="M10 86 L36 89 M12 96 L36 93 M110 86 L84 89 M108 96 L84 93" strokeWidth={2} />,
+    eyeY: 69,
+    eyeDx: 14,
+    // Both eyes sit on the mask: a paper outline, or they are lost in it.
+    eyeStroke: PAPER,
+    mouthY: 94,
+  },
 } satisfies Record<string, LineAnimal>;
 
 export type LineAnimalKey = keyof typeof LINE_ANIMALS;
@@ -301,30 +384,32 @@ export const LINE_ANIMAL_KEYS = Object.keys(LINE_ANIMALS) as LineAnimalKey[];
 
 /** Two eyes: open (pupils that move), happy (closed arcs), and the brows of thinking. */
 function Eyes({ animal }: { animal: LineAnimal }) {
-  const { eyeY: y, eyeDx: dx, pupil = "dot" } = animal;
+  const { eyeY: y, eyeDx: dx, pupil = "dot", eyeScale: k = 1, eyeStroke } = animal;
+  const happy = (x: number) => `M${x - 5 * k} ${y + 1.5} Q${x} ${y - 6 * k} ${x + 5 * k} ${y + 1.5}`;
+  const brow = 10 * k;
   return (
     <g className="lm-eyes">
       {[60 - dx, 60 + dx].map((x, side) => (
         <g className="lm-eye" data-side={side ? "r" : "l"} key={x}>
           <g className="lm-eye-open">
-            <ellipse cx={x} cy={y} fill={PAPER} rx={5.6} ry={6.2} strokeWidth={2.4} />
+            <ellipse cx={x} cy={y} fill={PAPER} rx={5.6 * k} ry={6.2 * k} stroke={eyeStroke} strokeWidth={2.4} />
             {/* Tracking moves .lm-pupils, the mood moves .lm-gaze: two transforms, never fighting. */}
             <g className="lm-pupils">
               <g className="lm-gaze">
                 {pupil === "bar" ? (
-                  <rect fill={INK} height={2.6} rx={1.3} stroke="none" width={6} x={x - 3} y={y - 1.3} />
+                  <rect fill={INK} height={2.6 * k} rx={1.3 * k} stroke="none" width={6 * k} x={x - 3 * k} y={y - 1.3 * k} />
                 ) : (
-                  <circle cx={x} cy={y} fill={INK} r={3.1} stroke="none" />
+                  <circle cx={x} cy={y} fill={INK} r={3.1 * k} stroke="none" />
                 )}
               </g>
             </g>
           </g>
           {/* A paper edge first, so the arc reads on a dark patch too. */}
-          <path className="lm-eye-happy" d={`M${x - 5} ${y + 1.5} Q${x} ${y - 6} ${x + 5} ${y + 1.5}`} stroke={PAPER} strokeWidth={6} />
-          <path className="lm-eye-happy" d={`M${x - 5} ${y + 1.5} Q${x} ${y - 6} ${x + 5} ${y + 1.5}`} />
+          <path className="lm-eye-happy" d={happy(x)} stroke={PAPER} strokeWidth={6} />
+          <path className="lm-eye-happy" d={happy(x)} stroke={eyeStroke} />
         </g>
       ))}
-      <path className="lm-brows" d={`M${60 - dx - 5} ${y - 10} L${60 - dx + 5} ${y - 10.5} M${60 + dx - 6} ${y - 11} Q${60 + dx} ${y - 16} ${60 + dx + 6} ${y - 12}`} strokeWidth={2.4} />
+      <path className="lm-brows" d={`M${60 - dx - 5} ${y - brow} L${60 - dx + 5} ${y - brow - 0.5} M${60 + dx - 6} ${y - brow - 1} Q${60 + dx} ${y - brow - 6} ${60 + dx + 6} ${y - brow - 2}`} stroke={eyeStroke} strokeWidth={2.4} />
     </g>
   );
 }
@@ -400,8 +485,8 @@ export function LineMascotArt({
               {art.marks}
               {art.cheeks ? (
                 <g className="lm-cheeks" fill={PINK} stroke="none">
-                  <circle cx={60 - art.eyeDx - 3} cy={art.eyeY + 12} r={5.5} />
-                  <circle cx={60 + art.eyeDx + 3} cy={art.eyeY + 12} r={5.5} />
+                  <circle cx={60 - art.eyeDx - 3} cy={art.eyeY + 12 * (art.eyeScale ?? 1)} r={5.5} />
+                  <circle cx={60 + art.eyeDx + 3} cy={art.eyeY + 12 * (art.eyeScale ?? 1)} r={5.5} />
                 </g>
               ) : null}
               <Eyes animal={art} />

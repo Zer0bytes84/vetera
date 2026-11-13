@@ -24,6 +24,8 @@ export type NavItem = {
   icon?: React.ReactNode;
   isActive?: boolean;
   onClick?: () => void;
+  /** The pointer or the keyboard reached the entry: the moment to get its page ready. */
+  onIntent?: () => void;
   /** Sub-pages, folded under the item until it is opened or toggled. */
   children?: NavSubItem[];
   expanded?: boolean;
@@ -52,7 +54,7 @@ export function NavMain({
                 aria-label={item.badge ? `${item.title}, ${item.badge} soins en retard` : item.title}
                 className="sidebar-nav-link group-data-[collapsible=icon]:size-11! group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:rounded-xl group-data-[collapsible=icon]:p-0! group-data-[collapsible=icon]:[&_svg]:size-[26px]!"
                 isActive={item.isActive}
-                render={<button onClick={item.onClick} type="button" />}
+                render={<button onClick={item.onClick} onFocus={item.onIntent} onPointerEnter={item.onIntent} type="button" />}
                 tooltip={item.title}
               >
                 <div

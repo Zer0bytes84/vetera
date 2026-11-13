@@ -6,7 +6,7 @@ export interface MascotAssetItem {
   kind: "vector";
 }
 
-/** Names saved by earlier versions, drawn as one of the twelve. */
+/** Names saved by earlier versions, drawn as one of the line mascots. */
 const LEGACY_DRAWING: Record<string, LineAnimalKey> = {
   dog: "chien",
   cat: "chat",
@@ -27,7 +27,7 @@ export const MASCOT_ASSETS = Object.fromEntries(
   ]),
 ) as Record<MascotAnimal, MascotAssetItem>;
 
-/** The twelve offered in the settings, in their order. */
+/** The fifteen offered in the settings, in their order. */
 export const MASCOT_CHOICES: readonly MascotAnimal[] = MASCOT_CHOICE_KEYS;
 
 export const LEGACY_VECTOR_MASCOTS: readonly MascotAnimal[] = ["dog", "cat", "rabbit", "fox", "panda", "bear"];

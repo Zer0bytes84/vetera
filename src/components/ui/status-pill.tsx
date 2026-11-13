@@ -96,7 +96,7 @@ export type StatusPillProps = React.ComponentProps<"span"> & {
   tone?: StatusTone;
   size?: keyof typeof sizes;
   /** Optional icon before the text. The text always stays, so tone is never the only signal. */
-  icon?: LucideIcon;
+  icon?: LucideIcon | React.ComponentType<{ className?: string; strokeWidth?: number | string; "aria-hidden"?: boolean | "true" | "false" }>;
   iconWeight?: "fill" | "bold";
 };
 
@@ -112,15 +112,16 @@ export function StatusPill({
   return (
     <span
       className={cn(
-        "inline-flex shrink-0 items-center rounded-full font-medium whitespace-nowrap",
+        // Its own tracking: a pill inside a tracked title or table keeps the spacing of its 12-13 px text.
+        "inline-flex shrink-0 items-center rounded-full font-medium tracking-normal whitespace-nowrap",
         sizes[size].pill,
         tones[tone],
         className,
       )}
       {...props}
     >
-      {IconComponent && iconWeight === "fill" && glyphs.has(IconComponent) ? (
-        <Glyph glyph={glyphs.get(IconComponent)!} className={sizes[size].icon} />
+      {IconComponent && iconWeight === "fill" && glyphs.has(IconComponent as LucideIcon) ? (
+        <Glyph glyph={glyphs.get(IconComponent as LucideIcon)!} className={sizes[size].icon} />
       ) : IconComponent ? (
         <IconComponent
           strokeWidth={iconWeight === "bold" ? 2.5 : 2}

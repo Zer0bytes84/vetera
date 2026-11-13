@@ -2,10 +2,10 @@
 // Free to use. If it helps you, you can support it: https://ko-fi.com/yurigokoryan
 "use client";
 
-import { ArrowDownRight, ArrowRight, ArrowUpRight, Minus } from "lucide-react";
+import { ArrowDownRightIcon, ArrowRightIcon, ArrowUpRightIcon, MinusIcon } from "@heroicons/react/16/solid";
 import type { ComponentType } from "react";
 
-/** Widget icons: a Lucide glyph or a Heroicons solid, both take className and strokeWidth. */
+/** Widget icons: Heroicons solid (they take className; strokeWidth is ignored by a filled glyph). */
 export type StatIcon = ComponentType<{ className?: string; strokeWidth?: number | string }>;
 import { MotionConfig, motion } from "motion/react";
 import { useId, type CSSProperties, type ReactNode } from "react";
@@ -18,7 +18,7 @@ import { cn } from "@/lib/utils";
 import { formatNumber } from "@/utils/display-format";
 
 /*
- * Adapted for Baitari: lucide icons, app tones (--tone-green / --tone-rose), 24 px figures (the scale),
+ * Adapted for Baitari: Heroicons, app tones (--tone-green / --tone-rose), 24 px figures (the scale),
  * French text and numbers. Optional extras, all off by default, for a row of key figures:
  *  - `icon` + `tone`: a tinted icon chip before the label, in one of the app's five tones;
  *  - `hint` is one short line under the badge, never wrapped; `deltaText` words a change a percentage cannot;
@@ -73,6 +73,8 @@ export type StatGridProps = {
   onSelect?: (stat: Stat) => void;
   /** Draw the goal bar of the stats that carry a `goal`. */
   goals?: boolean;
+  /** `false`: no badge row at all, for a grid whose cards carry no change (counts of what is to do). */
+  badges?: boolean;
   /** `row`: every card on one single row, scrolling sideways when the window is too narrow. */
   layout?: "grid" | "row";
   className?: string;
@@ -87,6 +89,7 @@ export function StatGrid({
   lead,
   sparklines = true,
   goals = true,
+  badges = true,
   onSelect,
   layout = "grid",
   className,
@@ -121,13 +124,13 @@ export function StatGrid({
                 : "grid-cols-1 @md:grid-cols-2",
           )}
         >
-          {data.map((stat, i) => (
+          {data.map((stat) => (
             <StatCard
               key={stat.id}
               stat={stat}
-              index={i}
               sparkline={sparklines}
               showGoal={goals}
+              showBadge={badges}
               onSelect={onSelect}
             />
           ))}
@@ -139,22 +142,22 @@ export function StatGrid({
 
 function StatCard({
   stat,
-  index,
   sparkline,
   showGoal,
+  showBadge,
   onSelect,
 }: {
   stat: Stat;
-  index: number;
   sparkline: boolean;
   showGoal: boolean;
+  showBadge: boolean;
   onSelect?: (stat: Stat) => void;
 }) {
   const { delta, higherIsBetter = true } = stat;
   // Exactly 0, not « under 0.05 »: the dashboard has always shown +0,03 % as a rise.
   const flat = delta === undefined || delta === 0;
   const good = !flat && delta > 0 === higherIsBetter;
-  const DeltaIcon = flat ? Minus : delta > 0 ? ArrowUpRight : ArrowDownRight;
+  const DeltaIcon = flat ? MinusIcon : delta > 0 ? ArrowUpRightIcon : ArrowDownRightIcon;
   const Root = onSelect ? motion.button : motion.div;
   const percent = delta === undefined ? "" : `${delta > 0 ? "+" : ""}${formatNumber(delta, { maximumFractionDigits: 1 })} %`;
 
@@ -163,9 +166,7 @@ function StatCard({
       type={onSelect ? "button" : undefined}
       onClick={onSelect ? () => onSelect(stat) : undefined}
       aria-label={onSelect ? stat.ariaLabel : undefined}
-      initial={{ opacity: 0, y: 6 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.24, ease: EASE_OUT, delay: index * 0.05 }}
+      // No entrance: a band read every morning is simply there, and a filter that changes a figure rolls the figure only.
       className={cn(
         "group min-w-0 text-left",
         onSelect &&
@@ -177,8 +178,15 @@ function StatCard({
         right, level with it), badge, one short line, and the goal bar at the foot. No row can wrap or
         grow, so each of them falls on the same line from one card to the next.
       */}
-      <Panel className="flex h-full flex-col gap-2 p-4">
-        <p className="flex h-6 items-center gap-2 text-[0.8125rem] text-muted-foreground">
+      <Panel
+        className={cn(
+          "flex h-full flex-col gap-2 p-4",
+          // A clickable card answers the pointer by its fill alone: no border, no shadow.
+          onSelect &&
+            "transition-[background-color] duration-150 ease-out group-hover:bg-[color-mix(in_oklab,var(--card-inset),var(--foreground)_3%)] group-active:bg-[color-mix(in_oklab,var(--card-inset),var(--foreground)_5%)]",
+        )}
+      >
+        <p className="flex h-6 items-center gap-2 text-[0.8125rem] text-muted-foreground" data-slot="stat-label">
           {stat.icon && (
             <span
               aria-hidden="true"
@@ -196,7 +204,7 @@ function StatCard({
           )}
           <span className="min-w-0 flex-1 truncate">{stat.label}</span>
           {onSelect && (
-            <ArrowRight
+            <ArrowRightIcon
               aria-hidden="true"
               className="size-3.5 shrink-0 opacity-0 transition-opacity duration-150 group-hover:opacity-100 group-focus-visible:opacity-100"
             />
@@ -205,6 +213,7 @@ function StatCard({
         <div className="flex h-8 items-center justify-between gap-3">
           <span
             className="shrink-0 whitespace-nowrap"
+            data-slot="stat-value"
             style={stat.emphasize && stat.tone ? { color: `var(--tone-${stat.tone})` } : undefined}
           >
             <RollingNumber
@@ -219,7 +228,7 @@ function StatCard({
             />
           )}
         </div>
-        <div className="flex h-5 items-center">
+        {showBadge && <div className="flex h-5 items-center">
           {delta !== undefined && (
             <StatusPill
               size="sm"
@@ -233,7 +242,7 @@ function StatCard({
               </span>
             </StatusPill>
           )}
-        </div>
+        </div>}
         <p className="h-4 truncate text-xs leading-4 text-muted-foreground">{stat.hint}</p>
         {showGoal && stat.goal && (
           <div className="mt-auto flex flex-col gap-1.5 pt-1">

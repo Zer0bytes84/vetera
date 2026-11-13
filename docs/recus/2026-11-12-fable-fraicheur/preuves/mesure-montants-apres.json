@@ -1,0 +1,56 @@
+{
+ "montants-tabulaires": {
+  "5": {
+   "n": 10,
+   "droites": [
+    1088.13
+   ],
+   "num": [
+    "tabular-nums"
+   ],
+   "ls": [
+    "normal"
+   ],
+   "ex": [
+    "7 500 DA",
+    "5 000 DA",
+    "8 000 DA"
+   ]
+  },
+  "6": {
+   "n": 2,
+   "droites": [
+    1212.83
+   ],
+   "num": [
+    "tabular-nums"
+   ],
+   "ls": [
+    "normal"
+   ],
+   "ex": [
+    "8 000 DA",
+    "3 000 DA"
+   ]
+  }
+ },
+ "montants-journal": {
+  "4": {
+   "n": 10,
+   "droites": [
+    1242.48
+   ],
+   "num": [
+    "tabular-nums"
+   ],
+   "ls": [
+    "normal"
+   ],
+   "ex": [
+    "500 DA",
+    "7 000 DA",
+    "5 000 DA"
+   ]
+  }
+ }
+}

@@ -1,0 +1,17 @@
+== 5198
+Votre premier patient, bande r=22px pad=6px bord=0px ombre=aucune | panneau r=16px bord=0px ombre=rgba(0, 0, 0, 0.06) 0px 0px 0px 0.5px, r
+Chiffres clés          bande r=22px pad=6px bord=0px ombre=aucune | panneau r=16px bord=0px ombre=rgba(0, 0, 0, 0.06) 0px 0px 0px 0.5px, r
+Recettes & activité    bande r=22px pad=6px bord=0px ombre=aucune | panneau r=16px bord=0px ombre=rgba(0, 0, 0, 0.06) 0px 0px 0px 0.5px, r
+Activité de la cliniqu bande r=22px pad=6px bord=0px ombre=aucune | panneau r=16px bord=0px ombre=rgba(0, 0, 0, 0.06) 0px 0px 0px 0.5px, r
+Cette semaine          bande r=22px pad=6px bord=0px ombre=aucune | panneau r=16px bord=0px ombre=rgba(0, 0, 0, 0.06) 0px 0px 0px 0.5px, r
+Agenda rapide          bande r=22px pad=6px bord=0px ombre=aucune | panneau r=16px bord=0px ombre=rgba(0, 0, 0, 0.06) 0px 0px 0px 0.5px, r
+Alertes                bande r=22px pad=6px bord=0px ombre=aucune | panneau r=16px bord=0px ombre=rgba(0, 0, 0, 0.06) 0px 0px 0px 0.5px, r
+== 5199
+Votre premier patient, bande r=22px pad=6px bord=0px ombre=aucune | panneau r=16px bord=0px ombre=aucune
+À traiter              bande r=22px pad=6px bord=0px ombre=aucune | panneau r=16px bord=0px ombre=aucune
+Chiffres clés          bande r=22px pad=6px bord=0px ombre=aucune | panneau r=16px bord=0px ombre=aucune
+Recettes & activité    bande r=22px pad=6px bord=0px ombre=aucune | panneau r=16px bord=0px ombre=aucune
+Activité de la cliniqu bande r=22px pad=6px bord=0px ombre=aucune | panneau r=16px bord=0px ombre=aucune
+Cette semaine          bande r=22px pad=6px bord=0px ombre=aucune | panneau r=16px bord=0px ombre=aucune
+Agenda rapide          bande r=22px pad=6px bord=0px ombre=aucune | panneau r=16px bord=0px ombre=aucune
+Alertes                bande r=22px pad=6px bord=0px ombre=aucune | panneau r=16px bord=0px ombre=aucune

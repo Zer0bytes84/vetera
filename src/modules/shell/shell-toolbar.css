@@ -632,7 +632,6 @@
   font-weight: 450;
   line-height: 20px;
   letter-spacing: -0.003em;
-  font-variant-numeric: tabular-nums;
   font-feature-settings: "kern", "liga", "calt";
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;

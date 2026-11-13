@@ -48,7 +48,7 @@ export function MascotChoices({
               onClick={() => choose({ mode: "mascot", animal })}
               type="button"
             >
-              {/* Still portraits: twelve faces following the pointer would be a crowd. */}
+              {/* Still portraits: fifteen faces following the pointer would be a crowd. */}
               <MascotAvatar animal={animal} animated={false} overflow size={compact ? 54 : 64} />
               <span>{MASCOT_ASSETS[animal].label}</span>
               <span className="mascot-choice-check" aria-hidden="true">

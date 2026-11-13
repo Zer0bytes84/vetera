@@ -1,8 +1,4 @@
-import {
-  ChevronDownIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-} from "@/lib/icons";
+import { ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/16/solid";
 import * as React from "react";
 import {
   type DayButton,

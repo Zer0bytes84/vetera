@@ -102,6 +102,10 @@
   /* Shadows: none at rest; the sheet barely lifts; floating layers use a soft stack. */
   --clean-sheet-shadow: 0 0 0 0.5px rgb(0 0 0 / 0.08), 0 1px 2px rgb(0 0 0 / 0.04);
   --clean-float-shadow: 0 0 0 0.5px rgb(0 0 0 / 0.08), 0 4px 12px rgb(0 0 0 / 0.06), 0 16px 32px -8px rgb(0 0 0 / 0.1);
+  /* Round 2 (banc du 12 novembre 2026) : une ombre de contact sous les panneaux blancs poses sur
+     leur bande, et l ombre du panneau assistant en trois couches fines au lieu d une seule large. */
+  --clean-panel-shadow: 0 0 0 0.5px rgb(0 0 0 / 0.06), 0 1px 2px rgb(0 0 0 / 0.05), 0 6px 12px -6px rgb(0 0 0 / 0.1);
+  --clean-slideout-shadow: -0.5px 0 0 rgb(0 0 0 / 0.08), -8px 0 24px -8px rgb(0 0 0 / 0.08), -24px 0 48px -24px rgb(0 0 0 / 0.12);
   /* Type: Inter for interface, body and titles. Titles have their own token so
      the mixed variant (Space Grotesk titles) stays a one-value change. */
   --clean-font-ui: "Inter Clean", "Inter Variable", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -146,6 +150,8 @@
   --clean-segment-active-shadow: inset 0 0 0 0.5px rgb(255 255 255 / 0.08);
   --clean-sheet-shadow: 0 0 0 0.5px rgb(255 255 255 / 0.07);
   --clean-float-shadow: 0 0 0 0.5px rgb(255 255 255 / 0.1);
+  --clean-panel-shadow: inset 0 1px 0 rgb(255 255 255 / 0.07);
+  --clean-slideout-shadow: -0.5px 0 0 rgb(255 255 255 / 0.1);
   --clean-glass-top: rgb(23 23 25 / 0.76);
   --clean-glass-bottom: rgb(17 18 20 / 0.6);
   --clean-glass-edge: rgb(255 255 255 / 0.06);
@@ -1751,3 +1757,124 @@
   border-radius: var(--clean-sheet-inset) var(--clean-sheet-inset) 0 0 !important;
 }
 
+
+/* ---------- Fraicheur du 12 novembre 2026 (banc banc/fable-fraicheur-2026-11-12) ----------
+   Une proposition par commit, chacune mesuree avant/apres : docs/recus/2026-11-12-fable-fraicheur/BILAN.md. */
+
+/* Focus clavier sur l'entree active de la navigation : l'anneau existait partout sauf la
+   (l'entree active remet outline a zero). Meme anneau que ses voisines : 2 px, decale de 2 px. */
+:root[data-skin="clean"][data-skin][data-skin] .app-sidebar :is([data-slot="sidebar-menu-button"], .sidebar-nav-link)[data-active]:focus-visible {
+  outline: 2px solid var(--nav-ink) !important;
+  outline-offset: 2px !important;
+}
+
+/* Pression des boutons : le retrait a 0,97 existait mais tombait d un coup, la liste des
+   transitions nommait transform alors que Tailwind 4 anime la propriete scale. 160 ms,
+   cubic-bezier(0.23, 1, 0.32, 1), comme le fond et le bord du meme bouton. */
+@media (prefers-reduced-motion: no-preference) {
+  :root[data-skin="clean"] :is([data-slot="button"], button.group\/button) {
+    transition:
+      background-color 160ms cubic-bezier(0.23, 1, 0.32, 1),
+      border-color 160ms cubic-bezier(0.23, 1, 0.32, 1),
+      box-shadow 160ms cubic-bezier(0.23, 1, 0.32, 1),
+      scale 160ms cubic-bezier(0.23, 1, 0.32, 1) !important;
+  }
+}
+
+/* Tableaux : le texte de donnees reprend l interlettrage normal de la charte (decision du
+   11 novembre : pas de tracking aux tailles de texte). Il restait -0,02 em de l ancienne base,
+   herite en pixels par les lignes de 12 et 14 px (-0,26 px, jusqu a -2,2 %). */
+:root[data-skin="clean"][data-skin][data-skin] :is(table, [data-slot="table"], .medical-data-table) {
+  letter-spacing: 0 !important;
+}
+
+/* Boutons : meme regle. Leurs libelles de 13 px portaient -0,28 px (-2,2 %), le reglage d un
+   titre sur un texte de la taille du corps. */
+:root[data-skin="clean"][data-skin][data-skin] :is([data-slot="button"], button.group\/button, [data-slot="page-header-actions"] button) {
+  letter-spacing: 0 !important;
+}
+
+/* Chiffres tabulaires la ou des chiffres s alignent, pas dans les libelles. Dans le fichier
+   Inter embarque, tnum elargit aussi le trait d union (942 > 1328 unites, +41 %), les
+   parentheses et la ponctuation : « rendez-vous » s ouvrait en « rendez - vous » dans les
+   en-tetes de colonne. Les cellules de donnees gardent leurs chiffres tabulaires. */
+:root[data-skin="clean"] :is(table, [data-slot="table"]) th {
+  font-variant-numeric: normal;
+}
+
+/* Chiffres cles : le dosage essaye le 11 novembre sur le tableau de bord (libelle 14 medium
+   en encre forte, valeur semibold) vaut pour toutes les bandes, en clair comme en sombre.
+   Le meme composant avait deux reglages : 14/500 sur le tableau de bord, 13/450 gris ailleurs. */
+/* Portee courte a dessein : l essai du tableau de bord en clair (#09090b) reste le plus fort. */
+:root[data-skin="clean"] [data-slot="stat-label"] {
+  color: var(--clean-ink-strong) !important;
+  font-size: 14px;
+  font-weight: 500;
+}
+:root[data-skin="clean"] [data-slot="stat-value"] > * {
+  font-weight: 600;
+}
+
+/* Texte selectionne : un voile de l encre au lieu d un aplat de la couleur d action (noir plein
+   en clair, violet plein en sombre). Le texte selectionne passe a l encre forte : sous le voile,
+   le gris discret tombait a 3,5:1 ; l encre forte tient 10,7:1 en clair et 10,2:1 en sombre. */
+:root[data-skin="clean"] ::selection {
+  background: color-mix(in srgb, var(--clean-ink-strong) 16%, transparent);
+  color: var(--clean-ink-strong);
+}
+
+/* ---------- Round 2 : mouvement, profondeur, matiere ---------- */
+
+/* Pression : les entrees de navigation et les onglets segmentes ne repondaient pas a l appui
+   (mesure : meme etat presse que survole). Le fond de l entree active des l appui pour la
+   navigation, un retrait a 0,97 pour l onglet ; 160 ms, cubic-bezier(0.23, 1, 0.32, 1). */
+:root[data-skin="clean"][data-skin][data-skin] .app-sidebar :is([data-slot="sidebar-menu-button"], [data-slot="sidebar-menu-sub-button"]):active {
+  background-color: var(--clean-nav-active) !important;
+  transition-duration: 0ms !important;
+}
+:root[data-skin="clean"] [data-tabs-style="segmented"] [data-slot="tabs-trigger"]:active {
+  scale: 0.97;
+}
+@media (prefers-reduced-motion: no-preference) {
+  :root[data-skin="clean"] [data-tabs-style="segmented"] [data-slot="tabs-trigger"] {
+    transition:
+      background-color 120ms ease-out,
+      color 120ms ease-out,
+      box-shadow 120ms ease-out,
+      scale 160ms cubic-bezier(0.23, 1, 0.32, 1);
+  }
+}
+
+/* Ombres, dosees fines. En clair, le panneau blanc se pose sur sa bande grise par une ombre de
+   contact (10 % de noir au plus, 12 px de flou, decalee de 6 px vers le bas) ; en sombre, pas d ombre portee : un filet
+   de lumiere sur l arete haute. La charte disait « ni trait ni ombre » : proposition de banc. */
+:root[data-skin="clean"] [data-slot="panel"] {
+  box-shadow: var(--clean-panel-shadow);
+}
+
+/* Degrade en maille, la ou il le merite : le panneau de l assistant, seule surface de l app qui
+   n est pas un outil de saisie mais une presence. Trois halos (bleu, indigo, sarcelle des
+   graphiques) fondus en haut du panneau, eteints avant le premier champ ; rien derriere le texte
+   de travail. Aucune image, aucun mouvement. */
+:root[data-skin="clean"] [data-slot="assistant-panel"] {
+  overflow: clip;
+}
+:root[data-skin="clean"] [data-slot="assistant-panel"]::before {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 220px;
+  border-top-left-radius: inherit;
+  background:
+    radial-gradient(58% 90% at 10% 0%, color-mix(in oklab, var(--chart-blue) 26%, transparent), transparent 72%),
+    radial-gradient(46% 80% at 58% -12%, color-mix(in oklab, var(--chart-indigo) 24%, transparent), transparent 72%),
+    radial-gradient(40% 70% at 100% 4%, color-mix(in oklab, var(--chart-teal) 18%, transparent), transparent 72%);
+  content: "";
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, transparent 100%);
+  pointer-events: none;
+}
+@media (prefers-contrast: more), (prefers-reduced-transparency: reduce) {
+  :root[data-skin="clean"] [data-slot="assistant-panel"]::before {
+    display: none;
+  }
+}

@@ -1,0 +1,12 @@
+== avant base.json
+sous-titre entier « Praticiens, soignants et accès »
+COUPÉE « 1 praticien · 0 soignant · Coordination active »
+COUPÉE « Praticiens titulaires et remplaçants · Actes & soins »
+COUPÉE « Assistants, infirmiers vétérinaires et stagiaires »
+COUPÉE « Tous les profils et habilitations sont conformes »
+== avant base-charge.json
+sous-titre entier « Praticiens, soignants et accès »
+COUPÉE « 2 praticiens · 3 soignants · Coordination active »
+COUPÉE « Praticiens titulaires et remplaçants · Actes & soins »
+COUPÉE « Assistants, infirmiers vétérinaires et stagiaires »
+entière « 1 compte inactif ou permissions en attente »
