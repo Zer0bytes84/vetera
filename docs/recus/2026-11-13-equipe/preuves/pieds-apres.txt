@@ -1,0 +1,12 @@
+== après base.json
+sous-titre entier « Jeudi 12 novembre · état à 10:00 · effectif complet · 1 praticien, 0 soignant · accès à jour »
+entière « 1 praticien · 0 soignant · 1 autre rôle »
+entière « 1 principal · 0 adjoint »
+entière « Aucun assistant ni stagiaire »
+entière « Tous les comptes sont actifs »
+== après base-charge.json
+sous-titre entier « Jeudi 12 novembre · état à 10:00 · 5 sur 6 en poste · 2 praticiens, 3 soignants · 1 accès en attente »
+entière « 2 praticiens · 3 soignants · 1 autre rôle »
+entière « 1 principal · 1 adjoint »
+entière « 2 assistants · 1 stagiaire »
+entière « 1 compte inactif »

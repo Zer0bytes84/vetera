@@ -1,0 +1,6 @@
+light-equipe-reelle: 6.3 % des pixels changent
+dark-equipe-reelle: 8.9 % des pixels changent
+light-equipe-essai: 12.3 % des pixels changent
+dark-equipe-essai: 15.2 % des pixels changent
+light-equipe-une-personne: 4.4 % des pixels changent
+dark-equipe-une-personne: 7.0 % des pixels changent
