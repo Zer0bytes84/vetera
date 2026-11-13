@@ -1,0 +1,18 @@
+master 58cd372 : 11 erreurs, 181 avertissements
+  181 x avertissement react-hooks/todo
+  11 x erreur erreur d analyse
+fusion b344310 : 11 erreurs, 181 avertissements
+  181 x avertissement react-hooks/todo
+  11 x erreur erreur d analyse
+fichiers en erreur (fusion) :
+  docs/recus/2026-11-12-tour-guide/outils/application-reelle/01-demarrer-et-etape1.js : Parsing error: 'return' outside of function
+  docs/recus/2026-11-12-tour-guide/outils/application-reelle/02-creer-le-dossier.js : Parsing error: 'return' outside of function
+  docs/recus/2026-11-12-tour-guide/outils/application-reelle/03-repere-et-annulation.js : Parsing error: 'return' outside of function
+  docs/recus/2026-11-12-tour-guide/outils/application-reelle/04-rendez-vous-choisir-le-patient.js : Parsing error: 'return' outside of function
+  docs/recus/2026-11-12-tour-guide/outils/application-reelle/05-rendez-vous-enregistrer.js : Parsing error: 'return' outside of function
+  docs/recus/2026-11-12-tour-guide/outils/application-reelle/06-note-soap.js : Parsing error: 'return' outside of function
+  docs/recus/2026-11-12-tour-guide/outils/application-reelle/07-valider-la-note.js : Parsing error: 'return' outside of function
+  docs/recus/2026-11-12-tour-guide/outils/application-reelle/08-emettre-la-facture.js : Parsing error: 'return' outside of function
+  docs/recus/2026-11-12-tour-guide/outils/application-reelle/09-regler-la-facture.js : Parsing error: 'return' outside of function
+  docs/recus/2026-11-12-tour-guide/outils/application-reelle/10-regler-et-observer-la-fin-en-direct.js : Parsing error: 'return' outside of function
+  docs/recus/2026-11-12-tour-guide/outils/application-reelle/11-relance-depuis-parametres.js : Parsing error: 'return' outside of function
