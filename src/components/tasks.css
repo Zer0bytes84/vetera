@@ -70,3 +70,33 @@ article[data-selected] { background: color-mix(in oklab, var(--primary) 6%, tran
 :root[data-skin="clean"] .reminders-page [data-slot="panel"] {
   box-shadow: none;
 }
+
+/* La rangée du nouveau rappel, dans le langage des bandes : un cadre gris de 6 px, les champs sur un panneau aux rayons
+   concentriques (22 px dehors, 16 px dedans), et le panneau des détails dessous, au même rayon. Plus de filets. */
+:root[data-skin="clean"] .reminders-page .quick-reminder-form {
+  border-radius: calc(var(--radius-panel) + var(--card-frame));
+  background: var(--card-band);
+  box-shadow: none;
+  padding: var(--card-frame);
+}
+
+:root[data-skin="clean"] .reminders-page .quick-reminder-fields {
+  border-radius: var(--radius-panel);
+  background: var(--card-inset);
+  padding: 16px;
+}
+
+:root[data-skin="clean"] .reminders-page .quick-reminder-fields + div {
+  margin-top: var(--card-frame);
+  border-top: 0;
+  border-radius: var(--radius-panel);
+  background: var(--card-inset);
+}
+
+/* Les libellés des détails parlent comme ceux de la rangée : 12 px, medium, encre douce. */
+:root[data-skin="clean"] .reminders-page .quick-reminder-fields + div :is(span.font-medium, label.font-medium) {
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+  color: var(--ink-soft);
+}
