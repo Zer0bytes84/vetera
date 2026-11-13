@@ -79,6 +79,7 @@ import { cn } from "@/lib/utils";
 import { hashPassword, updatePassword } from "@/services/sqlite/auth";
 import type { User, UserRole } from "@/types/db";
 import Avatar from "./Avatar";
+import { readTeam } from "./team-reading";
 
 const ROLE_CONFIG: Record<
   UserRole | string,
@@ -394,6 +395,14 @@ const Team: React.FC = () => {
     ];
   }, [users]);
 
+  // The band's state line reads the team as the dashboard and Rappels read theirs: day, time, then what is true now.
+  const team = readTeam(users);
+  const readAt = new Date();
+  const readDay = readAt.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" });
+  const bandSubtitle = loading
+    ? "Lecture de l’équipe…"
+    : `${readDay[0].toLocaleUpperCase("fr-FR")}${readDay.slice(1)} · état à ${readAt.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })} · ${team.state}`;
+
   return (
     <div className="dashboard-stage flex w-full min-w-0 flex-col gap-4 px-4 pb-8 lg:px-6">
       <MotivationalHeader section="equipe" />
@@ -416,7 +425,7 @@ const Team: React.FC = () => {
         }
         icon={UsersIcon}
         items={sectionCards}
-        subtitle="Praticiens, soignants et accès"
+        subtitle={bandSubtitle}
       />
 
       {/* Main Card */}
