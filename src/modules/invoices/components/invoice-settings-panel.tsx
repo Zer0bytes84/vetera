@@ -145,11 +145,11 @@ function ClinicServicesSection() {
           checked={hospitalization}
           disabled={saving}
           id="clinic-hospitalization"
-          onCheckedChange={async (next) => {
+          onCheckedChange={(next) => {
             setSaving(true);
-            try { await saveHospitalizationEnabled(next); }
-            catch { toast.error("Le réglage n’a pas pu être enregistré. Réessayez."); }
-            finally { setSaving(false); }
+            void saveHospitalizationEnabled(next)
+              .catch(() => toast.error("Le réglage n’a pas pu être enregistré. Réessayez."))
+              .then(() => setSaving(false));
           }}
         />
       </SettingsRow>
