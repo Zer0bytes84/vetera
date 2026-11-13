@@ -2,10 +2,10 @@
 // Free to use. If it helps you, you can support it: https://ko-fi.com/yurigokoryan
 "use client";
 
-import { ArrowDownRight, ArrowRight, ArrowUpRight, Minus } from "lucide-react";
+import { ArrowDownRightIcon, ArrowRightIcon, ArrowUpRightIcon, MinusIcon } from "@heroicons/react/16/solid";
 import type { ComponentType } from "react";
 
-/** Widget icons: a Lucide glyph or a Heroicons solid, both take className and strokeWidth. */
+/** Widget icons: Heroicons solid (they take className; strokeWidth is ignored by a filled glyph). */
 export type StatIcon = ComponentType<{ className?: string; strokeWidth?: number | string }>;
 import { MotionConfig, motion } from "motion/react";
 import { useId, type CSSProperties, type ReactNode } from "react";
@@ -18,7 +18,7 @@ import { cn } from "@/lib/utils";
 import { formatNumber } from "@/utils/display-format";
 
 /*
- * Adapted for Baitari: lucide icons, app tones (--tone-green / --tone-rose), 24 px figures (the scale),
+ * Adapted for Baitari: Heroicons, app tones (--tone-green / --tone-rose), 24 px figures (the scale),
  * French text and numbers. Optional extras, all off by default, for a row of key figures:
  *  - `icon` + `tone`: a tinted icon chip before the label, in one of the app's five tones;
  *  - `hint` is one short line under the badge, never wrapped; `deltaText` words a change a percentage cannot;
@@ -160,7 +160,7 @@ function StatCard({
   // Exactly 0, not « under 0.05 »: the dashboard has always shown +0,03 % as a rise.
   const flat = delta === undefined || delta === 0;
   const good = !flat && delta > 0 === higherIsBetter;
-  const DeltaIcon = flat ? Minus : delta > 0 ? ArrowUpRight : ArrowDownRight;
+  const DeltaIcon = flat ? MinusIcon : delta > 0 ? ArrowUpRightIcon : ArrowDownRightIcon;
   const Root = onSelect ? motion.button : motion.div;
   const percent = delta === undefined ? "" : `${delta > 0 ? "+" : ""}${formatNumber(delta, { maximumFractionDigits: 1 })} %`;
 
@@ -202,7 +202,7 @@ function StatCard({
           )}
           <span className="min-w-0 flex-1 truncate">{stat.label}</span>
           {onSelect && (
-            <ArrowRight
+            <ArrowRightIcon
               aria-hidden="true"
               className="size-3.5 shrink-0 opacity-0 transition-opacity duration-150 group-hover:opacity-100 group-focus-visible:opacity-100"
             />

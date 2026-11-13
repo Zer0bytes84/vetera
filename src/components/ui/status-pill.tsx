@@ -96,7 +96,7 @@ export type StatusPillProps = React.ComponentProps<"span"> & {
   tone?: StatusTone;
   size?: keyof typeof sizes;
   /** Optional icon before the text. The text always stays, so tone is never the only signal. */
-  icon?: LucideIcon;
+  icon?: LucideIcon | React.ComponentType<{ className?: string; strokeWidth?: number | string; "aria-hidden"?: boolean | "true" | "false" }>;
   iconWeight?: "fill" | "bold";
 };
 
@@ -120,8 +120,8 @@ export function StatusPill({
       )}
       {...props}
     >
-      {IconComponent && iconWeight === "fill" && glyphs.has(IconComponent) ? (
-        <Glyph glyph={glyphs.get(IconComponent)!} className={sizes[size].icon} />
+      {IconComponent && iconWeight === "fill" && glyphs.has(IconComponent as LucideIcon) ? (
+        <Glyph glyph={glyphs.get(IconComponent as LucideIcon)!} className={sizes[size].icon} />
       ) : IconComponent ? (
         <IconComponent
           strokeWidth={iconWeight === "bold" ? 2.5 : 2}

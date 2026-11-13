@@ -4,13 +4,12 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
-import { HugeiconsIcon } from "@hugeicons/react";
-import { DashboardSquare01Icon, StethoscopeIcon } from "@/lib/hugeicons";
+import { ClipboardDocumentListIcon, Squares2X2Icon } from "@heroicons/react/16/solid";
 import type { DashboardVersion } from "../hooks/use-dashboard-version";
 
 const modes = [
-  { value: "analytics", label: "Vue d’ensemble", icon: DashboardSquare01Icon },
-  { value: "clinical", label: "Journée clinique", icon: StethoscopeIcon },
+  { value: "analytics", label: "Vue d’ensemble", icon: Squares2X2Icon },
+  { value: "clinical", label: "Journée clinique", icon: ClipboardDocumentListIcon },
 ] as const;
 
 /** Two equally discoverable views; the choice changes immediately. */
@@ -49,12 +48,10 @@ export function DashboardModeToggle({
                 />
               }
             >
-              <HugeiconsIcon
-                icon={mode.icon}
-                size={16}
-                strokeWidth={1.5}
+              <mode.icon
+                aria-hidden="true"
                 className={cn(
-                  "relative z-10",
+                  "relative z-10 size-4",
                   isSelected
                     ? "text-ink"
                     : "text-ink-muted"

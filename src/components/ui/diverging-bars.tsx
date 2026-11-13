@@ -2,7 +2,7 @@
 // Free to use. If it helps you, you can support it: https://ko-fi.com/yurigokoryan
 "use client";
 
-import { ChartColumn } from "lucide-react";
+import { ChartBarIcon } from "@heroicons/react/20/solid";
 import {
   AnimatePresence,
   MotionConfig,
@@ -221,7 +221,7 @@ export function DivergingBars({
       <Shell className={cn("flex h-full flex-col", className)}>
         <ShellHeader
           as="h2"
-          icon={ChartColumn}
+          icon={ChartBarIcon}
           title={title}
           subtitle={subtitle}
         />

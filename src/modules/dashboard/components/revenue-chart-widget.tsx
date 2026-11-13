@@ -1,4 +1,4 @@
-import { ChartArea, ChartColumn, ChartLine, ChartPie } from "lucide-react";
+import { ArrowTrendingUpIcon, ChartBarIcon, ChartPieIcon, PresentationChartLineIcon } from "@heroicons/react/16/solid";
 import { useMemo, useState, type ReactNode } from "react";
 import { ChartCard, type ChartType } from "@/components/ui/chart-card";
 import { cn } from "@/lib/utils";
@@ -7,11 +7,11 @@ import { buildKindsDonut, buildRevenueChart, money } from "../model/revenue-char
 import type { VisitKindRow } from "../model/dashboard-widgets";
 import type { FocusPoint } from "./focus-trend-chart";
 
-const VIEWS: { value: ChartType; label: string; icon: typeof ChartLine }[] = [
-  { value: "line", label: "Courbe", icon: ChartLine },
-  { value: "bar", label: "Barres", icon: ChartColumn },
-  { value: "area", label: "Aires", icon: ChartArea },
-  { value: "donut", label: "Répartition des consultations par type d’acte", icon: ChartPie },
+const VIEWS: { value: ChartType; label: string; icon: typeof ChartBarIcon }[] = [
+  { value: "line", label: "Courbe", icon: ArrowTrendingUpIcon },
+  { value: "bar", label: "Barres", icon: ChartBarIcon },
+  { value: "area", label: "Aires", icon: PresentationChartLineIcon },
+  { value: "donut", label: "Répartition des consultations par type d’acte", icon: ChartPieIcon },
 ];
 
 /**
@@ -73,7 +73,7 @@ export function RevenueChartWidget({
                   onClick={() => setView(value)}
                   type="button"
                 >
-                  <Icon aria-hidden="true" className="size-4" strokeWidth={1.5} />
+                  <Icon aria-hidden="true" className="size-4" />
                 </button>
               ))}
             </div>

@@ -1,5 +1,6 @@
 import { useState, type ReactNode } from "react";
-import { ArrowRight, Bird, Cat, Dog, Horse, PawPrint, Rabbit, Turtle } from "@/lib/icons";
+import { ArrowRightIcon } from "@heroicons/react/16/solid";
+import { Bird, Cat, Dog, Horse, PawPrint, Rabbit, Turtle } from "@/lib/icons";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { formatNumber } from "@/utils/display-format";
 import { formatCentimes } from "../v2/model";
@@ -194,7 +195,7 @@ export function WidgetFooter({ children, action, onAction }: { children?: ReactN
       <p>{children}</p>
       {action && onAction ? (
         <button className="pillAction" onClick={onAction} type="button">
-          {action} <ArrowRight aria-hidden="true" size={13} />
+          {action} <ArrowRightIcon aria-hidden="true" className="size-3" />
         </button>
       ) : null}
     </div>
