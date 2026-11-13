@@ -24,6 +24,7 @@ import {
   CLINIC_TAB_OPEN_EVENT,
   CLINIC_TAB_PENDING_KEY,
 } from "@/modules/clinique/clinic-tab-events";
+import { type ClinicTab, isClinicTabVisible, useHospitalizationEnabled } from "@/modules/clinique/clinic-services";
 import { isTauriRuntime } from "@/services/browser-store";
 import type { View } from "@/types";
 
@@ -33,8 +34,6 @@ type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
   /** The signed-in account, shown as the sidebar footer's profile block. */
   account?: AccountMenuProps;
 };
-
-type ClinicTab = "soins" | "hospitalisation";
 
 /** Opens a section of Soins & hospitalisation, mounted or not. */
 function openClinicTab(tab: ClinicTab, currentView: View, onNavigate: (view: View) => void) {
@@ -107,14 +106,27 @@ export function AppSidebar({
   const operationsSection = navigationSections[2];
 
   const inClinic = currentView === "clinique" || currentView === "soins";
+  // A practice without hospitalization (Paramètres > Mon cabinet) does not see its entry. The same
+  // filter applies wherever the clinic entries are listed, sub-pages here or direct entries.
+  const hospitalizationEnabled = useHospitalizationEnabled();
+  const clinicEntries = (
+    [
+      { tab: "soins", title: "Soins" },
+      { tab: "hospitalisation", title: "Hospitalisation" },
+    ] satisfies { tab: ClinicTab; title: string }[]
+  ).filter((entry) => isClinicTabVisible(entry.tab, hospitalizationEnabled));
   const subPages: Partial<Record<View, { open: boolean; children: NavItem["children"] }>> = {
-    clinique: {
-      open: inClinic,
-      children: [
-        { title: "Soins", isActive: inClinic && clinicTab === "soins", onClick: () => openClinicTab("soins", currentView, onNavigate) },
-        { title: "Hospitalisation", isActive: inClinic && clinicTab === "hospitalisation", onClick: () => openClinicTab("hospitalisation", currentView, onNavigate) },
-      ],
-    },
+    // With Soins alone there is nothing to unfold: the entry is the page.
+    ...(clinicEntries.length > 1 && {
+      clinique: {
+        open: inClinic,
+        children: clinicEntries.map((entry) => ({
+          title: entry.title,
+          isActive: inClinic && clinicTab === entry.tab,
+          onClick: () => openClinicTab(entry.tab, currentView, onNavigate),
+        })),
+      },
+    }),
     finances: {
       open: currentView === "finances" || currentView === "finances_analytics",
       children: [
@@ -127,7 +139,7 @@ export function AppSidebar({
     const sub = subPages[item.view];
     const expanded = unfolded[item.view] ?? sub?.open ?? false;
     return {
-      title: item.view === "notes" ? "Documents" : t(item.labelKey),
+      title: item.view === "notes" ? "Documents" : item.view === "clinique" && !hospitalizationEnabled ? "Soins" : t(item.labelKey),
       icon: <SidebarIcon className="size-5!" view={item.view} />,
       isActive:
         currentView === item.view ||

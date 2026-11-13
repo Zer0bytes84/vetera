@@ -1,0 +1,10 @@
+["1 defaut : interrupteur coche","true","nav",["Tableau de bord","Patients","Agenda","Soins & hospitalisation","Flux","Rappels","Documents","Produits","Finances","Équipe"]]
+["2 page Soins, onglets",["Soins","Hospitalisation"],"nav",["Tableau de bord","Patients","Agenda","Soins & hospitalisation","Soins","Hospitalisation","Flux","Rappels","Documents","Produits","Finances","Équipe"]]
+["3 decoche (clic sur le libelle)","false","nav",["Tableau de bord","Patients","Agenda","Soins","Flux","Rappels","Documents","Produits","Finances","Équipe"],"stocke","false"]
+["4 page Soins sans hospitalisation, onglets",[],"fil","Soins\n : \nsoins planifiés"]
+["5 attaque : demande exterieure de l'onglet hospitalisation","sejours affiches ?",false]
+["6 palette : action Nouvelle hospitalisation presente ?",0]
+["7 apres rechargement, nav",[]]
+["8 recoche","true","nav",["Tableau de bord","Patients","Agenda","Soins & hospitalisation","Flux","Rappels","Documents","Produits","Finances","Équipe"]]
+["9 palette recochee",1]
+aucune erreur de console

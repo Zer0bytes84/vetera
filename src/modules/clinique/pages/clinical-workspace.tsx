@@ -9,6 +9,7 @@ import { MedicalRemindersModule } from "@/modules/patient-reminders/medical-remi
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useFocus, type FocusRequest } from "@/contexts/focus-provider";
 import type { View } from "@/types";
+import { resolveClinicTab, useHospitalizationEnabled } from "@/modules/clinique/clinic-services";
 import {
   CLINIC_TAB_EVENT,
   CLINIC_TAB_OPEN_EVENT,
@@ -39,9 +40,14 @@ export default function ClinicalWorkspace({
     window.addEventListener(CLINIC_TAB_OPEN_EVENT, open);
     return () => window.removeEventListener(CLINIC_TAB_OPEN_EVENT, open);
   }, []);
+  // A practice without hospitalization only has Soins here: no tab to choose, and a section asked
+  // for from outside falls back to Soins. A stay opened by its own link (a patient's record) still shows.
+  const hospitalizationEnabled = useHospitalizationEnabled();
+  const [openedStay, setOpenedStay] = useState(focus?.kind === "stay");
+  const shownTab = openedStay && tab === "hospitalisation" ? "hospitalisation" : resolveClinicTab(tab, hospitalizationEnabled);
   useEffect(() => {
-    window.dispatchEvent(new CustomEvent(CLINIC_TAB_EVENT, { detail: tab }));
-  }, [tab]);
+    window.dispatchEvent(new CustomEvent(CLINIC_TAB_EVENT, { detail: shownTab }));
+  }, [shownTab]);
   const [patientId, setPatientId] = useState<string | undefined>(() =>
     focus?.kind === "care_patient" ? focus.id : undefined,
   );
@@ -61,6 +67,7 @@ export default function ClinicalWorkspace({
   useEffect(() => {
     const handleFocus = (request: FocusRequest) => {
       if (request.kind === "stay") {
+        setOpenedStay(true);
         setTab("hospitalisation");
         setStayId(request.id);
         clearFocus();
@@ -68,6 +75,7 @@ export default function ClinicalWorkspace({
       }
       if (request.kind !== "care_patient" && request.kind !== "care_task")
         return;
+      setOpenedStay(false);
       setTab("soins");
       setPatientId(request.kind === "care_patient" ? request.id : undefined);
       setTaskId(request.kind === "care_task" ? request.id : undefined);
@@ -115,16 +123,18 @@ export default function ClinicalWorkspace({
     ),
     [overdueCount, overdueLabel],
   );
-  const subnav = useMemo(() => ({ node: tabsList, claim }), [tabsList, claim]);
+  // One section, no tabs: the page header keeps its place, without a switch that leads nowhere.
+  const sectionTabs = hospitalizationEnabled ? tabsList : null;
+  const subnav = useMemo(() => ({ node: sectionTabs, claim }), [sectionTabs, claim]);
   return (
     <Tabs
-      value={tab}
-      onValueChange={setTab}
+      value={shownTab}
+      onValueChange={(next) => { setOpenedStay(false); setTab(next); }}
       className="clinical-workspace clinical-workspace-navigation min-w-0 gap-0"
     >
       <PageSubnavContext.Provider value={subnav}>
-        {claims === 0 && <div className="px-4 pt-4 lg:px-6">{tabsList}</div>}
-        {tab === "hospitalisation" ? (
+        {claims === 0 && sectionTabs && <div className="px-4 pt-4 lg:px-6">{sectionTabs}</div>}
+        {shownTab === "hospitalisation" ? (
           <StaysPage key={stayId || "all"} initialStayId={stayId} />
         ) : (
           <CarePage

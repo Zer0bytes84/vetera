@@ -1,4 +1,4 @@
-import { Building2, FileText } from "lucide-react";
+import { BedDouble, Building2, FileText } from "lucide-react";
 import { ErrorState } from "@/design-system/patterns/error-state";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -8,6 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Segmented } from "@/components/ui/segmented-control";
 import { Textarea } from "@/components/ui/textarea";
 import { Spinner } from "@/components/ui/spinner";
+import { Switch } from "@/components/ui/switch";
+import { saveHospitalizationEnabled, useHospitalizationEnabled } from "@/modules/clinique/clinic-services";
 import {
   SettingsBody,
   SettingsFooter,
@@ -121,7 +123,37 @@ export function ClinicIdentityPanel() {
           <Button className="rounded-full" disabled={!dirty || saving || uploading || !settings.name.trim()} onClick={() => void save("Identité du cabinet enregistrée.")}>{saving ? "Enregistrement…" : "Enregistrer"}</Button>
         </SettingsFooter>
       </SettingsSection>
+      <ClinicServicesSection />
     </SettingsStack>
+  );
+}
+
+/** What the practice offers: a simple practice only sees what it uses. Saved at once, like every switch. */
+function ClinicServicesSection() {
+  const hospitalization = useHospitalizationEnabled();
+  const [saving, setSaving] = useState(false);
+  return (
+    <SettingsSection icon={BedDouble} subtitle="L’application n’affiche que ce que votre cabinet utilise." title="Services du cabinet">
+      <SettingsRow
+        detail="Décoché, l’hospitalisation disparaît de la navigation et de la page Soins. Les séjours déjà enregistrés sont conservés."
+        detailId="clinic-hospitalization-detail"
+        htmlFor="clinic-hospitalization"
+        title="Mon cabinet propose l’hospitalisation"
+      >
+        <Switch
+          aria-describedby="clinic-hospitalization-detail"
+          checked={hospitalization}
+          disabled={saving}
+          id="clinic-hospitalization"
+          onCheckedChange={async (next) => {
+            setSaving(true);
+            try { await saveHospitalizationEnabled(next); }
+            catch { toast.error("Le réglage n’a pas pu être enregistré. Réessayez."); }
+            finally { setSaving(false); }
+          }}
+        />
+      </SettingsRow>
+    </SettingsSection>
   );
 }
 

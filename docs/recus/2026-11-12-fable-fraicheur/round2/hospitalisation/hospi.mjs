@@ -1,0 +1,25 @@
+// Parcours au clic du reglage « Mon cabinet propose l'hospitalisation ». usage: node hospi.mjs <url> <dossier> [mode]
+import { launch, open } from "./lib/setup.mjs"; const S = new URL(".", import.meta.url).pathname; const [URL_, OUT, MODE = "light"] = process.argv.slice(2);
+const b = await launch(); const p = await open(b, { mode: MODE, base: S + "base.json" }); await p.go(URL_, "#/parametres"); const log = [];
+const side = p.locator(".app-sidebar, [data-slot='sidebar']").first();
+const nav = async () => (await side.locator("[data-slot='sidebar-menu-button'], [data-slot='sidebar-menu-sub-button']").allInnerTexts()).map((t) => t.trim()).filter(Boolean);
+const shot = async (n) => { await p.mouse.move(700, 5); await p.waitForTimeout(350); await p.screenshot({ path: `${OUT}/${MODE}-${n}.png` }); };
+await p.getByText("Mon cabinet", { exact: true }).first().click(); await p.settle(1500);
+const sw = p.getByRole("switch", { name: /hospitalisation/ }); await sw.scrollIntoViewIfNeeded();
+log.push(["1 defaut : interrupteur coche", await sw.getAttribute("aria-checked"), "nav", await nav()]); await shot("1-reglage-coche");
+await side.getByText("Soins & hospitalisation", { exact: true }).click(); await p.settle(2000);
+log.push(["2 page Soins, onglets", await p.getByRole("tab").allInnerTexts(), "nav", await nav()]); await shot("2-soins-avec-hospitalisation");
+await p.evaluate(() => { location.hash = "#/parametres"; }); await p.settle(1500); await p.getByText("Mon cabinet", { exact: true }).first().click(); await p.settle(1200);
+await p.getByText("Mon cabinet propose l’hospitalisation").click(); await p.waitForTimeout(800);
+log.push(["3 decoche (clic sur le libelle)", await sw.getAttribute("aria-checked"), "nav", await nav(), "stocke", await p.evaluate(() => JSON.parse(localStorage.getItem("vetera.browser-db.v1")).tables.app_settings.find((s) => s.key === "clinic.hospitalization_enabled")?.value)]); await sw.scrollIntoViewIfNeeded(); await shot("3-reglage-decoche");
+await side.getByText("Soins", { exact: true }).click(); await p.settle(2000);
+log.push(["4 page Soins sans hospitalisation, onglets", await p.getByRole("tab").allInnerTexts(), "fil", await p.locator(".shell-crumb").innerText()]); await shot("4-soins-sans-hospitalisation");
+await p.evaluate(() => window.dispatchEvent(new CustomEvent("vetera:open-clinic-tab", { detail: "hospitalisation" }))); await p.waitForTimeout(600);
+log.push(["5 attaque : demande exterieure de l'onglet hospitalisation", "sejours affiches ?", await p.getByText(/Séjours|séjour/).count() > 0 && await p.locator(".stay-list, .stay-location-grid").count() > 0]);
+await p.keyboard.press("Control+k"); await p.waitForTimeout(700); await p.keyboard.type("hospitalisation"); await p.waitForTimeout(700);
+log.push(["6 palette : action Nouvelle hospitalisation presente ?", await p.locator("[cmdk-item]", { hasText: "Nouvelle hospitalisation" }).count()]); await shot("5-palette-sans-hospitalisation"); await p.keyboard.press("Escape");
+await p.reload({ waitUntil: "domcontentloaded" }); await p.settle(2500); log.push(["7 apres rechargement, nav", await nav()]);
+await p.evaluate(() => { location.hash = "#/parametres"; }); await p.settle(1500); await p.getByText("Mon cabinet", { exact: true }).first().click(); await p.settle(1200); await sw.click(); await p.waitForTimeout(800);
+log.push(["8 recoche", await sw.getAttribute("aria-checked"), "nav", await nav()]);
+await p.keyboard.press("Control+k"); await p.waitForTimeout(700); await p.keyboard.type("hospitalisation"); await p.waitForTimeout(700); log.push(["9 palette recochee", await p.locator("[cmdk-item]", { hasText: "Nouvelle hospitalisation" }).count()]);
+for (const l of log) console.log(JSON.stringify(l)); console.log(p.errors.join("\n") || "aucune erreur de console"); await b.close();

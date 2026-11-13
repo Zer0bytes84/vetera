@@ -1,6 +1,7 @@
 "use client";
 /* eslint-disable react-hooks/purity */
 
+import { useHospitalizationEnabled } from "@/modules/clinique/clinic-services";
 import {
   BookOpenTextIcon,
   Calendar01Icon,
@@ -284,6 +285,8 @@ export default function CommandPalette({
   onNavigateToPatient,
 }: CommandPaletteProps) {
   const { t, i18n } = useTranslation();
+  // A practice without hospitalization (Paramètres > Mon cabinet) is not offered the action.
+  const hospitalizationEnabled = useHospitalizationEnabled();
   const lang = i18n.language?.slice(0, 2) ?? "fr";
   const dateLocale = localeByLanguage[lang] ?? fr;
   const { requestFocus } = useFocus();
@@ -1548,7 +1551,7 @@ export default function CommandPalette({
                   </span>
                 </CommandItem>
 
-                <CommandItem
+                {hospitalizationEnabled && (<CommandItem
                   className={commandItemClassName}
                   keywords={[
                     t("commandPalette.action.newHospitalization", { defaultValue: "Nouvelle hospitalisation" }),
@@ -1571,7 +1574,7 @@ export default function CommandPalette({
                   <span className="ml-1 font-medium text-foreground text-sm">
                     {t("commandPalette.action.newHospitalization", { defaultValue: "Nouvelle hospitalisation" })}
                   </span>
-                </CommandItem>
+                </CommandItem>)}
 
                 <CommandItem
                   className={commandItemClassName}
