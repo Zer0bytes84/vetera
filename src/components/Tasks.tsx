@@ -21,16 +21,7 @@ import { announcePatientRemindersChanged } from "@/modules/patient-reminders/use
 import { PatientRemindersContent } from "@/modules/patient-reminders/patient-reminders-panel";
 import { ListSearch } from "@/components/ui/list-controls";
 import { formatDisplayText, formatNumber } from "@/utils/display-format";
-import {
-  Check,
-  CheckCircle2,
-  ChevronDown,
-  Pencil,
-  Plus,
-  RotateCcw,
-  Trash2,
-  UserRound,
-} from "lucide-react";
+import { ArrowUturnLeftIcon, CheckIcon, ChevronDownIcon, PencilIcon, TrashIcon, UserIcon } from "@heroicons/react/16/solid";
 import type React from "react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -749,7 +740,7 @@ const Tasks: React.FC = () => {
               className="h-9 rounded-full px-4"
               onClick={openMedicalDraft}
             >
-              <Plus className="size-4" />
+              <PlusIcon className="size-4" />
               Rappel médical
             </Button>
         }
@@ -896,7 +887,7 @@ const Tasks: React.FC = () => {
             variant="ghost"
           >
             Détails
-            <ChevronDown
+            <ChevronDownIcon
               className={cn(
                 "size-4 transition-transform",
                 showDetails && "rotate-180",
@@ -908,7 +899,7 @@ const Tasks: React.FC = () => {
             disabled={saving || !draft.title.trim()}
             type="submit"
           >
-            <Plus className="size-4" />
+            <PlusIcon className="size-4" />
             Ajouter
           </Button>
         </div>
@@ -1211,7 +1202,7 @@ const Tasks: React.FC = () => {
             size="sm"
             type="button"
           >
-            <Check className="size-4" />
+            <CheckIcon className="size-4" />
             Marquer terminés
           </Button>
           <Button
@@ -1416,7 +1407,7 @@ function ManualReminderRow({
             onClick={onSave}
             type="button"
           >
-            <Check className="size-4" />
+            <CheckIcon className="size-4" />
             Enregistrer
           </Button>
         </div>
@@ -1460,9 +1451,9 @@ function ManualReminderRow({
         type="button"
       >
         {completed ? (
-          <CheckCircle2 className="size-5" />
+          <CheckCircleIcon className="size-5" />
         ) : (
-          <Check className="size-4" />
+          <CheckIcon className="size-4" />
         )}
       </button>
       <div className="min-w-0 flex-1">
@@ -1495,7 +1486,7 @@ function ManualReminderRow({
           </span>
           {item.patient && (
             <span className="inline-flex items-center gap-1.5">
-              <UserRound className="size-3.5" />
+              <UserIcon className="size-3.5" />
               {item.patient.name} · {item.patient.species}
             </span>
           )}
@@ -1517,7 +1508,7 @@ function ManualReminderRow({
           </Button>
         )}
         <Button onClick={onEdit} size="sm" type="button" variant="ghost">
-          <Pencil className="size-4" />
+          <PencilIcon className="size-4" />
           Modifier
         </Button>
         <Button
@@ -1527,7 +1518,7 @@ function ManualReminderRow({
           type="button"
           variant="ghost"
         >
-          <Trash2 className="size-4" />
+          <TrashIcon className="size-4" />
           {pendingDelete ? "Confirmer" : "Supprimer"}
         </Button>
       </div>
@@ -1573,7 +1564,7 @@ function AutomaticReminderRow({
           </span>
           {item.patient && (
             <span className="inline-flex items-center gap-1.5">
-              <UserRound className="size-3.5" />
+              <UserIcon className="size-3.5" />
               {item.patient.name} · {item.patient.species}
             </span>
           )}
@@ -1583,7 +1574,7 @@ function AutomaticReminderRow({
       {!completed && (
         <div className="flex flex-wrap gap-1">
           <Button onClick={onSnooze} size="sm" type="button" variant="ghost">
-            <RotateCcw className="size-4" />
+            <ArrowUturnLeftIcon className="size-4" />
             Dans 1 h
           </Button>
           <Button onClick={onDismiss} size="sm" type="button" variant="ghost">
