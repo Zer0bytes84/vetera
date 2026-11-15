@@ -16,6 +16,8 @@ export default defineConfig([
     ".playwright-mcp",
     ".next",
     "node_modules",
+    // Les reçus archivés (scripts du pilote de test, mesures) sont des preuves, pas du code applicatif : on ne les réécrit pas.
+    "docs",
   ]),
   {
     files: ["**/*.{ts,tsx}"],
