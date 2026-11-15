@@ -13,6 +13,10 @@ import { DEFAULT_PATIENT_RECORD_OPTIONS, type PatientRecordOptions, type Patient
 import "./patient-record-export.css";
 import { DatePicker } from "@/components/ui/date-picker";
 
+const loadPatientRecordService = () => import("./patient-record-service");
+const loadPatientRecordPdf = () => import("./patient-record-pdf");
+const loadPatientRecordSave = () => import("./patient-record-save");
+
 const SECTIONS: Array<{ id: keyof PatientRecordOptions["sections"]; label: string; description: string }> = [
   { id: "identity", label: "Identité du patient", description: "Identité, poids enregistré et coordonnées du propriétaire." },
   { id: "consultations", label: "Consultations", description: "Motifs, notes cliniques, diagnostics et traitements consignés." },
@@ -62,7 +66,7 @@ export function PatientRecordExportDialog({ patientId, patientName, onClose }: {
     setPhase("generating"); setProgress(null); setArtifact(null);
     try {
       const [{ loadPatientRecord }, { buildPatientRecordPdf }] = await Promise.all([
-        import("./patient-record-service"), import("./patient-record-pdf"),
+        loadPatientRecordService(), loadPatientRecordPdf(),
       ]);
       if (controller.signal.aborted) return;
       setProgress({ stage: "preparing", current: 0, pages: 0, label: "Lecture du dossier patient…" });
@@ -84,7 +88,7 @@ export function PatientRecordExportDialog({ patientId, patientName, onClose }: {
     if (!artifact) return;
     setSaving(true); setError("");
     try {
-      const { savePatientRecordPdf } = await import("./patient-record-save");
+      const { savePatientRecordPdf } = await loadPatientRecordSave();
       const result = await savePatientRecordPdf(artifact);
       if (result) toast.success(result.downloaded ? "Téléchargement du dossier PDF lancé." : "Dossier PDF enregistré.", { description: result.path, duration: 8000 });
     } catch (cause) { setError(userMessage(cause, "Le PDF n’a pas pu être enregistré. Vérifiez l’emplacement et l’espace disponible, puis réessayez.")); }
@@ -95,7 +99,7 @@ export function PatientRecordExportDialog({ patientId, patientName, onClose }: {
     const controller = new AbortController(); print.current = controller;
     setPrinting(true); setError("");
     try {
-      const { printPatientRecordPdf } = await import("./patient-record-save");
+      const { printPatientRecordPdf } = await loadPatientRecordSave();
       await printPatientRecordPdf(artifact, controller.signal);
     } catch (cause) { if (!controller.signal.aborted) setError(userMessage(cause, "L’impression du dossier n’a pas pu être préparée. Réessayez ou enregistrez le PDF.")); }
     finally { if (!controller.signal.aborted) setPrinting(false); }

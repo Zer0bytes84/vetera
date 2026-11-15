@@ -14,6 +14,9 @@ import { exportManagedDocument, patientDocumentPdf, printManagedDocument } from 
 import { DocumentPaperPreview } from "./document-paper-preview";
 import "./document-preview.css";
 
+const loadTauriAppsPluginDialog = () => import("@tauri-apps/plugin-dialog");
+const loadTauriAppsPluginFs = () => import("@tauri-apps/plugin-fs");
+
 const eventLabels: Record<string, string> = { creation: "Création", modification: "Modification", finalisation: "Finalisation", annulation: "Annulation", nouvelle_version: "Nouvelle version", import: "Import d’une pièce" };
 
 export function DocumentPreviewDialog({ documentId, onClose, onChanged }: {
@@ -59,10 +62,10 @@ export function DocumentPreviewDialog({ documentId, onClose, onChanged }: {
     const file = document.attachment;
     const data = Uint8Array.from(atob(file.dataUrl.split(",")[1]), (char) => char.charCodeAt(0));
     if (isTauriRuntime()) {
-      const { save } = await import("@tauri-apps/plugin-dialog");
+      const { save } = await loadTauriAppsPluginDialog();
       const path = await save({ title: "Enregistrer la pièce jointe", defaultPath: file.name });
       if (!path) return;
-      const { writeFile } = await import("@tauri-apps/plugin-fs"); await writeFile(path, data);
+      const { writeFile } = await loadTauriAppsPluginFs(); await writeFile(path, data);
     } else {
       const url = URL.createObjectURL(new Blob([data.buffer], { type: file.mimeType }));
       const link = window.document.createElement("a"); link.href = url; link.download = file.name; link.click();

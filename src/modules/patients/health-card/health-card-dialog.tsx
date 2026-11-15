@@ -22,6 +22,9 @@ import type { PatientRecordPdf } from "../export/patient-record-types";
 import "../export/patient-record-export.css";
 import { buildHealthCard } from "./health-card-data";
 
+const loadHealthCardPdf = () => import("./health-card-pdf");
+const loadExportPatientRecordSave = () => import("../export/patient-record-save");
+
 function message(error: unknown, fallback: string): string {
   return error instanceof Error && /^(?:L[’']|Le |La |Les |Une |Un |Votre |Connectez|Impossible )/u.test(error.message) ? error.message : fallback;
 }
@@ -74,7 +77,7 @@ export function HealthCardDialog({ onClose, owner, patient }: {
         if (!currentUser?.id) throw new Error("Connectez-vous pour préparer le carnet de santé.");
         let clinic: InvoiceSettings = DEFAULT_INVOICE_SETTINGS;
         try { clinic = await getInvoiceSettings(); } catch { /* L'en-tête du cabinet est facultatif. */ }
-        const { buildHealthCardPdf } = await import("./health-card-pdf");
+        const { buildHealthCardPdf } = await loadHealthCardPdf();
         const pdf = await buildHealthCardPdf(buildHealthCard({ ...input, now: new Date() }), {
           clinic, patientId: patient.id, requestedBy: currentUser.id,
         });
@@ -97,7 +100,7 @@ export function HealthCardDialog({ onClose, owner, patient }: {
     if (!artifact) return;
     setSaving(true); setError("");
     try {
-      const { savePatientRecordPdf } = await import("../export/patient-record-save");
+      const { savePatientRecordPdf } = await loadExportPatientRecordSave();
       const result = await savePatientRecordPdf(artifact, { title: "Enregistrer le carnet de santé", filterName: "Carnet de santé PDF" });
       if (result) toast.success(result.downloaded ? "Téléchargement du carnet de santé lancé." : "Carnet de santé enregistré.", { description: result.path, duration: 8000 });
     } catch (cause) { setError(message(cause, "Le PDF n’a pas pu être enregistré. Vérifiez l’emplacement choisi, puis réessayez.")); }
@@ -109,7 +112,7 @@ export function HealthCardDialog({ onClose, owner, patient }: {
     const controller = new AbortController(); print.current = controller;
     setPrinting(true); setError("");
     try {
-      const { printPatientRecordPdf } = await import("../export/patient-record-save");
+      const { printPatientRecordPdf } = await loadExportPatientRecordSave();
       await printPatientRecordPdf(artifact, controller.signal);
     } catch (cause) { if (!controller.signal.aborted) setError(message(cause, "L’impression n’a pas pu être préparée. Réessayez ou enregistrez le PDF.")); }
     finally { if (!controller.signal.aborted) setPrinting(false); }

@@ -56,6 +56,8 @@ import type {
   WeightEntry,
 } from "@/types/db";
 
+const loadServicesBillingService = () => import("@/services/billingService");
+
 type TimelineKind =
   "consultation" | "note" | "vaccination" | "weight" | "piece";
 
@@ -377,7 +379,7 @@ function usePatientInvoices(patientId: string) {
   useEffect(() => {
     if (!isTauriRuntime()) return;
     let cancelled = false;
-    void import("@/services/billingService")
+    void loadServicesBillingService()
       .then(({ listInvoices }) => listInvoices())
       .then((rows) => {
         if (!cancelled)

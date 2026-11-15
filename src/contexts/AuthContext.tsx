@@ -11,6 +11,8 @@ import { writeCachedProfile } from "@/lib/profile-cache";
 import { bootstrapScheduler, stopScheduler } from "@/services/backupScheduler";
 import * as AuthService from "@/services/sqlite/auth";
 
+const loadServicesAuditService = () => import("@/services/auditService");
+
 interface AuthUser {
   avatarUrl?: string | null;
   displayName: string | null;
@@ -225,7 +227,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       setError(null);
       // Audit log: login (ne doit jamais casser la session)
       try {
-        const { auditLogin } = await import("@/services/auditService");
+        const { auditLogin } = await loadServicesAuditService();
         await auditLogin({
           id: user.id,
           displayName: user.displayName,
@@ -274,7 +276,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     setCurrentUser(null);
     if (current) {
       try {
-        const { auditLogout } = await import("@/services/auditService");
+        const { auditLogout } = await loadServicesAuditService();
         await auditLogout({
           id: current.id,
           displayName: current.displayName,

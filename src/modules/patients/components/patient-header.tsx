@@ -16,6 +16,8 @@ import { formatDinars, formatPhone } from "@/utils/display-format";
 import { AlertTriangle } from "@/lib/icons";
 import { isClinicalSignal } from "./medical-record-summary";
 
+const loadServicesBillingService = () => import("@/services/billingService");
+
 
 /**
  * What the owner still owes, over every issued invoice in their name (all
@@ -41,7 +43,7 @@ function useOwnerBalance(ownerId?: string) {
   useEffect(() => {
     if (!ownerId || !isTauriRuntime()) return;
     let cancelled = false;
-    void import("@/services/billingService")
+    void loadServicesBillingService()
       .then(({ listInvoices }) => listInvoices())
       .then((invoices) => {
         if (cancelled) return;

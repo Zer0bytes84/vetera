@@ -4,6 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import type { PatientRecordPdf } from "./patient-record-types";
 
+const loadPdfjsDist = () => import("pdfjs-dist");
+const loadPdfjsDistBuildPdfWorkerMinMjs = () => import("pdfjs-dist/build/pdf.worker.min.mjs?url");
+
 /** Render only the requested page, and never transfer the saved artifact buffer. */
 export function PatientRecordPreview({ artifact, page }: { artifact: PatientRecordPdf; page: number }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -18,8 +21,8 @@ export function PatientRecordPreview({ artifact, page }: { artifact: PatientReco
     void (async () => {
       setPdf(null); setRendering(true); setError("");
       try {
-        const pdfjs = await import("pdfjs-dist");
-        const worker = await import("pdfjs-dist/build/pdf.worker.min.mjs?url");
+        const pdfjs = await loadPdfjsDist();
+        const worker = await loadPdfjsDistBuildPdfWorkerMinMjs();
         if (cancelled) return;
         pdfjs.GlobalWorkerOptions.workerSrc = worker.default;
         const root = new URL(import.meta.env.BASE_URL + "local-ai-runtime/pdf/", window.location.href).href;

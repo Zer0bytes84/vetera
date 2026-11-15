@@ -6,6 +6,9 @@ import { buildInvoicePdf, invoicePdfFileName, type InvoicePdfData, type InvoiceS
 import { isTestDataFolder } from "@/lib/test-data-folder";
 import { savePdf } from "@/lib/save-pdf";
 
+const loadPdfjsDist = () => import("pdfjs-dist");
+const loadPdfjsDistBuildPdfWorkerMinMjs = () => import("pdfjs-dist/build/pdf.worker.min.mjs?url");
+
 export function InvoicePdfPreview({ data, settings, onClose, sample = false }: {
   data: InvoicePdfData; settings: InvoiceSettings; onClose: () => void; sample?: boolean;
 }) {
@@ -28,8 +31,8 @@ export function InvoicePdfPreview({ data, settings, onClose, sample = false }: {
     setRendering(true); setRenderError("");
     void (async () => {
       try {
-        const pdfjs = await import("pdfjs-dist");
-        const worker = await import("pdfjs-dist/build/pdf.worker.min.mjs?url");
+        const pdfjs = await loadPdfjsDist();
+        const worker = await loadPdfjsDistBuildPdfWorkerMinMjs();
         if (cancelled) return;
         pdfjs.GlobalWorkerOptions.workerSrc = worker.default;
         const task = pdfjs.getDocument({ data: new Uint8Array(result.doc!.output("arraybuffer")), useSystemFonts: true });
