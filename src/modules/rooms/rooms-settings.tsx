@@ -9,6 +9,7 @@ import { isTauriRuntime } from "@/services/browser-store";
 import { roomsService } from "./service";
 import { ROOM_NAME_MAX_LENGTH, type Room } from "./store";
 import { announceRoomsChanged, refreshRooms, useRooms } from "./use-rooms";
+import { guard } from "@/lib/guard";
 
 const message = (error: unknown) =>
   error instanceof Error ? error.message : typeof error === "string" ? error : "La salle n'a pas pu être enregistrée.";
@@ -117,16 +118,19 @@ export function RoomsSettings() {
   async function run(action: () => Promise<unknown>, done?: string) {
     setBusy(true);
     setProblem(null);
-    try {
+    await guard(async () => {
       await action();
       await refreshRooms();
       announceRoomsChanged();
       if (done) toast.success(done);
-    } catch (e) {
-      setProblem(message(e));
-    } finally {
-      setBusy(false);
-    }
+    }, {
+      recover: (e) => {
+        setProblem(message(e));
+      },
+      cleanup: () => {
+        setBusy(false);
+      },
+    });
   }
 
   const add = (event: FormEvent) => {

@@ -39,6 +39,7 @@ import {
   usePatientReminders,
 } from "./use-patient-reminders";
 import { DatePicker } from "@/components/ui/date-picker";
+import { guard } from "@/lib/guard";
 
 const field = "min-h-11 rounded-xl border border-border bg-background px-3 t-13";
 
@@ -131,21 +132,24 @@ export function PatientRemindersContent({
     }
     setBusy(true);
     setNotice(null);
-    try {
+    await guard(async () => {
       await operation();
       announcePatientRemindersChanged();
       await refresh();
       setAction(null);
       setEditingType(null);
-    } catch (caught) {
-      setNotice(
-        caught instanceof Error
-          ? caught.message
-          : "L’action n’a pas pu être enregistrée."
-      );
-    } finally {
-      setBusy(false);
-    }
+    }, {
+      recover: (caught) => {
+        setNotice(
+          caught instanceof Error
+            ? caught.message
+            : "L’action n’a pas pu être enregistrée."
+        );
+      },
+      cleanup: () => {
+        setBusy(false);
+      },
+    });
   }
 
   function download() {

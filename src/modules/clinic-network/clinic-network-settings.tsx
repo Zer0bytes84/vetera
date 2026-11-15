@@ -19,6 +19,7 @@ import {
   type NetworkStatus,
   type RemoteHostInfo,
 } from "./clinic-network";
+import { guard } from "@/lib/guard";
 
 const MODES: { id: NetworkMode; title: string; description: string }[] = [
   {
@@ -107,13 +108,16 @@ export function ClinicNetworkSettings() {
   async function run(label: string, action: () => Promise<void>) {
     setBusy(label);
     setError(null);
-    try {
+    await guard(async () => {
       await action();
-    } catch (e) {
-      setError(networkErrorMessage(e));
-    } finally {
-      setBusy(null);
-    }
+    }, {
+      recover: (e) => {
+        setError(networkErrorMessage(e));
+      },
+      cleanup: () => {
+        setBusy(null);
+      },
+    });
   }
 
   const share = () =>

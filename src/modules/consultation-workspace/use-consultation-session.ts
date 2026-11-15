@@ -23,6 +23,7 @@ import { announceMedicalActRecorded } from "@/modules/patient-reminders/medical-
 import { useFlowUndo } from "@/modules/visit-flow/use-flow-undo";
 import { useAudit } from "@/services/use-audit";
 import type { Appointment, ConsultationDocument, Patient } from "@/types/db";
+import { guard } from "@/lib/guard";
 
 /**
  * The consultation workspace: the open consultation, its documents and
@@ -121,7 +122,7 @@ export function useConsultationSession({
       return;
     }
 
-    try {
+    await guard(async () => {
       await updateAppointment(activeConsultation.id, payload.appointmentPatch);
       await updatePatient(activeConsultation.patientId, payload.patientPatch);
       onMove?.("in_progress", activeConsultation.id);
@@ -138,13 +139,15 @@ export function useConsultationSession({
       if (!options?.silent) {
         toast.success("Consultation mise à jour.");
       }
-    } catch (error) {
-      console.error(error);
-      if (!options?.silent) {
-        toast.error("Impossible d’enregistrer la consultation.");
-      }
-      throw error;
-    }
+    }, {
+      recover: (error) => {
+        console.error(error);
+        if (!options?.silent) {
+          toast.error("Impossible d’enregistrer la consultation.");
+        }
+        throw error;
+      },
+    });
   };
 
   const handleConsultationComplete = async (
@@ -163,7 +166,7 @@ export function useConsultationSession({
       return;
     }
 
-    try {
+    await guard(async () => {
       const finalAppointmentPatch: Partial<Appointment> = {
         ...payload.appointmentPatch,
       };
@@ -214,10 +217,12 @@ export function useConsultationSession({
           note: updatedAppointment.reason || updatedAppointment.title,
         });
       }
-    } catch (error) {
-      console.error(error);
-      toast.error("Impossible de clôturer la consultation.");
-    }
+    }, {
+      recover: (error) => {
+        console.error(error);
+        toast.error("Impossible de clôturer la consultation.");
+      },
+    });
   };
 
   const handleConsultationDocumentUpload = async (

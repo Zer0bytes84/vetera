@@ -13,6 +13,7 @@ import { StockError } from "@/domain/stock";
 import { isTauriRuntime } from "@/services/browser-store";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCreationRequest } from "@/modules/shell/model/creation-request";
+import { guard } from "@/lib/guard";
 
 export function useStockPageModel() {
   const {currentUser} = useAuth();
@@ -130,7 +131,7 @@ export function useStockPageModel() {
 
     setIsSubmitting(true);
 
-    try {
+    await guard(async () => {
       const productData = {
         name: formData.name,
         category: formData.category || "Autre",
@@ -218,12 +219,15 @@ export function useStockPageModel() {
         purchasePriceAmount: 0,
         salePriceAmount: 0,
       });
-    } catch (e) {
-      console.error("Error saving product:", e);
-      toast.error(e instanceof StockError ? e.message : "Erreur lors de l'enregistrement. Veuillez réessayer.");
-    } finally {
-      setIsSubmitting(false);
-    }
+    }, {
+      recover: (e) => {
+        console.error("Error saving product:", e);
+        toast.error(e instanceof StockError ? e.message : "Erreur lors de l'enregistrement. Veuillez réessayer.");
+      },
+      cleanup: () => {
+        setIsSubmitting(false);
+      },
+    });
   };
 
   const handleRestockSubmit = async () => {
@@ -232,7 +236,7 @@ export function useStockPageModel() {
     }
     setIsSubmitting(true);
 
-    try {
+    await guard(async () => {
       await restockProduct({
         productId: selectedProduct.id,
         quantity: restockQty,
@@ -243,12 +247,15 @@ export function useStockPageModel() {
 
       setIsRestockModalOpen(false);
       toast.success(`Stock de ${selectedProduct.name} mis à jour.`);
-    } catch (e) {
-      console.error(e);
-      toast.error("La mise à jour du stock a échoué. Réessayez.");
-    } finally {
-      setIsSubmitting(false);
-    }
+    }, {
+      recover: (e) => {
+        console.error(e);
+        toast.error("La mise à jour du stock a échoué. Réessayez.");
+      },
+      cleanup: () => {
+        setIsSubmitting(false);
+      },
+    });
   };
 
   const autoFillProduct = (template: (typeof COMMON_VET_PRODUCTS)[0]) => {

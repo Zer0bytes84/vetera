@@ -15,6 +15,7 @@ import { useFlowUndo } from "@/modules/visit-flow/use-flow-undo";
 import { roomsService } from "@/modules/rooms/service";
 import type { Appointment, Patient } from "@/types/db";
 import { boardMove, buildFlowBoard, isSameLocalDay, walkInFor, type BoardLane, type FlowCard } from "./model";
+import { guard } from "@/lib/guard";
 
 const REFRESH_MS = 30_000;
 const OPEN_STATUSES = new Set(["arrived", "waiting", "in_progress"]);
@@ -47,15 +48,17 @@ export function useFlowBoard(vetId: string, query = "") {
   const refresh = useCallback(async () => {
     if (!isTauriRuntime()) return;
     const current = ++request.current;
-    try {
+    await guard(async () => {
       const next = await visitFlowService.boardStates(idsKey ? idsKey.split(",") : []);
       if (current === request.current) {
         setStates(next);
         setStatesError(null);
       }
-    } catch {
-      if (current === request.current) setStatesError("Le tableau n'a pas pu lire les étapes des visites.");
-    }
+    }, {
+      recover: () => {
+        if (current === request.current) setStatesError("Le tableau n'a pas pu lire les étapes des visites.");
+      },
+    });
   }, [idsKey]);
 
   // Appointment changes (status, new booking) arrive through the shared cache.
@@ -112,7 +115,7 @@ export function useFlowBoard(vetId: string, query = "") {
       if (busyId) return;
       setBusyId(card.appointmentId);
       const label = to === "planned" ? "" : VISIT_FLOW_STAGE_LABELS[to];
-      try {
+      await guard(async () => {
         if (outcome.kind === "status") {
           await appointments.transitionStatus(card.appointmentId, outcome.status);
         } else {
@@ -120,12 +123,15 @@ export function useFlowBoard(vetId: string, query = "") {
         }
         void flowUndo.confirm(card.appointmentId, `${card.patientName} : ${label}`);
         await refresh();
-      } catch (error) {
-        toast.error(error instanceof Error ? error.message : "Le patient n'a pas pu être déplacé.");
-        await refresh();
-      } finally {
-        setBusyId(null);
-      }
+      }, {
+        recover: async (error) => {
+          toast.error(error instanceof Error ? error.message : "Le patient n'a pas pu être déplacé.");
+          await refresh();
+        },
+        cleanup: () => {
+          setBusyId(null);
+        },
+      });
     },
     [appointments, busyId, currentUser?.id, flowUndo, refresh]
   );

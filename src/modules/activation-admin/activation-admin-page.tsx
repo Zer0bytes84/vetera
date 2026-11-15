@@ -91,6 +91,7 @@ import {
   verifyAdminToken,
 } from "@/services/licenseActivationService";
 import { DatePicker } from "@/components/ui/date-picker";
+import { guard } from "@/lib/guard";
 
 type ServerStatus = "checking" | "online" | "offline";
 type StatusFilter = "all" | "active" | "expiring" | "expired" | "revoked";
@@ -974,7 +975,7 @@ export default function ActivationAdminPage() {
       }
 
       setIsLoadingLicenses(true);
-      try {
+      await guard(async () => {
         const next = await listActivationLicenses(token);
         setLicenses(next);
         setLicenseSyncMessage(null);
@@ -982,19 +983,22 @@ export default function ActivationAdminPage() {
         if (!silent) {
           toast.success(`${next.length} licence(s) synchronisée(s).`);
         }
-      } catch (err) {
-        setLicenseSyncMessage(err instanceof Error ? err.message : "La synchronisation a échoué. Réessayez.");
-        setServerStatus("offline");
-        if (!silent) {
-          const msg =
-            err instanceof Error
-              ? err.message
-              : "Impossible de joindre le serveur d'activation.";
-          toast.error(msg);
-        }
-      } finally {
-        setIsLoadingLicenses(false);
-      }
+      }, {
+        recover: (err) => {
+          setLicenseSyncMessage(err instanceof Error ? err.message : "La synchronisation a échoué. Réessayez.");
+          setServerStatus("offline");
+          if (!silent) {
+            const msg =
+              err instanceof Error
+                ? err.message
+                : "Impossible de joindre le serveur d'activation.";
+            toast.error(msg);
+          }
+        },
+        cleanup: () => {
+          setIsLoadingLicenses(false);
+        },
+      });
     },
     [adminToken]
   );
@@ -1143,7 +1147,7 @@ export default function ActivationAdminPage() {
     }
 
     setIsCreating(true);
-    try {
+    await guard(async () => {
       const created = await createActivationLicense(adminToken.trim(), {
         email: data.email.trim(),
         plan: data.plan,
@@ -1174,13 +1178,16 @@ export default function ActivationAdminPage() {
           expiresAt: created.license.expiresAt,
         });
       }
-    } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : "Erreur lors de la création."
-      );
-    } finally {
-      setIsCreating(false);
-    }
+    }, {
+      recover: (error) => {
+        toast.error(
+          error instanceof Error ? error.message : "Erreur lors de la création."
+        );
+      },
+      cleanup: () => {
+        setIsCreating(false);
+      },
+    });
   };
 
   // Revoke license execution
@@ -1189,7 +1196,7 @@ export default function ActivationAdminPage() {
       return;
     }
     setIsRevoking(true);
-    try {
+    await guard(async () => {
       const revoked = await revokeActivationLicense(
         adminToken.trim(),
         licenseToRevoke.id
@@ -1199,15 +1206,18 @@ export default function ActivationAdminPage() {
       );
       toast.success(`Accès révoqué pour ${revoked.email}.`);
       setLicenseToRevoke(null);
-    } catch (error) {
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : "Impossible de révoquer cette licence."
-      );
-    } finally {
-      setIsRevoking(false);
-    }
+    }, {
+      recover: (error) => {
+        toast.error(
+          error instanceof Error
+            ? error.message
+            : "Impossible de révoquer cette licence."
+        );
+      },
+      cleanup: () => {
+        setIsRevoking(false);
+      },
+    });
   };
 
   // Copy helpers

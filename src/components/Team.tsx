@@ -67,6 +67,7 @@ import { hashPassword, updatePassword } from "@/services/sqlite/auth";
 import type { User, UserRole } from "@/types/db";
 import Avatar from "./Avatar";
 import { readTeam } from "./team-reading";
+import { guard } from "@/lib/guard";
 
 const ROLE_CONFIG: Record<
   UserRole | string,
@@ -210,6 +211,7 @@ const Team: React.FC = () => {
       return;
     }
 
+    const displayName = formData.displayName;
     const normalizedEmail = formData.email.trim().toLowerCase();
     const duplicateUser = users.find(
       (user) =>
@@ -224,10 +226,10 @@ const Team: React.FC = () => {
 
     setIsSubmitting(true);
 
-    try {
+    await guard(async () => {
       if (editingId) {
         await updateUser(editingId, {
-          displayName: formData.displayName.trim(),
+          displayName: displayName.trim(),
           email: normalizedEmail,
           phone: formData.phone || "",
           role: formData.role as UserRole,
@@ -237,7 +239,7 @@ const Team: React.FC = () => {
       } else {
         const initialPassword = createTemporaryPassword();
         await addUser({
-          displayName: formData.displayName.trim(),
+          displayName: displayName.trim(),
           email: normalizedEmail,
           phone: formData.phone || "",
           role: formData.role as UserRole,
@@ -251,22 +253,25 @@ const Team: React.FC = () => {
       if (editingId) {
         toast.success("Membre mis à jour.");
       }
-    } catch (error) {
-      console.error("[TEAM] Error saving:", error);
-      const message = getErrorMessage(error);
-      if (
-        message.toLowerCase().includes("unique") ||
-        message.toLowerCase().includes("email")
-      ) {
-        toast.error(
-          "Impossible d'ajouter ce membre : cet email est déjà utilisé.",
-        );
-      } else {
-        toast.error(`Erreur lors de la sauvegarde : ${message}`);
-      }
-    } finally {
-      setIsSubmitting(false);
-    }
+    }, {
+      recover: (error) => {
+        console.error("[TEAM] Error saving:", error);
+        const message = getErrorMessage(error);
+        if (
+          message.toLowerCase().includes("unique") ||
+          message.toLowerCase().includes("email")
+        ) {
+          toast.error(
+            "Impossible d'ajouter ce membre : cet email est déjà utilisé.",
+          );
+        } else {
+          toast.error(`Erreur lors de la sauvegarde : ${message}`);
+        }
+      },
+      cleanup: () => {
+        setIsSubmitting(false);
+      },
+    });
   };
 
   const handleDelete = async () => {
@@ -295,18 +300,21 @@ const Team: React.FC = () => {
     const temporaryPassword = createTemporaryPassword();
 
     setResetStatus({ loading: true, userId });
-    try {
+    await guard(async () => {
       await updatePassword(userId, temporaryPassword);
       setTemporaryPassword(temporaryPassword);
       setPasswordResetTarget(null);
-    } catch (error: any) {
-      console.error(error);
-      toast.error(
-        `Erreur lors de la réinitialisation : ${error?.message || "Erreur inconnue"}`,
-      );
-    } finally {
-      setResetStatus({ loading: false, userId: null });
-    }
+    }, {
+      recover: (error: any) => {
+        console.error(error);
+        toast.error(
+          `Erreur lors de la réinitialisation : ${error?.message || "Erreur inconnue"}`,
+        );
+      },
+      cleanup: () => {
+        setResetStatus({ loading: false, userId: null });
+      },
+    });
   };
 
   const filteredUsers = useMemo(

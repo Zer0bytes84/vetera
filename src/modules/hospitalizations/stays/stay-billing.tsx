@@ -9,6 +9,7 @@ import { stayDays } from "./domain";
 import { prepareStayInvoice, stayInvoiceInput } from "./billing";
 import { staysService } from "./service";
 import type { Stay } from "./store";
+import { guard } from "@/lib/guard";
 
 export function StayBilling({ stay }: { stay: Stay }) {
   const { currentUser } = useAuth();
@@ -35,13 +36,19 @@ export function StayBilling({ stay }: { stay: Stay }) {
         const patient = patients.data.find(item => item.id === stay.patient_id);
         if (!currentUser || !patient || !product || busy) return;
         setBusy(true); setError(null);
-        try {
+        await guard(async () => {
           const current = await staysService.get(stay.id);
           const invoice = await prepareStayInvoice(stayInvoiceInput(current, patient, product, currentUser.id), billingService);
           setInvoiceId(invoice.id);
           emitSQLiteDataChanged("invoices"); emitSQLiteDataChanged("invoice_lines");
-        } catch (cause) { setError(cause instanceof Error ? cause.message : "Le brouillon n’a pas pu être préparé."); }
-        finally { setBusy(false); }
+        }, {
+          recover: (cause) => {
+   setError(cause instanceof Error ? cause.message : "Le brouillon n’a pas pu être préparé.");
+          },
+          cleanup: () => {
+   setBusy(false);
+          },
+        });
       }}>
         <label className="block space-y-2 t-13">Tarif par journée
           <select aria-label="Tarif par journée" className="h-11 w-full rounded-xl border border-border bg-background px-3 t-13" value={productId} onChange={event => setProductId(event.target.value)}>

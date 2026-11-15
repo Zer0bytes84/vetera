@@ -22,6 +22,7 @@ import {
 } from "@/modules/consultations/off-visit-note";
 import type { Note } from "@/types/db";
 import { recordDate } from "./medical-record-summary";
+import { guard } from "@/lib/guard";
 
 const LocalConsultationAssistant = lazy(
   () =>
@@ -66,7 +67,7 @@ export function OffVisitNotePanel({
     if (!currentUser)
       throw new Error("Connectez-vous pour enregistrer une note.");
     setSaving(true);
-    try {
+    await guard(async () => {
       const saved = await saveOffVisitNote({
         patientId,
         userId: currentUser.uid,
@@ -77,9 +78,11 @@ export function OffVisitNotePanel({
         validated: true,
       });
       onSaved(saved);
-    } finally {
-      setSaving(false);
-    }
+    }, {
+      cleanup: () => {
+        setSaving(false);
+      },
+    });
   };
 
   if (note && existing) {

@@ -20,6 +20,7 @@ import { startAppUpdateCheck } from "@/services/updateService";
 import { isActivationAdminRoute } from "@/services/activationAdminWindowService";
 
 import { AIModelInstallPrompt } from "@/modules/consultations/components/ai-model-install-prompt";
+import { guard } from "@/lib/guard";
 
 const AppShell = lazy(async () => {
   const module = await import("@/modules/shell/app-shell");
@@ -88,7 +89,7 @@ function MainApp() {
 
   useEffect(() => {
     const checkSetup = async () => {
-      try {
+      await guard(async () => {
         const setupDone = await withTimeout(
           appSettingsRepository.isSetupComplete(),
           SETUP_CHECK_TIMEOUT_MS,
@@ -96,19 +97,22 @@ function MainApp() {
         );
         setNeedsSetup(!setupDone);
         setStartupError(null);
-      } catch (error) {
-        console.error("[App] Error checking setup status:", error);
-        // Never open the setup wizard after an uncertain database read. It
-        // could make an existing installation look like a new one.
-        setNeedsSetup(false);
-        setStartupError(
-          error instanceof Error
-            ? error
-            : new Error("Impossible de vérifier la base locale.")
-        );
-      } finally {
-        setIsCheckingSetup(false);
-      }
+      }, {
+        recover: (error) => {
+          console.error("[App] Error checking setup status:", error);
+          // Never open the setup wizard after an uncertain database read. It
+          // could make an existing installation look like a new one.
+          setNeedsSetup(false);
+          setStartupError(
+            error instanceof Error
+              ? error
+              : new Error("Impossible de vérifier la base locale.")
+          );
+        },
+        cleanup: () => {
+          setIsCheckingSetup(false);
+        },
+      });
     };
 
     // Never block initial UI boot on maintenance tasks.

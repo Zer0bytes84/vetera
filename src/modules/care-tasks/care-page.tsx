@@ -58,6 +58,7 @@ import {
   careTimeline,
   type CareMarkKind,
 } from "./care-day";
+import { guard } from "@/lib/guard";
 const labels: Record<CareDisplayStatus, string> = {
   a_faire: "À faire",
   en_cours: "En cours",
@@ -315,7 +316,7 @@ export default function CarePage({
     }
     setBusy(task.id);
     setActionError(null);
-    try {
+    await guard(async () => {
       await careTasksService.transition(
         task.id,
         status,
@@ -325,17 +326,20 @@ export default function CarePage({
       announceCareTasksChanged();
       await refresh();
       setReason("");
-    } catch (e) {
-      setActionError(careErrorMessage(e, "update"));
-    } finally {
-      setBusy(null);
-    }
+    }, {
+      recover: (e) => {
+        setActionError(careErrorMessage(e, "update"));
+      },
+      cleanup: () => {
+        setBusy(null);
+      },
+    });
   }
   async function undoCompletion(task: CareTask, correctionReason: string) {
     if (busy) return;
     setBusy(task.id);
     setUndoError(null);
-    try {
+    await guard(async () => {
       await careTasksService.undoCompletion(
         task.id,
         currentUser?.id ?? "",
@@ -354,11 +358,14 @@ export default function CarePage({
       setSavedMessage(
         "Validation annulée. Le soin est de nouveau à faire et le stock consommé a été restitué.",
       );
-    } catch (error) {
-      setUndoError(careErrorMessage(error, "update"));
-    } finally {
-      setBusy(null);
-    }
+    }, {
+      recover: (error) => {
+        setUndoError(careErrorMessage(error, "update"));
+      },
+      cleanup: () => {
+        setBusy(null);
+      },
+    });
   }
   const visible = tasks
     .filter((t) =>
@@ -913,7 +920,7 @@ export default function CarePage({
                         if (!draft || busy) return;
                         setBusy(detail.id);
                         setActionError(null);
-                        try {
+                        await guard(async () => {
                           const product = products.data.find(
                             (p) => p.id === draft.productId,
                           );
@@ -932,11 +939,14 @@ export default function CarePage({
                             delete copy[detail.id];
                             return copy;
                           });
-                        } catch (error) {
-                          setActionError(careErrorMessage(error, "update"));
-                        } finally {
-                          setBusy(null);
-                        }
+                        }, {
+                          recover: (error) => {
+                            setActionError(careErrorMessage(error, "update"));
+                          },
+                          cleanup: () => {
+                            setBusy(null);
+                          },
+                        });
                       }}
                     >
                       Mettre à jour le produit

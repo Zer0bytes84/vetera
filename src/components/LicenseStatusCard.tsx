@@ -6,6 +6,7 @@ import {
   checkLicenseAccess,
   type LicenseAccess,
 } from "@/services/licenseRuntime";
+import { guard } from "@/lib/guard";
 
 export function LicenseStatusCard() {
   const [access, setAccess] = useState<LicenseAccess | null>(null);
@@ -30,11 +31,13 @@ export function LicenseStatusCard() {
           disabled={busy}
           onClick={async () => {
             setBusy(true);
-            try {
+            await guard(async () => {
               setAccess(await checkLicenseAccess(true));
-            } finally {
-              setBusy(false);
-            }
+            }, {
+              cleanup: () => {
+                setBusy(false);
+              },
+            });
           }}
         >
           {busy ? "Vérification…" : "Vérifier maintenant"}

@@ -30,6 +30,7 @@ import {
   upsertTemplate,
 } from "../lib/prescription-templates";
 import "./prescription-templates.css";
+import { guard } from "@/lib/guard";
 
 function makeTemplateId(): string {
   return `rxtpl_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
@@ -253,7 +254,7 @@ export function PrescriptionTemplatesDialog({
 
   const handleSave = async () => {
     setBusy(true);
-    try {
+    await guard(async () => {
       const result = await state.save({ ...getCurrent(), name });
       toast.success(
         result.replaced
@@ -261,37 +262,46 @@ export function PrescriptionTemplatesDialog({
           : `Modèle « ${result.saved.name} » enregistré.`
       );
       setName("");
-    } catch (error) {
-      toast.error(errorMessage(error, "Impossible d'enregistrer le modèle."));
-    } finally {
-      setBusy(false);
-    }
+    }, {
+      recover: (error) => {
+        toast.error(errorMessage(error, "Impossible d'enregistrer le modèle."));
+      },
+      cleanup: () => {
+        setBusy(false);
+      },
+    });
   };
 
   const handleRename = async (id: string) => {
     setBusy(true);
-    try {
+    await guard(async () => {
       await state.rename(id, editingName);
       setEditingId(null);
       toast.success("Modèle renommé.");
-    } catch (error) {
-      toast.error(errorMessage(error, "Impossible de renommer le modèle."));
-    } finally {
-      setBusy(false);
-    }
+    }, {
+      recover: (error) => {
+        toast.error(errorMessage(error, "Impossible de renommer le modèle."));
+      },
+      cleanup: () => {
+        setBusy(false);
+      },
+    });
   };
 
   const handleRemove = async (template: PrescriptionTemplate) => {
     setBusy(true);
-    try {
+    await guard(async () => {
       await state.remove(template.id);
       setConfirmDeleteId(null);
       toast.success(`Modèle « ${template.name} » supprimé.`);
-    } catch (error) {
-      toast.error(errorMessage(error, "Impossible de supprimer le modèle."));
-    } finally {
-      setBusy(false);
-    }
+    }, {
+      recover: (error) => {
+        toast.error(errorMessage(error, "Impossible de supprimer le modèle."));
+      },
+      cleanup: () => {
+        setBusy(false);
+      },
+    });
   };
 
   return (

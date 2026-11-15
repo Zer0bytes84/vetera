@@ -14,6 +14,7 @@ import { announceStaysChanged } from "./use-stays";
 import type { StayLocation } from "./store";
 import { SearchableSelect } from "@/components/ui/searchable-select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { guard } from "@/lib/guard";
 export function AdmissionForm({locations,onSaved}: {locations: StayLocation[];onSaved: () => void}) {
  const {currentUser}=useAuth(); const patients=usePatientsRepository();
  const [patient,setPatient]=useState(""),[location,setLocation]=useState(""),[reason,setReason]=useState("");
@@ -22,7 +23,16 @@ export function AdmissionForm({locations,onSaved}: {locations: StayLocation[];on
  const [calendarOpen,setCalendarOpen]=useState(false);
  const admittedAt=admissionDateTime(date,time);
  const [error,setError]=useState<string | null>(null),[busy,setBusy]=useState(false);
- return <form className="space-y-4" onSubmit={async event => { event.preventDefault(); if (!currentUser || busy) return; if (!admittedAt) { setError("Choisissez une date et une heure d’admission valides."); return; } setBusy(true); setError(null); try { await staysService.admit({patientId:patient,locationId:location || undefined,admittedAt,reason},currentUser.id); announceStaysChanged(); toast.success("Admission enregistrée."); onSaved(); } catch { setError("L’admission n’a pas pu être enregistrée. Vérifiez les dates et la disponibilité du patient et de l’emplacement."); } finally {setBusy(false);} }}>
+ return <form className="space-y-4" onSubmit={async event => { event.preventDefault(); if (!currentUser || busy) return; if (!admittedAt) { setError("Choisissez une date et une heure d’admission valides."); return; } setBusy(true); setError(null); await guard(async () => {
+ await staysService.admit({patientId:patient,locationId:location || undefined,admittedAt,reason},currentUser.id); announceStaysChanged(); toast.success("Admission enregistrée."); onSaved();
+ }, {
+   recover: () => {
+   setError("L’admission n’a pas pu être enregistrée. Vérifiez les dates et la disponibilité du patient et de l’emplacement.");
+   },
+   cleanup: () => {
+  setBusy(false);
+   },
+ }); }}>
  <div className="flex flex-col gap-2"><label htmlFor="admission-patient" className="flex items-center justify-between t-13">Patient <span className="modal-required">requis</span></label>
  <SearchableSelect id="admission-patient" label="Patient à admettre" placeholder="Rechercher un patient…" value={patient} onValueChange={setPatient} disabled={busy}
  options={patients.data.map(p => ({value:p.id,label:p.name,keywords:`${p.species} ${p.breed || ""}`}))}/></div>
@@ -50,7 +60,16 @@ export function AdmissionForm({locations,onSaved}: {locations: StayLocation[];on
 }
 export function LocationForm({onSaved}: {onSaved: () => void}) {
  const {currentUser}=useAuth(); const [name,setName]=useState(""),[type,setType]=useState<StayLocation["type"]>("cage"),[error,setError]=useState<string | null>(null),[busy,setBusy]=useState(false);
- return <form className="space-y-4" onSubmit={async event => {event.preventDefault();if (!currentUser || busy) return;setBusy(true);setError(null);try {await staysService.createLocation(name,type,currentUser.id);announceStaysChanged();toast.success("Emplacement créé.");onSaved();} catch {setError("L’emplacement n’a pas pu être créé. Vérifiez que son nom est unique.");} finally {setBusy(false);}}}>
+ return <form className="space-y-4" onSubmit={async event => {event.preventDefault();if (!currentUser || busy) return;setBusy(true);setError(null);await guard(async () => {
+await staysService.createLocation(name,type,currentUser.id);announceStaysChanged();toast.success("Emplacement créé.");onSaved();
+ }, {
+   recover: () => {
+  setError("L’emplacement n’a pas pu être créé. Vérifiez que son nom est unique.");
+   },
+   cleanup: () => {
+  setBusy(false);
+   },
+ });}}>
  <label className="block space-y-2 t-13"><span className="flex items-center justify-between">Nom <span className="modal-required">requis</span></span><Input className="h-11" placeholder="Ex. Cage 3, Box chirurgie" value={name} onChange={event => setName(event.target.value)} required/></label>
  <label className="block space-y-2 t-13">Type<select className="h-11 w-full rounded-xl border bg-background px-3" value={type} onChange={event => setType(event.target.value as StayLocation["type"])}><option value="cage">Cage</option><option value="box">Box</option><option value="chenil">Chenil</option></select></label>
  {error && <p role="alert" className="t-13 text-destructive">{error}</p>}

@@ -27,6 +27,7 @@ import {
 } from "@/services/invoiceSettingsService";
 import { InvoicePdfPreview } from "./invoice-pdf-preview";
 import type { InvoicePdfData } from "@/lib/invoice-pdf";
+import { guard } from "@/lib/guard";
 
 const SAMPLE: InvoicePdfData = {
   number: "EXEMPLE-001", date: new Date("2026-09-29T12:00:00"),
@@ -112,9 +113,16 @@ export function ClinicIdentityPanel() {
           <input accept="image/png,image/jpeg,image/webp" aria-label="Fichier du logo du cabinet" className="sr-only" disabled={uploading} id="invoice-logo" onChange={async (event) => {
             const file = event.target.files?.[0]; event.target.value = ""; if (!file) return;
             setUploading(true);
-            try { change("logoDataUrl", await prepareInvoiceLogo(file)); }
-            catch (cause) { toast.error(cause instanceof Error ? cause.message : "Cette image ne peut pas être utilisée."); }
-            finally { setUploading(false); }
+            await guard(async () => {
+ change("logoDataUrl", await prepareInvoiceLogo(file));
+            }, {
+              recover: (cause) => {
+   toast.error(cause instanceof Error ? cause.message : "Cette image ne peut pas être utilisée.");
+              },
+              cleanup: () => {
+   setUploading(false);
+              },
+            });
           }} ref={fileInputRef} tabIndex={-1} type="file" />
           {settings.logoDataUrl && <Button className="rounded-full" disabled={uploading} onClick={() => change("logoDataUrl", "")} size="sm" variant="ghost">Retirer</Button>}
         </SettingsRow>

@@ -43,6 +43,7 @@ import type {
 import { bestPassage } from "../local-ai/passage-search";
 import { highlightPassage } from "../local-ai/search-highlight";
 import "./assistant-thinking.css";
+import { guard } from "@/lib/guard";
 
 const SOURCES: Array<{ key: SourceType | "all"; label: string }> = [
   { key: "all", label: "Toutes les sources" },
@@ -314,7 +315,7 @@ export function PatientDocumentSearch({
     setBusy(true);
     setError("");
     setMessage("Installation de la recherche locale…");
-    try {
+    await guard(async () => {
       const models = await importLocalModel("embeddinggemma");
       if (models) {
         setReady(!!models.embeddingReady);
@@ -323,13 +324,16 @@ export function PatientDocumentSearch({
       } else {
         setMessage("");
       }
-    } catch {
-      setError(
-        "L’installation de la recherche locale a échoué. Vérifiez que les fichiers de la recherche locale sont bien présents sur cet ordinateur.",
-      );
-    } finally {
-      setBusy(false);
-    }
+    }, {
+      recover: () => {
+        setError(
+          "L’installation de la recherche locale a échoué. Vérifiez que les fichiers de la recherche locale sont bien présents sur cet ordinateur.",
+        );
+      },
+      cleanup: () => {
+        setBusy(false);
+      },
+    });
   };
 
   const dictate = async () => {

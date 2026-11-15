@@ -16,6 +16,7 @@ import { filterPatientDocuments, type DocumentFilters } from "../lib/filter-pati
 import ConsultationDocumentsAssistant from "./consultation-documents-assistant";
 import { DocumentPreviewDialog } from "./document-preview-dialog";
 import { DatePicker } from "@/components/ui/date-picker";
+import { guard } from "@/lib/guard";
 
 function dateLabel(value: string) {
   const date = new Date(value);
@@ -38,15 +39,21 @@ export function PatientDocumentRegistry({ patientId, onUpload, uploadControl }: 
   const importFile = async (file: File) => {
     if (!currentUser || importing) return;
     setImporting(true); setProgress("Préparation du fichier…");
-    try {
+    await guard(async () => {
       const attachment = await preparePatientAttachment(file, undefined, event => setProgress(event.message));
       const document = await documentsService.importAttachment(patientId, attachment, currentUser.uid);
       await registry.refresh();
       toast.success("La pièce a été ajoutée au dossier du patient.");
       if (attachment.textState === "scan") toast.info("PDF numérisé : l’assistant ne dispose pas de texte extractible. La pièce reste consultable.");
       setPreviewId(document.id);
-    } catch (error) { toast.error(error instanceof Error ? error.message : "La pièce n’a pas pu être importée. Réessayez."); }
-    finally { setImporting(false); setProgress(""); }
+    }, {
+      recover: (error) => {
+   toast.error(error instanceof Error ? error.message : "La pièce n’a pas pu être importée. Réessayez.");
+      },
+      cleanup: () => {
+   setImporting(false); setProgress("");
+      },
+    });
   };
   return <section aria-label="Documents du patient" className="space-y-4">
     <header className="flex flex-wrap items-start justify-between gap-3 border-b border-border pb-4">

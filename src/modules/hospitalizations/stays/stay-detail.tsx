@@ -19,6 +19,7 @@ import { announceStaysChanged } from "./use-stays";
 import type { Stay, VitalSign } from "./store";
 import type { StayStatus } from "./domain";
 import { ACTIVE_STAY_STATUSES, stayDays } from "./domain";
+import { guard } from "@/lib/guard";
 export function StayDetail({stay,patientName,species,onBack}: {stay: Stay;patientName: string;species: string;onBack: () => void}) {
  const {currentUser}=useAuth(); const [vitals,setVitals]=useState<VitalSign[]>([]);
  const [error,setError]=useState<string | null>(null),[busy,setBusy]=useState(false),[summary,setSummary]=useState(""),[reason,setReason]=useState("");
@@ -29,9 +30,16 @@ export function StayDetail({stay,patientName,species,onBack}: {stay: Stay;patien
  useEffect(() => {void refresh();},[refresh]);
  async function transition(to: StayStatus) {
   if (!currentUser || busy) return; setBusy(true); setError(null);
-  try { await staysService.transition(stay.id,to,currentUser.id,{reason,summary,plannedAt:planned || undefined});announceStaysChanged();announceCareTasksChanged(); }
-  catch(error) {setError(error instanceof Error ? error.message : "Le séjour n’a pas pu être mis à jour.");}
-  finally {setBusy(false);}
+  await guard(async () => {
+ await staysService.transition(stay.id,to,currentUser.id,{reason,summary,plannedAt:planned || undefined});announceStaysChanged();announceCareTasksChanged();
+  }, {
+    recover: (error) => {
+  setError(error instanceof Error ? error.message : "Le séjour n’a pas pu être mis à jour.");
+    },
+    cleanup: () => {
+  setBusy(false);
+    },
+  });
  }
  const active=ACTIVE_STAY_STATUSES.includes(stay.status);
  return <div className="stay-detail space-y-5"><Button variant="ghost" className="h-11" onClick={onBack}>Retour aux séjours</Button>

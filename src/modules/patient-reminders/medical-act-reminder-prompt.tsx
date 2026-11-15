@@ -10,6 +10,7 @@ import { onMedicalActRecorded } from "./on-medical-act-recorded";
 import { patientRemindersService } from "./service";
 import type { MedicalAct, MedicalReminderProposal } from "./store";
 import { announcePatientRemindersChanged } from "./use-patient-reminders";
+import { guard } from "@/lib/guard";
 
 /** One local proposal queue shared by care and consultation entry points. */
 export function MedicalActReminderPrompt() {
@@ -24,15 +25,17 @@ export function MedicalActReminderPrompt() {
     const offer = async (act: MedicalAct) => {
       if (!isTauriRuntime() || seen.current.has(act.id)) return;
       seen.current.add(act.id);
-      try {
+      await guard(async () => {
         const proposal = await onMedicalActRecorded(act, patientRemindersService);
         if (mounted && proposal) setQueue((current) => [...current, proposal]);
-      } catch {
-        seen.current.delete(act.id);
-        toast.error("L’acte est enregistré. Le prochain rappel n’a pas pu être proposé.", {
-          action: { label: "Réessayer", onClick: () => { void offer(act); } },
-        });
-      }
+      }, {
+        recover: () => {
+          seen.current.delete(act.id);
+          toast.error("L’acte est enregistré. Le prochain rappel n’a pas pu être proposé.", {
+            action: { label: "Réessayer", onClick: () => { void offer(act); } },
+          });
+        },
+      });
     };
     const fromAct = (event: Event) => { void offer((event as CustomEvent<MedicalAct>).detail); };
     const fromProposal = (event: Event) => {

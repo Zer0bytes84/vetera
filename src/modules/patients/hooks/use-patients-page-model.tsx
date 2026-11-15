@@ -37,6 +37,7 @@ import {
   type PatientSort,
   sortPatientRecords,
 } from "@/modules/patients/lib/patient-list";
+import { guard } from "@/lib/guard";
 
 export function usePatientsPageModel({ onNavigateToPatient }: PatientsProps) {
   const { data: users } = useUsersRepository();
@@ -449,7 +450,7 @@ export function usePatientsPageModel({ onNavigateToPatient }: PatientsProps) {
       owner: Partial<Owner>;
       patient: Partial<Patient>;
     }) => {
-      try {
+      await guard(async () => {
         const createdBundle = await createWithOwner({
           ownerId: selectedOwnerId,
           owner: {
@@ -502,24 +503,26 @@ export function usePatientsPageModel({ onNavigateToPatient }: PatientsProps) {
             (selectedOwnerId ? ownersMap.get(selectedOwnerId) : undefined),
           patient: createdBundle.patient,
         });
-      } catch (error) {
-        console.error(error);
-        const message =
-          error instanceof Error
-            ? error.message
-            : typeof error === "string"
-              ? error
-              : "Impossible de créer le dossier patient.";
-        if (
-          message.toLowerCase().includes("database is locked") ||
-          message.toLowerCase().includes("code: 5")
-        ) {
-          toast.error("Base occupée, réessayez dans quelques secondes.");
-        } else {
-          toast.error(message);
-        }
-        throw new Error(message);
-      }
+      }, {
+        recover: (error) => {
+          console.error(error);
+          const message =
+            error instanceof Error
+              ? error.message
+              : typeof error === "string"
+                ? error
+                : "Impossible de créer le dossier patient.";
+          if (
+            message.toLowerCase().includes("database is locked") ||
+            message.toLowerCase().includes("code: 5")
+          ) {
+            toast.error("Base occupée, réessayez dans quelques secondes.");
+          } else {
+            toast.error(message);
+          }
+          throw new Error(message);
+        },
+      });
     },
     [audit, createWithOwner, ownersMap]
   );

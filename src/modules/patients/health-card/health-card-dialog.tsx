@@ -21,6 +21,7 @@ import { PatientRecordPreview } from "../export/patient-record-preview";
 import type { PatientRecordPdf } from "../export/patient-record-types";
 import "../export/patient-record-export.css";
 import { buildHealthCard } from "./health-card-data";
+import { guard } from "@/lib/guard";
 
 const loadHealthCardPdf = () => import("./health-card-pdf");
 const loadExportPatientRecordSave = () => import("../export/patient-record-save");
@@ -73,7 +74,7 @@ export function HealthCardDialog({ onClose, owner, patient }: {
     let cancelled = false;
     setArtifact(null); setError("");
     void (async () => {
-      try {
+      await guard(async () => {
         if (!currentUser?.id) throw new Error("Connectez-vous pour préparer le carnet de santé.");
         let clinic: InvoiceSettings = DEFAULT_INVOICE_SETTINGS;
         try { clinic = await getInvoiceSettings(); } catch { /* L'en-tête du cabinet est facultatif. */ }
@@ -82,10 +83,12 @@ export function HealthCardDialog({ onClose, owner, patient }: {
           clinic, patientId: patient.id, requestedBy: currentUser.id,
         });
         if (!cancelled) setArtifact(pdf);
-      } catch (cause) {
-        console.error(cause);
-        if (!cancelled) setError(message(cause, "Le carnet de santé n’a pas pu être préparé. Réessayez."));
-      }
+      }, {
+        recover: (cause) => {
+          console.error(cause);
+          if (!cancelled) setError(message(cause, "Le carnet de santé n’a pas pu être préparé. Réessayez."));
+        },
+      });
     })();
     return () => { cancelled = true; };
   }, [attempt, currentUser?.id, loading, patient.id]);
@@ -99,23 +102,35 @@ export function HealthCardDialog({ onClose, owner, patient }: {
   const save = async () => {
     if (!artifact) return;
     setSaving(true); setError("");
-    try {
+    await guard(async () => {
       const { savePatientRecordPdf } = await loadExportPatientRecordSave();
       const result = await savePatientRecordPdf(artifact, { title: "Enregistrer le carnet de santé", filterName: "Carnet de santé PDF" });
       if (result) toast.success(result.downloaded ? "Téléchargement du carnet de santé lancé." : "Carnet de santé enregistré.", { description: result.path, duration: 8000 });
-    } catch (cause) { setError(message(cause, "Le PDF n’a pas pu être enregistré. Vérifiez l’emplacement choisi, puis réessayez.")); }
-    finally { setSaving(false); }
+    }, {
+      recover: (cause) => {
+   setError(message(cause, "Le PDF n’a pas pu être enregistré. Vérifiez l’emplacement choisi, puis réessayez."));
+      },
+      cleanup: () => {
+   setSaving(false);
+      },
+    });
   };
 
   const printPdf = async () => {
     if (!artifact) return;
     const controller = new AbortController(); print.current = controller;
     setPrinting(true); setError("");
-    try {
+    await guard(async () => {
       const { printPatientRecordPdf } = await loadExportPatientRecordSave();
       await printPatientRecordPdf(artifact, controller.signal);
-    } catch (cause) { if (!controller.signal.aborted) setError(message(cause, "L’impression n’a pas pu être préparée. Réessayez ou enregistrez le PDF.")); }
-    finally { if (!controller.signal.aborted) setPrinting(false); }
+    }, {
+      recover: (cause) => {
+   if (!controller.signal.aborted) setError(message(cause, "L’impression n’a pas pu être préparée. Réessayez ou enregistrez le PDF."));
+      },
+      cleanup: () => {
+   if (!controller.signal.aborted) setPrinting(false);
+      },
+    });
   };
 
   return (

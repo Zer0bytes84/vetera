@@ -10,6 +10,7 @@ import {
 import { writeCachedProfile } from "@/lib/profile-cache";
 import { bootstrapScheduler, stopScheduler } from "@/services/backupScheduler";
 import * as AuthService from "@/services/sqlite/auth";
+import { guard } from "@/lib/guard";
 
 const loadServicesAuditService = () => import("@/services/auditService");
 
@@ -100,7 +101,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
     const isInitialLoad = !hasInitializedRef.current;
     const refreshPromise = (async () => {
-      try {
+      await guard(async () => {
         // Only show the global loading skeleton on the very first load.
         // Background refreshes must not blank out the app on WebView2.
         if (isInitialLoad) {
@@ -132,45 +133,53 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           setCurrentUser(null);
         }
         setError(null);
-      } catch (error: any) {
-        if (isTransientDbError(error)) {
-          setError(null);
-        } else {
-          console.error("Error refreshing user:", error);
-          setError(error.message || "Failed to refresh user");
-        }
-        // Never null out the user on a transient error after bootstrap.
-      } finally {
-        hasInitializedRef.current = true;
-        setLoading(false);
-      }
+      }, {
+        recover: (error: any) => {
+          if (isTransientDbError(error)) {
+            setError(null);
+          } else {
+            console.error("Error refreshing user:", error);
+            setError(error.message || "Failed to refresh user");
+          }
+          // Never null out the user on a transient error after bootstrap.
+        },
+        cleanup: () => {
+          hasInitializedRef.current = true;
+          setLoading(false);
+        },
+      });
     })();
 
     refreshPromiseRef.current = refreshPromise;
-    try {
+    await guard(async () => {
       await refreshPromise;
-    } finally {
-      if (refreshPromiseRef.current === refreshPromise) {
-        refreshPromiseRef.current = null;
-      }
-    }
+    }, {
+      cleanup: () => {
+        if (refreshPromiseRef.current === refreshPromise) {
+          refreshPromiseRef.current = null;
+        }
+      },
+    });
   }, []);
 
   // Charger l'utilisateur au démarrage
   useEffect(() => {
     const loadUser = async () => {
-      try {
+      await guard(async () => {
         await refreshCurrentUser();
         // Boot the backup scheduler once the user is resolved so the first
         // run benefits from the live DB connection.
         void bootstrapScheduler();
-      } catch (error: any) {
-        console.error("Error loading user:", error);
-        setError(error.message || "Failed to load user");
-      } finally {
-        hasInitializedRef.current = true;
-        setLoading(false);
-      }
+      }, {
+        recover: (error: any) => {
+          console.error("Error loading user:", error);
+          setError(error.message || "Failed to load user");
+        },
+        cleanup: () => {
+          hasInitializedRef.current = true;
+          setLoading(false);
+        },
+      });
     };
 
     loadUser();
@@ -210,7 +219,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   }, [refreshCurrentUser]);
 
   const login = async (email: string, password: string) => {
-    try {
+    await guard(async () => {
       const user = await AuthService.login({ email, password });
       setCurrentUser({
         id: user.id,
@@ -236,10 +245,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       } catch {
         // silencieux
       }
-    } catch (err: any) {
-      setError(err.message);
-      throw err;
-    }
+    }, {
+      recover: (err: any) => {
+        setError(err.message);
+        throw err;
+      },
+    });
   };
 
   const register = async (

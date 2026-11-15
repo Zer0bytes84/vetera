@@ -20,6 +20,7 @@ import { stockDay } from "@/domain/stock-date";
 import { inventoryService } from "../services/inventory-service";
 import { useStockInventory } from "../hooks/use-stock-inventory";
 import type { StockInventoryBalance } from "../services/inventory-store";
+import { guard } from "@/lib/guard";
 
 const dateLabel = (value: string | null) => value && Number.isFinite(Date.parse(value)) ? new Date(value.length === 10 ? value + "T12:00:00" : value).toLocaleDateString("fr-FR", {day: "numeric", month: "short", year: "numeric"}) : "Non renseignée";
 function LotDate({value, onChange, label, clearable}: {value?: Date; onChange: (value?: Date) => void; label: string; clearable?: boolean}) {
@@ -48,14 +49,20 @@ function LotForm({productId: initialProduct, onCancel, onSaved}: {productId: str
   return <form noValidate aria-label="Enregistrer un lot" className="space-y-4 border-y border-border bg-muted/10 p-5" onSubmit={async event => {
     event.preventDefault(); if (busy || !currentUser || !product || !number.trim() || !(requested > 0)) return;
     setBusy(true); setError(null);
-    try {
+    await guard(async () => {
       const receivedAt = new Date(`${stockDay(received)}T${time}:00`);
       if (mode === "receive" && (!/^([01]\d|2[0-3]):[0-5]\d$/.test(time) || !Number.isFinite(receivedAt.getTime()) || stockDay(receivedAt) !== stockDay(received) || `${String(receivedAt.getHours()).padStart(2, "0")}:${String(receivedAt.getMinutes()).padStart(2, "0")}` !== time)) throw new StockError("SOURCE_CONFLICT", "Choisissez une date et une heure de réception valides.");
       await inventoryService.registerLot({id: requestId, productId, lotNumber: number, quantity: requested, mode, locationId: location,
         expiryDate: expiry ? stockDay(expiry) : null, receivedAt: mode === "receive" ? receivedAt.toISOString() : undefined, authorId: currentUser.id});
       onSaved();
-    } catch (failure) {setError(failure instanceof StockError ? failure.message : "Le lot n’a pas pu être enregistré. Vérifiez les informations et réessayez.");}
-    finally {setBusy(false);}
+    }, {
+      recover: (failure) => {
+  setError(failure instanceof StockError ? failure.message : "Le lot n’a pas pu être enregistré. Vérifiez les informations et réessayez.");
+      },
+      cleanup: () => {
+  setBusy(false);
+      },
+    });
   }}>
     <div className="flex flex-wrap items-center justify-between gap-3"><h3 className="text-base font-medium">Enregistrer un lot</h3><Tabs value={mode} onValueChange={value => changed(() => setMode(value as typeof mode))}><TabsList aria-label="Origine du stock"><TabsTrigger disabled={busy} value="identify">Stock existant</TabsTrigger><TabsTrigger disabled={busy} value="receive">Réception</TabsTrigger></TabsList></Tabs></div>
     <p className="text-sm text-muted-foreground">{mode === "identify" ? "Attribuez un numéro au stock déjà présent. Le total reste inchangé." : "Enregistrez une livraison réellement reçue. Cette quantité s’ajoute au stock."}</p>
@@ -79,9 +86,16 @@ function CountForm({row, onClose}: {row: StockInventoryBalance; onClose: () => v
   return <form noValidate aria-label="Comptage du lot" className="space-y-3 border-y border-border bg-muted/10 p-5" onSubmit={async event => {
     event.preventDefault(); if (busy || !currentUser || !reason.trim() || !(count >= 0)) return;
     setBusy(true); setError(null);
-    try {await inventoryService.count({id: requestId, balanceId: row.id, quantity: count, reason, authorId: currentUser.id}); onClose();}
-    catch (failure) {setError(failure instanceof StockError ? failure.message : "Le comptage n’a pas pu être enregistré. Réessayez.");}
-    finally {setBusy(false);}
+    await guard(async () => {
+await inventoryService.count({id: requestId, balanceId: row.id, quantity: count, reason, authorId: currentUser.id}); onClose();
+    }, {
+      recover: (failure) => {
+  setError(failure instanceof StockError ? failure.message : "Le comptage n’a pas pu être enregistré. Réessayez.");
+      },
+      cleanup: () => {
+  setBusy(false);
+      },
+    });
   }}><h3 className="text-base font-medium">Compter {row.lotNumber ? `le lot ${row.lotNumber}` : "le stock sans lot"}</h3><p className="text-sm text-muted-foreground">{row.productName} · {row.locationName} · Réception du {dateLabel(row.receivedAt)}. L’écart sera journalisé.</p>
     <div className="grid gap-3 sm:grid-cols-[10rem_minmax(0,1fr)]"><div className="space-y-1.5"><label htmlFor="lot-count-quantity" className="text-sm">Quantité ({row.unit})</label><Input id="lot-count-quantity" className="h-11 rounded-xl" inputMode="decimal" disabled={busy} value={quantity} onChange={event => {setQuantity(event.target.value); setRequestId(generateId());}}/></div><div className="space-y-1.5"><label htmlFor="lot-count-reason" className="text-sm">Motif</label><Input id="lot-count-reason" className="h-11 rounded-xl" disabled={busy} value={reason} onChange={event => {setReason(event.target.value); setRequestId(generateId());}}/></div></div>
     {error && <p role="alert" className="text-sm text-destructive">{error}</p>}<div className="flex justify-end gap-2"><Button type="button" variant="outline" disabled={busy} className="h-11" onClick={onClose}>Annuler</Button><Button type="submit" className="h-11" disabled={busy || !currentUser || !(count >= 0) || !reason.trim()}>{busy ? "Enregistrement…" : "Confirmer le comptage"}</Button></div>

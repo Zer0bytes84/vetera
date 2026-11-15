@@ -20,6 +20,7 @@ import {
   runDbRead,
   toSQLiteTimestamp,
 } from "../services/sqlite/database";
+import { guard } from "@/lib/guard";
 
 interface UseSQLiteResult<T> {
   add: (item: Omit<T, "id" | "createdAt" | "updatedAt">) => Promise<T | null>;
@@ -337,22 +338,25 @@ export function useSQLite<T extends { id: string }>(tableName: string): UseSQLit
   const sourceId = useId();
 
   const loadData = useCallback(async (force = false) => {
-    try {
+    await guard(async () => {
       if (!safeTableName) throw new Error(`Table non autorisée: ${tableName}`);
       setError(null);
       setIsRefreshing(tableSnapshotCache.has(safeTableName));
       await loadTableSnapshot(safeTableName, force);
-    } catch (err) {
-      const message = err instanceof Error ? err.message : "Lecture impossible";
-      setError(message);
-      toast.error("Les données n’ont pas pu être chargées.", {
-        description: message,
-        action: { label: "Réessayer", onClick: () => { void loadData(true); } },
-      });
-    } finally {
-      setLoading(false);
-      setIsRefreshing(false);
-    }
+    }, {
+      recover: (err) => {
+        const message = err instanceof Error ? err.message : "Lecture impossible";
+        setError(message);
+        toast.error("Les données n’ont pas pu être chargées.", {
+          description: message,
+          action: { label: "Réessayer", onClick: () => { void loadData(true); } },
+        });
+      },
+      cleanup: () => {
+        setLoading(false);
+        setIsRefreshing(false);
+      },
+    });
   }, [safeTableName, tableName]);
 
   useEffect(() => { void loadData(); }, [loadData]);

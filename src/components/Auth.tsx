@@ -20,6 +20,7 @@ import { useTauriDrag } from "@/hooks/use-tauri-drag";
 import Logo from "./Logo";
 import { AuthBrandPanel, AuthGlassBackdrop } from "./auth-brand-panel";
 import "./auth-clinic.css";
+import { guard } from "@/lib/guard";
 
 const Auth: React.FC = () => {
   const [view, setView] = useState<"login" | "register">("login");
@@ -41,22 +42,25 @@ const Auth: React.FC = () => {
     event.preventDefault();
     setFormError("");
     setLoading(true);
-    try {
+    await guard(async () => {
       if (view === "login") {
         await login(email, password);
       } else {
         await register(email, password, name);
       }
-    } catch (error) {
-      console.error(error);
-      setFormError(
-        error instanceof Error
-          ? error.message
-          : "Une erreur est survenue. Veuillez réessayer."
-      );
-    } finally {
-      setLoading(false);
-    }
+    }, {
+      recover: (error) => {
+        console.error(error);
+        setFormError(
+          error instanceof Error
+            ? error.message
+            : "Une erreur est survenue. Veuillez réessayer."
+        );
+      },
+      cleanup: () => {
+        setLoading(false);
+      },
+    });
   };
 
   const changeView = (nextView: "login" | "register") => {

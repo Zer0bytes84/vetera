@@ -61,6 +61,7 @@ import {
   normalizeEntityId,
   getAppointmentPresentation,
 } from "@/modules/agenda/components/agenda-shared";
+import { guard } from "@/lib/guard";
 
 export function useAgendaPageModel(onNavigate?: (view: View) => void) {
   const { t } = useTranslation();
@@ -892,7 +893,7 @@ export function useAgendaPageModel(onNavigate?: (view: View) => void) {
 
     setIsSubmitting(true);
 
-    try {
+    await guard(async () => {
       const saved = await saveAppointment({
         ...(editingAppointmentId ? { id: editingAppointmentId } : {}),
         patientId: selectedPatientId,
@@ -957,29 +958,32 @@ export function useAgendaPageModel(onNavigate?: (view: View) => void) {
       setSelectedDate(start);
       setViewMode("list");
       closeDialog();
-    } catch (error) {
-      console.error(error);
-      const message =
-        error instanceof Error
-          ? error.message
-          : typeof error === "string"
-            ? error
-            : "Erreur inconnue";
-      if (
-        message.toLowerCase().includes("database is locked") ||
-        message.toLowerCase().includes("code: 5")
-      ) {
-        const userMessage = "Base occupée, réessayez dans quelques secondes.";
-        setFormError(userMessage);
-        toast.error(userMessage);
-      } else {
-        const userMessage = `Impossible d’enregistrer ce rendez-vous: ${message}`;
-        setFormError(userMessage);
-        toast.error(userMessage);
-      }
-    } finally {
-      setIsSubmitting(false);
-    }
+    }, {
+      recover: (error) => {
+        console.error(error);
+        const message =
+          error instanceof Error
+            ? error.message
+            : typeof error === "string"
+              ? error
+              : "Erreur inconnue";
+        if (
+          message.toLowerCase().includes("database is locked") ||
+          message.toLowerCase().includes("code: 5")
+        ) {
+          const userMessage = "Base occupée, réessayez dans quelques secondes.";
+          setFormError(userMessage);
+          toast.error(userMessage);
+        } else {
+          const userMessage = `Impossible d’enregistrer ce rendez-vous: ${message}`;
+          setFormError(userMessage);
+          toast.error(userMessage);
+        }
+      },
+      cleanup: () => {
+        setIsSubmitting(false);
+      },
+    });
   };
 
   const tableRowsByTab = useMemo<Record<TableTab, AgendaTableRow[]>>(() => {

@@ -72,6 +72,7 @@ import type {
 } from "@/types/db";
 import { formatDZD } from "@/utils/currency";
 import { DatePicker } from "@/components/ui/date-picker";
+import { guard } from "@/lib/guard";
 
 export const COMMON_SPECIES = [
   "Chien",
@@ -1662,22 +1663,25 @@ export function PatientCreateDialog({
 
     setIsSubmitting(true);
 
-    try {
+    await guard(async () => {
       await onCreate({
         selectedOwnerId: selectedOwnerId === "new" ? null : selectedOwnerId,
         owner: selectedOwnerId === "new" ? newOwner : {},
         patient: newPatient,
       });
-    } catch (error) {
-      const message =
-        error instanceof Error
-          ? error.message
-          : "Impossible de créer le dossier patient.";
-      setFormError(message);
-      toast.error(message);
-    } finally {
-      setIsSubmitting(false);
-    }
+    }, {
+      recover: (error) => {
+        const message =
+          error instanceof Error
+            ? error.message
+            : "Impossible de créer le dossier patient.";
+        setFormError(message);
+        toast.error(message);
+      },
+      cleanup: () => {
+        setIsSubmitting(false);
+      },
+    });
   }, [newPatient, selectedOwnerId, newOwner, onCreate]);
 
   const ownerOptions = useMemo(

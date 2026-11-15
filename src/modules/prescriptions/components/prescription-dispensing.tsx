@@ -12,6 +12,7 @@ import { useStockInventory } from "@/modules/stock/hooks/use-stock-inventory";
 import { stockDay } from "@/domain/stock-date";
 import { clinicalStockService } from "@/modules/stock/services/clinical-stock-service";
 import type { Dispensation, DispensingLineInput } from "@/modules/stock/services/clinical-stock-store";
+import { guard } from "@/lib/guard";
 
 export function PrescriptionDispensing({prescriptionId, status, items}: {prescriptionId: string; status: string; items: {id: string; medicationName: string}[]}) {
   const {currentUser} = useAuth();
@@ -65,9 +66,16 @@ export function PrescriptionDispensing({prescriptionId, status, items}: {prescri
   return <form noValidate aria-label="Dispenser l’ordonnance" className="mt-4 space-y-4 border-t border-border pt-4" onSubmit={async event => {
     event.preventDefault(); if (!valid || shortage || !currentUser || busy) return;
     setBusy(true); setError(null);
-    try {setSaved(await clinicalStockService.dispense({id: requestId, prescriptionId, authorId: currentUser.id, lines: payload})); setOpen(false);}
-    catch (error) {setError(error instanceof StockError ? error.message : "La dispensation n’a pas pu être enregistrée. Aucun stock ni facture n’a été modifié. Réessayez.");}
-    finally {setBusy(false);}
+    await guard(async () => {
+setSaved(await clinicalStockService.dispense({id: requestId, prescriptionId, authorId: currentUser.id, lines: payload})); setOpen(false);
+    }, {
+      recover: (error) => {
+  setError(error instanceof StockError ? error.message : "La dispensation n’a pas pu être enregistrée. Aucun stock ni facture n’a été modifié. Réessayez.");
+      },
+      cleanup: () => {
+  setBusy(false);
+      },
+    });
   }}>
     <p className="t-12 text-muted-foreground">Choisissez le produit remis et sa quantité physique. Les instructions de l’ordonnance restent inchangées.</p>
     {items.map(item => <div key={item.id} className="space-y-2">

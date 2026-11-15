@@ -23,6 +23,7 @@ import {
   recheckLicenseInBackground,
 } from "@/services/licenseRuntime";
 import { formatLicenseKey } from "@/services/licenseService";
+import { guard } from "@/lib/guard";
 
 export function LicenseGate({ children }: { children: ReactNode }) {
   // Browser-only development demos have no desktop installation to license.
@@ -57,12 +58,14 @@ function CheckedLicenseGate({ children }: { children: ReactNode }) {
     if (inFlight.current) return;
     inFlight.current = true;
     setBusy(true);
-    try {
+    await guard(async () => {
       apply(await checkLicenseAccess(online));
-    } finally {
-      inFlight.current = false;
-      if (mounted.current) setBusy(false);
-    }
+    }, {
+      cleanup: () => {
+        inFlight.current = false;
+        if (mounted.current) setBusy(false);
+      },
+    });
   }, [apply]);
 
   useEffect(() => {
@@ -96,19 +99,22 @@ function CheckedLicenseGate({ children }: { children: ReactNode }) {
     inFlight.current = true;
     setBusy(true);
     setError("");
-    try {
+    await guard(async () => {
       const result = await activateLicense(email, key);
       await acceptLicenseActivation(email, result.activationToken);
       setAccess(await checkLicenseAccess(false));
       setKey("");
-    } catch (cause) {
-      setError(
-        cause instanceof Error ? cause.message : "Activation impossible."
-      );
-    } finally {
-      inFlight.current = false;
-      setBusy(false);
-    }
+    }, {
+      recover: (cause) => {
+        setError(
+          cause instanceof Error ? cause.message : "Activation impossible."
+        );
+      },
+      cleanup: () => {
+        inFlight.current = false;
+        setBusy(false);
+      },
+    });
   };
 
   if (access?.allowed)

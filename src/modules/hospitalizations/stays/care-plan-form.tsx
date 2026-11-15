@@ -11,6 +11,7 @@ import { carePlanOccurrences } from "./domain";
 import { staysService } from "./service";
 import { announceStaysChanged } from "./use-stays";
 import { StayDateTimeField } from "./stay-date-time-field";
+import { guard, guardSync } from "@/lib/guard";
 function localDate(value?: string) { if (!value) return ""; const date=new Date(value); return new Date(date.getTime()-date.getTimezoneOffset()*60000).toISOString().slice(0,16); }
 export function CarePlanForm({stayId,onSaved,plan}: {stayId: string;onSaved: () => void;plan?: CarePlan}) {
  const {currentUser}=useAuth(); const products=useProductsRepository();
@@ -18,8 +19,23 @@ export function CarePlanForm({stayId,onSaved,plan}: {stayId: string;onSaved: () 
  const [error,setError]=useState<string | null>(null),[busy,setBusy]=useState(false);
  const hours=times.split(/[,;\s]+/).filter(Boolean);
  let count=0,validation="";
- try {if (starts && ends && hours.length) count=carePlanOccurrences(new Date(starts),new Date(ends),hours).filter(value => !plan || new Date(value) >= new Date()).length;} catch(error) {validation=error instanceof Error ? error.message : "Vérifiez les horaires.";}
- return <form className="space-y-4" onSubmit={async event => {event.preventDefault();if (!currentUser || busy || !count) return;setBusy(true);setError(null);try {const draft={label,type,productId:product || undefined,startsAt:starts,endsAt:ends,times:hours,note};if (plan) await staysService.updatePlan(plan.id,draft,currentUser.id); else await staysService.createPlan(stayId,draft,currentUser.id);announceStaysChanged();announceCareTasksChanged();onSaved();} catch(error) {setError(error instanceof Error ? error.message : "Le plan n’a pas pu être créé.");} finally {setBusy(false);}}}>
+ guardSync(() => {
+if (starts && ends && hours.length) count=carePlanOccurrences(new Date(starts),new Date(ends),hours).filter(value => !plan || new Date(value) >= new Date()).length;
+ }, {
+   recover: (error) => {
+  validation=error instanceof Error ? error.message : "Vérifiez les horaires.";
+   },
+ });
+ return <form className="space-y-4" onSubmit={async event => {event.preventDefault();if (!currentUser || busy || !count) return;setBusy(true);setError(null);await guard(async () => {
+const draft={label,type,productId:product || undefined,startsAt:starts,endsAt:ends,times:hours,note};if (plan) await staysService.updatePlan(plan.id,draft,currentUser.id); else await staysService.createPlan(stayId,draft,currentUser.id);announceStaysChanged();announceCareTasksChanged();onSaved();
+ }, {
+   recover: (error) => {
+  setError(error instanceof Error ? error.message : "Le plan n’a pas pu être créé.");
+   },
+   cleanup: () => {
+  setBusy(false);
+   },
+ });}}>
  <label className="block space-y-2 t-13">Soin<Input className="h-11" value={label} onChange={event => setLabel(event.target.value)} required/></label>
  <label className="block space-y-2 t-13">Type<select className="h-11 w-full rounded-xl border bg-background px-3" value={type} onChange={event => setType(event.target.value as CareType)}>{CARE_TYPES.map(item => <option key={item} value={item}>{careTypeLabels[item]}</option>)}</select></label>
  <div className="grid gap-4 sm:grid-cols-2"><div className="space-y-2 t-13"><span>Début</span><StayDateTimeField label="Date de début du plan" timeLabel="Heure de début" value={starts} onChange={setStarts}/></div><div className="space-y-2 t-13"><span>Fin</span><StayDateTimeField label="Date de fin du plan" timeLabel="Heure de fin" value={ends} onChange={setEnds}/></div></div>

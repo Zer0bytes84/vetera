@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { documentsService, MANAGED_DOCUMENTS_CHANGED } from "../document-service";
 import type { ManagedDocumentTemplate, PatientDocument } from "../document-domain";
+import { guard } from "@/lib/guard";
 
 function useDocumentRows<T>(load: () => Promise<T[]>) {
   const [rows, setRows] = useState<T[]>([]);
@@ -10,12 +11,17 @@ function useDocumentRows<T>(load: () => Promise<T[]>) {
   const refresh = useCallback(async () => {
     const request = ++generation.current.value;
     setLoading(true);
-    try {
+    await guard(async () => {
       const next = await load();
       if (request === generation.current.value) { setRows(next); setError(null); }
-    } catch (failure) {
-      if (request === generation.current.value) { setRows([]); setError(failure instanceof Error ? failure.message : "Les documents n’ont pas pu être chargés."); }
-    } finally { if (request === generation.current.value) setLoading(false); }
+    }, {
+      recover: (failure) => {
+        if (request === generation.current.value) { setRows([]); setError(failure instanceof Error ? failure.message : "Les documents n’ont pas pu être chargés."); }
+      },
+      cleanup: () => {
+   if (request === generation.current.value) setLoading(false);
+      },
+    });
   }, [load]);
   useEffect(() => {
     const tracker = generation.current;

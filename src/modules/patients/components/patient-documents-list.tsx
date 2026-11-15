@@ -37,6 +37,7 @@ import { readOffVisitNote } from "@/modules/consultations/off-visit-note";
 import { cn } from "@/lib/utils";
 import type { ConsultationDocument } from "@/types/db";
 import { PatientDocumentRegistry } from "@/modules/documents/components/patient-document-registry";
+import { guard } from "@/lib/guard";
 
 interface PatientDocumentsListProps {
   className?: string;
@@ -141,14 +142,17 @@ export function PatientDocumentsList({
 
   const confirmDelete = async () => {
     if (!deleteTarget) return;
-    try {
+    await guard(async () => {
       await repo.remove(deleteTarget.id);
       toast.success("Document supprimé avec succès.");
-    } catch (_err) {
-      toast.error("Erreur lors de la suppression.");
-    } finally {
-      setDeleteTarget(null);
-    }
+    }, {
+      recover: (_err) => {
+        toast.error("Erreur lors de la suppression.");
+      },
+      cleanup: () => {
+        setDeleteTarget(null);
+      },
+    });
   };
 
   const handleOpen = (doc: ConsultationDocument) => {

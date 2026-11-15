@@ -14,6 +14,7 @@ import { importLocalModel } from "../local-ai/models";
 import { aiModelInstallation, useAIModelInstallation } from "../services/ai-model-installation";
 import { AI_MODELS_CATALOG, AI_MODELS_CHANGED_EVENT, allAIModelsReady, type AIModelId, dictationModelReady, NEW_ASSISTANT, TOTAL_AI_MODELS_SIZE_LABEL } from "../services/ai-model-provisioning";
 import { GEMMA4_SUSPENDED, getGeneratorPreference, hasGeneratorFallenBack, setGeneratorPreference } from "../local-ai/generator-choice";
+import { guard } from "@/lib/guard";
 
 const icons = {whisper: Microphone, generator: MessageSquarePlus, embeddinggemma: Search};
 
@@ -34,14 +35,20 @@ export function AIModelSettings() {
 
   async function importFiles(kind: AIModelId) {
     setImporting(kind); setImportError(null);
-    try {
+    await guard(async () => {
       if (await importLocalModel(kind)) {
         await aiModelInstallation.refresh();
         window.dispatchEvent(new Event(AI_MODELS_CHANGED_EVENT));
         toast.success("Outil installé depuis vos fichiers.");
       }
-    } catch { setImportError("Ces fichiers n’ont pas pu être installés. Vérifiez qu’ils sont complets et compatibles."); }
-    finally { setImporting(null); }
+    }, {
+      recover: () => {
+   setImportError("Ces fichiers n’ont pas pu être installés. Vérifiez qu’ils sont complets et compatibles.");
+      },
+      cleanup: () => {
+   setImporting(null);
+      },
+    });
   }
   const allReady = allAIModelsReady(state.status);
   const ready = {whisper: dictationModelReady(state.status), generator: state.status.generatorReady, embeddinggemma: state.status.embeddingReady};

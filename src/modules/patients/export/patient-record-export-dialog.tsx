@@ -12,6 +12,7 @@ import { PatientRecordPreview } from "./patient-record-preview";
 import { DEFAULT_PATIENT_RECORD_OPTIONS, type PatientRecordOptions, type PatientRecordPdf, type PatientRecordProgress } from "./patient-record-types";
 import "./patient-record-export.css";
 import { DatePicker } from "@/components/ui/date-picker";
+import { guard } from "@/lib/guard";
 
 const loadPatientRecordService = () => import("./patient-record-service");
 const loadPatientRecordPdf = () => import("./patient-record-pdf");
@@ -87,22 +88,34 @@ export function PatientRecordExportDialog({ patientId, patientName, onClose }: {
   const save = async () => {
     if (!artifact) return;
     setSaving(true); setError("");
-    try {
+    await guard(async () => {
       const { savePatientRecordPdf } = await loadPatientRecordSave();
       const result = await savePatientRecordPdf(artifact);
       if (result) toast.success(result.downloaded ? "Téléchargement du dossier PDF lancé." : "Dossier PDF enregistré.", { description: result.path, duration: 8000 });
-    } catch (cause) { setError(userMessage(cause, "Le PDF n’a pas pu être enregistré. Vérifiez l’emplacement et l’espace disponible, puis réessayez.")); }
-    finally { setSaving(false); }
+    }, {
+      recover: (cause) => {
+   setError(userMessage(cause, "Le PDF n’a pas pu être enregistré. Vérifiez l’emplacement et l’espace disponible, puis réessayez."));
+      },
+      cleanup: () => {
+   setSaving(false);
+      },
+    });
   };
   const printPdf = async () => {
     if (!artifact) return;
     const controller = new AbortController(); print.current = controller;
     setPrinting(true); setError("");
-    try {
+    await guard(async () => {
       const { printPatientRecordPdf } = await loadPatientRecordSave();
       await printPatientRecordPdf(artifact, controller.signal);
-    } catch (cause) { if (!controller.signal.aborted) setError(userMessage(cause, "L’impression du dossier n’a pas pu être préparée. Réessayez ou enregistrez le PDF.")); }
-    finally { if (!controller.signal.aborted) setPrinting(false); }
+    }, {
+      recover: (cause) => {
+   if (!controller.signal.aborted) setError(userMessage(cause, "L’impression du dossier n’a pas pu être préparée. Réessayez ou enregistrez le PDF."));
+      },
+      cleanup: () => {
+   if (!controller.signal.aborted) setPrinting(false);
+      },
+    });
   };
   const hasContent = attachments || Object.values(sections).some(Boolean);
 

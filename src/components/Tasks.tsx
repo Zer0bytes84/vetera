@@ -56,6 +56,7 @@ import {
 import { useListCursor } from "@/hooks/useListCursor";
 import { Kbd } from "@/components/ui/kbd";
 import { DatePicker } from "@/components/ui/date-picker";
+import { guard } from "@/lib/guard";
 
 type ReminderView = "today" | "upcoming" | "completed";
 type Scope = "mine" | "team";
@@ -621,7 +622,7 @@ const Tasks: React.FC = () => {
     const tasks = selectedTasks.filter((task) => task.status !== "done");
     if (!tasks.length) return;
     setSaving(true);
-    try {
+    await guard(async () => {
       await Promise.all(
         tasks.map((task) => {
           const date = parseTaskDate(task) ?? new Date();
@@ -633,9 +634,11 @@ const Tasks: React.FC = () => {
       toast.success(
         `${tasks.length} rappel${tasks.length > 1 ? "s" : ""} reporté${tasks.length > 1 ? "s" : ""} au lendemain`,
       );
-    } finally {
-      setSaving(false);
-    }
+    }, {
+      cleanup: () => {
+        setSaving(false);
+      },
+    });
   };
 
   const sourceItems = allItems.filter(

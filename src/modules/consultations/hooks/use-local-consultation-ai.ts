@@ -24,6 +24,7 @@ import {
   releaseWhisperSession,
   takeWhisperSession,
 } from "../local-ai/whisper-session";
+import { guard } from "@/lib/guard";
 
 export type LocalAiPhase =
   | "idle"
@@ -166,7 +167,7 @@ export function useLocalConsultationAi({
       const update = (event: LocalAiProgress) => {
         if (active.current === attempt) setProgress(event);
       };
-      try {
+      await guard(async () => {
         if (native) {
           // No silent WASM fallback in the desktop app: a missing companion or
           // model is said before the microphone opens.
@@ -224,11 +225,11 @@ export function useLocalConsultationAi({
             const controller = new AbortController();
             const follow = () => controller.abort();
             signal.addEventListener("abort", follow, { once: true });
-            try {
-              microphone = await prepareMicrophone(controller.signal);
-            } finally {
-              signal.removeEventListener("abort", follow);
-            }
+            microphone = await guard(() => prepareMicrophone(controller.signal), {
+              cleanup: () => {
+                signal.removeEventListener("abort", follow);
+              },
+            });
             held.current = { microphone, controller, settled: false };
           } else {
             microphone = await prepareMicrophone(signal);
@@ -280,9 +281,11 @@ export function useLocalConsultationAi({
               ? "Le micro vous écoute. Parlez naturellement en français."
               : "Le micro vous écoute. La langue sera reconnue sur cet ordinateur.",
         });
-      } catch (failure) {
-        reportFailure(attempt, failure);
-      }
+      }, {
+        recover: (failure) => {
+          reportFailure(attempt, failure);
+        },
+      });
     },
     // `native` fixes the engine for the life of the hook (a state, not a prop):
     // it is stable, and naming it keeps the branch honest for the linter.

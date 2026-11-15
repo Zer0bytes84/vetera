@@ -27,6 +27,7 @@ import { careTasksService } from "./service";
 import { announceCareTasksChanged } from "./use-care-tasks";
 import { ProductStockFields } from "@/modules/stock/components/product-stock-fields";
 import { parseStockQuantityInput } from "@/domain/stock";
+import { guard } from "@/lib/guard";
 export const careTypeLabels: Record<CareType, string> = {
   medicament: "Médicament",
   perfusion: "Perfusion",
@@ -101,7 +102,7 @@ export function CareTaskForm({
         }
         setBusy(true);
         setError(null);
-        try {
+        await guard(async () => {
           await careTasksService.create(
             {
               patientId: patient,
@@ -116,11 +117,14 @@ export function CareTaskForm({
           );
           announceCareTasksChanged();
           onSaved(scheduled);
-        } catch (e) {
-          setError(careErrorMessage(e, "create"));
-        } finally {
-          setBusy(false);
-        }
+        }, {
+          recover: (e) => {
+            setError(careErrorMessage(e, "create"));
+          },
+          cleanup: () => {
+            setBusy(false);
+          },
+        });
       }}
     >
       <div className="space-y-1.5 t-13">

@@ -15,6 +15,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { usePatientsRepository } from "@/data/repositories";
 import { addCalendarMonths, assertDateOnly, isMedicalReminderType, localToday } from "./domain";
 import type { MedicalReminderProposal, ReminderType } from "./store";
+import { guard, guardSync } from "@/lib/guard";
 
 export function MedicalReminderDialog({
   editable = false,
@@ -38,12 +39,14 @@ export function MedicalReminderDialog({
   const patient = patients.data.find((entry) => entry.id === draft.patientId);
   const dueDate = new Date(`${draft.echeance}T12:00:00`);
   let valid = Boolean(draft.patientId && draft.type && Number.isInteger(Number(months)) && Number(months) >= 1 && Number(months) <= 120);
-  try {
+  guardSync(() => {
     assertDateOnly(draft.echeance);
     valid = valid && draft.echeance >= draft.dateActe;
-  } catch {
-    valid = false;
-  }
+  }, {
+    recover: () => {
+      valid = false;
+    },
+  });
 
   return (
     <Dialog open onOpenChange={(open) => { if (!open && !busy) onClose(); }}>
@@ -59,14 +62,17 @@ export function MedicalReminderDialog({
           if (!valid || busy) return;
           setBusy(true);
           setError(null);
-          try {
+          await guard(async () => {
             await onConfirm({ ...draft, intervalleMois: Number(months) });
             onClose();
-          } catch (caught) {
-            setError(caught instanceof Error ? caught.message : "Le rappel n’a pas pu être créé.");
-          } finally {
-            setBusy(false);
-          }
+          }, {
+            recover: (caught) => {
+              setError(caught instanceof Error ? caught.message : "Le rappel n’a pas pu être créé.");
+            },
+            cleanup: () => {
+              setBusy(false);
+            },
+          });
         }}>
           <FormDialogBody>
             <FieldGroup>

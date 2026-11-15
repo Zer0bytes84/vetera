@@ -26,6 +26,7 @@ import {
 } from "@/services/licenseActivationService";
 import Logo from "./Logo";
 import { AuthBrandPanel, AuthGlassBackdrop } from "./auth-brand-panel";
+import { guard } from "@/lib/guard";
 
 interface SetupWizardProps {
   onComplete: (userData: {
@@ -71,19 +72,22 @@ const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
     }
     setIsActivating(true);
     setError("");
-    try {
+    await guard(async () => {
       const result = await activateLicense(email, licenseKey);
       setActivationToken(result.activationToken);
       setStep(2);
-    } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Impossible de vérifier cette licence."
-      );
-    } finally {
-      setIsActivating(false);
-    }
+    }, {
+      recover: (err) => {
+        setError(
+          err instanceof Error
+            ? err.message
+            : "Impossible de vérifier cette licence."
+        );
+      },
+      cleanup: () => {
+        setIsActivating(false);
+      },
+    });
   };
 
   const handleCreateAccount = async () => {

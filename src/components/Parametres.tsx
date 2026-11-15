@@ -117,6 +117,7 @@ import { getSidebarTone, saveSidebarTone, SIDEBAR_TONES, type SidebarTone } from
 import { formatPersonName } from "@/utils/display-format";
 import { roleLabel as displayRole } from "@/lib/user-role";
 import { PageHeader } from "@/design-system/patterns/page-header";
+import { guard } from "@/lib/guard";
 
 type SettingsNavItem = {
   id: SettingsTab;
@@ -297,18 +298,21 @@ const BackupSettings: React.FC = () => {
 
   const load = async () => {
     setLoading(true);
-    try {
+    await guard(async () => {
       const [items, date] = await Promise.all([
         listBackups(),
         getLastBackupDate(),
       ]);
       setBackups(items);
       setLastBackup(date);
-    } catch {
-      toast.error("Impossible de lire les sauvegardes.");
-    } finally {
-      setLoading(false);
-    }
+    }, {
+      recover: () => {
+        toast.error("Impossible de lire les sauvegardes.");
+      },
+      cleanup: () => {
+        setLoading(false);
+      },
+    });
   };
 
   useEffect(() => {
@@ -748,7 +752,7 @@ const Parametres: React.FC<ParametresProps> = ({
     setIsSaving(true);
     setMessage(null);
 
-    try {
+    await guard(async () => {
       await updatePassword(currentUser.uid, newPassword);
 
       setMessage({
@@ -757,22 +761,25 @@ const Parametres: React.FC<ParametresProps> = ({
       });
       setNewPassword("");
       setConfirmPassword("");
-    } catch (error: any) {
-      console.error("Password change error:", error);
-      if (error.code === "auth/requires-recent-login") {
-        setMessage({
-          type: "error",
-          text: "Par sécurité, veuillez vous reconnecter avant de changer le mot de passe.",
-        });
-      } else {
-        setMessage({
-          type: "error",
-          text: `Erreur: ${error.message || String(error)}`,
-        });
-      }
-    } finally {
-      setIsSaving(false);
-    }
+    }, {
+      recover: (error: any) => {
+        console.error("Password change error:", error);
+        if (error.code === "auth/requires-recent-login") {
+          setMessage({
+            type: "error",
+            text: "Par sécurité, veuillez vous reconnecter avant de changer le mot de passe.",
+          });
+        } else {
+          setMessage({
+            type: "error",
+            text: `Erreur: ${error.message || String(error)}`,
+          });
+        }
+      },
+      cleanup: () => {
+        setIsSaving(false);
+      },
+    });
   };
 
   const roleLabel = displayRole(userDoc?.role, currentUser?.email);

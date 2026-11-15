@@ -14,6 +14,7 @@ import { buildManagedDocumentPdf } from "../lib/managed-document-pdf";
 import { DocumentPaperPreview } from "./document-paper-preview";
 import { DocumentPreviewDialog } from "./document-preview-dialog";
 import "./document-preview.css";
+import { guard } from "@/lib/guard";
 
 export function DocumentComposer({ open, patientId, consultationId, onClose, onCreated }: {
   open: boolean; patientId: string; consultationId: string;
@@ -53,9 +54,16 @@ export function DocumentComposer({ open, patientId, consultationId, onClose, onC
   async function perform(operation: () => Promise<void>) {
     if (busy) return;
     setBusy(true); setError("");
-    try { await operation(); }
-    catch (cause) { setError(cause instanceof Error ? cause.message : "Le document n’a pas pu être préparé."); }
-    finally { setBusy(false); }
+    await guard(async () => {
+ await operation();
+    }, {
+      recover: (cause) => {
+   setError(cause instanceof Error ? cause.message : "Le document n’a pas pu être préparé.");
+      },
+      cleanup: () => {
+   setBusy(false);
+      },
+    });
   }
   return <>
     <Dialog open={open && !createdId} onOpenChange={(value) => { if (!value && !busy) onClose(); }}>

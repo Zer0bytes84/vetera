@@ -9,6 +9,7 @@ import { CheckmarkCircle02Icon, UserAdd01Icon } from "@/lib/hugeicons";
 import { findDossiers } from "@/modules/agenda/quick-search";
 import { PatientDossierSearch } from "@/modules/agenda/components/patient-dossier-search";
 import type { Owner, Patient } from "@/types/db";
+import { guard } from "@/lib/guard";
 
 /**
  * A patient at the desk without a booking. Same dialog and same dossier
@@ -45,12 +46,14 @@ export function WalkInDialog({
   const confirm = async () => {
     if (!selected || busy) return;
     setBusy(true);
-    try {
+    await guard(async () => {
       await onConfirm(selected);
       close(false);
-    } finally {
-      setBusy(false);
-    }
+    }, {
+      cleanup: () => {
+        setBusy(false);
+      },
+    });
   };
 
   return (

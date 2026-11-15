@@ -18,6 +18,7 @@ import type { StockProduct } from "../services/stock-database";
 import type { InventoryLocation } from "../services/lot-store";
 import { StockDatePicker } from "./stock-date-picker";
 import { StockLotSelect } from "./stock-lot-select";
+import { guard } from "@/lib/guard";
 
 const failure=(error:unknown)=>error instanceof StockError?error.message:"L’opération n’a pas pu être enregistrée. Réessayez.";
 
@@ -26,7 +27,16 @@ function BarcodeMappingForm({onClose}: {onClose:()=>void}) {
   const [busy,setBusy]=useState(false);const [error,setError]=useState<string|null>(null);
   return <form noValidate aria-label="Associer un code-barres" className="space-y-4 border-y border-border bg-muted/10 p-5" onSubmit={async event=>{
     event.preventDefault();if(busy||!code.trim()||!product)return;setBusy(true);setError(null);
-    try{await stockOperationsService.barcode({id,code,productId:product});onClose();}catch(error){setError(failure(error));}finally{setBusy(false);}
+    await guard(async () => {
+await stockOperationsService.barcode({id,code,productId:product});onClose();
+    }, {
+      recover: (error) => {
+  setError(failure(error));
+      },
+      cleanup: () => {
+  setBusy(false);
+      },
+    });
   }}><h3 className="text-base font-medium">Associer un code-barres</h3><fieldset disabled={busy} className="grid gap-4 sm:grid-cols-2">
     <div className="space-y-1.5"><label htmlFor="barcode-map-code" className="text-sm">Code-barres</label><Input id="barcode-map-code" className="h-11 font-mono" value={code} onChange={event=>setCode(event.target.value)} autoComplete="off" spellCheck={false}/></div>
     <div className="space-y-1.5"><label htmlFor="barcode-map-product" className="text-sm">Produit</label><SearchableSelect id="barcode-map-product" label="Produit du code-barres" controlClassName="h-11 [&_input]:text-foreground" disabled={busy} value={product} onValueChange={setProduct} options={products.data.filter(item=>!item.archivedAt&&item.stockTracked!==false).map(item=>({value:item.id,label:item.name}))}/></div>
@@ -51,16 +61,32 @@ function Scanner({onOpenMovements}: {onOpenMovements?:()=>void}) {
     <div><h3 className="text-base font-medium">Entrée ou sortie rapide</h3><p className="mt-1 text-sm text-muted-foreground">Scannez avec votre lecteur ou saisissez le code. Vérifiez le produit et la quantité avant confirmation.</p></div>
     <form aria-label="Identifier un code-barres" className="flex flex-wrap items-end gap-2" onSubmit={async event=>{
       event.preventDefault();if(busy||!code.trim())return;setBusy(true);setError(null);setSaved(null);
-      try{const product=await stockOperationsService.lookup(code);setMatched(product);setQuantity("1");setLot("fifo");setLotNumber("");setExpiry(undefined);setRequestId(generateId());}catch(error){setMatched(null);setError(failure(error));}finally{setBusy(false);}
+      await guard(async () => {
+const product=await stockOperationsService.lookup(code);setMatched(product);setQuantity("1");setLot("fifo");setLotNumber("");setExpiry(undefined);setRequestId(generateId());
+      }, {
+        recover: (error) => {
+  setMatched(null);setError(failure(error));
+        },
+        cleanup: () => {
+  setBusy(false);
+        },
+      });
     }}><div className="min-w-0 flex-1 space-y-1.5"><label htmlFor="stock-scan-code" className="text-sm">Code-barres à identifier</label><Input ref={field} id="stock-scan-code" className="h-11 font-mono" value={code} disabled={busy} autoComplete="off" spellCheck={false} placeholder="Scanner ou saisir…" onChange={event=>{setCode(event.target.value);setMatched(null);setError(null);}}/></div><Button className="h-11" type="submit" variant="outline" disabled={busy||!code.trim()}>Identifier</Button></form>
     {matched&&<form noValidate aria-label="Mouvement par code-barres" className="space-y-4 border-t border-border pt-5" onSubmit={async event=>{
       event.preventDefault();if(busy||!valid||!currentUser)return;setBusy(true);setError(null);
-      try{
+      await guard(async () => {
         const result=await stockOperationsService.scan({id:requestId,code,direction,quantity:qty,locationId:location,authorId:currentUser.id,
           ...(direction==="out"?(lot==="unassigned"?{lotId:null}:lot!=="fifo"?{lotId:lot}:{}):{lotNumber,expiryDate:expiry?stockDay(expiry):null})});
         setSaved(`${direction==="in"?"Entrée":"Sortie"} de ${stockQuantityLabel(qty,matched.unit)} enregistrée pour ${matched.name}. Solde après opération : ${stockQuantityLabel(result.quantityAfter,matched.unit)}.`);
         setMatched(null);setCode("");field.current?.focus();
-      }catch(error){setError(failure(error));}finally{setBusy(false);}
+      }, {
+        recover: (error) => {
+  setError(failure(error));
+        },
+        cleanup: () => {
+  setBusy(false);
+        },
+      });
     }}><div className="flex flex-wrap items-center justify-between gap-3"><h4 className="font-medium">{matched.name}</h4><Tabs value={direction} onValueChange={value=>changed(()=>{setDirection(value as typeof direction);setLot("fifo");setLotNumber("");setExpiry(undefined);})}><TabsList aria-label="Sens du mouvement"><TabsTrigger value="in" disabled={busy}>Entrée</TabsTrigger><TabsTrigger value="out" disabled={busy}>Sortie</TabsTrigger></TabsList></Tabs></div>
       <fieldset disabled={busy} className="grid gap-4 sm:grid-cols-2"><div className="space-y-1.5"><label htmlFor="scan-quantity" className="text-sm">Quantité ({matched.unit})</label><Input id="scan-quantity" className="h-11 tabular-nums" inputMode="decimal" value={quantity} aria-invalid={insufficient||undefined} aria-describedby={direction==="out"?"scan-stock-availability":undefined} onChange={event=>changed(()=>setQuantity(event.target.value))}/></div><div className="min-w-0 space-y-1.5"><label htmlFor="scan-location" className="text-sm">Emplacement</label><SearchableSelect id="scan-location" label="Emplacement du mouvement" disabled={busy} controlClassName="h-11 [&_input]:text-foreground" value={location} onValueChange={value=>changed(()=>{setLocation(value);setLot("fifo");})} options={inventory.locations.filter(row=>row.active).map(row=>({value:row.id,label:row.name}))}/></div></fieldset>
       {direction==="out"?<><StockLotSelect productId={matched.id} locationId={location} unit={matched.unit} label="Lot à sortir" disabled={busy} value={lot} onChange={value=>changed(()=>setLot(value))}/><p id="scan-stock-availability" role="status" aria-live="polite" aria-atomic="true" className={`text-xs tabular-nums ${insufficient?"text-destructive":"text-muted-foreground"}`}>{insufficient?`Stock insuffisant : ${stockQuantityLabel(qty,matched.unit)} demandés, ${stockQuantityLabel(available,matched.unit)} disponibles. Réduisez la quantité ou changez de lot ou d’emplacement.`:`Stock utilisable dans cet emplacement : ${stockQuantityLabel(available,matched.unit)}.`}</p></>:<fieldset disabled={busy} className="grid gap-4 sm:grid-cols-2"><div className="space-y-1.5"><label htmlFor="scan-lot-number" className="text-sm">Numéro de lot (facultatif)</label><Input id="scan-lot-number" className="h-11" value={lotNumber} onChange={event=>changed(()=>setLotNumber(event.target.value))}/></div><div className="space-y-1.5"><label className="text-sm">Péremption du lot</label><StockDatePicker clearable disabled={busy} label="Péremption du lot scanné" value={expiry} onChange={value=>changed(()=>setExpiry(value))}/></div></fieldset>}
@@ -73,7 +99,16 @@ function Scanner({onOpenMovements}: {onOpenMovements?:()=>void}) {
 
 function LocationForm({location,onClose}: {location?:InventoryLocation;onClose:()=>void}) {
   const [id]=useState(()=>location?.id??generateId());const [name,setName]=useState(location?.name??"");const [busy,setBusy]=useState(false);const [error,setError]=useState<string|null>(null);
-  return <form noValidate aria-label="Emplacement de stock" className="space-y-4 border-y border-border bg-muted/10 p-5" onSubmit={async event=>{event.preventDefault();if(busy||!name.trim())return;setBusy(true);setError(null);try{await stockOperationsService.location({id,name});onClose();}catch(error){setError(failure(error));}finally{setBusy(false);}}}>
+  return <form noValidate aria-label="Emplacement de stock" className="space-y-4 border-y border-border bg-muted/10 p-5" onSubmit={async event=>{event.preventDefault();if(busy||!name.trim())return;setBusy(true);setError(null);await guard(async () => {
+await stockOperationsService.location({id,name});onClose();
+  }, {
+    recover: (error) => {
+  setError(failure(error));
+    },
+    cleanup: () => {
+  setBusy(false);
+    },
+  });}}>
     <h3 className="text-base font-medium">{location?"Modifier l’emplacement":"Nouvel emplacement de stock"}</h3><div className="max-w-lg space-y-1.5"><label htmlFor="stock-location-name" className="text-sm">Nom de l’emplacement</label><Input id="stock-location-name" className="h-11" disabled={busy} value={name} maxLength={80} onChange={event=>setName(event.target.value)}/></div>{error&&<p role="alert" className="text-sm text-destructive">{error}</p>}<div className="flex justify-end gap-2"><Button type="button" variant="outline" disabled={busy} onClick={onClose}>Annuler</Button><Button type="submit" disabled={busy||!name.trim()}>{busy?"Enregistrement…":"Enregistrer l’emplacement"}</Button></div>
   </form>;
 }
@@ -90,7 +125,16 @@ function TransferForm({onClose}: {onClose:()=>void}) {
   const insufficient=inventory.ready&&!!product&&qty>available;
   return <form noValidate aria-label="Transfert de stock" className="space-y-4 border-y border-border bg-muted/10 p-5" onSubmit={async event=>{
     event.preventDefault();if(busy||!valid||!currentUser)return;setBusy(true);setError(null);
-    try{await stockOperationsService.transfer({id:requestId,productId,fromLocationId:from,toLocationId:to,quantity:qty,authorId:currentUser.id,...(lot==="unassigned"?{lotId:null}:lot!=="fifo"?{lotId:lot}:{})});onClose();}catch(error){setError(failure(error));}finally{setBusy(false);}
+    await guard(async () => {
+await stockOperationsService.transfer({id:requestId,productId,fromLocationId:from,toLocationId:to,quantity:qty,authorId:currentUser.id,...(lot==="unassigned"?{lotId:null}:lot!=="fifo"?{lotId:lot}:{})});onClose();
+    }, {
+      recover: (error) => {
+  setError(failure(error));
+      },
+      cleanup: () => {
+  setBusy(false);
+      },
+    });
   }}><div><h3 className="text-base font-medium">Transférer du stock</h3><p className="mt-1 text-sm text-muted-foreground">Le total du produit reste inchangé. Les lots gardent leur péremption et leur date de réception.</p></div>
     <fieldset disabled={busy} className="grid gap-4 sm:grid-cols-2"><div className="min-w-0 space-y-1.5"><label htmlFor="transfer-product" className="text-sm">Produit</label><SearchableSelect id="transfer-product" label="Produit à transférer" disabled={busy} controlClassName="h-11 [&_input]:text-foreground" value={productId} onValueChange={value=>changed(()=>{setProductId(value);setLot("fifo");})} options={products.data.filter(row=>!row.archivedAt&&row.stockTracked!==false).map(row=>({value:row.id,label:row.name}))}/></div><div className="space-y-1.5"><label htmlFor="transfer-quantity" className="text-sm">Quantité{product?` (${product.unit})`:""}</label><Input id="transfer-quantity" className="h-11 tabular-nums" inputMode="decimal" value={quantity} aria-invalid={insufficient||undefined} aria-describedby="transfer-stock-availability" onChange={event=>changed(()=>setQuantity(event.target.value))}/></div>
       <div className="min-w-0 space-y-1.5"><label className="text-sm">Depuis</label><SearchableSelect label="Emplacement de départ" disabled={busy} controlClassName="h-11 [&_input]:text-foreground" value={from} onValueChange={value=>changed(()=>{setFrom(value);setLot("fifo");if(to===value)setTo("");})} options={inventory.locations.filter(row=>row.active).map(row=>({value:row.id,label:row.name}))}/></div><div className="min-w-0 space-y-1.5"><label className="text-sm">Vers</label><SearchableSelect label="Emplacement d’arrivée" disabled={busy} controlClassName="h-11 [&_input]:text-foreground" value={to} onValueChange={value=>changed(()=>setTo(value))} options={inventory.locations.filter(row=>row.active&&row.id!==from).map(row=>({value:row.id,label:row.name}))}/></div>
@@ -103,7 +147,16 @@ export function StockOperationsPanel({onOpenMovements}: {onOpenMovements?:()=>vo
   const operations=useStockOperations();const inventory=useStockInventory();const {currentUser}=useAuth();
   const [view,setView]=useState("codes");const [mapping,setMapping]=useState(false);const [locationEdit,setLocationEdit]=useState<InventoryLocation|"new"|null>(null);const [transfer,setTransfer]=useState(false);
   const [busy,setBusy]=useState(false);const [error,setError]=useState<string|null>(null);
-  const run=async(action:()=>Promise<unknown>)=>{if(busy)return;setBusy(true);setError(null);try{await action();}catch(error){setError(failure(error));}finally{setBusy(false);}};
+  const run=async(action:()=>Promise<unknown>)=>{if(busy)return;setBusy(true);setError(null);await guard(async () => {
+await action();
+  }, {
+    recover: (error) => {
+  setError(failure(error));
+    },
+    cleanup: () => {
+  setBusy(false);
+    },
+  });};
   if(!isTauriRuntime())return <p className="p-5 text-sm text-muted-foreground">Les codes-barres, transferts et analyses de consommation sont disponibles dans l’application de bureau.</p>;
   return <section aria-label="Opérations de stock" className="min-w-0">
     <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border p-4"><Tabs value={view} onValueChange={value=>{setView(value);setMapping(false);setLocationEdit(null);setTransfer(false);}}><TabsList aria-label="Vue des opérations"><TabsTrigger value="codes">Codes-barres</TabsTrigger><TabsTrigger value="consumption">Consommation</TabsTrigger><TabsTrigger value="locations">Emplacements</TabsTrigger></TabsList></Tabs>

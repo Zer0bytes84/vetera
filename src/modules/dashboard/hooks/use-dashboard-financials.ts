@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { billingService } from "@/services/billingService";
 import { isTauriRuntime } from "@/services/browser-store";
 import type { Invoice } from "@/types/db";
+import { guard } from "@/lib/guard";
 let cached: Invoice[] | undefined;
 let pending: Promise<Invoice[]> | undefined;
 function readInvoices() {
@@ -23,14 +24,17 @@ export function useDashboardFinancials() {
   const [error, setError] = useState<string | null>(null);
   const refresh = useCallback(async () => {
     if (!isTauriRuntime()) return;
-    try {
+    await guard(async () => {
       setInvoices(await readInvoices());
       setError(null);
-    } catch {
-      setError("Les factures n’ont pas pu être chargées.");
-    } finally {
-      setLoading(false);
-    }
+    }, {
+      recover: () => {
+        setError("Les factures n’ont pas pu être chargées.");
+      },
+      cleanup: () => {
+        setLoading(false);
+      },
+    });
   }, []);
   useEffect(() => {
     let active = true;

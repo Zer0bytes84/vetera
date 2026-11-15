@@ -82,6 +82,7 @@ import {
   EmptyHeader,
   EmptyTitle,
 } from "@/components/ui/empty";
+import { guard } from "@/lib/guard";
 
 type StockFilter = "all" | "healthy" | "low" | "out" | "expiring" | "expired";
 
@@ -1279,12 +1280,14 @@ export function StockWorkspace({
                 );
                 if (!product) return;
                 setInventorySaving(true);
-                try {
+                await guard(async () => {
                   await onAdjust(product, countedQuantity, inventoryReason);
                   setInventoryOpen(false);
-                } finally {
-                  setInventorySaving(false);
-                }
+                }, {
+                  cleanup: () => {
+                    setInventorySaving(false);
+                  },
+                });
               }}
             >
               {inventorySaving ? "Enregistrement…" : "Valider le comptage"}

@@ -4,6 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { emitSQLiteDataChanged } from "@/hooks/useSQLite";
 import { staysService } from "./service";
 import { DatePicker } from "@/components/ui/date-picker";
+import { guard } from "@/lib/guard";
 
 export function StayFollowUp({ stayId }: { stayId: string }) {
   const { currentUser } = useAuth();
@@ -13,9 +14,16 @@ export function StayFollowUp({ stayId }: { stayId: string }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const refresh = useCallback(async () => {
-    try { setTask(await staysService.followUp(stayId)); }
-    catch { setError("Le contrôle de sortie n’a pas pu être chargé."); }
-    finally { setLoading(false); }
+    await guard(async () => {
+ setTask(await staysService.followUp(stayId));
+    }, {
+      recover: () => {
+   setError("Le contrôle de sortie n’a pas pu être chargé.");
+      },
+      cleanup: () => {
+   setLoading(false);
+      },
+    });
   }, [stayId]);
   useEffect(() => { void refresh(); }, [refresh]);
   return <section className="space-y-3 rounded-2xl border border-[#F2F2F2] bg-card p-5 dark:border-border">
@@ -26,12 +34,18 @@ export function StayFollowUp({ stayId }: { stayId: string }) {
         event.preventDefault();
         if (!currentUser || busy || !date) return;
         setBusy(true); setError(null);
-        try {
+        await guard(async () => {
           await staysService.scheduleFollowUp(stayId, date, currentUser.id);
           emitSQLiteDataChanged("tasks");
           await refresh();
-        } catch (cause) { setError(cause instanceof Error ? cause.message : "Le contrôle n’a pas pu être planifié."); }
-        finally { setBusy(false); }
+        }, {
+          recover: (cause) => {
+   setError(cause instanceof Error ? cause.message : "Le contrôle n’a pas pu être planifié.");
+          },
+          cleanup: () => {
+   setBusy(false);
+          },
+        });
       }}>
         <label className="space-y-2 t-13">Date du contrôle<DatePicker className="h-11" value={date} onChange={(value) => setDate(value)} required/></label>
         <Button type="submit" className="h-11" disabled={busy || !date || !currentUser}>{busy ? "Enregistrement…" : "Ajouter dans Rappels"}</Button>

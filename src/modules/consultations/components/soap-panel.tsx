@@ -48,6 +48,7 @@ import { ConsultationAssistantPanel } from "./consultation-assistant-panel";
 import { isSoapReviewed, reviewedSoapContent } from "../local-ai/soap-review";
 import { OPEN_SOAP_ASSISTANT_EVENT } from "@/modules/consultation-workspace/consultation-closure";
 import type { SoapNoteOrigin } from "./local-consultation-assistant";
+import { guard } from "@/lib/guard";
 
 const ConsultationDocumentsAssistant = lazy(
   () =>
@@ -162,7 +163,7 @@ export function SoapPanel({
       const operation = (async () => {
         await previous?.catch(() => undefined);
         setSaveStatus("saving");
-        try {
+        await guard(async () => {
           const saved = await repoRef.current.upsertForAppointment(
             appointmentId,
             patientId,
@@ -175,17 +176,21 @@ export function SoapPanel({
             );
           lastSaved.current = snapshot;
           setSaveStatus("saved");
-        } catch (error) {
-          setSaveStatus("error");
-          throw error;
-        }
+        }, {
+          recover: (error) => {
+            setSaveStatus("error");
+            throw error;
+          },
+        });
       })();
       pendingSave.current = operation;
-      try {
+      await guard(async () => {
         await operation;
-      } finally {
-        if (pendingSave.current === operation) pendingSave.current = null;
-      }
+      }, {
+        cleanup: () => {
+          if (pendingSave.current === operation) pendingSave.current = null;
+        },
+      });
     },
     [appointmentId, currentUser?.id, patientId]
   );

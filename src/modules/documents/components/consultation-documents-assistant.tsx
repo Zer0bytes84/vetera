@@ -67,6 +67,7 @@ import {
   MAX_DOCUMENT_CHARACTERS,
   assertReadableFile,
 } from "../lib/document-reading";
+import { guard, guardSync } from "@/lib/guard";
 
 type Draft = Pick<ReviewedDocumentInput, "title" | "text" | "source">;
 function fileFromAttachment(document: ConsultationDocument): File {
@@ -242,7 +243,7 @@ export default function ConsultationDocumentsAssistant({
   );
   const createDraft = () => {
     if (!ready || !patient || !appointment || !soap) return;
-    try {
+    guardSync(() => {
       const template = templates.templates.find(
         (entry) => entry.id === templateId
       );
@@ -270,9 +271,11 @@ export default function ConsultationDocumentsAssistant({
       });
       resetReview();
       setError("");
-    } catch (failure) {
-      setError((failure as Error).message);
-    }
+    }, {
+      recover: (failure) => {
+        setError((failure as Error).message);
+      },
+    });
   };
   const readFile = async (file: File, sourceId?: string) => {
     if (controller.current || saving) return;
@@ -293,19 +296,22 @@ export default function ConsultationDocumentsAssistant({
     setDraft(null);
     resetReview();
     setCharacters(undefined);
-    try {
+    await guard(async () => {
       const source = await readLocalDocument(file, task.signal, (update) => {
         if (controller.current === task) setProgress(update);
       });
       if (!task.signal.aborted) setReading({ ...source, sourceId });
-    } catch (failure) {
-      if (!task.signal.aborted) setError((failure as Error).message);
-    } finally {
-      if (controller.current === task) {
-        controller.current = null;
-        setBusy(false);
-      }
-    }
+    }, {
+      recover: (failure) => {
+        if (!task.signal.aborted) setError((failure as Error).message);
+      },
+      cleanup: () => {
+        if (controller.current === task) {
+          controller.current = null;
+          setBusy(false);
+        }
+      },
+    });
   };
   const chooseExisting = (value: string) => {
     setError("");
@@ -347,7 +353,7 @@ export default function ConsultationDocumentsAssistant({
     resetReview();
     setCharacters(0);
     setProgress({ message: "Préparation de la lecture assistée…" });
-    try {
+    await guard(async () => {
       const result = await readDocumentAnswer(
         reading,
         question,
@@ -364,14 +370,17 @@ export default function ConsultationDocumentsAssistant({
         setAnswer(result.answer);
         setPartial(result.partial);
       }
-    } catch (failure) {
-      if (!task.signal.aborted) setError((failure as Error).message);
-    } finally {
-      if (controller.current === task) {
-        controller.current = null;
-        setBusy(false);
-      }
-    }
+    }, {
+      recover: (failure) => {
+        if (!task.signal.aborted) setError((failure as Error).message);
+      },
+      cleanup: () => {
+        if (controller.current === task) {
+          controller.current = null;
+          setBusy(false);
+        }
+      },
+    });
   };
   const reviewReading = () => {
     if (!reading) return;
@@ -400,7 +409,7 @@ export default function ConsultationDocumentsAssistant({
     savingRef.current = true;
     setSaving(true);
     setError("");
-    try {
+    await guard(async () => {
       await saveReviewedDocument({
         ...draft,
         patientId,
@@ -410,25 +419,31 @@ export default function ConsultationDocumentsAssistant({
       });
       setSaved(true);
       toast.success("Document validé et enregistré dans le dossier patient.");
-    } catch (failure) {
-      setError((failure as Error).message);
-    } finally {
-      savingRef.current = false;
-      setSaving(false);
-    }
+    }, {
+      recover: (failure) => {
+        setError((failure as Error).message);
+      },
+      cleanup: () => {
+        savingRef.current = false;
+        setSaving(false);
+      },
+    });
   };
   const install = async () => {
     if (importing || busy) return;
     setImporting(true);
     setError("");
-    try {
+    await guard(async () => {
       const status = await importLocalModel("generator");
       if (status) setModels(status);
-    } catch (failure) {
-      setError((failure as Error).message);
-    } finally {
-      setImporting(false);
-    }
+    }, {
+      recover: (failure) => {
+        setError((failure as Error).message);
+      },
+      cleanup: () => {
+        setImporting(false);
+      },
+    });
   };
   const availableFiles = files.data.filter(
     (entry) =>

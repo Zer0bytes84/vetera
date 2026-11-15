@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { buildInvoicePdf, invoicePdfFileName, type InvoicePdfData, type InvoiceSettings } from "@/lib/invoice-pdf";
 import { isTestDataFolder } from "@/lib/test-data-folder";
 import { savePdf } from "@/lib/save-pdf";
+import { guard } from "@/lib/guard";
 
 const loadPdfjsDist = () => import("pdfjs-dist");
 const loadPdfjsDistBuildPdfWorkerMinMjs = () => import("pdfjs-dist/build/pdf.worker.min.mjs?url");
@@ -57,10 +58,16 @@ export function InvoicePdfPreview({ data, settings, onClose, sample = false }: {
   const download = async () => {
     if (!result.doc) return;
     setSaving(true);
-    try {
+    await guard(async () => {
       if (await savePdf(result.doc, invoicePdfFileName(data, { test, sample }))) toast.success("PDF enregistré.");
-    } catch (error) { toast.error(error instanceof Error ? error.message : "Impossible d’enregistrer le PDF."); }
-    finally { setSaving(false); }
+    }, {
+      recover: (error) => {
+   toast.error(error instanceof Error ? error.message : "Impossible d’enregistrer le PDF.");
+      },
+      cleanup: () => {
+   setSaving(false);
+      },
+    });
   };
   return (
     <Dialog open onOpenChange={(open) => { if (!open) onClose(); }}>

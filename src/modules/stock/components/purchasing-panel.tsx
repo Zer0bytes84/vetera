@@ -25,6 +25,7 @@ import { usePurchasing } from "../hooks/use-purchasing";
 import { purchasingService } from "../services/purchasing-service";
 import { exportPurchaseOrder } from "../services/purchase-order-pdf";
 import type { PurchaseOrder, PurchaseOrderLine, StockSupplier } from "../services/purchasing-store";
+import { guard } from "@/lib/guard";
 
 const labels: Record<PurchaseOrder["status"], string> = {draft: "Brouillon", ordered: "Commandée", partial: "Réception partielle", received: "Reçue", cancelled: "Annulée"};
 const dateLabel = (value: string) => new Date(value).toLocaleDateString("fr-FR");
@@ -37,7 +38,16 @@ function SupplierForm({supplier, onClose}: {supplier?: StockSupplier; onClose: (
   const [busy, setBusy] = useState(false); const [error, setError] = useState<string | null>(null);
   return <form noValidate aria-label="Fiche fournisseur" className="space-y-4 border-y border-border bg-muted/10 p-5" onSubmit={async event => {
     event.preventDefault(); if (busy || !draft.name.trim()) return; setBusy(true); setError(null);
-    try {await purchasingService.supplier({id, ...draft}); onClose();} catch (error) {setError(failure(error));} finally {setBusy(false);}
+    await guard(async () => {
+await purchasingService.supplier({id, ...draft}); onClose();
+    }, {
+      recover: (error) => {
+  setError(failure(error));
+      },
+      cleanup: () => {
+  setBusy(false);
+      },
+    });
   }}>
     <h3 className="text-base font-medium">{supplier ? "Modifier le fournisseur" : "Nouveau fournisseur"}</h3>
     <fieldset disabled={busy} className="grid gap-4 sm:grid-cols-2">
@@ -66,7 +76,16 @@ function OrderForm({order, initialLines, fromAlerts, productId, onClose, onSaved
   const update = (key: string, patch: Partial<typeof rows[number]>) => setRows(items => items.map(row => row.key === key ? {...row, ...patch} : row));
   return <form noValidate aria-label="Bon de commande" className="space-y-4 border-y border-border bg-muted/10 p-5" onSubmit={async event => {
     event.preventDefault(); if (busy || !valid || !currentUser) return; setBusy(true); setError(null);
-    try {await purchasingService.saveOrder({id: orderId, create: !order, supplierId: supplier, lines: payload, authorId: currentUser.id, expectedFingerprint: order?.fingerprint}); onSaved(orderId);} catch (error) {setError(failure(error));} finally {setBusy(false);}
+    await guard(async () => {
+await purchasingService.saveOrder({id: orderId, create: !order, supplierId: supplier, lines: payload, authorId: currentUser.id, expectedFingerprint: order?.fingerprint}); onSaved(orderId);
+    }, {
+      recover: (error) => {
+  setError(failure(error));
+      },
+      cleanup: () => {
+  setBusy(false);
+      },
+    });
   }}>
     <div><h3 className="text-base font-medium">{order ? "Modifier le brouillon" : "Préparer une commande"}</h3><p className="mt-1 text-sm text-muted-foreground">{fromAlerts ? "Les quantités proposées correspondent au manque par rapport aux seuils actuels. Vérifiez-les avant confirmation." : "Choisissez les produits, leurs quantités physiques et le coût d’achat convenu."}</p></div>
     <div className="max-w-lg space-y-1.5"><label htmlFor="order-supplier" className="text-sm">Fournisseur</label><SearchableSelect id="order-supplier" controlClassName="h-11 [&_input]:text-foreground" label="Fournisseur de la commande" value={supplier} onValueChange={setSupplier} disabled={busy} options={purchasing.suppliers.filter(row => !row.archived_at).map(row => ({value: row.id, label: row.name}))}/></div>
@@ -96,12 +115,19 @@ function ReceiptForm({order, lines, onClose}: {order: PurchaseOrder; lines: Purc
   const update = (lineId: string, patch: Partial<typeof rows[number]>) => setRows(items => items.map(row => row.id === lineId ? {...row, ...patch} : row));
   return <form noValidate aria-label="Réception de commande" className="space-y-5 border-y border-border bg-muted/10 p-5" onSubmit={async event => {
     event.preventDefault(); if (busy || !valid || !currentUser) return; setBusy(true); setError(null);
-    try {
+    await guard(async () => {
       const receivedAt = new Date(`${stockDay(date)}T${time}:00`);
       if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(time) || !Number.isFinite(receivedAt.getTime()) || stockDay(receivedAt) !== stockDay(date) || `${String(receivedAt.getHours()).padStart(2,"0")}:${String(receivedAt.getMinutes()).padStart(2,"0")}` !== time) throw new StockError("SOURCE_CONFLICT", "Choisissez une date et une heure de réception valides.");
       await purchasingService.receive({id: requestId, orderId: order.id, reference, receivedAt: receivedAt.toISOString(), authorId: currentUser.id,
         lines: rows.filter((_, index) => quantities[index] > 0).map(row => ({orderLineId: row.id, quantity: parseStockQuantityInput(row.received), lotNumber: row.lot, expiryDate: row.expiry ? stockDay(row.expiry) : null, locationId: row.location}))}); onClose();
-    } catch (error) {setError(failure(error));} finally {setBusy(false);}
+    }, {
+      recover: (error) => {
+  setError(failure(error));
+      },
+      cleanup: () => {
+  setBusy(false);
+      },
+    });
   }}>
     <div><h3 className="text-base font-medium">Réceptionner {order.reference}</h3><p className="mt-1 text-sm text-muted-foreground">Vérifiez les quantités réellement reçues. Laissez 0 pour un produit non livré.</p></div>
     <fieldset disabled={busy} className="grid gap-4 sm:grid-cols-2"><div className="space-y-1.5"><label htmlFor="receipt-reference" className="text-sm">Référence du bon de livraison</label><Input id="receipt-reference" className="h-11" value={reference} onChange={event => setReference(event.target.value)}/></div><div className="space-y-1.5"><label className="text-sm">Date et heure de réception</label><div className="flex gap-2"><StockDatePicker disabled={busy} label="Date de réception de commande" value={date} onChange={value => {if(value) setDate(value);}}/><CareTimePicker label="Heure de réception" value={time} onChange={setTime}/></div></div></fieldset>
@@ -141,7 +167,16 @@ export function PurchasingPanel({orderFor, onOrderOpened}: {orderFor?: string | 
     onOrderOpened?.();
   },[orderFor,purchasing.ready,purchasing.suppliers,onOrderOpened]);
   const missingSupplierProduct=missingSupplierFor?products.data.find(item=>item.id===missingSupplierFor):undefined;
-  const run=async(operation:()=>Promise<unknown>)=>{if(busy)return;setBusy(true);setError(null);try{await operation();}catch(error){setError(failure(error));}finally{setBusy(false);}};
+  const run=async(operation:()=>Promise<unknown>)=>{if(busy)return;setBusy(true);setError(null);await guard(async () => {
+await operation();
+  }, {
+    recover: (error) => {
+  setError(failure(error));
+    },
+    cleanup: () => {
+  setBusy(false);
+    },
+  });};
   if(!isTauriRuntime())return <p className="p-5 text-sm text-muted-foreground">Les fournisseurs, commandes et réceptions sont disponibles dans l’application de bureau.</p>;
   return <section aria-label="Approvisionnements" className="min-w-0">
     <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border p-4"><Tabs value={view} onValueChange={value=>{setView(value);setSelected(null);setOrderEdit(null);setReceiving(false);}}><TabsList aria-label="Vue des approvisionnements"><TabsTrigger value="orders">Commandes</TabsTrigger><TabsTrigger value="suppliers">Fournisseurs</TabsTrigger></TabsList></Tabs>

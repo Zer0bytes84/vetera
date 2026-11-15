@@ -22,6 +22,7 @@ import { DOCUMENT_VARIABLES } from "../document-variables";
 import { MANAGED_DOCUMENT_DEFAULTS } from "../document-migration";
 import { useManagedTemplates } from "../hooks/use-managed-documents";
 import "../document-module.css";
+import { guard } from "@/lib/guard";
 
 type TemplateDraft = {
   source: ManagedDocumentTemplate | null;
@@ -85,7 +86,7 @@ export default function DocumentTemplateManager({ onConfigureClinic, embedded = 
     if (!draft || !currentUser || !canEdit || busy) return;
     setBusy(true);
     setError("");
-    try {
+    await guard(async () => {
       await documentsService.saveTemplate({
         id: draft.source?.id, name: draft.name, kind: draft.kind, body: draft.body,
         active: draft.active, expectedUpdatedAt: draft.source?.updatedAt,
@@ -93,44 +94,53 @@ export default function DocumentTemplateManager({ onConfigureClinic, embedded = 
       await store.refresh();
       setDraft(null);
       toast.success("Modèle enregistré sur cet ordinateur.");
-    } catch (failure) {
-      setError(failure instanceof Error ? failure.message : "Le modèle n’a pas pu être enregistré. Réessayez.");
-    } finally {
-      setBusy(false);
-    }
+    }, {
+      recover: (failure) => {
+        setError(failure instanceof Error ? failure.message : "Le modèle n’a pas pu être enregistré. Réessayez.");
+      },
+      cleanup: () => {
+        setBusy(false);
+      },
+    });
   };
   const setTemplateActive = async (template: ManagedDocumentTemplate) => {
     if (!currentUser || !canEdit || busy) return;
     setBusy(true);
     setError("");
-    try {
+    await guard(async () => {
       await documentsService.saveTemplate({
         id: template.id, name: template.name, kind: template.kind, body: template.body,
         active: !template.active, expectedUpdatedAt: template.updatedAt,
       }, currentUser.id);
       await store.refresh();
       toast.success(template.active ? "Modèle désactivé. Les documents existants sont conservés." : "Modèle activé.");
-    } catch (failure) {
-      setError(failure instanceof Error ? failure.message : "Le statut du modèle n’a pas pu être modifié. Réessayez.");
-    } finally {
-      setBusy(false);
-    }
+    }, {
+      recover: (failure) => {
+        setError(failure instanceof Error ? failure.message : "Le statut du modèle n’a pas pu être modifié. Réessayez.");
+      },
+      cleanup: () => {
+        setBusy(false);
+      },
+    });
   };
   const remove = async () => {
     if (!pendingDelete || !currentUser || !canEdit || busy) return;
     setBusy(true);
     setError("");
-    try {
+    await guard(async () => {
       await documentsService.deleteTemplate(pendingDelete.id, currentUser.id);
       await store.refresh();
       setPendingDelete(null);
       toast.success("Modèle supprimé.");
-    } catch (failure) {
-      setError(failure instanceof Error ? failure.message : "Le modèle n’a pas pu être supprimé. Réessayez.");
-      setPendingDelete(null);
-    } finally {
-      setBusy(false);
-    }
+    }, {
+      recover: (failure) => {
+        setError(failure instanceof Error ? failure.message : "Le modèle n’a pas pu être supprimé. Réessayez.");
+        setPendingDelete(null);
+      },
+      cleanup: () => {
+        setBusy(false);
+      },
+    });
   };
   const insertVariable = (key: string) => {
     if (!draft || busy || !canEdit) return;

@@ -6,6 +6,7 @@ import { ACTIVE_STAY_STATUSES } from "./domain";
 import { staysService } from "./service";
 import type { Stay, StayLocation } from "./store";
 import { announceStaysChanged, useStays } from "./use-stays";
+import { guard } from "@/lib/guard";
 export function LocationAvailability({ location, occupied }: { location: StayLocation; occupied: boolean }) {
   const { currentUser } = useAuth();
   const [busy, setBusy] = useState(false), [error, setError] = useState<string | null>(null);
@@ -13,9 +14,16 @@ export function LocationAvailability({ location, occupied }: { location: StayLoc
     <Button className="h-11" variant="outline" disabled={busy || !currentUser || occupied} onClick={async () => {
       if (!currentUser || busy) return;
       setBusy(true); setError(null);
-      try { await staysService.setLocationActive(location.id, !location.active, currentUser.id); announceStaysChanged(); }
-      catch (cause) { setError(cause instanceof Error ? cause.message : "L’emplacement n’a pas pu être modifié."); }
-      finally { setBusy(false); }
+      await guard(async () => {
+ await staysService.setLocationActive(location.id, !location.active, currentUser.id); announceStaysChanged();
+      }, {
+        recover: (cause) => {
+   setError(cause instanceof Error ? cause.message : "L’emplacement n’a pas pu être modifié.");
+        },
+        cleanup: () => {
+   setBusy(false);
+        },
+      });
     }}>{busy ? "Enregistrement…" : location.active ? "Désactiver" : "Activer"}</Button>
     {occupied && <p className="t-12 text-muted-foreground">Transférez le patient avant de désactiver cet emplacement.</p>}
     {error && <p role="alert" className="t-13 text-destructive">{error}</p>}
@@ -33,9 +41,16 @@ export function StayTransfer({ stay }: { stay: Stay }) {
     <form className="flex flex-wrap items-end gap-3" onSubmit={async event => {
       event.preventDefault(); if (!currentUser || busy || !locationId || !reason.trim()) return;
       setBusy(true); setError(null);
-      try { await staysService.transfer(stay.id, locationId, currentUser.id, reason); setLocationId(""); setReason(""); announceStaysChanged(); }
-      catch (cause) { setError(cause instanceof Error ? cause.message : "Le transfert n’a pas pu être enregistré."); }
-      finally { setBusy(false); }
+      await guard(async () => {
+ await staysService.transfer(stay.id, locationId, currentUser.id, reason); setLocationId(""); setReason(""); announceStaysChanged();
+      }, {
+        recover: (cause) => {
+   setError(cause instanceof Error ? cause.message : "Le transfert n’a pas pu être enregistré.");
+        },
+        cleanup: () => {
+   setBusy(false);
+        },
+      });
     }}>
       <label className="min-w-48 space-y-2 t-13">Nouvel emplacement<select className="h-11 w-full rounded-xl border bg-background px-3" value={locationId} onChange={event => setLocationId(event.target.value)}><option value="">Choisir un emplacement libre</option>{available.map(location => <option key={location.id} value={location.id}>{location.name}</option>)}</select></label>
       <label className="min-w-48 flex-1 space-y-2 t-13">Motif du transfert<Input className="h-11" value={reason} onChange={event => setReason(event.target.value)}/></label>

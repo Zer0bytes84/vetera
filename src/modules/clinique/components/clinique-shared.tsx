@@ -72,6 +72,7 @@ import type {
   Owner,
   Patient,
 } from "@/types/db";
+import { guard } from "@/lib/guard";
 
 export type CliniqueProps = {
   onNavigate?: (view: View) => void;
@@ -652,43 +653,50 @@ export function ConsultationSessionDialog({
       return;
     }
 
-    try {
+    await guard(async () => {
       setIsUploadingDocument(true);
       await onUploadDocument(file, documentDescription.trim());
       setDocumentDescription("");
       toast.success("Document ajouté à la consultation.");
-    } catch (error) {
-      console.error(error);
-      toast.error("Impossible d'ajouter ce document.");
-    } finally {
-      setIsUploadingDocument(false);
-    }
+    }, {
+      recover: (error) => {
+        console.error(error);
+        toast.error("Impossible d'ajouter ce document.");
+      },
+      cleanup: () => {
+        setIsUploadingDocument(false);
+      },
+    });
   };
 
   const handleSaveDraftClick = async () => {
     if (isSavingDraft || isCompleting) {
       return;
     }
-    try {
+    await guard(async () => {
       setIsSavingDraft(true);
       await onSaveDraft(buildPayload());
       setLastAutoSavedAt(new Date());
       setAutosaveStatus("saved");
-    } finally {
-      setIsSavingDraft(false);
-    }
+    }, {
+      cleanup: () => {
+        setIsSavingDraft(false);
+      },
+    });
   };
 
   const handleCompleteClick = async () => {
     if (isSavingDraft || isCompleting) {
       return;
     }
-    try {
+    await guard(async () => {
       setIsCompleting(true);
       await onComplete(buildPayload());
-    } finally {
-      setIsCompleting(false);
-    }
+    }, {
+      cleanup: () => {
+        setIsCompleting(false);
+      },
+    });
   };
 
   return (
@@ -1282,12 +1290,14 @@ export function BillingDialog({
     if (!draft.canConfirm) {
       return;
     }
-    try {
+    await guard(async () => {
       setIsConfirming(true);
       await onConfirm(items, draft.received ?? 0);
-    } finally {
-      setIsConfirming(false);
-    }
+    }, {
+      cleanup: () => {
+        setIsConfirming(false);
+      },
+    });
   };
 
   return (

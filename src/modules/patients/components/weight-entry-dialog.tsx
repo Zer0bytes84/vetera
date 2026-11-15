@@ -39,6 +39,7 @@ import { useWeightEntriesRepository } from "@/data/repositories";
 import type { WeightEntry } from "@/types/db";
 import { toDateInputValue } from "./patients-shared";
 import { DatePicker } from "@/components/ui/date-picker";
+import { guard } from "@/lib/guard";
 
 interface WeightEntryDialogProps {
   onOpenChange: (open: boolean) => void;
@@ -109,7 +110,7 @@ export function WeightEntryDialog({
     }
     setIsSubmitting(true);
     setError(null);
-    try {
+    await guard(async () => {
       const payload = {
         patientId,
         weightKg: weightNumber,
@@ -145,12 +146,15 @@ export function WeightEntryDialog({
         );
       }
       onOpenChange(false);
-    } catch (err) {
-      console.error("[WeightEntryDialog] save failed", err);
-      setError(err instanceof Error ? err.message : "Erreur");
-    } finally {
-      setIsSubmitting(false);
-    }
+    }, {
+      recover: (err) => {
+        console.error("[WeightEntryDialog] save failed", err);
+        setError(err instanceof Error ? err.message : "Erreur");
+      },
+      cleanup: () => {
+        setIsSubmitting(false);
+      },
+    });
   };
 
   const confirmDelete = async () => {
@@ -158,7 +162,7 @@ export function WeightEntryDialog({
       return;
     }
     setIsDeleting(true);
-    try {
+    await guard(async () => {
       const ok = await repo.remove(weightEntry.id);
       if (ok) {
         toast.success(
@@ -169,9 +173,11 @@ export function WeightEntryDialog({
         setConfirmDeleteOpen(false);
         onOpenChange(false);
       }
-    } finally {
-      setIsDeleting(false);
-    }
+    }, {
+      cleanup: () => {
+        setIsDeleting(false);
+      },
+    });
   };
 
   return (

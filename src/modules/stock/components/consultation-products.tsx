@@ -12,6 +12,7 @@ import { clinicalStockService } from "../services/clinical-stock-service";
 import type { ClinicalStockUse } from "../services/clinical-stock-store";
 import { ProductStockFields } from "./product-stock-fields";
 import { StockInvoiceLink } from "./stock-invoice-link";
+import { guard } from "@/lib/guard";
 
 export function ConsultationProducts({appointmentId, patientId}: {appointmentId: string; patientId: string}) {
   const {currentUser} = useAuth();
@@ -48,11 +49,17 @@ export function ConsultationProducts({appointmentId, patientId}: {appointmentId:
     <form noValidate className="space-y-3" onSubmit={async event => {
       event.preventDefault(); if (busy || !valid || !currentUser) return;
       setBusy(true); setError(null);
-      try {
+      await guard(async () => {
         await clinicalStockService.useProduct({id: requestId, appointmentId, patientId, productId, quantity: product?.stockTracked === false ? 1 : requested, authorId: currentUser.id});
         setProductId(""); setQuantity("1"); setRequestId(generateId()); setRevision(value => value + 1);
-      } catch (error) {setError(error instanceof StockError ? error.message : "L’utilisation n’a pas pu être enregistrée. Le stock reste inchangé. Réessayez.");}
-      finally {setBusy(false);}
+      }, {
+        recover: (error) => {
+  setError(error instanceof StockError ? error.message : "L’utilisation n’a pas pu être enregistrée. Le stock reste inchangé. Réessayez.");
+        },
+        cleanup: () => {
+  setBusy(false);
+        },
+      });
     }}>
       <ProductStockFields products={products.data} productId={productId} quantity={quantity} disabled={busy}
         onProductChange={id => {setProductId(id); setQuantity("1"); setRequestId(generateId());}} onQuantityChange={value => {setQuantity(value); setRequestId(generateId());}} />

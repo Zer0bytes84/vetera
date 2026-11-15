@@ -40,6 +40,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { useAuth } from "@/contexts/AuthContext";
 import { useLibraryItemsRepository, useNotesRepository, usePatientsRepository } from "@/data/repositories";
 import type { Note, Patient } from "@/types/db";
+import { guard } from "@/lib/guard";
 
 const DocumentsWorkspace = lazy(() => import("@/modules/documents/components/documents-workspace"));
 
@@ -362,7 +363,7 @@ const NotesPro: React.FC = () => {
         toast.error(verdict.reason);
         continue;
       }
-      try {
+      await guard(async () => {
         const dataUrl = await readFileAsDataUrl(file);
         const saved = await addItem({
           userId: currentUser.uid,
@@ -378,9 +379,11 @@ const NotesPro: React.FC = () => {
         });
         if (saved) added += 1;
         else toast.error(`« ${file.name} » n’a pas pu être enregistré.`);
-      } catch {
-        toast.error(`« ${file.name} » n’a pas pu être lu.`);
-      }
+      }, {
+        recover: () => {
+          toast.error(`« ${file.name} » n’a pas pu être lu.`);
+        },
+      });
     }
     if (added) toast.success(added === 1 ? "Ajouté à vos documents." : `${added} éléments ajoutés à vos documents.`);
   };

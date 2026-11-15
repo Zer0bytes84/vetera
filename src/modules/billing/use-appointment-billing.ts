@@ -16,6 +16,7 @@ import { formatOwnerName, type BillingItem } from "@/modules/clinique/components
 import type { useAppointmentsRepository } from "@/data/repositories";
 import type { ExistingInvoice } from "./billing-draft";
 import { patientDocumentName } from "@/modules/patients/reference/reference";
+import { guard } from "@/lib/guard";
 
 /**
  * Billing of a visit, shared by Clinique and Flux so both bill the same way:
@@ -119,7 +120,7 @@ export function useAppointmentBilling({
       );
 
       const exportReceipt = async () => {
-        try {
+        await guard(async () => {
           const invoice = isTauriRuntime()
             ? await billingService.getInvoice(
                 `appointment-invoice-${billingAppointment.id}`
@@ -156,23 +157,25 @@ export function useAppointmentBilling({
               ? "Facture PDF enregistrée, prête à imprimer."
               : "Encaissement conservé. Export PDF annulé."
           );
-        } catch (error) {
-          console.error(
-            "[Billing] Receipt export failed after successful payment",
-            error
-          );
-          toast.error(
-            "Facture enregistrée, mais le PDF n’a pas pu être généré.",
-            {
-              action: {
-                label: "Réessayer le PDF",
-                onClick: () => {
-                  void exportReceipt();
+        }, {
+          recover: (error) => {
+            console.error(
+              "[Billing] Receipt export failed after successful payment",
+              error
+            );
+            toast.error(
+              "Facture enregistrée, mais le PDF n’a pas pu être généré.",
+              {
+                action: {
+                  label: "Réessayer le PDF",
+                  onClick: () => {
+                    void exportReceipt();
+                  },
                 },
-              },
-            }
-          );
-        }
+              }
+            );
+          },
+        });
       };
       void exportReceipt();
 

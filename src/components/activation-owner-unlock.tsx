@@ -1,6 +1,7 @@
 import { useState, type ReactNode } from "react";
 import { requireActivationOwner } from "@/services/adminAccess";
 import { setStoredAdminToken, verifyAdminToken } from "@/services/licenseActivationService";
+import { guard } from "@/lib/guard";
 
 /** The server secret is entered explicitly and never persisted on disk. */
 export function ActivationOwnerUnlock({ children }: { children: ReactNode }) {
@@ -15,16 +16,21 @@ export function ActivationOwnerUnlock({ children }: { children: ReactNode }) {
       if (busy || !token.trim()) return;
       setBusy(true);
       setError("");
-      try {
+      await guard(async () => {
         await requireActivationOwner();
         if (!await verifyAdminToken(token.trim())) throw new Error("Jeton refusé ou serveur indisponible. Vérifiez le jeton puis réessayez.");
         await requireActivationOwner();
         setStoredAdminToken(token);
         setToken("");
         setUnlocked(true);
-      } catch (cause) {
-        setError(cause instanceof Error ? cause.message : "Accès impossible.");
-      } finally { setBusy(false); }
+      }, {
+        recover: (cause) => {
+          setError(cause instanceof Error ? cause.message : "Accès impossible.");
+        },
+        cleanup: () => {
+   setBusy(false);
+        },
+      });
     }}>
       <h1 className="t-18 font-medium">Déverrouiller le Centre d’Activation</h1>
       <p className="text-sm text-muted-foreground">Accès propriétaire. Le jeton de gestion est vérifié par le serveur et conservé uniquement pour cette session.</p>

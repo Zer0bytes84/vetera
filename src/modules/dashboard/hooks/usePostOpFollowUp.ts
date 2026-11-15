@@ -5,6 +5,7 @@ import {
   type Species,
 } from "@/lib/clinical-alerts";
 import { runDbRead } from "@/services/sqlite/database";
+import { guard } from "@/lib/guard";
 
 export interface PostOpPatient {
   alerts: ClinicalAlert[];
@@ -41,7 +42,7 @@ export function usePostOpFollowUp() {
   const [error, setError] = useState<Error | null>(null);
 
   const loadPatients = async () => {
-    try {
+    await guard(async () => {
       setIsLoading(true);
       const data = await runDbRead(async (db) => {
         const rows = await db.select<PostOpPatientRaw[]>(
@@ -94,11 +95,14 @@ export function usePostOpFollowUp() {
       const computed: PostOpPatient[] = data.map((row) => computePatient(row));
       setPatients(computed);
       setError(null);
-    } catch (err) {
-      setError(err instanceof Error ? err : new Error(String(err)));
-    } finally {
-      setIsLoading(false);
-    }
+    }, {
+      recover: (err) => {
+        setError(err instanceof Error ? err : new Error(String(err)));
+      },
+      cleanup: () => {
+        setIsLoading(false);
+      },
+    });
   };
 
   useEffect(() => {

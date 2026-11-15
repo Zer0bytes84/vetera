@@ -13,6 +13,7 @@ import { documentsService } from "../document-service";
 import { exportManagedDocument, patientDocumentPdf, printManagedDocument } from "../lib/managed-document-pdf";
 import { DocumentPaperPreview } from "./document-paper-preview";
 import "./document-preview.css";
+import { guard } from "@/lib/guard";
 
 const loadTauriAppsPluginDialog = () => import("@tauri-apps/plugin-dialog");
 const loadTauriAppsPluginFs = () => import("@tauri-apps/plugin-fs");
@@ -52,9 +53,16 @@ export function DocumentPreviewDialog({ documentId, onClose, onChanged }: {
   async function perform(action: () => Promise<void>) {
     if (busy) return;
     setBusy(true); setError("");
-    try { await action(); }
-    catch (cause) { setError(cause instanceof Error ? cause.message : "L’action n’a pas pu aboutir. Réessayez."); }
-    finally { setBusy(false); }
+    await guard(async () => {
+ await action();
+    }, {
+      recover: (cause) => {
+   setError(cause instanceof Error ? cause.message : "L’action n’a pas pu aboutir. Réessayez.");
+      },
+      cleanup: () => {
+   setBusy(false);
+      },
+    });
   }
   const author = currentUser?.id ?? "";
   async function downloadOriginal() {

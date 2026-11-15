@@ -35,6 +35,7 @@ import SlashCommands, {
   type SlashCommandItem,
   createSlashCommandsSuggestion,
 } from "./SlashCommandsExtension";
+import { guard } from "@/lib/guard";
 
 interface EditorProps {
   content: string;
@@ -168,7 +169,7 @@ const Editor: React.FC<EditorProps> = ({
     setIsAiLoading(true);
     const originalHtml = editor.getHTML();
 
-    try {
+    await guard(async () => {
       const context = selectedText || (isDraft ? "" : documentText);
 
       const result = await assistWithNote(context, instruction);
@@ -184,23 +185,26 @@ const Editor: React.FC<EditorProps> = ({
         to: selection.to,
         selected: Boolean(selectedText),
       });
-    } catch (e: any) {
-      console.error("[AI Generation Error]", e);
+    }, {
+      recover: (e: any) => {
+        console.error("[AI Generation Error]", e);
 
-      let errorMessage = "Erreur IA.";
-      if (e.message?.includes("not initialized")) {
-        errorMessage =
-          "L'assistant est en cours de préparation. Veuillez attendre quelques secondes.";
-      } else if (e.message?.includes("WebGPU")) {
-        errorMessage = "Fonctionnalité non supportée par votre navigateur.";
-      } else {
-        errorMessage = `Erreur: ${e.message || "Vérifiez votre connexion."}`;
-      }
+        let errorMessage = "Erreur IA.";
+        if (e.message?.includes("not initialized")) {
+          errorMessage =
+            "L'assistant est en cours de préparation. Veuillez attendre quelques secondes.";
+        } else if (e.message?.includes("WebGPU")) {
+          errorMessage = "Fonctionnalité non supportée par votre navigateur.";
+        } else {
+          errorMessage = `Erreur: ${e.message || "Vérifiez votre connexion."}`;
+        }
 
-      setAiError(errorMessage);
-    } finally {
-      setIsAiLoading(false);
-    }
+        setAiError(errorMessage);
+      },
+      cleanup: () => {
+        setIsAiLoading(false);
+      },
+    });
   };
 
   const applySuggestion = (mode: "insert" | "replace") => {

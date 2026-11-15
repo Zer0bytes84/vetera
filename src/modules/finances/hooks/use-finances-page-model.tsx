@@ -43,6 +43,7 @@ import {
   createTransactionDraft,
   isDateInRange,
 } from "@/modules/finances/components/finances-shared";
+import { guard } from "@/lib/guard";
 
 export function useFinancesPageModel({
   onNavigate,
@@ -161,14 +162,17 @@ export function useFinancesPageModel({
       return;
     }
 
-    try {
+    await guard(async () => {
       setInvoices(await billingService.listInvoices());
-    } catch (error) {
-      console.error("[Finances] Unable to load invoices", error);
-      setInvoiceError("Impossible de charger les factures locales.");
-    } finally {
-      setInvoicesLoading(false);
-    }
+    }, {
+      recover: (error) => {
+        console.error("[Finances] Unable to load invoices", error);
+        setInvoiceError("Impossible de charger les factures locales.");
+      },
+      cleanup: () => {
+        setInvoicesLoading(false);
+      },
+    });
   }, []);
 
   useEffect(() => {
@@ -616,7 +620,7 @@ export function useFinancesPageModel({
 
     let persistedDraftId = invoiceDraft.createdInvoiceId;
     setIsSubmitting(true);
-    try {
+    await guard(async () => {
       const invoiceId = invoiceDraft.createdInvoiceId;
       const created = invoiceId
         ? await billingService.getInvoice(invoiceId)
@@ -659,25 +663,28 @@ export function useFinancesPageModel({
       setIsInvoiceDialogOpen(false);
       setInvoiceDraft(createInvoiceDraft());
       await loadInvoices();
-    } catch (error) {
-      console.error(error);
-      if (action === "issue" && persistedDraftId) {
-        toast.warning(
-          "L’émission a échoué, mais le brouillon a été conservé. Vous pourrez l’émettre depuis le registre."
-        );
-        setIsInvoiceDialogOpen(false);
-        setInvoiceDraft(createInvoiceDraft());
-        await loadInvoices();
-      } else {
-        toast.error(
-          error instanceof Error
-            ? error.message
-            : "Impossible d’enregistrer la facture."
-        );
-      }
-    } finally {
-      setIsSubmitting(false);
-    }
+    }, {
+      recover: async (error) => {
+        console.error(error);
+        if (action === "issue" && persistedDraftId) {
+          toast.warning(
+            "L’émission a échoué, mais le brouillon a été conservé. Vous pourrez l’émettre depuis le registre."
+          );
+          setIsInvoiceDialogOpen(false);
+          setInvoiceDraft(createInvoiceDraft());
+          await loadInvoices();
+        } else {
+          toast.error(
+            error instanceof Error
+              ? error.message
+              : "Impossible d’enregistrer la facture."
+          );
+        }
+      },
+      cleanup: () => {
+        setIsSubmitting(false);
+      },
+    });
   };
 
   const startEditingInvoicePrices = () => {
@@ -688,21 +695,26 @@ export function useFinancesPageModel({
   const saveInvoicePrices = async () => {
     if (!selectedInvoice || isSubmitting) return;
     setIsSubmitting(true);
-    try {
+    await guard(async () => {
       const lines = draftPriceLines(selectedInvoice, invoicePrices);
       const saved = await billingService.updateInvoiceDraft({ invoiceId: selectedInvoice.id, lines, actor });
       setSelectedInvoice((current) => current?.id === saved.id ? saved : current);
       setEditingInvoicePrices(false);
       toast.success("Tarifs enregistrés. Le total de la facture a été recalculé.");
       await loadInvoices();
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Les tarifs n’ont pas pu être enregistrés.");
-    } finally { setIsSubmitting(false); }
+    }, {
+      recover: (error) => {
+        toast.error(error instanceof Error ? error.message : "Les tarifs n’ont pas pu être enregistrés.");
+      },
+      cleanup: () => {
+   setIsSubmitting(false);
+      },
+    });
   };
 
   const issueExistingInvoice = async (invoice: Invoice) => {
     setIsSubmitting(true);
-    try {
+    await guard(async () => {
       await billingService.issueInvoice({
         actor,
         clinicSnapshot: await getClinicSnapshot(),
@@ -715,16 +727,19 @@ export function useFinancesPageModel({
         const detail = await billingService.getInvoice(invoice.id);
         setSelectedInvoice(detail);
       }
-    } catch (error) {
-      console.error(error);
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : "Impossible d’émettre la facture."
-      );
-    } finally {
-      setIsSubmitting(false);
-    }
+    }, {
+      recover: (error) => {
+        console.error(error);
+        toast.error(
+          error instanceof Error
+            ? error.message
+            : "Impossible d’émettre la facture."
+        );
+      },
+      cleanup: () => {
+        setIsSubmitting(false);
+      },
+    });
   };
 
   /** I1 : l'émission fige la facture et lui attribue un numéro officiel. */
@@ -757,7 +772,7 @@ export function useFinancesPageModel({
       return;
     }
     setIsSubmitting(true);
-    try {
+    await guard(async () => {
       await billingService.voidInvoice({
         actor,
         invoiceId: voidTarget.id,
@@ -771,16 +786,19 @@ export function useFinancesPageModel({
         const detail = await billingService.getInvoice(voidTarget.id);
         setSelectedInvoice(detail);
       }
-    } catch (error) {
-      console.error(error);
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : "Impossible d’annuler la facture."
-      );
-    } finally {
-      setIsSubmitting(false);
-    }
+    }, {
+      recover: (error) => {
+        console.error(error);
+        toast.error(
+          error instanceof Error
+            ? error.message
+            : "Impossible d’annuler la facture."
+        );
+      },
+      cleanup: () => {
+        setIsSubmitting(false);
+      },
+    });
   };
 
   /** I11 : supprimer un brouillon abandonné (jamais émis). */
@@ -792,7 +810,7 @@ export function useFinancesPageModel({
       return;
     }
     setIsSubmitting(true);
-    try {
+    await guard(async () => {
       await billingService.deleteInvoiceDraft({
         actor,
         invoiceId: deleteDraftTarget.id,
@@ -800,16 +818,19 @@ export function useFinancesPageModel({
       toast.success("Brouillon de facture supprimé.");
       setDeleteDraftTarget(null);
       await loadInvoices();
-    } catch (error) {
-      console.error(error);
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : "Impossible de supprimer le brouillon."
-      );
-    } finally {
-      setIsSubmitting(false);
-    }
+    }, {
+      recover: (error) => {
+        console.error(error);
+        toast.error(
+          error instanceof Error
+            ? error.message
+            : "Impossible de supprimer le brouillon."
+        );
+      },
+      cleanup: () => {
+        setIsSubmitting(false);
+      },
+    });
   };
 
   const openPaymentDialog = (invoice: Invoice) => {
@@ -833,7 +854,7 @@ export function useFinancesPageModel({
     }
     const amountCentimes = toCentimes(amount);
     setIsSubmitting(true);
-    try {
+    await guard(async () => {
       await billingService.recordPayment({
         actor,
         amount: amountCentimes,
@@ -853,16 +874,19 @@ export function useFinancesPageModel({
       if (selectedInvoice?.id === paymentInvoice.id) {
         setSelectedInvoice(await billingService.getInvoice(paymentInvoice.id));
       }
-    } catch (error) {
-      console.error(error);
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : "Impossible d’enregistrer le règlement."
-      );
-    } finally {
-      setIsSubmitting(false);
-    }
+    }, {
+      recover: (error) => {
+        console.error(error);
+        toast.error(
+          error instanceof Error
+            ? error.message
+            : "Impossible d’enregistrer le règlement."
+        );
+      },
+      cleanup: () => {
+        setIsSubmitting(false);
+      },
+    });
   };
 
   const openTransactionEditor = (transaction?: Transaction) => {
@@ -905,7 +929,7 @@ export function useFinancesPageModel({
     }
 
     setIsSubmitting(true);
-    try {
+    await guard(async () => {
       const payload = {
         amount: toCentimes(amount),
         category: transactionDraft.category.trim() || "Autre",
@@ -934,12 +958,15 @@ export function useFinancesPageModel({
       );
       setIsTransactionDialogOpen(false);
       setEditingTransaction(null);
-    } catch (error) {
-      console.error(error);
-      toast.error("Impossible d’enregistrer cette écriture.");
-    } finally {
-      setIsSubmitting(false);
-    }
+    }, {
+      recover: (error) => {
+        console.error(error);
+        toast.error("Impossible d’enregistrer cette écriture.");
+      },
+      cleanup: () => {
+        setIsSubmitting(false);
+      },
+    });
   };
 
   const toggleTransactionStatus = async (transaction: Transaction) => {
@@ -947,17 +974,19 @@ export function useFinancesPageModel({
       toast.info("Le statut d’une écriture générée est verrouillé.");
       return;
     }
-    try {
+    await guard(async () => {
       const updated = await updateTransaction(transaction.id, {
         status: transaction.status === "paid" ? "pending" : "paid",
       });
       if (!updated) {
         throw new Error("La base locale a refusé la modification du statut.");
       }
-    } catch (error) {
-      console.error(error);
-      toast.error("Impossible de modifier le statut.");
-    }
+    }, {
+      recover: (error) => {
+        console.error(error);
+        toast.error("Impossible de modifier le statut.");
+      },
+    });
   };
   return {
     activeTab,
