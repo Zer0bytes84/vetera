@@ -20,7 +20,6 @@ import {
   runDbRead,
   toSQLiteTimestamp,
 } from "../services/sqlite/database";
-import { guard } from "@/lib/guard";
 
 interface UseSQLiteResult<T> {
   add: (item: Omit<T, "id" | "createdAt" | "updatedAt">) => Promise<T | null>;
@@ -295,6 +294,149 @@ function updateWriteStatus(patch: Partial<SQLiteWriteStatus>) {
   writeListeners.forEach(listener => listener());
 }
 
+/** Relit la ligne ecrite. Hors du hook : le `try` porte une expression conditionnelle que le compilateur React ne traduit pas. */
+async function readAuthoritativeRow(db: SQLiteDatabase, safeTableName: string | null, mapRow: (row: Record<string, unknown>) => CachedRow, id: string, fallback: CachedRow): Promise<CachedRow> {
+  try {
+    const rows = await db.select<Record<string, unknown>[]>(
+      safeTableName === "patients" ? `${PATIENTS_WITH_REFERENCE_SQL} WHERE patients.id = ?` : `SELECT * FROM ${safeTableName} WHERE id = ?`,
+      [id]
+    );
+    return rows[0] ? mapRow(rows[0]) : fallback;
+  } catch {
+    // The write already succeeded. A post-write read must not falsely roll it back.
+    return fallback;
+  }
+}
+
+/** Lecture d'une table. Hors du hook : « Réessayer » rappelle cette même fonction, ce qu'un rappel de composant ne peut pas faire. */
+async function reloadTable(ops: { safeTableName: string | null; tableName: string; setError: (message: string | null) => void; setLoading: (value: boolean) => void; setIsRefreshing: (value: boolean) => void }, force = false): Promise<void> {
+  const { safeTableName, tableName, setError, setLoading, setIsRefreshing } = ops;
+  try {
+    if (!safeTableName) throw new Error(`Table non autorisée: ${tableName}`);
+    setError(null);
+    setIsRefreshing(tableSnapshotCache.has(safeTableName));
+    await loadTableSnapshot(safeTableName, force);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Lecture impossible";
+    setError(message);
+    toast.error("Les données n’ont pas pu être chargées.", {
+      description: message,
+      action: { label: "Réessayer", onClick: () => { void reloadTable(ops, true); } },
+    });
+  } finally {
+    setLoading(false);
+    setIsRefreshing(false);
+  }
+}
+
+/** Ce que les opérations d'écriture reçoivent du hook : les valeurs de sa fermeture, passées explicitement. */
+interface TableOps<T extends { id: string }> {
+  safeTableName: string | null; tableName: string; sourceId: string;
+  loadData: (force?: boolean) => Promise<void>;
+  write: <R>(id: string, apply: (rows: CachedRow[]) => CachedRow[], operation: (db: SQLiteDatabase) => Promise<{ value: R; row?: CachedRow | null }>, retry: () => unknown) => Promise<R>;
+  authoritativeRow: (db: SQLiteDatabase, id: string, fallback: CachedRow) => Promise<CachedRow>;
+  /** Pour le typage seul : T n'apparaît que dans les signatures des opérations. */
+  readonly rowType?: T;
+}
+
+
+async function addRow<T extends { id: string }>(ops: TableOps<T>, item: Omit<T, "id" | "createdAt" | "updatedAt">): Promise<T | null> {
+  const { safeTableName, tableName, sourceId, loadData, write, authoritativeRow } = ops;
+  if (!safeTableName) throw new Error(`Table non autorisée: ${tableName}`);
+  const id = generateId();
+  if (!isTauriRuntime()) {
+    const created = insertBrowserRow(safeTableName as BrowserTableName, { id, ...item });
+    await loadData();
+    publishPatchedTable(safeTableName, sourceId, id);
+    return created as T;
+  }
+  const optimistic = { ...item, id, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() } as unknown as CachedRow;
+  try {
+    return await write(id, rows => [...rows.filter(row => row.id !== id), optimistic], async (db) => {
+      const columns = await getTableColumns(db, safeTableName);
+      const payload = normalizeDbPayloadToExistingColumns(stripUndefinedEntries(mapKeys(item as Record<string, unknown>, toSnakeCase)), columns);
+      const fields = Object.keys(payload).filter(field => field !== "id");
+      await db.execute(`INSERT INTO ${safeTableName} (id${fields.length ? `, ${fields.join(", ")}` : ""}) VALUES (?${fields.map(() => ", ?").join("")})`, [id, ...fields.map(field => sanitizeParam(payload[field]))]);
+      const row = await authoritativeRow(db, id, optimistic);
+      return { value: row as unknown as T, row };
+    }, () => addRow(ops, item));
+  } catch { return null; }
+
+}
+
+async function updateRow<T extends { id: string }>(ops: TableOps<T>, id: string, updates: Partial<T>): Promise<boolean> {
+  const { safeTableName, tableName, sourceId, loadData, write, authoritativeRow } = ops;
+  if (!safeTableName) throw new Error(`Table non autorisée: ${tableName}`);
+  const patch = stripUndefinedEntries(updates as Record<string, unknown>);
+  delete patch.id;
+  if (!Object.keys(patch).length) return true;
+  if (!isTauriRuntime()) {
+    const updated = updateBrowserRow(safeTableName as BrowserTableName, id, patch);
+    await loadData();
+    publishPatchedTable(safeTableName, sourceId, id);
+    return updated;
+  }
+  const fallback = { ...tableSnapshotCache.getRows(safeTableName)?.find(row => row.id === id), ...patch, id } as CachedRow;
+  try {
+    return await write(id, rows => rows.map(row => row.id === id ? { ...row, ...patch } : row), async (db) => {
+      const columns = await getTableColumns(db, safeTableName);
+      const payload = normalizeDbPayloadToExistingColumns(mapKeys(patch, toSnakeCase), columns);
+      const fields = Object.keys(payload);
+      const result = await db.execute(`UPDATE ${safeTableName} SET ${fields.map(field => `${field} = ?`).join(", ")} WHERE id = ?`, [...fields.map(field => sanitizeParam(payload[field])), id]);
+      if (!result.rowsAffected) throw new Error("L’élément n’existe plus. Actualisez la liste.");
+      return { value: true, row: await authoritativeRow(db, id, fallback) };
+    }, () => updateRow(ops, id, updates));
+  } catch { return false; }
+
+}
+
+async function removeRow<T extends { id: string }>(ops: TableOps<T>, id: string): Promise<boolean> {
+  const { safeTableName, tableName, sourceId, loadData, write } = ops;
+  if (!safeTableName) throw new Error(`Table non autorisée: ${tableName}`);
+  if (!isTauriRuntime()) {
+    const removed = removeBrowserRow(safeTableName as BrowserTableName, id);
+    await loadData();
+    publishPatchedTable(safeTableName, sourceId);
+    return removed;
+  }
+  try {
+    const removed = await write(id, rows => rows.filter(row => row.id !== id), async (db) => {
+      const result = await db.execute(`DELETE FROM ${safeTableName} WHERE id = ?`, [id]);
+      if (!result.rowsAffected) throw new Error("L’élément n’existe plus. Actualisez la liste.");
+      return { value: true, row: null };
+    }, () => removeRow(ops, id));
+    // Cascades and SET NULL affect related tables; invalidate only those tables.
+    for (const dependent of tablesAffectedByDelete(safeTableName)) emitSQLiteDataChanged(dependent);
+    return removed;
+  } catch { return false; }
+
+}
+
+async function setRow<T extends { id: string }>(ops: TableOps<T>, update: (id: string, updates: Partial<T>) => Promise<boolean>, id: string, item: Partial<T>): Promise<void> {
+  const { safeTableName, tableName, sourceId, loadData, write, authoritativeRow } = ops;
+  if (!safeTableName) throw new Error(`Table non autorisée: ${tableName}`);
+  if (!isTauriRuntime()) {
+    setBrowserRow(safeTableName as BrowserTableName, id, item as Partial<Record<string, unknown>>);
+    await loadData();
+    publishPatchedTable(safeTableName, sourceId, id);
+    return;
+  }
+  const existing = await runDbRead(db => db.select<{ id: string }[]>(`SELECT id FROM ${safeTableName} WHERE id = ?`, [id]));
+  if (existing.length) {
+    if (!await update(id, item)) throw new Error("La modification n’a pas été enregistrée.");
+    return;
+  }
+  const optimistic = { ...item, id } as unknown as CachedRow;
+  await write(id, rows => [...rows.filter(row => row.id !== id), optimistic], async (db) => {
+    const columns = await getTableColumns(db, safeTableName);
+    const payload = normalizeDbPayloadToExistingColumns(stripUndefinedEntries(mapKeys(item as Record<string, unknown>, toSnakeCase)), columns);
+    const fields = Object.keys(payload).filter(field => field !== "id");
+    await db.execute(`INSERT INTO ${safeTableName} (id${fields.length ? `, ${fields.join(", ")}` : ""}) VALUES (?${fields.map(() => ", ?").join("")})`, [id, ...fields.map(field => sanitizeParam(payload[field]))]);
+    return { value: undefined, row: await authoritativeRow(db, id, optimistic) };
+  }, () => setRow(ops, update, id, item));
+
+}
+
 /**
  * L'écriture optimiste d'une ligne. Elle vit hors du hook : le compilateur React ne sait pas traduire son `try … finally`,
  * et `guard()` ajouterait des tours de micro-tâches que les tests de la file d'écriture observent. Le corps est celui d'origine.
@@ -371,27 +513,7 @@ export function useSQLite<T extends { id: string }>(tableName: string): UseSQLit
   const [error, setError] = useState<string | null>(null);
   const sourceId = useId();
 
-  const loadData = useCallback(async function reload(force = false) {
-    await guard(async () => {
-      if (!safeTableName) throw new Error(`Table non autorisée: ${tableName}`);
-      setError(null);
-      setIsRefreshing(tableSnapshotCache.has(safeTableName));
-      await loadTableSnapshot(safeTableName, force);
-    }, {
-      recover: (err) => {
-        const message = err instanceof Error ? err.message : "Lecture impossible";
-        setError(message);
-        toast.error("Les données n’ont pas pu être chargées.", {
-          description: message,
-          action: { label: "Réessayer", onClick: () => { void reload(true); } },
-        });
-      },
-      cleanup: () => {
-        setLoading(false);
-        setIsRefreshing(false);
-      },
-    });
-  }, [safeTableName, tableName]);
+  const loadData = useCallback((force = false) => reloadTable({ safeTableName, tableName, setError, setLoading, setIsRefreshing }, force), [safeTableName, tableName]);
 
   useEffect(() => { void loadData(); }, [loadData]);
   useEffect(() => {
@@ -410,107 +532,15 @@ export function useSQLite<T extends { id: string }>(tableName: string): UseSQLit
     runTableWrite({ safeTableName, tableName, sourceId, setError, id, apply, operation, retry }), [safeTableName, sourceId, tableName]);
 
   const mapRow = useCallback((row: Record<string, unknown>) => normalizeBooleanFields(tableName, mapKeys(row, toCamelCase)) as CachedRow, [tableName]);
-  const authoritativeRow = useCallback(async (db: SQLiteDatabase, id: string, fallback: CachedRow) => {
-    try {
-      const rows = await db.select<Record<string, unknown>[]>(
-        safeTableName === "patients" ? `${PATIENTS_WITH_REFERENCE_SQL} WHERE patients.id = ?` : `SELECT * FROM ${safeTableName} WHERE id = ?`,
-        [id]
-      );
-      return rows[0] ? mapRow(rows[0]) : fallback;
-    } catch {
-      // The write already succeeded. A post-write read must not falsely roll it back.
-      return fallback;
-    }
-  }, [mapRow, safeTableName]);
+  const authoritativeRow = useCallback((db: SQLiteDatabase, id: string, fallback: CachedRow) => readAuthoritativeRow(db, safeTableName, mapRow, id, fallback), [mapRow, safeTableName]);
 
-  const add = useCallback(async function addRow(item: Omit<T, "id" | "createdAt" | "updatedAt">): Promise<T | null> {
-    if (!safeTableName) throw new Error(`Table non autorisée: ${tableName}`);
-    const id = generateId();
-    if (!isTauriRuntime()) {
-      const created = insertBrowserRow(safeTableName as BrowserTableName, { id, ...item });
-      await loadData();
-      publishPatchedTable(safeTableName, sourceId, id);
-      return created as T;
-    }
-    const optimistic = { ...item, id, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() } as unknown as CachedRow;
-    try {
-      return await write(id, rows => [...rows.filter(row => row.id !== id), optimistic], async (db) => {
-        const columns = await getTableColumns(db, safeTableName);
-        const payload = normalizeDbPayloadToExistingColumns(stripUndefinedEntries(mapKeys(item as Record<string, unknown>, toSnakeCase)), columns);
-        const fields = Object.keys(payload).filter(field => field !== "id");
-        await db.execute(`INSERT INTO ${safeTableName} (id${fields.length ? `, ${fields.join(", ")}` : ""}) VALUES (?${fields.map(() => ", ?").join("")})`, [id, ...fields.map(field => sanitizeParam(payload[field]))]);
-        const row = await authoritativeRow(db, id, optimistic);
-        return { value: row as unknown as T, row };
-      }, () => addRow(item));
-    } catch { return null; }
-  }, [authoritativeRow, loadData, safeTableName, sourceId, tableName, write]);
+  const add = useCallback((item: Omit<T, "id" | "createdAt" | "updatedAt">) => addRow<T>({ safeTableName, tableName, sourceId, loadData, write, authoritativeRow }, item), [authoritativeRow, loadData, safeTableName, sourceId, tableName, write]);
 
-  const update = useCallback(async function updateRow(id: string, updates: Partial<T>): Promise<boolean> {
-    if (!safeTableName) throw new Error(`Table non autorisée: ${tableName}`);
-    const patch = stripUndefinedEntries(updates as Record<string, unknown>);
-    delete patch.id;
-    if (!Object.keys(patch).length) return true;
-    if (!isTauriRuntime()) {
-      const updated = updateBrowserRow(safeTableName as BrowserTableName, id, patch);
-      await loadData();
-      publishPatchedTable(safeTableName, sourceId, id);
-      return updated;
-    }
-    const fallback = { ...tableSnapshotCache.getRows(safeTableName)?.find(row => row.id === id), ...patch, id } as CachedRow;
-    try {
-      return await write(id, rows => rows.map(row => row.id === id ? { ...row, ...patch } : row), async (db) => {
-        const columns = await getTableColumns(db, safeTableName);
-        const payload = normalizeDbPayloadToExistingColumns(mapKeys(patch, toSnakeCase), columns);
-        const fields = Object.keys(payload);
-        const result = await db.execute(`UPDATE ${safeTableName} SET ${fields.map(field => `${field} = ?`).join(", ")} WHERE id = ?`, [...fields.map(field => sanitizeParam(payload[field])), id]);
-        if (!result.rowsAffected) throw new Error("L’élément n’existe plus. Actualisez la liste.");
-        return { value: true, row: await authoritativeRow(db, id, fallback) };
-      }, () => updateRow(id, updates));
-    } catch { return false; }
-  }, [authoritativeRow, loadData, safeTableName, sourceId, tableName, write]);
+  const update = useCallback((id: string, updates: Partial<T>) => updateRow<T>({ safeTableName, tableName, sourceId, loadData, write, authoritativeRow }, id, updates), [authoritativeRow, loadData, safeTableName, sourceId, tableName, write]);
 
-  const remove = useCallback(async function removeRow(id: string): Promise<boolean> {
-    if (!safeTableName) throw new Error(`Table non autorisée: ${tableName}`);
-    if (!isTauriRuntime()) {
-      const removed = removeBrowserRow(safeTableName as BrowserTableName, id);
-      await loadData();
-      publishPatchedTable(safeTableName, sourceId);
-      return removed;
-    }
-    try {
-      const removed = await write(id, rows => rows.filter(row => row.id !== id), async (db) => {
-        const result = await db.execute(`DELETE FROM ${safeTableName} WHERE id = ?`, [id]);
-        if (!result.rowsAffected) throw new Error("L’élément n’existe plus. Actualisez la liste.");
-        return { value: true, row: null };
-      }, () => removeRow(id));
-      // Cascades and SET NULL affect related tables; invalidate only those tables.
-      for (const dependent of tablesAffectedByDelete(safeTableName)) emitSQLiteDataChanged(dependent);
-      return removed;
-    } catch { return false; }
-  }, [loadData, safeTableName, sourceId, tableName, write]);
+  const remove = useCallback((id: string) => removeRow<T>({ safeTableName, tableName, sourceId, loadData, write, authoritativeRow }, id), [authoritativeRow, loadData, safeTableName, sourceId, tableName, write]);
 
-  const set = useCallback(async (id: string, item: Partial<T>): Promise<void> => {
-    if (!safeTableName) throw new Error(`Table non autorisée: ${tableName}`);
-    if (!isTauriRuntime()) {
-      setBrowserRow(safeTableName as BrowserTableName, id, item as Partial<Record<string, unknown>>);
-      await loadData();
-      publishPatchedTable(safeTableName, sourceId, id);
-      return;
-    }
-    const existing = await runDbRead(db => db.select<{ id: string }[]>(`SELECT id FROM ${safeTableName} WHERE id = ?`, [id]));
-    if (existing.length) {
-      if (!await update(id, item)) throw new Error("La modification n’a pas été enregistrée.");
-      return;
-    }
-    const optimistic = { ...item, id } as unknown as CachedRow;
-    await write(id, rows => [...rows.filter(row => row.id !== id), optimistic], async (db) => {
-      const columns = await getTableColumns(db, safeTableName);
-      const payload = normalizeDbPayloadToExistingColumns(stripUndefinedEntries(mapKeys(item as Record<string, unknown>, toSnakeCase)), columns);
-      const fields = Object.keys(payload).filter(field => field !== "id");
-      await db.execute(`INSERT INTO ${safeTableName} (id${fields.length ? `, ${fields.join(", ")}` : ""}) VALUES (?${fields.map(() => ", ?").join("")})`, [id, ...fields.map(field => sanitizeParam(payload[field]))]);
-      return { value: undefined, row: await authoritativeRow(db, id, optimistic) };
-    }, () => set(id, item));
-  }, [authoritativeRow, loadData, safeTableName, sourceId, tableName, update, write]);
+  const set = useCallback((id: string, item: Partial<T>) => setRow<T>({ safeTableName, tableName, sourceId, loadData, write, authoritativeRow }, update, id, item), [authoritativeRow, loadData, safeTableName, sourceId, tableName, update, write]);
 
   const refresh = useCallback(async () => {
     if (safeTableName) invalidateTableRows(safeTableName);
