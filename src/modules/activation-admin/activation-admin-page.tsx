@@ -911,7 +911,8 @@ export default function ActivationAdminPage() {
 
   // Licenses data state
   const [licenses, setLicenses] = useState<ActivationAdminLicense[]>([]);
-  const [isLoadingLicenses, setIsLoadingLicenses] = useState(false);
+  // Un jeton enregistré lance la synchronisation dès le montage : l'écran est déjà « en chargement ».
+  const [isLoadingLicenses, setIsLoadingLicenses] = useState(() => getStoredAdminToken().trim() !== "");
   const [licenseSyncMessage, setLicenseSyncMessage] = useState<string | null>("Renseignez le jeton administrateur pour synchroniser les licences du serveur.");
 
   // Filters & search
@@ -953,33 +954,29 @@ export default function ActivationAdminPage() {
   const [tempToken, setTempToken] = useState(adminToken);
 
   // Heartbeat & Ping check
-  const pingServer = useCallback(async () => {
-    setServerStatus("checking");
+  const checkServer = useCallback(async () => {
     const start = performance.now();
-    try {
+    await guard(async () => {
       await checkActivationServer();
       const elapsed = Math.round(performance.now() - start);
       setServerStatus("online");
       setServerPingMs(elapsed);
-    } catch {
-      setServerStatus("offline");
-      setServerPingMs(null);
-    }
+    }, {
+      recover: () => {
+        setServerStatus("offline");
+        setServerPingMs(null);
+      },
+    });
   }, []);
+  const pingServer = useCallback(async () => {
+    setServerStatus("checking");
+    await checkServer();
+  }, [checkServer]);
 
   // Load licenses list (simplified to reduce cognitive complexity)
-  const loadLicenses = useCallback(
-    async (tokenToUse?: string, silent = false) => {
-      const token = (tokenToUse ?? adminToken).trim();
-      if (!token) {
-        setLicenseSyncMessage("Renseignez le jeton administrateur pour synchroniser les licences du serveur.");
-        if (!silent) {
-          toast.error("Veuillez renseigner le jeton administrateur.");
-        }
-        return;
-      }
-
-      setIsLoadingLicenses(true);
+  // Lecture des licences, sans poser l'état « en chargement » (déjà posé au montage ou par `loadLicenses`).
+  const fetchLicenses = useCallback(
+    async (token: string, silent: boolean) => {
       await guard(async () => {
         const next = await listActivationLicenses(token);
         setLicenses(next);
@@ -1005,16 +1002,40 @@ export default function ActivationAdminPage() {
         },
       });
     },
-    [adminToken]
+    []
   );
 
-  // On mount: ping server and auto-load if token exists
+  const loadLicenses = useCallback(
+    async (tokenToUse?: string, silent = false) => {
+      const token = (tokenToUse ?? adminToken).trim();
+      if (!token) {
+        setLicenseSyncMessage("Renseignez le jeton administrateur pour synchroniser les licences du serveur.");
+        if (!silent) {
+          toast.error("Veuillez renseigner le jeton administrateur.");
+        }
+        return;
+      }
+
+      setIsLoadingLicenses(true);
+      await fetchLicenses(token, silent);
+    },
+    [adminToken, fetchLicenses]
+  );
+
+  // Au montage et à chaque changement de jeton : l'état « en vérification / en chargement » est posé dès ce rendu,
+  // puis l'effet interroge le serveur et charge les licences si un jeton existe.
+  const [probedToken, setProbedToken] = useState(adminToken);
+  if (probedToken !== adminToken) {
+    setProbedToken(adminToken);
+    setServerStatus("checking");
+    if (adminToken.trim()) setIsLoadingLicenses(true);
+  }
   useEffect(() => {
-    pingServer();
-    if (adminToken) {
-      loadLicenses(adminToken, true);
+    void checkServer();
+    if (adminToken.trim()) {
+      void fetchLicenses(adminToken.trim(), true);
     }
-  }, [adminToken, loadLicenses, pingServer]);
+  }, [adminToken, checkServer, fetchLicenses]);
 
   // Statistics calculation
   const stats = useMemo(() => {

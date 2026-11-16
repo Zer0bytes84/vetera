@@ -198,34 +198,32 @@ export function usePatientsPageModel({ onNavigateToPatient }: PatientsProps) {
     setSelectedPatientId(null);
   }
 
-  useEffect(() => {
-    if (!recentlySavedPatientId) {
-      return;
-    }
-
-    const patientStillExists = patients.some(
-      (patient) => patient.id === recentlySavedPatientId
-    );
-    if (!patientStillExists) {
-      return;
-    }
-
+  // Après une modification, le dossier enregistré est sélectionné et reste visible : les filtres sont remis à zéro s'il ne l'était plus.
+  // Les états sont corrigés au rendu ; seul l'avis à l'écran (un effet de bord) part dans un effet, déclenché par le compteur.
+  const [filtersResetCount, setFiltersResetCount] = useState(0);
+  if (
+    recentlySavedPatientId &&
+    patients.some((patient) => patient.id === recentlySavedPatientId)
+  ) {
     const patientIsVisible = visiblePatients.some(
       (entry) => entry.patient.id === recentlySavedPatientId
     );
-
     if (!patientIsVisible) {
       setSearchTerm("");
       setSpeciesFilter("all");
       setStatusFilter("all");
+      setFiltersResetCount((count) => count + 1);
+    }
+    setSelectedPatientId(recentlySavedPatientId);
+    setRecentlySavedPatientId(null);
+  }
+  useEffect(() => {
+    if (filtersResetCount > 0) {
       toast.info(
         "Les filtres ont été réinitialisés pour garder le dossier visible après modification."
       );
     }
-
-    setSelectedPatientId(recentlySavedPatientId);
-    setRecentlySavedPatientId(null);
-  }, [patients, recentlySavedPatientId, visiblePatients]);
+  }, [filtersResetCount]);
 
   // Listen for new patient event from sidebar
   useEffect(() => {
