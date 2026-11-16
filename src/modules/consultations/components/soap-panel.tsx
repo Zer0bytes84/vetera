@@ -33,13 +33,13 @@ import {
 import { useAuth } from "@/contexts/AuthContext";
 import { useConsultationSoapsRepository } from "@/data/repositories";
 import { cn } from "@/lib/utils";
-import type { ConsultationSoap } from "@/types/db";
 import {
   EMPTY_SOAP,
   SOAP_SECTIONS,
   type LocalSoapNote,
 } from "../local-ai/soap-schema";
 import { SoapSectionEditor } from "./soap-section-editor";
+import { hasNote, isSoapAutosaveDue, isSoapUnsaved, samePayload, type Payload, type SaveStatus } from "../soap-panel-state";
 import { AssistantBrandAvatar } from "./assistant-brand-avatar";
 import { meaningful } from "@/modules/patients/lib/meaningful";
 import { Shell, ShellHeader } from "@/components/ui/surface";
@@ -64,19 +64,6 @@ const LocalConsultationAssistant = lazy(
 const preloadLocalConsultationAssistant = () => {
   void import("./local-consultation-assistant");
 };
-type SaveStatus = "idle" | "pending" | "saving" | "saved" | "error";
-type Payload = Pick<
-  ConsultationSoap,
-  | "subjective"
-  | "objective"
-  | "assessment"
-  | "plan"
-  | "transcript"
-  | "aiDraft"
-  | "aiConfidence"
-  | "content"
-  | "templateVersion"
->;
 const emptyPayload: Payload = {
   ...EMPTY_SOAP,
   transcript: null,
@@ -85,10 +72,17 @@ const emptyPayload: Payload = {
   content: "{}",
   templateVersion: "1.0",
 };
-const samePayload = (a: Payload | null, b: Payload) =>
-  a !== null && JSON.stringify(a) === JSON.stringify(b);
-const hasNote = (payload: Payload) =>
-  SOAP_SECTIONS.some(({ key }) => payload[key].trim());
+
+/** Les métadonnées cliniques déjà stockées sur la ligne SOAP ; un contenu ancien, vide ou illisible donne un objet vide. */
+function readContentObject(raw: string): Record<string, unknown> {
+  try {
+    const parsed: unknown = JSON.parse(raw);
+    if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) return parsed as Record<string, unknown>;
+  } catch {
+    /* Legacy content can be empty. */
+  }
+  return {};
+}
 
 export function SoapPanel({
   appointmentId,
@@ -113,6 +107,8 @@ export function SoapPanel({
   const [activeSection, setActiveSection] =
     useState<keyof LocalSoapNote>("subjective");
   const lastSaved = useRef<Payload | null>(null);
+  // Le même instantané, en état : l'indicateur « modifié » le lit au rendu (la ref, elle, sert aux minuteries et aux effets).
+  const [savedSnapshot, setSavedSnapshot] = useState<Payload | null>(null);
   const latest = useRef<Payload>(emptyPayload);
   const hydrated = useRef(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -133,8 +129,9 @@ export function SoapPanel({
   useEffect(() => {
     repoRef.current = repo;
   }, [repo]);
-  useEffect(() => {
-    if (initialised || repo.loading) return;
+  // Dès que la note enregistrée est lue, le panneau part d'elle (corrigé au rendu, sans effet) ;
+  // les références lues par les minuteries et le nettoyage sont posées juste après, dans l'effet qui suit.
+  if (!initialised && !repo.loading) {
     // A section holding only a placeholder (« Na », « n/a », « - »…) is read as empty; the stored text is left alone until the next real save.
     const value: Payload = existing
       ? {
@@ -150,12 +147,16 @@ export function SoapPanel({
         }
       : emptyPayload;
     setPayload(value);
-    latest.current = value;
-    lastSaved.current = existing ? value : null;
-    hydrated.current = true;
+    setSavedSnapshot(existing ? value : null);
     setInitialised(true);
     setSaveStatus(existing ? "saved" : "idle");
-  }, [existing, initialised, repo.loading]);
+  }
+  useEffect(() => {
+    if (!initialised) return;
+    latest.current = payload;
+    lastSaved.current = savedSnapshot;
+    hydrated.current = true;
+  }, [initialised, payload, savedSnapshot]);
 
   const persist = useCallback(
     async (snapshot: Payload) => {
@@ -175,6 +176,7 @@ export function SoapPanel({
               "La base locale n’a pas confirmé l’enregistrement."
             );
           lastSaved.current = snapshot;
+          setSavedSnapshot(snapshot);
           setSaveStatus("saved");
         }, {
           recover: (error) => {
@@ -207,30 +209,17 @@ export function SoapPanel({
     () => toast.error(t("consultations.soap.meta.saveError")),
     [t]
   );
+  // La sauvegarde automatique est due : l'état « en attente » est posé dès le rendu (corrigé au rendu, sans effet),
+  // l'effet ne fait que lancer la minuterie.
+  const autosaveDue = isSoapAutosaveDue({ initialised, assistantOpen, saveStatus, saved: savedSnapshot, payload });
+  if (autosaveDue && saveStatus !== "pending") setSaveStatus("pending");
   useEffect(() => {
-    if (
-      !initialised ||
-      assistantOpen ||
-      saveStatus === "saving" ||
-      saveStatus === "error" ||
-      (!hasNote(payload) && !lastSaved.current) ||
-      samePayload(lastSaved.current, payload)
-    )
-      return;
-    setSaveStatus("pending");
+    if (!autosaveDue) return;
     timer.current = setTimeout(() => {
       void persist(payload).catch(reportSaveError);
     }, 800);
     return clearTimer;
-  }, [
-    assistantOpen,
-    clearTimer,
-    initialised,
-    payload,
-    persist,
-    reportSaveError,
-    saveStatus,
-  ]);
+  }, [autosaveDue, clearTimer, payload, persist, reportSaveError, saveStatus]);
   useEffect(
     () => () => {
       clearTimer();
@@ -257,14 +246,7 @@ export function SoapPanel({
     clearTimer();
     await pendingSave.current?.catch(() => undefined);
     // Preserve extensible clinical metadata already stored on the SOAP row.
-    let content: Record<string, unknown> = {};
-    try {
-      const parsed: unknown = JSON.parse(payload.content);
-      if (parsed && typeof parsed === "object" && !Array.isArray(parsed))
-        content = parsed as Record<string, unknown>;
-    } catch {
-      /* Legacy content can be empty. */
-    }
+    const content = readContentObject(payload.content);
     const approved: Payload = {
       ...note,
       transcript,
@@ -318,10 +300,7 @@ export function SoapPanel({
       reportSaveError();
     }
   };
-  const dirty =
-    initialised &&
-    !samePayload(lastSaved.current, payload) &&
-    (hasNote(payload) || !!lastSaved.current);
+  const dirty = isSoapUnsaved(initialised, savedSnapshot, payload);
   return (
     <Shell className={cn("soap-panel", className)}>
       <ShellHeader
