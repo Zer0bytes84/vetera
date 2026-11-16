@@ -233,6 +233,12 @@ function countWords(text: string) {
     .reduce((sum, segment) => sum + tokenize(segment.text).length, 0);
 }
 
+/** Numerote les mots au fil du rendu. Hors du composant : le compilateur React ne traduit pas `i++` sur une variable capturée. */
+function counter(): () => number {
+  let value = 0;
+  return () => value++;
+}
+
 function Content({
   text,
   streaming,
@@ -243,7 +249,7 @@ function Content({
   settled: number;
 }) {
   const paragraphs = text.split(/\n{2,}/);
-  let index = 0;
+  const nextIndex = counter();
 
   return (
     <div className="flex flex-col gap-3 leading-6 text-pretty">
@@ -252,7 +258,7 @@ function Content({
           {parseInline(paragraph).map((segment, s) => {
             const words = tokenize(segment.text);
             const nodes = words.map((word) => {
-              const i = index++;
+              const i = nextIndex();
               return i < settled ? (
                 <Fragment key={i}>{word}</Fragment>
               ) : (

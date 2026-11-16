@@ -41,7 +41,9 @@ function Section({ icon, title, subtitle, aside, className, panelClassName, chil
   );
 }
 
-function Variation({ current, previous, format = (value: number) => value.toLocaleString("fr-FR") }: { current: number; previous: number; format?: (value: number) => string }) {
+const formatFr = (value: number) => value.toLocaleString("fr-FR");
+
+function Variation({ current, previous, format = formatFr }: { current: number; previous: number; format?: (value: number) => string }) {
   if (previous === 0) {
     return <span className="text-xs text-muted-foreground">Sans valeur sur la période précédente</span>;
   }

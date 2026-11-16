@@ -12,6 +12,10 @@ import { cn } from "@/lib/utils";
 import { RecordBlockHeading } from "./record-block-heading";
 import "../medical-record.css";
 
+function ownerInitials(owner: { firstName?: string | null; lastName?: string | null }): string {
+  return `${owner.firstName?.[0] || ""}${owner.lastName?.[0] || ""}`.toUpperCase() || "P";
+}
+
 export function recordDate(value?: string | null, withTime = false) {
   if (!value) return "À compléter";
   const parsed = normalizeDate(value);
@@ -207,9 +211,7 @@ export function OwnerContact({ owner }: { owner?: Owner }) {
     );
   }
 
-  const initials =
-    `${owner.firstName?.[0] || ""}${owner.lastName?.[0] || ""}`.toUpperCase() ||
-    "P";
+  const initials = ownerInitials(owner);
   const phoneLabel = formatPhone(owner.phone);
 
   return (

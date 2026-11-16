@@ -67,7 +67,7 @@ export function PatientRecordExportDialog({ patientId, patientName, onClose }: {
     generation.current?.abort(); generation.current = controller;
     const token = ++sequence.current;
     setPhase("generating"); setProgress(null); setArtifact(null);
-    try {
+    return await guard(async () => {
       const [{ loadPatientRecord }, { buildPatientRecordPdf }] = await Promise.all([
         loadPatientRecordService(), loadPatientRecordPdf(),
       ]);
@@ -80,11 +80,13 @@ export function PatientRecordExportDialog({ patientId, patientName, onClose }: {
       });
       if (token !== sequence.current || controller.signal.aborted) return;
       setArtifact(result); setPage(1); setPhase("preview");
-    } catch (cause) {
-      if (token !== sequence.current || controller.signal.aborted) return;
-      setError(userMessage(cause, "Le dossier n’a pas pu être préparé. Réessayez sans fermer le dossier patient."));
-      setPhase("options");
-    }
+    }, {
+      recover: (cause) => {
+        if (token !== sequence.current || controller.signal.aborted) return;
+        setError(userMessage(cause, "Le dossier n’a pas pu être préparé. Réessayez sans fermer le dossier patient."));
+        setPhase("options");
+      },
+    });
   };
   const cancelGeneration = () => { sequence.current += 1; generation.current?.abort(); setProgress(null); setPhase("options"); };
   const save = async () => {

@@ -120,6 +120,13 @@ export const appSettingsRepository = {
   saveLicenseInfo: AppSettingsService.saveLicenseInfo,
 };
 
+// Les comparateurs et la date du jour vivent hors des hooks : le compilateur React ne traduit pas `??` dans le test d'un ternaire.
+const byScheduledAtDescending = (a: { scheduledAt?: string | null }, b: { scheduledAt?: string | null }) =>
+  (a.scheduledAt ?? "") < (b.scheduledAt ?? "") ? 1 : -1;
+const byScheduledAtAscending = (a: { scheduledAt?: string | null }, b: { scheduledAt?: string | null }) =>
+  (a.scheduledAt ?? "") < (b.scheduledAt ?? "") ? -1 : 1;
+const currentDate = () => new Date();
+
 export function useUsersRepository() {
   return useSQLite<User>("users");
 }
@@ -1114,15 +1121,11 @@ export function useAnesthesiaSheetsRepository() {
     forPatient: (patientId: string) =>
       store.data
         .filter((row) => row.patientId === patientId)
-        .sort((a, b) =>
-          (a.scheduledAt ?? "") < (b.scheduledAt ?? "") ? 1 : -1
-        ),
+        .sort(byScheduledAtDescending),
     forHospitalization: (hospitalizationId: string) =>
       store.data
         .filter((row) => row.hospitalizationId === hospitalizationId)
-        .sort((a, b) =>
-          (a.scheduledAt ?? "") < (b.scheduledAt ?? "") ? -1 : 1
-        ),
+        .sort(byScheduledAtAscending),
     active: () =>
       store.data.filter(
         (row) => row.status === "planned" || row.status === "in_progress"
@@ -1191,7 +1194,7 @@ export function useRemindersRepository() {
         .filter((row) => row.appointmentId === appointmentId)
         .sort((a, b) => (a.scheduledFor < b.scheduledFor ? -1 : 1)),
     pending: () => store.data.filter((row) => row.status === "pending"),
-    dueNow: (now: Date = new Date()) =>
+    dueNow: (now: Date = currentDate()) =>
       store.data.filter(
         (row) =>
           row.status === "pending" &&

@@ -239,7 +239,7 @@ export function HexDensity({
             next = cell.id;
           }
         }
-        next ??= from.id;
+        next = next ?? from.id;
       }
     } else return;
     event.preventDefault();

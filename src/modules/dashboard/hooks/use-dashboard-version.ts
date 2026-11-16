@@ -5,6 +5,7 @@ export type DashboardVersion = "clinical" | "analytics";
 const KEY = "dashboard.version";
 const listeners = new Set<() => void>();
 let revision = 0;
+const bumpRevision = () => ++revision;
 const read = (): DashboardVersion =>
   localStorage.getItem(KEY) === "clinical" ? "clinical" : "analytics";
 const subscribe = (listener: () => void) => {
@@ -42,7 +43,7 @@ export function useDashboardVersion() {
   }, []);
   const setVersion = async (next: DashboardVersion) => {
     const previous = read();
-    const request = ++revision;
+    const request = bumpRevision();
     publish(next);
     try {
       await setSetting(KEY, next);

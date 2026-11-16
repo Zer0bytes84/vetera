@@ -9,6 +9,8 @@ import { Panel, Shell, ShellHeader } from "@/components/ui/surface";
 import { EASE_OUT } from "@/lib/motion-tokens";
 import { cn } from "@/lib/utils";
 
+const formatFr = (value: number) => value.toLocaleString("fr-FR");
+
 /*
  * Adapted for Baitari from TuffUI's Radial Dots. The drawing is theirs: a cycle as rings of dots, each sector a slot of the
  * cycle, dots stacking outward series by series, the centre showing a figure until a sector is hovered. What changes:
@@ -82,7 +84,7 @@ export function RadialDots({
   subtitle,
   center,
   axis,
-  format = (value) => value.toLocaleString("fr-FR"),
+  format = formatFr,
   sectorTitle,
   toolbar,
   children,
