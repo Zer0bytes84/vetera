@@ -251,6 +251,13 @@ export default function CarePage({
     window.addEventListener("vetera:plan-care", open);
     return () => window.removeEventListener("vetera:plan-care", open);
   }, []);
+  const [history, setHistory] = useState<CareHistory[]>([]);
+  const [historyError, setHistoryError] = useState(false);
+  const [busy, setBusy] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
+  const [reason, setReason] = useState("");
+  const [undoing, setUndoing] = useState<CareTask | null>(null);
+  const [undoError, setUndoError] = useState<string | null>(null);
   const [savedMessage, setSavedMessage] = useState<string | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
   useEffect(() => {
@@ -271,13 +278,6 @@ export default function CarePage({
       live = false;
     };
   }, [initialTaskId]);
-  const [history, setHistory] = useState<CareHistory[]>([]);
-  const [historyError, setHistoryError] = useState(false);
-  const [busy, setBusy] = useState<string | null>(null);
-  const [actionError, setActionError] = useState<string | null>(null);
-  const [reason, setReason] = useState("");
-  const [undoing, setUndoing] = useState<CareTask | null>(null);
-  const [undoError, setUndoError] = useState<string | null>(null);
   const patientName = (id: string) =>
     patients.data.find((p) => p.id === id)?.name ?? "Patient indisponible";
   const userName = (id: string | null) =>

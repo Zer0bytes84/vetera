@@ -275,6 +275,16 @@ export function getSpeciesComponent(species?: string) {
   return PawPrint;
 }
 
+/** L'icône de l'espèce, choisie dans un composant stable : le résultat est celui de getSpeciesComponent, sans créer de composant au rendu. */
+export function SpeciesComponentIcon({ species, ...props }: { species?: string } & React.ComponentProps<typeof Dog>) {
+  const normalized = species?.toLowerCase() ?? "";
+  if (normalized.includes("chien")) return <Dog {...props} />;
+  if (normalized.includes("chat")) return <Cat {...props} />;
+  if (normalized.includes("lapin")) return <Rabbit {...props} />;
+  if (normalized.includes("oiseau")) return <Bird {...props} />;
+  return <PawPrint {...props} />;
+}
+
 export function getBreedSuggestions(species?: string) {
   const normalized = species?.toLowerCase() ?? "";
   if (normalized.includes("chien")) {
@@ -1697,7 +1707,6 @@ export function PatientCreateDialog({
     [owners],
   );
 
-  const SpeciesIcon = getSpeciesComponent(newPatient.species);
   const selectedOwner =
     selectedOwnerId === "new"
       ? null
@@ -1719,7 +1728,7 @@ export function PatientCreateDialog({
         <FormDialogHeader
           artwork="patient"
           description="Identité de l’animal et coordonnées du propriétaire."
-          icon={<SpeciesIcon strokeWidth={1.5} />}
+          icon={<SpeciesComponentIcon species={newPatient.species} strokeWidth={1.5} />}
           title="Nouveau patient"
         />
 
@@ -1925,7 +1934,7 @@ export function PatientCreateDialog({
                     aria-hidden="true"
                     className="modal-section-icon modal-section-icon-patient"
                   >
-                    <SpeciesIcon className="size-[18px]" strokeWidth={1.9} />
+                    <SpeciesComponentIcon species={newPatient.species} className="size-[18px]" strokeWidth={1.9} />
                   </span>
                   <div>
                     <h3 className="font-semibold t-16 text-foreground">
@@ -1937,7 +1946,7 @@ export function PatientCreateDialog({
                   </div>
                 </div>
                 <span className="modal-section-state modal-section-state-patient">
-                  <SpeciesIcon className="size-3.5" strokeWidth={1.5} />
+                  <SpeciesComponentIcon species={newPatient.species} className="size-3.5" strokeWidth={1.5} />
                   {newPatient.species?.trim() || "Animal à identifier"}
                 </span>
               </div>

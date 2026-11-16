@@ -47,7 +47,7 @@ function CheckedLicenseGate({ children }: { children: ReactNode }) {
   const [error, setError] = useState("");
   const inFlight = useRef(false);
   const mounted = useRef(true);
-  const drag = useTauriDrag<HTMLDivElement>(true);
+  const { handleMouseDown: handleWindowMouseDown, ref: windowDragRef } = useTauriDrag<HTMLDivElement>(true);
   const apply = useCallback((result: LicenseAccess) => {
     if (!mounted.current) return;
     setAccess((previous) => (sameAccess(previous, result) ? previous : result));
@@ -150,8 +150,8 @@ function CheckedLicenseGate({ children }: { children: ReactNode }) {
   return (
     <main className="relative flex min-h-dvh items-center justify-center bg-background px-6 py-16 text-foreground">
       <div
-        ref={drag.ref}
-        onMouseDown={drag.handleMouseDown}
+        ref={windowDragRef}
+        onMouseDown={handleWindowMouseDown}
         className="absolute inset-x-0 top-0 h-12 select-none"
       />
       <section className="w-full max-w-md rounded-3xl border bg-card p-8 shadow-sm">

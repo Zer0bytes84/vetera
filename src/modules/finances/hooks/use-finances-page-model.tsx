@@ -43,7 +43,7 @@ import {
   createTransactionDraft,
   isDateInRange,
 } from "@/modules/finances/components/finances-shared";
-import { guard } from "@/lib/guard";
+import { guard, guardSync } from "@/lib/guard";
 
 export function useFinancesPageModel({
   onNavigate,
@@ -175,6 +175,32 @@ export function useFinancesPageModel({
     });
   }, []);
 
+  const openInvoiceDetail = async (invoice: Invoice, editPrices = false) => {
+    setEditingInvoicePrices(false);
+    setInvoicePrices({});
+    setIsDetailLoading(true);
+    return await guard(async () => {
+      const detail = await billingService.getInvoice(invoice.id);
+      if (!detail) {
+        toast.error("Cette facture est introuvable.");
+        return;
+      }
+      setSelectedInvoice(detail);
+      if (editPrices && detail.documentStatus === "draft") {
+        setInvoicePrices(Object.fromEntries(detail.lines.map((line) => [line.id, priceInput(line.unitAmount)])));
+        setEditingInvoicePrices(true);
+      }
+    }, {
+      recover: (error) => {
+        console.error(error);
+        toast.error("Impossible d’ouvrir cette facture.");
+      },
+      cleanup: () => {
+        setIsDetailLoading(false);
+      },
+    });
+  };
+
   useEffect(() => {
     void loadInvoices();
   }, [loadInvoices]);
@@ -183,7 +209,7 @@ export function useFinancesPageModel({
     const consume = () => {
       const raw = sessionStorage.getItem("vetera:pending-invoice");
       if (!raw) return;
-      try {
+      return guardSync(() => {
         const context = JSON.parse(raw) as {
           ownerId?: string;
           patientId?: string;
@@ -215,9 +241,11 @@ export function useFinancesPageModel({
           appointmentId: context.appointmentId,
         });
         setIsInvoiceDialogOpen(true);
-      } catch {
-        sessionStorage.removeItem("vetera:pending-invoice");
-      }
+      }, {
+        recover: () => {
+          sessionStorage.removeItem("vetera:pending-invoice");
+        },
+      });
     };
     consume();
     window.addEventListener("vetera:new-invoice", consume);
@@ -551,32 +579,6 @@ export function useFinancesPageModel({
   useEffect(() => {
     setJournalPage((page) => Math.min(page, journalPageCount));
   }, [journalPageCount]);
-
-  const openInvoiceDetail = async (invoice: Invoice, editPrices = false) => {
-    setEditingInvoicePrices(false);
-    setInvoicePrices({});
-    setIsDetailLoading(true);
-    return await guard(async () => {
-      const detail = await billingService.getInvoice(invoice.id);
-      if (!detail) {
-        toast.error("Cette facture est introuvable.");
-        return;
-      }
-      setSelectedInvoice(detail);
-      if (editPrices && detail.documentStatus === "draft") {
-        setInvoicePrices(Object.fromEntries(detail.lines.map((line) => [line.id, priceInput(line.unitAmount)])));
-        setEditingInvoicePrices(true);
-      }
-    }, {
-      recover: (error) => {
-        console.error(error);
-        toast.error("Impossible d’ouvrir cette facture.");
-      },
-      cleanup: () => {
-        setIsDetailLoading(false);
-      },
-    });
-  };
 
   const getClinicSnapshot = getInvoiceSettings;
 
