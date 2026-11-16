@@ -144,6 +144,17 @@ function AppShellInner() {
   const [assistantContentMounted, setAssistantContentMounted] = useState(false);
   if (aiAssistantOpen && !assistantContentMounted) setAssistantContentMounted(true);
   const releaseAssistantContent = useCallback(() => setAssistantContentMounted(false), []);
+  // The panel belongs to the page it was opened on: changing page (or record) closes it. Corrected during render,
+  // keyed on the route it last saw, so a close and a navigation in the same event cannot disagree.
+  const routeKey = `${currentView}|${currentPatientId ?? ""}`;
+  const [seenRoute, setSeenRoute] = useState(routeKey);
+  if (routeKey !== seenRoute) {
+    setSeenRoute(routeKey);
+    if (aiAssistantOpen) {
+      setAiAssistantOpen(false);
+      setIsAssistantCollapsed(false);
+    }
+  }
   const sidebarScrollRef = useRef<HTMLDivElement>(null);
   const [peekPatientId, setPeekPatientId] = useState<string | null>(null);
   const [peekFollows, setPeekFollows] = useState(false);
@@ -727,6 +738,7 @@ function AppShellInner() {
       />
       <ConsultationAssistantPanel
         open={aiAssistantOpen}
+        topInset={isDesktopRuntime ? 20 : 0}
         onCollapsedChange={setIsAssistantCollapsed}
         onExited={releaseAssistantContent}
       >

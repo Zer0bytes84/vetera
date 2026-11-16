@@ -47,6 +47,8 @@ interface Props {
   onCollapsedChange?: (collapsed: boolean) => void;
   /** The exit has played and the panel is gone: the caller can let go of its content. */
   onExited?: () => void;
+  /** Pixels kept free above the panel: the desktop window's title-bar strip, which swallows clicks. */
+  topInset?: number;
 }
 
 /**
@@ -63,6 +65,7 @@ export function ConsultationAssistantPanel({
   children,
   onCollapsedChange,
   onExited,
+  topInset = 0,
 }: Props) {
   const [rendered, setRendered] = useState(open);
   const [visible, setVisible] = useState(false);
@@ -115,9 +118,11 @@ export function ConsultationAssistantPanel({
         role="complementary"
         aria-label="Assistant de consultation"
         data-slot="assistant-panel"
+        data-no-drag
+        style={{ top: topInset }}
         data-state={collapsed ? "collapsed" : visible ? "open" : "closed"}
         className={cn(
-          "fixed inset-y-0 right-0 z-50 flex w-full flex-col",
+          "fixed bottom-0 right-0 z-50 flex w-full flex-col",
           "sm:max-w-[var(--assistant-width)]",
           "border-l border-border bg-[var(--card-band)] rounded-tl-[20px]",
           "shadow-[var(--clean-slideout-shadow,-16px_0_48px_-12px_rgba(0,0,0,0.18))]",
