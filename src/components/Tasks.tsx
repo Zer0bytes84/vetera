@@ -381,6 +381,31 @@ const Tasks: React.FC = () => {
       .slice(0, 100);
   }, [activeView, allItems, query, patientRemindersModel.types, sourceFilter]);
 
+  // Une demande de focus sur une tâche : portée, vue et sélection sont posées dès le rendu qui la reçoit (corrigé au rendu, sans effet) ;
+  // le défilement, l'éclairage et la fin de la demande restent dans l'effet.
+  const [handledFocus, setHandledFocus] = useState<typeof focus>(null);
+  const focusedTask = focus?.kind === "task" ? tasksRepository.data.find((entry) => entry.id === focus.id) : undefined;
+  if (focus?.kind === "task" && focusedTask && handledFocus !== focus) {
+    setHandledFocus(focus);
+    setScope("team");
+    setQuery("");
+    setActiveView(
+      focusedTask.status === "done"
+        ? "completed"
+        : itemMatchesView(
+              {
+                date: parseTaskDate(focusedTask),
+                kind: "manual",
+                task: focusedTask,
+              },
+              "today",
+            )
+          ? "today"
+          : "upcoming",
+    );
+    setFocusedTaskId(focusedTask.id);
+  }
+
   useEffect(() => {
     if (focus?.kind !== "task") {
       return;
@@ -390,24 +415,6 @@ const Tasks: React.FC = () => {
       clearFocus();
       return;
     }
-
-    setScope("team");
-    setQuery("");
-    setActiveView(
-      task.status === "done"
-        ? "completed"
-        : itemMatchesView(
-              {
-                date: parseTaskDate(task),
-                kind: "manual",
-                task,
-              },
-              "today",
-            )
-          ? "today"
-          : "upcoming",
-    );
-    setFocusedTaskId(task.id);
 
     const timer = window.setTimeout(() => {
       document

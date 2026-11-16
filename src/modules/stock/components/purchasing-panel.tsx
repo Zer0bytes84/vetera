@@ -159,13 +159,18 @@ export function PurchasingPanel({orderFor, onOrderOpened}: {orderFor?: string | 
   // Without an active supplier no order can be saved: say so instead of
   // opening a form that cannot be confirmed.
   const [missingSupplierFor,setMissingSupplierFor]=useState<string|null>(null);
-  useEffect(()=>{
-    if(!orderFor||!purchasing.ready)return;
+  // Une commande demandée depuis une alerte de stock : l'écran s'ouvre dès le rendu où les données sont prêtes (corrigé au rendu, sans effet) ;
+  // l'effet ne fait qu'avertir le parent que la demande est prise en compte.
+  const [openedFor,setOpenedFor]=useState<string|null>(null);
+  if(orderFor&&purchasing.ready&&openedFor!==orderFor){
+    setOpenedFor(orderFor);
     setView("orders");setSelected(null);
     if(purchasing.suppliers.some(item=>!item.archived_at)){setOrderEdit({fromAlerts:false,productId:orderFor});setMissingSupplierFor(null);}
     else{setOrderEdit(null);setMissingSupplierFor(orderFor);}
-    onOrderOpened?.();
-  },[orderFor,purchasing.ready,purchasing.suppliers,onOrderOpened]);
+  }else if(!orderFor&&openedFor!==null){setOpenedFor(null);}
+  useEffect(()=>{
+    if(orderFor&&openedFor===orderFor)onOrderOpened?.();
+  },[orderFor,openedFor,onOrderOpened]);
   const missingSupplierProduct=missingSupplierFor?products.data.find(item=>item.id===missingSupplierFor):undefined;
   const run=async(operation:()=>Promise<unknown>)=>{if(busy)return;setBusy(true);setError(null);await guard(async () => {
 await operation();

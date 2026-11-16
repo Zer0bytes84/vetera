@@ -101,12 +101,12 @@ export function DashboardPage({
     vaccinations: vaccinations.data, invoices: invoices.invoices,
   }), [appointments.data, owners.data, patients.data, products.data, tasks.data, transactions.data, vaccinations.data, invoices.invoices]);
   const { version, setVersion } = useDashboardVersion();
-  const [isCustomizing, setIsCustomizing] = useState(false);
+  // « Personnaliser » demandé depuis les réglages : la demande est lue au montage ; l'effet l'efface et passe en version clinique.
+  const [isCustomizing, setIsCustomizing] = useState(() => window.sessionStorage.getItem("baitari:customize-dashboard") === "true");
   useEffect(() => {
     if (window.sessionStorage.getItem("baitari:customize-dashboard") !== "true") return;
     window.sessionStorage.removeItem("baitari:customize-dashboard");
     void setVersion("clinical");
-    setIsCustomizing(true);
   }, [setVersion]);
 
   const [trendsOpen, setTrendsOpen] = useState(true);

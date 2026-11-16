@@ -407,6 +407,21 @@ export const generatePrescriptionPDF = (data: {
   );
 };
 
+/** L'heure de début d'une consultation : celle déjà notée pour la session, sinon maintenant, notée une fois pour toutes. */
+function consultationStart(appointmentId: string): string {
+  if (typeof window === "undefined") {
+    return new Date().toISOString();
+  }
+  const key = `vetera:consultation-start:${appointmentId}`;
+  const existing = window.sessionStorage.getItem(key);
+  if (existing) {
+    return existing;
+  }
+  const fallback = new Date().toISOString();
+  window.sessionStorage.setItem(key, fallback);
+  return fallback;
+}
+
 export function ConsultationSessionDialog({
   appointment,
   closeLabel = "Retour aux consultations",
@@ -492,19 +507,13 @@ export function ConsultationSessionDialog({
   const saveDraftRef = useRef(onSaveDraft);
   // The latest consultation and patient, read by the reset below without making it depend on them.
   const sourceRef = useRef({ appointment, patient });
-  const [startedAt, setStartedAt] = useState(() => {
-    if (typeof window === "undefined") {
-      return new Date().toISOString();
-    }
-    const key = `vetera:consultation-start:${appointment.id}`;
-    const existing = window.sessionStorage.getItem(key);
-    if (existing) {
-      return existing;
-    }
-    const fallback = new Date().toISOString();
-    window.sessionStorage.setItem(key, fallback);
-    return fallback;
-  });
+  const [startedAt, setStartedAt] = useState(() => consultationStart(appointment.id));
+  // Une autre consultation : son heure de début est relue (ou posée une fois pour toutes), dès ce rendu.
+  const [startedFor, setStartedFor] = useState(appointment.id);
+  if (startedFor !== appointment.id) {
+    setStartedFor(appointment.id);
+    setStartedAt(consultationStart(appointment.id));
+  }
   const [elapsedMs, setElapsedMs] = useState(0);
 
   useEffect(() => {
@@ -535,21 +544,6 @@ export function ConsultationSessionDialog({
   useEffect(() => {
     saveDraftRef.current = onSaveDraft;
   }, [onSaveDraft]);
-
-  useEffect(() => {
-    if (typeof window === "undefined") {
-      return;
-    }
-    const key = `vetera:consultation-start:${appointment.id}`;
-    const existing = window.sessionStorage.getItem(key);
-    if (existing) {
-      setStartedAt(existing);
-      return;
-    }
-    const now = new Date().toISOString();
-    window.sessionStorage.setItem(key, now);
-    setStartedAt(now);
-  }, [appointment.id]);
 
   useEffect(() => {
     const start = new Date(startedAt).getTime();

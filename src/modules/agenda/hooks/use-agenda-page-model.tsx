@@ -157,30 +157,36 @@ export function useAgendaPageModel(onNavigate?: (view: View) => void) {
     }
   };
 
-  useEffect(() => {
-    if (focus) {
-      if (focus.kind === "appointment") {
-        setSelectedAppointmentId(focus.id);
-        const appt = appointments.find((a) => a.id === focus.id);
-        if (appt) {
-          setSelectedDate(new Date(appt.startTime));
-        }
-        clearFocus();
-      } else if (focus.kind === "patient") {
-        const patientAppts = appointments
-          .filter((a) => a.patientId === focus.id)
-          .sort(
-            (a, b) =>
-              new Date(b.startTime).getTime() - new Date(a.startTime).getTime()
-          );
-        if (patientAppts.length > 0) {
-          setSelectedAppointmentId(patientAppts[0].id);
-          setSelectedDate(new Date(patientAppts[0].startTime));
-        }
-        clearFocus();
+  // Une demande de focus (un rendez-vous, ou le dernier d'un patient) : sélection et date sont posées dès le rendu qui la reçoit
+  // (corrigé au rendu, sans effet) ; l'effet ne fait que clore la demande.
+  const [handledFocus, setHandledFocus] = useState<typeof focus>(null);
+  if (focus && handledFocus !== focus) {
+    if (focus.kind === "appointment") {
+      setHandledFocus(focus);
+      setSelectedAppointmentId(focus.id);
+      const appt = appointments.find((a) => a.id === focus.id);
+      if (appt) {
+        setSelectedDate(new Date(appt.startTime));
+      }
+    } else if (focus.kind === "patient") {
+      setHandledFocus(focus);
+      const patientAppts = appointments
+        .filter((a) => a.patientId === focus.id)
+        .sort(
+          (a, b) =>
+            new Date(b.startTime).getTime() - new Date(a.startTime).getTime()
+        );
+      if (patientAppts.length > 0) {
+        setSelectedAppointmentId(patientAppts[0].id);
+        setSelectedDate(new Date(patientAppts[0].startTime));
       }
     }
-  }, [focus, appointments, clearFocus]);
+  }
+  useEffect(() => {
+    if (focus && (focus.kind === "appointment" || focus.kind === "patient")) {
+      clearFocus();
+    }
+  }, [focus, clearFocus]);
   const recurrencesStore = useAppointmentRecurrencesRepository();
   const { data: patients } = usePatientsRepository();
   const { data: owners } = useOwnersRepository();

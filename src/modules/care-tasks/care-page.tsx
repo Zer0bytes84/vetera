@@ -283,11 +283,16 @@ export default function CarePage({
   const userName = (id: string | null) =>
     users.data.find((u) => u.id === id)?.displayName ?? "Utilisateur";
   const detail = tasks.find((t) => t.id === selected);
+  // Un autre soin sélectionné, ou une liste rechargée : l'historique repart de zéro dès ce rendu (corrigé au rendu, sans effet).
+  const [historyFor, setHistoryFor] = useState({ selected, tasks });
+  if (selected && (historyFor.selected !== selected || historyFor.tasks !== tasks)) {
+    setHistoryFor({ selected, tasks });
+    setHistory([]);
+    setHistoryError(false);
+  }
   useEffect(() => {
     let live = true;
     if (selected) {
-      setHistory([]);
-      setHistoryError(false);
       void careTasksService
         .history(selected)
         .then((rows) => {

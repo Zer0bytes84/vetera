@@ -290,16 +290,21 @@ export function PatientDetailPage({
   /** "new" writes a note without a visit; a note id reads one. */
   const [offVisitNote, setOffVisitNote] = useState<"new" | string | null>(null);
   // A search result asks for its note: opened once the record's notes are read.
+  // La demande est lue dans la session ; l'ouverture est décidée au rendu, l'effacement de la demande part dans un effet.
+  const wantedNoteId = sessionStorage.getItem("patient:open-note");
+  const wantedNote = wantedNoteId ? notesRepo.data.find((entry) => entry.id === wantedNoteId) : null;
+  const [handledNoteId, setHandledNoteId] = useState<string | null>(null);
+  if (wantedNote && handledNoteId !== wantedNote.id) {
+    setHandledNoteId(wantedNote.id);
+    if (wantedNote.patientId === patientId && readOffVisitNote(wantedNote)) setOffVisitNote(wantedNote.id);
+  } else if (!wantedNote && handledNoteId !== null) {
+    setHandledNoteId(null);
+  }
   useEffect(() => {
-    const wanted = sessionStorage.getItem("patient:open-note");
-    const note = wanted
-      ? notesRepo.data.find((entry) => entry.id === wanted)
-      : null;
-    if (!note) return;
-    sessionStorage.removeItem("patient:open-note");
-    if (note.patientId === patientId && readOffVisitNote(note))
-      setOffVisitNote(note.id);
-  }, [notesRepo.data, patientId]);
+    if (handledNoteId !== null && sessionStorage.getItem("patient:open-note") === handledNoteId) {
+      sessionStorage.removeItem("patient:open-note");
+    }
+  }, [handledNoteId]);
 
   const [selectedHospitalization, setSelectedHospitalization] =
     useState<Hospitalization | null>(null);
@@ -355,16 +360,21 @@ export function PatientDetailPage({
   // The top bar reads « Patients : Rex », the first word taking back to the list.
   usePageCrumb("Patients", patient?.name, "patients");
 
-  useEffect(() => {
-    if (
-      !patient ||
-      sessionStorage.getItem("vetera:pending-vaccination") !== patientId
-    )
-      return;
-    sessionStorage.removeItem("vetera:pending-vaccination");
+  // Une vaccination demandée depuis un autre écran : le dialogue s'ouvre dès le rendu où le patient est chargé ; la demande est effacée dans un effet.
+  const wantsVaccination = Boolean(patient) && sessionStorage.getItem("vetera:pending-vaccination") === patientId;
+  const [handledVaccinationFor, setHandledVaccinationFor] = useState<string | null>(null);
+  if (wantsVaccination && handledVaccinationFor !== patientId) {
+    setHandledVaccinationFor(patientId);
     setEditingVaccination(null);
     setVaccinationDialogOpen(true);
-  }, [patient, patientId]);
+  } else if (!wantsVaccination && handledVaccinationFor !== null) {
+    setHandledVaccinationFor(null);
+  }
+  useEffect(() => {
+    if (handledVaccinationFor !== null && sessionStorage.getItem("vetera:pending-vaccination") === handledVaccinationFor) {
+      sessionStorage.removeItem("vetera:pending-vaccination");
+    }
+  }, [handledVaccinationFor]);
 
   const owner = useMemo(
     () => ownersRepo.data.find((o) => o.id === patient?.ownerId) ?? undefined,
@@ -455,7 +465,10 @@ export function PatientDetailPage({
     (task) => task.patientId === patientId && task.status !== "done",
   );
 
-  useEffect(() => {
+  // Un autre patient : l'écran repart de l'aperçu, sans dialogue ouvert (corrigé au rendu, sans effet).
+  const [seenPatientId, setSeenPatientId] = useState(patientId);
+  if (seenPatientId !== patientId) {
+    setSeenPatientId(patientId);
     setActiveTab("overview");
     setIsProfileEditorOpen(false);
     setSoapAppointmentId(null);
@@ -463,7 +476,7 @@ export function PatientDetailPage({
     setSelectedAnesthesia(null);
     setPrescriptionOpen(false);
     setAutoCreatedAppointmentId(null);
-  }, [patientId]);
+  }
 
   const handleTabChange = (val: PatientRecordSection | "timeline") => {
     // The chronology follows the synthesis: asking for it scrolls there.
