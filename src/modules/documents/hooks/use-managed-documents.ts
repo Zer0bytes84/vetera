@@ -8,9 +8,9 @@ function useDocumentRows<T>(load: () => Promise<T[]>) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const generation = useRef({ value: 0 });
-  const refresh = useCallback(async () => {
+  // Lire : `loading` est déjà vrai au montage et quand `load` change (voir plus bas) ; les rafraîchissements le repassent à vrai.
+  const fetchRows = useCallback(async () => {
     const request = ++generation.current.value;
-    setLoading(true);
     await guard(async () => {
       const next = await load();
       if (request === generation.current.value) { setRows(next); setError(null); }
@@ -23,13 +23,23 @@ function useDocumentRows<T>(load: () => Promise<T[]>) {
       },
     });
   }, [load]);
+  const refresh = useCallback(async () => {
+    setLoading(true);
+    await fetchRows();
+  }, [fetchRows]);
+  // Une autre source de lignes (autre patient, autre consultation) : retour à l'état « en chargement » dès ce rendu.
+  const [loadedFor, setLoadedFor] = useState(() => load);
+  if (loadedFor !== load) {
+    setLoadedFor(() => load);
+    setLoading(true);
+  }
   useEffect(() => {
     const tracker = generation.current;
-    void refresh();
+    void fetchRows();
     const listener = () => { void refresh(); };
     window.addEventListener(MANAGED_DOCUMENTS_CHANGED, listener);
     return () => { tracker.value++; window.removeEventListener(MANAGED_DOCUMENTS_CHANGED, listener); };
-  }, [refresh]);
+  }, [fetchRows, refresh]);
   return { rows, loading, error, refresh };
 }
 

@@ -24,12 +24,17 @@ export function InvoicePdfPreview({ data, settings, onClose, sample = false }: {
     try { return { doc: buildInvoicePdf(data, settings, { test }), error: "" }; }
     catch (error) { return { doc: null, error: error instanceof Error ? error.message : "Impossible de générer la facture." }; }
   }, [data, settings, test]);
+  // Un nouveau document ou une autre page : l'aperçu repasse en « rendu en cours », dès ce rendu.
+  const [shown, setShown] = useState({ result, page });
+  if (result.doc && (shown.result !== result || shown.page !== page)) {
+    setShown({ result, page });
+    setRendering(true); setRenderError("");
+  }
   useEffect(() => {
     if (!result.doc) return;
     let cancelled = false;
     let dispose: (() => void) | undefined;
     let cancelRender: (() => void) | undefined;
-    setRendering(true); setRenderError("");
     void (async () => {
       return await guard(async () => {
         const pdfjs = await loadPdfjsDist();

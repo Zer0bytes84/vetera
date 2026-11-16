@@ -46,6 +46,8 @@ import {
 } from "@/modules/finances/components/finances-shared";
 import { guard, guardSync } from "@/lib/guard";
 
+const DESKTOP_ONLY_INVOICES = "La facturation officielle est disponible dans l’application de bureau.";
+
 export function useFinancesPageModel({
   onNavigate,
 }: {
@@ -67,8 +69,9 @@ export function useFinancesPageModel({
   );
   const [activeTab, setActiveTab] = useState<FinanceTab>("invoices");
   const [invoices, setInvoices] = useState<Invoice[]>([]);
-  const [invoicesLoading, setInvoicesLoading] = useState(true);
-  const [invoiceError, setInvoiceError] = useState<string | null>(null);
+  // Hors de l'application de bureau, il n'y a rien à charger : l'état de départ est déjà celui que le chargement aurait posé.
+  const [invoicesLoading, setInvoicesLoading] = useState(isTauriRuntime);
+  const [invoiceError, setInvoiceError] = useState<string | null>(() => (isTauriRuntime() ? null : DESKTOP_ONLY_INVOICES));
   const [invoiceQuery, setInvoiceQuery] = useState("");
   const [invoiceDraft, setInvoiceDraft] =
     useState<InvoiceDraft>(createInvoiceDraft);
@@ -78,7 +81,11 @@ export function useFinancesPageModel({
   );
   const [editingInvoicePrices, setEditingInvoicePrices] = useState(false);
   const [invoicePrices, setInvoicePrices] = useState<Record<string, string>>({});
-  useEffect(() => { if (!selectedInvoice) { setEditingInvoicePrices(false); setInvoicePrices({}); } }, [selectedInvoice]);
+  // Quand la facture se ferme, l'édition des prix repart de zéro (corrigé au rendu, sans effet).
+  if (!selectedInvoice && (editingInvoicePrices || Object.keys(invoicePrices).length > 0)) {
+    setEditingInvoicePrices(false);
+    setInvoicePrices({});
+  }
   const [isDetailLoading, setIsDetailLoading] = useState(false);
   const [paymentInvoice, setPaymentInvoice] = useState<Invoice | null>(null);
   const [paymentDraft, setPaymentDraft] = useState<PaymentDraft>({
@@ -128,10 +135,15 @@ export function useFinancesPageModel({
   const [isTransactionDialogOpen, setIsTransactionDialogOpen] = useState(false);
 
   const {focus, clearFocus} = useFocus();
+  // Le chargement est annoncé dès le rendu qui reçoit la demande, avant que l'effet ne lance la lecture.
+  const [announcedFocus, setAnnouncedFocus] = useState<typeof focus>(null);
+  if (focus?.kind === "invoice" && announcedFocus !== focus) {
+    setAnnouncedFocus(focus);
+    setIsDetailLoading(true);
+  }
   useEffect(() => {
     if (focus?.kind !== "invoice") return;
     let alive = true;
-    setIsDetailLoading(true);
     void billingService.getInvoice(focus.id).then(invoice => {
       if (!alive) return;
       if (!invoice) {toast.error("Cette facture est introuvable."); return;}
@@ -149,18 +161,7 @@ export function useFinancesPageModel({
     [currentUser]
   );
 
-  const loadInvoices = useCallback(async () => {
-    setInvoicesLoading(true);
-    setInvoiceError(null);
-    if (!isTauriRuntime()) {
-      setInvoices([]);
-      setInvoiceError(
-        "La facturation officielle est disponible dans l’application de bureau."
-      );
-      setInvoicesLoading(false);
-      return;
-    }
-
+  const fetchInvoices = useCallback(async () => {
     await guard(async () => {
       setInvoices(await billingService.listInvoices());
     }, {
@@ -173,6 +174,18 @@ export function useFinancesPageModel({
       },
     });
   }, []);
+
+  const loadInvoices = useCallback(async () => {
+    setInvoicesLoading(true);
+    setInvoiceError(null);
+    if (!isTauriRuntime()) {
+      setInvoices([]);
+      setInvoiceError(DESKTOP_ONLY_INVOICES);
+      setInvoicesLoading(false);
+      return;
+    }
+    await fetchInvoices();
+  }, [fetchInvoices]);
 
   const openInvoiceDetail = async (invoice: Invoice, editPrices = false) => {
     setEditingInvoicePrices(false);
@@ -201,8 +214,8 @@ export function useFinancesPageModel({
   };
 
   useEffect(() => {
-    void loadInvoices();
-  }, [loadInvoices]);
+    if (isTauriRuntime()) void fetchInvoices();
+  }, [fetchInvoices]);
 
   useEffect(() => {
     const consume = () => {

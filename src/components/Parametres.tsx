@@ -296,8 +296,8 @@ const BackupSettings: React.FC = () => {
   const [passphrase, setPassphrase] = useState("");
   const desktop = isTauriRuntime();
 
-  const load = async () => {
-    setLoading(true);
+  // Lecture seule : au montage, `loading` vaut déjà true ; les rechargements le repassent à true via `load`.
+  const read = async () => {
     await guard(async () => {
       const [items, date] = await Promise.all([
         listBackups(),
@@ -315,8 +315,13 @@ const BackupSettings: React.FC = () => {
     });
   };
 
+  const load = async () => {
+    setLoading(true);
+    await read();
+  };
+
   useEffect(() => {
-    void load();
+    void read();
   }, []);
   const formatDate = (date: string) =>
     new Date(date).toLocaleString("fr-FR", {

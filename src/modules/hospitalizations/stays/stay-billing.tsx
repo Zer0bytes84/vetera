@@ -16,11 +16,12 @@ export function StayBilling({ stay }: { stay: Stay }) {
   const patients = usePatientsRepository(), products = useProductsRepository();
   const [productId, setProductId] = useState("");
   const [invoiceId, setInvoiceId] = useState<string | null>(null);
-  const [busy, setBusy] = useState(false), [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const desktop = isTauriRuntime();
+  // Hors de l'application de bureau, il n'y a rien à lire : le chargement ne commence jamais.
+  const [busy, setBusy] = useState(false), [loading, setLoading] = useState(desktop);
+  const [error, setError] = useState<string | null>(null);
   useEffect(() => {
-    if (!desktop) { setLoading(false); return; }
+    if (!desktop) return;
     let alive = true;
     void billingService.getInvoice(`stay-invoice:${stay.id}`).then(invoice => { if (alive) setInvoiceId(invoice?.id ?? null); }).catch(() => { if (alive) setError("La facture du séjour n’a pas pu être chargée."); }).finally(() => { if (alive) setLoading(false); });
     return () => { alive = false; };

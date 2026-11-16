@@ -43,7 +43,8 @@ function CheckedLicenseGate({ children }: { children: ReactNode }) {
   const [access, setAccess] = useState<LicenseAccess | null>(() => getCachedLicenseAccess());
   const [email, setEmail] = useState("");
   const [key, setKey] = useState("");
-  const [busy, setBusy] = useState(false);
+  // Au démarrage, sans accès déjà vérifié, la vérification complète part tout de suite : l'écran est déjà « occupé ».
+  const [busy, setBusy] = useState(() => !getCachedLicenseAccess());
   const [error, setError] = useState("");
   const inFlight = useRef(false);
   const mounted = useRef(true);
@@ -54,10 +55,9 @@ function CheckedLicenseGate({ children }: { children: ReactNode }) {
     setEmail((previous) => previous || result.email || "");
   }, []);
   // Startup and explicit retries: the full check, with its usual wait.
-  const refresh = useCallback(async (online: boolean) => {
+  const check = useCallback(async (online: boolean) => {
     if (inFlight.current) return;
     inFlight.current = true;
-    setBusy(true);
     await guard(async () => {
       apply(await checkLicenseAccess(online));
     }, {
@@ -67,11 +67,16 @@ function CheckedLicenseGate({ children }: { children: ReactNode }) {
       },
     });
   }, [apply]);
+  const refresh = useCallback(async (online: boolean) => {
+    if (inFlight.current) return;
+    setBusy(true);
+    await check(online);
+  }, [check]);
 
   useEffect(() => {
     mounted.current = true;
     // One full check per process; a remount reuses the verified access.
-    if (!getCachedLicenseAccess()) void refresh(true);
+    if (!getCachedLicenseAccess()) void check(true);
     // Background rechecks: no busy state, no wait, a verdict only if it changes.
     const recheck = (cause: "interval" | "visibility" | "online") => {
       if (inFlight.current) return;
@@ -91,7 +96,7 @@ function CheckedLicenseGate({ children }: { children: ReactNode }) {
       window.removeEventListener("online", reconnect);
       document.removeEventListener("visibilitychange", focus);
     };
-  }, [apply, refresh]);
+  }, [apply, check]);
 
   const activate = async (event: FormEvent) => {
     event.preventDefault();
