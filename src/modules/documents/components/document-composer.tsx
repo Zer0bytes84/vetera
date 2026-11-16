@@ -40,9 +40,14 @@ export function DocumentComposer({ open, patientId, consultationId, onClose, onC
   useEffect(() => {
     if (open) { setPreparation(null); setCreatedId(null); setReviewed(false); setError(""); }
   }, [open, patientId, consultationId]);
+  // Dès que la préparation, le titre ou le texte changent, l'ancien PDF est retiré (corrigé au rendu, sans effet).
+  const [pdfFor, setPdfFor] = useState({ preparation, title, content });
+  if (pdfFor.preparation !== preparation || pdfFor.title !== title || pdfFor.content !== content) {
+    setPdfFor({ preparation, title, content });
+    setPdf(null);
+  }
   useEffect(() => {
     let active = true;
-    setPdf(null);
     if (!preparation) return;
     const timer = setTimeout(() => {
       void buildManagedDocumentPdf({ title, content, clinic: preparation.clinic, patientReference: preparation.values["patient.reference"] || undefined }).then((document) => {

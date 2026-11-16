@@ -141,6 +141,11 @@ function isLicenseActive(license: ActivationAdminLicense) {
   );
 }
 
+/** Échue : non révoquée, avec une date de fin passée. Comme `isLicenseActive`, elle lit l'heure au moment du calcul. */
+function isLicenseExpired(license: ActivationAdminLicense) {
+  return Boolean(!license.revokedAt && license.expiresAt && Date.parse(license.expiresAt) < Date.now());
+}
+
 function isExpiringSoon(license: ActivationAdminLicense) {
   if (!(isLicenseActive(license) && license.expiresAt)) {
     return false;
@@ -1015,9 +1020,7 @@ export default function ActivationAdminPage() {
   const stats = useMemo(() => {
     const active = licenses.filter(isLicenseActive);
     const expiring = active.filter(isExpiringSoon);
-    const expired = licenses.filter(
-      (l) => !l.revokedAt && l.expiresAt && Date.parse(l.expiresAt) < Date.now()
-    );
+    const expired = licenses.filter(isLicenseExpired);
     const revoked = licenses.filter((l) => Boolean(l.revokedAt));
     const devices = active.reduce((acc, curr) => acc + curr.deviceCount, 0);
 

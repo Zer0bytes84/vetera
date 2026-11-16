@@ -208,12 +208,12 @@ export default function ConsultationDocumentsAssistant({
   const initialNote = initialNoteId
     ? notes.data.find((entry) => entry.id === initialNoteId && offered(entry))
     : undefined;
-  const initialNoteLoaded = useRef(false);
-  useEffect(() => {
-    if (!initialNote || initialNoteLoaded.current) return;
-    initialNoteLoaded.current = true;
+  // La note d'origine est lue une seule fois, dès le rendu où elle est disponible (corrigé au rendu, sans effet).
+  const [initialNoteLoaded, setInitialNoteLoaded] = useState(false);
+  if (initialNote && !initialNoteLoaded) {
+    setInitialNoteLoaded(true);
     readNote(initialNote);
-  }, [initialNote]);
+  }
   const resetReview = () => {
     setReviewed(false);
     setSaved(false);

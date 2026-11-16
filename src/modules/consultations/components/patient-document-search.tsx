@@ -141,13 +141,16 @@ export function PatientDocumentSearch({
   // The last operation the assistant ran, shown as one folded row: what it did, how long it took, what it found.
   const [lastRun, setLastRun] = useState<{ id: number; name: string; startedAt: number; durationMs?: number } | null>(null);
 
-  useEffect(() => {
+  // Une nouvelle transcription remplace la requête, dès le rendu qui la reçoit (corrigé au rendu, sans effet).
+  const [seenTranscription, setSeenTranscription] = useState<string | null>(null);
+  if (dictation.transcription !== seenTranscription) {
+    setSeenTranscription(dictation.transcription);
     if (dictation.transcription) {
       setQuery(dictation.transcription);
       setResults([]);
       setMessage("Requête vocale transcrite. Vous pouvez la compléter.");
     }
-  }, [dictation.transcription]);
+  }
 
   useEffect(() => {
     let alive = true;

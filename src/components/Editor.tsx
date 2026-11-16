@@ -5,7 +5,7 @@ import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { Columns3, PenLine, Plus, Rows3, Table2, Trash2 } from "@/lib/icons";
 import type React from "react";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
@@ -119,8 +119,9 @@ const Editor: React.FC<EditorProps> = ({
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [writeModalOpen, setWriteModalOpen] = useState(false);
   const [writeTopicInput, setWriteTopicInput] = useState("");
-  const [aiReady, setAiReady] = useState(false);
-  const [aiInitializing, setAiInitializing] = useState(false);
+  // L'état de départ est celui que la lecture du magasin donnait au montage ; l'abonnement suit ensuite les changements.
+  const [aiReady, setAiReady] = useState(() => isLocalTextReady());
+  const [aiInitializing, setAiInitializing] = useState(() => !isLocalTextReady() && isLocalTextLoading());
   const [suggestion, setSuggestion] = useState<{
     html: string;
     text: string;
@@ -134,11 +135,13 @@ const Editor: React.FC<EditorProps> = ({
   // When the host page offers a slot next to the note's title, the toolbar
   // renders there instead of above the text (see NotesPro).
   const [toolbarSlot, setToolbarSlot] = useState<HTMLElement | null>(null);
-  useLayoutEffect(() => {
-    setToolbarSlot(document.getElementById("note-editor-toolbar-slot"));
-  }, []);
   const [isInTable, setIsInTable] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
+  // La barre d'outils se range dans l'emplacement de la page hôte dès que le bloc est monté (rappel de ref : même moment que l'ancien effet de mise en page).
+  const attachRoot = useCallback((node: HTMLDivElement | null) => {
+    rootRef.current = node;
+    if (node) setToolbarSlot(document.getElementById("note-editor-toolbar-slot"));
+  }, []);
 
   const handleAiAction = async (instruction: string) => {
     if (!editor) {
@@ -234,13 +237,6 @@ const Editor: React.FC<EditorProps> = ({
   };
 
   useEffect(() => {
-    if (isLocalTextReady()) {
-      setAiReady(true);
-      setAiInitializing(false);
-    } else if (isLocalTextLoading()) {
-      setAiInitializing(true);
-    }
-
     const unsubscribe = subscribeToProgress((report) => {
       setAiReady(report.status === "ready");
       setAiInitializing(report.status === "loading");
@@ -350,7 +346,7 @@ const Editor: React.FC<EditorProps> = ({
   );
 
   return (
-    <div className="relative w-full" ref={rootRef}>
+    <div className="relative w-full" ref={attachRoot}>
       {!readOnly && <InlineBlockMenu editor={editor} items={blockItems} rootRef={rootRef} />}
       {!readOnly && (toolbarSlot ? createPortal(toolbarRow, toolbarSlot) : toolbarRow)}
       <SelectionBubbleMenu editor={editor} onAiAction={handleAiAction} />
