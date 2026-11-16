@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { careDisplayStatus, type CareTask } from "./domain";
 import { careTasksService } from "./service";
+import { guard } from "@/lib/guard";
 export const CARE_TASKS_CHANGED = "baitari:care-tasks-changed";
 /** Session key: day the Soins list opens on after a redirect (YYYY-MM-DD). */
 export const CARE_LIST_DAY_KEY = "baitari:care-list-day";
@@ -40,7 +41,7 @@ export function useCareTasks(date?: Date, rangeEnd?: Date) {
             Number(endKey.split("-")[2])
           );
     if (endKey === "day") end.setDate(end.getDate() + 1);
-    try {
+    return await guard(async () => {
       const rows = await careTasksService.list(start, end);
       // Today also carries every earlier care still not done, with its own date.
       const carried =
@@ -51,12 +52,15 @@ export function useCareTasks(date?: Date, rangeEnd?: Date) {
       setTasks([...carried, ...rows]);
       setNow(current);
       setError(null);
-    } catch {
-      if (sequence !== requestSequence.current) return;
-      setError("Les soins du jour n’ont pas pu être chargés. Réessayez.");
-    } finally {
-      if (sequence === requestSequence.current) setLoading(false);
-    }
+    }, {
+      recover: () => {
+        if (sequence !== requestSequence.current) return;
+        setError("Les soins du jour n’ont pas pu être chargés. Réessayez.");
+      },
+      cleanup: () => {
+        if (sequence === requestSequence.current) setLoading(false);
+      },
+    });
   }, [dateKey, endKey]);
   useEffect(() => {
     void refresh();

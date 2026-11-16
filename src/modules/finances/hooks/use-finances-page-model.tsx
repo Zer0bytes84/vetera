@@ -556,7 +556,7 @@ export function useFinancesPageModel({
     setEditingInvoicePrices(false);
     setInvoicePrices({});
     setIsDetailLoading(true);
-    try {
+    return await guard(async () => {
       const detail = await billingService.getInvoice(invoice.id);
       if (!detail) {
         toast.error("Cette facture est introuvable.");
@@ -567,12 +567,15 @@ export function useFinancesPageModel({
         setInvoicePrices(Object.fromEntries(detail.lines.map((line) => [line.id, priceInput(line.unitAmount)])));
         setEditingInvoicePrices(true);
       }
-    } catch (error) {
-      console.error(error);
-      toast.error("Impossible d’ouvrir cette facture.");
-    } finally {
-      setIsDetailLoading(false);
-    }
+    }, {
+      recover: (error) => {
+        console.error(error);
+        toast.error("Impossible d’ouvrir cette facture.");
+      },
+      cleanup: () => {
+        setIsDetailLoading(false);
+      },
+    });
   };
 
   const getClinicSnapshot = getInvoiceSettings;

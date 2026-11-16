@@ -58,6 +58,7 @@ import { usePatientReminders } from "@/modules/patient-reminders/use-patient-rem
 import { useHospitalizationEnabled } from "@/modules/clinique/clinic-services";
 import { MorningWatch } from "../components/morning-watch";
 import { buildMorningWatch, type MorningItem, type MorningStatus } from "../model/morning-watch";
+import { guard } from "@/lib/guard";
 
 export interface DashboardPageProps {
   onNavigate?: (view: View) => void;
@@ -284,11 +285,17 @@ export function DashboardPage({
     if (!row || row.status === "done" || pending.current.has(id)) return;
     pending.current.add(id);
     setBusyIds([...pending.current]);
-    try {
+    return await guard(async () => {
       if (!(await tasks.update(id, { status: "done" }))) return;
       toast.success("Tâche terminée", { duration: 5000, action: { label: "Annuler", onClick: () => { void tasks.update(id, { status: row.status }); } } });
-    } catch (error) { toast.error(error instanceof Error ? error.message : "La tâche n’a pas pu être terminée."); }
-    finally { pending.current.delete(id); setBusyIds([...pending.current]); }
+    }, {
+      recover: (error) => {
+   toast.error(error instanceof Error ? error.message : "La tâche n’a pas pu être terminée.");
+      },
+      cleanup: () => {
+   pending.current.delete(id); setBusyIds([...pending.current]);
+      },
+    });
   };
   const plan = (date?: Date) => {
     prepareAppointment(undefined, date instanceof Date ? date : new Date());

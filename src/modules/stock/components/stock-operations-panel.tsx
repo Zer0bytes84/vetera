@@ -18,7 +18,7 @@ import type { StockProduct } from "../services/stock-database";
 import type { InventoryLocation } from "../services/lot-store";
 import { StockDatePicker } from "./stock-date-picker";
 import { StockLotSelect } from "./stock-lot-select";
-import { guard } from "@/lib/guard";
+import { guard, guardSync } from "@/lib/guard";
 
 const failure=(error:unknown)=>error instanceof StockError?error.message:"L’opération n’a pas pu être enregistrée. Réessayez.";
 
@@ -53,7 +53,13 @@ function Scanner({onOpenMovements}: {onOpenMovements?:()=>void}) {
   const changed=(operation:()=>void)=>{operation();setRequestId(generateId());setError(null);};
   const current=products.data.find(item=>item.id===matched?.id);const qty=parseStockQuantityInput(quantity);
   const available=stockBalance(inventory.balances.filter(row=>{
-    try{return row.productId===matched?.id&&row.locationId===location&&row.locationActive&&row.quantity>0&&(!row.expiryDate||row.expiryDate>=stockDay())&&stockDay(new Date(stockTimestamp(row.receivedAt)))<=stockDay()&&(lot==="fifo"||row.lotId===(lot==="unassigned"?null:lot));}catch{return false;}
+    return guardSync(() => {
+return row.productId===matched?.id&&row.locationId===location&&row.locationActive&&row.quantity>0&&(!row.expiryDate||row.expiryDate>=stockDay())&&stockDay(new Date(stockTimestamp(row.receivedAt)))<=stockDay()&&(lot==="fifo"||row.lotId===(lot==="unassigned"?null:lot));
+    }, {
+      recover: () => {
+  return false;
+      },
+    });
   }).reduce((sum,row)=>sum+row.quantity,0));
   const valid=!!matched&&!!current&&!current.archivedAt&&!current.availabilityPending&&!current.inventoryInvalid&&qty>0&&(direction==="in"||qty<=available);
   const insufficient=inventory.ready&&direction==="out"&&qty>available;

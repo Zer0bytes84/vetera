@@ -585,7 +585,7 @@ export function PatientDetailsDialog({
 
     setIsSaving(true);
 
-    try {
+    return await guard(async () => {
       const patientUpdated = await onUpdatePatient(patient.id, {
         ...patientData,
         ownerId: selectedOwnerId,
@@ -626,12 +626,15 @@ export function PatientDetailsDialog({
       toast.success("Le dossier patient a été mis à jour.");
       setIsEditing(false);
       onSaved?.(patient.id);
-    } catch (error) {
-      console.error(error);
-      toast.error("Impossible d'enregistrer les modifications.");
-    } finally {
-      setIsSaving(false);
-    }
+    }, {
+      recover: (error) => {
+        console.error(error);
+        toast.error("Impossible d'enregistrer les modifications.");
+      },
+      cleanup: () => {
+        setIsSaving(false);
+      },
+    });
   }, [
     patient.id,
     patientData,

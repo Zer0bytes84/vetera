@@ -330,7 +330,7 @@ const BackupSettings: React.FC = () => {
     restart = false,
   ) => {
     setBusy(true);
-    try {
+    return await guard(async () => {
       const result = await operation();
       if (!result) {
         if (success.startsWith("Sauvegarde"))
@@ -347,15 +347,18 @@ const BackupSettings: React.FC = () => {
       } else {
         await load();
       }
-    } catch (error) {
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : "L’opération a échoué. Réessayez.",
-      );
-    } finally {
-      setBusy(false);
-    }
+    }, {
+      recover: (error) => {
+        toast.error(
+          error instanceof Error
+            ? error.message
+            : "L’opération a échoué. Réessayez.",
+        );
+      },
+      cleanup: () => {
+        setBusy(false);
+      },
+    });
   };
 
   const confirmPending = () => {
@@ -692,7 +695,7 @@ const Parametres: React.FC<ParametresProps> = ({
     setIsSaving(true);
     setMessage(null);
 
-    try {
+    return await guard(async () => {
       const dbUser = users.find(
         (u) => u.id === currentUser.id || u.email === currentUser.email,
       );
@@ -719,15 +722,18 @@ const Parametres: React.FC<ParametresProps> = ({
       await refreshCurrentUser();
 
       setMessage({ type: "success", text: "Profil mis à jour avec succès." });
-    } catch (error) {
-      console.error("[SETTINGS] Error updating profile:", error);
-      setMessage({
-        type: "error",
-        text: "Une erreur est survenue lors de la mise à jour.",
-      });
-    } finally {
-      setIsSaving(false);
-    }
+    }, {
+      recover: (error) => {
+        console.error("[SETTINGS] Error updating profile:", error);
+        setMessage({
+          type: "error",
+          text: "Une erreur est survenue lors de la mise à jour.",
+        });
+      },
+      cleanup: () => {
+        setIsSaving(false);
+      },
+    });
   };
 
   const handleChangePassword = async () => {

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { patientRemindersService } from "./service";
 import type { PatientReminder, ReminderType } from "./store";
+import { guard } from "@/lib/guard";
 export const PATIENT_REMINDERS_CHANGED = "baitari:patient-reminders-changed";
 export function announcePatientRemindersChanged() { window.dispatchEvent(new Event(PATIENT_REMINDERS_CHANGED)); }
 export function usePatientReminders() {
@@ -11,12 +12,18 @@ export function usePatientReminders() {
  const sequence=useRef(0);
  const refresh=useCallback(async()=>{
   const request=++sequence.current;
-  try {
+  return await guard(async () => {
    const [rows,kinds]=await Promise.all([patientRemindersService.list(),patientRemindersService.types()]);
    if (request !== sequence.current) return;
    setReminders(rows);setTypes(kinds);setError(null);
-  } catch {if(request===sequence.current) setError("Les rappels patients n’ont pas pu être chargés.");}
-  finally {if(request===sequence.current)setLoading(false);}
+  }, {
+    recover: () => {
+  if(request===sequence.current) setError("Les rappels patients n’ont pas pu être chargés.");
+    },
+    cleanup: () => {
+  if(request===sequence.current)setLoading(false);
+    },
+  });
  },[]);
  const invalidate=useCallback(()=>{sequence.current++;},[]);
  useEffect(()=>{

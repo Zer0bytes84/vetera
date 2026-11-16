@@ -3,14 +3,20 @@ import { SearchableSelect } from "@/components/ui/searchable-select";
 import { useStockInventory } from "../hooks/use-stock-inventory";
 import { stockDay, stockTimestamp } from "@/domain/stock-date";
 import { stockBalance, stockQuantityLabel } from "@/domain/stock";
+import { guardSync } from "@/lib/guard";
 
 export function StockLotSelect({productId, unit, value, onChange, disabled, locationId, label = "Lot à dispenser"}: {productId: string; unit: string; value: string; onChange: (value: string) => void; disabled?: boolean; locationId?: string; label?: string}) {
   const inventory = useStockInventory(); const inputId = useId(); const today = stockDay();
   const options = useMemo(() => {
     const groups = new Map<string, {quantity: number; name: string; expiry: string | null; receivedAt: string}>();
     for (const row of inventory.balances.filter(row => {
-      try {return row.productId === productId && row.quantity > 0 && row.locationActive && (!locationId || row.locationId === locationId) && (!row.expiryDate || row.expiryDate >= today) && stockDay(new Date(stockTimestamp(row.receivedAt))) <= today;}
-      catch {return false;}
+      return guardSync(() => {
+return row.productId === productId && row.quantity > 0 && row.locationActive && (!locationId || row.locationId === locationId) && (!row.expiryDate || row.expiryDate >= today) && stockDay(new Date(stockTimestamp(row.receivedAt))) <= today;
+      }, {
+        recover: () => {
+  return false;
+        },
+      });
     })) {
       const key = row.lotId ?? "unassigned"; const group = groups.get(key) ?? {quantity: 0, name: row.lotNumber || "Sans lot", expiry: row.expiryDate, receivedAt: row.receivedAt};
       group.quantity = stockBalance(group.quantity + row.quantity); if (row.receivedAt < group.receivedAt) group.receivedAt = row.receivedAt; groups.set(key, group);

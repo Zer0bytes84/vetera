@@ -33,6 +33,7 @@ import { useVaccinationsRepository } from "@/data/repositories";
 import type { Vaccination } from "@/types/db";
 import { toDateInputValue } from "./patients-shared";
 import { DatePicker } from "@/components/ui/date-picker";
+import { guard } from "@/lib/guard";
 
 interface VaccinationDialogProps {
   onOpenChange: (open: boolean) => void;
@@ -116,7 +117,7 @@ export function VaccinationDialog({
     setIsSubmitting(true);
     setError(null);
     let vaccinationSaved = false;
-    try {
+    return await guard(async () => {
       const payload = {
         patientId,
         vaccineName: vaccineName.trim(),
@@ -188,18 +189,21 @@ export function VaccinationDialog({
       }
       toast.success(t("patientDetail.vaccinations.save"));
       onOpenChange(false);
-    } catch (err) {
-      console.error("[VaccinationDialog] save failed", err);
-      setError(
-        vaccinationSaved
-          ? "La vaccination est enregistrée. Le prochain rappel n’a pas pu être préparé. Réessayez ou fermez ce dialogue."
-          : err instanceof Error
-            ? err.message
-            : "L’enregistrement a échoué.",
-      );
-    } finally {
-      setIsSubmitting(false);
-    }
+    }, {
+      recover: (err) => {
+        console.error("[VaccinationDialog] save failed", err);
+        setError(
+          vaccinationSaved
+            ? "La vaccination est enregistrée. Le prochain rappel n’a pas pu être préparé. Réessayez ou fermez ce dialogue."
+            : err instanceof Error
+              ? err.message
+              : "L’enregistrement a échoué.",
+        );
+      },
+      cleanup: () => {
+        setIsSubmitting(false);
+      },
+    });
   };
 
   if (open && proposal) {

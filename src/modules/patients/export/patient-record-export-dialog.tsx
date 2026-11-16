@@ -12,7 +12,7 @@ import { PatientRecordPreview } from "./patient-record-preview";
 import { DEFAULT_PATIENT_RECORD_OPTIONS, type PatientRecordOptions, type PatientRecordPdf, type PatientRecordProgress } from "./patient-record-types";
 import "./patient-record-export.css";
 import { DatePicker } from "@/components/ui/date-picker";
-import { guard } from "@/lib/guard";
+import { guard, guardSync } from "@/lib/guard";
 
 const loadPatientRecordService = () => import("./patient-record-service");
 const loadPatientRecordPdf = () => import("./patient-record-pdf");
@@ -58,9 +58,11 @@ export function PatientRecordExportDialog({ patientId, patientName, onClose }: {
   const generate = async (event: FormEvent) => {
     event.preventDefault();
     setError("");
-    let options: PatientRecordOptions;
-    try { options = validatePatientRecordOptions({ period: range ? { from, to } : null, sections, includeAttachments: attachments }); }
-    catch (cause) { setError(userMessage(cause, "Vérifiez la période et les sections à exporter.")); return; }
+    const options = guardSync<PatientRecordOptions | null, null>(
+      () => validatePatientRecordOptions({ period: range ? { from, to } : null, sections, includeAttachments: attachments }),
+      { recover: (cause) => { setError(userMessage(cause, "Vérifiez la période et les sections à exporter.")); return null; } },
+    );
+    if (!options) return;
     const controller = new AbortController();
     generation.current?.abort(); generation.current = controller;
     const token = ++sequence.current;

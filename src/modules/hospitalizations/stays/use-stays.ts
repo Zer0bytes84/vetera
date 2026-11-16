@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { staysService } from "./service";
 import type { Stay, StayLocation } from "./store";
+import { guard } from "@/lib/guard";
 export const STAYS_CHANGED = "baitari:stays-changed";
 export function announceStaysChanged() { window.dispatchEvent(new Event(STAYS_CHANGED)); }
 export function useStays(patientId?: string) {
@@ -9,12 +10,18 @@ export function useStays(patientId?: string) {
  const sequence=useRef(0);
  const refresh=useCallback(async () => {
   const request=++sequence.current;
-  try {
+  return await guard(async () => {
    const [records,places]=await Promise.all([staysService.list(patientId),staysService.locations()]);
    if (request !== sequence.current) return;
    setStays(records); setLocations(places); setError(null);
-  } catch { if (request === sequence.current) setError("Les séjours n’ont pas pu être chargés. Réessayez."); }
-  finally { if (request === sequence.current) setLoading(false); }
+  }, {
+    recover: () => {
+   if (request === sequence.current) setError("Les séjours n’ont pas pu être chargés. Réessayez.");
+    },
+    cleanup: () => {
+   if (request === sequence.current) setLoading(false);
+    },
+  });
  },[patientId]);
  const invalidatePending = useCallback(() => { sequence.current++; }, []);
  useEffect(() => {

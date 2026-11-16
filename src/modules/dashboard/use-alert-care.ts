@@ -3,6 +3,7 @@ import type { CareTask } from "@/modules/care-tasks/domain";
 import { careTasksService } from "@/modules/care-tasks/service";
 import { CARE_TASKS_CHANGED } from "@/modules/care-tasks/use-care-tasks";
 import { ALERT_DAYS_AHEAD, alertWindow } from "./model/alert-bars";
+import { guard } from "@/lib/guard";
 
 /**
  * The care of the alerts' window (six days back to seven days ahead), and every earlier care still not done, which stays late
@@ -19,16 +20,19 @@ export function useAlertCare(now: Date) {
     const request = ++sequence.current;
     const { from } = alertWindow(new Date());
     const end = new Date(from.getFullYear(), from.getMonth(), from.getDate() + 6 + ALERT_DAYS_AHEAD + 2);
-    try {
+    return await guard(async () => {
       const [rows, older] = await Promise.all([careTasksService.list(from, end), careTasksService.overdueBefore(from)]);
       if (request !== sequence.current) return;
       setTasks([...older, ...rows]);
       setError(null);
-    } catch {
-      if (request === sequence.current) setError("Les soins n’ont pas pu être chargés.");
-    } finally {
-      if (request === sequence.current) setLoading(false);
-    }
+    }, {
+      recover: () => {
+        if (request === sequence.current) setError("Les soins n’ont pas pu être chargés.");
+      },
+      cleanup: () => {
+        if (request === sequence.current) setLoading(false);
+      },
+    });
   }, []);
 
   useEffect(() => {

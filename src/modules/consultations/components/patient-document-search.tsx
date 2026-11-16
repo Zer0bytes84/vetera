@@ -194,7 +194,7 @@ export function PatientDocumentSearch({
       startedAt,
     });
 
-    try {
+    return await guard(async () => {
       if (indexOnly) {
         const count =
           audience === "all" || !patientId
@@ -290,25 +290,28 @@ export function PatientDocumentSearch({
           );
         }
       }
-    } catch (failure) {
-      if (!controller.signal.aborted) {
-        setError(
-          failure instanceof Error
-            ? failure.message
-            : "La recherche n’a pas abouti.",
-        );
-      }
-    } finally {
-      if (active.current === controller) {
-        active.current = null;
-        setBusy(false);
-        setLastRun((previous) =>
-          previous && previous.startedAt === startedAt
-            ? { ...previous, durationMs: Date.now() - startedAt }
-            : previous,
-        );
-      }
-    }
+    }, {
+      recover: (failure) => {
+        if (!controller.signal.aborted) {
+          setError(
+            failure instanceof Error
+              ? failure.message
+              : "La recherche n’a pas abouti.",
+          );
+        }
+      },
+      cleanup: () => {
+        if (active.current === controller) {
+          active.current = null;
+          setBusy(false);
+          setLastRun((previous) =>
+            previous && previous.startedAt === startedAt
+              ? { ...previous, durationMs: Date.now() - startedAt }
+              : previous,
+          );
+        }
+      },
+    });
   };
 
   const install = async () => {

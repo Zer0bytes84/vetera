@@ -1,4 +1,5 @@
 import { createContext, useContext, useState } from "react";
+import { guardSync } from "@/lib/guard";
 
 /*
  * The sidebar's collapse behaviour is the one layout choice left in Settings.
@@ -21,12 +22,14 @@ const LayoutContext = createContext<LayoutContextType | null>(null);
 
 export function LayoutProvider({ children }: { children: React.ReactNode }) {
   const [collapsible, _setCollapsible] = useState<Collapsible>(() => {
-    try {
+    return guardSync(() => {
       const saved = localStorage.getItem(LAYOUT_COLLAPSIBLE_KEY) as Collapsible | null;
       return saved && COLLAPSIBLES.includes(saved) ? saved : DEFAULT_COLLAPSIBLE;
-    } catch {
-      return DEFAULT_COLLAPSIBLE;
-    }
+    }, {
+      recover: () => {
+        return DEFAULT_COLLAPSIBLE;
+      },
+    });
   });
 
   const setCollapsible = (value: Collapsible) => {

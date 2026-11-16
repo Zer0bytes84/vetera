@@ -295,6 +295,40 @@ function updateWriteStatus(patch: Partial<SQLiteWriteStatus>) {
   writeListeners.forEach(listener => listener());
 }
 
+/**
+ * L'écriture optimiste d'une ligne. Elle vit hors du hook : le compilateur React ne sait pas traduire son `try … finally`,
+ * et `guard()` ajouterait des tours de micro-tâches que les tests de la file d'écriture observent. Le corps est celui d'origine.
+ */
+async function runTableWrite<R>({ safeTableName, tableName, sourceId, setError, id, apply, operation, retry }: {
+  safeTableName: string | null; tableName: string; sourceId: string; setError: (message: string | null) => void; id: string;
+  apply: (rows: CachedRow[]) => CachedRow[]; operation: (db: SQLiteDatabase) => Promise<{ value: R; row?: CachedRow | null }>; retry: () => unknown;
+}): Promise<R> {
+  if (!safeTableName) throw new Error(`Table non autorisée: ${tableName}`);
+  const token = tableSnapshotCache.begin(safeTableName, id, apply);
+  setError(null);
+  updateWriteStatus({ pending: writeStatus.pending + 1, error: null });
+  try {
+    const result = await runDbOperation(operation);
+    tableSnapshotCache.commit(safeTableName, token, result.row);
+    publishPatchedTable(safeTableName, sourceId, id);
+    updateWriteStatus({ savedAt: Date.now() });
+    return result.value;
+  } catch (err) {
+    tableSnapshotCache.rollback(safeTableName, token);
+    tableRowsCache.delete(safeTableName);
+    const message = err instanceof Error ? err.message : "Écriture impossible";
+    setError(message);
+    updateWriteStatus({ error: message });
+    toast.error("La modification n’a pas été enregistrée.", {
+      description: message,
+      action: { label: "Réessayer", onClick: () => { void Promise.resolve(retry()).catch(() => undefined); } },
+    });
+    throw err;
+  } finally {
+    updateWriteStatus({ pending: Math.max(0, writeStatus.pending - 1) });
+  }
+}
+
 async function loadTableSnapshot(table: string, force = false) {
   if (!isTauriRuntime()) {
     tableSnapshotCache.replace(table, getBrowserTable(table as BrowserTableName) as CachedRow[]);
@@ -372,32 +406,8 @@ export function useSQLite<T extends { id: string }>(tableName: string): UseSQLit
     return () => window.removeEventListener(DATA_CHANGED_EVENT, changed);
   }, [loadData, sourceId, tableName]);
 
-  const write = useCallback(async <R,>(id: string, apply: (rows: CachedRow[]) => CachedRow[], operation: (db: SQLiteDatabase) => Promise<{ value: R; row?: CachedRow | null }>, retry: () => unknown): Promise<R> => {
-    if (!safeTableName) throw new Error(`Table non autorisée: ${tableName}`);
-    const token = tableSnapshotCache.begin(safeTableName, id, apply);
-    setError(null);
-    updateWriteStatus({ pending: writeStatus.pending + 1, error: null });
-    try {
-      const result = await runDbOperation(operation);
-      tableSnapshotCache.commit(safeTableName, token, result.row);
-      publishPatchedTable(safeTableName, sourceId, id);
-      updateWriteStatus({ savedAt: Date.now() });
-      return result.value;
-    } catch (err) {
-      tableSnapshotCache.rollback(safeTableName, token);
-      tableRowsCache.delete(safeTableName);
-      const message = err instanceof Error ? err.message : "Écriture impossible";
-      setError(message);
-      updateWriteStatus({ error: message });
-      toast.error("La modification n’a pas été enregistrée.", {
-        description: message,
-        action: { label: "Réessayer", onClick: () => { void Promise.resolve(retry()).catch(() => undefined); } },
-      });
-      throw err;
-    } finally {
-      updateWriteStatus({ pending: Math.max(0, writeStatus.pending - 1) });
-    }
-  }, [safeTableName, sourceId, tableName]);
+  const write = useCallback(<R,>(id: string, apply: (rows: CachedRow[]) => CachedRow[], operation: (db: SQLiteDatabase) => Promise<{ value: R; row?: CachedRow | null }>, retry: () => unknown): Promise<R> =>
+    runTableWrite({ safeTableName, tableName, sourceId, setError, id, apply, operation, retry }), [safeTableName, sourceId, tableName]);
 
   const mapRow = useCallback((row: Record<string, unknown>) => normalizeBooleanFields(tableName, mapKeys(row, toCamelCase)) as CachedRow, [tableName]);
   const authoritativeRow = useCallback(async (db: SQLiteDatabase, id: string, fallback: CachedRow) => {

@@ -75,7 +75,7 @@ export function useAppointmentBilling({
       return;
     }
 
-    try {
+    return await guard(async () => {
       const patient = getPatient(billingAppointment.patientId);
       const owner = getOwner(billingAppointment);
 
@@ -194,14 +194,16 @@ export function useAppointmentBilling({
         .catch((error) =>
           console.error("[Billing] Additional audit failed", error)
         );
-    } catch (error) {
-      console.error(error);
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : "Impossible de finaliser la facturation."
-      );
-    }
+    }, {
+      recover: (error) => {
+        console.error(error);
+        toast.error(
+          error instanceof Error
+            ? error.message
+            : "Impossible de finaliser la facturation."
+        );
+      },
+    });
   };
 
 

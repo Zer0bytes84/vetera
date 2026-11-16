@@ -3,6 +3,7 @@ import type { PDFDocumentProxy } from "pdfjs-dist";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import type { PatientRecordPdf } from "./patient-record-types";
+import { guard } from "@/lib/guard";
 
 const loadPdfjsDist = () => import("pdfjs-dist");
 const loadPdfjsDistBuildPdfWorkerMinMjs = () => import("pdfjs-dist/build/pdf.worker.min.mjs?url");
@@ -51,7 +52,8 @@ export function PatientRecordPreview({ artifact, page }: { artifact: PatientReco
       setRendering(true); setError("");
       try {
         const current = await pdf.getPage(page);
-        try {
+        // La fonction se termine avec ce bloc : un return n'y saute que le reste du bloc, comme avant.
+        await guard(async () => {
           const canvas = canvasRef.current;
           if (!canvas || cancelled) return;
           const original = current.getViewport({ scale: 1 });
@@ -61,7 +63,7 @@ export function PatientRecordPreview({ artifact, page }: { artifact: PatientReco
           cancelRender = () => task.cancel();
           await task.promise;
           if (!cancelled) setRendering(false);
-        } finally { current.cleanup(); }
+        }, { cleanup: () => { current.cleanup(); } });
       } catch {
         if (!cancelled) { setError("Cette page n’a pas pu être affichée. Réessayez l’aperçu."); setRendering(false); }
       }

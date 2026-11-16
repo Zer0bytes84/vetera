@@ -303,7 +303,7 @@ export function useLocalConsultationAi({
     attempt.meter = undefined;
     setPhase("transcribing");
     setProgress({ message: "Transcription locale en cours…" });
-    try {
+    return await guard(async () => {
       const audio = capture.stop();
       attempt.microphone?.close();
       let raw: string;
@@ -345,10 +345,12 @@ export function useLocalConsultationAi({
         message: "Transcription terminée. Vous pouvez relire votre dictée.",
       });
       return text;
-    } catch (failure) {
-      reportFailure(attempt, failure);
-      return null;
-    }
+    }, {
+      recover: (failure) => {
+        reportFailure(attempt, failure);
+        return null;
+      },
+    });
   }, [dispose, phase, reportFailure, releaseMicrophone]);
   useEffect(() => {
     stopRef.current = stop;

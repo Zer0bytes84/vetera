@@ -99,6 +99,7 @@ import { VaccinationList } from "./components/vaccination-list";
 import { WeightEntryDialog } from "./components/weight-entry-dialog";
 import { WeightEvolutionChart } from "./components/weight-evolution-chart";
 import { DatePicker } from "@/components/ui/date-picker";
+import { guard } from "@/lib/guard";
 
 const HealthCardDialog = lazy(() =>
   import("./health-card/health-card-dialog").then((module) => ({
@@ -567,7 +568,7 @@ export function PatientDetailPage({
     }
 
     setIsSavingProfile(true);
-    try {
+    return await guard(async () => {
       const updated = await patientsRepo.update(patient.id, {
         ...profileDraft,
         allergies: profileDraft.allergies?.trim() || undefined,
@@ -588,12 +589,15 @@ export function PatientDetailPage({
       }
       toast.success("Dossier patient mis à jour.");
       closeProfileEditor();
-    } catch (error) {
-      console.error(error);
-      toast.error("Impossible d'enregistrer les modifications.");
-    } finally {
-      setIsSavingProfile(false);
-    }
+    }, {
+      recover: (error) => {
+        console.error(error);
+        toast.error("Impossible d'enregistrer les modifications.");
+      },
+      cleanup: () => {
+        setIsSavingProfile(false);
+      },
+    });
   };
   const recentVisits = appointments.filter((appointment) =>
     ["completed", "in_progress"].includes(appointment.status),

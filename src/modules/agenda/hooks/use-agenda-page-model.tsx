@@ -61,7 +61,7 @@ import {
   normalizeEntityId,
   getAppointmentPresentation,
 } from "@/modules/agenda/components/agenda-shared";
-import { guard } from "@/lib/guard";
+import { guard, guardSync } from "@/lib/guard";
 
 export function useAgendaPageModel(onNavigate?: (view: View) => void) {
   const { t } = useTranslation();
@@ -748,7 +748,7 @@ export function useAgendaPageModel(onNavigate?: (view: View) => void) {
         return false;
       }
 
-      try {
+      return guardSync(() => {
         const pending = JSON.parse(raw) as {
           patientId?: string;
           create?: boolean;
@@ -773,10 +773,12 @@ export function useAgendaPageModel(onNavigate?: (view: View) => void) {
           window.sessionStorage.removeItem("vetera:pending-appointment");
         }
         return opened;
-      } catch {
-        window.sessionStorage.removeItem("vetera:pending-appointment");
-        return false;
-      }
+      }, {
+        recover: () => {
+          window.sessionStorage.removeItem("vetera:pending-appointment");
+          return false;
+        },
+      });
     };
 
     const handleNewAppointment = (event: Event) => {

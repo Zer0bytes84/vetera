@@ -31,7 +31,7 @@ export function InvoicePdfPreview({ data, settings, onClose, sample = false }: {
     let cancelRender: (() => void) | undefined;
     setRendering(true); setRenderError("");
     void (async () => {
-      try {
+      return await guard(async () => {
         const pdfjs = await loadPdfjsDist();
         const worker = await loadPdfjsDistBuildPdfWorkerMinMjs();
         if (cancelled) return;
@@ -49,9 +49,11 @@ export function InvoicePdfPreview({ data, settings, onClose, sample = false }: {
         cancelRender = () => render.cancel();
         await render.promise;
         if (!cancelled) setRendering(false);
-      } catch (error) {
-        if (!cancelled) { setRenderError(error instanceof Error ? error.message : "Impossible d’afficher l’aperçu. Le PDF reste disponible à l’export."); setRendering(false); }
-      }
+      }, {
+        recover: (error) => {
+          if (!cancelled) { setRenderError(error instanceof Error ? error.message : "Impossible d’afficher l’aperçu. Le PDF reste disponible à l’export."); setRendering(false); }
+        },
+      });
     })();
     return () => { cancelled = true; cancelRender?.(); dispose?.(); };
   }, [result, page]);

@@ -431,7 +431,7 @@ const Tasks: React.FC = () => {
       return;
     }
     setSaving(true);
-    try {
+    return await guard(async () => {
       const created = await tasksRepository.add({
         assignedTo: currentUser?.uid,
         description: draft.description.trim() || undefined,
@@ -456,12 +456,15 @@ const Tasks: React.FC = () => {
         draft.dueDate > toDateKey(new Date()) ? "upcoming" : "today",
       );
       toast.success("Rappel ajouté");
-    } catch (error) {
-      console.error("[Reminders] Unable to create reminder", error);
-      toast.error("Impossible d'ajouter le rappel");
-    } finally {
-      setSaving(false);
-    }
+    }, {
+      recover: (error) => {
+        console.error("[Reminders] Unable to create reminder", error);
+        toast.error("Impossible d'ajouter le rappel");
+      },
+      cleanup: () => {
+        setSaving(false);
+      },
+    });
   };
 
   const startEditing = (task: Task) => {
@@ -483,7 +486,7 @@ const Tasks: React.FC = () => {
       return;
     }
     setSaving(true);
-    try {
+    return await guard(async () => {
       const updated = await tasksRepository.update(editingTaskId, {
         reminderTypeId: editDraft.reminderTypeId || null,
         description: editDraft.description.trim() || undefined,
@@ -496,12 +499,15 @@ const Tasks: React.FC = () => {
       if (!updated) return;
       setEditingTaskId(null);
       toast.success("Rappel mis à jour");
-    } catch (error) {
-      console.error("[Reminders] Unable to update reminder", error);
-      toast.error("Impossible de modifier le rappel");
-    } finally {
-      setSaving(false);
-    }
+    }, {
+      recover: (error) => {
+        console.error("[Reminders] Unable to update reminder", error);
+        toast.error("Impossible de modifier le rappel");
+      },
+      cleanup: () => {
+        setSaving(false);
+      },
+    });
   };
 
   const toggleTask = async (task: Task) => {
@@ -592,7 +598,7 @@ const Tasks: React.FC = () => {
     const tasks = selectedTasks.filter((task) => task.status !== "done");
     if (!tasks.length) return;
     setSaving(true);
-    try {
+    return await guard(async () => {
       const results = await Promise.all(
         tasks.map((task) =>
           tasksRepository.update(task.id, { status: "done" }),
@@ -614,9 +620,11 @@ const Tasks: React.FC = () => {
           },
         },
       );
-    } finally {
-      setSaving(false);
-    }
+    }, {
+      cleanup: () => {
+        setSaving(false);
+      },
+    });
   };
   const postponeSelected = async () => {
     const tasks = selectedTasks.filter((task) => task.status !== "done");
