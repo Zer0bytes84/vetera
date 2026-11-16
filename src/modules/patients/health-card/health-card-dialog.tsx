@@ -59,20 +59,26 @@ export function HealthCardDialog({ onClose, owner, patient }: {
   const loading =
     appointments.loading || hospitalizations.loading || prescriptions.loading ||
     items.loading || vaccinations.loading || weights.loading;
-  const snapshot = useRef<Parameters<typeof buildHealthCard>[0] | null>(null);
-  if (!loading && (!snapshot.current || snapshot.current.patient !== patient)) {
-    snapshot.current = {
+  // L'instantané est pris une fois les données lues, pour ce patient (corrigé au rendu, sans ref lue au rendu).
+  const [snapshot, setSnapshot] = useState<Parameters<typeof buildHealthCard>[0] | null>(null);
+  if (!loading && (!snapshot || snapshot.patient.id !== patient.id)) {
+    setSnapshot({
       appointments: appointments.data, hospitalizations: hospitalizations.data,
       items: items.data, now: new Date(), owner, patient,
       prescriptions: prescriptions.data, vaccinations: vaccinations.data, weights: weights.data,
-    };
+    });
   }
 
+  // Chaque nouvelle préparation (nouvel essai, autre utilisateur ou patient, instantané prêt) retire l'ancien PDF et l'ancienne erreur dès ce rendu.
+  const [preparedFor, setPreparedFor] = useState<{ attempt: number; userId: string | undefined; loading: boolean; patientId: string; snapshot: typeof snapshot } | null>(null);
+  if (!loading && snapshot && (!preparedFor || preparedFor.attempt !== attempt || preparedFor.userId !== currentUser?.id || preparedFor.loading !== loading || preparedFor.patientId !== patient.id || preparedFor.snapshot !== snapshot)) {
+    setPreparedFor({ attempt, userId: currentUser?.id, loading, patientId: patient.id, snapshot });
+    setArtifact(null); setError("");
+  }
   useEffect(() => {
-    const input = snapshot.current;
+    const input = snapshot;
     if (loading || !input) return;
     let cancelled = false;
-    setArtifact(null); setError("");
     void (async () => {
       await guard(async () => {
         if (!currentUser?.id) throw new Error("Connectez-vous pour préparer le carnet de santé.");
@@ -91,7 +97,7 @@ export function HealthCardDialog({ onClose, owner, patient }: {
       });
     })();
     return () => { cancelled = true; };
-  }, [attempt, currentUser?.id, loading, patient.id]);
+  }, [attempt, currentUser?.id, loading, patient.id, snapshot]);
 
   const close = () => {
     if (saving) return;
