@@ -1,0 +1,24 @@
+import { readFileSync } from "node:fs";
+import { it } from "vitest";
+import { answerQuestion } from "@/modules/assistant-answers/answer";
+import { formatDateInput, isDateInRange } from "@/modules/finances/components/finances-shared";
+import { buildPremiumAnalytics, dashboardPresentationData } from "@/modules/dashboard/model/premium-analytics";
+
+it("mesure : base réelle de test, fuseau du cabinet", () => {
+  const t = JSON.parse(readFileSync("/home/parallels/work/banc-dash/base.json", "utf8")).tables;
+  const data = { patients: t.patients, owners: t.owners, appointments: t.appointments, tasks: t.tasks, transactions: t.transactions.map((r: Record<string, unknown>) => ({ ...r, isLocked: Boolean(r.isLocked) })), vaccinations: [], products: [], invoices: [] };
+  const now = new Date(2026, 10, 12, 10, 0, 0);
+  const out: Record<string, unknown> = { tz: process.env.TZ, lignes: data.transactions.length };
+  for (const question of ["Recettes et dépenses des 30 derniers jours", "Recettes et dépenses de ce mois", "Recettes et dépenses de l'année dernière", "Recettes et dépenses en 2026"]) {
+    const a = answerQuestion(question, data as never, { now });
+    if (a.kind !== "answer") { out[question] = a.text; continue; }
+    const f = (id: string) => a.figures.find((x) => x.id === id)?.value ?? 0;
+    const from = formatDateInput(a.period!.from), to = formatDateInput(a.period!.to);
+    const sum = (type: string) => data.transactions.filter((r: { status: string; type: string; date: string }) => r.status === "paid" && r.type === type && isDateInRange(r.date, from, to)).reduce((n: number, r: { amount: number }) => n + r.amount, 0);
+    const dash = buildPremiumAnalytics({ ...dashboardPresentationData(data as never), vaccinations: [], alerts: [] }, "30d", now).cash;
+    out[question] = { assistant: [f("income"), f("expense")], finances: [sum("income"), sum("expense")], ecart: [f("income") - sum("income"), f("expense") - sum("expense")], ...(question.includes("30") ? { tableauDeBord: [dash.income, dash.expense] } : {}) };
+  }
+  const mismatched = data.transactions.filter((r: { date: string }) => { const d = new Date(r.date); return formatDateInput(d) !== r.date.slice(0, 10); }).length;
+  out.lignes_dont_le_jour_local_differe_du_jour_UTC = mismatched;
+  (require("node:fs") as typeof import("node:fs")).writeFileSync(`/home/parallels/work/lint-out/mesure-${(process.env.TZ ?? "").replace("/", "_")}.json`, JSON.stringify(out, null, 1));
+});

@@ -1,0 +1,13 @@
+{
+ "tableau_de_bord": "Trésorerie 37 500 DA 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 D A -34,8",
+ "recettes_30j": "Recettes des 30 derniers jours Question comprise Recettes et dépenses Terminé Question comprise : Terminé Lecture : journal de caisse 7 lignes retenues sur 60 Terminé 13 ms Lecture : journal de caisse : Terminé Encaissé du 14 oct. 2026 au 12 nov. 2026 : 37 500 DA, sur 7 lignes. Réponse terminée Lignes du journal de caisse 7 0 1 2 3 4 5 6 7 8 9 lignes Lignes du journal de caisse Date Libellé Montant 9 nov. 2026 Paiement INV-2026-000020 500 DA 9 nov. 2026 Paiement INV-2026-000020 7 000 DA 7 nov. 2026 Paiement INV-2026-000019 5 000 DA 3 nov. 2026 Paiement INV-2026-000018 8 000 DA 27 oct. 2026 Paiement INV-2026-000017 8 000 DA 25 oct. 2026 Paiement INV-2026-000016 3 000 DA 18 oct. 2026 Paiement ",
+ "rendez_vous_30j": "8 rendez-vous du 14 oct.",
+ "tableau_rdv": "Rendez-vous 8 0 1 2 3 4 5 6 7 8 9 -42,9 ",
+ "taches_retard": "Aucune tâche en retard.",
+ "nouveaux_patients": "Aucun dossier créé du 1 nov.",
+ "dose": ". La posologie se décide dans l’ordonnance, avec le calculateur que vous vérifiez. Je peux en revanche lire les données du cabinet. Réponse terminée Recettes des 30 derniers jours Rendez-vous d’aujourd’hui Absences des 30 derniers jours Tâches en retard Nouveaux patients ce mois Votre question sur les données du cabinet Lecture seule · données de cet ordinateur Envoyer (Entrée)",
+ "carte_avant": 2,
+ "carte_apres": "1 tâche ajoutée aux Rappels · 16:00 Enregistré Enregistré Tâches en retard Question comprise Tâ",
+ "requetes_externes": [],
+ "erreurs": []
+}

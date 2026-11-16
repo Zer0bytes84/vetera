@@ -1,0 +1,65 @@
+{
+ "tz": "America/New_York",
+ "lignes": 60,
+ "Recettes et dépenses des 30 derniers jours": {
+  "assistant": [
+   3750000,
+   0
+  ],
+  "finances": [
+   3750000,
+   0
+  ],
+  "ecart": [
+   0,
+   0
+  ],
+  "tableauDeBord": [
+   3750000,
+   0
+  ]
+ },
+ "Recettes et dépenses de ce mois": {
+  "assistant": [
+   2050000,
+   0
+  ],
+  "finances": [
+   2050000,
+   0
+  ],
+  "ecart": [
+   0,
+   0
+  ]
+ },
+ "Recettes et dépenses de l'année dernière": {
+  "assistant": [
+   0,
+   0
+  ],
+  "finances": [
+   0,
+   0
+  ],
+  "ecart": [
+   0,
+   0
+  ]
+ },
+ "Recettes et dépenses en 2026": {
+  "assistant": [
+   57240000,
+   12000000
+  ],
+  "finances": [
+   57240000,
+   12000000
+  ],
+  "ecart": [
+   0,
+   0
+  ]
+ },
+ "lignes_dont_le_jour_local_differe_du_jour_UTC": 12
+}
