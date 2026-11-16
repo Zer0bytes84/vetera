@@ -1,6 +1,7 @@
 import { createUuid } from "@/lib/uuid";
 import { useCreationRequest } from "@/modules/shell/model/creation-request";
 import { draftPriceLines, priceInput } from "../lib/draft-prices";
+import { usePage } from "@/hooks/use-page";
 import { getInvoiceSettings } from "@/services/invoiceSettingsService";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -104,7 +105,6 @@ export function useFinancesPageModel({
   const [invoiceSettlementFilter, setInvoiceSettlementFilter] =
     useState<InvoiceSettlementFilter>("all");
   const [invoiceAdvancedOpen, setInvoiceAdvancedOpen] = useState(false);
-  const [invoicePage, setInvoicePage] = useState(1);
   const [journalFrom, setJournalFrom] = useState("");
   const [journalTo, setJournalTo] = useState("");
   const [journalCategory, setJournalCategory] = useState("all");
@@ -119,7 +119,6 @@ export function useFinancesPageModel({
   const [journalMaxAmount, setJournalMaxAmount] = useState("");
   const [journalSort, setJournalSort] = useState<TransactionSort>("date-desc");
   const [journalAdvancedOpen, setJournalAdvancedOpen] = useState(false);
-  const [journalPage, setJournalPage] = useState(1);
   const pageSize = 10;
   const [transactionDraft, setTransactionDraft] = useState<TransactionDraft>(
     createTransactionDraft
@@ -515,6 +514,8 @@ export function useFinancesPageModel({
     1,
     Math.ceil(filteredTransactions.length / pageSize)
   );
+  const [invoicePage, setInvoicePage] = usePage(invoicePageCount);
+  const [journalPage, setJournalPage] = usePage(journalPageCount);
   const paginatedInvoices = useMemo(
     () =>
       filteredInvoices.slice(
@@ -572,13 +573,6 @@ export function useFinancesPageModel({
     setJournalPage(1);
   };
 
-  useEffect(() => {
-    setInvoicePage((page) => Math.min(page, invoicePageCount));
-  }, [invoicePageCount]);
-
-  useEffect(() => {
-    setJournalPage((page) => Math.min(page, journalPageCount));
-  }, [journalPageCount]);
 
   const getClinicSnapshot = getInvoiceSettings;
 

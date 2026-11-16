@@ -16,7 +16,8 @@ import {
   MoreHorizontal,
   RefreshCw,
 } from "@/lib/icons";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
+import { usePage } from "@/hooks/use-page";
 import {
   DataTable,
   type DataColumn,
@@ -560,7 +561,6 @@ export function StockWorkspace({
   const [workspaceTab, setWorkspaceTab] = useState("catalogue");
   const [category, setCategory] = useState("all");
   const [status, setStatus] = useState<StockFilter>("all");
-  const [page, setPage] = useState(1);
   const [selected, setSelected] = useState<Product | null>(null);
   const [view, setView] = useState<"table" | "cards">("table");
   const listRef = useListCursor({ storageKey: "products" });
@@ -631,8 +631,8 @@ export function StockWorkspace({
     });
   }, [category, products, query, status]);
 
-  useEffect(() => setPage(1), [query, category, status]);
   const pages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const [page, setPage] = usePage(pages, `${query}|${category}|${status}`);
   const visibleProducts = filtered.slice(
     (page - 1) * PAGE_SIZE,
     page * PAGE_SIZE,

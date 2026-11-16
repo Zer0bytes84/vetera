@@ -390,14 +390,12 @@ export function useAgendaPageModel(onNavigate?: (view: View) => void) {
     ? usersById.get(selectedAppointment.vetId)
     : undefined;
 
-  useEffect(() => {
-    if (
-      selectedAppointmentId &&
-      !appointments.some((item) => item.id === selectedAppointmentId)
-    ) {
-      setSelectedAppointmentId(null);
-    }
-  }, [appointments, selectedAppointmentId]);
+  if (
+    selectedAppointmentId &&
+    !appointments.some((item) => item.id === selectedAppointmentId)
+  ) {
+    setSelectedAppointmentId(null);
+  }
 
   const currentTimePosition = useMemo(() => {
     const hours = currentTime.getHours();

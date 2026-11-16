@@ -81,11 +81,9 @@ function MainApp() {
   // `loading` flips back to true (e.g. background refresh), we no longer
   // show the full-page skeleton — that prevents the flicker on Windows when
   // the WebView2 is minimized, moved or when focus changes.
-  useEffect(() => {
-    if (!(hasBootstrapped || isCheckingSetup || loading)) {
-      setHasBootstrapped(true);
-    }
-  }, [hasBootstrapped, isCheckingSetup, loading]);
+  if (!(hasBootstrapped || isCheckingSetup || loading)) {
+    setHasBootstrapped(true);
+  }
 
   useEffect(() => {
     const checkSetup = async () => {

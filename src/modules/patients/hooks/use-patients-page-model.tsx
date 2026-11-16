@@ -21,6 +21,7 @@ import {
 
 import { useAudit } from "@/services/use-audit";
 import type { Appointment, Owner, Patient } from "@/types/db";
+import { usePage } from "@/hooks/use-page";
 import { patientReferenceSearchText } from "@/modules/patients/reference/reference";
 
 import {
@@ -47,7 +48,6 @@ export function usePatientsPageModel({ onNavigateToPatient }: PatientsProps) {
   const [statusFilter, setStatusFilter] = useState("all");
   const [archiveFilter, setArchiveFilter] = useState("active");
   const [sortKey, setSortKey] = useState<PatientSort>("activity");
-  const [currentPage, setCurrentPage] = useState(1);
   const [recentOwnersById, setRecentOwnersById] = useState<
     Record<string, Owner>
   >({});
@@ -191,14 +191,12 @@ export function usePatientsPageModel({ onNavigateToPatient }: PatientsProps) {
     archiveFilter,
   ]);
 
-  useEffect(() => {
-    if (
-      selectedPatientId &&
-      !patients.some((patient) => patient.id === selectedPatientId)
-    ) {
-      setSelectedPatientId(null);
-    }
-  }, [patients, selectedPatientId]);
+  if (
+    selectedPatientId &&
+    !patients.some((patient) => patient.id === selectedPatientId)
+  ) {
+    setSelectedPatientId(null);
+  }
 
   useEffect(() => {
     if (!recentlySavedPatientId) {
@@ -228,10 +226,6 @@ export function usePatientsPageModel({ onNavigateToPatient }: PatientsProps) {
     setSelectedPatientId(recentlySavedPatientId);
     setRecentlySavedPatientId(null);
   }, [patients, recentlySavedPatientId, visiblePatients]);
-
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [deferredSearchTerm, sortKey, speciesFilter, statusFilter]);
 
   // Listen for new patient event from sidebar
   useEffect(() => {
@@ -359,14 +353,6 @@ export function usePatientsPageModel({ onNavigateToPatient }: PatientsProps) {
     }, 0);
   }, []);
 
-  const resetFilters = () => {
-    setSearchTerm("");
-    setSpeciesFilter("all");
-    setStatusFilter("all");
-    setArchiveFilter("active");
-    setSortKey("activity");
-    setCurrentPage(1);
-  };
   const filtersActive =
     searchTerm.trim() !== "" ||
     speciesFilter !== "all" ||
@@ -379,11 +365,19 @@ export function usePatientsPageModel({ onNavigateToPatient }: PatientsProps) {
     Math.ceil(visiblePatients.length / PATIENTS_PAGE_SIZE)
   );
 
-  useEffect(() => {
-    if (currentPage > totalPages) {
-      setCurrentPage(totalPages);
-    }
-  }, [currentPage, totalPages]);
+  const [currentPage, setCurrentPage] = usePage(
+    totalPages,
+    `${deferredSearchTerm}|${sortKey}|${speciesFilter}|${statusFilter}`
+  );
+
+  const resetFilters = () => {
+    setSearchTerm("");
+    setSpeciesFilter("all");
+    setStatusFilter("all");
+    setArchiveFilter("active");
+    setSortKey("activity");
+    setCurrentPage(1);
+  };
 
   const paginatedPatients = useMemo(() => {
     const start = (currentPage - 1) * PATIENTS_PAGE_SIZE;
