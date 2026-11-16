@@ -371,7 +371,7 @@ export function useSQLite<T extends { id: string }>(tableName: string): UseSQLit
   const [error, setError] = useState<string | null>(null);
   const sourceId = useId();
 
-  const loadData = useCallback(async (force = false) => {
+  const loadData = useCallback(async function reload(force = false) {
     await guard(async () => {
       if (!safeTableName) throw new Error(`Table non autorisée: ${tableName}`);
       setError(null);
@@ -383,7 +383,7 @@ export function useSQLite<T extends { id: string }>(tableName: string): UseSQLit
         setError(message);
         toast.error("Les données n’ont pas pu être chargées.", {
           description: message,
-          action: { label: "Réessayer", onClick: () => { void loadData(true); } },
+          action: { label: "Réessayer", onClick: () => { void reload(true); } },
         });
       },
       cleanup: () => {
@@ -423,7 +423,7 @@ export function useSQLite<T extends { id: string }>(tableName: string): UseSQLit
     }
   }, [mapRow, safeTableName]);
 
-  const add = useCallback(async (item: Omit<T, "id" | "createdAt" | "updatedAt">): Promise<T | null> => {
+  const add = useCallback(async function addRow(item: Omit<T, "id" | "createdAt" | "updatedAt">): Promise<T | null> {
     if (!safeTableName) throw new Error(`Table non autorisée: ${tableName}`);
     const id = generateId();
     if (!isTauriRuntime()) {
@@ -441,11 +441,11 @@ export function useSQLite<T extends { id: string }>(tableName: string): UseSQLit
         await db.execute(`INSERT INTO ${safeTableName} (id${fields.length ? `, ${fields.join(", ")}` : ""}) VALUES (?${fields.map(() => ", ?").join("")})`, [id, ...fields.map(field => sanitizeParam(payload[field]))]);
         const row = await authoritativeRow(db, id, optimistic);
         return { value: row as unknown as T, row };
-      }, () => add(item));
+      }, () => addRow(item));
     } catch { return null; }
   }, [authoritativeRow, loadData, safeTableName, sourceId, tableName, write]);
 
-  const update = useCallback(async (id: string, updates: Partial<T>): Promise<boolean> => {
+  const update = useCallback(async function updateRow(id: string, updates: Partial<T>): Promise<boolean> {
     if (!safeTableName) throw new Error(`Table non autorisée: ${tableName}`);
     const patch = stripUndefinedEntries(updates as Record<string, unknown>);
     delete patch.id;
@@ -465,11 +465,11 @@ export function useSQLite<T extends { id: string }>(tableName: string): UseSQLit
         const result = await db.execute(`UPDATE ${safeTableName} SET ${fields.map(field => `${field} = ?`).join(", ")} WHERE id = ?`, [...fields.map(field => sanitizeParam(payload[field])), id]);
         if (!result.rowsAffected) throw new Error("L’élément n’existe plus. Actualisez la liste.");
         return { value: true, row: await authoritativeRow(db, id, fallback) };
-      }, () => update(id, updates));
+      }, () => updateRow(id, updates));
     } catch { return false; }
   }, [authoritativeRow, loadData, safeTableName, sourceId, tableName, write]);
 
-  const remove = useCallback(async (id: string): Promise<boolean> => {
+  const remove = useCallback(async function removeRow(id: string): Promise<boolean> {
     if (!safeTableName) throw new Error(`Table non autorisée: ${tableName}`);
     if (!isTauriRuntime()) {
       const removed = removeBrowserRow(safeTableName as BrowserTableName, id);
@@ -482,7 +482,7 @@ export function useSQLite<T extends { id: string }>(tableName: string): UseSQLit
         const result = await db.execute(`DELETE FROM ${safeTableName} WHERE id = ?`, [id]);
         if (!result.rowsAffected) throw new Error("L’élément n’existe plus. Actualisez la liste.");
         return { value: true, row: null };
-      }, () => remove(id));
+      }, () => removeRow(id));
       // Cascades and SET NULL affect related tables; invalidate only those tables.
       for (const dependent of tablesAffectedByDelete(safeTableName)) emitSQLiteDataChanged(dependent);
       return removed;
