@@ -28,6 +28,28 @@ export type ReleaseNote = {
 /** Les plus récentes en premier. */
 export const RELEASE_NOTES: ReleaseNote[] = [
   {
+    version: "5.0.10",
+    status: "published",
+    date: "2026-11-16",
+    highlights: [
+      {
+        icon: MessageSquareText,
+        title: "Interrogez les données de votre cabinet",
+        text: "Un nouvel onglet « Données » dans l'assistant répond sur les recettes, les rendez-vous, les tâches et les patients. Chaque chiffre est calculé sur vos propres dossiers et s'affiche avec sa source.",
+      },
+      {
+        icon: CalendarCheck,
+        title: "Des absences à relancer en un clic",
+        text: "Quand l'assistant propose des tâches de suivi, vous les relisez sur une carte et rien n'est enregistré avant votre validation.",
+      },
+      {
+        icon: FileText,
+        title: "La note de consultation s'enregistre plus sûrement",
+        text: "L'indicateur « Enregistré » et la sauvegarde automatique de la note SOAP suivent mieux vos modifications.",
+      },
+    ],
+  },
+  {
     version: "5.0.9",
     status: "published",
     date: "2026-11-12",
