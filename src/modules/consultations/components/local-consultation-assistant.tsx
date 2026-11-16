@@ -15,7 +15,7 @@ import {
   X,
   XCircle,
 } from "@/lib/icons";
-import { ArrowRight as ArrowRightIcon, FileText as FileTextIcon, Mic, Square, Trash2 } from "lucide-react";
+import { ArrowRight as ArrowRightIcon, Database, FileText as FileTextIcon, Mic, Square, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button as ActionButton, IconButton } from "@/components/ui/action-button";
 import { AgentComposer } from "@/components/ui/agent-composer";
@@ -72,6 +72,7 @@ import {
   type LocalSoapNote,
 } from "../local-ai/soap-schema";
 import { PatientDocumentSearch } from "./patient-document-search";
+import { ClinicAnswers } from "@/modules/assistant-answers/clinic-answers";
 import { AssistantActivity } from "./assistant-activity";
 import { DictationLevelMeter, MicrophonePermissionWait, MicrophoneWarmup } from "./dictation-states";
 import {
@@ -98,7 +99,7 @@ import {
 import { cn } from "@/lib/utils";
 import type { SearchSection } from "../local-ai/embedding-index";
 
-type AssistantTab = "dictation" | "soap" | "search";
+type AssistantTab = "dictation" | "soap" | "search" | "data";
 
 interface Props {
   appointmentId?: string;
@@ -970,13 +971,22 @@ export default function LocalConsultationAssistant({
                 </span>
               ),
             },
+            {
+              value: "data",
+              label: (
+                <span className="inline-flex items-center gap-1.5">
+                  <Database className="size-3.5" />
+                  Données
+                </span>
+              ),
+            },
           ]}
           value={activeTab}
         />
       </div>
 
-      {/* 3. Settings Overlay / Popover */}
-      {setupOpen && (
+      {/* 3. Settings Overlay / Popover. The data tab reads tables and uses no model: the models card would only take its room. */}
+      {setupOpen && activeTab !== "data" && (
         <div className="mt-3 shrink-0 rounded-xl border border-border/80 bg-card p-3 shadow-sm">
           <div className="flex items-center justify-between pb-2">
             <h4 className="t-13 font-semibold text-foreground">
@@ -1420,6 +1430,13 @@ export default function LocalConsultationAssistant({
             patientId={patientId}
             onInsertExcerpt={handleInsertExcerpt}
           />
+        </div>
+      )}
+
+      {/* 7. Tab 4: answers about the practice's own data, computed from the tables of this machine. */}
+      {activeTab === "data" && (
+        <div className="mt-3 flex min-h-0 flex-1 flex-col overflow-hidden">
+          <ClinicAnswers patientId={effectivePatientId || undefined} renderAvatar={renderThreadAvatar} />
         </div>
       )}
 

@@ -47,6 +47,8 @@ export type AgentComposerProps = {
   meter?: ReactNode;
   /** ⌘ or Ctrl + Entrée. Plain Entrée adds a line: a dictation is prose, not a command. */
   onSubmit?: () => void;
+  /** A question, not prose: plain Entrée sends it and Maj + Entrée adds a line. */
+  submitOnEnter?: boolean;
   /** Takes the height the panel leaves: the field is the work area, not a fixed box. */
   fill?: boolean;
   className?: string;
@@ -65,6 +67,7 @@ export function AgentComposer({
   toolbar,
   meter,
   onSubmit,
+  submitOnEnter = false,
   fill = false,
   className,
 }: AgentComposerProps) {
@@ -102,6 +105,12 @@ export function AgentComposer({
         menu.onDismiss();
         return;
       }
+    }
+    // While an input method is composing (accents, Arabic), Entrée belongs to it.
+    if (event.key === "Enter" && submitOnEnter && !event.shiftKey && !event.nativeEvent.isComposing) {
+      event.preventDefault();
+      onSubmit?.();
+      return;
     }
     if (event.key === "Enter" && (event.metaKey || event.ctrlKey)) {
       event.preventDefault();
