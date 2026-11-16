@@ -1,3 +1,4 @@
+import { useNow } from "@/hooks/use-now";
 import { formatPhone, formatPersonName } from "@/utils/display-format";
 import {
   Add01Icon,
@@ -13,9 +14,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { Bird, Cat, Dog, PawPrint, Rabbit, UserRound } from "@/lib/icons";
 import React, {
   useCallback,
-  useEffect,
   useMemo,
-  useRef,
   useState,
 } from "react";
 import { toast } from "sonner";
@@ -285,6 +284,16 @@ export function SpeciesComponentIcon({ species, ...props }: { species?: string }
   return <PawPrint {...props} />;
 }
 
+/** L'adresse du propriétaire sur une ligne, ou « Non renseignée ». */
+function ownerAddressLabel(owner: { address?: string | null; city?: string | null } | null | undefined): string {
+  return [owner?.address, owner?.city].filter(Boolean).join(", ") || "Non renseignée";
+}
+
+/** Le contact secondaire du propriétaire sur une ligne, ou « Non renseigné ». */
+function secondaryContactLabel(owner: { secondaryContactName?: string | null; secondaryContactPhone?: string | null } | null | undefined): string {
+  return [owner?.secondaryContactName, formatPhone(owner?.secondaryContactPhone)].filter(Boolean).join(" · ") || "Non renseigné";
+}
+
 export function getBreedSuggestions(species?: string) {
   const normalized = species?.toLowerCase() ?? "";
   if (normalized.includes("chien")) {
@@ -442,19 +451,19 @@ export function PatientDetailsDialog({
     owner ? { ...owner } : {},
   );
 
-  useEffect(() => {
+  // Onglet demandé : repris à l'ouverture et quand le dossier affiché change (corrigé au rendu, sans effet).
+  const [seenTab, setSeenTab] = useState({ initialTab, patientId: patient.id });
+  if (seenTab.initialTab !== initialTab || seenTab.patientId !== patient.id) {
+    setSeenTab({ initialTab, patientId: patient.id });
     setActiveTab(initialTab);
-  }, [initialTab, patient.id]);
+  }
 
   // Ne réinitialise le formulaire que lorsque le dossier affiché change
   // vraiment (nouveau patient.id), pas à chaque nouvelle identité d'objet
   // fournie par le parent, pour ne pas effacer la saisie en cours.
-  const lastLoadedPatientId = useRef(patient.id);
-  useEffect(() => {
-    if (lastLoadedPatientId.current === patient.id) {
-      return;
-    }
-    lastLoadedPatientId.current = patient.id;
+  const [lastLoadedPatientId, setLastLoadedPatientId] = useState(patient.id);
+  if (lastLoadedPatientId !== patient.id) {
+    setLastLoadedPatientId(patient.id);
     setIsEditing(false);
     setPatientData({
       name: patient.name,
@@ -469,22 +478,18 @@ export function PatientDetailsDialog({
     });
     setSelectedOwnerId(patient.ownerId);
     setOwnerData(owner ? { ...owner } : {});
-  }, [patient, owner]);
+  }
 
   // Charge les champs du propriétaire choisi une seule fois par propriétaire,
   // pas à chaque rechargement de la liste : sinon la saisie en cours est écrasée.
-  const lastLinkedOwnerId = useRef<string | null>(null);
-  useEffect(() => {
-    if (lastLinkedOwnerId.current === selectedOwnerId) {
-      return;
-    }
+  const [lastLinkedOwnerId, setLastLinkedOwnerId] = useState<string | null>(null);
+  if (lastLinkedOwnerId !== selectedOwnerId) {
     const linkedOwner = allOwners.find((entry) => entry.id === selectedOwnerId);
-    if (!linkedOwner) {
-      return;
+    if (linkedOwner) {
+      setLastLinkedOwnerId(selectedOwnerId);
+      setOwnerData({ ...linkedOwner });
     }
-    lastLinkedOwnerId.current = selectedOwnerId;
-    setOwnerData({ ...linkedOwner });
-  }, [allOwners, selectedOwnerId]);
+  }
 
   const history = useMemo(
     () =>
@@ -538,6 +543,7 @@ export function PatientDetailsDialog({
     [patientData.species],
   );
 
+  const now = useNow();
   const upcomingAppointment = useMemo(
     () =>
       history
@@ -546,7 +552,7 @@ export function PatientDetailsDialog({
           return (
             appointment.status === "scheduled" &&
             !!date &&
-            date.getTime() >= Date.now()
+            date.getTime() >= now
           );
         })
         .slice()
@@ -555,7 +561,7 @@ export function PatientDetailsDialog({
           const rightDate = normalizeDate(right.startTime)?.getTime() ?? 0;
           return leftDate - rightDate;
         })[0],
-    [history],
+    [history, now],
   );
 
   const handleCancelEdit = () => {
@@ -1267,9 +1273,7 @@ export function PatientDetailsDialog({
                             <ReadOnlyDetail
                               label="Adresse"
                               value={
-                                [currentOwner?.address, currentOwner?.city]
-                                  .filter(Boolean)
-                                  .join(", ") || "Non renseignée"
+                                ownerAddressLabel(currentOwner)
                               }
                             />
                             <ReadOnlyDetail
@@ -1285,14 +1289,7 @@ export function PatientDetailsDialog({
                             <ReadOnlyDetail
                               label="Contact secondaire"
                               value={
-                                [
-                                  currentOwner?.secondaryContactName,
-                                  formatPhone(
-                                    currentOwner?.secondaryContactPhone,
-                                  ),
-                                ]
-                                  .filter(Boolean)
-                                  .join(" · ") || "Non renseigné"
+                                secondaryContactLabel(currentOwner)
                               }
                             />
                             {currentOwner?.communicationNotes ? (

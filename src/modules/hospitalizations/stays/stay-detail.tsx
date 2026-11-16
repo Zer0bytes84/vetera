@@ -20,14 +20,16 @@ import type { Stay, VitalSign } from "./store";
 import type { StayStatus } from "./domain";
 import { ACTIVE_STAY_STATUSES, stayDays } from "./domain";
 import { guard } from "@/lib/guard";
+import { useNow } from "@/hooks/use-now";
 export function StayDetail({stay,patientName,species,onBack}: {stay: Stay;patientName: string;species: string;onBack: () => void}) {
  const {currentUser}=useAuth(); const [vitals,setVitals]=useState<VitalSign[]>([]);
  const [error,setError]=useState<string | null>(null),[busy,setBusy]=useState(false),[summary,setSummary]=useState(""),[reason,setReason]=useState("");
  const [planOpen,setPlanOpen]=useState(false);
  const [vitalsOpen,setVitalsOpen]=useState(false);
  const [planned,setPlanned]=useState("");
- const refresh=useCallback(async () => { try {setVitals(await staysService.vitals(stay.id));} catch {setError("Les constantes n’ont pas pu être chargées.");} },[stay.id]);
+ const refresh=useCallback(async () => { await guard(async () => {setVitals(await staysService.vitals(stay.id));}, {recover: () => {setError("Les constantes n’ont pas pu être chargées.");}}); },[stay.id]);
  useEffect(() => {void refresh();},[refresh]);
+ const now = useNow();
  async function transition(to: StayStatus) {
   if (!currentUser || busy) return; setBusy(true); setError(null);
   await guard(async () => {
@@ -43,7 +45,7 @@ export function StayDetail({stay,patientName,species,onBack}: {stay: Stay;patien
  }
  const active=ACTIVE_STAY_STATUSES.includes(stay.status);
  return <div className="stay-detail space-y-5"><Button variant="ghost" className="h-11" onClick={onBack}>Retour aux séjours</Button>
- <header><h2 className="t-18 font-medium">{patientName}</h2><p className="mt-1 t-13 text-muted-foreground">{stay.reason}</p><p className="mt-2 t-13">{stayDays(new Date(stay.admitted_at), new Date(stay.discharged_at || Math.max(Date.now(), new Date(stay.admitted_at).getTime())))} journée(s) occupée(s)</p></header>
+ <header><h2 className="t-18 font-medium">{patientName}</h2><p className="mt-1 t-13 text-muted-foreground">{stay.reason}</p><p className="mt-2 t-13">{stayDays(new Date(stay.admitted_at), new Date(stay.discharged_at || Math.max(now, new Date(stay.admitted_at).getTime())))} journée(s) occupée(s)</p></header>
  {active && <StayTransfer stay={stay}/>}
  {error && <p role="alert" className="t-13 text-destructive">{error}</p>}
  {active && <section className="space-y-4 rounded-2xl border border-[#F2F2F2] bg-card p-5 dark:border-border"><h3 className="t-16 font-medium">Parcours du séjour</h3>
