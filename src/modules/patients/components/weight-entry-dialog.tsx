@@ -1,5 +1,5 @@
 import { Plus, Scales, Trash } from "@/lib/icons";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
@@ -84,23 +84,26 @@ export function WeightEntryDialog({
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (!open) {
-      return;
+  // À chaque ouverture, ou quand l'entrée éditée change : le formulaire repart des valeurs de l'entrée
+  // (corrigé au rendu, sans effet : plus d'image avec les anciennes valeurs, et le dialogue reste monté).
+  const [seenForm, setSeenForm] = useState<{ open: boolean; entry: WeightEntry | null | undefined } | null>(null);
+  if (!seenForm || seenForm.open !== open || seenForm.entry !== weightEntry) {
+    setSeenForm({ open, entry: weightEntry });
+    if (open) {
+      setError(null);
+      if (weightEntry) {
+        setWeight(String(weightEntry.weightKg ?? ""));
+        setDate(toDateInputValue(weightEntry.measuredAt));
+        setBcs(weightEntry.bcs == null ? "" : String(weightEntry.bcs));
+        setNotes(weightEntry.notes ?? "");
+      } else {
+        setWeight("");
+        setDate(toDateInputValue(new Date().toISOString()));
+        setBcs("");
+        setNotes("");
+      }
     }
-    setError(null);
-    if (weightEntry) {
-      setWeight(String(weightEntry.weightKg ?? ""));
-      setDate(toDateInputValue(weightEntry.measuredAt));
-      setBcs(weightEntry.bcs == null ? "" : String(weightEntry.bcs));
-      setNotes(weightEntry.notes ?? "");
-    } else {
-      setWeight("");
-      setDate(toDateInputValue(new Date().toISOString()));
-      setBcs("");
-      setNotes("");
-    }
-  }, [open, weightEntry]);
+  }
 
   const handleSave = async () => {
     const weightNumber = Number(weight.replace(",", "."));

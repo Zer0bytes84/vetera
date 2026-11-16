@@ -34,17 +34,27 @@ export function DocumentPreviewDialog({ documentId, onClose, onChanged }: {
   const [pdf, setPdf] = useState<{ dataUrl: string; version: string } | null>(null);
   const [events, setEvents] = useState<DocumentEvent[] | null>(null);
   const [reason, setReason] = useState<string | null>(null);
+  // Un autre document demandé : l'écran repart de zéro dès ce rendu (corrigé au rendu, sans effet).
+  const [seenDocumentId, setSeenDocumentId] = useState(documentId);
+  if (seenDocumentId !== documentId) {
+    setSeenDocumentId(documentId);
+    setDocument(null); setError(""); setEditing(false); setReviewed(false); setEvents(null); setReason(null);
+  }
   useEffect(() => {
     let active = true;
-    setDocument(null); setError(""); setEditing(false); setReviewed(false); setEvents(null); setReason(null);
     if (documentId) void documentsService.get(documentId).then((value) => {
       if (active) { setDocument(value); setTitle(value.title); setText(value.content); }
     }).catch((cause) => { if (active) setError(cause.message); });
     return () => { active = false; };
   }, [documentId]);
+  // Le PDF d'un autre document n'est jamais montré : il est retiré dès ce rendu.
+  const [seenDocument, setSeenDocument] = useState(document);
+  if (seenDocument !== document) {
+    setSeenDocument(document);
+    setPdf(null);
+  }
   useEffect(() => {
     let active = true;
-    setPdf(null);
     if (document) void patientDocumentPdf(document).then((dataUrl) => {
       if (active) setPdf({ dataUrl, version: document.updatedAt });
     }).catch((cause) => { if (active) setError(cause.message); });

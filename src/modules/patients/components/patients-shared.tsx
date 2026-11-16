@@ -1599,7 +1599,10 @@ export function PatientCreateDialog({
     status: "sante",
   });
 
-  useEffect(() => {
+  // À la fermeture (et au montage fermé), le formulaire repart de zéro (corrigé au rendu, sans effet).
+  const [seenOpen, setSeenOpen] = useState<boolean | null>(null);
+  if (seenOpen !== open) {
+    setSeenOpen(open);
     if (!open) {
       setSelectedOwnerId("new");
       setIsSubmitting(false);
@@ -1620,27 +1623,20 @@ export function PatientCreateDialog({
         status: "sante",
       });
     }
-  }, [open]);
+  }
 
   // Charge les champs du propriétaire choisi une seule fois par propriétaire,
   // pas à chaque rechargement de la liste : sinon la saisie en cours est écrasée.
-  const lastLinkedOwnerId = useRef<string | null>(null);
-  useEffect(() => {
-    if (selectedOwnerId === "new") {
-      lastLinkedOwnerId.current = null;
-      return;
-    }
-    if (lastLinkedOwnerId.current === selectedOwnerId) {
-      return;
-    }
-
+  const [lastLinkedOwnerId, setLastLinkedOwnerId] = useState<string | null>(null);
+  if (selectedOwnerId === "new") {
+    if (lastLinkedOwnerId !== null) setLastLinkedOwnerId(null);
+  } else if (lastLinkedOwnerId !== selectedOwnerId) {
     const linkedOwner = owners.find((entry) => entry.id === selectedOwnerId);
-    if (!linkedOwner) {
-      return;
+    if (linkedOwner) {
+      setLastLinkedOwnerId(selectedOwnerId);
+      setNewOwner({ ...linkedOwner });
     }
-    lastLinkedOwnerId.current = selectedOwnerId;
-    setNewOwner({ ...linkedOwner });
-  }, [owners, selectedOwnerId]);
+  }
 
   const breedSuggestions = useMemo(
     () => getBreedSuggestions(newPatient.species),

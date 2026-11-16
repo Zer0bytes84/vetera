@@ -7,7 +7,7 @@ import { patientRemindersService } from "@/modules/patient-reminders/service";
 import type { MedicalReminderProposal } from "@/modules/patient-reminders/store";
 import { announcePatientRemindersChanged } from "@/modules/patient-reminders/use-patient-reminders";
 import { Plus, Syringe } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
@@ -62,38 +62,41 @@ export function VaccinationDialog({
   const [manufacturer, setManufacturer] = useState("");
   const [notes, setNotes] = useState("");
   const [presetId, setPresetId] = useState("");
-  const vaccinationDraftId = useRef("");
+  const [vaccinationDraftId, setVaccinationDraftId] = useState("");
   const [proposal, setProposal] = useState<MedicalReminderProposal | null>(
     null,
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (!open) {
-      return;
+  // À chaque ouverture, ou quand la vaccination éditée change : le formulaire repart de ses valeurs
+  // (corrigé au rendu, sans effet : plus d'image avec les anciennes valeurs, et le dialogue reste monté).
+  const [seenForm, setSeenForm] = useState<{ open: boolean; entry: typeof vaccination } | null>(null);
+  if (!seenForm || seenForm.open !== open || seenForm.entry !== vaccination) {
+    setSeenForm({ open, entry: vaccination });
+    if (open) {
+      setError(null);
+      setVaccinationDraftId(vaccination?.id ?? generateId());
+      setProposal(null);
+      if (vaccination) {
+        setVaccineName(vaccination.vaccineName ?? "");
+        setVaccineType(vaccination.vaccineType ?? "");
+        setAdministeredAt(toDateInputValue(vaccination.administeredAt));
+        setBatchNumber(vaccination.batchNumber ?? "");
+        setManufacturer(vaccination.manufacturer ?? "");
+        setNotes(vaccination.notes ?? "");
+        setPresetId("");
+      } else {
+        setVaccineName("");
+        setVaccineType("");
+        setAdministeredAt(toDateInputValue(new Date().toISOString()));
+        setBatchNumber("");
+        setManufacturer("");
+        setNotes("");
+        setPresetId("");
+      }
     }
-    setError(null);
-    vaccinationDraftId.current = vaccination?.id ?? generateId();
-    setProposal(null);
-    if (vaccination) {
-      setVaccineName(vaccination.vaccineName ?? "");
-      setVaccineType(vaccination.vaccineType ?? "");
-      setAdministeredAt(toDateInputValue(vaccination.administeredAt));
-      setBatchNumber(vaccination.batchNumber ?? "");
-      setManufacturer(vaccination.manufacturer ?? "");
-      setNotes(vaccination.notes ?? "");
-      setPresetId("");
-    } else {
-      setVaccineName("");
-      setVaccineType("");
-      setAdministeredAt(toDateInputValue(new Date().toISOString()));
-      setBatchNumber("");
-      setManufacturer("");
-      setNotes("");
-      setPresetId("");
-    }
-  }, [open, vaccination]);
+  }
 
   const handlePresetChange = (value: string) => {
     setPresetId(value);
@@ -132,7 +135,7 @@ export function VaccinationDialog({
       if (isTauriRuntime()) {
         await patientRemindersService.saveVaccination(
           {
-            id: vaccinationDraftId.current,
+            id: vaccinationDraftId,
             patientId,
             vaccineName: vaccineName.trim(),
             vaccineType: vaccineType.trim() || undefined,
@@ -158,7 +161,7 @@ export function VaccinationDialog({
           const nextProposal = await onMedicalActRecorded(
             {
               date: administeredAt,
-              id: vaccinationDraftId.current,
+              id: vaccinationDraftId,
               note: notes.trim() || vaccineName.trim(),
               patientId,
               type: "vaccin",

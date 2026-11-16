@@ -37,9 +37,12 @@ export function DocumentComposer({ open, patientId, consultationId, onClose, onC
   const [createdId, setCreatedId] = useState<string | null>(null);
   const choices = useMemo(() => templates.filter((template) => template.active && template.kind === kind), [templates, kind]);
   const chosenId = choices.some((template) => template.id === templateId) ? templateId : choices[0]?.id ?? "";
-  useEffect(() => {
+  // À chaque ouverture, ou pour un autre patient / une autre consultation : on repart de zéro (corrigé au rendu, sans effet).
+  const [seenOpening, setSeenOpening] = useState<{ open: boolean; patientId: typeof patientId; consultationId: typeof consultationId } | null>(null);
+  if (!seenOpening || seenOpening.open !== open || seenOpening.patientId !== patientId || seenOpening.consultationId !== consultationId) {
+    setSeenOpening({ open, patientId, consultationId });
     if (open) { setPreparation(null); setCreatedId(null); setReviewed(false); setError(""); }
-  }, [open, patientId, consultationId]);
+  }
   // Dès que la préparation, le titre ou le texte changent, l'ancien PDF est retiré (corrigé au rendu, sans effet).
   const [pdfFor, setPdfFor] = useState({ preparation, title, content });
   if (pdfFor.preparation !== preparation || pdfFor.title !== title || pdfFor.content !== content) {

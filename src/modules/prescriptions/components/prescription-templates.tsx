@@ -240,13 +240,16 @@ export function PrescriptionTemplatesDialog({
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const nameInputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
+  // À chaque ouverture, la saisie repart de zéro (corrigé au rendu, sans effet).
+  const [wasOpen, setWasOpen] = useState(false);
+  if (open !== wasOpen) {
+    setWasOpen(open);
     if (open) {
       setName("");
       setEditingId(null);
       setConfirmDeleteId(null);
     }
-  }, [open]);
+  }
 
   const duplicate = name.trim()
     ? findTemplateByName(state.templates, name)
