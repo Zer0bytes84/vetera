@@ -70,13 +70,14 @@ typography:
     lineHeight: 1.5
     scope: "Premium body, controls and tabular data; Classic typography stays unchanged."
   landing-ui:
-    fontFamily: "Manrope, Arial, sans-serif"
+    fontFamily: "Inter Variable, Inter, ui-sans-serif, system-ui, sans-serif"
     fontWeight: 400
-    scope: "Baitari marketing landing and teaser captions only; application UI and body default to Geist through the appearance configuration"
+    scope: "Baitari marketing landing and teaser captions only, user-decided on 2026-11-17 (replaces Manrope); application UI and body default to Geist through the appearance configuration"
   landing-display:
-    fontFamily: "Instrument Serif, Georgia, serif"
-    fontWeight: 400
-    scope: "Marketing headings, roman and italic; matches the user-approved Aurora direction"
+    fontFamily: "Inter Variable, Inter, ui-sans-serif, system-ui, sans-serif"
+    fontWeight: 650
+    letterSpacing: "-0.045em"
+    scope: "Marketing headings, one family with the landing UI, no serif and no italic; user-decided on 2026-11-17 (replaces Instrument Serif and the Aurora direction)"
   display:
     fontFamily: "Geist Variable, Inter Variable, sans-serif"
     fontSize: "28px"
@@ -255,7 +256,7 @@ On frequently used non-dashboard pages, the interface behaves like a clinical in
 
 The approved application system uses an off-white canvas, gray frames, inset white surfaces, and charcoal equivalents in dark mode. Geist Variable is the default across application UI, body, headings, and tabular KPI values through the configurable application font. The CRM-inspired trial uses illuminated violet primary controls on neutral working surfaces. The chosen Opaline atmosphere remains behind the top content, alongside the dashboard's greeting and selected avatars. The Protocol glass header retains its independent scroll behavior. Animals and floral illustrations do not sit behind working surfaces.
 
-The dashboard preserves familiar work: Vue classique is first and is the default, while Journée clinique is an optional clinical operating view. Both use the same patient and financial data. This application extension preserves the separate Manrope and Instrument Serif typography of the approved marketing landing and teaser direction.
+The dashboard preserves familiar work: Vue classique is first and is the default, while Journée clinique is an optional clinical operating view. Both use the same patient and financial data. The marketing landing and teaser keep their own typography, Inter Variable alone (decided on 2026-11-17; Manrope and Instrument Serif are retired).
 
 **Key Characteristics:**
 
@@ -305,9 +306,9 @@ The frontmatter records the exact light-theme roles and their `-dark` counterpar
 
 **Application UI and Body Font:** Geist Variable by default (with Inter Variable and sans-serif fallbacks); the appearance setting controls the application sans family.
 
-**Marketing Fonts:** Manrope for landing UI and teaser captions; Instrument Serif for approved roman and italic marketing headings.
+**Marketing Fonts:** Inter Variable alone, for the landing UI, teaser captions and marketing headings (headings at weight 650 with tight tracking). Decided on 2026-11-17; Manrope and Instrument Serif are retired and must not come back.
 
-**Character:** Compact and highly legible, with Geist carrying the default interface as well as the heading and numeric hierarchy. Application screens do not use a serif. Marketing retains its own approved pairing.
+**Character:** Compact and highly legible, with Geist carrying the default interface as well as the heading and numeric hierarchy. Application screens do not use a serif. Marketing uses Inter Variable alone, without a serif either.
 
 ### Hierarchy
 
