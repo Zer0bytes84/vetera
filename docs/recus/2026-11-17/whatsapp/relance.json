@@ -1,0 +1,195 @@
+{
+  "declenchement": [
+    {
+      "moment": "ouverture de la page, 13:29:00",
+      "horloge": "13:29:00",
+      "groupe": false
+    },
+    {
+      "moment": "13:29:59, sans recharger",
+      "horloge": "13:29:59",
+      "groupe": false
+    },
+    {
+      "moment": "13:30:00 passé, sans recharger",
+      "horloge": "13:30:00",
+      "groupe": true,
+      "titre": "Rendez-vous dans l’heure 1",
+      "lignes": [
+        {
+          "id": "zz-a1",
+          "titre": "Rex · 14:30",
+          "bouton": 1
+        }
+      ]
+    },
+    {
+      "moment": "13:59:59",
+      "horloge": "13:59:59",
+      "groupe": true,
+      "titre": "Rendez-vous dans l’heure 2",
+      "lignes": [
+        {
+          "id": "zz-a1",
+          "titre": "Rex · 14:30",
+          "bouton": 1
+        },
+        {
+          "id": "zz-a3",
+          "titre": "Minou · 14:45",
+          "bouton": 0
+        }
+      ]
+    },
+    {
+      "moment": "14:00:00 passé",
+      "horloge": "14:00:01",
+      "groupe": true,
+      "titre": "Rendez-vous dans l’heure 3",
+      "lignes": [
+        {
+          "id": "zz-a1",
+          "titre": "Rex · 14:30",
+          "bouton": 1
+        },
+        {
+          "id": "zz-a3",
+          "titre": "Minou · 14:45",
+          "bouton": 0
+        },
+        {
+          "id": "zz-a2",
+          "titre": "Zoé l’Écureuil · 15:00",
+          "bouton": 1
+        }
+      ]
+    },
+    {
+      "moment": "14:29:59",
+      "horloge": "14:29:59",
+      "groupe": true,
+      "titre": "Rendez-vous dans l’heure 3",
+      "lignes": [
+        {
+          "id": "zz-a1",
+          "titre": "Rex · 14:30",
+          "bouton": 1
+        },
+        {
+          "id": "zz-a3",
+          "titre": "Minou · 14:45",
+          "bouton": 0
+        },
+        {
+          "id": "zz-a2",
+          "titre": "Zoé l’Écureuil · 15:00",
+          "bouton": 1
+        }
+      ]
+    },
+    {
+      "moment": "14:30:00 passé",
+      "horloge": "14:30:00",
+      "groupe": true,
+      "titre": "Rendez-vous dans l’heure 2",
+      "lignes": [
+        {
+          "id": "zz-a3",
+          "titre": "Minou · 14:45",
+          "bouton": 0
+        },
+        {
+          "id": "zz-a2",
+          "titre": "Zoé l’Écureuil · 15:00",
+          "bouton": 1
+        }
+      ]
+    }
+  ],
+  "rappels": {
+    "libelle": "Relance WhatsApp à ZZ-TEST Léa Martin",
+    "texteBouton": "Relance WhatsApp",
+    "ouvert": {
+      "lien": "whatsapp://send?phone=213555123456&text=Bonjour%2C%0A%0ANous%20vous%20rappelons%20le%20rendez-vous%20de%20Rex%20le%20mercredi%2018%20novembre%202026%20%C3%A0%2014%20h%2030.%0AEn%20cas%20d%E2%80%99emp%C3%AAchement%2C%20merci%20de%20nous%20pr%C3%A9venir.%0A%0A%C3%80%20bient%C3%B4t.",
+      "schema": "whatsapp:",
+      "numero": "213555123456",
+      "texte": "Bonjour,\n\nNous vous rappelons le rendez-vous de Rex le mercredi 18 novembre 2026 à 14 h 30.\nEn cas d’empêchement, merci de nous prévenir.\n\nÀ bientôt."
+    },
+    "filtre Manuels": 0,
+    "filtre Médicaux": 0,
+    "filtre Tous": 1,
+    "vue À venir": 0
+  },
+  "agenda": {
+    "Rex": {
+      "visible": 1,
+      "menu": [
+        "Ouvrir",
+        "Modifier",
+        "Relance WhatsApp",
+        "Marquer absent",
+        "Annuler le rendez-vous",
+        "Rouvrir le rendez-vous",
+        "Supprimer"
+      ],
+      "ouvert": {
+        "lien": "whatsapp://send?phone=213555123456&text=Bonjour%2C%0A%0ANous%20n%E2%80%99avons%20pas%20vu%20Rex%20au%20rendez-vous%20pr%C3%A9vu%20le%20mercredi%2018%20novembre%202026%20%C3%A0%2014%20h%2030.%0ASouhaitez-vous%20fixer%20un%20nouveau%20rendez-vous%C2%A0%3F%0A%0A%C3%80%20bient%C3%B4t.",
+        "schema": "whatsapp:",
+        "numero": "213555123456",
+        "texte": "Bonjour,\n\nNous n’avons pas vu Rex au rendez-vous prévu le mercredi 18 novembre 2026 à 14 h 30.\nSouhaitez-vous fixer un nouveau rendez-vous ?\n\nÀ bientôt."
+      }
+    },
+    "Zoé l’Écureuil": {
+      "visible": 1,
+      "menu": [
+        "Ouvrir",
+        "Modifier",
+        "Relance WhatsApp",
+        "Marquer absent",
+        "Annuler le rendez-vous",
+        "Supprimer"
+      ],
+      "ouvert": {
+        "lien": "whatsapp://send?phone=213555123456&text=Bonjour%2C%0A%0ANous%20vous%20rappelons%20le%20rendez-vous%20de%20Zo%C3%A9%20l%E2%80%99%C3%89cureuil%20le%20mercredi%2018%20novembre%202026%20%C3%A0%2015%20h.%0AEn%20cas%20d%E2%80%99emp%C3%AAchement%2C%20merci%20de%20nous%20pr%C3%A9venir.%0A%0A%C3%80%20bient%C3%B4t.",
+        "schema": "whatsapp:",
+        "numero": "213555123456",
+        "texte": "Bonjour,\n\nNous vous rappelons le rendez-vous de Zoé l’Écureuil le mercredi 18 novembre 2026 à 15 h.\nEn cas d’empêchement, merci de nous prévenir.\n\nÀ bientôt."
+      }
+    },
+    "Minou": {
+      "visible": 1,
+      "menu": [
+        "Ouvrir",
+        "Modifier",
+        "Marquer absent",
+        "Annuler le rendez-vous",
+        "Rouvrir le rendez-vous",
+        "Supprimer"
+      ]
+    },
+    "Médor": {
+      "visible": 1,
+      "menu": [
+        "Ouvrir",
+        "Modifier",
+        "Annuler le rendez-vous",
+        "Rouvrir le rendez-vous",
+        "Supprimer"
+      ]
+    },
+    "Pistache": {
+      "visible": 1,
+      "menu": [
+        "Ouvrir",
+        "Modifier",
+        "Marquer absent",
+        "Annuler le rendez-vous",
+        "Supprimer"
+      ]
+    }
+  },
+  "erreurs": {
+    "light": [],
+    "dark": []
+  }
+}

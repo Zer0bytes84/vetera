@@ -10,6 +10,8 @@ import { normalizeDate } from "./patients-shared";
 import { formatPhone } from "@/utils/display-format";
 import { cn } from "@/lib/utils";
 import { RecordBlockHeading } from "./record-block-heading";
+import { WhatsAppLink } from "@/components/whatsapp-link";
+import { contactMessage } from "@/lib/whatsapp";
 import "../medical-record.css";
 
 function ownerInitials(owner: { firstName?: string | null; lastName?: string | null }): string {
@@ -196,7 +198,8 @@ export function isClinicalSignal(value?: string) {
   ].includes(normalized);
 }
 
-export function OwnerContact({ owner }: { owner?: Owner }) {
+/** `animal` is the patient's name: with it, a WhatsApp button opens a first message about the animal. */
+export function OwnerContact({ animal, owner }: { animal?: string; owner?: Owner }) {
   if (!owner) {
     return (
       <section
@@ -250,6 +253,14 @@ export function OwnerContact({ owner }: { owner?: Owner }) {
             <span>{phoneLabel}</span>
           </a>
         )}
+        {animal?.trim() ? (
+          <WhatsAppLink
+            className="medical-whatsapp-link"
+            message={contactMessage(animal)}
+            ownerName={`${owner.firstName} ${owner.lastName}`}
+            phone={owner.phone}
+          />
+        ) : null}
         {owner.email && (
           <a
             href={`mailto:${owner.email}`}

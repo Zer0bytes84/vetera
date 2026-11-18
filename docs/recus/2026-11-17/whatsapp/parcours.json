@@ -1,0 +1,134 @@
+{
+  "rappels": {
+    "En cours": [
+      {
+        "animal": "Médor",
+        "bouton": 1,
+        "libelle": "Écrire sur WhatsApp à ZZ-TEST Karim Haddad",
+        "ouvert": {
+          "lien": "whatsapp://send?phone=213661223344&text=Bonjour%2C%0A%0ALe%20rappel%20%C2%AB%C2%A0Vermifuge%C2%A0%C2%BB%20de%20M%C3%A9dor%20%C3%A9tait%20pr%C3%A9vu%20le%201er%20octobre%202026.%0ASouhaitez-vous%20prendre%20rendez-vous%C2%A0%3F",
+          "schema": "whatsapp:",
+          "numero": "213661223344",
+          "texte": "Bonjour,\n\nLe rappel « Vermifuge » de Médor était prévu le 1er octobre 2026.\nSouhaitez-vous prendre rendez-vous ?"
+        }
+      },
+      {
+        "animal": "Rex",
+        "bouton": 1,
+        "libelle": "Écrire sur WhatsApp à ZZ-TEST Léa Martin",
+        "ouvert": {
+          "lien": "whatsapp://send?phone=213555123456&text=Bonjour%2C%0A%0ALe%20rappel%20%C2%AB%C2%A0Vaccin%C2%A0%C2%BB%20de%20Rex%20est%20pr%C3%A9vu%20le%2017%20novembre%202026.%0ASouhaitez-vous%20prendre%20rendez-vous%C2%A0%3F",
+          "schema": "whatsapp:",
+          "numero": "213555123456",
+          "texte": "Bonjour,\n\nLe rappel « Vaccin » de Rex est prévu le 17 novembre 2026.\nSouhaitez-vous prendre rendez-vous ?"
+        }
+      }
+    ],
+    "À venir": [
+      {
+        "animal": "Zoé l’Écureuil",
+        "bouton": 1,
+        "libelle": "Écrire sur WhatsApp à ZZ-TEST Inès Benali",
+        "ouvert": {
+          "lien": "whatsapp://send?phone=213555123456&text=Bonjour%2C%0A%0ALe%20rappel%20%C2%AB%C2%A0Contr%C3%B4le%20annuel%C2%A0%C2%BB%20de%20Zo%C3%A9%20l%E2%80%99%C3%89cureuil%20est%20pr%C3%A9vu%20le%201er%20d%C3%A9cembre%202026.%0ASouhaitez-vous%20prendre%20rendez-vous%C2%A0%3F",
+          "schema": "whatsapp:",
+          "numero": "213555123456",
+          "texte": "Bonjour,\n\nLe rappel « Contrôle annuel » de Zoé l’Écureuil est prévu le 1er décembre 2026.\nSouhaitez-vous prendre rendez-vous ?"
+        }
+      },
+      {
+        "animal": "Minou",
+        "bouton": 0
+      },
+      {
+        "animal": "Pistache",
+        "bouton": 0
+      }
+    ],
+    "Terminés": [
+      {
+        "animal": "(dossier réel de la copie, nom masqué)",
+        "bouton": 0
+      },
+      {
+        "animal": "(dossier réel de la copie, nom masqué)",
+        "bouton": 0
+      }
+    ],
+    "Rappels du jour": [
+      {
+        "animal": "Médor",
+        "bouton": 1,
+        "libelle": "Écrire sur WhatsApp à ZZ-TEST Karim Haddad",
+        "ouvert": {
+          "lien": "whatsapp://send?phone=213661223344&text=Bonjour%2C%0A%0ALe%20rappel%20%C2%AB%C2%A0Vermifuge%C2%A0%C2%BB%20de%20M%C3%A9dor%20%C3%A9tait%20pr%C3%A9vu%20le%201er%20octobre%202026.%0ASouhaitez-vous%20prendre%20rendez-vous%C2%A0%3F",
+          "schema": "whatsapp:",
+          "numero": "213661223344",
+          "texte": "Bonjour,\n\nLe rappel « Vermifuge » de Médor était prévu le 1er octobre 2026.\nSouhaitez-vous prendre rendez-vous ?"
+        }
+      },
+      {
+        "animal": "Rex",
+        "bouton": 1,
+        "libelle": "Écrire sur WhatsApp à ZZ-TEST Léa Martin",
+        "ouvert": {
+          "lien": "whatsapp://send?phone=213555123456&text=Bonjour%2C%0A%0ALe%20rappel%20%C2%AB%C2%A0Vaccin%C2%A0%C2%BB%20de%20Rex%20est%20pr%C3%A9vu%20le%2017%20novembre%202026.%0ASouhaitez-vous%20prendre%20rendez-vous%C2%A0%3F",
+          "schema": "whatsapp:",
+          "numero": "213555123456",
+          "texte": "Bonjour,\n\nLe rappel « Vaccin » de Rex est prévu le 17 novembre 2026.\nSouhaitez-vous prendre rendez-vous ?"
+        }
+      }
+    ]
+  },
+  "fiches": {
+    "Zoé l’Écureuil": {
+      "bouton": 1,
+      "lienAppel": 1,
+      "libelle": "Écrire sur WhatsApp à ZZ-TEST Inès Benali",
+      "ouvert": {
+        "lien": "whatsapp://send?phone=213555123456&text=Bonjour%2C%0A%0ANous%20vous%20%C3%A9crivons%20au%20sujet%20de%20Zo%C3%A9%20l%E2%80%99%C3%89cureuil.",
+        "schema": "whatsapp:",
+        "numero": "213555123456",
+        "texte": "Bonjour,\n\nNous vous écrivons au sujet de Zoé l’Écureuil."
+      }
+    },
+    "Médor": {
+      "bouton": 1,
+      "lienAppel": 1,
+      "libelle": "Écrire sur WhatsApp à ZZ-TEST Karim Haddad",
+      "ouvert": {
+        "lien": "whatsapp://send?phone=213661223344&text=Bonjour%2C%0A%0ANous%20vous%20%C3%A9crivons%20au%20sujet%20de%20M%C3%A9dor.",
+        "schema": "whatsapp:",
+        "numero": "213661223344",
+        "texte": "Bonjour,\n\nNous vous écrivons au sujet de Médor."
+      }
+    },
+    "Rex": {
+      "bouton": 1,
+      "lienAppel": 1,
+      "libelle": "Écrire sur WhatsApp à ZZ-TEST Léa Martin",
+      "ouvert": {
+        "lien": "whatsapp://send?phone=213555123456&text=Bonjour%2C%0A%0ANous%20vous%20%C3%A9crivons%20au%20sujet%20de%20Rex.",
+        "schema": "whatsapp:",
+        "numero": "213555123456",
+        "texte": "Bonjour,\n\nNous vous écrivons au sujet de Rex."
+      }
+    },
+    "Minou": {
+      "bouton": 0,
+      "lienAppel": 1
+    },
+    "Pistache": {
+      "bouton": 0,
+      "lienAppel": 0
+    }
+  },
+  "erreurs": {
+    "light": [],
+    "dark": []
+  },
+  "reglage": {
+    "lignes": 1,
+    "texte": "Indicatif pour WhatsApp Ajouté aux numéros des propriétaires qui commencent par 0 : 0555 12 34 56 devient +213 555 12 34 56. Les numéros qui portent déjà un indicatif ne changent pas. +213"
+  }
+}

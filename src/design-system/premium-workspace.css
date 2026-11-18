@@ -449,7 +449,8 @@
   display: grid;
   gap: 8px;
 }
-:root[data-skin="clean"] :is(.patient-record-page, .patient-peek-panel) .medical-owner a {
+:root[data-skin="clean"] :is(.patient-record-page, .patient-peek-panel) .medical-owner a,
+:root[data-skin="clean"] :is(.patient-record-page, .patient-peek-panel) .medical-owner .medical-whatsapp-link {
   min-height: 40px;
   padding: 8px 0;
   border: 0;

@@ -1459,7 +1459,7 @@ export function PatientDetailPage({
                 </Button>
               </section>
             ) : (
-              <OwnerContact owner={owner} />
+              <OwnerContact animal={patient.name} owner={owner} />
             )}
             <section>
               <RecordBlockHeading icon={Notebook}>
