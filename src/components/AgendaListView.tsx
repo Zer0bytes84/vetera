@@ -33,6 +33,9 @@ import {
 } from "@/modules/agenda/components/agenda-shared";
 import type { Appointment, AppointmentStatus } from "@/types/db";
 import { formatPhone } from "@/utils/display-format";
+import { openWhatsApp } from "@/components/whatsapp-link";
+import { canRelance } from "@/lib/appointment-relance";
+import { appointmentMessage, whatsAppLink } from "@/lib/whatsapp";
 import "@/modules/agenda/components/agenda-cards.css";
 
 interface AgendaListViewProps {
@@ -214,6 +217,15 @@ function AppointmentListItem({
     "scheduled"
   );
   const phone = formatPhone(row.owner?.phone);
+  // « Relance WhatsApp » only for a visit still to come, a known animal and an owner's number that makes a link.
+  const animal = patient?.name?.trim();
+  const relanceLink =
+    animal && canRelance(appointment.status)
+      ? whatsAppLink(
+          row.owner?.phone,
+          appointmentMessage({ animal, start: new Date(appointment.startTime) })
+        )
+      : null;
   const dateLabel = new Date(appointment.startTime).toLocaleDateString("fr-FR", {
     weekday: "short",
     day: "numeric",
@@ -347,6 +359,11 @@ function AppointmentListItem({
               <DropdownMenuItem onClick={() => onEdit(appointment)}>
                 Modifier
               </DropdownMenuItem>
+              {relanceLink ? (
+                <DropdownMenuItem onClick={() => openWhatsApp(relanceLink)}>
+                  Relance WhatsApp
+                </DropdownMenuItem>
+              ) : null}
               {canMarkAbsent ? (
                 <DropdownMenuItem
                   onClick={() =>

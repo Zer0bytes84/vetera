@@ -86,6 +86,40 @@ const longDate = new Intl.DateTimeFormat("fr-FR", {
   year: "numeric",
 });
 
+const FIRST_AFTER_WEEKDAY = /^(\S+) 1 /;
+const appointmentDate = new Intl.DateTimeFormat("fr-FR", {
+  day: "numeric",
+  month: "long",
+  weekday: "long",
+  year: "numeric",
+});
+
+/** « 14 h 30 », « 9 h » : the hour as French writes it, in the clinic's local time. */
+function frenchTime(date: Date): string {
+  const minutes = date.getMinutes();
+  return minutes
+    ? `${date.getHours()} h ${String(minutes).padStart(2, "0")}`
+    : `${date.getHours()} h`;
+}
+
+/**
+ * From an appointment: a courteous reminder with the animal, the day and the hour, sent by the person from WhatsApp
+ * (« Relance WhatsApp » in the Agenda's menu and on the reminder that comes up one hour before).
+ */
+export function appointmentMessage({
+  animal,
+  start,
+}: {
+  animal: string;
+  /** The appointment's start, read in the clinic's local time. */
+  start: Date;
+}): string {
+  const date = appointmentDate
+    .format(start)
+    .replace(FIRST_AFTER_WEEKDAY, "$1 1er ");
+  return `Bonjour,\n\nNous vous rappelons le rendez-vous de ${animal.trim()} le ${date} à ${frenchTime(start)}.\nEn cas d’empêchement, merci de nous prévenir.\n\nÀ bientôt.`;
+}
+
 /**
  * From a reminder: the animal, what is due and the due date. A reminder carries a due date, not an appointment; a date
  * already past is told in the past.

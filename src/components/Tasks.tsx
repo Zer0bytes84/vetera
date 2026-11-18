@@ -57,6 +57,7 @@ import { useListCursor } from "@/hooks/useListCursor";
 import { Kbd } from "@/components/ui/kbd";
 import { DatePicker } from "@/components/ui/date-picker";
 import { guard } from "@/lib/guard";
+import { AppointmentRelances } from "@/modules/agenda/components/appointment-relances";
 
 type ReminderView = "today" | "upcoming" | "completed";
 type Scope = "mine" | "team";
@@ -1087,6 +1088,14 @@ const Tasks: React.FC = () => {
             />
           </div>
         </div>
+
+        {!auxiliaryView && activeView === "today" && sourceFilter === "all" ? (
+          <AppointmentRelances
+            appointments={appointments}
+            patients={patients}
+            query={query}
+          />
+        ) : null}
 
         {auxiliaryView ? (
           <PatientRemindersContent
