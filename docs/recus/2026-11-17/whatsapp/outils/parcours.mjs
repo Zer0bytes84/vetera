@@ -6,7 +6,7 @@ import { launch, open } from "./banc.mjs";
 const OUT = process.argv[2] ?? "sortie";
 fs.mkdirSync(OUT, { recursive: true });
 const result = { rappels: {}, fiches: {}, erreurs: {} };
-const decode = (link) => { const u = new URL(link); return { lien: link, numero: u.pathname.slice(1), texte: u.searchParams.get("text") }; };
+const decode = (link) => { const u = new URL(link); return { lien: link, schema: u.protocol, numero: u.searchParams.get("phone"), texte: u.searchParams.get("text") }; };
 
 async function clickAll(page, scope) {
   const rows = [];
@@ -63,6 +63,15 @@ for (const mode of ["light", "dark"]) {
       await block.screenshot({ path: `${OUT}/fiche-${animal === "Minou" ? "minou-sans-bouton" : "zoe"}-${mode}.png` });
     }
   }
+  // Le reglage visible : Parametres > Mon cabinet, ligne « Indicatif pour WhatsApp ».
+  await page.go("#/parametres");
+  await page.getByRole("button", { name: /Mon cabinet/ }).or(page.getByRole("tab", { name: /Mon cabinet/ })).or(page.getByRole("link", { name: /Mon cabinet/ })).first().click();
+  await page.waitForTimeout(2000);
+  const row = page.locator(".settings-row").filter({ hasText: "Indicatif pour WhatsApp" });
+  result.reglage = { lignes: await row.count(), texte: (await row.first().innerText()).replace(/\s+/g, " ") };
+  await page.mouse.move(5, 5);
+  await row.first().scrollIntoViewIfNeeded();
+  await row.first().screenshot({ path: `${OUT}/reglage-indicatif-${mode}.png` });
   result.erreurs[mode] = page.errors;
   await browser.close();
 }
