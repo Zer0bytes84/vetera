@@ -97,6 +97,9 @@
         "installMode": "passive"
       }
     },
-    "sql": {}
+    "sql": {},
+    "shell": {
+      "open": "(((mailto:\\w+)|(tel:\\w+)|(https?://\\w+)).+|whatsapp://send\\?phone=[0-9]{8,15}(&text=[A-Za-z0-9%._~!*'()-]*)?)"
+    }
   }
 }

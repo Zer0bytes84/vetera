@@ -28,6 +28,7 @@ import {
 import { InvoicePdfPreview } from "./invoice-pdf-preview";
 import type { InvoicePdfData } from "@/lib/invoice-pdf";
 import { guard } from "@/lib/guard";
+import { WHATSAPP_COUNTRY_CODE } from "@/lib/whatsapp";
 
 const SAMPLE: InvoicePdfData = {
   number: "EXEMPLE-001", date: new Date("2026-09-29T12:00:00"),
@@ -125,6 +126,12 @@ export function ClinicIdentityPanel() {
             });
           }} ref={fileInputRef} tabIndex={-1} type="file" />
           {settings.logoDataUrl && <Button className="rounded-full" disabled={uploading} onClick={() => change("logoDataUrl", "")} size="sm" variant="ghost">Retirer</Button>}
+        </SettingsRow>
+        <SettingsRow
+          detail={<>Ajouté aux numéros des propriétaires qui commencent par 0 : 0555 12 34 56 devient +213 555 12 34 56. Les numéros qui portent déjà un indicatif ne changent pas.</>}
+          title="Indicatif pour WhatsApp"
+        >
+          <span className="t-13 font-medium tabular-nums">+{WHATSAPP_COUNTRY_CODE}</span>
         </SettingsRow>
         <SettingsFooter>
           <p className="text-xs text-muted-foreground" role="status">{dirty ? "Modifications non enregistrées" : "Les factures déjà émises conservent leur identité d’origine."}</p>

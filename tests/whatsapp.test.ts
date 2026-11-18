@@ -1,28 +1,52 @@
-import { describe, expect, it } from "vitest";
+import { readFileSync } from "node:fs";
+import { describe, expect, it, vi } from "vitest";
 import {
   contactMessage,
   reminderMessage,
+  WHATSAPP_APP_LINK,
+  WHATSAPP_COUNTRY_CODE,
   whatsAppLink,
   whatsAppNumber,
 } from "../src/lib/whatsapp";
 import { normalizeLinkUrl } from "../src/modules/documents/lib/library";
+import { openExternalLink } from "../src/modules/documents/lib/open-external";
 
-describe("whatsAppNumber : chiffres seulement, indicatif gardé, jamais deviné", () => {
+describe("whatsAppNumber : chiffres seulement, indicatif écrit gardé, +213 de la clinique sur les numéros nationaux", () => {
   it.each([
-    ["+213555123456", "213555123456", true],
-    ["+213 555 12 34 56", "213555123456", true],
-    ["+213\u00a0555\u00a012\u00a034\u00a056", "213555123456", true],
-    ["00213 555 12 34 56", "213555123456", true],
-    ["+33 6 12 34 56 78", "33612345678", true],
-    ["+1 (415) 555-0132", "14155550132", true],
-    ["0555 12 34 56", "0555123456", false],
-    ["05.55.12.34.56", "0555123456", false],
-    ["0555-12-34-56", "0555123456", false],
-    ["021 23 45 67", "021234567", false],
-    ["555123456", "555123456", false],
-    ["213555123456", "213555123456", false],
-  ])("%s → %s (indicatif écrit : %s)", (phone, digits, international) => {
-    expect(whatsAppNumber(phone)).toEqual({ digits, international });
+    // Indicatif écrit dans le dossier : inchangé.
+    ["+213555123456", "213555123456", "written"],
+    ["+213 555 12 34 56", "213555123456", "written"],
+    ["+213\u00a0555\u00a012\u00a034\u00a056", "213555123456", "written"],
+    ["00213 555 12 34 56", "213555123456", "written"],
+    ["+33 6 12 34 56 78", "33612345678", "written"],
+    ["+1 (415) 555-0132", "14155550132", "written"],
+    ["+33 06 12 34 56 78", "330612345678", "written"],
+    // Numéros algériens nationaux : le 0 tombe, 213 devant.
+    ["0555 12 34 56", "213555123456", "clinic"],
+    ["0661 22 33 44", "213661223344", "clinic"],
+    ["0770 98 76 54", "213770987654", "clinic"],
+    ["0555123456", "213555123456", "clinic"],
+    ["05.55.12.34.56", "213555123456", "clinic"],
+    ["0661-22-33-44", "213661223344", "clinic"],
+    ["0770 98\u00a076\u00a054", "213770987654", "clinic"],
+    ["021 23 45 67", "21321234567", "clinic"],
+    // Ni +, ni 00, ni 0 : les chiffres tels quels, rien n'est deviné.
+    ["555123456", "555123456", "none"],
+    ["213555123456", "213555123456", "none"],
+  ])("%s → %s (indicatif : %s)", (phone, digits, countryCode) => {
+    expect(whatsAppNumber(phone)).toEqual({ countryCode, digits });
+  });
+
+  it("l’indicatif de la clinique est +213", () => {
+    expect(WHATSAPP_COUNTRY_CODE).toBe("213");
+  });
+
+  it("un numéro national dont le résultat dépasserait 15 chiffres ne donne pas de lien", () => {
+    expect(whatsAppNumber("0123 456 789 012 34")).toBeNull();
+    expect(whatsAppNumber("0123 456 789 012")).toEqual({
+      countryCode: "clinic",
+      digits: "213123456789012",
+    });
   });
 
   it.each([
@@ -45,57 +69,153 @@ describe("whatsAppNumber : chiffres seulement, indicatif gardé, jamais deviné"
 
 // What must never reach the link unencoded.
 const RAW_CHARACTERS = /[\s«»éÉ’\u00a0]/;
+const ASCII_ONLY = /^[\x21-\x7e]+$/;
+const ZOE_REMINDER = reminderMessage({
+  animal: "Zoé l’Écureuil",
+  dueDate: "2026-12-03",
+  reminder: "Vaccin trivalent félin",
+  today: "2026-11-17",
+});
 
-describe("whatsAppLink : le message encodé proprement", () => {
+describe("whatsAppLink : lien direct vers l’application, message encodé proprement", () => {
   const roundTrip = (link: string) => new URL(link).searchParams.get("text");
 
-  it("forme wa.me/<chiffres>?text=<message>", () => {
+  it("forme whatsapp://send?phone=<chiffres>&text=<message>", () => {
     expect(whatsAppLink("+213 555 12 34 56", "Bonjour")).toBe(
-      "https://wa.me/213555123456?text=Bonjour"
+      "whatsapp://send?phone=213555123456&text=Bonjour"
     );
   });
 
-  it("encode accents, espaces, retours à la ligne, guillemets français et espaces insécables", () => {
-    const message = reminderMessage({
-      animal: "Zoé l’Écureuil",
-      dueDate: "2026-12-03",
-      reminder: "Vaccin trivalent félin",
-      today: "2026-11-17",
-    });
-    const link = whatsAppLink("0555 12 34 56", message) ?? "";
-    expect(link.startsWith("https://wa.me/0555123456?text=")).toBe(true);
-    expect(link).not.toMatch(RAW_CHARACTERS);
-    expect(link).toContain("%0A%0A");
-    expect(link).toContain("%C3%A9");
-    expect(roundTrip(link)).toBe(message);
+  it.each([
+    ["0555 12 34 56", "213555123456"],
+    ["0661 22 33 44", "213661223344"],
+    ["0770 98 76 54", "213770987654"],
+    ["+213 555 12 34 56", "213555123456"],
+    ["00213 661 22 33 44", "213661223344"],
+  ])("%s → phone=%s", (phone, digits) => {
+    expect(
+      new URL(whatsAppLink(phone, "Bonjour") ?? "").searchParams.get("phone")
+    ).toBe(digits);
   });
 
-  it("garde « & », « ? », « # » et « + » dans le texte au lieu de couper le lien", () => {
-    const message = "Rex & Mia : rappel ? n° #2 + 1";
+  it("encode accents, espaces, retours à la ligne, guillemets français et espaces insécables", () => {
+    const link = whatsAppLink("0555 12 34 56", ZOE_REMINDER) ?? "";
+    expect(link.startsWith("whatsapp://send?phone=213555123456&text=")).toBe(
+      true
+    );
+    expect(link).not.toMatch(RAW_CHARACTERS);
+    expect(link).toMatch(ASCII_ONLY);
+    expect(link).toContain("%0A%0A");
+    expect(link).toContain("%C3%A9");
+    expect(roundTrip(link)).toBe(ZOE_REMINDER);
+  });
+
+  it("garde « & », « ? », « # », « + » et « = » dans le texte au lieu de couper le lien", () => {
+    const message = "Rex & Mia : rappel ? n° #2 + 1 = 3";
     const link = whatsAppLink("+213555123456", message) ?? "";
     expect(roundTrip(link)).toBe(message);
     expect(new URL(link).hash).toBe("");
-  });
-
-  it("passe tel quel par le garde des liens externes de l’app", () => {
-    const link =
-      whatsAppLink("+213 555 12 34 56", contactMessage("Médor")) ?? "";
-    expect(normalizeLinkUrl(link)).toBe(link);
+    expect([...new URL(link).searchParams.keys()]).toEqual(["phone", "text"]);
   });
 
   it("sans message, le lien ouvre seulement la conversation", () => {
     expect(whatsAppLink("+213555123456", "  ")).toBe(
-      "https://wa.me/213555123456"
+      "whatsapp://send?phone=213555123456"
     );
+  });
+
+  it("aucune adresse web de WhatsApp dans le code du bouton : pas de repli vers wa.me", () => {
+    for (const file of [
+      "src/lib/whatsapp.ts",
+      "src/components/whatsapp-link.tsx",
+      "src/modules/documents/lib/open-external.ts",
+    ]) {
+      expect(readFileSync(file, "utf8")).not.toMatch(WEB_WHATSAPP);
+    }
   });
 });
 
-// The desktop app opens links through tauri-plugin-shell; with no « open » setting in tauri.conf.json, the plugin checks
-// every address against this default pattern (copied from tauri-plugin-shell 2.3.6, src/lib.rs, open_scope).
-const SHELL_OPEN_DEFAULT = /^((mailto:\w+)|(tel:\w+)|(https?:\/\/\w+)).+/;
-const ASCII_ONLY = /^[\x21-\x7e]+$/;
+const WEB_WHATSAPP =
+  /https?:\/\/(wa\.me|api\.whatsapp\.com|web\.whatsapp\.com)/;
 
-describe("ouverture par le plugin shell de l’app de bureau", () => {
+// Links the WhatsApp guard must refuse: another WhatsApp screen, a bad number, raw or extra text, other schemes.
+const REFUSED = [
+  "whatsapp://call?phone=213555123456",
+  "whatsapp://send?phone=2135",
+  "whatsapp://send?phone=2135551234567890",
+  "whatsapp://send?phone=+213555123456",
+  "whatsapp://send?phone=213555123456&text=a b",
+  "whatsapp://send?phone=213555123456&text=a\nb",
+  "whatsapp://send?phone=213555123456&text=a&phone=1",
+  "whatsapp://send?text=a&phone=213555123456",
+  "whatsapp://send?phone=213555123456&text=a#b",
+  "WHATSAPP://send?phone=213555123456",
+  "whatsapp:send?phone=213555123456",
+  "whatsapp://send?phone=213555123456 --flag",
+  "-i",
+  "/R",
+  "file:///etc/passwd",
+  "javascript:alert(1)",
+  "sms:0555123456",
+];
+
+describe("garde du module d’ouverture de l’app : le schéma whatsapp:// en plus, ni plus ni moins", () => {
+  it("accepte les liens que le bouton construit", () => {
+    for (const phone of [
+      "0555 12 34 56",
+      "+213 555 12 34 56",
+      "00213661223344",
+      "555123456",
+    ]) {
+      expect(whatsAppLink(phone, ZOE_REMINDER)).toMatch(WHATSAPP_APP_LINK);
+      expect(whatsAppLink(phone, "")).toMatch(WHATSAPP_APP_LINK);
+    }
+  });
+
+  it.each(REFUSED)("refuse %j", (link) => {
+    expect(link).not.toMatch(WHATSAPP_APP_LINK);
+  });
+
+  it("le garde des liens enregistrés (bibliothèque) reste fermé à whatsapp://", () => {
+    expect(
+      normalizeLinkUrl(whatsAppLink("0555123456", "Bonjour") ?? "")
+    ).toBeNull();
+  });
+
+  it("openExternalLink ouvre le lien WhatsApp et refuse les autres variantes", async () => {
+    const open = vi.fn(() => ({}));
+    vi.stubGlobal("window", { open });
+    try {
+      const link = whatsAppLink("0555 12 34 56", ZOE_REMINDER) ?? "";
+      expect(await openExternalLink(link)).toBe(true);
+      expect(open).toHaveBeenLastCalledWith(
+        link,
+        "_blank",
+        "noopener,noreferrer"
+      );
+      for (const refused of REFUSED) {
+        expect(await openExternalLink(refused)).toBe(false);
+      }
+      expect(open).toHaveBeenCalledTimes(1);
+      expect(await openExternalLink("https://example.org/page")).toBe(true);
+      expect(await openExternalLink("mailto:a@b.org")).toBe(true);
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
+});
+
+// The desktop app opens links through tauri-plugin-shell 2.3.6. Its default pattern (src/lib.rs, open_scope) is
+// replaced by the one in tauri.conf.json, which the plugin wraps in ^…$ (src/config.rs, Validate).
+const SHELL_OPEN_DEFAULT = /^((mailto:\w+)|(tel:\w+)|(https?:\/\/\w+)).+/;
+const SHELL_OPEN_CONFIG = (
+  JSON.parse(readFileSync("src-tauri/tauri.conf.json", "utf8")) as {
+    plugins: { shell: { open: string } };
+  }
+).plugins.shell.open;
+const SHELL_OPEN = new RegExp(`^${SHELL_OPEN_CONFIG}$`);
+
+describe("garde du plugin shell de l’app de bureau (tauri.conf.json)", () => {
   it.each([
     ["+213 555 12 34 56", contactMessage("Zoé l’Écureuil")],
     [
@@ -116,10 +236,31 @@ describe("ouverture par le plugin shell de l’app de bureau", () => {
         today: "2026-11-17",
       }),
     ],
-  ])("le lien de %s passe le garde par défaut, en ASCII seul", (phone, message) => {
-    const link = whatsAppLink(phone, message) ?? "";
-    expect(link).toMatch(SHELL_OPEN_DEFAULT);
-    expect(link).toMatch(ASCII_ONLY);
+    ["0770 98 76 54", ""],
+  ])("accepte le lien de %s", (phone, message) => {
+    expect(whatsAppLink(phone, message)).toMatch(SHELL_OPEN);
+  });
+
+  it.each(REFUSED)("refuse %j", (link) => {
+    expect(link).not.toMatch(SHELL_OPEN);
+  });
+
+  it.each([
+    "https://example.org/page?x=1",
+    "http://localhost:3000/",
+    "mailto:contact@clinique.dz",
+    "tel:+213555123456",
+    "https://wa.me/213555123456",
+    "ftp://example.org",
+    "whatsapp://send?phone=213555123456",
+    "-i",
+    "https://",
+    "mailto:",
+  ])("hors WhatsApp, même verdict que le garde par défaut : %j", (link) => {
+    const expected = link.startsWith("whatsapp://")
+      ? true
+      : SHELL_OPEN_DEFAULT.test(link);
+    expect(SHELL_OPEN.test(link)).toBe(expected);
   });
 });
 
