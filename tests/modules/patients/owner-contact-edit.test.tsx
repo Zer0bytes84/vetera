@@ -313,6 +313,19 @@ describe("points d’entrée : la bande de la fiche et le crayon du tableau", ()
     expect(html).toContain("Martn");
   });
 
+  it("tel que la fiche le rend (avec l’animal), le seul bouton du bloc est la ligne WhatsApp", () => {
+    const html = renderToStaticMarkup(
+      <OwnerContact animal="Rex" owner={LEA} />
+    );
+    const buttons = [...html.matchAll(/<button[^>]*>(.*?)<\/button>/g)];
+    expect(buttons).toHaveLength(1);
+    expect(buttons[0][0]).toContain(
+      'aria-label="Écrire sur WhatsApp à ZZ-TEST Léa Martn"'
+    );
+    expect(buttons[0][1].replace(/<[^>]+>/g, "").trim()).toBe("WhatsApp");
+    expect(html).not.toContain("Modifier les coordonnées");
+  });
+
   it("« Modifier les coordonnées » est la dernière pilule de la bande, après l’action principale", () => {
     const html = actions(() => undefined);
     const buttons = [...html.matchAll(/<button[^>]*>(.*?)<\/button>/g)].map(
