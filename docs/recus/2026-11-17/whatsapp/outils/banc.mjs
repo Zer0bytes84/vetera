@@ -6,7 +6,8 @@ import { DatabaseSync } from "node:sqlite";
 
 const HERE = new URL(".", import.meta.url).pathname;
 const SQL = new DatabaseSync(`${HERE}base-test.db`, { readOnly: true });
-const STORE = fs.readFileSync(`${HERE}store.json`, "utf8");
+const stores = new Map();
+const readStore = (name) => { if (!stores.has(name)) stores.set(name, fs.readFileSync(`${HERE}${name}`, "utf8")); return stores.get(name); };
 // Le mode navigateur ne lit pas les rappels (SQLite natif) : ses lectures SQL passent par la copie, en lecture seule.
 const PATCHES = [
   [/\/src\/services\/sqlite\/database\.ts/, (js) => js.replace(/(export function runDbRead\(operation\) \{)/, "$1 if (window.__benchSelect) return operation({ select: (sql, binds) => window.__benchSelect(sql, binds ?? []) });")],
@@ -17,7 +18,9 @@ const FIXED = new Date("2026-11-17T10:00:00+01:00");
 
 export const launch = () => chromium.launch({ executablePath: EXE, args: ["--no-sandbox", "--disable-gpu", "--font-render-hinting=none"] });
 
-export async function open(browser, { mode = "light", width = 1440, height = 900 } = {}) {
+// clock : une date fixe (par defaut le 17 novembre 2026 a 10 h) ou { install: <date> } pour une horloge qui avance et se pilote.
+export async function open(browser, { mode = "light", width = 1440, height = 900, store = "store.json", clock = FIXED } = {}) {
+  const STORE = readStore(store);
   const ctx = await browser.newContext({ viewport: { width, height }, reducedMotion: "reduce", locale: "fr-FR", timezoneId: "Europe/Paris" });
   const page = await ctx.newPage();
   page.errors = [];
@@ -27,7 +30,7 @@ export async function open(browser, { mode = "light", width = 1440, height = 900
   await ctx.route(/wa\.me|whatsapp\.com/, (route) => { page.errors.push(`REQUETE WHATSAPP ${route.request().url()}`); return route.abort(); });
   await page.exposeFunction("__benchSelect", (sql, binds) => SQL.prepare(sql).all(...binds.map((b) => (typeof b === "boolean" ? Number(b) : b ?? null))));
   for (const [re, fix] of PATCHES) await page.route(re, async (route) => { const r = await route.fetch(); const js = await r.text(); const out = fix(js); if (out === js) page.errors.push(`PATCH SANS EFFET ${route.request().url()}`); await route.fulfill({ response: r, body: out }); });
-  await page.clock.setFixedTime(FIXED);
+  if (clock instanceof Date) await page.clock.setFixedTime(clock); else await page.clock.install({ time: clock.install });
   await page.addInitScript(([m, db]) => {
     if (!localStorage.getItem("vetera.browser-db.v1")) localStorage.setItem("vetera.browser-db.v1", db);
     localStorage.setItem("auth_token", "banc");
