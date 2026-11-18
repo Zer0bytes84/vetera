@@ -1,0 +1,72 @@
+{
+  "erreurs": {
+    "light": [],
+    "dark": []
+  },
+  "light": {
+    "bande": [
+      "Modifier",
+      "Actions",
+      "Note hors visite",
+      "Modifier les coordonnées"
+    ],
+    "boutonsDuBlocProprietaire": 0,
+    "ficheDialogue": {
+      "titre": "Modifier les coordonnées du propriétaire",
+      "champs": 10
+    },
+    "ficheApres": "Propriétaire ZM ZZ-TEST Léa Martinez Alger 05 55 12 34 56",
+    "tableau": {
+      "crayons": 10,
+      "lignes": 10,
+      "libelle": "Modifier les coordonnées de ZZ-TEST Léa Martinez",
+      "avant": "Rex Chien · Femelle ZZ-TEST Léa Martinez 0555123456 En bonne santé Aucune 18 nov. 2026 14:30",
+      "dialogue": {
+        "ouvert": 1,
+        "titre": "Modifier les coordonnées du propriétaire",
+        "nom": "Martinez",
+        "adresseInchangee": true
+      },
+      "refus": "Le numéro de téléphone doit contenir entre 8 et 15 chiffres.",
+      "apres": {
+        "dialogueFerme": true,
+        "toujoursSurLaListe": true,
+        "ligne": "Rex Chien · Femelle ZZ-TEST Léa Martinez 0770987654 En bonne santé Aucune 18 nov. 2026 14:30"
+      },
+      "apresRechargement": {
+        "ligne": "Rex Chien · Femelle ZZ-TEST Léa Martinez 0770987654 En bonne santé Aucune 18 nov. 2026 14:30",
+        "stocke": {
+          "lastName": "Martinez",
+          "phone": "0770987654"
+        }
+      }
+    },
+    "agenda": "ZZ-TEST Léa Martinez 07 70 98 76 54 Chien Vétérinaire masqué",
+    "ficheFinale": "Propriétaire ZM ZZ-TEST Léa Martinez Alger 07 70 98 76 54"
+  },
+  "dark": {
+    "bande": [
+      "Modifier",
+      "Actions",
+      "Note hors visite",
+      "Modifier les coordonnées"
+    ],
+    "boutonsDuBlocProprietaire": 0,
+    "ficheDialogue": {
+      "titre": "Modifier les coordonnées du propriétaire",
+      "champs": 10
+    },
+    "tableau": {
+      "crayons": 10,
+      "lignes": 10,
+      "libelle": "Modifier les coordonnées de ZZ-TEST Léa Martin",
+      "avant": "Rex Chien · Femelle ZZ-TEST Léa Martin 0555 12 34 56 En bonne santé Aucune 18 nov. 2026 14:30",
+      "dialogue": {
+        "ouvert": 1,
+        "titre": "Modifier les coordonnées du propriétaire",
+        "nom": "Martin",
+        "adresseInchangee": true
+      }
+    }
+  }
+}
