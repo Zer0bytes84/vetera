@@ -18,7 +18,14 @@ import {
   User,
   X,
 } from "@/lib/icons";
-import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
+import {
+  lazy,
+  Suspense,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import {
@@ -79,6 +86,7 @@ import { PatientDocumentsList } from "./components/patient-documents-list";
 import { PatientRecordActions, PatientRecordHeader } from "./components/patient-header";
 import { PatientContextWidgets } from "./components/patient-context-widgets";
 import { OwnerContact, recordDate } from "./components/medical-record-summary";
+import { OwnerContactDialog } from "./components/owner-contact-dialog";
 import { PatientPrevention } from "./components/patient-prevention";
 import { buildTreatments } from "./health-card/health-card-data";
 import type { TimelinePiece } from "./lib/timeline-pieces";
@@ -224,6 +232,21 @@ function createProfileDraft(patient: Patient): PatientProfileDraft {
   };
 }
 
+/**
+ * The profile editor opens below the summary, often out of view (from « Modifier les informations » under the general
+ * notes, for one): once mounted, it is brought into view and its first field takes the focus. A module function, so the
+ * ref keeps its identity and runs only when the editor mounts.
+ */
+function revealProfileEditor(node: HTMLElement | null) {
+  if (!node) {
+    return;
+  }
+  node.scrollIntoView({ behavior: "smooth", block: "start" });
+  node
+    .querySelector<HTMLElement>("input, textarea, select")
+    ?.focus({ preventScroll: true });
+}
+
 export function PatientDetailPage({
   onNavigate,
   patientId,
@@ -279,6 +302,7 @@ export function PatientDetailPage({
     useState<Vaccination | null>(null);
   const [activeTab, setActiveTab] = useState<PatientRecordSection>("overview");
   const [isProfileEditorOpen, setIsProfileEditorOpen] = useState(false);
+  const [isOwnerEditorOpen, setIsOwnerEditorOpen] = useState(false);
   const [profileDraft, setProfileDraft] = useState<PatientProfileDraft | null>(
     null,
   );
@@ -716,6 +740,14 @@ export function PatientDetailPage({
             />
           </Suspense>
         )}
+        {isOwnerEditorOpen && owner ? (
+          <OwnerContactDialog
+            key={owner.id}
+            onClose={() => setIsOwnerEditorOpen(false)}
+            onUpdate={ownersRepo.update}
+            owner={owner}
+          />
+        ) : null}
         {healthCardOpen && (
           <Suspense
             fallback={
@@ -866,7 +898,12 @@ export function PatientDetailPage({
         </Shell>
 
         {isProfileEditorOpen && profileDraft ? (
-          <section className="rounded-2xl border border-border/80 bg-card/95 shadow-md p-5 sm:p-6 backdrop-blur-xl">
+          <section
+            aria-label="Modifier le dossier"
+            className="scroll-mt-4 rounded-2xl border border-border/80 bg-card/95 shadow-md p-5 sm:p-6 backdrop-blur-xl"
+            data-patient-profile-editor=""
+            ref={revealProfileEditor}
+          >
             <div className="flex flex-col gap-4 border-border/70 border-b pb-5 sm:flex-row sm:items-start sm:justify-between">
               <div>
                 <p className="font-semibold text-foreground text-lg tracking-[-0.02em]">
@@ -1421,7 +1458,10 @@ export function PatientDetailPage({
                 </Button>
               </section>
             ) : (
-              <OwnerContact owner={owner} />
+              <OwnerContact
+                onEdit={owner ? () => setIsOwnerEditorOpen(true) : undefined}
+                owner={owner}
+              />
             )}
             <section>
               <RecordBlockHeading icon={Notebook}>

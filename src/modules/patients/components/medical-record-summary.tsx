@@ -1,6 +1,7 @@
 import type { KeyboardEvent } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Phone, Mail, User } from "@/lib/icons";
+import { Mail, Pencil, Phone, User } from "@/lib/icons";
+import { Button } from "@/components/ui/button";
 import { getSpeciesGlyph } from "@/lib/species-icons";
 import { getSpeciesTheme } from "@/lib/species-theme";
 import { getPatientStatusMeta } from "@/config/status-meta";
@@ -196,7 +197,17 @@ export function isClinicalSignal(value?: string) {
   ].includes(normalized);
 }
 
-export function OwnerContact({ owner }: { owner?: Owner }) {
+/**
+ * The owner's block of the patient's page. With `onEdit`, it carries « Modifier les coordonnées », which opens the
+ * owner's editor; without it (the side preview), it only shows the details.
+ */
+export function OwnerContact({
+  onEdit,
+  owner,
+}: {
+  onEdit?: () => void;
+  owner?: Owner;
+}) {
   if (!owner) {
     return (
       <section
@@ -268,6 +279,19 @@ export function OwnerContact({ owner }: { owner?: Owner }) {
           {owner.communicationNotes}
         </div>
       )}
+
+      {onEdit ? (
+        <Button
+          className="medical-owner-edit mt-3"
+          onClick={onEdit}
+          size="sm"
+          type="button"
+          variant="outline"
+        >
+          <Pencil aria-hidden="true" className="size-4" />
+          Modifier les coordonnées
+        </Button>
+      ) : null}
     </section>
   );
 }

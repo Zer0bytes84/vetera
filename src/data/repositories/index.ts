@@ -148,7 +148,19 @@ export function useOwnersRepository() {
       ...current,
       ...patch,
     };
-    return store.update(id, normalizeOwnerDraft(draft));
+    const normalized = normalizeOwnerDraft(draft);
+    // An optional field emptied in a form comes back undefined, which the store skips, so the old value stayed.
+    // Sent as null, it is really cleared.
+    const cleared = Object.fromEntries(
+      Object.keys(patch)
+        .filter(
+          (key) =>
+            key in normalized &&
+            normalized[key as keyof typeof normalized] === undefined
+        )
+        .map((key) => [key, null])
+    );
+    return store.update(id, { ...normalized, ...cleared } as Partial<Owner>);
   };
 
   return { ...store, update };
