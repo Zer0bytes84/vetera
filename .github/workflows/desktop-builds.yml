@@ -100,6 +100,8 @@ jobs:
             patchelf
 
       - name: Install frontend dependencies
+        env:
+          ONNXRUNTIME_NODE_INSTALL_CUDA: skip
         run: npm ci
 
       - name: Validate frontend and database migrations
