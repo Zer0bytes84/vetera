@@ -40,6 +40,8 @@ import {
 } from "./use-patient-reminders";
 import { DatePicker } from "@/components/ui/date-picker";
 import { guard } from "@/lib/guard";
+import { WhatsAppLink } from "@/components/whatsapp-link";
+import { reminderMessage } from "@/lib/whatsapp";
 
 const field = "min-h-11 rounded-xl border border-border bg-background px-3 t-13";
 
@@ -102,7 +104,8 @@ export function PatientRemindersContent({
     return reminder.statut === "en_cours";
   });
 
-  const callRows = useMemo<CallRow[]>(
+  // Each row also keeps the stored number and, when the animal is known, its name, for the WhatsApp message.
+  const callRows = useMemo<(CallRow & { animal: string | null; storedPhone: string | null })[]>(
     () =>
       rows.map((reminder) => {
         const patient = patients.data.find(
@@ -117,7 +120,9 @@ export function PatientRemindersContent({
             ? `${owner.firstName} ${owner.lastName}`
             : "Propriétaire indisponible",
           patient: patient?.name || "Patient indisponible",
+          animal: patient?.name?.trim() || null,
           phone: formatPhone(owner?.phone) || "Non renseigné",
+          storedPhone: owner?.phone ?? null,
           type:
             types.find((entry) => entry.id === reminder.type)?.name ||
             "Rappel médical",
@@ -341,6 +346,19 @@ export function PatientRemindersContent({
                         ) : (
                           <span className="text-muted-foreground">Téléphone non renseigné</span>
                         )}
+                        {reminder.statut === "en_cours" && contact.animal ? (
+                          <WhatsAppLink
+                            className="medical-phone-link"
+                            message={reminderMessage({
+                              animal: contact.animal,
+                              dueDate: reminder.echeance,
+                              reminder: contact.type,
+                              today,
+                            })}
+                            ownerName={contact.owner}
+                            phone={contact.storedPhone}
+                          />
+                        ) : null}
                       </p>
                     )}
                   </div>

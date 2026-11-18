@@ -253,7 +253,7 @@ export function PatientPeekView({
                         ) : null}
                       </dl>
                     </section>
-                    <OwnerContact owner={owner} />
+                    <OwnerContact animal={patient.name} owner={owner} />
                     <section>
                       <RecordBlockHeading icon={Notebook}>
                         Notes utiles à la prise en charge

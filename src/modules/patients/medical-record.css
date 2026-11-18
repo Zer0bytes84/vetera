@@ -1214,7 +1214,9 @@
   display: grid;
   gap: 8px;
 }
-.medical-owner a {
+/* The WhatsApp button stands in the list as one more contact line, styled as the links around it. */
+.medical-owner a,
+.medical-owner .medical-whatsapp-link {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -1233,18 +1235,29 @@
     background-color 160ms ease,
     color 160ms ease;
 }
-.medical-owner a svg {
+.medical-owner a svg,
+.medical-owner .medical-whatsapp-link svg {
   flex-shrink: 0;
   color: var(--medical-muted);
 }
-.medical-owner a span {
+.medical-owner a span,
+.medical-owner .medical-whatsapp-link span {
   min-width: 0;
   overflow-wrap: anywhere;
 }
 @media (hover: hover) and (pointer: fine) {
-  .medical-owner a:hover {
+  .medical-owner a:hover,
+  .medical-owner .medical-whatsapp-link:hover {
     background: var(--medical-hover);
   }
+}
+.medical-owner .medical-whatsapp-link {
+  width: 100%;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 20px;
+  text-align: left;
 }
 .medical-contact-hint {
   margin: 0;
