@@ -1,0 +1,14 @@
+{
+  "erreurs": {
+    "light": []
+  },
+  "light": {
+    "avant": "Propriétaire ZM ZZ-TEST Léa Martin Alger 05 55 12 34 56",
+    "boutonCoordonnees": 0,
+    "modifierLesInformations": {
+      "editeurOuvert": 1,
+      "editeurVisibleApresClic": false,
+      "focusDansEditeur": false
+    }
+  }
+}

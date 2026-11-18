@@ -1,0 +1,124 @@
+{
+  "erreurs": {
+    "light": [],
+    "dark": []
+  },
+  "light": {
+    "avant": "Propriétaire ZM ZZ-TEST Léa Martin Alger 05 55 12 34 56 Modifier les coordonnées",
+    "boutonCoordonnees": 1,
+    "modifierLesInformations": {
+      "editeurOuvert": 1,
+      "editeurVisibleApresClic": true,
+      "focusDansEditeur": true
+    },
+    "champs": [
+      "Nom",
+      "Prénom",
+      "Téléphone",
+      "Email",
+      "Adresse",
+      "Ville",
+      "Contact privilégié",
+      "Contact secondaire",
+      "Téléphone secondaire",
+      "Consigne de communication"
+    ],
+    "focusInitial": "owner-edit-last-name",
+    "refus": {
+      "message": "Le numéro de téléphone doit contenir entre 8 et 15 chiffres.",
+      "dialogueOuvert": 1
+    },
+    "refusEffaceALaSaisie": true,
+    "apresEnregistrement": {
+      "dialogueFerme": true,
+      "bloc": "Propriétaire ZM ZZ-TEST Léa Martinez Alger 06 61 22 33 44 lea@example.invalid Modifier les coordonnées"
+    },
+    "apresRechargement": "Propriétaire ZM ZZ-TEST Léa Martinez Alger 06 61 22 33 44 lea@example.invalid Modifier les coordonnées",
+    "stocke": {
+      "id": "zz-o3",
+      "firstName": "ZZ-TEST Léa",
+      "lastName": "Martinez",
+      "phone": "0661223344",
+      "email": "lea@example.invalid",
+      "address": null,
+      "city": "Alger",
+      "createdAt": "2026-11-18 00:04:28",
+      "updatedAt": "2026-11-18T12:40:00.000Z",
+      "preferredContact": null,
+      "secondaryContactName": "ZZ-TEST Nadia",
+      "secondaryContactPhone": "0770987654",
+      "communicationNotes": null
+    },
+    "apresEffacement": {
+      "email": null,
+      "secondaryContactName": null,
+      "secondaryContactPhone": null,
+      "lastName": "Martinez",
+      "phone": "0661223344"
+    },
+    "agenda": "ZZ-TEST Léa Martinez 06 61 22 33 44 Chien Vétérinaire masqué",
+    "rappels": "17 nov. 2026 Rex Médical Vaccin En retard ZZ-TEST Léa Martinez 06 61 22 33 44 Traiter Reporter Annuler Historique",
+    "listePatients": [
+      "ZZ-TEST Léa Martinez"
+    ]
+  },
+  "dark": {
+    "avant": "Propriétaire ZM ZZ-TEST Léa Martin Alger 05 55 12 34 56 Modifier les coordonnées",
+    "boutonCoordonnees": 1,
+    "modifierLesInformations": {
+      "editeurOuvert": 1,
+      "editeurVisibleApresClic": true,
+      "focusDansEditeur": true
+    },
+    "champs": [
+      "Nom",
+      "Prénom",
+      "Téléphone",
+      "Email",
+      "Adresse",
+      "Ville",
+      "Contact privilégié",
+      "Contact secondaire",
+      "Téléphone secondaire",
+      "Consigne de communication"
+    ],
+    "focusInitial": "owner-edit-last-name",
+    "refus": {
+      "message": "Le numéro de téléphone doit contenir entre 8 et 15 chiffres.",
+      "dialogueOuvert": 1
+    },
+    "refusEffaceALaSaisie": true,
+    "apresEnregistrement": {
+      "dialogueFerme": true,
+      "bloc": "Propriétaire ZM ZZ-TEST Léa Martinez Alger 06 61 22 33 44 lea@example.invalid Modifier les coordonnées"
+    },
+    "apresRechargement": "Propriétaire ZM ZZ-TEST Léa Martinez Alger 06 61 22 33 44 lea@example.invalid Modifier les coordonnées",
+    "stocke": {
+      "id": "zz-o3",
+      "firstName": "ZZ-TEST Léa",
+      "lastName": "Martinez",
+      "phone": "0661223344",
+      "email": "lea@example.invalid",
+      "address": null,
+      "city": "Alger",
+      "createdAt": "2026-11-18 00:04:28",
+      "updatedAt": "2026-11-18T12:40:00.000Z",
+      "preferredContact": null,
+      "secondaryContactName": "ZZ-TEST Nadia",
+      "secondaryContactPhone": "0770987654",
+      "communicationNotes": null
+    },
+    "apresEffacement": {
+      "email": null,
+      "secondaryContactName": null,
+      "secondaryContactPhone": null,
+      "lastName": "Martinez",
+      "phone": "0661223344"
+    },
+    "agenda": "ZZ-TEST Léa Martinez 06 61 22 33 44 Chien Vétérinaire masqué",
+    "rappels": "17 nov. 2026 Rex Médical Vaccin En retard ZZ-TEST Léa Martinez 06 61 22 33 44 Traiter Reporter Annuler Historique",
+    "listePatients": [
+      "ZZ-TEST Léa Martinez"
+    ]
+  }
+}
