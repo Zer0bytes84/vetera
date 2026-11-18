@@ -1,4 +1,4 @@
-import { Archive, Banknote, Building2, CalendarCheck, Eraser, FileText, LayoutGrid, MessageSquareText, Palette, PanelLeft, Pencil, Plus, Shapes, Type, UserPen, type LucideIcon } from "lucide-react";
+import { Archive, Banknote, Building2, CalendarCheck, FileText, LayoutGrid, MessageCircle, MessageSquareText, Palette, PanelLeft, Pencil, Phone, Plus, Shapes, Type, UserPen, type LucideIcon } from "lucide-react";
 
 /**
  * Les notes de version : une entrée par version, à remplir à chaque publication.
@@ -28,19 +28,24 @@ export type ReleaseNote = {
 /** Les plus récentes en premier. */
 export const RELEASE_NOTES: ReleaseNote[] = [
   {
-    version: "5.0.11",
+    version: "5.1.0",
     status: "published",
     date: "2026-11-18",
     highlights: [
       {
-        icon: UserPen,
-        title: "Corrigez les coordonnées du propriétaire en quelques secondes",
-        text: "En haut de la fiche du patient, « Modifier les coordonnées » permet de corriger le nom, le téléphone, l'email, l'adresse ou le contact secondaire. Dans la liste des patients, le crayon à côté du propriétaire ouvre la même fenêtre sans quitter la liste. La correction se retrouve partout : fiche, Agenda, Rappels et liste.",
+        icon: MessageCircle,
+        title: "Relancez vos clients sur WhatsApp en un clic",
+        text: "Dans l'Agenda, « Relance WhatsApp » dans le menu du rendez-vous ouvre WhatsApp sur le numéro du propriétaire, avec un message prêt : le nom de l'animal, la date et l'heure. Une heure avant le rendez-vous, puis s'il est manqué ou marqué absent, la relance remonte aussi dans les Rappels. Vous relisez et envoyez vous-même : rien ne part tout seul.",
       },
       {
-        icon: Eraser,
-        title: "Un champ vidé est bien effacé",
-        text: "Quand vous effacez l'email, l'adresse ou le téléphone secondaire d'un propriétaire, l'ancienne valeur ne revient plus.",
+        icon: UserPen,
+        title: "Corrigez les coordonnées du propriétaire en quelques secondes",
+        text: "En haut de la fiche du patient, « Modifier les coordonnées » permet de corriger le nom, le téléphone, l'email, l'adresse ou le contact secondaire. Dans la liste des patients, le crayon à côté du propriétaire ouvre la même fenêtre sans quitter la liste. Un champ que vous videz est bien effacé, et la correction se retrouve partout.",
+      },
+      {
+        icon: Phone,
+        title: "Les numéros algériens prêts pour WhatsApp",
+        text: "Un numéro enregistré en 0 (0555 12 34 56) reçoit l'indicatif +213 pour WhatsApp ; un numéro qui porte déjà son indicatif ne change pas. Le réglage est visible dans Paramètres, Mon cabinet.",
       },
       {
         icon: Pencil,
