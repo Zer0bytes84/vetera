@@ -1,4 +1,4 @@
-import { Archive, Banknote, Building2, CalendarCheck, FileText, LayoutGrid, MessageSquareText, Palette, PanelLeft, Plus, Shapes, Type, type LucideIcon } from "lucide-react";
+import { Archive, Banknote, Building2, CalendarCheck, Eraser, FileText, LayoutGrid, MessageSquareText, Palette, PanelLeft, Pencil, Plus, Shapes, Type, UserPen, type LucideIcon } from "lucide-react";
 
 /**
  * Les notes de version : une entrée par version, à remplir à chaque publication.
@@ -27,6 +27,28 @@ export type ReleaseNote = {
 
 /** Les plus récentes en premier. */
 export const RELEASE_NOTES: ReleaseNote[] = [
+  {
+    version: "5.0.11",
+    status: "published",
+    date: "2026-11-18",
+    highlights: [
+      {
+        icon: UserPen,
+        title: "Corrigez les coordonnées du propriétaire depuis la fiche",
+        text: "Sur la fiche du patient, « Modifier les coordonnées » dans le bloc Propriétaire permet de corriger le nom, le téléphone, l'email, l'adresse ou le contact secondaire. La correction se retrouve partout : fiche, Agenda, Rappels et liste des patients.",
+      },
+      {
+        icon: Eraser,
+        title: "Un champ vidé est bien effacé",
+        text: "Quand vous effacez l'email, l'adresse ou le téléphone secondaire d'un propriétaire, l'ancienne valeur ne revient plus.",
+      },
+      {
+        icon: Pencil,
+        title: "« Modifier les informations » vous amène au formulaire",
+        text: "Le bouton sous les notes générales fait défiler la fiche jusqu'au formulaire et place le curseur dans le premier champ.",
+      },
+    ],
+  },
   {
     version: "5.0.10",
     status: "published",
