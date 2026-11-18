@@ -133,10 +133,10 @@
         "Supprimer"
       ],
       "ouvert": {
-        "lien": "whatsapp://send?phone=213555123456&text=Bonjour%2C%0A%0ANous%20vous%20rappelons%20le%20rendez-vous%20de%20Rex%20le%20mercredi%2018%20novembre%202026%20%C3%A0%2014%20h%2030.%0AEn%20cas%20d%E2%80%99emp%C3%AAchement%2C%20merci%20de%20nous%20pr%C3%A9venir.%0A%0A%C3%80%20bient%C3%B4t.",
+        "lien": "whatsapp://send?phone=213555123456&text=Bonjour%2C%0A%0ANous%20n%E2%80%99avons%20pas%20vu%20Rex%20au%20rendez-vous%20pr%C3%A9vu%20le%20mercredi%2018%20novembre%202026%20%C3%A0%2014%20h%2030.%0ASouhaitez-vous%20fixer%20un%20nouveau%20rendez-vous%C2%A0%3F%0A%0A%C3%80%20bient%C3%B4t.",
         "schema": "whatsapp:",
         "numero": "213555123456",
-        "texte": "Bonjour,\n\nNous vous rappelons le rendez-vous de Rex le mercredi 18 novembre 2026 à 14 h 30.\nEn cas d’empêchement, merci de nous prévenir.\n\nÀ bientôt."
+        "texte": "Bonjour,\n\nNous n’avons pas vu Rex au rendez-vous prévu le mercredi 18 novembre 2026 à 14 h 30.\nSouhaitez-vous fixer un nouveau rendez-vous ?\n\nÀ bientôt."
       }
     },
     "Zoé l’Écureuil": {

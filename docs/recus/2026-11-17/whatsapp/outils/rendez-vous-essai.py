@@ -1,5 +1,5 @@
-"""Ajoute a une COPIE du magasin du navigateur (store.json, jamais la vraie base) cinq rendez-vous ZZ-TEST le 18 novembre
-2026, un par proprietaire ZZ-TEST de donnees-essai.py, pour la relance du rendez-vous. Heures de Paris (UTC+1 en novembre),
+"""Ajoute a une COPIE du magasin du navigateur (store.json, jamais la vraie base) sept rendez-vous ZZ-TEST, cinq le 18 novembre 2026
+(un par proprietaire ZZ-TEST de donnees-essai.py), un absent la veille et un manque il y a 13 jours, pour la relance. Heures de Paris (UTC+1 en novembre),
 le fuseau du banc. Usage : python3 -I rendez-vous-essai.py store.json store-rdv.json"""
 import datetime, json, sys
 
@@ -10,6 +10,8 @@ CAS = [
     ("zz-a3", "zz-p4", "zz-o4", "2026-11-18T14:45:00", "scheduled", "Antiparasitaire"),   # Minou, « à rappeler »
     ("zz-a4", "zz-p2", "zz-o2", "2026-11-18T14:15:00", "cancelled", "Vermifuge"),         # Médor, annulé
     ("zz-a5", "zz-p5", "zz-o5", "2026-11-18T14:20:00", "arrived", "Détartrage"),          # Pistache, arrivé
+    ("zz-a6", "zz-p2", "zz-o2", "2026-11-17T10:00:00", "no_show", "Vaccin"),              # Médor, absent la veille
+    ("zz-a7", "zz-p1", "zz-o1", "2026-11-05T09:00:00", "scheduled", "Ancien contrôle"),   # Zoé, manqué il y a 13 jours
 ]
 
 

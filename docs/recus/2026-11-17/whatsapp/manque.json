@@ -1,0 +1,166 @@
+{
+  "etapes": [
+    {
+      "moment": "14:29:50",
+      "horloge": "18/11/2026 14:29:50",
+      "dans l’heure": [
+        {
+          "id": "zz-a1",
+          "titre": "Rex · 14:30",
+          "badge": "Rendez-vous",
+          "bouton": true
+        },
+        {
+          "id": "zz-a3",
+          "titre": "Minou · 14:45",
+          "badge": "Rendez-vous",
+          "bouton": false
+        },
+        {
+          "id": "zz-a2",
+          "titre": "Zoé l’Écureuil · 15:00",
+          "badge": "Rendez-vous",
+          "bouton": true
+        }
+      ],
+      "manqués": [
+        {
+          "id": "zz-a6",
+          "titre": "Médor · mar. 17 nov. · 10:00",
+          "badge": "Absent",
+          "bouton": true
+        }
+      ]
+    },
+    {
+      "moment": "14:29:59, sans recharger",
+      "horloge": "18/11/2026 14:29:59",
+      "dans l’heure": [
+        {
+          "id": "zz-a1",
+          "titre": "Rex · 14:30",
+          "badge": "Rendez-vous",
+          "bouton": true
+        },
+        {
+          "id": "zz-a3",
+          "titre": "Minou · 14:45",
+          "badge": "Rendez-vous",
+          "bouton": false
+        },
+        {
+          "id": "zz-a2",
+          "titre": "Zoé l’Écureuil · 15:00",
+          "badge": "Rendez-vous",
+          "bouton": true
+        }
+      ],
+      "manqués": [
+        {
+          "id": "zz-a6",
+          "titre": "Médor · mar. 17 nov. · 10:00",
+          "badge": "Absent",
+          "bouton": true
+        }
+      ]
+    },
+    {
+      "moment": "14:30:00 passé, sans recharger",
+      "horloge": "18/11/2026 14:30:00",
+      "dans l’heure": [
+        {
+          "id": "zz-a3",
+          "titre": "Minou · 14:45",
+          "badge": "Rendez-vous",
+          "bouton": false
+        },
+        {
+          "id": "zz-a2",
+          "titre": "Zoé l’Écureuil · 15:00",
+          "badge": "Rendez-vous",
+          "bouton": true
+        }
+      ],
+      "manqués": [
+        {
+          "id": "zz-a1",
+          "titre": "Rex · mer. 18 nov. · 14:30",
+          "badge": "Non arrivé",
+          "bouton": true
+        },
+        {
+          "id": "zz-a6",
+          "titre": "Médor · mar. 17 nov. · 10:00",
+          "badge": "Absent",
+          "bouton": true
+        }
+      ]
+    },
+    {
+      "moment": "après « Marquer absent » sur Zoé (15 h)",
+      "horloge": "18/11/2026 14:30:12",
+      "dans l’heure": [
+        {
+          "id": "zz-a3",
+          "titre": "Minou · 14:45",
+          "badge": "Rendez-vous",
+          "bouton": false
+        }
+      ],
+      "manqués": [
+        {
+          "id": "zz-a2",
+          "titre": "Zoé l’Écureuil · mer. 18 nov. · 15:00",
+          "badge": "Absent",
+          "bouton": true
+        },
+        {
+          "id": "zz-a1",
+          "titre": "Rex · mer. 18 nov. · 14:30",
+          "badge": "Non arrivé",
+          "bouton": true
+        },
+        {
+          "id": "zz-a6",
+          "titre": "Médor · mar. 17 nov. · 10:00",
+          "badge": "Absent",
+          "bouton": true
+        }
+      ]
+    }
+  ],
+  "clics": {
+    "Rex, non arrivé": {
+      "lien": "whatsapp://send?phone=213555123456&text=Bonjour%2C%0A%0ANous%20n%E2%80%99avons%20pas%20vu%20Rex%20au%20rendez-vous%20pr%C3%A9vu%20le%20mercredi%2018%20novembre%202026%20%C3%A0%2014%20h%2030.%0ASouhaitez-vous%20fixer%20un%20nouveau%20rendez-vous%C2%A0%3F%0A%0A%C3%80%20bient%C3%B4t.",
+      "numero": "213555123456",
+      "texte": "Bonjour,\n\nNous n’avons pas vu Rex au rendez-vous prévu le mercredi 18 novembre 2026 à 14 h 30.\nSouhaitez-vous fixer un nouveau rendez-vous ?\n\nÀ bientôt."
+    },
+    "Médor, absent la veille": {
+      "lien": "whatsapp://send?phone=213661223344&text=Bonjour%2C%0A%0ANous%20n%E2%80%99avons%20pas%20vu%20M%C3%A9dor%20au%20rendez-vous%20pr%C3%A9vu%20le%20mardi%2017%20novembre%202026%20%C3%A0%2010%20h.%0ASouhaitez-vous%20fixer%20un%20nouveau%20rendez-vous%C2%A0%3F%0A%0A%C3%80%20bient%C3%B4t.",
+      "numero": "213661223344",
+      "texte": "Bonjour,\n\nNous n’avons pas vu Médor au rendez-vous prévu le mardi 17 novembre 2026 à 10 h.\nSouhaitez-vous fixer un nouveau rendez-vous ?\n\nÀ bientôt."
+    },
+    "Agenda, Rex après l'heure": {
+      "lien": "whatsapp://send?phone=213555123456&text=Bonjour%2C%0A%0ANous%20n%E2%80%99avons%20pas%20vu%20Rex%20au%20rendez-vous%20pr%C3%A9vu%20le%20mercredi%2018%20novembre%202026%20%C3%A0%2014%20h%2030.%0ASouhaitez-vous%20fixer%20un%20nouveau%20rendez-vous%C2%A0%3F%0A%0A%C3%80%20bient%C3%B4t.",
+      "numero": "213555123456",
+      "texte": "Bonjour,\n\nNous n’avons pas vu Rex au rendez-vous prévu le mercredi 18 novembre 2026 à 14 h 30.\nSouhaitez-vous fixer un nouveau rendez-vous ?\n\nÀ bientôt."
+    },
+    "Agenda, Zoé absente": {
+      "lien": "whatsapp://send?phone=213555123456&text=Bonjour%2C%0A%0ANous%20n%E2%80%99avons%20pas%20vu%20Zo%C3%A9%20l%E2%80%99%C3%89cureuil%20au%20rendez-vous%20pr%C3%A9vu%20le%20mercredi%2018%20novembre%202026%20%C3%A0%2015%20h.%0ASouhaitez-vous%20fixer%20un%20nouveau%20rendez-vous%C2%A0%3F%0A%0A%C3%80%20bient%C3%B4t.",
+      "numero": "213555123456",
+      "texte": "Bonjour,\n\nNous n’avons pas vu Zoé l’Écureuil au rendez-vous prévu le mercredi 18 novembre 2026 à 15 h.\nSouhaitez-vous fixer un nouveau rendez-vous ?\n\nÀ bientôt."
+    }
+  },
+  "erreurs": {
+    "light": [],
+    "dark": []
+  },
+  "menuZoeAbsente": [
+    "Ouvrir",
+    "Modifier",
+    "Relance WhatsApp",
+    "Marquer absent",
+    "Rouvrir le rendez-vous",
+    "Supprimer"
+  ]
+}

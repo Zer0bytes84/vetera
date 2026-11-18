@@ -64,6 +64,25 @@ Elle reprend toute la mécanique de la section 2 : le numéro du propriétaire d
   - Le premier du mois s'écrit « 1er ».
   - Le nom de la clinique n'y figure pas (voir la section 8).
 
+## 2 ter. Le rendez-vous manqué
+
+Ajout demandé le 17 au soir, avec la même mécanique et sans nouvel envoi automatique. Il n'a pas demandé de gros changement : c'est le même calcul à partir des rendez-vous, avec un second groupe dans les Rappels. Rien n'est enregistré.
+
+- **Quand il remonte :**
+  - **dépassé sans être marqué arrivé :** un rendez-vous encore « Planifié » ou « Confirmé », dès son heure. À cette seconde, il passe de « Rendez-vous dans l'heure » à « Rendez-vous manqués » ;
+  - **marqué « Absent » :** dès qu'il est marqué, quelle que soit son heure.
+  - Un rendez-vous arrivé, en salle d'attente, en cours, terminé ou annulé ne remonte pas.
+- **Combien de temps :** 7 jours après l'heure du rendez-vous (`MISSED_RELANCE_DAYS`). Comme rien ne retient que le message est parti, il fallait une limite : sans elle, un vieux rendez-vous jamais clôturé resterait affiché pour toujours. **Cette durée de 7 jours est mon choix, à trancher.**
+- **Rappels, groupe « Rendez-vous manqués » :**
+  - il se place sous « Rendez-vous dans l'heure », dans la vue « Aujourd'hui » avec le filtre « Tous » ;
+  - le plus récent vient en premier ;
+  - chaque ligne montre l'animal, le jour et l'heure, un badge « Non arrivé » ou « Absent », le propriétaire, le téléphone et le motif ;
+  - le bouton « Relance WhatsApp » apparaît quand le numéro est exploitable.
+- **Le message :** « Bonjour,⏎⏎Nous n'avons pas vu Rex au rendez-vous prévu le mercredi 18 novembre 2026 à 14 h 30.⏎Souhaitez-vous fixer un nouveau rendez-vous ?⏎⏎À bientôt. »
+- **Agenda, deux ajustements dans le même esprit :**
+  - **un rendez-vous marqué « Absent » a lui aussi « Relance WhatsApp » dans son menu.** Ses autres entrées ne changent pas ;
+  - **le message est choisi au moment du clic :** avant l'heure, le rappel ; après l'heure ou pour un absent, le message du rendez-vous manqué. Avant cet ajout, un rendez-vous dépassé recevait par le menu un « Nous vous rappelons le rendez-vous », ce qui était faux.
+
 ## 3. La règle du numéro
 
 - **Chiffres seulement :** les espaces, y compris insécables, les points, les tirets, les barres obliques et les parenthèses tombent.
@@ -195,8 +214,50 @@ Elle reprend toute la mécanique de la section 2 : le numéro du propriétaire d
 - **Erreurs :** aucune erreur de console ni de page, en clair comme en sombre.
 - **Non-régression :** le parcours de la fiche, des rappels médicaux et du réglage a été rejoué. Son résultat est identique à celui d'avant la correction.
 
+**Rendez-vous manqué** (`tests/appointment-relance.test.ts`, **19 cas de plus, tous verts**) :
+- **Le genre de relance selon le statut et l'heure, 15 cas :**
+  - « dans l'heure » jusqu'à 1 min avant ;
+  - « manqué » à l'heure pile, 90 min après, et jusqu'à 7 jours moins 1 min ;
+  - plus rien à 7 jours ;
+  - « Absent » remonte, même avant son heure ;
+  - arrivé, en attente, en cours, terminé et annulé ne remontent jamais.
+- **Le menu de l'Agenda :** il propose la relance pour planifié, confirmé et absent, mais pas pour arrivé, annulé ou terminé.
+- **Une semaine simulée en suivant les délais de la page :** « dans l'heure » le 18 à 13:30:00, « manqué » le 18 à 14:30:00, plus rien le 25 à 14:30:00.
+- **Le message :** le texte exact, puis le lien `whatsapp://` accepté par la garde avec `213555123456`.
+- Un test d'avant change, comme attendu : à l'heure du rendez-vous, le prochain changement n'est plus « aucun » mais la fin de la semaine.
+
+**Rendez-vous manqué au clic dans le banc navigateur** (`manque.json`, outil `outils/manque.mjs`) :
+- **Le banc :** le même, avec deux rendez-vous de plus :
+  - Médor, marqué absent la veille à 10 h ;
+  - Zoé, planifiée le 5 novembre, manquée depuis 13 jours.
+- **Page Rappels ouverte, horloge pilotée, sans recharger :**
+
+  | Heure | Dans l'heure | Manqués |
+  |---|---|---|
+  | 14:29:50 | Rex, Minou, Zoé | Médor « Absent » |
+  | 14:29:59 | Rex, Minou, Zoé | Médor « Absent » |
+  | 14:30:00 | Minou, Zoé | Rex « Non arrivé », Médor « Absent » |
+
+  Ne remontent jamais :
+  - Zoé du 5 novembre, au-delà de 7 jours ;
+  - Pistache, arrivé ;
+  - Médor du 18, annulé.
+- **Clics :**
+  - **depuis les Rappels :**
+    - Rex ouvre `phone=213555123456`, « Nous n'avons pas vu Rex au rendez-vous prévu le mercredi 18 novembre 2026 à 14 h 30. » ;
+    - Médor ouvre `phone=213661223344`, « … le mardi 17 novembre 2026 à 10 h. » ;
+  - **depuis le menu de l'Agenda :** Rex, après l'heure, ouvre le même message de rendez-vous manqué.
+- **« Marquer absent » par le menu de l'Agenda,** sur la copie du banc :
+  - Zoé, à 15 h, est marquée absente à 14 h 30 ;
+  - son menu propose alors « Relance WhatsApp », avec le message du rendez-vous manqué ;
+  - de retour dans les Rappels, elle est passée de « dans l'heure » à « manqués », avec le badge « Absent ».
+- **Erreurs :** aucune erreur de console ni de page, en clair comme en sombre.
+- **Non-régression :**
+  - le parcours de la fiche, des rappels médicaux et du réglage donne un résultat identique ;
+  - le parcours de la relance à 1 heure aussi, à une différence près : le clic du menu sur Rex, fait après 14 h 30, donne maintenant le message du rendez-vous manqué. C'est voulu ; `relance.json` est mis à jour.
+
 **Vérifications :**
-- suite complète : 229 fichiers et 2 063 tests verts ;
+- suite complète : 229 fichiers et 2 082 tests verts ;
 - lint sans avertissement sur les fichiers touchés ;
 - Ultracite sans remarque sur les nouveaux fichiers, et des comptes identiques avant et après sur les fichiers existants touchés ;
 - CSS sans avertissement (lightningcss) ;
@@ -208,7 +269,8 @@ Elle reprend toute la mécanique de la section 2 : le numéro du propriétaire d
 - une ligne de rappel en retard et une à venir ;
 - la ligne de réglage « Indicatif pour WhatsApp » ;
 - le menu d'actions du rendez-vous de Rex dans l'Agenda, avec « Relance WhatsApp » (`agenda-menu-relance-*`). Le nom du vétérinaire, qui vient de la vraie base, est remplacé à l'écran par « Vétérinaire masqué » avant la capture ;
-- le groupe « Rendez-vous dans l'heure » des Rappels à 13 h 30, avec Rex (`rappels-relance-1330-*`).
+- le groupe « Rendez-vous dans l'heure » des Rappels à 13 h 30, avec Rex (`rappels-relance-1330-*`) ;
+- le groupe « Rendez-vous manqués » à 14 h 30, avec Rex « Non arrivé » et Médor « Absent » (`rappels-manques-1430-*`).
 
 ## 6. Ce qui change de comportement
 
@@ -219,6 +281,10 @@ Elle reprend toute la mécanique de la section 2 : le numéro du propriétaire d
   - le menu d'actions de l'Agenda gagne une entrée ;
   - la vue « Aujourd'hui » des Rappels gagne un groupe en tête, seulement quand un rendez-vous est dans l'heure.
   - Les compteurs des onglets et de l'en-tête des Rappels ne comptent pas ces relances : ils sont inchangés.
+- **Rendez-vous manqué :**
+  - un second groupe dans la vue « Aujourd'hui » des Rappels ;
+  - « Relance WhatsApp » dans le menu d'un rendez-vous absent ;
+  - après l'heure, le message du menu est celui du rendez-vous manqué.
 - **`WhatsAppLink` :** deux réglages facultatifs, le texte visible et l'action annoncée, ont « WhatsApp » et « Écrire sur WhatsApp » comme valeurs par défaut. La fiche et les rappels médicaux s'affichent donc comme avant.
 
 ## 7. Ce qui n'est pas prouvé
@@ -231,6 +297,8 @@ Elle reprend toute la mécanique de la section 2 : le numéro du propriétaire d
   - la mise en veille du poste ;
   - un changement d'heure du système.
 - **Ce n'est pas une notification :** la relance apparaît dans la page Rappels. Si personne ne regarde cette page, rien ne prévient : aucun son, aucun toast, aucun badge, et les compteurs ne bougent pas.
+- **Le rendez-vous manqué, dans la vraie app :** non vu. Le passage à « manqué » à l'heure pile est prouvé dans les tests et dans le banc. « Marquer absent » est prouvé dans le banc, sur la copie, pas dans l'app de bureau.
+- **Un rendez-vous jamais clôturé** reste « Non arrivé » pendant 7 jours, même si l'animal est en réalité venu sans qu'on le marque arrivé. La relance part alors à tort si on clique. Seul le statut de l'Agenda fait foi.
 - **Rien ne retient qu'une relance a été envoyée :** l'envoi se fait dans WhatsApp, l'app n'en sait rien. La relance reste affichée jusqu'à l'heure du rendez-vous, même après le clic.
 - **Le menu de l'Agenda, dans l'app de bureau :** non vu. Il passe par le même `openExternalLink` que le bouton de la fiche, qui n'est lui non plus pas vu dans l'app de bureau.
 
@@ -264,7 +332,11 @@ Elle reprend toute la mécanique de la section 2 : le numéro du propriétaire d
     - la garder affichée après l'heure du rendez-vous, par exemple pour un retard ;
     - la compter dans les compteurs et le badge des Rappels ;
     - la signaler par une notification ;
-    - retenir qu'elle a été envoyée.
+    - retenir qu'elle a été envoyée ;
+  - **pour le rendez-vous manqué :**
+    - la durée d'affichage : 7 jours par mon choix ;
+    - un délai de grâce après l'heure avant de compter le rendez-vous comme manqué : aucun pour l'instant, il passe à « manqué » à l'heure pile ;
+    - le texte du message.
 
 ## Refaire le banc
 
@@ -275,7 +347,7 @@ Les outils sont dans `outils/`.
 4. `npx vite --port 5211` dans le worktree, puis `node parcours.mjs sortie` et `node styles.mjs`.
 5. Relance du rendez-vous :
    - `python3 -I rendez-vous-essai.py store.json store-rdv.json` ;
-   - avec Vite lancé, `node relance.mjs sortie-relance`.
+   - avec Vite lancé, `node relance.mjs sortie-relance`, puis `node manque.mjs sortie-manque`.
 6. Garde Rust :
    - copier `src/lib/whatsapp.ts` en `whatsapp-copie.ts` ;
    - `node --experimental-strip-types cas-rust.ts > cas-rust.json` ;

@@ -2,12 +2,17 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import {
   canRelance,
+  canRelanceFromAgenda,
+  isMissedRelanceDue,
   isRelanceDue,
+  MISSED_RELANCE_DAYS,
   nextRelanceChange,
   RELANCE_MINUTES_BEFORE,
+  relanceKind,
 } from "../src/lib/appointment-relance";
 import {
   appointmentMessage,
+  missedAppointmentMessage,
   WHATSAPP_APP_LINK,
   whatsAppLink,
 } from "../src/lib/whatsapp";
@@ -71,7 +76,9 @@ describe("déclenchement : la page relit l’horloge exactement quand une relanc
     expect(nextRelanceChange([rex()], at(-60, -1))).toBe(1000);
     expect(nextRelanceChange([rex()], at(-60))).toBe(60 * 60_000);
     expect(nextRelanceChange([rex()], at(-1))).toBe(60_000);
-    expect(nextRelanceChange([rex()], at(0))).toBeNull();
+    // From the hour, the next change is the end of the missed-visit week.
+    expect(nextRelanceChange([rex()], at(0))).toBe(7 * 24 * 60 * 60_000);
+    expect(nextRelanceChange([rex()], at(7 * 24 * 60))).toBeNull();
   });
 
   it("prend la prochaine échéance de tous les rendez-vous, et ignore ceux qu’on ne relance pas", () => {
@@ -148,5 +155,83 @@ describe("message de relance : animal, date et heure, ton courtois", () => {
       }
     ).plugins.shell.open;
     expect(link).toMatch(new RegExp(`^${shellOpen}$`));
+  });
+});
+
+const DAY = 24 * 60;
+
+describe("rendez-vous manqué : dépassé sans être marqué arrivé, ou marqué absent", () => {
+  it("une semaine", () => {
+    expect(MISSED_RELANCE_DAYS).toBe(7);
+  });
+
+  it.each([
+    ["scheduled", -1, "before"],
+    ["scheduled", 0, "missed"],
+    ["confirmed", 0, "missed"],
+    ["scheduled", 90, "missed"],
+    ["scheduled", 7 * DAY - 1, "missed"],
+    ["scheduled", 7 * DAY, null],
+    ["no_show", -120, "missed"],
+    ["no_show", 30, "missed"],
+    ["no_show", 7 * DAY - 1, "missed"],
+    ["no_show", 7 * DAY, null],
+    ["arrived", 30, null],
+    ["waiting", 30, null],
+    ["in_progress", 30, null],
+    ["completed", 30, null],
+    ["cancelled", 30, null],
+  ] as const)("%s à %i min de l’heure : %s", (status, minutes, kind) => {
+    expect(relanceKind(rex(status), at(minutes))).toBe(kind);
+    expect(isMissedRelanceDue(rex(status), at(minutes))).toBe(
+      kind === "missed"
+    );
+  });
+
+  it("le menu de l’Agenda propose la relance pour un rendez-vous à venir ou absent, pas pour un arrivé ou annulé", () => {
+    expect(canRelanceFromAgenda("scheduled")).toBe(true);
+    expect(canRelanceFromAgenda("confirmed")).toBe(true);
+    expect(canRelanceFromAgenda("no_show")).toBe(true);
+    expect(canRelanceFromAgenda("arrived")).toBe(false);
+    expect(canRelanceFromAgenda("cancelled")).toBe(false);
+    expect(canRelanceFromAgenda("completed")).toBe(false);
+  });
+
+  it("en suivant les attentes de la page, Rex passe de « dans l’heure » à « manqué » à 14:30:00 pile", () => {
+    let now = new Date(2026, 10, 18, 9, 0);
+    let kind = relanceKind(rex(), now);
+    const seen: string[] = [];
+    for (let wakes = 0; wakes < 10; wakes++) {
+      const wait = nextRelanceChange([rex()], now);
+      if (wait === null) {
+        break;
+      }
+      now = new Date(now.getTime() + wait);
+      const next = relanceKind(rex(), now);
+      if (next !== kind) {
+        seen.push(
+          `${next ?? "rien"} le ${now.getDate()} à ${now.getHours()}:${String(now.getMinutes()).padStart(2, "0")}:${String(now.getSeconds()).padStart(2, "0")}`
+        );
+        kind = next;
+      }
+    }
+    expect(seen).toEqual([
+      "before le 18 à 13:30:00",
+      "missed le 18 à 14:30:00",
+      "rien le 25 à 14:30:00",
+    ]);
+  });
+
+  it("le message : l’animal, la date et l’heure, et la proposition d’un nouveau rendez-vous", () => {
+    expect(missedAppointmentMessage({ animal: " Rex ", start: START })).toBe(
+      "Bonjour,\n\nNous n’avons pas vu Rex au rendez-vous prévu le mercredi 18 novembre 2026 à 14 h 30.\nSouhaitez-vous fixer un nouveau rendez-vous\u00a0?\n\nÀ bientôt."
+    );
+    const link =
+      whatsAppLink(
+        "0555 12 34 56",
+        missedAppointmentMessage({ animal: "Zoé l’Écureuil", start: START })
+      ) ?? "";
+    expect(link).toMatch(WHATSAPP_APP_LINK);
+    expect(new URL(link).searchParams.get("phone")).toBe("213555123456");
   });
 });

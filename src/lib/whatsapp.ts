@@ -121,6 +121,24 @@ export function appointmentMessage({
 }
 
 /**
+ * From a missed appointment (past its hour and not marked arrived, or marked absent): a courteous relaunch with the
+ * animal, the day and the hour, offering a new appointment.
+ */
+export function missedAppointmentMessage({
+  animal,
+  start,
+}: {
+  animal: string;
+  /** The appointment's start, read in the clinic's local time. */
+  start: Date;
+}): string {
+  const date = appointmentDate
+    .format(start)
+    .replace(FIRST_AFTER_WEEKDAY, "$1 1er ");
+  return `Bonjour,\n\nNous n’avons pas vu ${animal.trim()} au rendez-vous prévu le ${date} à ${frenchTime(start)}.\nSouhaitez-vous fixer un nouveau rendez-vous\u00a0?\n\nÀ bientôt.`;
+}
+
+/**
  * From a reminder: the animal, what is due and the due date. A reminder carries a due date, not an appointment; a date
  * already past is told in the past.
  */

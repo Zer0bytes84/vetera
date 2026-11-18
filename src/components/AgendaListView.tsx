@@ -34,8 +34,13 @@ import {
 import type { Appointment, AppointmentStatus } from "@/types/db";
 import { formatPhone } from "@/utils/display-format";
 import { openWhatsApp } from "@/components/whatsapp-link";
-import { canRelance } from "@/lib/appointment-relance";
-import { appointmentMessage, whatsAppLink } from "@/lib/whatsapp";
+import { canRelanceFromAgenda } from "@/lib/appointment-relance";
+import {
+  appointmentMessage,
+  missedAppointmentMessage,
+  whatsAppLink,
+  whatsAppNumber,
+} from "@/lib/whatsapp";
 import "@/modules/agenda/components/agenda-cards.css";
 
 interface AgendaListViewProps {
@@ -217,15 +222,21 @@ function AppointmentListItem({
     "scheduled"
   );
   const phone = formatPhone(row.owner?.phone);
-  // « Relance WhatsApp » only for a visit still to come, a known animal and an owner's number that makes a link.
+  // « Relance WhatsApp » for a visit still to come or marked absent, a known animal and an owner's number that makes a
+  // link. The message is chosen at the click: past its hour, or absent, it is the missed-visit one.
   const animal = patient?.name?.trim();
   const relanceLink =
-    animal && canRelance(appointment.status)
-      ? whatsAppLink(
-          row.owner?.phone,
-          appointmentMessage({ animal, start: new Date(appointment.startTime) })
-        )
+    animal && canRelanceFromAgenda(appointment.status)
+      ? (now: number) => {
+          const start = new Date(appointment.startTime);
+          const message =
+            appointment.status === "no_show" || start.getTime() <= now
+              ? missedAppointmentMessage
+              : appointmentMessage;
+          return whatsAppLink(row.owner?.phone, message({ animal, start }));
+        }
       : null;
+  const canRelanceRow = relanceLink !== null && whatsAppNumber(row.owner?.phone) !== null;
   const dateLabel = new Date(appointment.startTime).toLocaleDateString("fr-FR", {
     weekday: "short",
     day: "numeric",
@@ -359,8 +370,15 @@ function AppointmentListItem({
               <DropdownMenuItem onClick={() => onEdit(appointment)}>
                 Modifier
               </DropdownMenuItem>
-              {relanceLink ? (
-                <DropdownMenuItem onClick={() => openWhatsApp(relanceLink)}>
+              {canRelanceRow ? (
+                <DropdownMenuItem
+                  onClick={() => {
+                    const link = relanceLink?.(Date.now());
+                    if (link) {
+                      openWhatsApp(link);
+                    }
+                  }}
+                >
                   Relance WhatsApp
                 </DropdownMenuItem>
               ) : null}

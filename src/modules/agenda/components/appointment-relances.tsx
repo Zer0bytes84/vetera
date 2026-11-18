@@ -5,9 +5,13 @@ import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { WhatsAppLink } from "@/components/whatsapp-link";
 import { useOwnersRepository } from "@/data/repositories";
-import { isRelanceDue, nextRelanceChange } from "@/lib/appointment-relance";
-import { appointmentMessage } from "@/lib/whatsapp";
-import type { Appointment, Patient } from "@/types/db";
+import {
+  nextRelanceChange,
+  type RelanceKind,
+  relanceKind,
+} from "@/lib/appointment-relance";
+import { appointmentMessage, missedAppointmentMessage } from "@/lib/whatsapp";
+import type { Appointment, Owner, Patient } from "@/types/db";
 import { formatPhone } from "@/utils/display-format";
 
 // The clock is read again at least once a minute, in case the computer slept through a planned wake-up.
@@ -46,11 +50,42 @@ const timeFormat = new Intl.DateTimeFormat("fr-FR", {
   hour: "2-digit",
   minute: "2-digit",
 });
+const dayFormat = new Intl.DateTimeFormat("fr-FR", {
+  day: "numeric",
+  month: "short",
+  weekday: "short",
+});
+
+interface RelanceRow {
+  appointment: Appointment;
+  kind: RelanceKind;
+  owner?: Owner;
+  ownerName: string;
+  patient?: Patient;
+}
+
+const GROUPS: Record<
+  RelanceKind,
+  { bucket: string; label: string; message: typeof appointmentMessage }
+> = {
+  before: {
+    bucket: "relance",
+    label: "Rendez-vous dans l’heure",
+    message: appointmentMessage,
+  },
+  missed: {
+    bucket: "relance-manquee",
+    label: "Rendez-vous manqués",
+    message: missedAppointmentMessage,
+  },
+};
 
 /**
- * « Rendez-vous dans l’heure », at the top of today's reminders: each visit still to come within the hour, with
- * « Relance WhatsApp » when the owner's number makes a link. One click opens WhatsApp with the message ready; the person
- * sends it there. Renders nothing when no appointment is within the hour.
+ * The appointment relaunches, at the top of today's reminders, each with « Relance WhatsApp » when the owner's number
+ * makes a link. One click opens WhatsApp with the message ready; the person sends it there.
+ * - « Rendez-vous dans l’heure »: each visit still to come within the hour.
+ * - « Rendez-vous manqués »: each visit past its hour and not marked arrived, or marked absent, for 7 days.
+ * Renders nothing when there is no relaunch.
  */
 export function AppointmentRelances({
   appointments,
@@ -67,8 +102,11 @@ export function AppointmentRelances({
   const rows = useMemo(() => {
     const search = query.trim().toLocaleLowerCase("fr-FR");
     return appointments
-      .filter((appointment) => isRelanceDue(appointment, now))
-      .map((appointment) => {
+      .flatMap((appointment): RelanceRow[] => {
+        const kind = relanceKind(appointment, now);
+        if (!kind) {
+          return [];
+        }
         const patient = patients.find(
           (entry) => entry.id === appointment.patientId
         );
@@ -78,7 +116,7 @@ export function AppointmentRelances({
         const ownerName = owner
           ? `${owner.firstName} ${owner.lastName}`.trim()
           : "";
-        return { appointment, owner, ownerName, patient };
+        return [{ appointment, kind, owner, ownerName, patient }];
       })
       .filter(
         ({ appointment, ownerName, patient }) =>
@@ -89,32 +127,62 @@ export function AppointmentRelances({
             appointment.reason,
             appointment.title,
           ].some((value) => value?.toLocaleLowerCase("fr-FR").includes(search))
-      )
-      .sort(
-        (left, right) =>
-          new Date(left.appointment.startTime).getTime() -
-          new Date(right.appointment.startTime).getTime()
       );
   }, [appointments, now, owners.data, patients, query]);
 
+  const byStart = (left: RelanceRow, right: RelanceRow) =>
+    new Date(left.appointment.startTime).getTime() -
+    new Date(right.appointment.startTime).getTime();
+  const before = rows.filter((row) => row.kind === "before").sort(byStart);
+  // The most recent missed visit first.
+  const missed = rows
+    .filter((row) => row.kind === "missed")
+    .sort((left, right) => byStart(right, left));
+
+  return (
+    <>
+      <RelanceGroup kind="before" rows={before} />
+      <RelanceGroup kind="missed" rows={missed} />
+    </>
+  );
+}
+
+function badgeLabel(kind: RelanceKind, status: Appointment["status"]) {
+  if (kind === "before") {
+    return "Rendez-vous";
+  }
+  return status === "no_show" ? "Absent" : "Non arrivé";
+}
+
+function RelanceGroup({
+  kind,
+  rows,
+}: {
+  kind: RelanceKind;
+  rows: RelanceRow[];
+}) {
   if (!rows.length) {
     return null;
   }
-
+  const group = GROUPS[kind];
   return (
     <section
-      aria-label={`Rendez-vous dans l’heure : ${rows.length}`}
+      aria-label={`${group.label} : ${rows.length}`}
       className="reminder-group clinical-surface divide-y divide-border/70 overflow-hidden"
-      data-bucket="relance"
+      data-bucket={group.bucket}
     >
       <h2 className="reminder-group-head">
-        Rendez-vous dans l’heure
+        {group.label}
         <span className="tabular-nums">{rows.length}</span>
       </h2>
       {rows.map(({ appointment, owner, ownerName, patient }) => {
         const start = new Date(appointment.startTime);
         const animal = patient?.name?.trim();
         const phone = formatPhone(owner?.phone);
+        const when =
+          kind === "missed"
+            ? `${dayFormat.format(start)} · ${timeFormat.format(start)}`
+            : timeFormat.format(start);
         return (
           <article
             className="appointment-relance flex flex-col gap-4 bg-sky-500/[0.025] p-4 sm:flex-row sm:items-center sm:p-5"
@@ -127,14 +195,13 @@ export function AppointmentRelances({
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-2">
                 <h3 className="font-semibold text-sm">
-                  {animal || "Patient indisponible"} ·{" "}
-                  {timeFormat.format(start)}
+                  {animal || "Patient indisponible"} · {when}
                 </h3>
                 <Badge
                   className="border-sky-500/20 bg-sky-500/8 text-sky-700 dark:text-sky-300"
                   variant="outline"
                 >
-                  Rendez-vous
+                  {badgeLabel(kind, appointment.status)}
                 </Badge>
               </div>
               <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-muted-foreground text-xs">
@@ -153,7 +220,7 @@ export function AppointmentRelances({
               <WhatsAppLink
                 action="Relance WhatsApp"
                 className={buttonVariants({ size: "sm", variant: "outline" })}
-                message={appointmentMessage({ animal, start })}
+                message={group.message({ animal, start })}
                 ownerName={ownerName}
                 phone={owner?.phone}
                 text="Relance WhatsApp"
