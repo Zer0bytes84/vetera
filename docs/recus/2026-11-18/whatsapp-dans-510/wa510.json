@@ -1,0 +1,205 @@
+{
+  "erreurs": {
+    "light": [],
+    "dark": []
+  },
+  "light": {
+    "quoiDeNeuf": {
+      "mode": "light"
+    },
+    "agendaMenu": [
+      "Ouvrir",
+      "Modifier",
+      "Relance WhatsApp",
+      "Marquer absent",
+      "Annuler le rendez-vous",
+      "Rouvrir le rendez-vous",
+      "Supprimer"
+    ],
+    "agendaClic": {
+      "lien": {
+        "schema": "whatsapp:",
+        "numero": "213555123456",
+        "texte": "Bonjour,\n\nNous vous rappelons le rendez-vous de Rex le mercredi 18 novembre 2026 à 14 h 30.\nEn cas d’empêchement, merci de nous prévenir.\n\nÀ bientôt."
+      },
+      "toast": "WhatsApp n’a pas pu être ouvert."
+    },
+    "rappels": {
+      "relance": {
+        "titre": "Rendez-vous dans l’heure1",
+        "lignes": [
+          {
+            "id": "zz-a1",
+            "titre": "Rex · 14:30",
+            "bouton": true
+          }
+        ]
+      },
+      "relance-manquee": {
+        "titre": "Rendez-vous manqués1",
+        "lignes": [
+          {
+            "id": "zz-a6",
+            "titre": "Médor · mar. 17 nov. · 10:00",
+            "bouton": true
+          }
+        ]
+      }
+    },
+    "rappelsClic": {
+      "lien": {
+        "schema": "whatsapp:",
+        "numero": "213555123456",
+        "texte": "Bonjour,\n\nNous vous rappelons le rendez-vous de Rex le mercredi 18 novembre 2026 à 14 h 30.\nEn cas d’empêchement, merci de nous prévenir.\n\nÀ bientôt."
+      },
+      "toast": "WhatsApp n’a pas pu être ouvert."
+    },
+    "reglage": {
+      "lignes": 1,
+      "texte": "Indicatif pour WhatsApp Ajouté aux numéros des propriétaires qui commencent par 0 : 0555 12 34 56 devient +213 555 12 34 56. Les numéros qui portent déjà un indicatif ne changent pas. +213"
+    },
+    "fiche": {
+      "bande": [
+        "Modifier",
+        "Actions",
+        "Note hors visite",
+        "Modifier les coordonnées"
+      ],
+      "boutonsDuBloc": [
+        "WhatsApp"
+      ]
+    },
+    "ficheWhatsApp": {
+      "lien": {
+        "schema": "whatsapp:",
+        "numero": "213555123456",
+        "texte": "Bonjour,\n\nNous vous écrivons au sujet de Rex."
+      },
+      "toast": "WhatsApp n’a pas pu être ouvert."
+    },
+    "ficheApres": {
+      "dialogueFerme": true,
+      "bloc": "Propriétaire ZM ZZ-TEST Léa Martinez Alger 05 55 12 34 56 WhatsApp"
+    },
+    "tableau": {
+      "dialogueFerme": true,
+      "surLaListe": true,
+      "ligne": "Rex Chien · Femelle ZZ-TEST Léa Martinez 0770987654 En bonne santé Aucune 18 nov. 2026 14:30"
+    },
+    "agendaApresCorrection": {
+      "lien": {
+        "schema": "whatsapp:",
+        "numero": "213770987654",
+        "texte": "Bonjour,\n\nNous vous rappelons le rendez-vous de Rex le mercredi 18 novembre 2026 à 14 h 30.\nEn cas d’empêchement, merci de nous prévenir.\n\nÀ bientôt."
+      },
+      "toast": "WhatsApp n’a pas pu être ouvert."
+    },
+    "stockeApresRechargement": {
+      "lastName": "Martinez",
+      "phone": "0770987654"
+    }
+  },
+  "dark": {
+    "quoiDeNeuf": {
+      "mode": "dark",
+      "titre": "Quoi de neuf dans la version 5.1.0",
+      "points": [
+        "Relancez vos clients sur WhatsApp en un clic",
+        "Corrigez les coordonnées du propriétaire en quelques secondes",
+        "Les numéros algériens prêts pour WhatsApp",
+        "« Modifier les informations » vous amène au formulaire"
+      ]
+    },
+    "agendaMenu": [
+      "Ouvrir",
+      "Modifier",
+      "Relance WhatsApp",
+      "Marquer absent",
+      "Annuler le rendez-vous",
+      "Rouvrir le rendez-vous",
+      "Supprimer"
+    ],
+    "agendaClic": {
+      "lien": {
+        "schema": "whatsapp:",
+        "numero": "213555123456",
+        "texte": "Bonjour,\n\nNous vous rappelons le rendez-vous de Rex le mercredi 18 novembre 2026 à 14 h 30.\nEn cas d’empêchement, merci de nous prévenir.\n\nÀ bientôt."
+      },
+      "toast": "WhatsApp n’a pas pu être ouvert."
+    },
+    "rappels": {
+      "relance": {
+        "titre": "Rendez-vous dans l’heure1",
+        "lignes": [
+          {
+            "id": "zz-a1",
+            "titre": "Rex · 14:30",
+            "bouton": true
+          }
+        ]
+      },
+      "relance-manquee": {
+        "titre": "Rendez-vous manqués1",
+        "lignes": [
+          {
+            "id": "zz-a6",
+            "titre": "Médor · mar. 17 nov. · 10:00",
+            "bouton": true
+          }
+        ]
+      }
+    },
+    "rappelsClic": {
+      "lien": {
+        "schema": "whatsapp:",
+        "numero": "213555123456",
+        "texte": "Bonjour,\n\nNous vous rappelons le rendez-vous de Rex le mercredi 18 novembre 2026 à 14 h 30.\nEn cas d’empêchement, merci de nous prévenir.\n\nÀ bientôt."
+      },
+      "toast": "WhatsApp n’a pas pu être ouvert."
+    },
+    "reglage": {
+      "lignes": 1,
+      "texte": "Indicatif pour WhatsApp Ajouté aux numéros des propriétaires qui commencent par 0 : 0555 12 34 56 devient +213 555 12 34 56. Les numéros qui portent déjà un indicatif ne changent pas. +213"
+    },
+    "fiche": {
+      "bande": [
+        "Modifier",
+        "Actions",
+        "Note hors visite",
+        "Modifier les coordonnées"
+      ],
+      "boutonsDuBloc": [
+        "WhatsApp"
+      ]
+    },
+    "ficheWhatsApp": {
+      "lien": {
+        "schema": "whatsapp:",
+        "numero": "213555123456",
+        "texte": "Bonjour,\n\nNous vous écrivons au sujet de Rex."
+      },
+      "toast": "WhatsApp n’a pas pu être ouvert."
+    },
+    "ficheApres": {
+      "dialogueFerme": true,
+      "bloc": "Propriétaire ZM ZZ-TEST Léa Martin Alger 05 55 12 34 56 WhatsApp"
+    },
+    "tableau": {
+      "dialogueFerme": true,
+      "surLaListe": true,
+      "ligne": "Rex Chien · Femelle ZZ-TEST Léa Martin 0555123456 En bonne santé Aucune 18 nov. 2026 14:30"
+    },
+    "agendaApresCorrection": {
+      "lien": {
+        "schema": "whatsapp:",
+        "numero": "213555123456",
+        "texte": "Bonjour,\n\nNous vous rappelons le rendez-vous de Rex le mercredi 18 novembre 2026 à 14 h 30.\nEn cas d’empêchement, merci de nous prévenir.\n\nÀ bientôt."
+      },
+      "toast": "WhatsApp n’a pas pu être ouvert."
+    },
+    "stockeApresRechargement": {
+      "lastName": "Martin",
+      "phone": "0555123456"
+    }
+  }
+}
