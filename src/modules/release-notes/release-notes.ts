@@ -34,8 +34,8 @@ export const RELEASE_NOTES: ReleaseNote[] = [
     highlights: [
       {
         icon: UserPen,
-        title: "Corrigez les coordonnées du propriétaire depuis la fiche",
-        text: "Sur la fiche du patient, « Modifier les coordonnées » dans le bloc Propriétaire permet de corriger le nom, le téléphone, l'email, l'adresse ou le contact secondaire. La correction se retrouve partout : fiche, Agenda, Rappels et liste des patients.",
+        title: "Corrigez les coordonnées du propriétaire en quelques secondes",
+        text: "En haut de la fiche du patient, « Modifier les coordonnées » permet de corriger le nom, le téléphone, l'email, l'adresse ou le contact secondaire. Dans la liste des patients, le crayon à côté du propriétaire ouvre la même fenêtre sans quitter la liste. La correction se retrouve partout : fiche, Agenda, Rappels et liste.",
       },
       {
         icon: Eraser,

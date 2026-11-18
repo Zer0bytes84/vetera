@@ -1,5 +1,5 @@
 import "@/design-system/page-header-line.css";
-import { CalendarPlus, FirstAid, Notebook, PencilSimple } from "@/lib/icons";
+import { CalendarPlus, FirstAid, Notebook, Pencil, PencilSimple } from "@/lib/icons";
 import { Archive, ArchiveRestore, ChevronDown, Download, HeartPulse, Zap } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -198,6 +198,7 @@ export function PatientRecordHeader({
  * actions of the record) and the main note button (the note of the visit under way, or a note without visit when none is).
  */
 export function PatientRecordActions({
+  onEditOwner,
   onEditProfile,
   onNewAppointment,
   onOpenCare,
@@ -209,6 +210,8 @@ export function PatientRecordActions({
   onArchive,
   onUnarchive,
 }: {
+  /** « Modifier les coordonnées » of the owner, last and in a pill, as the main action of the other pages. */
+  onEditOwner?: () => void;
   onEditProfile: () => void;
   onNewAppointment: () => void;
   onOpenCare?: () => void;
@@ -320,6 +323,17 @@ export function PatientRecordActions({
           >
             <primary.icon aria-hidden="true" className="size-4" />
             {primary.label}
+          </Button>
+        ) : null}
+        {onEditOwner ? (
+          <Button
+            className="medical-action medical-action-primary rounded-full px-4"
+            data-testid="patient-owner-edit"
+            onClick={onEditOwner}
+            size="sm"
+          >
+            <Pencil aria-hidden="true" className="size-4" />
+            Modifier les coordonnées
           </Button>
         ) : null}
     </div>

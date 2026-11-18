@@ -6,6 +6,8 @@ import {
   type DataRow,
 } from "@/components/ui/data-table";
 import { IconButton, QuietButton } from "@/components/ui/tuff-controls";
+import { Button } from "@/components/ui/button";
+import { Pencil } from "@/lib/icons";
 import { StatusPill, type StatusTone } from "@/components/ui/status-pill";
 import { PATIENT_STATUS_META } from "@/config/status-meta";
 import { speciesIcon } from "@/lib/species-icon";
@@ -17,7 +19,7 @@ import {
 } from "@/modules/patients/components/patients-shared";
 import { clinicalFlags } from "../lib/patient-list";
 import type { PatientsViewProps } from "../hooks/use-patients-page-model";
-import type { Patient } from "@/types/db";
+import type { Owner, Patient } from "@/types/db";
 
 type PatientRecord = PatientsViewProps["visiblePatients"][number];
 
@@ -100,6 +102,7 @@ export function PatientsTable({
   filters,
   filtersActive,
   onResetFilters,
+  onEditOwner,
   onOpen,
   listRef,
 }: {
@@ -107,6 +110,8 @@ export function PatientsTable({
   filters: ReactNode;
   filtersActive: boolean;
   onResetFilters: () => void;
+  /** The pencil of the Propriétaire column: opens the owner's details editor, not the record. */
+  onEditOwner?: (owner: Owner) => void;
   onOpen: (patient: Patient) => void;
   listRef: Ref<HTMLDivElement>;
 }) {
@@ -163,14 +168,35 @@ export function PatientsTable({
       format: (_, row) => {
         const { owner } = byId.get(row.id)!;
         return (
-          <span className="block min-w-0">
-            <span className="block truncate text-sm capitalize text-foreground">
-              {formatOwnerName(owner)}
-            </span>
-            {owner?.phone ? (
-              <span className="block truncate text-[0.8125rem] text-muted-foreground tabular-nums">
-                {owner.phone}
+          <span className="flex min-w-0 items-center gap-1">
+            <span className="block min-w-0">
+              <span className="block truncate text-sm capitalize text-foreground">
+                {formatOwnerName(owner)}
               </span>
+              {owner?.phone ? (
+                <span className="block truncate text-[0.8125rem] text-muted-foreground tabular-nums">
+                  {owner.phone}
+                </span>
+              ) : null}
+            </span>
+            {owner && onEditOwner ? (
+              <Button
+                aria-label={`Modifier les coordonnées de ${formatOwnerName(owner)}`}
+                className="shrink-0 text-muted-foreground"
+                data-owner-edit={owner.id}
+                onClick={(event) => {
+                  // The row opens the record: the pencil opens only the owner's editor.
+                  event.stopPropagation();
+                  onEditOwner(owner);
+                }}
+                onKeyDown={(event) => event.stopPropagation()}
+                size="icon-sm"
+                title="Modifier les coordonnées"
+                type="button"
+                variant="ghost"
+              >
+                <Pencil aria-hidden="true" className="size-4" />
+              </Button>
             ) : null}
           </span>
         );

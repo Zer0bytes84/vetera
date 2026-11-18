@@ -42,6 +42,8 @@ function base(): DatabaseSync {
 
 import { useOwnersRepository } from "@/data/repositories";
 import { OwnerContact } from "@/modules/patients/components/medical-record-summary";
+import { PatientRecordActions } from "@/modules/patients/components/patient-header";
+import { PatientsTable } from "@/modules/patients/components/patients-table";
 import {
   ownerContactDraft,
   ownerContactError,
@@ -293,17 +295,107 @@ describe("enregistrement réel : ownersRepo.update de la page, base SQLite", () 
   });
 });
 
-describe("point d’entrée sur la fiche", () => {
-  it("le bloc Propriétaire de la fiche porte « Modifier les coordonnées »", () => {
-    const html = renderToStaticMarkup(
-      <OwnerContact onEdit={() => undefined} owner={LEA} />
+describe("points d’entrée : la bande de la fiche et le crayon du tableau", () => {
+  const actions = (onEditOwner?: () => void) =>
+    renderToStaticMarkup(
+      <PatientRecordActions
+        onEditOwner={onEditOwner}
+        onEditProfile={() => undefined}
+        onNewAppointment={() => undefined}
+        onNewOffVisitNote={() => undefined}
+      />
     );
-    expect(html).toContain("Modifier les coordonnées");
-  });
 
-  it("l’aperçu latéral, qui ne passe pas onEdit, reste en lecture seule", () => {
+  it("le bloc Propriétaire de la fiche redevient une lecture pure", () => {
     const html = renderToStaticMarkup(<OwnerContact owner={LEA} />);
     expect(html).not.toContain("Modifier les coordonnées");
+    expect(html).not.toContain("<button");
     expect(html).toContain("Martn");
+  });
+
+  it("« Modifier les coordonnées » est la dernière pilule de la bande, après l’action principale", () => {
+    const html = actions(() => undefined);
+    const buttons = [...html.matchAll(/<button[^>]*>(.*?)<\/button>/g)].map(
+      (match) => match[1].replace(/<[^>]+>/g, "").trim()
+    );
+    expect(buttons.at(-1)).toBe("Modifier les coordonnées");
+    expect(buttons.at(-2)).toBe("Note hors visite");
+    const pill = html.slice(html.lastIndexOf("<button"));
+    expect(pill).toContain('data-testid="patient-owner-edit"');
+    expect(pill).toContain("rounded-full");
+    expect(pill).toContain("medical-action-primary");
+  });
+
+  it("sans propriétaire, la bande n’a pas la pilule", () => {
+    expect(actions()).not.toContain("Modifier les coordonnées");
+  });
+
+  const tableFor = (
+    owner: Owner | undefined,
+    onEditOwner?: (owner: Owner) => void
+  ) =>
+    renderToStaticMarkup(
+      <PatientsTable
+        entries={[
+          {
+            lastVisit: undefined,
+            owner,
+            patient: {
+              createdAt: "2026-11-01",
+              id: "zz-p3",
+              name: "Rex",
+              ownerId: "zz-o3",
+              sex: "F",
+              species: "Chien",
+              status: "sante",
+            },
+            upcomingAppointment: undefined,
+          } as unknown as Parameters<
+            typeof PatientsTable
+          >[0]["entries"][number],
+        ]}
+        filters={null}
+        filtersActive={false}
+        listRef={null}
+        onEditOwner={onEditOwner}
+        onOpen={() => undefined}
+        onResetFilters={() => undefined}
+      />
+    );
+
+  it("chaque ligne du tableau porte le crayon du propriétaire, avec son nom pour les lecteurs d’écran", () => {
+    const html = tableFor(LEA, () => undefined);
+    expect(html).toContain('data-owner-edit="zz-o3"');
+    expect(html).toContain(
+      'aria-label="Modifier les coordonnées de ZZ-TEST Léa Martn"'
+    );
+  });
+
+  it("pas de crayon sans propriétaire, ni quand la liste ne le propose pas", () => {
+    expect(tableFor(undefined, () => undefined)).not.toContain(
+      "data-owner-edit"
+    );
+    expect(tableFor(LEA)).not.toContain("data-owner-edit");
+  });
+
+  it("depuis le tableau : le dialogue enregistre par ownersRepo.update, et la ligne relue montre les valeurs corrigées", async () => {
+    const repo = useOwnersRepository();
+    expect(tableFor(LEA, () => undefined)).toContain("0555123456");
+    const result = await saveOwnerContact(repo.update, LEA, {
+      ...ownerContactDraft(LEA),
+      lastName: "Martin",
+      phone: "0661 22 33 44",
+    });
+    expect(result).toEqual({ ok: true });
+    const stored = row("zz-o3");
+    const reread = {
+      ...LEA,
+      lastName: String(stored.last_name),
+      phone: String(stored.phone),
+    };
+    const html = tableFor(reread, () => undefined);
+    expect(html).toContain("ZZ-TEST Léa Martin");
+    expect(html).toContain("0661223344");
+    expect(html).not.toContain("0555123456");
   });
 });

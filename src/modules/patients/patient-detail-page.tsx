@@ -801,6 +801,7 @@ export function PatientDetailPage({
                 archived={Boolean(patient.archivedAt)}
                 onArchive={() => setArchiveConfirmOpen(true)}
                 onUnarchive={() => void handleUnarchivePatient()}
+                onEditOwner={owner ? () => setIsOwnerEditorOpen(true) : undefined}
                 onEditProfile={openProfileEditor}
                 onExportPdf={() => setPdfExportOpen(true)}
                 onHealthCard={() => setHealthCardOpen(true)}
@@ -1458,10 +1459,7 @@ export function PatientDetailPage({
                 </Button>
               </section>
             ) : (
-              <OwnerContact
-                onEdit={owner ? () => setIsOwnerEditorOpen(true) : undefined}
-                owner={owner}
-              />
+              <OwnerContact owner={owner} />
             )}
             <section>
               <RecordBlockHeading icon={Notebook}>

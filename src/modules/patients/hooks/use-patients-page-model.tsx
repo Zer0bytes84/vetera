@@ -80,11 +80,13 @@ export function usePatientsPageModel({ onNavigateToPatient }: PatientsProps) {
   const audit = useAudit();
 
   const hydratedOwners = useMemo(() => {
+    // A just-created owner is kept until the store has it; once it does, the store's row wins, so a correction made
+    // after the creation shows at once.
     const merged = new Map<string, Owner>();
-    owners.forEach((owner) => merged.set(owner.id, owner));
     Object.values(recentOwnersById).forEach((owner) =>
       merged.set(owner.id, owner)
     );
+    owners.forEach((owner) => merged.set(owner.id, owner));
     return Array.from(merged.values());
   }, [owners, recentOwnersById]);
 

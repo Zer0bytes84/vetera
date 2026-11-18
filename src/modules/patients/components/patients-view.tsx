@@ -6,6 +6,7 @@ import {
   StethoscopeIcon,
 } from "@/lib/hugeicons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import { useState } from "react";
 
 import MotivationalHeader from "@/components/MotivationalHeader";
 import { FormDialogHeader } from "@/components/ui/form-dialog";
@@ -34,6 +35,7 @@ import {
 import { useListCursor } from "@/hooks/useListCursor";
 import type { PatientsViewProps } from "../hooks/use-patients-page-model";
 import { PatientsTable } from "./patients-table";
+import { OwnerContactDialog } from "./owner-contact-dialog";
 import "../patients-list.css";
 
 export function PatientsView(props: PatientsViewProps) {
@@ -75,6 +77,9 @@ export function PatientsView(props: PatientsViewProps) {
     users,
     visiblePatients,
   } = props;
+  // The owner whose details are being corrected from the list's pencil, read fresh from the owners on every render.
+  const [editingOwnerId, setEditingOwnerId] = useState<string | null>(null);
+  const editingOwner = editingOwnerId ? ownersMap.get(editingOwnerId) : undefined;
   const listRef = useListCursor({ storageKey: "patients" });
   return (
     <div className="dashboard-stage flex w-full min-w-0 flex-col gap-6 px-4 pb-8 lg:px-6">
@@ -159,6 +164,7 @@ export function PatientsView(props: PatientsViewProps) {
           }
           filtersActive={filtersActive}
           listRef={listRef}
+          onEditOwner={(owner) => setEditingOwnerId(owner.id)}
           onOpen={(patient) =>
             onNavigateToPatient
               ? onNavigateToPatient(patient.id)
@@ -190,6 +196,15 @@ export function PatientsView(props: PatientsViewProps) {
           }}
           owner={ownersMap.get(selectedPatient.ownerId)}
           patient={selectedPatient}
+        />
+      ) : null}
+
+      {editingOwner ? (
+        <OwnerContactDialog
+          key={editingOwner.id}
+          onClose={() => setEditingOwnerId(null)}
+          onUpdate={updateOwner}
+          owner={editingOwner}
         />
       ) : null}
 
