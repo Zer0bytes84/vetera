@@ -1,11 +1,11 @@
 .studio-dashboard {
   --studio-accent: var(--primary);
   --studio-line: color-mix(in srgb, var(--foreground) 9%, transparent);
-  color: var(--foreground);
   position: relative;
-  isolation: isolate;
   padding: 0;
+  color: var(--foreground);
   background: var(--background);
+  isolation: isolate;
 }
 .dark .studio-dashboard {
   background: var(--background);
@@ -48,8 +48,8 @@
 /* A botanical cover with two functional glass instruments. */
 .studio-progress-fill {
   height: 100%;
-  border-radius: 9999px;
   background: linear-gradient(90deg, #8271d6, #9e8ee4);
+  border-radius: 9999px;
   transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -61,11 +61,11 @@
   flex-direction: column;
   min-width: 0;
   padding: 5px;
+  color: var(--foreground);
   text-align: left;
+  background: var(--muted);
   border: 1px solid var(--border);
   border-radius: 14px;
-  background: var(--muted);
-  color: var(--foreground);
   transition: border-color 160ms;
 }
 @media (hover: hover) and (pointer: fine) {

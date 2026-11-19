@@ -23,21 +23,21 @@
 :root:root:root [data-tabs-style="nav"] {
   display: flex !important;
   flex-wrap: nowrap !important;
+  gap: 4px !important;
   align-items: stretch !important;
   justify-content: flex-start !important;
-  gap: 4px !important;
   width: 100% !important;
   max-width: 100% !important;
   height: 40px !important;
   min-height: 40px !important;
   padding: 0 !important;
-  border: 0 !important;
-  border-radius: 0 !important;
-  background: transparent !important;
-  box-shadow: inset 0 -1px 0 var(--tabs-rule) !important;
   overflow-x: auto !important;
   overflow-y: hidden !important;
   scrollbar-width: none !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: inset 0 -1px 0 var(--tabs-rule) !important;
 }
 :root:root:root [data-tabs-style="nav"]::-webkit-scrollbar {
   display: none !important;
@@ -49,31 +49,31 @@
   position: relative !important;
   display: inline-flex !important;
   flex: 0 0 auto !important;
-  align-items: center !important;
   gap: 6px !important;
+  align-items: center !important;
   width: auto !important;
   height: 40px !important;
   min-height: 40px !important;
   padding: 0 12px !important;
-  border: 0 !important;
-  border-radius: 0 !important;
-  background: transparent !important;
-  box-shadow: none !important;
   font-family: var(--app-font-sans) !important;
   font-size: 13px !important;
   font-weight: 500 !important;
-  letter-spacing: 0 !important;
   line-height: 1 !important;
-  white-space: nowrap !important;
   color: var(--tabs-text) !important;
+  letter-spacing: 0 !important;
+  white-space: nowrap !important;
   cursor: pointer;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
 }
 @media (hover: hover) and (pointer: fine) {
   :root:root:root
     [data-tabs-style="nav"]
     > :is([data-slot="tabs-trigger"], [role="tab"], button):hover {
-    background: transparent !important;
     color: var(--tabs-ink) !important;
+    background: transparent !important;
   }
 }
 :root:root:root
@@ -86,8 +86,8 @@
     [aria-pressed="true"],
     [aria-current="page"]
   ) {
-  background: transparent !important;
   color: var(--tabs-ink) !important;
+  background: transparent !important;
   box-shadow: inset 0 -2px 0 var(--tabs-ink) !important;
 }
 :root:root:root
@@ -107,21 +107,21 @@
 :root:root:root [data-tabs-style="segmented"] {
   display: inline-flex !important;
   flex-wrap: nowrap !important;
+  gap: 2px !important;
   align-items: center !important;
   justify-content: flex-start !important;
-  gap: 2px !important;
   width: max-content !important;
   max-width: 100% !important;
   height: 36px !important;
   min-height: 36px !important;
   padding: 3px !important;
-  border: 0 !important;
-  border-radius: 8px !important;
-  background: var(--tabs-track) !important;
-  box-shadow: none !important;
   overflow-x: auto !important;
   overflow-y: hidden !important;
   scrollbar-width: none !important;
+  background: var(--tabs-track) !important;
+  border: 0 !important;
+  border-radius: 8px !important;
+  box-shadow: none !important;
 }
 :root:root:root [data-tabs-style="segmented"]::-webkit-scrollbar {
   display: none !important;
@@ -138,25 +138,25 @@
   position: relative !important;
   display: inline-flex !important;
   flex: 0 0 auto !important;
+  gap: 6px !important;
   align-items: center !important;
   justify-content: center !important;
-  gap: 6px !important;
   width: auto !important;
   height: 30px !important;
   min-height: 30px !important;
   padding: 0 12px !important;
-  border: 0 !important;
-  border-radius: 6px !important;
-  background: transparent !important;
-  box-shadow: none !important;
   font-family: var(--app-font-sans) !important;
   font-size: 13px !important;
   font-weight: 500 !important;
-  letter-spacing: 0 !important;
   line-height: 1 !important;
-  white-space: nowrap !important;
   color: var(--tabs-text) !important;
+  letter-spacing: 0 !important;
+  white-space: nowrap !important;
   cursor: pointer;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 6px !important;
+  box-shadow: none !important;
 }
 @media (hover: hover) and (pointer: fine) {
   :root:root:root
@@ -167,8 +167,8 @@
       [data-slot="toggle-group-item"],
       button
     ):hover {
-    background: transparent !important;
     color: var(--tabs-ink) !important;
+    background: transparent !important;
   }
 }
 :root:root:root
@@ -190,8 +190,8 @@
     [aria-checked="true"],
     [aria-current="page"]
   ) {
-  background: var(--tabs-active-bg) !important;
   color: var(--tabs-ink) !important;
+  background: var(--tabs-active-bg) !important;
   box-shadow:
     0 1px 2px rgb(0 0 0 / 6%),
     0 0 0 1px rgb(0 0 0 / 3%) !important;
@@ -210,18 +210,18 @@
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
-  line-height: 1 !important;
   min-width: 20px !important;
   height: 18px !important;
-  margin: 0 !important;
   padding: 0 6px !important;
-  border: 0 !important;
-  border-radius: 999px !important;
-  background: var(--tabs-badge) !important;
-  color: inherit !important;
+  margin: 0 !important;
   font-size: 12px !important;
   font-weight: 500 !important;
   font-variant-numeric: tabular-nums !important;
+  line-height: 1 !important;
+  color: inherit !important;
+  background: var(--tabs-badge) !important;
+  border: 0 !important;
+  border-radius: 999px !important;
 }
 
 :root:root:root [data-tabs-style] > :focus-visible {
@@ -231,8 +231,8 @@
 :root:root:root
   [data-tabs-style]
   > :is(:disabled, [aria-disabled="true"], [data-disabled]) {
-  opacity: 0.5 !important;
   cursor: not-allowed;
+  opacity: 0.5 !important;
 }
 
 /* Fill variant: a segmented control that shares a narrow column equally. */
@@ -248,7 +248,7 @@
 
 /* Inline variant: a navigation bar that shares a row with other controls. */
 :root:root:root [data-tabs-style="nav"][data-tabs-inline] {
-  width: auto !important;
   flex: 0 1 auto;
+  width: auto !important;
   box-shadow: none !important;
 }

@@ -4,35 +4,35 @@
    down to the key hints instead of stopping at mid-screen over an empty half. */
 .flow-board-page {
   display: flex;
-  min-width: 0;
-  min-height: 100%;
   flex-direction: column;
   gap: 16px;
+  min-width: 0;
+  min-height: 100%;
 }
 
 .flow-board {
   display: flex;
-  min-width: 0;
   flex: 1;
   flex-direction: column;
   gap: 12px;
+  min-width: 0;
 }
 
 .flow-lanes {
   display: grid;
   flex: 1;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  align-items: stretch;
   gap: 10px;
+  align-items: stretch;
 }
 
 /* Narrow windows scroll sideways, never vertically inside the board. */
 @media (max-width: 1180px) {
   .flow-lanes {
     grid-template-columns: repeat(5, minmax(232px, 1fr));
+    padding-bottom: 6px;
     overflow-x: auto;
     overflow-y: hidden;
-    padding-bottom: 6px;
     scroll-snap-type: x proximity;
   }
 }
@@ -40,14 +40,14 @@
 .flow-lane,
 .flow-planned {
   display: flex;
-  min-width: 0;
   flex-direction: column;
   gap: 8px;
-  border-radius: var(--radius-panel);
-  background: var(--frame);
-  box-shadow: var(--shadow-hairline);
+  min-width: 0;
   padding: 10px;
   scroll-snap-align: start;
+  background: var(--frame);
+  border-radius: var(--radius-panel);
+  box-shadow: var(--shadow-hairline);
   transition:
     box-shadow var(--duration-fast) var(--ease-out),
     background-color var(--duration-fast) var(--ease-out);
@@ -65,9 +65,9 @@
 
 .flow-lane-head {
   display: flex;
+  gap: 8px;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
   padding: 2px 4px;
 }
 
@@ -75,20 +75,20 @@
   font-family: var(--font-display);
   font-size: 13px;
   font-weight: 600;
-  letter-spacing: -0.01em;
   color: var(--ink);
+  letter-spacing: -0.01em;
 }
 
 .flow-count {
   min-width: 22px;
-  border-radius: 999px;
-  background: var(--surface);
-  box-shadow: var(--shadow-hairline);
   padding: 1px 7px;
-  text-align: center;
   font-size: 12px;
   font-variant-numeric: tabular-nums;
   color: var(--ink-muted);
+  text-align: center;
+  background: var(--surface);
+  border-radius: 999px;
+  box-shadow: var(--shadow-hairline);
 }
 
 .flow-lane-warning {
@@ -133,13 +133,13 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
-  cursor: grab;
-  border-radius: var(--radius-body);
-  background: var(--surface);
-  box-shadow: var(--shadow-hairline), var(--shadow-card);
   padding: 10px 10px 8px;
-  outline: none;
   touch-action: none;
+  cursor: grab;
+  outline: none;
+  background: var(--surface);
+  border-radius: var(--radius-body);
+  box-shadow: var(--shadow-hairline), var(--shadow-card);
   transition:
     box-shadow var(--duration-fast) var(--ease-out),
     opacity var(--duration-fast) var(--ease-out);
@@ -184,8 +184,8 @@
 
 .flow-card-head {
   display: flex;
-  align-items: flex-start;
   gap: 8px;
+  align-items: flex-start;
 }
 
 .flow-species {
@@ -194,9 +194,9 @@
   place-items: center;
   width: 30px;
   height: 30px;
-  border-radius: var(--radius-control);
-  background: var(--frame);
   color: var(--ink-muted);
+  background: var(--frame);
+  border-radius: var(--radius-control);
 }
 
 .is-compact .flow-species {
@@ -207,20 +207,20 @@
 .flow-card-name {
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
   font-family: var(--font-display);
   font-size: 14px;
   font-weight: 600;
-  letter-spacing: -0.01em;
   color: var(--ink);
+  letter-spacing: -0.01em;
+  white-space: nowrap;
 }
 
 .flow-card-sub {
   display: flex;
-  min-width: 0;
   flex-wrap: wrap;
-  align-items: center;
   gap: 2px 6px;
+  align-items: center;
+  min-width: 0;
   margin-top: 1px;
 }
 
@@ -230,13 +230,13 @@
 
 .flow-urgent {
   flex: none;
-  border-radius: 6px;
-  background: color-mix(in oklch, var(--signal-critical) 12%, transparent);
   padding: 1px 6px;
   font-family: var(--app-font-sans);
   font-size: 12px;
   font-weight: 600;
   color: color-mix(in oklch, var(--signal-critical) 80%, var(--ink));
+  background: color-mix(in oklch, var(--signal-critical) 12%, transparent);
+  border-radius: 6px;
 }
 
 .flow-card-meta {
@@ -246,28 +246,28 @@
 
 .flow-card-details {
   display: flex;
-  min-width: 0;
   flex-direction: column;
   gap: 2px;
+  min-width: 0;
   font-size: 13px;
   color: var(--ink);
 }
 
 .flow-timer {
   flex: none;
-  border-radius: 999px;
-  background: var(--frame);
   padding: 2px 7px;
   font-size: 12px;
   font-variant-numeric: tabular-nums;
-  white-space: nowrap;
   color: var(--ink-muted);
+  white-space: nowrap;
+  background: var(--frame);
+  border-radius: 999px;
 }
 
 .flow-timer.is-warning,
 .flow-timer.is-late {
-  background: color-mix(in oklch, var(--signal-watch) 16%, transparent);
   color: color-mix(in oklch, var(--signal-watch) 70%, var(--ink));
+  background: color-mix(in oklch, var(--signal-watch) 16%, transparent);
 }
 
 .flow-card-alerts {
@@ -278,52 +278,52 @@
 
 .flow-alert {
   display: inline-flex;
-  align-items: center;
   gap: 4px;
-  border-radius: 6px;
+  align-items: center;
   padding: 2px 6px;
   font-size: 12px;
   font-weight: 600;
   line-height: 1.3;
+  border-radius: 6px;
 }
 
 .flow-alert[data-kind="allergy"],
 .flow-alert[data-kind="bite"] {
-  background: color-mix(in oklch, var(--signal-critical) 11%, transparent);
   color: color-mix(in oklch, var(--signal-critical) 80%, var(--ink));
+  background: color-mix(in oklch, var(--signal-critical) 11%, transparent);
 }
 
 .flow-alert[data-kind="vaccine"] {
-  background: color-mix(in oklch, var(--signal-watch) 14%, transparent);
   color: color-mix(in oklch, var(--signal-watch) 70%, var(--ink));
+  background: color-mix(in oklch, var(--signal-watch) 14%, transparent);
 }
 
 .flow-alert[data-kind="more"] {
-  background: var(--frame);
   color: var(--ink-muted);
+  background: var(--frame);
 }
 
 .flow-card-actions {
   display: flex;
-  align-items: center;
   gap: 6px;
+  align-items: center;
   margin-top: auto;
 }
 
 .flow-toolbar {
   display: flex;
   flex-wrap: wrap;
+  gap: 8px 12px;
   align-items: center;
   justify-content: space-between;
-  gap: 8px 12px;
   margin-top: -4px;
 }
 
 .flow-toolbar-summary {
   display: flex;
   flex-wrap: wrap;
-  align-items: baseline;
   gap: 4px 14px;
+  align-items: baseline;
   font-size: 13px;
   color: var(--ink-muted);
 }
@@ -341,21 +341,21 @@
 .flow-toolbar-controls {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
   gap: 8px;
+  align-items: center;
 }
 
 .flow-search {
   display: inline-flex;
-  height: 36px;
-  min-width: 220px;
-  align-items: center;
   gap: 8px;
-  border: 1px solid var(--hairline);
-  border-radius: var(--radius-control);
-  background: var(--surface);
+  align-items: center;
+  min-width: 220px;
+  height: 36px;
   padding: 0 10px;
   color: var(--ink-muted);
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-control);
 }
 
 .flow-search:focus-within {
@@ -367,12 +367,12 @@
 }
 
 .flow-search input {
-  min-width: 0;
   flex: 1;
-  background: transparent;
+  min-width: 0;
   font-size: 13px;
   color: var(--ink);
   outline: none;
+  background: transparent;
 }
 
 .flow-search input::placeholder {
@@ -384,10 +384,10 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
-  border-radius: var(--radius-panel);
-  background: color-mix(in oklch, var(--frame) 88%, var(--signal-watch) 6%);
-  box-shadow: var(--shadow-hairline);
   padding: 10px;
+  background: color-mix(in oklch, var(--frame) 88%, var(--signal-watch) 6%);
+  border-radius: var(--radius-panel);
+  box-shadow: var(--shadow-hairline);
 }
 
 .flow-left-open > summary {
@@ -415,26 +415,26 @@
 
 .flow-card-stage {
   width: fit-content;
-  border-radius: 6px;
-  background: var(--frame);
   padding: 2px 6px;
   font-size: 12px;
   color: var(--ink-muted);
+  background: var(--frame);
+  border-radius: 6px;
 }
 
 /* Opens the patient record: same quiet icon button as the rest of the app. */
 .flow-record-button {
   display: inline-flex;
-  width: 28px;
-  height: 28px;
   flex: none;
   align-items: center;
   justify-content: center;
+  width: 28px;
+  height: 28px;
   margin-left: auto;
+  color: var(--ink);
+  background: var(--surface);
   border: 1px solid var(--hairline);
   border-radius: 8px;
-  background: var(--surface);
-  color: var(--ink);
   transition:
     background-color var(--duration-fast) var(--ease-out),
     border-color var(--duration-fast) var(--ease-out);
@@ -458,30 +458,30 @@
 
 .flow-density {
   display: inline-flex;
-  border-radius: var(--radius-control);
-  background: var(--frame);
   padding: 2px;
+  background: var(--frame);
+  border-radius: var(--radius-control);
   box-shadow: var(--shadow-hairline);
 }
 
 .flow-density button {
   display: inline-flex;
-  height: 30px;
-  align-items: center;
   gap: 6px;
-  border-radius: 8px;
+  align-items: center;
+  height: 30px;
   padding: 0 10px;
   font-size: 12px;
   color: var(--ink-muted);
+  border-radius: 8px;
   transition:
     background-color var(--duration-fast) var(--ease-out),
     color var(--duration-fast) var(--ease-out);
 }
 
 .flow-density button[aria-pressed="true"] {
+  color: var(--ink);
   background: var(--surface);
   box-shadow: var(--shadow-hairline);
-  color: var(--ink);
 }
 
 .flow-density button:focus-visible {
@@ -492,19 +492,19 @@
 .flow-footer {
   display: flex;
   flex-wrap: wrap;
+  gap: 8px 16px;
   align-items: center;
   justify-content: space-between;
-  gap: 8px 16px;
   font-size: 12px;
   color: var(--ink-muted);
 }
 
 .flow-error {
-  border-radius: var(--radius-body);
-  background: color-mix(in oklch, var(--signal-critical) 8%, transparent);
   padding: 12px 14px;
   font-size: 13px;
   color: color-mix(in oklch, var(--signal-critical) 80%, var(--ink));
+  background: color-mix(in oklch, var(--signal-critical) 8%, transparent);
+  border-radius: var(--radius-body);
 }
 
 @media (max-width: 640px) {
@@ -559,10 +559,10 @@
 
 .dark .flow-board-page .flow-timer.is-warning,
 .dark .flow-board-page .flow-timer.is-late {
+  color: var(--signal-watch);
   background: color-mix(in oklch, var(--signal-watch) 12%, var(--flow-card));
   box-shadow: inset 0 0 0 1px
     color-mix(in oklch, var(--signal-watch) 38%, transparent);
-  color: var(--signal-watch);
 }
 
 .dark .flow-board-page .flow-card-stage {
@@ -582,13 +582,13 @@
 
 :root[data-skin="clean"] .flow-board-page .flow-quiet-cell {
   display: flex;
-  min-width: 0;
   flex-direction: column;
   gap: 6px;
-  border-radius: var(--radius-panel);
-  background: var(--frame);
-  box-shadow: var(--shadow-hairline);
+  min-width: 0;
   padding: 14px 16px;
+  background: var(--frame);
+  border-radius: var(--radius-panel);
+  box-shadow: var(--shadow-hairline);
 }
 
 :root[data-skin="clean"] .flow-board-page .flow-quiet-cell:nth-child(-n + 2) {
@@ -612,9 +612,9 @@
 :root[data-skin="clean"] .flow-board-page .flow-quiet-what {
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
   font-size: 14px;
   color: var(--ink);
+  white-space: nowrap;
 }
 
 :root[data-skin="clean"] .flow-board-page .flow-quiet-what strong {
@@ -647,9 +647,9 @@
 :root[data-skin="clean"] .flow-board-page .flow-quiet-facts dd {
   font-size: 18px;
   font-weight: 600;
+  font-variant-numeric: tabular-nums;
   line-height: 1.35;
   color: var(--ink);
-  font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
 

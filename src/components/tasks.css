@@ -17,12 +17,12 @@
 /* Groups counted by due date, as in Linear: En retard, Aujourd'hui, Demain… */
 .reminder-group-head {
   display: flex;
-  align-items: center;
   gap: 8px;
+  align-items: center;
   padding: 10px 12px 8px;
-  color: var(--muted-foreground);
   font-size: 12px;
   font-weight: 500;
+  color: var(--muted-foreground);
 }
 .reminder-group-head span {
   color: var(--foreground);
@@ -34,10 +34,10 @@
 /* Selection box: shown on hover, cursor or focus, always once a row is selected. */
 .reminder-select {
   display: flex;
+  flex-shrink: 0;
   align-items: center;
   justify-content: center;
   width: 20px;
-  flex-shrink: 0;
   opacity: 0;
   transition: opacity var(--speed-highlight-out) ease;
 }
@@ -68,14 +68,14 @@ article[data-selected] {
   left: 50%;
   z-index: 40;
   display: flex;
-  align-items: center;
   gap: 8px;
+  align-items: center;
   padding: 6px 6px 6px 16px;
-  border-radius: 12px;
-  background: var(--surface-raised, var(--popover));
-  box-shadow: var(--elev-float);
-  color: var(--foreground);
   font-size: 13px;
+  color: var(--foreground);
+  background: var(--surface-raised, var(--popover));
+  border-radius: 12px;
+  box-shadow: var(--elev-float);
   transform: translateX(-50%);
 }
 
@@ -87,23 +87,23 @@ article[data-selected] {
 /* La rangée du nouveau rappel, dans le langage des bandes : un cadre gris de 6 px, les champs sur un panneau aux rayons
    concentriques (22 px dehors, 16 px dedans), et le panneau des détails dessous, au même rayon. Plus de filets. */
 :root[data-skin="clean"] .reminders-page .quick-reminder-form {
-  border-radius: calc(var(--radius-panel) + var(--card-frame));
-  background: var(--card-band);
-  box-shadow: none;
   padding: var(--card-frame);
+  background: var(--card-band);
+  border-radius: calc(var(--radius-panel) + var(--card-frame));
+  box-shadow: none;
 }
 
 :root[data-skin="clean"] .reminders-page .quick-reminder-fields {
-  border-radius: var(--radius-panel);
-  background: var(--card-inset);
   padding: 16px;
+  background: var(--card-inset);
+  border-radius: var(--radius-panel);
 }
 
 :root[data-skin="clean"] .reminders-page .quick-reminder-fields + div {
   margin-top: var(--card-frame);
+  background: var(--card-inset);
   border-top: 0;
   border-radius: var(--radius-panel);
-  background: var(--card-inset);
 }
 
 /* Les libellés des détails parlent comme ceux de la rangée : 12 px, medium, encre douce. */
@@ -130,9 +130,9 @@ article[data-selected] {
 
 :root[data-skin="clean"] .reminders-page .reminders-quiet-cell {
   display: flex;
-  min-width: 0;
   flex-direction: column;
   gap: 6px;
+  min-width: 0;
   padding: 16px;
 }
 
@@ -158,9 +158,9 @@ article[data-selected] {
 :root[data-skin="clean"] .reminders-page .reminders-quiet-what {
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
   font-size: 14px;
   color: var(--ink);
+  white-space: nowrap;
 }
 
 :root[data-skin="clean"] .reminders-page .reminders-quiet-what strong {
@@ -193,9 +193,9 @@ article[data-selected] {
 :root[data-skin="clean"] .reminders-page .reminders-quiet-facts dd {
   font-size: 18px;
   font-weight: 600;
+  font-variant-numeric: tabular-nums;
   line-height: 1.35;
   color: var(--ink);
-  font-variant-numeric: tabular-nums;
 }
 
 @media (max-width: 1180px) {

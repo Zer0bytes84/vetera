@@ -6,8 +6,8 @@
   box-shadow: none;
 }
 :root[data-skin="clean"] .finance-register > [data-slot="tabs-content"] {
-  margin: 0;
   min-width: 0;
+  margin: 0;
 }
 :root[data-skin="clean"]
   .finance-register
@@ -30,7 +30,7 @@
 /* The register is its table's rounded grey band and nothing else: the skins' own frame around it (a white box with a 10 px
    radius and a hairline) made a second, differently rounded border. */
 :root:root .finance-register {
-  border-radius: 0 !important;
   background: transparent !important;
+  border-radius: 0 !important;
   box-shadow: none !important;
 }

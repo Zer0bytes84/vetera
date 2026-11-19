@@ -1,12 +1,12 @@
 .sidebar-brand-wordmark {
   display: block;
-  /* Centred on the mascot's whole height, ears included (measured: the ink sat 0.7 px low). */
-  transform: translateY(-0.7px);
-  color: var(--sidebar-foreground);
   font-size: 18px;
   font-weight: 600;
-  letter-spacing: -0.035em;
   line-height: 1;
+  color: var(--sidebar-foreground);
+  letter-spacing: -0.035em;
+  /* Centred on the mascot's whole height, ears included (measured: the ink sat 0.7 px low). */
+  transform: translateY(-0.7px);
 }
 /* « bAItari »: the AI in the middle of the name, in the blue and teal of our charts. The gradient runs twice its width so a
    sheen can cross it on hover; at rest it shows blue to teal. */
@@ -15,18 +15,18 @@
      the chart tones themselves fell to 4.1 and 2.9 at this size. */
   --brand-ai-blue: #3d9bff;
   --brand-ai-teal: #2fb7a3;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
   background-image: linear-gradient(
     100deg,
     var(--brand-ai-blue) 0%,
     var(--brand-ai-teal) 50%,
     var(--brand-ai-blue) 100%
   );
-  background-size: 200% 100%;
   background-position: 0% 50%;
   -webkit-background-clip: text;
   background-clip: text;
-  color: transparent;
-  -webkit-text-fill-color: transparent;
+  background-size: 200% 100%;
   transition: background-position 900ms
     var(--ease-out, cubic-bezier(0.22, 1, 0.36, 1));
 }
@@ -48,22 +48,22 @@
   }
 }
 .mascot-settings-preview {
-  display: grid;
   position: relative;
+  display: grid;
+  place-items: center;
   width: 56px;
   height: 56px;
-  place-items: center;
 }
 .mascot-settings-preview::before {
-  content: "";
   position: absolute;
   inset: 4px;
-  border-radius: 50%;
+  content: "";
   background: radial-gradient(
     ellipse at 50% 65%,
     color-mix(in srgb, #cbad87 13%, transparent),
     transparent 70%
   );
+  border-radius: 50%;
 }
 .mascot-choices {
   display: grid;
@@ -72,21 +72,21 @@
   padding: 24px;
 }
 .mascot-choice {
-  display: flex;
   position: relative;
+  display: flex;
   flex-direction: column;
+  gap: 7px;
   align-items: center;
   justify-content: center;
-  gap: 7px;
   min-width: 0;
   min-height: 113px;
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  background: var(--background);
-  color: var(--foreground);
   font-size: 12px;
   font-weight: 500;
+  color: var(--foreground);
   cursor: pointer;
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: 16px;
   transition:
     background-color 160ms ease,
     border-color 160ms ease,
@@ -94,8 +94,8 @@
 }
 @media (hover: hover) and (pointer: fine) {
   .mascot-choice:hover {
-    border-color: color-mix(in srgb, var(--foreground) 32%, var(--border));
     background: var(--sidebar);
+    border-color: color-mix(in srgb, var(--foreground) 32%, var(--border));
   }
 }
 .mascot-choice:active {
@@ -106,30 +106,30 @@
   outline-offset: 3px;
 }
 .mascot-choice[data-selected="true"] {
-  border-color: color-mix(in srgb, var(--foreground) 44%, var(--border));
   background: var(--sidebar);
+  border-color: color-mix(in srgb, var(--foreground) 44%, var(--border));
 }
 .mascot-choice-check {
-  display: grid;
   position: absolute;
   inset-block-start: 8px;
   inset-inline-end: 8px;
+  display: grid;
+  place-items: center;
   width: 16px;
   height: 16px;
-  border-radius: 50%;
-  color: var(--primary-foreground);
   font-size: 12px;
   font-weight: 650;
-  place-items: center;
+  color: var(--primary-foreground);
+  border-radius: 50%;
 }
 .mascot-choice[data-selected="true"] .mascot-choice-check {
   background: var(--primary);
 }
 .mascot-classic-mark {
   display: grid;
+  place-items: center;
   width: 64px;
   height: 64px;
-  place-items: center;
 }
 @media (max-width: 600px) {
   .mascot-choices {
@@ -148,24 +148,24 @@
 
 .sidebar-brand {
   display: flex;
-  align-items: center;
   gap: 8px;
+  align-items: center;
   min-width: 0;
 }
 .sidebar-brand[data-collapsed="true"] {
   justify-content: center;
 }
 .sidebar-mascot-circle {
+  position: relative;
   display: inline-flex;
+  flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  position: relative;
-  flex-shrink: 0;
-  border-radius: 9999px;
-  cursor: pointer;
-  border: none;
-  background: transparent;
   padding: 0;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  border-radius: 9999px;
   box-shadow: none;
   transition: transform 160ms ease;
 }
@@ -183,34 +183,34 @@
 /* Single defined circle container for classic logo */
 .sidebar-mascot-circle[data-sidebar-brand="logo"] {
   display: grid;
+  place-items: center;
   width: 52px;
   height: 52px;
+  background: var(--card);
   border: 1.5px solid color-mix(in srgb, var(--sidebar-border) 80%, transparent);
   border-radius: 50%;
-  background: var(--card);
   box-shadow: 0 3px 10px -2px rgb(0 0 0 / 0.06);
-  place-items: center;
   transition:
     border-color 160ms ease,
     background-color 160ms ease,
     transform 160ms ease;
 }
 .sidebar-mascot-circle[data-sidebar-brand="logo"][data-popup-open] {
+  background: var(--sidebar);
   border-color: color-mix(
     in srgb,
     var(--sidebar-foreground) 24%,
     var(--sidebar-border)
   );
-  background: var(--sidebar);
 }
 @media (hover: hover) and (pointer: fine) {
   .sidebar-mascot-circle[data-sidebar-brand="logo"]:hover {
+    background: var(--sidebar);
     border-color: color-mix(
       in srgb,
       var(--sidebar-foreground) 24%,
       var(--sidebar-border)
     );
-    background: var(--sidebar);
   }
 }
 .sidebar-brand[data-collapsed="true"]
@@ -223,35 +223,35 @@
 .sidebar-mascot-circle[data-sidebar-brand="mascot"] {
   width: auto;
   height: auto;
-  border: none;
-  background: transparent;
-  box-shadow: none;
   padding: 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
 }
 .sidebar-mascot-circle[data-sidebar-brand="mascot"][data-popup-open] {
-  border: none;
   background: transparent;
+  border: none;
   box-shadow: none;
 }
 @media (hover: hover) and (pointer: fine) {
   .sidebar-mascot-circle[data-sidebar-brand="mascot"]:hover {
-    border: none;
     background: transparent;
+    border: none;
     box-shadow: none;
   }
 }
 .sidebar-brand-home {
   padding: 6px 0;
-  border-radius: 6px;
   cursor: pointer;
+  border-radius: 6px;
 }
 .mascot-picker {
-  width: min(330px, calc(100vw - 24px));
   gap: 0;
+  width: min(330px, calc(100vw - 24px));
   padding: 0;
   overflow: hidden;
-  border-radius: 17px;
   background: var(--card);
+  border-radius: 17px;
   box-shadow: 0 12px 40px rgb(0 0 0 / 0.12);
 }
 .mascot-picker-heading {
@@ -276,34 +276,34 @@
   font-size: 12px;
 }
 .mascot-choices[data-compact="true"] .mascot-choice-logo {
-  grid-column: auto;
   flex-direction: column;
-  min-height: 97px;
+  grid-column: auto;
   gap: 7px;
+  min-height: 97px;
   margin-top: 0;
   font-size: 12px;
 }
 .mascot-choices[data-compact="true"] .mascot-choice-logo .mascot-classic-mark {
-  width: 44px;
-  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 9999px;
-  border: 1.5px solid color-mix(in srgb, var(--border) 70%, transparent);
+  width: 44px;
+  height: 44px;
   background: radial-gradient(circle at 50% 35%, #ffffff 0%, #f1f3f5 100%);
+  border: 1.5px solid color-mix(in srgb, var(--border) 70%, transparent);
+  border-radius: 9999px;
   box-shadow: 0 2px 8px -2px rgba(0, 0, 0, 0.08);
 }
 .dark
   .mascot-choices[data-compact="true"]
   .mascot-choice-logo
   .mascot-classic-mark {
+  background: radial-gradient(circle at 50% 35%, #2a2d36 0%, #181a20 100%);
   border-color: color-mix(
     in srgb,
     var(--border) 60%,
     rgba(255, 255, 255, 0.12)
   );
-  background: radial-gradient(circle at 50% 35%, #2a2d36 0%, #181a20 100%);
 }
 .mascot-choices[data-compact="true"] .mascot-classic-mark svg {
   width: 26px;
@@ -311,13 +311,13 @@
 }
 .mascot-picker-motion {
   display: flex;
+  gap: 12px;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
   padding: 12px 18px;
-  border-top: 1px solid var(--border);
-  color: var(--muted-foreground);
   font-size: 12px;
+  color: var(--muted-foreground);
+  border-top: 1px solid var(--border);
 }
 .mascot-picker-motion label {
   cursor: pointer;

@@ -5,11 +5,11 @@
 
 .shell-toolbar .shell-toolbar-control {
   flex-shrink: 0;
+  color: rgb(24 24 27 / 0.75);
   cursor: pointer;
+  background: transparent;
   border: 0;
   border-radius: 999px;
-  background: transparent;
-  color: rgb(24 24 27 / 0.75);
   box-shadow: none;
   transition:
     background-color var(--speed-highlight-out) ease,
@@ -24,13 +24,13 @@
 .shell-toolbar .shell-toolbar-control:active,
 .shell-toolbar .shell-toolbar-control[aria-expanded="true"],
 .shell-toolbar .shell-toolbar-control[aria-pressed="true"] {
-  background: color-mix(in srgb, var(--primary) 10%, var(--background));
   color: var(--foreground);
+  background: color-mix(in srgb, var(--primary) 10%, var(--background));
 }
 
 .dark .shell-toolbar .shell-toolbar-control {
-  background: transparent;
   color: rgb(244 244 245 / 0.8);
+  background: transparent;
   box-shadow: none;
 }
 
@@ -41,19 +41,19 @@
     [aria-expanded="true"],
     [aria-pressed="true"]
   ) {
-  background: rgb(255 255 255 / 0.1);
   color: #fafafa;
+  background: rgb(255 255 255 / 0.1);
 }
 
 @media (hover: hover) and (pointer: fine) {
   .shell-toolbar .shell-toolbar-control:hover {
-    background: transparent;
     color: #18181b;
+    background: transparent;
   }
 
   .dark .shell-toolbar .shell-toolbar-control:hover {
-    background: transparent;
     color: #fafafa;
+    background: transparent;
   }
 }
 
@@ -75,37 +75,37 @@
   position: sticky;
   top: 0;
   z-index: 40;
+  display: flex;
+  align-items: center;
   width: 100%;
   height: calc(
     var(--header-height) +
     var(--header-content-clearance)
   ) !important;
   min-height: var(--header-height);
-  display: flex;
-  align-items: center;
+  overflow: visible;
   background: rgba(255, 255, 255, 0.72) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
-  backdrop-filter: blur(20px) saturate(180%) !important;
   border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important;
   box-shadow:
     inset 0 1px 0 0 rgba(255, 255, 255, 0.8),
     0 4px 20px -2px rgba(0, 0, 0, 0.03) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
   transition:
     background-color 200ms ease,
     border-color 200ms ease,
     box-shadow 200ms ease;
-  overflow: visible;
 }
 
 .dark [data-slot="app-header"],
 :root.dark[data-chrome-style="liquid-glass"] [data-slot="app-header"] {
   background: rgba(10, 12, 18, 0.72) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
-  backdrop-filter: blur(20px) saturate(180%) !important;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
   box-shadow:
     inset 0 1px 0 0 rgba(255, 255, 255, 0.06),
     0 4px 24px -2px rgba(0, 0, 0, 0.4) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
 }
 
 :root[data-chrome-style="liquid-glass"]
@@ -118,13 +118,13 @@
 
 :root[data-chrome-style="liquid-glass"] .shell-toolbar-actions {
   display: flex;
-  align-items: center;
   gap: 8px;
+  align-items: center;
+  padding: 0;
   background: transparent;
   box-shadow: none;
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
-  padding: 0;
 }
 
 :root[data-chrome-style="liquid-glass"] .shell-toolbar-actions::before {
@@ -148,14 +148,14 @@
   place-items: center;
   width: 40px;
   height: 40px;
-  border-radius: 50%;
-  border: 1px solid rgb(24 24 27 / 0.18);
   color: #202124;
   background: linear-gradient(
     160deg,
     rgb(255 255 255 / 0.4),
     rgb(255 255 255 / 0.08)
   );
+  border: 1px solid rgb(24 24 27 / 0.18);
+  border-radius: 50%;
   box-shadow:
     inset 0 0 0 1px rgb(255 255 255 / 0.78),
     inset 0 -1px 2px rgb(24 24 27 / 0.09),
@@ -170,22 +170,22 @@
   .shell-toolbar-actions
   .shell-toolbar-control
   svg {
+  flex-shrink: 0;
   width: 22px;
   height: 22px;
-  flex-shrink: 0;
   filter: drop-shadow(0 1px 0 rgb(255 255 255 / 0.7));
 }
 
 :root.dark[data-chrome-style="liquid-glass"]
   .shell-toolbar-actions
   .shell-toolbar-control {
-  border-color: rgb(255 255 255 / 0.32);
   color: #f4f4f5;
   background: linear-gradient(
     160deg,
     rgb(255 255 255 / 0.11),
     rgb(255 255 255 / 0.03)
   );
+  border-color: rgb(255 255 255 / 0.32);
   box-shadow:
     inset 0 0 0 1px rgb(255 255 255 / 0.19),
     inset 0 1px 1px rgb(255 255 255 / 0.13),
@@ -203,8 +203,8 @@
   :root[data-chrome-style="liquid-glass"]
     .shell-toolbar-actions
     .shell-toolbar-control:hover {
-    background: rgb(255 255 255 / 0.85);
     color: #09090b;
+    background: rgb(255 255 255 / 0.85);
     box-shadow:
       inset 0 0 0 1px rgb(255 255 255 / 0.95),
       0 3px 7px -4px rgb(24 24 27 / 0.3);
@@ -212,8 +212,8 @@
   :root.dark[data-chrome-style="liquid-glass"]
     .shell-toolbar-actions
     .shell-toolbar-control:hover {
-    background: rgb(255 255 255 / 0.18);
     color: #fff;
+    background: rgb(255 255 255 / 0.18);
     box-shadow:
       inset 0 0 0 1px rgb(255 255 255 / 0.3),
       0 3px 7px -4px rgb(0 0 0 / 0.5);
@@ -227,8 +227,8 @@
     [aria-expanded="true"],
     [aria-pressed="true"]
   ) {
-  background: color-mix(in srgb, var(--primary) 12%, var(--background));
   color: var(--foreground);
+  background: color-mix(in srgb, var(--primary) 12%, var(--background));
   box-shadow:
     inset 0 0 0 1px color-mix(in srgb, var(--primary) 35%, transparent),
     inset 0 1px 3px rgb(24 24 27 / 0.1);
@@ -244,12 +244,12 @@
 
 @media (max-width: 480px) {
   :root[data-chrome-style="liquid-glass"] .shell-toolbar {
-    padding-inline: 12px;
     gap: 8px;
+    padding-inline: 12px;
   }
   :root[data-chrome-style="liquid-glass"] .shell-toolbar-actions {
-    padding-inline: 6px;
     gap: 3px;
+    padding-inline: 6px;
   }
 }
 
@@ -267,12 +267,12 @@
 
 /* The floating mode has no full-width header or framed workspace. */
 :root[data-chrome-style="liquid-glass"] [data-slot="sidebar-inset"] {
-  margin: 0 !important;
-  padding: 0 !important;
   height: 100dvh;
   max-height: 100dvh !important;
-  border-radius: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
   background: var(--background) !important;
+  border-radius: 0 !important;
   box-shadow: none !important;
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
@@ -306,18 +306,18 @@
 @media (min-width: 768px) {
   :root[data-chrome-style="liquid-glass"] [data-slot="sidebar-container"] {
     padding: 0 !important;
+    background: var(--sidebar);
     border: 0 !important;
     border-radius: 0 !important;
-    background: var(--sidebar);
     box-shadow: none !important;
   }
 
   :root[data-chrome-style="liquid-glass"] [data-slot="sidebar-inner"] {
-    margin-top: 0 !important;
     height: 100% !important;
     padding-top: var(--titlebar-clearance);
-    border-radius: 0 !important;
+    margin-top: 0 !important;
     background: var(--sidebar);
+    border-radius: 0 !important;
     box-shadow: none !important;
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
@@ -330,13 +330,13 @@
 
   :root[data-chrome-style="liquid-glass"]
     [data-slot="sidebar-container"]::after {
-    content: "";
     position: absolute;
     inset-block: 0;
     inset-inline-end: 0;
     width: 1px;
-    background: var(--border);
     pointer-events: none;
+    content: "";
+    background: var(--border);
   }
 
   :root[data-chrome-style="liquid-glass"] [data-slot="sidebar-gap"] {
@@ -393,8 +393,8 @@
 }
 
 :root[data-chrome-style="liquid-glass"] [data-slot="shell-scroll-panel"] {
-  border: 0;
   background: var(--background);
+  border: 0;
 }
 
 /* The outline family is exclusive to Liquid Glass. */
@@ -411,8 +411,8 @@
 :root[data-chrome-style="liquid-glass"]
   [data-slot="sidebar-header"]
   [data-slot="sidebar-trigger"] {
-  border: 0;
   background: transparent;
+  border: 0;
   box-shadow: none;
 }
 
@@ -440,8 +440,8 @@
     align-items: flex-end;
   }
   :root[data-chrome-style="liquid-glass"] [data-slot="page-header-actions"] {
-    margin-inline-end: 0;
     margin-block-start: 0;
+    margin-inline-end: 0;
   }
 }
 @media (min-width: 768px) and (max-width: 1023px) {
@@ -459,8 +459,8 @@
 }
 @supports selector(::-webkit-scrollbar) {
   [data-slot="shell-scroll-panel"] {
-    scrollbar-width: auto;
     scrollbar-color: auto;
+    scrollbar-width: auto;
   }
   [data-slot="shell-scroll-panel"]::-webkit-scrollbar {
     width: 6px;
@@ -484,9 +484,9 @@
   .shell-toolbar-control {
   width: 40px;
   height: 40px;
-  border-radius: 12px;
-  border: 1px solid transparent;
   background: transparent;
+  border: 1px solid transparent;
+  border-radius: 12px;
   box-shadow: none;
 }
 .shell-toolbar-actions .shell-toolbar-control svg,
@@ -501,8 +501,8 @@
 :root.dark[data-chrome-style="liquid-glass"]
   .shell-toolbar-actions
   .shell-toolbar-control {
-  border-color: transparent;
   background: transparent;
+  border-color: transparent;
   box-shadow: none;
 }
 :root.dark[data-chrome-style="liquid-glass"]
@@ -537,20 +537,20 @@
   gap: 2px;
   padding: 4px;
   margin-inline-end: 0;
+  background: rgb(255 255 255 / 0.46);
   border: 1px solid rgb(255 255 255 / 0.8);
   border-radius: 18px;
-  background: rgb(255 255 255 / 0.46);
-  -webkit-backdrop-filter: blur(22px) saturate(150%);
-  backdrop-filter: blur(22px) saturate(150%);
   box-shadow:
     inset 0 1px 0 rgb(255 255 255 / 0.95),
     inset 0 -1px 0 rgb(24 24 27 / 0.04),
     0 3px 12px -7px rgb(24 24 27 / 0.25);
+  -webkit-backdrop-filter: blur(22px) saturate(150%);
+  backdrop-filter: blur(22px) saturate(150%);
 }
 .dark .shell-toolbar-actions,
 :root.dark[data-chrome-style="liquid-glass"] .shell-toolbar-actions {
-  border-color: rgb(255 255 255 / 0.14);
   background: rgb(255 255 255 / 0.055);
+  border-color: rgb(255 255 255 / 0.14);
   box-shadow:
     inset 0 1px 0 rgb(255 255 255 / 0.1),
     0 3px 12px -7px rgb(0 0 0 / 0.4);
@@ -558,12 +558,12 @@
 [data-slot="app-header"],
 :root[data-chrome-style="liquid-glass"] [data-slot="app-header"] {
   background: rgb(255 255 255 / 0.5) !important;
-  -webkit-backdrop-filter: blur(28px) saturate(150%) !important;
-  backdrop-filter: blur(28px) saturate(150%) !important;
   box-shadow:
     inset 0 1px 0 rgb(255 255 255 / 0.9),
     inset 0 -1px 0 rgb(255 255 255 / 0.45),
     0 6px 20px -16px rgb(24 24 27 / 0.18) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(150%) !important;
+  backdrop-filter: blur(28px) saturate(150%) !important;
 }
 .dark [data-slot="app-header"],
 :root.dark[data-chrome-style="liquid-glass"] [data-slot="app-header"] {
@@ -607,21 +607,21 @@
 }
 .shell-header-search-field {
   display: flex;
+  gap: 8px;
+  align-items: center;
   width: 100%;
   height: 36px;
-  align-items: center;
-  gap: 8px;
   padding: 0 4px 0 12px;
-  border: 1px solid
-    color-mix(in srgb, var(--ink, var(--foreground)) 8%, transparent);
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--ink, var(--foreground)) 4%, transparent);
-  color: var(--ink-muted, var(--muted-foreground));
   font-size: 13px;
   font-weight: 450;
   line-height: 20px;
+  color: var(--ink-muted, var(--muted-foreground));
   text-align: left;
   cursor: pointer;
+  background: color-mix(in srgb, var(--ink, var(--foreground)) 4%, transparent);
+  border: 1px solid
+    color-mix(in srgb, var(--ink, var(--foreground)) 8%, transparent);
+  border-radius: 999px;
   transition:
     background-color var(--speed-highlight-out) ease,
     border-color var(--speed-highlight-out) ease,
@@ -639,55 +639,55 @@
   outline-offset: 2px;
 }
 .shell-header-search-field[aria-expanded="true"] {
+  color: var(--ink, var(--foreground));
+  background: color-mix(in srgb, var(--ink, var(--foreground)) 7%, transparent);
   border-color: color-mix(
     in srgb,
     var(--ink, var(--foreground)) 16%,
     transparent
   );
-  background: color-mix(in srgb, var(--ink, var(--foreground)) 7%, transparent);
-  color: var(--ink, var(--foreground));
 }
 .shell-header-search-placeholder {
-  min-width: 0;
   flex: 1;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 .shell-header-search-key {
   display: grid;
-  min-width: 28px;
-  height: 28px;
   flex: none;
   place-items: center;
+  min-width: 28px;
+  height: 28px;
   padding: 0 8px;
-  border-radius: 999px;
-  background: var(--surface, var(--card));
-  box-shadow: 0 0 0 1px
-    color-mix(in srgb, var(--ink, var(--foreground)) 8%, transparent);
   font-family: inherit;
   font-size: 12px;
   font-weight: 500;
   line-height: 1;
-  letter-spacing: 0;
   color: var(--ink-soft, var(--foreground));
+  letter-spacing: 0;
+  background: var(--surface, var(--card));
+  border-radius: 999px;
+  box-shadow: 0 0 0 1px
+    color-mix(in srgb, var(--ink, var(--foreground)) 8%, transparent);
   transition:
     background-color var(--speed-highlight-out) ease,
     color var(--speed-highlight-out) ease;
 }
 @media (hover: hover) and (pointer: fine) {
   .shell-header-search-field:hover {
-    border-color: color-mix(
-      in srgb,
-      var(--ink, var(--foreground)) 14%,
-      transparent
-    );
+    color: var(--ink, var(--foreground));
     background: color-mix(
       in srgb,
       var(--ink, var(--foreground)) 7%,
       transparent
     );
-    color: var(--ink, var(--foreground));
+    border-color: color-mix(
+      in srgb,
+      var(--ink, var(--foreground)) 14%,
+      transparent
+    );
     transition-duration:
       var(--speed-highlight-in), var(--speed-highlight-in),
       var(--speed-highlight-in), 160ms;
@@ -708,12 +708,12 @@
 /* The account: the avatar alone, at the header's right end. */
 .shell-account-trigger {
   display: grid;
-  width: 32px;
-  height: 32px;
   flex: none;
   place-items: center;
-  border-radius: 999px;
+  width: 32px;
+  height: 32px;
   cursor: pointer;
+  border-radius: 999px;
   transition: box-shadow var(--speed-highlight-out) ease;
 }
 .shell-account-trigger .shell-account-avatar {
@@ -736,29 +736,29 @@
 }
 .shell-account-menu .shell-account-identity {
   display: flex;
-  align-items: center;
   gap: 10px;
+  align-items: center;
   padding: 8px;
   font-weight: 400;
 }
 .shell-account-menu .shell-account-name {
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
   font-size: 13px;
   font-weight: 500;
   color: var(--ink, var(--foreground));
+  white-space: nowrap;
 }
 .shell-account-menu .shell-account-detail {
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
   font-size: 12px;
   color: var(--ink-muted, var(--muted-foreground));
+  white-space: nowrap;
 }
 .shell-account-menu .shell-account-item {
-  min-height: 32px;
   gap: 10px;
+  min-height: 32px;
   padding-inline: 8px;
 }
 .shell-account-menu .shell-account-item svg {
@@ -766,8 +766,8 @@
   height: 16px;
 }
 .shell-account-menu .shell-account-count {
-  letter-spacing: 0;
   font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
 }
 
 /* The sidebar's slide-out toggle opens the header, then a short rule, then the
@@ -775,13 +775,13 @@
 /* Slide-out toggle: the 36 px of the header's tools, round like them. */
 .shell-sidebar-toggle {
   display: grid;
-  width: 36px;
-  height: 36px;
   flex: none;
   place-items: center;
-  border-radius: 999px;
+  width: 36px;
+  height: 36px;
   color: var(--ink-muted, var(--muted-foreground));
   cursor: pointer;
+  border-radius: 999px;
   transition:
     background-color var(--speed-highlight-out) ease,
     color var(--speed-highlight-out) ease;
@@ -792,15 +792,15 @@
 }
 /* The thin rule between the toggle and the search: 20 px, the line colour. */
 .shell-header-divider {
+  flex: none;
   width: 1px;
   height: 20px;
-  flex: none;
   background: var(--border);
 }
 @media (hover: hover) and (pointer: fine) {
   .shell-sidebar-toggle:hover {
-    background: var(--surface-hover, var(--muted));
     color: var(--ink, var(--foreground));
+    background: var(--surface-hover, var(--muted));
   }
 }
 
@@ -839,20 +839,20 @@
 }
 .shell-crumb {
   display: flex;
-  min-width: 0;
   flex: 1 1 0;
-  align-items: baseline;
   gap: 0;
-  white-space: nowrap;
+  align-items: baseline;
+  min-width: 0;
   font-size: 13px;
   font-weight: 450;
-  line-height: 20px;
-  letter-spacing: -0.003em;
   font-feature-settings: "kern", "liga", "calt";
   -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
+  line-height: 20px;
   /* A grey that reads on the header in both modes (about 5:1), softer than the body text. */
   color: color-mix(in srgb, var(--ink, var(--foreground)) 62%, transparent);
+  letter-spacing: -0.003em;
+  white-space: nowrap;
+  text-rendering: optimizeLegibility;
 }
 .shell-crumb > * {
   overflow: hidden;
@@ -860,9 +860,9 @@
 }
 .shell-crumb-sep {
   flex: none;
+  padding-inline: 0.1em;
   white-space: pre;
   opacity: 0.7;
-  padding-inline: 0.1em;
 }
 .shell-crumb-page {
   font-weight: 500;
@@ -872,11 +872,11 @@
   flex: 0 1 auto;
   min-width: 0;
   padding: 0;
-  border: 0;
-  background: none;
   font: inherit;
   color: inherit;
   cursor: pointer;
+  background: none;
+  border: 0;
   border-radius: 4px;
 }
 .shell-crumb-link:focus-visible {
@@ -898,18 +898,18 @@
 
 /* The dashboard's greeting, in the bar where the breadcrumb is on other pages: « Bonjour Zouhir 👋 », the first name in blue. */
 .shell-greeting {
-  min-width: 0;
   flex: 1 1 0;
+  min-width: 0;
   margin: 0;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
   font-size: 16px;
   font-weight: 500;
-  line-height: 20px;
-  letter-spacing: -0.01em;
-  color: var(--ink, var(--foreground));
   -webkit-font-smoothing: antialiased;
+  line-height: 20px;
+  color: var(--ink, var(--foreground));
+  letter-spacing: -0.01em;
+  white-space: nowrap;
 }
 .shell-greeting-name {
   color: var(--tone-blue);

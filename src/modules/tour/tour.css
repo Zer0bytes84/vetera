@@ -6,23 +6,23 @@
 .tour-invitation .tour-invitation-panel {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
   gap: 14px 16px;
+  align-items: center;
   padding: 16px 20px;
 }
 .tour-invitation-icon {
   display: grid;
-  width: 36px;
-  height: 36px;
   flex: none;
   place-items: center;
-  border-radius: 12px;
-  background: color-mix(in oklab, var(--foreground) 6%, transparent);
+  width: 36px;
+  height: 36px;
   color: var(--muted-foreground);
+  background: color-mix(in oklab, var(--foreground) 6%, transparent);
+  border-radius: 12px;
 }
 .tour-invitation-text {
-  min-width: 220px;
   flex: 1 1 280px;
+  min-width: 220px;
 }
 .tour-invitation-title {
   margin: 0;
@@ -38,8 +38,8 @@
 }
 .tour-invitation-actions {
   display: flex;
-  align-items: center;
   gap: 6px;
+  align-items: center;
   margin-inline-start: auto;
 }
 
@@ -56,8 +56,8 @@
 }
 .tour-card-count {
   display: flex;
-  align-items: center;
   gap: 6px;
+  align-items: center;
   margin: 0;
   font-size: 0.75rem;
   line-height: 1rem;
@@ -72,10 +72,10 @@
   margin: 8px 0 12px;
 }
 .tour-card-bar span {
-  height: 3px;
   flex: 1;
-  border-radius: 999px;
+  height: 3px;
   background: color-mix(in oklab, var(--foreground) 10%, transparent);
+  border-radius: 999px;
 }
 .tour-card-bar span[data-done],
 .tour-card-bar span[data-current] {

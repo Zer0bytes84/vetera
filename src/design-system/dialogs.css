@@ -15,8 +15,8 @@
   font-size: 24px !important;
   font-weight: 500 !important;
   line-height: 1.2 !important;
-  letter-spacing: -0.02em !important;
   color: var(--ink, var(--foreground)) !important;
+  letter-spacing: -0.02em !important;
 }
 
 :root:root:root

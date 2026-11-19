@@ -28,8 +28,8 @@
   gap: 4px 16px;
   align-items: baseline;
   padding: 8px 0;
-  border-top: 1px solid var(--border);
   font-size: 13px;
+  border-top: 1px solid var(--border);
 }
 .vitals-latest-label {
   color: var(--muted-foreground);
@@ -62,31 +62,31 @@
 }
 .vitals-by-day table {
   width: 100%;
-  border-collapse: collapse;
   font-size: 13px;
+  border-collapse: collapse;
 }
 .vitals-by-day caption {
-  text-align: left;
   padding-bottom: 8px;
+  text-align: left;
 }
 .vitals-by-day :is(th, td) {
   padding: 8px 12px 8px 0;
-  border-top: 1px solid var(--border);
-  text-align: left;
   font-variant-numeric: tabular-nums;
+  text-align: left;
   white-space: nowrap;
+  border-top: 1px solid var(--border);
 }
 .vitals-by-day thead th {
-  color: var(--muted-foreground);
-  font-weight: 400;
   font-size: 12px;
+  font-weight: 400;
+  color: var(--muted-foreground);
 }
 .vitals-by-day-date {
   font-weight: 500;
 }
 .vitals-by-day-date span {
   display: block;
-  color: var(--muted-foreground);
-  font-weight: 400;
   font-size: 12px;
+  font-weight: 400;
+  color: var(--muted-foreground);
 }

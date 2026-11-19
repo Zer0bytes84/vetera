@@ -7,31 +7,31 @@
 :root:root:root .tuff-table th {
   height: auto !important;
   padding: 8px !important;
-  border: 0 !important;
-  background: transparent !important;
-  box-shadow: none !important;
   font-size: 0.875rem !important;
-  line-height: 1.5rem !important;
   font-weight: 500 !important;
-  letter-spacing: 0 !important;
-  text-transform: none !important;
+  line-height: 1.5rem !important;
   color: var(--muted-foreground) !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
 }
 :root:root:root .tuff-table th[aria-sort] {
   color: var(--foreground) !important;
 }
 :root:root:root .tuff-table td {
   padding: 10px 8px !important;
-  border: 0 !important;
-  background: transparent !important;
-  box-shadow: none !important;
   font-size: 0.875rem !important;
   line-height: 1.5rem !important;
   color: var(--foreground) !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
 }
 :root:root:root .tuff-table tbody tr {
-  border: 0 !important;
   background: transparent !important;
+  border: 0 !important;
   transition: background-color 150ms ease-out;
 }
 :root:root:root .tuff-table tbody tr[data-zebra="odd"] {
@@ -74,9 +74,9 @@
 }
 /* The element that holds the table: the skins draw a frame around any `div > table`; this table sits in its panel. */
 :root:root:root div:has(> .tuff-table) {
+  background: transparent !important;
   border: 0 !important;
   border-radius: 0 !important;
-  background: transparent !important;
   box-shadow: none !important;
 }
 :root:root:root .tuff-table tbody tr:last-child td,
@@ -86,8 +86,8 @@
 }
 :root:root:root div:has(> .tuff-table)::before,
 :root:root:root div:has(> .tuff-table)::after {
-  content: none !important;
   display: none !important;
+  content: none !important;
 }
 :root:root:root .tuff-table thead {
   box-shadow: none !important;

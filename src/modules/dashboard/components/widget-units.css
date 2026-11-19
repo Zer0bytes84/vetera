@@ -2,19 +2,19 @@
    Chart tokens only (ink, soft, faint, series-1), sizes 12, 13 and 24 px. */
 [data-skin="clean"] .widgetHero {
   display: flex;
-  align-items: baseline;
   gap: 6px;
-  margin: 0;
+  align-items: baseline;
   min-width: 0;
+  margin: 0;
 }
 
 [data-skin="clean"] .widgetHero strong {
   font-size: 24px;
   font-weight: 500;
-  line-height: 1;
-  letter-spacing: -0.035em;
   font-variant-numeric: tabular-nums;
+  line-height: 1;
   color: var(--ink);
+  letter-spacing: -0.035em;
 }
 
 [data-skin="clean"] .widgetHero span {
@@ -39,8 +39,8 @@
 [data-skin="clean"] .unit {
   display: block;
   aspect-ratio: 1;
-  border-radius: 5px;
   background: var(--series-1);
+  border-radius: 5px;
 }
 
 [data-skin="clean"] .unitGrid .unit {
@@ -61,16 +61,16 @@
 [data-skin="clean"] .widgetRows {
   display: flex;
   flex-direction: column;
-  margin: 0;
   padding: 0;
+  margin: 0;
   list-style: none;
 }
 
 [data-skin="clean"] .widgetRows li {
   display: grid;
   grid-template-columns: 12px minmax(0, 1fr) auto auto;
-  align-items: center;
   column-gap: 8px;
+  align-items: center;
   min-height: 24px;
   font-size: 13px;
 }
@@ -90,14 +90,14 @@
 [data-skin="clean"] .widgetRowName {
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
   color: var(--ink);
+  white-space: nowrap;
 }
 
 [data-skin="clean"] .widgetRowValue,
 [data-skin="clean"] .widgetRowShare {
-  text-align: right;
   font-variant-numeric: tabular-nums;
+  text-align: right;
   white-space: nowrap;
 }
 
@@ -136,8 +136,8 @@
   top: 0;
   font-size: 12px;
   font-variant-numeric: tabular-nums;
-  white-space: nowrap;
   color: var(--soft);
+  white-space: nowrap;
 }
 
 [data-skin="clean"] .forecastAxis {
@@ -153,8 +153,8 @@
   position: relative;
   display: flex;
   height: 12px;
-  border-radius: 4px;
   background: color-mix(in srgb, var(--ink) 6%, transparent);
+  border-radius: 4px;
 }
 
 [data-skin="clean"] .forecastBar > i:first-child {
@@ -176,8 +176,8 @@
 [data-skin="clean"] .forecastKey[data-part="previous"] {
   width: 2px !important;
   margin-left: 4px;
-  border-radius: 1px !important;
   background: var(--ink);
+  border-radius: 1px !important;
 }
 
 [data-skin="clean"] .forecastMark {
@@ -186,8 +186,8 @@
   bottom: -3px;
   width: 2px;
   margin-left: -1px;
-  border-radius: 1px;
   background: var(--ink);
+  border-radius: 1px;
 }
 
 [data-skin="clean"] .forecastNote {
@@ -200,18 +200,18 @@
 [data-skin="clean"] .pillAction {
   display: inline-flex;
   flex: none;
-  align-items: center;
   gap: 4px;
+  align-items: center;
   height: 28px;
   padding: 0 12px;
-  border: 0;
-  border-radius: 999px;
   font-size: 12px;
   font-weight: 500;
-  white-space: nowrap;
   color: var(--btn-primary-fg);
-  background: var(--btn-primary-bg);
+  white-space: nowrap;
   cursor: pointer;
+  background: var(--btn-primary-bg);
+  border: 0;
+  border-radius: 999px;
   transition: background-color 160ms var(--ease-out-quint);
 }
 
@@ -235,14 +235,14 @@
 [data-skin="clean"] .dayRow {
   display: grid;
   grid-template-columns: 44px minmax(0, 1fr) auto;
-  align-items: center;
   gap: 12px;
+  align-items: center;
   width: 100%;
   padding: 10px 20px;
-  border: 0;
-  background: none;
   text-align: left;
   cursor: pointer;
+  background: none;
+  border: 0;
   box-shadow: var(--hair-t);
   transition: background-color 180ms var(--ease-out-quint);
 }
@@ -261,11 +261,11 @@
 /* ------------------------------------------------------------ Card footer: sentence, then the single action */
 [data-skin="clean"] .widgetFooter {
   display: flex;
+  gap: 12px;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  margin-top: auto;
   padding: 12px 20px;
+  margin-top: auto;
   box-shadow: var(--hair-t);
 }
 
@@ -289,8 +289,8 @@
 [data-skin="clean"] .speciesSplit {
   display: grid;
   grid-template-columns: 120px minmax(0, 1fr);
-  align-items: center;
   gap: 20px;
+  align-items: center;
   padding: 16px 20px;
 }
 
@@ -366,30 +366,30 @@
   inset: 22px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
   /* Wide enough that even the glyph boxes (taller than the line) never touch. */
   gap: 6px;
+  align-items: center;
+  justify-content: center;
   margin: 0;
-  pointer-events: none;
   text-align: center;
+  pointer-events: none;
 }
 
 [data-skin="clean"] .speciesCenter strong {
   font-size: 24px;
   font-weight: 500;
-  line-height: 1;
-  letter-spacing: -0.035em;
   font-variant-numeric: tabular-nums;
+  line-height: 1;
   color: var(--ink);
+  letter-spacing: -0.035em;
 }
 
 [data-skin="clean"] .speciesCenter span {
   max-width: 100%;
   overflow: hidden;
+  text-overflow: ellipsis;
   font-size: 12px;
   line-height: 1.2;
-  text-overflow: ellipsis;
-  white-space: nowrap;
   color: var(--faint);
+  white-space: nowrap;
 }

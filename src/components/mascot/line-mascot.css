@@ -21,8 +21,8 @@
 
 /* Breathing, a slow rise of the whole figure from its shoulders. */
 .lm-figure {
-  transform-box: view-box;
   transform-origin: 60px 120px;
+  transform-box: view-box;
   animation: lm-breathe 4.4s ease-in-out infinite;
 }
 
@@ -34,13 +34,13 @@
 
 /* The head tilts round its neck (set by the frame loop). */
 .lm-face {
-  transform-box: view-box;
   transform-origin: 60px 104px;
+  transform-box: view-box;
 }
 
 .lm-eye-open {
-  transform-box: fill-box;
   transform-origin: center;
+  transform-box: fill-box;
   transition: transform 70ms ease-out;
 }
 

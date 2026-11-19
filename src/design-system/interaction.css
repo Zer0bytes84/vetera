@@ -32,11 +32,11 @@
   position: absolute;
   inset: 0 4px;
   z-index: -1;
-  border-radius: 8px;
-  background: var(--row-hover);
-  content: "";
-  opacity: 0;
   pointer-events: none;
+  content: "";
+  background: var(--row-hover);
+  border-radius: 8px;
+  opacity: 0;
   transition: opacity var(--speed-highlight-out) ease;
 }
 :is(div, li, a, button, article)[data-list-row][data-current]::before {

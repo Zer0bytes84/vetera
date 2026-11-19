@@ -2,11 +2,11 @@
 .studio-kpi-visual {
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
   gap: 6px;
+  justify-content: flex-end;
+  min-width: 0;
   height: 64px;
   margin-top: 8px;
-  min-width: 0;
 }
 .studio-kpi-visual svg {
   display: block;
@@ -15,35 +15,35 @@
 }
 .studio-kpi-visual-caption {
   display: flex;
-  justify-content: space-between;
   gap: 6px;
+  justify-content: space-between;
   font-size: 12px;
   line-height: 1.4;
   color: var(--muted-foreground);
 }
 .studio-kpi-visual-caption strong {
   font-weight: 500;
+  font-variant-numeric: tabular-nums;
   color: var(--foreground);
   white-space: nowrap;
-  font-variant-numeric: tabular-nums;
 }
 .studio-kpi-track {
   display: flex;
+  gap: 3px;
   width: 100%;
   height: 12px;
-  gap: 3px;
   overflow: hidden;
-  border-radius: 4px;
   background: var(--muted);
+  border-radius: 4px;
 }
 .studio-kpi-track > span {
-  min-width: 2px;
   flex-basis: 0;
+  min-width: 2px;
   border-radius: 3px;
 }
 .studio-kpi-segments {
-  justify-content: center;
   gap: 10px;
+  justify-content: center;
 }
 .studio-kpi-visual {
   position: relative;
@@ -65,20 +65,20 @@
 .studio-mini-tooltip {
   position: absolute;
   bottom: 62px;
-  transform: translateX(-50%);
   z-index: 2;
   display: flex;
   flex-direction: column;
   gap: 3px;
   padding: 7px 10px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background: var(--popover);
-  color: var(--popover-foreground);
-  box-shadow: 0 4px 12px color-mix(in srgb, var(--ink) 8%, transparent);
   font-size: 12px;
+  color: var(--popover-foreground);
   white-space: nowrap;
   pointer-events: none;
+  background: var(--popover);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--ink) 8%, transparent);
+  transform: translateX(-50%);
 }
 .studio-mini-tooltip > span {
   color: var(--muted-foreground);

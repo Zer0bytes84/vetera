@@ -8,16 +8,16 @@
   }
   :root:root:root:root:root:root .soap-panel {
     padding: 6px 6px 12px !important;
-    border-radius: 22px !important;
     background: var(--card-band) !important;
+    border-radius: 22px !important;
     box-shadow: none !important;
   }
   :root:root:root:root:root:root .soap-panel .soap-panel-header {
+    gap: 12px;
+    max-width: none !important;
     padding: 6px 14px 12px 6px !important;
     border: 0 !important;
     box-shadow: none !important;
-    max-width: none !important;
-    gap: 12px;
   }
   :root:root:root:root:root:root
     .soap-panel
@@ -70,9 +70,9 @@
     .soap-section-editor.soap-section-editor {
     padding: 0 !important;
     overflow: hidden !important;
+    background: var(--card-inset) !important;
     border: 1px solid color-mix(in oklab, var(--foreground) 10%, transparent) !important;
     border-radius: 16px !important;
-    background: var(--card-inset) !important;
     box-shadow: none !important;
   }
   :root:root:root:root:root:root
@@ -88,10 +88,10 @@
     .soap-panel
     .soap-section-editor
     > div:first-child {
-    margin: 0 !important;
     padding: 14px 16px 0 !important;
-    border-radius: 0 !important;
+    margin: 0 !important;
     background: transparent !important;
+    border-radius: 0 !important;
     box-shadow: none !important;
   }
   :root:root:root:root:root:root
@@ -100,13 +100,13 @@
     .soap-section-chip {
     width: 28px !important;
     height: 28px !important;
-    border-radius: 9px !important;
+    color: var(--soap-tone) !important;
     background: color-mix(
       in oklab,
       var(--soap-tone) 16%,
       transparent
     ) !important;
-    color: var(--soap-tone) !important;
+    border-radius: 9px !important;
   }
   :root:root:root:root:root:root
     .soap-panel

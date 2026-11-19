@@ -59,13 +59,13 @@
       [type="password"]
     )
   ):not([data-slot="input-group"] *, [data-slot="command"] *, [cmdk-root] *) {
-  border: 1px solid var(--field-border) !important;
-  border-radius: 8px !important;
-  background-color: var(--field-bg) !important;
-  color: var(--field-text) !important;
-  box-shadow: none !important;
   font-family: var(--app-font-sans) !important;
   font-size: 13px !important;
+  color: var(--field-text) !important;
+  background-color: var(--field-bg) !important;
+  border: 1px solid var(--field-border) !important;
+  border-radius: 8px !important;
+  box-shadow: none !important;
   transition:
     border-color 160ms ease-out,
     box-shadow 160ms ease-out !important;
@@ -168,8 +168,8 @@
   ):not([data-slot="input-group"] *, [aria-invalid="true"]):focus-visible,
 :root:root:root
   [data-slot="input-group"]:focus-within:not(:has([aria-invalid="true"])) {
-  border-color: var(--field-border-focus) !important;
   outline: none !important;
+  border-color: var(--field-border-focus) !important;
   box-shadow: 0 0 0 3px rgb(0 0 0 / 6%) !important;
 }
 
@@ -210,11 +210,11 @@
 :root:root:root
   [data-slot="input-group"]
   :is([data-slot="input-group-control"], input, textarea) {
+  font-size: 13px !important;
+  background: transparent !important;
   border: 0 !important;
   border-radius: 0 !important;
-  background: transparent !important;
   box-shadow: none !important;
-  font-size: 13px !important;
 }
 
 /* Toolbar search fields keep room for their magnifier icon. */
@@ -246,8 +246,8 @@
     [data-slot="combobox-trigger"],
     [data-slot="combobox-clear"]
   ) {
-  border: 0 !important;
   background: transparent !important;
+  border: 0 !important;
   box-shadow: none !important;
 }
 
@@ -270,18 +270,18 @@
 :root:root:root:root:root:root
   .soap-section-editor
   [data-slot="textarea"]:focus-visible {
+  background: transparent !important;
   border: 0 !important;
   border-radius: 0 !important;
-  background: transparent !important;
   box-shadow: none !important;
 }
 @media (hover: hover) and (pointer: fine) {
   :root:root:root:root:root:root
     .soap-section-editor
     [data-slot="textarea"]:hover {
+    background: transparent !important;
     border: 0 !important;
     border-radius: 0 !important;
-    background: transparent !important;
     box-shadow: none !important;
   }
 }

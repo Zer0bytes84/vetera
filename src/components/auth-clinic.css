@@ -9,8 +9,8 @@
    optical axis as the card on the right (a little above the true centre). */
 .auth-clinic > div > section:first-child {
   justify-content: center;
-  border-right: 0;
   padding-bottom: 6vh;
+  border-right: 0;
 }
 .auth-clinic
   > div
@@ -48,12 +48,12 @@
 :root:root .auth-clinic .auth-clinic-title {
   /* !important: Premium forces its heading font on every h1. */
   font-family: "Instrument Serif", ui-serif, Georgia, serif !important;
+  font-size: clamp(3.4rem, 5.6vw, 5.9rem);
   font-style: italic;
   font-weight: 400 !important;
-  font-size: clamp(3.4rem, 5.6vw, 5.9rem);
   line-height: 0.96;
-  letter-spacing: -0.025em !important;
   color: var(--foreground);
+  letter-spacing: -0.025em !important;
 }
 .auth-clinic-title > span {
   display: block;
@@ -67,8 +67,8 @@
 }
 .auth-clinic-chips {
   display: inline-flex;
-  vertical-align: -0.08em;
   margin-inline: 0.12em 0.18em;
+  vertical-align: -0.08em;
 }
 .auth-clinic-chip {
   display: inline-grid;
@@ -85,57 +85,57 @@
   height: 0.46em;
 }
 .auth-clinic-chip--care {
-  background: linear-gradient(145deg, #f2559b, #e0337e);
   color: #fff;
+  background: linear-gradient(145deg, #f2559b, #e0337e);
   transform: rotate(-9deg);
 }
 .auth-clinic-chip--note {
   margin-left: -0.22em;
-  background: #eef3ff;
   color: #1d2b55;
+  background: #eef3ff;
   transform: rotate(7deg) translateY(-0.06em);
 }
 .dark .auth-clinic-chip--note {
   background: #dfe7fb;
 }
 :root:root .auth-clinic .auth-clinic-lead {
-  margin-top: 28px;
   max-width: 36ch;
+  margin-top: 28px;
   font:
     400 16px / 1.6 "Geist Variable",
     var(--font-sans);
-  letter-spacing: -0.01em;
   color: color-mix(in oklab, var(--foreground) 68%, transparent);
+  letter-spacing: -0.01em;
 }
 .auth-clinic-lead mark {
   padding: 0.05em 0.2em;
-  border-radius: 4px;
   color: inherit;
+  border-radius: 4px;
 }
 .auth-clinic-mark--blue {
-  background: rgb(19 159 223 / 0.16);
   color: #0a6f9f !important;
+  background: rgb(19 159 223 / 0.16);
 }
 .auth-clinic-mark--pink {
-  background: rgb(242 85 155 / 0.14);
   color: #b8236a !important;
+  background: rgb(242 85 155 / 0.14);
 }
 .dark .auth-clinic-mark--blue {
-  background: rgb(19 159 223 / 0.24);
   color: #8fd6f7 !important;
+  background: rgb(19 159 223 / 0.24);
 }
 .dark .auth-clinic-mark--pink {
-  background: rgb(242 85 155 / 0.22);
   color: #f6a3c8 !important;
+  background: rgb(242 85 155 / 0.22);
 }
 :root:root .auth-clinic .auth-clinic-eyebrow,
 :root:root .auth-clinic .auth-clinic-rubrics {
   font-family: "IBM Plex Mono", ui-monospace, monospace;
   font-size: 12px;
   font-weight: 500;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
   color: color-mix(in oklab, var(--foreground) 52%, transparent);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
 }
 .auth-clinic-eyebrow {
   margin-bottom: 28px;
@@ -167,19 +167,19 @@
   letter-spacing: -0.025em;
 }
 .auth-clinic .auth-panel {
+  background: var(--card);
   border: 1px solid var(--border);
   border-radius: 24px;
-  background: var(--card);
-  backdrop-filter: none;
   box-shadow: 0 12px 40px -24px rgb(0 0 0 / 0.18);
+  backdrop-filter: none;
 }
 .auth-clinic .auth-field {
   background: var(--background);
 }
 @media (prefers-reduced-motion: reduce) {
   .auth-clinic button {
-    transition: none;
     transform: none;
+    transition: none;
   }
 }
 
@@ -194,23 +194,23 @@
 :root:root:root:root:root:root .auth-clinic .auth-field__input:focus-visible {
   height: 3rem !important;
   min-height: 0 !important;
+  font-size: 14px !important;
+  outline: none !important;
+  background: transparent !important;
   border: 0 !important;
   border-radius: 0 !important;
-  background: transparent !important;
   box-shadow: none !important;
-  outline: none !important;
-  font-size: 14px !important;
 }
 @media (hover: hover) and (pointer: fine) {
   :root:root:root:root:root:root .auth-clinic .auth-field__input:hover {
     height: 3rem !important;
     min-height: 0 !important;
+    font-size: 14px !important;
+    outline: none !important;
+    background: transparent !important;
     border: 0 !important;
     border-radius: 0 !important;
-    background: transparent !important;
     box-shadow: none !important;
-    outline: none !important;
-    font-size: 14px !important;
   }
 }
 
@@ -276,8 +276,8 @@
 .auth-brand-canvas__orb {
   position: absolute;
   border-radius: 999px;
-  filter: blur(64px);
   opacity: 0.7;
+  filter: blur(64px);
   will-change: transform;
 }
 .auth-brand-canvas__orb--blue {
@@ -346,25 +346,25 @@
   position: absolute;
   inset: 0;
   z-index: 0;
-  pointer-events: none;
   overflow-x: visible;
   overflow-y: clip;
+  pointer-events: none;
 }
 .auth-glass-backdrop::before {
-  content: "";
   position: absolute;
   inset: 0;
+  content: "";
   background-image: radial-gradient(
     rgb(10 60 90 / 0.13) 1px,
     transparent 1.5px
   );
   background-size: 18px 18px;
-  mask-image: radial-gradient(
+  -webkit-mask-image: radial-gradient(
     ellipse 60% 55% at 50% 50%,
     black 30%,
     transparent 75%
   );
-  -webkit-mask-image: radial-gradient(
+  mask-image: radial-gradient(
     ellipse 60% 55% at 50% 50%,
     black 30%,
     transparent 75%
@@ -413,30 +413,28 @@
   top: calc(50% - 398px);
   left: calc(50% + 30px);
   width: 190px;
-  transform: rotate(4deg);
   filter: drop-shadow(0 14px 18px rgb(10 30 50 / 0.12));
+  transform: rotate(4deg);
 }
 .auth-glass-backdrop__cat {
   position: absolute;
   top: calc(50% + 70px);
   left: calc(50% - 380px);
   width: 190px;
-  transform: rotate(-8deg);
   filter: drop-shadow(0 14px 18px rgb(10 30 50 / 0.12));
+  transform: rotate(-8deg);
 }
 
 /* Liquid glass card: frosted, saturated, a bright rim and a soft inner edge. */
 :root .auth-clinic .auth-panel {
   position: relative;
   z-index: 1;
-  border: 1.5px solid rgb(255 255 255 / 0.9);
   background: linear-gradient(
     160deg,
     rgb(255 255 255 / 0.5),
     rgb(255 255 255 / 0.3)
   );
-  backdrop-filter: blur(22px) saturate(1.9);
-  -webkit-backdrop-filter: blur(22px) saturate(1.9);
+  border: 1.5px solid rgb(255 255 255 / 0.9);
   box-shadow:
     inset 0 1px 0 rgb(255 255 255 / 0.9),
     inset 0 -1px 0 rgb(10 60 90 / 0.06),
@@ -446,14 +444,16 @@
     0 0 0 6px rgb(10 80 120 / 0.06),
     0 1px 2px rgb(10 30 50 / 0.06),
     0 30px 70px -30px rgb(10 40 70 / 0.35);
+  -webkit-backdrop-filter: blur(22px) saturate(1.9);
+  backdrop-filter: blur(22px) saturate(1.9);
 }
 .dark .auth-clinic .auth-panel {
-  border-color: rgb(255 255 255 / 0.12);
   background: linear-gradient(
     160deg,
     rgb(28 32 38 / 0.5),
     rgb(18 21 26 / 0.36)
   );
+  border-color: rgb(255 255 255 / 0.12);
   box-shadow:
     inset 0 1px 0 rgb(255 255 255 / 0.14),
     inset 0 -1px 0 rgb(0 0 0 / 0.3),
@@ -463,12 +463,11 @@
     0 30px 70px -30px rgb(0 0 0 / 0.8);
 }
 .auth-clinic .auth-panel::before {
-  content: "";
   position: absolute;
   inset: 0;
   z-index: 0;
-  border-radius: inherit;
   pointer-events: none;
+  content: "";
   background: linear-gradient(
     135deg,
     rgb(255 255 255 / 0.55) 0%,
@@ -476,6 +475,7 @@
     transparent 70%,
     rgb(255 255 255 / 0.18) 100%
   );
+  border-radius: inherit;
   mix-blend-mode: soft-light;
 }
 .auth-clinic .auth-panel > * {
@@ -484,16 +484,16 @@
 }
 /* Inner hairline 4 px in: the second edge of a thick pane of glass. */
 .auth-clinic .auth-panel::after {
-  content: "";
   position: absolute;
   inset: 4px;
   z-index: 2;
-  border-radius: 20px;
+  pointer-events: none;
+  content: "";
   border: 1px solid rgb(255 255 255 / 0.55);
+  border-radius: 20px;
   box-shadow:
     inset 0 1px 0 rgb(255 255 255 / 0.6),
     inset 0 -1px 0 rgb(10 60 90 / 0.05);
-  pointer-events: none;
 }
 .dark .auth-clinic .auth-panel::after {
   border-color: rgb(255 255 255 / 0.08);
@@ -509,16 +509,16 @@
   :root .auth-clinic .auth-panel,
   .dark .auth-clinic .auth-panel {
     background: var(--card);
-    backdrop-filter: none;
     -webkit-backdrop-filter: none;
+    backdrop-filter: none;
   }
 }
 
 /* Wordmark: "AI" carried by the logo's blue-to-teal gradient inside bAItari. */
 .auth-wordmark {
   display: flex;
-  align-items: center;
   gap: 10px;
+  align-items: center;
 }
 /* The mark's ink starts 8 px into its 44 px box: pull it back so the logo
    shares the left edge of the eyebrow, title, lead and rubrics. */
@@ -529,22 +529,22 @@
   font:
     650 24px / 1 "Geist Variable",
     var(--font-sans);
-  letter-spacing: -0.045em;
   color: var(--foreground);
+  letter-spacing: -0.045em;
 }
 /* Upright serif "AI": its serifed I can never read as a lowercase l. */
 .auth-wordmark__ai {
   margin-inline: 0.03em 0.035em;
   font-family: "Instrument Serif", ui-serif, Georgia, serif;
+  font-size: 1.2em;
   font-style: normal;
   font-weight: 400;
-  font-size: 1.2em;
   line-height: 0;
+  color: transparent;
   letter-spacing: 0.015em;
   background: linear-gradient(120deg, #139fdf 10%, #2fc4b2 90%);
   -webkit-background-clip: text;
   background-clip: text;
-  color: transparent;
 }
 .dark .auth-wordmark__ai {
   background-image: linear-gradient(120deg, #3fb6ec 10%, #66dfd0 90%);
@@ -558,16 +558,16 @@
   letter-spacing: -0.035em !important;
 }
 .auth-clinic-welcome em {
+  padding-inline-end: 0.06em;
   font-family: "Instrument Serif", ui-serif, Georgia, serif;
+  font-size: 1.18em;
   font-style: italic;
   font-weight: 400;
-  font-size: 1.18em;
+  color: transparent;
   letter-spacing: -0.01em;
-  padding-inline-end: 0.06em;
   background: linear-gradient(110deg, #0b8fd0, #12a596);
   -webkit-background-clip: text;
   background-clip: text;
-  color: transparent;
 }
 .dark .auth-clinic-welcome em {
   background-image: linear-gradient(110deg, #5cc8f2, #66dfd0);
@@ -632,9 +632,9 @@
   font-family: "IBM Plex Mono", ui-monospace, monospace;
   font-size: 12px;
   font-weight: 500;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
   color: #0a6f9f;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
 }
 .dark .auth-clinic .auth-clinic-step-label {
   color: #8fd6f7;
@@ -643,8 +643,8 @@
   display: flex;
   flex-shrink: 0;
   gap: 6px;
-  margin: 0;
   padding: 0;
+  margin: 0;
   border: 0;
 }
 .auth-step {
@@ -652,13 +652,13 @@
   place-items: center;
   width: 28px;
   height: 28px;
-  border-radius: 999px;
-  border: 1px solid var(--border);
-  background: rgb(255 255 255 / 0.6);
-  color: var(--muted-foreground);
   font:
     600 12px / 1 "Geist Variable",
     var(--font-sans);
+  color: var(--muted-foreground);
+  background: rgb(255 255 255 / 0.6);
+  border: 1px solid var(--border);
+  border-radius: 999px;
   transition:
     background-color 0.3s,
     color 0.3s,
@@ -668,7 +668,7 @@
   background: rgb(0 0 0 / 0.22);
 }
 .auth-step[data-active="true"] {
-  border-color: var(--primary);
-  background: var(--primary);
   color: var(--primary-foreground);
+  background: var(--primary);
+  border-color: var(--primary);
 }

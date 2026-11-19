@@ -5,8 +5,8 @@
 .dictation-level {
   --dictation-level-ink: var(--destructive);
   display: inline-flex;
-  align-items: center;
   gap: 3px;
+  align-items: center;
   height: 28px;
   padding: 0 2px;
 }
@@ -14,8 +14,8 @@
 .dictation-level > span {
   width: 4px;
   height: calc(5px + var(--bar) * 23px);
-  border-radius: 999px;
   background: var(--dictation-level-ink);
+  border-radius: 999px;
   transition: height 60ms linear;
 }
 
