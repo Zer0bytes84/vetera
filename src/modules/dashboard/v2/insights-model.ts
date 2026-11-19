@@ -15,7 +15,7 @@ export function buildDashboardInsights(
   );
   const hours = Array.from({ length: 12 }, (_, i) => ({
     label: i === 0 ? "Avant 8h" : i === 11 ? "18h et +" : `${i + 7}h`,
-    counts: Array<number>(7).fill(0),
+    counts: new Array<number>(7).fill(0),
   }));
   const months = Array.from({ length: 12 }, (_, i) => {
     const date = new Date(

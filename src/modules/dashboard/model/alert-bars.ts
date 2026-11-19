@@ -119,13 +119,13 @@ export function buildAlertBars({
     (_, i) => new Date(from.getFullYear(), from.getMonth(), from.getDate() + i)
   );
   const values: Record<AlertCategory, number[]> = {
-    reminders: Array(count).fill(0),
-    care: Array(count).fill(0),
-    stock: Array(count).fill(0),
-    receivables: Array(count).fill(0),
-    appointments: Array(count).fill(0),
+    reminders: new Array(count).fill(0),
+    care: new Array(count).fill(0),
+    stock: new Array(count).fill(0),
+    receivables: new Array(count).fill(0),
+    appointments: new Array(count).fill(0),
   };
-  const late = Array<number>(count).fill(0);
+  const late = new Array<number>(count).fill(0);
   let olderLate = 0;
   const older: Record<AlertCategory, number> = {
     reminders: 0,

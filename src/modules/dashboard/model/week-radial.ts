@@ -88,9 +88,9 @@ export function buildWeekRadial(
 ): WeekRadial {
   const { startOfWeek, endOfToday } = weekWindow(now);
   const empty = (n: number) => ({
-    done: Array<number>(n).fill(0),
-    underway: Array<number>(n).fill(0),
-    upcoming: Array<number>(n).fill(0),
+    done: new Array<number>(n).fill(0),
+    underway: new Array<number>(n).fill(0),
+    upcoming: new Array<number>(n).fill(0),
   });
   const hour = empty(24);
   const weekday = empty(7);

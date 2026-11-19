@@ -512,8 +512,8 @@ export function buildHourlyActivity(
   const weekEnd = plusDays(weekFrom, 7);
   const dayStart = dayOnly(now);
   const dayEnd = plusDays(dayStart, 1);
-  const week = Array.from({ length: 7 }, () => Array<number>(24).fill(0));
-  const today = Array<number>(24).fill(0);
+  const week = Array.from({ length: 7 }, () => new Array<number>(24).fill(0));
+  const today = new Array<number>(24).fill(0);
   for (const appointment of appointments) {
     if (NOT_SEEN.has(appointment.status)) {
       continue;

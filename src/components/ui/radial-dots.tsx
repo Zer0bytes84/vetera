@@ -232,7 +232,7 @@ export function RadialDots({
 
               {labels.map((_, i) => {
                 // Fill lanes ring by ring, inner series first.
-                const slots: (string | null)[] = Array(rings * LANES).fill(
+                const slots: (string | null)[] = new Array(rings * LANES).fill(
                   null
                 );
                 let at = 0;
