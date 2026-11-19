@@ -82,12 +82,14 @@ export function createCareStore(
       if (!author.trim()) {
         throw new Error("Un utilisateur connecté est requis.");
       }
-      if (!draft.patientId || !draft.label.trim()) {
+      if (!(draft.patientId && draft.label.trim())) {
         throw new Error("Choisissez un patient et indiquez le soin.");
       }
       if (
-        !CARE_TYPES.includes(draft.type) ||
-        !Number.isFinite(new Date(draft.scheduledAt).getTime())
+        !(
+          CARE_TYPES.includes(draft.type) &&
+          Number.isFinite(new Date(draft.scheduledAt).getTime())
+        )
       ) {
         throw new Error("Vérifiez le type et l’heure prévue du soin.");
       }

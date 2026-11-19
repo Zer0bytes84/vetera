@@ -499,8 +499,10 @@ function ReceiptForm({
           async () => {
             const receivedAt = new Date(`${stockDay(date)}T${time}:00`);
             if (
-              !/^([01]\d|2[0-3]):[0-5]\d$/.test(time) ||
-              !Number.isFinite(receivedAt.getTime()) ||
+              !(
+                /^([01]\d|2[0-3]):[0-5]\d$/.test(time) &&
+                Number.isFinite(receivedAt.getTime())
+              ) ||
               stockDay(receivedAt) !== stockDay(date) ||
               `${String(receivedAt.getHours()).padStart(2, "0")}:${String(receivedAt.getMinutes()).padStart(2, "0")}` !==
                 time
@@ -803,10 +805,11 @@ export function PurchasingPanel({
               <Button
                 variant="outline"
                 disabled={
-                  !purchasing.ready ||
-                  !activeSuppliers.length ||
-                  !needs.length ||
-                  products.data.some((item) => item.availabilityPending)
+                  !(
+                    purchasing.ready &&
+                    activeSuppliers.length &&
+                    needs.length
+                  ) || products.data.some((item) => item.availabilityPending)
                 }
                 onClick={() => {
                   setOrderEdit({ fromAlerts: true });
@@ -816,7 +819,7 @@ export function PurchasingPanel({
                 Depuis les alertes ({needs.length})
               </Button>
               <Button
-                disabled={!purchasing.ready || !activeSuppliers.length}
+                disabled={!(purchasing.ready && activeSuppliers.length)}
                 onClick={() => {
                   setOrderEdit({ fromAlerts: false });
                   setSelected(null);
@@ -872,7 +875,7 @@ export function PurchasingPanel({
           </p>
         )
       )}
-      {!purchasing.ready && !purchasing.error && (
+      {!(purchasing.ready || purchasing.error) && (
         <p role="status" className="p-4 text-sm text-muted-foreground">
           Chargement des approvisionnements…
         </p>
@@ -1258,7 +1261,7 @@ export function PurchasingPanel({
       <AlertDialog
         open={!!cancelling}
         onOpenChange={(open) => {
-          if (!open && !busy) {
+          if (!(open || busy)) {
             setCancelling(null);
           }
         }}

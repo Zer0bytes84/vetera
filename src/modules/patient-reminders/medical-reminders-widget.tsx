@@ -47,7 +47,7 @@ export function MedicalRemindersWidgetContent({
       actions={
         <div className="flex items-center gap-3">
           {/* The status badge would contradict a loading error, so it waits for real data. */}
-          {!model.error && !model.loading && (
+          {!(model.error || model.loading) && (
             <SignalBadge
               tone={
                 overdue.length ? "critical" : dueToday.length ? "info" : "quiet"

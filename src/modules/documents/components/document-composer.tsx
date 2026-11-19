@@ -161,7 +161,7 @@ export function DocumentComposer({
       <Dialog
         open={open && !createdId}
         onOpenChange={(value) => {
-          if (!value && !busy) {
+          if (!(value || busy)) {
             onClose();
           }
         }}

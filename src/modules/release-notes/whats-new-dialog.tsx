@@ -41,7 +41,7 @@ export function WhatsNewGate() {
     const toShow = releaseNoteToShow(version, lastSeen);
     const timer = window.setTimeout(() => {
       // Sans note pour cette version, on rattrape le marqueur sans rien montrer ; si le stockage refuse, on ne montre rien.
-      if (!markVersionSeen(version) || !toShow) {
+      if (!(markVersionSeen(version) && toShow)) {
         return;
       }
       setNote(toShow);

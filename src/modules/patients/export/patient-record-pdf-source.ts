@@ -96,10 +96,12 @@ export async function openPatientRecordRasterSource(
               annotation.borderColor);
           if (
             visibleHtml ||
-            (!annotation.hasAppearance &&
-              !synthesized.has(annotation.subtype) &&
-              !popup &&
-              !link)
+            !(
+              annotation.hasAppearance ||
+              synthesized.has(annotation.subtype) ||
+              popup ||
+              link
+            )
           ) {
             page.cleanup();
             throw new Error(

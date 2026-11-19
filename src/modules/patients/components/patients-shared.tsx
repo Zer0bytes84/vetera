@@ -363,9 +363,11 @@ export function validatePatientIdentity(input: {
     }
   }
   if (
-    !input.skipOwnerName &&
-    !input.ownerFirstName?.trim() &&
-    !input.ownerLastName?.trim()
+    !(
+      input.skipOwnerName ||
+      input.ownerFirstName?.trim() ||
+      input.ownerLastName?.trim()
+    )
   ) {
     return "Le nom du propriétaire est obligatoire.";
   }

@@ -57,7 +57,7 @@ function useTourInvoices(enabled: boolean): {
     known: false,
   });
   useEffect(() => {
-    if (!enabled || !isTauriRuntime()) {
+    if (!(enabled && isTauriRuntime())) {
       return;
     }
     let active = true;

@@ -280,8 +280,10 @@ export function useFinancesPageModel({
             return;
           }
           if (
-            !context.ownerId ||
-            !owners.some((owner) => owner.id === context.ownerId)
+            !(
+              context.ownerId &&
+              owners.some((owner) => owner.id === context.ownerId)
+            )
           ) {
             return;
           }
@@ -665,8 +667,7 @@ export function useFinancesPageModel({
       const quantity = Number(line.quantity);
       const unitAmount = Number(line.unitAmount);
       if (
-        !description ||
-        !Number.isFinite(quantity) ||
+        !(description && Number.isFinite(quantity)) ||
         quantity <= 0 ||
         !Number.isFinite(unitAmount) ||
         unitAmount <= 0
@@ -1048,8 +1049,7 @@ export function useFinancesPageModel({
   const submitTransaction = async () => {
     const amount = Number(transactionDraft.amount);
     if (
-      !transactionDraft.description.trim() ||
-      !Number.isFinite(amount) ||
+      !(transactionDraft.description.trim() && Number.isFinite(amount)) ||
       amount <= 0
     ) {
       toast.error("Ajoutez une description et un montant valide.");

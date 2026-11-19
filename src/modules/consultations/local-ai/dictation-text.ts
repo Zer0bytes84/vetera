@@ -12,7 +12,7 @@ const SEUL = /\bdegr[éeè]s?\s+(?:Celsius|centigrades?|C)\b/giu;
  * « 38.5 °C » comme la référence ; sinon le symbole prend la place du mot.
  */
 export function normalizeTemperatureSymbols(text: string) {
-  if (!text || !MOTIF.test(text)) {
+  if (!(text && MOTIF.test(text))) {
     return text;
   }
   return text.replace(APRES_NOMBRE, "$1 °C").replace(SEUL, "°C");

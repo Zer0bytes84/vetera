@@ -45,7 +45,7 @@ export function useMascotLife(
   useEffect(() => {
     const el = root.current;
     // Without life the face is neutral: the returned mood says so.
-    if (!el || !enabled || still) {
+    if (!(el && enabled) || still) {
       return;
     }
     const pupils = [...el.querySelectorAll<SVGGElement>(".lm-pupils")];
@@ -61,7 +61,7 @@ export function useMascotLife(
     let hovered = false;
 
     const aim = () => {
-      if (!pointer || !eyes.length) {
+      if (!(pointer && eyes.length)) {
         return;
       }
       // The gaze aims from between the eyes; the drawing's scale turns pixels into units.
@@ -107,7 +107,7 @@ export function useMascotLife(
       }
     };
     const run = () => {
-      if (!frame && !document.hidden) {
+      if (!(frame || document.hidden)) {
         frame = requestAnimationFrame(tick);
       }
     };

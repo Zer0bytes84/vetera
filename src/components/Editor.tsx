@@ -86,7 +86,7 @@ function InlineBlockMenu({
         $from.depth === 1 &&
         $from.parent.type.name === "paragraph" &&
         $from.parent.content.size === 0;
-      if (!root || !onEmptyLine) {
+      if (!(root && onEmptyLine)) {
         setTop(null);
         return;
       }
@@ -204,7 +204,7 @@ const Editor: React.FC<EditorProps> = ({
     );
     const documentText = editor.getText().trim();
     const isDraft = instruction.toLowerCase().startsWith("rédige un texte");
-    if (!isDraft && !selectedText && !documentText) {
+    if (!(isDraft || selectedText || documentText)) {
       setAiError(
         "Écrivez ou sélectionnez un passage avant d'utiliser cette commande."
       );
@@ -265,8 +265,7 @@ const Editor: React.FC<EditorProps> = ({
 
   const applySuggestion = (mode: "insert" | "replace") => {
     if (
-      !editor ||
-      !suggestion ||
+      !(editor && suggestion) ||
       editor.getHTML() !== suggestion.originalHtml
     ) {
       setAiError(

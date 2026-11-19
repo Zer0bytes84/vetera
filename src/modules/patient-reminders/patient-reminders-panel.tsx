@@ -502,7 +502,7 @@ export function PatientRemindersContent({
         <Dialog
           open
           onOpenChange={(open) => {
-            if (!open && !busy) {
+            if (!(open || busy)) {
               setAction(null);
             }
           }}

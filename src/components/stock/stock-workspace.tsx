@@ -1277,8 +1277,7 @@ export function StockWorkspace({
             </Button>
             <Button
               disabled={
-                !inventoryProductId ||
-                !inventoryReason.trim() ||
+                !(inventoryProductId && inventoryReason.trim()) ||
                 countedQuantity < 0 ||
                 inventorySaving
               }

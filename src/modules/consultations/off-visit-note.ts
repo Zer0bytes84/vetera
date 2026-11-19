@@ -75,7 +75,7 @@ export function buildOffVisitNote(
   if (!input.validated) {
     throw new Error("Relisez et validez la note avant de l’enregistrer.");
   }
-  if (!input.patientId || !input.userId) {
+  if (!(input.patientId && input.userId)) {
     throw new Error("Le patient et le vétérinaire doivent être identifiés.");
   }
   if (!(input.kind in OFF_VISIT_KINDS)) {

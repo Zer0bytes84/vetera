@@ -54,7 +54,7 @@ export function bookingHours(
   const spans = appointments.filter(isActive).flatMap((a) => {
     const start = parseDashboardDate(a.startTime);
     const end = parseDashboardDate(a.endTime);
-    if (!start || !end || start.getTime() < since || start > now) {
+    if (!(start && end) || start.getTime() < since || start > now) {
       return [];
     }
     return [

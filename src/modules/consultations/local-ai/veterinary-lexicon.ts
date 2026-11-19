@@ -515,7 +515,7 @@ export function matchesSearchTerms(query: string, text: string): boolean {
   }
   const normQuery = normalizeLexical(query);
   const normText = normalizeLexical(text);
-  if (!normQuery || !normText) {
+  if (!(normQuery && normText)) {
     return false;
   }
 

@@ -170,8 +170,10 @@ function LotForm({
             const receivedAt = new Date(`${stockDay(received)}T${time}:00`);
             if (
               mode === "receive" &&
-              (!/^([01]\d|2[0-3]):[0-5]\d$/.test(time) ||
-                !Number.isFinite(receivedAt.getTime()) ||
+              (!(
+                /^([01]\d|2[0-3]):[0-5]\d$/.test(time) &&
+                Number.isFinite(receivedAt.getTime())
+              ) ||
                 stockDay(receivedAt) !== stockDay(received) ||
                 `${String(receivedAt.getHours()).padStart(2, "0")}:${String(receivedAt.getMinutes()).padStart(2, "0")}` !==
                   time)
@@ -543,7 +545,7 @@ export function StockLotsPanel() {
           />
         </div>
         <Button
-          disabled={!inventory.ready || !inventory.supported}
+          disabled={!(inventory.ready && inventory.supported)}
           onClick={() => {
             setCounting(null);
             setOpen(true);
@@ -564,7 +566,7 @@ export function StockLotsPanel() {
           </Button>
         </div>
       )}
-      {!inventory.ready && !inventory.error && (
+      {!(inventory.ready || inventory.error) && (
         <p role="status" className="p-4 text-sm text-muted-foreground">
           Vérification des lots…
         </p>

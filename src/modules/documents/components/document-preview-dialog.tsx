@@ -188,7 +188,7 @@ export function DocumentPreviewDialog({
     <Dialog
       open={!!documentId}
       onOpenChange={(open) => {
-        if (!open && !busy) {
+        if (!(open || busy)) {
           onClose();
         }
       }}
@@ -506,7 +506,7 @@ export function DocumentPreviewDialog({
             </div>
           </>
         )}
-        {!document && !error && (
+        {!(document || error) && (
           <p role="status" className="p-6 text-sm text-muted-foreground">
             Chargement du document…
           </p>

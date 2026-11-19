@@ -42,12 +42,15 @@ export function assertDocumentSource(
       "Relisez et validez le document avant tout enregistrement."
     );
   }
-  if (!input.userId || !input.patientId || !input.appointmentId) {
+  if (!(input.userId && input.patientId && input.appointmentId)) {
     throw new Error(
       "Le patient, la consultation et le vétérinaire doivent être identifiés."
     );
   }
-  if (!input.title.trim() || !input.text.trim() || input.text.length > 60_000) {
+  if (
+    !(input.title.trim() && input.text.trim()) ||
+    input.text.length > 60_000
+  ) {
     throw new Error(
       "Le document doit contenir un titre et un texte de 60 000 caractères maximum."
     );

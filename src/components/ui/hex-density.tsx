@@ -376,19 +376,21 @@ export function HexDensity({
                                     : "none"
                             }
                             strokeDasharray={
-                              !isActive &&
-                              !cell.today &&
-                              !marked.has(cell.id) &&
-                              cell.future
+                              !(
+                                isActive ||
+                                cell.today ||
+                                marked.has(cell.id)
+                              ) && cell.future
                                 ? "2.5 2.5"
                                 : undefined
                             }
                             strokeLinejoin="round"
                             strokeOpacity={
-                              !isActive &&
-                              !cell.today &&
-                              !marked.has(cell.id) &&
-                              cell.future
+                              !(
+                                isActive ||
+                                cell.today ||
+                                marked.has(cell.id)
+                              ) && cell.future
                                 ? 0.5
                                 : 1
                             }

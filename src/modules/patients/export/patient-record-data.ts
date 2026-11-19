@@ -69,7 +69,7 @@ function validatePeriod(period: PatientRecordOptions["period"]): void {
   if (period === null) {
     return;
   }
-  if (!period || !validDay(period.from) || !validDay(period.to)) {
+  if (!(period && validDay(period.from) && validDay(period.to))) {
     throw new Error("Indiquez deux dates civiles valides pour la période.");
   }
   if (period.from > period.to) {
@@ -89,8 +89,7 @@ export function validatePatientRecordOptions(
     "notes",
   ] as const;
   if (
-    !options ||
-    !options.sections ||
+    !(options && options.sections) ||
     keys.some((key) => typeof options.sections[key] !== "boolean") ||
     typeof options.includeAttachments !== "boolean"
   ) {
@@ -98,8 +97,7 @@ export function validatePatientRecordOptions(
   }
   validatePeriod(options.period);
   if (
-    !options.includeAttachments &&
-    !keys.some((key) => options.sections[key])
+    !(options.includeAttachments || keys.some((key) => options.sections[key]))
   ) {
     throw new Error("Choisissez au moins une section ou les annexes.");
   }
@@ -307,7 +305,7 @@ export function assemblePatientRecordSnapshot(
   generatedAt: string | Date
 ): PatientRecordSnapshot {
   const options = validatePatientRecordOptions(input);
-  if (!raw.patient?.id || !present(raw.patient.name)) {
+  if (!(raw.patient?.id && present(raw.patient.name))) {
     throw new Error("Ce patient n’existe plus ou son identité est incomplète.");
   }
   if (!present(raw.requestedBy)) {
@@ -655,12 +653,14 @@ export function assemblePatientRecordSnapshot(
     )) {
       const metadata = clinicalDocument(note)!;
       if (
-        !present(metadata.reviewedAt) ||
-        !present(metadata.reviewedBy) ||
-        !sameConsultation(
-          typeof metadata.appointmentId === "string"
-            ? metadata.appointmentId
-            : null
+        !(
+          present(metadata.reviewedAt) &&
+          present(metadata.reviewedBy) &&
+          sameConsultation(
+            typeof metadata.appointmentId === "string"
+              ? metadata.appointmentId
+              : null
+          )
         )
       ) {
         continue;
@@ -811,7 +811,7 @@ export function assemblePatientRecordSnapshot(
         continue;
       }
       const attachment = document.attachment;
-      if (!attachment || !supported(attachment.mimeType)) {
+      if (!(attachment && supported(attachment.mimeType))) {
         throw new Error(
           `La pièce « ${document.title || document.id} » ne contient aucun original PDF, JPG ou PNG lisible.`
         );

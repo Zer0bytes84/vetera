@@ -336,7 +336,7 @@ export default function LocalConsultationAssistant({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [note, fullTranscript, hasExistingNote, resolvedExistingNote]);
   const proposalRequests: ApprovalRequest[] = useMemo(() => {
-    if (!reviewSource || !assistantProposal) {
+    if (!(reviewSource && assistantProposal)) {
       return [];
     }
     return SOAP_SECTIONS.filter(
@@ -424,7 +424,7 @@ export default function LocalConsultationAssistant({
         }
         setModels(status);
         setCheckingModels(false);
-        if (!nativeDictationEnabled() && !status.whisperReady) {
+        if (!(nativeDictationEnabled() || status.whisperReady)) {
           setSetupOpen(true);
         }
       })
@@ -507,7 +507,7 @@ export default function LocalConsultationAssistant({
       changeSection(sectionIndex + 1);
       return;
     }
-    if (!fullTranscript.trim() && !hasExistingNote) {
+    if (!(fullTranscript.trim() || hasExistingNote)) {
       setMessage(
         "Veuillez dicter ou saisir des observations avant de structurer la note."
       );
@@ -799,7 +799,7 @@ export default function LocalConsultationAssistant({
     requests: ApprovalRequest[],
     decision: ApprovalDecision
   ) => {
-    if (!reviewSource || !assistantProposal) {
+    if (!(reviewSource && assistantProposal)) {
       return;
     }
     setDecisions((previous) => ({

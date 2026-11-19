@@ -79,7 +79,7 @@ export function createStockSnapshotHook<T>(
     );
     useEffect(() => {
       void refresh();
-      if (!refreshAtMidnight || !isTauriRuntime()) {
+      if (!(refreshAtMidnight && isTauriRuntime())) {
         return;
       }
       let timeout: ReturnType<typeof setTimeout>;

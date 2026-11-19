@@ -163,7 +163,7 @@ export default function DocumentTemplateManager({
     }
   };
   const save = async () => {
-    if (!draft || !currentUser || !canEdit || busy) {
+    if (!(draft && currentUser && canEdit) || busy) {
       return;
     }
     setBusy(true);
@@ -200,7 +200,7 @@ export default function DocumentTemplateManager({
     );
   };
   const setTemplateActive = async (template: ManagedDocumentTemplate) => {
-    if (!currentUser || !canEdit || busy) {
+    if (!(currentUser && canEdit) || busy) {
       return;
     }
     setBusy(true);
@@ -240,7 +240,7 @@ export default function DocumentTemplateManager({
     );
   };
   const remove = async () => {
-    if (!pendingDelete || !currentUser || !canEdit || busy) {
+    if (!(pendingDelete && currentUser && canEdit) || busy) {
       return;
     }
     setBusy(true);
@@ -740,7 +740,7 @@ export default function DocumentTemplateManager({
 
       <AlertDialog
         onOpenChange={(open) => {
-          if (!busy && !open) {
+          if (!(busy || open)) {
             setPendingDelete(null);
           }
         }}

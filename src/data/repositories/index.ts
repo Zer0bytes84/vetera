@@ -912,7 +912,7 @@ export function useProductsRepository() {
         ? saveProduct(undefined, draft)
         : productsStore.add(draft),
     update: async (productId: string, draft: Partial<Product>) => {
-      if (!isTauriRuntime() || !(await inventoryService.supported())) {
+      if (!(isTauriRuntime() && (await inventoryService.supported()))) {
         return productsStore.update(productId, draft);
       }
       try {

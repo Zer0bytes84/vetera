@@ -97,7 +97,7 @@ export async function printPatientRecordPdf(
   document.body.appendChild(frame);
   const target = frame.contentDocument;
   const view = frame.contentWindow;
-  if (!target || !view) {
+  if (!(target && view)) {
     frame.remove();
     throw new Error("L’impression du dossier n’a pas pu être préparée.");
   }

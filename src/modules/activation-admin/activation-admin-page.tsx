@@ -372,7 +372,7 @@ function LicensesTableView({
           {syncMessage}
         </div>
       )}
-      {!isLoading && !syncMessage && licenses.length === 0 && (
+      {!(isLoading || syncMessage) && licenses.length === 0 && (
         <div className="flex min-h-56 flex-col items-center justify-center gap-3 p-8 text-center">
           <div className="flex size-12 items-center justify-center rounded-2xl bg-muted/60 text-muted-foreground">
             <Clipboard className="size-6" />

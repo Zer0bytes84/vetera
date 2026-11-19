@@ -221,7 +221,7 @@ export function createStayStore(
       author: string
     ) {
       authorRequired(author);
-      if (!draft.patientId || !draft.reason.trim()) {
+      if (!(draft.patientId && draft.reason.trim())) {
         throw new Error("Choisissez le patient et indiquez le motif.");
       }
       const stayId = id(),
@@ -354,8 +354,10 @@ export function createStayStore(
       authorRequired(author);
       const parsed = new Date(`${dueDate}T12:00:00Z`);
       if (
-        !/^\d{4}-\d{2}-\d{2}$/.test(dueDate) ||
-        !Number.isFinite(parsed.getTime()) ||
+        !(
+          /^\d{4}-\d{2}-\d{2}$/.test(dueDate) &&
+          Number.isFinite(parsed.getTime())
+        ) ||
         parsed.toISOString().slice(0, 10) !== dueDate
       ) {
         throw new Error("Choisissez une date de contrôle valide.");
@@ -496,7 +498,7 @@ export function createStayStore(
             active: number;
           }[]
         >("SELECT * FROM care_plans WHERE id=$1", [planId]);
-        if (!plan || !plan.active) {
+        if (!(plan && plan.active)) {
           throw new Error("Ce plan n’est plus actif.");
         }
         const stay = await get(db, plan.stay_id);

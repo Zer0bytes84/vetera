@@ -93,8 +93,10 @@ self.onmessage = async ({ data }: MessageEvent<WorkerRequest>) => {
           decoder_start_token_id: number;
         } | null;
         if (
-          !config?.lang_to_id ||
-          !Number.isInteger(config.decoder_start_token_id)
+          !(
+            config?.lang_to_id &&
+            Number.isInteger(config.decoder_start_token_id)
+          )
         ) {
           throw new Error(
             "La langue n’a pas pu être reconnue. Choisissez Français et réessayez."

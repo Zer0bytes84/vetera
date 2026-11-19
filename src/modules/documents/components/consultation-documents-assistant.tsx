@@ -257,8 +257,7 @@ export default function ConsultationDocumentsAssistant({
   const ready = !!soap && isSoapReviewed(soap) && !!patient && !!appointment;
   const changedSource =
     draft?.source.type === "soap" &&
-    (!soap ||
-      !isSoapReviewed(soap) ||
+    (!(soap && isSoapReviewed(soap)) ||
       soapSourceKey(soap) !== draft.source.sourceKey);
   const unavailable = !!(
     patients.error ||
@@ -270,7 +269,7 @@ export default function ConsultationDocumentsAssistant({
     managedDocuments.error
   );
   const createDraft = () => {
-    if (!ready || !patient || !appointment || !soap) {
+    if (!(ready && patient && appointment && soap)) {
       return;
     }
     guardSync(
@@ -467,7 +466,7 @@ export default function ConsultationDocumentsAssistant({
     resetReview();
   };
   const save = async () => {
-    if (!draft || !reviewed || savingRef.current || busy) {
+    if (!(draft && reviewed) || savingRef.current || busy) {
       return;
     }
     savingRef.current = true;
@@ -917,7 +916,7 @@ export default function ConsultationDocumentsAssistant({
                 valeurs, unités et traitements.
               </label>
             </div>
-            {!appointment && !saved && (
+            {!(appointment || saved) && (
               <p className="text-xs text-muted-foreground">
                 Choisissez une consultation pour enregistrer ce document dans le
                 dossier du patient.
@@ -927,9 +926,7 @@ export default function ConsultationDocumentsAssistant({
               <Button
                 size="sm"
                 disabled={
-                  !reviewed ||
-                  !draft.text.trim() ||
-                  !draft.title.trim() ||
+                  !(reviewed && draft.text.trim() && draft.title.trim()) ||
                   saving ||
                   busy ||
                   changedSource ||

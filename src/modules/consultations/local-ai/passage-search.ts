@@ -244,7 +244,7 @@ export function rankPassages<T extends SearchChunk & { vector: number[] }>(
     });
   }
   for (const chunk of lexicalOnly) {
-    if (!inScope(chunk) || !matchesSearchTerms(queryText, chunk.text)) {
+    if (!(inScope(chunk) && matchesSearchTerms(queryText, chunk.text))) {
       continue;
     }
     scored.push({

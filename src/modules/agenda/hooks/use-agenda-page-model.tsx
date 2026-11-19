@@ -388,7 +388,7 @@ export function useAgendaPageModel(onNavigate?: (view: View) => void) {
       const sameVet = Boolean(vetId) && appointment.vetId === vetId;
       const sameRoom =
         Boolean(selectedRoom) && appointment.room === selectedRoom;
-      if (!sameVet && !sameRoom) {
+      if (!(sameVet || sameRoom)) {
         return [];
       }
       const start = new Date(appointment.startTime);

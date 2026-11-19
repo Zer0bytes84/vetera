@@ -25,7 +25,7 @@ export function formatDinars(value: number, maximumFractionDigits = 2) {
 /** Group the national number by pairs without guessing a country. */
 export function formatPhone(value?: string | null) {
   const text = value?.trim() || "";
-  if (!text || !/^\+?[\d\s().-]+$/.test(text)) {
+  if (!(text && /^\+?[\d\s().-]+$/.test(text))) {
     return text;
   }
   const digits = text.replace(/\D/g, "");

@@ -28,7 +28,7 @@ export function CareCompletionRollbackDialog({
     <Dialog
       open
       onOpenChange={(open) => {
-        if (!open && !busy) {
+        if (!(open || busy)) {
           onClose();
         }
       }}

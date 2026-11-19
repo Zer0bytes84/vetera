@@ -299,7 +299,7 @@ function Delivery({
     );
   }
   // Nothing to say about a message that went through, unless it was edited or a time is given.
-  if (!edited && !sentAt) {
+  if (!(edited || sentAt)) {
     return null;
   }
   return (

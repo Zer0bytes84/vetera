@@ -214,7 +214,7 @@ export function parseDateInput(value: string) {
     return;
   }
   const [year, month, day] = value.split("-").map(Number);
-  if (!year || !month || !day) {
+  if (!(year && month && day)) {
     return;
   }
   return new Date(year, month - 1, day);

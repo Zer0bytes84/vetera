@@ -716,7 +716,7 @@ async function loadTableSnapshot(table: string, force = false) {
     ),
     generation
   );
-  if (!applied && !tableSnapshotCache.has(table)) {
+  if (!(applied || tableSnapshotCache.has(table))) {
     await loadTableSnapshot(table, true);
   }
 }

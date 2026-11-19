@@ -28,7 +28,7 @@ const release = () => {
 };
 const openWeights = async (url: string) => {
   const response = await fetch(url);
-  if (!response.ok || !response.body) {
+  if (!(response.ok && response.body)) {
     throw new Error("Fichier de modèle inaccessible.");
   }
   return response.body.getReader();
@@ -57,8 +57,7 @@ self.onmessage = async ({ data }: MessageEvent<WorkerRequest>) => {
       throw new Error("Aucun modèle de rédaction disponible.");
     }
     if (
-      !model ||
-      !candidates.some((candidate) => candidate.url === loadedUrl)
+      !(model && candidates.some((candidate) => candidate.url === loadedUrl))
     ) {
       release();
       const gpu = (
@@ -66,7 +65,7 @@ self.onmessage = async ({ data }: MessageEvent<WorkerRequest>) => {
           gpu?: { requestAdapter: () => Promise<unknown> };
         }
       ).gpu;
-      if (!gpu || !(await gpu.requestAdapter())) {
+      if (!(gpu && (await gpu.requestAdapter()))) {
         throw new Error(unavailableGraphics);
       }
       const { FilesetResolver, LlmInference } = await import(

@@ -80,7 +80,7 @@ export function MedicalReminderDialog({
     <Dialog
       open
       onOpenChange={(open) => {
-        if (!open && !busy) {
+        if (!(open || busy)) {
           onClose();
         }
       }}

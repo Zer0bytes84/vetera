@@ -616,7 +616,7 @@ export function PatientDetailPage({
     setIsProfileEditorOpen(false);
   };
   const saveProfile = async () => {
-    if (!profileDraft?.name.trim() || !profileDraft.species.trim()) {
+    if (!(profileDraft?.name.trim() && profileDraft.species.trim())) {
       toast.error("Le nom et l'espèce du patient sont obligatoires.");
       return;
     }

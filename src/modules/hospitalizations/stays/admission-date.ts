@@ -4,9 +4,11 @@ export function admissionDateTime(
   time: string
 ): string | null {
   if (
-    !day ||
-    !Number.isFinite(day.getTime()) ||
-    !/^([01]\d|2[0-3]):[0-5]\d$/.test(time)
+    !(
+      day &&
+      Number.isFinite(day.getTime()) &&
+      /^([01]\d|2[0-3]):[0-5]\d$/.test(time)
+    )
   ) {
     return null;
   }

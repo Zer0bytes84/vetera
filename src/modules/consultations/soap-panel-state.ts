@@ -44,7 +44,7 @@ export function isSoapAutosaveDue(a: {
     a.assistantOpen ||
     a.saveStatus === "saving" ||
     a.saveStatus === "error" ||
-    (!hasNote(a.payload) && !a.saved) ||
+    !(hasNote(a.payload) || a.saved) ||
     samePayload(a.saved, a.payload)
   );
 }

@@ -67,8 +67,10 @@ export function parseDocumentAnswer(
     for (const quote of answer.extraits) {
       const page = source.pages.find((entry) => entry.number === quote.page);
       if (
-        !page ||
-        !normalizeExtract(page.text).includes(normalizeExtract(quote.texte))
+        !(
+          page &&
+          normalizeExtract(page.text).includes(normalizeExtract(quote.texte))
+        )
       ) {
         throw new Error("L’extrait ne correspond pas au document.");
       }

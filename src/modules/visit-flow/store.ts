@@ -324,7 +324,7 @@ export function createVisitFlowStore(persistence: FlowPersistence) {
             "Ce patient a bougé depuis. Rien n'a été annulé."
           );
         }
-        if (!["status", "care"].includes(event.cause) || !event.fromStatus) {
+        if (!(["status", "care"].includes(event.cause) && event.fromStatus)) {
           throw new VisitFlowError(
             "not_undoable",
             "Ce déplacement ne s'annule pas ici."

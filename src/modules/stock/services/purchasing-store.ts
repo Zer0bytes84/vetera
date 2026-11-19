@@ -156,7 +156,7 @@ export async function saveSupplierInDatabase(
   now: string
 ) {
   const name = text(input.name, "Le nom", 120);
-  if (!name || !input.id.trim()) {
+  if (!(name && input.id.trim())) {
     fail("Indiquez le nom du fournisseur.");
   }
   const [old] = await db.select<StockSupplier[]>(
@@ -211,7 +211,7 @@ export async function savePurchaseOrderInDatabase(
   now: string
 ) {
   actor(input.authorId);
-  if (!input.id.trim() || !input.lines.length) {
+  if (!(input.id.trim() && input.lines.length)) {
     fail("Ajoutez au moins un produit à commander.");
   }
   if (
@@ -373,7 +373,7 @@ export async function receivePurchaseOrderInDatabase(
   actor(input.authorId);
   const receivedAt = stockTimestamp(input.receivedAt);
   const reference = text(input.reference, "La référence de livraison", 120);
-  if (!input.id.trim() || !input.lines.length) {
+  if (!(input.id.trim() && input.lines.length)) {
     fail("Saisissez au moins une quantité reçue.");
   }
   if (
@@ -412,7 +412,7 @@ export async function receivePurchaseOrderInDatabase(
     "SELECT * FROM purchase_orders WHERE id=?",
     [input.orderId]
   );
-  if (!order || !["ordered", "partial"].includes(order.status)) {
+  if (!(order && ["ordered", "partial"].includes(order.status))) {
     fail("Confirmez la commande avant de réceptionner ses produits.");
   }
   const ordered = await db.select<PurchaseOrderLine[]>(

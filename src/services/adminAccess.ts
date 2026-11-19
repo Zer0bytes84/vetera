@@ -88,7 +88,7 @@ export async function verifyAdministratorPassword(password: string) {
     hash = user ? getBrowserPasswordHash(user) : undefined;
   }
   const { verifyPassword } = await import("./sqlite/auth");
-  if (!hash || !(await verifyPassword(password, hash))) {
+  if (!(hash && (await verifyPassword(password, hash)))) {
     throw new Error("Mot de passe incorrect.");
   }
   return administrator;

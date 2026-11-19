@@ -71,7 +71,7 @@ function useOwnerBalance(ownerId?: string) {
     late: boolean;
   } | null>(null);
   useEffect(() => {
-    if (!ownerId || !isTauriRuntime()) {
+    if (!(ownerId && isTauriRuntime())) {
       return;
     }
     let cancelled = false;

@@ -603,10 +603,11 @@ export function PatientTimeline({
                             {entry.context || "Non renseigné"}
                           </p>
                         ) : null}
-                        {!entry.context &&
-                        !entry.summary &&
-                        !entry.summaryDetail &&
-                        entry.kind !== "consultation" ? (
+                        {!(
+                          entry.context ||
+                          entry.summary ||
+                          entry.summaryDetail
+                        ) && entry.kind !== "consultation" ? (
                           <p className="patient-timeline-note">
                             Aucun détail renseigné
                           </p>

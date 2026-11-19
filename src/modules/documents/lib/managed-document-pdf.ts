@@ -325,7 +325,7 @@ export async function printManagedDocument(
     "position:fixed;width:1px;height:1px;opacity:0;pointer-events:none";
   window.document.body.appendChild(frame);
   const target = frame.contentDocument;
-  if (!target || !frame.contentWindow) {
+  if (!(target && frame.contentWindow)) {
     frame.remove();
     throw new Error("L’impression n’a pas pu être ouverte.");
   }

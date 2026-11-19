@@ -205,7 +205,7 @@ export async function saveCatalogueProductInDatabase(
   const name = draft.name?.trim();
   const unit = draft.unit?.trim();
   const category = draft.category?.trim();
-  if (!name || !unit || !category) {
+  if (!(name && unit && category)) {
     throw new StockError(
       "SOURCE_CONFLICT",
       "Indiquez le nom, la catégorie et l’unité du produit."

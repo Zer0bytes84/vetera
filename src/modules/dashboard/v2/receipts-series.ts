@@ -52,7 +52,7 @@ export function buildReceiptsSeries(
   const to = parseISO(
     range.to || dates.at(-1) || format(new Date(), "yyyy-MM-dd")
   );
-  if (!isValid(from) || !isValid(to) || from > to) {
+  if (!(isValid(from) && isValid(to)) || from > to) {
     return [];
   }
   const days = differenceInCalendarDays(to, from) + 1;

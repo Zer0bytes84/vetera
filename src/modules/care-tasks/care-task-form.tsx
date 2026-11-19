@@ -90,7 +90,7 @@ export function CareTaskForm({
           );
           return;
         }
-        if (!patient || !scheduled) {
+        if (!(patient && scheduled)) {
           setError(
             "Choisissez un patient, une date et une heure avant de confirmer le soin."
           );

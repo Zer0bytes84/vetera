@@ -88,7 +88,7 @@ export function SlotPicker({
     const at = (document.activeElement as HTMLElement | null)?.dataset.cell
       ?.split(":")
       .map(Number);
-    if (!move || !at) {
+    if (!(move && at)) {
       return;
     }
     event.preventDefault();

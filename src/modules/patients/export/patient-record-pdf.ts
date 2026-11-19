@@ -328,7 +328,7 @@ class Layout {
   async table(
     block: Extract<PatientRecordBlock, { kind: "table" }>
   ): Promise<void> {
-    if (!block.columns.length || !block.rows.length) {
+    if (!(block.columns.length && block.rows.length)) {
       return;
     }
     const doc = this.current();
@@ -713,7 +713,7 @@ async function appendSource(
       );
       let rasterBytes: Uint8Array | undefined;
       const vectorPages = originals.filter(
-        (page) => !hasForm && !hasAnnotations(page) && page.node.Contents()
+        (page) => !(hasForm || hasAnnotations(page)) && page.node.Contents()
       );
       const embeddedPages = await layout.output.embedPages(
         vectorPages,

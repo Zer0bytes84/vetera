@@ -348,11 +348,13 @@ export function buildTreatments(
     .flatMap((item): HealthCardTreatment[] => {
       const prescription = byId.get(item.prescriptionId);
       if (
-        !prescription ||
-        !isTreatmentActive(
-          prescription.prescriptionDate,
-          item.duration,
-          input.now
+        !(
+          prescription &&
+          isTreatmentActive(
+            prescription.prescriptionDate,
+            item.duration,
+            input.now
+          )
         )
       ) {
         return [];

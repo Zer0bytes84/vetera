@@ -167,7 +167,7 @@ export async function activeLocation(
     "SELECT id,name,active FROM stock_locations WHERE id=?",
     [locationId]
   );
-  if (!location || !location.active) {
+  if (!(location && location.active)) {
     throw new StockError(
       "SOURCE_CONFLICT",
       "Choisissez un emplacement de stockage actif."
@@ -574,7 +574,7 @@ export async function registerLotInDatabase(
   id: () => string,
   now: string
 ) {
-  if (!input.id.trim() || !input.authorId.trim()) {
+  if (!(input.id.trim() && input.authorId.trim())) {
     throw new StockError(
       "SOURCE_CONFLICT",
       "Un utilisateur connecté est requis pour enregistrer un lot."
@@ -767,7 +767,7 @@ export async function countStockBucketInDatabase(
   now: string
 ) {
   const quantity = stockQuantity(input.quantity, true);
-  if (!input.id.trim() || !input.authorId.trim() || !input.reason.trim()) {
+  if (!(input.id.trim() && input.authorId.trim() && input.reason.trim())) {
     throw new StockError(
       "SOURCE_CONFLICT",
       "Un motif et un utilisateur sont requis pour corriger un lot."

@@ -84,7 +84,7 @@ export function StayBilling({ stay }: { stay: Stay }) {
             const patient = patients.data.find(
               (item) => item.id === stay.patient_id
             );
-            if (!currentUser || !patient || !product || busy) {
+            if (!(currentUser && patient && product) || busy) {
               return;
             }
             setBusy(true);
@@ -144,7 +144,7 @@ export function StayBilling({ stay }: { stay: Stay }) {
           <Button
             type="submit"
             className="h-11"
-            disabled={!product || !currentUser || busy}
+            disabled={!(product && currentUser) || busy}
           >
             {busy ? "Préparation…" : "Créer le brouillon de facture"}
           </Button>

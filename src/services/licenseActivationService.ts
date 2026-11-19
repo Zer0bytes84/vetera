@@ -119,7 +119,7 @@ async function licenseRequest(
   body: Record<string, string>,
   timeoutMs = LICENSE_REQUEST_TIMEOUT_MS
 ): Promise<LicenseActivationResult> {
-  if (!ACTIVATION_SERVER_URL || !LICENSE_PUBLIC_KEY) {
+  if (!(ACTIVATION_SERVER_URL && LICENSE_PUBLIC_KEY)) {
     throw new LicenseActivationError(
       "Le serveur d’activation n’est pas configuré pour cette version. Contactez l’administrateur.",
       0,
@@ -146,7 +146,7 @@ async function licenseRequest(
     timeoutMs
   );
   const payload = await readAdminResponse<LicenseActivationResult>(response);
-  if (!payload?.activationToken || !payload.license?.email) {
+  if (!(payload?.activationToken && payload.license?.email)) {
     throw new LicenseActivationError("Réponse d’activation invalide.");
   }
   const email = body.email || payload.license.email;

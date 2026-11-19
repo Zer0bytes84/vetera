@@ -51,9 +51,11 @@ export interface SearchChunk {
 }
 export function assertSearchScope(scope: SearchScope) {
   if (
-    !scope.patientId.trim() ||
-    !scope.sourceTypes.length ||
-    !scope.sections.length ||
+    !(
+      scope.patientId.trim() &&
+      scope.sourceTypes.length &&
+      scope.sections.length
+    ) ||
     scope.sourceTypes.some(
       (type) =>
         ![
@@ -82,7 +84,7 @@ export function assertSearchScope(scope: SearchScope) {
 }
 // One semantic unit per SOAP section, without character-based subdivision.
 export function soapSearchChunks(note: ConsultationSoap): SearchChunk[] {
-  if (!note.patientId || !isSoapReviewed(note)) {
+  if (!(note.patientId && isSoapReviewed(note))) {
     throw new Error(
       "Seules les notes relues et validées peuvent être recherchées."
     );
@@ -261,7 +263,7 @@ export function consultationSearchChunks(
   patientName?: string
 ): SearchChunk[] {
   const patientId = appointment.patientId || appointment.patient_id;
-  if (!appointment.id || !patientId) {
+  if (!(appointment.id && patientId)) {
     return [];
   }
 
@@ -320,7 +322,7 @@ export function productSearchChunks(product: {
   unit?: string | null;
   quantity?: number | null;
 }): SearchChunk[] {
-  if (!product.id || !product.name) {
+  if (!(product.id && product.name)) {
     return [];
   }
   const sub = product.subCategory || product.sub_category;

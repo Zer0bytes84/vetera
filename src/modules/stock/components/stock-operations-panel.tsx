@@ -877,7 +877,7 @@ export function StockOperationsPanel({
           </Button>
         </div>
       )}
-      {!operations.ready && !operations.error && (
+      {!(operations.ready || operations.error) && (
         <p role="status" className="p-4 text-sm text-muted-foreground">
           Chargement des opérations…
         </p>

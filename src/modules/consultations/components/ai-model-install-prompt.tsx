@@ -61,7 +61,7 @@ export function AIModelInstallPrompt() {
           return;
         }
         // Base tools installed first; only then the new assistant, in one tap.
-        if (!shouldOfferNewAssistant(await checkAIModelsStatus()) || !alive) {
+        if (!(shouldOfferNewAssistant(await checkAIModelsStatus()) && alive)) {
           return;
         }
         offered.current = true;

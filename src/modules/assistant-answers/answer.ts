@@ -1011,7 +1011,7 @@ export function verifyAnswer(answer: Answer): Answer {
   if (
     answer.figures.some(
       (figure) =>
-        !sourceIds.has(figure.sourceId) || !Number.isInteger(figure.value)
+        !(sourceIds.has(figure.sourceId) && Number.isInteger(figure.value))
     )
   ) {
     return fail();

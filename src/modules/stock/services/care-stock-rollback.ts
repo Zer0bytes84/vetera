@@ -35,7 +35,7 @@ export async function returnCareStockInDatabase(
   },
   id: () => string
 ): Promise<string | null> {
-  if (!input.authorId.trim() || !input.reason.trim()) {
+  if (!(input.authorId.trim() && input.reason.trim())) {
     throw new StockError(
       "SOURCE_CONFLICT",
       "Indiquez le motif et l’auteur de l’annulation de validation."

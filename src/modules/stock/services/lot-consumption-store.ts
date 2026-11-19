@@ -24,9 +24,11 @@ export async function consumeStockLotsInDatabase(
 ): Promise<string | null> {
   const quantity = stockQuantity(input.quantity);
   if (
-    !input.sourceId.trim() ||
-    !input.sourceLineId.trim() ||
-    !input.authorId.trim()
+    !(
+      input.sourceId.trim() &&
+      input.sourceLineId.trim() &&
+      input.authorId.trim()
+    )
   ) {
     throw new StockError(
       "SOURCE_CONFLICT",

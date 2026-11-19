@@ -61,7 +61,7 @@ const parseMessage = (value: unknown): PersistedAIMessage | null => {
   const role =
     value.role === "user" || value.role === "assistant" ? value.role : null;
   const content = asString(value.content);
-  if (!role || !asString(value.id) || !content) {
+  if (!(role && asString(value.id) && content)) {
     return null;
   }
 
@@ -134,7 +134,7 @@ export function loadAIAgentState(): PersistedAIAgentState | null {
     }
 
     const parsed: unknown = JSON.parse(raw);
-    if (!isRecord(parsed) || !Array.isArray(parsed.conversations)) {
+    if (!(isRecord(parsed) && Array.isArray(parsed.conversations))) {
       return null;
     }
 

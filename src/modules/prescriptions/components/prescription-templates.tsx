@@ -363,7 +363,7 @@ export function PrescriptionTemplatesDialog({
           >
             <Input
               className="h-9 text-sm"
-              disabled={!canSaveCurrent || !state.ready}
+              disabled={!(canSaveCurrent && state.ready)}
               id="rx-template-name"
               maxLength={TEMPLATE_NAME_MAX}
               onChange={(event) => setName(event.target.value)}
@@ -373,7 +373,7 @@ export function PrescriptionTemplatesDialog({
             />
             <Button
               className="h-9 shrink-0 gap-1.5"
-              disabled={!canSaveCurrent || !state.ready || !name.trim() || busy}
+              disabled={!(canSaveCurrent && state.ready && name.trim()) || busy}
               type="submit"
             >
               <FloppyDisk className="size-4" weight="duotone" />

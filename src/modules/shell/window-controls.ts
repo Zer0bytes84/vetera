@@ -92,7 +92,7 @@ export function initWindowControls() {
     return;
   }
   const preview = !isWindowsDesktop() && previewRequested();
-  if (!isWindowsDesktop() && !preview) {
+  if (!(isWindowsDesktop() || preview)) {
     return;
   }
 

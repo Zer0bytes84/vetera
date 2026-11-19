@@ -149,7 +149,7 @@ export function SoapPanel({
   }, [repo]);
   // Dès que la note enregistrée est lue, le panneau part d'elle (corrigé au rendu, sans effet) ;
   // les références lues par les minuteries et le nettoyage sont posées juste après, dans l'effet qui suit.
-  if (!initialised && !repo.loading) {
+  if (!(initialised || repo.loading)) {
     // A section holding only a placeholder (« Na », « n/a », « - »…) is read as empty; the stored text is left alone until the next real save.
     const value: Payload = existing
       ? {

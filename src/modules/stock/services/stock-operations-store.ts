@@ -152,7 +152,7 @@ export async function saveLocationInDatabase(
   now: string
 ) {
   const name = input.name.trim();
-  if (!input.id.trim() || !name || name.length > 80) {
+  if (!(input.id.trim() && name) || name.length > 80) {
     fail("Indiquez un nom d’emplacement de 1 à 80 caractères.");
   }
   const [old] = await db.select<{ active: number; created_at: string }[]>(
@@ -329,7 +329,7 @@ export async function barcodeStockOperationInDatabase(
   actor(input.authorId);
   const code = normalizeBarcode(input.code);
   const quantity = stockQuantity(input.quantity);
-  if (!input.id.trim() || !["in", "out"].includes(input.direction)) {
+  if (!(input.id.trim() && ["in", "out"].includes(input.direction))) {
     fail("Choisissez une entrée ou une sortie de stock.");
   }
   if (input.direction === "in" && input.lotId !== undefined) {

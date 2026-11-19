@@ -59,7 +59,7 @@ export function billingDraft(
     ? existing.grossDa
     : items.reduce((sum, item) => sum + (item.amount ?? 0), 0);
   const due = existing ? existing.balanceDa : total;
-  const free = !existing && !missingPrice && total === 0;
+  const free = !(existing || missingPrice) && total === 0;
   const received = free ? 0 : parseDinars(receivedText);
 
   let problem: string | null = null;

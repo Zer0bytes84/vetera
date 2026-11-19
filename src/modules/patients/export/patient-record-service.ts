@@ -242,12 +242,13 @@ async function readRecord(
     raw.prescriptionItems = [];
     for (const prescription of raw.prescriptions) {
       if (
-        !appointments.some(
-          (visit) =>
-            visit.id === prescription.appointmentId &&
-            visit.patientId === patientId
-        ) ||
-        !["signed", "dispensed"].includes(prescription.status)
+        !(
+          appointments.some(
+            (visit) =>
+              visit.id === prescription.appointmentId &&
+              visit.patientId === patientId
+          ) && ["signed", "dispensed"].includes(prescription.status)
+        )
       ) {
         continue;
       }

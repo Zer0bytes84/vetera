@@ -76,7 +76,7 @@ export function useRooms() {
     () => snapshot
   );
   useEffect(() => {
-    if (!state.loaded && !pending) {
+    if (!(state.loaded || pending)) {
       void refreshRooms();
     }
   }, [state.loaded]);

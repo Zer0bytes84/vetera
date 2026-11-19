@@ -346,7 +346,7 @@ export function useLocalConsultationAi({
     if (!attempt?.capture || phase !== "listening") {
       return null;
     }
-    if (!attempt.native && !attempt.session) {
+    if (!(attempt.native || attempt.session)) {
       return null;
     }
     // Synchronously detach the capture so repeated clicks/limit events cannot

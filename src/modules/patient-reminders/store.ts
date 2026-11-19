@@ -144,7 +144,7 @@ export function createPatientReminderStore(
     async saveVaccination(draft: VaccineReminderDraft, author: string) {
       requireAuthor(author);
       assertDateOnly(draft.administeredDate);
-      if (!draft.id || !draft.patientId || !draft.vaccineName.trim()) {
+      if (!(draft.id && draft.patientId && draft.vaccineName.trim())) {
         throw new Error("Choisissez un patient et indiquez le vaccin.");
       }
       return persistence.transaction(async (db) => {
@@ -294,9 +294,11 @@ export function createPatientReminderStore(
         )[0];
         const typeId = canonicalType(proposal.type);
         if (
-          !patient ||
-          !(await listTypes(db)).some(
-            (type) => type.id === typeId && type.active === 1
+          !(
+            patient &&
+            (await listTypes(db)).some(
+              (type) => type.id === typeId && type.active === 1
+            )
           )
         ) {
           throw new Error("Choisissez un patient et un type de rappel actif.");
@@ -494,8 +496,7 @@ export function createPatientReminderStore(
     ) {
       requireAuthor(author);
       if (
-        !draft.name.trim() ||
-        !Number.isInteger(draft.intervalMonths) ||
+        !(draft.name.trim() && Number.isInteger(draft.intervalMonths)) ||
         draft.intervalMonths < 1 ||
         draft.intervalMonths > 120
       ) {

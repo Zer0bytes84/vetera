@@ -191,7 +191,7 @@ export function buildFlowBoard(input: BoardInput): FlowBoard {
     const today = isSameLocalDay(appointment.startTime, input.now);
     const stillOpen =
       stage === "waiting" || stage === "consultation" || stage === "care";
-    if (!today && !stillOpen) {
+    if (!(today || stillOpen)) {
       continue;
     }
     const planned =

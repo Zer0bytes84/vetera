@@ -660,9 +660,11 @@ export function FlowBoardPage({
 
   const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     if (
-      !current ||
-      !(event.target instanceof HTMLElement) ||
-      !event.target.matches(".flow-card")
+      !(
+        current &&
+        event.target instanceof HTMLElement &&
+        event.target.matches(".flow-card")
+      )
     ) {
       return;
     }
@@ -779,7 +781,7 @@ export function FlowBoardPage({
   const inCare = board.lanes.consultation.length + board.lanes.care.length;
   // A day with no visit at all, nothing left open and no search: the strip above the lanes says what is next instead.
   const quietDay =
-    !loading && !error && !query && total === 0 && board.leftOpen.length === 0;
+    !(loading || error || query) && total === 0 && board.leftOpen.length === 0;
   const todayLabel = now.toLocaleDateString("fr-FR", {
     weekday: "long",
     day: "numeric",

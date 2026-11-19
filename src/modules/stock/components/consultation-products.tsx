@@ -65,8 +65,7 @@ export function ConsultationProducts({
     requested > 0 &&
     !product.archivedAt &&
     (product.stockTracked === false ||
-      (!product.availabilityPending &&
-        !product.inventoryInvalid &&
+      (!(product.availabilityPending || product.inventoryInvalid) &&
         (product.availableQuantity ?? product.quantity) >= requested));
   if (!desktop) {
     return (

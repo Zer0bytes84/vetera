@@ -306,7 +306,10 @@ export function createDocumentStore(
         ? (await db.list("sessions", { token }))[0]
         : undefined;
       const expiry = new Date(text(session?.expires_at)).getTime();
-      if (!session || !Number.isFinite(expiry) || expiry <= clock().getTime()) {
+      if (
+        !(session && Number.isFinite(expiry)) ||
+        expiry <= clock().getTime()
+      ) {
         throw new Error("Connectez-vous pour accéder aux documents.");
       }
       currentId = text(session.user_id);
@@ -435,8 +438,7 @@ export function createDocumentStore(
       await db.list("consultation_soaps", { appointment_id: consultationId })
     )[0];
     if (
-      !patient ||
-      !consultation ||
+      !(patient && consultation) ||
       consultation.patient_id !== patientId ||
       !soap ||
       soap.patient_id !== patientId
@@ -1058,10 +1060,11 @@ export function createDocumentStore(
       authorId: string
     ): Promise<PatientDocument> {
       if (
-        !["application/pdf", "image/jpeg", "image/png"].includes(
-          attachment.mimeType
+        !(
+          ["application/pdf", "image/jpeg", "image/png"].includes(
+            attachment.mimeType
+          ) && attachment.name.trim()
         ) ||
-        !attachment.name.trim() ||
         attachment.name.length > 200 ||
         attachment.size <= 0 ||
         attachment.size > 12 * 1024 * 1024

@@ -66,13 +66,13 @@ export function normalizeOwnerDraft(owner: OwnerDraft): OwnerDraft {
   const email = normalizeEmail(owner.email);
   const secondaryContactPhone = normalizePhone(owner.secondaryContactPhone);
 
-  if (!firstName && !lastName) {
+  if (!(firstName || lastName)) {
     throw new ClinicalValidationError(
       "OWNER_NAME_REQUIRED",
       "Le nom ou le prénom du propriétaire est obligatoire."
     );
   }
-  if (!phone && !email) {
+  if (!(phone || email)) {
     throw new ClinicalValidationError(
       "OWNER_CONTACT_REQUIRED",
       "Ajoutez un téléphone ou un email pour pouvoir contacter le propriétaire."

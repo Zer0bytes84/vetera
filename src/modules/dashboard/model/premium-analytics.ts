@@ -68,7 +68,7 @@ export function customAnalyticsRange(
   }
   const a = parseDay(custom.from);
   const b = parseDay(custom.to);
-  if (!a || !b) {
+  if (!(a && b)) {
     return null;
   }
   const [first, last] = a <= b ? [a, b] : [b, a];
@@ -261,7 +261,7 @@ export function dashboardPresentationData(data: {
       (a) => !excludedAppointments.has(a.id)
     ),
     tasks: data.tasks.filter(
-      (t) => !excludedPatients.has(t.patientId ?? "") && !isTestObject(t.title)
+      (t) => !(excludedPatients.has(t.patientId ?? "") || isTestObject(t.title))
     ),
     products: data.products.filter((p) => !isTestObject(p.name)),
     vaccinations: data.vaccinations.filter(
@@ -270,12 +270,14 @@ export function dashboardPresentationData(data: {
     invoices: data.invoices.filter((i) => !excludedInvoices.has(i.id)),
     transactions: data.transactions.filter(
       (t) =>
-        !isTestObject(t.description) &&
-        !isTestObject(t.category) &&
-        !excludedInvoices.has(t.referenceId ?? "") &&
-        !excludedInvoices.has(t.sourceId ?? "") &&
-        !excludedAppointments.has(t.referenceId ?? "") &&
-        !excludedAppointments.has(t.sourceId ?? "")
+        !(
+          isTestObject(t.description) ||
+          isTestObject(t.category) ||
+          excludedInvoices.has(t.referenceId ?? "") ||
+          excludedInvoices.has(t.sourceId ?? "") ||
+          excludedAppointments.has(t.referenceId ?? "") ||
+          excludedAppointments.has(t.sourceId ?? "")
+        )
     ),
   };
 }

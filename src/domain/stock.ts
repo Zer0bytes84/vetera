@@ -20,8 +20,7 @@ const PRECISION = 1_000_000;
 export function stockQuantity(value: number, allowZero = false): number {
   const scaled = value * PRECISION;
   if (
-    !Number.isFinite(value) ||
-    !Number.isSafeInteger(Math.round(scaled)) ||
+    !(Number.isFinite(value) && Number.isSafeInteger(Math.round(scaled))) ||
     value < 0 ||
     (!allowZero && value === 0) ||
     Math.abs(scaled - Math.round(scaled)) > 0.0001
