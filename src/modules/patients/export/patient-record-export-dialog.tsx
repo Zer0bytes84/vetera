@@ -291,7 +291,7 @@ export function PatientRecordExportDialog({
       open
     >
       <FormDialogContent
-        className={`patient-export-dialog${phase === "preview" ? " patient-export-dialog-preview" : ""}`}
+        className={`patient-export-dialog${phase === "preview" ? "patient-export-dialog-preview" : ""}`}
         size={phase === "preview" ? "xl" : "md"}
       >
         <FormDialogHeader

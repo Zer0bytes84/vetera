@@ -517,7 +517,7 @@ export function KpiSpeciesDistribution({
               );
             })
           ) : (
-            <div className="w-full h-full bg-muted/60 rounded-full" />
+            <div className="h-full w-full rounded-full bg-muted/60" />
           )}
         </div>
 
@@ -562,7 +562,7 @@ export function KpiSpeciesDistribution({
               );
             })
           ) : (
-            <span className="t-12 text-muted-foreground flex items-center gap-1.5">
+            <span className="t-12 flex items-center gap-1.5 text-muted-foreground">
               <PawPrint className="opacity-50" size={11} />
               <span>Aucun patient enregistré</span>
             </span>
@@ -646,11 +646,11 @@ export function KpiReceivablesGauge({
             {isClean ? (
               <Check
                 aria-hidden="true"
-                className="text-primary stroke-[2.4]"
+                className="stroke-[2.4] text-primary"
                 size={14}
               />
             ) : (
-              <span className="t-12 font-bold text-amber-600 dark:text-amber-400 tabular-nums">
+              <span className="t-12 font-bold text-amber-600 tabular-nums dark:text-amber-400">
                 {recoveryRate}%
               </span>
             )}
@@ -662,7 +662,7 @@ export function KpiReceivablesGauge({
           {isClean ? (
             <>
               <div className="kpi-gauge-title text-primary">
-                <span className="size-1.5 rounded-full bg-primary animate-pulse" />
+                <span className="size-1.5 animate-pulse rounded-full bg-primary" />
                 <span>100 % à jour</span>
               </div>
               <div className="kpi-gauge-sub">Aucun impayé en attente</div>

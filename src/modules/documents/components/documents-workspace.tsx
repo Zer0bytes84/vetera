@@ -66,7 +66,7 @@ export default function DocumentsWorkspace({
         />
       </div>
       {sourceNote && (
-        <p className="flex items-start gap-2 rounded-xl border border-border bg-muted/40 p-3 text-xs text-muted-foreground">
+        <p className="flex items-start gap-2 rounded-xl border border-border bg-muted/40 p-3 text-muted-foreground text-xs">
           <FileText aria-hidden="true" className="mt-0.5 size-3.5 shrink-0" />
           <span>
             Note source :{" "}
@@ -81,7 +81,7 @@ export default function DocumentsWorkspace({
         </p>
       )}
       {(patients.error || appointments.error) && (
-        <p className="text-sm text-destructive" role="alert">
+        <p className="text-destructive text-sm" role="alert">
           Les dossiers n’ont pas pu être chargés.
         </p>
       )}

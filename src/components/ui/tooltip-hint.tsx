@@ -104,7 +104,7 @@ export function Tooltip({
       <span
         aria-hidden={!open}
         className={cn(
-          "pointer-events-none absolute z-50 w-max max-w-64 rounded-xl bg-surface-raised px-2.5 py-1.5 text-xs text-foreground",
+          "pointer-events-none absolute z-50 w-max max-w-64 rounded-xl bg-surface-raised px-2.5 py-1.5 text-foreground text-xs",
           "scale-[0.97] opacity-0 transition-[opacity,scale] duration-[125ms] ease-[cubic-bezier(0.23,1,0.32,1)] data-open:scale-100 data-open:opacity-100 motion-reduce:scale-100",
           instant && "duration-0",
           placement[side][align],

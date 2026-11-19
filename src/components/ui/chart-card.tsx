@@ -294,7 +294,7 @@ export function ChartCard({
           aside={
             total && (
               <RollingNumber
-                className="text-[1.5rem] leading-none font-medium tracking-tight"
+                className="font-medium text-[1.5rem] leading-none tracking-tight"
                 value={total}
               />
             )

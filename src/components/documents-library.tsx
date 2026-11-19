@@ -247,7 +247,7 @@ export function DocumentsLibrary({
       className="mx-auto flex w-full max-w-[40rem] flex-col gap-4 pb-8"
     >
       <div className="flex items-center gap-2">
-        <h2 className="text-xl/8 font-semibold">Documents</h2>
+        <h2 className="font-semibold text-xl/8">Documents</h2>
         <DropdownMenu>
           <DropdownMenuTrigger
             render={
@@ -398,7 +398,7 @@ export function DocumentsLibrary({
                 key={`${entry.kind}:${entry.id}`}
               >
                 <button
-                  className="flex min-w-0 flex-1 cursor-pointer items-center gap-3 px-3 py-2.5 text-left outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring/40"
+                  className="flex min-w-0 flex-1 cursor-pointer items-center gap-3 px-3 py-2.5 text-left outline-none focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:ring-inset"
                   data-list-row=""
                   data-row-id={entry.id}
                   onClick={() => open(entry)}
@@ -412,7 +412,7 @@ export function DocumentsLibrary({
                   </span>
                   <span className="min-w-0 flex-1">
                     <span className="flex items-center gap-1.5">
-                      <span className="truncate text-sm font-medium">
+                      <span className="truncate font-medium text-sm">
                         {entry.title}
                       </span>
                       {entry.isFavorite ? (
@@ -555,7 +555,7 @@ export function DocumentsLibrary({
             </DialogHeader>
             <div className="grid gap-1.5">
               <label
-                className="text-[0.8125rem] font-medium"
+                className="font-medium text-[0.8125rem]"
                 htmlFor="library-link-url"
               >
                 Adresse
@@ -577,7 +577,7 @@ export function DocumentsLibrary({
             </div>
             <div className="grid gap-1.5">
               <label
-                className="text-[0.8125rem] font-medium"
+                className="font-medium text-[0.8125rem]"
                 htmlFor="library-link-title"
               >
                 Titre

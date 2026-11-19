@@ -59,12 +59,12 @@ export function MovementAllocationDetails({
             : "Lots et emplacements"}
       </Button>
       {error && (
-        <p className="mt-1 text-xs text-destructive" role="alert">
+        <p className="mt-1 text-destructive text-xs" role="alert">
           Le détail n’a pas pu être chargé. Réessayez.
         </p>
       )}
       {open && (
-        <ul className="mt-2 space-y-1 text-xs text-muted-foreground">
+        <ul className="mt-2 space-y-1 text-muted-foreground text-xs">
           {rows?.length ? (
             rows.map((row) => (
               <li className="whitespace-normal" key={row.id}>

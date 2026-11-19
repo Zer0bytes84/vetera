@@ -77,7 +77,7 @@ export function SourceList({
               initial={{ opacity: 0, y: 6 }}
               key={group.name}
             >
-              <h4 className="flex items-center gap-3 px-3 pt-1.5 pb-1 text-xs text-muted-foreground">
+              <h4 className="flex items-center gap-3 px-3 pt-1.5 pb-1 text-muted-foreground text-xs">
                 {group.icon ? (
                   <IconTile className="size-5 rounded-md" icon={group.icon} />
                 ) : null}
@@ -91,20 +91,20 @@ export function SourceList({
                     key={source.id}
                   >
                     <div className="flex items-baseline gap-3">
-                      <span className="min-w-0 flex-1 truncate text-sm font-medium">
+                      <span className="min-w-0 flex-1 truncate font-medium text-sm">
                         {source.title}
                       </span>
                       {source.tag ? (
                         <Tag className="font-sans">{source.tag}</Tag>
                       ) : null}
                       {source.date ? (
-                        <span className="shrink-0 text-xs text-muted-foreground">
+                        <span className="shrink-0 text-muted-foreground text-xs">
                           {source.date}
                         </span>
                       ) : null}
                     </div>
                     {/* The passage found, put forward. */}
-                    <div className="rounded-xl border-l-2 border-brand bg-brand/[0.06] px-3 py-2">
+                    <div className="rounded-xl border-brand border-l-2 bg-brand/[0.06] px-3 py-2">
                       {source.passage}
                     </div>
                     {source.actions ? (

@@ -312,7 +312,7 @@ export function ClinicIdentityPanel() {
           </span>
         </SettingsRow>
         <SettingsFooter>
-          <p className="text-xs text-muted-foreground" role="status">
+          <p className="text-muted-foreground text-xs" role="status">
             {dirty
               ? "Modifications non enregistrées"
               : "Les factures déjà émises conservent leur identité d’origine."}
@@ -446,13 +446,13 @@ export function InvoiceSettingsPanel({
               rows={3}
               value={settings.footer}
             />
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               Remerciement ou mentions du cabinet. Facultatif.
             </p>
           </Field>
         </SettingsBody>
         <SettingsFooter>
-          <p className="text-xs text-muted-foreground" role="status">
+          <p className="text-muted-foreground text-xs" role="status">
             {dirty
               ? "Modifications non enregistrées"
               : "Les factures déjà émises conservent leur présentation d’origine."}

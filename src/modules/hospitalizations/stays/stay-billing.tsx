@@ -112,11 +112,11 @@ export function StayBilling({ stay }: { stay: Stay }) {
               );
             }}
           >
-            <label className="block space-y-2 t-13">
+            <label className="t-13 block space-y-2">
               Tarif par journée
               <select
                 aria-label="Tarif par journée"
-                className="h-11 w-full rounded-xl border border-border bg-background px-3 t-13"
+                className="t-13 h-11 w-full rounded-xl border border-border bg-background px-3"
                 onChange={(event) => setProductId(event.target.value)}
                 value={productId}
               >

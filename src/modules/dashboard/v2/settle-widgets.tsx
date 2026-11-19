@@ -143,9 +143,9 @@ export function SettleStatTile({
   return (
     <div
       className={cn(
-        "settle-stat-tile rounded-[14px] p-4 bg-white dark:bg-neutral-900 border border-black/[0.07] dark:border-white/[0.08] shadow-[0_1px_2px_rgb(0_0_0/0.05)] flex flex-col justify-between transition",
+        "settle-stat-tile flex flex-col justify-between rounded-[14px] border border-black/[0.07] bg-white p-4 shadow-[0_1px_2px_rgb(0_0_0/0.05)] transition dark:border-white/[0.08] dark:bg-neutral-900",
         onClick &&
-          "cursor-pointer hover:border-black/[0.15] dark:hover:border-white/[0.18] hover:shadow-[0_2px_4px_rgb(0_0_0/0.06)]"
+          "cursor-pointer hover:border-black/[0.15] hover:shadow-[0_2px_4px_rgb(0_0_0/0.06)] dark:hover:border-white/[0.18]"
       )}
       onClick={onClick}
       onKeyDown={(e) => {
@@ -160,7 +160,7 @@ export function SettleStatTile({
       <div>
         <div className="flex items-start justify-between gap-4">
           <p
-            className="settle-stat-label m-0 min-w-0 truncate text-sm/6 font-medium text-neutral-900 dark:text-neutral-100"
+            className="settle-stat-label m-0 min-w-0 truncate font-medium text-neutral-900 text-sm/6 dark:text-neutral-100"
             title={tip}
           >
             {label}
@@ -171,7 +171,7 @@ export function SettleStatTile({
             </span>
           ) : null}
         </div>
-        <p className="settle-stat-value m-0 mt-3 tabular-nums t-24 font-semibold tracking-[-0.03em] text-neutral-900 dark:text-neutral-100">
+        <p className="settle-stat-value t-24 m-0 mt-3 font-semibold text-neutral-900 tabular-nums tracking-[-0.03em] dark:text-neutral-100">
           {value}
         </p>
       </div>
@@ -179,7 +179,7 @@ export function SettleStatTile({
         {delta ? (
           <span
             className={cn(
-              "badge whitespace-nowrap inline-flex items-center gap-1 h-[22px] px-2 rounded-[7px] t-12 font-medium tabular-nums",
+              "badge t-12 inline-flex h-[22px] items-center gap-1 whitespace-nowrap rounded-[7px] px-2 font-medium tabular-nums",
               delta.good ? TONE_BADGE.emerald : TONE_BADGE.rose
             )}
           >
@@ -197,7 +197,7 @@ export function SettleStatTile({
         ) : badge ? (
           <span
             className={cn(
-              "badge whitespace-nowrap inline-flex items-center gap-1 h-[22px] px-2 rounded-[7px] t-12 font-medium tabular-nums",
+              "badge t-12 inline-flex h-[22px] items-center gap-1 whitespace-nowrap rounded-[7px] px-2 font-medium tabular-nums",
               TONE_BADGE[badge.tone] || TONE_BADGE.neutral
             )}
           >
@@ -293,18 +293,18 @@ export function SettleCard({
   return (
     <section
       className={cn(
-        "settle-card rounded-[18px] border border-black/[0.07] bg-white shadow-[0_1px_2px_rgb(0_0_0/0.05)] dark:border-white/[0.08] dark:bg-neutral-900 flex flex-col",
+        "settle-card flex flex-col rounded-[18px] border border-black/[0.07] bg-white shadow-[0_1px_2px_rgb(0_0_0/0.05)] dark:border-white/[0.08] dark:bg-neutral-900",
         className
       )}
     >
       {title ? (
         <div className="premium-card-heading flex flex-wrap items-start justify-between gap-4 px-4 pt-4">
           <div className="min-w-0">
-            <h2 className="m-0 t-16 font-semibold text-neutral-900 dark:text-neutral-100">
+            <h2 className="t-16 m-0 font-semibold text-neutral-900 dark:text-neutral-100">
               {title}
             </h2>
             {subtitle ? (
-              <p className="m-0 mt-0.5 t-13 text-neutral-500 dark:text-neutral-400">
+              <p className="t-13 m-0 mt-0.5 text-neutral-500 dark:text-neutral-400">
                 {subtitle}
               </p>
             ) : null}
@@ -342,14 +342,14 @@ export function SettleMetricFooter({
             key={idx}
             title={m.tip}
           >
-            <p className="m-0 t-12 font-medium uppercase tracking-[0.04em] text-neutral-500 dark:text-neutral-400">
+            <p className="t-12 m-0 font-medium text-neutral-500 uppercase tracking-[0.04em] dark:text-neutral-400">
               {m.label}
             </p>
-            <p className="m-0 mt-1 t-16 font-semibold tabular-nums text-neutral-900 dark:text-neutral-100">
+            <p className="t-16 m-0 mt-1 font-semibold text-neutral-900 tabular-nums dark:text-neutral-100">
               {m.value}
             </p>
             {m.caption ? (
-              <p className="m-0 mt-0.5 t-12 text-neutral-500 dark:text-neutral-400">
+              <p className="t-12 m-0 mt-0.5 text-neutral-500 dark:text-neutral-400">
                 {m.caption}
               </p>
             ) : null}
@@ -384,7 +384,7 @@ export function SettleQueueItem({
     <div
       className={cn(
         "settle-queue-item flex items-start gap-3 px-4 py-3.5 transition-colors hover:bg-black/[0.02] dark:hover:bg-white/[0.03]",
-        onClick && "cursor-pointer group"
+        onClick && "group cursor-pointer"
       )}
       onClick={onClick}
       onKeyDown={(e) => {
@@ -407,11 +407,11 @@ export function SettleQueueItem({
         </span>
       ) : null}
       <div className="min-w-0 flex-1">
-        <p className="m-0 t-13 font-medium text-neutral-900 dark:text-neutral-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+        <p className="t-13 m-0 font-medium text-neutral-900 transition-colors group-hover:text-blue-600 dark:text-neutral-100 dark:group-hover:text-blue-400">
           {title}
         </p>
         {subtitle ? (
-          <p className="m-0 mt-0.5 t-13 text-neutral-500 dark:text-neutral-400">
+          <p className="t-13 m-0 mt-0.5 text-neutral-500 dark:text-neutral-400">
             {subtitle}
           </p>
         ) : null}
@@ -419,12 +419,12 @@ export function SettleQueueItem({
       {amount || meta ? (
         <div className="shrink-0 text-right">
           {amount ? (
-            <p className="m-0 t-13 font-medium tabular-nums text-neutral-900 dark:text-neutral-100">
+            <p className="t-13 m-0 font-medium text-neutral-900 tabular-nums dark:text-neutral-100">
               {amount}
             </p>
           ) : null}
           {meta ? (
-            <p className="m-0 mt-0.5 t-12 tabular-nums text-neutral-400 dark:text-neutral-500">
+            <p className="t-12 m-0 mt-0.5 text-neutral-400 tabular-nums dark:text-neutral-500">
               {meta}
             </p>
           ) : null}

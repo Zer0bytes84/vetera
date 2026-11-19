@@ -195,7 +195,7 @@ export function AgentStatus({
             <Indicator status={status} />
           )}
           <div className="min-w-0 flex-1">
-            <div className="relative h-5 overflow-hidden text-sm font-medium">
+            <div className="relative h-5 overflow-hidden font-medium text-sm">
               <AnimatePresence initial={false} mode="popLayout">
                 <motion.p
                   animate={{ y: 0, opacity: 1, transition: enter }}
@@ -213,7 +213,7 @@ export function AgentStatus({
                 <AnimatePresence initial={false} mode="popLayout">
                   <motion.p
                     animate={{ opacity: 1, x: 0, transition: enter }}
-                    className="truncate text-xs text-muted-foreground"
+                    className="truncate text-muted-foreground text-xs"
                     exit={{ opacity: 0, x: -6, transition: leave }}
                     initial={{ opacity: 0, x: 6 }}
                     key={detail}
@@ -225,7 +225,7 @@ export function AgentStatus({
             )}
           </div>
           <time
-            className="shrink-0 font-mono text-xs text-muted-foreground tabular-nums"
+            className="shrink-0 font-mono text-muted-foreground text-xs tabular-nums"
             dateTime={`PT${Math.floor(elapsed / 1000)}S`}
           >
             <RollingNumber value={formatElapsed(elapsed)} />

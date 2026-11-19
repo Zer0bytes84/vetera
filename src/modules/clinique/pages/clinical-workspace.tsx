@@ -122,7 +122,7 @@ export default function ClinicalWorkspace({
           {overdueCount > 0 && (
             <Badge
               aria-hidden="true"
-              className="care-nav-badge min-w-5 border-rose-200 bg-rose-50 px-1.5 t-12 text-rose-700 tabular-nums dark:border-rose-900 dark:bg-rose-950/40 dark:text-rose-300"
+              className="care-nav-badge t-12 min-w-5 border-rose-200 bg-rose-50 px-1.5 text-rose-700 tabular-nums dark:border-rose-900 dark:bg-rose-950/40 dark:text-rose-300"
               title={overdueLabel}
               variant="outline"
             >

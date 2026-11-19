@@ -90,7 +90,7 @@ function RoomRow({
           </Button>
         )}
       </form>
-      <span className="w-32 shrink-0 text-xs tabular-nums text-muted-foreground">
+      <span className="w-32 shrink-0 text-muted-foreground text-xs tabular-nums">
         {bookings(room.appointmentCount)}
       </span>
       <div className="flex shrink-0 items-center gap-1">
@@ -199,7 +199,7 @@ export function RoomsSettings() {
       subtitle="Les espaces où vous recevez les animaux."
       title="Salles du cabinet"
     >
-      <p className="p-6 text-sm text-muted-foreground">
+      <p className="p-6 text-muted-foreground text-sm">
         Avec une seule salle, l'agenda ne vous demande rien. Dès la deuxième,
         chaque rendez-vous choisit la sienne et les conflits de salle sont
         signalés.
@@ -222,7 +222,7 @@ export function RoomsSettings() {
               ))}
             </ul>
           ) : (
-            <p className="flex items-center gap-2 text-sm text-muted-foreground">
+            <p className="flex items-center gap-2 text-muted-foreground text-sm">
               <Loader2 className="size-4 animate-spin" />
               Chargement des salles…
             </p>
@@ -245,7 +245,7 @@ export function RoomsSettings() {
 
           {(problem || error) && (
             <p
-              className="rounded-2xl border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive"
+              className="rounded-2xl border border-destructive/20 bg-destructive/5 p-4 text-destructive text-sm"
               role="alert"
             >
               {problem ?? error}
@@ -254,7 +254,7 @@ export function RoomsSettings() {
 
           {archived.length > 0 && (
             <details className="rounded-2xl border">
-              <summary className="cursor-pointer px-4 py-3 text-sm font-medium">
+              <summary className="cursor-pointer px-4 py-3 font-medium text-sm">
                 Salles archivées ({archived.length})
               </summary>
               <ul className="divide-y border-t">
@@ -264,7 +264,7 @@ export function RoomsSettings() {
                     key={room.id}
                   >
                     <span className="min-w-48 flex-1 text-sm">{room.name}</span>
-                    <span className="w-32 shrink-0 text-xs tabular-nums text-muted-foreground">
+                    <span className="w-32 shrink-0 text-muted-foreground text-xs tabular-nums">
                       {bookings(room.appointmentCount)}
                     </span>
                     <Button
@@ -289,7 +289,7 @@ export function RoomsSettings() {
           )}
         </div>
       ) : (
-        <p className="p-6 text-sm text-muted-foreground">
+        <p className="p-6 text-muted-foreground text-sm">
           Les salles se gèrent dans l'application de bureau.
         </p>
       )}

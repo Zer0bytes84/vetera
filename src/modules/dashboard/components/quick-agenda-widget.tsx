@@ -53,7 +53,7 @@ export function QuickAgendaWidget({
       confirmLabel="Créer le rendez-vous"
       days={model.days}
       footer={
-        <p className="text-xs text-muted-foreground">
+        <p className="text-muted-foreground text-xs">
           {totalFree
             ? `${formatNumber(totalFree)} créneau${totalFree > 1 ? "x" : ""} libre${totalFree > 1 ? "s" : ""} sur ${DAYS} jours`
             : `Aucun créneau libre sur ${DAYS} jours`}

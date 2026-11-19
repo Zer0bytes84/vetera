@@ -57,14 +57,14 @@ export function LicenseStatusCard() {
           {access?.message || "Lecture de l’activation…"}
         </p>
         {access?.allowed && (
-          <p className="text-xs text-muted-foreground">
+          <p className="text-muted-foreground text-xs">
             {access.expiresAt
               ? `Valable jusqu’au ${new Date(access.expiresAt).toLocaleString("fr-FR")}`
               : "Licence sans date d’expiration"}{" "}
             · contrôle périodique en ligne
           </p>
         )}
-        <p className="text-xs text-muted-foreground">
+        <p className="text-muted-foreground text-xs">
           Après une vérification réussie, l’accès reste disponible jusqu’à sept
           jours hors connexion, dans la limite de validité de la licence.
         </p>

@@ -535,12 +535,12 @@ export default function ConsultationDocumentsAssistant({
   return (
     <section
       aria-label="Assistant documents de consultation"
-      className="mx-auto flex w-full max-w-3xl flex-col gap-5 border-t border-border pt-5"
+      className="mx-auto flex w-full max-w-3xl flex-col gap-5 border-border border-t pt-5"
     >
       <header className="flex items-center justify-between gap-3">
         <div>
           <h3 className="font-semibold">Documents de consultation</h3>
-          <p className="mt-1 text-xs text-muted-foreground">
+          <p className="mt-1 text-muted-foreground text-xs">
             {patient?.name ?? "Patient"} · Sur cet ordinateur
           </p>
         </div>
@@ -569,7 +569,7 @@ export default function ConsultationDocumentsAssistant({
         value={mode}
       />
       {unavailable && (
-        <p className="text-sm text-destructive" role="alert">
+        <p className="text-destructive text-sm" role="alert">
           Une partie du dossier n’a pas pu être chargée. Fermez puis rouvrez les
           documents.
         </p>
@@ -582,7 +582,7 @@ export default function ConsultationDocumentsAssistant({
             enregistrement.
           </ChatMessage>
           {!ready && (
-            <p className="text-sm text-muted-foreground" role="status">
+            <p className="text-muted-foreground text-sm" role="status">
               {appointment
                 ? "Validez d’abord la note de cette consultation. Une modification de la note demande une nouvelle validation."
                 : "Choisissez une consultation pour créer un document à partir de sa note validée."}
@@ -705,7 +705,7 @@ export default function ConsultationDocumentsAssistant({
             <ChatMessage>
               <div className="space-y-3">
                 <p className="font-medium">{reading.name}</p>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-muted-foreground text-xs">
                   Le texte reconnu reste modifiable. Vérifiez les noms, valeurs
                   et unités sur l’original.
                 </p>
@@ -800,7 +800,7 @@ export default function ConsultationDocumentsAssistant({
             <ChatMessage>
               <div className="space-y-3">
                 {partial && (
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-muted-foreground text-xs">
                     La recherche porte sur les passages les plus pertinents. Le
                     texte complet reste disponible au-dessus.
                   </p>
@@ -811,7 +811,7 @@ export default function ConsultationDocumentsAssistant({
                     key={`${quote.page}:${index}`}
                   >
                     <p className="whitespace-pre-wrap text-sm">{quote.texte}</p>
-                    <cite className="mt-2 block text-xs not-italic text-muted-foreground">
+                    <cite className="mt-2 block text-muted-foreground text-xs not-italic">
                       {reading?.name} · page {quote.page}
                     </cite>
                   </blockquote>
@@ -841,7 +841,7 @@ export default function ConsultationDocumentsAssistant({
             <ChevronDown className="size-3.5" />
             <span className="sr-only">Afficher les étapes de lecture</span>
           </CollapsibleTrigger>
-          <CollapsibleContent className="px-3 pb-3 text-xs text-muted-foreground">
+          <CollapsibleContent className="px-3 pb-3 text-muted-foreground text-xs">
             {progress.page && <p>Page {progress.page}</p>}
             {typeof characters === "number" ? (
               <p>{characters.toLocaleString("fr-FR")} caractères préparés</p>
@@ -899,7 +899,7 @@ export default function ConsultationDocumentsAssistant({
               </Field>
             </FieldGroup>
             {changedSource && (
-              <p className="text-sm text-destructive" role="alert">
+              <p className="text-destructive text-sm" role="alert">
                 La note source a changé. Validez-la puis préparez à nouveau le
                 document.
               </p>
@@ -917,7 +917,7 @@ export default function ConsultationDocumentsAssistant({
               </label>
             </div>
             {!(appointment || saved) && (
-              <p className="text-xs text-muted-foreground">
+              <p className="text-muted-foreground text-xs">
                 Choisissez une consultation pour enregistrer ce document dans le
                 dossier du patient.
               </p>
@@ -962,7 +962,7 @@ export default function ConsultationDocumentsAssistant({
         </ChatMessage>
       )}
       {error && (
-        <p className="text-sm text-destructive" role="alert">
+        <p className="text-destructive text-sm" role="alert">
           {error}
         </p>
       )}

@@ -79,7 +79,7 @@ export function QuickPatientPicker({
         className="flex max-h-[calc(100dvh-2rem)] flex-col gap-0 overflow-hidden p-0 sm:max-w-lg"
         showCloseButton
       >
-        <DialogHeader className="gap-1 px-5 pt-5 pb-1 pe-12">
+        <DialogHeader className="gap-1 px-5 pe-12 pt-5 pb-1">
           <DialogTitle className="t-18 font-semibold">{title}</DialogTitle>
           <DialogDescription className="t-13">{description}</DialogDescription>
         </DialogHeader>
@@ -93,7 +93,7 @@ export function QuickPatientPicker({
             value={query}
           />
         </div>
-        <div className="min-h-0 max-h-80 overflow-y-auto px-5 pb-2">
+        <div className="max-h-80 min-h-0 overflow-y-auto px-5 pb-2">
           {filtered.length === 0 ? (
             <div className="flex flex-col items-center gap-1.5 py-6 text-center text-muted-foreground text-sm">
               {t("quickPatientPicker.empty", {
@@ -131,12 +131,12 @@ export function QuickPatientPicker({
                             {patient.name}
                           </span>
                           {owner && (
-                            <span className="truncate t-13 text-foreground">
+                            <span className="t-13 truncate text-foreground">
                               {ownerName(owner)}
                             </span>
                           )}
                         </span>
-                        <span className="truncate t-12 text-muted-foreground">
+                        <span className="t-12 truncate text-muted-foreground">
                           {details}
                         </span>
                       </div>
@@ -147,14 +147,14 @@ export function QuickPatientPicker({
             </ul>
           )}
         </div>
-        <div className="flex items-center justify-between border-black/5 border-t px-4 py-2.5 t-12 text-muted-foreground/70 dark:border-white/5">
+        <div className="t-12 flex items-center justify-between border-black/5 border-t px-4 py-2.5 text-muted-foreground/70 dark:border-white/5">
           <span>
             {t("quickPatientPicker.hint", {
               defaultValue: "Sélectionnez pour continuer",
             })}
           </span>
           <span className="flex items-center gap-1.5">
-            <Kbd className="h-4 px-1 t-12">esc</Kbd>
+            <Kbd className="t-12 h-4 px-1">esc</Kbd>
             {t("common.close")}
           </span>
         </div>

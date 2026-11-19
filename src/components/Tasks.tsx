@@ -906,7 +906,7 @@ const Tasks: React.FC = () => {
         <div className="quick-reminder-fields flex flex-col gap-3 p-3 sm:flex-row sm:items-center">
           <div className="quick-reminder-title min-w-0 flex-1">
             <label
-              className="inline-flex items-center gap-2 text-xs font-medium text-foreground"
+              className="inline-flex items-center gap-2 font-medium text-foreground text-xs"
               htmlFor="new-reminder-title"
             >
               <BellIcon aria-hidden="true" className="size-4 shrink-0" />
@@ -928,7 +928,7 @@ const Tasks: React.FC = () => {
           </div>
           <div className="quick-reminder-type flex min-w-40 flex-col gap-1">
             <label
-              className="text-xs font-medium"
+              className="font-medium text-xs"
               htmlFor="quick-reminder-type"
             >
               Type de rappel
@@ -950,7 +950,7 @@ const Tasks: React.FC = () => {
           </div>
           <div className="quick-reminder-date flex w-40 flex-col gap-1">
             <label
-              className="text-xs font-medium"
+              className="font-medium text-xs"
               htmlFor="quick-reminder-date"
             >
               Date du rappel
@@ -1126,7 +1126,7 @@ const Tasks: React.FC = () => {
             </TabsList>
           </Tabs>
           <Button
-            className="h-8 t-13"
+            className="t-13 h-8"
             onClick={() => setAuxiliaryView("types")}
             type="button"
             variant="outline"

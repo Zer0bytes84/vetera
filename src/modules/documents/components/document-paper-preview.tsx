@@ -52,7 +52,7 @@ export function DocumentPaperPreview({ dataUrl }: { dataUrl: string | null }) {
           </figure>
         ))
       ) : (
-        <p className="text-sm text-muted-foreground" role="status">
+        <p className="text-muted-foreground text-sm" role="status">
           Préparation de l’aperçu A4…
         </p>
       )}

@@ -108,7 +108,7 @@ function FormDialogBody({ className, ...props }: ComponentProps<"div">) {
   return (
     <div
       className={cn(
-        "modal-medical-body modal-form-fields min-h-0 min-w-0 overflow-x-hidden overflow-y-auto overscroll-contain p-5 sm:p-8",
+        "modal-medical-body modal-form-fields min-h-0 min-w-0 overflow-y-auto overflow-x-hidden overscroll-contain p-5 sm:p-8",
         className
       )}
       {...props}

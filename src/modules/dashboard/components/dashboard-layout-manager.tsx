@@ -99,7 +99,7 @@ function SortableDashboardBlock({
     >
       {isEditing ? (
         <div className="absolute inset-x-2 top-1 flex h-6 items-center justify-between">
-          <span className="pl-1 font-medium t-12 text-muted-foreground">
+          <span className="t-12 pl-1 font-medium text-muted-foreground">
             {index + 1}. {block.label}
           </span>
           <button
@@ -109,7 +109,7 @@ function SortableDashboardBlock({
             {...listeners}
             aria-keyshortcuts="ArrowUp ArrowDown"
             aria-label={`Déplacer ${block.label}`}
-            className="flex h-6 cursor-grab touch-none items-center gap-1.5 rounded-full border border-border/70 bg-background/95 px-2.5 font-medium t-12 text-muted-foreground shadow-sm backdrop-blur-md transition-[color,background-color,border-color,box-shadow] hover:border-primary/30 hover:bg-primary/10 hover:text-primary hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 active:cursor-grabbing"
+            className="t-12 flex h-6 cursor-grab touch-none items-center gap-1.5 rounded-full border border-border/70 bg-background/95 px-2.5 font-medium text-muted-foreground shadow-sm backdrop-blur-md transition-[color,background-color,border-color,box-shadow] hover:border-primary/30 hover:bg-primary/10 hover:text-primary hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 active:cursor-grabbing"
             data-no-drag
             onKeyDown={(event) => {
               if (event.key === "ArrowUp" || event.key === "ArrowDown") {
@@ -342,13 +342,13 @@ export function DashboardLayoutManager({
             </span>
             <div className="min-w-0">
               <p className="font-semibold text-xs">Disposition du tableau</p>
-              <p className="hidden t-12 text-muted-foreground sm:block">
+              <p className="t-12 hidden text-muted-foreground sm:block">
                 Saisissez une poignée puis déplacez le bloc.
               </p>
             </div>
             <span
               aria-live="polite"
-              className="hidden font-medium t-12 text-muted-foreground lg:inline"
+              className="t-12 hidden font-medium text-muted-foreground lg:inline"
             >
               {saveStatus === "saving" ? "Enregistrement…" : null}
               {saveStatus === "saved" ? "Enregistré" : null}

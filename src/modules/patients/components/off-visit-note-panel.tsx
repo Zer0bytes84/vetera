@@ -93,15 +93,15 @@ export function OffVisitNotePanel({
     return (
       <section
         aria-label={`${note.title} de ${patientName}`}
-        className="off-visit-note space-y-4 border-b border-border pb-6"
+        className="off-visit-note space-y-4 border-border border-b pb-6"
         id="patient-off-visit-note"
       >
         <div className="flex items-start justify-between gap-3">
           <div>
-            <h2 className="text-lg font-semibold">
+            <h2 className="font-semibold text-lg">
               Note hors visite · {patientName}
             </h2>
-            <p className="mt-1 text-xs text-muted-foreground">
+            <p className="mt-1 text-muted-foreground text-xs">
               {OFF_VISIT_KINDS[existing.kind]} · validée le{" "}
               {recordDate(existing.reviewedAt, true)} · sans rendez-vous
             </p>
@@ -117,7 +117,7 @@ export function OffVisitNotePanel({
                 className="rounded-2xl border border-border bg-card p-4"
                 key={key}
               >
-                <dt className="text-sm font-semibold">
+                <dt className="font-semibold text-sm">
                   {t(`consultations.soap.sections.${key}`)}
                 </dt>
                 <dd className="mt-2 whitespace-pre-line text-sm leading-6">
@@ -134,15 +134,15 @@ export function OffVisitNotePanel({
   return (
     <section
       aria-label={`Nouvelle note hors visite pour ${patientName}`}
-      className="off-visit-note space-y-4 border-b border-border pb-6"
+      className="off-visit-note space-y-4 border-border border-b pb-6"
       id="patient-off-visit-note"
     >
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
-          <h2 className="text-lg font-semibold">
+          <h2 className="font-semibold text-lg">
             Note hors visite · {patientName}
           </h2>
-          <p className="mt-1 max-w-2xl text-xs leading-5 text-muted-foreground">
+          <p className="mt-1 max-w-2xl text-muted-foreground text-xs leading-5">
             Pour un appel, un conseil ou une observation. Aucun rendez-vous
             n’est créé et la note n’apparaît pas dans le Flux. Rien n’est
             enregistré avant votre validation.
@@ -174,7 +174,7 @@ export function OffVisitNotePanel({
           <button
             aria-checked={kind === value}
             className={cn(
-              "rounded-full border px-3 py-1 text-xs font-medium transition-colors",
+              "rounded-full border px-3 py-1 font-medium text-xs transition-colors",
               kind === value
                 ? "border-foreground bg-foreground text-background"
                 : "border-border text-muted-foreground hover:text-foreground"
@@ -203,7 +203,7 @@ export function OffVisitNotePanel({
           />
         ))}
       </div>
-      <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground">
+      <div className="flex flex-wrap items-center justify-between gap-3 text-muted-foreground text-xs">
         <span>
           {hasText(draft)
             ? "Relisez la note, puis validez-la pour l’enregistrer au dossier."
@@ -233,7 +233,7 @@ export function OffVisitNotePanel({
         <Suspense
           fallback={
             <p
-              className="flex items-center gap-2 text-sm text-muted-foreground"
+              className="flex items-center gap-2 text-muted-foreground text-sm"
               role="status"
             >
               <CircleNotch className="size-4 animate-spin" /> Ouverture de

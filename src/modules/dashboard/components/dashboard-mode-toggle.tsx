@@ -44,10 +44,10 @@ export function DashboardModeToggle({
                   aria-label={mode.label}
                   aria-pressed={isSelected}
                   className={cn(
-                    "relative inline-flex size-7 items-center justify-center rounded-md t-12 font-medium transition duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
+                    "t-12 relative inline-flex size-7 items-center justify-center rounded-md font-medium transition duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
                     isSelected
-                      ? "bg-surface text-ink shadow-2xs font-semibold"
-                      : "text-ink-muted hover:text-ink bg-transparent"
+                      ? "bg-surface font-semibold text-ink shadow-2xs"
+                      : "bg-transparent text-ink-muted hover:text-ink"
                   )}
                   onClick={() => onChange(mode.value)}
                   type="button"

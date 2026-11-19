@@ -116,7 +116,7 @@ export function ShellHeader({
     >
       {icon && <IconTile icon={icon} />}
       <div className={cn("min-w-0 flex-1", !icon && "pl-2")}>
-        <Heading className="truncate text-sm/6 font-semibold">{title}</Heading>
+        <Heading className="truncate font-semibold text-sm/6">{title}</Heading>
         {subtitle && (
           <p
             className={cn(

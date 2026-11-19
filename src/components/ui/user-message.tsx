@@ -145,7 +145,7 @@ export function UserMessage({
                     {file.name}
                   </span>
                   {file.size !== undefined && (
-                    <span className="block text-xs text-muted-foreground">
+                    <span className="block text-muted-foreground text-xs">
                       {file.kind === "image" ? "Image" : "Fichier"} ·{" "}
                       {formatBytes(file.size)}
                     </span>
@@ -206,7 +206,7 @@ export function UserMessage({
             <motion.div
               animate={{ opacity: 1, transition: enter }}
               className={cn(
-                "max-w-[85%] rounded-2xl rounded-br-md bg-brand/10 px-3.5 py-2 text-sm leading-relaxed whitespace-pre-wrap",
+                "max-w-[85%] whitespace-pre-wrap rounded-2xl rounded-br-md bg-brand/10 px-3.5 py-2 text-sm leading-relaxed",
                 status === "sending" && "opacity-70"
               )}
               exit={{ opacity: 0, transition: exit }}
@@ -219,7 +219,7 @@ export function UserMessage({
         </AnimatePresence>
 
         {!editing && (
-          <div className="flex items-center gap-1 text-xs text-muted-foreground">
+          <div className="flex items-center gap-1 text-muted-foreground text-xs">
             <span
               className={cn(
                 "flex items-center gap-1 opacity-0 transition-opacity duration-150 group-focus-within:opacity-100 group-hover:opacity-100 [@media(hover:none)]:opacity-100"

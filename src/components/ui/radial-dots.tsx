@@ -305,21 +305,21 @@ export function RadialDots({
             <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center">
               {active === null ? (
                 <>
-                  <p className="text-[1.5rem] font-medium tracking-tight tabular-nums">
+                  <p className="font-medium text-[1.5rem] tabular-nums tracking-tight">
                     {center.value}
                   </p>
                   {center.caption && (
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-muted-foreground text-xs">
                       {center.caption}
                     </p>
                   )}
                 </>
               ) : (
                 <>
-                  <p className="text-xs text-muted-foreground first-letter:uppercase">
+                  <p className="text-muted-foreground text-xs first-letter:uppercase">
                     {titleOf(active)}
                   </p>
-                  <p className="text-[1.5rem] font-medium tracking-tight tabular-nums">
+                  <p className="font-medium text-[1.5rem] tabular-nums tracking-tight">
                     {format(totals[active])}
                   </p>
                 </>
@@ -329,7 +329,7 @@ export function RadialDots({
 
           <ul
             aria-label="Légende"
-            className="mt-3 flex flex-wrap justify-center gap-x-4 gap-y-1 text-xs text-muted-foreground"
+            className="mt-3 flex flex-wrap justify-center gap-x-4 gap-y-1 text-muted-foreground text-xs"
           >
             {series.map((s) => (
               <li className="flex items-center gap-1.5" key={s.id}>
@@ -349,7 +349,7 @@ export function RadialDots({
             ))}
           </ul>
           {per > 1 ? (
-            <p className="mt-1 text-center text-xs text-muted-foreground">
+            <p className="mt-1 text-center text-muted-foreground text-xs">
               1 point = {per} {unit}
             </p>
           ) : null}

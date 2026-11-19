@@ -88,7 +88,7 @@ export function ConsultationProducts({
       />
       <Panel className="consultation-products-card space-y-4 p-4 sm:p-5">
         {uses.length > 0 && (
-          <ul className="divide-y divide-border t-13">
+          <ul className="t-13 divide-y divide-border">
             {uses.map((use) => (
               <li
                 className="flex flex-wrap items-center justify-between gap-3 py-2"
@@ -96,7 +96,7 @@ export function ConsultationProducts({
               >
                 <div className="min-w-0">
                   <span className="font-medium">{use.product_name}</span>
-                  <span className="ml-2 tabular-nums text-muted-foreground">
+                  <span className="ml-2 text-muted-foreground tabular-nums">
                     {stockQuantityLabel(use.quantity, use.unit)}
                   </span>
                 </div>
@@ -106,7 +106,7 @@ export function ConsultationProducts({
           </ul>
         )}
         {loadError && (
-          <p className="text-xs text-destructive" role="alert">
+          <p className="text-destructive text-xs" role="alert">
             Les utilisations précédentes n’ont pas pu être chargées.{" "}
             <button
               className="underline underline-offset-4"

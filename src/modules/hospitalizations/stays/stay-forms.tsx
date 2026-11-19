@@ -84,7 +84,7 @@ export function AdmissionForm({
     >
       <div className="flex flex-col gap-2">
         <label
-          className="flex items-center justify-between t-13"
+          className="t-13 flex items-center justify-between"
           htmlFor="admission-patient"
         >
           Patient <span className="modal-required">requis</span>
@@ -103,7 +103,7 @@ export function AdmissionForm({
           value={patient}
         />
       </div>
-      <label className="block space-y-2 t-13">
+      <label className="t-13 block space-y-2">
         Emplacement
         <select
           className="h-11 w-full rounded-xl border bg-background px-3"
@@ -120,7 +120,7 @@ export function AdmissionForm({
             ))}
         </select>
       </label>
-      <div className="space-y-2 t-13">
+      <div className="t-13 space-y-2">
         <span className="flex items-center justify-between">
           Date et heure d’admission{" "}
           <span className="modal-required">requis</span>
@@ -179,7 +179,7 @@ export function AdmissionForm({
           </p>
         )}
       </div>
-      <label className="block space-y-2 t-13">
+      <label className="t-13 block space-y-2">
         <span className="flex items-center justify-between">
           Motif <span className="modal-required">requis</span>
         </span>
@@ -244,7 +244,7 @@ export function LocationForm({ onSaved }: { onSaved: () => void }) {
         );
       }}
     >
-      <label className="block space-y-2 t-13">
+      <label className="t-13 block space-y-2">
         <span className="flex items-center justify-between">
           Nom <span className="modal-required">requis</span>
         </span>
@@ -256,7 +256,7 @@ export function LocationForm({ onSaved }: { onSaved: () => void }) {
           value={name}
         />
       </label>
-      <label className="block space-y-2 t-13">
+      <label className="t-13 block space-y-2">
         Type
         <select
           className="h-11 w-full rounded-xl border bg-background px-3"

@@ -89,7 +89,7 @@ export function StockLotSelect({
         options={options}
         value={value}
       />
-      <p className="text-xs text-muted-foreground">
+      <p className="text-muted-foreground text-xs">
         {value === "fifo"
           ? "Les réceptions utilisables les plus anciennes sont utilisées en premier."
           : "Seul le lot choisi sera utilisé. Les autres stocks restent disponibles."}

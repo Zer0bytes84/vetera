@@ -171,7 +171,7 @@ export function ContextWindowMeter({
           <p className="mb-4 flex items-baseline gap-2">
             <span
               className={cn(
-                "font-mono text-[1.5rem] leading-tight font-medium tracking-tight tabular-nums",
+                "font-medium font-mono text-[1.5rem] tabular-nums leading-tight tracking-tight",
                 warning && "text-warning"
               )}
             >
@@ -197,7 +197,7 @@ export function ContextWindowMeter({
               : `Les cases teintées marquent les derniers ${100 - Math.round(warnAt * 100)} %`}
           </p>
         </Panel>
-        <ul className="grid grid-cols-1 gap-x-4 gap-y-1 px-3 py-3 @sm:grid-cols-2">
+        <ul className="grid @sm:grid-cols-2 grid-cols-1 gap-x-4 gap-y-1 px-3 py-3">
           {colored.map((s) => (
             <li className="flex items-start gap-2.5 py-1" key={s.id}>
               <span
@@ -216,12 +216,12 @@ export function ContextWindowMeter({
                   )}
                 </span>
                 {s.detail && (
-                  <span className="block truncate text-xs text-muted-foreground">
+                  <span className="block truncate text-muted-foreground text-xs">
                     {s.detail}
                   </span>
                 )}
               </span>
-              <span className="font-mono text-xs text-muted-foreground tabular-nums">
+              <span className="font-mono text-muted-foreground text-xs tabular-nums">
                 {formatTokens(s.tokens)}
               </span>
             </li>

@@ -86,7 +86,7 @@ export function DayModule({
             <HugeiconsIcon icon={ArrowLeft01Icon} size={16} strokeWidth={1.5} />
           </IconButton>
           <button
-            className={`rounded-control px-2 py-1.5 t-12 text-ink-muted hover:bg-frame ${focusRing}`}
+            className={`t-12 rounded-control px-2 py-1.5 text-ink-muted hover:bg-frame ${focusRing}`}
             onClick={onToday}
             type="button"
           >
@@ -175,11 +175,11 @@ export function DayModule({
                 onPointerLeave={onIntentCancel}
                 transition={{ duration: MOTION.fast, ease: MOTION.easeOut }}
               >
-                <div className="w-12 shrink-0 border-r border-hairline">
+                <div className="w-12 shrink-0 border-hairline border-r">
                   <time className="t-13 font-medium tabular-nums">
                     {formatTime(row.start)}
                   </time>
-                  <p className="mt-1 t-12 text-ink-muted">
+                  <p className="t-12 mt-1 text-ink-muted">
                     {Math.max(
                       0,
                       Math.round(
@@ -192,13 +192,13 @@ export function DayModule({
                 <PatientPortrait name={row.patientName} />
                 <div className="min-w-0 flex-1">
                   <button
-                    className={`max-w-full truncate rounded text-left t-13 font-medium hover:text-primary ${focusRing}`}
+                    className={`t-13 max-w-full truncate rounded text-left font-medium hover:text-primary ${focusRing}`}
                     onClick={() => onPatient(row.appointment.patientId)}
                     type="button"
                   >
                     {row.patientName}
                   </button>
-                  <p className="mt-1 truncate t-12 text-ink-muted">
+                  <p className="t-12 mt-1 truncate text-ink-muted">
                     {row.appointment.type} · {row.ownerName}
                   </p>
                 </div>
@@ -236,13 +236,13 @@ export function DayModule({
         />
       )}
       {rows.length < 3 && context.rows.length > 0 && (
-        <div className="mt-2 border-t border-hairline pt-3">
-          <h3 className="mb-1 t-12 font-medium text-ink-muted">
+        <div className="mt-2 border-hairline border-t pt-3">
+          <h3 className="t-12 mb-1 font-medium text-ink-muted">
             {context.label}
           </h3>
           {context.rows.slice(0, 2).map((row) => (
             <button
-              className={`flex w-full items-center justify-between gap-3 rounded-control py-2 text-left t-12 hover:text-primary ${focusRing}`}
+              className={`t-12 flex w-full items-center justify-between gap-3 rounded-control py-2 text-left hover:text-primary ${focusRing}`}
               key={row.appointment.id}
               onClick={() => onPatient(row.appointment.patientId)}
               type="button"
@@ -253,7 +253,7 @@ export function DayModule({
                   {row.appointment.type}
                 </span>
               </span>
-              <time className="shrink-0 t-12 text-ink-muted">
+              <time className="t-12 shrink-0 text-ink-muted">
                 {row.start.toLocaleDateString("fr-FR", {
                   day: "numeric",
                   month: "short",
@@ -263,7 +263,7 @@ export function DayModule({
           ))}
         </div>
       )}
-      <div className="mt-3 flex items-center justify-between border-t border-hairline pt-3">
+      <div className="mt-3 flex items-center justify-between border-hairline border-t pt-3">
         <span className="t-12 text-ink-muted">
           {filtered.length
             ? `${activePage * 5 + 1}–${Math.min(filtered.length, activePage * 5 + 5)} sur ${filtered.length} visites`

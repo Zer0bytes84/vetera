@@ -423,7 +423,7 @@ export function HexDensity({
                       opacity: 1,
                       transition: { ...enter, delay: reduce ? 0 : 0.35 },
                     }}
-                    className="pointer-events-none absolute z-10 -translate-y-1/2 rounded-full bg-[var(--card-raised)] px-2.5 py-1 text-xs whitespace-nowrap text-muted-foreground"
+                    className="pointer-events-none absolute z-10 -translate-y-1/2 whitespace-nowrap rounded-full bg-[var(--card-raised)] px-2.5 py-1 text-muted-foreground text-xs"
                     exit={{ opacity: 0, transition: exit }}
                     initial={{ opacity: 0 }}
                     key="callout"
@@ -479,7 +479,7 @@ export function HexDensity({
               : ""}
           </p>
 
-          <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
+          <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-muted-foreground text-xs">
             <span>
               {filledCells.length} {binUnit} · pic{" "}
               <span className="text-foreground tabular-nums">

@@ -192,7 +192,7 @@ export function ClinicNetworkSettings() {
         subtitle="Partager la base entre les postes du cabinet."
         title="Réseau local"
       >
-        <p className="p-6 text-sm text-muted-foreground">
+        <p className="p-6 text-muted-foreground text-sm">
           Le partage entre postes est disponible dans l'application de bureau.
         </p>
       </SettingsSection>
@@ -236,15 +236,15 @@ export function ClinicNetworkSettings() {
             >
               <RadioGroupItem className="mt-0.5" value={mode.id} />
               <span className="min-w-0">
-                <span className="flex flex-wrap items-baseline gap-x-2 text-sm font-medium">
+                <span className="flex flex-wrap items-baseline gap-x-2 font-medium text-sm">
                   {mode.title}
                   {status?.mode === mode.id && (
-                    <span className="text-xs font-normal text-muted-foreground">
+                    <span className="font-normal text-muted-foreground text-xs">
                       actuel
                     </span>
                   )}
                 </span>
-                <span className="mt-1 block text-xs leading-relaxed text-muted-foreground">
+                <span className="mt-1 block text-muted-foreground text-xs leading-relaxed">
                   {mode.description}
                 </span>
               </span>
@@ -274,7 +274,7 @@ export function ClinicNetworkSettings() {
 
         {choice === "standalone" && status && status.mode !== "standalone" && (
           <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border p-4">
-            <p className="text-sm text-muted-foreground">
+            <p className="text-muted-foreground text-sm">
               {status.mode === "host"
                 ? "Les postes secondaires ne pourront plus travailler tant que ce poste ne partage plus sa base."
                 : "Ce poste retrouvera sa propre base, sans les données du poste principal."}
@@ -296,7 +296,7 @@ export function ClinicNetworkSettings() {
           <div className="space-y-4 rounded-2xl border p-4">
             {host.running ? (
               <>
-                <div className="flex flex-wrap items-center gap-2 text-sm font-medium">
+                <div className="flex flex-wrap items-center gap-2 font-medium text-sm">
                   <StatusDot tone="on" />
                   Partage actif
                   <span className="font-normal text-muted-foreground">
@@ -309,11 +309,11 @@ export function ClinicNetworkSettings() {
                 </div>
                 {host.key && (
                   <div className="space-y-2">
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-muted-foreground text-xs">
                       Clé de connexion à saisir sur chaque poste secondaire
                     </p>
                     <div className="flex flex-wrap items-center gap-2">
-                      <code className="rounded-lg border bg-muted/40 px-3 py-2 font-mono text-base tracking-[0.12em] tabular-nums">
+                      <code className="rounded-lg border bg-muted/40 px-3 py-2 font-mono text-base tabular-nums tracking-[0.12em]">
                         {host.key}
                       </code>
                       <Button
@@ -343,7 +343,7 @@ export function ClinicNetworkSettings() {
                   </div>
                 )}
                 <div className="space-y-2">
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-muted-foreground text-xs">
                     Postes reliés en ce moment
                   </p>
                   {host.workstations.length > 0 ? (
@@ -359,13 +359,13 @@ export function ClinicNetworkSettings() {
                       ))}
                     </ul>
                   ) : (
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-muted-foreground text-sm">
                       Aucun pour l'instant.
                     </p>
                   )}
                 </div>
                 {host.advertiseError && (
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-muted-foreground text-xs">
                     Ce poste ne peut pas s'annoncer sur le réseau (
                     {host.advertiseError}). Les postes secondaires devront
                     saisir son adresse.
@@ -385,7 +385,7 @@ export function ClinicNetworkSettings() {
               </>
             ) : (
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <p className="max-w-prose text-sm text-muted-foreground">
+                <p className="max-w-prose text-muted-foreground text-sm">
                   {host.error ??
                     "Le système peut demander d'autoriser Baitari sur le réseau : acceptez pour les réseaux privés."}
                 </p>
@@ -465,7 +465,7 @@ export function ClinicNetworkSettings() {
             {found && (
               <div className="space-y-2">
                 {found.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-muted-foreground text-sm">
                     Aucun poste principal trouvé. Vérifiez qu'il partage sa
                     base, ou saisissez son adresse affichée dans ses paramètres.
                   </p>
@@ -528,7 +528,7 @@ export function ClinicNetworkSettings() {
                 {tested.workstationName} répond, Baitari {tested.appVersion}.
               </p>
             )}
-            <p className="text-xs leading-relaxed text-muted-foreground">
+            <p className="text-muted-foreground text-xs leading-relaxed">
               Une fois relié, ce poste affiche les données du poste principal.
               Ses propres données restent sur cet ordinateur et reviennent si
               vous repassez en poste seul.
@@ -562,7 +562,7 @@ export function ClinicNetworkSettings() {
 
         {error && (
           <p
-            className="rounded-2xl border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive"
+            className="rounded-2xl border border-destructive/20 bg-destructive/5 p-4 text-destructive text-sm"
             role="alert"
           >
             {error}

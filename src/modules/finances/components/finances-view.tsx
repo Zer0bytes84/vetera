@@ -409,7 +409,7 @@ export function FinancesView(props: FinancesViewProps) {
                 </ToggleGroup>
                 <Button
                   aria-expanded={journalAdvancedOpen}
-                  className="list-filter-control h-[30px] rounded-full text-xs"
+                  className="h-[30px] list-filter-control rounded-full text-xs"
                   onClick={() => setJournalAdvancedOpen((open) => !open)}
                   variant="outline"
                 >
@@ -588,19 +588,19 @@ export function FinancesView(props: FinancesViewProps) {
                           Opération
                         </th>
                         <th
-                          className="hidden @md:table-cell px-2 py-2 text-left font-medium"
+                          className="@md:table-cell hidden px-2 py-2 text-left font-medium"
                           scope="col"
                         >
                           Catégorie
                         </th>
                         <th
-                          className="hidden @xl:table-cell px-2 py-2 text-left font-medium"
+                          className="@xl:table-cell hidden px-2 py-2 text-left font-medium"
                           scope="col"
                         >
                           Mode
                         </th>
                         <th
-                          className="hidden @xl:table-cell px-2 py-2 text-left font-medium"
+                          className="@xl:table-cell hidden px-2 py-2 text-left font-medium"
                           scope="col"
                         >
                           Origine
@@ -627,7 +627,7 @@ export function FinancesView(props: FinancesViewProps) {
                           >
                             <td className="whitespace-nowrap px-2 py-2.5">
                               <span className="block max-w-56">
-                                <span className="block truncate text-sm font-medium">
+                                <span className="block truncate font-medium text-sm">
                                   {transaction.description}
                                 </span>
                                 <span className="block text-[0.8125rem] text-muted-foreground">
@@ -635,15 +635,15 @@ export function FinancesView(props: FinancesViewProps) {
                                 </span>
                               </span>
                             </td>
-                            <td className="hidden whitespace-nowrap px-2 py-2.5 @md:table-cell">
+                            <td className="@md:table-cell hidden whitespace-nowrap px-2 py-2.5">
                               <StatusPill size="sm" tone="neutral">
                                 {transaction.category}
                               </StatusPill>
                             </td>
-                            <td className="hidden whitespace-nowrap px-2 py-2.5 text-muted-foreground @xl:table-cell">
+                            <td className="@xl:table-cell hidden whitespace-nowrap px-2 py-2.5 text-muted-foreground">
                               {PAYMENT_METHOD_LABELS[transaction.method]}
                             </td>
-                            <td className="hidden whitespace-nowrap px-2 py-2.5 @xl:table-cell">
+                            <td className="@xl:table-cell hidden whitespace-nowrap px-2 py-2.5">
                               {locked ? (
                                 <StatusPill size="sm" tone="brand">
                                   <HugeiconsIcon
@@ -662,7 +662,7 @@ export function FinancesView(props: FinancesViewProps) {
                             <td className="whitespace-nowrap px-2 py-2.5 text-right">
                               <span
                                 className={cn(
-                                  "font-sans text-[0.8125rem] font-medium tabular-nums",
+                                  "font-medium font-sans text-[0.8125rem] tabular-nums",
                                   isIncome ? "text-positive" : "text-negative"
                                 )}
                               >
@@ -717,7 +717,7 @@ export function FinancesView(props: FinancesViewProps) {
               )}
             </Panel>
 
-            <footer className="flex items-center justify-between gap-3 py-1.5 pr-1.5 pl-3.5 text-xs text-muted-foreground">
+            <footer className="flex items-center justify-between gap-3 py-1.5 pr-1.5 pl-3.5 text-muted-foreground text-xs">
               <span>
                 {paginatedTransactions.length
                   ? filteredTransactions.indexOf(paginatedTransactions[0]) + 1
@@ -1052,7 +1052,7 @@ export function FinancesView(props: FinancesViewProps) {
                                   }
                                   value={invoicePrices[line.id] ?? ""}
                                 />
-                                <span className="text-xs text-muted-foreground">
+                                <span className="text-muted-foreground text-xs">
                                   DA
                                 </span>
                               </div>

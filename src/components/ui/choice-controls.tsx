@@ -54,7 +54,7 @@ function Field({
   return (
     <label
       className={cn(
-        "flex cursor-pointer items-start gap-3 select-none",
+        "flex cursor-pointer select-none items-start gap-3",
         className
       )}
     >

@@ -126,16 +126,16 @@ export function PatientDocumentRegistry({
   };
   return (
     <section aria-label="Documents du patient" className="space-y-4">
-      <header className="flex flex-wrap items-start justify-between gap-3 border-b border-border pb-4">
+      <header className="flex flex-wrap items-start justify-between gap-3 border-border border-b pb-4">
         <div className="min-w-0">
-          <h3 className="flex items-center gap-2 text-base font-medium">
+          <h3 className="flex items-center gap-2 font-medium text-base">
             <FileText
               className="size-4 shrink-0 text-muted-foreground"
               strokeWidth={1}
             />
             Documents du patient
           </h3>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <p className="mt-1 text-muted-foreground text-sm">
             Documents générés et pièces importées, conservés sur cet ordinateur.
           </p>
         </div>
@@ -183,7 +183,7 @@ export function PatientDocumentRegistry({
             value={filters.search}
           />
         </label>
-        <label className="block text-xs text-muted-foreground">
+        <label className="block text-muted-foreground text-xs">
           <span className="sr-only">Type de document</span>
           <NativeSelect
             aria-label="Type de document"
@@ -201,7 +201,7 @@ export function PatientDocumentRegistry({
             </NativeSelectOption>
           </NativeSelect>
         </label>
-        <label className="block text-xs text-muted-foreground">
+        <label className="block text-muted-foreground text-xs">
           Du
           <DatePicker
             aria-label="Documents à partir du"
@@ -211,7 +211,7 @@ export function PatientDocumentRegistry({
             value={filters.from}
           />
         </label>
-        <label className="block text-xs text-muted-foreground">
+        <label className="block text-muted-foreground text-xs">
           Au
           <DatePicker
             aria-label="Documents jusqu’au"
@@ -224,7 +224,7 @@ export function PatientDocumentRegistry({
         </label>
       </div>
       {importing && (
-        <p className="text-sm text-muted-foreground" role="status">
+        <p className="text-muted-foreground text-sm" role="status">
           {progress}
         </p>
       )}
@@ -236,13 +236,13 @@ export function PatientDocumentRegistry({
         />
       ) : registry.loading ? (
         <p
-          className="py-8 text-center text-sm text-muted-foreground"
+          className="py-8 text-center text-muted-foreground text-sm"
           role="status"
         >
           Chargement des documents…
         </p>
       ) : visible.length ? (
-        <ul className="divide-y divide-border border-y border-border">
+        <ul className="divide-y divide-border border-border border-y">
           {visible.map((document) => (
             <li
               className="grid min-w-0 gap-3 py-4 md:grid-cols-[minmax(0,1fr)_auto] md:items-center"
@@ -250,13 +250,13 @@ export function PatientDocumentRegistry({
             >
               <div className="min-w-0">
                 <button
-                  className="max-w-full text-left text-sm font-medium underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+                  className="max-w-full text-left font-medium text-sm underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-4"
                   onClick={() => setPreviewId(document.id)}
                   type="button"
                 >
                   <span className="break-words">{document.title}</span>
                 </button>
-                <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
+                <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-muted-foreground text-xs">
                   <span>
                     {document.kind === "import"
                       ? "Pièce importée"
@@ -304,12 +304,12 @@ export function PatientDocumentRegistry({
         </ul>
       ) : (
         <div className="py-8 text-center">
-          <p className="text-sm font-medium">
+          <p className="font-medium text-sm">
             {registry.documents.length
               ? "Aucun document ne correspond aux filtres."
               : "Aucun document généré ou importé pour ce patient."}
           </p>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <p className="mt-1 text-muted-foreground text-sm">
             Générez un document depuis une note validée, ou importez un PDF ou
             une image.
           </p>
@@ -338,7 +338,7 @@ export function PatientDocumentRegistry({
           </DialogHeader>
           <Button
             aria-label="Fermer la lecture"
-            className="absolute right-4 top-4"
+            className="absolute top-4 right-4"
             onClick={() => setReader(null)}
             size="icon"
             variant="ghost"

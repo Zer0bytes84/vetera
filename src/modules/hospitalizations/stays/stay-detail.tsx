@@ -101,8 +101,8 @@ export function StayDetail({
       </Button>
       <header>
         <h2 className="t-18 font-medium">{patientName}</h2>
-        <p className="mt-1 t-13 text-muted-foreground">{stay.reason}</p>
-        <p className="mt-2 t-13">
+        <p className="t-13 mt-1 text-muted-foreground">{stay.reason}</p>
+        <p className="t-13 mt-2">
           {stayDays(
             new Date(stay.admitted_at),
             new Date(
@@ -152,7 +152,7 @@ export function StayDetail({
           )}
           {stay.status === "sortie_prevue" && (
             <div className="space-y-3">
-              <label className="block t-13">
+              <label className="t-13 block">
                 Résumé de sortie
                 <Input
                   className="mt-2 h-11"
@@ -189,7 +189,7 @@ export function StayDetail({
         </section>
       )}
       {stay.discharge_summary && (
-        <p className="rounded-xl bg-muted p-4 t-13">{stay.discharge_summary}</p>
+        <p className="t-13 rounded-xl bg-muted p-4">{stay.discharge_summary}</p>
       )}
       {stay.status === "sorti" && (
         <>
@@ -216,7 +216,7 @@ export function StayDetail({
         {vitals.length > 0 &&
           vitalAlerts(species, vitals[vitals.length - 1]).map((alert) => (
             <p
-              className="rounded-xl bg-amber-50 px-3 py-2 t-13 text-amber-800 dark:bg-amber-950/30 dark:text-amber-200"
+              className="t-13 rounded-xl bg-amber-50 px-3 py-2 text-amber-800 dark:bg-amber-950/30 dark:text-amber-200"
               key={alert}
               role="status"
             >
@@ -227,7 +227,7 @@ export function StayDetail({
         {vitals.length ? (
           vitals.map((vital) => (
             <div
-              className="flex flex-wrap gap-4 border-t py-3 t-13"
+              className="t-13 flex flex-wrap gap-4 border-t py-3"
               key={vital.id}
             >
               <time className="text-muted-foreground tabular-nums">

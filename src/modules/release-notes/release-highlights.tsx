@@ -18,8 +18,8 @@ export function ReleaseHighlights({
             <Icon className="size-4" />
           </IconTile>
           <div className="min-w-0">
-            <h3 className="text-[1rem] font-medium leading-6">{title}</h3>
-            <p className="text-[0.8125rem] leading-5 text-muted-foreground">
+            <h3 className="font-medium text-[1rem] leading-6">{title}</h3>
+            <p className="text-[0.8125rem] text-muted-foreground leading-5">
               {text}
             </p>
           </div>

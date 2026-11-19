@@ -206,7 +206,7 @@ export function AgendaMonthCalendar({
                           </span>
                         ))}
                       {count > MAX_NAMED ? (
-                        <span className="agenda-month-more ps-3 text-[12px] text-muted-foreground leading-4 tabular-nums">
+                        <span className="agenda-month-more ps-3 text-[12px] text-muted-foreground tabular-nums leading-4">
                           + {count - (MAX_NAMED - 1)}
                         </span>
                       ) : null}

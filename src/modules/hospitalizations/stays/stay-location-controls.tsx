@@ -128,7 +128,7 @@ export function StayTransfer({ stay }: { stay: Stay }) {
           );
         }}
       >
-        <label className="min-w-48 space-y-2 t-13">
+        <label className="t-13 min-w-48 space-y-2">
           Nouvel emplacement
           <select
             className="h-11 w-full rounded-xl border bg-background px-3"
@@ -143,7 +143,7 @@ export function StayTransfer({ stay }: { stay: Stay }) {
             ))}
           </select>
         </label>
-        <label className="min-w-48 flex-1 space-y-2 t-13">
+        <label className="t-13 min-w-48 flex-1 space-y-2">
           Motif du transfert
           <Input
             className="h-11"

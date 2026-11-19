@@ -243,18 +243,18 @@ export function DivergingBars({
               {headline && (
                 <p className="flex flex-wrap items-center gap-x-2">
                   <RollingNumber
-                    className="text-[1.5rem] leading-none font-medium tracking-tight"
+                    className="font-medium text-[1.5rem] leading-none tracking-tight"
                     value={headline.value}
                   />
                   {headline.caption && (
-                    <span className="text-sm text-muted-foreground">
+                    <span className="text-muted-foreground text-sm">
                       {headline.caption}
                     </span>
                   )}
                 </p>
               )}
               {aside && (
-                <div className="text-sm text-muted-foreground">{aside}</div>
+                <div className="text-muted-foreground text-sm">{aside}</div>
               )}
             </div>
           )}

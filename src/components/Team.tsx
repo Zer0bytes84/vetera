@@ -410,7 +410,7 @@ const Team: React.FC = () => {
         className="team-directory flex flex-1 flex-col gap-3"
       >
         <div className="team-directory-tools flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
-          <p className="text-muted-foreground t-13">
+          <p className="t-13 text-muted-foreground">
             <span className="font-medium text-foreground tabular-nums">
               {formatNumber(filteredUsers.length)}
             </span>{" "}
@@ -615,7 +615,7 @@ const Team: React.FC = () => {
                     <div className="absolute right-5 bottom-5">
                       <Badge
                         className={cn(
-                          "gap-1 t-12",
+                          "t-12 gap-1",
                           TEAM_STATUS_META[
                             user.status === "active" ? "active" : "inactive"
                           ].className

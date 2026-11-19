@@ -48,7 +48,7 @@ export function SettingsSection({
       />
       <div
         className={cn(
-          "settings-section-panel overflow-hidden rounded-2xl border border-border bg-[var(--card-inset)] divide-y divide-border",
+          "settings-section-panel divide-y divide-border overflow-hidden rounded-2xl border border-border bg-[var(--card-inset)]",
           panelClassName
         )}
       >
@@ -86,7 +86,7 @@ export function SettingsRow({
       <div className="min-w-0 flex-1 basis-64">
         <Title
           className={cn(
-            "block text-sm font-medium",
+            "block font-medium text-sm",
             htmlFor && "cursor-pointer"
           )}
           {...(htmlFor ? { htmlFor } : {})}
@@ -94,7 +94,7 @@ export function SettingsRow({
           {title}
         </Title>
         {detail ? (
-          <p className="text-xs leading-5 text-muted-foreground" id={detailId}>
+          <p className="text-muted-foreground text-xs leading-5" id={detailId}>
             {detail}
           </p>
         ) : null}

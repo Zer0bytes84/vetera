@@ -129,7 +129,7 @@ export function PatientPeekView({
         initialFocus={follow ? false : undefined}
         showOverlay={!follow}
       >
-        <SheetHeader className="border-b border-border px-6 py-5 pr-14">
+        <SheetHeader className="border-border border-b px-6 py-5 pr-14">
           <SheetTitle>Dossier médical</SheetTitle>
           <SheetDescription>
             Lecture rapide du patient et de son suivi clinique.
@@ -370,7 +370,7 @@ export function PatientPeekView({
             />
           )}
         </div>
-        <div className="patient-peek-footer flex flex-wrap items-center justify-between gap-3 border-t border-border bg-card px-6 py-4">
+        <div className="patient-peek-footer flex flex-wrap items-center justify-between gap-3 border-border border-t bg-card px-6 py-4">
           <ActionButton onClick={onClose} quiet>
             Fermer
           </ActionButton>

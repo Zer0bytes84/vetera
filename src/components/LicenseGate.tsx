@@ -204,18 +204,18 @@ function CheckedLicenseGate({ children }: { children: ReactNode }) {
       />
       <section className="w-full max-w-md rounded-3xl border bg-card p-8 shadow-sm">
         <Logo />
-        <h1 className="mt-6 text-2xl font-semibold">
+        <h1 className="mt-6 font-semibold text-2xl">
           {access ? "Licence de ce poste" : "Vérification de votre licence"}
         </h1>
         <p
-          className="mt-3 text-sm leading-6 text-muted-foreground"
+          className="mt-3 text-muted-foreground text-sm leading-6"
           role="status"
         >
           {access?.message || "Connexion au serveur d’activation…"}
         </p>
         {access && (
           <>
-            <p className="mt-2 text-sm text-muted-foreground">
+            <p className="mt-2 text-muted-foreground text-sm">
               Vos dossiers restent conservés sur cet appareil.
             </p>
             <form className="mt-6 space-y-4" onSubmit={activate}>
@@ -248,7 +248,7 @@ function CheckedLicenseGate({ children }: { children: ReactNode }) {
                 />
               </div>
               {error && (
-                <p className="text-sm text-destructive" role="alert">
+                <p className="text-destructive text-sm" role="alert">
                   {error}
                 </p>
               )}

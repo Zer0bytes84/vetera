@@ -518,7 +518,7 @@ const BackupSettings: React.FC = () => {
             <Spinner />
           </div>
         ) : backups.length === 0 ? (
-          <p className="px-6 py-6 text-sm text-muted-foreground">
+          <p className="px-6 py-6 text-muted-foreground text-sm">
             Votre première copie apparaîtra ici après la sauvegarde.
           </p>
         ) : (
@@ -885,13 +885,13 @@ const Parametres: React.FC<ParametresProps> = ({
               <div className="flex items-center gap-3 p-6">
                 <Avatar name={displayName} size="xl" src={avatarUrl} />
                 <div className="min-w-0">
-                  <p className="truncate text-lg font-medium">
+                  <p className="truncate font-medium text-lg">
                     {formatPersonName(displayName) || "Votre profil"}
                   </p>
-                  <p className="truncate text-sm text-muted-foreground">
+                  <p className="truncate text-muted-foreground text-sm">
                     {currentUser?.email}
                   </p>
-                  <p className="text-xs text-muted-foreground">{roleLabel}</p>
+                  <p className="text-muted-foreground text-xs">{roleLabel}</p>
                 </div>
               </div>
               <details className="settings-avatar-picker">
@@ -1188,8 +1188,8 @@ const Parametres: React.FC<ParametresProps> = ({
               <div className="flex items-center gap-6 p-6">
                 <Logo collapsed size="lg" />
                 <div className="min-w-0">
-                  <p className="text-lg font-medium">{APP_NAME}</p>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="font-medium text-lg">{APP_NAME}</p>
+                  <p className="text-muted-foreground text-sm">
                     Version {getAppVersion()}
                   </p>
                 </div>

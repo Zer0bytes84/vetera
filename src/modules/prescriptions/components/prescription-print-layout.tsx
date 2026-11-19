@@ -89,7 +89,7 @@ export function PrescriptionPrintLayout({
                 {patient.breed ? `, ${patient.breed}` : ""})
               </span>
               {patient.reference ? (
-                <span className="mt-0.5 block font-mono font-medium tabular-nums">
+                <span className="mt-0.5 block font-medium font-mono tabular-nums">
                   Réf. {patient.reference}
                 </span>
               ) : null}

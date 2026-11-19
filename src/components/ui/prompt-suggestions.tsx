@@ -64,7 +64,7 @@ export function PromptSuggestions({
       <MotionConfig reducedMotion="user">
         <div className={cn("flex w-full flex-col gap-2", className)}>
           {heading && (
-            <p className="px-1 text-xs font-medium text-muted-foreground">
+            <p className="px-1 font-medium text-muted-foreground text-xs">
               {heading}
             </p>
           )}
@@ -125,10 +125,10 @@ export function PromptSuggestions({
           className
         )}
       >
-        {heading && <p className="px-1 text-[1rem] font-medium">{heading}</p>}
+        {heading && <p className="px-1 font-medium text-[1rem]">{heading}</p>}
         <ul
           aria-label={heading ?? "Suggestions de recherche"}
-          className="grid grid-cols-1 gap-2 @md:grid-cols-2"
+          className="grid @md:grid-cols-2 grid-cols-1 gap-2"
         >
           {data.map((s, i) => (
             <motion.li key={s.id} {...appear(i)}>
@@ -139,11 +139,11 @@ export function PromptSuggestions({
               >
                 {s.icon && <IconTile icon={s.icon} />}
                 <span className={cn("min-w-0 flex-1 py-1", !s.icon && "pl-2")}>
-                  <span className="block truncate text-[0.8125rem] font-medium">
+                  <span className="block truncate font-medium text-[0.8125rem]">
                     {s.title}
                   </span>
                   {s.hint && (
-                    <span className="block truncate text-xs text-muted-foreground">
+                    <span className="block truncate text-muted-foreground text-xs">
                       {s.hint}
                     </span>
                   )}

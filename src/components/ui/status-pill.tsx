@@ -134,7 +134,7 @@ export function StatusPill({
     <span
       className={cn(
         // Its own tracking: a pill inside a tracked title or table keeps the spacing of its 12-13 px text.
-        "inline-flex shrink-0 items-center rounded-full font-medium tracking-normal whitespace-nowrap",
+        "inline-flex shrink-0 items-center whitespace-nowrap rounded-full font-medium tracking-normal",
         sizes[size].pill,
         tones[tone],
         className
@@ -165,7 +165,7 @@ export function Tag({ className, ...props }: React.ComponentProps<"span">) {
   return (
     <span
       className={cn(
-        "inline-flex h-5 shrink-0 items-center rounded-md bg-foreground/[0.06] px-1.5 font-mono text-xs text-muted-foreground",
+        "inline-flex h-5 shrink-0 items-center rounded-md bg-foreground/[0.06] px-1.5 font-mono text-muted-foreground text-xs",
         className
       )}
       {...props}

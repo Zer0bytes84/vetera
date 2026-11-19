@@ -90,7 +90,7 @@ export function MicrophonePermissionWait({
         onStop={onCancel}
         stopLabel="Annuler"
       />
-      <p className="px-2 text-xs leading-relaxed text-muted-foreground">
+      <p className="px-2 text-muted-foreground text-xs leading-relaxed">
         {hint
           ? "Aucune fenêtre ne s’affiche ? Ouvrez Réglages Système → Confidentialité et sécurité → Microphone, autorisez Baitari, puis cliquez à nouveau sur Dicter."
           : "Si macOS vous le demande, cliquez sur Autoriser."}

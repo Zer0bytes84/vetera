@@ -129,12 +129,12 @@ export function ToolCallBlock({
           </motion.span>
         </AnimatePresence>
       </span>
-      <span className="shrink-0 text-[0.8125rem] font-medium">{data.name}</span>
-      <span className="min-w-0 flex-1 truncate text-xs text-muted-foreground">
+      <span className="shrink-0 font-medium text-[0.8125rem]">{data.name}</span>
+      <span className="min-w-0 flex-1 truncate text-muted-foreground text-xs">
         {data.summary}
       </span>
       <span className="sr-only">{status.label}</span>
-      <span className="shrink-0 text-xs text-muted-foreground tabular-nums">
+      <span className="shrink-0 text-muted-foreground text-xs tabular-nums">
         {running ? (
           <Elapsed key={data.id} />
         ) : data.durationMs !== undefined && data.status !== "pending" ? (
@@ -224,7 +224,7 @@ export function ToolCallBlock({
                       className="mt-0.5 size-3.5 shrink-0"
                       strokeWidth={2.5}
                     />
-                    <p className="min-w-0 flex-1 text-xs leading-5 break-words">
+                    <p className="min-w-0 flex-1 break-words text-xs leading-5">
                       {data.error ?? "L’opération n’a pas abouti."}
                     </p>
                     {onRetry && (
@@ -241,7 +241,7 @@ export function ToolCallBlock({
                   </div>
                 ) : data.status === "success" && data.result ? (
                   <Section copy={data.result} title="Résultat">
-                    <p className="text-[0.8125rem] leading-5 whitespace-pre-wrap">
+                    <p className="whitespace-pre-wrap text-[0.8125rem] leading-5">
                       {data.result}
                     </p>
                   </Section>

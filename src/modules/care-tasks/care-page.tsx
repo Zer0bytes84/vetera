@@ -450,7 +450,7 @@ export default function CarePage({
         <div className="min-w-0 flex-1">
           {mode === "heure" && (
             <button
-              className="mb-1 rounded t-13 font-medium hover:underline focus-visible:outline-2 focus-visible:outline-primary"
+              className="t-13 mb-1 rounded font-medium hover:underline focus-visible:outline-2 focus-visible:outline-primary"
               onClick={() => onNavigateToPatient?.(task.patient_id)}
               type="button"
             >
@@ -458,7 +458,7 @@ export default function CarePage({
             </button>
           )}
           <button
-            className="flex w-full min-h-11 min-w-0 flex-1 items-center gap-4 rounded-lg text-left focus-visible:outline-2 focus-visible:outline-primary"
+            className="flex min-h-11 w-full min-w-0 flex-1 items-center gap-4 rounded-lg text-left focus-visible:outline-2 focus-visible:outline-primary"
             onClick={() => {
               setSelected(task.id);
               setActionError(null);
@@ -467,21 +467,21 @@ export default function CarePage({
             type="button"
           >
             <time
-              className="shrink-0 t-16 font-medium tabular-nums"
+              className="t-16 shrink-0 font-medium tabular-nums"
               dateTime={task.heure_prevue}
             >
               {isCarried(task) && (
-                <span className="block t-12 font-normal text-rose-700 dark:text-rose-300">
+                <span className="t-12 block font-normal text-rose-700 dark:text-rose-300">
                   {shortDay(task.heure_prevue)}
                 </span>
               )}
               {time(task.heure_prevue)}
             </time>
             <span className="min-w-0 flex-1">
-              <span className="block break-words t-14 font-medium">
+              <span className="t-14 block break-words font-medium">
                 {task.label}
               </span>
-              <span className="block t-12 text-muted-foreground">
+              <span className="t-12 block text-muted-foreground">
                 {careTypeLabels[task.type]}
                 {task.produit_id &&
                 products.data.find((p) => p.id === task.produit_id)
@@ -490,13 +490,13 @@ export default function CarePage({
                   : ""}
               </span>
               {stockWarning(task) && (
-                <span className="block t-12 text-destructive">
+                <span className="t-12 block text-destructive">
                   Stock insuffisant, ouvrez le soin pour vérifier.
                 </span>
               )}
             </span>
             <span
-              className={`shrink-0 rounded-lg px-2.5 py-1 t-12 font-medium ${tones[status]}`}
+              className={`t-12 shrink-0 rounded-lg px-2.5 py-1 font-medium ${tones[status]}`}
               data-premium-status={status}
             >
               {labels[status]}
@@ -539,8 +539,8 @@ export default function CarePage({
       aria-label="Soins"
       className={
         patientId && !onShowAll
-          ? "care-page min-w-0 space-y-4 t-13"
-          : "care-page dashboard-stage min-w-0 px-4 pb-8 lg:px-6 space-y-6 font-sans t-13 font-normal"
+          ? "care-page t-13 min-w-0 space-y-4"
+          : "care-page dashboard-stage t-13 min-w-0 space-y-6 px-4 pb-8 font-normal font-sans lg:px-6"
       }
     >
       {patientId && !onShowAll ? (
@@ -804,7 +804,7 @@ export default function CarePage({
           </div>
         </>
       ) : (
-        <div className="rounded-2xl border border-dashed border-border p-12 text-center">
+        <div className="rounded-2xl border border-border border-dashed p-12 text-center">
           <p className="t-16 font-medium">Aucun soin pour cette date</p>
           <p className="mt-2 text-muted-foreground">
             {tasks.length
@@ -857,7 +857,7 @@ export default function CarePage({
           showCloseButton={false}
         >
           <Button
-            className="absolute right-4 top-4"
+            className="absolute top-4 right-4"
             onClick={() => setSelected(null)}
             size="sm"
             variant="ghost"
@@ -873,7 +873,7 @@ export default function CarePage({
           {detail && (
             <div className="mt-6 space-y-5">
               <h2 className="t-18 font-medium">{detail.label}</h2>
-              <dl className="grid grid-cols-2 gap-3 t-13">
+              <dl className="t-13 grid grid-cols-2 gap-3">
                 {[
                   ["Heure prévue", when(detail)],
                   ["Type", careTypeLabels[detail.type]],
@@ -904,7 +904,7 @@ export default function CarePage({
                 <p>Motif : {detail.motif_annulation}</p>
               )}
               {detail.statut === "fait" && (
-                <div className="border-y border-border py-4">
+                <div className="border-border border-y py-4">
                   <Button
                     className="min-h-11 w-full"
                     disabled={!!busy || !currentUser}
@@ -920,7 +920,7 @@ export default function CarePage({
               )}
               {!["fait", "annule"].includes(detail.statut) && (
                 <div className="space-y-3">
-                  <div className="space-y-3 border-y border-border py-4">
+                  <div className="space-y-3 border-border border-y py-4">
                     <ProductStockFields
                       disabled={!!busy}
                       onProductChange={(productId) =>
@@ -1049,7 +1049,7 @@ export default function CarePage({
                   </Button>
                 </div>
               )}
-              <div className="border-t border-border pt-4">
+              <div className="border-border border-t pt-4">
                 <h3 className="font-medium">Historique</h3>
                 {historyError ? (
                   <p role="alert">L’historique n’a pas pu être chargé.</p>

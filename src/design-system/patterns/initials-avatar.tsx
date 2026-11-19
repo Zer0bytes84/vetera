@@ -32,7 +32,7 @@ export function InitialsAvatar({
     <span
       aria-hidden="true"
       className={cn(
-        "inline-grid size-10 shrink-0 place-items-center rounded-full bg-[#F5F5F5] ring-1 ring-black/5 t-13 font-medium text-[#5D5D5D] dark:bg-white/10 dark:text-white/70",
+        "t-13 inline-grid size-10 shrink-0 place-items-center rounded-full bg-[#F5F5F5] font-medium text-[#5D5D5D] ring-1 ring-black/5 dark:bg-white/10 dark:text-white/70",
         className
       )}
       data-slot="initials-avatar"

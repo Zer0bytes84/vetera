@@ -131,7 +131,7 @@ export function ConfirmationCard({
                           <div className="min-w-0 flex-1">
                             <p className="truncate text-sm">{item.label}</p>
                             {item.detail && (
-                              <p className="truncate text-xs text-muted-foreground">
+                              <p className="truncate text-muted-foreground text-xs">
                                 {item.detail}
                               </p>
                             )}
@@ -234,7 +234,7 @@ function Done({
       <Panel className="flex items-center gap-3 border border-border p-3">
         <IconTile className="bg-positive/15 text-positive" icon={CircleCheck} />
         <div className="min-w-0 flex-1">
-          <p className="text-[1rem] font-medium">{data.title}</p>
+          <p className="font-medium text-[1rem]">{data.title}</p>
           <p className="truncate text-[0.8125rem] text-muted-foreground">
             {[data.reference, data.doneAt].filter(Boolean).join(" · ")}
           </p>

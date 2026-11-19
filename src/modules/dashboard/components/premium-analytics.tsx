@@ -676,7 +676,7 @@ export function PremiumAnalytics({
   );
 
   return (
-    <div className="premium-overview-shell flex flex-col gap-6 w-full">
+    <div className="premium-overview-shell flex w-full flex-col gap-6">
       {clinicalView ? (
         <div className="premium-clinical-overview">{clinicalView}</div>
       ) : (
@@ -782,7 +782,7 @@ export function PremiumAnalytics({
                         <button
                           aria-label={label}
                           aria-pressed={keyView === view}
-                          className="filter keyViewIcon"
+                          className="keyViewIcon filter"
                           data-active={keyView === view}
                           onClick={() => setKeyView(view)}
                           type="button"

@@ -61,7 +61,7 @@ export function MedicalRemindersWidgetContent({
             </SignalBadge>
           )}
           <button
-            className="inline-flex min-h-11 items-center gap-2 rounded-md px-2 t-12 font-medium text-ink-muted hover:text-ink focus-visible:outline-2 focus-visible:outline-ring"
+            className="t-12 inline-flex min-h-11 items-center gap-2 rounded-md px-2 font-medium text-ink-muted hover:text-ink focus-visible:outline-2 focus-visible:outline-ring"
             onClick={onAll}
             type="button"
           >
@@ -94,7 +94,7 @@ export function MedicalRemindersWidgetContent({
             <div>
               <dt className="t-12 text-ink-muted">En retard</dt>
               <dd
-                className={`mt-1 font-heading text-2xl font-medium tabular-nums ${overdue.length ? "text-destructive" : ""}`}
+                className={`mt-1 font-heading font-medium text-2xl tabular-nums ${overdue.length ? "text-destructive" : ""}`}
               >
                 {overdue.length}
               </dd>
@@ -102,14 +102,14 @@ export function MedicalRemindersWidgetContent({
             <div>
               <dt className="t-12 text-ink-muted">Aujourd’hui</dt>
               <dd
-                className={`mt-1 font-heading text-2xl font-medium tabular-nums ${dueToday.length ? "text-[var(--premium-blue,var(--interactive-blue))]" : ""}`}
+                className={`mt-1 font-heading font-medium text-2xl tabular-nums ${dueToday.length ? "text-[var(--premium-blue,var(--interactive-blue))]" : ""}`}
               >
                 {dueToday.length}
               </dd>
             </div>
             <div>
               <dt className="t-12 text-ink-muted">À venir</dt>
-              <dd className="mt-1 font-heading text-2xl font-medium tabular-nums">
+              <dd className="mt-1 font-heading font-medium text-2xl tabular-nums">
                 {upcomingCount}
               </dd>
             </div>
@@ -137,7 +137,7 @@ export function MedicalRemindersWidgetContent({
                 return (
                   <li key={reminder.id}>
                     <time
-                      className="font-mono t-12 text-ink-muted tabular-nums"
+                      className="t-12 font-mono text-ink-muted tabular-nums"
                       dateTime={reminder.echeance}
                     >
                       {new Date(
@@ -151,10 +151,10 @@ export function MedicalRemindersWidgetContent({
                             : "numeric",
                       })}
                     </time>
-                    <span className="truncate t-14 font-medium">
+                    <span className="t-14 truncate font-medium">
                       {patient?.name ?? "Patient indisponible"}
                     </span>
-                    <span className="truncate t-12 text-ink-muted">
+                    <span className="t-12 truncate text-ink-muted">
                       {type?.name ?? "Rappel médical"}
                     </span>
                   </li>

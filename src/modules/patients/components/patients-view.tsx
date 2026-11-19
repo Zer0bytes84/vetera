@@ -225,7 +225,7 @@ export function PatientsView(props: PatientsViewProps) {
         }}
         open={!!createdPatientPrompt}
       >
-        <DialogContent className="modal-medical-shell gap-0 w-full max-w-[min(560px,calc(100%-2rem))] overflow-hidden p-0 sm:max-w-[560px]">
+        <DialogContent className="modal-medical-shell w-full max-w-[min(560px,calc(100%-2rem))] gap-0 overflow-hidden p-0 sm:max-w-[560px]">
           <FormDialogHeader
             artwork="patient-created"
             compact

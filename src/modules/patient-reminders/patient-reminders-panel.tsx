@@ -211,22 +211,22 @@ export function PatientRemindersContent({
         <>
           <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <h2 className="font-heading t-18 font-medium">
+              <h2 className="t-18 font-heading font-medium">
                 Rappels médicaux
               </h2>
-              <p className="mt-1 t-13 text-muted-foreground">
+              <p className="t-13 mt-1 text-muted-foreground">
                 Échéances préventives liées aux actes des patients.
               </p>
             </div>
-            <div className="flex gap-6 t-12">
+            <div className="t-12 flex gap-6">
               <span>
-                <strong className="block t-18 text-destructive tabular-nums">
+                <strong className="t-18 block text-destructive tabular-nums">
                   {overdueCount}
                 </strong>
                 en retard
               </span>
               <span>
-                <strong className="block t-18 text-primary tabular-nums">
+                <strong className="t-18 block text-primary tabular-nums">
                   {todayCount}
                 </strong>
                 dus aujourd’hui
@@ -312,7 +312,7 @@ export function PatientRemindersContent({
           )}
 
           {!rows.length && (
-            <p className="py-8 text-center t-13 text-muted-foreground">
+            <p className="t-13 py-8 text-center text-muted-foreground">
               {loading
                 ? "Chargement des rappels…"
                 : "Aucun rappel médical dans cette vue."}
@@ -357,13 +357,13 @@ export function PatientRemindersContent({
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <h3 className="font-medium t-14">{contact.patient}</h3>
+                      <h3 className="t-14 font-medium">{contact.patient}</h3>
                       <Badge variant="outline">Médical</Badge>
                       <Badge variant={overdue ? "destructive" : "secondary"}>
                         {contact.type}
                       </Badge>
                     </div>
-                    <p className="mt-1 t-13 text-muted-foreground">
+                    <p className="t-13 mt-1 text-muted-foreground">
                       {overdue
                         ? "En retard"
                         : dueToday
@@ -375,7 +375,7 @@ export function PatientRemindersContent({
                               : `Échéance le ${new Date(`${reminder.echeance}T12:00:00`).toLocaleDateString("fr-FR")}`}
                     </p>
                     {
-                      <p className="mt-2 flex flex-wrap items-center gap-2 t-13">
+                      <p className="t-13 mt-2 flex flex-wrap items-center gap-2">
                         <span>{contact.owner}</span>
                         {contact.phone === "Non renseigné" ? (
                           <span className="text-muted-foreground">
@@ -463,7 +463,7 @@ export function PatientRemindersContent({
                     </Button>
                   </div>
                   {history?.id === reminder.id && (
-                    <ol className="col-span-full mt-1 space-y-2 border-border/70 border-t pt-3 t-12 text-muted-foreground">
+                    <ol className="t-12 col-span-full mt-1 space-y-2 border-border/70 border-t pt-3 text-muted-foreground">
                       {history.rows.map((entry) => (
                         <li key={String(entry.id)}>
                           {new Date(String(entry.created_at)).toLocaleString(
@@ -568,7 +568,7 @@ export function PatientRemindersContent({
                   </p>
                 )}
                 {action.kind === "Reporter" && (
-                  <label className="block t-13">
+                  <label className="t-13 block">
                     Nouvelle échéance
                     <DatePicker
                       className="mt-1 min-h-11"
@@ -579,7 +579,7 @@ export function PatientRemindersContent({
                   </label>
                 )}
                 {action.kind !== "Traiter" && (
-                  <label className="block t-13">
+                  <label className="t-13 block">
                     Motif
                     <Input
                       className="mt-1 min-h-11"
@@ -626,7 +626,7 @@ export function PatientRemindersContent({
                 key={entry.id}
               >
                 <div>
-                  <p className="font-medium t-14">{entry.name}</p>
+                  <p className="t-14 font-medium">{entry.name}</p>
                   <p className="t-13 text-muted-foreground">
                     {entry.interval_months} mois ·{" "}
                     {entry.active ? "Actif" : "Inactif"}
@@ -677,7 +677,7 @@ export function PatientRemindersContent({
                 );
               }}
             >
-              <label className="block t-13">
+              <label className="t-13 block">
                 Nom
                 <Input
                   className="mt-1 min-h-11"
@@ -686,7 +686,7 @@ export function PatientRemindersContent({
                   value={name}
                 />
               </label>
-              <label className="block t-13">
+              <label className="t-13 block">
                 Intervalle en mois
                 <Input
                   className="mt-1 min-h-11"
@@ -701,7 +701,7 @@ export function PatientRemindersContent({
               </label>
               <Switch
                 checked={active}
-                className="min-h-11 items-center t-13"
+                className="t-13 min-h-11 items-center"
                 label="Actif"
                 onCheckedChange={setActive}
               />

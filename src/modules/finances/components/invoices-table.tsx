@@ -120,7 +120,7 @@ export function InvoicesTable({
         const invoice = byId.get(row.id)!;
         return (
           <span className="block">
-            <span className="block text-sm font-medium tabular-nums">
+            <span className="block font-medium text-sm tabular-nums">
               {row.invoice}
             </span>
             <span className="block text-[0.8125rem] text-muted-foreground">
@@ -195,7 +195,7 @@ export function InvoicesTable({
       sortable: true,
       priority: 2,
       format: (value) => (
-        <span className="font-sans text-[0.8125rem] font-medium">
+        <span className="font-medium font-sans text-[0.8125rem]">
           {formatDZD(Number(value))}
         </span>
       ),
@@ -210,7 +210,7 @@ export function InvoicesTable({
         const invoice = byId.get(row.id)!;
         return (
           <span
-            className={`font-sans text-[0.8125rem] font-medium ${Number(value) > 0 ? (invoice.settlementStatus === "overdue" ? "text-negative" : "text-warning") : "text-positive"}`}
+            className={`font-medium font-sans text-[0.8125rem] ${Number(value) > 0 ? (invoice.settlementStatus === "overdue" ? "text-negative" : "text-warning") : "text-positive"}`}
           >
             {Number(value) > 0 ? formatDZD(Number(value)) : "Soldé"}
           </span>

@@ -724,7 +724,7 @@ export function ConsultationSessionDialog({
       aria-label={`Consultation de ${patientName}`}
       className="flex min-w-0 flex-col gap-6"
     >
-      <header className="flex flex-wrap items-start justify-between gap-4 border-b border-border pb-4">
+      <header className="flex flex-wrap items-start justify-between gap-4 border-border border-b pb-4">
         <div className="flex min-w-0 flex-1 flex-col gap-3">
           {/* The same header as the patient's record: avatar beside the name, ID and status, then the context line. */}
           <PatientRecordHeader owner={owner} patient={patient} />
@@ -792,7 +792,7 @@ export function ConsultationSessionDialog({
       />
 
       <details className="rounded-xl border border-border bg-card">
-        <summary className="cursor-pointer px-4 py-3 text-sm font-medium">
+        <summary className="cursor-pointer px-4 py-3 font-medium text-sm">
           Informations du patient et dossier de consultation
         </summary>
         <div className="min-w-0 p-4 sm:p-6">
@@ -802,7 +802,7 @@ export function ConsultationSessionDialog({
               {/* Section 1: Résumé du créneau */}
               <div className="flex flex-col gap-4">
                 <div className="border-zinc-100 border-b pb-2 dark:border-zinc-800/80">
-                  <h3 className="font-bold t-12 text-zinc-400 uppercase tracking-wider dark:text-zinc-500">
+                  <h3 className="t-12 font-bold text-zinc-400 uppercase tracking-wider dark:text-zinc-500">
                     Résumé du créneau
                   </h3>
                   <p className="mt-0.5 text-muted-foreground text-xs">
@@ -812,7 +812,7 @@ export function ConsultationSessionDialog({
                 </div>
                 <div className="grid gap-3 sm:grid-cols-2">
                   <div className="rounded-xl border border-zinc-100 bg-zinc-50/50 px-4 py-3 dark:border-zinc-800 dark:bg-zinc-900/30">
-                    <p className="font-semibold t-12 text-muted-foreground uppercase tracking-wider">
+                    <p className="t-12 font-semibold text-muted-foreground uppercase tracking-wider">
                       Patient
                     </p>
                     <p className="mt-1 font-bold text-sm text-zinc-800 dark:text-zinc-200">
@@ -820,7 +820,7 @@ export function ConsultationSessionDialog({
                     </p>
                   </div>
                   <div className="rounded-xl border border-zinc-100 bg-zinc-50/50 px-4 py-3 dark:border-zinc-800 dark:bg-zinc-900/30">
-                    <p className="font-semibold t-12 text-muted-foreground uppercase tracking-wider">
+                    <p className="t-12 font-semibold text-muted-foreground uppercase tracking-wider">
                       Propriétaire
                     </p>
                     <p className="mt-1 font-bold text-sm text-zinc-800 dark:text-zinc-200">
@@ -828,7 +828,7 @@ export function ConsultationSessionDialog({
                     </p>
                   </div>
                   <div className="rounded-xl border border-zinc-100 bg-zinc-50/50 px-4 py-3 dark:border-zinc-800 dark:bg-zinc-900/30">
-                    <p className="font-semibold t-12 text-muted-foreground uppercase tracking-wider">
+                    <p className="t-12 font-semibold text-muted-foreground uppercase tracking-wider">
                       Heure de début
                     </p>
                     <p className="mt-1 font-bold text-sm text-zinc-800 dark:text-zinc-200">
@@ -836,7 +836,7 @@ export function ConsultationSessionDialog({
                     </p>
                   </div>
                   <div className="rounded-xl border border-zinc-100 bg-zinc-50/50 px-4 py-3 dark:border-zinc-800 dark:bg-zinc-900/30">
-                    <p className="font-semibold t-12 text-muted-foreground uppercase tracking-wider">
+                    <p className="t-12 font-semibold text-muted-foreground uppercase tracking-wider">
                       Téléphone
                     </p>
                     <p className="mt-1 font-bold text-sm text-zinc-800 dark:text-zinc-200">
@@ -849,7 +849,7 @@ export function ConsultationSessionDialog({
               {/* Section 2: Historique récent */}
               <div className="flex flex-col gap-4">
                 <div className="border-zinc-100 border-b pb-2 dark:border-zinc-800/80">
-                  <h3 className="font-bold t-12 text-zinc-400 uppercase tracking-wider dark:text-zinc-500">
+                  <h3 className="t-12 font-bold text-zinc-400 uppercase tracking-wider dark:text-zinc-500">
                     Historique récent
                   </h3>
                   <p className="mt-0.5 text-muted-foreground text-xs">
@@ -891,7 +891,7 @@ export function ConsultationSessionDialog({
               {/* Section 3: Mise à jour du patient */}
               <div className="flex flex-col gap-4">
                 <div className="border-zinc-100 border-b pb-2 dark:border-zinc-800/80">
-                  <h3 className="font-bold t-12 text-zinc-400 uppercase tracking-wider dark:text-zinc-500">
+                  <h3 className="t-12 font-bold text-zinc-400 uppercase tracking-wider dark:text-zinc-500">
                     Mise à jour du patient
                   </h3>
                   <p className="mt-0.5 text-muted-foreground text-xs">
@@ -999,7 +999,7 @@ export function ConsultationSessionDialog({
             <div className="flex flex-col gap-6">
               <div className="flex flex-col gap-4">
                 <div className="border-zinc-100 border-b pb-2 dark:border-zinc-800/80">
-                  <h3 className="font-bold t-12 text-zinc-400 uppercase tracking-wider dark:text-zinc-500">
+                  <h3 className="t-12 font-bold text-zinc-400 uppercase tracking-wider dark:text-zinc-500">
                     Conduite de consultation
                   </h3>
                   <p className="mt-0.5 text-muted-foreground text-xs">
@@ -1153,7 +1153,7 @@ export function ConsultationSessionDialog({
           className="consultation-closing-blocker flex flex-col gap-2 rounded-xl border border-amber-500/30 bg-amber-500/8 px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
           role="status"
         >
-          <p className="text-sm text-foreground">{closingBlocker}</p>
+          <p className="text-foreground text-sm">{closingBlocker}</p>
           <div className="flex shrink-0 gap-2">
             <Button
               onClick={writeNote}
@@ -1169,7 +1169,7 @@ export function ConsultationSessionDialog({
           </div>
         </div>
       ) : null}
-      <div className="flex flex-col gap-3 border-t border-border py-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-3 border-border border-t py-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-h-5 text-muted-foreground text-sm">
           {autosaveStatus === "saving" ? (
             <span className="inline-flex items-center gap-2">
@@ -1347,7 +1347,7 @@ export function BillingDialog({
           <div className="grid gap-6">
             <div>
               <div className="mb-4 border-zinc-100 border-b pb-3 dark:border-zinc-800/80">
-                <h3 className="font-bold t-12 text-zinc-400 uppercase tracking-wider dark:text-zinc-500">
+                <h3 className="t-12 font-bold text-zinc-400 uppercase tracking-wider dark:text-zinc-500">
                   Résumé avant facturation
                 </h3>
                 <p className="mt-1 text-muted-foreground text-xs">
@@ -1358,7 +1358,7 @@ export function BillingDialog({
 
               <div className="grid gap-3 sm:grid-cols-4">
                 <div className="rounded-xl border border-zinc-100 bg-zinc-50/50 px-4 py-3 dark:border-zinc-800 dark:bg-zinc-900/30">
-                  <p className="font-semibold t-12 text-muted-foreground uppercase tracking-wider">
+                  <p className="t-12 font-semibold text-muted-foreground uppercase tracking-wider">
                     Patient
                   </p>
                   <p className="mt-1.5 font-bold text-sm text-zinc-800 dark:text-zinc-200">
@@ -1366,7 +1366,7 @@ export function BillingDialog({
                   </p>
                 </div>
                 <div className="rounded-xl border border-zinc-100 bg-zinc-50/50 px-4 py-3 dark:border-zinc-800 dark:bg-zinc-900/30">
-                  <p className="font-semibold t-12 text-muted-foreground uppercase tracking-wider">
+                  <p className="t-12 font-semibold text-muted-foreground uppercase tracking-wider">
                     Client
                   </p>
                   <p className="mt-1.5 font-bold text-sm text-zinc-800 dark:text-zinc-200">
@@ -1374,7 +1374,7 @@ export function BillingDialog({
                   </p>
                 </div>
                 <div className="rounded-xl border border-zinc-100 bg-zinc-50/50 px-4 py-3 dark:border-zinc-800 dark:bg-zinc-900/30">
-                  <p className="font-semibold t-12 text-muted-foreground uppercase tracking-wider">
+                  <p className="t-12 font-semibold text-muted-foreground uppercase tracking-wider">
                     Acte
                   </p>
                   <p className="mt-1.5 font-bold text-sm text-zinc-800 dark:text-zinc-200">
@@ -1382,7 +1382,7 @@ export function BillingDialog({
                   </p>
                 </div>
                 <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-4 py-3 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300">
-                  <p className="font-semibold t-12 uppercase tracking-wider">
+                  <p className="t-12 font-semibold uppercase tracking-wider">
                     Total provisoire
                   </p>
                   <p className="mt-1.5 font-extrabold text-base tracking-tight">
@@ -1532,7 +1532,7 @@ export function BillingDialog({
                     </p>
                     {due > 0 && (
                       <button
-                        className="mt-2 t-12 font-medium text-primary underline-offset-2 hover:underline"
+                        className="t-12 mt-2 font-medium text-primary underline-offset-2 hover:underline"
                         onClick={() => setAmountReceived(String(due))}
                         type="button"
                       >
@@ -1595,7 +1595,7 @@ export function BillingDialog({
 
           {draft.problem && (
             <p
-              className="text-muted-foreground text-sm sm:me-auto sm:ms-4"
+              className="text-muted-foreground text-sm sm:ms-4 sm:me-auto"
               role="status"
             >
               {draft.problem}

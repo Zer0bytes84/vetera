@@ -23,7 +23,7 @@ export function SaveIndicator({
   return (
     <span
       aria-live="polite"
-      className="inline-flex w-[112px] items-center gap-1.5 t-12 text-ink-muted"
+      className="t-12 inline-flex w-[112px] items-center gap-1.5 text-ink-muted"
       role="status"
     >
       <HugeiconsIcon

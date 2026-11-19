@@ -150,7 +150,7 @@ export function PatientsTable({
             <SpeciesAvatar species={patient.species} />
             <span className="min-w-0">
               <span className="flex min-w-0 items-center gap-2">
-                <span className="truncate text-sm font-medium capitalize text-foreground">
+                <span className="truncate font-medium text-foreground text-sm capitalize">
                   {patient.name}
                 </span>
                 <Flags patient={patient} />
@@ -172,7 +172,7 @@ export function PatientsTable({
         return (
           <span className="flex min-w-0 items-center gap-1">
             <span className="block min-w-0">
-              <span className="block truncate text-sm capitalize text-foreground">
+              <span className="block truncate text-foreground text-sm capitalize">
                 {formatOwnerName(owner)}
               </span>
               {owner?.phone ? (
@@ -223,7 +223,7 @@ export function PatientsTable({
       sortable: true,
       format: (value) =>
         value ? (
-          <span className="tabular-nums text-foreground">
+          <span className="text-foreground tabular-nums">
             {formatPatientDate(String(value))}
           </span>
         ) : (

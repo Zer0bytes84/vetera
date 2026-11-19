@@ -466,7 +466,7 @@ export function SoapPanel({
       {documentsOpen && (
         <Suspense
           fallback={
-            <p className="text-sm text-muted-foreground" role="status">
+            <p className="text-muted-foreground text-sm" role="status">
               Ouverture des documents…
             </p>
           }
@@ -492,7 +492,7 @@ export function SoapPanel({
         <Suspense
           fallback={
             <p
-              className="flex items-center gap-2 text-sm text-muted-foreground"
+              className="flex items-center gap-2 text-muted-foreground text-sm"
               role="status"
             >
               <CircleNotch className="size-4 animate-spin" /> Ouverture de
@@ -543,7 +543,7 @@ function SaveStatusPill({ status }: { status: SaveStatus }) {
     idle: "notSaved",
   }[status];
   return (
-    <Badge className="gap-1 t-12" variant="outline">
+    <Badge className="t-12 gap-1" variant="outline">
       {status === "saving" && (
         <CircleNotch className="size-3 animate-spin motion-reduce:animate-none" />
       )}

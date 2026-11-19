@@ -275,7 +275,7 @@ export function ToolApprovalQueue({
                             {r.title}
                           </span>
                           {r.detail && (
-                            <span className="block truncate text-xs text-muted-foreground">
+                            <span className="block truncate text-muted-foreground text-xs">
                               {r.detail}
                             </span>
                           )}
@@ -305,7 +305,7 @@ export function ToolApprovalQueue({
                             <div className="px-2.5 pb-2.5">
                               <div className="flex flex-col gap-1.5">
                                 <Inset className="px-3.5 py-2.5 text-[0.8125rem]">
-                                  <p className="mb-0.5 text-xs text-muted-foreground">
+                                  <p className="mb-0.5 text-muted-foreground text-xs">
                                     Votre dictée
                                   </p>
                                   <p className="whitespace-pre-wrap">
@@ -313,7 +313,7 @@ export function ToolApprovalQueue({
                                   </p>
                                 </Inset>
                                 <Inset className="bg-brand/10 px-3.5 py-2.5 text-[0.8125rem]">
-                                  <p className="mb-0.5 text-xs text-brand">
+                                  <p className="mb-0.5 text-brand text-xs">
                                     Formulation proposée
                                   </p>
                                   <p className="whitespace-pre-wrap">
@@ -358,7 +358,7 @@ export function ToolApprovalQueue({
               transition={reduce ? instant : reveal}
             >
               <div className="px-2 pt-2.5 pb-1">
-                <p className="px-1.5 pb-1 text-xs text-muted-foreground">
+                <p className="px-1.5 pb-1 text-muted-foreground text-xs">
                   Examinées · {resolved.length}
                 </p>
                 <ul>

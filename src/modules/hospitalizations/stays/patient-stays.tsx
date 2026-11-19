@@ -34,7 +34,7 @@ export function PatientStays({
         >
           <div>
             <p className="t-14 font-medium">{stay.reason}</p>
-            <p className="mt-1 t-13 text-muted-foreground">
+            <p className="t-13 mt-1 text-muted-foreground">
               {new Date(stay.admitted_at).toLocaleDateString("fr-FR")}
               {stay.discharged_at
                 ? ` au ${new Date(stay.discharged_at).toLocaleDateString("fr-FR")}`
@@ -43,7 +43,7 @@ export function PatientStays({
                   : " · Séjour actif"}
             </p>
             {stay.discharge_summary && (
-              <p className="mt-2 t-13">{stay.discharge_summary}</p>
+              <p className="t-13 mt-2">{stay.discharge_summary}</p>
             )}
           </div>
           <Button

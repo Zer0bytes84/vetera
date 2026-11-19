@@ -85,10 +85,10 @@ export function AccountSidebarFooter({
               src={src}
             />
             <span className="grid min-w-0 flex-1">
-              <span className="truncate font-semibold text-sm leading-5 text-sidebar-foreground">
+              <span className="truncate font-semibold text-sidebar-foreground text-sm leading-5">
                 {name}
               </span>
-              <span className="truncate text-[13px] leading-5 text-sidebar-foreground/60">
+              <span className="truncate text-[13px] text-sidebar-foreground/60 leading-5">
                 {email}
               </span>
             </span>

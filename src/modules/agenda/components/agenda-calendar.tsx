@@ -398,7 +398,7 @@ function TimeGrid({
                       className="pointer-events-none absolute inset-x-0 z-10 border-signal-critical border-t-2"
                       style={{ top: grid.yAt(nowMinutes) }}
                     >
-                      <span className="-translate-y-1/2 -ml-1 absolute size-2 rounded-full bg-signal-critical" />
+                      <span className="absolute -ml-1 size-2 -translate-y-1/2 rounded-full bg-signal-critical" />
                     </div>
                   ) : null}
                 </div>
@@ -519,7 +519,7 @@ export function AgendaCalendar({
               </PopoverContent>
             </Popover>
           </div>
-          <h2 className="truncate font-medium text-[18px] first-letter:uppercase tracking-[-0.02em]">
+          <h2 className="truncate font-medium text-[18px] tracking-[-0.02em] first-letter:uppercase">
             {title(view, selectedDate, weekDays)}
           </h2>
         </div>

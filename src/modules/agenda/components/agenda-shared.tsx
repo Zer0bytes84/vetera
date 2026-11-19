@@ -218,7 +218,7 @@ export function AppointmentTimePicker({
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
         <Input
           aria-label="Heure de début"
-          className="h-10 w-[5.5rem] text-center text-base font-semibold tabular-nums"
+          className="h-10 w-[5.5rem] text-center font-semibold text-base tabular-nums"
           inputMode="numeric"
           onBlur={commit}
           onChange={(event) => setDraft(event.target.value)}
@@ -245,7 +245,7 @@ export function AppointmentTimePicker({
           placeholder="09:00"
           value={draft ?? value}
         />
-        <span className="text-sm tabular-nums text-muted-foreground">
+        <span className="text-muted-foreground text-sm tabular-nums">
           → {endLabel}
         </span>
         <span
@@ -291,7 +291,7 @@ export function AppointmentTimePicker({
               {busyHour && (
                 <span
                   aria-hidden
-                  className="absolute right-1 top-1 size-1 rounded-full bg-amber-500"
+                  className="absolute top-1 right-1 size-1 rounded-full bg-amber-500"
                 />
               )}
             </Button>
@@ -913,7 +913,7 @@ export function CalendarAppointmentContent({
 }) {
   if (isTiny) {
     return (
-      <div className="flex min-w-0 items-center gap-1.5 pl-1 font-medium t-12 leading-[12px]">
+      <div className="t-12 flex min-w-0 items-center gap-1.5 pl-1 font-medium leading-[12px]">
         <span className="shrink-0 tabular-nums">{formatTime(start)}</span>
         <span className="truncate">{patientName}</span>
       </div>
@@ -949,7 +949,7 @@ export function CalendarAppointmentContent({
       ) : null}
 
       {showReason ? (
-        <p className="mt-0.5 line-clamp-2 t-12 text-muted-foreground leading-3.5">
+        <p className="t-12 mt-0.5 line-clamp-2 text-muted-foreground leading-3.5">
           {appointment.reason}
         </p>
       ) : null}
@@ -1113,7 +1113,7 @@ export function AgendaDayView({
               {/* The current time is named once, in the margin. */}
               {showsNow ? (
                 <div
-                  className="pointer-events-none absolute right-2 z-20 -translate-y-1/2 rounded-full bg-primary px-2 py-0.5 font-medium t-12 text-primary-foreground tabular-nums"
+                  className="t-12 pointer-events-none absolute right-2 z-20 -translate-y-1/2 rounded-full bg-primary px-2 py-0.5 font-medium text-primary-foreground tabular-nums"
                   style={{ top: `${currentTimePosition}px` }}
                 >
                   {currentTimeLabel}
@@ -1174,7 +1174,7 @@ export function AgendaDayView({
                     return (
                       <button
                         aria-label={`Nouveau rendez-vous à ${time} avec ${formatPersonName(vet.displayName)}`}
-                        className="agenda-free-slot group/slot absolute inset-x-1 flex items-center gap-1.5 rounded-md px-2 text-left t-12 text-muted-foreground"
+                        className="agenda-free-slot group/slot t-12 absolute inset-x-1 flex items-center gap-1.5 rounded-md px-2 text-left text-muted-foreground"
                         key={minutes}
                         onClick={() => onCreateAt?.(vet.id, time)}
                         style={{

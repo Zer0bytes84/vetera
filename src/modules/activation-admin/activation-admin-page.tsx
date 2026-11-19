@@ -366,7 +366,7 @@ function LicensesTableView({
 
       {!isLoading && syncMessage && (
         <div
-          className="p-8 text-center text-sm text-muted-foreground"
+          className="p-8 text-center text-muted-foreground text-sm"
           role="status"
         >
           {syncMessage}
@@ -502,7 +502,7 @@ function LicensesTableView({
                         </Button>
 
                         {isRevoked ? (
-                          <span className="px-2 t-12 text-muted-foreground">
+                          <span className="t-12 px-2 text-muted-foreground">
                             Fermée
                           </span>
                         ) : (
@@ -863,7 +863,7 @@ function GeneratorTabView({
                   <Mail className="size-4" />
                   Envoyer la clé par courriel
                 </Button>
-                <p className="text-center t-12 text-muted-foreground">
+                <p className="t-12 text-center text-muted-foreground">
                   Ouvre le client Mail ou copie le texte prêt à l'emploi.
                 </p>
               </div>
@@ -878,7 +878,7 @@ function GeneratorTabView({
             </CardHeader>
             <CardContent className="space-y-3.5 text-muted-foreground text-xs leading-relaxed">
               <div className="flex gap-2.5">
-                <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-primary/10 font-bold t-12 text-primary">
+                <span className="t-12 flex size-5 shrink-0 items-center justify-center rounded-full bg-primary/10 font-bold text-primary">
                   1
                 </span>
                 <p>
@@ -887,7 +887,7 @@ function GeneratorTabView({
                 </p>
               </div>
               <div className="flex gap-2.5">
-                <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-primary/10 font-bold t-12 text-primary">
+                <span className="t-12 flex size-5 shrink-0 items-center justify-center rounded-full bg-primary/10 font-bold text-primary">
                   2
                 </span>
                 <p>
@@ -896,7 +896,7 @@ function GeneratorTabView({
                 </p>
               </div>
               <div className="flex gap-2.5">
-                <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-primary/10 font-bold t-12 text-primary">
+                <span className="t-12 flex size-5 shrink-0 items-center justify-center rounded-full bg-primary/10 font-bold text-primary">
                   3
                 </span>
                 <p>
@@ -908,7 +908,7 @@ function GeneratorTabView({
 
               <Separator className="my-3" />
 
-              <div className="rounded-lg bg-muted/40 p-3 t-12">
+              <div className="t-12 rounded-lg bg-muted/40 p-3">
                 <p className="font-medium text-foreground">
                   🔒 Sécurité cryptographique locale
                 </p>
@@ -1374,7 +1374,7 @@ export default function ActivationAdminPage() {
             <span className="font-heading font-semibold text-sm tracking-tight">
               Baitari
             </span>
-            <Badge className="h-5 px-1.5 font-normal t-12" variant="outline">
+            <Badge className="t-12 h-5 px-1.5 font-normal" variant="outline">
               Centre d'Activation
             </Badge>
           </div>
@@ -1437,7 +1437,7 @@ export default function ActivationAdminPage() {
                   </p>
                   <p className="text-destructive/90 text-xs">
                     Démarrez le serveur avec{" "}
-                    <code className="rounded bg-black/10 px-1 py-0.5 font-mono t-12 dark:bg-white/10">
+                    <code className="t-12 rounded bg-black/10 px-1 py-0.5 font-mono dark:bg-white/10">
                       npm run activation-server
                     </code>{" "}
                     ou vérifiez que le port 8787 est disponible.
@@ -1466,7 +1466,7 @@ export default function ActivationAdminPage() {
                   <p className="mt-1 font-heading font-semibold text-2xl tracking-tight">
                     {stats.active}
                   </p>
-                  <p className="mt-0.5 t-12 text-muted-foreground">
+                  <p className="t-12 mt-0.5 text-muted-foreground">
                     Cabinets validés
                   </p>
                 </div>
@@ -1485,7 +1485,7 @@ export default function ActivationAdminPage() {
                   <p className="mt-1 font-heading font-semibold text-2xl tracking-tight">
                     {stats.devices}
                   </p>
-                  <p className="mt-0.5 t-12 text-muted-foreground">
+                  <p className="t-12 mt-0.5 text-muted-foreground">
                     Appareils déployés
                   </p>
                 </div>
@@ -1502,7 +1502,7 @@ export default function ActivationAdminPage() {
                   <p className="mt-1 font-heading font-semibold text-2xl tracking-tight">
                     {stats.expiring}
                   </p>
-                  <p className="mt-0.5 t-12 text-muted-foreground">
+                  <p className="t-12 mt-0.5 text-muted-foreground">
                     Sous les 30 jours
                   </p>
                 </div>
@@ -1519,7 +1519,7 @@ export default function ActivationAdminPage() {
                   <p className="mt-1 font-heading font-semibold text-2xl tracking-tight">
                     {stats.total}
                   </p>
-                  <p className="mt-0.5 t-12 text-muted-foreground">
+                  <p className="t-12 mt-0.5 text-muted-foreground">
                     Historique local
                   </p>
                 </div>
@@ -1671,7 +1671,7 @@ export default function ActivationAdminPage() {
                       <span className="text-muted-foreground">
                         Stockage des données
                       </span>
-                      <span className="font-mono t-12">
+                      <span className="t-12 font-mono">
                         {ACTIVATION_SERVER_HOST === "127.0.0.1:8787"
                           ? "activation-server/data/licenses.json"
                           : "Stockage du serveur configuré"}
@@ -1754,7 +1754,7 @@ export default function ActivationAdminPage() {
                       </Button>
                     </div>
 
-                    <div className="rounded-lg bg-muted/40 p-3 t-12 text-muted-foreground">
+                    <div className="t-12 rounded-lg bg-muted/40 p-3 text-muted-foreground">
                       <p className="font-medium text-foreground">
                         💡 Fichier source :
                       </p>
@@ -1854,7 +1854,7 @@ export default function ActivationAdminPage() {
               <Label className="t-12 text-muted-foreground">
                 Aperçu du message formaté
               </Label>
-              <div className="max-h-48 select-text overflow-y-auto whitespace-pre-wrap rounded-lg border border-border/60 bg-muted/30 p-3 font-mono t-12 text-foreground/90 leading-relaxed">
+              <div className="t-12 max-h-48 select-text overflow-y-auto whitespace-pre-wrap rounded-lg border border-border/60 bg-muted/30 p-3 font-mono text-foreground/90 leading-relaxed">
                 {computedEmailTemplate.body}
               </div>
             </div>
@@ -1986,7 +1986,7 @@ export default function ActivationAdminPage() {
                   Postes enregistrés (identifiants d’installation)
                 </Label>
                 {detailLicense.devices && detailLicense.devices.length > 0 ? (
-                  <div className="max-h-28 overflow-y-auto rounded-lg border border-border/60 bg-background p-2 font-mono t-12">
+                  <div className="t-12 max-h-28 overflow-y-auto rounded-lg border border-border/60 bg-background p-2 font-mono">
                     {detailLicense.devices.map((dev, idx) => (
                       <div
                         className="flex items-center justify-between border-border/30 border-b py-1 last:border-0"
@@ -2034,7 +2034,7 @@ export default function ActivationAdminPage() {
                     ))}
                   </div>
                 ) : (
-                  <p className="rounded-lg border border-border/60 border-dashed p-2.5 text-center t-12 text-muted-foreground">
+                  <p className="t-12 rounded-lg border border-border/60 border-dashed p-2.5 text-center text-muted-foreground">
                     Aucun appareil n'a encore validé sa première connexion.
                   </p>
                 )}

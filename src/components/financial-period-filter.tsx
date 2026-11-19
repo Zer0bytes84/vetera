@@ -84,7 +84,7 @@ export function FinancialPeriodFilter({
           render={
             <Button
               aria-label={`Choisir la période : ${label}`}
-              className="list-filter-control h-[30px] gap-1.5 rounded-full bg-background px-2.5 text-xs font-medium"
+              className="h-[30px] list-filter-control gap-1.5 rounded-full bg-background px-2.5 font-medium text-xs"
               variant="outline"
             >
               <CalendarDays className="size-3.5 text-muted-foreground" />
@@ -95,17 +95,17 @@ export function FinancialPeriodFilter({
         />
         <PopoverContent
           align="start"
-          className="w-auto max-w-[calc(100vw-24px)] gap-0 rounded-2xl p-0 overflow-hidden"
+          className="w-auto max-w-[calc(100vw-24px)] gap-0 overflow-hidden rounded-2xl p-0"
           sideOffset={8}
         >
           <div className="border-b px-4 py-3">
             <p className="font-semibold">Période</p>
-            <p className="mt-1 text-xs text-muted-foreground">
+            <p className="mt-1 text-muted-foreground text-xs">
               Choisissez un raccourci ou deux dates.
             </p>
           </div>
           <div className="flex flex-col sm:flex-row">
-            <div className="flex flex-wrap gap-1 border-b p-2 sm:w-36 sm:flex-col sm:border-b-0 sm:border-r">
+            <div className="flex flex-wrap gap-1 border-b p-2 sm:w-36 sm:flex-col sm:border-r sm:border-b-0">
               {(
                 [
                   ["day", "Aujourd’hui"],
@@ -128,7 +128,7 @@ export function FinancialPeriodFilter({
                 </Button>
               ))}
               <Button
-                className="justify-start rounded-lg text-xs text-muted-foreground"
+                className="justify-start rounded-lg text-muted-foreground text-xs"
                 onClick={() => apply("", "")}
                 size="sm"
                 variant="ghost"
@@ -147,7 +147,7 @@ export function FinancialPeriodFilter({
             />
           </div>
           <div className="flex items-center justify-between gap-3 border-t bg-muted/20 px-3 py-3">
-            <span className="text-xs text-muted-foreground">
+            <span className="text-muted-foreground text-xs">
               {draft?.from
                 ? `${format(draft.from, "dd/MM/yyyy")}${draft.to ? ` – ${format(draft.to, "dd/MM/yyyy")}` : " · Date de fin à choisir"}`
                 : "Aucune date sélectionnée"}

@@ -53,7 +53,7 @@ export function CareCompletionRollbackDialog({
           }}
         >
           <div className="space-y-2">
-            <label className="text-sm font-medium" htmlFor={reasonId}>
+            <label className="font-medium text-sm" htmlFor={reasonId}>
               Motif de la correction
             </label>
             <textarea
@@ -66,12 +66,12 @@ export function CareCompletionRollbackDialog({
               value={reason}
             />
           </div>
-          <p className="text-xs text-muted-foreground">
+          <p className="text-muted-foreground text-xs">
             Si la facture comporte un règlement ou un avoir, régularisez-la
             d’abord dans Finances.
           </p>
           {error && (
-            <p className="text-sm text-destructive" role="alert">
+            <p className="text-destructive text-sm" role="alert">
               {error}
             </p>
           )}

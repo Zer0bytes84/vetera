@@ -653,7 +653,7 @@ export function PatientTimeline({
                         ) : entry.statusBadge ? (
                           <Badge
                             className={cn(
-                              "rounded-full px-2 py-0.5 font-medium t-12",
+                              "t-12 rounded-full px-2 py-0.5 font-medium",
                               entry.statusBadge.className
                             )}
                             variant="secondary"

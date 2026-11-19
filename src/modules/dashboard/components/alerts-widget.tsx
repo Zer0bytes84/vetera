@@ -65,7 +65,7 @@ export function AlertsWidget({
       className="alertsBars"
       footer={
         unavailable.length ? (
-          <p className="text-xs text-muted-foreground">
+          <p className="text-muted-foreground text-xs">
             Non comptés : {unavailable.join(", ")} (chargement impossible).
           </p>
         ) : undefined

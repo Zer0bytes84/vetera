@@ -632,7 +632,7 @@ export function PrescriptionBuilder({
           <div className="grid gap-3 sm:grid-cols-2">
             <Card>
               <CardContent className="space-y-2 px-3 py-3">
-                <Label className="font-semibold t-12 text-muted-foreground uppercase tracking-wider">
+                <Label className="t-12 font-semibold text-muted-foreground uppercase tracking-wider">
                   {t("prescriptions.builder.diagnosis")}
                 </Label>
                 <Textarea
@@ -645,7 +645,7 @@ export function PrescriptionBuilder({
             </Card>
             <Card>
               <CardContent className="space-y-2 px-3 py-3">
-                <Label className="font-semibold t-12 text-muted-foreground uppercase tracking-wider">
+                <Label className="t-12 font-semibold text-muted-foreground uppercase tracking-wider">
                   {t("prescriptions.builder.generalInstructions")}
                 </Label>
                 <Textarea
@@ -843,7 +843,7 @@ function BuilderHeader({
         ) : null}
         {status === "signed" ? (
           <Badge
-            className="bg-emerald-500/10 t-12 text-emerald-700 dark:text-emerald-300"
+            className="t-12 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
             variant="secondary"
           >
             {t("prescriptions.builder.signed")}
@@ -909,7 +909,7 @@ function WeightCard({
     <Card className="border-primary/15 bg-gradient-to-br from-primary/5 via-background to-background">
       <CardContent className="space-y-2 px-3 py-3">
         <Label
-          className="font-semibold t-12 text-muted-foreground uppercase tracking-wider"
+          className="t-12 font-semibold text-muted-foreground uppercase tracking-wider"
           htmlFor="weight-input"
         >
           {t("prescriptions.builder.weightLabel")}
@@ -946,7 +946,7 @@ function PatientInfoCard({ patient }: { patient: Patient }) {
   return (
     <Card>
       <CardContent className="space-y-1 px-3 py-3 text-xs">
-        <p className="font-semibold t-12 text-muted-foreground uppercase tracking-wider">
+        <p className="t-12 font-semibold text-muted-foreground uppercase tracking-wider">
           {patient.name}
         </p>
         <p className="text-muted-foreground">
@@ -1031,7 +1031,7 @@ function ItemRow({
 
   return (
     <Card className="@container overflow-hidden">
-      <div className="grid gap-0 @3xl:grid-cols-[minmax(0,1fr)_240px]">
+      <div className="grid @3xl:grid-cols-[minmax(0,1fr)_240px] gap-0">
         <div className="space-y-3 px-3 py-3">
           {/* Ligne 1 : nom + actions */}
           <div className="flex items-center justify-between gap-2">
@@ -1044,7 +1044,7 @@ function ItemRow({
                   {item.medicationName}
                 </p>
                 {item.medicationClass ? (
-                  <p className="truncate t-12 text-muted-foreground">
+                  <p className="t-12 truncate text-muted-foreground">
                     {item.medicationClass}
                   </p>
                 ) : null}
@@ -1088,7 +1088,7 @@ function ItemRow({
           </div>
 
           {/* L'essentiel : dose, fréquence, durée */}
-          <div className="grid grid-cols-1 gap-2 @sm:grid-cols-2 @lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,1fr)]">
+          <div className="grid @lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,1fr)] @sm:grid-cols-2 grid-cols-1 gap-2">
             <DoseField item={item} onChange={onChange} />
             <FieldShell label={t("prescriptions.item.frequency")}>
               <Input
@@ -1119,10 +1119,10 @@ function ItemRow({
               onClick={() => setDetailsOpen((open) => !open)}
               type="button"
             >
-              <span className="shrink-0 font-medium t-12 text-muted-foreground uppercase tracking-wider">
+              <span className="t-12 shrink-0 font-medium text-muted-foreground uppercase tracking-wider">
                 {t("prescriptions.item.details")}
               </span>
-              <span className="min-w-0 flex-1 t-12 text-muted-foreground">
+              <span className="t-12 min-w-0 flex-1 text-muted-foreground">
                 {detailsOpen ? null : detailsSummary.join(" · ")}
               </span>
               <ChevronDown
@@ -1137,7 +1137,7 @@ function ItemRow({
                 className="space-y-2 border-border/60 border-t px-2.5 py-2.5"
                 id={detailsId}
               >
-                <div className="grid grid-cols-1 gap-2 @sm:grid-cols-2">
+                <div className="grid @sm:grid-cols-2 grid-cols-1 gap-2">
                   <FieldShell label={t("prescriptions.item.form")}>
                     <NativeSelect
                       className="h-8 text-xs"
@@ -1204,7 +1204,7 @@ function ItemRow({
                     />
                   </FieldShell>
                 </div>
-                <div className="grid grid-cols-1 gap-2 @sm:grid-cols-2">
+                <div className="grid @sm:grid-cols-2 grid-cols-1 gap-2">
                   <FieldShell label={t("prescriptions.item.instructions")}>
                     <Textarea
                       className="min-h-[60px] resize-none border-0 bg-muted/30 text-xs shadow-none focus-visible:ring-1"
@@ -1232,14 +1232,14 @@ function ItemRow({
         </div>
 
         {/* Colonne droite : dose calculator + état */}
-        <div className="space-y-2 border-border/40 border-t bg-muted/20 px-3 py-3 @3xl:border-t-0 @3xl:border-l">
+        <div className="space-y-2 border-border/40 border-t @3xl:border-t-0 @3xl:border-l bg-muted/20 px-3 py-3">
           <DoseCalculatorCard
             className="bg-background"
             computation={computation}
             concentrationMgPerMl={item.concentrationMgPerMl}
             weightKg={weightKg}
           />
-          <p className="text-center t-12 text-muted-foreground">
+          <p className="t-12 text-center text-muted-foreground">
             <ArrowsDownUp className="mr-1 inline size-3" weight="duotone" />
             {t("prescriptions.calculator.perKg")}
           </p>
@@ -1258,7 +1258,7 @@ function FieldShell({
 }) {
   return (
     <div className="space-y-1">
-      <Label className="font-medium t-12 text-muted-foreground uppercase tracking-wider">
+      <Label className="t-12 font-medium text-muted-foreground uppercase tracking-wider">
         {label}
       </Label>
       {children}

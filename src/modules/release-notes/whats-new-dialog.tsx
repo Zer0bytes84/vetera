@@ -64,7 +64,7 @@ export function WhatsNewGate() {
             <Sparkles className="size-4" />
           </span>
           <div className="min-w-0">
-            <DialogTitle className="text-[1rem] font-medium leading-6">
+            <DialogTitle className="font-medium text-[1rem] leading-6">
               Quoi de neuf dans la version {note.version}
             </DialogTitle>
             <DialogDescription className="text-[0.8125rem] leading-5">

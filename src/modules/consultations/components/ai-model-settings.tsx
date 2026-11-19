@@ -104,7 +104,7 @@ export function AIModelSettings() {
       title="Vos outils IA"
     >
       {!desktop && (
-        <p className="p-6 text-sm text-muted-foreground" role="status">
+        <p className="p-6 text-muted-foreground text-sm" role="status">
           Ces outils sont disponibles dans l’application de bureau. Vous pouvez
           continuer à utiliser la version web sans les installer.
         </p>
@@ -131,9 +131,9 @@ export function AIModelSettings() {
             >
               <div className="flex items-center gap-2">
                 <Icon className="size-4 shrink-0 text-muted-foreground" />
-                <h4 className="text-sm font-medium">{model.name}</h4>
+                <h4 className="font-medium text-sm">{model.name}</h4>
               </div>
-              <p className="flex-1 text-xs leading-relaxed text-muted-foreground">
+              <p className="flex-1 text-muted-foreground text-xs leading-relaxed">
                 {model.description}
               </p>
               <div className="flex flex-wrap items-center justify-between gap-2">
@@ -153,7 +153,7 @@ export function AIModelSettings() {
                     "Non installé"
                   )}
                 </Badge>
-                <span className="text-xs tabular-nums text-muted-foreground">
+                <span className="text-muted-foreground text-xs tabular-nums">
                   {model.sizeLabel}
                 </span>
               </div>
@@ -210,7 +210,7 @@ export function AIModelSettings() {
                 aria-label="Progression de l’installation"
                 value={state.progress?.percentage ?? 0}
               />
-              <p className="text-xs text-muted-foreground">
+              <p className="text-muted-foreground text-xs">
                 Vous pouvez changer de page. Le téléchargement continue en
                 arrière-plan.
               </p>
@@ -218,7 +218,7 @@ export function AIModelSettings() {
           )}
           {(state.error || importError) && (
             <p
-              className="rounded-2xl border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive"
+              className="rounded-2xl border border-destructive/20 bg-destructive/5 p-4 text-destructive text-sm"
               role="alert"
             >
               {importError || state.error}
@@ -229,18 +229,18 @@ export function AIModelSettings() {
               className="rounded-2xl border p-4"
               open={state.errorCode === "access_required" ? true : undefined}
             >
-              <summary className="cursor-pointer text-sm font-medium">
+              <summary className="cursor-pointer font-medium text-sm">
                 Accès au téléchargement
               </summary>
               <div className="mt-4 space-y-3">
-                <p className="text-xs leading-relaxed text-muted-foreground">
+                <p className="text-muted-foreground text-xs leading-relaxed">
                   L’assistant IA nécessite un accès autorisé chez son
                   fournisseur. Les autres outils se téléchargent directement. Le
                   téléchargement installe les outils manquants. Vous pouvez
                   aussi utiliser des fichiers déjà téléchargés.
                 </p>
                 <a
-                  className="inline-block text-sm text-primary underline underline-offset-4"
+                  className="inline-block text-primary text-sm underline underline-offset-4"
                   href="https://huggingface.co/litert-community/Gemma3-1B-IT"
                   rel="noreferrer"
                   target="_blank"
@@ -301,7 +301,7 @@ export function AIModelSettings() {
                     ? "Réessayer le téléchargement"
                     : "Télécharger les outils IA"}
             </Button>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               Seuls les outils manquants sont installés.
             </p>
           </div>
@@ -333,19 +333,19 @@ export function NewAssistantCard({
   return (
     <article className="mx-6 mb-6 flex min-w-0 flex-col gap-3 rounded-2xl border bg-background p-4">
       <div className="flex items-center gap-2">
-        <h4 className="text-sm font-medium">{NEW_ASSISTANT.name}</h4>
+        <h4 className="font-medium text-sm">{NEW_ASSISTANT.name}</h4>
       </div>
-      <p className="text-xs leading-relaxed text-muted-foreground">
+      <p className="text-muted-foreground text-xs leading-relaxed">
         {NEW_ASSISTANT.description}
       </p>
       {suspended && (
-        <p className="text-xs text-muted-foreground" role="status">
+        <p className="text-muted-foreground text-xs" role="status">
           Temporairement indisponible : cette version est en cours de
           correction. L’assistant actuel rédige vos notes.
         </p>
       )}
       {!suspended && installed && enabled && fellBack && (
-        <p className="text-xs text-muted-foreground" role="status">
+        <p className="text-muted-foreground text-xs" role="status">
           Cet ordinateur n’a pas pu la charger : l’assistant actuel a pris le
           relais.
         </p>

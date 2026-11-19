@@ -68,7 +68,7 @@ export function PrescriptionDispensing({
   }, [prescriptionId, status, desktop]);
   if (!desktop) {
     return (
-      <p className="mt-3 t-12 text-muted-foreground">
+      <p className="t-12 mt-3 text-muted-foreground">
         La dispensation et sa facturation sont disponibles dans l’application de
         bureau.
       </p>
@@ -152,7 +152,7 @@ export function PrescriptionDispensing({
   }
   if (saved || status === "dispensed") {
     return (
-      <div className="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-3 t-12">
+      <div className="t-12 mt-3 flex flex-wrap items-center justify-between gap-3 border-border border-t pt-3">
         <span>Dispensation enregistrée, stock déduit.</span>
         {saved && <StockInvoiceLink invoiceId={saved.invoice_id} />}
         {error && (
@@ -165,7 +165,7 @@ export function PrescriptionDispensing({
   }
   if (status !== "signed") {
     return (
-      <p className="mt-3 t-12 text-muted-foreground">
+      <p className="t-12 mt-3 text-muted-foreground">
         Signez l’ordonnance pour accéder à la dispensation.
       </p>
     );
@@ -182,7 +182,7 @@ export function PrescriptionDispensing({
   return (
     <form
       aria-label="Dispenser l’ordonnance"
-      className="mt-4 space-y-4 border-t border-border pt-4"
+      className="mt-4 space-y-4 border-border border-t pt-4"
       noValidate
       onSubmit={async (event) => {
         event.preventDefault();

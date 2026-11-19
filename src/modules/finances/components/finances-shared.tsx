@@ -240,7 +240,7 @@ export function DateFilter({
           render={
             <Button
               aria-label={label}
-              className="list-filter-control h-[30px] w-full justify-between rounded-full bg-background px-2.5 text-xs font-normal"
+              className="h-[30px] w-full list-filter-control justify-between rounded-full bg-background px-2.5 font-normal text-xs"
               variant="outline"
             >
               <span className={cn(!value && "text-muted-foreground")}>

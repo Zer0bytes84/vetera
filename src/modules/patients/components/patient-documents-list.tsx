@@ -182,14 +182,14 @@ export function PatientDocumentsList({
         patientId={patientId}
         uploadControl={uploadControl}
       />
-      <div className="mt-8 border-t border-border pt-5">
+      <div className="mt-8 border-border border-t pt-5">
         <div className="mb-4 flex flex-row items-center justify-between gap-2">
           <div className="flex items-center gap-2.5">
             <span className="flex size-8 items-center justify-center rounded-xl bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-300">
               <FileText className="size-4" weight="duotone" />
             </span>
             <div>
-              <div className="font-bold t-12 text-muted-foreground uppercase tracking-wider">
+              <div className="t-12 font-bold text-muted-foreground uppercase tracking-wider">
                 Pièces jointes antérieures
               </div>
               <div className="mt-0.5 text-muted-foreground text-xs">
@@ -228,7 +228,7 @@ export function PatientDocumentsList({
           {clinicalNotes.length ? (
             clinicalNotes.slice(0, 3).map((note) => (
               <button
-                className="flex w-full items-center justify-between gap-2 border-t border-border/50 py-2 text-left text-xs hover:text-primary"
+                className="flex w-full items-center justify-between gap-2 border-border/50 border-t py-2 text-left text-xs hover:text-primary"
                 key={note.id}
                 onClick={() =>
                   onOpenOffVisitNote && readOffVisitNote(note)
@@ -246,13 +246,13 @@ export function PatientDocumentsList({
               </button>
             ))
           ) : (
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               Aucun écrit pour ce patient.
             </p>
           )}
           {clinicalNotes.length > 3 && (
             <button
-              className="mt-1 text-xs font-medium text-primary"
+              className="mt-1 font-medium text-primary text-xs"
               onClick={() => openNotes()}
               type="button"
             >
@@ -305,13 +305,13 @@ export function PatientDocumentsList({
                             {doc.fileName}
                           </span>
                           <Badge
-                            className="rounded-full px-1.5 py-0 font-medium t-12"
+                            className="t-12 rounded-full px-1.5 py-0 font-medium"
                             variant="outline"
                           >
                             {meta.label}
                           </Badge>
                         </div>
-                        <div className="mt-0.5 flex items-center gap-2 t-12 text-muted-foreground">
+                        <div className="t-12 mt-0.5 flex items-center gap-2 text-muted-foreground">
                           <span>{formatDate(doc.createdAt)}</span>
                           <span aria-hidden>·</span>
                           <span>{formatBytes(doc.sizeBytes)}</span>

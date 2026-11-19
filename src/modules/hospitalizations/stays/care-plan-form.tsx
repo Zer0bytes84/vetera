@@ -108,7 +108,7 @@ export function CarePlanForm({
         );
       }}
     >
-      <label className="block space-y-2 t-13">
+      <label className="t-13 block space-y-2">
         Soin
         <Input
           className="h-11"
@@ -117,7 +117,7 @@ export function CarePlanForm({
           value={label}
         />
       </label>
-      <label className="block space-y-2 t-13">
+      <label className="t-13 block space-y-2">
         Type
         <select
           className="h-11 w-full rounded-xl border bg-background px-3"
@@ -132,7 +132,7 @@ export function CarePlanForm({
         </select>
       </label>
       <div className="grid gap-4 sm:grid-cols-2">
-        <div className="space-y-2 t-13">
+        <div className="t-13 space-y-2">
           <span>Début</span>
           <StayDateTimeField
             label="Date de début du plan"
@@ -141,7 +141,7 @@ export function CarePlanForm({
             value={starts}
           />
         </div>
-        <div className="space-y-2 t-13">
+        <div className="t-13 space-y-2">
           <span>Fin</span>
           <StayDateTimeField
             label="Date de fin du plan"
@@ -151,7 +151,7 @@ export function CarePlanForm({
           />
         </div>
       </div>
-      <label className="block space-y-2 t-13">
+      <label className="t-13 block space-y-2">
         Horaires quotidiens
         <Input
           className="h-11"
@@ -161,7 +161,7 @@ export function CarePlanForm({
           value={times}
         />
       </label>
-      <label className="block space-y-2 t-13">
+      <label className="t-13 block space-y-2">
         Produit lié (facultatif)
         <select
           className="h-11 w-full rounded-xl border bg-background px-3"
@@ -176,7 +176,7 @@ export function CarePlanForm({
           ))}
         </select>
       </label>
-      <label className="block space-y-2 t-13">
+      <label className="t-13 block space-y-2">
         Consignes
         <Input
           className="h-11"

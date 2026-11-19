@@ -213,12 +213,12 @@ export function StockView(props: StockViewProps) {
               <div className="flex items-center justify-between gap-4 py-2">
                 <div>
                   <label
-                    className="text-sm font-medium"
+                    className="font-medium text-sm"
                     htmlFor="product-stock-tracked"
                   >
                     Suivre le stock
                   </label>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-muted-foreground text-xs">
                     Désactivez pour une prestation ou un acte sans produit
                     physique.
                   </p>

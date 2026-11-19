@@ -88,10 +88,10 @@ export function CashModule({
         ]}
         unit="DA"
       />
-      <div className="mt-4 flex items-center justify-between gap-3 border-y border-hairline py-3">
+      <div className="mt-4 flex items-center justify-between gap-3 border-hairline border-y py-3">
         <div>
           <p className="t-12 text-ink-muted">À recouvrer · toutes dates</p>
-          <p className="mt-1 font-display t-18 font-medium tabular-nums">
+          <p className="t-18 mt-1 font-display font-medium tabular-nums">
             {formatCentimes(pending)}
           </p>
         </div>
@@ -105,14 +105,14 @@ export function CashModule({
         <div className="divide-y divide-hairline">
           {receivables.slice(0, 2).map((row) => (
             <button
-              className="clinical-receivable-row flex w-full items-center justify-between gap-3 py-2.5 text-left t-12"
+              className="clinical-receivable-row t-12 flex w-full items-center justify-between gap-3 py-2.5 text-left"
               key={row.id}
               onClick={onFinances}
               type="button"
             >
               <div className="min-w-0">
                 <p className="truncate font-medium">{row.label}</p>
-                <p className="mt-0.5 truncate t-12 text-ink-muted">
+                <p className="t-12 mt-0.5 truncate text-ink-muted">
                   {row.detail}
                 </p>
               </div>
@@ -124,17 +124,17 @@ export function CashModule({
         </div>
       ) : cash.recent.length > 0 ? (
         <div className="pt-3">
-          <h3 className="mb-1 t-12 font-medium text-ink-muted">
+          <h3 className="t-12 mb-1 font-medium text-ink-muted">
             Derniers mouvements · toutes dates
           </h3>
           {cash.recent.slice(0, 2).map((row) => (
             <div
-              className="flex items-center justify-between gap-3 py-2 t-12"
+              className="t-12 flex items-center justify-between gap-3 py-2"
               key={row.id}
             >
               <div className="min-w-0">
                 <p className="truncate">{row.description || row.category}</p>
-                <p className="mt-0.5 t-12 text-ink-muted">
+                <p className="t-12 mt-0.5 text-ink-muted">
                   {parseDashboardDate(row.date)?.toLocaleDateString("fr-FR", {
                     day: "numeric",
                     month: "short",
@@ -180,7 +180,7 @@ export function CashModule({
           <dd>{formatCentimes(pending)}</dd>
         </div>
       </dl>
-      <div className="mt-3 flex justify-end border-t border-hairline pt-3">
+      <div className="mt-3 flex justify-end border-hairline border-t pt-3">
         <ModuleLink onClick={onFinances}>Voir les finances</ModuleLink>
       </div>
     </WidgetShell>

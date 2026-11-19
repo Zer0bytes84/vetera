@@ -81,7 +81,7 @@ function Variation({
 }) {
   if (previous === 0) {
     return (
-      <span className="text-xs text-muted-foreground">
+      <span className="text-muted-foreground text-xs">
         Sans valeur sur la période précédente
       </span>
     );
@@ -89,7 +89,7 @@ function Variation({
   const delta = percentageDelta(current, previous);
   const Icon = delta < 0 ? ArrowDownRight : ArrowUpRight;
   return (
-    <span className="flex flex-wrap items-center gap-1 text-xs text-muted-foreground">
+    <span className="flex flex-wrap items-center gap-1 text-muted-foreground text-xs">
       <span
         className={cn(
           "flex items-center gap-1",
@@ -119,13 +119,13 @@ function Metric({
 }) {
   return (
     <div className="flex min-w-0 flex-col gap-1 bg-[var(--card-inset)] p-6">
-      <h2 className="text-[0.8125rem] font-normal text-muted-foreground">
+      <h2 className="font-normal text-[0.8125rem] text-muted-foreground">
         {title}
       </h2>
-      <strong className="text-[1.5rem] leading-tight font-medium tracking-tight tabular-nums">
+      <strong className="font-medium text-[1.5rem] tabular-nums leading-tight tracking-tight">
         {value}
       </strong>
-      <span className="text-xs text-muted-foreground">{context}</span>
+      <span className="text-muted-foreground text-xs">{context}</span>
       {children}
     </div>
   );
@@ -193,7 +193,7 @@ export function PremiumFinancialAnalysis({
       <li className="flex flex-col gap-2" key={label}>
         <div className="flex flex-wrap items-baseline justify-between gap-x-3 text-[0.8125rem]">
           <span>{label}</span>
-          <strong className="font-medium whitespace-nowrap tabular-nums">
+          <strong className="whitespace-nowrap font-medium tabular-nums">
             {formatDinars(value)}
           </strong>
         </div>
@@ -204,7 +204,7 @@ export function PremiumFinancialAnalysis({
             size="sm"
             value={Math.min(100, share)}
           />
-          <span className="min-w-12 text-right text-xs text-muted-foreground tabular-nums">
+          <span className="min-w-12 text-right text-muted-foreground text-xs tabular-nums">
             {share.toLocaleString("fr-FR", { maximumFractionDigits: 1 })} %
           </span>
         </div>
@@ -289,7 +289,7 @@ export function PremiumFinancialAnalysis({
                 ],
               }}
               footer={
-                <p className="pt-3 text-xs text-muted-foreground">
+                <p className="pt-3 text-muted-foreground text-xs">
                   Montants en DA. Seules les écritures réglées sont prises en
                   compte.
                 </p>
@@ -352,11 +352,11 @@ export function PremiumFinancialAnalysis({
                       )}
                       {rest > 0 && row("Autres catégories", rest)}
                     </ul>
-                    <div className="flex flex-wrap items-baseline justify-between gap-3 border-t border-border pt-6 text-[0.8125rem]">
+                    <div className="flex flex-wrap items-baseline justify-between gap-3 border-border border-t pt-6 text-[0.8125rem]">
                       <span className="text-muted-foreground">
                         Total sur 30 jours
                       </span>
-                      <strong className="text-lg font-medium tabular-nums">
+                      <strong className="font-medium text-lg tabular-nums">
                         {formatDinars(metrics.summary.income30)}
                       </strong>
                     </div>
@@ -399,7 +399,7 @@ export function PremiumFinancialAnalysis({
               footer={
                 <div className="flex flex-col gap-6 pt-3">
                   {invoicesUnavailable ? (
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-muted-foreground text-xs">
                       Les factures n’ont pas pu être lues : seules les écritures
                       en attente sont comptées.
                     </p>
@@ -436,7 +436,7 @@ export function PremiumFinancialAnalysis({
                   {biggest.length ? (
                     <ul
                       aria-label="Plus gros soldes"
-                      className="flex flex-col divide-y divide-border border-t border-border"
+                      className="flex flex-col divide-y divide-border border-border border-t"
                     >
                       {biggest.map((item) => (
                         <li
@@ -450,14 +450,14 @@ export function PremiumFinancialAnalysis({
                               · {item.detail}
                             </span>
                           </span>
-                          <strong className="font-medium whitespace-nowrap tabular-nums">
+                          <strong className="whitespace-nowrap font-medium tabular-nums">
                             {formatDinars(item.balance)}
                           </strong>
                         </li>
                       ))}
                     </ul>
                   ) : (
-                    <p className="border-t border-border pt-6 text-[0.8125rem] text-muted-foreground">
+                    <p className="border-border border-t pt-6 text-[0.8125rem] text-muted-foreground">
                       Aucune créance à recouvrer.
                     </p>
                   )}

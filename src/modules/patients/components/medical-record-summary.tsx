@@ -95,7 +95,7 @@ export function PatientIdentity({
 
       <div className="min-w-0 flex-1">
         <div className="medical-identity-line flex flex-wrap items-center gap-2">
-          <h1 className="medical-identity-name text-2xl font-bold tracking-tight text-foreground">
+          <h1 className="medical-identity-name font-bold text-2xl text-foreground tracking-tight">
             {patient.name}
           </h1>
           {patient.reference ? (
@@ -147,11 +147,11 @@ export function PatientIdentity({
         ) : null}
 
         {showIdentifiers ? (
-          <div className="medical-record-id flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+          <div className="medical-record-id flex flex-wrap items-center gap-2 text-muted-foreground text-xs">
             {patient.chipNumber?.trim() ? (
               <>
                 <span
-                  className="font-mono tabular-nums text-foreground/70"
+                  className="font-mono text-foreground/70 tabular-nums"
                   title="Puce d’identification"
                 >
                   Puce {patient.chipNumber.trim()}
@@ -164,7 +164,7 @@ export function PatientIdentity({
             {patient.tattooNumber?.trim() ? (
               <>
                 <span
-                  className="font-mono tabular-nums text-foreground/70"
+                  className="font-mono text-foreground/70 tabular-nums"
                   title="Tatouage"
                 >
                   Tatouage {patient.tattooNumber.trim()}
@@ -225,7 +225,7 @@ export function OwnerContact({
         className="medical-owner p-5"
       >
         <RecordBlockHeading icon={User}>Propriétaire</RecordBlockHeading>
-        <p className="medical-contact-hint text-xs text-muted-foreground">
+        <p className="medical-contact-hint text-muted-foreground text-xs">
           Associez un propriétaire depuis les informations du patient.
         </p>
       </section>
@@ -241,19 +241,19 @@ export function OwnerContact({
       className="medical-owner p-5"
     >
       <RecordBlockHeading icon={User}>Propriétaire</RecordBlockHeading>
-      <div className="medical-owner-card flex items-center gap-3.5 p-3 rounded-xl bg-muted/40 border border-border/60">
+      <div className="medical-owner-card flex items-center gap-3.5 rounded-xl border border-border/60 bg-muted/40 p-3">
         <div
           aria-hidden="true"
-          className="medical-owner-avatar size-11 rounded-xl flex items-center justify-center font-bold text-sm text-white bg-gradient-to-br from-indigo-500 to-purple-600 shadow-sm shrink-0"
+          className="medical-owner-avatar flex size-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 font-bold text-sm text-white shadow-sm"
         >
           {initials}
         </div>
         <div className="min-w-0 flex-1">
-          <p className="medical-owner-name font-semibold text-sm text-foreground">
+          <p className="medical-owner-name font-semibold text-foreground text-sm">
             {owner.firstName} {owner.lastName}
           </p>
           {(owner.address || owner.city) && (
-            <p className="medical-owner-address text-xs text-muted-foreground truncate mt-0.5">
+            <p className="medical-owner-address mt-0.5 truncate text-muted-foreground text-xs">
               {[owner.address, owner.city].filter(Boolean).join(", ")}
             </p>
           )}
@@ -263,7 +263,7 @@ export function OwnerContact({
       <div className="medical-owner-links mt-3 flex flex-wrap gap-2">
         {owner.phone && (
           <a
-            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200/80 transition-colors dark:bg-emerald-950/50 dark:text-emerald-300 dark:border-emerald-800/40"
+            className="inline-flex items-center gap-2 rounded-lg border border-emerald-200/80 bg-emerald-50 px-3 py-1.5 font-medium text-emerald-700 text-xs transition-colors hover:bg-emerald-100 dark:border-emerald-800/40 dark:bg-emerald-950/50 dark:text-emerald-300"
             href={`tel:${owner.phone}`}
             title={`Appeler ${phoneLabel}`}
           >
@@ -281,7 +281,7 @@ export function OwnerContact({
         ) : null}
         {owner.email && (
           <a
-            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium bg-sky-50 text-sky-700 hover:bg-sky-100 border border-sky-200/80 transition-colors dark:bg-sky-950/50 dark:text-sky-300 dark:border-sky-800/40"
+            className="inline-flex items-center gap-2 rounded-lg border border-sky-200/80 bg-sky-50 px-3 py-1.5 font-medium text-sky-700 text-xs transition-colors hover:bg-sky-100 dark:border-sky-800/40 dark:bg-sky-950/50 dark:text-sky-300"
             href={`mailto:${owner.email}`}
             title={`Écrire à ${owner.email}`}
           >
@@ -292,8 +292,8 @@ export function OwnerContact({
       </div>
 
       {owner.communicationNotes && (
-        <div className="medical-contact-note mt-3 p-2.5 rounded-lg bg-amber-50/60 border border-amber-200/60 text-xs text-amber-900 dark:bg-amber-950/30 dark:text-amber-200 dark:border-amber-800/40">
-          <span className="font-semibold block mb-0.5">Consigne contact</span>
+        <div className="medical-contact-note mt-3 rounded-lg border border-amber-200/60 bg-amber-50/60 p-2.5 text-amber-900 text-xs dark:border-amber-800/40 dark:bg-amber-950/30 dark:text-amber-200">
+          <span className="mb-0.5 block font-semibold">Consigne contact</span>
           {owner.communicationNotes}
         </div>
       )}

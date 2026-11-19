@@ -178,7 +178,7 @@ export function PrescriptionTemplateQuickList({
       data-testid="prescription-template-quick-list"
     >
       <div className="flex items-center justify-between gap-2">
-        <p className="font-medium t-12 text-muted-foreground uppercase tracking-wider">
+        <p className="t-12 font-medium text-muted-foreground uppercase tracking-wider">
           Partir d'un modèle
         </p>
         <button
@@ -347,7 +347,7 @@ export function PrescriptionTemplatesDialog({
 
         <section className="space-y-2">
           <Label
-            className="font-medium t-12 text-muted-foreground uppercase tracking-wider"
+            className="t-12 font-medium text-muted-foreground uppercase tracking-wider"
             htmlFor="rx-template-name"
           >
             Enregistrer l'ordonnance actuelle
@@ -390,7 +390,7 @@ export function PrescriptionTemplatesDialog({
         </section>
 
         <section className="space-y-2">
-          <p className="font-medium t-12 text-muted-foreground uppercase tracking-wider">
+          <p className="t-12 font-medium text-muted-foreground uppercase tracking-wider">
             Modèles enregistrés
           </p>
           {state.templates.length === 0 ? (
@@ -460,7 +460,7 @@ export function PrescriptionTemplatesDialog({
                           <p className="truncate font-medium text-sm">
                             {template.name}
                           </p>
-                          <p className="truncate t-12 text-muted-foreground">
+                          <p className="t-12 truncate text-muted-foreground">
                             {template.items
                               .map((it) => it.medicationName)
                               .join(" · ")}

@@ -197,10 +197,10 @@ export function MedicalReminderDialog({
                     strokeWidth={1}
                   />
                   <div className="min-w-0">
-                    <p className="font-heading t-16 font-medium">
+                    <p className="t-16 font-heading font-medium">
                       {patient?.name ?? "Patient"} · {draft.typeLabel}
                     </p>
-                    <p className="mt-1 t-13 text-muted-foreground">
+                    <p className="t-13 mt-1 text-muted-foreground">
                       Le rappel sera créé uniquement après votre confirmation.
                     </p>
                   </div>
@@ -309,7 +309,7 @@ export function MedicalReminderDialog({
               <Field>
                 <FieldLabel htmlFor="medical-reminder-note">
                   Note utile{" "}
-                  <span className="text-muted-foreground font-normal">
+                  <span className="font-normal text-muted-foreground">
                     (facultatif)
                   </span>
                 </FieldLabel>
@@ -326,7 +326,7 @@ export function MedicalReminderDialog({
                 />
               </Field>
               {error && (
-                <p className="text-sm text-destructive" role="alert">
+                <p className="text-destructive text-sm" role="alert">
                   {error}
                 </p>
               )}

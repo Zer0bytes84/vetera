@@ -88,21 +88,21 @@ export function PatientContextWidgets({
         type="button"
       >
         <span className="patient-context-heading flex items-center gap-2">
-          <span className="size-7 rounded-md flex items-center justify-center bg-sky-50 text-sky-600 border border-sky-200/60 dark:bg-sky-950/60 dark:text-sky-400 dark:border-sky-800/40 shrink-0 shadow-xs">
+          <span className="flex size-7 shrink-0 items-center justify-center rounded-md border border-sky-200/60 bg-sky-50 text-sky-600 shadow-xs dark:border-sky-800/40 dark:bg-sky-950/60 dark:text-sky-400">
             <CalendarBlank aria-hidden="true" size={15} weight="duotone" />
           </span>
-          <span className="text-xs font-medium text-muted-foreground group-hover:text-foreground transition-colors">
+          <span className="font-medium text-muted-foreground text-xs transition-colors group-hover:text-foreground">
             RDV aujourd’hui
           </span>
           <ArrowUpRight
             aria-hidden="true"
-            className="ml-auto text-muted-foreground/60 group-hover:text-foreground transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+            className="ml-auto text-muted-foreground/60 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-foreground"
             size={14}
           />
         </span>
         <span
           className={cn(
-            "patient-context-value text-2xl font-bold tracking-tight text-foreground",
+            "patient-context-value font-bold text-2xl text-foreground tracking-tight",
             appointmentsError ? "patient-context-date" : "",
             // A zero is printed as a zero, without the weight of a figure.
             !(appointmentsLoading || appointmentsError) &&
@@ -119,7 +119,7 @@ export function PatientContextWidgets({
               : formatNumber(visitsToday.length)}
         </span>
         <span
-          className="patient-context-detail text-xs text-muted-foreground truncate"
+          className="patient-context-detail truncate text-muted-foreground text-xs"
           title={visitDetail}
         >
           {visitDetail}
@@ -133,21 +133,21 @@ export function PatientContextWidgets({
           className="patient-context-card group"
         >
           <span className="patient-context-heading flex items-center gap-2">
-            <span className="size-7 rounded-md flex items-center justify-center bg-amber-50 text-amber-600 border border-amber-200/60 dark:bg-amber-950/60 dark:text-amber-400 dark:border-amber-800/40 shrink-0 shadow-xs">
+            <span className="flex size-7 shrink-0 items-center justify-center rounded-md border border-amber-200/60 bg-amber-50 text-amber-600 shadow-xs dark:border-amber-800/40 dark:bg-amber-950/60 dark:text-amber-400">
               <ClipboardList aria-hidden="true" size={15} weight="duotone" />
             </span>
-            <span className="text-xs font-medium text-muted-foreground group-hover:text-foreground transition-colors">
+            <span className="font-medium text-muted-foreground text-xs transition-colors group-hover:text-foreground">
               Actions à suivre
             </span>
             <ArrowUpRight
               aria-hidden="true"
-              className="ml-auto text-muted-foreground/60 group-hover:text-foreground transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+              className="ml-auto text-muted-foreground/60 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-foreground"
               size={14}
             />
           </span>
           <span
             className={cn(
-              "patient-context-value text-2xl font-bold tracking-tight text-foreground",
+              "patient-context-value font-bold text-2xl text-foreground tracking-tight",
               tasksError ? "patient-context-date" : "",
               !(tasksLoading || tasksError) && tasks.length === 0
                 ? "is-zero"
@@ -162,7 +162,7 @@ export function PatientContextWidgets({
                 : formatNumber(tasks.length)}
           </span>
           <span
-            className="patient-context-detail text-xs text-muted-foreground truncate"
+            className="patient-context-detail truncate text-muted-foreground text-xs"
             title={taskDetail}
           >
             {taskDetail}

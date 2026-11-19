@@ -139,7 +139,7 @@ function PatientPicker({
                 ? "Afficher les documents d’un patient"
                 : "Rattacher la note à un dossier patient"
             }
-            className="h-8 min-w-[160px] max-w-[260px] gap-1.5 rounded-lg border-0 bg-transparent px-2 text-xs font-medium text-foreground shadow-none hover:bg-muted dark:text-foreground dark:hover:bg-white/10"
+            className="h-8 min-w-[160px] max-w-[260px] gap-1.5 rounded-lg border-0 bg-transparent px-2 font-medium text-foreground text-xs shadow-none hover:bg-muted dark:text-foreground dark:hover:bg-white/10"
             size="sm"
             type="button"
             variant="ghost"
@@ -158,10 +158,10 @@ function PatientPicker({
         sideOffset={7}
       >
         <div className="px-2.5 pt-2 pb-2.5">
-          <p className="text-xs font-semibold text-foreground dark:text-foreground">
+          <p className="font-semibold text-foreground text-xs dark:text-foreground">
             {isFilter ? "Afficher les documents de" : "Rattacher cette note à"}
           </p>
-          <p className="mt-0.5 t-12 leading-4 text-muted-foreground dark:text-muted-foreground">
+          <p className="t-12 mt-0.5 text-muted-foreground leading-4 dark:text-muted-foreground">
             {isFilter
               ? "Ce choix filtre la bibliothèque sans modifier les notes."
               : "La note sera enregistrée dans le dossier choisi."}
@@ -186,7 +186,7 @@ function PatientPicker({
         <div className="max-h-60 overflow-y-auto overscroll-contain py-0.5">
           {!query && (
             <button
-              className="flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-left text-xs font-medium text-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 dark:text-foreground dark:hover:bg-white/10"
+              className="flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-left font-medium text-foreground text-xs hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 dark:text-foreground dark:hover:bg-white/10"
               onClick={() => select("")}
               type="button"
             >
@@ -202,10 +202,10 @@ function PatientPicker({
               type="button"
             >
               <span className="min-w-0 flex-1">
-                <span className="block truncate text-xs font-medium text-foreground dark:text-foreground">
+                <span className="block truncate font-medium text-foreground text-xs dark:text-foreground">
                   {patient.name}
                 </span>
-                <span className="block truncate t-12 text-muted-foreground dark:text-muted-foreground">
+                <span className="t-12 block truncate text-muted-foreground dark:text-muted-foreground">
                   {patient.species}
                   {patient.breed ? ` · ${patient.breed}` : ""}
                 </span>
@@ -219,7 +219,7 @@ function PatientPicker({
             </button>
           ))}
           {results.length === 0 && (
-            <p className="px-2.5 py-5 text-center text-xs text-muted-foreground dark:text-muted-foreground">
+            <p className="px-2.5 py-5 text-center text-muted-foreground text-xs dark:text-muted-foreground">
               Aucun patient trouvé
             </p>
           )}
@@ -790,7 +790,7 @@ const NotesPro: React.FC = () => {
                       {/* Save status */}
                       {saveFailed ? (
                         <span
-                          className="flex items-center gap-1.5 text-xs font-medium text-destructive"
+                          className="flex items-center gap-1.5 font-medium text-destructive text-xs"
                           role="alert"
                         >
                           Non enregistré
@@ -804,7 +804,7 @@ const NotesPro: React.FC = () => {
                           </Button>
                         </span>
                       ) : isSaving ? (
-                        <span className="flex items-center gap-1.5 text-xs text-foreground/70">
+                        <span className="flex items-center gap-1.5 text-foreground/70 text-xs">
                           <span className="relative flex size-1.5">
                             <span className="absolute inline-flex size-full animate-ping rounded-full bg-amber-400 opacity-75" />
                             <span className="relative inline-flex size-1.5 rounded-full bg-amber-500" />
@@ -812,7 +812,7 @@ const NotesPro: React.FC = () => {
                           Enregistrement...
                         </span>
                       ) : lastSaved ? (
-                        <span className="flex items-center gap-1 text-xs font-medium text-emerald-700 dark:text-emerald-300">
+                        <span className="flex items-center gap-1 font-medium text-emerald-700 text-xs dark:text-emerald-300">
                           <HugeiconsIcon
                             className="size-3"
                             icon={CheckmarkCircle02Icon}
@@ -824,7 +824,7 @@ const NotesPro: React.FC = () => {
                       {!isPreviewMode && aiStatus.loading && (
                         <span
                           aria-live="polite"
-                          className="ml-2 flex items-center gap-1.5 text-xs font-medium text-foreground dark:text-foreground"
+                          className="ml-2 flex items-center gap-1.5 font-medium text-foreground text-xs dark:text-foreground"
                         >
                           <span className="size-3 animate-spin rounded-full border-2 border-current border-t-transparent" />
                           Proposition en cours…
@@ -970,7 +970,7 @@ const NotesPro: React.FC = () => {
                       <div className="flex w-full flex-1 flex-col px-5 py-8 md:px-8 md:py-10">
                         {isPreviewMode ? (
                           <div className="document-rich-content prose prose-sm dark:prose-invert max-w-none overflow-x-auto">
-                            <h1 className="font-heading text-2xl font-medium tracking-[-0.035em]">
+                            <h1 className="font-heading font-medium text-2xl tracking-[-0.035em]">
                               {formatDisplayText(title)}
                             </h1>
                             <p className="mt-1 mb-6 text-foreground/70 text-xs">
@@ -986,7 +986,7 @@ const NotesPro: React.FC = () => {
                             <div className="mb-2.5 flex items-start gap-3">
                               <input
                                 aria-label="Titre du document"
-                                className="min-w-0 flex-1 bg-transparent font-heading text-2xl font-medium leading-tight tracking-[-0.035em] text-foreground outline-none placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring/30 dark:text-foreground dark:placeholder:text-muted-foreground"
+                                className="min-w-0 flex-1 bg-transparent font-heading font-medium text-2xl text-foreground leading-tight tracking-[-0.035em] outline-none placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring/30 dark:text-foreground dark:placeholder:text-muted-foreground"
                                 onChange={(e) =>
                                   handleTitleChange(e.target.value)
                                 }
@@ -1002,13 +1002,13 @@ const NotesPro: React.FC = () => {
 
                             {/* Meta line below title */}
                             <div className="mb-2 flex flex-wrap items-center gap-2.5">
-                              <p className="text-xs text-muted-foreground dark:text-muted-foreground">
+                              <p className="text-muted-foreground text-xs dark:text-muted-foreground">
                                 {formatFullDate(activeNote.updatedAt)}
                               </p>
                               {wordCount > 0 && (
                                 <>
                                   <span className="text-foreground/50">·</span>
-                                  <p className="text-xs text-muted-foreground tabular-nums dark:text-muted-foreground">
+                                  <p className="text-muted-foreground text-xs tabular-nums dark:text-muted-foreground">
                                     {wordCount} mots
                                   </p>
                                 </>
@@ -1016,7 +1016,7 @@ const NotesPro: React.FC = () => {
                               {(activeNote as any).isPinned && (
                                 <>
                                   <span className="text-foreground/50">·</span>
-                                  <span className="flex items-center gap-1 text-xs font-medium text-amber-700 dark:text-amber-300">
+                                  <span className="flex items-center gap-1 font-medium text-amber-700 text-xs dark:text-amber-300">
                                     <Pin className="size-2.5" />
                                     Épinglée
                                   </span>
@@ -1025,7 +1025,7 @@ const NotesPro: React.FC = () => {
                               {activeNote.isFavorite && (
                                 <>
                                   <span className="text-foreground/50">·</span>
-                                  <span className="flex items-center gap-1 text-xs font-medium text-amber-700 dark:text-amber-300">
+                                  <span className="flex items-center gap-1 font-medium text-amber-700 text-xs dark:text-amber-300">
                                     <Star className="size-2.5 fill-current" />
                                     Favori
                                   </span>
@@ -1087,10 +1087,10 @@ const NotesPro: React.FC = () => {
           </div>
         )
       ) : (
-        <div className="min-h-0 flex-1 overflow-y-auto rounded-t-xl border border-b-0 border-border bg-card">
+        <div className="min-h-0 flex-1 overflow-y-auto rounded-t-xl border border-border border-b-0 bg-card">
           <Suspense
             fallback={
-              <p className="p-6 text-sm text-muted-foreground" role="status">
+              <p className="p-6 text-muted-foreground text-sm" role="status">
                 Ouverture des documents…
               </p>
             }

@@ -98,7 +98,7 @@ export function LocalDataResetSettings() {
             />
           </Field>
           {error && (
-            <p className="text-sm text-destructive" role="alert">
+            <p className="text-destructive text-sm" role="alert">
               {error}
             </p>
           )}

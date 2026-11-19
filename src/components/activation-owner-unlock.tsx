@@ -56,7 +56,7 @@ export function ActivationOwnerUnlock({ children }: { children: ReactNode }) {
         <h1 className="t-18 font-medium">
           Déverrouiller le Centre d’Activation
         </h1>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-muted-foreground text-sm">
           Accès propriétaire. Le jeton de gestion est vérifié par le serveur et
           conservé uniquement pour cette session.
         </p>
@@ -72,7 +72,7 @@ export function ActivationOwnerUnlock({ children }: { children: ReactNode }) {
           />
         </label>
         {error && (
-          <p className="text-sm text-destructive" role="alert">
+          <p className="text-destructive text-sm" role="alert">
             {error}
           </p>
         )}

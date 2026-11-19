@@ -83,7 +83,7 @@ export function StayFollowUp({ stayId }: { stayId: string }) {
             );
           }}
         >
-          <label className="space-y-2 t-13">
+          <label className="t-13 space-y-2">
             Date du contrôle
             <DatePicker
               className="h-11"

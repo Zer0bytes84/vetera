@@ -58,14 +58,14 @@ export function AgendaStays({
   }
   return (
     <section aria-label="Admissions et sorties" className="border-t px-6 py-4">
-      <h3 className="mb-3 flex items-center gap-2 t-14 font-medium">
+      <h3 className="t-14 mb-3 flex items-center gap-2 font-medium">
         <StayClipboardIcon />
         Hospitalisation
       </h3>
       <div className="flex flex-wrap gap-3">
         {events.map((event) => (
           <button
-            className="min-h-11 rounded-xl border border-teal-200 bg-teal-50 px-4 py-3 text-left t-13 transition-colors hover:bg-teal-100 focus-visible:outline-2 focus-visible:outline-primary dark:border-teal-900 dark:bg-teal-950/40 dark:hover:bg-teal-950"
+            className="t-13 min-h-11 rounded-xl border border-teal-200 bg-teal-50 px-4 py-3 text-left transition-colors hover:bg-teal-100 focus-visible:outline-2 focus-visible:outline-primary dark:border-teal-900 dark:bg-teal-950/40 dark:hover:bg-teal-950"
             key={event.id}
             onClick={() => {
               requestFocus("stay", event.stayId);
@@ -76,7 +76,7 @@ export function AgendaStays({
             <span className="font-medium">
               {event.label} · {patientName(event.patientId)}
             </span>
-            <span className="mt-1 block t-12 text-muted-foreground">
+            <span className="t-12 mt-1 block text-muted-foreground">
               {new Date(event.date).toLocaleString("fr-FR", {
                 day: "numeric",
                 month: "short",

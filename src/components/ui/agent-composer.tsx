@@ -166,7 +166,7 @@ export function AgentComposer({
               >
                 <span className="truncate font-medium">{item.label}</span>
                 {item.detail && (
-                  <span className="truncate text-xs text-muted-foreground">
+                  <span className="truncate text-muted-foreground text-xs">
                     {item.detail}
                   </span>
                 )}
@@ -213,7 +213,7 @@ export function AgentComposer({
               {toolbar}
             </div>
             {meter ? (
-              <div className="shrink-0 text-xs text-muted-foreground">
+              <div className="shrink-0 text-muted-foreground text-xs">
                 {meter}
               </div>
             ) : null}

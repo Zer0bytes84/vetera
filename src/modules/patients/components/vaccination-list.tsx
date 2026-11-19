@@ -86,7 +86,7 @@ export function VaccinationList({
             <Syringe className="size-4" weight="duotone" />
           </span>
           <div className="min-w-0">
-            <div className="truncate font-bold t-12 text-muted-foreground uppercase tracking-wider">
+            <div className="t-12 truncate font-bold text-muted-foreground uppercase tracking-wider">
               {t("patientDetail.vaccinations.title")}
             </div>
             <div className="mt-0.5 truncate text-muted-foreground text-xs">
@@ -103,7 +103,7 @@ export function VaccinationList({
         </div>
         {onNew ? (
           <Button
-            className="medical-action medical-action-outline h-8 shrink-0 gap-1.5 t-12 font-medium cursor-pointer"
+            className="medical-action medical-action-outline t-12 h-8 shrink-0 cursor-pointer gap-1.5 font-medium"
             onClick={onNew}
             size="sm"
             variant="outline"
@@ -148,7 +148,7 @@ export function VaccinationList({
                       </span>
                       {entry.vaccineType ? (
                         <Badge
-                          className="rounded-full px-1.5 py-0 font-medium t-12"
+                          className="t-12 rounded-full px-1.5 py-0 font-medium"
                           variant="outline"
                         >
                           {entry.vaccineType}
@@ -156,7 +156,7 @@ export function VaccinationList({
                       ) : null}
                       <Badge
                         className={cn(
-                          "rounded-full px-2 py-0 font-medium t-12",
+                          "t-12 rounded-full px-2 py-0 font-medium",
                           meta.className
                         )}
                         variant="secondary"

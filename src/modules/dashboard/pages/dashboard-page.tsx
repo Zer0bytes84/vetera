@@ -470,7 +470,7 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
     />
   );
   return (
-    <div className="dashboard-stage flex w-full min-w-0 flex-col gap-6 px-4 pt-4 pb-12 lg:px-6 premium-analytics-dashboard">
+    <div className="dashboard-stage premium-analytics-dashboard flex w-full min-w-0 flex-col gap-6 px-4 pt-4 pb-12 lg:px-6">
       <TourInvitation />
       <PremiumAnalytics
         alertSources={{

@@ -150,7 +150,7 @@ function LotForm({
   return (
     <form
       aria-label="Enregistrer un lot"
-      className="space-y-4 border-y border-border bg-muted/10 p-5"
+      className="space-y-4 border-border border-y bg-muted/10 p-5"
       noValidate
       onSubmit={async (event) => {
         event.preventDefault();
@@ -213,7 +213,7 @@ function LotForm({
       }}
     >
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h3 className="text-base font-medium">Enregistrer un lot</h3>
+        <h3 className="font-medium text-base">Enregistrer un lot</h3>
         <Tabs
           onValueChange={(value) =>
             changed(() => setMode(value as typeof mode))
@@ -230,7 +230,7 @@ function LotForm({
           </TabsList>
         </Tabs>
       </div>
-      <p className="text-sm text-muted-foreground">
+      <p className="text-muted-foreground text-sm">
         {mode === "identify"
           ? "Attribuez un numéro au stock déjà présent. Le total reste inchangé."
           : "Enregistrez une livraison réellement reçue. Cette quantité s’ajoute au stock."}
@@ -282,7 +282,7 @@ function LotForm({
             value={quantity}
           />
           {mode === "identify" && product && (
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               Sans lot dans cet emplacement :{" "}
               {stockQuantityLabel(unassigned, product.unit)}.
             </p>
@@ -296,7 +296,7 @@ function LotForm({
             onChange={(value) => changed(() => setExpiry(value))}
             value={expiry}
           />
-          <p className="text-xs text-muted-foreground">
+          <p className="text-muted-foreground text-xs">
             Facultative si le produit n’a pas de péremption indiquée.
           </p>
         </div>
@@ -339,7 +339,7 @@ function LotForm({
         )}
       </fieldset>
       {error && (
-        <p className="text-sm text-destructive" role="alert">
+        <p className="text-destructive text-sm" role="alert">
           {error}
         </p>
       )}
@@ -393,7 +393,7 @@ function CountForm({
   return (
     <form
       aria-label="Comptage du lot"
-      className="space-y-3 border-y border-border bg-muted/10 p-5"
+      className="space-y-3 border-border border-y bg-muted/10 p-5"
       noValidate
       onSubmit={async (event) => {
         event.preventDefault();
@@ -428,11 +428,11 @@ function CountForm({
         );
       }}
     >
-      <h3 className="text-base font-medium">
+      <h3 className="font-medium text-base">
         Compter{" "}
         {row.lotNumber ? `le lot ${row.lotNumber}` : "le stock sans lot"}
       </h3>
-      <p className="text-sm text-muted-foreground">
+      <p className="text-muted-foreground text-sm">
         {row.productName} · {row.locationName} · Réception du{" "}
         {dateLabel(row.receivedAt)}. L’écart sera journalisé.
       </p>
@@ -470,7 +470,7 @@ function CountForm({
         </div>
       </div>
       {error && (
-        <p className="text-sm text-destructive" role="alert">
+        <p className="text-destructive text-sm" role="alert">
           {error}
         </p>
       )}
@@ -521,7 +521,7 @@ export function StockLotsPanel() {
   ).size;
   if (!isTauriRuntime()) {
     return (
-      <p className="p-5 text-sm text-muted-foreground">
+      <p className="p-5 text-muted-foreground text-sm">
         Les lots et leur traçabilité sont disponibles dans l’application de
         bureau. Le catalogue web reste utilisable.
       </p>
@@ -529,7 +529,7 @@ export function StockLotsPanel() {
   }
   return (
     <section aria-label="Lots et réceptions" className="min-w-0">
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border p-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-border border-b p-4">
         <div className="w-full min-w-0 sm:w-72">
           <SearchableSelect
             controlClassName="[&_input]:text-foreground"
@@ -557,7 +557,7 @@ export function StockLotsPanel() {
       </div>
       {inventory.error && (
         <div
-          className="flex flex-wrap items-center justify-between gap-3 p-4 text-sm text-destructive"
+          className="flex flex-wrap items-center justify-between gap-3 p-4 text-destructive text-sm"
           role="alert"
         >
           {inventory.error}
@@ -567,13 +567,13 @@ export function StockLotsPanel() {
         </div>
       )}
       {!(inventory.ready || inventory.error) && (
-        <p className="p-4 text-sm text-muted-foreground" role="status">
+        <p className="p-4 text-muted-foreground text-sm" role="status">
           Vérification des lots…
         </p>
       )}
       {uniqueAlerts > 0 && (
         <p
-          className="border-b border-border p-4 text-sm text-destructive"
+          className="border-border border-b p-4 text-destructive text-sm"
           role="status"
         >
           {uniqueAlerts}{" "}
@@ -639,7 +639,7 @@ export function StockLotsPanel() {
                 >
                   <TableCell className="whitespace-normal break-words align-top">
                     <span className="font-medium">{row.productName}</span>
-                    <p className="mt-1 text-xs text-muted-foreground">
+                    <p className="mt-1 text-muted-foreground text-xs">
                       {row.locationName}
                     </p>
                   </TableCell>
@@ -669,7 +669,7 @@ export function StockLotsPanel() {
                   <TableCell className="whitespace-normal text-right align-top tabular-nums">
                     {stockQuantityLabel(row.quantity, row.unit)}
                   </TableCell>
-                  <TableCell className="whitespace-normal align-top text-xs text-muted-foreground">
+                  <TableCell className="whitespace-normal align-top text-muted-foreground text-xs">
                     <span className="block">
                       Réception : {dateLabel(row.receivedAt)}
                     </span>
@@ -697,7 +697,7 @@ export function StockLotsPanel() {
           )}
         </TableBody>
       </Table>
-      <p className="border-t border-border px-4 py-3 text-xs text-muted-foreground">
+      <p className="border-border border-t px-4 py-3 text-muted-foreground text-xs">
         Chaque réception conserve sa date pour le FIFO. Le stock ancien reste «
         sans lot » jusqu’à son identification.
       </p>

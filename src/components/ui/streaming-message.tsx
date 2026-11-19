@@ -184,7 +184,7 @@ function Reasoning({
         {streaming ? (
           <motion.span
             animate={{ backgroundPosition: "-100% 0" }}
-            className="bg-[linear-gradient(90deg,var(--muted-foreground)_35%,var(--foreground)_50%,var(--muted-foreground)_65%)] bg-[length:200%_100%] bg-clip-text text-transparent"
+            className="bg-[length:200%_100%] bg-[linear-gradient(90deg,var(--muted-foreground)_35%,var(--foreground)_50%,var(--muted-foreground)_65%)] bg-clip-text text-transparent"
             initial={{ backgroundPosition: "100% 0" }}
             transition={{
               duration: 1.6,
@@ -214,7 +214,7 @@ function Reasoning({
       <AnimatePresence initial={false}>
         {open && (
           <motion.div {...fold} className="overflow-hidden">
-            <p className="px-3.5 pb-3 text-[0.8125rem] leading-6 text-muted-foreground">
+            <p className="px-3.5 pb-3 text-[0.8125rem] text-muted-foreground leading-6">
               {text}
             </p>
           </motion.div>
@@ -272,7 +272,7 @@ function Content({
   const nextIndex = counter();
 
   return (
-    <div className="flex flex-col gap-3 leading-6 text-pretty">
+    <div className="flex flex-col gap-3 text-pretty leading-6">
       {paragraphs.map((paragraph, p) => (
         <p key={p}>
           {parseInline(paragraph).map((segment, s) => {

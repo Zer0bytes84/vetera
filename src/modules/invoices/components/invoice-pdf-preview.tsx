@@ -183,7 +183,7 @@ export function InvoicePdfPreview({
             className="min-h-0 flex-1 overflow-auto rounded-lg border bg-muted p-3 sm:p-6"
           >
             {rendering && (
-              <p className="mb-3 text-sm text-muted-foreground" role="status">
+              <p className="mb-3 text-muted-foreground text-sm" role="status">
                 Préparation de l’aperçu…
               </p>
             )}
@@ -224,7 +224,7 @@ export function InvoicePdfPreview({
           </div>
         )}
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <p className="text-xs text-muted-foreground">
+          <p className="text-muted-foreground text-xs">
             A4 · Texte sélectionnable · Génération locale
           </p>
           <div className="flex gap-2">

@@ -136,7 +136,7 @@ export function CareTaskForm({
         );
       }}
     >
-      <div className="space-y-1.5 t-13">
+      <div className="t-13 space-y-1.5">
         <span className="flex items-center justify-between">
           Patient <span className="modal-required">requis</span>
         </span>
@@ -146,7 +146,7 @@ export function CareTaskForm({
             disabled={!!patientId}
             render={
               <Button
-                className="h-11 w-full justify-between rounded-xl px-3 t-13"
+                className="t-13 h-11 w-full justify-between rounded-xl px-3"
                 data-field="picker"
                 type="button"
                 variant="outline"
@@ -204,12 +204,12 @@ export function CareTaskForm({
           </PopoverContent>
         </Popover>
       </div>
-      <label className="block space-y-1.5 t-13">
+      <label className="t-13 block space-y-1.5">
         <span className="flex items-center justify-between">
           Soin <span className="modal-required">requis</span>
         </span>
         <Input
-          className="h-11 w-full rounded-xl t-13"
+          className="t-13 h-11 w-full rounded-xl"
           onChange={(e) => setLabel(e.target.value)}
           placeholder="Ex. pansement, injection, contrôle de plaie"
           required
@@ -217,7 +217,7 @@ export function CareTaskForm({
         />
       </label>
       <div className="grid gap-4 sm:grid-cols-[minmax(170px,0.8fr)_minmax(0,1.2fr)]">
-        <label className="block min-w-0 space-y-1.5 t-13">
+        <label className="t-13 block min-w-0 space-y-1.5">
           Type
           <select
             aria-label="Type de soin"
@@ -232,14 +232,14 @@ export function CareTaskForm({
             ))}
           </select>
         </label>
-        <div className="min-w-0 space-y-1.5 t-13">
+        <div className="t-13 min-w-0 space-y-1.5">
           <span className="flex items-center justify-between">
             Date et heure prévues <span className="modal-required">requis</span>
           </span>
           <div className="flex gap-2">
             <DatePicker
               aria-label="Choisir la date du soin"
-              className="h-11 flex-1 rounded-xl t-13"
+              className="t-13 h-11 flex-1 rounded-xl"
               onChange={setScheduledDate}
               placeholder="Choisir la date"
               value={scheduledDate}
@@ -260,7 +260,7 @@ export function CareTaskForm({
         products={products.data}
         quantity={productQuantity}
       />
-      <label className="block space-y-1.5 t-13">
+      <label className="t-13 block space-y-1.5">
         Note
         <textarea
           className={`${field} h-auto min-h-24 resize-y py-3`}
@@ -280,7 +280,7 @@ export function CareTaskForm({
       )}
       <div className="grid grid-cols-2 gap-3">
         <Button
-          className="h-11 w-full rounded-xl t-13"
+          className="t-13 h-11 w-full rounded-xl"
           onClick={onCancel}
           type="button"
           variant="outline"
@@ -288,7 +288,7 @@ export function CareTaskForm({
           Annuler
         </Button>
         <Button
-          className="h-11 w-full rounded-xl t-13"
+          className="t-13 h-11 w-full rounded-xl"
           disabled={
             busy || !currentUser || !patient || !label.trim() || !scheduled
           }

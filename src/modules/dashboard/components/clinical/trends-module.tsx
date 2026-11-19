@@ -38,7 +38,7 @@ export function TrendsModule({
           <button
             aria-controls="clinical-trends-content"
             aria-expanded={open}
-            className={`inline-flex h-8 items-center gap-2 rounded-full bg-[var(--card-inset)] px-3 t-12 font-medium text-ink-muted hover:text-ink ${focusRing}`}
+            className={`t-12 inline-flex h-8 items-center gap-2 rounded-full bg-[var(--card-inset)] px-3 font-medium text-ink-muted hover:text-ink ${focusRing}`}
             onClick={() => onOpen(!open)}
             type="button"
           >
@@ -69,7 +69,7 @@ export function TrendsModule({
             {([30, 90] as const).map((days) => (
               <button
                 aria-pressed={model.days === days}
-                className={`rounded-full px-3 py-1.5 t-12 font-medium ${model.days === days ? "bg-surface shadow-card" : "text-ink-muted hover:text-ink"} ${focusRing}`}
+                className={`t-12 rounded-full px-3 py-1.5 font-medium ${model.days === days ? "bg-surface shadow-card" : "text-ink-muted hover:text-ink"} ${focusRing}`}
                 key={days}
                 onClick={() => onPeriod(days)}
                 type="button"
@@ -97,11 +97,11 @@ export function TrendsModule({
             <div className="grid gap-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
               <section>
                 <div className="flex items-baseline justify-between">
-                  <h3 className="font-display t-14 font-medium">
+                  <h3 className="t-14 font-display font-medium">
                     Consultations terminées
                   </h3>
                   <span className="t-12 text-ink-muted">
-                    <strong className="font-display t-18 font-medium text-ink tabular-nums">
+                    <strong className="t-18 font-display font-medium text-ink tabular-nums">
                       {model.total}
                     </strong>{" "}
                     au total
@@ -117,14 +117,14 @@ export function TrendsModule({
                   />
                 </div>
               </section>
-              <section className="lg:border-l lg:border-hairline lg:pl-6">
-                <h3 className="font-display t-14 font-medium">
+              <section className="lg:border-hairline lg:border-l lg:pl-6">
+                <h3 className="t-14 font-display font-medium">
                   Répartition des actes
                 </h3>
                 <div className="mt-4 space-y-4">
                   {model.specialties.slice(0, 5).map((row) => (
                     <div key={row.label}>
-                      <div className="mb-1.5 flex justify-between gap-3 t-12">
+                      <div className="t-12 mb-1.5 flex justify-between gap-3">
                         <span>{row.label}</span>
                         <span className="text-ink-muted tabular-nums">
                           {row.count} ·{" "}

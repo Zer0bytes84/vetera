@@ -85,7 +85,7 @@ export function MorningWatch({
     <div aria-atomic="true" aria-live="polite">
       <StatGrid
         badges={false}
-        className="max-w-none morningWatch"
+        className="morningWatch max-w-none"
         data={stats}
         goals={false}
         icon={ExclamationCircleIcon}

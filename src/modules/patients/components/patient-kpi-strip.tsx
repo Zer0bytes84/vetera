@@ -87,10 +87,10 @@ export function PatientKpiStrip({
       <article aria-label="Suivi du poids" className="medical-kpi group">
         <div className="medical-kpi-heading">
           <div className="flex items-center gap-2.5">
-            <div className="size-8 rounded-lg flex items-center justify-center bg-indigo-50 text-indigo-600 border border-indigo-200/60 dark:bg-indigo-950/60 dark:text-indigo-400 dark:border-indigo-800/40 shrink-0 shadow-xs">
+            <div className="flex size-8 shrink-0 items-center justify-center rounded-lg border border-indigo-200/60 bg-indigo-50 text-indigo-600 shadow-xs dark:border-indigo-800/40 dark:bg-indigo-950/60 dark:text-indigo-400">
               <Scales aria-hidden="true" size={16} weight="duotone" />
             </div>
-            <h2 className="text-xs font-semibold text-foreground/80 tracking-wide uppercase">
+            <h2 className="font-semibold text-foreground/80 text-xs uppercase tracking-wide">
               Poids
             </h2>
           </div>
@@ -107,19 +107,19 @@ export function PatientKpiStrip({
         {lastWeight ? (
           <>
             <div className="medical-kpi-value-row mt-1">
-              <p className="medical-kpi-value text-2xl font-bold tracking-tight text-foreground">
+              <p className="medical-kpi-value font-bold text-2xl text-foreground tracking-tight">
                 {lastWeight.weightKg.toLocaleString("fr-FR", {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
                 })}
-                <span className="medical-kpi-unit text-sm font-medium text-muted-foreground ml-1.5">
+                <span className="medical-kpi-unit ml-1.5 font-medium text-muted-foreground text-sm">
                   kg
                 </span>
               </p>
               {sparklineWeights.length > 1 && (
                 <svg
                   aria-label={`Évolution des ${sparklineWeights.length} dernières pesées`}
-                  className="medical-weight-sparkline w-20 h-8"
+                  className="medical-weight-sparkline h-8 w-20"
                   fill="none"
                   role="img"
                   viewBox="0 0 64 28"
@@ -169,16 +169,16 @@ export function PatientKpiStrip({
               )}
             </div>
             <div className="medical-kpi-caption-row mt-2">
-              <span className="text-xs text-muted-foreground">
+              <span className="text-muted-foreground text-xs">
                 Mesuré le {formatDateShort(lastWeight.measuredAt)}
               </span>
               {weightChange.kind === "change" && (
                 <span
                   className={cn(
-                    "medical-weight-delta inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold border shadow-2xs",
+                    "medical-weight-delta inline-flex items-center rounded-full border px-2 py-0.5 font-semibold text-xs shadow-2xs",
                     weightChange.deltaKg < 0
-                      ? "bg-amber-50 text-amber-700 border-amber-200/80 dark:bg-amber-950/50 dark:text-amber-300 dark:border-amber-800/40"
-                      : "bg-emerald-50 text-emerald-700 border-emerald-200/80 dark:bg-emerald-950/50 dark:text-emerald-300 dark:border-emerald-800/40"
+                      ? "border-amber-200/80 bg-amber-50 text-amber-700 dark:border-amber-800/40 dark:bg-amber-950/50 dark:text-amber-300"
+                      : "border-emerald-200/80 bg-emerald-50 text-emerald-700 dark:border-emerald-800/40 dark:bg-emerald-950/50 dark:text-emerald-300"
                   )}
                   title="Variation depuis la pesée précédente"
                 >
@@ -187,7 +187,7 @@ export function PatientKpiStrip({
               )}
               {weightChange.kind === "implausible" && (
                 <button
-                  className="medical-weight-delta inline-flex items-center rounded-full border border-border bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground hover:text-foreground"
+                  className="medical-weight-delta inline-flex items-center rounded-full border border-border bg-muted px-2 py-0.5 font-medium text-muted-foreground text-xs hover:text-foreground"
                   onClick={onWeightClick}
                   title={`Pesée précédente : ${formatKg(weightChange.previous.weightKg)} kg le ${formatDateShort(weightChange.previous.measuredAt)}. Écart trop grand pour être une variation réelle : vérifiez la saisie dans l’onglet Poids.`}
                   type="button"
@@ -199,10 +199,10 @@ export function PatientKpiStrip({
           </>
         ) : (
           <div className="medical-kpi-empty mt-2">
-            <p className="medical-kpi-value text-lg font-bold text-foreground">
+            <p className="medical-kpi-value font-bold text-foreground text-lg">
               Aucune pesée
             </p>
-            <p className="text-xs text-muted-foreground mt-1">
+            <p className="mt-1 text-muted-foreground text-xs">
               À saisir dans l’onglet Poids.
             </p>
           </div>
@@ -212,10 +212,10 @@ export function PatientKpiStrip({
       <article aria-label="Parcours de soins" className="medical-kpi group">
         <div className="medical-kpi-heading">
           <div className="flex items-center gap-2.5">
-            <div className="size-8 rounded-lg flex items-center justify-center bg-violet-50 text-violet-600 border border-violet-200/60 dark:bg-violet-950/60 dark:text-violet-400 dark:border-violet-800/40 shrink-0 shadow-xs">
+            <div className="flex size-8 shrink-0 items-center justify-center rounded-lg border border-violet-200/60 bg-violet-50 text-violet-600 shadow-xs dark:border-violet-800/40 dark:bg-violet-950/60 dark:text-violet-400">
               <Stethoscope aria-hidden="true" size={16} weight="duotone" />
             </div>
-            <h2 className="text-xs font-semibold text-foreground/80 tracking-wide uppercase">
+            <h2 className="font-semibold text-foreground/80 text-xs uppercase tracking-wide">
               Parcours de soins
             </h2>
           </div>
@@ -231,14 +231,14 @@ export function PatientKpiStrip({
         </div>
         {displayedVisit ? (
           <>
-            <p className="medical-kpi-value text-lg font-bold text-foreground mt-1">
+            <p className="medical-kpi-value mt-1 font-bold text-foreground text-lg">
               {displayedVisit}
             </p>
-            <p className="medical-kpi-caption text-xs text-muted-foreground">
+            <p className="medical-kpi-caption text-muted-foreground text-xs">
               {showLastVisit ? "Dernière consultation" : "Prochaine visite"}
             </p>
             {!showLastVisit && nextAppointment && (
-              <p className="medical-kpi-detail text-xs font-medium text-foreground/80 truncate mt-1">
+              <p className="medical-kpi-detail mt-1 truncate font-medium text-foreground/80 text-xs">
                 {nextAppointment.type}
                 {nextApptDate &&
                   ` · ${nextApptDate.toLocaleTimeString("fr-FR", {
@@ -250,14 +250,14 @@ export function PatientKpiStrip({
           </>
         ) : (
           <div className="medical-kpi-empty mt-2">
-            <p className="medical-kpi-value text-lg font-bold text-foreground">
+            <p className="medical-kpi-value font-bold text-foreground text-lg">
               {showLastVisit ? "Aucune visite" : "Aucune visite à venir"}
             </p>
           </div>
         )}
         {showLastVisit && nextAppointment ? (
           <button
-            className="medical-next-visit medical-kpi-footer inline-flex items-center gap-2 mt-auto pt-2 text-xs font-medium text-violet-700 dark:text-violet-300 hover:underline cursor-pointer"
+            className="medical-next-visit medical-kpi-footer mt-auto inline-flex cursor-pointer items-center gap-2 pt-2 font-medium text-violet-700 text-xs hover:underline dark:text-violet-300"
             onClick={onAppointmentClick}
             title="Ouvrir le rendez-vous dans l’agenda"
             type="button"
@@ -271,7 +271,7 @@ export function PatientKpiStrip({
         ) : showLastVisit ? (
           lastVisitFormatted ? (
             <button
-              className="medical-kpi-text-action medical-kpi-footer inline-flex items-center gap-1.5 mt-auto pt-2 text-xs font-medium text-muted-foreground hover:text-foreground cursor-pointer"
+              className="medical-kpi-text-action medical-kpi-footer mt-auto inline-flex cursor-pointer items-center gap-1.5 pt-2 font-medium text-muted-foreground text-xs hover:text-foreground"
               onClick={onAppointmentClick}
               type="button"
             >
@@ -281,7 +281,7 @@ export function PatientKpiStrip({
           ) : null
         ) : (
           <button
-            className="medical-kpi-text-action medical-kpi-footer inline-flex items-center gap-1.5 mt-auto pt-2 text-xs font-medium text-muted-foreground hover:text-foreground cursor-pointer"
+            className="medical-kpi-text-action medical-kpi-footer mt-auto inline-flex cursor-pointer items-center gap-1.5 pt-2 font-medium text-muted-foreground text-xs hover:text-foreground"
             onClick={nextAppointment ? onAppointmentClick : onTimelineClick}
             type="button"
           >

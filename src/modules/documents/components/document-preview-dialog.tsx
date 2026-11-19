@@ -218,7 +218,7 @@ export function DocumentPreviewDialog({
         </header>
         {error && (
           <p
-            className="mx-5 rounded-lg border border-destructive/20 bg-destructive/5 p-3 text-sm text-destructive"
+            className="mx-5 rounded-lg border border-destructive/20 bg-destructive/5 p-3 text-destructive text-sm"
             role="alert"
           >
             {error}
@@ -229,16 +229,16 @@ export function DocumentPreviewDialog({
             <div className="document-preview-body">
               <aside className="document-preview-tools">
                 {document.status === "annule" ? (
-                  <p className="text-sm text-destructive">
+                  <p className="text-destructive text-sm">
                     Document annulé : {document.cancellationReason}
                   </p>
                 ) : document.status === "brouillon" ? (
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-muted-foreground text-sm">
                     Relisez l’aperçu avant de finaliser. Le brouillon ne peut
                     pas être imprimé ni exporté.
                   </p>
                 ) : (
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-muted-foreground text-sm">
                     Document finalisé le{" "}
                     {new Date(
                       document.finalizedAt || document.createdAt
@@ -408,12 +408,12 @@ export function DocumentPreviewDialog({
                   </Button>
                 )}
                 {document.attachment?.textState === "scan" && (
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-muted-foreground text-sm">
                     PDF scanné : aucun texte extractible. L’assistant ne peut
                     pas citer son contenu sans reconnaissance locale explicite.
                   </p>
                 )}
-                <div className="border-t border-border pt-4 space-y-3">
+                <div className="space-y-3 border-border border-t pt-4">
                   <Button
                     disabled={busy}
                     onClick={() =>
@@ -497,7 +497,7 @@ export function DocumentPreviewDialog({
                     ))}
                 </div>
                 {busy && (
-                  <p className="text-sm text-muted-foreground" role="status">
+                  <p className="text-muted-foreground text-sm" role="status">
                     En cours…
                   </p>
                 )}
@@ -507,7 +507,7 @@ export function DocumentPreviewDialog({
           </>
         )}
         {!(document || error) && (
-          <p className="p-6 text-sm text-muted-foreground" role="status">
+          <p className="p-6 text-muted-foreground text-sm" role="status">
             Chargement du document…
           </p>
         )}

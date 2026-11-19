@@ -29,7 +29,7 @@ export function AssistantBrandAvatar({
   return (
     <div
       aria-hidden="true"
-      className="inline-flex shrink-0 items-center justify-center rounded-full border border-border/70 bg-background shadow-xs overflow-hidden"
+      className="inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full border border-border/70 bg-background shadow-xs"
       style={{ width: size, height: size }}
     >
       <Logo className="scale-75" collapsed variant="refined" />

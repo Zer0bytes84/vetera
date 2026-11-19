@@ -77,13 +77,13 @@ export function WeightEvolutionChart({
             <span className="flex size-8 items-center justify-center rounded-xl bg-sky-50 text-sky-600 dark:bg-sky-950/40 dark:text-sky-300">
               <Scales className="size-4" weight="duotone" />
             </span>
-            <div className="font-bold t-12 text-muted-foreground uppercase tracking-wider">
+            <div className="t-12 font-bold text-muted-foreground uppercase tracking-wider">
               {title}
             </div>
           </div>
           {onAdd ? (
             <Button
-              className="medical-action medical-action-outline h-8 gap-1.5 t-12 font-medium cursor-pointer"
+              className="medical-action medical-action-outline t-12 h-8 cursor-pointer gap-1.5 font-medium"
               onClick={onAdd}
               size="sm"
               variant="outline"
@@ -108,7 +108,7 @@ export function WeightEvolutionChart({
             <Scales className="size-4" weight="duotone" />
           </span>
           <div>
-            <div className="font-bold t-12 text-muted-foreground uppercase tracking-wider">
+            <div className="t-12 font-bold text-muted-foreground uppercase tracking-wider">
               {title}
             </div>
             <div className="mt-0.5 text-muted-foreground text-xs">
@@ -118,7 +118,7 @@ export function WeightEvolutionChart({
         </div>
         {onAdd ? (
           <Button
-            className="medical-action medical-action-outline h-8 gap-1.5 t-12 font-medium cursor-pointer"
+            className="medical-action medical-action-outline t-12 h-8 cursor-pointer gap-1.5 font-medium"
             onClick={onAdd}
             size="sm"
             variant="outline"

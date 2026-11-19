@@ -229,8 +229,8 @@ function CatalogueTable({
       format: (_, row) => {
         const product = byId.get(row.id)!;
         return (
-          <span className="block max-w-64 min-w-0">
-            <span className="block truncate text-sm font-medium">
+          <span className="block min-w-0 max-w-64">
+            <span className="block truncate font-medium text-sm">
               {row.name}
             </span>
             <span className="block truncate text-[0.8125rem] text-muted-foreground">
@@ -253,7 +253,7 @@ function CatalogueTable({
               {statusCopy[productStatus(product)].label}
             </StatusPill>
             {stockWords(product) && (
-              <span className="mt-1 block whitespace-nowrap text-xs text-muted-foreground">
+              <span className="mt-1 block whitespace-nowrap text-muted-foreground text-xs">
                 {stockWords(product)}
               </span>
             )}
@@ -267,7 +267,7 @@ function CatalogueTable({
       align: "right",
       sortable: true,
       format: (_, row) => (
-        <span className="font-sans text-sm font-medium">
+        <span className="font-medium font-sans text-sm">
           {row.qty}{" "}
           <span className="font-normal text-muted-foreground text-xs">
             {byId.get(row.id)!.unit}
@@ -295,7 +295,7 @@ function CatalogueTable({
       sortable: true,
       priority: 2,
       format: (value) => (
-        <span className="font-sans text-[0.8125rem] font-medium">
+        <span className="font-medium font-sans text-[0.8125rem]">
           {formatDZD(Number(value))}
         </span>
       ),
@@ -409,7 +409,7 @@ function ProductDetail({
         className="max-w-[calc(100%-2rem)] gap-0 overflow-hidden p-0 sm:max-w-xl"
         showCloseButton
       >
-        <div className="relative overflow-hidden border-b bg-[#f6f3e9] px-6 pb-6 pt-7 dark:bg-[#1f251f]">
+        <div className="relative overflow-hidden border-b bg-[#f6f3e9] px-6 pt-7 pb-6 dark:bg-[#1f251f]">
           <div className="absolute inset-0 bg-gradient-to-r from-[#f6f3e9] via-[#f6f3e9]/95 to-transparent dark:from-[#1f251f] dark:via-[#1f251f]/95" />
           <DialogHeader className="relative max-w-[75%]">
             <div className="mb-2 flex items-center gap-2">
@@ -818,7 +818,7 @@ export function StockWorkspace({
                 status !== "expired" && (
                   <ul
                     aria-label="Péremptions proches"
-                    className="mb-3 divide-y overflow-hidden rounded-2xl bg-amber-50/60 text-sm dark:bg-amber-500/[0.06] [&>li]:flex [&>li]:items-center [&>li]:gap-3 [&>li]:px-5 [&>li]:py-2 [&>li]:text-amber-900 dark:[&>li]:text-amber-200 [&>li[data-expired]]:bg-rose-50/70 [&>li[data-expired]]:text-rose-800 dark:[&>li[data-expired]]:bg-rose-500/[0.08] dark:[&>li[data-expired]]:text-rose-200"
+                    className="mb-3 divide-y overflow-hidden rounded-2xl bg-amber-50/60 text-sm dark:bg-amber-500/[0.06] [&>li[data-expired]]:bg-rose-50/70 [&>li[data-expired]]:text-rose-800 dark:[&>li[data-expired]]:bg-rose-500/[0.08] dark:[&>li[data-expired]]:text-rose-200 [&>li]:flex [&>li]:items-center [&>li]:gap-3 [&>li]:px-5 [&>li]:py-2 [&>li]:text-amber-900 dark:[&>li]:text-amber-200"
                   >
                     {expiries.slice(0, 3).map((product) => (
                       <li
@@ -1060,7 +1060,7 @@ export function StockWorkspace({
                               {movement.quantityDelta.toLocaleString("fr-FR", {
                                 maximumFractionDigits: 6,
                               })}
-                              <span className="ml-1 text-xs font-normal text-muted-foreground">
+                              <span className="ml-1 font-normal text-muted-foreground text-xs">
                                 {movement.unitSnapshot ||
                                   product?.unit ||
                                   "unité non renseignée"}
@@ -1070,7 +1070,7 @@ export function StockWorkspace({
                               {movement.quantityAfter.toLocaleString("fr-FR", {
                                 maximumFractionDigits: 6,
                               })}
-                              <span className="ml-1 text-xs text-muted-foreground">
+                              <span className="ml-1 text-muted-foreground text-xs">
                                 {movement.unitSnapshot ||
                                   product?.unit ||
                                   "unité non renseignée"}
@@ -1174,7 +1174,7 @@ export function StockWorkspace({
                   )}
                 </p>
               </div>
-              <div className="md:col-span-3 flex flex-col gap-4 rounded-2xl bg-foreground/[0.04] p-6 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex flex-col gap-4 rounded-2xl bg-foreground/[0.04] p-6 sm:flex-row sm:items-center sm:justify-between md:col-span-3">
                 <div className="flex items-start gap-3">
                   <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700">
                     <ClipboardCheck className="size-5" />

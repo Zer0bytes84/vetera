@@ -425,7 +425,7 @@ export function DataTable<R extends DataRow>({
                       {columns.map((c, ci) => (
                         <td
                           className={cn(
-                            "px-2 py-2.5 whitespace-nowrap",
+                            "whitespace-nowrap px-2 py-2.5",
                             priorityOf(c, ci),
                             c.align === "right" &&
                               "text-right font-mono text-xs tabular-nums"
@@ -462,7 +462,7 @@ export function DataTable<R extends DataRow>({
           </div>
         </Panel>
 
-        <footer className="flex items-center justify-between gap-3 py-1.5 pr-1.5 pl-3.5 text-xs text-muted-foreground">
+        <footer className="flex items-center justify-between gap-3 py-1.5 pr-1.5 pl-3.5 text-muted-foreground text-xs">
           <span>
             {rows.length ? current * pageSize + 1 : 0}–
             {Math.min((current + 1) * pageSize, rows.length)} sur {rows.length}

@@ -397,7 +397,7 @@ export function ReadOnlyDetail({
 }) {
   return (
     <dl className="record-detail min-w-0 border-border/60 border-b py-2.5">
-      <dt className="text-xs text-muted-foreground">{label}</dt>
+      <dt className="text-muted-foreground text-xs">{label}</dt>
       <dd className="mt-1 break-words font-medium text-foreground text-sm leading-5">
         {value}
       </dd>
@@ -774,11 +774,11 @@ export function PatientDetailsDialog({
           <div className="flex flex-col gap-4 px-5 py-4 sm:px-7 sm:py-5">
             <div className="record-summary grid gap-2 sm:grid-cols-3">
               <div className="flex min-w-0 items-center gap-3 rounded-2xl bg-muted/30 px-3.5 py-3 text-foreground ring-1 ring-border/40 transition-colors dark:bg-muted/15 dark:ring-border/30">
-                <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-sky-500 text-white shadow-sm shadow-sky-500/20">
+                <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-sky-500 text-white shadow-sky-500/20 shadow-sm">
                   <HugeiconsIcon icon={Calendar01Icon} strokeWidth={1.5} />
                 </span>
                 <div className="min-w-0">
-                  <p className="font-semibold t-12 text-muted-foreground uppercase tracking-[0.12em]">
+                  <p className="t-12 font-semibold text-muted-foreground uppercase tracking-[0.12em]">
                     Dernière visite
                   </p>
                   <p className="mt-0.5 truncate font-semibold text-sm tracking-[-0.02em]">
@@ -804,11 +804,11 @@ export function PatientDetailsDialog({
               </div>
 
               <div className="flex min-w-0 items-center gap-3 rounded-2xl bg-muted/30 px-3.5 py-3 text-foreground ring-1 ring-border/40 transition-colors dark:bg-muted/15 dark:ring-border/30">
-                <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-amber-500 text-white shadow-sm shadow-amber-500/20">
+                <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-amber-500 text-white shadow-amber-500/20 shadow-sm">
                   <HugeiconsIcon icon={WorkHistoryIcon} strokeWidth={1.5} />
                 </span>
                 <div className="min-w-0">
-                  <p className="font-semibold t-12 text-muted-foreground uppercase tracking-[0.12em]">
+                  <p className="t-12 font-semibold text-muted-foreground uppercase tracking-[0.12em]">
                     Prochain créneau
                   </p>
                   <p className="mt-0.5 truncate font-semibold text-sm tracking-[-0.02em]">
@@ -830,11 +830,11 @@ export function PatientDetailsDialog({
                   patient.allergies || patient.chronicConditions
                 )}
               >
-                <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-emerald-500 text-white shadow-sm shadow-emerald-500/20">
+                <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-emerald-500 text-white shadow-emerald-500/20 shadow-sm">
                   <HugeiconsIcon icon={StethoscopeIcon} strokeWidth={1.5} />
                 </span>
                 <div className="min-w-0">
-                  <p className="font-semibold t-12 text-muted-foreground uppercase tracking-[0.12em]">
+                  <p className="t-12 font-semibold text-muted-foreground uppercase tracking-[0.12em]">
                     Repère clinique
                   </p>
                   <p className="mt-0.5 truncate font-semibold text-sm tracking-[-0.02em]">
@@ -858,7 +858,7 @@ export function PatientDetailsDialog({
         <div className="record-workspace min-h-0 overflow-y-auto bg-card">
           <div className="grid min-h-full md:grid-cols-[180px_minmax(0,1fr)]">
             <aside className="border-border/40 border-b bg-card px-4 py-3 md:sticky md:top-0 md:h-full md:border-r md:border-b-0 md:px-4 md:py-5">
-              <p className="mb-2 hidden px-3 font-semibold t-12 text-muted-foreground uppercase tracking-[0.14em] md:block">
+              <p className="t-12 mb-2 hidden px-3 font-semibold text-muted-foreground uppercase tracking-[0.14em] md:block">
                 Dossier patient
               </p>
               <nav
@@ -922,7 +922,7 @@ export function PatientDetailsDialog({
               </nav>
 
               <div className="mt-5 hidden border-border/60 border-t px-3 pt-4 md:block">
-                <p className="font-semibold t-12 text-muted-foreground uppercase tracking-[0.12em]">
+                <p className="t-12 font-semibold text-muted-foreground uppercase tracking-[0.12em]">
                   Dossier
                 </p>
                 <p className="mt-1 font-mono text-foreground text-xs">
@@ -942,7 +942,7 @@ export function PatientDetailsDialog({
                     <span className="flex size-9 items-center justify-center rounded-xl bg-sky-50 text-sky-600 ring-1 ring-sky-100 dark:bg-sky-950/40 dark:text-sky-300 dark:ring-sky-900">
                       <HugeiconsIcon icon={BirdIcon} strokeWidth={1.5} />
                     </span>
-                    <h2 className="font-semibold t-18 tracking-[-0.03em]">
+                    <h2 className="t-18 font-semibold tracking-[-0.03em]">
                       Identité & contacts
                     </h2>
                   </div>
@@ -1347,7 +1347,7 @@ export function PatientDetailsDialog({
                     <span className="flex size-9 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 ring-1 ring-emerald-100 dark:bg-emerald-950/40 dark:text-emerald-300 dark:ring-emerald-900">
                       <HugeiconsIcon icon={StethoscopeIcon} strokeWidth={1.5} />
                     </span>
-                    <h2 className="font-semibold t-18 tracking-[-0.03em]">
+                    <h2 className="t-18 font-semibold tracking-[-0.03em]">
                       Suivi médical
                     </h2>
                   </div>
@@ -1437,7 +1437,7 @@ export function PatientDetailsDialog({
                       <HugeiconsIcon icon={WorkHistoryIcon} strokeWidth={1.5} />
                     </span>
                     <div>
-                      <h2 className="font-semibold t-18 tracking-[-0.03em]">
+                      <h2 className="t-18 font-semibold tracking-[-0.03em]">
                         Historique des visites
                       </h2>
                       <p className="text-muted-foreground text-xs">
@@ -1448,7 +1448,7 @@ export function PatientDetailsDialog({
                   <Card className="rounded-2xl shadow-none" size="sm">
                     <CardContent className="grid gap-0 p-0 sm:grid-cols-3">
                       <div className="px-4 py-3.5 sm:border-border/70 sm:border-r">
-                        <p className="font-semibold t-12 text-muted-foreground uppercase tracking-[0.12em]">
+                        <p className="t-12 font-semibold text-muted-foreground uppercase tracking-[0.12em]">
                           Réglé par le foyer
                         </p>
                         <p className="mt-1 font-semibold text-lg tracking-[-0.03em]">
@@ -1456,7 +1456,7 @@ export function PatientDetailsDialog({
                         </p>
                       </div>
                       <div className="border-border/70 border-t px-4 py-3.5 sm:border-t-0 sm:border-r">
-                        <p className="font-semibold t-12 text-muted-foreground uppercase tracking-[0.12em]">
+                        <p className="t-12 font-semibold text-muted-foreground uppercase tracking-[0.12em]">
                           En attente
                         </p>
                         <p className="mt-1 font-semibold text-lg tracking-[-0.03em]">
@@ -1464,7 +1464,7 @@ export function PatientDetailsDialog({
                         </p>
                       </div>
                       <div className="border-border/70 border-t px-4 py-3.5 sm:border-t-0">
-                        <p className="font-semibold t-12 text-muted-foreground uppercase tracking-[0.12em]">
+                        <p className="t-12 font-semibold text-muted-foreground uppercase tracking-[0.12em]">
                           Écritures liées
                         </p>
                         <p className="mt-1 font-semibold text-lg tracking-[-0.03em]">
@@ -1785,7 +1785,7 @@ export function PatientCreateDialog({
                     <UserRound className="size-[18px]" strokeWidth={1.9} />
                   </span>
                   <div>
-                    <h3 className="font-semibold t-16 text-foreground">
+                    <h3 className="t-16 font-semibold text-foreground">
                       Propriétaire
                     </h3>
                     <p className="mt-0.5 text-muted-foreground text-xs">
@@ -1831,7 +1831,7 @@ export function PatientCreateDialog({
                   <div className="rounded-2xl border border-amber-500/20 bg-amber-500/5 p-4 transition-[background-color,color,border-color,box-shadow,opacity,transform]">
                     <div className="flex items-start justify-between gap-3">
                       <div className="space-y-1">
-                        <p className="font-semibold text-sm text-foreground">
+                        <p className="font-semibold text-foreground text-sm">
                           {formatOwnerName(selectedOwner)}
                         </p>
                         <p className="text-muted-foreground text-xs">
@@ -1981,7 +1981,7 @@ export function PatientCreateDialog({
                     />
                   </span>
                   <div>
-                    <h3 className="font-semibold t-16 text-foreground">
+                    <h3 className="t-16 font-semibold text-foreground">
                       Patient
                     </h3>
                     <p className="mt-0.5 text-muted-foreground text-xs">
@@ -2119,7 +2119,7 @@ export function PatientCreateDialog({
                 {formError}
               </div>
             ) : (
-              <span className="inline-flex items-center gap-2 text-xs text-muted-foreground">
+              <span className="inline-flex items-center gap-2 text-muted-foreground text-xs">
                 <span aria-hidden="true" className="modal-footer-status-icon">
                   <HugeiconsIcon
                     icon={CheckmarkCircle02Icon}
@@ -2159,7 +2159,7 @@ export function PatientCreateDialog({
                 />
               )}
               <span>Créer le dossier</span>
-              <kbd className="hidden rounded bg-primary-foreground/20 px-1.5 py-0.5 font-mono t-12 sm:inline-block">
+              <kbd className="t-12 hidden rounded bg-primary-foreground/20 px-1.5 py-0.5 font-mono sm:inline-block">
                 ⌘↵
               </kbd>
             </Button>

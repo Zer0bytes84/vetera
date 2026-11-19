@@ -195,7 +195,7 @@ export function EmptyState({
         {description && (
           <p
             className={cn(
-              "text-[0.8125rem] text-pretty text-muted-foreground",
+              "text-pretty text-[0.8125rem] text-muted-foreground",
               compact ? "mt-0.5" : "mx-auto mt-1 max-w-xs"
             )}
           >

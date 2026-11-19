@@ -548,10 +548,10 @@ export function PatientDetailPage({
   if (patientsRepo.error) {
     return (
       <div className="p-8">
-        <h2 className="text-lg font-semibold">
+        <h2 className="font-semibold text-lg">
           Le dossier ne peut pas être chargé
         </h2>
-        <p className="mt-2 text-sm text-muted-foreground">
+        <p className="mt-2 text-muted-foreground text-sm">
           Réessayez pour retrouver les informations du patient.
         </p>
         <Button className="mt-4" onClick={() => void patientsRepo.refresh()}>
@@ -750,7 +750,7 @@ export function PatientDetailPage({
         {pdfExportOpen && (
           <Suspense
             fallback={
-              <p className="text-sm text-muted-foreground" role="status">
+              <p className="text-muted-foreground text-sm" role="status">
                 Ouverture de l’export PDF…
               </p>
             }
@@ -774,7 +774,7 @@ export function PatientDetailPage({
         {healthCardOpen && (
           <Suspense
             fallback={
-              <p className="text-sm text-muted-foreground" role="status">
+              <p className="text-muted-foreground text-sm" role="status">
                 Ouverture du carnet de santé…
               </p>
             }
@@ -789,7 +789,7 @@ export function PatientDetailPage({
         )}
         {patient.archivedAt ? (
           <p
-            className="rounded-2xl bg-zinc-500/10 px-4 py-3 text-sm text-muted-foreground"
+            className="rounded-2xl bg-zinc-500/10 px-4 py-3 text-muted-foreground text-sm"
             role="status"
           >
             Dossier archivé : il n’apparaît plus dans les listes, les recherches
@@ -931,7 +931,7 @@ export function PatientDetailPage({
         {isProfileEditorOpen && profileDraft ? (
           <section
             aria-label="Modifier le dossier"
-            className="scroll-mt-4 rounded-2xl border border-border/80 bg-card/95 shadow-md p-5 sm:p-6 backdrop-blur-xl"
+            className="scroll-mt-4 rounded-2xl border border-border/80 bg-card/95 p-5 shadow-md backdrop-blur-xl sm:p-6"
             data-patient-profile-editor=""
             ref={revealProfileEditor}
           >

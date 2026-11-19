@@ -123,10 +123,10 @@ export default function StaysPage({
                   <h2 className="t-16 font-medium">
                     {patientName(stay.patient_id)}
                   </h2>
-                  <p className="mt-1 t-13 text-muted-foreground">
+                  <p className="t-13 mt-1 text-muted-foreground">
                     {stay.reason}
                   </p>
-                  <p className="mt-2 t-12 text-muted-foreground">
+                  <p className="t-12 mt-2 text-muted-foreground">
                     Admis le{" "}
                     {new Date(stay.admitted_at).toLocaleString("fr-FR", {
                       day: "numeric",
@@ -158,7 +158,7 @@ export default function StaysPage({
                   >
                     Ouvrir le séjour
                   </Button>
-                  <p className="mt-1 t-12 text-muted-foreground">
+                  <p className="t-12 mt-1 text-muted-foreground">
                     {locations.find(
                       (location) => location.id === stay.location_id
                     )?.name || "Sans emplacement"}
@@ -167,7 +167,7 @@ export default function StaysPage({
               </article>
             ))
           ) : (
-            <div className="rounded-2xl border border-dashed p-8 text-center t-14 text-muted-foreground">
+            <div className="t-14 rounded-2xl border border-dashed p-8 text-center text-muted-foreground">
               Aucun séjour enregistré.
             </div>
           )}
@@ -198,14 +198,14 @@ export default function StaysPage({
                             : "Chenil"}
                       </span>
                     </div>
-                    <p className="mt-4 t-14">
+                    <p className="t-14 mt-4">
                       {occupant
                         ? patientName(occupant.patient_id)
                         : location.active
                           ? "Disponible"
                           : "Désactivé"}
                     </p>
-                    <p className="mt-1 t-12 text-muted-foreground">
+                    <p className="t-12 mt-1 text-muted-foreground">
                       {occupant
                         ? labels[occupant.status]
                         : location.species || "Toutes espèces"}

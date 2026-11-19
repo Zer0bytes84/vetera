@@ -89,7 +89,7 @@ function SupplierForm({
   return (
     <form
       aria-label="Fiche fournisseur"
-      className="space-y-4 border-y border-border bg-muted/10 p-5"
+      className="space-y-4 border-border border-y bg-muted/10 p-5"
       noValidate
       onSubmit={async (event) => {
         event.preventDefault();
@@ -114,7 +114,7 @@ function SupplierForm({
         );
       }}
     >
-      <h3 className="text-base font-medium">
+      <h3 className="font-medium text-base">
         {supplier ? "Modifier le fournisseur" : "Nouveau fournisseur"}
       </h3>
       <fieldset className="grid gap-4 sm:grid-cols-2" disabled={busy}>
@@ -160,7 +160,7 @@ function SupplierForm({
         </div>
       </fieldset>
       {error && (
-        <p className="text-sm text-destructive" role="alert">
+        <p className="text-destructive text-sm" role="alert">
           {error}
         </p>
       )}
@@ -262,7 +262,7 @@ function OrderForm({
   return (
     <form
       aria-label="Bon de commande"
-      className="space-y-4 border-y border-border bg-muted/10 p-5"
+      className="space-y-4 border-border border-y bg-muted/10 p-5"
       noValidate
       onSubmit={async (event) => {
         event.preventDefault();
@@ -295,10 +295,10 @@ function OrderForm({
       }}
     >
       <div>
-        <h3 className="text-base font-medium">
+        <h3 className="font-medium text-base">
           {order ? "Modifier le brouillon" : "Préparer une commande"}
         </h3>
-        <p className="mt-1 text-sm text-muted-foreground">
+        <p className="mt-1 text-muted-foreground text-sm">
           {fromAlerts
             ? "Les quantités proposées correspondent au manque par rapport aux seuils actuels. Vérifiez-les avant confirmation."
             : "Choisissez les produits, leurs quantités physiques et le coût d’achat convenu."}
@@ -324,7 +324,7 @@ function OrderForm({
         const product = products.data.find((item) => item.id === row.productId);
         return (
           <fieldset
-            className="grid gap-3 border-t border-border pt-4 sm:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_9rem_10rem_auto]"
+            className="grid gap-3 border-border border-t pt-4 sm:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_9rem_10rem_auto]"
             disabled={busy}
             key={row.key}
           >
@@ -418,7 +418,7 @@ function OrderForm({
         </p>
       </div>
       {error && (
-        <p className="text-sm text-destructive" role="alert">
+        <p className="text-destructive text-sm" role="alert">
           {error}
         </p>
       )}
@@ -486,7 +486,7 @@ function ReceiptForm({
   return (
     <form
       aria-label="Réception de commande"
-      className="space-y-5 border-y border-border bg-muted/10 p-5"
+      className="space-y-5 border-border border-y bg-muted/10 p-5"
       noValidate
       onSubmit={async (event) => {
         event.preventDefault();
@@ -542,10 +542,10 @@ function ReceiptForm({
       }}
     >
       <div>
-        <h3 className="text-base font-medium">
+        <h3 className="font-medium text-base">
           Réceptionner {order.reference}
         </h3>
-        <p className="mt-1 text-sm text-muted-foreground">
+        <p className="mt-1 text-muted-foreground text-sm">
           Vérifiez les quantités réellement reçues. Laissez 0 pour un produit
           non livré.
         </p>
@@ -585,13 +585,13 @@ function ReceiptForm({
       </fieldset>
       {rows.map((row, index) => (
         <fieldset
-          className="space-y-3 border-t border-border pt-4"
+          className="space-y-3 border-border border-t pt-4"
           disabled={busy}
           key={row.id}
         >
           <div className="flex flex-wrap justify-between gap-2">
-            <h4 className="text-sm font-medium">{row.product_name}</h4>
-            <span className="text-xs text-muted-foreground tabular-nums">
+            <h4 className="font-medium text-sm">{row.product_name}</h4>
+            <span className="text-muted-foreground text-xs tabular-nums">
               Reste à recevoir :{" "}
               {stockQuantityLabel(
                 stockBalance(row.quantity - row.received_quantity),
@@ -657,13 +657,13 @@ function ReceiptForm({
         </fieldset>
       ))}
       {!valid && (
-        <p className="text-sm text-muted-foreground">
+        <p className="text-muted-foreground text-sm">
           Saisissez au moins une quantité positive, sans dépasser le restant
           commandé.
         </p>
       )}
       {error && (
-        <p className="text-sm text-destructive" role="alert">
+        <p className="text-destructive text-sm" role="alert">
           {error}
         </p>
       )}
@@ -776,7 +776,7 @@ export function PurchasingPanel({
   };
   if (!isTauriRuntime()) {
     return (
-      <p className="p-5 text-sm text-muted-foreground">
+      <p className="p-5 text-muted-foreground text-sm">
         Les fournisseurs, commandes et réceptions sont disponibles dans
         l’application de bureau.
       </p>
@@ -784,7 +784,7 @@ export function PurchasingPanel({
   }
   return (
     <section aria-label="Approvisionnements" className="min-w-0">
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border p-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-border border-b p-4">
         <Tabs
           onValueChange={(value) => {
             setView(value);
@@ -842,7 +842,7 @@ export function PurchasingPanel({
       </div>
       {missingSupplierFor && !activeSuppliers.length && (
         <div
-          className="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-amber-50/60 px-4 py-3 text-sm dark:bg-amber-500/[0.06]"
+          className="flex flex-wrap items-center justify-between gap-3 border-border border-b bg-amber-50/60 px-4 py-3 text-sm dark:bg-amber-500/[0.06]"
           role="status"
         >
           <span>
@@ -870,13 +870,13 @@ export function PurchasingPanel({
         />
       ) : (
         error && (
-          <p className="p-4 text-sm text-destructive" role="alert">
+          <p className="p-4 text-destructive text-sm" role="alert">
             {error}
           </p>
         )
       )}
       {!(purchasing.ready || purchasing.error) && (
-        <p className="p-4 text-sm text-muted-foreground" role="status">
+        <p className="p-4 text-muted-foreground text-sm" role="status">
           Chargement des approvisionnements…
         </p>
       )}
@@ -913,7 +913,7 @@ export function PurchasingPanel({
                     </TableCell>
                     <TableCell className="whitespace-normal break-words align-top">
                       <span className="block">{formatPhone(item.phone)}</span>
-                      <span className="block text-xs text-muted-foreground">
+                      <span className="block text-muted-foreground text-xs">
                         {item.email || item.address || "Contact non renseigné"}
                       </span>
                     </TableCell>
@@ -979,7 +979,7 @@ export function PurchasingPanel({
       ) : (
         <>
           {!activeSuppliers.length && purchasing.ready && (
-            <p className="p-4 text-sm text-muted-foreground">
+            <p className="p-4 text-muted-foreground text-sm">
               Ajoutez un fournisseur dans l’onglet Fournisseurs pour préparer
               une commande.
             </p>
@@ -1015,8 +1015,8 @@ export function PurchasingPanel({
                 </Button>
                 <div className="flex flex-wrap items-start justify-between gap-4">
                   <div>
-                    <h3 className="text-lg font-medium">{order.reference}</h3>
-                    <p className="mt-1 text-sm text-muted-foreground">
+                    <h3 className="font-medium text-lg">{order.reference}</h3>
+                    <p className="mt-1 text-muted-foreground text-sm">
                       {order.supplier_name} · {dateLabel(order.created_at)}
                     </p>
                   </div>
@@ -1124,7 +1124,7 @@ export function PurchasingPanel({
                   ))}
                 </TableBody>
               </Table>
-              <p className="border-y border-border p-4 text-right text-sm tabular-nums">
+              <p className="border-border border-y p-4 text-right text-sm tabular-nums">
                 Total de la commande :{" "}
                 <strong>{formatDZD(order.total_amount)}</strong>
               </p>
@@ -1137,14 +1137,14 @@ export function PurchasingPanel({
                     .filter((item) => item.order_id === order.id)
                     .map((item) => (
                       <div
-                        className="border-t border-border pt-3"
+                        className="border-border border-t pt-3"
                         key={item.id}
                       >
-                        <p className="text-sm font-medium">
+                        <p className="font-medium text-sm">
                           {item.reference || "Livraison sans référence"} ·{" "}
                           {dateLabel(item.received_at)}
                         </p>
-                        <ul className="mt-2 space-y-1 text-xs text-muted-foreground">
+                        <ul className="mt-2 space-y-1 text-muted-foreground text-xs">
                           {purchasing.receiptLines
                             .filter((line) => line.receipt_id === item.id)
                             .map((line) => {
@@ -1170,7 +1170,7 @@ export function PurchasingPanel({
                       </div>
                     ))
                 ) : (
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-muted-foreground text-sm">
                     Aucune réception enregistrée.
                   </p>
                 )}
@@ -1225,7 +1225,7 @@ export function PurchasingPanel({
                             >
                               {item.reference}
                             </Button>
-                            <span className="mt-1 block text-xs text-muted-foreground">
+                            <span className="mt-1 block text-muted-foreground text-xs">
                               {dateLabel(item.created_at)}
                             </span>
                           </TableCell>
@@ -1282,7 +1282,7 @@ export function PurchasingPanel({
             </AlertDialogDescription>
           </AlertDialogHeader>
           {error && (
-            <p className="text-sm text-destructive" role="alert">
+            <p className="text-destructive text-sm" role="alert">
               {error}
             </p>
           )}

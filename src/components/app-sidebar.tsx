@@ -243,7 +243,7 @@ export function AppSidebar({
           "relative z-10 overflow-y-auto",
           "[scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
           isCollapsed
-            ? "flex flex-col items-center overflow-y-auto! overflow-x-hidden px-0 py-5"
+            ? "overflow-y-auto! flex flex-col items-center overflow-x-hidden px-0 py-5"
             : "px-4 pt-2 pb-6"
         )}
         ref={navigationRef}
@@ -274,7 +274,7 @@ export function AppSidebar({
           isCollapsed ? (
             <AccountSidebarFooter {...account} collapsed />
           ) : (
-            <div className="mt-2 border-t border-sidebar-border/70 pt-2">
+            <div className="mt-2 border-sidebar-border/70 border-t pt-2">
               <AccountSidebarFooter {...account} />
             </div>
           )

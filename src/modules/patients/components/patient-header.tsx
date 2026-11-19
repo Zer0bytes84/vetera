@@ -145,7 +145,7 @@ export function PatientRecordHeader({
     <>
       {allergy ? (
         <span
-          className="patient-record-allergy mr-2 inline-flex items-center gap-1.5 rounded-full bg-negative/10 px-2.5 py-0.5 align-middle text-[0.8125rem] font-medium text-negative"
+          className="patient-record-allergy mr-2 inline-flex items-center gap-1.5 rounded-full bg-negative/10 px-2.5 py-0.5 align-middle font-medium text-[0.8125rem] text-negative"
           role="alert"
         >
           <AlertTriangle aria-hidden="true" className="shrink-0" size={13} />
@@ -228,7 +228,7 @@ export function PatientRecordHeader({
             </StatusPill>
           </h1>
           {/* The identity in context, under the name, smaller: never cut, the owner's name least of all. */}
-          <p className="patient-record-context mt-0.5 text-[0.8125rem] leading-5 text-muted-foreground">
+          <p className="patient-record-context mt-0.5 text-[0.8125rem] text-muted-foreground leading-5">
             {context}
           </p>
         </div>

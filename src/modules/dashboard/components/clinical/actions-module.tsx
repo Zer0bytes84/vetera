@@ -76,7 +76,7 @@ export function ActionsModule({
           {filters.map((value) => (
             <button
               aria-pressed={filter === value}
-              className={`rounded-md px-2 py-1.5 t-12 font-medium transition-colors duration-150 ${filter === value ? "bg-frame text-ink" : "text-ink-muted hover:bg-frame"} ${focusRing}`}
+              className={`t-12 rounded-md px-2 py-1.5 font-medium transition-colors duration-150 ${filter === value ? "bg-frame text-ink" : "text-ink-muted hover:bg-frame"} ${focusRing}`}
               key={value}
               onClick={() => onFilter(value)}
               type="button"
@@ -91,7 +91,7 @@ export function ActionsModule({
           {filtered.slice(0, 4).map((alert) => (
             <motion.div
               animate={{ opacity: 1 }}
-              className="flex items-start gap-3 border-t border-hairline py-3"
+              className="flex items-start gap-3 border-hairline border-t py-3"
               data-row-id={
                 alert.source === "task" ? alert.id.slice(5) : undefined
               }
@@ -110,10 +110,10 @@ export function ActionsModule({
                 onClick={() => onOpen(alert)}
                 type="button"
               >
-                <span className="block t-12 font-medium leading-5 hover:text-primary">
+                <span className="t-12 block font-medium leading-5 hover:text-primary">
                   {alert.title}
                 </span>
-                <span className="mt-0.5 block t-12 leading-4 text-ink-muted">
+                <span className="t-12 mt-0.5 block text-ink-muted leading-4">
                   {alert.detail}
                 </span>
               </button>
@@ -174,7 +174,7 @@ export function ActionsModule({
           <dd>{alerts.length}</dd>
         </div>
       </dl>
-      <div className="mt-2 flex items-center justify-between gap-3 border-t border-hairline pt-3">
+      <div className="mt-2 flex items-center justify-between gap-3 border-hairline border-t pt-3">
         <span className="t-12 text-ink-muted">
           {filtered.length > 4
             ? `+ ${filtered.length - 4} à consulter`

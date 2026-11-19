@@ -39,7 +39,7 @@ export function PageDate() {
 
   return (
     <time
-      className="block text-xs normal-case leading-4 text-muted-foreground"
+      className="block text-muted-foreground text-xs normal-case leading-4"
       data-slot="page-date"
       dateTime={localDate}
     >

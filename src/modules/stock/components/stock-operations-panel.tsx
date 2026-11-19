@@ -47,7 +47,7 @@ function BarcodeMappingForm({ onClose }: { onClose: () => void }) {
   return (
     <form
       aria-label="Associer un code-barres"
-      className="space-y-4 border-y border-border bg-muted/10 p-5"
+      className="space-y-4 border-border border-y bg-muted/10 p-5"
       noValidate
       onSubmit={async (event) => {
         event.preventDefault();
@@ -76,7 +76,7 @@ function BarcodeMappingForm({ onClose }: { onClose: () => void }) {
         );
       }}
     >
-      <h3 className="text-base font-medium">Associer un code-barres</h3>
+      <h3 className="font-medium text-base">Associer un code-barres</h3>
       <fieldset className="grid gap-4 sm:grid-cols-2" disabled={busy}>
         <div className="space-y-1.5">
           <label className="text-sm" htmlFor="barcode-map-code">
@@ -109,7 +109,7 @@ function BarcodeMappingForm({ onClose }: { onClose: () => void }) {
         </div>
       </fieldset>
       {error && (
-        <p className="text-sm text-destructive" role="alert">
+        <p className="text-destructive text-sm" role="alert">
           {error}
         </p>
       )}
@@ -192,8 +192,8 @@ function Scanner({ onOpenMovements }: { onOpenMovements?: () => void }) {
   return (
     <div className="space-y-5 p-5">
       <div>
-        <h3 className="text-base font-medium">Entrée ou sortie rapide</h3>
-        <p className="mt-1 text-sm text-muted-foreground">
+        <h3 className="font-medium text-base">Entrée ou sortie rapide</h3>
+        <p className="mt-1 text-muted-foreground text-sm">
           Scannez avec votre lecteur ou saisissez le code. Vérifiez le produit
           et la quantité avant confirmation.
         </p>
@@ -263,7 +263,7 @@ function Scanner({ onOpenMovements }: { onOpenMovements?: () => void }) {
       {matched && (
         <form
           aria-label="Mouvement par code-barres"
-          className="space-y-4 border-t border-border pt-5"
+          className="space-y-4 border-border border-t pt-5"
           noValidate
           onSubmit={async (event) => {
             event.preventDefault();
@@ -439,13 +439,13 @@ function Scanner({ onOpenMovements }: { onOpenMovements?: () => void }) {
         </form>
       )}
       {error && (
-        <p className="text-sm text-destructive" role="alert">
+        <p className="text-destructive text-sm" role="alert">
           {error}
         </p>
       )}
       {saved && (
         <div
-          className="flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4 text-sm"
+          className="flex flex-wrap items-center justify-between gap-3 border-border border-t pt-4 text-sm"
           role="status"
         >
           <p>{saved}</p>
@@ -478,7 +478,7 @@ function LocationForm({
   return (
     <form
       aria-label="Emplacement de stock"
-      className="space-y-4 border-y border-border bg-muted/10 p-5"
+      className="space-y-4 border-border border-y bg-muted/10 p-5"
       noValidate
       onSubmit={async (event) => {
         event.preventDefault();
@@ -503,7 +503,7 @@ function LocationForm({
         );
       }}
     >
-      <h3 className="text-base font-medium">
+      <h3 className="font-medium text-base">
         {location ? "Modifier l’emplacement" : "Nouvel emplacement de stock"}
       </h3>
       <div className="max-w-lg space-y-1.5">
@@ -520,7 +520,7 @@ function LocationForm({
         />
       </div>
       {error && (
-        <p className="text-sm text-destructive" role="alert">
+        <p className="text-destructive text-sm" role="alert">
           {error}
         </p>
       )}
@@ -594,7 +594,7 @@ function TransferForm({ onClose }: { onClose: () => void }) {
   return (
     <form
       aria-label="Transfert de stock"
-      className="space-y-4 border-y border-border bg-muted/10 p-5"
+      className="space-y-4 border-border border-y bg-muted/10 p-5"
       noValidate
       onSubmit={async (event) => {
         event.preventDefault();
@@ -632,8 +632,8 @@ function TransferForm({ onClose }: { onClose: () => void }) {
       }}
     >
       <div>
-        <h3 className="text-base font-medium">Transférer du stock</h3>
-        <p className="mt-1 text-sm text-muted-foreground">
+        <h3 className="font-medium text-base">Transférer du stock</h3>
+        <p className="mt-1 text-muted-foreground text-sm">
           Le total du produit reste inchangé. Les lots gardent leur péremption
           et leur date de réception.
         </p>
@@ -738,7 +738,7 @@ function TransferForm({ onClose }: { onClose: () => void }) {
         </p>
       </fieldset>
       {error && (
-        <p className="text-sm text-destructive" role="alert">
+        <p className="text-destructive text-sm" role="alert">
           {error}
         </p>
       )}
@@ -800,7 +800,7 @@ export function StockOperationsPanel({
   };
   if (!isTauriRuntime()) {
     return (
-      <p className="p-5 text-sm text-muted-foreground">
+      <p className="p-5 text-muted-foreground text-sm">
         Les codes-barres, transferts et analyses de consommation sont
         disponibles dans l’application de bureau.
       </p>
@@ -808,7 +808,7 @@ export function StockOperationsPanel({
   }
   return (
     <section aria-label="Opérations de stock" className="min-w-0">
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border p-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-border border-b p-4">
         <Tabs
           onValueChange={(value) => {
             setView(value);
@@ -862,7 +862,7 @@ export function StockOperationsPanel({
       </div>
       {(operations.error || inventory.error || error) && (
         <div
-          className="flex flex-wrap items-center justify-between gap-3 p-4 text-sm text-destructive"
+          className="flex flex-wrap items-center justify-between gap-3 p-4 text-destructive text-sm"
           role="alert"
         >
           {operations.error || inventory.error || error}
@@ -878,7 +878,7 @@ export function StockOperationsPanel({
         </div>
       )}
       {!(operations.ready || operations.error) && (
-        <p className="p-4 text-sm text-muted-foreground" role="status">
+        <p className="p-4 text-muted-foreground text-sm" role="status">
           Chargement des opérations…
         </p>
       )}
@@ -900,13 +900,13 @@ export function StockOperationsPanel({
               {operations.barcodes.length ? (
                 operations.barcodes.map((row) => (
                   <TableRow key={row.id}>
-                    <TableCell className="break-all whitespace-normal font-mono text-xs">
+                    <TableCell className="whitespace-normal break-all font-mono text-xs">
                       {row.code}
                     </TableCell>
                     <TableCell className="whitespace-normal break-words">
                       {row.product_name}
                       {row.archived_at && (
-                        <span className="ml-2 text-xs text-muted-foreground">
+                        <span className="ml-2 text-muted-foreground text-xs">
                           Archivé
                         </span>
                       )}
@@ -945,7 +945,7 @@ export function StockOperationsPanel({
         <>
           <div className="space-y-1 p-5">
             <h3 className="font-medium">Consommation sur 30 jours</h3>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-muted-foreground text-sm">
               Sorties cliniques et sorties rapides réellement enregistrées. Le
               seuil proposé couvre 14 jours au même rythme ; il reste à votre
               choix.
@@ -1100,16 +1100,16 @@ export function StockOperationsPanel({
               })}
             </TableBody>
           </Table>
-          <p className="px-5 py-3 text-xs text-muted-foreground">
+          <p className="px-5 py-3 text-muted-foreground text-xs">
             Un emplacement contenant du stock doit être vidé avant
             désactivation.
           </p>
-          <div className="space-y-3 border-t border-border p-5">
+          <div className="space-y-3 border-border border-t p-5">
             <h3 className="font-medium">Historique des transferts</h3>
             {operations.transfers.length ? (
               operations.transfers.map((row) => (
                 <div
-                  className="flex flex-wrap justify-between gap-3 border-t border-border pt-3 text-sm"
+                  className="flex flex-wrap justify-between gap-3 border-border border-t pt-3 text-sm"
                   key={row.id}
                 >
                   <div>
@@ -1117,17 +1117,17 @@ export function StockOperationsPanel({
                       {row.product_name} ·{" "}
                       {stockQuantityLabel(row.quantity, row.unit)}
                     </p>
-                    <p className="mt-1 text-xs text-muted-foreground">
+                    <p className="mt-1 text-muted-foreground text-xs">
                       {row.source_name} vers {row.target_name}
                     </p>
                   </div>
-                  <span className="text-xs text-muted-foreground">
+                  <span className="text-muted-foreground text-xs">
                     {new Date(row.created_at).toLocaleString("fr-FR")}
                   </span>
                 </div>
               ))
             ) : (
-              <p className="text-sm text-muted-foreground">
+              <p className="text-muted-foreground text-sm">
                 Aucun transfert enregistré.
               </p>
             )}

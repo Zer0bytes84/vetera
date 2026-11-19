@@ -72,7 +72,7 @@ export function VitalsForm({
     >
       <div className="grid grid-cols-2 gap-4">
         {fields.map((field) => (
-          <label className="space-y-2 t-13" key={field.key}>
+          <label className="t-13 space-y-2" key={field.key}>
             {field.label}
             <Input
               className="h-11"
@@ -86,7 +86,7 @@ export function VitalsForm({
         ))}
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
-        <label className="space-y-2 t-13">
+        <label className="t-13 space-y-2">
           État général
           <select
             className="h-11 w-full rounded-xl border bg-background px-3"
@@ -101,7 +101,7 @@ export function VitalsForm({
             ))}
           </select>
         </label>
-        <label className="space-y-2 t-13">
+        <label className="t-13 space-y-2">
           Appétit
           <select
             className="h-11 w-full rounded-xl border bg-background px-3"
@@ -117,7 +117,7 @@ export function VitalsForm({
           </select>
         </label>
       </div>
-      <label className="block space-y-2 t-13">
+      <label className="t-13 block space-y-2">
         Observations
         <Input
           className="h-11"

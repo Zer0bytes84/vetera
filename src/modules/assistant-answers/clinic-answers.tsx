@@ -319,7 +319,7 @@ export function ClinicAnswers({ patientId, renderAvatar }: Props) {
 
       {readError ? (
         <div
-          className="shrink-0 rounded-xl border border-negative/30 bg-negative/10 p-3 t-13 text-foreground"
+          className="t-13 shrink-0 rounded-xl border border-negative/30 bg-negative/10 p-3 text-foreground"
           role="alert"
         >
           Les données du cabinet n’ont pas pu être lues. Je ne réponds pas tant
@@ -365,7 +365,7 @@ export function ClinicAnswers({ patientId, renderAvatar }: Props) {
         }
         submitOnEnter
         toolbar={
-          <span className="inline-flex items-center gap-1.5 t-12 text-muted-foreground">
+          <span className="t-12 inline-flex items-center gap-1.5 text-muted-foreground">
             <Database aria-hidden="true" className="size-3.5" />
             Lecture seule · données de cet ordinateur
           </span>

@@ -747,7 +747,7 @@ export function AgendaView(props: AgendaViewProps) {
                   className="lg:col-span-2"
                   key={isDialogOpen ? "open" : "closed"}
                 >
-                  <CollapsibleTrigger className="group/owner-path inline-flex min-h-9 cursor-pointer items-center gap-1.5 rounded-lg px-2 t-13 font-medium text-[color:var(--ink-soft,#5d5d5d)] outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring">
+                  <CollapsibleTrigger className="group/owner-path t-13 inline-flex min-h-9 cursor-pointer items-center gap-1.5 rounded-lg px-2 font-medium text-[color:var(--ink-soft,#5d5d5d)] outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring">
                     <HugeiconsIcon
                       aria-hidden="true"
                       className="transition-transform group-data-[panel-open]/owner-path:rotate-180"
@@ -1210,7 +1210,7 @@ export function AgendaView(props: AgendaViewProps) {
                       ? "Enregistrer"
                       : "Ajouter au planning"}
                   </span>
-                  <kbd className="hidden rounded bg-primary-foreground/20 px-1.5 py-0.5 font-mono t-12 sm:inline-block">
+                  <kbd className="t-12 hidden rounded bg-primary-foreground/20 px-1.5 py-0.5 font-mono sm:inline-block">
                     ⌘↵
                   </kbd>
                 </Button>

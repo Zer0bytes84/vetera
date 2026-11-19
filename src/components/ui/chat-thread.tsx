@@ -69,7 +69,7 @@ export function ChatThread({
     ) : (
       <span
         aria-hidden="true"
-        className="flex size-8 shrink-0 items-center justify-center rounded-full bg-foreground/[0.08] text-xs font-medium"
+        className="flex size-8 shrink-0 items-center justify-center rounded-full bg-foreground/[0.08] font-medium text-xs"
       >
         {(message.author ?? userName).slice(0, 1).toUpperCase()}
       </span>
@@ -128,7 +128,7 @@ export function ChatThread({
                       >
                         <span className="font-medium">{name}</span>
                         <time
-                          className="text-xs text-muted-foreground tabular-nums opacity-0 transition-opacity duration-150 group-focus-within:opacity-100 group-hover:opacity-100 [@media(hover:none)]:opacity-100"
+                          className="text-muted-foreground text-xs tabular-nums opacity-0 transition-opacity duration-150 group-focus-within:opacity-100 group-hover:opacity-100 [@media(hover:none)]:opacity-100"
                           dateTime={message.at}
                         >
                           {time(message.at)}
@@ -140,7 +140,7 @@ export function ChatThread({
                         "max-w-full text-sm leading-relaxed",
                         user &&
                           !message.plain &&
-                          "rounded-2xl bg-brand/10 px-3.5 py-2 whitespace-pre-wrap",
+                          "whitespace-pre-wrap rounded-2xl bg-brand/10 px-3.5 py-2",
                         user && !message.plain && !grouped && "rounded-tr-md"
                       )}
                     >

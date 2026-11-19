@@ -29,7 +29,7 @@ function paidIncome(transactions: Transaction[], range: AnalyticsRange) {
 function Change({ value, previous }: { value: number; previous: number }) {
   if (previous === 0) {
     return (
-      <span className="text-xs text-muted-foreground">
+      <span className="text-muted-foreground text-xs">
         {value === 0
           ? "Rien sur les deux périodes"
           : "Rien sur la période précédente"}
@@ -38,7 +38,7 @@ function Change({ value, previous }: { value: number; previous: number }) {
   }
   const change = ((value - previous) / previous) * 100;
   return (
-    <span className="flex flex-wrap items-center gap-1 text-xs text-muted-foreground">
+    <span className="flex flex-wrap items-center gap-1 text-muted-foreground text-xs">
       <span
         className={cn(
           "font-medium",
@@ -118,13 +118,13 @@ export function FinanceOverview({
         footer={
           <div className="flex flex-col gap-6 pt-3">
             <Change previous={previous} value={current} />
-            <div className="flex flex-col gap-3 border-t border-border pt-6">
+            <div className="flex flex-col gap-3 border-border border-t pt-6">
               <div className="flex items-baseline justify-between gap-3">
-                <h3 className="text-[0.8125rem] font-medium">
+                <h3 className="font-medium text-[0.8125rem]">
                   Facturé par nature
                 </h3>
                 {natures ? (
-                  <span className="text-[0.8125rem] font-medium tabular-nums">
+                  <span className="font-medium text-[0.8125rem] tabular-nums">
                     {formatDinars(invoiced / 100, 0)}
                   </span>
                 ) : null}
@@ -136,10 +136,10 @@ export function FinanceOverview({
                       className="grid grid-cols-[minmax(0,1fr)_auto] items-baseline gap-x-6 gap-y-1 py-3 first:pt-0"
                       key={row.key}
                     >
-                      <span className="text-[0.8125rem] font-medium">
+                      <span className="font-medium text-[0.8125rem]">
                         {row.label}
                       </span>
-                      <strong className="text-right text-[0.8125rem] font-medium tabular-nums">
+                      <strong className="text-right font-medium text-[0.8125rem] tabular-nums">
                         {formatDinars(row.value / 100, 0)}
                       </strong>
                       <span className="col-span-2 justify-self-end">
@@ -149,13 +149,13 @@ export function FinanceOverview({
                   ))}
                 </ul>
               ) : (
-                <p className="text-xs text-muted-foreground">
+                <p className="text-muted-foreground text-xs">
                   {lines === "error"
                     ? "Les factures n’ont pas pu être lues."
                     : "Chargement des factures…"}
                 </p>
               )}
-              <p className="text-xs text-muted-foreground">
+              <p className="text-muted-foreground text-xs">
                 Facturé : factures émises sur la période, avant avoirs. Encaissé
                 : écritures réglées du journal.
               </p>

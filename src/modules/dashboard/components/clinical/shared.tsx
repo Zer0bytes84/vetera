@@ -34,7 +34,7 @@ export function ModuleLink({
 }) {
   return (
     <button
-      className={`inline-flex shrink-0 items-center gap-1.5 rounded-md t-12 font-medium text-ink-muted transition-colors duration-150 hover:text-ink ${focusRing}`}
+      className={`t-12 inline-flex shrink-0 items-center gap-1.5 rounded-md font-medium text-ink-muted transition-colors duration-150 hover:text-ink ${focusRing}`}
       onClick={onClick}
       type="button"
     >
@@ -59,7 +59,7 @@ export function PatientPortrait({
   ) : (
     <span
       aria-hidden="true"
-      className="grid size-9 shrink-0 place-items-center rounded-control bg-frame font-display t-14 text-ink-muted"
+      className="t-14 grid size-9 shrink-0 place-items-center rounded-control bg-frame font-display text-ink-muted"
     >
       {(patient?.name ?? name ?? "P").slice(0, 1).toLocaleUpperCase()}
     </span>
@@ -81,18 +81,18 @@ export function ModuleTotals({
         ? "finder-dot-orange"
         : "finder-dot-red";
   return (
-    <dl className="module-totals-grid flex flex-wrap gap-x-6 gap-y-3 border-b border-hairline pb-4">
+    <dl className="module-totals-grid flex flex-wrap gap-x-6 gap-y-3 border-hairline border-b pb-4">
       {values.map((row, index) => (
         <div
           className="module-totals-item flex items-baseline gap-2"
           key={row.label}
         >
           <dd
-            className={`font-display t-18 font-medium tabular-nums ${row.tone === "positive" ? "text-[color:var(--premium-green,var(--signal-positive))]" : row.tone === "watch" ? "text-[color:var(--premium-orange,var(--signal-watch))]" : "text-ink"}`}
+            className={`t-18 font-display font-medium tabular-nums ${row.tone === "positive" ? "text-[color:var(--premium-green,var(--signal-positive))]" : row.tone === "watch" ? "text-[color:var(--premium-orange,var(--signal-watch))]" : "text-ink"}`}
           >
             {row.value}
           </dd>
-          <dt className="flex items-center gap-1.5 t-12 text-ink-muted">
+          <dt className="t-12 flex items-center gap-1.5 text-ink-muted">
             <i aria-hidden="true" className={`finder-dot ${dotColor(index)}`} />
             {row.label}
           </dt>

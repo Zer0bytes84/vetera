@@ -92,8 +92,8 @@ export function PlanCareTasks({
                   strokeWidth={1.5}
                 />
                 <div className="min-w-0 space-y-1">
-                  <p className="font-medium t-14">Soin planifié</p>
-                  <p className="break-words t-13">
+                  <p className="t-14 font-medium">Soin planifié</p>
+                  <p className="t-13 break-words">
                     « {confirmation.label} » est prévu le{" "}
                     {scheduleLabel(confirmation.scheduledAt)}. Il figure
                     maintenant dans la liste des soins du patient.
@@ -108,7 +108,7 @@ export function PlanCareTasks({
               <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
                 {remaining ? (
                   <Button
-                    className="h-11 rounded-xl t-13"
+                    className="t-13 h-11 rounded-xl"
                     onClick={() => setConfirmation(null)}
                     variant="outline"
                   >
@@ -116,14 +116,14 @@ export function PlanCareTasks({
                   </Button>
                 ) : (
                   <Button
-                    className="h-11 rounded-xl t-13"
+                    className="t-13 h-11 rounded-xl"
                     onClick={() => setOpen(false)}
                     variant="outline"
                   >
                     Fermer
                   </Button>
                 )}
-                <Button className="h-11 rounded-xl t-13" onClick={openCareList}>
+                <Button className="t-13 h-11 rounded-xl" onClick={openCareList}>
                   Voir les soins du patient
                 </Button>
               </div>
@@ -139,9 +139,9 @@ export function PlanCareTasks({
                       key={`${i}:${s.label}`}
                     >
                       <div className="min-w-0 flex-1">
-                        <p className="break-words t-13">{s.label}</p>
+                        <p className="t-13 break-words">{s.label}</p>
                         {done && (
-                          <p className="mt-1 flex items-center gap-1.5 t-12 text-emerald-700 dark:text-emerald-300">
+                          <p className="t-12 mt-1 flex items-center gap-1.5 text-emerald-700 dark:text-emerald-300">
                             <CheckCircle2
                               aria-hidden="true"
                               className="size-3.5"
@@ -168,7 +168,7 @@ export function PlanCareTasks({
               {created.length > 0 && (
                 <div className="flex justify-end pt-1">
                   <Button
-                    className="h-11 rounded-xl t-13"
+                    className="t-13 h-11 rounded-xl"
                     onClick={openCareList}
                     variant="outline"
                   >

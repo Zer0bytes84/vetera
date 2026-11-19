@@ -121,9 +121,9 @@ export function ConsultationAssistantPanel({
         aria-hidden={collapsed || !visible}
         aria-label="Assistant de consultation"
         className={cn(
-          "fixed bottom-0 right-0 z-50 flex w-full flex-col",
+          "fixed right-0 bottom-0 z-50 flex w-full flex-col",
           "sm:max-w-[var(--assistant-width)]",
-          "border-l border-border bg-[var(--card-band)] rounded-tl-[20px]",
+          "rounded-tl-[20px] border-border border-l bg-[var(--card-band)]",
           "shadow-[var(--clean-slideout-shadow,-16px_0_48px_-12px_rgba(0,0,0,0.18))]",
           "transition-transform motion-reduce:transition-none",
           visible && !collapsed
@@ -171,7 +171,7 @@ export function ConsultationAssistantPanel({
                 aria-controls={panelId}
                 aria-expanded={false}
                 aria-label="Déplier le panneau assistant"
-                className="fixed bottom-6 right-6 z-50 h-auto gap-2.5 rounded-full border border-black/10 bg-background/95 px-3 py-2 shadow-lg backdrop-blur-md transition hover:scale-105 hover:bg-background active:scale-95 dark:border-white/15 dark:shadow-2xl"
+                className="fixed right-6 bottom-6 z-50 h-auto gap-2.5 rounded-full border border-black/10 bg-background/95 px-3 py-2 shadow-lg backdrop-blur-md transition hover:scale-105 hover:bg-background active:scale-95 dark:border-white/15 dark:shadow-2xl"
                 onClick={expand}
                 ref={reopenRef}
                 variant="outline"

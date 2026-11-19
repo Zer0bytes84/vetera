@@ -77,7 +77,7 @@ export function NavMain({
                 {!!item.badge && (
                   <span
                     aria-hidden="true"
-                    className="ml-auto grid min-w-5 shrink-0 place-items-center rounded-full bg-rose-600 px-1 t-12 font-medium text-white group-data-[collapsible=icon]:absolute group-data-[collapsible=icon]:right-0 group-data-[collapsible=icon]:top-0"
+                    className="t-12 ml-auto grid min-w-5 shrink-0 place-items-center rounded-full bg-rose-600 px-1 font-medium text-white group-data-[collapsible=icon]:absolute group-data-[collapsible=icon]:top-0 group-data-[collapsible=icon]:right-0"
                   >
                     {item.badge}
                   </span>

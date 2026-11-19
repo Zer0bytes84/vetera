@@ -144,7 +144,7 @@ export function SlotPicker({
               >
                 <p
                   aria-hidden="true"
-                  className="pb-1 text-center text-xs text-muted-foreground"
+                  className="pb-1 text-center text-muted-foreground text-xs"
                 >
                   <span className="block font-medium text-foreground first-letter:uppercase">
                     {weekday(days[col])}
@@ -180,7 +180,7 @@ export function SlotPicker({
                     );
                   })
                 ) : (
-                  <p className="px-1 pt-1 text-center text-xs text-muted-foreground">
+                  <p className="px-1 pt-1 text-center text-muted-foreground text-xs">
                     Complet
                   </p>
                 )}

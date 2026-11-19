@@ -45,12 +45,12 @@ export function ListFilter({
           <Button
             aria-label={`${label} : ${current}`}
             className={cn(
-              "list-filter-control h-[30px] min-w-0 gap-0 overflow-hidden px-0 text-xs",
+              "h-[30px] min-w-0 list-filter-control gap-0 overflow-hidden px-0 text-xs",
               className
             )}
             variant="outline"
           >
-            <span className="shrink-0 border-r border-border px-2.5 font-normal text-muted-foreground">
+            <span className="shrink-0 border-border border-r px-2.5 font-normal text-muted-foreground">
               {label}
             </span>
             <span className="flex min-w-0 items-center gap-1.5 px-2.5">
@@ -99,15 +99,15 @@ export function ListSearch({
   label: string;
 }) {
   return (
-    <div className={cn("list-search-control relative min-w-0", className)}>
+    <div className={cn("relative min-w-0 list-search-control", className)}>
       <Search
         aria-hidden="true"
-        className="pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground"
+        className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground"
       />
       <Input
         {...props}
         aria-label={label}
-        className="h-[30px] rounded-full bg-background pl-8 pr-8 text-xs md:text-xs focus-visible:ring-2 focus-visible:ring-ring/15 [&::-webkit-search-cancel-button]:appearance-none"
+        className="h-[30px] rounded-full bg-background pr-8 pl-8 text-xs focus-visible:ring-2 focus-visible:ring-ring/15 md:text-xs [&::-webkit-search-cancel-button]:appearance-none"
         onChange={(event) => onValueChange(event.target.value)}
         type="search"
         value={value}
@@ -115,7 +115,7 @@ export function ListSearch({
       {value && (
         <button
           aria-label={`Effacer : ${label}`}
-          className="absolute right-1 top-1/2 grid size-6 -translate-y-1/2 place-items-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring"
+          className="absolute top-1/2 right-1 grid size-6 -translate-y-1/2 place-items-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring"
           onClick={() => onValueChange("")}
           type="button"
         >

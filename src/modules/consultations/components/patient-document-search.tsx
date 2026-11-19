@@ -112,7 +112,7 @@ export interface PatientDocumentSearchProps {
 /** Passage with the query terms highlighted. */
 function Passage({ text, query }: { text: string; query: string }) {
   return (
-    <p className="line-clamp-6 t-13 leading-relaxed text-foreground whitespace-pre-wrap">
+    <p className="t-13 line-clamp-6 whitespace-pre-wrap text-foreground leading-relaxed">
       {highlightPassage(text, query).map((segment, index) =>
         segment.hit ? (
           <mark
@@ -419,7 +419,7 @@ export function PatientDocumentSearch({
         <Search className="size-5 text-muted-foreground" />
         <div className="space-y-1">
           <h4 className="t-14 font-medium">Recherche dans les dossiers</h4>
-          <p className="max-w-[300px] t-12 text-muted-foreground">
+          <p className="t-12 max-w-[300px] text-muted-foreground">
             Elle fonctionne entièrement sur cet ordinateur, sans connexion
             internet.
           </p>
@@ -457,7 +457,7 @@ export function PatientDocumentSearch({
           <Search className="pointer-events-none absolute left-3 size-4 text-muted-foreground" />
           <Input
             aria-label="Rechercher dans les dossiers"
-            className="h-9 pl-9 pr-16 t-13"
+            className="t-13 h-9 pr-16 pl-9"
             disabled={locked}
             onChange={(event) => {
               setQuery(event.target.value);
@@ -515,7 +515,7 @@ export function PatientDocumentSearch({
           </div>
         </div>
         <Button
-          className="h-9 shrink-0 px-3 t-12"
+          className="t-12 h-9 shrink-0 px-3"
           disabled={locked || !query.trim()}
           size="sm"
           type="submit"
@@ -530,7 +530,7 @@ export function PatientDocumentSearch({
             render={
               <Button
                 aria-label={`Filtres : ${filterSummary}`}
-                className="-ml-1.5 h-7 min-w-0 gap-1 px-1.5 t-12 font-normal text-muted-foreground hover:text-foreground"
+                className="t-12 -ml-1.5 h-7 min-w-0 gap-1 px-1.5 font-normal text-muted-foreground hover:text-foreground"
                 disabled={locked}
                 size="xs"
                 variant="ghost"
@@ -608,7 +608,7 @@ export function PatientDocumentSearch({
             )}
             <DropdownMenuSeparator />
             <DropdownMenuItem
-              className="gap-2 t-12"
+              className="t-12 gap-2"
               onClick={() => void run(true)}
             >
               <RefreshCw className="size-3.5" />
@@ -619,7 +619,7 @@ export function PatientDocumentSearch({
 
         {!lastRun && (busy || dictation.busy) ? (
           <span
-            className="flex min-w-0 items-center gap-1.5 t-12 text-muted-foreground"
+            className="t-12 flex min-w-0 items-center gap-1.5 text-muted-foreground"
             role="status"
           >
             <CircleNotch className="size-3 shrink-0 animate-spin" />
@@ -631,7 +631,7 @@ export function PatientDocumentSearch({
           !lastRun &&
           message &&
           !error && (
-            <span className="truncate t-12 text-muted-foreground" role="status">
+            <span className="t-12 truncate text-muted-foreground" role="status">
               {message}
             </span>
           )
@@ -660,7 +660,7 @@ export function PatientDocumentSearch({
 
       {error && (
         <div
-          className="shrink-0 rounded-lg bg-destructive/10 px-3 py-2 t-12 text-destructive"
+          className="t-12 shrink-0 rounded-lg bg-destructive/10 px-3 py-2 text-destructive"
           role="alert"
         >
           {error}
@@ -670,7 +670,7 @@ export function PatientDocumentSearch({
       <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
         {results.length === 0 && !busy && !error && (
           <div className="flex flex-col items-center gap-3 px-4 py-8 text-center">
-            <p className="max-w-[320px] t-12 text-muted-foreground">
+            <p className="t-12 max-w-[320px] text-muted-foreground">
               {query.trim()
                 ? "Aucun passage trouvé. Essayez un synonyme, une reformulation ou élargissez les filtres."
                 : "Retrouvez le passage utile dans les notes, documents et protocoles validés : symptômes, pathologies, molécules ou synonymes."}

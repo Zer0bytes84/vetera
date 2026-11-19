@@ -155,7 +155,7 @@ const MotivationalHeader: React.FC<MotivationalHeaderProps> = ({
     return (
       <div className="space-y-1">
         <PageDate />
-        <h1 className="flex flex-wrap items-center gap-2.5 font-display font-semibold text-2xl text-foreground tracking-tight leading-tight">
+        <h1 className="flex flex-wrap items-center gap-2.5 font-display font-semibold text-2xl text-foreground leading-tight tracking-tight">
           <span>
             {isDashboard && cleanTitle.includes(userName) ? (
               <>
@@ -265,7 +265,7 @@ const MotivationalHeader: React.FC<MotivationalHeaderProps> = ({
             <ShortcutTooltip label="Nouvelle consultation" shortcut="N">
               <Button
                 aria-keyshortcuts="N"
-                className="dashboard-primary-action h-9 w-auto min-w-0 flex-none rounded-lg px-3.5 t-13 font-medium"
+                className="dashboard-primary-action t-13 h-9 w-auto min-w-0 flex-none rounded-lg px-3.5 font-medium"
                 data-primary-action="true"
                 onClick={() => {
                   prepareAppointment();

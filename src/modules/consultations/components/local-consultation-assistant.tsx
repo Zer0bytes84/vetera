@@ -964,7 +964,7 @@ export default function LocalConsultationAssistant({
       <div className="assistant-panel-header flex shrink-0 items-center justify-between gap-3 px-3">
         <div className="min-w-0">
           <div className="flex items-center gap-3">
-            <h3 className="text-[1.125rem] font-semibold leading-6 tracking-tight text-foreground">
+            <h3 className="font-semibold text-[1.125rem] text-foreground leading-6 tracking-tight">
               Assistant Baitari
             </h3>
             {!patientId && patients.data.length > 0 && (
@@ -974,7 +974,7 @@ export default function LocalConsultationAssistant({
                 }
                 value={effectivePatientId || "none"}
               >
-                <SelectTrigger className="h-6 max-w-[140px] rounded-lg border-border/70 px-2 t-12">
+                <SelectTrigger className="t-12 h-6 max-w-[140px] rounded-lg border-border/70 px-2">
                   <SelectValue placeholder="Patient…">
                     {(value: string | null) =>
                       !value || value === "none"
@@ -996,7 +996,7 @@ export default function LocalConsultationAssistant({
             )}
           </div>
           {patient?.name ? (
-            <p className="flex min-w-0 items-center gap-1.5 t-12 text-muted-foreground">
+            <p className="t-12 flex min-w-0 items-center gap-1.5 text-muted-foreground">
               <PatientSpeciesGlyph species={patient.species} />
               <span className="truncate font-medium text-foreground">
                 {patient.name}
@@ -1147,13 +1147,13 @@ export default function LocalConsultationAssistant({
                 <X className="size-3.5" />
               </Button>
             </div>
-            <p className="t-12 leading-relaxed text-muted-foreground">
+            <p className="t-12 text-muted-foreground leading-relaxed">
               Vos dictées et notes restent exclusivement sur votre appareil.
               Aucun flux n’est envoyé sur internet.
             </p>
 
             <div className="mt-3 flex flex-col gap-2">
-              <div className="flex items-center justify-between rounded-lg bg-muted/50 p-2 t-12">
+              <div className="t-12 flex items-center justify-between rounded-lg bg-muted/50 p-2">
                 <div>
                   <span className="font-medium text-foreground">
                     Dictée vocale
@@ -1165,7 +1165,7 @@ export default function LocalConsultationAssistant({
                   </p>
                 </div>
                 <Button
-                  className="gap-1 t-12"
+                  className="t-12 gap-1"
                   disabled={ai.busy || importing || saving}
                   onClick={() => void importModel("whisper")}
                   size="xs"
@@ -1178,7 +1178,7 @@ export default function LocalConsultationAssistant({
                 </Button>
               </div>
 
-              <div className="flex items-center justify-between rounded-lg bg-muted/50 p-2 t-12">
+              <div className="t-12 flex items-center justify-between rounded-lg bg-muted/50 p-2">
                 <div>
                   <span className="font-medium text-foreground">
                     Assistant IA
@@ -1190,7 +1190,7 @@ export default function LocalConsultationAssistant({
                   </p>
                 </div>
                 <Button
-                  className="gap-1 t-12"
+                  className="t-12 gap-1"
                   disabled={ai.busy || importing || saving}
                   onClick={() => void importModel("generator")}
                   size="xs"
@@ -1264,7 +1264,7 @@ export default function LocalConsultationAssistant({
               {/* Error banner */}
               {visibleError && (
                 <div
-                  className="flex items-center gap-2 rounded-xl border border-destructive/30 bg-destructive/10 p-3 t-12 text-destructive"
+                  className="t-12 flex items-center gap-2 rounded-xl border border-destructive/30 bg-destructive/10 p-3 text-destructive"
                   role="alert"
                 >
                   <XCircle className="size-4 shrink-0" />
@@ -1309,7 +1309,7 @@ export default function LocalConsultationAssistant({
               <div className="assistant-dictation-workspace flex min-h-fit flex-1 flex-col gap-2">
                 {/* Progress of the four rubrics, and the patients mentioned */}
                 <div className="flex flex-wrap items-center justify-between gap-3">
-                  <span className="flex items-center gap-3 t-12 font-medium text-foreground">
+                  <span className="t-12 flex items-center gap-3 font-medium text-foreground">
                     <span aria-hidden="true" className="flex gap-1">
                       {sectionPrompts.map((step, index) => (
                         <span
@@ -1331,7 +1331,7 @@ export default function LocalConsultationAssistant({
                       {mentions.map((mention) => (
                         <span
                           className={cn(
-                            "inline-flex items-center gap-1 rounded-md px-2 py-0.5 t-12",
+                            "t-12 inline-flex items-center gap-1 rounded-md px-2 py-0.5",
                             mention.patient
                               ? "bg-primary/10 font-medium text-primary"
                               : "bg-destructive/10 font-medium text-destructive"
@@ -1561,7 +1561,7 @@ export default function LocalConsultationAssistant({
 
               {visibleError && (
                 <div
-                  className="rounded-xl border border-destructive/30 bg-destructive/10 p-3 t-12 text-destructive"
+                  className="t-12 rounded-xl border border-destructive/30 bg-destructive/10 p-3 text-destructive"
                   role="alert"
                 >
                   {visibleError}
@@ -1584,7 +1584,7 @@ export default function LocalConsultationAssistant({
                     </div>
 
                     <Textarea
-                      className="min-h-20 resize-y bg-background t-13 leading-relaxed"
+                      className="t-13 min-h-20 resize-y bg-background leading-relaxed"
                       disabled={saving || saved}
                       id={`soap-field-${key}`}
                       maxLength={6000}
@@ -1678,7 +1678,7 @@ export default function LocalConsultationAssistant({
           <p className="t-13 font-medium text-foreground">
             Abandonner cette session d’assistant ?
           </p>
-          <p className="mt-1 t-12 text-muted-foreground">
+          <p className="t-12 mt-1 text-muted-foreground">
             Vos modifications non validées seront perdues.
           </p>
           <div className="mt-3 flex items-center justify-end gap-2">

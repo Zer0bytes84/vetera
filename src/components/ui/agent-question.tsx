@@ -164,11 +164,11 @@ export function AgentQuestion({
         <div className="flex items-center gap-3 pt-1.5 pr-2 pb-3 pl-1.5">
           <IconTile icon={MessageCircleMore} />
           <div className="min-w-0 flex-1">
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               Question de l’{agent}
             </p>
             <h3
-              className="mt-0.5 text-[1rem] font-medium text-pretty"
+              className="mt-0.5 text-pretty font-medium text-[1rem]"
               id={`${id}-q`}
             >
               {data.question}
@@ -188,7 +188,7 @@ export function AgentQuestion({
           {status === "pending" ? (
             <div
               aria-labelledby={`${id}-q`}
-              className="grid grid-cols-1 gap-1.5 @md:grid-cols-2"
+              className="grid @md:grid-cols-2 grid-cols-1 gap-1.5"
               onKeyDown={onGridKey}
               ref={grid}
               role={data.multiple ? "group" : "radiogroup"}
@@ -210,7 +210,7 @@ export function AgentQuestion({
               {data.allowOther &&
                 (writing ? (
                   <motion.form
-                    className="flex items-center gap-2 rounded-2xl bg-[var(--card-inset)] p-2 @md:col-span-2"
+                    className="@md:col-span-2 flex items-center gap-2 rounded-2xl bg-[var(--card-inset)] p-2"
                     layout
                     onSubmit={(e) => {
                       e.preventDefault();
@@ -241,7 +241,7 @@ export function AgentQuestion({
                   </motion.form>
                 ) : (
                   <button
-                    className="flex min-h-16 items-center gap-3 rounded-2xl bg-[var(--card-inset)]/50 p-3.5 text-left text-sm text-muted-foreground transition-[color,background-color,scale] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] hover:bg-[var(--card-inset)] hover:text-foreground active:scale-[0.98]"
+                    className="flex min-h-16 items-center gap-3 rounded-2xl bg-[var(--card-inset)]/50 p-3.5 text-left text-muted-foreground text-sm transition-[color,background-color,scale] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] hover:bg-[var(--card-inset)] hover:text-foreground active:scale-[0.98]"
                     data-card
                     onClick={() => setWriting(true)}
                     tabIndex={-1}
@@ -374,7 +374,7 @@ function Card({
         </span>
       )}
       <span className="min-w-0 flex-1">
-        <span className="flex items-center gap-2 text-sm font-medium">
+        <span className="flex items-center gap-2 font-medium text-sm">
           {option.label}
           {suggested && (
             <StatusPill size="sm" tone="brand">

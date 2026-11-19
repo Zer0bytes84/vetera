@@ -190,7 +190,7 @@ export function DocumentComposer({
           </header>
           {(error || templatesError) && (
             <div
-              className="mx-6 mt-4 rounded-lg border border-destructive/20 bg-destructive/5 p-3 text-sm text-destructive"
+              className="mx-6 mt-4 rounded-lg border border-destructive/20 bg-destructive/5 p-3 text-destructive text-sm"
               role="alert"
             >
               {error || String(templatesError)}
@@ -228,7 +228,7 @@ export function DocumentComposer({
                       value={content}
                     />
                   </label>
-                  <p className="text-xs leading-5 text-muted-foreground">
+                  <p className="text-muted-foreground text-xs leading-5">
                     Les mentions [à compléter] signalent une donnée absente.
                     Aucune information clinique n’est ajoutée automatiquement.
                   </p>
@@ -342,7 +342,7 @@ export function DocumentComposer({
                         </NativeSelectOption>
                       ))}
                     </NativeSelect>
-                    <span className="text-xs text-muted-foreground">
+                    <span className="text-muted-foreground text-xs">
                       L’objet ne constitue pas une attestation. Vérifiez les
                       observations et complétez la portée du certificat.
                     </span>
@@ -372,13 +372,13 @@ export function DocumentComposer({
                     </label>
                   </div>
                 )}
-                <p className="text-sm text-muted-foreground">
+                <p className="text-muted-foreground text-sm">
                   Le patient, la consultation, le clinicien et la note validée
                   seront repris. Le document reste indépendant du modèle et de
                   la note source.
                 </p>
                 {loading && (
-                  <p className="text-sm text-muted-foreground" role="status">
+                  <p className="text-muted-foreground text-sm" role="status">
                     Chargement des modèles…
                   </p>
                 )}

@@ -37,7 +37,7 @@ export function CareTimePicker({
         aria-label={`Choisir l’${label.toLocaleLowerCase("fr-FR")}`}
         render={
           <Button
-            className="h-11 w-[115px] shrink-0 justify-start gap-2 rounded-xl px-3 t-13"
+            className="t-13 h-11 w-[115px] shrink-0 justify-start gap-2 rounded-xl px-3"
             data-field="time"
             type="button"
             variant="outline"
@@ -52,15 +52,15 @@ export function CareTimePicker({
         className="w-[320px] max-w-[calc(100vw-32px)] gap-4 p-4"
       >
         <div className="flex items-center justify-between gap-3">
-          <h3 className="text-sm font-medium">{label}</h3>
-          <span aria-live="polite" className="text-lg font-medium tabular-nums">
+          <h3 className="font-medium text-sm">{label}</h3>
+          <span aria-live="polite" className="font-medium text-lg tabular-nums">
             {draft || "À choisir"}
           </span>
         </div>
         <div className="max-h-[240px] space-y-4 overflow-y-auto">
           {TIME_PERIODS.map((period) => (
             <div className="space-y-2" key={period.id}>
-              <p className="text-xs font-medium text-muted-foreground">
+              <p className="font-medium text-muted-foreground text-xs">
                 {period.label}
               </p>
               <div className="grid grid-cols-4 gap-2">
@@ -86,7 +86,7 @@ export function CareTimePicker({
           ))}
         </div>
         <div className="space-y-2 border-t pt-3">
-          <p className="text-xs text-muted-foreground">Ajuster à la minute</p>
+          <p className="text-muted-foreground text-xs">Ajuster à la minute</p>
           <div className="grid grid-cols-4 gap-2">
             {[-5, -1, 1, 5].map((delta) => (
               <Button

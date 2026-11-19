@@ -80,7 +80,7 @@ const Logo: FC<LogoProps> = ({
           />
         </svg>
         {!compact && (
-          <span className="t-18 leading-none font-semibold tracking-[-0.035em] text-sidebar-foreground">
+          <span className="t-18 font-semibold text-sidebar-foreground leading-none tracking-[-0.035em]">
             Baitari
           </span>
         )}

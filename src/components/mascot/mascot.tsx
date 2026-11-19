@@ -50,7 +50,7 @@ export function Mascot({
     <div
       aria-hidden="true"
       className={cn(
-        "inline-flex shrink-0 items-center justify-center rounded-full border border-border/70 bg-card shadow-xs overflow-hidden",
+        "inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full border border-border/70 bg-card shadow-xs",
         className
       )}
       style={{ width: size, height: size }}
@@ -78,7 +78,7 @@ export function Mascot({
       <PopoverTrigger
         aria-label="Changer de mascotte ou logo"
         className={cn(
-          "inline-flex shrink-0 items-center justify-center rounded-full transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer",
+          "inline-flex shrink-0 cursor-pointer items-center justify-center rounded-full transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
           className
         )}
         type="button"

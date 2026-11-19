@@ -79,7 +79,7 @@ export function StayRecords({ stayId }: { stayId: string }) {
           <h3 className="t-16 font-medium">Plans de soins</h3>
           {plans.map((plan) => (
             <div
-              className="flex flex-wrap items-center justify-between gap-3 border-t py-3 t-13"
+              className="t-13 flex flex-wrap items-center justify-between gap-3 border-t py-3"
               key={plan.id}
             >
               <div>
@@ -140,7 +140,7 @@ export function StayRecords({ stayId }: { stayId: string }) {
           <ul className="max-h-80 overflow-y-auto">
             {tasks.map((task) => (
               <li
-                className="flex flex-wrap items-center justify-between gap-3 border-t py-3 t-13"
+                className="t-13 flex flex-wrap items-center justify-between gap-3 border-t py-3"
                 key={task.id}
               >
                 <div>
@@ -173,7 +173,7 @@ export function StayRecords({ stayId }: { stayId: string }) {
         <h3 className="t-16 font-medium">Historique du séjour</h3>
         <ol className="max-h-64 overflow-y-auto">
           {history.map((event) => (
-            <li className="border-t py-3 t-13" key={event.id}>
+            <li className="t-13 border-t py-3" key={event.id}>
               <p className="font-medium">
                 {eventLabels[event.event] || "Mise à jour du séjour"}
               </p>
