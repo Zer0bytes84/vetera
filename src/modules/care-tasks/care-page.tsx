@@ -709,16 +709,7 @@ export default function CarePage({
         <ErrorState message={error} onRetry={() => void refresh()} />
       ) : loading ? (
         <p role="status">Chargement des soins…</p>
-      ) : !visible.length ? (
-        <div className="rounded-2xl border border-dashed border-border p-12 text-center">
-          <p className="t-16 font-medium">Aucun soin pour cette date</p>
-          <p className="mt-2 text-muted-foreground">
-            {tasks.length
-              ? "Adaptez les filtres ou la recherche."
-              : "Les soins planifiés pour une autre date apparaîtront le jour prévu."}
-          </p>
-        </div>
-      ) : (
+      ) : visible.length ? (
         <>
           {mode === "patient" && (
             <ul aria-label="Légende de la frise" className="care-strip-legend">
@@ -812,6 +803,15 @@ export default function CarePage({
             ))}
           </div>
         </>
+      ) : (
+        <div className="rounded-2xl border border-dashed border-border p-12 text-center">
+          <p className="t-16 font-medium">Aucun soin pour cette date</p>
+          <p className="mt-2 text-muted-foreground">
+            {tasks.length
+              ? "Adaptez les filtres ou la recherche."
+              : "Les soins planifiés pour une autre date apparaîtront le jour prévu."}
+          </p>
+        </div>
       )}
       {actionError && (
         <p role="alert" className="text-destructive">

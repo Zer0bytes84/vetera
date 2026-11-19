@@ -1783,7 +1783,7 @@ function EmptyState({
               Voir les rappels à venir
               <ArrowRightIcon aria-hidden="true" className="size-3.5" />
             </Button>
-          ) : view !== "completed" ? (
+          ) : view === "completed" ? null : (
             <Button
               className="reminders-quiet-link"
               onClick={onCompleted}
@@ -1794,7 +1794,7 @@ function EmptyState({
               Voir les rappels terminés
               <ArrowRightIcon aria-hidden="true" className="size-3.5" />
             </Button>
-          ) : null}
+          )}
         </Panel>
         <Panel className="reminders-quiet-cell reminders-quiet-wide">
           <h3 className="reminders-quiet-label">Rappels ouverts et terminés</h3>

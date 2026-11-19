@@ -149,9 +149,9 @@ export function KpiConsultationsCadence({
                     : isToday
                       ? 0.95
                       : val > 0
-                        ? active !== null
-                          ? 0.35
-                          : 0.55
+                        ? active === null
+                          ? 0.55
+                          : 0.35
                         : 0.16
                 }
               />
@@ -351,7 +351,25 @@ export function KpiIncomeSplineWave({
         )}
 
         {/* Interactive / Last point marker */}
-        {active !== null ? (
+        {active === null ? (
+          lastPoint ? (
+            <g>
+              <circle
+                cx={lastPoint[0]}
+                cy={lastPoint[1]}
+                r={4.5}
+                fill="var(--primary)"
+                opacity={0.25}
+              />
+              <circle
+                cx={lastPoint[0]}
+                cy={lastPoint[1]}
+                r={2.6}
+                fill="var(--primary)"
+              />
+            </g>
+          ) : null
+        ) : (
           <circle
             cx={activeX}
             cy={points[active][1]}
@@ -360,23 +378,7 @@ export function KpiIncomeSplineWave({
             stroke="var(--primary)"
             strokeWidth={2.4}
           />
-        ) : lastPoint ? (
-          <g>
-            <circle
-              cx={lastPoint[0]}
-              cy={lastPoint[1]}
-              r={4.5}
-              fill="var(--primary)"
-              opacity={0.25}
-            />
-            <circle
-              cx={lastPoint[0]}
-              cy={lastPoint[1]}
-              r={2.6}
-              fill="var(--primary)"
-            />
-          </g>
-        ) : null}
+        )}
       </svg>
 
       {/* Interactive Tooltip */}

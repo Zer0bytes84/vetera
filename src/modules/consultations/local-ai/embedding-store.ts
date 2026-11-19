@@ -193,7 +193,7 @@ export async function persistSearchChunks(
         SEARCH_INDEX_KEYS[generation],
         chunk.documentType,
         chunk.sourceType === "soap" ? chunk.sourceId : null,
-        chunk.sourceType !== "soap" ? chunk.sourceId : null,
+        chunk.sourceType === "soap" ? null : chunk.sourceId,
       ]
     );
   }

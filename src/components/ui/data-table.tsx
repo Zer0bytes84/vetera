@@ -147,11 +147,11 @@ export function selectRows<R extends DataRow>(
 
 /** A header's clicks: descending, then ascending, then back to the order of the data. */
 export function nextSort(sort: Sort, key: string): Sort {
-  return sort?.key !== key
-    ? { key, dir: "desc" }
-    : sort.dir === "desc"
+  return sort?.key === key
+    ? sort.dir === "desc"
       ? { key, dir: "asc" }
-      : null;
+      : null
+    : { key, dir: "desc" };
 }
 
 export function DataTable<R extends DataRow>({
@@ -204,11 +204,11 @@ export function DataTable<R extends DataRow>({
 
   const toggleSort = (key: string) => {
     setSort((s) =>
-      s?.key !== key
-        ? { key, dir: "desc" }
-        : s.dir === "desc"
+      s?.key === key
+        ? s.dir === "desc"
           ? { key, dir: "asc" }
           : null
+        : { key, dir: "desc" }
     );
     setPage(0);
   };

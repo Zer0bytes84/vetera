@@ -60,7 +60,18 @@ export async function resetLocalData(confirmation: string, password: string) {
     throw new Error("Saisissez RÉINITIALISER pour confirmer.");
   }
   await verifyAdministratorPassword(password);
-  if (!isTauriRuntime()) {
+  if (isTauriRuntime()) {
+    const { createBackup } = await import("./backupService");
+    if (!(await createBackup("before-local-data-reset"))) {
+      throw new Error(
+        "La sauvegarde préalable a échoué. Aucune donnée n’a été supprimée."
+      );
+    }
+    const { runDbOperation } = await import("./sqlite/database");
+    await requireAdministrator();
+    await runDbOperation(resetSqliteSchema);
+    localStorage.clear();
+  } else {
     const key = "vetera.browser-db.v1";
     const backupKey = `${key}.before-reset`;
     const original = localStorage.getItem(key);
@@ -87,17 +98,6 @@ export async function resetLocalData(confirmation: string, password: string) {
       }
     }
     localStorage.removeItem("auth_token");
-  } else {
-    const { createBackup } = await import("./backupService");
-    if (!(await createBackup("before-local-data-reset"))) {
-      throw new Error(
-        "La sauvegarde préalable a échoué. Aucune donnée n’a été supprimée."
-      );
-    }
-    const { runDbOperation } = await import("./sqlite/database");
-    await requireAdministrator();
-    await runDbOperation(resetSqliteSchema);
-    localStorage.clear();
   }
   window.dispatchEvent(new Event("sqlite-data-changed"));
 }

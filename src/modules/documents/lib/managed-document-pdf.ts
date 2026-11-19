@@ -132,7 +132,11 @@ export async function buildManagedDocumentPdf(
     doc.setLineWidth(0.2);
     doc.line(left, y, right, y);
     y += 10;
-    if (!continuation) {
+    if (continuation) {
+      normal(9, false, "#7f7f7f");
+      doc.text("Suite du document", left, y);
+      y += 8;
+    } else {
       normal(16, true);
       const titles: string[] = doc.splitTextToSize(source.title, width);
       titles.forEach((line) => {
@@ -140,10 +144,6 @@ export async function buildManagedDocumentPdf(
         y += 7;
       });
       y += 4;
-    } else {
-      normal(9, false, "#7f7f7f");
-      doc.text("Suite du document", left, y);
-      y += 8;
     }
   };
   header();

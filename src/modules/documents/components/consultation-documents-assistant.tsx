@@ -922,24 +922,7 @@ export default function ConsultationDocumentsAssistant({
                 dossier du patient.
               </p>
             )}
-            {!saved ? (
-              <Button
-                size="sm"
-                disabled={
-                  !(reviewed && draft.text.trim() && draft.title.trim()) ||
-                  saving ||
-                  busy ||
-                  changedSource ||
-                  unavailable ||
-                  !appointment
-                }
-                onClick={() => void save()}
-              >
-                {saving
-                  ? "Enregistrement…"
-                  : "Valider et enregistrer le document"}
-              </Button>
-            ) : (
+            {saved ? (
               <div className="space-y-2">
                 <p role="status" className="flex items-center gap-2 text-sm">
                   <Check className="size-4" /> Enregistré dans Documents et le
@@ -957,6 +940,23 @@ export default function ConsultationDocumentsAssistant({
                   <FileText className="size-4" /> Exporter le PDF validé
                 </Button>
               </div>
+            ) : (
+              <Button
+                size="sm"
+                disabled={
+                  !(reviewed && draft.text.trim() && draft.title.trim()) ||
+                  saving ||
+                  busy ||
+                  changedSource ||
+                  unavailable ||
+                  !appointment
+                }
+                onClick={() => void save()}
+              >
+                {saving
+                  ? "Enregistrement…"
+                  : "Valider et enregistrer le document"}
+              </Button>
             )}
           </div>
         </ChatMessage>

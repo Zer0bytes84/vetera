@@ -52,7 +52,7 @@ export function VisitFlowBoard({
   const active = next?.appointment.status === "in_progress";
   const arrived =
     next && ["arrived", "waiting"].includes(next.appointment.status);
-  const stage = !next ? (completed ? 3 : -1) : active ? 2 : arrived ? 1 : 0;
+  const stage = next ? (active ? 2 : arrived ? 1 : 0) : completed ? 3 : -1;
   const timing =
     startsIn === null
       ? ""
@@ -125,7 +125,7 @@ export function VisitFlowBoard({
                 className="visit-flow-patient"
               >
                 <span
-                  className={`visit-flow-symbol ${!next ? "visit-flow-symbol-done" : ""}`}
+                  className={`visit-flow-symbol ${next ? "" : "visit-flow-symbol-done"}`}
                   aria-hidden="true"
                 >
                   {next ? (

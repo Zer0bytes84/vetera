@@ -284,9 +284,9 @@ function Scanner({ onOpenMovements }: { onOpenMovements?: () => void }) {
                   ...(direction === "out"
                     ? lot === "unassigned"
                       ? { lotId: null }
-                      : lot !== "fifo"
-                        ? { lotId: lot }
-                        : {}
+                      : lot === "fifo"
+                        ? {}
+                        : { lotId: lot }
                     : {
                         lotNumber,
                         expiryDate: expiry ? stockDay(expiry) : null,
@@ -614,9 +614,9 @@ function TransferForm({ onClose }: { onClose: () => void }) {
               authorId: currentUser.id,
               ...(lot === "unassigned"
                 ? { lotId: null }
-                : lot !== "fifo"
-                  ? { lotId: lot }
-                  : {}),
+                : lot === "fifo"
+                  ? {}
+                  : { lotId: lot }),
             });
             onClose();
           },
@@ -897,17 +897,7 @@ export function StockOperationsPanel({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {!operations.barcodes.length ? (
-                <TableRow>
-                  <TableCell
-                    colSpan={3}
-                    className="h-24 whitespace-normal text-center text-muted-foreground"
-                  >
-                    Aucun code associé. Associez le code présent sur l’emballage
-                    à son produit.
-                  </TableCell>
-                </TableRow>
-              ) : (
+              {operations.barcodes.length ? (
                 operations.barcodes.map((row) => (
                   <TableRow key={row.id}>
                     <TableCell className="break-all whitespace-normal font-mono text-xs">
@@ -937,6 +927,16 @@ export function StockOperationsPanel({
                     </TableCell>
                   </TableRow>
                 ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={3}
+                    className="h-24 whitespace-normal text-center text-muted-foreground"
+                  >
+                    Aucun code associé. Associez le code présent sur l’emballage
+                    à son produit.
+                  </TableCell>
+                </TableRow>
               )}
             </TableBody>
           </Table>
@@ -965,16 +965,7 @@ export function StockOperationsPanel({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {!operations.consumption.length ? (
-                <TableRow>
-                  <TableCell
-                    colSpan={4}
-                    className="h-28 whitespace-normal text-center text-muted-foreground"
-                  >
-                    Aucune sortie enregistrée sur cette période.
-                  </TableCell>
-                </TableRow>
-              ) : (
+              {operations.consumption.length ? (
                 operations.consumption.map((row) => (
                   <TableRow key={row.product_id}>
                     <TableCell className="whitespace-normal break-words font-medium">
@@ -1016,6 +1007,15 @@ export function StockOperationsPanel({
                     </TableCell>
                   </TableRow>
                 ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={4}
+                    className="h-28 whitespace-normal text-center text-muted-foreground"
+                  >
+                    Aucune sortie enregistrée sur cette période.
+                  </TableCell>
+                </TableRow>
               )}
             </TableBody>
           </Table>
@@ -1106,11 +1106,7 @@ export function StockOperationsPanel({
           </p>
           <div className="space-y-3 border-t border-border p-5">
             <h3 className="font-medium">Historique des transferts</h3>
-            {!operations.transfers.length ? (
-              <p className="text-sm text-muted-foreground">
-                Aucun transfert enregistré.
-              </p>
-            ) : (
+            {operations.transfers.length ? (
               operations.transfers.map((row) => (
                 <div
                   key={row.id}
@@ -1130,6 +1126,10 @@ export function StockOperationsPanel({
                   </span>
                 </div>
               ))
+            ) : (
+              <p className="text-sm text-muted-foreground">
+                Aucun transfert enregistré.
+              </p>
             )}
           </div>
         </>

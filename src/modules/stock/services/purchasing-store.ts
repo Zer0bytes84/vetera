@@ -269,7 +269,15 @@ export async function savePurchaseOrderInDatabase(
     );
   }
   await activeSupplier(db, input.supplierId);
-  if (!old) {
+  if (old) {
+    await db.execute("DELETE FROM purchase_order_lines WHERE order_id=?", [
+      old.id,
+    ]);
+    await db.execute(
+      "UPDATE purchase_orders SET supplier_id=?,fingerprint=?,author_id=?,updated_at=? WHERE id=?",
+      [input.supplierId, fingerprint, input.authorId, now, old.id]
+    );
+  } else {
     const reference = `BC-${stockDay(new Date(stockTimestamp(now))).replaceAll("-", "")}-${input.id.slice(0, 8).toLocaleUpperCase("fr-FR")}`;
     await db.execute(
       `INSERT INTO purchase_orders(id,reference,supplier_id,status,fingerprint,author_id,created_at,updated_at)
@@ -283,14 +291,6 @@ export async function savePurchaseOrderInDatabase(
         now,
         now,
       ]
-    );
-  } else {
-    await db.execute("DELETE FROM purchase_order_lines WHERE order_id=?", [
-      old.id,
-    ]);
-    await db.execute(
-      "UPDATE purchase_orders SET supplier_id=?,fingerprint=?,author_id=?,updated_at=? WHERE id=?",
-      [input.supplierId, fingerprint, input.authorId, now, old.id]
     );
   }
   for (const [index, line] of prepared.entries()) {

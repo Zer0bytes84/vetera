@@ -268,7 +268,18 @@ export function PatientKpiStrip({
               {nextApptFormatted || "Voir le rendez-vous"}
             </strong>
           </button>
-        ) : !showLastVisit ? (
+        ) : showLastVisit ? (
+          lastVisitFormatted ? (
+            <button
+              type="button"
+              onClick={onAppointmentClick}
+              className="medical-kpi-text-action medical-kpi-footer inline-flex items-center gap-1.5 mt-auto pt-2 text-xs font-medium text-muted-foreground hover:text-foreground cursor-pointer"
+            >
+              <span>Planifier la suite</span>
+              <ArrowUpRight size={14} aria-hidden="true" />
+            </button>
+          ) : null
+        ) : (
           <button
             type="button"
             onClick={nextAppointment ? onAppointmentClick : onTimelineClick}
@@ -281,16 +292,7 @@ export function PatientKpiStrip({
             </span>
             <ArrowUpRight size={14} aria-hidden="true" />
           </button>
-        ) : lastVisitFormatted ? (
-          <button
-            type="button"
-            onClick={onAppointmentClick}
-            className="medical-kpi-text-action medical-kpi-footer inline-flex items-center gap-1.5 mt-auto pt-2 text-xs font-medium text-muted-foreground hover:text-foreground cursor-pointer"
-          >
-            <span>Planifier la suite</span>
-            <ArrowUpRight size={14} aria-hidden="true" />
-          </button>
-        ) : null}
+        )}
       </article>
     </section>
   );

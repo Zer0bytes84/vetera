@@ -63,7 +63,7 @@ export function bookingHours(
         end:
           end.getHours() +
           end.getMinutes() / 60 +
-          (end.getDate() !== start.getDate() ? 24 : 0),
+          (end.getDate() === start.getDate() ? 0 : 24),
       },
     ];
   });

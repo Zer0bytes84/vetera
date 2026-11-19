@@ -241,19 +241,7 @@ export function PatientDocumentRegistry({
         >
           Chargement des documents…
         </p>
-      ) : !visible.length ? (
-        <div className="py-8 text-center">
-          <p className="text-sm font-medium">
-            {registry.documents.length
-              ? "Aucun document ne correspond aux filtres."
-              : "Aucun document généré ou importé pour ce patient."}
-          </p>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Générez un document depuis une note validée, ou importez un PDF ou
-            une image.
-          </p>
-        </div>
-      ) : (
+      ) : visible.length ? (
         <ul className="divide-y divide-border border-y border-border">
           {visible.map((document) => (
             <li
@@ -314,6 +302,18 @@ export function PatientDocumentRegistry({
             </li>
           ))}
         </ul>
+      ) : (
+        <div className="py-8 text-center">
+          <p className="text-sm font-medium">
+            {registry.documents.length
+              ? "Aucun document ne correspond aux filtres."
+              : "Aucun document généré ou importé pour ce patient."}
+          </p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Générez un document depuis une note validée, ou importez un PDF ou
+            une image.
+          </p>
+        </div>
       )}
       <DocumentPreviewDialog
         documentId={previewId}

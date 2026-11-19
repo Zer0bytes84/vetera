@@ -238,9 +238,7 @@ export function HexDensity({
     } else if (event.key === "End") {
       next = placed.at(-1)!.id;
     } else if (event.key in dirs) {
-      if (!activeCell) {
-        next = from.id;
-      } else {
+      if (activeCell) {
         // Nearest cell in that direction, preferring the same row or column.
         const [ux, uy] = dirs[event.key];
         let best = Infinity;
@@ -259,6 +257,8 @@ export function HexDensity({
           }
         }
         next = next ?? from.id;
+      } else {
+        next = from.id;
       }
     } else {
       return;

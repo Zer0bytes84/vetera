@@ -116,13 +116,13 @@ export function AIModelSettings() {
             | Record<string, string | undefined>
             | undefined;
           // The dictation card follows its native model while that one is being installed.
-          const stage = !state.running
-            ? undefined
-            : model.id === "whisper" &&
-                stages?.["whisper-turbo"] &&
-                stages["whisper-turbo"] !== "ready"
+          const stage = state.running
+            ? model.id === "whisper" &&
+              stages?.["whisper-turbo"] &&
+              stages["whisper-turbo"] !== "ready"
               ? stages["whisper-turbo"]
-              : stages?.[model.id];
+              : stages?.[model.id]
+            : undefined;
           const installed = ready[model.id] || stage === "ready";
           return (
             <article

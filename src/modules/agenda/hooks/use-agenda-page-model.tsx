@@ -525,9 +525,8 @@ export function useAgendaPageModel(onNavigate?: (view: View) => void) {
       : null;
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
-    const nextDay = !nextStart
-      ? ""
-      : isSameDay(nextStart, new Date())
+    const nextDay = nextStart
+      ? isSameDay(nextStart, new Date())
         ? "Aujourd'hui"
         : isSameDay(nextStart, tomorrow)
           ? "Demain"
@@ -535,7 +534,8 @@ export function useAgendaPageModel(onNavigate?: (view: View) => void) {
               weekday: "short",
               day: "numeric",
               month: "short",
-            });
+            })
+      : "";
     const nextPatient = nextAppointment
       ? patientsById.get(nextAppointment.patientId)?.name ||
         nextAppointment.title

@@ -76,17 +76,17 @@ export function ProductStockFields({
         className={`t-12 ${shortage ? "text-destructive" : "text-muted-foreground"}`}
         aria-live="polite"
       >
-        {!product
-          ? "Sélectionnez le produit réellement utilisé, dans l’unité de son stock."
-          : !tracked
-            ? "Prestation tarifée, sans sortie de stock."
-            : product.availabilityPending
+        {product
+          ? tracked
+            ? product.availabilityPending
               ? "Vérification du stock utilisable…"
               : product.inventoryInvalid
                 ? "Les données d’un lot sont à vérifier avant utilisation."
                 : shortage
                   ? `Stock insuffisant : ${stockQuantityLabel(available, product.unit)} utilisables. Une réception ou une autre quantité est nécessaire avant utilisation.`
-                  : `Disponible : ${stockQuantityLabel(available, product.unit)}. Les lots périmés sont exclus.`}
+                  : `Disponible : ${stockQuantityLabel(available, product.unit)}. Les lots périmés sont exclus.`
+            : "Prestation tarifée, sans sortie de stock."
+          : "Sélectionnez le produit réellement utilisé, dans l’unité de son stock."}
       </p>
     </div>
   );

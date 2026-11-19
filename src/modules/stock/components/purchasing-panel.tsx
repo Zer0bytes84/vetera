@@ -900,17 +900,7 @@ export function PurchasingPanel({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {!purchasing.suppliers.length ? (
-                <TableRow>
-                  <TableCell
-                    colSpan={3}
-                    className="h-32 whitespace-normal text-center text-muted-foreground"
-                  >
-                    Ajoutez un fournisseur pour préparer votre première
-                    commande.
-                  </TableCell>
-                </TableRow>
-              ) : (
+              {purchasing.suppliers.length ? (
                 purchasing.suppliers.map((item) => (
                   <TableRow key={item.id}>
                     <TableCell className="whitespace-normal break-words align-top">
@@ -972,6 +962,16 @@ export function PurchasingPanel({
                     </TableCell>
                   </TableRow>
                 ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={3}
+                    className="h-32 whitespace-normal text-center text-muted-foreground"
+                  >
+                    Ajoutez un fournisseur pour préparer votre première
+                    commande.
+                  </TableCell>
+                </TableRow>
               )}
             </TableBody>
           </Table>
@@ -1130,13 +1130,9 @@ export function PurchasingPanel({
               </p>
               <div className="space-y-3 p-5">
                 <h4 className="font-medium">Réceptions</h4>
-                {!purchasing.receipts.some(
+                {purchasing.receipts.some(
                   (item) => item.order_id === order.id
                 ) ? (
-                  <p className="text-sm text-muted-foreground">
-                    Aucune réception enregistrée.
-                  </p>
-                ) : (
                   purchasing.receipts
                     .filter((item) => item.order_id === order.id)
                     .map((item) => (
@@ -1173,6 +1169,10 @@ export function PurchasingPanel({
                         </ul>
                       </div>
                     ))
+                ) : (
+                  <p className="text-sm text-muted-foreground">
+                    Aucune réception enregistrée.
+                  </p>
                 )}
               </div>
             </>
@@ -1203,19 +1203,10 @@ export function PurchasingPanel({
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {!purchasing.orders.some(
+                  {purchasing.orders.some(
                     (item) =>
                       !supplierFilter || item.supplier_id === supplierFilter
                   ) ? (
-                    <TableRow>
-                      <TableCell
-                        colSpan={4}
-                        className="h-32 whitespace-normal text-center text-muted-foreground"
-                      >
-                        Aucune commande pour ce filtre.
-                      </TableCell>
-                    </TableRow>
-                  ) : (
                     purchasing.orders
                       .filter(
                         (item) =>
@@ -1251,6 +1242,15 @@ export function PurchasingPanel({
                           </TableCell>
                         </TableRow>
                       ))
+                  ) : (
+                    <TableRow>
+                      <TableCell
+                        colSpan={4}
+                        className="h-32 whitespace-normal text-center text-muted-foreground"
+                      >
+                        Aucune commande pour ce filtre.
+                      </TableCell>
+                    </TableRow>
                   )}
                 </TableBody>
               </Table>

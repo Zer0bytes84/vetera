@@ -499,7 +499,7 @@ export function createDocumentStore(
         continue;
       }
       result.push(
-        `Prescription du ${dateText(prescription.prescription_date) || DOCUMENT_MISSING_VALUE}${prescription.weight_kg != null ? ` · Poids de référence : ${numberText(prescription.weight_kg)} kg` : ""}`
+        `Prescription du ${dateText(prescription.prescription_date) || DOCUMENT_MISSING_VALUE}${prescription.weight_kg == null ? "" : ` · Poids de référence : ${numberText(prescription.weight_kg)} kg`}`
       );
       for (const item of items) {
         const present = (value: unknown) =>

@@ -68,13 +68,13 @@ export function analyzeTreatmentDictation(
       text,
       kind,
       setting:
-        kind !== "treatment"
-          ? null
-          : /\bje\s+lui\s+fais\b/iu.test(text)
+        kind === "treatment"
+          ? /\bje\s+lui\s+fais\b/iu.test(text)
             ? "acte-clinique"
             : /\bvous\s+lui\s+donnez\b/iu.test(text)
               ? "ordonnance-maison"
-              : null,
+              : null
+          : null,
       medications: [
         ...text.matchAll(
           /(?<![\p{L}\p{N}])(Metacam|Synulox|Clavaseptin|Convenia|Cerenia|Vetmedin|Fortekor|Thyronorm)(?![\p{L}\p{N}])/giu

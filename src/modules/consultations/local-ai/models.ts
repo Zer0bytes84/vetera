@@ -62,20 +62,20 @@ export async function importLocalModel(
   }
   const { open } = await import("@tauri-apps/plugin-dialog");
   const path = await open(
-    kind !== "generator"
+    kind === "generator"
       ? {
+          directory: false,
+          multiple: false,
+          title: "Choisir le fichier de préparation des notes",
+          filters: [{ name: "Préparation des notes", extensions: ["task"] }],
+        }
+      : {
           directory: true,
           multiple: false,
           title:
             kind === "whisper"
               ? "Choisir le dossier de dictée téléchargé"
               : "Choisir le dossier de recherche locale téléchargé",
-        }
-      : {
-          directory: false,
-          multiple: false,
-          title: "Choisir le fichier de préparation des notes",
-          filters: [{ name: "Préparation des notes", extensions: ["task"] }],
         }
   );
   if (!path || Array.isArray(path)) {

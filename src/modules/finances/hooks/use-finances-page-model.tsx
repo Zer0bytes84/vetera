@@ -383,14 +383,14 @@ export function useFinancesPageModel({
       {
         title: "Facturé",
         value: formatDZD(invoiceStats.gross),
-        ...(recoveryRate !== null
-          ? {
+        ...(recoveryRate === null
+          ? {}
+          : {
               change: recoveryRate,
               changeKind: "rate" as const,
               changeBase: invoiceStats.gross,
               changeLabel: "déjà encaissés",
-            }
-          : {}),
+            }),
         trend: "neutral",
         detailRow: `${plural(issued.length, "facture")} émise${issued.length > 1 ? "s" : ""} · toutes périodes`,
         footerTitle: "Montant des factures",

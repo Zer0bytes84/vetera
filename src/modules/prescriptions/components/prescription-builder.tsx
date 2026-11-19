@@ -1020,9 +1020,9 @@ function ItemRow({
     optionLabel(t, "form", FORM_OPTIONS, item.form ?? "comprime"),
     optionLabel(t, "route", ROUTE_OPTIONS, item.route ?? "PO"),
     item.quantity?.trim() ? item.quantity.trim() : null,
-    item.concentrationMgPerMl != null
-      ? `${item.concentrationMgPerMl} mg/mL`
-      : null,
+    item.concentrationMgPerMl == null
+      ? null
+      : `${item.concentrationMgPerMl} mg/mL`,
     item.instructions?.trim()
       ? t("prescriptions.item.instructionsFilled")
       : null,

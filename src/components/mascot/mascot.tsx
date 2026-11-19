@@ -43,7 +43,7 @@ export function Mascot({
   const [open, setOpen] = useState(false);
 
   const effectiveAnimal = animal || preferences.animal;
-  const isAnimated = animated !== undefined ? animated : preferences.animated;
+  const isAnimated = animated === undefined ? preferences.animated : animated;
   const isLogoMode = fallbackToLogo && preferences.mode === "logo" && !animal;
 
   const content = isLogoMode ? (

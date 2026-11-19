@@ -183,7 +183,7 @@ export function FocusTrendChart({
   // A marker a day while days stay apart; a long period keeps the line alone.
   const markers = n <= 31;
 
-  const hot = active !== null ? points[active] : null;
+  const hot = active === null ? null : points[active];
   const flip = active !== null && x(active) > width - 260;
 
   const onMove = (event: React.PointerEvent<SVGSVGElement>) => {

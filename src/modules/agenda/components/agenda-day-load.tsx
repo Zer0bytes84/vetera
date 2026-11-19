@@ -157,7 +157,7 @@ export function AgendaDayLoadCard({
               Aucun rendez-vous planifié ce jour-là.
             </p>
 
-            {nextAppointment !== undefined ? (
+            {nextAppointment === undefined ? null : (
               <div className="agenda-load-section grid gap-2.5">
                 <p className="agenda-load-label">Prochain rendez-vous</p>
                 {nextAppointment ? (
@@ -205,7 +205,7 @@ export function AgendaDayLoadCard({
                   </p>
                 )}
               </div>
-            ) : null}
+            )}
           </>
         )}
 

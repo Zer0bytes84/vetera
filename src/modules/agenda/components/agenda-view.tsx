@@ -324,13 +324,13 @@ export function AgendaView(props: AgendaViewProps) {
                 : TABLE_TABS.find((tab) => tab.value === tableTab)?.label}
             </CardTitle>
             <CardDescription className="text-sm">
-              {!isDayScope
-                ? TABLE_SCOPES(formatDateLabel(selectedDate))[tableTab]
-                : displayMode === "day"
+              {isDayScope
+                ? displayMode === "day"
                   ? `${daySummaryLabel}${dayRows.length > 0 ? ", répartis par vétérinaire" : ""}`
                   : displayMode === "week"
                     ? "Rendez-vous de la semaine du jour choisi, jour par jour"
-                    : daySummaryLabel}
+                    : daySummaryLabel
+                : TABLE_SCOPES(formatDateLabel(selectedDate))[tableTab]}
             </CardDescription>
           </CardHeader>
 

@@ -201,7 +201,7 @@ export function PatientDocumentSearch({
   }, []);
 
   const run = async (indexOnly: boolean, forcedQuery?: string) => {
-    const searchQuery = forcedQuery !== undefined ? forcedQuery : query;
+    const searchQuery = forcedQuery === undefined ? query : forcedQuery;
     active.current?.abort();
     const controller = new AbortController();
     active.current = controller;

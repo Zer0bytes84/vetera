@@ -124,9 +124,7 @@ export async function readLocalDocument(
           operations?.fnArray.some((operator) =>
             imageOperators.has(operator)
           ) ?? false;
-        if (!needsPageOcr(text, containsImage)) {
-          result.pages.push({ number: index, text, method: "text" });
-        } else {
+        if (needsPageOcr(text, containsImage)) {
           const viewport = page.getViewport({ scale: 2 });
           if (viewport.width * viewport.height > 20_000_000) {
             throw new Error(
@@ -148,6 +146,8 @@ export async function readLocalDocument(
             canvas.width = 0;
             canvas.height = 0;
           }
+        } else {
+          result.pages.push({ number: index, text, method: "text" });
         }
         page.cleanup();
         if (

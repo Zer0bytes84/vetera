@@ -733,7 +733,360 @@ const NotesPro: React.FC = () => {
       )}
 
       {/* Main workspace */}
-      {workspaceMode !== "library" ? (
+      {workspaceMode === "library" ? (
+        selectedNoteId && activeNote ? (
+          <Shell className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden p-0">
+            {/* ── EDITOR AREA ── */}
+            <main className="flex min-h-0 min-w-0 flex-1 flex-col">
+              {selectedNoteId && activeNote ? (
+                <div className="flex h-full min-h-0 flex-col">
+                  {/* One slim bar: the way back, the folder, the save state, one menu. */}
+                  <div className="flex flex-wrap items-center justify-between gap-2 px-3 py-1.5">
+                    <div className="flex min-w-0 flex-wrap items-center gap-2">
+                      <Button
+                        className="gap-1.5 rounded-full"
+                        onClick={() => setSelectedNoteId(null)}
+                        size="sm"
+                        title="Retour à la liste des documents"
+                        type="button"
+                        variant="ghost"
+                      >
+                        <ArrowLeft aria-hidden="true" className="size-4" />
+                        Documents
+                      </Button>
+
+                      {/* Attach the note to a patient folder, from the bar itself. */}
+                      <PatientPicker
+                        kind="link"
+                        onSelect={(patientId) => {
+                          void updateNote(activeNote.id, {
+                            patientId: patientId || null,
+                          });
+                          if (patientFilter && patientFilter !== patientId) {
+                            setPatientFilter(patientId);
+                          }
+                        }}
+                        patients={patients}
+                        value={activeNote.patientId ?? ""}
+                      />
+
+                      {isPreviewMode && (
+                        <Button
+                          className="h-8 gap-1.5 rounded-full text-xs"
+                          onClick={() => setIsPreviewMode(false)}
+                          size="sm"
+                          type="button"
+                          variant="outline"
+                        >
+                          <HugeiconsIcon
+                            className="size-3"
+                            icon={EditIcon}
+                            strokeWidth={1.5}
+                          />
+                          Revenir à l’édition
+                        </Button>
+                      )}
+
+                      {/* Save status */}
+                      {saveFailed ? (
+                        <span
+                          role="alert"
+                          className="flex items-center gap-1.5 text-xs font-medium text-destructive"
+                        >
+                          Non enregistré
+                          <Button
+                            className="h-6 rounded-full px-2 text-xs"
+                            onClick={() => void flushSave()}
+                            size="sm"
+                            variant="outline"
+                          >
+                            Réessayer
+                          </Button>
+                        </span>
+                      ) : isSaving ? (
+                        <span className="flex items-center gap-1.5 text-xs text-foreground/70">
+                          <span className="relative flex size-1.5">
+                            <span className="absolute inline-flex size-full animate-ping rounded-full bg-amber-400 opacity-75" />
+                            <span className="relative inline-flex size-1.5 rounded-full bg-amber-500" />
+                          </span>
+                          Enregistrement...
+                        </span>
+                      ) : lastSaved ? (
+                        <span className="flex items-center gap-1 text-xs font-medium text-emerald-700 dark:text-emerald-300">
+                          <HugeiconsIcon
+                            className="size-3"
+                            icon={CheckmarkCircle02Icon}
+                            strokeWidth={1.5}
+                          />
+                          Sauvegardé
+                        </span>
+                      ) : null}
+                      {!isPreviewMode && aiStatus.loading && (
+                        <span
+                          aria-live="polite"
+                          className="ml-2 flex items-center gap-1.5 text-xs font-medium text-foreground dark:text-foreground"
+                        >
+                          <span className="size-3 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                          Proposition en cours…
+                        </span>
+                      )}
+                    </div>
+
+                    <DropdownMenu>
+                      <DropdownMenuTrigger
+                        render={
+                          <Button
+                            aria-label="Plus d’actions pour cette note"
+                            className="size-8 rounded-full text-foreground/70 hover:text-foreground"
+                            size="icon-sm"
+                            variant="ghost"
+                          >
+                            <HugeiconsIcon
+                              className="size-3.5"
+                              icon={MoreVerticalIcon}
+                              strokeWidth={1.5}
+                            />
+                          </Button>
+                        }
+                      />
+                      <DropdownMenuContent align="end" className="w-52">
+                        <DropdownMenuItem
+                          onClick={() =>
+                            setIsPreviewMode((preview) => !preview)
+                          }
+                        >
+                          <HugeiconsIcon
+                            className="mr-2 size-4"
+                            icon={isPreviewMode ? EditIcon : EyeIcon}
+                            strokeWidth={1.5}
+                          />
+                          {isPreviewMode ? "Éditer" : "Aperçu"}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => togglePin(activeNote)}>
+                          <HugeiconsIcon
+                            className="mr-2 size-4"
+                            icon={Bookmark01Icon}
+                            strokeWidth={1.5}
+                          />
+                          {(activeNote as any).isPinned
+                            ? "Désépingler"
+                            : "Épingler"}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => toggleFavorite(activeNote)}
+                        >
+                          <HugeiconsIcon
+                            className="mr-2 size-4"
+                            icon={StarIcon}
+                            strokeWidth={1.5}
+                          />
+                          {activeNote.isFavorite
+                            ? "Retirer des favoris"
+                            : "Ajouter aux favoris"}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={handleCopyNote}>
+                          <HugeiconsIcon
+                            className="mr-2 size-4"
+                            icon={CopyIcon}
+                            strokeWidth={1.5}
+                          />
+                          Copier le contenu
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                          onClick={() => void handleDuplicateNote(activeNote)}
+                        >
+                          <HugeiconsIcon
+                            className="mr-2 size-4"
+                            icon={CopyIcon}
+                            strokeWidth={1.5}
+                          />
+                          Dupliquer la note
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => handleOpenAssistant(activeNote)}
+                        >
+                          <HugeiconsIcon
+                            className="mr-2 size-4"
+                            icon={File01Icon}
+                            strokeWidth={1.5}
+                          />
+                          Ouvrir dans l'assistant
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                          onClick={() => handleExportNote("md")}
+                        >
+                          <HugeiconsIcon
+                            className="mr-2 size-4"
+                            icon={DownloadIcon}
+                            strokeWidth={1.5}
+                          />
+                          Exporter en Markdown
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => handleExportNote("txt")}
+                        >
+                          <HugeiconsIcon
+                            className="mr-2 size-4"
+                            icon={DownloadIcon}
+                            strokeWidth={1.5}
+                          />
+                          Exporter en Texte
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                          className="text-destructive focus:text-destructive"
+                          onClick={() => handleDeleteNote(activeNote.id)}
+                        >
+                          <HugeiconsIcon
+                            className="mr-2 size-4"
+                            icon={Delete01Icon}
+                            strokeWidth={1.5}
+                          />
+                          Supprimer
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+
+                  {/* Editor content area: the shell's inset panel, the column inside it. */}
+                  <Panel
+                    className="mx-[var(--card-frame)] mb-[var(--card-frame)] flex min-h-0 flex-1 flex-col overflow-hidden"
+                    onClick={(e) => {
+                      if (e.target === e.currentTarget) {
+                        editorInstance?.commands.focus("end");
+                      }
+                    }}
+                  >
+                    <div
+                      className="min-h-0 flex-1 cursor-text select-text overflow-y-auto overscroll-contain [scrollbar-gutter:stable]"
+                      onClick={(e) => {
+                        if (e.target === e.currentTarget) {
+                          editorInstance?.commands.focus("end");
+                        }
+                      }}
+                    >
+                      <div className="flex w-full flex-1 flex-col px-5 py-8 md:px-8 md:py-10">
+                        {isPreviewMode ? (
+                          <div className="document-rich-content prose prose-sm dark:prose-invert max-w-none overflow-x-auto">
+                            <h1 className="font-heading text-2xl font-medium tracking-[-0.035em]">
+                              {formatDisplayText(title)}
+                            </h1>
+                            <p className="mt-1 mb-6 text-foreground/70 text-xs">
+                              {formatFullDate(activeNote.updatedAt)}
+                            </p>
+                            <div
+                              dangerouslySetInnerHTML={{ __html: content }}
+                            />
+                          </div>
+                        ) : (
+                          <>
+                            {/* Note title, with the editor's own tools at its right. */}
+                            <div className="mb-2.5 flex items-start gap-3">
+                              <input
+                                aria-label="Titre du document"
+                                className="min-w-0 flex-1 bg-transparent font-heading text-2xl font-medium leading-tight tracking-[-0.035em] text-foreground outline-none placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring/30 dark:text-foreground dark:placeholder:text-muted-foreground"
+                                onChange={(e) =>
+                                  handleTitleChange(e.target.value)
+                                }
+                                placeholder="Sans titre"
+                                type="text"
+                                value={formatDisplayText(title)}
+                              />
+                              <div
+                                className="flex shrink-0 items-center gap-1.5 pt-0.5"
+                                id="note-editor-toolbar-slot"
+                              />
+                            </div>
+
+                            {/* Meta line below title */}
+                            <div className="mb-2 flex flex-wrap items-center gap-2.5">
+                              <p className="text-xs text-muted-foreground dark:text-muted-foreground">
+                                {formatFullDate(activeNote.updatedAt)}
+                              </p>
+                              {wordCount > 0 && (
+                                <>
+                                  <span className="text-foreground/50">·</span>
+                                  <p className="text-xs text-muted-foreground tabular-nums dark:text-muted-foreground">
+                                    {wordCount} mots
+                                  </p>
+                                </>
+                              )}
+                              {(activeNote as any).isPinned && (
+                                <>
+                                  <span className="text-foreground/50">·</span>
+                                  <span className="flex items-center gap-1 text-xs font-medium text-amber-700 dark:text-amber-300">
+                                    <Pin className="size-2.5" />
+                                    Épinglée
+                                  </span>
+                                </>
+                              )}
+                              {activeNote.isFavorite && (
+                                <>
+                                  <span className="text-foreground/50">·</span>
+                                  <span className="flex items-center gap-1 text-xs font-medium text-amber-700 dark:text-amber-300">
+                                    <Star className="size-2.5 fill-current" />
+                                    Favori
+                                  </span>
+                                </>
+                              )}
+                            </div>
+
+                            {/* Rich text editor */}
+                            <Editor
+                              key={activeNote.id}
+                              content={content}
+                              onAiStatusChange={setAiStatus}
+                              onEditorCreated={setEditorInstance}
+                              onUpdate={handleContentChange}
+                            />
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </Panel>
+                </div>
+              ) : null}
+            </main>
+          </Shell>
+        ) : (
+          <div
+            className="min-h-0 flex-1 space-y-6 overflow-y-auto pb-8"
+            ref={libraryRef}
+          >
+            <DocumentsLibrary
+              entries={entries}
+              filter={filter}
+              headerActions={secondaryPages}
+              onAddFiles={(files, wanted) => void handleAddFiles(files, wanted)}
+              onAddLink={(url, linkName) => void handleAddLink(url, linkName)}
+              onCopyLink={(url) => void handleCopyLink(url)}
+              onCreateDocument={() => void handleCreateNote()}
+              onDelete={(entry) => void deleteEntry(entry)}
+              onDownload={handleDownload}
+              onDuplicate={(note) => void handleDuplicateNote(note)}
+              onExport={(note) => handleExportNote("md", note)}
+              onFilter={setFilter}
+              onOpenAssistant={handleOpenAssistant}
+              onOpenDocument={handleSelectNote}
+              onOpenLink={(url) => void handleOpenLink(url)}
+              onToggleFavorite={(entry) => void toggleEntryFavorite(entry)}
+              onTogglePin={(entry) => void toggleEntryPin(entry)}
+              patientActive={Boolean(patientFilter)}
+              patientName={patientName}
+              patientPicker={
+                <PatientPicker
+                  kind="filter"
+                  onSelect={setPatientFilter}
+                  patients={patients}
+                  value={patientFilter}
+                />
+              }
+            />
+          </div>
+        )
+      ) : (
         <div className="min-h-0 flex-1 overflow-y-auto rounded-t-xl border border-b-0 border-border bg-card">
           <Suspense
             fallback={
@@ -748,349 +1101,6 @@ const NotesPro: React.FC = () => {
             />
           </Suspense>
         </div>
-      ) : !(selectedNoteId && activeNote) ? (
-        <div
-          className="min-h-0 flex-1 space-y-6 overflow-y-auto pb-8"
-          ref={libraryRef}
-        >
-          <DocumentsLibrary
-            entries={entries}
-            filter={filter}
-            headerActions={secondaryPages}
-            onAddFiles={(files, wanted) => void handleAddFiles(files, wanted)}
-            onAddLink={(url, linkName) => void handleAddLink(url, linkName)}
-            onCopyLink={(url) => void handleCopyLink(url)}
-            onCreateDocument={() => void handleCreateNote()}
-            onDelete={(entry) => void deleteEntry(entry)}
-            onDownload={handleDownload}
-            onDuplicate={(note) => void handleDuplicateNote(note)}
-            onExport={(note) => handleExportNote("md", note)}
-            onFilter={setFilter}
-            onOpenAssistant={handleOpenAssistant}
-            onOpenDocument={handleSelectNote}
-            onOpenLink={(url) => void handleOpenLink(url)}
-            onToggleFavorite={(entry) => void toggleEntryFavorite(entry)}
-            onTogglePin={(entry) => void toggleEntryPin(entry)}
-            patientActive={Boolean(patientFilter)}
-            patientName={patientName}
-            patientPicker={
-              <PatientPicker
-                kind="filter"
-                onSelect={setPatientFilter}
-                patients={patients}
-                value={patientFilter}
-              />
-            }
-          />
-        </div>
-      ) : (
-        <Shell className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden p-0">
-          {/* ── EDITOR AREA ── */}
-          <main className="flex min-h-0 min-w-0 flex-1 flex-col">
-            {selectedNoteId && activeNote ? (
-              <div className="flex h-full min-h-0 flex-col">
-                {/* One slim bar: the way back, the folder, the save state, one menu. */}
-                <div className="flex flex-wrap items-center justify-between gap-2 px-3 py-1.5">
-                  <div className="flex min-w-0 flex-wrap items-center gap-2">
-                    <Button
-                      className="gap-1.5 rounded-full"
-                      onClick={() => setSelectedNoteId(null)}
-                      size="sm"
-                      title="Retour à la liste des documents"
-                      type="button"
-                      variant="ghost"
-                    >
-                      <ArrowLeft aria-hidden="true" className="size-4" />
-                      Documents
-                    </Button>
-
-                    {/* Attach the note to a patient folder, from the bar itself. */}
-                    <PatientPicker
-                      kind="link"
-                      onSelect={(patientId) => {
-                        void updateNote(activeNote.id, {
-                          patientId: patientId || null,
-                        });
-                        if (patientFilter && patientFilter !== patientId) {
-                          setPatientFilter(patientId);
-                        }
-                      }}
-                      patients={patients}
-                      value={activeNote.patientId ?? ""}
-                    />
-
-                    {isPreviewMode && (
-                      <Button
-                        className="h-8 gap-1.5 rounded-full text-xs"
-                        onClick={() => setIsPreviewMode(false)}
-                        size="sm"
-                        type="button"
-                        variant="outline"
-                      >
-                        <HugeiconsIcon
-                          className="size-3"
-                          icon={EditIcon}
-                          strokeWidth={1.5}
-                        />
-                        Revenir à l’édition
-                      </Button>
-                    )}
-
-                    {/* Save status */}
-                    {saveFailed ? (
-                      <span
-                        role="alert"
-                        className="flex items-center gap-1.5 text-xs font-medium text-destructive"
-                      >
-                        Non enregistré
-                        <Button
-                          className="h-6 rounded-full px-2 text-xs"
-                          onClick={() => void flushSave()}
-                          size="sm"
-                          variant="outline"
-                        >
-                          Réessayer
-                        </Button>
-                      </span>
-                    ) : isSaving ? (
-                      <span className="flex items-center gap-1.5 text-xs text-foreground/70">
-                        <span className="relative flex size-1.5">
-                          <span className="absolute inline-flex size-full animate-ping rounded-full bg-amber-400 opacity-75" />
-                          <span className="relative inline-flex size-1.5 rounded-full bg-amber-500" />
-                        </span>
-                        Enregistrement...
-                      </span>
-                    ) : lastSaved ? (
-                      <span className="flex items-center gap-1 text-xs font-medium text-emerald-700 dark:text-emerald-300">
-                        <HugeiconsIcon
-                          className="size-3"
-                          icon={CheckmarkCircle02Icon}
-                          strokeWidth={1.5}
-                        />
-                        Sauvegardé
-                      </span>
-                    ) : null}
-                    {!isPreviewMode && aiStatus.loading && (
-                      <span
-                        aria-live="polite"
-                        className="ml-2 flex items-center gap-1.5 text-xs font-medium text-foreground dark:text-foreground"
-                      >
-                        <span className="size-3 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                        Proposition en cours…
-                      </span>
-                    )}
-                  </div>
-
-                  <DropdownMenu>
-                    <DropdownMenuTrigger
-                      render={
-                        <Button
-                          aria-label="Plus d’actions pour cette note"
-                          className="size-8 rounded-full text-foreground/70 hover:text-foreground"
-                          size="icon-sm"
-                          variant="ghost"
-                        >
-                          <HugeiconsIcon
-                            className="size-3.5"
-                            icon={MoreVerticalIcon}
-                            strokeWidth={1.5}
-                          />
-                        </Button>
-                      }
-                    />
-                    <DropdownMenuContent align="end" className="w-52">
-                      <DropdownMenuItem
-                        onClick={() => setIsPreviewMode((preview) => !preview)}
-                      >
-                        <HugeiconsIcon
-                          className="mr-2 size-4"
-                          icon={isPreviewMode ? EditIcon : EyeIcon}
-                          strokeWidth={1.5}
-                        />
-                        {isPreviewMode ? "Éditer" : "Aperçu"}
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => togglePin(activeNote)}>
-                        <HugeiconsIcon
-                          className="mr-2 size-4"
-                          icon={Bookmark01Icon}
-                          strokeWidth={1.5}
-                        />
-                        {(activeNote as any).isPinned
-                          ? "Désépingler"
-                          : "Épingler"}
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => toggleFavorite(activeNote)}
-                      >
-                        <HugeiconsIcon
-                          className="mr-2 size-4"
-                          icon={StarIcon}
-                          strokeWidth={1.5}
-                        />
-                        {activeNote.isFavorite
-                          ? "Retirer des favoris"
-                          : "Ajouter aux favoris"}
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={handleCopyNote}>
-                        <HugeiconsIcon
-                          className="mr-2 size-4"
-                          icon={CopyIcon}
-                          strokeWidth={1.5}
-                        />
-                        Copier le contenu
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem
-                        onClick={() => void handleDuplicateNote(activeNote)}
-                      >
-                        <HugeiconsIcon
-                          className="mr-2 size-4"
-                          icon={CopyIcon}
-                          strokeWidth={1.5}
-                        />
-                        Dupliquer la note
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => handleOpenAssistant(activeNote)}
-                      >
-                        <HugeiconsIcon
-                          className="mr-2 size-4"
-                          icon={File01Icon}
-                          strokeWidth={1.5}
-                        />
-                        Ouvrir dans l'assistant
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={() => handleExportNote("md")}>
-                        <HugeiconsIcon
-                          className="mr-2 size-4"
-                          icon={DownloadIcon}
-                          strokeWidth={1.5}
-                        />
-                        Exporter en Markdown
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleExportNote("txt")}>
-                        <HugeiconsIcon
-                          className="mr-2 size-4"
-                          icon={DownloadIcon}
-                          strokeWidth={1.5}
-                        />
-                        Exporter en Texte
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem
-                        className="text-destructive focus:text-destructive"
-                        onClick={() => handleDeleteNote(activeNote.id)}
-                      >
-                        <HugeiconsIcon
-                          className="mr-2 size-4"
-                          icon={Delete01Icon}
-                          strokeWidth={1.5}
-                        />
-                        Supprimer
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-
-                {/* Editor content area: the shell's inset panel, the column inside it. */}
-                <Panel
-                  className="mx-[var(--card-frame)] mb-[var(--card-frame)] flex min-h-0 flex-1 flex-col overflow-hidden"
-                  onClick={(e) => {
-                    if (e.target === e.currentTarget) {
-                      editorInstance?.commands.focus("end");
-                    }
-                  }}
-                >
-                  <div
-                    className="min-h-0 flex-1 cursor-text select-text overflow-y-auto overscroll-contain [scrollbar-gutter:stable]"
-                    onClick={(e) => {
-                      if (e.target === e.currentTarget) {
-                        editorInstance?.commands.focus("end");
-                      }
-                    }}
-                  >
-                    <div className="flex w-full flex-1 flex-col px-5 py-8 md:px-8 md:py-10">
-                      {isPreviewMode ? (
-                        <div className="document-rich-content prose prose-sm dark:prose-invert max-w-none overflow-x-auto">
-                          <h1 className="font-heading text-2xl font-medium tracking-[-0.035em]">
-                            {formatDisplayText(title)}
-                          </h1>
-                          <p className="mt-1 mb-6 text-foreground/70 text-xs">
-                            {formatFullDate(activeNote.updatedAt)}
-                          </p>
-                          <div dangerouslySetInnerHTML={{ __html: content }} />
-                        </div>
-                      ) : (
-                        <>
-                          {/* Note title, with the editor's own tools at its right. */}
-                          <div className="mb-2.5 flex items-start gap-3">
-                            <input
-                              aria-label="Titre du document"
-                              className="min-w-0 flex-1 bg-transparent font-heading text-2xl font-medium leading-tight tracking-[-0.035em] text-foreground outline-none placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring/30 dark:text-foreground dark:placeholder:text-muted-foreground"
-                              onChange={(e) =>
-                                handleTitleChange(e.target.value)
-                              }
-                              placeholder="Sans titre"
-                              type="text"
-                              value={formatDisplayText(title)}
-                            />
-                            <div
-                              className="flex shrink-0 items-center gap-1.5 pt-0.5"
-                              id="note-editor-toolbar-slot"
-                            />
-                          </div>
-
-                          {/* Meta line below title */}
-                          <div className="mb-2 flex flex-wrap items-center gap-2.5">
-                            <p className="text-xs text-muted-foreground dark:text-muted-foreground">
-                              {formatFullDate(activeNote.updatedAt)}
-                            </p>
-                            {wordCount > 0 && (
-                              <>
-                                <span className="text-foreground/50">·</span>
-                                <p className="text-xs text-muted-foreground tabular-nums dark:text-muted-foreground">
-                                  {wordCount} mots
-                                </p>
-                              </>
-                            )}
-                            {(activeNote as any).isPinned && (
-                              <>
-                                <span className="text-foreground/50">·</span>
-                                <span className="flex items-center gap-1 text-xs font-medium text-amber-700 dark:text-amber-300">
-                                  <Pin className="size-2.5" />
-                                  Épinglée
-                                </span>
-                              </>
-                            )}
-                            {activeNote.isFavorite && (
-                              <>
-                                <span className="text-foreground/50">·</span>
-                                <span className="flex items-center gap-1 text-xs font-medium text-amber-700 dark:text-amber-300">
-                                  <Star className="size-2.5 fill-current" />
-                                  Favori
-                                </span>
-                              </>
-                            )}
-                          </div>
-
-                          {/* Rich text editor */}
-                          <Editor
-                            key={activeNote.id}
-                            content={content}
-                            onAiStatusChange={setAiStatus}
-                            onEditorCreated={setEditorInstance}
-                            onUpdate={handleContentChange}
-                          />
-                        </>
-                      )}
-                    </div>
-                  </div>
-                </Panel>
-              </div>
-            ) : null}
-          </main>
-        </Shell>
       )}
     </div>
   );

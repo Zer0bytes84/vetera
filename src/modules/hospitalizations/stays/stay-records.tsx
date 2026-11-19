@@ -136,11 +136,7 @@ export function StayRecords({ stayId }: { stayId: string }) {
       )}
       <section className="space-y-3 rounded-2xl border border-[#F2F2F2] bg-card p-5 dark:border-border">
         <h3 className="t-16 font-medium">Soins du séjour</h3>
-        {!tasks.length ? (
-          <p className="t-13 text-muted-foreground">
-            Aucun soin planifié pour ce séjour.
-          </p>
-        ) : (
+        {tasks.length ? (
           <ul className="max-h-80 overflow-y-auto">
             {tasks.map((task) => (
               <li
@@ -167,6 +163,10 @@ export function StayRecords({ stayId }: { stayId: string }) {
               </li>
             ))}
           </ul>
+        ) : (
+          <p className="t-13 text-muted-foreground">
+            Aucun soin planifié pour ce séjour.
+          </p>
         )}
       </section>
       <section className="space-y-3 rounded-2xl border border-[#F2F2F2] bg-card p-5 dark:border-border">

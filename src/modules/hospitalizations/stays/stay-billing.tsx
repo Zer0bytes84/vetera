@@ -64,91 +64,95 @@ export function StayBilling({ stay }: { stay: Stay }) {
         Minimum une journée, sortie à minuit exclue. Le brouillon devra être
         vérifié et émis dans Finances.
       </p>
-      {!desktop ? (
+      {desktop ? (
+        loading ? (
+          <p role="status" className="t-13">
+            Chargement de la facture…
+          </p>
+        ) : invoiceId ? (
+          <p className="t-13">
+            La facture de ce séjour est disponible dans Finances.
+          </p>
+        ) : (
+          <form
+            className="space-y-3"
+            onSubmit={async (event) => {
+              event.preventDefault();
+              const patient = patients.data.find(
+                (item) => item.id === stay.patient_id
+              );
+              if (!(currentUser && patient && product) || busy) {
+                return;
+              }
+              setBusy(true);
+              setError(null);
+              await guard(
+                async () => {
+                  const current = await staysService.get(stay.id);
+                  const invoice = await prepareStayInvoice(
+                    stayInvoiceInput(current, patient, product, currentUser.id),
+                    billingService
+                  );
+                  setInvoiceId(invoice.id);
+                  emitSQLiteDataChanged("invoices");
+                  emitSQLiteDataChanged("invoice_lines");
+                },
+                {
+                  recover: (cause) => {
+                    setError(
+                      cause instanceof Error
+                        ? cause.message
+                        : "Le brouillon n’a pas pu être préparé."
+                    );
+                  },
+                  cleanup: () => {
+                    setBusy(false);
+                  },
+                }
+              );
+            }}
+          >
+            <label className="block space-y-2 t-13">
+              Tarif par journée
+              <select
+                aria-label="Tarif par journée"
+                className="h-11 w-full rounded-xl border border-border bg-background px-3 t-13"
+                value={productId}
+                onChange={(event) => setProductId(event.target.value)}
+              >
+                <option value="">Choisir un tarif du catalogue</option>
+                {products.data
+                  .filter((item) => !item.archivedAt)
+                  .map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {item.name} ·{" "}
+                      {(item.salePriceAmount / 100).toLocaleString("fr-FR")} DA
+                    </option>
+                  ))}
+              </select>
+            </label>
+            {product && (
+              <p className="t-14 font-medium">
+                Total proposé :{" "}
+                {((days * product.salePriceAmount) / 100).toLocaleString(
+                  "fr-FR"
+                )}{" "}
+                DA
+              </p>
+            )}
+            <Button
+              type="submit"
+              className="h-11"
+              disabled={!(product && currentUser) || busy}
+            >
+              {busy ? "Préparation…" : "Créer le brouillon de facture"}
+            </Button>
+          </form>
+        )
+      ) : (
         <p className="t-13 text-muted-foreground">
           Facturation indisponible sur le web.
         </p>
-      ) : loading ? (
-        <p role="status" className="t-13">
-          Chargement de la facture…
-        </p>
-      ) : invoiceId ? (
-        <p className="t-13">
-          La facture de ce séjour est disponible dans Finances.
-        </p>
-      ) : (
-        <form
-          className="space-y-3"
-          onSubmit={async (event) => {
-            event.preventDefault();
-            const patient = patients.data.find(
-              (item) => item.id === stay.patient_id
-            );
-            if (!(currentUser && patient && product) || busy) {
-              return;
-            }
-            setBusy(true);
-            setError(null);
-            await guard(
-              async () => {
-                const current = await staysService.get(stay.id);
-                const invoice = await prepareStayInvoice(
-                  stayInvoiceInput(current, patient, product, currentUser.id),
-                  billingService
-                );
-                setInvoiceId(invoice.id);
-                emitSQLiteDataChanged("invoices");
-                emitSQLiteDataChanged("invoice_lines");
-              },
-              {
-                recover: (cause) => {
-                  setError(
-                    cause instanceof Error
-                      ? cause.message
-                      : "Le brouillon n’a pas pu être préparé."
-                  );
-                },
-                cleanup: () => {
-                  setBusy(false);
-                },
-              }
-            );
-          }}
-        >
-          <label className="block space-y-2 t-13">
-            Tarif par journée
-            <select
-              aria-label="Tarif par journée"
-              className="h-11 w-full rounded-xl border border-border bg-background px-3 t-13"
-              value={productId}
-              onChange={(event) => setProductId(event.target.value)}
-            >
-              <option value="">Choisir un tarif du catalogue</option>
-              {products.data
-                .filter((item) => !item.archivedAt)
-                .map((item) => (
-                  <option key={item.id} value={item.id}>
-                    {item.name} ·{" "}
-                    {(item.salePriceAmount / 100).toLocaleString("fr-FR")} DA
-                  </option>
-                ))}
-            </select>
-          </label>
-          {product && (
-            <p className="t-14 font-medium">
-              Total proposé :{" "}
-              {((days * product.salePriceAmount) / 100).toLocaleString("fr-FR")}{" "}
-              DA
-            </p>
-          )}
-          <Button
-            type="submit"
-            className="h-11"
-            disabled={!(product && currentUser) || busy}
-          >
-            {busy ? "Préparation…" : "Créer le brouillon de facture"}
-          </Button>
-        </form>
       )}
       {error && (
         <p role="alert" className="t-13 text-destructive">

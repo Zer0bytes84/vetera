@@ -377,17 +377,17 @@ export function PatientRemindersContent({
                     {
                       <p className="mt-2 flex flex-wrap items-center gap-2 t-13">
                         <span>{contact.owner}</span>
-                        {contact.phone !== "Non renseigné" ? (
+                        {contact.phone === "Non renseigné" ? (
+                          <span className="text-muted-foreground">
+                            Téléphone non renseigné
+                          </span>
+                        ) : (
                           <a
                             className="medical-phone-link"
                             href={`tel:${contact.phone.replace(/\s/g, "")}`}
                           >
                             <Phone className="size-4" /> {contact.phone}
                           </a>
-                        ) : (
-                          <span className="text-muted-foreground">
-                            Téléphone non renseigné
-                          </span>
                         )}
                         {reminder.statut === "en_cours" && contact.animal ? (
                           <WhatsAppLink

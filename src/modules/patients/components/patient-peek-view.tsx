@@ -147,17 +147,7 @@ export function PatientPeekView({
               title="Le dossier n’a pas pu être chargé"
               action={<ActionButton onClick={onRetry}>Réessayer</ActionButton>}
             />
-          ) : !patient ? (
-            <EmptyState
-              title="Ce patient n’est plus disponible"
-              description="Actualisez la liste pour retrouver les dossiers actuels."
-              action={
-                <ActionButton quiet onClick={onRetry}>
-                  Actualiser
-                </ActionButton>
-              }
-            />
-          ) : (
+          ) : patient ? (
             <>
               <div className="patient-peek-identity px-6 py-6">
                 <PatientIdentity patient={patient} compact />
@@ -368,6 +358,16 @@ export function PatientPeekView({
                 )}
               </div>
             </>
+          ) : (
+            <EmptyState
+              title="Ce patient n’est plus disponible"
+              description="Actualisez la liste pour retrouver les dossiers actuels."
+              action={
+                <ActionButton quiet onClick={onRetry}>
+                  Actualiser
+                </ActionButton>
+              }
+            />
           )}
         </div>
         <div className="patient-peek-footer flex flex-wrap items-center justify-between gap-3 border-t border-border bg-card px-6 py-4">

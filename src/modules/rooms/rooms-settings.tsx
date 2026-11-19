@@ -204,18 +204,9 @@ export function RoomsSettings() {
         chaque rendez-vous choisit la sienne et les conflits de salle sont
         signalés.
       </p>
-      {!desktop ? (
-        <p className="p-6 text-sm text-muted-foreground">
-          Les salles se gèrent dans l'application de bureau.
-        </p>
-      ) : (
+      {desktop ? (
         <div className="space-y-6 p-6">
-          {!loaded ? (
-            <p className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Loader2 className="size-4 animate-spin" />
-              Chargement des salles…
-            </p>
-          ) : (
+          {loaded ? (
             <ul className="divide-y rounded-2xl border bg-background">
               {active.map((room, index) => (
                 <RoomRow
@@ -230,6 +221,11 @@ export function RoomsSettings() {
                 />
               ))}
             </ul>
+          ) : (
+            <p className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Loader2 className="size-4 animate-spin" />
+              Chargement des salles…
+            </p>
           )}
 
           <form className="flex flex-wrap items-center gap-2" onSubmit={add}>
@@ -292,6 +288,10 @@ export function RoomsSettings() {
             </details>
           )}
         </div>
+      ) : (
+        <p className="p-6 text-sm text-muted-foreground">
+          Les salles se gèrent dans l'application de bureau.
+        </p>
       )}
     </SettingsSection>
   );

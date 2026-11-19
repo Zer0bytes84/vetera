@@ -122,11 +122,11 @@ export function KpiMiniChart({
                 active === i
                   ? 1
                   : value
-                    ? active !== null
-                      ? 0.3
-                      : i === values.length - 1
+                    ? active === null
+                      ? i === values.length - 1
                         ? 1
                         : 0.55
+                      : 0.3
                     : 0.12
               }
             />
@@ -193,7 +193,7 @@ export function KpiSegments({
   const total = visible.reduce((sum, segment) => sum + segment.value, 0);
   const active =
     hovered === null ? null : Math.min(hovered, visible.length - 1);
-  const segment = active !== null ? visible[active] : undefined;
+  const segment = active === null ? undefined : visible[active];
   return (
     <span className="studio-kpi-visual studio-kpi-segments">
       <span

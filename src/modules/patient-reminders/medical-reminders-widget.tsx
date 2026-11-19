@@ -146,9 +146,9 @@ export function MedicalRemindersWidgetContent({
                         day: "2-digit",
                         month: "short",
                         year:
-                          reminder.echeance.slice(0, 4) !== today.slice(0, 4)
-                            ? "numeric"
-                            : undefined,
+                          reminder.echeance.slice(0, 4) === today.slice(0, 4)
+                            ? undefined
+                            : "numeric",
                       })}
                     </time>
                     <span className="truncate t-14 font-medium">
