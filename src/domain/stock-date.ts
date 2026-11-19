@@ -34,7 +34,7 @@ export function stockTimestamp(value: string): string {
   const normalized = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}(?:\.\d+)?$/.test(
     value
   )
-    ? value.replace(" ", "T") + "Z"
+    ? `${value.replace(" ", "T")}Z`
     : value;
   if (!Number.isFinite(Date.parse(normalized))) {
     throw new StockError(

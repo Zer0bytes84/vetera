@@ -108,7 +108,7 @@ export function useStockPageModel() {
     ) {
       return;
     }
-    toast.success(product.name + " a été archivé.", {
+    toast.success(`${product.name} a été archivé.`, {
       duration: 5000,
       action: {
         label: "Annuler",

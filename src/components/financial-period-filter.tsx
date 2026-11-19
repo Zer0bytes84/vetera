@@ -52,7 +52,7 @@ export function FinancialPeriodFilter({
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState<DateRange | undefined>();
   const parse = (value: string) =>
-    value ? new Date(value + "T12:00:00") : undefined;
+    value ? new Date(`${value}T12:00:00`) : undefined;
   const display = (value: string) =>
     format(parse(value)!, "d MMM yyyy", { locale: fr });
   const label =

@@ -110,12 +110,10 @@ function useWidth() {
 }
 
 function hexPath(r: number) {
-  return (
-    Array.from({ length: 6 }, (_, k) => {
-      const a = (Math.PI / 3) * k - Math.PI / 2;
-      return `${k ? "L" : "M"}${round(r * Math.cos(a))} ${round(r * Math.sin(a))}`;
-    }).join("") + "Z"
-  );
+  return `${Array.from({ length: 6 }, (_, k) => {
+    const a = (Math.PI / 3) * k - Math.PI / 2;
+    return `${k ? "L" : "M"}${round(r * Math.cos(a))} ${round(r * Math.sin(a))}`;
+  }).join("")}Z`;
 }
 
 export function HexDensity({

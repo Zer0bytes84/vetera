@@ -94,7 +94,7 @@ const load = async (
   if (!wasm) {
     throw new Error("Runtime indisponible.");
   }
-  wasm.wasmPaths = runtimeRoot + "onnx/";
+  wasm.wasmPaths = `${runtimeRoot}onnx/`;
   wasm.numThreads = 1;
   wasm.proxy = false;
   send({
@@ -131,7 +131,7 @@ const loadArctic = async (
   if (!wasm) {
     throw new Error("Runtime indisponible.");
   }
-  wasm.wasmPaths = runtimeRoot + "onnx/";
+  wasm.wasmPaths = `${runtimeRoot}onnx/`;
   // Threads need SharedArrayBuffer, i.e. a cross-origin isolated page.
   if (threads > 1) {
     exposeSharedMemory();
@@ -168,7 +168,7 @@ const loadV2 = async (modelRoot: string, runtimeRoot: string) => {
   if (!wasm) {
     throw new Error("Runtime indisponible.");
   }
-  wasm.wasmPaths = runtimeRoot + "onnx-v4/";
+  wasm.wasmPaths = `${runtimeRoot}onnx-v4/`;
   wasm.numThreads = 1;
   wasm.proxy = false;
   send({

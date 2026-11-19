@@ -288,7 +288,7 @@ export default function ConsultationDocumentsAssistant({
           vetName: currentUser?.displayName ?? "",
         });
         setDraft({
-          title: template.name + " · " + patient.name,
+          title: `${template.name} · ${patient.name}`,
           text,
           source: {
             type: "soap",
@@ -453,7 +453,7 @@ export default function ConsultationDocumentsAssistant({
           .map((page) => `Page ${page.number}\n${page.text}`)
           .join("\n\n");
     setDraft({
-      title: "Lecture · " + reading.name,
+      title: `Lecture · ${reading.name}`,
       text,
       source: {
         type: "document",
@@ -589,11 +589,11 @@ export default function ConsultationDocumentsAssistant({
             </p>
           )}
           <Field>
-            <FieldLabel htmlFor={id + "-template"}>
+            <FieldLabel htmlFor={`${id}-template`}>
               Modèle de document
             </FieldLabel>
             <NativeSelect
-              id={id + "-template"}
+              id={`${id}-template`}
               value={templateId}
               onChange={(event) => setTemplateId(event.target.value)}
               disabled={busy || saving}
@@ -624,11 +624,11 @@ export default function ConsultationDocumentsAssistant({
             le patient et les résultats avant tout enregistrement.
           </ChatMessage>
           <Field>
-            <FieldLabel htmlFor={id + "-source"}>
+            <FieldLabel htmlFor={`${id}-source`}>
               Document du dossier
             </FieldLabel>
             <NativeSelect
-              id={id + "-source"}
+              id={`${id}-source`}
               value={reading?.sourceId ?? selectedManagedId}
               onChange={(event) => chooseExisting(event.target.value)}
               disabled={busy || saving || unavailable}
@@ -711,15 +711,15 @@ export default function ConsultationDocumentsAssistant({
                 </p>
                 {reading.pages.map((page) => (
                   <Field key={page.number}>
-                    <FieldLabel htmlFor={id + "-page-" + page.number}>
+                    <FieldLabel htmlFor={`${id}-page-${page.number}`}>
                       Page {page.number}
                       {page.method === "ocr"
                         ? " · Texte reconnu sur l’image"
                         : ""}
                     </FieldLabel>
                     <Textarea
-                      id={id + "-page-" + page.number}
-                      aria-label={"Texte de la page " + page.number}
+                      id={`${id}-page-${page.number}`}
+                      aria-label={`Texte de la page ${page.number}`}
                       disabled={busy || saving}
                       className="min-h-32 text-sm"
                       value={page.text}
@@ -751,11 +751,11 @@ export default function ConsultationDocumentsAssistant({
           {reading && (
             <FieldGroup className="gap-3">
               <Field>
-                <FieldLabel htmlFor={id + "-question"}>
+                <FieldLabel htmlFor={`${id}-question`}>
                   Votre question
                 </FieldLabel>
                 <Input
-                  id={id + "-question"}
+                  id={`${id}-question`}
                   value={question}
                   maxLength={500}
                   disabled={busy || saving}
@@ -807,7 +807,7 @@ export default function ConsultationDocumentsAssistant({
                 )}
                 {answer.extraits.map((quote, index) => (
                   <blockquote
-                    key={quote.page + ":" + index}
+                    key={`${quote.page}:${index}`}
                     className="rounded-lg bg-muted p-3"
                   >
                     <p className="whitespace-pre-wrap text-sm">{quote.texte}</p>
@@ -867,11 +867,11 @@ export default function ConsultationDocumentsAssistant({
             <p className="font-medium">Document à relire</p>
             <FieldGroup className="gap-3">
               <Field>
-                <FieldLabel htmlFor={id + "-title"}>
+                <FieldLabel htmlFor={`${id}-title`}>
                   Titre du document
                 </FieldLabel>
                 <Input
-                  id={id + "-title"}
+                  id={`${id}-title`}
                   value={draft.title}
                   disabled={saving}
                   maxLength={180}
@@ -882,11 +882,11 @@ export default function ConsultationDocumentsAssistant({
                 />
               </Field>
               <Field>
-                <FieldLabel htmlFor={id + "-draft"}>
+                <FieldLabel htmlFor={`${id}-draft`}>
                   Texte du document
                 </FieldLabel>
                 <Textarea
-                  id={id + "-draft"}
+                  id={`${id}-draft`}
                   value={draft.text}
                   disabled={saving}
                   maxLength={60_000}
@@ -906,12 +906,12 @@ export default function ConsultationDocumentsAssistant({
             )}
             <div className="flex items-start gap-2">
               <Checkbox
-                id={id + "-review"}
+                id={`${id}-review`}
                 checked={reviewed}
                 disabled={saving || saved}
                 onCheckedChange={(value) => setReviewed(value === true)}
               />
-              <label htmlFor={id + "-review"} className="text-xs leading-5">
+              <label htmlFor={`${id}-review`} className="text-xs leading-5">
                 J’ai vérifié le patient et relu le document, y compris les
                 valeurs, unités et traitements.
               </label>

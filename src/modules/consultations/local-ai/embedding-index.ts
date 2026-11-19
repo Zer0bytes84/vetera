@@ -173,7 +173,7 @@ export function managedDocumentSearchChunks(
     {
       patientId: document.patientId,
       patientName: document.patientName,
-      sourceId: "patient-document:" + document.id,
+      sourceId: `patient-document:${document.id}`,
       sourceType: "document",
       documentType: ["prescription", "certificate", "report"].includes(
         document.kind

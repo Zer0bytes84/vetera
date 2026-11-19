@@ -29,7 +29,7 @@ export async function readLocalDocument(
   let pdf: import("pdfjs-dist").PDFDocumentProxy | null = null;
   let loading: import("pdfjs-dist").PDFDocumentLoadingTask | null = null;
   const root = new URL(
-    import.meta.env.BASE_URL + "local-ai-runtime/",
+    `${import.meta.env.BASE_URL}local-ai-runtime/`,
     window.location.href
   ).href;
   const cancel = () => {
@@ -42,7 +42,7 @@ export async function readLocalDocument(
     const recognize = async (image: File | HTMLCanvasElement, page: number) => {
       checkAbort(signal);
       if (!ocr) {
-        ocr = new PackagedOcr(root + "ocr/", signal, (event) => {
+        ocr = new PackagedOcr(`${root}ocr/`, signal, (event) => {
           if (!signal.aborted) {
             onProgress(event);
           }
@@ -85,10 +85,10 @@ export async function readLocalDocument(
       loading = pdfjs.getDocument({
         data: new Uint8Array(await file.arrayBuffer()),
         useSystemFonts: true,
-        cMapUrl: root + "pdf/cmaps/",
+        cMapUrl: `${root}pdf/cmaps/`,
         cMapPacked: true,
-        wasmUrl: root + "pdf/wasm/",
-        standardFontDataUrl: root + "pdf/standard_fonts/",
+        wasmUrl: `${root}pdf/wasm/`,
+        standardFontDataUrl: `${root}pdf/standard_fonts/`,
         disableAutoFetch: true,
         disableStream: true,
       });

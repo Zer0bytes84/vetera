@@ -17,7 +17,7 @@ export async function openPatientRecordRasterSource(
   );
   pdfjs.GlobalWorkerOptions.workerSrc = workerSrc;
   const root = new URL(
-    import.meta.env.BASE_URL + "local-ai-runtime/pdf/",
+    `${import.meta.env.BASE_URL}local-ai-runtime/pdf/`,
     window.location.href
   );
   if (root.origin !== window.location.origin) {

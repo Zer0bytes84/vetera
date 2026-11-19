@@ -78,7 +78,7 @@ export function MovementAllocationDetails({
                   : "Sans lot"}{" "}
                 · {row.location_name_snapshot}
                 {row.expiry_date_snapshot
-                  ? ` · Péremption ${new Date(row.expiry_date_snapshot + "T12:00:00").toLocaleDateString("fr-FR")}`
+                  ? ` · Péremption ${new Date(`${row.expiry_date_snapshot}T12:00:00`).toLocaleDateString("fr-FR")}`
                   : ""}
               </li>
             ))

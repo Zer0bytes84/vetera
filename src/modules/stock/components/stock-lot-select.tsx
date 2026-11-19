@@ -68,7 +68,7 @@ export function StockLotSelect({
         .sort((a, b) => a[1].receivedAt.localeCompare(b[1].receivedAt))
         .map(([key, group]) => ({
           value: key,
-          label: `${group.name} · ${stockQuantityLabel(group.quantity, unit)}${group.expiry ? ` · ${new Date(group.expiry + "T12:00:00").toLocaleDateString("fr-FR")}` : ""}`,
+          label: `${group.name} · ${stockQuantityLabel(group.quantity, unit)}${group.expiry ? ` · ${new Date(`${group.expiry}T12:00:00`).toLocaleDateString("fr-FR")}` : ""}`,
         })),
     ];
   }, [inventory.balances, productId, unit, today, locationId]);

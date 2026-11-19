@@ -40,7 +40,7 @@ import { guard } from "@/lib/guard";
 const dateLabel = (value: string | null) =>
   value && Number.isFinite(Date.parse(value))
     ? new Date(
-        value.length === 10 ? value + "T12:00:00" : value
+        value.length === 10 ? `${value}T12:00:00` : value
       ).toLocaleDateString("fr-FR", {
         day: "numeric",
         month: "short",

@@ -462,7 +462,7 @@ ${sp.alimentsToxiques ? `- Aliments toxiques: ${sp.alimentsToxiques.join(", ")}`
       "\n\n📚 **INFORMATIONS DE LA BASE DE CONNAISSANCES VÉTÉRINAIRES:**\n\n";
 
     for (const result of results) {
-      context += this.formatResultForLLM(result) + "\n\n";
+      context += `${this.formatResultForLLM(result)}\n\n`;
     }
 
     context +=

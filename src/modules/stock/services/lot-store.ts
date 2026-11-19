@@ -610,7 +610,7 @@ export async function registerLotInDatabase(
   const previous = await previousInventoryOperation(
     db,
     input.id,
-    "lot-" + input.mode,
+    `lot-${input.mode}`,
     fingerprint
   );
   if (previous) {
@@ -745,7 +745,7 @@ export async function registerLotInDatabase(
   );
   await completeInventoryOperation(db, {
     id: input.id,
-    kind: "lot-" + input.mode,
+    kind: `lot-${input.mode}`,
     fingerprint,
     movementId: result.movementId,
     authorId: input.authorId,

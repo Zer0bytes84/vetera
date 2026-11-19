@@ -83,16 +83,16 @@ export async function preparePatientAttachment(
   );
   pdfjs.GlobalWorkerOptions.workerSrc = workerSrc;
   const root = new URL(
-    import.meta.env.BASE_URL + "local-ai-runtime/pdf/",
+    `${import.meta.env.BASE_URL}local-ai-runtime/pdf/`,
     window.location.href
   ).href;
   const loading = pdfjs.getDocument({
     data: new Uint8Array(await file.arrayBuffer()),
     useSystemFonts: true,
-    cMapUrl: root + "cmaps/",
+    cMapUrl: `${root}cmaps/`,
     cMapPacked: true,
-    wasmUrl: root + "wasm/",
-    standardFontDataUrl: root + "standard_fonts/",
+    wasmUrl: `${root}wasm/`,
+    standardFontDataUrl: `${root}standard_fonts/`,
     disableAutoFetch: true,
     disableStream: true,
   });

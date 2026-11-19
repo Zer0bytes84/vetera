@@ -353,7 +353,7 @@ export async function barcodeStockOperationInDatabase(
   const previous = await previousInventoryOperation(
     db,
     input.id,
-    "barcode-" + input.direction,
+    `barcode-${input.direction}`,
     fingerprint
   );
   if (previous) {
@@ -440,7 +440,7 @@ export async function barcodeStockOperationInDatabase(
   }
   await completeInventoryOperation(db, {
     id: input.id,
-    kind: "barcode-" + input.direction,
+    kind: `barcode-${input.direction}`,
     fingerprint,
     movementId: result.movementId,
     authorId: input.authorId,

@@ -30,5 +30,5 @@ export async function exportClinicalDocument(
   }
   const filename =
     title.replace(/[^\p{L}\p{N} _-]/gu, "").slice(0, 90) || "Document";
-  return savePdf(doc, filename + ".pdf");
+  return savePdf(doc, `${filename}.pdf`);
 }

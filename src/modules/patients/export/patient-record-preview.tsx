@@ -38,16 +38,16 @@ export function PatientRecordPreview({
         }
         pdfjs.GlobalWorkerOptions.workerSrc = worker.default;
         const root = new URL(
-          import.meta.env.BASE_URL + "local-ai-runtime/pdf/",
+          `${import.meta.env.BASE_URL}local-ai-runtime/pdf/`,
           window.location.href
         ).href;
         const task = pdfjs.getDocument({
           data: Uint8Array.from(artifact.bytes),
           useSystemFonts: false,
-          cMapUrl: root + "cmaps/",
+          cMapUrl: `${root}cmaps/`,
           cMapPacked: true,
-          standardFontDataUrl: root + "standard_fonts/",
-          wasmUrl: root + "wasm/",
+          standardFontDataUrl: `${root}standard_fonts/`,
+          wasmUrl: `${root}wasm/`,
           disableAutoFetch: true,
           disableStream: true,
         });

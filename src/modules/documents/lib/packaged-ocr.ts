@@ -23,7 +23,7 @@ export class PackagedOcr {
     if (signal.aborted) {
       throw abortError();
     }
-    this.worker = new Worker(root + "ocr.worker.js");
+    this.worker = new Worker(`${root}ocr.worker.js`);
     this.worker.onmessage = ({ data }) => {
       if (this.closed) {
         return;
@@ -65,7 +65,7 @@ export class PackagedOcr {
       );
     }
     return new Promise((resolve, reject) => {
-      const jobId = "document-" + ++this.nextJob;
+      const jobId = `document-${++this.nextJob}`;
       const timer = setTimeout(
         () =>
           this.close(
@@ -89,7 +89,7 @@ export class PackagedOcr {
     await this.request("loadLanguage", {
       langs: "fra+eng",
       options: {
-        langPath: this.root + "lang",
+        langPath: `${this.root}lang`,
         cacheMethod: "none",
         gzip: false,
         lstmOnly: true,
