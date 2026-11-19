@@ -67,6 +67,7 @@ import {
   type PrescriptionTemplate,
 } from "../lib/prescription-templates";
 import { DoseCalculatorCard } from "./dose-calculator-card";
+import { ValidatedDosePanel } from "./validated-dose-panel";
 import { MedicationPicker } from "./medication-picker";
 import { PrescriptionPreview } from "./prescription-preview";
 import {
@@ -676,6 +677,7 @@ export function PrescriptionBuilder({
                     canUp={idx > 0}
                     item={it}
                     key={it.id}
+                    speciesKey={speciesKey}
                     onChange={(patch) => updateItem(it.id, patch)}
                     onMoveDown={() => moveItem(it.id, 1)}
                     onMoveUp={() => moveItem(it.id, -1)}
@@ -983,8 +985,10 @@ function ItemRow({
   onMoveUp,
   onRemove,
   safetyAlerts,
+  speciesKey,
   weightKg,
 }: {
+  speciesKey: SpeciesKey | null;
   canDown: boolean;
   canUp: boolean;
   item: DraftItem;
@@ -1095,6 +1099,9 @@ function ItemRow({
               />
             </FieldShell>
           </div>
+
+          {/* La dose de référence validée (24 molécules relues par Aïssa) : elle informe, la ligne reste au vétérinaire. */}
+          <ValidatedDosePanel medicationId={item.medicationId} species={speciesKey} weightKg={weightKg} />
 
           {/* Le détail, replié par défaut avec un résumé */}
           <div className="rounded-md border border-border/60">
