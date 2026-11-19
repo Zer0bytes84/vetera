@@ -103,7 +103,7 @@ function Indicator({ status }: { status: AgentStatusState }) {
                 animate={{ opacity: [0.25, 1, 0.25], scale: [0.8, 1, 0.8] }}
                 transition={{
                   duration: 1,
-                  repeat: Infinity,
+                  repeat: Number.POSITIVE_INFINITY,
                   ease: "easeInOut",
                   delay: i * 0.16,
                 }}

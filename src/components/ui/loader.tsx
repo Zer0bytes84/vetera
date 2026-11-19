@@ -123,7 +123,7 @@ export function Thinking({
                   ? { duration: 0 }
                   : {
                       duration: 1,
-                      repeat: Infinity,
+                      repeat: Number.POSITIVE_INFINITY,
                       ease: "easeInOut",
                       delay: i * 0.15,
                     }

@@ -227,7 +227,7 @@ export function buildClinicalCash(
   const recent = [...paid]
     .filter(
       (row) =>
-        (parseDashboardDate(row.date)?.getTime() ?? Infinity) <=
+        (parseDashboardDate(row.date)?.getTime() ?? Number.POSITIVE_INFINITY) <=
         endOfDay(now).getTime()
     )
     .sort(

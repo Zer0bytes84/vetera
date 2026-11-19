@@ -10,7 +10,12 @@ export const AGING_BUCKETS = [
   { id: "recent", label: "Moins de 30 jours", from: 0, to: 30 },
   { id: "month", label: "30 à 60 jours", from: 30, to: 60 },
   { id: "quarter", label: "60 à 90 jours", from: 60, to: 90 },
-  { id: "old", label: "Plus de 90 jours", from: 90, to: Infinity },
+  {
+    id: "old",
+    label: "Plus de 90 jours",
+    from: 90,
+    to: Number.POSITIVE_INFINITY,
+  },
 ] as const;
 
 export interface AgingBucket {

@@ -241,7 +241,7 @@ export function HexDensity({
       if (activeCell) {
         // Nearest cell in that direction, preferring the same row or column.
         const [ux, uy] = dirs[event.key];
-        let best = Infinity;
+        let best = Number.POSITIVE_INFINITY;
         for (const cell of placed) {
           const along = (cell.cx - from.cx) * ux + (cell.cy - from.cy) * uy;
           if (along <= 1) {

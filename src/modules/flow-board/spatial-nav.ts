@@ -22,7 +22,7 @@ export function nearestInDirection<T extends { box: Box }>(
     y: (from.top + from.bottom) / 2,
   };
   let best: T | null = null;
-  let bestScore = Infinity;
+  let bestScore = Number.POSITIVE_INFINITY;
   for (const candidate of candidates) {
     const box = candidate.box;
     const cx = (box.left + box.right) / 2;

@@ -25,7 +25,7 @@ export function selectWhisperLanguage(
   languageTokens: Record<string, number>
 ) {
   let language: string | null = null;
-  let highest = -Infinity;
+  let highest = Number.NEGATIVE_INFINITY;
   for (const [token, index] of Object.entries(languageTokens)) {
     const code = /^<\|([a-z]{2,3})\|>$/.exec(token)?.[1];
     const value = logits[index];

@@ -298,7 +298,8 @@ function buildVaccinations(
     .sort(
       (a, b) =>
         STATUS_RANK[a.status] - STATUS_RANK[b.status] ||
-        (time(a.nextDueAt) || Infinity) - (time(b.nextDueAt) || Infinity) ||
+        (time(a.nextDueAt) || Number.POSITIVE_INFINITY) -
+          (time(b.nextDueAt) || Number.POSITIVE_INFINITY) ||
         time(b.administeredAt) - time(a.administeredAt)
     );
   return {

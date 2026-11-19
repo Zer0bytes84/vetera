@@ -95,7 +95,7 @@ export function AIModelInstallPrompt() {
       if (!progressHidden.current) {
         toast.loading("Installation en arrière-plan", {
           id: TOAST_ID,
-          duration: Infinity,
+          duration: Number.POSITIVE_INFINITY,
           closeButton: true,
           description: state.progress
             ? `${state.progress.stepMessage} ${state.progress.percentage} %`

@@ -41,7 +41,7 @@ export function parseStockQuantityInput(value: string): number {
   const text = value.trim().replace(/[\s\u00a0\u202f]/g, "");
   return /^\d+(?:[.,]\d{0,6})?$/.test(text)
     ? Number(text.replace(",", "."))
-    : NaN;
+    : Number.NaN;
 }
 
 export function stockQuantityLabel(value: number, unit: string): string {

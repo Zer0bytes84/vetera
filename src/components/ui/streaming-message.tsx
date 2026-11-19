@@ -185,7 +185,11 @@ function Reasoning({
           <motion.span
             initial={{ backgroundPosition: "100% 0" }}
             animate={{ backgroundPosition: "-100% 0" }}
-            transition={{ duration: 1.6, repeat: Infinity, ease: "linear" }}
+            transition={{
+              duration: 1.6,
+              repeat: Number.POSITIVE_INFINITY,
+              ease: "linear",
+            }}
             className="bg-[linear-gradient(90deg,var(--muted-foreground)_35%,var(--foreground)_50%,var(--muted-foreground)_65%)] bg-[length:200%_100%] bg-clip-text text-transparent"
           >
             Réflexion…
@@ -311,7 +315,11 @@ function Content({
             <motion.span
               aria-hidden="true"
               animate={{ opacity: [1, 0, 1] }}
-              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+              transition={{
+                duration: 1,
+                repeat: Number.POSITIVE_INFINITY,
+                ease: "linear",
+              }}
               className="ml-0.5 inline-block h-[1.1em] w-[2px] translate-y-[3px] rounded-full bg-brand"
             />
           )}
