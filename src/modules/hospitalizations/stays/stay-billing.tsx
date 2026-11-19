@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { BanknotesIcon } from "@heroicons/react/20/solid";
+import { StaySection } from "./stay-section";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { usePatientsRepository, useProductsRepository } from "@/data/repositories";
@@ -28,8 +30,7 @@ export function StayBilling({ stay }: { stay: Stay }) {
   }, [stay.id, desktop]);
   const product = products.data.find(item => item.id === productId);
   const days = stayDays(new Date(stay.admitted_at), new Date(stay.discharged_at!));
-  return <section className="space-y-3 rounded-2xl border border-[#F2F2F2] bg-card p-5 dark:border-border">
-    <h3 className="t-16 font-medium">Facturation du séjour</h3>
+  return <StaySection icon={BanknotesIcon} title="Facturation du séjour">
     <p className="t-13 text-muted-foreground">{days} journée{days > 1 ? "s" : ""} occupée{days > 1 ? "s" : ""}. Minimum une journée, sortie à minuit exclue. Le brouillon devra être vérifié et émis dans Finances.</p>
     {!desktop ? <p className="t-13 text-muted-foreground">Facturation indisponible sur le web.</p> : loading ? <p role="status" className="t-13">Chargement de la facture…</p> : invoiceId ? <p className="t-13">La facture de ce séjour est disponible dans Finances.</p> :
       <form className="space-y-3" onSubmit={async event => {
@@ -61,5 +62,5 @@ export function StayBilling({ stay }: { stay: Stay }) {
         <Button type="submit" className="h-11" disabled={!product || !currentUser || busy}>{busy ? "Préparation…" : "Créer le brouillon de facture"}</Button>
       </form>}
     {error && <p role="alert" className="t-13 text-destructive">{error}</p>}
-  </section>;
+  </StaySection>;
 }

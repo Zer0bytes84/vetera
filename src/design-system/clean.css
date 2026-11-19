@@ -1852,6 +1852,14 @@
   box-shadow: var(--clean-panel-shadow);
 }
 
+/* Les cartes d une premiere rangee de widgets (StatGrid, sur toutes les pages) suivent la charte du Tableau de bord, qui
+   fait foi : aucun trait, aucune ombre, le contraste des fonds seul, cadre de 6 px, rayons concentriques 22/16. L ombre
+   de contact ci-dessus (proposition de banc du 13 novembre, 2ff09f6) leur dessinait un filet de 0,5 px aux coins et aux
+   jonctions. Le Tableau de bord et Rappels l annulaient chacun localement ; ici, pour toutes les rangees. */
+:root[data-skin="clean"] [data-slot="stat-grid"] [data-slot="panel"] {
+  box-shadow: none;
+}
+
 /* Degrade en maille, la ou il le merite : le panneau de l assistant, seule surface de l app qui
    n est pas un outil de saisie mais une presence. Trois halos (bleu, indigo, sarcelle des
    graphiques) fondus en haut du panneau, eteints avant le premier champ ; rien derriere le texte

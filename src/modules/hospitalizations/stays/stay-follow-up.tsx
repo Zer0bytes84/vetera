@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
+import { CalendarDaysIcon } from "@heroicons/react/20/solid";
+import { StaySection } from "./stay-section";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { emitSQLiteDataChanged } from "@/hooks/useSQLite";
@@ -26,8 +28,7 @@ export function StayFollowUp({ stayId }: { stayId: string }) {
     });
   }, [stayId]);
   useEffect(() => { void refresh(); }, [refresh]);
-  return <section className="space-y-3 rounded-2xl border border-[#F2F2F2] bg-card p-5 dark:border-border">
-    <h3 className="t-16 font-medium">Contrôle à la sortie</h3>
+  return <StaySection icon={CalendarDaysIcon} title="Contrôle à la sortie">
     {loading ? <p role="status" className="t-13 text-muted-foreground">Chargement du contrôle…</p> : task ?
       <p className="t-13">Contrôle prévu le {new Date(`${task.due_date}T12:00:00`).toLocaleDateString("fr-FR")}. Retrouvez-le dans Rappels.</p> :
       <form className="flex flex-wrap items-end gap-3" onSubmit={async event => {
@@ -51,5 +52,5 @@ export function StayFollowUp({ stayId }: { stayId: string }) {
         <Button type="submit" className="h-11" disabled={busy || !date || !currentUser}>{busy ? "Enregistrement…" : "Ajouter dans Rappels"}</Button>
       </form>}
     {error && <p role="alert" className="t-13 text-destructive">{error}</p>}
-  </section>;
+  </StaySection>;
 }

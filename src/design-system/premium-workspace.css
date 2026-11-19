@@ -300,32 +300,8 @@
     border-color: var(--line-strong) !important;
   }
 }
-:root[data-skin="clean"] :is(.stay-summary-card, .stay-location-card) {
-  padding: 20px !important;
-  border: 1px solid var(--line) !important;
-  border-radius: 8px !important;
-  background: var(--surface) !important;
-  box-shadow: none !important;
-}
-:root[data-skin="clean"] .stay-location-card > div:first-child {
-  padding-bottom: 16px;
-  box-shadow: var(--hair-b);
-}
-
-:root[data-skin="clean"] .stay-detail > :is(header, section) {
-  padding: 20px !important;
-  border: 1px solid var(--line) !important;
-  border-radius: 8px !important;
-  background: var(--surface) !important;
-}
-:root[data-skin="clean"] .stay-detail > header { background: var(--band) !important; }
-:root[data-skin="clean"] .stay-detail > section > :is(h3, div:first-child:has(h3)) {
-  margin: -20px -20px 20px;
-  padding: 16px 20px;
-  border-radius: 8px 8px 0 0;
-  background: var(--band);
-  box-shadow: var(--hair-b);
-}
+/* Hospitalisation : les cadres a trait de l ancienne interface (cartes de sejour et d emplacement, blocs du detail)
+   sont retires le 19 novembre ; la vue est en bandes grises et panneaux (stay-section.tsx). */
 @media (max-width: 639px) {
   :root[data-skin="clean"] .care-toolbar-controls { margin-left: 0; width: 100%; }
   :root[data-skin="clean"] .care-task-row { flex-wrap: wrap; }
@@ -336,12 +312,6 @@
   background: var(--band);
   box-shadow: var(--hair-t), var(--hair-b);
   margin-bottom: 0;
-}
-:root[data-skin="clean"] .stay-location-card > div:first-child {
-  margin: -20px -20px 0;
-  padding: 16px 20px;
-  background: var(--band);
-  border-radius: 8px 8px 0 0;
 }
 
 /* Selected consultation: keep the complete record in the same ruled frame. */

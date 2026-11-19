@@ -554,10 +554,15 @@
  * next appointment over two columns, the day's summary over two, the actions in the last: the cells line up with the
  * lanes below. The same frame as a lane, and no decoration.
  */
+/* The quiet day's row is the first row of widgets of Flux: built like the dashboard's, which is the reference. A grey band
+   with a 6 px frame, cards set apart by the contrast of fills alone, no hairline, no shadow, radii 22/16. */
 :root[data-skin="clean"] .flow-board-page .flow-quiet {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 10px;
+  gap: var(--card-frame);
+  border-radius: calc(var(--radius-panel) + var(--card-frame));
+  background: var(--card-band);
+  padding: var(--card-frame);
 }
 
 :root[data-skin="clean"] .flow-board-page .flow-quiet-cell {
@@ -566,9 +571,9 @@
   flex-direction: column;
   gap: 6px;
   border-radius: var(--radius-panel);
-  background: var(--frame);
-  box-shadow: var(--shadow-hairline);
-  padding: 14px 16px;
+  background: var(--card-inset);
+  box-shadow: none;
+  padding: 16px;
 }
 
 :root[data-skin="clean"] .flow-board-page .flow-quiet-cell:nth-child(-n + 2) {

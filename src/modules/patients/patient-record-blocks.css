@@ -2,17 +2,21 @@
    Presentation only; every control keeps its place and its behaviour. This sits above the skins' own frames, which draw
    a bordered box around each block (`.patient-record-indicators`, `.medical-permanent`, `.medical-register`). */
 
-/* The summary strip: one row of four white cards inside a grey surface with its own header band. */
+/* The summary strip: the first row of widgets of the record, built like the dashboard's, which is the reference. Four
+   cards inside the record's grey band, set apart by the band's frame (6 px) and the contrast of fills alone: no hairline,
+   no shadow, concentric radii (band 22, cards 16). Until 19 November it was one surface cut by hairlines. */
+/* The skins draw this row as one card with inner rules (clean.css, « Indicators: one card… »), with !important: these
+   rules answer them at a higher specificity. */
 html:root:root:root:root:root .patient-record-page .patient-record-indicators {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 0;
+  gap: var(--card-frame) !important;
   padding: 0;
-  border: 0;
-  border-radius: 16px;
-  background: var(--card-inset);
-  box-shadow: none;
-  overflow: hidden;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  overflow: visible !important;
 }
 html:root:root:root:root:root .patient-record-page .patient-record-indicators > :is(.patient-context-widgets, .medical-kpi-strip) {
   display: contents;
@@ -20,17 +24,17 @@ html:root:root:root:root:root .patient-record-page .patient-record-indicators > 
 html:root:root:root:root:root .patient-record-page .patient-record-indicators :is(.patient-context-card, .medical-kpi) {
   min-width: 0;
   min-height: 0;
-  padding: 16px;
+  padding: 16px !important;
   border: 0 !important;
-  border-radius: 0 !important;
-  background: transparent !important;
+  border-radius: var(--radius-panel) !important;
+  background: var(--card-inset) !important;
   box-shadow: none !important;
 }
-/* Separators between the four cards: one hairline, the same on every theme. */
-html:root:root:root:root:root .patient-record-page .patient-record-indicators :is(.patient-context-card, .medical-kpi) + :is(.patient-context-card, .medical-kpi),
-html:root:root:root:root:root .patient-record-page .patient-record-indicators .patient-context-widgets > :is(.patient-context-card, [data-slot="popover-trigger"]) + :is(.patient-context-card, [data-slot="popover-trigger"]),
-html:root:root:root:root:root .patient-record-page .patient-record-indicators .medical-kpi-strip > .medical-kpi:first-child {
-  box-shadow: inset 1px 0 0 color-mix(in oklab, var(--foreground) 10%, transparent) !important;
+/* A card that opens something answers the pointer by its fill alone, as the dashboard's cards do. */
+@media (hover: hover) and (pointer: fine) {
+  html:root:root:root:root:root .patient-record-page .patient-record-indicators :is(.patient-context-card, .medical-kpi):hover {
+    background: color-mix(in oklab, var(--card-inset), var(--foreground) 3%) !important;
+  }
 }
 html:root:root:root:root:root .patient-record-page .patient-record-indicators :is(.patient-context-card, .medical-kpi)::before,
 html:root:root:root:root:root .patient-record-page .patient-record-indicators :is(.patient-context-card, .medical-kpi)::after {

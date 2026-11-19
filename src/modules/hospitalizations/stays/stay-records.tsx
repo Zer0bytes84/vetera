@@ -1,4 +1,6 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { BeakerIcon, CalendarDaysIcon, ClockIcon } from "@heroicons/react/20/solid";
+import { StaySection } from "./stay-section";
 import { CarePlanForm } from "./care-plan-form";
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -32,19 +34,17 @@ export function StayRecords({ stayId }: { stayId: string }) {
     return () => { active = false; window.removeEventListener(STAYS_CHANGED, listener); window.removeEventListener(CARE_TASKS_CHANGED, listener); };
   }, [refresh]);
   return <div className="space-y-5">
-    {plans.length > 0 && <section className="space-y-3 rounded-2xl border border-[#F2F2F2] bg-card p-5 dark:border-border"><h3 className="t-16 font-medium">Plans de soins</h3>{plans.map(plan => <div key={plan.id} className="flex flex-wrap items-center justify-between gap-3 border-t py-3 t-13"><div><p className="font-medium">{plan.label}</p><p className="mt-1 text-muted-foreground">Du {new Date(plan.starts_at).toLocaleDateString("fr-FR")} au {new Date(plan.ends_at).toLocaleDateString("fr-FR")} · {plan.active ? "Actif" : "Clos"}</p></div>{Boolean(plan.active) && <Button variant="outline" className="h-11" onClick={() => setEditing(plan)}>Modifier les soins futurs</Button>}</div>)}</section>}
+    {plans.length > 0 && <StaySection icon={CalendarDaysIcon} title="Plans de soins">{plans.map(plan => <div key={plan.id} className="flex flex-wrap items-center justify-between gap-3 border-t py-3 t-13"><div><p className="font-medium">{plan.label}</p><p className="mt-1 text-muted-foreground">Du {new Date(plan.starts_at).toLocaleDateString("fr-FR")} au {new Date(plan.ends_at).toLocaleDateString("fr-FR")} · {plan.active ? "Actif" : "Clos"}</p></div>{Boolean(plan.active) && <Button variant="outline" className="h-11" onClick={() => setEditing(plan)}>Modifier les soins futurs</Button>}</div>)}</StaySection>}
     <Dialog open={editing !== null} onOpenChange={open => { if (!open) setEditing(null); }}><DialogContent className="max-h-[85dvh] overflow-y-auto sm:max-w-xl"><DialogHeader><DialogTitle>Modifier le plan de soins</DialogTitle><DialogDescription>Les soins déjà réalisés ou en cours et leur historique seront conservés.</DialogDescription></DialogHeader>{editing && <CarePlanForm key={editing.id} stayId={stayId} plan={editing} onSaved={() => setEditing(null)}/>}</DialogContent></Dialog>
     {error && <p role="alert" className="t-13 text-destructive">{error}</p>}
-    <section className="space-y-3 rounded-2xl border border-[#F2F2F2] bg-card p-5 dark:border-border">
-      <h3 className="t-16 font-medium">Soins du séjour</h3>
+    <StaySection icon={BeakerIcon} title="Soins du séjour">
       {!tasks.length ? <p className="t-13 text-muted-foreground">Aucun soin planifié pour ce séjour.</p> : <ul className="max-h-80 overflow-y-auto">{tasks.map(task => <li key={task.id} className="flex flex-wrap items-center justify-between gap-3 border-t py-3 t-13">
         <div><p className="font-medium">{task.label}</p><p className="mt-1 text-muted-foreground">{new Date(task.heure_prevue).toLocaleString("fr-FR")} · {taskLabels[task.statut]}</p></div>
         <Button className="h-11" variant="outline" onClick={() => { requestFocus("care_task", task.id); window.location.hash = "#/clinique"; }}>Ouvrir le soin</Button>
       </li>)}</ul>}
-    </section>
-    <section className="space-y-3 rounded-2xl border border-[#F2F2F2] bg-card p-5 dark:border-border">
-      <h3 className="t-16 font-medium">Historique du séjour</h3>
+    </StaySection>
+    <StaySection icon={ClockIcon} title="Historique du séjour">
       <ol className="max-h-64 overflow-y-auto">{history.map(event => <li key={event.id} className="border-t py-3 t-13"><p className="font-medium">{eventLabels[event.event] || "Mise à jour du séjour"}</p><p className="mt-1 text-muted-foreground">{new Date(event.changed_at).toLocaleString("fr-FR")} · {formatPersonName(users.data.find(user => user.id === event.author_id)?.displayName) || "Auteur enregistré"}</p>{event.reason && <p className="mt-1">{event.reason}</p>}</li>)}</ol>
-    </section>
+    </StaySection>
   </div>;
 }
