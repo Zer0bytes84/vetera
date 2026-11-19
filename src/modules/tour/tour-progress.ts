@@ -10,17 +10,26 @@ import { TOUR_STEP_IDS, type TourState, type TourStepId } from "./tour-state";
  * créer son patient par la barre « + », par la liste, par la palette de commandes, l'étape sera reconnue de la même façon.
  */
 export interface TourSnapshot {
-  patients: readonly {
-    id: string;
-    ownerId: string;
-    createdAt: string;
-    archivedAt?: string | null;
-  }[];
   appointments: readonly {
     id: string;
     patientId: string;
     createdAt: string;
     status: string;
+  }[];
+  /** Factures émises. Vide ET `invoicesKnown` faux hors de l'application de bureau (pas de facturation dans le navigateur). */
+  invoices: readonly {
+    id: string;
+    patientId?: string | null;
+    ownerId: string;
+    createdAt: string;
+    completedPaymentAmount: number;
+  }[];
+  invoicesKnown: boolean;
+  patients: readonly {
+    id: string;
+    ownerId: string;
+    createdAt: string;
+    archivedAt?: string | null;
   }[];
   soaps: readonly Pick<
     ConsultationSoap,
@@ -33,15 +42,6 @@ export interface TourSnapshot {
     | "assessment"
     | "plan"
   >[];
-  /** Factures émises. Vide ET `invoicesKnown` faux hors de l'application de bureau (pas de facturation dans le navigateur). */
-  invoices: readonly {
-    id: string;
-    patientId?: string | null;
-    ownerId: string;
-    createdAt: string;
-    completedPaymentAmount: number;
-  }[];
-  invoicesKnown: boolean;
 }
 
 const NAIVE_SQLITE = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}(\.\d+)?$/;
@@ -60,11 +60,11 @@ export function storedInstantMs(value: unknown): number | null {
 }
 
 export interface StepOutcome {
+  appointmentId?: string;
   done: boolean;
   /** Le geste est à moitié fait (une facture émise, pas encore payée) : la consigne le sait. */
   partial?: boolean;
   patientId?: string;
-  appointmentId?: string;
 }
 
 const NOT_DONE: StepOutcome = { done: false };

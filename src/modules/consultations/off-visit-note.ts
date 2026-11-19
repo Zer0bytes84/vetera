@@ -27,21 +27,21 @@ export type OffVisitKind = keyof typeof OFF_VISIT_KINDS;
 
 export interface OffVisitNoteMeta {
   kind: OffVisitKind;
-  soap: LocalSoapNote;
-  transcript: string;
   /** "dictee": the vet's own dictation; "assistant": structured by the assistant; "saisie": typed. */
   origin: SoapNoteOrigin | "saisie";
   reviewedAt: string;
   reviewedBy: string;
+  soap: LocalSoapNote;
+  transcript: string;
 }
 
 export interface OffVisitNoteInput {
-  patientId: string;
-  userId: string;
   kind: OffVisitKind;
   note: LocalSoapNote;
-  transcript?: string;
   origin: OffVisitNoteMeta["origin"];
+  patientId: string;
+  transcript?: string;
+  userId: string;
   /** The vet's explicit validation: nothing is written without it. */
   validated: boolean;
 }

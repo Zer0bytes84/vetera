@@ -1,14 +1,14 @@
 /** A lease is trusted only after verification with the public key pinned at build time. */
 export interface LicenseLease {
-  v: 2;
   aud: "baitari-desktop";
-  sub: string;
-  email: string;
   deviceId: string;
-  plan: "trial" | "clinic";
-  issuedAt: number;
+  email: string;
   expiresAt: number | null;
+  issuedAt: number;
   leaseUntil: number;
+  plan: "trial" | "clinic";
+  sub: string;
+  v: 2;
 }
 
 const MAX_LEASE_MS = 7 * 24 * 60 * 60 * 1000;

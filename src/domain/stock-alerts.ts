@@ -2,14 +2,14 @@ import { stockBalance } from "./stock";
 import { stockDay } from "./stock-date";
 
 interface StockAlertProduct {
-  stockTracked?: boolean;
-  quantity: number;
   availableQuantity?: number;
-  minStock: number;
-  nearestExpiryDate?: string | null;
-  expiryDate?: string;
   expiredQuantity?: number;
   expiringQuantity?: number;
+  expiryDate?: string;
+  minStock: number;
+  nearestExpiryDate?: string | null;
+  quantity: number;
+  stockTracked?: boolean;
 }
 export const stockExpiry = (product: StockAlertProduct) =>
   product.nearestExpiryDate === undefined

@@ -34,26 +34,26 @@ import { PatientSafetyZone } from "./patient-safety-zone";
 import { RecordBlockHeading } from "./record-block-heading";
 
 export interface PatientPeekViewProps {
-  patient?: Patient;
-  owner?: Owner;
   appointments: Appointment[];
-  vaccinations: Vaccination[];
-  weights: WeightEntry[];
-  loading: boolean;
   error: boolean;
-  onRetry: () => void;
-  onClose: () => void;
-  onOpenFull: () => void;
   /**
    * Opened from a list cursor: non-modal, no backdrop, focus left on the
    * list so the arrows keep moving and the peek follows them.
    */
   follow?: boolean;
-  skeletons: { profile: boolean; history: boolean; followUp: boolean };
-  historyLoading: boolean;
+  followUpError: boolean;
   followUpLoading: boolean;
   historyError: boolean;
-  followUpError: boolean;
+  historyLoading: boolean;
+  loading: boolean;
+  onClose: () => void;
+  onOpenFull: () => void;
+  onRetry: () => void;
+  owner?: Owner;
+  patient?: Patient;
+  skeletons: { profile: boolean; history: boolean; followUp: boolean };
+  vaccinations: Vaccination[];
+  weights: WeightEntry[];
 }
 const VISIT_STATUSES: Record<Appointment["status"], string> = {
   scheduled: "Planifiée",

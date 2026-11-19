@@ -1,10 +1,10 @@
 import type { DocumentKind } from "./document-domain";
 
 export interface DocumentVariable {
-  key: string;
-  label: string;
   group: string;
+  key: string;
   kinds?: DocumentKind[];
+  label: string;
 }
 
 export const DOCUMENT_VARIABLES: readonly DocumentVariable[] = [

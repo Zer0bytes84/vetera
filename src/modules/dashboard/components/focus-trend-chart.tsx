@@ -5,10 +5,10 @@ import "./focus-trend-chart.css";
 export interface FocusPoint {
   label: string;
   long: string;
-  receipts: number;
-  visits: number;
   previousReceipts?: number;
   previousVisits?: number;
+  receipts: number;
+  visits: number;
 }
 
 /** Plot geometry: the readout band on top, the visits scale on the left, the receipts scale on the right, three dates under. */

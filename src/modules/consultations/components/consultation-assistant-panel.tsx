@@ -42,11 +42,11 @@ export function AssistantSlideoutIcon() {
 const EXIT_MS = 200;
 
 interface Props {
-  open: boolean;
   children: ReactNode;
   onCollapsedChange?: (collapsed: boolean) => void;
   /** The exit has played and the panel is gone: the caller can let go of its content. */
   onExited?: () => void;
+  open: boolean;
   /** Pixels kept free above the panel: the desktop window's title-bar strip, which swallows clicks. */
   topInset?: number;
 }

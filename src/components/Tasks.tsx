@@ -80,11 +80,11 @@ type Scope = "mine" | "team";
 type ReminderSource = "all" | "manual" | "medical";
 
 interface TaskDraft {
-  reminderTypeId: string;
   description: string;
   dueDate: string;
   patientId: string;
   priority: Task["priority"];
+  reminderTypeId: string;
   startTime: string;
   title: string;
 }
@@ -105,10 +105,10 @@ interface AutomaticReminderItem {
 }
 
 interface MedicalReminderItem {
-  kind: "medical";
-  reminder: PatientReminder;
-  patient?: Patient;
   date: Date;
+  kind: "medical";
+  patient?: Patient;
+  reminder: PatientReminder;
 }
 type ReminderItem =
   | ManualReminderItem

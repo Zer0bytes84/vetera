@@ -17,30 +17,30 @@ import {
 import { stockProductInDatabase as lotProductInDatabase } from "./stock-database";
 
 export interface StockDatabase {
-  select<T>(sql: string, values?: unknown[]): Promise<T>;
   execute(sql: string, values?: unknown[]): Promise<unknown>;
+  select<T>(sql: string, values?: unknown[]): Promise<T>;
 }
 
 export interface StockProduct {
+  archived_at: string | null;
   id: string;
   name: string;
-  unit: string;
   quantity: number;
-  stock_tracked: number;
-  archived_at: string | null;
   sale_price_amount: number;
+  stock_tracked: number;
+  unit: string;
 }
 
 export interface StockConsumption extends StockSelection {
-  productId: string;
-  quantity: number;
-  sourceType: "care" | "consultation" | "prescription";
-  sourceId: string;
-  sourceLineId: string;
-  sourceLabel: string;
-  patientId: string;
   authorId: string;
   occurredAt: string;
+  patientId: string;
+  productId: string;
+  quantity: number;
+  sourceId: string;
+  sourceLabel: string;
+  sourceLineId: string;
+  sourceType: "care" | "consultation" | "prescription";
 }
 
 export async function stockProductInDatabase(

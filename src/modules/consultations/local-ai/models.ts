@@ -4,17 +4,17 @@ import type { AIProvisioningProgress } from "../services/ai-model-provisioning";
 import { generatorCandidates } from "./generator-choice";
 
 export interface LocalModelStatus {
-  root: string | null;
-  whisperReady: boolean;
-  whisperModel?: string | null;
-  generatorReady: boolean;
-  embeddingReady?: boolean;
-  /** EmbeddingGemma 2 (phase A2), installed alongside v1. */
-  embedding2Ready?: boolean;
   /** arctic-embed-l-v2 (A2 candidate). */
   arcticReady?: boolean;
+  /** EmbeddingGemma 2 (phase A2), installed alongside v1. */
+  embedding2Ready?: boolean;
+  embeddingReady?: boolean;
   /** New assistant version (Gemma 4 E2B), installed next to Gemma 3. */
   generator4Ready?: boolean;
+  generatorReady: boolean;
+  root: string | null;
+  whisperModel?: string | null;
+  whisperReady: boolean;
   /** Native dictation model (whisper.cpp large-v3-turbo q8), desktop macOS. */
   whisperTurboReady?: boolean;
 }

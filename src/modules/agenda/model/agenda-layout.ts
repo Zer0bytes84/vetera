@@ -5,25 +5,25 @@
  */
 
 export interface TimedItem {
+  endTime?: string | null;
   id: string;
   startTime: string;
-  endTime?: string | null;
 }
 
 export interface PlacedEvent<T extends TimedItem> {
-  item: T;
-  /** Minutes from the day's midnight, kept inside 0–1440. */
-  start: number;
-  /** The end used to group appointments: at least a minimal block after the start. */
-  end: number;
-  /** The real end, for display: what the appointment says, or a default length when it says nothing usable. */
-  realEnd: number;
   /** Column of the block within its group of overlapping appointments. */
   column: number;
   /** How many columns that group holds. */
   columns: number;
+  /** The end used to group appointments: at least a minimal block after the start. */
+  end: number;
   /** Index of the group of overlapping appointments, in order of time. */
   group: number;
+  item: T;
+  /** The real end, for display: what the appointment says, or a default length when it says nothing usable. */
+  realEnd: number;
+  /** Minutes from the day's midnight, kept inside 0–1440. */
+  start: number;
 }
 
 /** A block never gets shorter than this, so a 5-minute visit stays a block one can read and click. */
@@ -174,31 +174,31 @@ export function fitHourPx(
 /* ------------------------------------------------------------ Elastic time axis */
 
 export interface GridBlock<T extends TimedItem> {
-  item: T;
-  start: number;
-  /** The real end of the appointment, not the grouping one. */
-  end: number;
-  /** Pixels from the top of the grid. */
-  top: number;
-  height: number;
   column: number;
   columns: number;
+  /** The real end of the appointment, not the grouping one. */
+  end: number;
+  height: number;
+  item: T;
   /** True when the block is one of a crowded group, stacked one line under the other. */
   stacked: boolean;
+  start: number;
+  /** Pixels from the top of the grid. */
+  top: number;
 }
 
 export interface TimeGridLayout<T extends TimedItem> {
+  /** The blocks of each day, in the order of the days given. */
+  days: GridBlock<T>[][];
   /** Height of each shown hour: the base, grown where appointments crowd it. */
   heights: number[];
+  /** Minutes from midnight at a pixel offset from the top of the grid. */
+  minuteAt: (px: number) => number;
   /** Top of each shown hour, then the bottom of the last one. */
   offsets: number[];
   total: number;
-  /** The blocks of each day, in the order of the days given. */
-  days: GridBlock<T>[][];
   /** Pixels from the top of the grid for minutes from midnight. */
   yAt: (minutes: number) => number;
-  /** Minutes from midnight at a pixel offset from the top of the grid. */
-  minuteAt: (px: number) => number;
 }
 
 /** A crowded group, drawn one line per appointment: the line and its gap. */

@@ -20,10 +20,10 @@ function reachable(element: HTMLElement, doc: Document): boolean {
 }
 
 export interface TourTarget {
-  /** L'élément à entourer, s'il est à l'écran. */
-  element: HTMLElement | null;
   /** Il est à l'écran mais une fenêtre le recouvre : l'utilisateur est dans le geste (un formulaire est ouvert). */
   covered: boolean;
+  /** L'élément à entourer, s'il est à l'écran. */
+  element: HTMLElement | null;
 }
 
 /**

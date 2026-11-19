@@ -115,7 +115,6 @@ type AssistantTab = "dictation" | "soap" | "search" | "data";
 
 interface Props {
   appointmentId?: string;
-  patientId?: string;
   existingNote?: LocalSoapNote;
   onClose: () => void;
   /** origin "dictee": the note is the dictation itself, reviewed and validated by the vet. */
@@ -124,6 +123,7 @@ interface Props {
     transcript: string,
     origin: SoapNoteOrigin
   ) => Promise<void>;
+  patientId?: string;
 }
 
 export type SoapNoteOrigin = "assistant" | "dictee";

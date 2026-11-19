@@ -33,10 +33,10 @@ export const VISIT_FLOW_UNDO_WINDOW_MS = 10_000;
 export interface VisitFlowFacts {
   /** The visit is in care or waiting for results while still open. */
   care: boolean;
-  /** At least one issued invoice, and every issued invoice is settled. */
-  settled: boolean;
   /** Closed as free of charge: nothing to bill. */
   noCharge?: boolean;
+  /** At least one issued invoice, and every issued invoice is settled. */
+  settled: boolean;
   status: AppointmentStatus;
 }
 

@@ -8,10 +8,10 @@ export const normalizePatientName = (name: string) =>
     .trim()
     .replace(/\s+/g, " ");
 export interface PatientMention {
-  start: number;
   end: number;
-  name: string;
   key: string;
+  name: string;
+  start: number;
 }
 const mentionPattern = () =>
   /(^|[^\p{L}\p{N}_@])@(?:"([^"\n]+)"|([\p{L}\p{N}_][\p{L}\p{N}_'’-]*))/gu;

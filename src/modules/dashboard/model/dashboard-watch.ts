@@ -19,12 +19,12 @@ export interface WatchRow {
 }
 
 export interface WatchList {
+  /** Nombre d'éléments en tonalité critique. */
+  critical: number;
   /** Lignes affichées (déjà limitées). */
   rows: WatchRow[];
   /** Nombre total d'éléments concernés, au-delà de la limite affichée. */
   total: number;
-  /** Nombre d'éléments en tonalité critique. */
-  critical: number;
 }
 
 const DAY_MS = 24 * 60 * 60 * 1000;

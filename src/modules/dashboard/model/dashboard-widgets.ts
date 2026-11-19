@@ -11,9 +11,9 @@ export type DayUnitState = "done" | "underway" | "upcoming";
 
 export interface DayUnit {
   id: string;
-  state: DayUnitState;
   /** "08:00 · Rex · Consultation", read in the unit's tooltip. */
   label: string;
+  state: DayUnitState;
 }
 
 const UNDERWAY = new Set(["arrived", "waiting", "in_progress"]);
@@ -163,9 +163,9 @@ export function buildMonthForecast(
 }
 
 export interface SpeciesRow {
+  count: number;
   key: string;
   name: string;
-  count: number;
   share: number;
 }
 
@@ -231,9 +231,9 @@ export function buildSpeciesSplit(
 }
 
 export interface VisitKindRow {
+  count: number;
   key: string;
   name: string;
-  count: number;
   share: number;
 }
 
@@ -275,13 +275,13 @@ export const HEATMAP_PERIODS: { value: HeatmapPeriod; label: string }[] = [
 export const HEAT_STEPS = 4;
 
 export interface HeatDay {
-  key: string;
-  date: Date;
   count: number;
-  /** 0 for an empty day, then 1 to HEAT_STEPS. */
-  level: number;
+  date: Date;
   /** After today: what is already booked, not what happened. */
   future: boolean;
+  key: string;
+  /** 0 for an empty day, then 1 to HEAT_STEPS. */
+  level: number;
   today: boolean;
 }
 
@@ -294,8 +294,8 @@ export interface HeatMonth {
 
 /** One week of the year view, Monday to Sunday, named when a month starts in it. */
 export interface HeatColumn {
-  key: string;
   days: (HeatDay | null)[];
+  key: string;
   month?: string;
 }
 

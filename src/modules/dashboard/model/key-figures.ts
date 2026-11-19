@@ -15,24 +15,24 @@ import type { receivablesSummary } from "../v2/financial-model";
 export type KeyFigureId = "cash" | "appointments" | "receivables" | "actions";
 
 export interface KeyFigure {
-  id: KeyFigureId;
-  label: string;
-  value: string;
+  ariaLabel: string;
   /** Change vs the previous period, in percent: every card has one. */
   delta: number;
   /** The badge's words when a percentage cannot be (the previous period was empty). */
   deltaText?: string;
-  higherIsBetter: boolean;
-  /** The one short line under the figure. */
-  line: string;
-  /** Progress towards a goal the card's own records make meaningful, 0 to 1, with its label; none when they cannot say. */
-  goal?: { ratio: number; label: string };
-  /** The curve of the sparkline: a running total for money, a count per day for appointments. */
-  trend?: number[];
-  tone: StatTone;
   /** The figure itself takes the tone: a warning. */
   emphasize: boolean;
-  ariaLabel: string;
+  /** Progress towards a goal the card's own records make meaningful, 0 to 1, with its label; none when they cannot say. */
+  goal?: { ratio: number; label: string };
+  higherIsBetter: boolean;
+  id: KeyFigureId;
+  label: string;
+  /** The one short line under the figure. */
+  line: string;
+  tone: StatTone;
+  /** The curve of the sparkline: a running total for money, a count per day for appointments. */
+  trend?: number[];
+  value: string;
 }
 
 /**

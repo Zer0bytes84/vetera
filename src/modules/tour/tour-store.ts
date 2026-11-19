@@ -21,16 +21,16 @@ type Storage = Pick<globalThis.Storage, "getItem" | "setItem" | "removeItem">;
  */
 export interface TourStore {
   get(): TourState;
+  invitationShownThisSession(): boolean;
+  isWritable(): boolean;
+  justFinished(): boolean;
+  markFinished(finished: boolean): void;
+  markInvitationShown(): void;
+  /** Relit le stockage (une autre fenêtre de l'application a pu le changer). */
+  reload(): void;
   subscribe(listener: () => void): () => void;
   /** Applique une transition, la garde, prévient les abonnés. Une transition sans effet n'écrit rien. */
   update(transition: (state: TourState) => TourState): void;
-  isWritable(): boolean;
-  markInvitationShown(): void;
-  invitationShownThisSession(): boolean;
-  markFinished(finished: boolean): void;
-  justFinished(): boolean;
-  /** Relit le stockage (une autre fenêtre de l'application a pu le changer). */
-  reload(): void;
 }
 
 function readFrom(storage: Storage | null): {

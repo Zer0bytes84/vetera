@@ -33,15 +33,15 @@ export type MorningId =
   | "stays";
 
 export interface MorningItem {
-  id: MorningId;
-  label: string;
+  ariaLabel: string;
   /** null : la source n'a pas pu être lue. */
   count: number | null;
+  id: MorningId;
+  label: string;
   /** La ligne sous le chiffre : le contexte qui aide à décider. */
   line: string;
   /** La page où l'action se fait. */
   view: View;
-  ariaLabel: string;
 }
 
 const ACTIVE_STAY = new Set<Hospitalization["status"]>([

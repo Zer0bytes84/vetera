@@ -9,17 +9,17 @@ export type SpeciesType =
   | "other";
 
 export interface SpeciesTheme {
-  id: SpeciesType;
-  label: string;
   accentHex: string;
   avatarBg: string;
   avatarBorder: string;
   avatarGlow: string;
   avatarIconColor: string;
   badgeBg: string;
-  badgeText: string;
   badgeBorder: string;
+  badgeText: string;
   cardHighlight: string;
+  id: SpeciesType;
+  label: string;
 }
 
 export function getSpeciesTheme(species?: string): SpeciesTheme {

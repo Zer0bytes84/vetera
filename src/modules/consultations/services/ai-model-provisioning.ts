@@ -18,15 +18,15 @@ export type AIModelProgressState =
   | "ready"
   | "error";
 export interface AIProvisioningProgress {
+  currentModelId: AIModelId | null;
+  downloadedBytes: number;
+  models: Record<AIModelId, AIModelProgressState>;
+  percentage: number;
+  secondsRemaining: number;
+  speedMbps: number;
   step: "idle" | "preparing" | AIModelId | "finalizing" | "completed" | "error";
   stepMessage: string;
-  currentModelId: AIModelId | null;
   totalBytes: number;
-  downloadedBytes: number;
-  percentage: number;
-  speedMbps: number;
-  secondsRemaining: number;
-  models: Record<AIModelId, AIModelProgressState>;
 }
 
 export const AI_ONBOARDING_DISMISSED_KEY =

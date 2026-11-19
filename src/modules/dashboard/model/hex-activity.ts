@@ -24,21 +24,21 @@ export const HEX_VIEWS: { value: HexView; label: string }[] = [
 ];
 
 export interface HexCellData {
-  id: string;
   /** Position in the hexagon grid; odd rows sit half a cell to the right. */
   col: number;
-  row: number;
   count: number;
-  /** 0 for an empty cell, then 1 to 4: the heatmap's own steps. */
-  level: number;
-  /** Written inside the hexagon: a day number, an hour, a count. */
-  label?: string;
-  /** What the tooltip names: a day, an hour. */
-  title: string;
   /** What the tooltip says about it: « 2 rendez-vous », « Rien de prévu ». */
   detail: string;
   /** After now: what is already booked, not what happened. */
   future: boolean;
+  id: string;
+  /** Written inside the hexagon: a day number, an hour, a count. */
+  label?: string;
+  /** 0 for an empty cell, then 1 to 4: the heatmap's own steps. */
+  level: number;
+  row: number;
+  /** What the tooltip names: a day, an hour. */
+  title: string;
   today: boolean;
 }
 
@@ -48,19 +48,19 @@ export interface HexCaption {
 }
 
 export interface HexActivity {
-  view: HexView;
   cells: HexCellData[];
   cols: number;
-  rows: number;
   columnCaptions: HexCaption[];
-  rowCaptions: HexCaption[];
-  total: number;
+  footer: string;
   /** « rendez-vous sur la période » */
   heroCaption: string;
-  stats: { key: string; name: string; value: string }[];
   legend: ReturnType<typeof heatLegend>;
-  footer: string;
   peak: number;
+  rowCaptions: HexCaption[];
+  rows: number;
+  stats: { key: string; name: string; value: string }[];
+  total: number;
+  view: HexView;
 }
 
 const WEEKDAYS = [

@@ -253,7 +253,6 @@ function ServerStatusPill({
 // SUBCOMPONENT: LICENSES TABLE VIEW
 // ---------------------------------------------------------------------------
 interface LicensesTableViewProps {
-  syncMessage: string | null;
   activeCount: number;
   expiringCount: number;
   isLoading: boolean;
@@ -269,6 +268,7 @@ interface LicensesTableViewProps {
   revokedCount: number;
   searchQuery: string;
   statusFilter: StatusFilter;
+  syncMessage: string | null;
 }
 
 function LicensesTableView({

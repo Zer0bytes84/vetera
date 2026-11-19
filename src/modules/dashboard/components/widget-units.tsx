@@ -22,8 +22,8 @@ export interface CategoryRow {
   key: string;
   mark: ReactNode;
   name: string;
-  value: string;
   share?: number;
+  value: string;
 }
 
 export function CategoryRows({

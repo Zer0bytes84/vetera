@@ -35,19 +35,19 @@ export type SearchSection =
   | "product";
 export interface SearchScope {
   patientId: string;
-  sourceTypes: SourceType[];
   sections: SearchSection[];
+  sourceTypes: SourceType[];
 }
 export interface SearchChunk {
+  chunkIndex: number;
+  documentType: DocumentType;
   patientId: string;
   patientName?: string;
-  sourceId: string;
-  sourceType: SourceType;
-  documentType: DocumentType;
   section: SearchSection;
-  chunkIndex: number;
-  text: string;
+  sourceId: string;
   sourceKey: string;
+  sourceType: SourceType;
+  text: string;
 }
 export function assertSearchScope(scope: SearchScope) {
   if (

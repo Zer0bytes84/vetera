@@ -71,10 +71,10 @@ export function buildWeekFacts(data: {
 }
 
 export interface WeekRadial {
-  total: number;
-  hour: { labels: string[]; values: Record<DayUnitState, number[]> };
-  weekday: { labels: string[]; values: Record<DayUnitState, number[]> };
   byState: Record<DayUnitState, number>;
+  hour: { labels: string[]; values: Record<DayUnitState, number[]> };
+  total: number;
+  weekday: { labels: string[]; values: Record<DayUnitState, number[]> };
 }
 
 /** The week's visits, per hour and per weekday (Monday first), by state; their sum is the week's figure. */

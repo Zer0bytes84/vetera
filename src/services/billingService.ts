@@ -1338,12 +1338,12 @@ export async function getInvoice(
 
 /** One line of an issued invoice, with what tells its nature apart. */
 export interface IssuedInvoiceLine {
-  invoiceId: string;
-  issuedAt: string;
   /** Line total in centimes, as invoiced (before any credit note). */
   amount: number;
-  productId: string | null;
   appointmentType: string | null;
+  invoiceId: string;
+  issuedAt: string;
+  productId: string | null;
 }
 
 /** Read only: the lines of invoices issued between two dates, voided ones excluded. */

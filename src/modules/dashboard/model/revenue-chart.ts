@@ -24,20 +24,20 @@ export function changeText(change: number | null, previous: string) {
 }
 
 export interface RevenueChartModel {
+  changes: { receipts: number | null; visits: number | null };
   labels: string[];
-  titles: string[];
+  /** The same point in the previous period, as the tooltip's last line. */
+  note: (index: number) => string | undefined;
   receipts: number[];
-  visits: number[];
+  series: ChartSeries[];
+  titles: string[];
   totals: {
     receipts: number;
     visits: number;
     previousReceipts: number;
     previousVisits: number;
   };
-  changes: { receipts: number | null; visits: number | null };
-  /** The same point in the previous period, as the tooltip's last line. */
-  note: (index: number) => string | undefined;
-  series: ChartSeries[];
+  visits: number[];
 }
 
 /**

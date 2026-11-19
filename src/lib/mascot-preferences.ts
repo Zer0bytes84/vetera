@@ -33,9 +33,9 @@ export type MascotAnimal =
   | (typeof LEGACY_ANIMALS)[number];
 
 export interface MascotPreferences {
-  mode: "mascot" | "logo";
   animal: MascotAnimal;
   animated: boolean;
+  mode: "mascot" | "logo";
 }
 
 export const MASCOT_STORAGE_KEY = "baitari:mascot:v1";

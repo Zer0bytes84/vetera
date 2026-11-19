@@ -12,14 +12,14 @@ export type TimelinePieceKind =
 
 /** A paper the visit produced: prescription, invoice, analysis result, document. */
 export interface TimelinePiece {
+  /** The visit that produced it, when known. */
+  appointmentId: string | null;
   at: string;
+  /** Number or file name, shown next to the label. */
+  detail?: string;
   id: string;
   kind: TimelinePieceKind;
   label: string;
-  /** Number or file name, shown next to the label. */
-  detail?: string;
-  /** The visit that produced it, when known. */
-  appointmentId: string | null;
   /** Target to open: the record object behind the piece. */
   sourceId: string;
 }

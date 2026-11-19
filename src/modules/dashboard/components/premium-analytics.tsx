@@ -62,21 +62,41 @@ import type { View } from "@/types";
 import "./premium-analytics.css";
 
 interface PremiumAnalyticsProps {
-  model: ReturnType<typeof buildPremiumAnalytics>;
-  period: DashboardPeriod;
-  /** A preset period: the quick choices. */
-  onPeriod: (period: AnalyticsPeriod) => void;
+  /** Rappels et soins lus à part des autres données ; `unavailable` nomme ce qui n'a pas pu être chargé. */
+  alertSources?: {
+    reminders: AlertReminder[];
+    careTasks: CareTask[];
+    unavailable: string[];
+  };
+  clinicalView?: React.ReactNode;
   /** The two days picked, when `period` is « custom ». */
   customRange?: CustomRange | null;
-  /** Two days picked: the page switches to « custom » with them. */
-  onCustomRange?: (range: CustomRange) => void;
-  states: { cash: WidgetState; patients: WidgetState; actions: WidgetState };
-  onFinances: () => void;
-  onPatients: () => void;
-  onActions: () => void;
-  onNavigate?: (view: View) => void;
   /** The switch between the dashboard and its clinical view, on the right of the key figures band. */
   dashboardViewControl?: React.ReactNode;
+  /** Kept for callers: the receivables are now read from the records, in `receivablesSummary`. */
+  financials?: {
+    income: number;
+    pending: number;
+    receivables?: any;
+  };
+  model: ReturnType<typeof buildPremiumAnalytics>;
+  /** « À traiter »: the day's anomalies, right under the chart. */
+  morningWatch?: React.ReactNode;
+  /** Heure courante (horloge de la page), pour repérer le prochain rendez-vous. */
+  now?: Date;
+  onActions: () => void;
+  /** Le vétérinaire a choisi un créneau libre : la création du rendez-vous s'ouvre dessus. */
+  onCreateSlot?: (slot: FreeSlot) => void;
+  /** Two days picked: the page switches to « custom » with them. */
+  onCustomRange?: (range: CustomRange) => void;
+  onFinances: () => void;
+  onNavigate?: (view: View) => void;
+  onPatients: () => void;
+  /** A preset period: the quick choices. */
+  onPeriod: (period: AnalyticsPeriod) => void;
+  /** Shows the visit in Flux, where visits move on. */
+  onStartConsultation?: (appointmentId: string) => void;
+  period: DashboardPeriod;
   presentation?: {
     patients: any[];
     owners: any[];
@@ -87,32 +107,12 @@ interface PremiumAnalyticsProps {
     vaccinations: any[];
     invoices: any[];
   };
+  states: { cash: WidgetState; patients: WidgetState; actions: WidgetState };
   today?: ScheduleEntry[];
-  /** Kept for callers: the receivables are now read from the records, in `receivablesSummary`. */
-  financials?: {
-    income: number;
-    pending: number;
-    receivables?: any;
-  };
-  /** Shows the visit in Flux, where visits move on. */
-  onStartConsultation?: (appointmentId: string) => void;
-  clinicalView?: React.ReactNode;
-  /** « À traiter »: the day's anomalies, right under the chart. */
-  morningWatch?: React.ReactNode;
-  /** Rangée « À surveiller » (rappels, stock, hospitalisés): plus affichée sur le tableau de bord, qui s'arrête après « Cette semaine ». */
-  watch?: React.ReactNode;
-  /** Heure courante (horloge de la page), pour repérer le prochain rendez-vous. */
-  now?: Date;
   /** Vétérinaires actifs : « Agenda rapide » compte un créneau libre dès que l'un d'eux l'est. */
   vets?: { id: string }[];
-  /** Le vétérinaire a choisi un créneau libre : la création du rendez-vous s'ouvre dessus. */
-  onCreateSlot?: (slot: FreeSlot) => void;
-  /** Rappels et soins lus à part des autres données ; `unavailable` nomme ce qui n'a pas pu être chargé. */
-  alertSources?: {
-    reminders: AlertReminder[];
-    careTasks: CareTask[];
-    unavailable: string[];
-  };
+  /** Rangée « À surveiller » (rappels, stock, hospitalisés): plus affichée sur le tableau de bord, qui s'arrête après « Cette semaine ». */
+  watch?: React.ReactNode;
 }
 
 export function DeltaBadge({

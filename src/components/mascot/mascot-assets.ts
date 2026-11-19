@@ -5,8 +5,8 @@ import {
 import { LINE_ANIMALS, type LineAnimalKey } from "./line-mascots";
 
 export interface MascotAssetItem {
-  label: string;
   kind: "vector";
+  label: string;
 }
 
 /** Names saved by earlier versions, drawn as one of the line mascots. */

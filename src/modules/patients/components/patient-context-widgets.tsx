@@ -13,16 +13,16 @@ import { normalizeDate } from "./patients-shared";
 
 interface PatientContextWidgetsProps {
   appointments: Appointment[];
-  appointmentsLoading: boolean;
   appointmentsError: boolean;
+  appointmentsLoading: boolean;
   now: number;
   onOpenHistory: () => void;
   onOpenTask: (taskId: string) => void;
   onRetryTasks: () => void;
   patientName: string;
   tasks: Task[];
-  tasksLoading: boolean;
   tasksError: boolean;
+  tasksLoading: boolean;
 }
 
 function shortDate(value: string) {

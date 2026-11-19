@@ -12,11 +12,8 @@ import type { Appointment, ConsultationSoap, Note } from "@/types/db";
 import { documentToHtml } from "./document-templates";
 
 export interface ReviewedDocumentInput {
-  title: string;
-  text: string;
-  patientId: string;
   appointmentId: string;
-  userId: string;
+  patientId: string;
   reviewed: boolean;
   source:
     | {
@@ -31,6 +28,9 @@ export interface ReviewedDocumentInput {
         pages: { number: number; text: string; method: string }[];
         question?: string;
       };
+  text: string;
+  title: string;
+  userId: string;
 }
 export function assertDocumentSource(
   input: ReviewedDocumentInput,

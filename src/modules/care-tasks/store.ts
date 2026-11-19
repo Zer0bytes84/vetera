@@ -17,21 +17,21 @@ import {
 } from "@/modules/stock/services/stock-store";
 import { returnCareStockInDatabase } from "@/modules/stock/services/care-stock-rollback";
 export interface CareDatabase {
-  select<T>(sql: string, values?: unknown[]): Promise<T>;
   execute(sql: string, values?: unknown[]): Promise<{ rowsAffected: number }>;
+  select<T>(sql: string, values?: unknown[]): Promise<T>;
 }
 export interface CarePersistence {
   read<T>(operation: (db: CareDatabase) => Promise<T>): Promise<T>;
   transaction<T>(operation: (db: CareDatabase) => Promise<T>): Promise<T>;
 }
 export interface NewCareTask {
-  patientId: string;
   label: string;
-  type: CareType;
-  scheduledAt: string;
+  note?: string;
+  patientId: string;
   productId?: string | null;
   productQuantity?: number;
-  note?: string;
+  scheduledAt: string;
+  type: CareType;
 }
 export function createCareStore(
   persistence: CarePersistence,

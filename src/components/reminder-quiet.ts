@@ -4,19 +4,19 @@
  * ouvert est un rappel non terminé ; « d'ici 7 jours » compte les rappels ouverts datés de demain à J+7.
  */
 export interface QuietReminder {
-  kind: "manual" | "medical" | "automatic";
-  date: Date | null;
   completed: boolean;
-  title: string;
+  date: Date | null;
+  kind: "manual" | "medical" | "automatic";
   patientName?: string;
+  title: string;
 }
 
 export interface ReminderQuiet<T extends QuietReminder = QuietReminder> {
+  completed: number;
   next: T | null;
   openManual: number;
   openMedical: number;
   week: number;
-  completed: number;
 }
 
 const dayKey = (date: Date) =>

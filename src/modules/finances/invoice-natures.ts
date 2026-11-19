@@ -16,13 +16,13 @@ export const INVOICE_NATURES: { key: InvoiceNature; label: string }[] = [
 type Range = { from: Date; to: Date };
 
 export interface NatureRow {
-  key: InvoiceNature;
-  label: string;
-  /** Invoiced over the current period, in centimes. */
-  value: number;
-  previous: number;
   /** Percentage change; null when the previous period had nothing to compare. */
   change: number | null;
+  key: InvoiceNature;
+  label: string;
+  previous: number;
+  /** Invoiced over the current period, in centimes. */
+  value: number;
 }
 
 /**

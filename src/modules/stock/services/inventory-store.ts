@@ -12,22 +12,22 @@ import {
 import { stockProductInDatabase, type StockDatabase } from "./stock-database";
 
 export interface StockInventoryBalance extends InventoryBucket {
+  productArchived: boolean;
   productName: string;
   unit: string;
-  productArchived: boolean;
 }
 export interface StockInventorySnapshot {
-  supported: boolean;
   balances: StockInventoryBalance[];
   locations: InventoryLocation[];
+  supported: boolean;
 }
 export interface ProductStockSummary {
   availableQuantity: number;
   expiredQuantity: number;
   expiringQuantity: number;
+  invalid: boolean;
   lotsCount: number;
   nearestExpiryDate: string | null;
-  invalid: boolean;
 }
 
 export async function inventorySnapshotInDatabase(

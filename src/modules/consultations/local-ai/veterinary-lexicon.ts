@@ -304,12 +304,12 @@ for (const [acronym, expansions] of Object.entries(ACRONYMS_RAW)) {
 }
 
 export interface QueryExpansion {
-  /** Individual tokens with stop-words removed */
-  terms: string[];
-  /** Stems of individual tokens */
-  stems: string[];
   /** Equivalent phrases (DCI, brand, acronym, synonym expressions) */
   phrases: string[];
+  /** Stems of individual tokens */
+  stems: string[];
+  /** Individual tokens with stop-words removed */
+  terms: string[];
 }
 
 const STOP_WORDS = new Set([

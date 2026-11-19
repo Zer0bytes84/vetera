@@ -5,9 +5,9 @@ import {
 } from "../document-domain";
 
 export interface DocumentFilters {
-  search: string;
-  kind: string;
   from: string;
+  kind: string;
+  search: string;
   to: string;
 }
 export function filterPatientDocuments(

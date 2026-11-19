@@ -125,17 +125,17 @@ export interface DashboardWatchProps {
   /** Places occupied and free, from the same data as the Occupation view. */
   hospitalizedCapacity?: ReactNode;
   onOpenPatient: (patientId: string) => void;
+  onPatients?: () => void;
   onReminders: () => void;
+  onRemindersRetry?: () => void;
   onStays: () => void;
   onStock: () => void;
   reminders: WatchList;
   remindersError?: string | null;
   remindersLoading?: boolean;
-  onRemindersRetry?: () => void;
-  stock: WatchList;
   /** Active patients by species; omitted while the patients load. */
   species?: { total: number; recent: number; rows: SpeciesRow[] };
-  onPatients?: () => void;
+  stock: WatchList;
 }
 
 /** Rangée « À surveiller » : trois listes courtes, issues des vraies données. */

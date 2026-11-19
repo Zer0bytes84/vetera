@@ -54,15 +54,15 @@ export interface SafetyAlert {
     origin: "ordonnance" | "traitement";
     prescribedOn?: string;
   };
-  reason: string;
-  ruleId: string;
-  /** Référence officielle de la règle (RCP), quand elle est sourcée. */
-  source?: RuleSource;
   /** Pour une contre-indication : la mention du dossier en cause. */
   patientFinding?: {
     field: "allergies" | "conditions";
     text: string;
   };
+  reason: string;
+  ruleId: string;
+  /** Référence officielle de la règle (RCP), quand elle est sourcée. */
+  source?: RuleSource;
 }
 
 export interface SafetyCheckInput {

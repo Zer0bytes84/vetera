@@ -20,68 +20,68 @@ export const CERTIFICATE_TYPES = [
   "Vermifugation",
 ] as const;
 export interface ManagedDocumentTemplate {
-  id: string;
-  name: string;
-  kind: DocumentKind;
-  body: string;
   active: boolean;
+  body: string;
   createdAt: string;
-  updatedAt: string;
   createdBy: string | null;
+  id: string;
+  kind: DocumentKind;
+  name: string;
+  updatedAt: string;
   usageCount: number;
 }
 export interface DocumentPreparation {
+  clinic: InvoiceSettings;
+  consultationId: string;
+  content: string;
   patientId: string;
   patientName: string;
-  consultationId: string;
   soapId: string;
   sourceKey: string;
   template: ManagedDocumentTemplate;
-  clinic: InvoiceSettings;
-  values: Record<string, string>;
   title: string;
-  content: string;
+  values: Record<string, string>;
 }
 export interface DocumentAttachment {
-  name: string;
-  mimeType: "application/pdf" | "image/jpeg" | "image/png";
   dataUrl: string;
+  mimeType: "application/pdf" | "image/jpeg" | "image/png";
+  name: string;
+  pages: { page: number; text: string }[];
   size: number;
   textState: "extractible" | "scan" | "image";
-  pages: { page: number; text: string }[];
 }
 export interface PatientDocument {
+  attachment: DocumentAttachment | null;
+  authorName: string;
+  cancellationReason: string | null;
+  clinic: InvoiceSettings;
+  consultationId: string | null;
+  content: string;
+  createdAt: string;
+  createdBy: string;
+  finalizedAt: string | null;
   id: string;
+  kind: DocumentKind | "import";
   patientId: string;
   patientName: string;
-  consultationId: string | null;
-  soapId: string | null;
-  sourceKey: string | null;
-  templateId: string | null;
-  templateSnapshot: ManagedDocumentTemplate | null;
-  kind: DocumentKind | "import";
-  title: string;
-  content: string;
-  status: DocumentStatus;
-  clinic: InvoiceSettings;
-  values: Record<string, string>;
-  attachment: DocumentAttachment | null;
   pdfDataUrl: string | null;
   previousDocumentId: string | null;
-  cancellationReason: string | null;
-  createdAt: string;
+  soapId: string | null;
+  sourceKey: string | null;
+  status: DocumentStatus;
+  templateId: string | null;
+  templateSnapshot: ManagedDocumentTemplate | null;
+  title: string;
   updatedAt: string;
-  finalizedAt: string | null;
-  createdBy: string;
-  authorName: string;
+  values: Record<string, string>;
 }
 export interface DocumentEvent {
-  id: string;
-  documentId: string;
   action: string;
   authorId: string;
   authorName: string;
   createdAt: string;
+  documentId: string;
+  id: string;
   reason: string | null;
 }
 export interface PrepareDocumentOptions {

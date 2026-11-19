@@ -16,12 +16,12 @@ import { hasStockLots } from "./lot-consumption-store";
 import { stockSelectionKey } from "./lot-store";
 
 export interface ClinicalUseInput {
-  id: string;
   appointmentId: string;
+  authorId: string;
+  id: string;
   patientId: string;
   productId: string;
   quantity: number;
-  authorId: string;
 }
 export interface DispensingLineInput extends StockSelection {
   prescriptionItemId: string;
@@ -29,26 +29,26 @@ export interface DispensingLineInput extends StockSelection {
   quantity: number;
 }
 export interface DispensingInput {
-  id: string;
-  prescriptionId: string;
   authorId: string;
+  id: string;
   lines: DispensingLineInput[];
+  prescriptionId: string;
 }
 export interface ClinicalStockUse {
+  created_at: string;
   id: string;
-  product_id: string;
-  product_name: string;
-  unit: string;
-  quantity: number;
   invoice_id: string | null;
   movement_id: string | null;
-  created_at: string;
+  product_id: string;
+  product_name: string;
+  quantity: number;
+  unit: string;
 }
 export interface Dispensation {
-  id: string;
-  prescription_id: string;
-  invoice_id: string | null;
   created_at: string;
+  id: string;
+  invoice_id: string | null;
+  prescription_id: string;
 }
 
 function requireActor(author: string) {

@@ -9,11 +9,11 @@ export const DOCUMENT_KINDS = {
 } as const;
 export type ClinicalDocumentKind = keyof typeof DOCUMENT_KINDS;
 export interface ClinicalDocumentTemplate {
+  body: string;
+  createdAt: string;
   id: string;
   kind: ClinicalDocumentKind;
   name: string;
-  body: string;
-  createdAt: string;
   updatedAt: string;
 }
 const date = "2026-10-07T00:00:00.000Z";

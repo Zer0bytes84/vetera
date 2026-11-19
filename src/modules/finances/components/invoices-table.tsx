@@ -39,13 +39,13 @@ import {
  */
 
 interface InvoiceRow extends DataRow {
+  actions: string;
+  amount: number;
+  balance: number;
+  due: string;
   invoice: string;
   owner: string;
   situation: string;
-  due: string;
-  amount: number;
-  balance: number;
-  actions: string;
 }
 
 const DOCUMENT_TONE: Record<BillingDocumentStatus, StatusTone> = {

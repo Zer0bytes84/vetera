@@ -150,10 +150,10 @@ export function focusExcerpt(text: string, query: string, lead = 90) {
  * one model to another, so the semantic threshold and the lexical scores do too.
  */
 export interface SearchCalibration {
-  minimum: number;
-  lexicalFloor: number;
   bonus: number;
+  lexicalFloor: number;
   lexicalOnly: number;
+  minimum: number;
 }
 /** v1 values (EmbeddingGemma 300M), calibrated on whole sections then kept for passages. */
 export const V1_CALIBRATION: SearchCalibration = {

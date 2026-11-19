@@ -23,31 +23,31 @@ import {
 } from "./lot-store";
 
 export interface ProductBarcode {
+  archived_at: string | null;
+  code: string;
   id: string;
   product_id: string;
-  code: string;
   product_name: string;
   unit: string;
-  archived_at: string | null;
 }
 export interface ConsumptionSummary {
+  min_stock: number;
   product_id: string;
   product_name: string;
-  unit: string;
   quantity: number;
-  min_stock: number;
   suggested_minimum: number;
+  unit: string;
 }
 export interface StockTransfer {
+  created_at: string;
   id: string;
+  movement_id: string;
   product_id: string;
   product_name: string;
-  unit: string;
+  quantity: number;
   source_name: string;
   target_name: string;
-  quantity: number;
-  movement_id: string;
-  created_at: string;
+  unit: string;
 }
 export interface StockOperationsSnapshot {
   barcodes: ProductBarcode[];
@@ -55,23 +55,23 @@ export interface StockOperationsSnapshot {
   transfers: StockTransfer[];
 }
 export interface BarcodeOperationInput extends StockSelection {
-  id: string;
+  authorId: string;
   code: string;
   direction: "in" | "out";
-  quantity: number;
+  expiryDate?: string | null;
+  id: string;
   locationId: string;
   lotNumber?: string;
-  expiryDate?: string | null;
-  authorId: string;
+  quantity: number;
 }
 export interface TransferInput {
-  id: string;
-  productId: string;
-  fromLocationId: string;
-  toLocationId: string;
-  quantity: number;
   authorId: string;
+  fromLocationId: string;
+  id: string;
   lotId?: string | null;
+  productId: string;
+  quantity: number;
+  toLocationId: string;
 }
 function fail(message: string): never {
   throw new StockError("SOURCE_CONFLICT", message);

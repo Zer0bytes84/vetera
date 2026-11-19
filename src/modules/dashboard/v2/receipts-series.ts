@@ -17,10 +17,10 @@ import {
 } from "./financial-model";
 
 export interface ReceiptsBucket {
-  key: string;
-  label: string;
   detail: string;
   invoices: number;
+  key: string;
+  label: string;
   manual: number;
   pending: number;
 }

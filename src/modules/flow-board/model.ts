@@ -41,9 +41,9 @@ export interface FlowCard {
   patientId: string;
   patientName: string;
   reason: string;
-  species: string;
   /** When the visit entered its lane; null when the journal has no trace. */
   since: string | null;
+  species: string;
   startTime: string;
   status: Appointment["status"];
   urgent: boolean;
@@ -130,11 +130,11 @@ export interface BoardInput {
   now: Date;
   owners: readonly Owner[];
   patients: readonly Patient[];
+  /** Words to find in the patient, owner, reason, species or veterinarian. */
+  query?: string;
   states: readonly VisitFlowBoardState[];
   users: readonly User[];
   vaccinations: readonly Vaccination[];
-  /** Words to find in the patient, owner, reason, species or veterinarian. */
-  query?: string;
   /** Only this veterinarian's visits; empty for everyone. */
   vetId?: string;
 }

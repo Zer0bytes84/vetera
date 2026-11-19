@@ -4,21 +4,21 @@ import type { TourStepId } from "./tour-state";
  * Les quatre étapes du circuit du premier patient, et rien d'autre. Les textes sont courts : une consigne pour agir, puis ce qu'il reste à faire une fois sur l'écran.
  */
 export interface TourStepCopy {
-  id: TourStepId;
-  title: string;
-  /** Avant le geste d'ouverture (le « + », ou l'Agenda). */
-  open: (patientName: string | null) => string;
-  /** Une fois l'écran ouvert : ce qui fait réellement avancer l'étape. */
-  then: (patientName: string | null) => string;
-  /** Le libellé de l'entrée du menu « + » à montrer, ou celui de l'entrée de la barre latérale. */
-  target: { menuLabel: string } | { sidebarLabel: string };
-  /** La consigne quand le geste est à moitié fait (déduit des données) : elle remplace `open` et `then`. */
-  partial?: (patientName: string | null) => string;
   /** Un écran plus avant dans le geste (la consultation ouverte) : sa consigne remplace `then`. */
   deeper?: {
     hashes: readonly string[];
     text: (patientName: string | null) => string;
   };
+  id: TourStepId;
+  /** Avant le geste d'ouverture (le « + », ou l'Agenda). */
+  open: (patientName: string | null) => string;
+  /** La consigne quand le geste est à moitié fait (déduit des données) : elle remplace `open` et `then`. */
+  partial?: (patientName: string | null) => string;
+  /** Le libellé de l'entrée du menu « + » à montrer, ou celui de l'entrée de la barre latérale. */
+  target: { menuLabel: string } | { sidebarLabel: string };
+  /** Une fois l'écran ouvert : ce qui fait réellement avancer l'étape. */
+  then: (patientName: string | null) => string;
+  title: string;
 }
 
 const forPatient = (name: string | null) =>

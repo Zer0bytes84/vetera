@@ -20,10 +20,10 @@ import { parseDashboardDate, startOfDay } from "../v2/model";
  */
 
 export interface AlertReminder {
+  echeance: string;
   id: string;
   patient_id: string;
   statut: string;
-  echeance: string;
 }
 
 export type AlertCategory =

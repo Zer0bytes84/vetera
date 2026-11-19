@@ -40,8 +40,8 @@ export interface VisitFlowBoardState extends VisitFlowState {
 }
 
 export interface FlowDatabase {
-  select<T>(sql: string, values?: unknown[]): Promise<T>;
   execute(sql: string, values?: unknown[]): Promise<{ rowsAffected: number }>;
+  select<T>(sql: string, values?: unknown[]): Promise<T>;
 }
 
 export interface FlowPersistence {

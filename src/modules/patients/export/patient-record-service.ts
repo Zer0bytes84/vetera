@@ -35,8 +35,8 @@ import type {
 
 type Row = Record<string, unknown>;
 export interface PatientRecordReadDatabase {
-  select<T>(query: string, values?: unknown[]): Promise<T>;
   execute(query: string, values?: unknown[]): Promise<unknown>;
+  select<T>(query: string, values?: unknown[]): Promise<T>;
 }
 
 function checkAbort(signal?: AbortSignal): void {

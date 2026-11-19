@@ -29,32 +29,32 @@ import type {
 
 /** Storage DTOs only. No React hooks, model output or derived medicine doses. */
 export interface PatientRecordMedicalReminder {
-  id: string;
-  patientId: string;
-  type: string;
-  echeance: string;
-  statut: "en_cours" | "termine" | "annule";
-  createdAt: string;
   completedAt?: string | null;
-  note?: string | null;
+  createdAt: string;
+  echeance: string;
+  id: string;
   intervalleMois?: number;
+  note?: string | null;
+  patientId: string;
+  statut: "en_cours" | "termine" | "annule";
+  type: string;
 }
 export interface PatientRecordRawData {
-  patient: Patient;
-  owner?: Owner | null;
-  requestedBy: string;
-  clinic: InvoiceSettings;
-  users?: Pick<User, "id" | "displayName">[];
-  weights?: WeightEntry[];
   appointments?: Appointment[];
-  soaps?: ConsultationSoap[];
-  prescriptions?: Prescription[];
-  prescriptionItems?: PrescriptionItem[];
+  attachments?: ConsultationDocument[];
+  clinic: InvoiceSettings;
   documents?: PatientDocument[];
   notes?: Note[];
+  owner?: Owner | null;
+  patient: Patient;
+  prescriptionItems?: PrescriptionItem[];
+  prescriptions?: Prescription[];
   reminders?: PatientRecordMedicalReminder[];
   reminderTypes?: { id: string; name: string }[];
-  attachments?: ConsultationDocument[];
+  requestedBy: string;
+  soaps?: ConsultationSoap[];
+  users?: Pick<User, "id" | "displayName">[];
+  weights?: WeightEntry[];
 }
 
 function validDay(value: string): boolean {

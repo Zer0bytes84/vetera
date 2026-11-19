@@ -16,23 +16,23 @@ export interface SoapRetryPart {
 }
 
 interface SoapGenerationOptions {
-  prompt: string;
-  retryPrompt: string;
+  generate: (
+    prompt: string,
+    attempt: 1 | 2,
+    part?: SoapRetryPart
+  ) => Promise<string>;
   /** Rubrics not sent to the model: they come back empty. */
   omittedKeys?: readonly (keyof LocalSoapNote)[];
-  signal: AbortSignal;
+  onRetry: (error: SoapFormatError | SoapFidelityError) => void;
+  prompt: string;
   /**
    * Guided dictation: the second attempt asks each dictated rubric on its own
    * instead of the simplified whole note. A small model may drop a key or fill
    * an empty one in a four-key reply; one key at a time it only has to copy.
    */
   retryParts?: readonly SoapRetryPart[];
-  generate: (
-    prompt: string,
-    attempt: 1 | 2,
-    part?: SoapRetryPart
-  ) => Promise<string>;
-  onRetry: (error: SoapFormatError | SoapFidelityError) => void;
+  retryPrompt: string;
+  signal: AbortSignal;
   validate?: (note: LocalSoapNote) => void;
 }
 

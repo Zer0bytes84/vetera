@@ -4,64 +4,64 @@ import { stockProductInDatabase, type StockDatabase } from "./stock-database";
 import { receiveStockInDatabase, registerLotInDatabase } from "./lot-store";
 
 export interface StockSupplier {
-  id: string;
-  name: string;
-  phone: string;
-  email: string;
   address: string;
-  notes: string;
   archived_at: string | null;
   created_at: string;
+  email: string;
+  id: string;
+  name: string;
+  notes: string;
+  phone: string;
   updated_at: string;
 }
 export interface PurchaseOrder {
+  author_id: string;
+  created_at: string;
+  fingerprint: string;
   id: string;
+  ordered_at: string | null;
   reference: string;
+  status: "draft" | "ordered" | "partial" | "received" | "cancelled";
   supplier_id: string;
   supplier_name: string;
-  status: "draft" | "ordered" | "partial" | "received" | "cancelled";
-  fingerprint: string;
-  author_id: string;
-  ordered_at: string | null;
-  created_at: string;
-  updated_at: string;
   total_amount: number;
+  updated_at: string;
 }
 export interface PurchaseOrderLine {
   id: string;
   order_id: string;
   product_id: string;
   product_name: string;
-  unit: string;
   quantity: number;
   received_quantity: number;
-  unit_cost_amount: number;
   sort_order: number;
+  unit: string;
+  unit_cost_amount: number;
 }
 export interface PurchaseReceipt {
-  id: string;
-  order_id: string;
-  reference: string;
-  received_at: string;
   author_id: string;
   created_at: string;
+  id: string;
+  order_id: string;
+  received_at: string;
+  reference: string;
 }
 export interface PurchaseReceiptLine {
+  expiry_date: string | null;
   id: string;
-  receipt_id: string;
+  location_id: string;
+  lot_number: string | null;
+  movement_id: string;
   order_line_id: string;
   quantity: number;
-  movement_id: string;
-  lot_number: string | null;
-  expiry_date: string | null;
-  location_id: string;
+  receipt_id: string;
 }
 export interface PurchasingSnapshot {
-  suppliers: StockSupplier[];
-  orders: PurchaseOrder[];
   lines: PurchaseOrderLine[];
-  receipts: PurchaseReceipt[];
+  orders: PurchaseOrder[];
   receiptLines: PurchaseReceiptLine[];
+  receipts: PurchaseReceipt[];
+  suppliers: StockSupplier[];
 }
 export interface OrderDraftLine {
   productId: string;
@@ -69,19 +69,16 @@ export interface OrderDraftLine {
   unitCostAmount: number;
 }
 export interface OrderSaveInput {
-  id: string;
-  create: boolean;
-  supplierId: string;
-  lines: OrderDraftLine[];
   authorId: string;
+  create: boolean;
   expectedFingerprint?: string;
+  id: string;
+  lines: OrderDraftLine[];
+  supplierId: string;
 }
 export interface PurchaseReceiveInput {
-  id: string;
-  orderId: string;
-  reference: string;
-  receivedAt: string;
   authorId: string;
+  id: string;
   lines: {
     orderLineId: string;
     quantity: number;
@@ -89,6 +86,9 @@ export interface PurchaseReceiveInput {
     expiryDate?: string | null;
     locationId: string;
   }[];
+  orderId: string;
+  receivedAt: string;
+  reference: string;
 }
 
 function fail(message: string): never {

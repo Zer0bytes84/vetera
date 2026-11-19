@@ -5,8 +5,8 @@ export const VITAL_REFERENCE_SOURCE =
 export const TEMPERATURE_REFERENCE_SOURCE =
   "https://www.merckvetmanual.com/multimedia/table/normal-rectal-temperature-ranges";
 export interface VitalReference {
-  temperature: readonly [number, number];
   heartRate: readonly [number, number];
+  temperature: readonly [number, number];
 }
 export const SPECIES_VITAL_REFERENCES: Record<string, VitalReference> = {
   chien: { temperature: [37.5, 39.2], heartRate: [70, 120] },

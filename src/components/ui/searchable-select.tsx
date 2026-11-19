@@ -9,9 +9,9 @@ import {
 import { useMemo } from "react";
 
 export interface SearchableOption {
-  value: string;
-  label: string;
   keywords?: string;
+  label: string;
+  value: string;
 }
 
 const normalize = (text: string) =>

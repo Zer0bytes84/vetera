@@ -36,9 +36,9 @@ export interface Medication {
       attention?: string;
     }
   >;
-  tempsAttente?: Record<string, string>;
   /** Références officielles (RCP) des données de la fiche, quand elles sont sourcées. */
   sources?: MedicationSource[];
+  tempsAttente?: Record<string, string>;
 }
 
 export interface MedicationSource {

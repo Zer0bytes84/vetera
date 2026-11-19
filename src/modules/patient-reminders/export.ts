@@ -1,9 +1,9 @@
 export interface CallRow {
-  patient: string;
+  dueDate: string;
   owner: string;
+  patient: string;
   phone: string;
   type: string;
-  dueDate: string;
 }
 export function callsCsv(rows: CallRow[]): string {
   const cell = (value: string) =>

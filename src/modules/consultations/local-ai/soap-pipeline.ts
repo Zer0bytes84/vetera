@@ -23,14 +23,9 @@ import { createSoapPrompt, type LocalPatientContext } from "./patient-context";
 import type { LocalAiProgress } from "./worker-protocol";
 
 interface SoapDraftOptions {
-  models: LocalModelStatus;
-  transcript: string;
   context: LocalPatientContext;
   guidedSource?: LocalSoapNote;
-  signal: AbortSignal;
-  onProgress: (event: LocalAiProgress) => void;
-  /** Receives the session as soon as it exists, so the caller can cancel it. */
-  onSession?: (session: LocalInferenceSession) => void;
+  models: LocalModelStatus;
   /** Each raw model output and the model that produced it (evaluation bench). */
   onAttempt?: (attempt: {
     number: 1 | 2;
@@ -38,6 +33,11 @@ interface SoapDraftOptions {
     generator?: string;
     fellBack?: boolean;
   }) => void;
+  onProgress: (event: LocalAiProgress) => void;
+  /** Receives the session as soon as it exists, so the caller can cancel it. */
+  onSession?: (session: LocalInferenceSession) => void;
+  signal: AbortSignal;
+  transcript: string;
 }
 
 /** The sections the model receives and the fidelity check compares against. */

@@ -9,11 +9,11 @@ import {
 } from "./ai-model-provisioning";
 
 export interface AIInstallationState {
-  status: LocalModelStatus;
-  running: boolean;
-  progress: AIProvisioningProgress | null;
   error: string | null;
   errorCode: string | null;
+  progress: AIProvisioningProgress | null;
+  running: boolean;
+  status: LocalModelStatus;
   /** What the running or last installation was: the base tools or the new assistant. */
   target: "base" | "generator4";
 }

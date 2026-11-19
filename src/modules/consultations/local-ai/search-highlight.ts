@@ -5,8 +5,8 @@ import {
 } from "./veterinary-lexicon";
 
 export interface HighlightSegment {
-  text: string;
   hit: boolean;
+  text: string;
 }
 
 /**

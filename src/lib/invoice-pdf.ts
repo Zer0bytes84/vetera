@@ -11,23 +11,23 @@ export type { InvoiceSettings };
 
 /** All monetary fields use integer centimes, never display-unit amounts. */
 export interface InvoicePdfData {
-  number: string;
-  date: Date;
-  patientName: string;
-  ownerName: string;
-  ownerAddress?: string;
-  items: { description: string; amount: number }[];
-  totalAmount: number;
-  paidAmount: number;
   balanceAmount: number;
   creditAmount?: number;
-  refundAmount?: number;
+  date: Date;
   /**
    * Short fingerprint of the invoice's internal id and issue time, added to the
    * file name: two invoices never offer the same name, even when two copies of
    * one database give them the same official number.
    */
   fileKey?: string;
+  items: { description: string; amount: number }[];
+  number: string;
+  ownerAddress?: string;
+  ownerName: string;
+  paidAmount: number;
+  patientName: string;
+  refundAmount?: number;
+  totalAmount: number;
 }
 
 /** 7 base-36 characters (FNV-1a), stable for one invoice across exports. */

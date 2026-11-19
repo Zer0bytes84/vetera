@@ -47,11 +47,11 @@ async function installFonts(doc: jsPDF) {
 }
 
 export interface DocumentPdfContent {
-  title: string;
-  content: string;
   clinic: InvoiceSettings;
+  content: string;
   /** « ID-0011 », printed at the top of every page. */
   patientReference?: string;
+  title: string;
 }
 
 /** One PDF is used for the preview, the final snapshot, export and printing. */

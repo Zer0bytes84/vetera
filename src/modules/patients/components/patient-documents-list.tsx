@@ -42,10 +42,10 @@ import { guard } from "@/lib/guard";
 interface PatientDocumentsListProps {
   className?: string;
   onOpenDocument?: (document: ConsultationDocument) => void;
-  onUpload?: () => void;
   onOpenNotes?: () => void;
   /** Notes kept without a visit open in the record, not in the Documents editor. */
   onOpenOffVisitNote?: (noteId: string) => void;
+  onUpload?: () => void;
   patientId: string;
 }
 

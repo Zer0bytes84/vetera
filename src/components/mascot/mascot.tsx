@@ -15,16 +15,16 @@ import { MascotChoices } from "./mascot-choices";
 
 export interface MascotProps {
   animal?: MascotAnimal;
-  mood?: MascotMood;
   animated?: boolean;
-  size?: number;
+  className?: string;
+  fallbackToLogo?: boolean;
   framing?: "full" | "portrait";
+  interactive?: boolean;
+  mood?: MascotMood;
+  onSelect?: () => void;
   /** Ears and paws may leave the round frame instead of being cut by it. */
   overflow?: boolean;
-  className?: string;
-  interactive?: boolean;
-  fallbackToLogo?: boolean;
-  onSelect?: () => void;
+  size?: number;
 }
 
 export function Mascot({

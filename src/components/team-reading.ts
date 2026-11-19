@@ -6,18 +6,18 @@ import type { User } from "@/types/db";
  * accès est en attente quand le compte n'est pas actif. Chaque ligne est courte et vraie, jamais un slogan.
  */
 export interface TeamReading {
-  total: number;
   active: number;
-  vets: number;
-  principals: number;
   adjoints: number;
-  support: number;
   assistants: number;
-  trainees: number;
+  lines: { active: string; vets: string; support: string; access: string };
   pending: number;
+  principals: number;
   /** La ligne d'état sous le titre de la bande, sans le jour et l'heure. */
   state: string;
-  lines: { active: string; vets: string; support: string; access: string };
+  support: number;
+  total: number;
+  trainees: number;
+  vets: number;
 }
 
 const n = (count: number, one: string, many = `${one}s`) =>

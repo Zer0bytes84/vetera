@@ -46,10 +46,10 @@ const TABLES = [
 ] as const;
 export type DocumentTable = (typeof TABLES)[number];
 export interface DocumentDatabase {
-  list(table: DocumentTable, filters?: DocumentRow): Promise<DocumentRow[]>;
   insert(table: DocumentTable, row: DocumentRow): Promise<void>;
-  update(table: DocumentTable, id: string, row: DocumentRow): Promise<void>;
+  list(table: DocumentTable, filters?: DocumentRow): Promise<DocumentRow[]>;
   remove(table: DocumentTable, id: string): Promise<void>;
+  update(table: DocumentTable, id: string, row: DocumentRow): Promise<void>;
 }
 export interface DocumentPersistence {
   read<T>(operation: (db: DocumentDatabase) => Promise<T>): Promise<T>;
@@ -264,12 +264,12 @@ function documentToRow(document: PatientDocument): DocumentRow {
 }
 
 export interface SaveDocumentTemplateInput {
-  id?: string;
-  name: string;
-  kind: ManagedDocumentTemplate["kind"];
-  body: string;
   active: boolean;
+  body: string;
   expectedUpdatedAt?: string;
+  id?: string;
+  kind: ManagedDocumentTemplate["kind"];
+  name: string;
 }
 export function createDocumentStore(
   persistence: DocumentPersistence,

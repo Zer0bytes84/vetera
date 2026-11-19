@@ -9,13 +9,13 @@ export interface SoapQuestionnaireOption {
 
 export interface SoapQuestionnaireStep {
   key: keyof LocalSoapNote;
-  letter: "S" | "O" | "A" | "P";
-  title: string;
   label: string;
-  question: string;
-  subtitle: string;
+  letter: "S" | "O" | "A" | "P";
   mode: "single" | "multiple";
   options: SoapQuestionnaireOption[];
+  question: string;
+  subtitle: string;
+  title: string;
 }
 
 export const SOAP_QUESTIONNAIRE_STEPS: SoapQuestionnaireStep[] = [

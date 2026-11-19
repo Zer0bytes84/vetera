@@ -105,8 +105,8 @@ type SearchResult = SearchChunk & {
 };
 
 export interface PatientDocumentSearchProps {
-  patientId?: string;
   onInsertExcerpt?: (excerpt: string, section?: SearchSection) => void;
+  patientId?: string;
 }
 
 /** Passage with the query terms highlighted. */

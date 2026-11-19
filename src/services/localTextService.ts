@@ -7,8 +7,8 @@ import { containsDosage } from "@/modules/consultations/local-ai/soap-schema";
 import { prepareModelDictation } from "@/modules/consultations/local-ai/treatment-routing";
 export interface ProgressReport {
   progress: number;
-  text: string;
   status?: "ready" | "loading" | "error" | "idle";
+  text: string;
 }
 export interface LocalChatTurn {
   role: "user" | "assistant";

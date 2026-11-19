@@ -29,12 +29,12 @@ type PatientRecord = PatientsViewProps["visiblePatients"][number];
  */
 
 interface PatientRow extends DataRow {
-  patient: string;
-  owner: string;
-  status: string;
   last: string;
   next: string;
   open: string;
+  owner: string;
+  patient: string;
+  status: string;
 }
 
 const STATUS_TONE: Record<Patient["status"], StatusTone> = {

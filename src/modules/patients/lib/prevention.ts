@@ -6,12 +6,12 @@ import type {
 import { currentVaccineReminders } from "../health-card/health-card-data";
 
 export interface PreventionCountdown {
-  id: string;
-  label: string;
-  /** Calendar day of the due date, local time. */
-  dueDate: string;
   /** Whole days until the due date; negative once it is past. */
   days: number;
+  /** Calendar day of the due date, local time. */
+  dueDate: string;
+  id: string;
+  label: string;
   source: "vaccine" | "reminder";
 }
 

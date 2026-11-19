@@ -1,9 +1,9 @@
 export const ASSISTANT_TOGGLE_EVENT = "baitari:assistant-toggle";
 
 export interface AssistantOpenOptions {
-  patientId?: string;
   appointmentId?: string;
   open?: boolean;
+  patientId?: string;
 }
 
 export function openAssistant(options?: AssistantOpenOptions) {

@@ -9,23 +9,23 @@ export type CareType = (typeof CARE_TYPES)[number];
 export type CareStatus = "a_faire" | "en_cours" | "fait" | "annule";
 export type CareDisplayStatus = CareStatus | "en_retard";
 export interface CareTask {
-  id: string;
-  patient_id: string;
-  label: string;
-  type: CareType;
-  heure_prevue: string;
-  statut: CareStatus;
+  completed_at: string | null;
+  completion_revision?: number;
+  created_at: string;
   execute_par: string | null;
+  heure_prevue: string;
+  id: string;
+  label: string;
+  motif_annulation: string | null;
+  note: string;
+  patient_id: string;
   produit_id: string | null;
   /** Physical quantity in the product's stock unit, unrelated to clinical dosage. */
   produit_quantite?: number;
-  note: string;
-  motif_annulation: string | null;
   recurrence: string | null;
-  created_at: string;
+  statut: CareStatus;
+  type: CareType;
   updated_at: string;
-  completed_at: string | null;
-  completion_revision?: number;
 }
 export function careCompletionKey(taskId: string, revision = 0): string {
   if (!Number.isSafeInteger(revision) || revision < 0)
@@ -36,13 +36,13 @@ export function careInvoiceId(taskId: string, revision = 0): string {
   return `care-invoice:${careCompletionKey(taskId, revision)}`;
 }
 export interface CareHistory {
-  id: string;
-  task_id: string;
-  from_status: CareStatus | null;
-  to_status: CareStatus;
   author_id: string;
   changed_at: string;
+  from_status: CareStatus | null;
+  id: string;
   reason: string | null;
+  task_id: string;
+  to_status: CareStatus;
 }
 export function careDisplayStatus(
   task: Pick<CareTask, "statut" | "heure_prevue">,
@@ -73,8 +73,8 @@ export function assertCareTransition(
 }
 export interface CareSuggestion {
   label: string;
-  type: CareType;
   note: string;
+  type: CareType;
 }
 /** Deterministic, verbatim candidates. Scheduling and confirmation remain human. */
 export function suggestCareTasksFromPlan(plan: string): CareSuggestion[] {

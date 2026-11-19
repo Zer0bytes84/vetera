@@ -36,20 +36,20 @@ export function formatDateValue(date: Date): string {
 }
 
 export interface DatePickerProps {
-  /** Civil day, YYYY-MM-DD, or an empty string. Same contract as a native date input. */
-  value: string;
-  onChange: (value: string) => void;
-  id?: string;
-  name?: string;
-  min?: string;
-  max?: string;
-  required?: boolean;
-  disabled?: boolean;
-  clearable?: boolean;
-  placeholder?: string;
+  align?: "start" | "center" | "end";
   "aria-label"?: string;
   className?: string;
-  align?: "start" | "center" | "end";
+  clearable?: boolean;
+  disabled?: boolean;
+  id?: string;
+  max?: string;
+  min?: string;
+  name?: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+  required?: boolean;
+  /** Civil day, YYYY-MM-DD, or an empty string. Same contract as a native date input. */
+  value: string;
 }
 
 /**

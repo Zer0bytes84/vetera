@@ -12,8 +12,8 @@ export const LICENSE_PUBLIC_KEY = import.meta.env.VITE_LICENSE_PUBLIC_KEY || "";
 const DEVICE_ID_SETTING = "baitari-license-installation-v2";
 export interface ActivatedLicense {
   createdAt: string;
-  email: string;
   deviceCount: number;
+  email: string;
   expiresAt: string | null;
   id: string;
   maxDevices: number;

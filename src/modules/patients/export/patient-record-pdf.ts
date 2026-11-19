@@ -147,13 +147,13 @@ function hasContent(block: PatientRecordBlock): boolean {
 }
 
 interface Margins {
-  top: number;
   bottom: number;
-  headerBottom: number;
-  footerTop: number;
-  patient: string[];
   clinic: string[];
+  footerTop: number;
+  headerBottom: number;
   legal: string[];
+  patient: string[];
+  top: number;
 }
 
 function measureMargins(doc: jsPDF, snapshot: PatientRecordSnapshot): Margins {

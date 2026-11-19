@@ -4,18 +4,18 @@ export type FinancialSource = "all" | "invoices" | "manual";
 export interface FinancialCategory {
   id: string;
   label: string;
-  totalValue: number;
-  safeValue: number;
-  riskValue: number;
-  totalCount: number;
   riskCount: number;
+  riskValue: number;
+  safeValue: number;
+  totalCount: number;
+  totalValue: number;
 }
 export type RiskCategoryData = FinancialCategory;
 export interface Receivable {
+  balance: number;
+  detail: string;
   id: string;
   label: string;
-  detail: string;
-  balance: number;
 }
 
 /** All source amounts are centimes; display aggregates are dinars. */

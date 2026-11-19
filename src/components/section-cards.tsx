@@ -24,19 +24,11 @@ import { formatNumber } from "@/utils/display-format";
 import { cn } from "@/lib/utils";
 
 export interface SectionCardItem {
-  onClick?: () => void;
   actionLabel?: string;
   badge?: string;
-  footerDescription?: string;
-  footerTitle?: string;
-  detailRow?: string;
-  icon?: StatIcon;
-  sparkData?: number[];
-  title: string;
-  tone?: "critical" | "positive" | "quiet" | "watch";
-  trend?: "up" | "down" | "neutral";
-  value: string | number;
   change?: number | null;
+  /** Previous value (variation) or denominator (rate). Zero hides the percentage. */
+  changeBase?: number | null;
   /**
    * How `change` reads. "variation" (default): percentage vs a previous value,
    * the only kind with a trend arrow. "rate": a share such as a completion rate.
@@ -44,11 +36,19 @@ export interface SectionCardItem {
    * units vs a previous value (e.g. +2 vs hier), shown with an arrow.
    */
   changeKind?: "variation" | "rate" | "count" | "difference";
-  /** Previous value (variation) or denominator (rate). Zero hides the percentage. */
-  changeBase?: number | null;
   changeLabel?: string;
+  detailRow?: string;
+  footerDescription?: string;
+  footerTitle?: string;
+  icon?: StatIcon;
   /** True when a rise is bad news (overdue items, stock alerts). */
   inverse?: boolean;
+  onClick?: () => void;
+  sparkData?: number[];
+  title: string;
+  tone?: "critical" | "positive" | "quiet" | "watch";
+  trend?: "up" | "down" | "neutral";
+  value: string | number;
 }
 
 /*

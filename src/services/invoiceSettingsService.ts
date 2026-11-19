@@ -8,14 +8,14 @@ export const INVOICE_ACCENTS = {
 } as const;
 
 export interface InvoiceSettings {
-  name: string;
-  address: string;
-  phone: string;
-  email: string;
-  registrationNumber: string;
-  logoDataUrl: string;
-  footer: string;
   accent: keyof typeof INVOICE_ACCENTS;
+  address: string;
+  email: string;
+  footer: string;
+  logoDataUrl: string;
+  name: string;
+  phone: string;
+  registrationNumber: string;
 }
 
 export const DEFAULT_INVOICE_SETTINGS: InvoiceSettings = {

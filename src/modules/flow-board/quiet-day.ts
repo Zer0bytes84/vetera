@@ -10,6 +10,7 @@ import { isSameLocalDay } from "./model";
  * caisse, qui est celle du cabinet.
  */
 export interface QuietDay {
+  cancelledToday: number;
   next: {
     appointmentId: string;
     startTime: string;
@@ -19,12 +20,11 @@ export interface QuietDay {
     /** Le prochain rendez-vous est aujourd'hui, plus tard. */
     today: boolean;
   } | null;
-  /** Rendez-vous planifiés ou confirmés des sept prochains jours, aujourd'hui compris. */
-  week: number;
-  cancelledToday: number;
   noShowToday: number;
   /** Recettes payées aujourd'hui, en centimes. */
   receiptsToday: number;
+  /** Rendez-vous planifiés ou confirmés des sept prochains jours, aujourd'hui compris. */
+  week: number;
 }
 
 const UPCOMING = new Set<Appointment["status"]>(["scheduled", "confirmed"]);

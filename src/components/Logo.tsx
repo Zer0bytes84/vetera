@@ -2,11 +2,11 @@ import { useId, type FC } from "react";
 import { cn } from "@/lib/utils";
 interface LogoProps {
   className?: string;
-  variant?: "original" | "refined";
   collapsed?: boolean;
   showWordmark?: boolean;
   size?: "sm" | "md" | "lg" | "xl" | "2xl";
   textSize?: "sm" | "md" | "lg" | "xl" | "2xl";
+  variant?: "original" | "refined";
 }
 const SIZE_PX = { sm: 24, md: 28, lg: 32, xl: 38, "2xl": 44 };
 function BrandMark() {

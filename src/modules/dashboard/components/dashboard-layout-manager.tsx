@@ -47,12 +47,12 @@ export interface DashboardLayoutBlock {
 
 interface DashboardLayoutManagerProps {
   blocks: DashboardLayoutBlock[];
-  isEditing: boolean;
-  onEditingChange: (isEditing: boolean) => void;
-  storageKeyPrefix?: string;
   /** Operational priorities precede any previously saved widget order. */
   firstBlockIds?: string[];
+  isEditing: boolean;
   migrateFromPrefix?: string;
+  onEditingChange: (isEditing: boolean) => void;
+  storageKeyPrefix?: string;
 }
 
 type SaveStatus = "idle" | "saving" | "saved";

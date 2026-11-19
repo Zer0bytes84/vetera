@@ -59,8 +59,8 @@ const effectiveGeneration = (models: LocalModelStatus): SearchGeneration => {
   return active;
 };
 export interface SearchDatabase {
-  select<T>(query: string, values?: unknown[]): Promise<T>;
   execute(query: string, values?: unknown[]): Promise<unknown>;
+  select<T>(query: string, values?: unknown[]): Promise<T>;
 }
 const SOAP_COLUMNS =
   "id,patient_id AS patientId,subjective,objective,assessment,plan,content,ai_draft AS aiDraft";

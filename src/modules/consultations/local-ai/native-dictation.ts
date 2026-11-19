@@ -7,20 +7,20 @@ import { isTauriRuntime } from "@/services/browser-store";
 import type { DictationLanguage } from "./whisper-language";
 
 export interface NativeDictationStatus {
+  cheminAttendu: string;
   disponible: boolean;
   modele: string | null;
-  cheminAttendu: string;
-  source: string;
   raison: string | null;
+  source: string;
 }
 
 export interface NativeDictationResult {
-  texte: string;
-  secondes: number;
-  pid: number | null;
-  pidApplication: number;
   code: number | null;
   journal: string;
+  pid: number | null;
+  pidApplication: number;
+  secondes: number;
+  texte: string;
 }
 
 /**

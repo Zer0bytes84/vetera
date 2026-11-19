@@ -14,10 +14,10 @@
  * `guardSync` est la forme sans `await` : elle s'exécute de façon synchrone, comme l'instruction d'origine.
  */
 export interface GuardSteps<E> {
-  /** Le bloc `catch`. */
-  recover?: (error: unknown) => E | Promise<E>;
   /** Le bloc `finally`. */
   cleanup?: () => void | Promise<void>;
+  /** Le bloc `catch`. */
+  recover?: (error: unknown) => E | Promise<E>;
 }
 
 export async function guard<T, E = never>(

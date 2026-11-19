@@ -34,10 +34,10 @@ interface UseSQLiteResult<T> {
   add: (item: Omit<T, "id" | "createdAt" | "updatedAt">) => Promise<T | null>;
   data: T[];
   error: string | null;
-  /** True only when no rows are known yet (first ever read of the table). */
-  loading: boolean;
   /** True while a background re-read runs on top of already displayed rows. */
   isRefreshing: boolean;
+  /** True only when no rows are known yet (first ever read of the table). */
+  loading: boolean;
   refresh: () => Promise<void>;
   remove: (id: string) => Promise<boolean>;
   set: (id: string, item: Partial<T>) => Promise<void>;
@@ -389,10 +389,17 @@ async function reloadTable(
 
 /** Ce que les opérations d'écriture reçoivent du hook : les valeurs de sa fermeture, passées explicitement. */
 interface TableOps<T extends { id: string }> {
-  safeTableName: string | null;
-  tableName: string;
-  sourceId: string;
+  authoritativeRow: (
+    db: SQLiteDatabase,
+    id: string,
+    fallback: CachedRow
+  ) => Promise<CachedRow>;
   loadData: (force?: boolean) => Promise<void>;
+  /** Pour le typage seul : T n'apparaît que dans les signatures des opérations. */
+  readonly rowType?: T;
+  safeTableName: string | null;
+  sourceId: string;
+  tableName: string;
   write: <R>(
     id: string,
     apply: (rows: CachedRow[]) => CachedRow[],
@@ -401,13 +408,6 @@ interface TableOps<T extends { id: string }> {
     ) => Promise<{ value: R; row?: CachedRow | null }>,
     retry: () => unknown
   ) => Promise<R>;
-  authoritativeRow: (
-    db: SQLiteDatabase,
-    id: string,
-    fallback: CachedRow
-  ) => Promise<CachedRow>;
-  /** Pour le typage seul : T n'apparaît que dans les signatures des opérations. */
-  readonly rowType?: T;
 }
 
 async function addRow<T extends { id: string }>(

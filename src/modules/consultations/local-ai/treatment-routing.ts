@@ -37,10 +37,10 @@ export type TreatmentKind =
   | "negated"
   | "observation";
 export interface DictatedStatement {
-  text: string;
   kind: TreatmentKind;
-  setting: "acte-clinique" | "ordonnance-maison" | null;
   medications: { brand: string; dci: string }[];
+  setting: "acte-clinique" | "ordonnance-maison" | null;
+  text: string;
 }
 export function analyzeTreatmentDictation(
   transcript: string
@@ -209,11 +209,11 @@ const sameEvidence = (a: string, b: string) =>
   evidenceTokens(a).join(" ") === evidenceTokens(b).join(" ");
 
 interface Piece {
-  text: string;
-  /** First clause of its sentence: it starts a sentence again once restored. */
-  opens: boolean;
   /** Kept away from the model, restored word for word at its own place. */
   kept: boolean;
+  /** First clause of its sentence: it starts a sentence again once restored. */
+  opens: boolean;
+  text: string;
 }
 
 /** The text the model receives: the clauses it may see, sentence by sentence. */
@@ -281,12 +281,12 @@ function restoreClauses(output: string, pieces: Piece[]) {
 }
 
 export interface GuidedSection {
-  /** Text of this rubric sent to the model; empty when the model gets none of it. */
-  model: string;
   /** "phrase": whole sentences kept away (punctuated dictation, unchanged);
    * "proposition": clauses kept away, because whole sentences emptied the rubric;
    * "exclue": nothing left for the model, the rubric is not sent to it at all. */
   mode: "phrase" | "proposition" | "exclue";
+  /** Text of this rubric sent to the model; empty when the model gets none of it. */
+  model: string;
   /** Final rubric from the model's validated text. */
   restore: (output: string) => string;
 }

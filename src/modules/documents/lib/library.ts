@@ -29,18 +29,18 @@ export const KIND_LABELS: Record<LibraryKind, string> = {
 export const MAX_FILE_BYTES = 5 * 1024 * 1024;
 
 export interface LibraryEntry {
-  kind: LibraryKind;
+  createdAt: string;
   id: string;
-  title: string;
-  patientId: string | null;
   isFavorite: boolean;
   isPinned: boolean;
-  updatedAt: string;
-  createdAt: string;
+  item?: LibraryItem;
+  kind: LibraryKind;
+  note?: Note;
+  patientId: string | null;
   /** Everything the search field reads. */
   text: string;
-  note?: Note;
-  item?: LibraryItem;
+  title: string;
+  updatedAt: string;
 }
 
 /** The note's text without its HTML tags: the search field reads this value, so a word from the body finds the note. */

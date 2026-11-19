@@ -6,80 +6,80 @@ import {
   type StayStatus,
 } from "./domain";
 export interface Stay {
-  id: string;
-  patient_id: string;
-  location_id: string | null;
-  status: StayStatus;
   admitted_at: string;
-  planned_discharge_at: string | null;
-  discharged_at: string | null;
-  reason: string;
-  discharge_summary: string;
-  cancellation_reason: string | null;
   author_id: string;
+  cancellation_reason: string | null;
   created_at: string;
+  discharge_summary: string;
+  discharged_at: string | null;
+  id: string;
+  location_id: string | null;
+  patient_id: string;
+  planned_discharge_at: string | null;
+  reason: string;
+  status: StayStatus;
   updated_at: string;
 }
 export interface CarePlan {
-  id: string;
-  stay_id: string;
-  label: string;
-  type: CareType;
-  product_id: string | null;
-  note: string;
-  starts_at: string;
-  ends_at: string;
-  times_json: string;
   active: number;
+  ends_at: string;
+  id: string;
+  label: string;
+  note: string;
+  product_id: string | null;
+  starts_at: string;
+  stay_id: string;
+  times_json: string;
+  type: CareType;
 }
 export interface CarePlanDraft {
-  label: string;
-  type: string;
-  startsAt: string;
   endsAt: string;
-  times: string[];
-  productId?: string;
+  label: string;
   note?: string;
+  productId?: string;
+  startsAt: string;
+  times: string[];
+  type: string;
 }
 export interface StayHistory {
-  id: string;
+  author_id: string;
+  changed_at: string;
   event: string;
   from_status: StayStatus | null;
-  to_status: StayStatus;
-  author_id: string;
+  id: string;
   reason: string | null;
-  changed_at: string;
+  to_status: StayStatus;
 }
 export interface StayLocation {
+  active: number;
   id: string;
   name: string;
-  type: "cage" | "box" | "chenil";
-  species: string | null;
-  active: number;
   note: string;
+  species: string | null;
+  type: "cage" | "box" | "chenil";
 }
 export interface VitalDraft {
-  recordedAt: string;
-  temperatureC?: number;
-  heartRate?: number;
-  respiratoryRate?: number;
-  weightKg?: number;
-  generalState?: string;
   appetite?: string;
+  generalState?: string;
+  heartRate?: number;
   note?: string;
+  recordedAt: string;
+  respiratoryRate?: number;
+  temperatureC?: number;
+  weightKg?: number;
 }
 export interface VitalSign {
-  id: string;
-  stay_id: string;
-  recorded_at: string;
-  temperature_c: number | null;
-  heart_rate: number | null;
-  respiratory_rate: number | null;
-  weight_kg: number | null;
-  general_state: string | null;
   appetite: string | null;
-  note: string;
   author_id: string;
+  general_state: string | null;
+  heart_rate: number | null;
+  id: string;
+  note: string;
+  recorded_at: string;
+  respiratory_rate: number | null;
+  stay_id: string;
+  temperature_c: number | null;
+  weight_kg: number | null;
 }
 export function createStayStore(
   persistence: CarePersistence,

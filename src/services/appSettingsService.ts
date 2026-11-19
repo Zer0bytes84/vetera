@@ -152,12 +152,12 @@ export async function markSetupComplete(): Promise<void> {
  * Get stored license info
  */
 export interface StoredLicense {
-  activationToken: string;
-  key: string;
-  email: string;
   activatedAt: string;
-  lastSeen?: number;
+  activationToken: string;
   denied?: string;
+  email: string;
+  key: string;
+  lastSeen?: number;
 }
 
 export async function getLicenseInfo(): Promise<StoredLicense | null> {

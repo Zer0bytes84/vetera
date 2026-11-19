@@ -17,8 +17,8 @@ import {
 } from "./dropdown-menu";
 
 export interface ListFilterOption {
-  value: string;
   label: string;
+  value: string;
 }
 
 /** Compact, controlled list filter; label and selected value stay visually distinct. */

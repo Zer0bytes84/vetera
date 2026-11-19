@@ -7,18 +7,18 @@ import {
 import { stockDate, stockDay, stockTimestamp } from "./stock-date";
 
 export interface StockBucket {
+  expiryDate: string | null;
   id: string;
-  productId: string;
-  lotId: string | null;
   locationId: string;
+  lotId: string | null;
+  productId: string;
   quantity: number;
   receivedAt: string;
-  expiryDate: string | null;
 }
 export interface StockSelection {
+  locationId?: string;
   /** Undefined: FIFO. Null: explicitly use stock without a lot. */
   lotId?: string | null;
-  locationId?: string;
 }
 export interface StockAllocation {
   balanceId: string;

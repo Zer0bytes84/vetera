@@ -10,12 +10,12 @@ export interface OccupancyUnit {
 }
 
 export interface OccupancySummary {
-  units: OccupancyUnit[];
-  total: number;
-  occupied: number;
-  free: number;
   /** Said only when planned discharges back it; never guessed. */
   forecast: string | null;
+  free: number;
+  occupied: number;
+  total: number;
+  units: OccupancyUnit[];
 }
 
 const DAY = 24 * 60 * 60 * 1000;

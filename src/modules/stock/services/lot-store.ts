@@ -18,25 +18,25 @@ import {
 } from "./stock-database";
 
 export interface InventoryBucket extends StockBucket {
-  lotNumber: string | null;
-  locationName: string;
   locationActive: number;
+  locationName: string;
+  lotNumber: string | null;
 }
 export interface InventoryLocation {
+  active: number;
   id: string;
   name: string;
-  active: number;
 }
 export interface LotRegistrationInput {
-  id: string;
-  productId: string;
-  lotNumber: string;
-  expiryDate: string | null;
-  quantity: number;
-  mode: "identify" | "receive";
-  locationId: string;
-  receivedAt?: string;
   authorId: string;
+  expiryDate: string | null;
+  id: string;
+  locationId: string;
+  lotNumber: string;
+  mode: "identify" | "receive";
+  productId: string;
+  quantity: number;
+  receivedAt?: string;
   unitCostAmount?: number;
 }
 export interface StockOperationResult {

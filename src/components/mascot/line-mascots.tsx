@@ -15,31 +15,31 @@ const SW = 3;
 export type LineMood = "neutral" | "happy" | "thinking";
 
 export interface LineAnimal {
-  label: string;
   /** Behind the head: horns, mane, wool, spikes, shell. */
   back?: ReactNode;
+  cheeks?: boolean;
   /** Ears, behind the head, each in its own group so it can twitch. */
   earL?: ReactNode;
-  earR?: ReactNode;
   /** Pivot of each ear, for the twitch. */
   earPivot?: [number, number, number, number];
-  head: string;
-  /** On the head, under the eyes: patches, stripes, spots. */
-  marks?: ReactNode;
-  /** Over the lower face: snout, nose, beak. */
-  muzzle?: ReactNode;
-  /** In front of everything and never clipped: a paw, a beard. */
-  front?: ReactNode;
-  eyeY: number;
+  earR?: ReactNode;
   eyeDx: number;
-  pupil?: "dot" | "bar";
   /** Eyes drawn larger than the others' (the owl's discs); 1 by default. */
   eyeScale?: number;
   /** Eye outline when the eyes sit on a black patch (the ferret's mask): paper, or they are lost in it. */
   eyeStroke?: string;
+  eyeY: number;
+  /** In front of everything and never clipped: a paw, a beard. */
+  front?: ReactNode;
+  head: string;
+  label: string;
+  /** On the head, under the eyes: patches, stripes, spots. */
+  marks?: ReactNode;
   /** Mouth line height; null for a beak. */
   mouthY: number | null;
-  cheeks?: boolean;
+  /** Over the lower face: snout, nose, beak. */
+  muzzle?: ReactNode;
+  pupil?: "dot" | "bar";
 }
 
 const HEAD_ROUND =

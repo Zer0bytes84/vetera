@@ -8,12 +8,12 @@ import type {
 
 export type AssistantTask = "summary" | "soap" | "email" | "appointments";
 export interface AssistantRecord {
-  patient: Patient;
-  ownerName?: string;
-  weight?: WeightEntry;
-  soaps: ConsultationSoap[];
   appointments: Appointment[];
+  ownerName?: string;
+  patient: Patient;
+  soaps: ConsultationSoap[];
   vaccinations: Vaccination[];
+  weight?: WeightEntry;
 }
 const date = (value: string) => {
   const parsed = new Date(value);

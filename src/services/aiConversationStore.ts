@@ -10,17 +10,17 @@ export interface PersistedAIMessage {
   content: string;
   id: string;
   isToolCall?: boolean;
+  role: "user" | "assistant";
   thoughtTimeSeconds?: number;
   timestamp: string;
   toolSteps?: { title: string; type?: string; sources?: string[] }[];
-  role: "user" | "assistant";
 }
 
 export interface PersistedAIConversation {
-  patientId?: string;
   createdAt: string;
   id: string;
   messages: PersistedAIMessage[];
+  patientId?: string;
   title: string;
   updatedAt: string;
 }

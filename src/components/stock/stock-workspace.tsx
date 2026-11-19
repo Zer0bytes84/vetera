@@ -168,14 +168,14 @@ function StatusBadge({ product }: { product: Product }) {
 }
 
 interface StockRow extends DataRow {
-  name: string;
-  state: string;
-  qty: number;
-  min: number;
-  buy: number;
-  sell: number;
-  expiry: string;
   actions: string;
+  buy: number;
+  expiry: string;
+  min: number;
+  name: string;
+  qty: number;
+  sell: number;
+  state: string;
 }
 
 const STATUS_TONE: Record<Exclude<StockFilter, "all">, StatusTone> = {

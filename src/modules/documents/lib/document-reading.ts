@@ -1,15 +1,15 @@
 import { z } from "zod";
 
 export interface DocumentPage {
+  confidence?: number;
+  method: "text" | "ocr";
   number: number;
   text: string;
-  method: "text" | "ocr";
-  confidence?: number;
 }
 export interface ReadingProgress {
   message: string;
-  progress?: number;
   page?: number;
+  progress?: number;
 }
 export interface ReadDocument {
   name: string;

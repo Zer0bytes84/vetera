@@ -9,18 +9,18 @@ import type { StockDatabase, StockProduct } from "./stock-database";
 
 interface CareMovement {
   id: string;
-  product_id: string;
-  quantity_delta: number;
   patient_id: string | null;
-  unit_snapshot: string | null;
+  product_id: string;
   product_name_snapshot: string | null;
+  quantity_delta: number;
+  unit_snapshot: string | null;
 }
 interface OriginalAllocation {
   balance_id: string;
-  quantity_delta: number;
-  lot_number_snapshot: string | null;
   expiry_date_snapshot: string | null;
   location_name_snapshot: string;
+  lot_number_snapshot: string | null;
+  quantity_delta: number;
 }
 
 /** Caller owns the transaction with care status, invoice and history. Never infer a debit from the care's current quantity. */

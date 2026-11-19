@@ -73,9 +73,9 @@ interface ViewRegistryProps {
   currentTheme: ThemeMode;
   onNavigate: (view: View) => void;
   onNavigateToPatient?: (patientId: string) => void;
+  onOpenAIAgent?: () => void;
   /** Opens the full patient record, without the quick-read panel. */
   onOpenPatientRecord?: (patientId: string) => void;
-  onOpenAIAgent?: () => void;
   onThemeChange: (mode: ThemeMode) => void;
   patientId?: string | null;
   userDisplayName?: string;

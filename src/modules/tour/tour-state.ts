@@ -23,14 +23,14 @@ type TourInvitation = "unseen" | "shown" | "closed";
 type TourStatus = "idle" | "running" | "done" | "quit";
 
 export interface TourState {
+  appointmentId: string | null;
   invitation: TourInvitation;
+  patientId: string | null;
+  /** ISO. Seules les données créées après cet instant comptent pour une étape. */
+  startedAt: string | null;
   status: TourStatus;
   /** Index de l'étape en cours dans TOUR_STEP_IDS, tant que le tour tourne. */
   step: number;
-  /** ISO. Seules les données créées après cet instant comptent pour une étape. */
-  startedAt: string | null;
-  patientId: string | null;
-  appointmentId: string | null;
 }
 
 export const FRESH_TOUR_STATE: TourState = {

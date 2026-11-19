@@ -15,22 +15,22 @@ import {
 } from "../v2/model";
 
 export interface NowSnapshot {
-  today: ScheduleEntry[];
-  next?: ScheduleEntry;
   allergies?: string;
-  waiting: ScheduleEntry[];
-  /** Waiting room order with an estimated time for each patient. */
-  queue: QueueEstimate[];
-  maximumWait: number;
-  startsIn: number | null;
   /** When the summary was computed, shown as "Mis à jour à". */
   at: Date;
+  maximumWait: number;
+  next?: ScheduleEntry;
+  /** Waiting room order with an estimated time for each patient. */
+  queue: QueueEstimate[];
+  startsIn: number | null;
+  today: ScheduleEntry[];
+  waiting: ScheduleEntry[];
 }
 export interface QueueEstimate {
   entry: ScheduleEntry;
-  position: number;
   /** Estimated time the patient is seen, from the planned slot lengths. */
   estimatedAt: Date;
+  position: number;
 }
 const MINIMUM_SLOT_MS = 5 * 60_000;
 /**

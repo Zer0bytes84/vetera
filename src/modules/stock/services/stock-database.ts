@@ -1,18 +1,18 @@
 import { StockError } from "@/domain/stock";
 
 export interface StockDatabase {
-  select<T>(sql: string, values?: unknown[]): Promise<T>;
   execute(sql: string, values?: unknown[]): Promise<unknown>;
+  select<T>(sql: string, values?: unknown[]): Promise<T>;
 }
 export interface StockProduct {
+  archived_at: string | null;
+  expiry_date: string | null;
   id: string;
   name: string;
-  unit: string;
   quantity: number;
-  stock_tracked: number;
-  archived_at: string | null;
   sale_price_amount: number;
-  expiry_date: string | null;
+  stock_tracked: number;
+  unit: string;
 }
 export async function stockProductInDatabase(
   db: StockDatabase,

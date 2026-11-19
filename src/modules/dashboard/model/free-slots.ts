@@ -9,22 +9,22 @@ import { parseDashboardDate } from "../v2/model";
  */
 
 export interface FreeSlot {
-  id: string;
   /** Local day, "2026-11-10". */
   day: string;
+  end: string;
+  id: string;
   /** "HH:MM", local. */
   start: string;
-  end: string;
   startsAt: Date;
   /** The first veterinarian free on it, when the clinic has veterinarians. */
   vetId?: string;
 }
 
 export interface SlotWindow {
-  from: number;
-  to: number;
   /** Where the hours come from: the clinic's own bookings, or the default when there are too few. */
   basis: "bookings" | "default";
+  from: number;
+  to: number;
 }
 
 const SLOT_MINUTES = 30;

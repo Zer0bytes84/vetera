@@ -239,12 +239,12 @@ function NotificationItemRow({
 }
 
 export interface NotificationCenterProps {
-  open?: boolean;
-  onOpenChange?: (open: boolean) => void;
   anchor?: HTMLElement | null | RefObject<HTMLElement | null>;
   hideTrigger?: boolean;
   onNavigate: (view: View) => void;
   onNavigateToPatient?: (patientId: string) => void;
+  onOpenChange?: (open: boolean) => void;
+  open?: boolean;
 }
 
 export function NotificationCenter({

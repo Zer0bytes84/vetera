@@ -4,9 +4,9 @@ import type { Patient } from "@/types/db";
 import { isClinicalSignal } from "./medical-record-summary";
 
 interface PatientSafetyZoneProps {
-  patient: Patient;
   /** The record shows the allergy on the patient's line: the zone then holds only the restraint. */
   allergyElsewhere?: boolean;
+  patient: Patient;
 }
 
 /**

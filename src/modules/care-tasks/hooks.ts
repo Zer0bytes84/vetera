@@ -1,12 +1,12 @@
 import type { CareTask } from "./domain";
 export interface CareCompletedEvent {
-  taskId: string;
-  patientId: string;
   act: string;
-  scheduledAt: string;
   completedAt: string;
   executorId: string;
+  patientId: string;
   productId: string | null;
+  scheduledAt: string;
+  taskId: string;
 }
 type CompletionHook = (task: Readonly<CareTask>) => void | Promise<void>;
 let completionHook: CompletionHook = () => undefined;

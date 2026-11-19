@@ -4,12 +4,12 @@ import type { LocalAiPhase } from "../hooks/use-local-consultation-ai";
 import type { LocalAiProgress } from "../local-ai/worker-protocol";
 
 interface Props {
-  phase: LocalAiPhase;
-  progress: LocalAiProgress;
+  failed: boolean;
+  hasNote: boolean;
   hasTranscript: boolean;
   patientVerified: boolean;
-  hasNote: boolean;
-  failed: boolean;
+  phase: LocalAiPhase;
+  progress: LocalAiProgress;
 }
 
 // This is an activity log of observable operations, not generated reasoning.

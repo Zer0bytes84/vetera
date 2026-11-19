@@ -19,49 +19,49 @@ import type { Receivable } from "../v2/financial-model";
 export type { WidgetState } from "./clinical/shared";
 
 export interface ClinicalDashboardViewProps {
-  now: NowSnapshot;
+  actionFilter: ActionFilter;
+  alerts: ClinicalAlert[];
+  busyIds: string[];
+  cash: ReturnType<typeof buildClinicalCash>;
+  cashPeriod: ClinicalCashPeriod;
+  context: { label: string; rows: ScheduleEntry[] };
   day: ScheduleEntry[];
   dayDate: Date;
-  context: { label: string; rows: ScheduleEntry[] };
-  alerts: ClinicalAlert[];
   followUp: { count: number; underTreatment: number; hospitalized: number };
+  isCustomizing: boolean;
+  now: NowSnapshot;
+  onActionFilter: (filter: ActionFilter) => void;
+  onAgenda: () => void;
+  onCashPeriod: (period: ClinicalCashPeriod) => void;
+  onCompleteTask: (id: string) => void;
+  onCustomizingChange: (value: boolean) => void;
+  onFinances: () => void;
+  /** Visits move on in Flux only: the dashboard shows them there. */
+  onFlux: (id?: string) => void;
+  onOpenAlert: (alert: ClinicalAlert) => void;
+  onOpenPatient: (id: string) => void;
+  onPatientIntent: () => void;
+  onPatientIntentCancel: () => void;
+  onPatients: () => void;
+  onPlan: (date?: Date) => void;
+  onReminders: () => void;
+  onShiftDay: (days: number) => void;
+  onToday: () => void;
+  onTrendsOpen: (open: boolean) => void;
+  onTrendsPeriod: (days: 30 | 90) => void;
   patientRows: ReturnType<typeof buildPatientFollowUpRows>;
-  cash: ReturnType<typeof buildClinicalCash>;
   pending: number;
-  cashPeriod: ClinicalCashPeriod;
   receivables: Receivable[];
-  trends: ReturnType<typeof buildClinicalTrends>;
-  actionFilter: ActionFilter;
   reducedMotion: boolean;
+  renderRow: (id: string, index: number, content: ReactNode) => ReactNode;
   states: Record<
     "now" | "day" | "actions" | "patients" | "cash" | "trends",
     WidgetState
   >;
-  busyIds: string[];
-  isCustomizing: boolean;
-  onCustomizingChange: (value: boolean) => void;
+  trends: ReturnType<typeof buildClinicalTrends>;
   trendsOpen: boolean;
-  onTrendsOpen: (open: boolean) => void;
-  onTrendsPeriod: (days: 30 | 90) => void;
-  onCashPeriod: (period: ClinicalCashPeriod) => void;
-  onActionFilter: (filter: ActionFilter) => void;
-  onShiftDay: (days: number) => void;
-  onToday: () => void;
-  /** Visits move on in Flux only: the dashboard shows them there. */
-  onFlux: (id?: string) => void;
-  onOpenPatient: (id: string) => void;
-  onPatientIntent: () => void;
-  onPatientIntentCancel: () => void;
-  onCompleteTask: (id: string) => void;
-  onOpenAlert: (alert: ClinicalAlert) => void;
-  onAgenda: () => void;
-  onPlan: (date?: Date) => void;
-  onPatients: () => void;
-  onFinances: () => void;
-  onReminders: () => void;
   /** The dashboard's view switch, shown beside « Ouvrir Flux ». */
   viewControl?: ReactNode;
-  renderRow: (id: string, index: number, content: ReactNode) => ReactNode;
 }
 export function ClinicalDashboardView(p: ClinicalDashboardViewProps) {
   const blocks = [
