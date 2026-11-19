@@ -85,8 +85,8 @@ export interface CliniqueProps {
 }
 
 export interface BillingItem {
-  desc: string;
   amount: number;
+  desc: string;
 }
 
 export interface SaveDraftOptions {

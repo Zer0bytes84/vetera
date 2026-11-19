@@ -5,11 +5,11 @@ import type { GeneratorCandidate, GeneratorFamily } from "./generator-choice";
 export type SearchModel = "embeddinggemma" | "embeddinggemma2" | "arctic";
 
 export interface LocalAiProgress {
+  attempt?: 1 | 2;
+  characters?: number;
   message: string;
   progress?: number;
   stage?: "loading" | "generating" | "validating" | "retrying";
-  characters?: number;
-  attempt?: 1 | 2;
 }
 export type WorkerRequest =
   // threads: ONNX threads for Whisper (applied only in a cross-origin isolated page).

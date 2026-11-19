@@ -107,10 +107,10 @@ const invalidateTableRows = (tableName: string) => {
 };
 
 interface SQLiteChangedDetail {
-  tableName: string;
   cacheFresh?: boolean;
   cacheInvalidated?: boolean;
   sourceId?: string;
+  tableName: string;
 }
 
 // External writes (imports, authentication, invoicing) must invalidate even
@@ -313,8 +313,8 @@ const normalizeBooleanFields = (
 };
 
 export interface SQLiteWriteStatus {
-  pending: number;
   error: string | null;
+  pending: number;
   savedAt: number | null;
 }
 let writeStatus: SQLiteWriteStatus = { pending: 0, error: null, savedAt: null };

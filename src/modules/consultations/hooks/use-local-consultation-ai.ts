@@ -41,28 +41,28 @@ export type LocalAiPhase =
   | "loading-soap"
   | "generating";
 interface Attempt {
+  capture?: Awaited<ReturnType<typeof captureAudio>>;
   controller: AbortController;
   language?: DictationLanguage;
-  session?: LocalInferenceSession;
-  microphone?: Awaited<ReturnType<typeof prepareMicrophone>>;
-  capture?: Awaited<ReturnType<typeof captureAudio>>;
-  /** Live microphone level for the recording indicator. */
-  meter?: ReturnType<typeof createLevelMeter>;
-  /** Model and threads of the dictation session, to reuse it for the next rubric. */
-  whisperKey?: string;
   /** Model load started with the microphone; awaited before transcribing. */
   loading?: Promise<void>;
+  /** Live microphone level for the recording indicator. */
+  meter?: ReturnType<typeof createLevelMeter>;
+  microphone?: Awaited<ReturnType<typeof prepareMicrophone>>;
   /** Native companion path: no WASM session, no parked model. */
   native?: boolean;
+  session?: LocalInferenceSession;
+  /** Model and threads of the dictation session, to reuse it for the next rubric. */
+  whisperKey?: string;
 }
 type PreparedMicrophone = Awaited<ReturnType<typeof prepareMicrophone>>;
 /** Microphone kept open between the dictations of one guided note. */
 interface HeldMicrophone {
-  microphone: PreparedMicrophone;
   controller: AbortController;
+  idle?: ReturnType<typeof setTimeout>;
+  microphone: PreparedMicrophone;
   /** Its level has settled once: later dictations listen at once. */
   settled: boolean;
-  idle?: ReturnType<typeof setTimeout>;
 }
 /** A held microphone left unused this long is closed. */
 export const MICROPHONE_HOLD_MS = 120_000;

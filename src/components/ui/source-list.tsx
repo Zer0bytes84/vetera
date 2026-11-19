@@ -20,27 +20,27 @@ import { enter } from "@/lib/motion-tokens";
 import { cn } from "@/lib/utils";
 
 export interface Source {
-  id: string;
-  /** Whose and what: « Rex · Évaluation ». */
-  title: ReactNode;
+  /** The vet's actions on the passage: copy, insert. */
+  actions?: ReactNode;
+  /** Display date, e.g. « 12 oct. 2026 ». */
+  date?: string;
   /** The kind of record it comes from; sources are grouped by it. */
   group: string;
   icon?: LucideIcon;
-  /** A short tag after the title, e.g. the SOAP rubric. */
-  tag?: string;
-  /** Display date, e.g. « 12 oct. 2026 ». */
-  date?: string;
+  id: string;
   /** The passage found, already highlighted by the caller: it is what the source is shown for. */
   passage: ReactNode;
-  /** The vet's actions on the passage: copy, insert. */
-  actions?: ReactNode;
+  /** A short tag after the title, e.g. the SOAP rubric. */
+  tag?: string;
+  /** Whose and what: « Rex · Évaluation ». */
+  title: ReactNode;
 }
 
 export interface SourceListProps {
-  sources: Source[];
-  heading: string;
-  subtitle?: string;
   className?: string;
+  heading: string;
+  sources: Source[];
+  subtitle?: string;
 }
 
 export function SourceList({

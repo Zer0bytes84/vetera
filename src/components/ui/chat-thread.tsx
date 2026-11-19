@@ -19,29 +19,29 @@ import { enter, exit } from "@/lib/motion-tokens";
 import { cn } from "@/lib/utils";
 
 export interface ThreadMessage {
-  id: string;
-  role: "user" | "assistant";
-  content: ReactNode;
   /** ISO timestamp; drives grouping and the hover time. */
   at: string;
   /** Name shown at the start of a group; defaults to `userName` / `agentName`. */
   author?: string;
-  streaming?: boolean;
+  content: ReactNode;
+  id: string;
   /** The content brings its own bubble (the vet's `UserMessage`): the thread draws none around it. */
   plain?: boolean;
+  role: "user" | "assistant";
+  streaming?: boolean;
 }
 
 export interface ChatThreadProps {
-  messages: ThreadMessage[];
   agentName?: string;
-  userName?: string;
+  className?: string;
+  /** Rendered after the last message: the assistant's live state, its questions. */
+  footer?: ReactNode;
+  messages: ThreadMessage[];
   /** Custom avatar per role; the assistant's is the app's mascot (the panel passes it with its mood). */
   renderAvatar?: (message: ThreadMessage) => ReactNode;
   /** Show the author's name at the start of a turn. The panel hides it: the mascot and the bubble's side say who speaks. */
   showNames?: boolean;
-  /** Rendered after the last message: the assistant's live state, its questions. */
-  footer?: ReactNode;
-  className?: string;
+  userName?: string;
 }
 
 /** Turns from the same side within this window share one header. */

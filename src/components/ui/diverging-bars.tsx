@@ -25,38 +25,38 @@ import { cn } from "@/lib/utils";
  */
 
 export interface DivergingSeries {
+  /** Any CSS color. Defaults to the palette by position, so a series keeps its color. */
+  color?: string;
   id: string;
   label: string;
   /** One value per label. */
   values: number[];
-  /** Any CSS color. Defaults to the palette by position, so a series keeps its color. */
-  color?: string;
 }
 
 export interface DivergingBarsProps {
-  /** One label per column, e.g. a date. Every few are drawn under the chart. */
-  labels: string[];
-  /** Longer names of the columns, for the tooltip and screen readers. */
-  titles?: string[];
-  /** Index of the column marked as today. */
-  marker?: number;
-  /** Stacked upward, first series at the bottom. */
-  series: DivergingSeries[];
-  /** Hangs below the zero line on its own, smaller scale, e.g. escalations. */
-  below?: DivergingSeries;
-  /** Big number above the chart, with a caption next to it. Rolls when it changes. */
-  headline?: { value: string; caption?: string };
   /** Right side of the headline row: a secondary stat. */
   aside?: React.ReactNode;
-  title: string;
-  subtitle?: ReactNode;
+  /** Hangs below the zero line on its own, smaller scale, e.g. escalations. */
+  below?: DivergingSeries;
+  className?: string;
   /** Under the chart, in the panel. */
   footer?: ReactNode;
   /** Formats ticks and the tooltip. */
   format?: (value: number) => string;
+  /** Big number above the chart, with a caption next to it. Rolls when it changes. */
+  headline?: { value: string; caption?: string };
+  /** One label per column, e.g. a date. Every few are drawn under the chart. */
+  labels: string[];
+  /** Index of the column marked as today. */
+  marker?: number;
   /** Called when a column is hovered, clicked or reached with the arrow keys. */
   onSelect?: (index: number) => void;
-  className?: string;
+  /** Stacked upward, first series at the bottom. */
+  series: DivergingSeries[];
+  subtitle?: ReactNode;
+  title: string;
+  /** Longer names of the columns, for the tooltip and screen readers. */
+  titles?: string[];
 }
 
 // TuffUI's order (blue, teal, purple), as our tokens: the accent blue, the chart teal, the violet tone.

@@ -17,24 +17,24 @@ import { cn } from "@/lib/utils";
 
 /** One part of what is counted (here: characters of the dictation). */
 export interface ContextSegment {
-  id: string;
-  label: string;
-  tokens: number;
-  /** Secondary text under the label. */
-  detail?: string;
-  /** Marks a segment that is always kept. */
-  pinned?: boolean;
   /** Any CSS color. Defaults to the built-in palette by position. */
   color?: string;
+  /** Secondary text under the label. */
+  detail?: string;
+  id: string;
+  label: string;
+  /** Marks a segment that is always kept. */
+  pinned?: boolean;
+  tokens: number;
 }
 
 export interface ContextWindowMeterProps {
+  className?: string;
   data: { limit: number; segments: ContextSegment[]; model?: string };
-  /** Share of the limit (0–1) where the warning zone starts. */
-  warnAt?: number;
   /** `card` for a panel, `inline` for a single row in a composer footer. */
   variant?: "card" | "inline";
-  className?: string;
+  /** Share of the limit (0–1) where the warning zone starts. */
+  warnAt?: number;
 }
 
 // Segment colours: our own tones, in order (blue, violet, green, amber, rose, quiet grey).

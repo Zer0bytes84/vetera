@@ -31,17 +31,25 @@ import { enter, exit, spring } from "@/lib/motion-tokens";
 import { cn } from "@/lib/utils";
 
 export interface ConfirmationItem {
-  id: string;
-  label: string;
   /** A short line under the label: what it holds. */
   detail?: string;
   /** Filled in: shown with a check; empty rubrics show a dash. */
   filled?: boolean;
+  id: string;
+  label: string;
 }
 
 export type ConfirmationStatus = "review" | "confirming" | "done";
 
 export interface ConfirmationCardProps {
+  /** Why confirming is not yet possible; disables the button and says so. */
+  blocked?: string;
+  cancelLabel?: string;
+  className?: string;
+  /** One line instead of the list of items, for a card kept at the foot of a scrolling panel. */
+  compact?: boolean;
+  confirmingLabel?: string;
+  confirmLabel?: string;
   data: {
     title: string;
     subtitle?: string;
@@ -52,20 +60,12 @@ export interface ConfirmationCardProps {
     /** Shown once done, e.g. « Aujourd’hui, 14 h 32 ». */
     doneAt?: string;
   };
-  status?: ConfirmationStatus;
-  onConfirm?: () => void;
-  onEdit?: () => void;
-  onCancel?: () => void;
-  confirmLabel?: string;
-  confirmingLabel?: string;
   doneLabel?: string;
   editLabel?: string;
-  cancelLabel?: string;
-  /** Why confirming is not yet possible; disables the button and says so. */
-  blocked?: string;
-  /** One line instead of the list of items, for a card kept at the foot of a scrolling panel. */
-  compact?: boolean;
-  className?: string;
+  onCancel?: () => void;
+  onConfirm?: () => void;
+  onEdit?: () => void;
+  status?: ConfirmationStatus;
 }
 
 export function ConfirmationCard({

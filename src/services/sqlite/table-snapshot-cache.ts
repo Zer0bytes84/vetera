@@ -5,15 +5,15 @@ export interface CachedRow {
   [key: string]: unknown;
 }
 interface Layer<R> {
-  id: string;
   apply: (rows: R[]) => R[];
+  id: string;
 }
 interface Entry<R> {
   base?: R[];
-  visible?: R[];
   generation: number;
   layers: Map<number, Layer<R>>;
   listeners: Set<() => void>;
+  visible?: R[];
 }
 
 export class TableSnapshotCache<R extends { id: string }> {

@@ -94,8 +94,8 @@ export const PATIENT_SORT_OPTIONS: { value: PatientSort; label: string }[] = [
 ];
 
 interface SortableRecord {
-  patient: Pick<Patient, "name" | "createdAt">;
   lastVisit?: string;
+  patient: Pick<Patient, "name" | "createdAt">;
   upcomingAppointment?: Pick<Appointment, "startTime">;
 }
 

@@ -19,15 +19,15 @@ import type {
 
 /** The rows the engine reads. It never reads anything else: no store, no network, no model. */
 export interface ClinicData {
-  patients: Patient[];
-  owners: Owner[];
   appointments: Appointment[];
+  invoices?: Invoice[];
+  owners: Owner[];
+  patients: Patient[];
+  products?: Product[];
   tasks: Task[];
   transactions: Transaction[];
   /** Read only so that test records are left out exactly as the dashboard leaves them out. */
   vaccinations?: Vaccination[];
-  products?: Product[];
-  invoices?: Invoice[];
 }
 
 export interface AskContext {
@@ -38,35 +38,35 @@ export interface AskContext {
 
 /** A span of days, both ends included. `explicit` is false when the question named none and a default was taken. */
 export interface Period {
-  from: Date;
-  to: Date;
-  label: string;
   explicit: boolean;
+  from: Date;
+  label: string;
+  to: Date;
 }
 
 export type CellKind = "text" | "date" | "datetime" | "money" | "number";
 export type AnswerRow = { id: string } & Record<string, string | number | null>;
 export interface AnswerColumn {
   key: string;
-  label: string;
   kind: CellKind;
+  label: string;
   priority?: 1 | 2 | 3;
 }
 export interface AnswerTable {
-  title: string;
-  noun: [one: string, many: string];
   columns: AnswerColumn[];
-  rows: AnswerRow[];
   exportName: string;
+  noun: [one: string, many: string];
+  rows: AnswerRow[];
+  title: string;
 }
 
 /** What was read to answer, so the vet can check the answer against it. */
 export interface AnswerSource {
+  filter: string;
   id: string;
+  kept: number;
   label: string;
   read: number;
-  kept: number;
-  filter: string;
 }
 
 /**
@@ -75,35 +75,35 @@ export interface AnswerSource {
  */
 export interface Figure {
   id: string;
-  label: string;
-  value: number;
   kind: "count" | "money";
+  label: string;
   sourceId: string;
   tie?: "rows" | "income" | "expense" | "sum";
+  value: number;
 }
 
 export interface AnswerStep {
+  details: { label: string; value: string }[];
   id: string;
   name: string;
   summary?: string;
-  details: { label: string; value: string }[];
 }
 
 export interface TaskDraft {
-  key: string;
-  title: string;
   description: string;
-  patientId: string;
   dueDate: string;
+  key: string;
+  patientId: string;
+  title: string;
 }
 /** A write the assistant suggests. Nothing is saved until the vet validates the card. */
 export interface Proposal {
   id: string;
   kind: "tasks";
-  title: string;
+  skipped: number;
   subtitle: string;
   tasks: TaskDraft[];
-  skipped: number;
+  title: string;
 }
 
 export type Topic = "cash" | "appointments" | "tasks" | "patients";

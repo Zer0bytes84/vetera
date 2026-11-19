@@ -13,23 +13,23 @@ import {
 } from "@/components/ui/sidebar";
 
 export interface NavSubItem {
-  title: string;
   isActive?: boolean;
   onClick?: () => void;
+  title: string;
 }
 
 export interface NavItem {
-  title: string;
   badge?: number;
+  /** Sub-pages, folded under the item until it is opened or toggled. */
+  children?: NavSubItem[];
+  expanded?: boolean;
   icon?: React.ReactNode;
   isActive?: boolean;
   onClick?: () => void;
   /** The pointer or the keyboard reached the entry: the moment to get its page ready. */
   onIntent?: () => void;
-  /** Sub-pages, folded under the item until it is opened or toggled. */
-  children?: NavSubItem[];
-  expanded?: boolean;
   onToggle?: () => void;
+  title: string;
 }
 
 export function NavMain({

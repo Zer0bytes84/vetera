@@ -29,19 +29,19 @@ import { enter, exit as leave } from "@/lib/motion-tokens";
 import { cn } from "@/lib/utils";
 
 export interface QuestionOption {
-  id: string;
-  label: string;
   description?: string;
   icon?: LucideIcon;
+  id: string;
+  label: string;
 }
 
 export interface AgentQuestionData {
-  question: string;
-  options: QuestionOption[];
-  /** Allow several answers instead of one. */
-  multiple?: boolean;
   /** Adds an « Autre chose… » card that turns into a text field. */
   allowOther?: boolean;
+  /** Allow several answers instead of one. */
+  multiple?: boolean;
+  options: QuestionOption[];
+  question: string;
   /** The option the agent would pick, and why. */
   suggested?: { optionId: string; reason: string };
 }
@@ -54,22 +54,22 @@ export interface QuestionAnswer {
 }
 
 export interface AgentQuestionProps {
-  data: AgentQuestionData;
-  /** Controls the state; leave unset to let the card track it. */
-  status?: "pending" | "answered" | "delegated";
-  answer?: QuestionAnswer;
-  onSubmit?: (answer: QuestionAnswer) => void;
-  /** « Laisser l’assistant choisir »: the assistant goes with its suggestion. */
-  onDelegate?: () => void;
-  /** Called from the Undo pill shown for `undoMs` after answering. */
-  onUndo?: () => void;
-  undoMs?: number;
-  /** Controlled selection for multiple-choice questions. */
-  selected?: string[];
-  onSelectedChange?: (ids: string[]) => void;
   /** Name shown above the question: « Assistant IA », never a model name. */
   agent?: string;
+  answer?: QuestionAnswer;
   className?: string;
+  data: AgentQuestionData;
+  /** « Laisser l’assistant choisir »: the assistant goes with its suggestion. */
+  onDelegate?: () => void;
+  onSelectedChange?: (ids: string[]) => void;
+  onSubmit?: (answer: QuestionAnswer) => void;
+  /** Called from the Undo pill shown for `undoMs` after answering. */
+  onUndo?: () => void;
+  /** Controlled selection for multiple-choice questions. */
+  selected?: string[];
+  /** Controls the state; leave unset to let the card track it. */
+  status?: "pending" | "answered" | "delegated";
+  undoMs?: number;
 }
 
 // Cards morph into the summary on screen: a critically damped spring.

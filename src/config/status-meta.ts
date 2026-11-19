@@ -1,8 +1,8 @@
 import type { Appointment, Patient } from "@/types/db";
 
 interface StatusColor {
-  label: string;
   className: string;
+  label: string;
 }
 
 export const APPOINTMENT_TYPE_META: Record<

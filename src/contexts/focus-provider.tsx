@@ -31,15 +31,15 @@ export interface FocusRequest {
 }
 
 interface FocusContextValue {
-  focus: FocusRequest | null;
-  requestFocus: (kind: FocusEntityKind, id: string) => void;
   clearFocus: () => void;
+  focus: FocusRequest | null;
   /**
    * Permet à une vue (Agenda, Taches, Stock, PatientDetail) de s'enregistrer
    * comme handler de focus. Une seule vue à la fois (la plus récemment
    * montée gagne). Retourne un cleanup.
    */
   registerHandler: (handler: ((req: FocusRequest) => void) | null) => void;
+  requestFocus: (kind: FocusEntityKind, id: string) => void;
 }
 
 const FocusContext = createContext<FocusContextValue | null>(null);

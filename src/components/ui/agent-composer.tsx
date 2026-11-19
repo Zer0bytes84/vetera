@@ -24,45 +24,45 @@ import { Panel, Shell } from "@/components/ui/surface";
 import { cn } from "@/lib/utils";
 
 export interface ComposerSuggestion {
+  detail?: string;
   key: string;
   label: string;
-  detail?: string;
 }
 
 export interface ComposerMenu {
+  active: number;
+  items: ComposerSuggestion[];
   /** Accessible name of the list, e.g. « Suggestions de patients ». */
   label: string;
-  items: ComposerSuggestion[];
-  active: number;
   onActiveChange: (index: number) => void;
-  onPick: (item: ComposerSuggestion) => void;
   /** Escape closes the menu without choosing. */
   onDismiss: () => void;
+  onPick: (item: ComposerSuggestion) => void;
 }
 
 export interface AgentComposerProps {
-  value: string;
-  onValueChange: (value: string, caret: number) => void;
-  /** The caret moved (selection, click, arrow keys): the caller finds the « @ » being typed from it. */
-  onCaretChange?: (caret: number) => void;
-  textareaRef?: Ref<HTMLTextAreaElement>;
-  placeholder?: string;
-  maxLength?: number;
+  className?: string;
   disabled?: boolean;
-  /** Accessible name of the field. */
-  label: string;
-  menu?: ComposerMenu;
-  /** Left of the footer: the dictation button, the language. */
-  toolbar?: ReactNode;
-  /** Right of the footer: the counter. */
-  meter?: ReactNode;
-  /** ⌘ or Ctrl + Entrée. Plain Entrée adds a line: a dictation is prose, not a command. */
-  onSubmit?: () => void;
-  /** A question, not prose: plain Entrée sends it and Maj + Entrée adds a line. */
-  submitOnEnter?: boolean;
   /** Takes the height the panel leaves: the field is the work area, not a fixed box. */
   fill?: boolean;
-  className?: string;
+  /** Accessible name of the field. */
+  label: string;
+  maxLength?: number;
+  menu?: ComposerMenu;
+  /** Right of the footer: the counter. */
+  meter?: ReactNode;
+  /** The caret moved (selection, click, arrow keys): the caller finds the « @ » being typed from it. */
+  onCaretChange?: (caret: number) => void;
+  /** ⌘ or Ctrl + Entrée. Plain Entrée adds a line: a dictation is prose, not a command. */
+  onSubmit?: () => void;
+  onValueChange: (value: string, caret: number) => void;
+  placeholder?: string;
+  /** A question, not prose: plain Entrée sends it and Maj + Entrée adds a line. */
+  submitOnEnter?: boolean;
+  textareaRef?: Ref<HTMLTextAreaElement>;
+  /** Left of the footer: the dictation button, the language. */
+  toolbar?: ReactNode;
+  value: string;
 }
 
 export function AgentComposer({

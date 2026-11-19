@@ -25,24 +25,24 @@ import { cn } from "@/lib/utils";
 
 export interface StreamingMessageData {
   content: string;
-  status: "streaming" | "done" | "error";
-  reasoning?: { text: string; durationMs?: number; streaming?: boolean };
   error?: string;
+  reasoning?: { text: string; durationMs?: number; streaming?: boolean };
+  status: "streaming" | "done" | "error";
 }
 
 export interface StreamingMessageProps {
+  /** The message in its bubble (rounded, tinted, the corner at the author's side squared), as the vet's bubble is on the other side. */
+  bubble?: boolean;
+  className?: string;
   data: StreamingMessageData;
   /** Shown in the header: « Assistant IA », never a model name. */
   model?: string;
-  /** Hide the avatar + model row when a surrounding thread already shows the author. */
-  showHeader?: boolean;
-  /** The message in its bubble (rounded, tinted, the corner at the author's side squared), as the vet's bubble is on the other side. */
-  bubble?: boolean;
-  /** Copy and regenerate under a finished message; off for the assistant's fixed prompts. */
-  showActions?: boolean;
   onCopy?: (content: string) => void;
   onRetry?: () => void;
-  className?: string;
+  /** Copy and regenerate under a finished message; off for the assistant's fixed prompts. */
+  showActions?: boolean;
+  /** Hide the avatar + model row when a surrounding thread already shows the author. */
+  showHeader?: boolean;
 }
 
 // Strong ease-out for things entering; exits are quicker than entrances.
@@ -225,8 +225,8 @@ function Reasoning({
 }
 
 interface Segment {
-  text: string;
   kind: "text" | "code" | "bold";
+  text: string;
 }
 
 // Unclosed `code` or **bold** at the tail (mid-stream) already renders styled,

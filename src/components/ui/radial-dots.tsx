@@ -23,35 +23,35 @@ const formatFr = (value: number) => value.toLocaleString("fr-FR");
  */
 
 export interface RadialSeries {
+  /** Any CSS colour. */
+  color: string;
   id: string;
   label: string;
   /** One value per sector. Series stack outward in order. */
   values: number[];
-  /** Any CSS colour. */
-  color: string;
 }
 
 export interface RadialDotsProps {
-  /** One label per sector, clockwise from the top: hours, weekdays. */
-  labels: string[];
-  series: RadialSeries[];
-  title: string;
-  subtitle?: ReactNode;
-  /** Big number in the middle and the line under it. */
-  center: { value: string; caption?: string };
   /** Which sector labels to draw around the edge. Defaults to the four quarters. */
   axis?: number[];
-  /** What a unit is called when a sector is hovered: « 3 rendez-vous ». */
-  format?: (value: number) => string;
-  /** What the sector's tooltip title says (centre, top line). Defaults to its label. */
-  sectorTitle?: (index: number) => string;
-  /** Right of the header: the views. */
-  toolbar?: ReactNode;
+  /** Big number in the middle and the line under it. */
+  center: { value: string; caption?: string };
   /** Under the legend, in the panel. */
   children?: ReactNode;
+  className?: string;
+  /** What a unit is called when a sector is hovered: « 3 rendez-vous ». */
+  format?: (value: number) => string;
+  /** One label per sector, clockwise from the top: hours, weekdays. */
+  labels: string[];
+  /** What the sector's tooltip title says (centre, top line). Defaults to its label. */
+  sectorTitle?: (index: number) => string;
+  series: RadialSeries[];
+  subtitle?: ReactNode;
+  title: string;
+  /** Right of the header: the views. */
+  toolbar?: ReactNode;
   /** Unit written in « 1 point = 2 rendez-vous ». */
   unit?: string;
-  className?: string;
 }
 
 const SIZE = 300;

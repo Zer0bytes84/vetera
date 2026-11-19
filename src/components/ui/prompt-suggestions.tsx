@@ -16,25 +16,25 @@ import { EASE_OUT, exit } from "@/lib/motion-tokens";
 import { cn } from "@/lib/utils";
 
 export interface PromptSuggestion {
-  id: string;
-  title: string;
   /** Second line on cards; ignored by chips. */
   hint?: string;
   icon?: LucideIcon;
+  id: string;
   /** Text to run; defaults to the title. */
   prompt?: string;
+  title: string;
 }
 
 export interface PromptSuggestionsProps {
+  className?: string;
   data: PromptSuggestion[];
-  /** `cards` for an empty chat, `chips` for follow-ups under an answer. */
-  variant?: "cards" | "chips";
-  onSelect: (suggestion: PromptSuggestion, prompt: string) => void;
+  heading?: string;
   /** Shows a refresh button (chips) that asks for new suggestions. */
   onRefresh?: () => void;
+  onSelect: (suggestion: PromptSuggestion, prompt: string) => void;
   refreshing?: boolean;
-  heading?: string;
-  className?: string;
+  /** `cards` for an empty chat, `chips` for follow-ups under an answer. */
+  variant?: "cards" | "chips";
 }
 
 const STAGGER = 0.04;

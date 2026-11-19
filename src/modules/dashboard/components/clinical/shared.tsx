@@ -5,10 +5,10 @@ import { focusRing, SkeletonBlock } from "@/design-system/primitives";
 import type { Patient } from "@/types/db";
 
 export interface WidgetState {
-  loading: boolean;
-  skeleton: boolean;
   error?: string | null;
+  loading: boolean;
   retry: () => void;
+  skeleton: boolean;
 }
 export function RowSkeleton({ count = 3 }: { count?: number }) {
   return (

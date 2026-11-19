@@ -24,14 +24,14 @@ let lastClosedAt = 0;
 const WARM_MS = 400;
 
 export interface TooltipProps {
-  content: React.ReactNode;
+  align?: "start" | "center" | "end";
   /** A single focusable element; it gets aria-describedby pointing at the tooltip. */
   children: React.ReactElement<{ "aria-describedby"?: string; title?: string }>;
-  side?: "top" | "bottom";
-  align?: "start" | "center" | "end";
+  className?: string;
+  content: React.ReactNode;
   /** Hover delay for the first tooltip, in ms. Focus always opens instantly. */
   delay?: number;
-  className?: string;
+  side?: "top" | "bottom";
 }
 
 const placement = {

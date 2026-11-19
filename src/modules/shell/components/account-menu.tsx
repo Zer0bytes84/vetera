@@ -25,15 +25,15 @@ export interface AccountMenuProps {
   avatarUrl?: string | null;
   email: string;
   name: string;
-  role: string;
-  unreadCount: number;
-  onProfile: () => void;
   /** Opens Paramètres on its « Mon cabinet » section. */
   onClinic: () => void;
   onFinances: () => void;
-  onNotifications: () => void;
-  onSettings: () => void;
   onLogout: () => Promise<void> | void;
+  onNotifications: () => void;
+  onProfile: () => void;
+  onSettings: () => void;
+  role: string;
+  unreadCount: number;
 }
 
 /**

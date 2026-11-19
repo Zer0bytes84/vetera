@@ -18,37 +18,37 @@ import { EASE_OUT } from "@/lib/motion-tokens";
 import { cn } from "@/lib/utils";
 
 export interface AgentStatusStep {
-  id: string;
-  label: string;
   /** Milliseconds the step took. */
   durationMs?: number;
+  id: string;
+  label: string;
 }
 
 export type AgentStatusState = "working" | "done" | "stopped" | "error";
 
 export interface AgentStatusData {
-  /** What the assistant is doing right now, e.g. « Écoute en cours ». */
-  label: string;
   /** A changing detail under the label. */
   detail?: string;
+  /** What the assistant is doing right now, e.g. « Écoute en cours ». */
+  label: string;
   /** When the run started (ms since epoch); drives the elapsed timer. */
   startedAt: number;
+  status?: AgentStatusState;
   /** Finished steps, oldest first. The last few show above the current one. */
   steps?: AgentStatusStep[];
-  status?: AgentStatusState;
 }
 
 export interface AgentStatusProps {
+  className?: string;
   data: AgentStatusData;
+  /** How many finished steps to show; 0 hides them. */
+  maxSteps?: number;
+  /** Replaces the three dots while working: the microphone level, for the dictation. */
+  meter?: ReactNode;
   /** Shows a « Arrêter » button while working. */
   onStop?: () => void;
   /** Label of that button; « Annuler » while the microphone is still being prepared. */
   stopLabel?: string;
-  /** Replaces the three dots while working: the microphone level, for the dictation. */
-  meter?: ReactNode;
-  /** How many finished steps to show; 0 hides them. */
-  maxSteps?: number;
-  className?: string;
 }
 
 // Strong ease-out for things entering; exits are quicker than entrances.

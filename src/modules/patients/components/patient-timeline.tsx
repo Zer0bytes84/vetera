@@ -66,22 +66,22 @@ type TimelineKind =
   | "piece";
 
 interface TimelineEntry {
-  id: string;
   at: string;
+  context?: string;
+  id: string;
   kind: TimelineKind;
   label: string;
-  context?: string;
-  summary: string;
-  summaryDetail?: string;
-  /** Quiet: the state an event normally ends in, read as plain text; only the others stay a tag. */
-  statusBadge?: { label: string; className: string; quiet?: boolean };
   /** A visit that was planned or confirmed and whose time has passed with no other status. */
   overdue?: boolean;
-  weightEntry?: WeightEntry;
-  /** Prescriptions, invoices and results this event produced. */
-  pieces?: TimelinePiece[];
   /** A piece no visit produced stands as its own event. */
   piece?: TimelinePiece;
+  /** Prescriptions, invoices and results this event produced. */
+  pieces?: TimelinePiece[];
+  /** Quiet: the state an event normally ends in, read as plain text; only the others stay a tag. */
+  statusBadge?: { label: string; className: string; quiet?: boolean };
+  summary: string;
+  summaryDetail?: string;
+  weightEntry?: WeightEntry;
 }
 
 const KIND_ICON: Record<TimelineKind, typeof Stethoscope> = {

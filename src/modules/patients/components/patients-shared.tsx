@@ -133,12 +133,12 @@ export const OWNER_CONTACT_LABELS: Record<
 };
 
 export interface PatientRecord {
-  patient: Patient;
-  owner?: Owner;
   completedAppointments: Appointment[];
-  upcomingAppointment?: Appointment;
   lastVisit?: string;
+  owner?: Owner;
+  patient: Patient;
   searchIndex: string;
+  upcomingAppointment?: Appointment;
 }
 
 export const PATIENTS_PAGE_SIZE = 12;

@@ -408,17 +408,17 @@ export type TableTab = (typeof TABLE_TABS)[number]["value"];
 
 export interface AgendaTableRow {
   appointment: Appointment;
-  patient?: Patient;
-  owner?: Owner;
-  vet?: AppUser;
-  patientName: string;
-  ownerName: string;
-  vetName: string;
   appointmentAt: string;
-  statusLabel: string;
-  statusClassName: string;
-  tab: TableTab;
+  owner?: Owner;
+  ownerName: string;
+  patient?: Patient;
+  patientName: string;
   searchIndex: string;
+  statusClassName: string;
+  statusLabel: string;
+  tab: TableTab;
+  vet?: AppUser;
+  vetName: string;
 }
 
 export function normalizeDate(value?: string | Date | null) {

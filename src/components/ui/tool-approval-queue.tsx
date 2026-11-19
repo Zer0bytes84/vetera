@@ -36,29 +36,29 @@ import { cn } from "@/lib/utils";
 export type ApprovalDecision = "approved" | "denied";
 
 export interface ApprovalRequest {
-  id: string;
-  /** What is proposed, in words: the rubric concerned. */
-  title: string;
-  /** A short line under the title. */
-  detail?: string;
-  /** Set by the parent once decided; the queue also tracks the decision it just took, for the undo window. */
-  status?: "pending" | ApprovalDecision;
-  /** The vet's own words. */
-  before: string;
   /** The assistant's proposed wording. */
   after: string;
+  /** The vet's own words. */
+  before: string;
+  /** A short line under the title. */
+  detail?: string;
+  id: string;
+  /** Set by the parent once decided; the queue also tracks the decision it just took, for the undo window. */
+  status?: "pending" | ApprovalDecision;
+  /** What is proposed, in words: the rubric concerned. */
+  title: string;
 }
 
 export interface ToolApprovalQueueProps {
+  className?: string;
   data: ApprovalRequest[];
   heading?: string;
-  subtitle?: string;
   /** Called for one request (row actions) or several (selection bar). */
   onDecide?: (requests: ApprovalRequest[], decision: ApprovalDecision) => void;
   /** Takes a decision back, within `undoMs` of taking it here. */
   onUndo?: (request: ApprovalRequest) => void;
+  subtitle?: string;
   undoMs?: number;
-  className?: string;
 }
 
 // Height morphs on a damped spring; opacity leads on enter and exits faster.

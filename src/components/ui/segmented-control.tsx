@@ -14,20 +14,20 @@ import { spring } from "@/lib/motion-tokens";
 import { cn } from "@/lib/utils";
 
 export interface SegmentedOption<T extends string = string> {
-  value: T;
-  label: React.ReactNode;
   disabled?: boolean;
+  label: React.ReactNode;
+  value: T;
 }
 
 export interface SegmentedProps<T extends string = string> {
-  options: SegmentedOption<T>[];
-  value?: T;
+  className?: string;
   defaultValue?: T;
-  onValueChange?: (value: T) => void;
   /** Accessible name for the group. */
   label: string;
+  onValueChange?: (value: T) => void;
+  options: SegmentedOption<T>[];
   size?: "sm" | "md";
-  className?: string;
+  value?: T;
 }
 
 /**

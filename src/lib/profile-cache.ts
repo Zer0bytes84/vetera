@@ -1,8 +1,8 @@
 const PROFILE_CACHE_UPDATED_EVENT = "profile-cache-updated";
 
 interface CachedProfile {
-  displayName?: string;
   avatarUrl?: string;
+  displayName?: string;
 }
 
 function getProfileCacheKey(email: string) {

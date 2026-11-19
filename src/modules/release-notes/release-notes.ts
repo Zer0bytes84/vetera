@@ -34,16 +34,16 @@ import {
  */
 export interface ReleaseHighlight {
   icon: LucideIcon;
-  title: string;
   text: string;
+  title: string;
 }
 
 export interface ReleaseNote {
-  version: string;
-  status: "published" | "draft";
   /** Date de publication, `AAAA-MM-JJ`. Absente tant que la version est en brouillon. */
   date?: string;
   highlights: ReleaseHighlight[];
+  status: "published" | "draft";
+  version: string;
 }
 
 /** Les plus récentes en premier. */

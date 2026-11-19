@@ -37,8 +37,8 @@ export type BrowserTableName =
   | "notification_state";
 
 export interface BrowserRow {
-  id?: string;
   createdAt?: string;
+  id?: string;
   updatedAt?: string;
 }
 

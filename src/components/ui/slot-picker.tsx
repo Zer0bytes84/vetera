@@ -23,26 +23,26 @@ import { cn } from "@/lib/utils";
  */
 
 export interface Slot {
-  id: string;
   /** Local day, "2026-11-10". */
   day: string;
+  end: string;
+  id: string;
   /** "HH:MM", local. */
   start: string;
-  end: string;
 }
 
 export interface SlotPickerProps {
-  title?: string;
-  subtitle?: ReactNode;
-  /** Every column, in order, whether or not it has a free time. */
-  days: string[];
-  slots: Slot[];
+  className?: string;
   /** Words of the confirm button. */
   confirmLabel?: string;
-  onConfirm?: (slot: Slot) => void;
+  /** Every column, in order, whether or not it has a free time. */
+  days: string[];
   /** Under the panel: a footer line. */
   footer?: ReactNode;
-  className?: string;
+  onConfirm?: (slot: Slot) => void;
+  slots: Slot[];
+  subtitle?: ReactNode;
+  title?: string;
 }
 
 const dayDate = (day: string) => new Date(`${day}T00:00:00`);

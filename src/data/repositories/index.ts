@@ -1384,11 +1384,11 @@ export function useAuditLogRepository() {
 }
 
 export interface NotificationStateRow {
+  createdAt: string;
+  dismissedAt: string | null;
   id: string;
   notificationId: string;
   readAt: string | null;
-  dismissedAt: string | null;
-  createdAt: string;
 }
 
 /**

@@ -1,7 +1,7 @@
 export interface AgeParts {
-  years: number;
-  months: number;
   days: number;
+  months: number;
+  years: number;
 }
 
 /**

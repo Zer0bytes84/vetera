@@ -14,12 +14,12 @@ import { getLeaseTimeError, verifyLicenseLease } from "./licenseLease";
 
 export interface LicenseAccess {
   allowed: boolean;
-  message: string;
-  offlineUntil?: number;
+  email?: string;
   expiresAt?: number | null;
   /** End of the signed lease that granted this access (never extended locally). */
   leaseUntil?: number;
-  email?: string;
+  message: string;
+  offlineUntil?: number;
   /** The check itself failed (local read, IPC): nothing was decided. */
   transient?: boolean;
 }

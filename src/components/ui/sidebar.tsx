@@ -37,17 +37,17 @@ const SIDEBAR_WIDTH_ICON = "3.5rem";
 const SIDEBAR_KEYBOARD_SHORTCUT = "b";
 
 interface SidebarContextProps {
-  state: "expanded" | "collapsed";
-  open: boolean;
-  setOpen: (open: boolean) => void;
-  openMobile: boolean;
-  setOpenMobile: (open: boolean) => void;
   isMobile: boolean;
   isResizing: boolean;
-  setIsResizing: (isResizing: boolean) => void;
-  sidebarWidth: number;
-  setSidebarWidth: (width: number) => void;
+  open: boolean;
+  openMobile: boolean;
   resetSidebarWidth: () => void;
+  setIsResizing: (isResizing: boolean) => void;
+  setOpen: (open: boolean) => void;
+  setOpenMobile: (open: boolean) => void;
+  setSidebarWidth: (width: number) => void;
+  sidebarWidth: number;
+  state: "expanded" | "collapsed";
   toggleSidebar: () => void;
 }
 

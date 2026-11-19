@@ -27,33 +27,33 @@ import { Spinner } from "@/components/ui/loader";
 
 export interface UserMessageAttachment {
   id: string;
-  name: string;
   kind: "image" | "file";
-  /** Bytes. */
-  size?: number;
+  name: string;
   /** Optional thumbnail for images. */
   previewUrl?: string;
+  /** Bytes. */
+  size?: number;
 }
 
 export type UserMessageStatus = "sending" | "sent" | "failed";
 
 export interface UserMessageData {
-  id: string;
-  content: string;
   attachments?: UserMessageAttachment[];
+  content: string;
+  edited?: boolean;
+  id: string;
   /** Display time, e.g. « 14:02 ». */
   sentAt?: string;
   status?: UserMessageStatus;
-  edited?: boolean;
 }
 
 export interface UserMessageProps {
+  className?: string;
   data: UserMessageData;
+  onCopy?: (text: string) => void;
   /** Save the edited text. Hides the edit action when omitted (the panel edits a rubric by going back to it). */
   onEdit?: (text: string) => void;
   onRetry?: () => void;
-  onCopy?: (text: string) => void;
-  className?: string;
 }
 
 export const formatBytes = (n: number) =>

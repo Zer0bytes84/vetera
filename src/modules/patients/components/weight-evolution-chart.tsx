@@ -27,8 +27,8 @@ const chartConfig = {
 
 export interface WeightChartPoint {
   date: string;
-  weightKg: number;
   measuredAt: string;
+  weightKg: number;
 }
 
 function buildPoints(entries: WeightEntry[]): WeightChartPoint[] {

@@ -28,20 +28,20 @@ import { cn } from "@/lib/utils";
  */
 
 export interface HexCell {
-  id: string;
   /** Grid position. Odd rows sit half a cell to the right. */
   col: number;
-  row: number;
   count: number;
-  /** 0 for an empty cell, then 1 to 4. */
-  level: number;
-  /** Written inside the hexagon. */
-  label?: string;
-  /** Tooltip title and body. */
-  title: string;
   detail: string;
   /** After now: booked, not happened. */
   future?: boolean;
+  id: string;
+  /** Written inside the hexagon. */
+  label?: string;
+  /** 0 for an empty cell, then 1 to 4. */
+  level: number;
+  row: number;
+  /** Tooltip title and body. */
+  title: string;
   today?: boolean;
 }
 
@@ -51,33 +51,33 @@ export interface HexCaption {
 }
 
 export interface HexDensityProps {
-  cells: HexCell[];
-  cols: number;
-  rows: number;
-  /** Above the grid, at a column. */
-  columnCaptions?: HexCaption[];
-  /** Left of the grid, at a row. */
-  rowCaptions?: HexCaption[];
-  /** Colour of a filled cell. */
-  tone?: string;
   /** Height of the grid's area in px: hexagons shrink to fit it, and every view takes the same space. */
   areaHeight?: number;
-  /** Largest hexagon radius in px. It shrinks so every column fits. */
-  radius?: number;
-  title: string;
-  subtitle?: ReactNode;
-  /** Right of the header: the views. */
-  toolbar?: ReactNode;
-  /** Read by screen readers instead of the grid. */
-  summary: string;
+  binUnit?: string;
+  cells: HexCell[];
   /** Under the grid, in the panel: the figures and the footer. */
   children?: ReactNode;
-  /** What one count is called, plural, and what one cell is called, plural. */
-  unit?: string;
-  binUnit?: string;
+  className?: string;
+  cols: number;
+  /** Above the grid, at a column. */
+  columnCaptions?: HexCaption[];
   /** Written on the fullest cell. */
   densestLabel?: string;
-  className?: string;
+  /** Largest hexagon radius in px. It shrinks so every column fits. */
+  radius?: number;
+  /** Left of the grid, at a row. */
+  rowCaptions?: HexCaption[];
+  rows: number;
+  subtitle?: ReactNode;
+  /** Read by screen readers instead of the grid. */
+  summary: string;
+  title: string;
+  /** Colour of a filled cell. */
+  tone?: string;
+  /** Right of the header: the views. */
+  toolbar?: ReactNode;
+  /** What one count is called, plural, and what one cell is called, plural. */
+  unit?: string;
 }
 
 const SQRT3 = Math.sqrt(3);

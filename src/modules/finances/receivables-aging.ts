@@ -19,12 +19,12 @@ export const AGING_BUCKETS = [
 ] as const;
 
 export interface AgingBucket {
-  id: (typeof AGING_BUCKETS)[number]["id"];
-  label: string;
   /** Dinars still to collect in this age band. */
   amount: number;
   /** Open invoices and pending entries in it. */
   count: number;
+  id: (typeof AGING_BUCKETS)[number]["id"];
+  label: string;
 }
 
 const DAY = 86_400_000;

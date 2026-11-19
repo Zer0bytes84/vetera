@@ -90,11 +90,11 @@ function useTourInvoices(enabled: boolean): {
 }
 
 interface Box {
-  x: number;
-  y: number;
-  width: number;
   height: number;
   radius: string;
+  width: number;
+  x: number;
+  y: number;
 }
 
 /**

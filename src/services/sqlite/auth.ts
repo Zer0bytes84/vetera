@@ -53,21 +53,21 @@ async function getRegistrationRole(): Promise<string> {
 }
 
 interface BrowserUserRecord {
-  id: string;
-  email: string;
-  passwordHash?: string;
-  password_hash?: string;
+  avatarUrl?: string | null;
   displayName: string;
+  email: string;
+  id: string;
+  password_hash?: string;
+  passwordHash?: string;
   role: string;
   status: "active" | "inactive";
-  avatarUrl?: string | null;
 }
 
 interface BrowserSessionRecord {
-  id: string;
-  userId: string;
-  token: string;
   expiresAt: string;
+  id: string;
+  token: string;
+  userId: string;
 }
 
 function legacySha256(value: string): string {

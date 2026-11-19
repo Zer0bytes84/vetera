@@ -9,9 +9,9 @@ import { PatientPeekView } from "../components/patient-peek-view";
 import { useDelayedSkeleton } from "@/hooks/useDelayedSkeleton";
 export const PATIENT_PEEK_EVENT = "baitari:patient-peek";
 export interface PatientPeekDetail {
-  id: string;
   /** Opened from a list cursor: no backdrop, focus stays on the list. */
   follow?: boolean;
+  id: string;
   /** Same patient already shown: close instead (Space twice). */
   toggle?: boolean;
 }

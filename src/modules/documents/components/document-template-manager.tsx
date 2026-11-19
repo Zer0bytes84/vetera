@@ -57,11 +57,11 @@ import "../document-module.css";
 import { guard } from "@/lib/guard";
 
 interface TemplateDraft {
-  source: ManagedDocumentTemplate | null;
-  name: string;
-  kind: DocumentKind;
-  body: string;
   active: boolean;
+  body: string;
+  kind: DocumentKind;
+  name: string;
+  source: ManagedDocumentTemplate | null;
 }
 
 function templateDraft(

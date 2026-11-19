@@ -1,12 +1,12 @@
 import type { SoapSectionKey } from "@/types/db";
 
 export interface SoapDraft {
-  subjective: string;
-  objective: string;
   assessment: string;
-  plan: string;
   confidence: number | null;
   groundingScore?: number | null;
+  objective: string;
+  plan: string;
+  subjective: string;
 }
 
 export const EMPTY_SOAP_DRAFT: SoapDraft = {

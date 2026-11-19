@@ -46,17 +46,17 @@ import { saveProposal } from "./save-proposal";
 import type { Answer, AnswerColumn, CellKind, Proposal } from "./types";
 
 export interface Turn {
-  id: string;
-  question: string;
+  answer: Answer;
   at: string;
   durationMs: number;
-  answer: Answer;
+  id: string;
+  question: string;
 }
 interface CardState {
-  status: ConfirmationStatus | "dismissed";
+  doneAt?: string;
   error?: string;
   reference?: string;
-  doneAt?: string;
+  status: ConfirmationStatus | "dismissed";
 }
 
 /**

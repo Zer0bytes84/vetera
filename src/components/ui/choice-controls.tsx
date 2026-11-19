@@ -36,10 +36,10 @@ function useControllable<T>(
 const ease = "ease-[cubic-bezier(0.23,1,0.32,1)]";
 
 interface Labelled {
+  className?: string;
+  description?: React.ReactNode;
   /** Visible label next to the control; clicking it toggles the control. */
   label?: React.ReactNode;
-  description?: React.ReactNode;
-  className?: string;
 }
 
 function Field({
@@ -225,9 +225,9 @@ export function Checkbox({
 }
 
 interface RadioContext {
-  value: string | undefined;
-  select: (value: string) => void;
   name: string;
+  select: (value: string) => void;
+  value: string | undefined;
 }
 const RadioCtx = createContext<RadioContext | null>(null);
 

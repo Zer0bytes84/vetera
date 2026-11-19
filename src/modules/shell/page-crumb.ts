@@ -8,9 +8,9 @@ import type { View } from "@/types";
  * (« Patients » in a patient's record); without it the first segment is plain text.
  */
 export interface PageCrumb {
-  title: string;
   note?: string;
   parent?: View;
+  title: string;
 }
 
 let current: PageCrumb | null = null;

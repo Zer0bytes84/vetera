@@ -38,25 +38,25 @@ import { cn } from "@/lib/utils";
 export type ToolCallStatus = "pending" | "running" | "success" | "error";
 
 export interface ToolCall {
+  /** Label and value pairs shown when the row opens. */
+  details?: { label: string; value: string }[];
+  /** Final duration; while running the block counts up on its own. */
+  durationMs?: number;
+  error?: string;
   id: string;
   /** What the assistant does, in words: « Recherche dans les dossiers ». */
   name: string;
+  result?: string;
+  status: ToolCallStatus;
   /** One line after the name: the query, the patient. */
   summary?: string;
-  status: ToolCallStatus;
-  /** Final duration; while running the block counts up on its own. */
-  durationMs?: number;
-  /** Label and value pairs shown when the row opens. */
-  details?: { label: string; value: string }[];
-  result?: string;
-  error?: string;
 }
 
 export interface ToolCallBlockProps {
+  className?: string;
   data: ToolCall;
   defaultOpen?: boolean;
   onRetry?: (call: ToolCall) => void;
-  className?: string;
 }
 
 const statuses = {

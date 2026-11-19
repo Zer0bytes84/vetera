@@ -23,8 +23,8 @@ if (!isActivationAdminRoute()) {
 }
 
 interface ErrorBoundaryState {
-  hasError: boolean;
   error: Error | null;
+  hasError: boolean;
 }
 
 class ErrorBoundary extends React.Component<

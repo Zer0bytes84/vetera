@@ -129,16 +129,16 @@ import { PageHeader } from "@/design-system/patterns/page-header";
 import { guard } from "@/lib/guard";
 
 interface SettingsNavItem {
-  id: SettingsTab;
-  label: string;
   description: string;
   icon: typeof UserCircle02Icon;
+  id: SettingsTab;
   keywords?: string[];
+  label: string;
 }
 
 interface SettingsNavGroup {
-  label: string;
   items: SettingsNavItem[];
+  label: string;
 }
 
 const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
