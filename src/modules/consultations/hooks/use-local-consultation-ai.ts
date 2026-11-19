@@ -242,8 +242,7 @@ export function useLocalConsultationAi({
           const kept = held.current;
           if (
             holdMicrophone &&
-            kept &&
-            kept.microphone.stream
+            kept?.microphone.stream
               .getAudioTracks()
               .every((track) => track.readyState === "live") &&
             kept.microphone.audio?.state !== "closed"

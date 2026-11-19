@@ -89,7 +89,7 @@ export function validatePatientRecordOptions(
     "notes",
   ] as const;
   if (
-    !(options && options.sections) ||
+    !options?.sections ||
     keys.some((key) => typeof options.sections[key] !== "boolean") ||
     typeof options.includeAttachments !== "boolean"
   ) {

@@ -498,7 +498,7 @@ export function createStayStore(
             active: number;
           }[]
         >("SELECT * FROM care_plans WHERE id=$1", [planId]);
-        if (!(plan && plan.active)) {
+        if (!plan?.active) {
           throw new Error("Ce plan n’est plus actif.");
         }
         const stay = await get(db, plan.stay_id);

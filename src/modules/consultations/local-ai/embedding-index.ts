@@ -214,15 +214,15 @@ export function patientSearchChunks(patient: {
     parts.push(`Identification / Puce : ${chip}`);
   }
   const allergies = patient.allergies;
-  if (allergies && allergies.trim()) {
+  if (allergies?.trim()) {
     parts.push(`Allergies : ${allergies.trim()}`);
   }
   const chronic = patient.chronicConditions || patient.chronic_conditions;
-  if (chronic && chronic.trim()) {
+  if (chronic?.trim()) {
     parts.push(`Affections chroniques : ${chronic.trim()}`);
   }
   const notes = patient.generalNotes || patient.general_notes;
-  if (notes && notes.trim()) {
+  if (notes?.trim()) {
     parts.push(`Notes médicales : ${notes.trim()}`);
   }
 
@@ -273,16 +273,16 @@ export function consultationSearchChunks(
       `Consultation ${appointment.type || ""} : ${appointment.title || ""}`.trim()
     );
   }
-  if (appointment.reason && appointment.reason.trim()) {
+  if (appointment.reason?.trim()) {
     parts.push(`Motif : ${appointment.reason.trim()}`);
   }
-  if (appointment.diagnosis && appointment.diagnosis.trim()) {
+  if (appointment.diagnosis?.trim()) {
     parts.push(`Diagnostic : ${appointment.diagnosis.trim()}`);
   }
-  if (appointment.treatment && appointment.treatment.trim()) {
+  if (appointment.treatment?.trim()) {
     parts.push(`Traitement : ${appointment.treatment.trim()}`);
   }
-  if (appointment.notes && appointment.notes.trim()) {
+  if (appointment.notes?.trim()) {
     parts.push(`Notes d'examen : ${appointment.notes.trim()}`);
   }
 

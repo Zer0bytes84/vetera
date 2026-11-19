@@ -167,7 +167,7 @@ export async function activeLocation(
     "SELECT id,name,active FROM stock_locations WHERE id=?",
     [locationId]
   );
-  if (!(location && location.active)) {
+  if (!location?.active) {
     throw new StockError(
       "SOURCE_CONFLICT",
       "Choisissez un emplacement de stockage actif."

@@ -122,7 +122,7 @@ export function useStockPageModel() {
   };
 
   const handleSaveProduct = async () => {
-    if (!(formData.name && formData.name.trim())) {
+    if (!formData.name?.trim()) {
       toast.error("Veuillez entrer un nom de produit.");
       return;
     }
