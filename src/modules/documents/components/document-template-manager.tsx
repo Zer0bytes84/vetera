@@ -640,8 +640,6 @@ export default function DocumentTemplateManager({
                     </Field>
                     {canEdit && providedTemplate && (
                       <Button
-                        type="button"
-                        variant="outline"
                         disabled={
                           busy ||
                           (draft.body === providedTemplate.body &&
@@ -656,6 +654,8 @@ export default function DocumentTemplateManager({
                             body: providedTemplate.body,
                           })
                         }
+                        type="button"
+                        variant="outline"
                       >
                         Rétablir le modèle fourni
                       </Button>

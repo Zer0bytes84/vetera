@@ -38,19 +38,19 @@ export function Spinner({
 }: SpinnerProps) {
   return (
     <span
-      role="status"
       className={cn(
         "inline-flex items-center gap-2 text-muted-foreground",
         className
       )}
+      role="status"
     >
       <LoaderCircle
-        strokeWidth={2.5}
         aria-hidden="true"
         className={cn(
           "shrink-0 animate-spin [animation-duration:700ms] motion-reduce:animate-none",
           spinnerSizes[size]
         )}
+        strokeWidth={2.5}
       />
       {showLabel ? (
         <span className="text-[0.8125rem]">{label}</span>
@@ -102,22 +102,22 @@ export function Thinking({
   return (
     <MotionConfig reducedMotion="user">
       <span
-        role="status"
         className={cn(
           "inline-flex items-center gap-2 text-muted-foreground",
           className
         )}
+        role="status"
       >
         <span aria-hidden="true" className={cn("flex items-center", s.gap)}>
           {[0, 1, 2].map((i) => (
             <motion.span
-              key={i}
-              className={cn("rounded-full bg-current", s.dot)}
               animate={
                 reduce
                   ? { opacity: 0.6 }
                   : { opacity: [0.3, 1, 0.3], y: [0, -2, 0] }
               }
+              className={cn("rounded-full bg-current", s.dot)}
+              key={i}
               transition={
                 reduce
                   ? { duration: 0 }
@@ -138,21 +138,21 @@ export function Thinking({
               s.text
             )}
           >
-            <AnimatePresence mode="popLayout" initial={false}>
+            <AnimatePresence initial={false} mode="popLayout">
               <motion.span
-                key={word}
-                initial={{ y: "100%", opacity: 0 }}
                 animate={{
                   y: 0,
                   opacity: 1,
                   transition: { duration: 0.24, ease: EASE_OUT },
                 }}
+                className="whitespace-nowrap"
                 exit={{
                   y: "-100%",
                   opacity: 0,
                   transition: { duration: 0.15, ease: EASE_OUT },
                 }}
-                className="whitespace-nowrap"
+                initial={{ y: "100%", opacity: 0 }}
+                key={word}
               >
                 {word}…
               </motion.span>

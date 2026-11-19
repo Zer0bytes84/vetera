@@ -11,9 +11,9 @@ export function StockInvoiceLink({ invoiceId }: { invoiceId: string | null }) {
   }
   return (
     <a
+      className="t-12 font-medium text-primary underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
       href="#/finances"
       onClick={() => requestFocus("invoice", invoiceId)}
-      className="t-12 font-medium text-primary underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
     >
       Voir la facture
     </a>

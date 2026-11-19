@@ -13,9 +13,9 @@ export function ThemeControl({
   return (
     <ShortcutTooltip label="Changer le thème" shortcut="D">
       <button
-        aria-label="Changer le thème"
         aria-keyshortcuts="D"
-        type="button"
+        aria-label="Changer le thème"
+        className="shell-toolbar-control relative grid size-9 shrink-0 place-items-center overflow-hidden"
         onClick={(event) => {
           if (event.detail === 0) {
             onToggle();
@@ -23,7 +23,7 @@ export function ThemeControl({
           }
           startTransition({ x: event.clientX, y: event.clientY }, onToggle);
         }}
-        className="shell-toolbar-control relative grid size-9 shrink-0 place-items-center overflow-hidden"
+        type="button"
       >
         <ToolbarIcon name={dark ? "moon" : "sun"} />
       </button>

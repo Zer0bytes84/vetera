@@ -242,6 +242,7 @@ export function DataTable<R extends DataRow>({
     <MotionConfig reducedMotion="user">
       <Shell className={cn("w-full", className)}>
         <ShellHeader
+          as="h2"
           aside={
             <>
               {toolbar}
@@ -258,7 +259,6 @@ export function DataTable<R extends DataRow>({
               />
             </>
           }
-          as="h2"
           icon={HeaderIcon}
           subtitle={
             subtitle ?? (
@@ -444,13 +444,13 @@ export function DataTable<R extends DataRow>({
             </table>
             {rows.length === 0 && (
               <EmptyState
+                action={emptyAction}
                 compact
                 description={
                   data.length
                     ? `Rien ne correspond à « ${query} ».`
                     : emptyDescription
                 }
-                action={emptyAction}
                 icon={SearchX}
                 title={
                   data.length

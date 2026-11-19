@@ -46,8 +46,8 @@ export function WidgetShell({
       className={cn("flex flex-col", own)}
     >
       <ShellHeader
-        aside={actions}
         as="h2"
+        aside={actions}
         icon={icon}
         subtitle={subtitle}
         title={title}
@@ -55,8 +55,8 @@ export function WidgetShell({
       <Panel className={cn("flex-1 p-5", bodyClassName)}>
         {busy ? (
           <div
-            className={cn("min-h-[120px]", !showSkeleton && "opacity-0")}
             aria-hidden="true"
+            className={cn("min-h-[120px]", !showSkeleton && "opacity-0")}
           >
             {skeleton ?? (
               <>

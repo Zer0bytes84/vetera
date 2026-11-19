@@ -41,9 +41,9 @@ export function PeekingDog({ className }: { className?: string }) {
           stroke="none"
         />
         {/* Eyes */}
-        <circle cx="88" cy="92" r="6" fill={INK} stroke="none" />
-        <circle cx="134" cy="92" r="6" fill="var(--pet-paper)" stroke="none" />
-        <circle cx="134" cy="92" r="3.5" fill={INK} stroke="none" />
+        <circle cx="88" cy="92" fill={INK} r="6" stroke="none" />
+        <circle cx="134" cy="92" fill="var(--pet-paper)" r="6" stroke="none" />
+        <circle cx="134" cy="92" fill={INK} r="3.5" stroke="none" />
         {/* Muzzle, nose, smile, tongue */}
         <path
           d="M84 124 C84 108 136 108 136 124 C136 140 120 146 110 146 C100 146 84 140 84 124 Z"
@@ -120,18 +120,18 @@ export function PeekingCat({ className }: { className?: string }) {
         <circle
           cx="70"
           cy="128"
-          r="7"
           fill="#f7a8b8"
-          stroke="none"
           opacity=".7"
+          r="7"
+          stroke="none"
         />
         <circle
           cx="138"
           cy="128"
-          r="7"
           fill="#f7a8b8"
-          stroke="none"
           opacity=".7"
+          r="7"
+          stroke="none"
         />
       </g>
     </svg>

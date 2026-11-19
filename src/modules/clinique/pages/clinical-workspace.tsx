@@ -114,17 +114,17 @@ export default function ClinicalWorkspace({
         tabsStyle="nav"
       >
         <TabsTrigger
-          value="soins"
-          className="gap-2"
           aria-label={overdueCount ? `Soins, ${overdueLabel}` : "Soins"}
+          className="gap-2"
+          value="soins"
         >
           Soins
           {overdueCount > 0 && (
             <Badge
-              variant="outline"
               aria-hidden="true"
-              title={overdueLabel}
               className="care-nav-badge min-w-5 border-rose-200 bg-rose-50 px-1.5 t-12 text-rose-700 tabular-nums dark:border-rose-900 dark:bg-rose-950/40 dark:text-rose-300"
+              title={overdueLabel}
+              variant="outline"
             >
               {overdueCount}
             </Badge>
@@ -143,26 +143,26 @@ export default function ClinicalWorkspace({
   );
   return (
     <Tabs
-      value={shownTab}
+      className="clinical-workspace clinical-workspace-navigation min-w-0 gap-0"
       onValueChange={(next) => {
         setOpenedStay(false);
         setTab(next);
       }}
-      className="clinical-workspace clinical-workspace-navigation min-w-0 gap-0"
+      value={shownTab}
     >
       <PageSubnavContext.Provider value={subnav}>
         {claims === 0 && sectionTabs && (
           <div className="px-4 pt-4 lg:px-6">{sectionTabs}</div>
         )}
         {shownTab === "hospitalisation" ? (
-          <StaysPage key={stayId || "all"} initialStayId={stayId} />
+          <StaysPage initialStayId={stayId} key={stayId || "all"} />
         ) : (
           <CarePage
-            key={`${patientId ?? "all"}-${taskId ?? ""}`}
-            patientId={patientId}
-            onShowAll={() => setPatientId(undefined)}
             initialTaskId={taskId}
+            key={`${patientId ?? "all"}-${taskId ?? ""}`}
             onNavigateToPatient={onNavigateToPatient}
+            onShowAll={() => setPatientId(undefined)}
+            patientId={patientId}
             reminders={
               <MedicalRemindersModule
                 onAll={() => {

@@ -234,8 +234,8 @@ export function DivergingBars({
         <ShellHeader
           as="h2"
           icon={ChartBarIcon}
-          title={title}
           subtitle={subtitle}
+          title={title}
         />
         <Panel className="flex flex-1 flex-col p-4">
           {(headline || aside) && (
@@ -243,8 +243,8 @@ export function DivergingBars({
               {headline && (
                 <p className="flex flex-wrap items-center gap-x-2">
                   <RollingNumber
-                    value={headline.value}
                     className="text-[1.5rem] leading-none font-medium tracking-tight"
+                    value={headline.value}
                   />
                   {headline.caption && (
                     <span className="text-sm text-muted-foreground">
@@ -260,24 +260,24 @@ export function DivergingBars({
           )}
 
           <div
-            role="group"
             aria-label="Séries"
             className="mb-3 flex flex-wrap gap-1.5"
+            role="group"
           >
             {[...series, ...(below ? [below] : [])].map((s) => {
               const on = !hidden.includes(s.id);
               return (
                 <button
-                  key={s.id}
-                  type="button"
                   aria-pressed={on}
-                  onClick={() => toggle(s.id, on)}
                   className={cn(
                     "inline-flex h-7 items-center gap-1.5 rounded-full px-2.5 text-xs transition-[background-color,color,opacity,scale] duration-150 ease-out active:scale-[0.97]",
                     on
                       ? "bg-foreground/[0.06] text-foreground"
                       : "text-muted-foreground opacity-60 hover:opacity-100"
                   )}
+                  key={s.id}
+                  onClick={() => toggle(s.id, on)}
+                  type="button"
                 >
                   <span
                     aria-hidden="true"
@@ -296,72 +296,72 @@ export function DivergingBars({
           </div>
 
           <div
-            ref={ref}
-            tabIndex={0}
-            role="group"
             aria-label={`${title}. Les flèches du clavier lisent chaque colonne.`}
-            onKeyDown={onKeyDown}
-            onBlur={() => fromKeyboard && setActive(null)}
             className="relative rounded-xl outline-offset-4"
+            onBlur={() => fromKeyboard && setActive(null)}
+            onKeyDown={onKeyDown}
+            ref={ref}
+            role="group"
+            tabIndex={0}
           >
             <svg
-              key={measured ? "measured" : "guess"}
-              visibility={measured ? undefined : "hidden"}
-              role="img"
               aria-label={summary}
-              width={width}
-              height={H}
               className="block overflow-visible"
+              height={H}
+              key={measured ? "measured" : "guess"}
               onPointerLeave={() => select(null, false)}
+              role="img"
+              visibility={measured ? undefined : "hidden"}
+              width={width}
             >
               {/* Gridlines and the right axis: the upper scale, zero, the lower scale. */}
-              <g fontSize="12" className="text-muted-foreground">
+              <g className="text-muted-foreground" fontSize="12">
                 {[0.5, 1].map((t) => (
                   <g key={t}>
                     <line
+                      stroke="currentColor"
+                      strokeDasharray="2 4"
+                      strokeOpacity={0.1}
                       x1={PAD.left}
                       x2={PAD.left + innerW}
                       y1={zero - up(upMax * t)}
                       y2={zero - up(upMax * t)}
-                      stroke="currentColor"
-                      strokeOpacity={0.1}
-                      strokeDasharray="2 4"
                     />
                     <text
+                      dy="0.32em"
+                      fill="currentColor"
+                      textAnchor="end"
                       x={width - 4}
                       y={zero - up(upMax * t)}
-                      dy="0.32em"
-                      textAnchor="end"
-                      fill="currentColor"
                     >
                       {format(upMax * t)}
                     </text>
                   </g>
                 ))}
                 <line
+                  stroke="currentColor"
+                  strokeOpacity={0.22}
                   x1={PAD.left}
                   x2={PAD.left + innerW}
                   y1={zero}
                   y2={zero}
-                  stroke="currentColor"
-                  strokeOpacity={0.22}
                 />
                 <text
+                  dy="0.32em"
+                  fill="currentColor"
+                  textAnchor="end"
                   x={width - 4}
                   y={zero}
-                  dy="0.32em"
-                  textAnchor="end"
-                  fill="currentColor"
                 >
                   {format(0)}
                 </text>
                 {below && (
                   <text
+                    dy="0.32em"
+                    style={{ fill: below.color }}
+                    textAnchor="end"
                     x={width - 4}
                     y={zero + ZERO_GAP + downH}
-                    dy="0.32em"
-                    textAnchor="end"
-                    style={{ fill: below.color }}
                   >
                     {format(downMax)}
                   </text>
@@ -370,12 +370,12 @@ export function DivergingBars({
 
               {activeIndex !== null && (
                 <rect
-                  x={x(activeIndex) - Math.min(band, barW + 8) / 2}
-                  y={PAD.top - 6}
-                  width={Math.min(band, barW + 8)}
+                  className="fill-foreground/[0.06]"
                   height={UP_H + (below ? ZERO_GAP + downH : 0) + 12}
                   rx={Math.min(8, barW / 2 + 4)}
-                  className="fill-foreground/[0.06]"
+                  width={Math.min(band, barW + 8)}
+                  x={x(activeIndex) - Math.min(band, barW + 8) / 2}
+                  y={PAD.top - 6}
                 />
               )}
 
@@ -389,12 +389,12 @@ export function DivergingBars({
                 };
                 return (
                   <g
-                    key={`${label}-${i}`}
                     className={cn(
                       "transition-opacity duration-150 ease-out",
                       dim && "opacity-40",
                       fromKeyboard && "duration-0"
                     )}
+                    key={`${label}-${i}`}
                   >
                     {visible.map((s) => {
                       const h = up(s.values[i] ?? 0);
@@ -406,29 +406,29 @@ export function DivergingBars({
                       const segH = Math.max(h - gap, 1);
                       return (
                         <motion.rect
-                          key={s.id}
-                          x={x(i) - barW / 2}
-                          width={barW}
-                          rx={rx}
-                          initial={{ y: zero - ZERO_GAP, height: 0 }}
                           animate={{ y: top + (h - segH), height: segH }}
-                          transition={transition}
                           fill={s.color}
+                          initial={{ y: zero - ZERO_GAP, height: 0 }}
+                          key={s.id}
+                          rx={rx}
+                          transition={transition}
+                          width={barW}
+                          x={x(i) - barW / 2}
                         />
                       );
                     })}
                     {belowOn && below && (below.values[i] ?? 0) > 0 && (
                       <motion.rect
-                        x={x(i) - barW / 2}
-                        width={barW}
-                        rx={rx}
-                        y={zero + ZERO_GAP}
-                        initial={{ height: 0 }}
                         animate={{
                           height: Math.max(down(below.values[i] ?? 0), 1),
                         }}
-                        transition={transition}
                         fill={below.color}
+                        initial={{ height: 0 }}
+                        rx={rx}
+                        transition={transition}
+                        width={barW}
+                        x={x(i) - barW / 2}
+                        y={zero + ZERO_GAP}
                       />
                     )}
                   </g>
@@ -438,17 +438,17 @@ export function DivergingBars({
               {labels.map((label, i) =>
                 i % labelEvery === 0 ? (
                   <text
-                    key={`${label}-${i}`}
-                    x={x(i)}
-                    y={H - 6}
-                    textAnchor={i === 0 ? "start" : "middle"}
-                    dx={i === 0 ? -barW / 2 : 0}
-                    fontSize="12"
                     className={cn(
                       activeIndex === i || marker === i
                         ? "fill-foreground"
                         : "fill-muted-foreground"
                     )}
+                    dx={i === 0 ? -barW / 2 : 0}
+                    fontSize="12"
+                    key={`${label}-${i}`}
+                    textAnchor={i === 0 ? "start" : "middle"}
+                    x={x(i)}
+                    y={H - 6}
                   >
                     {label}
                   </text>
@@ -458,14 +458,14 @@ export function DivergingBars({
               {/* Hit areas: the whole band, both sides of the line. */}
               {labels.map((label, i) => (
                 <rect
+                  fill="transparent"
+                  height={UP_H + (below ? ZERO_GAP + downH : 0) + 12}
                   key={`${label}-${i}`}
+                  onClick={() => select(i, false)}
+                  onPointerEnter={() => select(i, false)}
+                  width={band}
                   x={x(i) - band / 2}
                   y={PAD.top - 6}
-                  width={band}
-                  height={UP_H + (below ? ZERO_GAP + downH : 0) + 12}
-                  fill="transparent"
-                  onPointerEnter={() => select(i, false)}
-                  onClick={() => select(i, false)}
                 />
               ))}
             </svg>
@@ -473,11 +473,11 @@ export function DivergingBars({
             <AnimatePresence>
               {activeIndex !== null && (
                 <motion.div
-                  key="tip"
-                  initial={fromKeyboard ? false : { opacity: 0, scale: 0.97 }}
                   animate={{ opacity: 1, scale: 1, transition: enter }}
-                  exit={{ opacity: 0, transition: exit }}
                   className="pointer-events-none absolute top-0 z-10 min-w-40 rounded-xl bg-[var(--card-raised)] px-3 py-2 text-xs shadow-sm"
+                  exit={{ opacity: 0, transition: exit }}
+                  initial={fromKeyboard ? false : { opacity: 0, scale: 0.97 }}
+                  key="tip"
                   style={
                     tipRight
                       ? {
@@ -501,8 +501,8 @@ export function DivergingBars({
                   </p>
                   {rows(activeIndex).map((row) => (
                     <p
-                      key={row.id}
                       className="flex items-center gap-2 text-muted-foreground"
+                      key={row.id}
                     >
                       <span
                         aria-hidden="true"
@@ -551,7 +551,7 @@ export function DivergingBars({
               </tbody>
             </table>
           </section>
-          <p role="status" aria-live="polite" className="sr-only">
+          <p aria-live="polite" className="sr-only" role="status">
             {fromKeyboard && activeIndex !== null
               ? `${titles?.[activeIndex] ?? labels[activeIndex]} : total ${format(total(activeIndex))}, ${rows(
                   activeIndex

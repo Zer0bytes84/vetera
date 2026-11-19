@@ -311,7 +311,6 @@ export function InvoicesTable({
       emptyTitle="Aucune facture"
       exportName="factures"
       filters={filters}
-      toolbar={toolbar}
       icon={FileText}
       noun={["facture", "factures"]}
       onRowClick={(row) => onOpen(byId.get(row.id)!)}
@@ -323,6 +322,7 @@ export function InvoicesTable({
       searchPlaceholder="Numéro ou propriétaire"
       selectable
       title="Registre des factures"
+      toolbar={toolbar}
     />
   );
 }

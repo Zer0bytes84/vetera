@@ -516,32 +516,32 @@ const Editor: React.FC<EditorProps> = ({
 
       {isAiLoading && (
         <div
-          role="status"
           className="mt-4 flex items-center gap-2 text-muted-foreground text-sm"
+          role="status"
         >
           <Spinner className="size-4" /> Préparation d’une proposition…
         </div>
       )}
       {aiError && (
-        <p role="alert" className="mt-4 text-destructive text-sm">
+        <p className="mt-4 text-destructive text-sm" role="alert">
           {aiError}
         </p>
       )}
 
       <Dialog
-        open={Boolean(suggestion)}
         onOpenChange={(open) => {
           if (!open) {
             setSuggestion(null);
           }
         }}
+        open={Boolean(suggestion)}
       >
         <FormDialogContent size="md">
           <FormDialogHeader
             compact
-            title="Proposition de rédaction"
             description="Relisez le texte avant de décider de l’ajouter à votre document."
             icon={<PenLine strokeWidth={1.8} />}
+            title="Proposition de rédaction"
           />
           <FormDialogBody>
             <p className="mb-2 text-muted-foreground text-xs">
@@ -556,12 +556,12 @@ const Editor: React.FC<EditorProps> = ({
             </p>
           </FormDialogBody>
           <FormDialogFooter>
-            <Button variant="outline" onClick={() => setSuggestion(null)}>
+            <Button onClick={() => setSuggestion(null)} variant="outline">
               Ignorer
             </Button>
             <Button
-              variant={suggestion?.selected ? "outline" : "default"}
               onClick={() => applySuggestion("insert")}
+              variant={suggestion?.selected ? "outline" : "default"}
             >
               {suggestion?.selected ? "Insérer après" : "Insérer au curseur"}
             </Button>
@@ -578,9 +578,9 @@ const Editor: React.FC<EditorProps> = ({
         <FormDialogContent size="sm">
           <FormDialogHeader
             compact
-            title="Que voulez-vous écrire ?"
             description="Décrivez le document souhaité. Vous pourrez relire la proposition avant de l’insérer."
             icon={<PenLine strokeWidth={1.8} />}
+            title="Que voulez-vous écrire ?"
           />
           <FormDialogBody>
             <Input

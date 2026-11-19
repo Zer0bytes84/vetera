@@ -94,20 +94,19 @@ export function ContextWindowMeter({
 
   const grid = (
     <div
-      role="meter"
       aria-label="Longueur de la dictée"
-      aria-valuemin={0}
       aria-valuemax={limit}
+      aria-valuemin={0}
       aria-valuenow={used}
       aria-valuetext={`${used.toLocaleString("fr-FR")} sur ${limit.toLocaleString("fr-FR")} caractères (${percent} %)`}
       className={cn(
         "grid",
         inline ? "w-28 grid-cols-[repeat(20,1fr)] gap-px" : "grid-cols-20 gap-1"
       )}
+      role="meter"
     >
       {cells.map((color, i) => (
         <span
-          key={i}
           aria-hidden="true"
           className={cn(
             "transition-colors duration-200 ease-out motion-reduce:duration-0",
@@ -117,6 +116,7 @@ export function ContextWindowMeter({
                 ? "bg-warning/20"
                 : "bg-foreground/[0.07]")
           )}
+          key={i}
           style={{ background: color ?? undefined }}
         />
       ))}
@@ -131,8 +131,8 @@ export function ContextWindowMeter({
         <div className={cn("flex items-center gap-2 text-xs", className)}>
           {warning && (
             <TriangleAlert
-              className="size-3.5 text-warning"
               aria-label="Proche de la limite"
+              className="size-3.5 text-warning"
             />
           )}
           {grid}
@@ -143,7 +143,7 @@ export function ContextWindowMeter({
             {" / "}
             {formatTokens(limit)}
           </span>
-          <p role="status" aria-live="polite" className="sr-only">
+          <p aria-live="polite" className="sr-only" role="status">
             {announcement}
           </p>
         </div>
@@ -190,7 +190,7 @@ export function ContextWindowMeter({
             )}
           >
             {warning && (
-              <TriangleAlert className="size-3.5 shrink-0" aria-hidden="true" />
+              <TriangleAlert aria-hidden="true" className="size-3.5 shrink-0" />
             )}
             {warning
               ? `Zone d’alerte : ${formatTokens(Math.max(limit - used, 0))} caractères restants`
@@ -199,7 +199,7 @@ export function ContextWindowMeter({
         </Panel>
         <ul className="grid grid-cols-1 gap-x-4 gap-y-1 px-3 py-3 @sm:grid-cols-2">
           {colored.map((s) => (
-            <li key={s.id} className="flex items-start gap-2.5 py-1">
+            <li className="flex items-start gap-2.5 py-1" key={s.id}>
               <span
                 aria-hidden="true"
                 className="mt-1 size-2.5 shrink-0 rounded-[3px]"
@@ -210,8 +210,8 @@ export function ContextWindowMeter({
                   {s.label}
                   {s.pinned && (
                     <Lock
-                      className="size-3 shrink-0 text-muted-foreground"
                       aria-label="Conservé"
+                      className="size-3 shrink-0 text-muted-foreground"
                     />
                   )}
                 </span>
@@ -227,7 +227,7 @@ export function ContextWindowMeter({
             </li>
           ))}
         </ul>
-        <p role="status" aria-live="polite" className="sr-only">
+        <p aria-live="polite" className="sr-only" role="status">
           {announcement}
         </p>
       </Shell>

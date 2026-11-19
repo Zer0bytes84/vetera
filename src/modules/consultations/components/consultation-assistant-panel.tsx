@@ -30,10 +30,10 @@ export function useAssistantPanelControls() {
 export function AssistantSlideoutIcon() {
   return (
     <HugeiconsIcon
-      icon={LayoutRightIcon}
-      strokeWidth={1.5}
       aria-hidden="true"
       className="size-4"
+      icon={LayoutRightIcon}
+      strokeWidth={1.5}
     />
   );
 }
@@ -118,16 +118,8 @@ export function ConsultationAssistantPanel({
   return createPortal(
     <>
       <aside
-        id={panelId}
-        ref={panelRef}
-        inert={collapsed || !visible}
         aria-hidden={collapsed || !visible}
-        role="complementary"
         aria-label="Assistant de consultation"
-        data-slot="assistant-panel"
-        data-no-drag
-        style={{ top: topInset }}
-        data-state={collapsed ? "collapsed" : visible ? "open" : "closed"}
         className={cn(
           "fixed bottom-0 right-0 z-50 flex w-full flex-col",
           "sm:max-w-[var(--assistant-width)]",
@@ -138,6 +130,11 @@ export function ConsultationAssistantPanel({
             ? "translate-x-0 duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]"
             : "translate-x-full duration-200 ease-[cubic-bezier(0.23,1,0.32,1)]"
         )}
+        data-no-drag
+        data-slot="assistant-panel"
+        data-state={collapsed ? "collapsed" : visible ? "open" : "closed"}
+        id={panelId}
+        inert={collapsed || !visible}
         onTransitionEnd={(event) => {
           if (
             !open &&
@@ -148,6 +145,9 @@ export function ConsultationAssistantPanel({
             onExited?.();
           }
         }}
+        ref={panelRef}
+        role="complementary"
+        style={{ top: topInset }}
       >
         <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden">
           <PanelControlsContext.Provider
@@ -168,13 +168,13 @@ export function ConsultationAssistantPanel({
           <TooltipTrigger
             render={
               <Button
-                ref={reopenRef}
-                variant="outline"
-                className="fixed bottom-6 right-6 z-50 h-auto gap-2.5 rounded-full border border-black/10 bg-background/95 px-3 py-2 shadow-lg backdrop-blur-md transition hover:scale-105 hover:bg-background active:scale-95 dark:border-white/15 dark:shadow-2xl"
-                aria-label="Déplier le panneau assistant"
                 aria-controls={panelId}
                 aria-expanded={false}
+                aria-label="Déplier le panneau assistant"
+                className="fixed bottom-6 right-6 z-50 h-auto gap-2.5 rounded-full border border-black/10 bg-background/95 px-3 py-2 shadow-lg backdrop-blur-md transition hover:scale-105 hover:bg-background active:scale-95 dark:border-white/15 dark:shadow-2xl"
                 onClick={expand}
+                ref={reopenRef}
+                variant="outline"
               />
             }
           >

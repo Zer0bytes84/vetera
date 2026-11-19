@@ -73,12 +73,12 @@ export function ClinicalDashboardView(p: ClinicalDashboardViewProps) {
         "clinical-now",
         0,
         <NowBoardView
-          snapshot={p.now}
-          loading={p.states.now.loading}
-          skeleton={p.states.now.skeleton}
           error={p.states.now.error}
-          onRetry={p.states.now.retry}
+          loading={p.states.now.loading}
           onFlux={p.onFlux}
+          onRetry={p.states.now.retry}
+          skeleton={p.states.now.skeleton}
+          snapshot={p.now}
           viewControl={p.viewControl}
         />
       ),
@@ -92,31 +92,31 @@ export function ClinicalDashboardView(p: ClinicalDashboardViewProps) {
         1,
         <div className="grid items-stretch gap-3 xl:grid-cols-[minmax(0,1.65fr)_minmax(300px,1fr)]">
           <DayModule
-            key={p.dayDate.toDateString()}
-            rows={p.day}
-            date={p.dayDate}
             context={p.context}
-            state={p.states.day}
-            reducedMotion={p.reducedMotion}
-            onShiftDay={p.onShiftDay}
-            onToday={p.onToday}
+            date={p.dayDate}
+            key={p.dayDate.toDateString()}
             onAgenda={p.onAgenda}
-            onPlan={() => p.onPlan(p.dayDate)}
-            onPatient={p.onOpenPatient}
+            onFlux={p.onFlux}
             onIntent={p.onPatientIntent}
             onIntentCancel={p.onPatientIntentCancel}
-            onFlux={p.onFlux}
+            onPatient={p.onOpenPatient}
+            onPlan={() => p.onPlan(p.dayDate)}
+            onShiftDay={p.onShiftDay}
+            onToday={p.onToday}
+            reducedMotion={p.reducedMotion}
+            rows={p.day}
+            state={p.states.day}
           />
           <ActionsModule
             alerts={p.alerts}
             busyIds={p.busyIds}
             filter={p.actionFilter}
-            onFilter={p.onActionFilter}
-            state={p.states.actions}
-            reducedMotion={p.reducedMotion}
-            onOpen={p.onOpenAlert}
-            onComplete={p.onCompleteTask}
             onAll={p.onReminders}
+            onComplete={p.onCompleteTask}
+            onFilter={p.onActionFilter}
+            onOpen={p.onOpenAlert}
+            reducedMotion={p.reducedMotion}
+            state={p.states.actions}
           />
         </div>
       ),
@@ -130,22 +130,22 @@ export function ClinicalDashboardView(p: ClinicalDashboardViewProps) {
         2,
         <div className="grid items-stretch gap-3 lg:grid-cols-2">
           <PatientsModule
-            summary={p.followUp}
-            rows={p.patientRows}
-            state={p.states.patients}
-            onPatient={p.onOpenPatient}
             onIntent={p.onPatientIntent}
             onIntentCancel={p.onPatientIntentCancel}
+            onPatient={p.onOpenPatient}
             onPatients={p.onPatients}
+            rows={p.patientRows}
+            state={p.states.patients}
+            summary={p.followUp}
           />
           <CashModule
             cash={p.cash}
-            pending={p.pending}
-            receivables={p.receivables}
-            period={p.cashPeriod}
-            onPeriod={p.onCashPeriod}
-            state={p.states.cash}
             onFinances={p.onFinances}
+            onPeriod={p.onCashPeriod}
+            pending={p.pending}
+            period={p.cashPeriod}
+            receivables={p.receivables}
+            state={p.states.cash}
           />
         </div>
       ),
@@ -158,12 +158,12 @@ export function ClinicalDashboardView(p: ClinicalDashboardViewProps) {
         "clinical-trends",
         3,
         <TrendsModule
-          open={p.trendsOpen}
-          onOpen={p.onTrendsOpen}
           model={p.trends}
+          onOpen={p.onTrendsOpen}
           onPeriod={p.onTrendsPeriod}
-          state={p.states.trends}
           onPlan={p.onPlan}
+          open={p.trendsOpen}
+          state={p.states.trends}
         />
       ),
     },
@@ -173,9 +173,9 @@ export function ClinicalDashboardView(p: ClinicalDashboardViewProps) {
       blocks={blocks}
       firstBlockIds={["clinical-now", "clinical-day"]}
       isEditing={p.isCustomizing}
+      migrateFromPrefix="dashboard_studio_v1"
       onEditingChange={p.onCustomizingChange}
       storageKeyPrefix="dashboard_clinical_v1"
-      migrateFromPrefix="dashboard_studio_v1"
     />
   );
 }

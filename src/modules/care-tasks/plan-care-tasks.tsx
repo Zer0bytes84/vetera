@@ -63,18 +63,18 @@ export function PlanCareTasks({
     <>
       <Button
         className="rounded-full px-4"
-        variant="outline"
-        size="sm"
         onClick={() => {
           setOpen(true);
           setSelected(null);
           setCreated([]);
           setConfirmation(null);
         }}
+        size="sm"
+        variant="outline"
       >
         Générer les tâches de suivi
       </Button>
-      <Dialog open={open} onOpenChange={setOpen}>
+      <Dialog onOpenChange={setOpen} open={open}>
         <DialogContent className="max-h-[85dvh] overflow-y-auto sm:max-w-[640px] sm:p-7">
           <DialogHeader>
             <DialogTitle>Tâches de suivi</DialogTitle>
@@ -153,8 +153,8 @@ export function PlanCareTasks({
                       </div>
                       {!done && (
                         <Button
-                          variant="outline"
                           onClick={() => setSelected(i)}
+                          variant="outline"
                         >
                           Ajuster
                         </Button>
@@ -180,8 +180,6 @@ export function PlanCareTasks({
           ) : (
             <CareTaskForm
               key={selected}
-              patientId={patientId}
-              suggestion={suggestions[selected]}
               onCancel={() => setSelected(null)}
               onSaved={(scheduledAt) => {
                 const entry = {
@@ -198,6 +196,8 @@ export function PlanCareTasks({
                   });
                 }
               }}
+              patientId={patientId}
+              suggestion={suggestions[selected]}
             />
           )}
         </DialogContent>

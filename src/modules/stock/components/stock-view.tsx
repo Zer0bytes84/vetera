@@ -213,8 +213,8 @@ export function StockView(props: StockViewProps) {
               <div className="flex items-center justify-between gap-4 py-2">
                 <div>
                   <label
-                    htmlFor="product-stock-tracked"
                     className="text-sm font-medium"
+                    htmlFor="product-stock-tracked"
                   >
                     Suivre le stock
                   </label>
@@ -224,8 +224,8 @@ export function StockView(props: StockViewProps) {
                   </p>
                 </div>
                 <Switch
-                  id="product-stock-tracked"
                   checked={formData.stockTracked !== false}
+                  id="product-stock-tracked"
                   onCheckedChange={(checked) =>
                     setFormData({ ...formData, stockTracked: checked })
                   }

@@ -52,25 +52,18 @@ export function PatientPeek({
   const patient = patients.data.find((row) => row.id === patientId);
   return (
     <PatientPeekView
-      follow={follow}
-      patient={patient}
-      owner={owners.data.find((row) => row.id === patient?.ownerId)}
       appointments={appointments.data
         .filter((row) => row.patientId === patientId)
         .sort((a, b) => b.startTime.localeCompare(a.startTime))}
-      vaccinations={vaccinations.data.filter(
-        (row) => row.patientId === patientId
-      )}
-      weights={weights.data
-        .filter((row) => row.patientId === patientId)
-        .sort((a, b) => b.measuredAt.localeCompare(a.measuredAt))}
-      loading={profileLoading}
       error={!!(patients.error || owners.error)}
-      skeletons={skeletons}
-      historyLoading={historyLoading}
+      follow={follow}
+      followUpError={!!(vaccinations.error || weights.error)}
       followUpLoading={followUpLoading}
       historyError={!!appointments.error}
-      followUpError={!!(vaccinations.error || weights.error)}
+      historyLoading={historyLoading}
+      loading={profileLoading}
+      onClose={onClose}
+      onOpenFull={onOpenFull}
       onRetry={() => {
         void patients.refresh();
         void owners.refresh();
@@ -78,8 +71,15 @@ export function PatientPeek({
         void vaccinations.refresh();
         void weights.refresh();
       }}
-      onClose={onClose}
-      onOpenFull={onOpenFull}
+      owner={owners.data.find((row) => row.id === patient?.ownerId)}
+      patient={patient}
+      skeletons={skeletons}
+      vaccinations={vaccinations.data.filter(
+        (row) => row.patientId === patientId
+      )}
+      weights={weights.data
+        .filter((row) => row.patientId === patientId)
+        .sort((a, b) => b.measuredAt.localeCompare(a.measuredAt))}
     />
   );
 }

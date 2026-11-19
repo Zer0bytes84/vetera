@@ -427,7 +427,7 @@ function PieceChip({
   const detail = pieceDetail(piece, eventAt);
   const content = (
     <>
-      <Icon className="size-3.5 shrink-0" weight="duotone" aria-hidden="true" />
+      <Icon aria-hidden="true" className="size-3.5 shrink-0" weight="duotone" />
       <span className="font-medium">{piece.label}</span>
       {detail ? (
         <span className="truncate text-muted-foreground">{detail}</span>
@@ -548,9 +548,9 @@ export function PatientTimeline({
         </Empty>
       ) : (
         <div
+          aria-label="Chronologie du patient"
           className="patient-timeline"
           role="region"
-          aria-label="Chronologie du patient"
         >
           {months.map((month) => (
             <section className="patient-timeline-month" key={month.label}>
@@ -570,11 +570,11 @@ export function PatientTimeline({
                   return (
                     <li
                       className="patient-timeline-event"
-                      key={entry.id}
-                      data-kind={entry.kind}
-                      data-piece={entry.piece?.kind}
                       data-compact={compact || undefined}
+                      data-kind={entry.kind}
                       data-overdue={entry.overdue || undefined}
+                      data-piece={entry.piece?.kind}
+                      key={entry.id}
                     >
                       <time
                         className="patient-timeline-date"
@@ -585,8 +585,8 @@ export function PatientTimeline({
                       </time>
                       <div className="patient-timeline-kind">
                         <span
-                          className="patient-timeline-marker"
                           aria-hidden="true"
+                          className="patient-timeline-marker"
                         >
                           <Icon className="size-3.5" />
                         </span>
@@ -632,8 +632,8 @@ export function PatientTimeline({
                       <div className="patient-timeline-side">
                         {entry.pieces?.length ? (
                           <ul
-                            className="patient-timeline-pieces"
                             aria-label="Pièces de cet événement"
+                            className="patient-timeline-pieces"
                           >
                             {entry.pieces.map((piece) => (
                               <li key={piece.id}>

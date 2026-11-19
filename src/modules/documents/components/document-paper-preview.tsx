@@ -35,24 +35,24 @@ export function DocumentPaperPreview({ dataUrl }: { dataUrl: string | null }) {
   const error = result?.source === dataUrl ? result.error : "";
   return (
     <div
-      className="document-paper-preview"
       aria-label="Aperçu avant impression"
+      className="document-paper-preview"
     >
       {error ? (
-        <p role="alert" className="text-destructive">
+        <p className="text-destructive" role="alert">
           {error}
         </p>
       ) : pages.length ? (
         pages.map((page, index) => (
           <figure key={index}>
-            <img src={page} alt={`Aperçu du document, page ${index + 1}`} />
+            <img alt={`Aperçu du document, page ${index + 1}`} src={page} />
             <figcaption>
               Page {index + 1} sur {pages.length}
             </figcaption>
           </figure>
         ))
       ) : (
-        <p role="status" className="text-sm text-muted-foreground">
+        <p className="text-sm text-muted-foreground" role="status">
           Préparation de l’aperçu A4…
         </p>
       )}

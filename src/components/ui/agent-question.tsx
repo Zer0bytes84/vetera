@@ -168,8 +168,8 @@ export function AgentQuestion({
               Question de l’{agent}
             </p>
             <h3
-              id={`${id}-q`}
               className="mt-0.5 text-[1rem] font-medium text-pretty"
+              id={`${id}-q`}
             >
               {data.question}
             </h3>
@@ -187,53 +187,53 @@ export function AgentQuestion({
         <LayoutGroup id={id}>
           {status === "pending" ? (
             <div
+              aria-labelledby={`${id}-q`}
+              className="grid grid-cols-1 gap-1.5 @md:grid-cols-2"
+              onKeyDown={onGridKey}
               ref={grid}
               role={data.multiple ? "group" : "radiogroup"}
-              aria-labelledby={`${id}-q`}
-              onKeyDown={onGridKey}
-              className="grid grid-cols-1 gap-1.5 @md:grid-cols-2"
             >
               {data.options.map((o, i) => {
                 const on = selected.includes(o.id);
                 return (
                   <Card
+                    checked={on}
                     key={o.id}
+                    onClick={() => pick(o.id)}
                     option={o}
                     role={data.multiple ? "checkbox" : "radio"}
-                    checked={on}
-                    tabIndex={i === 0 ? 0 : -1}
                     suggested={o.id === data.suggested?.optionId}
-                    onClick={() => pick(o.id)}
+                    tabIndex={i === 0 ? 0 : -1}
                   />
                 );
               })}
               {data.allowOther &&
                 (writing ? (
                   <motion.form
+                    className="flex items-center gap-2 rounded-2xl bg-[var(--card-inset)] p-2 @md:col-span-2"
                     layout
-                    transition={morph}
                     onSubmit={(e) => {
                       e.preventDefault();
                       if (!data.multiple && other.trim()) {
                         submit({ optionIds: [], other: other.trim() });
                       }
                     }}
-                    className="flex items-center gap-2 rounded-2xl bg-[var(--card-inset)] p-2 @md:col-span-2"
+                    transition={morph}
                   >
                     <input
+                      aria-label="Votre réponse"
                       autoFocus
-                      value={other}
+                      className="h-9 min-w-0 flex-1 bg-transparent px-2 text-sm outline-none placeholder:text-muted-foreground"
                       onChange={(e) => setOther(e.target.value)}
                       onKeyDown={(e) => e.key === "Escape" && setWriting(false)}
                       placeholder="Dites à l’assistant ce que vous souhaitez"
-                      aria-label="Votre réponse"
-                      className="h-9 min-w-0 flex-1 bg-transparent px-2 text-sm outline-none placeholder:text-muted-foreground"
+                      value={other}
                     />
                     {!data.multiple && (
                       <Button
+                        disabled={!other.trim()}
                         type="submit"
                         variant="primary"
-                        disabled={!other.trim()}
                       >
                         Répondre
                       </Button>
@@ -241,15 +241,15 @@ export function AgentQuestion({
                   </motion.form>
                 ) : (
                   <button
-                    type="button"
-                    data-card
-                    tabIndex={-1}
-                    onClick={() => setWriting(true)}
                     className="flex min-h-16 items-center gap-3 rounded-2xl bg-[var(--card-inset)]/50 p-3.5 text-left text-sm text-muted-foreground transition-[color,background-color,scale] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] hover:bg-[var(--card-inset)] hover:text-foreground active:scale-[0.98]"
+                    data-card
+                    onClick={() => setWriting(true)}
+                    tabIndex={-1}
+                    type="button"
                   >
                     <PencilLine
-                      className="size-4 shrink-0"
                       aria-hidden="true"
+                      className="size-4 shrink-0"
                     />
                     Autre chose…
                   </button>
@@ -271,11 +271,11 @@ export function AgentQuestion({
                 <>
                   {chosen.map((o) => (
                     <Card
+                      checked
                       key={o.id}
                       option={o}
-                      role="radio"
-                      checked
                       readOnly
+                      role="radio"
                       suggested={false}
                     />
                   ))}
@@ -294,12 +294,12 @@ export function AgentQuestion({
             <>
               {onDelegate && (
                 <Button
-                  variant="quiet"
+                  className="-ml-1 px-2.5 font-normal"
                   onClick={() => {
                     setOwn({ status: "delegated" });
                     onDelegate();
                   }}
-                  className="-ml-1 px-2.5 font-normal"
+                  variant="quiet"
                 >
                   Laisser l’assistant choisir
                 </Button>
@@ -307,20 +307,20 @@ export function AgentQuestion({
               <AnimatePresence>
                 {data.multiple && count > 0 && (
                   <motion.div
-                    initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1, transition: enter }}
-                    exit={{ opacity: 0, scale: 0.95, transition: leave }}
                     className="ml-auto origin-right"
+                    exit={{ opacity: 0, scale: 0.95, transition: leave }}
+                    initial={{ opacity: 0, scale: 0.95 }}
                   >
                     <Button
-                      variant="primary"
-                      size="md"
                       onClick={() =>
                         submit({
                           optionIds: selected,
                           other: other.trim() || undefined,
                         })
                       }
+                      size="md"
+                      variant="primary"
                     >
                       Envoyer {count} {count === 1 ? "choix" : "choix"}
                     </Button>
@@ -329,10 +329,10 @@ export function AgentQuestion({
               </AnimatePresence>
             </>
           ) : (
-            <Settled status={status} undoMs={undoMs} onUndo={undo} />
+            <Settled onUndo={undo} status={status} undoMs={undoMs} />
           )}
         </div>
-        <p role="status" aria-live="polite" className="sr-only">
+        <p aria-live="polite" className="sr-only" role="status">
           {status === "answered"
             ? "Réponse envoyée"
             : status === "delegated"
@@ -370,14 +370,14 @@ function Card({
               : "bg-foreground/[0.05] text-muted-foreground"
           )}
         >
-          <Icon className="size-4" aria-hidden="true" />
+          <Icon aria-hidden="true" className="size-4" />
         </span>
       )}
       <span className="min-w-0 flex-1">
         <span className="flex items-center gap-2 text-sm font-medium">
           {option.label}
           {suggested && (
-            <StatusPill tone="brand" size="sm">
+            <StatusPill size="sm" tone="brand">
               Suggéré
             </StatusPill>
           )}
@@ -390,9 +390,9 @@ function Card({
       </span>
       {checked && (
         <Check
-          strokeWidth={2.5}
-          className="mt-0.5 size-4 shrink-0 text-brand"
           aria-label="Choisi"
+          className="mt-0.5 size-4 shrink-0 text-brand"
+          strokeWidth={2.5}
         />
       )}
     </>
@@ -407,15 +407,15 @@ function Card({
         <div className={base}>{content}</div>
       ) : (
         <button
-          type="button"
-          data-card
-          role={role}
           aria-checked={checked}
           className={cn(
             base,
             "w-full transition-[background-color,scale] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] hover:bg-surface-raised/60 active:scale-[0.98]",
             checked && "hover:bg-brand/15"
           )}
+          data-card
+          role={role}
+          type="button"
           {...props}
         >
           {content}
@@ -444,25 +444,25 @@ function Settled({
     <>
       <span className="flex items-center gap-1.5 px-1.5 text-muted-foreground">
         <Check
-          strokeWidth={2.5}
-          className="size-3.5 text-positive"
           aria-hidden="true"
+          className="size-3.5 text-positive"
+          strokeWidth={2.5}
         />
         {status === "answered" ? "Réponse envoyée" : "L’assistant choisira"}
       </span>
       <AnimatePresence>
         {undoable && (
           <motion.div
-            initial={{ opacity: 0 }}
             animate={{ opacity: 1, transition: enter }}
-            exit={{ opacity: 0, transition: leave }}
             className="ml-auto"
+            exit={{ opacity: 0, transition: leave }}
+            initial={{ opacity: 0 }}
           >
             <Button
+              className="gap-1 px-3 text-xs"
               icon={Undo2}
               iconWeight="bold"
               onClick={onUndo}
-              className="gap-1 px-3 text-xs"
             >
               Annuler
             </Button>

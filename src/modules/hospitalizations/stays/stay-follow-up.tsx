@@ -39,7 +39,7 @@ export function StayFollowUp({ stayId }: { stayId: string }) {
     <section className="space-y-3 rounded-2xl border border-[#F2F2F2] bg-card p-5 dark:border-border">
       <h3 className="t-16 font-medium">Contrôle à la sortie</h3>
       {loading ? (
-        <p role="status" className="t-13 text-muted-foreground">
+        <p className="t-13 text-muted-foreground" role="status">
           Chargement du contrôle…
         </p>
       ) : task ? (
@@ -87,22 +87,22 @@ export function StayFollowUp({ stayId }: { stayId: string }) {
             Date du contrôle
             <DatePicker
               className="h-11"
-              value={date}
               onChange={(value) => setDate(value)}
               required
+              value={date}
             />
           </label>
           <Button
-            type="submit"
             className="h-11"
             disabled={busy || !date || !currentUser}
+            type="submit"
           >
             {busy ? "Enregistrement…" : "Ajouter dans Rappels"}
           </Button>
         </form>
       )}
       {error && (
-        <p role="alert" className="t-13 text-destructive">
+        <p className="t-13 text-destructive" role="alert">
           {error}
         </p>
       )}

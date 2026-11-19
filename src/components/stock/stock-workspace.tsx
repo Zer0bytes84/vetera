@@ -371,7 +371,6 @@ function CatalogueTable({
       emptyTitle="Aucun produit dans cette sélection"
       exportName="produits"
       filters={filters}
-      toolbar={toolbar}
       icon={CubeIcon}
       noun={["référence", "références"]}
       onRowClick={(row) => onOpen(byId.get(row.id)!)}
@@ -382,6 +381,7 @@ function CatalogueTable({
       })}
       searchPlaceholder="Nom, catégorie, usage"
       title="Catalogue"
+      toolbar={toolbar}
     />
   );
 }
@@ -529,7 +529,7 @@ function TabShell({
 }) {
   return (
     <Shell>
-      <ShellHeader aside={toolbar} as="h2" icon={CubeIcon} title={title} />
+      <ShellHeader as="h2" aside={toolbar} icon={CubeIcon} title={title} />
       <Panel className="overflow-hidden">{children}</Panel>
     </Shell>
   );
@@ -650,16 +650,15 @@ export function StockWorkspace({
     <>
       <ListFilter
         label="Catégorie"
-        value={category}
         onValueChange={setCategory}
         options={[
           { value: "all", label: "Toutes" },
           ...categories.map((value) => ({ value, label: value })),
         ]}
+        value={category}
       />
       <ListFilter
         label="État"
-        value={status}
         onValueChange={(value) => setStatus(value as StockFilter)}
         options={[
           { value: "all", label: "Tous" },
@@ -669,6 +668,7 @@ export function StockWorkspace({
           { value: "expiring", label: "À surveiller" },
           { value: "expired", label: "Expirés" },
         ]}
+        value={status}
       />
       <div className="stock-view-toggle ml-auto flex h-[30px] items-center rounded-full border bg-background p-0.5">
         <Button
@@ -713,7 +713,6 @@ export function StockWorkspace({
       <SectionCards
         actions={actions}
         icon={CubeIcon}
-        subtitle="Stock, seuils et péremptions"
         items={[
           {
             title: "Valeur du stock",
@@ -789,9 +788,10 @@ export function StockWorkspace({
             actionLabel: "Voir l'historique des mouvements",
           },
         ]}
+        subtitle="Stock, seuils et péremptions"
       />
 
-      <Tabs value={workspaceTab} onValueChange={setWorkspaceTab}>
+      <Tabs onValueChange={setWorkspaceTab} value={workspaceTab}>
         <TabsContent value="catalogue">
           <MaybeShell
             shell={catalogueInShell}
@@ -803,9 +803,9 @@ export function StockWorkspace({
                 <ListSearch
                   className="w-full sm:w-64"
                   label="Rechercher les produits"
+                  onValueChange={setQuery}
                   placeholder="Nom, catégorie, usage…"
                   value={query}
-                  onValueChange={setQuery}
                 />
                 {filterControls}
               </div>
@@ -893,7 +893,6 @@ export function StockWorkspace({
                 <div className="p-1">
                   <CatalogueTable
                     filters={filterControls}
-                    toolbar={tabButtons}
                     listRef={listRef}
                     onDelete={onDelete}
                     onEdit={onEdit}
@@ -901,6 +900,7 @@ export function StockWorkspace({
                     onOrder={order}
                     onRestock={onRestock}
                     products={filtered}
+                    toolbar={tabButtons}
                   />
                 </div>
               ) : (
@@ -1126,8 +1126,8 @@ export function StockWorkspace({
         <TabsContent value="purchasing">
           <TabShell title="Approvisionnements" toolbar={tabButtons}>
             <PurchasingPanel
-              orderFor={orderFor}
               onOrderOpened={clearOrderFor}
+              orderFor={orderFor}
             />
           </TabShell>
         </TabsContent>

@@ -194,9 +194,9 @@ export function ClinicIdentityPanel() {
               </FieldLabel>
               <Input
                 id="invoice-phone"
-                type="tel"
                 maxLength={80}
                 onChange={(e) => change("phone", e.target.value)}
+                type="tel"
                 value={settings.phone}
               />
             </Field>
@@ -204,9 +204,9 @@ export function ClinicIdentityPanel() {
               <FieldLabel htmlFor="invoice-email">E-mail du cabinet</FieldLabel>
               <Input
                 id="invoice-email"
-                type="email"
                 maxLength={160}
                 onChange={(e) => change("email", e.target.value)}
+                type="email"
                 value={settings.email}
               />
             </Field>
@@ -481,9 +481,9 @@ export function InvoiceSettingsPanel({
       {preview && (
         <InvoicePdfPreview
           data={SAMPLE}
-          settings={settings}
           onClose={() => setPreview(false)}
           sample
+          settings={settings}
         />
       )}
     </SettingsStack>

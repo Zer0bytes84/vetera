@@ -686,12 +686,9 @@ export function PremiumAnalytics({
             <StatGrid
               className="max-w-none"
               data={keyStats}
+              goals={keyView === "kpi"}
               icon={Squares2X2Icon}
               layout="row"
-              goals={keyView === "kpi"}
-              sparklines={keyView === "sparklines"}
-              subtitle={rangeLabel}
-              title="Chiffres clés"
               lead={
                 <div className="filters">
                   <div
@@ -702,13 +699,13 @@ export function PremiumAnalytics({
                   >
                     {ANALYTICS_PERIODS.map((opt) => (
                       <button
-                        key={opt.value}
-                        type="button"
-                        className="filter"
-                        data-active={period === opt.value}
                         aria-label={opt.ariaLabel}
                         aria-pressed={period === opt.value}
+                        className="filter"
+                        data-active={period === opt.value}
+                        key={opt.value}
                         onClick={() => onPeriod(opt.value)}
+                        type="button"
                       >
                         {opt.label}
                       </button>
@@ -746,6 +743,17 @@ export function PremiumAnalytics({
                   </div>
                 </div>
               }
+              onSelect={(stat) =>
+                ({
+                  cash: onFinances,
+                  appointments: () => onNavigate?.("agenda"),
+                  receivables: onFinances,
+                  actions: onActions,
+                })[stat.id as KeyFigureId]()
+              }
+              sparklines={keyView === "sparklines"}
+              subtitle={rangeLabel}
+              title="Chiffres clés"
               // The widget's two views, as TuffUI has them, named in French: « Indicateurs » (the cards with their goal bar)
               // and « Mini-graphiques » (the cards with their sparkline).
               toolbar={
@@ -786,14 +794,6 @@ export function PremiumAnalytics({
                   </div>
                   {dashboardViewControl}
                 </>
-              }
-              onSelect={(stat) =>
-                ({
-                  cash: onFinances,
-                  appointments: () => onNavigate?.("agenda"),
-                  receivables: onFinances,
-                  actions: onActions,
-                })[stat.id as KeyFigureId]()
               }
             />
           </div>

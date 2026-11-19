@@ -196,24 +196,24 @@ export function AppSidebar({
   return (
     <Sidebar
       {...props}
-      data-desktop-runtime={isDesktopRuntime ? "true" : undefined}
       className={cn(
         "app-sidebar restored-sidebar",
         variant !== "sidebar" && "border-none",
         props.className
       )}
+      data-desktop-runtime={isDesktopRuntime ? "true" : undefined}
       variant={variant}
     >
       <div className="apple-sidebar-glow" />
 
       <SidebarHeader
-        data-window-drag-region={isDesktopRuntime ? "true" : undefined}
         className={cn(
           "relative z-10 flex shrink-0 flex-row items-center p-0",
           "h-[calc(var(--header-height)+var(--titlebar-clearance))]",
           sidebarHeaderPadding,
           "w-full bg-transparent"
         )}
+        data-window-drag-region={isDesktopRuntime ? "true" : undefined}
         style={{ paddingTop: "var(--titlebar-clearance)" }}
       >
         {/* Hairline separator */}
@@ -239,7 +239,6 @@ export function AppSidebar({
         </div>
       </SidebarHeader>
       <SidebarContent
-        ref={navigationRef}
         className={cn(
           "relative z-10 overflow-y-auto",
           "[scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
@@ -247,6 +246,7 @@ export function AppSidebar({
             ? "flex flex-col items-center overflow-y-auto! overflow-x-hidden px-0 py-5"
             : "px-4 pt-2 pb-6"
         )}
+        ref={navigationRef}
       >
         <div
           className={cn(

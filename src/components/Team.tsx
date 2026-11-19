@@ -420,9 +420,9 @@ const Team: React.FC = () => {
           <ListSearch
             className="w-full sm:w-56"
             label="Rechercher un membre"
+            onValueChange={setSearchTerm}
             placeholder="Rechercher un membre…"
             value={searchTerm}
-            onValueChange={setSearchTerm}
           />
         </div>
 
@@ -436,6 +436,7 @@ const Team: React.FC = () => {
             // Composed as the Rappels' empty search: the page's band, one true line, and the way out.
             <Shell>
               <ShellHeader
+                as="h2"
                 aside={
                   searchTerm ? (
                     <Button
@@ -458,7 +459,6 @@ const Team: React.FC = () => {
                     </Button>
                   ) : undefined
                 }
-                as="h2"
                 icon={searchTerm ? MagnifyingGlassIcon : UsersIcon}
                 subtitle={
                   searchTerm
@@ -826,7 +826,7 @@ const Team: React.FC = () => {
                     }
                     value={formData.role || ""}
                   >
-                    <NativeSelectOption value="" disabled>
+                    <NativeSelectOption disabled value="">
                       Choisir un rôle
                     </NativeSelectOption>
                     <NativeSelectOption value="vet_principal">

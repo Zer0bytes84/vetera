@@ -89,8 +89,8 @@ function ModalBanner({
   return (
     <div
       className={cn("modal-banner modal-banner-illustrated", className)}
-      data-slot="modal-banner"
       data-artwork={artwork}
+      data-slot="modal-banner"
       data-tone={resolvedTone}
     >
       {/* 5. Glass Badges & Optical Links */}

@@ -52,8 +52,8 @@ export function PatientClinicalSummary({
   const chronic = chronicConditions?.trim();
   return (
     <section
-      className="patient-clinical-summary"
       aria-labelledby="patient-clinical-summary-title"
+      className="patient-clinical-summary"
     >
       <h2 className="sr-only" id="patient-clinical-summary-title">
         Synthèse clinique

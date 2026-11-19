@@ -78,16 +78,12 @@ export function KpiConsultationsCadence({
   return (
     <div className="kpi-visual-container">
       <svg
-        className="kpi-cadence-svg"
-        viewBox={`0 0 ${svgWidth} ${svgHeight}`}
-        preserveAspectRatio="none"
-        role="img"
-        tabIndex={0}
         aria-label={`Cadence des consultations sur 7 jours. ${values
           .map((v, i) => `${labels[i]} : ${v} consultation${v > 1 ? "s" : ""}`)
           .join(", ")}`}
-        onFocus={() => setHovered(count - 1)}
+        className="kpi-cadence-svg"
         onBlur={() => setHovered(null)}
+        onFocus={() => setHovered(count - 1)}
         onKeyDown={(e) => handleKeyNavigation(e, active, count, setHovered)}
         onPointerLeave={() => setHovered(null)}
         onPointerMove={(e) => {
@@ -99,15 +95,19 @@ export function KpiConsultationsCadence({
           );
           setHovered(idx);
         }}
+        preserveAspectRatio="none"
+        role="img"
+        tabIndex={0}
+        viewBox={`0 0 ${svgWidth} ${svgHeight}`}
       >
         {/* Baseline */}
         <line
-          x1={0}
-          y1={svgHeight - 2}
-          x2={svgWidth}
-          y2={svgHeight - 2}
           stroke="var(--border)"
           strokeDasharray="3 4"
+          x1={0}
+          x2={svgWidth}
+          y1={svgHeight - 2}
+          y2={svgHeight - 2}
         />
 
         {values.map((val, i) => {
@@ -120,29 +120,25 @@ export function KpiConsultationsCadence({
           const y = svgHeight - 2 - barHeight;
 
           return (
-            <g key={i} className="kpi-bar-slot">
+            <g className="kpi-bar-slot" key={i}>
               {/* Background ambient pillar for today */}
               {isToday && (
                 <rect
+                  fill="var(--primary)"
+                  height={svgHeight - 4}
+                  opacity={0.08}
+                  rx={5}
+                  width={slotWidth - 4}
                   x={slotX + 2}
                   y={2}
-                  width={slotWidth - 4}
-                  height={svgHeight - 4}
-                  rx={5}
-                  fill="var(--primary)"
-                  opacity={0.08}
                 />
               )}
 
               {/* Bar - Baitari Blue palette */}
               <rect
                 className="kpi-bar-rect"
-                x={x}
-                y={y}
-                width={barWidth}
-                height={barHeight}
-                rx={Math.min(3, barWidth / 2)}
                 fill="var(--primary)"
+                height={barHeight}
                 opacity={
                   isSelected
                     ? 1
@@ -154,6 +150,10 @@ export function KpiConsultationsCadence({
                           : 0.35
                         : 0.16
                 }
+                rx={Math.min(3, barWidth / 2)}
+                width={barWidth}
+                x={x}
+                y={y}
               />
 
               {/* Accent dot for today */}
@@ -161,8 +161,8 @@ export function KpiConsultationsCadence({
                 <circle
                   cx={slotX + slotWidth / 2}
                   cy={svgHeight - 1}
-                  r={1.5}
                   fill="var(--primary)"
+                  r={1.5}
                 />
               )}
             </g>
@@ -205,9 +205,9 @@ export function KpiConsultationsCadence({
             title="Comparaison aux 7 jours précédents"
           >
             {change > 0 ? (
-              <ArrowUpRight size={10} aria-hidden="true" />
+              <ArrowUpRight aria-hidden="true" size={10} />
             ) : change < 0 ? (
-              <ArrowDownRight size={10} aria-hidden="true" />
+              <ArrowDownRight aria-hidden="true" size={10} />
             ) : null}
             {change > 0 ? "+" : ""}
             {formatNumber(change)} %
@@ -277,19 +277,15 @@ export function KpiIncomeSplineWave({
   return (
     <div className="kpi-visual-container">
       <svg
-        className="kpi-spline-svg"
-        viewBox={`0 0 ${svgWidth} ${svgHeight}`}
-        preserveAspectRatio="none"
-        role="img"
-        tabIndex={0}
         aria-label={`Courbe des encaissements sur 7 jours. ${values
           .map(
             (v, i) =>
               `${labels[i]} : ${Math.round(v).toLocaleString("fr-FR")} DA`
           )
           .join(", ")}`}
-        onFocus={() => setHovered(count - 1)}
+        className="kpi-spline-svg"
         onBlur={() => setHovered(null)}
+        onFocus={() => setHovered(count - 1)}
         onKeyDown={(e) => handleKeyNavigation(e, active, count, setHovered)}
         onPointerLeave={() => setHovered(null)}
         onPointerMove={(e) => {
@@ -304,9 +300,13 @@ export function KpiIncomeSplineWave({
           );
           setHovered(idx);
         }}
+        preserveAspectRatio="none"
+        role="img"
+        tabIndex={0}
+        viewBox={`0 0 ${svgWidth} ${svgHeight}`}
       >
         <defs>
-          <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
+          <linearGradient id={gradientId} x1="0" x2="0" y1="0" y2="1">
             <stop offset="0%" stopColor="var(--primary)" stopOpacity="0.22" />
             <stop offset="100%" stopColor="var(--primary)" stopOpacity="0.02" />
           </linearGradient>
@@ -314,12 +314,12 @@ export function KpiIncomeSplineWave({
 
         {/* Baseline */}
         <line
-          x1={0}
-          y1={svgHeight - 2}
-          x2={svgWidth}
-          y2={svgHeight - 2}
           stroke="var(--border)"
           strokeDasharray="3 4"
+          x1={0}
+          x2={svgWidth}
+          y1={svgHeight - 2}
+          y2={svgHeight - 2}
         />
 
         {/* Area fill - Baitari Blue */}
@@ -331,22 +331,22 @@ export function KpiIncomeSplineWave({
             d={spline}
             fill="none"
             stroke="var(--primary)"
-            strokeWidth="2.2"
             strokeLinecap="round"
             strokeLinejoin="round"
+            strokeWidth="2.2"
           />
         )}
 
         {/* Crosshair guide */}
         {active !== null && (
           <line
-            x1={activeX}
-            y1={2}
-            x2={activeX}
-            y2={svgHeight - 2}
             stroke="var(--primary)"
-            strokeOpacity={0.35}
             strokeDasharray="2 3"
+            strokeOpacity={0.35}
+            x1={activeX}
+            x2={activeX}
+            y1={2}
+            y2={svgHeight - 2}
           />
         )}
 
@@ -357,15 +357,15 @@ export function KpiIncomeSplineWave({
               <circle
                 cx={lastPoint[0]}
                 cy={lastPoint[1]}
-                r={4.5}
                 fill="var(--primary)"
                 opacity={0.25}
+                r={4.5}
               />
               <circle
                 cx={lastPoint[0]}
                 cy={lastPoint[1]}
-                r={2.6}
                 fill="var(--primary)"
+                r={2.6}
               />
             </g>
           ) : null
@@ -373,8 +373,8 @@ export function KpiIncomeSplineWave({
           <circle
             cx={activeX}
             cy={points[active][1]}
-            r={3.8}
             fill="var(--card)"
+            r={3.8}
             stroke="var(--primary)"
             strokeWidth={2.4}
           />
@@ -412,9 +412,9 @@ export function KpiIncomeSplineWave({
             title="Comparaison aux 7 jours précédents"
           >
             {change > 0 ? (
-              <ArrowUpRight size={10} aria-hidden="true" />
+              <ArrowUpRight aria-hidden="true" size={10} />
             ) : change < 0 ? (
-              <ArrowDownRight size={10} aria-hidden="true" />
+              <ArrowDownRight aria-hidden="true" size={10} />
             ) : null}
             {change > 0 ? "+" : ""}
             {formatNumber(change)} %
@@ -481,15 +481,15 @@ export function KpiSpeciesDistribution({
       <div className="kpi-species-box">
         {/* Segmented Multi-Species Track */}
         <div
-          className="kpi-species-track"
-          role="img"
           aria-label={`Répartition des espèces : ${displayEntries
             .map(
               ([name, count]) =>
                 `${name} : ${count} (${Math.round((count / cleanTotal) * 100)} %)`
             )
             .join(", ")}`}
+          className="kpi-species-track"
           onPointerLeave={() => setHoveredIndex(null)}
+          role="img"
         >
           {displayEntries.length > 0 ? (
             displayEntries.map(([name, count], index) => {
@@ -503,15 +503,15 @@ export function KpiSpeciesDistribution({
 
               return (
                 <div
-                  key={name}
                   className="kpi-species-segment"
+                  key={name}
+                  onPointerEnter={() => setHoveredIndex(index)}
                   style={{
                     flexGrow: count,
                     backgroundColor: speciesColor,
                     opacity: hoveredIndex === null || isSelected ? 1 : 0.35,
                     filter: isSelected ? "brightness(1.15)" : undefined,
                   }}
-                  onPointerEnter={() => setHoveredIndex(index)}
                   title={`${name} : ${count} (${Math.round(pct)} %)`}
                 />
               );
@@ -536,21 +536,21 @@ export function KpiSpeciesDistribution({
 
               return (
                 <span
-                  key={name}
                   className={cn(
                     "kpi-species-chip transition-opacity",
                     hoveredIndex !== null && !isSelected
                       ? "opacity-35"
                       : "opacity-100"
                   )}
-                  style={{ color: isSelected ? speciesColor : undefined }}
+                  key={name}
                   onPointerEnter={() => setHoveredIndex(index)}
                   onPointerLeave={() => setHoveredIndex(null)}
+                  style={{ color: isSelected ? speciesColor : undefined }}
                 >
                   <Glyph
+                    aria-hidden="true"
                     size={11.5}
                     style={{ color: speciesColor }}
-                    aria-hidden="true"
                   />
                   <span>
                     <strong>{formatNumber(count)}</strong>{" "}
@@ -563,7 +563,7 @@ export function KpiSpeciesDistribution({
             })
           ) : (
             <span className="t-12 text-muted-foreground flex items-center gap-1.5">
-              <PawPrint size={11} className="opacity-50" />
+              <PawPrint className="opacity-50" size={11} />
               <span>Aucun patient enregistré</span>
             </span>
           )}
@@ -621,23 +621,23 @@ export function KpiReceivablesGauge({
             <circle
               cx={16}
               cy={16}
-              r={strokeRadius}
               fill="none"
+              r={strokeRadius}
               stroke="var(--muted)"
               strokeWidth={3}
             />
             {/* Active gauge ring - Baitari Blue when clean */}
             <circle
+              className="transition-[stroke-dashoffset] duration-300 ease-out"
               cx={16}
               cy={16}
-              r={strokeRadius}
               fill="none"
+              r={strokeRadius}
               stroke={isClean ? "var(--primary)" : "#f59e0b"}
-              strokeWidth={3}
               strokeDasharray={circumference}
               strokeDashoffset={strokeOffset}
               strokeLinecap="round"
-              className="transition-[stroke-dashoffset] duration-300 ease-out"
+              strokeWidth={3}
             />
           </svg>
 
@@ -645,9 +645,9 @@ export function KpiReceivablesGauge({
           <div className="kpi-gauge-center">
             {isClean ? (
               <Check
-                size={14}
-                className="text-primary stroke-[2.4]"
                 aria-hidden="true"
+                className="text-primary stroke-[2.4]"
+                size={14}
               />
             ) : (
               <span className="t-12 font-bold text-amber-600 dark:text-amber-400 tabular-nums">

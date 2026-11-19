@@ -124,20 +124,20 @@ export function UserMessage({
           >
             {attachments.map((file) => (
               <li
-                key={file.id}
                 className="flex items-center gap-2 rounded-xl bg-foreground/[0.05] py-1.5 pr-3 pl-1.5"
+                key={file.id}
               >
                 <span className="flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-foreground/[0.06] text-muted-foreground">
                   {file.previewUrl ? (
                     <img
-                      src={file.previewUrl}
                       alt=""
                       className="size-full object-cover"
+                      src={file.previewUrl}
                     />
                   ) : file.kind === "image" ? (
-                    <ImageIcon className="size-4" aria-hidden="true" />
+                    <ImageIcon aria-hidden="true" className="size-4" />
                   ) : (
-                    <FileText className="size-4" aria-hidden="true" />
+                    <FileText aria-hidden="true" className="size-4" />
                   )}
                 </span>
                 <span className="min-w-0">
@@ -156,23 +156,22 @@ export function UserMessage({
           </ul>
         )}
 
-        <AnimatePresence mode="popLayout" initial={false}>
+        <AnimatePresence initial={false} mode="popLayout">
           {editing ? (
             <motion.form
-              key="edit"
-              initial={{ opacity: 0, scale: 0.98 }}
               animate={{ opacity: 1, scale: 1, transition: enter }}
+              className="flex w-full max-w-[85%] origin-top-right flex-col gap-2 rounded-2xl bg-surface p-1.5"
               exit={{ opacity: 0, transition: exit }}
+              initial={{ opacity: 0, scale: 0.98 }}
+              key="edit"
               onSubmit={(e) => {
                 e.preventDefault();
                 save();
               }}
-              className="flex w-full max-w-[85%] origin-top-right flex-col gap-2 rounded-2xl bg-surface p-1.5"
             >
               <TextArea
                 aria-label="Modifier le message"
                 autoFocus
-                value={draft}
                 onChange={(e) => setDraft(e.target.value)}
                 onFocus={(e) =>
                   e.target.setSelectionRange(draft.length, draft.length)
@@ -187,31 +186,32 @@ export function UserMessage({
                   }
                 }}
                 rows={Math.min(6, Math.max(2, draft.split("\n").length))}
+                value={draft}
               />
               <div className="flex justify-end gap-1.5">
                 <Button
+                  onClick={cancel}
+                  size="sm"
                   type="button"
                   variant="quiet"
-                  size="sm"
-                  onClick={cancel}
                 >
                   Annuler
                 </Button>
-                <Button type="submit" size="sm" disabled={!draft.trim()}>
+                <Button disabled={!draft.trim()} size="sm" type="submit">
                   Enregistrer
                 </Button>
               </div>
             </motion.form>
           ) : (
             <motion.div
-              key="bubble"
-              initial={{ opacity: 0 }}
               animate={{ opacity: 1, transition: enter }}
-              exit={{ opacity: 0, transition: exit }}
               className={cn(
                 "max-w-[85%] rounded-2xl rounded-br-md bg-brand/10 px-3.5 py-2 text-sm leading-relaxed whitespace-pre-wrap",
                 status === "sending" && "opacity-70"
               )}
+              exit={{ opacity: 0, transition: exit }}
+              initial={{ opacity: 0 }}
+              key="bubble"
             >
               {content}
             </motion.div>
@@ -227,32 +227,32 @@ export function UserMessage({
             >
               {onEdit && status !== "sending" && (
                 <IconButton
-                  ref={editButton}
                   icon={Pencil}
                   label="Modifier le message"
-                  variant="quiet"
-                  size="sm"
                   onClick={startEdit}
+                  ref={editButton}
+                  size="sm"
+                  variant="quiet"
                 />
               )}
               <IconButton
                 icon={copied ? Check : Copy}
                 iconWeight={copied ? "bold" : "fill"}
                 label={copied ? "Copié" : "Copier le message"}
-                variant="quiet"
-                size="sm"
                 onClick={copy}
+                size="sm"
+                variant="quiet"
               />
             </span>
             <Delivery
-              status={status}
-              sentAt={sentAt}
               edited={edited}
               onRetry={onRetry}
+              sentAt={sentAt}
+              status={status}
             />
           </div>
         )}
-        <p role="status" aria-live="polite" className="sr-only">
+        <p aria-live="polite" className="sr-only" role="status">
           {status === "failed" ? "Message non envoyé" : copied ? "Copié" : ""}
         </p>
       </div>
@@ -274,7 +274,7 @@ function Delivery({
   if (status === "sending") {
     return (
       <span className="flex items-center gap-1 px-1">
-        <Spinner size="sm" label="Envoi" className="text-current" />
+        <Spinner className="text-current" label="Envoi" size="sm" />
         <span aria-hidden="true">Envoi…</span>
       </span>
     );
@@ -282,15 +282,15 @@ function Delivery({
   if (status === "failed") {
     return (
       <span className="flex items-center gap-1.5 pl-1 text-negative">
-        <CircleAlert className="size-3.5" aria-hidden="true" />
+        <CircleAlert aria-hidden="true" className="size-3.5" />
         Non envoyé
         {onRetry && (
           <Button
-            variant="danger"
-            size="sm"
             icon={RotateCw}
             iconWeight="bold"
             onClick={onRetry}
+            size="sm"
+            variant="danger"
           >
             Réessayer
           </Button>

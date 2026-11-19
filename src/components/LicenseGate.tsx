@@ -167,18 +167,18 @@ function CheckedLicenseGate({ children }: { children: ReactNode }) {
       <>
         {access.offlineUntil && (
           <div
-            role="status"
             className="fixed bottom-3 left-1/2 z-[100] flex max-w-[90vw] -translate-x-1/2 items-center gap-3 rounded-xl border bg-background px-4 py-2 text-xs shadow-sm"
+            role="status"
           >
             <span>
               Licence hors connexion · accès jusqu’au{" "}
               {new Date(access.offlineUntil).toLocaleString("fr-FR")}
             </span>
             <Button
-              size="sm"
-              variant="ghost"
               disabled={busy}
               onClick={() => void refresh(true)}
+              size="sm"
+              variant="ghost"
             >
               Réessayer
             </Button>
@@ -198,9 +198,9 @@ function CheckedLicenseGate({ children }: { children: ReactNode }) {
   return (
     <main className="relative flex min-h-dvh items-center justify-center bg-background px-6 py-16 text-foreground">
       <div
-        ref={windowDragRef}
-        onMouseDown={handleWindowMouseDown}
         className="absolute inset-x-0 top-0 h-12 select-none"
+        onMouseDown={handleWindowMouseDown}
+        ref={windowDragRef}
       />
       <section className="w-full max-w-md rounded-3xl border bg-card p-8 shadow-sm">
         <Logo />
@@ -208,8 +208,8 @@ function CheckedLicenseGate({ children }: { children: ReactNode }) {
           {access ? "Licence de ce poste" : "Vérification de votre licence"}
         </h1>
         <p
-          role="status"
           className="mt-3 text-sm leading-6 text-muted-foreground"
+          role="status"
         >
           {access?.message || "Connexion au serveur d’activation…"}
         </p>
@@ -218,49 +218,49 @@ function CheckedLicenseGate({ children }: { children: ReactNode }) {
             <p className="mt-2 text-sm text-muted-foreground">
               Vos dossiers restent conservés sur cet appareil.
             </p>
-            <form onSubmit={activate} className="mt-6 space-y-4">
+            <form className="mt-6 space-y-4" onSubmit={activate}>
               <div className="space-y-2">
                 <Label htmlFor="license-email">Courriel de la licence</Label>
                 <Input
-                  id="license-email"
-                  type="email"
                   autoComplete="email"
-                  required
-                  value={email}
                   disabled={busy}
+                  id="license-email"
                   onChange={(event) => setEmail(event.target.value)}
+                  required
+                  type="email"
+                  value={email}
                 />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="license-key">Clé d’activation</Label>
                 <Input
-                  id="license-key"
-                  required
                   autoComplete="off"
-                  spellCheck={false}
-                  maxLength={24}
-                  value={key}
                   disabled={busy}
-                  placeholder="XXXX-XXXX-XXXX-XXXX-XXXX"
+                  id="license-key"
+                  maxLength={24}
                   onChange={(event) =>
                     setKey(formatLicenseKey(event.target.value))
                   }
+                  placeholder="XXXX-XXXX-XXXX-XXXX-XXXX"
+                  required
+                  spellCheck={false}
+                  value={key}
                 />
               </div>
               {error && (
-                <p role="alert" className="text-sm text-destructive">
+                <p className="text-sm text-destructive" role="alert">
                   {error}
                 </p>
               )}
-              <Button type="submit" className="w-full" disabled={busy}>
+              <Button className="w-full" disabled={busy} type="submit">
                 {busy ? "Vérification…" : "Activer ce poste"}
               </Button>
               <Button
-                type="button"
-                variant="outline"
                 className="w-full"
                 disabled={busy}
                 onClick={() => void refresh(true)}
+                type="button"
+                variant="outline"
               >
                 Vérifier l’activation existante
               </Button>

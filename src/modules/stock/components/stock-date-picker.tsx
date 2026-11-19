@@ -26,15 +26,15 @@ export function StockDatePicker({
   const [open, setOpen] = useState(false);
   return (
     <div className="flex min-w-0 gap-2">
-      <Popover open={open} onOpenChange={setOpen}>
+      <Popover onOpenChange={setOpen} open={open}>
         <PopoverTrigger
           aria-label={label}
           disabled={disabled}
           render={
             <Button
+              className="h-11 min-w-0 flex-1 justify-start rounded-xl px-3"
               type="button"
               variant="outline"
-              className="h-11 min-w-0 flex-1 justify-start rounded-xl px-3"
             />
           }
         >
@@ -45,26 +45,26 @@ export function StockDatePicker({
         </PopoverTrigger>
         <PopoverContent align="start" className="w-auto p-2">
           <Calendar
-            mode="single"
-            locale={fr}
-            selected={value}
             className={COMPACT_CALENDAR_CLASS}
+            locale={fr}
+            mode="single"
             onSelect={(date) => {
               onChange(date);
               if (date) {
                 setOpen(false);
               }
             }}
+            selected={value}
           />
         </PopoverContent>
       </Popover>
       {clearable && value && (
         <Button
+          className="h-11"
+          disabled={disabled}
+          onClick={() => onChange(undefined)}
           type="button"
           variant="ghost"
-          disabled={disabled}
-          className="h-11"
-          onClick={() => onChange(undefined)}
         >
           Effacer
         </Button>

@@ -282,8 +282,8 @@ function TourRunner({ state }: { state: TourState }) {
       <section
         aria-label="Tour guidé"
         className="tour-card"
-        data-tour-ui
         data-tour-step={step.id}
+        data-tour-ui
         role="region"
       >
         <Shell>
@@ -294,8 +294,8 @@ function TourRunner({ state }: { state: TourState }) {
             <div aria-hidden="true" className="tour-card-bar">
               {TOUR_STEPS.map((item, index) => (
                 <span
-                  data-done={index < state.step || undefined}
                   data-current={index === state.step || undefined}
+                  data-done={index < state.step || undefined}
                   key={item.id}
                 />
               ))}
@@ -343,8 +343,8 @@ function TourFinishedCard() {
     <section
       aria-label="Tour guidé"
       className="tour-card"
-      data-tour-ui
       data-tour-step="done"
+      data-tour-ui
       role="region"
     >
       <Shell>

@@ -165,8 +165,8 @@ export function AgendaMonthCalendar({
                 {count > 0 ? (
                   <>
                     <span
-                      className="flex shrink-0 items-center gap-0.5 sm:hidden"
                       aria-hidden="true"
+                      className="flex shrink-0 items-center gap-0.5 sm:hidden"
                     >
                       {dayAppointments.slice(0, MAX_DOTS).map((appointment) => (
                         <span
@@ -180,8 +180,8 @@ export function AgendaMonthCalendar({
                       ))}
                     </span>
                     <span
-                      className="agenda-month-events hidden w-full min-w-0 flex-col gap-0.5 sm:flex"
                       aria-hidden="true"
+                      className="agenda-month-events hidden w-full min-w-0 flex-col gap-0.5 sm:flex"
                     >
                       {dayAppointments
                         .slice(0, count > MAX_NAMED ? MAX_NAMED - 1 : MAX_NAMED)

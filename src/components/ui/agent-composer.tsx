@@ -148,21 +148,21 @@ export function AgentComposer({
         {/* Opened by typing « @ », so it appears instantly: keyboard actions never animate. */}
         {menuOpen && menu && (
           <ul
-            id={`${id}-menu`}
-            role="listbox"
             aria-label={menu.label}
             className="mb-3 max-h-40 overflow-y-auto rounded-2xl border border-border bg-surface-raised p-1"
+            id={`${id}-menu`}
+            role="listbox"
           >
             {items.map((item, i) => (
               <li
-                key={item.key}
-                id={`${id}-opt-${i}`}
-                role="option"
                 aria-selected={i === active}
-                onMouseDown={(event) => event.preventDefault()}
-                onClick={() => menu.onPick(item)}
-                onMouseMove={() => menu.onActiveChange(i)}
                 className="flex cursor-pointer flex-col gap-0.5 rounded-xl px-3 py-2 text-[0.8125rem] aria-selected:bg-foreground/[0.07]"
+                id={`${id}-opt-${i}`}
+                key={item.key}
+                onClick={() => menu.onPick(item)}
+                onMouseDown={(event) => event.preventDefault()}
+                onMouseMove={() => menu.onActiveChange(i)}
+                role="option"
               >
                 <span className="truncate font-medium">{item.label}</span>
                 {item.detail && (
@@ -180,33 +180,33 @@ export function AgentComposer({
             fill && "flex min-h-0 flex-1 flex-col"
           )}
         >
-          <label htmlFor={`${id}-input`} className="sr-only">
+          <label className="sr-only" htmlFor={`${id}-input`}>
             {label}
           </label>
           <textarea
-            ref={inner}
-            id={`${id}-input`}
-            rows={fill ? undefined : 2}
-            value={value}
-            maxLength={maxLength}
-            disabled={disabled}
-            placeholder={placeholder}
-            onChange={(event) =>
-              onValueChange(event.target.value, event.target.selectionStart)
-            }
-            onSelect={(event) =>
-              onCaretChange?.(event.currentTarget.selectionStart)
-            }
-            onKeyDown={onKeyDown}
-            role={menu ? "combobox" : undefined}
-            aria-autocomplete={menu ? "list" : undefined}
-            aria-expanded={menu ? menuOpen : undefined}
-            aria-controls={menu && menuOpen ? `${id}-menu` : undefined}
             aria-activedescendant={menuOpen ? `${id}-opt-${active}` : undefined}
+            aria-autocomplete={menu ? "list" : undefined}
+            aria-controls={menu && menuOpen ? `${id}-menu` : undefined}
+            aria-expanded={menu ? menuOpen : undefined}
             className={cn(
               "block w-full resize-none bg-transparent px-3 pt-3 pb-0 text-sm leading-6 outline-none placeholder:text-muted-foreground disabled:opacity-60",
               fill ? "min-h-[14rem] flex-1" : "max-h-[220px] min-h-[5.5rem]"
             )}
+            disabled={disabled}
+            id={`${id}-input`}
+            maxLength={maxLength}
+            onChange={(event) =>
+              onValueChange(event.target.value, event.target.selectionStart)
+            }
+            onKeyDown={onKeyDown}
+            onSelect={(event) =>
+              onCaretChange?.(event.currentTarget.selectionStart)
+            }
+            placeholder={placeholder}
+            ref={inner}
+            role={menu ? "combobox" : undefined}
+            rows={fill ? undefined : 2}
+            value={value}
           />
           <div className="flex flex-wrap items-center justify-between gap-3 p-3">
             <div className="flex min-w-0 flex-wrap items-center gap-3">

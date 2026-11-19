@@ -72,8 +72,8 @@ export function StreamingMessage({
   return (
     <MotionConfig reducedMotion="user">
       <article
-        aria-label={`Message de ${model}`}
         aria-busy={streaming}
+        aria-label={`Message de ${model}`}
         className={cn("w-full max-w-xl text-sm", className)}
       >
         {showHeader && (
@@ -96,7 +96,7 @@ export function StreamingMessage({
                   "w-fit max-w-full rounded-2xl rounded-tl-md bg-[var(--card-band)] px-3.5 py-2"
               )}
             >
-              <Content text={content} streaming={streaming} settled={settled} />
+              <Content settled={settled} streaming={streaming} text={content} />
             </div>
           )}
           <AnimatePresence initial={false}>
@@ -104,8 +104,8 @@ export function StreamingMessage({
               <motion.div role="alert" {...fold} className="overflow-hidden">
                 <div className="mt-3 flex items-center gap-2.5 rounded-2xl bg-negative/10 py-2 pr-2 pl-3.5">
                   <CircleAlert
-                    className="size-4 shrink-0 text-negative"
                     aria-hidden="true"
+                    className="size-4 shrink-0 text-negative"
                   />
                   <p className="flex-1 text-[0.8125rem]">
                     <span className="font-medium text-negative">
@@ -117,10 +117,10 @@ export function StreamingMessage({
                   </p>
                   {onRetry && (
                     <Button
+                      className="h-7 px-3 text-xs"
                       icon={RotateCcw}
                       iconWeight="bold"
                       onClick={onRetry}
-                      className="h-7 px-3 text-xs"
                     >
                       Réessayer
                     </Button>
@@ -132,26 +132,26 @@ export function StreamingMessage({
           <AnimatePresence initial={false}>
             {showActions && status === "done" && (
               <motion.div
-                initial={{ opacity: 0, y: -4 }}
                 animate={{ opacity: 1, y: 0, transition: enter }}
-                exit={{ opacity: 0, transition: leave }}
                 className="mt-2 -ml-2 flex items-center gap-0.5"
+                exit={{ opacity: 0, transition: leave }}
+                initial={{ opacity: 0, y: -4 }}
               >
                 <CopyAction content={content} onCopy={onCopy} />
                 {onRetry && (
                   <IconButton
+                    className="size-7"
                     icon={RotateCcw}
                     iconWeight="bold"
                     label="Régénérer la réponse"
                     onClick={onRetry}
-                    className="size-7"
                   />
                 )}
               </motion.div>
             )}
           </AnimatePresence>
         </div>
-        <p role="status" aria-live="polite" className="sr-only">
+        <p aria-live="polite" className="sr-only" role="status">
           {status === "done"
             ? "Réponse terminée"
             : status === "error"
@@ -175,22 +175,22 @@ function Reasoning({
   return (
     <div className="mb-3 rounded-2xl bg-foreground/[0.04]">
       <button
-        type="button"
         aria-expanded={open}
-        onClick={() => setUserOpen(!open)}
         className="flex w-full items-center gap-1.5 rounded-2xl px-3.5 py-2.5 text-[0.8125rem] text-muted-foreground transition-[color,scale] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] hover:text-foreground active:scale-[0.99]"
+        onClick={() => setUserOpen(!open)}
+        type="button"
       >
-        <Brain className="size-3.5" aria-hidden="true" />
+        <Brain aria-hidden="true" className="size-3.5" />
         {streaming ? (
           <motion.span
-            initial={{ backgroundPosition: "100% 0" }}
             animate={{ backgroundPosition: "-100% 0" }}
+            className="bg-[linear-gradient(90deg,var(--muted-foreground)_35%,var(--foreground)_50%,var(--muted-foreground)_65%)] bg-[length:200%_100%] bg-clip-text text-transparent"
+            initial={{ backgroundPosition: "100% 0" }}
             transition={{
               duration: 1.6,
               repeat: Number.POSITIVE_INFINITY,
               ease: "linear",
             }}
-            className="bg-[linear-gradient(90deg,var(--muted-foreground)_35%,var(--foreground)_50%,var(--muted-foreground)_65%)] bg-[length:200%_100%] bg-clip-text text-transparent"
           >
             Réflexion…
           </motion.span>
@@ -201,13 +201,13 @@ function Reasoning({
         )}
         <motion.span
           animate={{ rotate: open ? 90 : 0 }}
-          transition={{ duration: 0.2, ease: [0.77, 0, 0.175, 1] }}
           className="ml-auto inline-flex"
+          transition={{ duration: 0.2, ease: [0.77, 0, 0.175, 1] }}
         >
           <ChevronRight
-            strokeWidth={2.5}
-            className="size-3.5"
             aria-hidden="true"
+            className="size-3.5"
+            strokeWidth={2.5}
           />
         </motion.span>
       </button>
@@ -283,9 +283,9 @@ function Content({
                 <Fragment key={i}>{word}</Fragment>
               ) : (
                 <motion.span
-                  key={i}
-                  initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
+                  initial={{ opacity: 0 }}
+                  key={i}
                   transition={{ duration: 0.25, ease: EASE_OUT }}
                 >
                   {word}
@@ -295,8 +295,8 @@ function Content({
             if (segment.kind === "code") {
               return (
                 <code
-                  key={s}
                   className="rounded-md bg-foreground/[0.07] px-1 py-px font-mono text-[0.75rem]"
+                  key={s}
                 >
                   {nodes}
                 </code>
@@ -304,7 +304,7 @@ function Content({
             }
             if (segment.kind === "bold") {
               return (
-                <strong key={s} className="font-semibold">
+                <strong className="font-semibold" key={s}>
                   {nodes}
                 </strong>
               );
@@ -313,14 +313,14 @@ function Content({
           })}
           {streaming && p === paragraphs.length - 1 && (
             <motion.span
-              aria-hidden="true"
               animate={{ opacity: [1, 0, 1] }}
+              aria-hidden="true"
+              className="ml-0.5 inline-block h-[1.1em] w-[2px] translate-y-[3px] rounded-full bg-brand"
               transition={{
                 duration: 1,
                 repeat: Number.POSITIVE_INFINITY,
                 ease: "linear",
               }}
-              className="ml-0.5 inline-block h-[1.1em] w-[2px] translate-y-[3px] rounded-full bg-brand"
             />
           )}
         </p>
@@ -347,6 +347,7 @@ function CopyAction({
 
   return (
     <IconButton
+      className={cn("size-7", copied && "text-positive hover:text-positive")}
       icon={copied ? Check : Copy}
       iconWeight={copied ? "bold" : "fill"}
       label={copied ? "Copié" : "Copier le message"}
@@ -357,7 +358,6 @@ function CopyAction({
         setCopied(true);
         onCopy?.(content);
       }}
-      className={cn("size-7", copied && "text-positive hover:text-positive")}
     />
   );
 }

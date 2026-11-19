@@ -205,7 +205,7 @@ export function ClinicNetworkSettings() {
     <SettingsSection
       aria-label="Réseau local"
       aside={
-        <Badge variant="outline" className="shrink-0">
+        <Badge className="shrink-0" variant="outline">
           Aperçu technique
         </Badge>
       }
@@ -218,23 +218,23 @@ export function ClinicNetworkSettings() {
           aria-label="Rôle de ce poste"
           // Wraps on the panel's own width: settings content is narrower than the window.
           className="grid grid-cols-[repeat(auto-fit,minmax(13rem,1fr))] gap-3"
-          value={choice}
           onValueChange={(value) => {
             setChoice(value as NetworkMode);
             setError(null);
           }}
+          value={choice}
         >
           {MODES.map((mode) => (
             <label
-              key={mode.id}
               className={cn(
                 "flex min-w-0 cursor-pointer items-start gap-3 rounded-2xl border bg-background p-4 transition-colors",
                 choice === mode.id
                   ? "border-primary/60 bg-primary/5"
                   : "hover:bg-muted/40"
               )}
+              key={mode.id}
             >
-              <RadioGroupItem value={mode.id} className="mt-0.5" />
+              <RadioGroupItem className="mt-0.5" value={mode.id} />
               <span className="min-w-0">
                 <span className="flex flex-wrap items-baseline gap-x-2 text-sm font-medium">
                   {mode.title}
@@ -260,11 +260,11 @@ export function ClinicNetworkSettings() {
             <Input
               id="clinic-network-name"
               maxLength={40}
+              onChange={(event) => setName(event.target.value)}
               placeholder={
                 choice === "host" ? "Accueil" : "Salle de consultation"
               }
               value={name}
-              onChange={(event) => setName(event.target.value)}
             />
             <FieldDescription>
               Affiché sur les autres postes pour savoir qui est relié.
@@ -280,11 +280,11 @@ export function ClinicNetworkSettings() {
                 : "Ce poste retrouvera sa propre base, sans les données du poste principal."}
             </p>
             <Button
-              type="button"
-              variant="outline"
-              size="sm"
               disabled={busy !== null}
               onClick={stop}
+              size="sm"
+              type="button"
+              variant="outline"
             >
               {busy === "stop" && <Loader2 className="size-4 animate-spin" />}
               Revenir en poste seul
@@ -317,20 +317,20 @@ export function ClinicNetworkSettings() {
                         {host.key}
                       </code>
                       <Button
+                        onClick={() => void copyKey(host.key!)}
+                        size="sm"
                         type="button"
                         variant="outline"
-                        size="sm"
-                        onClick={() => void copyKey(host.key!)}
                       >
                         <Copy className="size-4" />
                         Copier
                       </Button>
                       <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
                         disabled={busy !== null}
                         onClick={newKey}
+                        size="sm"
+                        type="button"
+                        variant="ghost"
                       >
                         {busy === "key" ? (
                           <Loader2 className="size-4 animate-spin" />
@@ -350,8 +350,8 @@ export function ClinicNetworkSettings() {
                     <ul className="flex flex-wrap gap-2">
                       {host.workstations.map((workstation) => (
                         <li
-                          key={workstation}
                           className="flex items-center gap-2 rounded-lg border px-3 py-1.5 text-sm"
+                          key={workstation}
                         >
                           <Laptop2 className="size-4 text-muted-foreground" />
                           {workstation}
@@ -373,11 +373,11 @@ export function ClinicNetworkSettings() {
                 )}
                 {name.trim() && name.trim() !== status.workstationName && (
                   <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
                     disabled={busy !== null}
                     onClick={share}
+                    size="sm"
+                    type="button"
+                    variant="outline"
                   >
                     Renommer en « {name.trim()} »
                   </Button>
@@ -390,10 +390,10 @@ export function ClinicNetworkSettings() {
                     "Le système peut demander d'autoriser Baitari sur le réseau : acceptez pour les réseaux privés."}
                 </p>
                 <Button
-                  type="button"
-                  size="sm"
                   disabled={busy !== null || !name.trim()}
                   onClick={share}
+                  size="sm"
+                  type="button"
                 >
                   {busy === "share" ? (
                     <Loader2 className="size-4 animate-spin" />
@@ -440,19 +440,19 @@ export function ClinicNetworkSettings() {
                 <Input
                   id="clinic-network-address"
                   inputMode="decimal"
-                  placeholder="192.168.1.20"
-                  value={address}
                   onChange={(event) => {
                     setAddress(event.target.value);
                     setTested(null);
                   }}
+                  placeholder="192.168.1.20"
+                  value={address}
                 />
               </Field>
               <Button
-                type="button"
-                variant="outline"
                 disabled={busy !== null}
                 onClick={discover}
+                type="button"
+                variant="outline"
               >
                 {busy === "discover" ? (
                   <Loader2 className="size-4 animate-spin" />
@@ -476,7 +476,6 @@ export function ClinicNetworkSettings() {
                       return (
                         <li key={value}>
                           <button
-                            type="button"
                             className={cn(
                               "flex items-center gap-2 rounded-lg border px-3 py-1.5 text-sm transition-colors hover:bg-muted/40",
                               address === value &&
@@ -486,6 +485,7 @@ export function ClinicNetworkSettings() {
                               setAddress(value);
                               setTested(null);
                             }}
+                            type="button"
                           >
                             <Server className="size-4 text-muted-foreground" />
                             {candidate.workstationName}
@@ -505,17 +505,17 @@ export function ClinicNetworkSettings() {
                 Clé de connexion
               </FieldLabel>
               <Input
-                id="clinic-network-key"
                 autoCapitalize="characters"
                 autoComplete="off"
                 className="font-mono tracking-[0.12em]"
-                placeholder="ABCD-EFGH-JKMN"
-                spellCheck={false}
-                value={key}
+                id="clinic-network-key"
                 onChange={(event) => {
                   setKey(event.target.value.toUpperCase());
                   setTested(null);
                 }}
+                placeholder="ABCD-EFGH-JKMN"
+                spellCheck={false}
+                value={key}
               />
               <FieldDescription>
                 Affichée dans les paramètres du poste principal, rubrique Réseau
@@ -523,7 +523,7 @@ export function ClinicNetworkSettings() {
               </FieldDescription>
             </Field>
             {tested && (
-              <p role="status" className="flex items-center gap-2 text-sm">
+              <p className="flex items-center gap-2 text-sm" role="status">
                 <Check className="size-4 text-emerald-600 dark:text-emerald-400" />
                 {tested.workstationName} répond, Baitari {tested.appVersion}.
               </p>
@@ -535,8 +535,6 @@ export function ClinicNetworkSettings() {
             </p>
             <div className="flex flex-wrap justify-end gap-2">
               <Button
-                type="button"
-                variant="outline"
                 disabled={
                   busy !== null ||
                   !address.trim() ||
@@ -544,14 +542,16 @@ export function ClinicNetworkSettings() {
                   !name.trim()
                 }
                 onClick={test}
+                type="button"
+                variant="outline"
               >
                 {busy === "test" && <Loader2 className="size-4 animate-spin" />}
                 Tester la connexion
               </Button>
               <Button
-                type="button"
                 disabled={busy !== null || !tested}
                 onClick={join}
+                type="button"
               >
                 {busy === "join" && <Loader2 className="size-4 animate-spin" />}
                 Relier ce poste
@@ -562,8 +562,8 @@ export function ClinicNetworkSettings() {
 
         {error && (
           <p
-            role="alert"
             className="rounded-2xl border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive"
+            role="alert"
           >
             {error}
           </p>
@@ -571,15 +571,15 @@ export function ClinicNetworkSettings() {
 
         {status?.needsRestart && (
           <div
-            role="status"
             className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-primary/30 bg-primary/5 p-4"
+            role="status"
           >
             <p className="text-sm">
               {status.mode === "client"
                 ? `Ce poste est relié à ${status.remoteAddress ?? "son poste principal"}. Redémarrez Baitari pour travailler sur la base partagée.`
                 : "Redémarrez Baitari pour retrouver la base de ce poste."}
             </p>
-            <Button type="button" size="sm" onClick={() => void relaunch()}>
+            <Button onClick={() => void relaunch()} size="sm" type="button">
               Redémarrer Baitari
             </Button>
           </div>

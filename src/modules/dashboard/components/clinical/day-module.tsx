@@ -80,14 +80,6 @@ export function DayModule({
   ).length;
   return (
     <WidgetShell
-      icon={CalendarDays}
-      className="clinical-module clinical-day-module"
-      title="Planning des visites"
-      subtitle={date.toLocaleDateString("fr-FR", {
-        weekday: "long",
-        day: "numeric",
-        month: "long",
-      })}
       actions={
         <div className="flex items-center gap-1">
           <IconButton label="Jour précédent" onClick={() => onShiftDay(-1)}>
@@ -95,8 +87,8 @@ export function DayModule({
           </IconButton>
           <button
             className={`rounded-control px-2 py-1.5 t-12 text-ink-muted hover:bg-frame ${focusRing}`}
-            type="button"
             onClick={onToday}
+            type="button"
           >
             Aujourd’hui
           </button>
@@ -109,11 +101,19 @@ export function DayModule({
           </IconButton>
         </div>
       }
+      className="clinical-module clinical-day-module"
+      error={state.error}
+      icon={CalendarDays}
+      onRetry={state.retry}
       pending={state.loading}
       showSkeleton={state.skeleton}
-      error={state.error}
-      onRetry={state.retry}
       skeleton={<RowSkeleton />}
+      subtitle={date.toLocaleDateString("fr-FR", {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+      })}
+      title="Planning des visites"
     >
       <ModuleTotals
         values={[
@@ -131,10 +131,10 @@ export function DayModule({
         ]}
       />
       <div
+        aria-label="Filtrer les visites"
         className="clinical-filter-tabs"
         data-tabs-style="segmented"
         role="group"
-        aria-label="Filtrer les visites"
       >
         {(
           [
@@ -145,13 +145,13 @@ export function DayModule({
           ] as const
         ).map(([value, label]) => (
           <button
-            type="button"
-            key={value}
             aria-pressed={filter === value}
+            key={value}
             onClick={() => {
               setFilter(value);
               setPage(0);
             }}
+            type="button"
           >
             {label}
           </button>
@@ -162,18 +162,18 @@ export function DayModule({
           <AnimatePresence initial={false}>
             {filtered.slice(activePage * 5, activePage * 5 + 5).map((row) => (
               <motion.div
+                animate={{ opacity: 1 }}
+                className="group/row flex min-w-0 flex-wrap items-center gap-3 rounded-control py-3 transition-colors duration-150 hover:bg-frame sm:flex-nowrap"
+                data-row-id={row.appointment.id}
+                exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 4 }}
+                initial={false}
                 key={row.appointment.id}
                 layout={!reducedMotion}
-                initial={false}
-                animate={{ opacity: 1 }}
-                exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 4 }}
-                transition={{ duration: MOTION.fast, ease: MOTION.easeOut }}
-                data-row-id={row.appointment.id}
-                className="group/row flex min-w-0 flex-wrap items-center gap-3 rounded-control py-3 transition-colors duration-150 hover:bg-frame sm:flex-nowrap"
-                onPointerEnter={onIntent}
-                onFocus={onIntent}
-                onPointerLeave={onIntentCancel}
                 onBlur={onIntentCancel}
+                onFocus={onIntent}
+                onPointerEnter={onIntent}
+                onPointerLeave={onIntentCancel}
+                transition={{ duration: MOTION.fast, ease: MOTION.easeOut }}
               >
                 <div className="w-12 shrink-0 border-r border-hairline">
                   <time className="t-13 font-medium tabular-nums">
@@ -192,9 +192,9 @@ export function DayModule({
                 <PatientPortrait name={row.patientName} />
                 <div className="min-w-0 flex-1">
                   <button
-                    type="button"
                     className={`max-w-full truncate rounded text-left t-13 font-medium hover:text-primary ${focusRing}`}
                     onClick={() => onPatient(row.appointment.patientId)}
+                    type="button"
                   >
                     {row.patientName}
                   </button>
@@ -203,8 +203,8 @@ export function DayModule({
                   </p>
                 </div>
                 <StatusStepper
-                  status={row.appointment.status}
                   onFlux={() => onFlux(row.appointment.id)}
+                  status={row.appointment.status}
                 />
               </motion.div>
             ))}
@@ -212,19 +212,8 @@ export function DayModule({
         </div>
       ) : (
         <EmptyState
-          compact
-          title={
-            rows.length
-              ? "Aucune visite dans ce filtre"
-              : "Aucun rendez-vous ce jour"
-          }
-          description={
-            rows.length
-              ? "Choisissez un autre état pour retrouver les visites de cette journée."
-              : "La prochaine visite peut se préparer dès maintenant."
-          }
           action={
-            <ActionButton quiet onClick={onPlan}>
+            <ActionButton onClick={onPlan} quiet>
               <HugeiconsIcon
                 icon={CalendarAdd01Icon}
                 size={15}
@@ -232,6 +221,17 @@ export function DayModule({
               />
               Planifier une visite
             </ActionButton>
+          }
+          compact
+          description={
+            rows.length
+              ? "Choisissez un autre état pour retrouver les visites de cette journée."
+              : "La prochaine visite peut se préparer dès maintenant."
+          }
+          title={
+            rows.length
+              ? "Aucune visite dans ce filtre"
+              : "Aucun rendez-vous ce jour"
           }
         />
       )}
@@ -242,10 +242,10 @@ export function DayModule({
           </h3>
           {context.rows.slice(0, 2).map((row) => (
             <button
-              type="button"
+              className={`flex w-full items-center justify-between gap-3 rounded-control py-2 text-left t-12 hover:text-primary ${focusRing}`}
               key={row.appointment.id}
               onClick={() => onPatient(row.appointment.patientId)}
-              className={`flex w-full items-center justify-between gap-3 rounded-control py-2 text-left t-12 hover:text-primary ${focusRing}`}
+              type="button"
             >
               <span className="truncate">
                 {row.patientName}
@@ -273,15 +273,15 @@ export function DayModule({
           {pageCount > 1 && (
             <>
               <IconButton
-                label="Visites précédentes"
                 disabled={activePage === 0}
+                label="Visites précédentes"
                 onClick={() => setPage(activePage - 1)}
               >
                 <HugeiconsIcon icon={ArrowLeft01Icon} size={14} />
               </IconButton>
               <IconButton
-                label="Visites suivantes"
                 disabled={activePage + 1 === pageCount}
+                label="Visites suivantes"
                 onClick={() => setPage(activePage + 1)}
               >
                 <HugeiconsIcon icon={ArrowRight01Icon} size={14} />

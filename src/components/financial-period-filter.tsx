@@ -72,20 +72,20 @@ export function FinancialPeriodFilter({
   return (
     <div className="flex items-center">
       <Popover
-        open={open}
         onOpenChange={(next) => {
           if (next) {
             setDraft({ from: parse(from), to: parse(to) });
           }
           setOpen(next);
         }}
+        open={open}
       >
         <PopoverTrigger
           render={
             <Button
-              variant="outline"
-              className="list-filter-control h-[30px] gap-1.5 rounded-full bg-background px-2.5 text-xs font-medium"
               aria-label={`Choisir la période : ${label}`}
+              className="list-filter-control h-[30px] gap-1.5 rounded-full bg-background px-2.5 text-xs font-medium"
+              variant="outline"
             >
               <CalendarDays className="size-3.5 text-muted-foreground" />
               <span>{label}</span>
@@ -95,8 +95,8 @@ export function FinancialPeriodFilter({
         />
         <PopoverContent
           align="start"
-          sideOffset={8}
           className="w-auto max-w-[calc(100vw-24px)] gap-0 rounded-2xl p-0 overflow-hidden"
+          sideOffset={8}
         >
           <div className="border-b px-4 py-3">
             <p className="font-semibold">Période</p>
@@ -115,35 +115,35 @@ export function FinancialPeriodFilter({
                 ] as const
               ).map(([key, text]) => (
                 <Button
-                  key={key}
-                  variant="ghost"
-                  size="sm"
                   className="justify-start rounded-lg text-xs"
+                  key={key}
                   onClick={() => {
                     const r = financialPeriodRange(key, new Date());
                     apply(r.from, r.to);
                   }}
+                  size="sm"
+                  variant="ghost"
                 >
                   {text}
                 </Button>
               ))}
               <Button
-                variant="ghost"
-                size="sm"
                 className="justify-start rounded-lg text-xs text-muted-foreground"
                 onClick={() => apply("", "")}
+                size="sm"
+                variant="ghost"
               >
                 Toutes les dates
               </Button>
             </div>
             <Calendar
-              mode="range"
-              locale={fr}
-              weekStartsOn={1}
-              selected={draft}
-              onSelect={setDraft}
-              defaultMonth={parse(from) ?? new Date()}
               className="p-3 [--cell-size:--spacing(8)]"
+              defaultMonth={parse(from) ?? new Date()}
+              locale={fr}
+              mode="range"
+              onSelect={setDraft}
+              selected={draft}
+              weekStartsOn={1}
             />
           </div>
           <div className="flex items-center justify-between gap-3 border-t bg-muted/20 px-3 py-3">
@@ -153,7 +153,6 @@ export function FinancialPeriodFilter({
                 : "Aucune date sélectionnée"}
             </span>
             <Button
-              size="sm"
               className="rounded-lg"
               disabled={!draft?.from}
               onClick={() =>
@@ -163,6 +162,7 @@ export function FinancialPeriodFilter({
                   format(draft.to ?? draft.from, "yyyy-MM-dd")
                 )
               }
+              size="sm"
             >
               Appliquer
             </Button>

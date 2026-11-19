@@ -709,16 +709,16 @@ export function PatientDetailPage({
 
   return (
     <div
-      ref={pageRef}
       className="patient-record-page dashboard-stage flex w-full min-w-0 flex-col gap-5 px-4 pb-8 lg:px-6"
+      ref={pageRef}
     >
       <div className="mx-auto w-full max-w-7xl space-y-4">
         <PatientRecordHeader owner={owner} patient={patient} />
         {soapAppointmentId && (
           <section
-            id="patient-consultation-note"
             aria-label={`Note de consultation de ${patient.name}`}
             className="space-y-4"
+            id="patient-consultation-note"
           >
             <SoapPanel
               appointmentId={soapAppointmentId}
@@ -726,8 +726,8 @@ export function PatientDetailPage({
               patientId={patientId}
             />
             <ConsultationProducts
-              key={`products:${soapAppointmentId}`}
               appointmentId={soapAppointmentId}
+              key={`products:${soapAppointmentId}`}
               patientId={patientId}
             />
           </section>
@@ -750,16 +750,16 @@ export function PatientDetailPage({
         {pdfExportOpen && (
           <Suspense
             fallback={
-              <p role="status" className="text-sm text-muted-foreground">
+              <p className="text-sm text-muted-foreground" role="status">
                 Ouverture de l’export PDF…
               </p>
             }
           >
             <PatientRecordExportDialog
               key={patientId}
+              onClose={() => setPdfExportOpen(false)}
               patientId={patientId}
               patientName={patient.name}
-              onClose={() => setPdfExportOpen(false)}
             />
           </Suspense>
         )}
@@ -774,16 +774,16 @@ export function PatientDetailPage({
         {healthCardOpen && (
           <Suspense
             fallback={
-              <p role="status" className="text-sm text-muted-foreground">
+              <p className="text-sm text-muted-foreground" role="status">
                 Ouverture du carnet de santé…
               </p>
             }
           >
             <HealthCardDialog
               key={patientId}
+              onClose={() => setHealthCardOpen(false)}
               owner={owner}
               patient={patient}
-              onClose={() => setHealthCardOpen(false)}
             />
           </Suspense>
         )}
@@ -799,8 +799,8 @@ export function PatientDetailPage({
           </p>
         ) : null}
         <AlertDialog
-          open={archiveConfirmOpen}
           onOpenChange={setArchiveConfirmOpen}
+          open={archiveConfirmOpen}
         >
           <AlertDialogContent>
             <AlertDialogHeader>
@@ -822,11 +822,11 @@ export function PatientDetailPage({
         </AlertDialog>
         <Shell className="patient-record-summary">
           <ShellHeader
+            as="h2"
             aside={
               <PatientRecordActions
                 archived={Boolean(patient.archivedAt)}
                 onArchive={() => setArchiveConfirmOpen(true)}
-                onUnarchive={() => void handleUnarchivePatient()}
                 onEditOwner={
                   owner ? () => setIsOwnerEditorOpen(true) : undefined
                 }
@@ -847,26 +847,22 @@ export function PatientDetailPage({
                     ? () => openSoapForAppointment(clinicalNoteAppointment.id)
                     : undefined
                 }
+                onUnarchive={() => void handleUnarchivePatient()}
               />
             }
-            as="h2"
             icon={LayoutGrid}
             subtitle="Repères du dossier"
             title="Chiffres clés"
           />
           <section
-            className="patient-record-indicators"
             aria-label={`Indicateurs de ${patient.name}`}
+            className="patient-record-indicators"
           >
             <PatientContextWidgets
-              patientName={patient.name}
               appointments={appointments}
-              appointmentsLoading={appointmentsRepo.loading}
               appointmentsError={Boolean(appointmentsRepo.error)}
+              appointmentsLoading={appointmentsRepo.loading}
               now={now}
-              tasks={patientTasks}
-              tasksLoading={tasksRepo.loading}
-              tasksError={Boolean(tasksRepo.error)}
               onOpenHistory={() => {
                 handleTabChange("timeline");
                 requestAnimationFrame(() =>
@@ -880,14 +876,18 @@ export function PatientDetailPage({
                 onNavigate("taches");
               }}
               onRetryTasks={() => void tasksRepo.refresh()}
+              patientName={patient.name}
+              tasks={patientTasks}
+              tasksError={Boolean(tasksRepo.error)}
+              tasksLoading={tasksRepo.loading}
             />
             {appointmentsRepo.loading ||
             vaccinationsRepo.loading ||
             weightsRepo.loading ? (
               <div
-                className="medical-kpi-strip"
-                aria-label="Chargement du suivi clinique"
                 aria-busy="true"
+                aria-label="Chargement du suivi clinique"
+                className="medical-kpi-strip"
               >
                 {[0, 1, 2].map((index) => (
                   <div className="medical-kpi" key={index}>
@@ -898,18 +898,18 @@ export function PatientDetailPage({
             ) : appointmentsRepo.error ||
               vaccinationsRepo.error ||
               weightsRepo.error ? (
-              <div role="status" className="medical-kpi-load-error">
+              <div className="medical-kpi-load-error" role="status">
                 <span>
                   Une partie du suivi clinique n’a pas pu être chargée.
                 </span>
                 <Button
-                  size="sm"
-                  variant="ghost"
                   onClick={() => {
                     void appointmentsRepo.refresh();
                     void vaccinationsRepo.refresh();
                     void weightsRepo.refresh();
                   }}
+                  size="sm"
+                  variant="ghost"
                 >
                   Réessayer
                 </Button>
@@ -1183,8 +1183,8 @@ export function PatientDetailPage({
               title="Dossier médical"
             />
             <section
-              className="medical-register"
               aria-label={`Dossier clinique de ${patient.name}`}
+              className="medical-register"
             >
               <MedicalRecordTabs label="Sections du dossier médical">
                 {PATIENT_RECORD_SECTIONS.map((section) => {
@@ -1192,29 +1192,29 @@ export function PatientDetailPage({
                   const isSelected = activeTab === section.value;
                   return (
                     <button
-                      key={section.value}
-                      type="button"
-                      role="tab"
-                      tabIndex={isSelected ? 0 : -1}
+                      aria-controls="record-tab-content"
+                      aria-selected={isSelected}
+                      className={cn(
+                        "group cursor-pointer transition",
+                        isSelected && ACTIVE_RECORD_TAB_CLASS
+                      )}
                       id={`record-tab-${section.value}`}
+                      key={section.value}
+                      onClick={() => handleTabChange(section.value)}
+                      role="tab"
                       style={
                         {
                           "--section-tone": section.tone,
                         } as React.CSSProperties
                       }
-                      aria-selected={isSelected}
-                      aria-controls="record-tab-content"
-                      className={cn(
-                        "group cursor-pointer transition",
-                        isSelected && ACTIVE_RECORD_TAB_CLASS
-                      )}
-                      onClick={() => handleTabChange(section.value)}
+                      tabIndex={isSelected ? 0 : -1}
+                      type="button"
                     >
-                      <span className="patient-rail-chip" aria-hidden="true">
+                      <span aria-hidden="true" className="patient-rail-chip">
                         <SectionIcon
+                          aria-hidden="true"
                           className="size-4 shrink-0"
                           weight="duotone"
-                          aria-hidden="true"
                         />
                       </span>
                       <span className="patient-rail-label">
@@ -1222,8 +1222,8 @@ export function PatientDetailPage({
                       </span>
                       {sectionCounts[section.value] ? (
                         <span
-                          className="patient-rail-count"
                           aria-label={`${sectionCounts[section.value]} élément${sectionCounts[section.value]! > 1 ? "s" : ""}`}
+                          className="patient-rail-count"
                         >
                           {sectionCounts[section.value]}
                         </span>
@@ -1233,11 +1233,11 @@ export function PatientDetailPage({
                 })}
               </MedicalRecordTabs>
               <div
+                aria-labelledby={`record-tab-${activeTab}`}
                 className="medical-tab-content"
                 id="record-tab-content"
                 role="tabpanel"
                 tabIndex={0}
-                aria-labelledby={`record-tab-${activeTab}`}
               >
                 {activeTab === "overview" && (
                   <>
@@ -1299,9 +1299,9 @@ export function PatientDetailPage({
                     <div className="medical-empty">
                       Les vaccinations ne sont pas disponibles.{" "}
                       <Button
+                        onClick={() => void vaccinationsRepo.refresh()}
                         size="sm"
                         variant="ghost"
-                        onClick={() => void vaccinationsRepo.refresh()}
                       >
                         Réessayer
                       </Button>
@@ -1321,9 +1321,9 @@ export function PatientDetailPage({
                     <div className="medical-empty">
                       Les pesées ne sont pas disponibles.{" "}
                       <Button
+                        onClick={() => void weightsRepo.refresh()}
                         size="sm"
                         variant="ghost"
-                        onClick={() => void weightsRepo.refresh()}
                       >
                         Réessayer
                       </Button>
@@ -1331,11 +1331,11 @@ export function PatientDetailPage({
                   ) : (
                     <WeightEvolutionChart
                       className="border-0 shadow-none"
+                      emptyMessage={t("patientDetail.overview.weightEmpty")}
                       entries={weightEntries}
                       onAdd={openNewWeight}
                       onEditEntry={openEditWeight}
                       title="Évolution du poids"
-                      emptyMessage={t("patientDetail.overview.weightEmpty")}
                     />
                   ))}
                 {activeTab === "documents" && (
@@ -1412,8 +1412,8 @@ export function PatientDetailPage({
 
                 {activeTab === "hospitalizations" && (
                   <PatientStays
-                    patientId={patientId}
                     onOpen={() => onNavigate("clinique")}
+                    patientId={patientId}
                   />
                 )}
                 {activeTab === "hospitalizations" ? (
@@ -1504,9 +1504,9 @@ export function PatientDetailPage({
                   Les coordonnées ne sont pas disponibles.
                 </p>
                 <Button
+                  onClick={() => void ownersRepo.refresh()}
                   size="sm"
                   variant="ghost"
-                  onClick={() => void ownersRepo.refresh()}
                 >
                   Réessayer
                 </Button>
@@ -1524,9 +1524,9 @@ export function PatientDetailPage({
               </p>
               <Button
                 className="mt-3"
+                onClick={openProfileEditor}
                 size="sm"
                 variant="ghost"
-                onClick={openProfileEditor}
               >
                 Modifier les informations
               </Button>

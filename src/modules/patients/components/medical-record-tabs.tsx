@@ -91,45 +91,45 @@ export function MedicalRecordTabs({
   return (
     <div
       className="medical-tabs-frame"
-      data-overflow-start={edges.start || undefined}
       data-overflow-end={edges.end || undefined}
+      data-overflow-start={edges.start || undefined}
     >
       <div
-        ref={railRef}
-        role="tablist"
         aria-label={label}
         aria-orientation="vertical"
         className="medical-tabs"
         data-tabs-style="nav"
-        onKeyDown={handleRecordTabKeys}
         onFocusCapture={(event) => {
           const tab = (event.target as HTMLElement).closest('[role="tab"]');
           if (tab instanceof HTMLElement && railRef.current) {
             revealTab(railRef.current, tab);
           }
         }}
+        onKeyDown={handleRecordTabKeys}
+        ref={railRef}
+        role="tablist"
       >
         {children}
       </div>
       <button
-        type="button"
-        className="medical-tabs-scroll medical-tabs-scroll-start"
         aria-label="Afficher les onglets précédents"
-        title="Onglets précédents"
+        className="medical-tabs-scroll medical-tabs-scroll-start"
         disabled={!edges.start}
         onClick={() => scrollTabs(-1)}
+        title="Onglets précédents"
+        type="button"
       >
-        <ChevronLeft size={16} aria-hidden="true" />
+        <ChevronLeft aria-hidden="true" size={16} />
       </button>
       <button
-        type="button"
-        className="medical-tabs-scroll medical-tabs-scroll-end"
         aria-label="Afficher les onglets suivants"
-        title="Onglets suivants"
+        className="medical-tabs-scroll medical-tabs-scroll-end"
         disabled={!edges.end}
         onClick={() => scrollTabs(1)}
+        title="Onglets suivants"
+        type="button"
       >
-        <ChevronRight size={16} aria-hidden="true" />
+        <ChevronRight aria-hidden="true" size={16} />
       </button>
     </div>
   );

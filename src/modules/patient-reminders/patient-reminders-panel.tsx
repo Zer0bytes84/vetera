@@ -500,18 +500,18 @@ export function PatientRemindersContent({
 
       {action && (
         <Dialog
-          open
           onOpenChange={(open) => {
             if (!(open || busy)) {
               setAction(null);
             }
           }}
+          open
         >
           <FormDialogContent size="sm">
             <FormDialogHeader
-              title={`${action.kind} ce rappel`}
               description="Mettez à jour le suivi de ce patient."
               icon={<CalendarDays strokeWidth={1} />}
+              title={`${action.kind} ce rappel`}
               tone="sky"
             />
             <form

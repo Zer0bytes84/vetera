@@ -46,9 +46,9 @@ function BarcodeMappingForm({ onClose }: { onClose: () => void }) {
   const [error, setError] = useState<string | null>(null);
   return (
     <form
-      noValidate
       aria-label="Associer un code-barres"
       className="space-y-4 border-y border-border bg-muted/10 p-5"
+      noValidate
       onSubmit={async (event) => {
         event.preventDefault();
         if (busy || !code.trim() || !product) {
@@ -77,52 +77,52 @@ function BarcodeMappingForm({ onClose }: { onClose: () => void }) {
       }}
     >
       <h3 className="text-base font-medium">Associer un code-barres</h3>
-      <fieldset disabled={busy} className="grid gap-4 sm:grid-cols-2">
+      <fieldset className="grid gap-4 sm:grid-cols-2" disabled={busy}>
         <div className="space-y-1.5">
-          <label htmlFor="barcode-map-code" className="text-sm">
+          <label className="text-sm" htmlFor="barcode-map-code">
             Code-barres
           </label>
           <Input
-            id="barcode-map-code"
-            className="h-11 font-mono"
-            value={code}
-            onChange={(event) => setCode(event.target.value)}
             autoComplete="off"
+            className="h-11 font-mono"
+            id="barcode-map-code"
+            onChange={(event) => setCode(event.target.value)}
             spellCheck={false}
+            value={code}
           />
         </div>
         <div className="space-y-1.5">
-          <label htmlFor="barcode-map-product" className="text-sm">
+          <label className="text-sm" htmlFor="barcode-map-product">
             Produit
           </label>
           <SearchableSelect
-            id="barcode-map-product"
-            label="Produit du code-barres"
             controlClassName="h-11 [&_input]:text-foreground"
             disabled={busy}
-            value={product}
+            id="barcode-map-product"
+            label="Produit du code-barres"
             onValueChange={setProduct}
             options={products.data
               .filter((item) => !item.archivedAt && item.stockTracked !== false)
               .map((item) => ({ value: item.id, label: item.name }))}
+            value={product}
           />
         </div>
       </fieldset>
       {error && (
-        <p role="alert" className="text-sm text-destructive">
+        <p className="text-sm text-destructive" role="alert">
           {error}
         </p>
       )}
       <div className="flex justify-end gap-2">
         <Button
-          type="button"
-          variant="outline"
           disabled={busy}
           onClick={onClose}
+          type="button"
+          variant="outline"
         >
           Annuler
         </Button>
-        <Button type="submit" disabled={busy || !code.trim() || !product}>
+        <Button disabled={busy || !code.trim() || !product} type="submit">
           {busy ? "Enregistrement…" : "Associer le code"}
         </Button>
       </div>
@@ -232,39 +232,39 @@ function Scanner({ onOpenMovements }: { onOpenMovements?: () => void }) {
         }}
       >
         <div className="min-w-0 flex-1 space-y-1.5">
-          <label htmlFor="stock-scan-code" className="text-sm">
+          <label className="text-sm" htmlFor="stock-scan-code">
             Code-barres à identifier
           </label>
           <Input
-            ref={field}
-            id="stock-scan-code"
-            className="h-11 font-mono"
-            value={code}
-            disabled={busy}
             autoComplete="off"
-            spellCheck={false}
-            placeholder="Scanner ou saisir…"
+            className="h-11 font-mono"
+            disabled={busy}
+            id="stock-scan-code"
             onChange={(event) => {
               setCode(event.target.value);
               setMatched(null);
               setError(null);
             }}
+            placeholder="Scanner ou saisir…"
+            ref={field}
+            spellCheck={false}
+            value={code}
           />
         </div>
         <Button
           className="h-11"
+          disabled={busy || !code.trim()}
           type="submit"
           variant="outline"
-          disabled={busy || !code.trim()}
         >
           Identifier
         </Button>
       </form>
       {matched && (
         <form
-          noValidate
           aria-label="Mouvement par code-barres"
           className="space-y-4 border-t border-border pt-5"
+          noValidate
           onSubmit={async (event) => {
             event.preventDefault();
             if (busy || !valid || !currentUser) {
@@ -313,7 +313,6 @@ function Scanner({ onOpenMovements }: { onOpenMovements?: () => void }) {
           <div className="flex flex-wrap items-center justify-between gap-3">
             <h4 className="font-medium">{matched.name}</h4>
             <Tabs
-              value={direction}
               onValueChange={(value) =>
                 changed(() => {
                   setDirection(value as typeof direction);
@@ -322,46 +321,46 @@ function Scanner({ onOpenMovements }: { onOpenMovements?: () => void }) {
                   setExpiry(undefined);
                 })
               }
+              value={direction}
             >
               <TabsList aria-label="Sens du mouvement">
-                <TabsTrigger value="in" disabled={busy}>
+                <TabsTrigger disabled={busy} value="in">
                   Entrée
                 </TabsTrigger>
-                <TabsTrigger value="out" disabled={busy}>
+                <TabsTrigger disabled={busy} value="out">
                   Sortie
                 </TabsTrigger>
               </TabsList>
             </Tabs>
           </div>
-          <fieldset disabled={busy} className="grid gap-4 sm:grid-cols-2">
+          <fieldset className="grid gap-4 sm:grid-cols-2" disabled={busy}>
             <div className="space-y-1.5">
-              <label htmlFor="scan-quantity" className="text-sm">
+              <label className="text-sm" htmlFor="scan-quantity">
                 Quantité ({matched.unit})
               </label>
               <Input
-                id="scan-quantity"
-                className="h-11 tabular-nums"
-                inputMode="decimal"
-                value={quantity}
-                aria-invalid={insufficient || undefined}
                 aria-describedby={
                   direction === "out" ? "scan-stock-availability" : undefined
                 }
+                aria-invalid={insufficient || undefined}
+                className="h-11 tabular-nums"
+                id="scan-quantity"
+                inputMode="decimal"
                 onChange={(event) =>
                   changed(() => setQuantity(event.target.value))
                 }
+                value={quantity}
               />
             </div>
             <div className="min-w-0 space-y-1.5">
-              <label htmlFor="scan-location" className="text-sm">
+              <label className="text-sm" htmlFor="scan-location">
                 Emplacement
               </label>
               <SearchableSelect
+                controlClassName="h-11 [&_input]:text-foreground"
+                disabled={busy}
                 id="scan-location"
                 label="Emplacement du mouvement"
-                disabled={busy}
-                controlClassName="h-11 [&_input]:text-foreground"
-                value={location}
                 onValueChange={(value) =>
                   changed(() => {
                     setLocation(value);
@@ -371,26 +370,27 @@ function Scanner({ onOpenMovements }: { onOpenMovements?: () => void }) {
                 options={inventory.locations
                   .filter((row) => row.active)
                   .map((row) => ({ value: row.id, label: row.name }))}
+                value={location}
               />
             </div>
           </fieldset>
           {direction === "out" ? (
             <>
               <StockLotSelect
-                productId={matched.id}
-                locationId={location}
-                unit={matched.unit}
-                label="Lot à sortir"
                 disabled={busy}
-                value={lot}
+                label="Lot à sortir"
+                locationId={location}
                 onChange={(value) => changed(() => setLot(value))}
+                productId={matched.id}
+                unit={matched.unit}
+                value={lot}
               />
               <p
+                aria-atomic="true"
+                aria-live="polite"
+                className={`text-xs tabular-nums ${insufficient ? "text-destructive" : "text-muted-foreground"}`}
                 id="scan-stock-availability"
                 role="status"
-                aria-live="polite"
-                aria-atomic="true"
-                className={`text-xs tabular-nums ${insufficient ? "text-destructive" : "text-muted-foreground"}`}
               >
                 {insufficient
                   ? `Stock insuffisant : ${stockQuantityLabel(qty, matched.unit)} demandés, ${stockQuantityLabel(available, matched.unit)} disponibles. Réduisez la quantité ou changez de lot ou d’emplacement.`
@@ -398,18 +398,18 @@ function Scanner({ onOpenMovements }: { onOpenMovements?: () => void }) {
               </p>
             </>
           ) : (
-            <fieldset disabled={busy} className="grid gap-4 sm:grid-cols-2">
+            <fieldset className="grid gap-4 sm:grid-cols-2" disabled={busy}>
               <div className="space-y-1.5">
-                <label htmlFor="scan-lot-number" className="text-sm">
+                <label className="text-sm" htmlFor="scan-lot-number">
                   Numéro de lot (facultatif)
                 </label>
                 <Input
-                  id="scan-lot-number"
                   className="h-11"
-                  value={lotNumber}
+                  id="scan-lot-number"
                   onChange={(event) =>
                     changed(() => setLotNumber(event.target.value))
                   }
+                  value={lotNumber}
                 />
               </div>
               <div className="space-y-1.5">
@@ -418,16 +418,16 @@ function Scanner({ onOpenMovements }: { onOpenMovements?: () => void }) {
                   clearable
                   disabled={busy}
                   label="Péremption du lot scanné"
-                  value={expiry}
                   onChange={(value) => changed(() => setExpiry(value))}
+                  value={expiry}
                 />
               </div>
             </fieldset>
           )}
           <div className="flex justify-end">
             <Button
-              type="submit"
               disabled={busy || !valid || !inventory.ready || !currentUser}
+              type="submit"
             >
               {busy
                 ? "Enregistrement…"
@@ -439,21 +439,21 @@ function Scanner({ onOpenMovements }: { onOpenMovements?: () => void }) {
         </form>
       )}
       {error && (
-        <p role="alert" className="text-sm text-destructive">
+        <p className="text-sm text-destructive" role="alert">
           {error}
         </p>
       )}
       {saved && (
         <div
-          role="status"
           className="flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4 text-sm"
+          role="status"
         >
           <p>{saved}</p>
           {onOpenMovements && (
             <Button
-              variant="link"
               className="dark:text-blue-300 dark:hover:text-blue-200"
               onClick={onOpenMovements}
+              variant="link"
             >
               Voir les mouvements
             </Button>
@@ -477,9 +477,9 @@ function LocationForm({
   const [error, setError] = useState<string | null>(null);
   return (
     <form
-      noValidate
       aria-label="Emplacement de stock"
       className="space-y-4 border-y border-border bg-muted/10 p-5"
+      noValidate
       onSubmit={async (event) => {
         event.preventDefault();
         if (busy || !name.trim()) {
@@ -507,33 +507,33 @@ function LocationForm({
         {location ? "Modifier l’emplacement" : "Nouvel emplacement de stock"}
       </h3>
       <div className="max-w-lg space-y-1.5">
-        <label htmlFor="stock-location-name" className="text-sm">
+        <label className="text-sm" htmlFor="stock-location-name">
           Nom de l’emplacement
         </label>
         <Input
-          id="stock-location-name"
           className="h-11"
           disabled={busy}
-          value={name}
+          id="stock-location-name"
           maxLength={80}
           onChange={(event) => setName(event.target.value)}
+          value={name}
         />
       </div>
       {error && (
-        <p role="alert" className="text-sm text-destructive">
+        <p className="text-sm text-destructive" role="alert">
           {error}
         </p>
       )}
       <div className="flex justify-end gap-2">
         <Button
-          type="button"
-          variant="outline"
           disabled={busy}
           onClick={onClose}
+          type="button"
+          variant="outline"
         >
           Annuler
         </Button>
-        <Button type="submit" disabled={busy || !name.trim()}>
+        <Button disabled={busy || !name.trim()} type="submit">
           {busy ? "Enregistrement…" : "Enregistrer l’emplacement"}
         </Button>
       </div>
@@ -593,9 +593,9 @@ function TransferForm({ onClose }: { onClose: () => void }) {
   const insufficient = inventory.ready && !!product && qty > available;
   return (
     <form
-      noValidate
       aria-label="Transfert de stock"
       className="space-y-4 border-y border-border bg-muted/10 p-5"
+      noValidate
       onSubmit={async (event) => {
         event.preventDefault();
         if (busy || !valid || !currentUser) {
@@ -638,17 +638,16 @@ function TransferForm({ onClose }: { onClose: () => void }) {
           et leur date de réception.
         </p>
       </div>
-      <fieldset disabled={busy} className="grid gap-4 sm:grid-cols-2">
+      <fieldset className="grid gap-4 sm:grid-cols-2" disabled={busy}>
         <div className="min-w-0 space-y-1.5">
-          <label htmlFor="transfer-product" className="text-sm">
+          <label className="text-sm" htmlFor="transfer-product">
             Produit
           </label>
           <SearchableSelect
+            controlClassName="h-11 [&_input]:text-foreground"
+            disabled={busy}
             id="transfer-product"
             label="Produit à transférer"
-            disabled={busy}
-            controlClassName="h-11 [&_input]:text-foreground"
-            value={productId}
             onValueChange={(value) =>
               changed(() => {
                 setProductId(value);
@@ -658,29 +657,29 @@ function TransferForm({ onClose }: { onClose: () => void }) {
             options={products.data
               .filter((row) => !row.archivedAt && row.stockTracked !== false)
               .map((row) => ({ value: row.id, label: row.name }))}
+            value={productId}
           />
         </div>
         <div className="space-y-1.5">
-          <label htmlFor="transfer-quantity" className="text-sm">
+          <label className="text-sm" htmlFor="transfer-quantity">
             Quantité{product ? ` (${product.unit})` : ""}
           </label>
           <Input
-            id="transfer-quantity"
-            className="h-11 tabular-nums"
-            inputMode="decimal"
-            value={quantity}
-            aria-invalid={insufficient || undefined}
             aria-describedby="transfer-stock-availability"
+            aria-invalid={insufficient || undefined}
+            className="h-11 tabular-nums"
+            id="transfer-quantity"
+            inputMode="decimal"
             onChange={(event) => changed(() => setQuantity(event.target.value))}
+            value={quantity}
           />
         </div>
         <div className="min-w-0 space-y-1.5">
           <label className="text-sm">Depuis</label>
           <SearchableSelect
-            label="Emplacement de départ"
-            disabled={busy}
             controlClassName="h-11 [&_input]:text-foreground"
-            value={from}
+            disabled={busy}
+            label="Emplacement de départ"
             onValueChange={(value) =>
               changed(() => {
                 setFrom(value);
@@ -693,28 +692,28 @@ function TransferForm({ onClose }: { onClose: () => void }) {
             options={inventory.locations
               .filter((row) => row.active)
               .map((row) => ({ value: row.id, label: row.name }))}
+            value={from}
           />
         </div>
         <div className="min-w-0 space-y-1.5">
           <label className="text-sm">Vers</label>
           <SearchableSelect
-            label="Emplacement d’arrivée"
-            disabled={busy}
             controlClassName="h-11 [&_input]:text-foreground"
-            value={to}
+            disabled={busy}
+            label="Emplacement d’arrivée"
             onValueChange={(value) => changed(() => setTo(value))}
             options={inventory.locations
               .filter((row) => row.active && row.id !== from)
               .map((row) => ({ value: row.id, label: row.name }))}
+            value={to}
           />
         </div>
         <div className="min-w-0 space-y-1.5">
           <label className="text-sm">Lot</label>
           <SearchableSelect
-            label="Lot à transférer"
-            disabled={busy || !productId}
             controlClassName="h-11 [&_input]:text-foreground"
-            value={lot}
+            disabled={busy || !productId}
+            label="Lot à transférer"
             onValueChange={(value) => changed(() => setLot(value))}
             options={[
               { value: "fifo", label: "Tous les lots, par réception" },
@@ -723,14 +722,15 @@ function TransferForm({ onClose }: { onClose: () => void }) {
                 label: `${row.name} · ${stockQuantityLabel(row.quantity, product?.unit || "unité")}`,
               })),
             ]}
+            value={lot}
           />
         </div>
         <p
+          aria-atomic="true"
+          aria-live="polite"
+          className={`self-center text-sm tabular-nums ${insufficient ? "text-destructive" : "text-muted-foreground"}`}
           id="transfer-stock-availability"
           role="status"
-          aria-live="polite"
-          aria-atomic="true"
-          className={`self-center text-sm tabular-nums ${insufficient ? "text-destructive" : "text-muted-foreground"}`}
         >
           {insufficient
             ? `Stock insuffisant : ${stockQuantityLabel(qty, product?.unit || "unité")} demandés, ${stockQuantityLabel(available, product?.unit || "unité")} disponibles. Réduisez la quantité ou changez de lot ou d’emplacement.`
@@ -738,22 +738,22 @@ function TransferForm({ onClose }: { onClose: () => void }) {
         </p>
       </fieldset>
       {error && (
-        <p role="alert" className="text-sm text-destructive">
+        <p className="text-sm text-destructive" role="alert">
           {error}
         </p>
       )}
       <div className="flex justify-end gap-2">
         <Button
-          type="button"
-          variant="outline"
           disabled={busy}
           onClick={onClose}
+          type="button"
+          variant="outline"
         >
           Annuler
         </Button>
         <Button
-          type="submit"
           disabled={busy || !valid || !inventory.ready || !currentUser}
+          type="submit"
         >
           {busy ? "Transfert…" : "Confirmer le transfert"}
         </Button>
@@ -810,13 +810,13 @@ export function StockOperationsPanel({
     <section aria-label="Opérations de stock" className="min-w-0">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border p-4">
         <Tabs
-          value={view}
           onValueChange={(value) => {
             setView(value);
             setMapping(false);
             setLocationEdit(null);
             setTransfer(false);
           }}
+          value={view}
         >
           <TabsList aria-label="Vue des opérations">
             <TabsTrigger value="codes">Codes-barres</TabsTrigger>
@@ -826,9 +826,9 @@ export function StockOperationsPanel({
         </Tabs>
         {view === "codes" && (
           <Button
-            variant="outline"
             disabled={!operations.ready}
             onClick={() => setMapping(true)}
+            variant="outline"
           >
             Associer un code
           </Button>
@@ -836,12 +836,12 @@ export function StockOperationsPanel({
         {view === "locations" && (
           <div className="flex gap-2">
             <Button
-              variant="outline"
               disabled={!inventory.ready}
               onClick={() => {
                 setLocationEdit("new");
                 setTransfer(false);
               }}
+              variant="outline"
             >
               Nouvel emplacement
             </Button>
@@ -862,23 +862,23 @@ export function StockOperationsPanel({
       </div>
       {(operations.error || inventory.error || error) && (
         <div
-          role="alert"
           className="flex flex-wrap items-center justify-between gap-3 p-4 text-sm text-destructive"
+          role="alert"
         >
           {operations.error || inventory.error || error}
           <Button
-            variant="outline"
             onClick={() => {
               operations.refresh();
               inventory.refresh();
             }}
+            variant="outline"
           >
             Actualiser
           </Button>
         </div>
       )}
       {!(operations.ready || operations.error) && (
-        <p role="status" className="p-4 text-sm text-muted-foreground">
+        <p className="p-4 text-sm text-muted-foreground" role="status">
           Chargement des opérations…
         </p>
       )}
@@ -913,14 +913,14 @@ export function StockOperationsPanel({
                     </TableCell>
                     <TableCell className="text-right">
                       <Button
-                        size="sm"
-                        variant="ghost"
                         disabled={busy || !currentUser}
                         onClick={() =>
                           void run(() =>
                             stockOperationsService.removeBarcode(row.id)
                           )
                         }
+                        size="sm"
+                        variant="ghost"
                       >
                         Retirer
                       </Button>
@@ -930,8 +930,8 @@ export function StockOperationsPanel({
               ) : (
                 <TableRow>
                   <TableCell
-                    colSpan={3}
                     className="h-24 whitespace-normal text-center text-muted-foreground"
+                    colSpan={3}
                   >
                     Aucun code associé. Associez le code présent sur l’emballage
                     à son produit.
@@ -982,8 +982,6 @@ export function StockOperationsPanel({
                         {stockQuantityLabel(row.suggested_minimum, row.unit)}
                       </span>
                       <Button
-                        size="sm"
-                        variant="link"
                         className="dark:text-blue-300 dark:hover:text-blue-200"
                         disabled={
                           busy ||
@@ -999,6 +997,8 @@ export function StockOperationsPanel({
                             )
                           )
                         }
+                        size="sm"
+                        variant="link"
                       >
                         {row.min_stock === row.suggested_minimum
                           ? "Appliqué"
@@ -1010,8 +1010,8 @@ export function StockOperationsPanel({
               ) : (
                 <TableRow>
                   <TableCell
-                    colSpan={4}
                     className="h-28 whitespace-normal text-center text-muted-foreground"
+                    colSpan={4}
                   >
                     Aucune sortie enregistrée sur cette période.
                   </TableCell>
@@ -1054,7 +1054,7 @@ export function StockOperationsPanel({
                   <TableRow key={row.id}>
                     <TableCell className="whitespace-normal break-words font-medium">
                       {row.name}
-                      <Badge variant="outline" className="ml-2">
+                      <Badge className="ml-2" variant="outline">
                         {row.active ? "Actif" : "Désactivé"}
                       </Badge>
                     </TableCell>
@@ -1064,18 +1064,16 @@ export function StockOperationsPanel({
                     <TableCell className="whitespace-normal">
                       <div className="flex flex-wrap justify-end gap-1">
                         <Button
-                          size="sm"
-                          variant="ghost"
                           onClick={() => {
                             setLocationEdit(row);
                             setTransfer(false);
                           }}
+                          size="sm"
+                          variant="ghost"
                         >
                           Modifier
                         </Button>
                         <Button
-                          size="sm"
-                          variant="ghost"
                           disabled={
                             busy ||
                             row.id === "stock-main" ||
@@ -1090,6 +1088,8 @@ export function StockOperationsPanel({
                               })
                             )
                           }
+                          size="sm"
+                          variant="ghost"
                         >
                           {row.active ? "Désactiver" : "Réactiver"}
                         </Button>
@@ -1109,8 +1109,8 @@ export function StockOperationsPanel({
             {operations.transfers.length ? (
               operations.transfers.map((row) => (
                 <div
-                  key={row.id}
                   className="flex flex-wrap justify-between gap-3 border-t border-border pt-3 text-sm"
+                  key={row.id}
                 >
                   <div>
                     <p className="font-medium">

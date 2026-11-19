@@ -162,8 +162,8 @@ export function RadialDots({
     <MotionConfig reducedMotion="user">
       <Shell className={cn("flex h-full flex-col", className)}>
         <ShellHeader
-          aside={toolbar}
           as="h2"
+          aside={toolbar}
           icon={ChartPieIcon}
           subtitle={subtitle}
           title={title}

@@ -61,14 +61,14 @@ function LotDate({
   const [open, setOpen] = useState(false);
   return (
     <div className="flex min-w-0 gap-2">
-      <Popover open={open} onOpenChange={setOpen}>
+      <Popover onOpenChange={setOpen} open={open}>
         <PopoverTrigger
           aria-label={label}
           render={
             <Button
+              className="h-11 min-w-0 flex-1 justify-start rounded-xl px-3"
               type="button"
               variant="outline"
-              className="h-11 min-w-0 flex-1 justify-start rounded-xl px-3"
             />
           }
         >
@@ -79,25 +79,25 @@ function LotDate({
         </PopoverTrigger>
         <PopoverContent align="start" className="w-auto p-2">
           <Calendar
-            mode="single"
-            locale={fr}
-            selected={value}
             className={COMPACT_CALENDAR_CLASS}
+            locale={fr}
+            mode="single"
             onSelect={(date) => {
               onChange(date);
               if (date) {
                 setOpen(false);
               }
             }}
+            selected={value}
           />
         </PopoverContent>
       </Popover>
       {clearable && value && (
         <Button
-          type="button"
-          variant="ghost"
           className="h-11"
           onClick={() => onChange(undefined)}
+          type="button"
+          variant="ghost"
         >
           Effacer
         </Button>
@@ -149,9 +149,9 @@ function LotForm({
     .reduce((sum, row) => sum + Math.max(0, row.quantity), 0);
   return (
     <form
-      noValidate
       aria-label="Enregistrer un lot"
       className="space-y-4 border-y border-border bg-muted/10 p-5"
+      noValidate
       onSubmit={async (event) => {
         event.preventDefault();
         if (
@@ -215,10 +215,10 @@ function LotForm({
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h3 className="text-base font-medium">Enregistrer un lot</h3>
         <Tabs
-          value={mode}
           onValueChange={(value) =>
             changed(() => setMode(value as typeof mode))
           }
+          value={mode}
         >
           <TabsList aria-label="Origine du stock">
             <TabsTrigger disabled={busy} value="identify">
@@ -235,17 +235,16 @@ function LotForm({
           ? "Attribuez un numéro au stock déjà présent. Le total reste inchangé."
           : "Enregistrez une livraison réellement reçue. Cette quantité s’ajoute au stock."}
       </p>
-      <fieldset disabled={busy} className="grid min-w-0 gap-4 md:grid-cols-2">
+      <fieldset className="grid min-w-0 gap-4 md:grid-cols-2" disabled={busy}>
         <div className="min-w-0 space-y-1.5">
-          <label htmlFor="lot-product" className="text-sm">
+          <label className="text-sm" htmlFor="lot-product">
             Produit
           </label>
           <SearchableSelect
-            id="lot-product"
             controlClassName="h-11 rounded-xl"
             disabled={busy}
+            id="lot-product"
             label="Produit du lot"
-            value={productId}
             onValueChange={(value) => changed(() => setProductId(value))}
             options={products.data
               .filter((row) => !row.archivedAt && row.stockTracked !== false)
@@ -255,31 +254,32 @@ function LotForm({
                 keywords: row.category,
               }))}
             placeholder="Rechercher un produit…"
+            value={productId}
           />
         </div>
         <div className="space-y-1.5">
-          <label htmlFor="lot-number" className="text-sm">
+          <label className="text-sm" htmlFor="lot-number">
             Numéro de lot
           </label>
           <Input
-            id="lot-number"
             className="h-11 rounded-xl"
-            value={number}
+            id="lot-number"
             maxLength={120}
             onChange={(event) => changed(() => setNumber(event.target.value))}
             placeholder="Numéro indiqué sur l’emballage"
+            value={number}
           />
         </div>
         <div className="space-y-1.5">
-          <label htmlFor="lot-quantity" className="text-sm">
+          <label className="text-sm" htmlFor="lot-quantity">
             Quantité{product ? ` (${product.unit})` : ""}
           </label>
           <Input
-            id="lot-quantity"
             className="h-11 rounded-xl tabular-nums"
+            id="lot-quantity"
             inputMode="decimal"
-            value={quantity}
             onChange={(event) => changed(() => setQuantity(event.target.value))}
+            value={quantity}
           />
           {mode === "identify" && product && (
             <p className="text-xs text-muted-foreground">
@@ -291,29 +291,29 @@ function LotForm({
         <div className="space-y-1.5">
           <label className="text-sm">Péremption</label>
           <LotDate
-            label="Choisir la péremption du lot"
             clearable
-            value={expiry}
+            label="Choisir la péremption du lot"
             onChange={(value) => changed(() => setExpiry(value))}
+            value={expiry}
           />
           <p className="text-xs text-muted-foreground">
             Facultative si le produit n’a pas de péremption indiquée.
           </p>
         </div>
         <div className="min-w-0 space-y-1.5">
-          <label htmlFor="lot-location" className="text-sm">
+          <label className="text-sm" htmlFor="lot-location">
             Emplacement
           </label>
           <SearchableSelect
-            id="lot-location"
             controlClassName="h-11 rounded-xl"
             disabled={busy}
-            value={location}
+            id="lot-location"
             label="Emplacement du lot"
             onValueChange={(value) => changed(() => setLocation(value))}
             options={inventory.locations
               .filter((row) => row.active)
               .map((row) => ({ value: row.id, label: row.name }))}
+            value={location}
           />
         </div>
         {mode === "receive" && (
@@ -322,39 +322,38 @@ function LotForm({
             <div className="flex min-w-0 gap-2">
               <LotDate
                 label="Choisir la date de réception"
-                value={received}
                 onChange={(value) => {
                   if (value) {
                     changed(() => setReceived(value));
                   }
                 }}
+                value={received}
               />
               <CareTimePicker
                 label="Heure de réception"
-                value={time}
                 onChange={(value) => changed(() => setTime(value))}
+                value={time}
               />
             </div>
           </div>
         )}
       </fieldset>
       {error && (
-        <p role="alert" className="text-sm text-destructive">
+        <p className="text-sm text-destructive" role="alert">
           {error}
         </p>
       )}
       <div className="flex flex-wrap justify-end gap-2">
         <Button
+          className="h-11"
+          disabled={busy}
+          onClick={onCancel}
           type="button"
           variant="outline"
-          disabled={busy}
-          className="h-11"
-          onClick={onCancel}
         >
           Annuler
         </Button>
         <Button
-          type="submit"
           className="h-11"
           disabled={
             busy ||
@@ -364,6 +363,7 @@ function LotForm({
             !number.trim() ||
             !inventory.ready
           }
+          type="submit"
         >
           {busy
             ? "Enregistrement…"
@@ -392,9 +392,9 @@ function CountForm({
   const count = parseStockQuantityInput(quantity);
   return (
     <form
-      noValidate
       aria-label="Comptage du lot"
       className="space-y-3 border-y border-border bg-muted/10 p-5"
+      noValidate
       onSubmit={async (event) => {
         event.preventDefault();
         if (busy || !currentUser || !reason.trim() || !(count >= 0)) {
@@ -438,56 +438,56 @@ function CountForm({
       </p>
       <div className="grid gap-3 sm:grid-cols-[10rem_minmax(0,1fr)]">
         <div className="space-y-1.5">
-          <label htmlFor="lot-count-quantity" className="text-sm">
+          <label className="text-sm" htmlFor="lot-count-quantity">
             Quantité ({row.unit})
           </label>
           <Input
-            id="lot-count-quantity"
             className="h-11 rounded-xl"
-            inputMode="decimal"
             disabled={busy}
-            value={quantity}
+            id="lot-count-quantity"
+            inputMode="decimal"
             onChange={(event) => {
               setQuantity(event.target.value);
               setRequestId(generateId());
             }}
+            value={quantity}
           />
         </div>
         <div className="space-y-1.5">
-          <label htmlFor="lot-count-reason" className="text-sm">
+          <label className="text-sm" htmlFor="lot-count-reason">
             Motif
           </label>
           <Input
-            id="lot-count-reason"
             className="h-11 rounded-xl"
             disabled={busy}
-            value={reason}
+            id="lot-count-reason"
             onChange={(event) => {
               setReason(event.target.value);
               setRequestId(generateId());
             }}
+            value={reason}
           />
         </div>
       </div>
       {error && (
-        <p role="alert" className="text-sm text-destructive">
+        <p className="text-sm text-destructive" role="alert">
           {error}
         </p>
       )}
       <div className="flex justify-end gap-2">
         <Button
+          className="h-11"
+          disabled={busy}
+          onClick={onClose}
           type="button"
           variant="outline"
-          disabled={busy}
-          className="h-11"
-          onClick={onClose}
         >
           Annuler
         </Button>
         <Button
-          type="submit"
           className="h-11"
           disabled={busy || !currentUser || !(count >= 0) || !reason.trim()}
+          type="submit"
         >
           {busy ? "Enregistrement…" : "Confirmer le comptage"}
         </Button>
@@ -533,15 +533,15 @@ export function StockLotsPanel() {
         <div className="w-full min-w-0 sm:w-72">
           <SearchableSelect
             controlClassName="[&_input]:text-foreground"
-            value={filter}
-            onValueChange={setFilter}
             label="Filtrer les lots par produit"
+            onValueChange={setFilter}
             options={[
               { value: "", label: "Tous les produits" },
               ...products.data
                 .filter((row) => !row.archivedAt && row.stockTracked !== false)
                 .map((row) => ({ value: row.id, label: row.name })),
             ]}
+            value={filter}
           />
         </div>
         <Button
@@ -557,24 +557,24 @@ export function StockLotsPanel() {
       </div>
       {inventory.error && (
         <div
-          role="alert"
           className="flex flex-wrap items-center justify-between gap-3 p-4 text-sm text-destructive"
+          role="alert"
         >
           {inventory.error}
-          <Button variant="outline" onClick={inventory.refresh}>
+          <Button onClick={inventory.refresh} variant="outline">
             Actualiser
           </Button>
         </div>
       )}
       {!(inventory.ready || inventory.error) && (
-        <p role="status" className="p-4 text-sm text-muted-foreground">
+        <p className="p-4 text-sm text-muted-foreground" role="status">
           Vérification des lots…
         </p>
       )}
       {uniqueAlerts > 0 && (
         <p
-          role="status"
           className="border-b border-border p-4 text-sm text-destructive"
+          role="status"
         >
           {uniqueAlerts}{" "}
           {uniqueAlerts === 1
@@ -586,20 +586,20 @@ export function StockLotsPanel() {
       )}
       {open && (
         <LotForm
-          productId={filter}
           onCancel={() => setOpen(false)}
           onSaved={() => setOpen(false)}
+          productId={filter}
         />
       )}
       {counting && (
         <CountForm
           key={counting.id}
-          row={counting}
           onClose={() =>
             setCounting((current) =>
               current?.id === counting.id ? null : current
             )
           }
+          row={counting}
         />
       )}
       <Table className="table-fixed">
@@ -618,8 +618,8 @@ export function StockLotsPanel() {
           {rows.length === 0 ? (
             <TableRow>
               <TableCell
-                colSpan={5}
                 className="h-32 whitespace-normal text-center text-muted-foreground"
+                colSpan={5}
               >
                 {inventory.ready
                   ? "Aucun stock pour ce filtre. Enregistrez une réception ou identifiez le stock déjà présent."
@@ -634,8 +634,8 @@ export function StockLotsPanel() {
               const empty = row.quantity <= 0;
               return (
                 <TableRow
-                  key={row.id}
                   className={empty ? "text-muted-foreground" : undefined}
+                  key={row.id}
                 >
                   <TableCell className="whitespace-normal break-words align-top">
                     <span className="font-medium">{row.productName}</span>
@@ -647,7 +647,6 @@ export function StockLotsPanel() {
                     <span>{row.lotNumber || "Sans lot"}</span>
                     <div className="mt-1">
                       <Badge
-                        variant="outline"
                         className={
                           expired && !empty
                             ? "text-destructive"
@@ -655,6 +654,7 @@ export function StockLotsPanel() {
                               ? "text-amber-700 dark:text-amber-300"
                               : "text-muted-foreground"
                         }
+                        variant="outline"
                       >
                         {empty
                           ? "Épuisé"
@@ -679,14 +679,14 @@ export function StockLotsPanel() {
                   </TableCell>
                   <TableCell className="align-top">
                     <Button
-                      variant="outline"
-                      size="sm"
                       className="max-w-full px-2"
                       disabled={!inventory.ready}
                       onClick={() => {
                         setOpen(false);
                         setCounting(row);
                       }}
+                      size="sm"
+                      variant="outline"
                     >
                       Compter
                     </Button>

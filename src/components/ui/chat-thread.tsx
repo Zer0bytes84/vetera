@@ -78,10 +78,10 @@ export function ChatThread({
   return (
     <MotionConfig reducedMotion="user">
       <div
-        role="log"
-        aria-label="Conversation"
         aria-busy={messages.some((m) => m.streaming) || undefined}
+        aria-label="Conversation"
         className={cn("flex flex-col gap-3", className)}
+        role="log"
       >
         <AnimatePresence initial={false}>
           {messages.map((message, i) => {
@@ -96,11 +96,11 @@ export function ChatThread({
             return (
               <Fragment key={message.id}>
                 <motion.article
-                  initial={{ opacity: 0, y: 6 }}
                   animate={{ opacity: 1, y: 0, transition: enter }}
-                  exit={{ opacity: 0, transition: exit }}
                   aria-label={`${name}, ${time(message.at)}`}
                   className={cn("group flex gap-3", user && "flex-row-reverse")}
+                  exit={{ opacity: 0, transition: exit }}
+                  initial={{ opacity: 0, y: 6 }}
                 >
                   {grouped ? (
                     <span aria-hidden="true" className="w-8 shrink-0" />
@@ -128,8 +128,8 @@ export function ChatThread({
                       >
                         <span className="font-medium">{name}</span>
                         <time
-                          dateTime={message.at}
                           className="text-xs text-muted-foreground tabular-nums opacity-0 transition-opacity duration-150 group-focus-within:opacity-100 group-hover:opacity-100 [@media(hover:none)]:opacity-100"
+                          dateTime={message.at}
                         >
                           {time(message.at)}
                         </time>

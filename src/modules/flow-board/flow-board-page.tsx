@@ -123,14 +123,14 @@ function Alerts({ alerts }: { alerts: FlowAlert[] }) {
   const shown = alerts.slice(0, 2);
   const rest = alerts.slice(2);
   return (
-    <ul className="flow-card-alerts" aria-label="Alertes">
+    <ul aria-label="Alertes" className="flow-card-alerts">
       {shown.map((alert) => {
         const Icon = ALERT_ICON[alert.kind];
         return (
           <li
-            key={alert.kind}
             className="flow-alert"
             data-kind={alert.kind}
+            key={alert.kind}
             title={alert.detail}
           >
             <Icon aria-hidden className="size-3" />
@@ -251,7 +251,7 @@ function CardBody({
   return (
     <>
       <div className="flow-card-head">
-        <span className="flow-species" aria-hidden>
+        <span aria-hidden className="flow-species">
           <HugeiconsIcon
             icon={getSpeciesGlyph(card.species)}
             size={compact ? 16 : 20}
@@ -435,7 +435,7 @@ function Lane({
     >
       <header className="flow-lane-head">
         <h2>{VISIT_FLOW_STAGE_LABELS[lane]}</h2>
-        <span className="flow-count" aria-hidden>
+        <span aria-hidden className="flow-count">
           {cards.length}
         </span>
       </header>
@@ -468,7 +468,7 @@ function PlannedStrip({
     >
       <header className="flow-lane-head">
         <h2>Prévus aujourd'hui</h2>
-        <span className="flow-count" aria-hidden>
+        <span aria-hidden className="flow-count">
           {cards.length}
         </span>
       </header>
@@ -494,7 +494,7 @@ function LeftOpen({
         <span className="flow-left-open-hint">
           Visites d'autres jours jamais clôturées
         </span>
-        <span className="flow-count" aria-hidden>
+        <span aria-hidden className="flow-count">
           {cards.length}
         </span>
       </summary>
@@ -791,12 +791,12 @@ export function FlowBoardPage({
   const renderCards = (cards: FlowCard[], leftOpen = false) =>
     cards.map((card) => (
       <DraggableCard
-        leftOpen={leftOpen}
         busy={busyId === card.appointmentId}
         card={card}
         compact={prefs.compact || leftOpen}
         focused={current?.id === card.appointmentId}
         key={card.appointmentId}
+        leftOpen={leftOpen}
         now={now}
         onFocus={() => setFocus({ id: card.appointmentId })}
         onOpen={open}

@@ -94,18 +94,15 @@ export function Tooltip({
   return (
     <span
       className="relative inline-flex"
+      onBlur={hide}
+      onFocus={(e) => e.target.matches(":focus-visible") && show(true)}
+      onKeyDown={(e) => e.key === "Escape" && hide()}
       onPointerEnter={(e) => e.pointerType === "mouse" && show(false)}
       onPointerLeave={hide}
-      onFocus={(e) => e.target.matches(":focus-visible") && show(true)}
-      onBlur={hide}
-      onKeyDown={(e) => e.key === "Escape" && hide()}
     >
       {trigger}
       <span
-        id={id}
-        role="tooltip"
         aria-hidden={!open}
-        data-open={open || undefined}
         className={cn(
           "pointer-events-none absolute z-50 w-max max-w-64 rounded-xl bg-surface-raised px-2.5 py-1.5 text-xs text-foreground",
           "scale-[0.97] opacity-0 transition-[opacity,scale] duration-[125ms] ease-[cubic-bezier(0.23,1,0.32,1)] data-open:scale-100 data-open:opacity-100 motion-reduce:scale-100",
@@ -113,6 +110,9 @@ export function Tooltip({
           placement[side][align],
           className
         )}
+        data-open={open || undefined}
+        id={id}
+        role="tooltip"
       >
         {content}
       </span>

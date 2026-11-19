@@ -170,7 +170,7 @@ const MotivationalHeader: React.FC<MotivationalHeaderProps> = ({
             )}
           </span>
           {isDashboard && (
-            <span className="dashboard-greeting-wave" aria-hidden="true">
+            <span aria-hidden="true" className="dashboard-greeting-wave">
               👋
             </span>
           )}
@@ -248,10 +248,10 @@ const MotivationalHeader: React.FC<MotivationalHeaderProps> = ({
               <Button
                 aria-label="Personnaliser le tableau de bord"
                 aria-pressed={isCustomizing}
-                size="icon-sm"
                 className="size-[30px] rounded-full bg-background/65 p-0"
                 disabled={isCustomizing}
                 onClick={onCustomize}
+                size="icon-sm"
                 title="Personnaliser le tableau de bord"
                 variant="outline"
               >
@@ -264,9 +264,9 @@ const MotivationalHeader: React.FC<MotivationalHeaderProps> = ({
             ) : null}
             <ShortcutTooltip label="Nouvelle consultation" shortcut="N">
               <Button
-                data-primary-action="true"
                 aria-keyshortcuts="N"
                 className="dashboard-primary-action h-9 w-auto min-w-0 flex-none rounded-lg px-3.5 t-13 font-medium"
+                data-primary-action="true"
                 onClick={() => {
                   prepareAppointment();
                   onNavigate("agenda");
@@ -280,9 +280,9 @@ const MotivationalHeader: React.FC<MotivationalHeaderProps> = ({
                 }}
               >
                 <Stethoscope
+                  aria-hidden="true"
                   className="mr-1.5 size-4"
                   strokeWidth={1}
-                  aria-hidden="true"
                 />
                 Nouvelle consultation
               </Button>

@@ -68,14 +68,14 @@ export function SourceList({
         <Panel className="flex flex-col gap-3 border border-border p-1.5">
           {groups.map((group, g) => (
             <motion.section
-              key={group.name}
-              aria-label={group.name}
               animate={{
                 opacity: 1,
                 y: 0,
                 transition: { ...enter, delay: g * 0.04 },
               }}
+              aria-label={group.name}
               initial={{ opacity: 0, y: 6 }}
+              key={group.name}
             >
               <h4 className="flex items-center gap-3 px-3 pt-1.5 pb-1 text-xs text-muted-foreground">
                 {group.icon ? (

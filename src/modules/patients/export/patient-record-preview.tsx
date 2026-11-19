@@ -127,7 +127,7 @@ export function PatientRecordPreview({
   }, [pdf, page]);
 
   return (
-    <div className="patient-export-preview" aria-busy={rendering}>
+    <div aria-busy={rendering} className="patient-export-preview">
       {rendering && (
         <p className="patient-export-preview-status" role="status">
           <Spinner className="size-4" />
@@ -146,10 +146,10 @@ export function PatientRecordPreview({
         </div>
       )}
       <canvas
-        ref={canvasRef}
-        className={rendering || error ? "invisible" : ""}
-        role="img"
         aria-label={`Dossier de ${artifact.patientName}, page ${page} sur ${artifact.pageCount}`}
+        className={rendering || error ? "invisible" : ""}
+        ref={canvasRef}
+        role="img"
       />
     </div>
   );

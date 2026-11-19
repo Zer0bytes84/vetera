@@ -94,7 +94,7 @@ function CareDayStrip({
     return null;
   }
   return (
-    <div className="care-strip" aria-label="Frise des soins du jour">
+    <div aria-label="Frise des soins du jour" className="care-strip">
       <div className="care-strip-track">
         {line.now !== null && (
           <span
@@ -444,27 +444,27 @@ export default function CarePage({
     const terminal = task.statut === "fait" || task.statut === "annule";
     return (
       <div
-        key={task.id}
         className={`care-task-row flex items-center gap-3 rounded-xl border p-3 ${status === "en_retard" ? "border-rose-200 bg-rose-50/60 dark:border-rose-900 dark:bg-rose-950/15" : "border-border bg-background"}`}
+        key={task.id}
       >
         <div className="min-w-0 flex-1">
           {mode === "heure" && (
             <button
-              type="button"
               className="mb-1 rounded t-13 font-medium hover:underline focus-visible:outline-2 focus-visible:outline-primary"
               onClick={() => onNavigateToPatient?.(task.patient_id)}
+              type="button"
             >
               {patientName(task.patient_id)}
             </button>
           )}
           <button
-            type="button"
             className="flex w-full min-h-11 min-w-0 flex-1 items-center gap-4 rounded-lg text-left focus-visible:outline-2 focus-visible:outline-primary"
             onClick={() => {
               setSelected(task.id);
               setActionError(null);
               setReason("");
             }}
+            type="button"
           >
             <time
               className="shrink-0 t-16 font-medium tabular-nums"
@@ -496,8 +496,8 @@ export default function CarePage({
               )}
             </span>
             <span
-              data-premium-status={status}
               className={`shrink-0 rounded-lg px-2.5 py-1 t-12 font-medium ${tones[status]}`}
+              data-premium-status={status}
             >
               {labels[status]}
             </span>
@@ -505,8 +505,8 @@ export default function CarePage({
         </div>
         {!terminal && (
           <Button
+            aria-label={`Valider ${task.label} pour ${patientName(task.patient_id)}`}
             className="min-h-11 shrink-0"
-            variant="outline"
             disabled={
               !!busy ||
               !currentUser ||
@@ -514,7 +514,7 @@ export default function CarePage({
               hasUnsavedProductUsage(task)
             }
             onClick={() => void transition(task, "fait")}
-            aria-label={`Valider ${task.label} pour ${patientName(task.patient_id)}`}
+            variant="outline"
           >
             {busy === task.id ? "…" : "Valider"}
           </Button>
@@ -526,12 +526,12 @@ export default function CarePage({
     <DatePicker
       aria-label="Date des soins"
       className="h-11 w-44"
-      value={`${careDate.getFullYear()}-${String(careDate.getMonth() + 1).padStart(2, "0")}-${String(careDate.getDate()).padStart(2, "0")}`}
       onChange={(value) => {
         if (value) {
           setCareDate(new Date(`${value}T12:00:00`));
         }
       }}
+      value={`${careDate.getFullYear()}-${String(careDate.getMonth() + 1).padStart(2, "0")}-${String(careDate.getDate()).padStart(2, "0")}`}
     />
   );
   return (
@@ -587,9 +587,8 @@ export default function CarePage({
                 </Button>
               </>
             }
-            icon={Syringe}
             className="care-summary"
-            subtitle="Soins du jour"
+            icon={Syringe}
             items={[
               {
                 title: "Soins prévus",
@@ -639,14 +638,15 @@ export default function CarePage({
                   : "Heure prévue dépassée, soin non validé",
               },
             ]}
+            subtitle="Soins du jour"
           />
           {reminders}
           <div className="care-toolbar flex flex-wrap items-center justify-between gap-3">
             <div
+              aria-label="Filtrer les soins"
               className="flex flex-wrap gap-1"
               data-tabs-style="segmented"
               role="group"
-              aria-label="Filtrer les soins"
             >
               {[
                 ["tous", "Tous"],
@@ -655,10 +655,10 @@ export default function CarePage({
                 ["fait", "Terminés"],
               ].map(([key, label]) => (
                 <Button
-                  key={key}
-                  variant={filter === key ? "secondary" : "ghost"}
                   aria-pressed={filter === key}
+                  key={key}
                   onClick={() => setFilter(key)}
+                  variant={filter === key ? "secondary" : "ghost"}
                 >
                   {label}
                 </Button>
@@ -667,24 +667,24 @@ export default function CarePage({
             <div className="care-toolbar-controls flex flex-wrap gap-3">
               <Input
                 aria-label="Rechercher un patient"
+                className="w-56"
+                onChange={(e) => setSearch(e.target.value)}
                 placeholder="Rechercher un patient…"
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="w-56"
               />
               <div
+                aria-label="Mode d’affichage"
                 className="flex"
                 data-tabs-style="segmented"
                 role="group"
-                aria-label="Mode d’affichage"
               >
                 {(["patient", "heure"] as const).map((m) => (
                   <Button
-                    key={m}
-                    variant={mode === m ? "secondary" : "ghost"}
-                    size="sm"
                     aria-pressed={mode === m}
+                    key={m}
                     onClick={() => setMode(m)}
+                    size="sm"
+                    variant={mode === m ? "secondary" : "ghost"}
                   >
                     Par {m}
                   </Button>
@@ -698,8 +698,8 @@ export default function CarePage({
       {patientId && dateControl}
       {savedMessage && (
         <p
-          role="status"
           className="rounded-xl border border-border bg-muted/50 px-4 py-3"
+          role="status"
         >
           {savedMessage}
         </p>
@@ -736,8 +736,8 @@ export default function CarePage({
           >
             {groups.map((group) => (
               <article
-                key={group}
                 className="care-task-group space-y-3 rounded-2xl border border-border bg-card p-4"
+                key={group}
               >
                 <div className="care-group-head">
                   <div className="care-group-title">
@@ -745,9 +745,9 @@ export default function CarePage({
                       {mode === "patient" ? (
                         onNavigateToPatient ? (
                           <button
-                            type="button"
                             className="rounded text-left hover:underline focus-visible:outline-2 focus-visible:outline-primary"
                             onClick={() => onNavigateToPatient(group)}
+                            type="button"
                           >
                             {patientName(group)}
                           </button>
@@ -814,11 +814,11 @@ export default function CarePage({
         </div>
       )}
       {actionError && (
-        <p role="alert" className="text-destructive">
+        <p className="text-destructive" role="alert">
           {actionError}
         </p>
       )}
-      <Dialog open={creating} onOpenChange={setCreating}>
+      <Dialog onOpenChange={setCreating} open={creating}>
         <DialogContent className="sm:max-w-[600px] sm:p-7">
           <DialogHeader>
             <DialogTitle>Planifier un soin</DialogTitle>
@@ -827,7 +827,7 @@ export default function CarePage({
             </DialogDescription>
           </DialogHeader>
           <CareTaskForm
-            patientId={patientId}
+            onCancel={() => setCreating(false)}
             onSaved={(scheduledAt) => {
               setCreating(false);
               setFilter("tous");
@@ -840,27 +840,27 @@ export default function CarePage({
                 );
               }
             }}
-            onCancel={() => setCreating(false)}
+            patientId={patientId}
           />
         </DialogContent>
       </Dialog>
       <Sheet
-        open={!!selected}
         onOpenChange={(open) => {
           if (!open) {
             setSelected(null);
           }
         }}
+        open={!!selected}
       >
         <SheetContent
-          showCloseButton={false}
           className="care-page overflow-y-auto p-6 sm:max-w-[440px]"
+          showCloseButton={false}
         >
           <Button
-            variant="ghost"
-            size="sm"
             className="absolute right-4 top-4"
             onClick={() => setSelected(null)}
+            size="sm"
+            variant="ghost"
           >
             Fermer
           </Button>
@@ -906,13 +906,13 @@ export default function CarePage({
               {detail.statut === "fait" && (
                 <div className="border-y border-border py-4">
                   <Button
-                    variant="outline"
                     className="min-h-11 w-full"
                     disabled={!!busy || !currentUser}
                     onClick={() => {
                       setUndoError(null);
                       setUndoing(detail);
                     }}
+                    variant="outline"
                   >
                     Annuler la validation
                   </Button>
@@ -922,18 +922,7 @@ export default function CarePage({
                 <div className="space-y-3">
                   <div className="space-y-3 border-y border-border py-4">
                     <ProductStockFields
-                      products={products.data}
-                      optional
                       disabled={!!busy}
-                      productId={
-                        usageDrafts[detail.id]?.productId ??
-                        detail.produit_id ??
-                        ""
-                      }
-                      quantity={
-                        usageDrafts[detail.id]?.quantity ??
-                        String(detail.produit_quantite ?? 1)
-                      }
                       onProductChange={(productId) =>
                         setUsageDrafts((rows) => ({
                           ...rows,
@@ -952,15 +941,25 @@ export default function CarePage({
                           },
                         }))
                       }
+                      optional
+                      productId={
+                        usageDrafts[detail.id]?.productId ??
+                        detail.produit_id ??
+                        ""
+                      }
+                      products={products.data}
+                      quantity={
+                        usageDrafts[detail.id]?.quantity ??
+                        String(detail.produit_quantite ?? 1)
+                      }
                     />
                     {hasUnsavedProductUsage(detail) && (
-                      <p role="status" className="t-13 text-muted-foreground">
+                      <p className="t-13 text-muted-foreground" role="status">
                         Enregistrez la modification du produit ou de la quantité
                         avant de valider le soin.
                       </p>
                     )}
                     <Button
-                      variant="outline"
                       disabled={
                         !!busy || !currentUser || !usageDrafts[detail.id]
                       }
@@ -1002,22 +1001,23 @@ export default function CarePage({
                           }
                         );
                       }}
+                      variant="outline"
                     >
                       Mettre à jour le produit
                     </Button>
                   </div>
                   {stockWarning(detail) && (
-                    <p role="alert" className="t-13 text-destructive">
+                    <p className="t-13 text-destructive" role="alert">
                       {stockWarning(detail)}
                     </p>
                   )}
                   <div className="flex flex-wrap gap-2">
                     {detail.statut === "a_faire" && (
                       <Button
-                        variant="outline"
                         className="min-h-11"
                         disabled={!!busy}
                         onClick={() => void transition(detail, "en_cours")}
+                        variant="outline"
                       >
                         Commencer
                       </Button>
@@ -1036,14 +1036,14 @@ export default function CarePage({
                   </div>
                   <Input
                     aria-label="Motif d’annulation"
+                    onChange={(e) => setReason(e.target.value)}
                     placeholder="Motif d’annulation"
                     value={reason}
-                    onChange={(e) => setReason(e.target.value)}
                   />
                   <Button
-                    variant="ghost"
                     disabled={!!busy || !reason.trim()}
                     onClick={() => void transition(detail, "annule")}
+                    variant="ghost"
                   >
                     Annuler ce soin
                   </Button>
@@ -1078,14 +1078,14 @@ export default function CarePage({
       </Sheet>
       {undoing && (
         <CareCompletionRollbackDialog
-          key={`${undoing.id}:${undoing.completion_revision ?? 0}`}
-          task={undoing}
           busy={!!busy}
           error={undoError}
+          key={`${undoing.id}:${undoing.completion_revision ?? 0}`}
           onClose={() => setUndoing(null)}
           onConfirm={(reason) => {
             void undoCompletion(undoing, reason);
           }}
+          task={undoing}
         />
       )}
     </section>

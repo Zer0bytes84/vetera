@@ -140,16 +140,16 @@ export function CareTaskForm({
         <span className="flex items-center justify-between">
           Patient <span className="modal-required">requis</span>
         </span>
-        <Popover open={patientPickerOpen} onOpenChange={setPatientPickerOpen}>
+        <Popover onOpenChange={setPatientPickerOpen} open={patientPickerOpen}>
           <PopoverTrigger
-            disabled={!!patientId}
             aria-label="Choisir un patient"
+            disabled={!!patientId}
             render={
               <Button
+                className="h-11 w-full justify-between rounded-xl px-3 t-13"
                 data-field="picker"
                 type="button"
                 variant="outline"
-                className="h-11 w-full justify-between rounded-xl px-3 t-13"
               />
             }
           >
@@ -163,9 +163,9 @@ export function CareTaskForm({
             <Command shouldFilter={false}>
               <CommandInput
                 aria-label="Rechercher un patient"
+                onValueChange={setPatientSearch}
                 placeholder="Nom du patient ou espèce…"
                 value={patientSearch}
-                onValueChange={setPatientSearch}
               />
               <CommandList>
                 <CommandEmpty>Aucun patient trouvé.</CommandEmpty>
@@ -186,12 +186,12 @@ export function CareTaskForm({
                   .map((p) => (
                     <CommandItem
                       key={p.id}
-                      value={p.id}
                       onSelect={() => {
                         setPatient(p.id);
                         setPatientPickerOpen(false);
                         setPatientSearch("");
                       }}
+                      value={p.id}
                     >
                       <span>{p.name}</span>
                       <span className="ml-auto text-muted-foreground">
@@ -210,10 +210,10 @@ export function CareTaskForm({
         </span>
         <Input
           className="h-11 w-full rounded-xl t-13"
+          onChange={(e) => setLabel(e.target.value)}
           placeholder="Ex. pansement, injection, contrôle de plaie"
           required
           value={label}
-          onChange={(e) => setLabel(e.target.value)}
         />
       </label>
       <div className="grid gap-4 sm:grid-cols-[minmax(170px,0.8fr)_minmax(0,1.2fr)]">
@@ -222,8 +222,8 @@ export function CareTaskForm({
           <select
             aria-label="Type de soin"
             className={field}
-            value={type}
             onChange={(e) => setType(e.target.value as CareType)}
+            value={type}
           >
             {CARE_TYPES.map((t) => (
               <option key={t} value={t}>
@@ -244,29 +244,29 @@ export function CareTaskForm({
               placeholder="Choisir la date"
               value={scheduledDate}
             />
-            <CareTimePicker value={scheduledTime} onChange={setScheduledTime} />
+            <CareTimePicker onChange={setScheduledTime} value={scheduledTime} />
           </div>
         </div>
       </div>
       <ProductStockFields
-        products={products.data}
-        productId={product}
-        quantity={productQuantity}
+        disabled={busy}
         onProductChange={(id) => {
           setProduct(id);
           setProductQuantity("1");
         }}
         onQuantityChange={setProductQuantity}
-        disabled={busy}
         optional
+        productId={product}
+        products={products.data}
+        quantity={productQuantity}
       />
       <label className="block space-y-1.5 t-13">
         Note
         <textarea
           className={`${field} h-auto min-h-24 resize-y py-3`}
+          onChange={(e) => setNote(e.target.value)}
           placeholder="Consigne utile pour l’équipe"
           value={note}
-          onChange={(e) => setNote(e.target.value)}
         />
       </label>
       <p className="t-12 text-muted-foreground">
@@ -274,25 +274,25 @@ export function CareTaskForm({
         confirmation.
       </p>
       {error && (
-        <p role="alert" className="t-13 text-destructive">
+        <p className="t-13 text-destructive" role="alert">
           {error}
         </p>
       )}
       <div className="grid grid-cols-2 gap-3">
         <Button
+          className="h-11 w-full rounded-xl t-13"
+          onClick={onCancel}
           type="button"
           variant="outline"
-          onClick={onCancel}
-          className="h-11 w-full rounded-xl t-13"
         >
           Annuler
         </Button>
         <Button
-          type="submit"
+          className="h-11 w-full rounded-xl t-13"
           disabled={
             busy || !currentUser || !patient || !label.trim() || !scheduled
           }
-          className="h-11 w-full rounded-xl t-13"
+          type="submit"
         >
           {busy ? "Enregistrement…" : "Confirmer le soin"}
         </Button>

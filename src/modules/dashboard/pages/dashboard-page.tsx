@@ -402,31 +402,51 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
   };
   const clinicalView = (
     <ClinicalDashboardView
-      now={buildNowSnapshot(today, presentation.patients, now)}
+      actionFilter={actionFilter}
+      alerts={alerts}
+      busyIds={busyIds}
+      cash={cash}
+      cashPeriod={cashPeriod}
+      context={context}
       day={day}
       dayDate={dayDate}
-      context={context}
-      alerts={alerts}
       followUp={buildClinicalFollowUp(presentation.patients, stays.data)}
+      isCustomizing={isCustomizing}
+      now={buildNowSnapshot(today, presentation.patients, now)}
+      onActionFilter={setActionFilter}
+      onAgenda={() => navigate("agenda")}
+      onCashPeriod={setCashPeriod}
+      onCompleteTask={(id) => {
+        void completeTask(id);
+      }}
+      onCustomizingChange={setIsCustomizing}
+      onFinances={() => navigate("finances")}
+      onFlux={showVisit}
+      onOpenAlert={(alert) =>
+        alert.patientId
+          ? openPatientPeek(alert.patientId)
+          : navigate(alert.source === "stock" ? "stock" : "taches")
+      }
+      onOpenPatient={openPatientPeek}
+      onPatientIntent={intent.onPointerEnter}
+      onPatientIntentCancel={intent.onPointerLeave}
+      onPatients={() => navigate("patients")}
+      onPlan={plan}
+      onReminders={() => navigate("taches")}
+      onShiftDay={(days) => setSelectedDay(addDays(dayDate, days))}
+      onToday={() => setSelectedDay(null)}
+      onTrendsOpen={setTrendsOpen}
+      onTrendsPeriod={setTrendDays}
       patientRows={buildPatientFollowUpRows(
         presentation.patients,
         presentation.owners,
         stays.data
       )}
-      cash={cash}
       pending={cashPending}
-      cashPeriod={cashPeriod}
-      onCashPeriod={setCashPeriod}
       receivables={financials.receivables}
-      trends={buildClinicalTrends(presentation.appointments, now, trendDays)}
-      onTrendsPeriod={setTrendDays}
-      actionFilter={actionFilter}
-      onActionFilter={setActionFilter}
       reducedMotion={Boolean(reduced)}
-      onShiftDay={(days) => setSelectedDay(addDays(dayDate, days))}
-      onToday={() => setSelectedDay(null)}
-      onPlan={plan}
-      onReminders={() => navigate("taches")}
+      // Rows appear with the data: a dashboard opened every morning does not perform an entrance.
+      renderRow={(id, _index, content) => <div key={id}>{content}</div>}
       states={{
         now: nowState,
         day: dayState,
@@ -435,45 +455,55 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
         cash: cashState,
         trends: trendsState,
       }}
-      busyIds={busyIds}
-      isCustomizing={isCustomizing}
-      onCustomizingChange={setIsCustomizing}
+      trends={buildClinicalTrends(presentation.appointments, now, trendDays)}
       trendsOpen={trendsOpen}
-      onTrendsOpen={setTrendsOpen}
-      onFlux={showVisit}
-      onOpenPatient={openPatientPeek}
-      onPatientIntent={intent.onPointerEnter}
-      onPatientIntentCancel={intent.onPointerLeave}
-      onCompleteTask={(id) => {
-        void completeTask(id);
-      }}
-      onOpenAlert={(alert) =>
-        alert.patientId
-          ? openPatientPeek(alert.patientId)
-          : navigate(alert.source === "stock" ? "stock" : "taches")
-      }
       viewControl={
         <DashboardModeToggle
-          value={version}
-          reducedMotion={Boolean(reduced)}
           onChange={(next) => {
             setIsCustomizing(false);
             void setVersion(next);
           }}
+          reducedMotion={Boolean(reduced)}
+          value={version}
         />
       }
-      onAgenda={() => navigate("agenda")}
-      onPatients={() => navigate("patients")}
-      onFinances={() => navigate("finances")}
-      // Rows appear with the data: a dashboard opened every morning does not perform an entrance.
-      renderRow={(id, _index, content) => <div key={id}>{content}</div>}
     />
   );
   return (
     <div className="dashboard-stage flex w-full min-w-0 flex-col gap-6 px-4 pt-4 pb-12 lg:px-6 premium-analytics-dashboard">
       <TourInvitation />
       <PremiumAnalytics
+        alertSources={{
+          reminders: medicalReminders.reminders,
+          careTasks: alertCare.tasks,
+          unavailable: [
+            medicalReminders.error ? "rappels" : "",
+            alertCare.error ? "soins" : "",
+          ].filter(Boolean),
+        }}
         clinicalView={version === "clinical" ? clinicalView : undefined}
+        customRange={customRange}
+        dashboardViewControl={
+          <DashboardModeToggle
+            onChange={(next) => {
+              setIsCustomizing(false);
+              void setVersion(next);
+            }}
+            reducedMotion={Boolean(reduced)}
+            value={version}
+          />
+        }
+        financials={{
+          income: cash.income,
+          pending: cashPending,
+          receivables: financials.receivables,
+        }}
+        model={buildPremiumAnalytics(
+          { ...presentation, alerts, reminders: medicalReminders.reminders },
+          analyticsPeriod,
+          now,
+          customRange
+        )}
         morningWatch={
           <MorningWatch
             items={morning}
@@ -483,46 +513,23 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
             status={morningStatus}
           />
         }
-        model={buildPremiumAnalytics(
-          { ...presentation, alerts, reminders: medicalReminders.reminders },
-          analyticsPeriod,
-          now,
-          customRange
-        )}
-        period={analyticsPeriod}
-        onPeriod={(next: AnalyticsPeriod) => setAnalyticsPeriod(next)}
-        customRange={customRange}
+        now={now}
+        onActions={() => navigate("taches")}
+        onCreateSlot={createSlot}
         onCustomRange={(range) => {
           setCustomRange(range);
           setAnalyticsPeriod("custom");
         }}
-        states={{ cash: cashState, patients: nowState, actions: actionsState }}
         onFinances={() => navigate("finances")}
-        onPatients={() => navigate("patients")}
-        onActions={() => navigate("taches")}
         onNavigate={navigate}
-        dashboardViewControl={
-          <DashboardModeToggle
-            value={version}
-            reducedMotion={Boolean(reduced)}
-            onChange={(next) => {
-              setIsCustomizing(false);
-              void setVersion(next);
-            }}
-          />
-        }
-        now={now}
+        onPatients={() => navigate("patients")}
+        onPeriod={(next: AnalyticsPeriod) => setAnalyticsPeriod(next)}
+        onStartConsultation={showVisit}
+        period={analyticsPeriod}
         presentation={presentation}
+        states={{ cash: cashState, patients: nowState, actions: actionsState }}
+        today={today}
         vets={vets}
-        onCreateSlot={createSlot}
-        alertSources={{
-          reminders: medicalReminders.reminders,
-          careTasks: alertCare.tasks,
-          unavailable: [
-            medicalReminders.error ? "rappels" : "",
-            alertCare.error ? "soins" : "",
-          ].filter(Boolean),
-        }}
         watch={
           <DashboardWatch
             hospitalized={buildHospitalizedWatch({
@@ -538,6 +545,7 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
               />
             }
             onOpenPatient={openPatientPeek}
+            onPatients={() => navigate("patients")}
             onReminders={() => {
               window.sessionStorage.setItem(
                 "baitari:reminders-source",
@@ -556,22 +564,14 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
             })}
             remindersError={medicalReminders.error}
             remindersLoading={medicalReminders.loading}
-            stock={buildStockWatch({ now, products: presentation.products })}
             species={
               patients.loading
                 ? undefined
                 : buildSpeciesSplit(presentation.patients, now)
             }
-            onPatients={() => navigate("patients")}
+            stock={buildStockWatch({ now, products: presentation.products })}
           />
         }
-        today={today}
-        financials={{
-          income: cash.income,
-          pending: cashPending,
-          receivables: financials.receivables,
-        }}
-        onStartConsultation={showVisit}
       />
     </div>
   );

@@ -366,8 +366,8 @@ function LicensesTableView({
 
       {!isLoading && syncMessage && (
         <div
-          role="status"
           className="p-8 text-center text-sm text-muted-foreground"
+          role="status"
         >
           {syncMessage}
         </div>
@@ -1570,7 +1570,6 @@ export default function ActivationAdminPage() {
             {/* TAB 1: LICENSES TABLE */}
             <TabsContent className="mt-4 space-y-4" value="licenses">
               <LicensesTableView
-                syncMessage={licenseSyncMessage}
                 activeCount={stats.active}
                 expiringCount={stats.expiring}
                 isLoading={isLoadingLicenses}
@@ -1594,6 +1593,7 @@ export default function ActivationAdminPage() {
                 revokedCount={stats.revoked}
                 searchQuery={searchQuery}
                 statusFilter={statusFilter}
+                syncMessage={licenseSyncMessage}
               />
             </TabsContent>
 
@@ -1999,9 +1999,6 @@ export default function ActivationAdminPage() {
                           {dev}
                         </span>
                         <Button
-                          size="sm"
-                          variant="ghost"
-                          type="button"
                           onClick={async () => {
                             if (
                               !window.confirm(
@@ -2027,6 +2024,9 @@ export default function ActivationAdminPage() {
                               );
                             }
                           }}
+                          size="sm"
+                          type="button"
+                          variant="ghost"
                         >
                           Libérer
                         </Button>

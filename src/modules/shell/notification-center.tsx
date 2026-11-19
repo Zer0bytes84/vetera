@@ -355,8 +355,8 @@ export function NotificationCenter({
         </PopoverTrigger>
       )}
       <PopoverContent
-        anchor={anchor}
         align="end"
+        anchor={anchor}
         className="w-[min(400px,calc(100vw-24px))] gap-0 p-0"
         sideOffset={8}
       >

@@ -151,9 +151,6 @@ export function ToolApprovalQueue({
     <MotionConfig reducedMotion="user">
       <Shell aria-label={heading} className={cn("max-w-none", className)}>
         <ShellHeader
-          icon={ShieldCheck}
-          title={heading}
-          subtitle={subtitle}
           aside={
             <span className="text-[0.8125rem] text-muted-foreground tabular-nums">
               {pending.length ? (
@@ -165,21 +162,24 @@ export function ToolApprovalQueue({
               )}
             </span>
           }
+          icon={ShieldCheck}
+          subtitle={subtitle}
+          title={heading}
         />
         <Panel className="overflow-hidden border border-border">
           <AnimatePresence initial={false}>
             {bulk.length > 0 && (
               <motion.div
-                key="bulk"
-                initial={{ height: 0, opacity: 0 }}
                 animate={{ height: "auto", opacity: 1 }}
+                className="overflow-hidden"
                 exit={{
                   height: 0,
                   opacity: 0,
                   transition: still ? instant : exitFast,
                 }}
+                initial={{ height: 0, opacity: 0 }}
+                key="bulk"
                 transition={still ? instant : reveal}
-                className="overflow-hidden"
               >
                 <div className="m-1.5 mb-0 flex flex-wrap items-center gap-2 rounded-xl bg-brand/10 py-1.5 pr-1.5 pl-3 text-[0.8125rem]">
                   <span className="font-medium text-brand tabular-nums">
@@ -187,9 +187,9 @@ export function ToolApprovalQueue({
                     {bulk.length > 1 ? "s" : ""}
                   </span>
                   <button
-                    type="button"
-                    onClick={() => setSelected([])}
                     className="text-muted-foreground transition-colors duration-150 hover:text-foreground"
+                    onClick={() => setSelected([])}
+                    type="button"
                   >
                     Effacer
                   </button>
@@ -200,8 +200,8 @@ export function ToolApprovalQueue({
                     Garder ma dictée
                   </Button>
                   <Button
-                    variant="primary"
                     onClick={() => decide(bulk, "approved")}
+                    variant="primary"
                   >
                     Accepter
                   </Button>
@@ -212,9 +212,9 @@ export function ToolApprovalQueue({
           {pending.length === 0 && (
             <EmptyState
               compact
+              description="Les reformulations proposées apparaissent ici."
               icon={ShieldCheck}
               title="Rien à examiner"
-              description="Les reformulations proposées apparaissent ici."
             />
           )}
           <div className={cn("p-1.5", pending.length === 0 && "hidden")}>
@@ -224,16 +224,16 @@ export function ToolApprovalQueue({
                 const checked = selectedIds.includes(r.id);
                 return (
                   <motion.div
-                    key={r.id}
-                    initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: "auto" }}
+                    className="overflow-hidden"
                     exit={{
                       opacity: 0,
                       height: 0,
                       transition: reduce ? instant : exitFast,
                     }}
+                    initial={{ opacity: 0, height: 0 }}
+                    key={r.id}
                     transition={reduce ? instant : reveal}
-                    className="overflow-hidden"
                   >
                     <div
                       className={cn(
@@ -242,6 +242,14 @@ export function ToolApprovalQueue({
                       )}
                     >
                       <div
+                        aria-expanded={open}
+                        aria-keyshortcuts="Space Enter ArrowUp ArrowDown"
+                        className="flex cursor-pointer items-center gap-3 rounded-xl px-2.5 py-2.5 hover:bg-foreground/[0.03]"
+                        onClick={() => {
+                          setViaKeys(false);
+                          setExpanded(open ? null : r.id);
+                        }}
+                        onKeyDown={(e) => onRowKey(e, r)}
                         ref={(el) => {
                           if (el) {
                             rows.current.set(r.id, el);
@@ -251,24 +259,16 @@ export function ToolApprovalQueue({
                         }}
                         role="button"
                         tabIndex={0}
-                        aria-expanded={open}
-                        aria-keyshortcuts="Space Enter ArrowUp ArrowDown"
-                        onClick={() => {
-                          setViaKeys(false);
-                          setExpanded(open ? null : r.id);
-                        }}
-                        onKeyDown={(e) => onRowKey(e, r)}
-                        className="flex cursor-pointer items-center gap-3 rounded-xl px-2.5 py-2.5 hover:bg-foreground/[0.03]"
                       >
                         <Checkbox
-                          tabIndex={-1}
-                          checked={checked}
                           aria-label={`Sélectionner : ${r.title}`}
+                          checked={checked}
                           onClick={(e) => {
                             e.stopPropagation();
                             setViaKeys(false);
                             toggle(r.id);
                           }}
+                          tabIndex={-1}
                         />
                         <span className="min-w-0 flex-1">
                           <span className="block truncate text-sm">
@@ -281,26 +281,26 @@ export function ToolApprovalQueue({
                           )}
                         </span>
                         <ChevronDown
-                          strokeWidth={2.5}
+                          aria-hidden="true"
                           className={cn(
                             "size-4 shrink-0 text-muted-foreground transition-transform duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:transition-none",
                             open && "rotate-180"
                           )}
-                          aria-hidden="true"
+                          strokeWidth={2.5}
                         />
                       </div>
                       <AnimatePresence initial={false}>
                         {open && (
                           <motion.div
-                            initial={{ height: 0, opacity: 0 }}
                             animate={{ height: "auto", opacity: 1 }}
+                            className="overflow-hidden"
                             exit={{
                               height: 0,
                               opacity: 0,
                               transition: still ? instant : exitFast,
                             }}
+                            initial={{ height: 0, opacity: 0 }}
                             transition={still ? instant : reveal}
-                            className="overflow-hidden"
                           >
                             <div className="px-2.5 pb-2.5">
                               <div className="flex flex-col gap-1.5">
@@ -326,8 +326,8 @@ export function ToolApprovalQueue({
                                   Garder ma dictée
                                 </Button>
                                 <Button
-                                  variant="primary"
                                   onClick={() => decide([r], "approved")}
+                                  variant="primary"
                                 >
                                   Accepter la formulation
                                 </Button>
@@ -346,16 +346,16 @@ export function ToolApprovalQueue({
         <AnimatePresence initial={false}>
           {resolved.length > 0 && (
             <motion.div
-              key="resolved"
-              initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
+              className="overflow-hidden"
               exit={{
                 height: 0,
                 opacity: 0,
                 transition: reduce ? instant : exitFast,
               }}
+              initial={{ height: 0, opacity: 0 }}
+              key="resolved"
               transition={reduce ? instant : reveal}
-              className="overflow-hidden"
             >
               <div className="px-2 pt-2.5 pb-1">
                 <p className="px-1.5 pb-1 text-xs text-muted-foreground">
@@ -366,9 +366,9 @@ export function ToolApprovalQueue({
                     {resolved.map((r) => (
                       <ResolvedRow
                         key={r.id}
+                        onUndo={undo}
                         request={r}
                         undoable={undoable.includes(r.id)}
-                        onUndo={undo}
                       />
                     ))}
                   </AnimatePresence>
@@ -377,7 +377,7 @@ export function ToolApprovalQueue({
             </motion.div>
           )}
         </AnimatePresence>
-        <p role="status" aria-live="polite" className="sr-only">
+        <p aria-live="polite" className="sr-only" role="status">
           {announcement}
         </p>
       </Shell>
@@ -398,21 +398,21 @@ function ResolvedRow({
   const Icon = ok ? Check : X;
   return (
     <motion.li
-      initial={{ opacity: 0, height: 0 }}
       animate={{ opacity: 1, height: "auto" }}
-      exit={{ opacity: 0, height: 0, transition: exitFast }}
-      transition={{ duration: 0.2, ease: EASE_OUT }}
       className="overflow-hidden"
+      exit={{ opacity: 0, height: 0, transition: exitFast }}
+      initial={{ opacity: 0, height: 0 }}
+      transition={{ duration: 0.2, ease: EASE_OUT }}
     >
       <div className="flex min-h-9 items-center gap-2.5 px-1.5 text-[0.8125rem]">
         <IconTile
-          icon={Icon}
           className={cn(
             "size-5 rounded-full",
             ok
               ? "bg-positive/15 text-positive"
               : "bg-foreground/[0.08] text-muted-foreground"
           )}
+          icon={Icon}
         />
         <span className="min-w-0 flex-1 truncate text-muted-foreground">
           <span className="text-foreground">{request.title}</span>
@@ -421,10 +421,10 @@ function ResolvedRow({
         </span>
         {undoable && (
           <Button
+            className="h-7 gap-1 px-2.5 text-xs"
             icon={Undo2}
             iconWeight="bold"
             onClick={() => onUndo(request)}
-            className="h-7 gap-1 px-2.5 text-xs"
           >
             Annuler
           </Button>

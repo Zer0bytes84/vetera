@@ -77,17 +77,17 @@ export function StockLotSelect({
   }
   return (
     <div className="space-y-1.5">
-      <label htmlFor={inputId} className="text-sm">
+      <label className="text-sm" htmlFor={inputId}>
         {label}
       </label>
       <SearchableSelect
+        controlClassName="h-11 rounded-xl [&_input]:text-foreground"
+        disabled={disabled || !inventory.ready || !productId}
         id={inputId}
         label={label}
-        disabled={disabled || !inventory.ready || !productId}
-        controlClassName="h-11 rounded-xl [&_input]:text-foreground"
+        onValueChange={onChange}
         options={options}
         value={value}
-        onValueChange={onChange}
       />
       <p className="text-xs text-muted-foreground">
         {value === "fifo"

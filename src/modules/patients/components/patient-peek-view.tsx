@@ -114,19 +114,19 @@ export function PatientPeekView({
   const pending = loading || skeletons.profile;
   return (
     <Sheet
-      open
       modal={!follow}
       onOpenChange={(open) => {
         if (!open) {
           onClose();
         }
       }}
+      open
     >
       <SheetContent
         className="patient-peek-panel w-full! gap-0 bg-card sm:max-w-[620px]"
         data-peek-follow={follow ? "" : undefined}
-        initialFocus={follow ? false : undefined}
         finalFocus={follow ? false : undefined}
+        initialFocus={follow ? false : undefined}
         showOverlay={!follow}
       >
         <SheetHeader className="border-b border-border px-6 py-5 pr-14">
@@ -138,29 +138,29 @@ export function PatientPeekView({
         <div className="min-h-0 flex-1 overflow-y-auto">
           {pending ? (
             <div aria-busy="true" className="space-y-5 p-6">
-              <SkeletonBlock visible={skeletons.profile} className="h-16" />
-              <SkeletonBlock visible={skeletons.profile} className="h-24" />
-              <SkeletonBlock visible={skeletons.profile} className="h-40" />
+              <SkeletonBlock className="h-16" visible={skeletons.profile} />
+              <SkeletonBlock className="h-24" visible={skeletons.profile} />
+              <SkeletonBlock className="h-40" visible={skeletons.profile} />
             </div>
           ) : error ? (
             <EmptyState
-              title="Le dossier n’a pas pu être chargé"
               action={<ActionButton onClick={onRetry}>Réessayer</ActionButton>}
+              title="Le dossier n’a pas pu être chargé"
             />
           ) : patient ? (
             <>
               <div className="patient-peek-identity px-6 py-6">
-                <PatientIdentity patient={patient} compact />
+                <PatientIdentity compact patient={patient} />
               </div>
               {/* Safety first, as in the record: the allergy in red, the restraint beside it. */}
               <div className="patient-peek-safety">
                 <PatientSafetyZone patient={patient} />
               </div>
               <div
-                className="medical-tabs"
-                role="tablist"
-                onKeyDown={handleRecordTabKeys}
                 aria-label="Aperçu du dossier"
+                className="medical-tabs"
+                onKeyDown={handleRecordTabKeys}
+                role="tablist"
               >
                 {[
                   { value: "summary", label: "Synthèse" },
@@ -168,13 +168,13 @@ export function PatientPeekView({
                   { value: "followup", label: "Suivi préventif" },
                 ].map((item) => (
                   <button
+                    aria-controls={`${id}-content`}
+                    aria-selected={tab === item.value}
+                    id={`${id}-${item.value}`}
                     key={item.value}
+                    onClick={() => setTab(item.value)}
                     role="tab"
                     tabIndex={tab === item.value ? 0 : -1}
-                    id={`${id}-${item.value}`}
-                    aria-selected={tab === item.value}
-                    aria-controls={`${id}-content`}
-                    onClick={() => setTab(item.value)}
                     type="button"
                   >
                     {item.label}
@@ -182,11 +182,11 @@ export function PatientPeekView({
                 ))}
               </div>
               <div
+                aria-labelledby={`${id}-${tab}`}
                 className="medical-peek-content"
                 id={`${id}-content`}
                 role="tabpanel"
                 tabIndex={0}
-                aria-labelledby={`${id}-${tab}`}
               >
                 {tab === "summary" && (
                   <>
@@ -264,11 +264,11 @@ export function PatientPeekView({
                     </RecordBlockHeading>
                     {historyLoading || skeletons.history ? (
                       <SkeletonBlock
-                        visible={skeletons.history}
                         className="h-40"
+                        visible={skeletons.history}
                       />
                     ) : historyError ? (
-                      <ActionButton quiet onClick={onRetry}>
+                      <ActionButton onClick={onRetry} quiet>
                         Réessayer le chargement des visites
                       </ActionButton>
                     ) : appointments.length ? (
@@ -300,11 +300,11 @@ export function PatientPeekView({
                     </RecordBlockHeading>
                     {followUpLoading || skeletons.followUp ? (
                       <SkeletonBlock
-                        visible={skeletons.followUp}
                         className="h-40"
+                        visible={skeletons.followUp}
                       />
                     ) : followUpError ? (
-                      <ActionButton quiet onClick={onRetry}>
+                      <ActionButton onClick={onRetry} quiet>
                         Réessayer le chargement du suivi
                       </ActionButton>
                     ) : (
@@ -360,18 +360,18 @@ export function PatientPeekView({
             </>
           ) : (
             <EmptyState
-              title="Ce patient n’est plus disponible"
-              description="Actualisez la liste pour retrouver les dossiers actuels."
               action={
-                <ActionButton quiet onClick={onRetry}>
+                <ActionButton onClick={onRetry} quiet>
                   Actualiser
                 </ActionButton>
               }
+              description="Actualisez la liste pour retrouver les dossiers actuels."
+              title="Ce patient n’est plus disponible"
             />
           )}
         </div>
         <div className="patient-peek-footer flex flex-wrap items-center justify-between gap-3 border-t border-border bg-card px-6 py-4">
-          <ActionButton quiet onClick={onClose}>
+          <ActionButton onClick={onClose} quiet>
             Fermer
           </ActionButton>
           <ActionButton

@@ -65,13 +65,9 @@ export function KpiMiniChart({
   return (
     <span className="studio-kpi-visual" style={{ color }}>
       <svg
-        viewBox="0 0 240 40"
-        preserveAspectRatio="none"
-        role="img"
-        tabIndex={0}
         aria-label={`${caption}. Flèches gauche et droite pour parcourir. ${values.map((value, i) => `${labels[i]} : ${number(value)} ${unit}`).join(", ")}`}
-        onFocus={() => setHovered(values.length - 1)}
         onBlur={() => setHovered(null)}
+        onFocus={() => setHovered(values.length - 1)}
         onKeyDown={(event) =>
           readingKey(event, active, values.length, setHovered)
         }
@@ -91,9 +87,13 @@ export function KpiMiniChart({
             )
           );
         }}
+        preserveAspectRatio="none"
+        role="img"
+        tabIndex={0}
+        viewBox="0 0 240 40"
       >
         <defs>
-          <linearGradient id={id} x1="0" y1="0" x2="0" y2="1">
+          <linearGradient id={id} x1="0" x2="0" y1="0" y2="1">
             <stop stopColor="currentColor" stopOpacity=".22" />
             <stop offset="1" stopColor="currentColor" stopOpacity=".02" />
           </linearGradient>
@@ -103,21 +103,17 @@ export function KpiMiniChart({
           <path
             d={`M${activeX} 0V38`}
             stroke="currentColor"
-            strokeOpacity=".35"
             strokeDasharray="2 3"
+            strokeOpacity=".35"
           />
         )}
         {bars ? (
           values.map((value, i) => (
             <rect
-              key={i}
               className="studio-mini-bar"
-              x={(i * 240) / values.length + 4}
-              y={36 - (value / max) * 30}
-              width={240 / values.length - 8}
-              height={Math.max(2, (value / max) * 30)}
-              rx="3"
               fill="currentColor"
+              height={Math.max(2, (value / max) * 30)}
+              key={i}
               opacity={
                 active === i
                   ? 1
@@ -129,6 +125,10 @@ export function KpiMiniChart({
                       : 0.3
                     : 0.12
               }
+              rx="3"
+              width={240 / values.length - 8}
+              x={(i * 240) / values.length + 4}
+              y={36 - (value / max) * 30}
             />
           ))
         ) : (
@@ -138,19 +138,19 @@ export function KpiMiniChart({
               d={line}
               fill="none"
               stroke="currentColor"
-              strokeWidth="2"
-              strokeLinejoin="round"
               strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
             />
             {points.map(([x, y], i) => (
-              <circle key={i} cx={x} cy={y} r="2.5" fill="currentColor" />
+              <circle cx={x} cy={y} fill="currentColor" key={i} r="2.5" />
             ))}
             {active !== null && (
               <circle
                 cx={activeX}
                 cy={points[active][1]}
-                r="4"
                 fill="var(--card)"
+                r="4"
                 stroke="currentColor"
                 strokeWidth="2"
               />
@@ -197,20 +197,20 @@ export function KpiSegments({
   return (
     <span className="studio-kpi-visual studio-kpi-segments">
       <span
-        className="studio-kpi-track"
-        role="img"
-        tabIndex={0}
         aria-label={`${caption}. ${segments.map((segment) => `${segment.label} : ${number(segment.value)} ${unit}`).join(", ")}. Flèches pour parcourir.`}
+        className="studio-kpi-track"
+        onBlur={() => setHovered(null)}
         onFocus={() => {
           if (visible.length) {
             setHovered(0);
           }
         }}
-        onBlur={() => setHovered(null)}
         onKeyDown={(event) =>
           readingKey(event, active, visible.length, setHovered)
         }
         onPointerLeave={() => setHovered(null)}
+        role="img"
+        tabIndex={0}
       >
         {visible.map((segment, i) => (
           <span

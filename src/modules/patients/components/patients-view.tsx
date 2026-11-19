@@ -134,16 +134,15 @@ export function PatientsView(props: PatientsViewProps) {
             <>
               <ListFilter
                 label="Espèce"
-                value={speciesFilter}
                 onValueChange={setSpeciesFilter}
                 options={[
                   { value: "all", label: "Toutes" },
                   ...speciesOptions.map((value) => ({ value, label: value })),
                 ]}
+                value={speciesFilter}
               />
               <ListFilter
                 label="Statut"
-                value={statusFilter}
                 onValueChange={setStatusFilter}
                 options={[
                   { value: "all", label: "Tous" },
@@ -151,16 +150,17 @@ export function PatientsView(props: PatientsViewProps) {
                     ([value, option]) => ({ value, label: option.label })
                   ),
                 ]}
+                value={statusFilter}
               />
               <ListFilter
                 label="Dossiers"
-                value={archiveFilter}
                 onValueChange={setArchiveFilter}
                 options={[
                   { value: "active", label: "Actifs" },
                   { value: "archived", label: "Archivés" },
                   { value: "all", label: "Tous" },
                 ]}
+                value={archiveFilter}
               />
             </>
           }
@@ -178,8 +178,6 @@ export function PatientsView(props: PatientsViewProps) {
 
       {selectedPatient ? (
         <PatientDetailsDialog
-          users={users}
-          transactions={transactions}
           allOwners={hydratedOwners}
           appointments={appointments}
           initialTab={detailsInitialTab}
@@ -198,6 +196,8 @@ export function PatientsView(props: PatientsViewProps) {
           }}
           owner={ownersMap.get(selectedPatient.ownerId)}
           patient={selectedPatient}
+          transactions={transactions}
+          users={users}
         />
       ) : null}
 
@@ -227,13 +227,13 @@ export function PatientsView(props: PatientsViewProps) {
       >
         <DialogContent className="modal-medical-shell gap-0 w-full max-w-[min(560px,calc(100%-2rem))] overflow-hidden p-0 sm:max-w-[560px]">
           <FormDialogHeader
-            compact
             artwork="patient-created"
-            title={createdPatientPrompt?.patient.name}
+            compact
             description="Dossier créé"
             icon={
               <HugeiconsIcon icon={CheckmarkCircle02Icon} strokeWidth={1.5} />
             }
+            title={createdPatientPrompt?.patient.name}
           />
           <div className="modal-medical-footer flex flex-col gap-2 px-6 py-4 sm:flex-row sm:items-center sm:justify-end">
             <Button

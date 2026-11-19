@@ -91,8 +91,8 @@ export function ConsultationProducts({
           <ul className="divide-y divide-border t-13">
             {uses.map((use) => (
               <li
-                key={use.id}
                 className="flex flex-wrap items-center justify-between gap-3 py-2"
+                key={use.id}
               >
                 <div className="min-w-0">
                   <span className="font-medium">{use.product_name}</span>
@@ -106,7 +106,7 @@ export function ConsultationProducts({
           </ul>
         )}
         {loadError && (
-          <p role="alert" className="text-xs text-destructive">
+          <p className="text-xs text-destructive" role="alert">
             Les utilisations précédentes n’ont pas pu être chargées.{" "}
             <button
               className="underline underline-offset-4"
@@ -117,8 +117,8 @@ export function ConsultationProducts({
           </p>
         )}
         <form
-          noValidate
           className="space-y-3"
+          noValidate
           onSubmit={async (event) => {
             event.preventDefault();
             if (busy || !valid || !currentUser) {
@@ -157,9 +157,6 @@ export function ConsultationProducts({
           }}
         >
           <ProductStockFields
-            products={products.data}
-            productId={productId}
-            quantity={quantity}
             disabled={busy}
             onProductChange={(id) => {
               setProductId(id);
@@ -170,18 +167,21 @@ export function ConsultationProducts({
               setQuantity(value);
               setRequestId(generateId());
             }}
+            productId={productId}
+            products={products.data}
+            quantity={quantity}
           />
           {error && (
-            <p role="alert" className="t-13 text-destructive">
+            <p className="t-13 text-destructive" role="alert">
               {error}
             </p>
           )}
           <div className="flex justify-end">
             <Button
               className="rounded-full px-4"
+              disabled={busy || !valid || !currentUser}
               size="sm"
               type="submit"
-              disabled={busy || !valid || !currentUser}
             >
               {busy ? "Enregistrement…" : "Valider l’utilisation"}
             </Button>

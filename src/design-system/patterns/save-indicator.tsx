@@ -12,7 +12,7 @@ export function SaveIndicator({
   onRetry?: () => void;
 }) {
   if (state === "idle") {
-    return <span className="w-[112px]" aria-hidden="true" />;
+    return <span aria-hidden="true" className="w-[112px]" />;
   }
   const text =
     state === "saving"
@@ -22,20 +22,11 @@ export function SaveIndicator({
         : "Enregistré";
   return (
     <span
+      aria-live="polite"
       className="inline-flex w-[112px] items-center gap-1.5 t-12 text-ink-muted"
       role="status"
-      aria-live="polite"
     >
       <HugeiconsIcon
-        icon={
-          state === "saving"
-            ? Refresh01Icon
-            : state === "error"
-              ? AlertCircleIcon
-              : CheckmarkCircle02Icon
-        }
-        strokeWidth={1.5}
-        size={13}
         className={
           state === "saving"
             ? "animate-spin motion-reduce:animate-none"
@@ -43,12 +34,21 @@ export function SaveIndicator({
               ? "text-signal-critical"
               : "text-signal-positive"
         }
+        icon={
+          state === "saving"
+            ? Refresh01Icon
+            : state === "error"
+              ? AlertCircleIcon
+              : CheckmarkCircle02Icon
+        }
+        size={13}
+        strokeWidth={1.5}
       />
       {state === "error" && onRetry ? (
         <button
-          type="button"
           className="underline underline-offset-4"
           onClick={onRetry}
+          type="button"
         >
           {text}
         </button>

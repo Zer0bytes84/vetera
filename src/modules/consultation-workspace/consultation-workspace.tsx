@@ -105,9 +105,9 @@ export function ConsultationWorkspace({
           appointment={activeConsultation}
           closeLabel={closeLabel}
           closingBlocker={closingBlocker}
-          key={activeConsultation.id}
           documents={activeConsultationDocuments}
           historyAppointments={activeConsultationHistory}
+          key={activeConsultation.id}
           onClose={() => setActiveConsultation(null)}
           onComplete={handleConsultationComplete}
           onDeleteDocument={handleConsultationDocumentDelete}

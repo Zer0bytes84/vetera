@@ -24,11 +24,9 @@ export function MovementAllocationDetails({
   return (
     <div className="mt-1">
       <Button
-        type="button"
-        variant="link"
+        aria-expanded={open}
         className="h-auto p-0 text-xs dark:text-blue-300 dark:hover:text-blue-200"
         disabled={busy}
-        aria-expanded={open}
         onClick={async () => {
           if (rows) {
             setOpen((value) => !value);
@@ -51,6 +49,8 @@ export function MovementAllocationDetails({
             }
           );
         }}
+        type="button"
+        variant="link"
       >
         {busy
           ? "Chargement…"
@@ -59,7 +59,7 @@ export function MovementAllocationDetails({
             : "Lots et emplacements"}
       </Button>
       {error && (
-        <p role="alert" className="mt-1 text-xs text-destructive">
+        <p className="mt-1 text-xs text-destructive" role="alert">
           Le détail n’a pas pu être chargé. Réessayez.
         </p>
       )}
@@ -67,7 +67,7 @@ export function MovementAllocationDetails({
         <ul className="mt-2 space-y-1 text-xs text-muted-foreground">
           {rows?.length ? (
             rows.map((row) => (
-              <li key={row.id} className="whitespace-normal">
+              <li className="whitespace-normal" key={row.id}>
                 <span className="tabular-nums">
                   {row.quantity_delta > 0 ? "+" : ""}
                   {stockQuantityLabel(row.quantity_delta, unit)}

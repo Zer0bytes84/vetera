@@ -64,6 +64,7 @@ export function VisitFlowBoard({
   return (
     <Shell aria-labelledby="visit-flow-title" className="visit-flow-widget">
       <ShellHeader
+        as="h2"
         aside={
           <>
             {viewControl}
@@ -73,18 +74,17 @@ export function VisitFlowBoard({
               onClick={() => onFlux?.(next?.appointment.id)}
             >
               Ouvrir Flux
-              <ArrowRight size={14} aria-hidden="true" />
+              <ArrowRight aria-hidden="true" size={14} />
             </ActionButton>
           </>
         }
-        as="h2"
         icon={Stethoscope}
+        id="visit-flow-title"
         subtitle={`Mis à jour à ${formatTime(at)}`}
         title="Maintenant"
-        id="visit-flow-title"
       />
       <div className="visit-flow-board">
-        <Panel className="visit-flow-card" aria-label="Prise en charge">
+        <Panel aria-label="Prise en charge" className="visit-flow-card">
           <div className="visit-flow-main">
             <div className="visit-flow-topline">
               <SignalBadge
@@ -109,24 +109,24 @@ export function VisitFlowBoard({
                         : "Agenda disponible"}
               </SignalBadge>
               <span className="visit-flow-date">
-                <CalendarDays size={14} aria-hidden="true" />
+                <CalendarDays aria-hidden="true" size={14} />
                 Aujourd’hui · {today.length} visite{today.length > 1 ? "s" : ""}
               </span>
             </div>
-            <AnimatePresence mode="wait" initial={false}>
+            <AnimatePresence initial={false} mode="wait">
               <motion.div
-                key={`${next?.appointment.id ?? "empty"}-${next?.appointment.status ?? "idle"}`}
+                animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                className="visit-flow-patient"
+                exit={reduced ? { opacity: 1 } : { opacity: 0.8, y: -3 }}
                 initial={
                   reduced ? false : { opacity: 0.8, y: 4, filter: "blur(2px)" }
                 }
-                animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                exit={reduced ? { opacity: 1 } : { opacity: 0.8, y: -3 }}
+                key={`${next?.appointment.id ?? "empty"}-${next?.appointment.status ?? "idle"}`}
                 transition={{ duration: reduced ? 0 : 0.16 }}
-                className="visit-flow-patient"
               >
                 <span
-                  className={`visit-flow-symbol ${next ? "" : "visit-flow-symbol-done"}`}
                   aria-hidden="true"
+                  className={`visit-flow-symbol ${next ? "" : "visit-flow-symbol-done"}`}
                 >
                   {next ? (
                     <HugeiconsIcon
@@ -161,7 +161,7 @@ export function VisitFlowBoard({
                 {next && (
                   <div className="visit-flow-slot">
                     <span className="visit-flow-slot-label">
-                      <Clock3 size={13} aria-hidden="true" /> Créneau prévu
+                      <Clock3 aria-hidden="true" size={13} /> Créneau prévu
                     </span>
                     <time>{formatTime(next.start)}</time>
                     {!active && (
@@ -174,12 +174,12 @@ export function VisitFlowBoard({
             {next && (
               <div className="visit-flow-details">
                 <span>
-                  <Stethoscope size={14} aria-hidden="true" />
+                  <Stethoscope aria-hidden="true" size={14} />
                   {next.appointment.type}
                 </span>
                 {nextRoom && (
                   <span>
-                    <DoorOpen size={14} aria-hidden="true" />
+                    <DoorOpen aria-hidden="true" size={14} />
                     {nextRoom}
                   </span>
                 )}
@@ -193,21 +193,21 @@ export function VisitFlowBoard({
             )}
             {hasAllergy && (
               <p className="visit-flow-allergy">
-                <AlertTriangle size={15} aria-hidden="true" />
+                <AlertTriangle aria-hidden="true" size={15} />
                 <span>
                   <strong>Allergies :</strong> {allergies}
                 </span>
               </p>
             )}
-            <ol className="visit-flow-steps" aria-label="Parcours de la visite">
+            <ol aria-label="Parcours de la visite" className="visit-flow-steps">
               {["Planifiée", "Arrivée", "Consultation", "Terminée"].map(
                 (label, i) => (
                   <li
-                    key={label}
+                    aria-current={i === stage ? "step" : undefined}
                     data-state={
                       i < stage ? "done" : i === stage ? "current" : "future"
                     }
-                    aria-current={i === stage ? "step" : undefined}
+                    key={label}
                   >
                     <span>{i < stage ? <Check size={12} /> : i + 1}</span>
                     {label}
@@ -218,10 +218,10 @@ export function VisitFlowBoard({
           </div>
         </Panel>
         <Panel
-          className="visit-flow-card"
           aria-label="Salle d’attente et avancement"
+          className="visit-flow-card"
         >
-          <aside className="visit-flow-queue" aria-label="File des visites">
+          <aside aria-label="File des visites" className="visit-flow-queue">
             <div className="visit-flow-queue-title">
               <DoorOpen size={16} />
               <h3>Salle d’attente</h3>
@@ -268,9 +268,9 @@ export function VisitFlowBoard({
                 </strong>
               </div>
               <div
+                aria-label={`${completed} visites terminées sur ${today.length}`}
                 className="visit-flow-track"
                 role="img"
-                aria-label={`${completed} visites terminées sur ${today.length}`}
               >
                 <span
                   style={{

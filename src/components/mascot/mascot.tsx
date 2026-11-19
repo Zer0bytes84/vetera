@@ -55,17 +55,17 @@ export function Mascot({
       )}
       style={{ width: size, height: size }}
     >
-      <Logo collapsed variant="refined" className="scale-75" />
+      <Logo className="scale-75" collapsed variant="refined" />
     </div>
   ) : (
     <MascotAvatar
       animal={effectiveAnimal}
       animated={isAnimated}
-      mood={mood}
-      size={size}
-      framing={framing}
-      overflow={overflow}
       className={className}
+      framing={framing}
+      mood={mood}
+      overflow={overflow}
+      size={size}
     />
   );
 
@@ -74,18 +74,18 @@ export function Mascot({
   }
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover onOpenChange={setOpen} open={open}>
       <PopoverTrigger
-        type="button"
         aria-label="Changer de mascotte ou logo"
         className={cn(
           "inline-flex shrink-0 items-center justify-center rounded-full transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer",
           className
         )}
+        type="button"
       >
         {content}
       </PopoverTrigger>
-      <PopoverContent align="start" sideOffset={8} className="mascot-picker">
+      <PopoverContent align="start" className="mascot-picker" sideOffset={8}>
         <div className="mascot-picker-heading">
           <PopoverTitle>Compagnon Baitari</PopoverTitle>
           <PopoverDescription>

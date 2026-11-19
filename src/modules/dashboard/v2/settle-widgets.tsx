@@ -96,23 +96,23 @@ export function SettleSparkLine({
 
   return (
     <svg
-      viewBox="0 0 104 28"
-      className="h-[24px] w-[72px] shrink-0 overflow-visible"
       aria-hidden="true"
+      className="h-[24px] w-[72px] shrink-0 overflow-visible"
+      viewBox="0 0 104 28"
     >
       <path
+        className={TONE_STROKE[tone] || TONE_STROKE.neutral}
         d={d}
         fill="none"
         stroke="currentColor"
-        strokeWidth="1.75"
         strokeLinecap="round"
-        className={TONE_STROKE[tone] || TONE_STROKE.neutral}
+        strokeWidth="1.75"
       />
       <circle
+        className={TONE_FILL[tone] || TONE_FILL.neutral}
         cx={lastPoint[0]}
         cy={lastPoint[1]}
         r="2.6"
-        className={TONE_FILL[tone] || TONE_FILL.neutral}
       />
     </svg>
   );
@@ -142,8 +142,11 @@ export function SettleStatTile({
 }) {
   return (
     <div
-      role={onClick ? "button" : undefined}
-      tabIndex={onClick ? 0 : undefined}
+      className={cn(
+        "settle-stat-tile rounded-[14px] p-4 bg-white dark:bg-neutral-900 border border-black/[0.07] dark:border-white/[0.08] shadow-[0_1px_2px_rgb(0_0_0/0.05)] flex flex-col justify-between transition",
+        onClick &&
+          "cursor-pointer hover:border-black/[0.15] dark:hover:border-white/[0.18] hover:shadow-[0_2px_4px_rgb(0_0_0/0.06)]"
+      )}
       onClick={onClick}
       onKeyDown={(e) => {
         if (onClick && (e.key === "Enter" || e.key === " ")) {
@@ -151,11 +154,8 @@ export function SettleStatTile({
           onClick();
         }
       }}
-      className={cn(
-        "settle-stat-tile rounded-[14px] p-4 bg-white dark:bg-neutral-900 border border-black/[0.07] dark:border-white/[0.08] shadow-[0_1px_2px_rgb(0_0_0/0.05)] flex flex-col justify-between transition",
-        onClick &&
-          "cursor-pointer hover:border-black/[0.15] dark:hover:border-white/[0.18] hover:shadow-[0_2px_4px_rgb(0_0_0/0.06)]"
-      )}
+      role={onClick ? "button" : undefined}
+      tabIndex={onClick ? 0 : undefined}
     >
       <div>
         <div className="flex items-start justify-between gap-4">
@@ -167,7 +167,7 @@ export function SettleStatTile({
           </p>
           {spark ? (
             <span className="-mt-1">
-              <SettleSparkLine values={spark.values} tone={spark.tone} />
+              <SettleSparkLine tone={spark.tone} values={spark.values} />
             </span>
           ) : null}
         </div>
@@ -184,12 +184,12 @@ export function SettleStatTile({
             )}
           >
             {delta.direction === "up" ? (
-              <ArrowUpRight size={12} className="h-3 w-3" aria-hidden="true" />
+              <ArrowUpRight aria-hidden="true" className="h-3 w-3" size={12} />
             ) : (
               <ArrowDownRight
-                size={12}
-                className="h-3 w-3"
                 aria-hidden="true"
+                className="h-3 w-3"
+                size={12}
               />
             )}
             {delta.value}
@@ -232,7 +232,6 @@ export function SettleProgressBar({
   const total = max ?? visible.reduce((sum, segment) => sum + segment.value, 0);
   return (
     <div
-      role="img"
       aria-label={
         visible.length
           ? visible
@@ -247,23 +246,24 @@ export function SettleProgressBar({
         "settle-progress-bar flex w-full overflow-hidden rounded-full bg-black/[0.05] dark:bg-white/[0.07]",
         height
       )}
+      role="img"
     >
       {visible.map((segment, index) => (
         <span
-          key={index}
-          data-tone={segment.tone}
-          data-value={segment.value}
-          title={`${segment.label ?? segment.tone} : ${segment.value.toLocaleString("fr-FR")}`}
           className={cn(
             "settle-progress-segment h-full transition-[width] duration-300 motion-reduce:transition-none",
             TONE_DOT[segment.tone]
           )}
+          data-tone={segment.tone}
+          data-value={segment.value}
+          key={index}
           // Keep small outstanding balances visible; flex shrinks the larger segments to fit.
           style={{
             width: `${(segment.value / (total || 1)) * 100}%`,
             minWidth: 6,
             flexShrink: 1,
           }}
+          title={`${segment.label ?? segment.tone} : ${segment.value.toLocaleString("fr-FR")}`}
         />
       ))}
     </div>
@@ -338,8 +338,8 @@ export function SettleMetricFooter({
       <div className="settle-metric-footer grid grid-cols-2 divide-x divide-black/[0.06] sm:grid-cols-4 dark:divide-white/[0.08]">
         {metrics.map((m, idx) => (
           <div
-            key={idx}
             className="settle-metric-cell px-4 py-3.5"
+            key={idx}
             title={m.tip}
           >
             <p className="m-0 t-12 font-medium uppercase tracking-[0.04em] text-neutral-500 dark:text-neutral-400">
@@ -382,8 +382,10 @@ export function SettleQueueItem({
 }) {
   return (
     <div
-      role={onClick ? "button" : undefined}
-      tabIndex={onClick ? 0 : undefined}
+      className={cn(
+        "settle-queue-item flex items-start gap-3 px-4 py-3.5 transition-colors hover:bg-black/[0.02] dark:hover:bg-white/[0.03]",
+        onClick && "cursor-pointer group"
+      )}
       onClick={onClick}
       onKeyDown={(e) => {
         if (onClick && (e.key === "Enter" || e.key === " ")) {
@@ -391,10 +393,8 @@ export function SettleQueueItem({
           onClick();
         }
       }}
-      className={cn(
-        "settle-queue-item flex items-start gap-3 px-4 py-3.5 transition-colors hover:bg-black/[0.02] dark:hover:bg-white/[0.03]",
-        onClick && "cursor-pointer group"
-      )}
+      role={onClick ? "button" : undefined}
+      tabIndex={onClick ? 0 : undefined}
     >
       {Icon ? (
         <span

@@ -35,29 +35,29 @@ export function LocalDataResetSettings() {
       title="Réinitialisation"
     >
       <SettingsRow
-        title="Revenir à la première installation"
         detail="Supprime les données du cabinet, les comptes, les sessions, les paramètres et la licence enregistrée sur ce poste. Une sauvegarde automatique est créée avant toute suppression."
+        title="Revenir à la première installation"
       >
         <Button
           className="rounded-full"
-          variant="outline"
           onClick={() => {
             setConfirmation("");
             setPassword("");
             setError("");
             setOpen(true);
           }}
+          variant="outline"
         >
           Réinitialiser
         </Button>
       </SettingsRow>
       <AlertDialog
-        open={open}
         onOpenChange={(value) => {
           if (!busy) {
             setOpen(value);
           }
         }}
+        open={open}
       >
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -77,12 +77,12 @@ export function LocalDataResetSettings() {
               Votre mot de passe administrateur
             </FieldLabel>
             <Input
-              id="reset-password"
-              type="password"
               autoComplete="current-password"
-              value={password}
               disabled={busy}
+              id="reset-password"
               onChange={(event) => setPassword(event.target.value)}
+              type="password"
+              value={password}
             />
           </Field>
           <Field>
@@ -90,22 +90,21 @@ export function LocalDataResetSettings() {
               Saisissez {RESET_CONFIRMATION}
             </FieldLabel>
             <Input
-              id="reset-confirmation"
-              value={confirmation}
-              disabled={busy}
-              onChange={(event) => setConfirmation(event.target.value)}
               autoComplete="off"
+              disabled={busy}
+              id="reset-confirmation"
+              onChange={(event) => setConfirmation(event.target.value)}
+              value={confirmation}
             />
           </Field>
           {error && (
-            <p role="alert" className="text-sm text-destructive">
+            <p className="text-sm text-destructive" role="alert">
               {error}
             </p>
           )}
           <AlertDialogFooter>
             <AlertDialogCancel disabled={busy}>Annuler</AlertDialogCancel>
             <Button
-              variant="destructive"
               disabled={
                 busy || confirmation !== RESET_CONFIRMATION || !password
               }
@@ -125,6 +124,7 @@ export function LocalDataResetSettings() {
                   setBusy(false);
                 }
               }}
+              variant="destructive"
             >
               {busy ? "Réinitialisation…" : "Confirmer la réinitialisation"}
             </Button>

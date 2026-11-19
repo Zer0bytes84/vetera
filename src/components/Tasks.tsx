@@ -814,8 +814,8 @@ const Tasks: React.FC = () => {
     >
       <MotivationalHeader
         section="taches"
-        title="Rappels"
         subtitle="actions à suivre"
+        title="Rappels"
       />
 
       <SectionCards
@@ -827,7 +827,6 @@ const Tasks: React.FC = () => {
         }
         badges={false}
         icon={ClipboardDocumentCheckIcon}
-        subtitle={bandSubtitle}
         items={[
           {
             title: "En retard",
@@ -897,6 +896,7 @@ const Tasks: React.FC = () => {
             actionLabel: "Voir les prochains rappels",
           },
         ]}
+        subtitle={bandSubtitle}
       />
 
       <form
@@ -906,16 +906,16 @@ const Tasks: React.FC = () => {
         <div className="quick-reminder-fields flex flex-col gap-3 p-3 sm:flex-row sm:items-center">
           <div className="quick-reminder-title min-w-0 flex-1">
             <label
-              htmlFor="new-reminder-title"
               className="inline-flex items-center gap-2 text-xs font-medium text-foreground"
+              htmlFor="new-reminder-title"
             >
               <BellIcon aria-hidden="true" className="size-4 shrink-0" />
               Nouveau rappel
             </label>
             <Input
-              id="new-reminder-title"
               aria-label="Nouveau rappel"
               className="h-8 border-0 bg-transparent px-0 text-sm shadow-none focus-visible:ring-0"
+              id="new-reminder-title"
               onChange={(event) =>
                 setDraft((current) => ({
                   ...current,
@@ -934,18 +934,18 @@ const Tasks: React.FC = () => {
               Type de rappel
             </label>
             <SearchableSelect
+              disabled={saving}
               id="quick-reminder-type"
               label="Type du nouveau rappel"
-              placeholder="Choisir un type…"
+              onValueChange={(reminderTypeId) =>
+                setDraft((current) => ({ ...current, reminderTypeId }))
+              }
               options={activeTypes.map((type) => ({
                 value: type.id,
                 label: type.name,
               }))}
+              placeholder="Choisir un type…"
               value={draft.reminderTypeId}
-              onValueChange={(reminderTypeId) =>
-                setDraft((current) => ({ ...current, reminderTypeId }))
-              }
-              disabled={saving}
             />
           </div>
           <div className="quick-reminder-date flex w-40 flex-col gap-1">
@@ -956,13 +956,13 @@ const Tasks: React.FC = () => {
               Date du rappel
             </label>
             <DatePicker
-              id="quick-reminder-date"
               aria-label="Date du nouveau rappel"
-              value={draft.dueDate}
+              disabled={saving}
+              id="quick-reminder-date"
               onChange={(value) =>
                 setDraft((current) => ({ ...current, dueDate: value }))
               }
-              disabled={saving}
+              value={draft.dueDate}
             />
           </div>
           <Button
@@ -1073,10 +1073,10 @@ const Tasks: React.FC = () => {
         )}
         <div className="reminders-filter-bar flex flex-wrap items-center gap-x-3 gap-y-2">
           <div
+            aria-label="Origine des rappels"
             className="reminder-segments"
             data-tabs-style="segmented"
             role="group"
-            aria-label="Origine des rappels"
           >
             {(
               [
@@ -1086,21 +1086,20 @@ const Tasks: React.FC = () => {
               ] as const
             ).map(([value, label]) => (
               <button
-                key={value}
-                type="button"
-                className="reminder-segment"
                 aria-pressed={sourceFilter === value}
+                className="reminder-segment"
+                key={value}
                 onClick={() => {
                   setSourceFilter(value);
                   setAuxiliaryView(null);
                 }}
+                type="button"
               >
                 {label}
               </button>
             ))}
           </div>
           <Tabs
-            value={auxiliaryView ?? activeView}
             onValueChange={(value) => {
               if (value === "calls") {
                 setAuxiliaryView(value);
@@ -1110,6 +1109,7 @@ const Tasks: React.FC = () => {
                 setActiveView(value as ReminderView);
               }
             }}
+            value={auxiliaryView ?? activeView}
           >
             <TabsList
               aria-label="Vues des rappels"
@@ -1148,9 +1148,9 @@ const Tasks: React.FC = () => {
             <ListSearch
               className="w-full lg:w-44"
               label="Rechercher dans les rappels"
+              onValueChange={setQuery}
               placeholder="Rechercher…"
               value={query}
-              onValueChange={setQuery}
             />
           </div>
         </div>
@@ -1165,11 +1165,11 @@ const Tasks: React.FC = () => {
 
         {auxiliaryView ? (
           <PatientRemindersContent
+            embedded
+            includeManualTypes={auxiliaryView === "types"}
             key={auxiliaryView}
             model={patientRemindersModel}
             view={auxiliaryView}
-            includeManualTypes={auxiliaryView === "types"}
-            embedded
           />
         ) : visibleItems.length === 0 ? (
           <EmptyState
@@ -1211,8 +1211,8 @@ const Tasks: React.FC = () => {
                     <ManualReminderRow
                       draft={editDraft}
                       editing={editingTaskId === item.task.id}
-                      item={item}
                       focused={focusedTaskId === item.task.id}
+                      item={item}
                       key={`task-${item.task.id}`}
                       onCancelEdit={() => setEditingTaskId(null)}
                       onDelete={() => deleteTask(item.task.id)}
@@ -1220,14 +1220,14 @@ const Tasks: React.FC = () => {
                       onEdit={() => startEditing(item.task)}
                       onPostpone={() => postponeTask(item.task)}
                       onSave={saveEdit}
-                      onToggle={() => toggleTask(item.task)}
                       onSelect={() => toggleSelected(item.task.id)}
+                      onToggle={() => toggleTask(item.task)}
+                      patients={patients}
+                      pendingDelete={pendingDeleteId === item.task.id}
+                      reminderTypes={patientRemindersModel.types}
+                      saving={saving}
                       selected={selectedIds.has(item.task.id)}
                       selecting={selectedIds.size > 0}
-                      patients={patients}
-                      reminderTypes={patientRemindersModel.types}
-                      pendingDelete={pendingDeleteId === item.task.id}
-                      saving={saving}
                       view={activeView}
                     />
                   ) : item.kind === "automatic" ? (
@@ -1262,6 +1262,7 @@ const Tasks: React.FC = () => {
               )}
             {visibleItems.some((item) => item.kind === "medical") && (
               <PatientRemindersContent
+                embedded
                 key={activeView}
                 model={{
                   ...patientRemindersModel,
@@ -1273,7 +1274,6 @@ const Tasks: React.FC = () => {
                     .map((item) => item.reminder),
                 }}
                 view={activeView === "completed" ? "completed" : "active"}
-                embedded
               />
             )}
           </div>
@@ -1413,15 +1413,15 @@ function ManualReminderRow({
           <Field label="Type de rappel">
             <SearchableSelect
               label="Type du rappel modifié"
-              placeholder="Sans type"
+              onValueChange={(reminderTypeId) =>
+                onDraftChange({ ...draft, reminderTypeId })
+              }
               options={reminderTypesForSelect(
                 reminderTypes,
                 draft.reminderTypeId
               ).map((type) => ({ value: type.id, label: type.name }))}
+              placeholder="Sans type"
               value={draft.reminderTypeId}
-              onValueChange={(reminderTypeId) =>
-                onDraftChange({ ...draft, reminderTypeId })
-              }
             />
           </Field>
           <div className="sm:col-span-2 lg:col-span-4">
@@ -1716,6 +1716,7 @@ function EmptyState({
     return (
       <Shell className="reminders-quiet">
         <ShellHeader
+          as="h2"
           aside={
             <Button
               onClick={onClearQuery}
@@ -1726,7 +1727,6 @@ function EmptyState({
               Effacer la recherche
             </Button>
           }
-          as="h2"
           icon={MagnifyingGlassIcon}
           subtitle={`Aucun rappel ne correspond à « ${query} ».`}
           title="Aucun résultat"

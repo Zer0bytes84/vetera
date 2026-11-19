@@ -88,9 +88,9 @@ function SupplierForm({
   const [error, setError] = useState<string | null>(null);
   return (
     <form
-      noValidate
       aria-label="Fiche fournisseur"
       className="space-y-4 border-y border-border bg-muted/10 p-5"
+      noValidate
       onSubmit={async (event) => {
         event.preventDefault();
         if (busy || !draft.name.trim()) {
@@ -117,7 +117,7 @@ function SupplierForm({
       <h3 className="text-base font-medium">
         {supplier ? "Modifier le fournisseur" : "Nouveau fournisseur"}
       </h3>
-      <fieldset disabled={busy} className="grid gap-4 sm:grid-cols-2">
+      <fieldset className="grid gap-4 sm:grid-cols-2" disabled={busy}>
         {(
           [
             ["name", "Nom"],
@@ -126,54 +126,54 @@ function SupplierForm({
             ["address", "Adresse"],
           ] as const
         ).map(([key, label]) => (
-          <div key={key} className="space-y-1.5">
-            <label htmlFor={`supplier-${key}`} className="text-sm">
+          <div className="space-y-1.5" key={key}>
+            <label className="text-sm" htmlFor={`supplier-${key}`}>
               {label}
             </label>
             <Input
               className="h-11"
               id={`supplier-${key}`}
-              type={
-                key === "email" ? "email" : key === "phone" ? "tel" : "text"
-              }
-              value={draft[key]}
               onChange={(event) =>
                 setDraft((current) => ({
                   ...current,
                   [key]: event.target.value,
                 }))
               }
+              type={
+                key === "email" ? "email" : key === "phone" ? "tel" : "text"
+              }
+              value={draft[key]}
             />
           </div>
         ))}
         <div className="space-y-1.5 sm:col-span-2">
-          <label htmlFor="supplier-notes" className="text-sm">
+          <label className="text-sm" htmlFor="supplier-notes">
             Notes
           </label>
           <Textarea
             id="supplier-notes"
-            value={draft.notes}
             onChange={(event) =>
               setDraft((current) => ({ ...current, notes: event.target.value }))
             }
+            value={draft.notes}
           />
         </div>
       </fieldset>
       {error && (
-        <p role="alert" className="text-sm text-destructive">
+        <p className="text-sm text-destructive" role="alert">
           {error}
         </p>
       )}
       <div className="flex justify-end gap-2">
         <Button
-          type="button"
-          variant="outline"
           disabled={busy}
           onClick={onClose}
+          type="button"
+          variant="outline"
         >
           Annuler
         </Button>
-        <Button type="submit" disabled={busy || !draft.name.trim()}>
+        <Button disabled={busy || !draft.name.trim()} type="submit">
           {busy ? "Enregistrement…" : "Enregistrer le fournisseur"}
         </Button>
       </div>
@@ -261,9 +261,9 @@ function OrderForm({
     );
   return (
     <form
-      noValidate
       aria-label="Bon de commande"
       className="space-y-4 border-y border-border bg-muted/10 p-5"
+      noValidate
       onSubmit={async (event) => {
         event.preventDefault();
         if (busy || !valid || !currentUser) {
@@ -305,39 +305,38 @@ function OrderForm({
         </p>
       </div>
       <div className="max-w-lg space-y-1.5">
-        <label htmlFor="order-supplier" className="text-sm">
+        <label className="text-sm" htmlFor="order-supplier">
           Fournisseur
         </label>
         <SearchableSelect
-          id="order-supplier"
           controlClassName="h-11 [&_input]:text-foreground"
-          label="Fournisseur de la commande"
-          value={supplier}
-          onValueChange={setSupplier}
           disabled={busy}
+          id="order-supplier"
+          label="Fournisseur de la commande"
+          onValueChange={setSupplier}
           options={purchasing.suppliers
             .filter((row) => !row.archived_at)
             .map((row) => ({ value: row.id, label: row.name }))}
+          value={supplier}
         />
       </div>
       {rows.map((row, index) => {
         const product = products.data.find((item) => item.id === row.productId);
         return (
           <fieldset
-            key={row.key}
-            disabled={busy}
             className="grid gap-3 border-t border-border pt-4 sm:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_9rem_10rem_auto]"
+            disabled={busy}
+            key={row.key}
           >
             <div className="min-w-0 space-y-1.5">
-              <label htmlFor={`order-product-${row.key}`} className="text-sm">
+              <label className="text-sm" htmlFor={`order-product-${row.key}`}>
                 Produit {index + 1}
               </label>
               <SearchableSelect
-                id={`order-product-${row.key}`}
                 controlClassName="h-11 [&_input]:text-foreground"
-                label={`Produit à commander ${index + 1}`}
                 disabled={busy}
-                value={row.productId}
+                id={`order-product-${row.key}`}
+                label={`Produit à commander ${index + 1}`}
                 onValueChange={(productId) =>
                   update(row.key, {
                     productId,
@@ -352,46 +351,47 @@ function OrderForm({
                     (item) => !item.archivedAt && item.stockTracked !== false
                   )
                   .map((item) => ({ value: item.id, label: item.name }))}
+                value={row.productId}
               />
             </div>
             <div className="space-y-1.5">
-              <label htmlFor={`order-qty-${row.key}`} className="text-sm">
+              <label className="text-sm" htmlFor={`order-qty-${row.key}`}>
                 Quantité{product ? ` (${product.unit})` : ""}
               </label>
               <Input
+                aria-label={`Quantité à commander ${index + 1}`}
                 className="h-11 tabular-nums"
                 id={`order-qty-${row.key}`}
-                aria-label={`Quantité à commander ${index + 1}`}
                 inputMode="decimal"
-                value={row.quantity}
                 onChange={(event) =>
                   update(row.key, { quantity: event.target.value })
                 }
+                value={row.quantity}
               />
             </div>
             <div className="space-y-1.5">
-              <label htmlFor={`order-cost-${row.key}`} className="text-sm">
+              <label className="text-sm" htmlFor={`order-cost-${row.key}`}>
                 Coût unitaire (DA)
               </label>
               <Input
+                aria-label={`Coût unitaire ${index + 1}`}
                 className="h-11 tabular-nums"
                 id={`order-cost-${row.key}`}
-                aria-label={`Coût unitaire ${index + 1}`}
                 inputMode="decimal"
-                value={row.cost}
                 onChange={(event) =>
                   update(row.key, { cost: event.target.value })
                 }
+                value={row.cost}
               />
             </div>
             <Button
-              type="button"
-              variant="ghost"
-              className="h-11 self-end"
               aria-label={`Retirer le produit ${index + 1}`}
+              className="h-11 self-end"
               onClick={() =>
                 setRows((items) => items.filter((item) => item.key !== row.key))
               }
+              type="button"
+              variant="ghost"
             >
               Retirer
             </Button>
@@ -400,8 +400,6 @@ function OrderForm({
       })}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <Button
-          type="button"
-          variant="outline"
           disabled={busy}
           onClick={() =>
             setRows((items) => [
@@ -409,6 +407,8 @@ function OrderForm({
               { key: generateId(), productId: "", quantity: "1", cost: "0" },
             ])
           }
+          type="button"
+          variant="outline"
         >
           <Plus className="size-4" />
           Ajouter un produit
@@ -418,20 +418,20 @@ function OrderForm({
         </p>
       </div>
       {error && (
-        <p role="alert" className="text-sm text-destructive">
+        <p className="text-sm text-destructive" role="alert">
           {error}
         </p>
       )}
       <div className="flex justify-end gap-2">
         <Button
-          type="button"
-          variant="outline"
           disabled={busy}
           onClick={onClose}
+          type="button"
+          variant="outline"
         >
           Annuler
         </Button>
-        <Button type="submit" disabled={busy || !valid || !currentUser}>
+        <Button disabled={busy || !valid || !currentUser} type="submit">
           {busy ? "Enregistrement…" : "Enregistrer le brouillon"}
         </Button>
       </div>
@@ -485,9 +485,9 @@ function ReceiptForm({
     );
   return (
     <form
-      noValidate
       aria-label="Réception de commande"
       className="space-y-5 border-y border-border bg-muted/10 p-5"
+      noValidate
       onSubmit={async (event) => {
         event.preventDefault();
         if (busy || !valid || !currentUser) {
@@ -550,16 +550,16 @@ function ReceiptForm({
           non livré.
         </p>
       </div>
-      <fieldset disabled={busy} className="grid gap-4 sm:grid-cols-2">
+      <fieldset className="grid gap-4 sm:grid-cols-2" disabled={busy}>
         <div className="space-y-1.5">
-          <label htmlFor="receipt-reference" className="text-sm">
+          <label className="text-sm" htmlFor="receipt-reference">
             Référence du bon de livraison
           </label>
           <Input
-            id="receipt-reference"
             className="h-11"
-            value={reference}
+            id="receipt-reference"
             onChange={(event) => setReference(event.target.value)}
+            value={reference}
           />
         </div>
         <div className="space-y-1.5">
@@ -568,26 +568,26 @@ function ReceiptForm({
             <StockDatePicker
               disabled={busy}
               label="Date de réception de commande"
-              value={date}
               onChange={(value) => {
                 if (value) {
                   setDate(value);
                 }
               }}
+              value={date}
             />
             <CareTimePicker
               label="Heure de réception"
-              value={time}
               onChange={setTime}
+              value={time}
             />
           </div>
         </div>
       </fieldset>
       {rows.map((row, index) => (
         <fieldset
-          key={row.id}
-          disabled={busy}
           className="space-y-3 border-t border-border pt-4"
+          disabled={busy}
+          key={row.id}
         >
           <div className="flex flex-wrap justify-between gap-2">
             <h4 className="text-sm font-medium">{row.product_name}</h4>
@@ -601,56 +601,56 @@ function ReceiptForm({
           </div>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <div className="space-y-1.5">
-              <label htmlFor={`receive-qty-${row.id}`} className="text-sm">
+              <label className="text-sm" htmlFor={`receive-qty-${row.id}`}>
                 Quantité ({row.unit})
               </label>
               <Input
+                aria-label={`Quantité reçue ${index + 1}`}
                 className="h-11 tabular-nums"
                 id={`receive-qty-${row.id}`}
-                aria-label={`Quantité reçue ${index + 1}`}
                 inputMode="decimal"
-                value={row.received}
                 onChange={(event) =>
                   update(row.id, { received: event.target.value })
                 }
+                value={row.received}
               />
             </div>
             <div className="space-y-1.5">
-              <label htmlFor={`receive-lot-${row.id}`} className="text-sm">
+              <label className="text-sm" htmlFor={`receive-lot-${row.id}`}>
                 Numéro de lot
               </label>
               <Input
+                aria-label={`Lot reçu ${index + 1}`}
                 className="h-11"
                 id={`receive-lot-${row.id}`}
-                aria-label={`Lot reçu ${index + 1}`}
-                value={row.lot}
-                placeholder="Facultatif"
                 onChange={(event) =>
                   update(row.id, { lot: event.target.value })
                 }
+                placeholder="Facultatif"
+                value={row.lot}
               />
             </div>
             <div className="space-y-1.5">
               <label className="text-sm">Péremption</label>
               <StockDatePicker
-                disabled={busy}
                 clearable
+                disabled={busy}
                 label={`Péremption reçue ${index + 1}`}
-                value={row.expiry}
                 onChange={(expiry) => update(row.id, { expiry })}
+                value={row.expiry}
               />
             </div>
             <div className="min-w-0 space-y-1.5">
               <label className="text-sm">Emplacement</label>
               <SearchableSelect
-                label={`Emplacement reçu ${index + 1}`}
                 controlClassName="h-11 [&_input]:text-foreground"
-                value={row.location}
-                onValueChange={(location) => update(row.id, { location })}
                 disabled={busy}
+                label={`Emplacement reçu ${index + 1}`}
+                onValueChange={(location) => update(row.id, { location })}
                 options={inventory.locations
                   .filter((item) => item.active)
                   .map((item) => ({ value: item.id, label: item.name }))}
+                value={row.location}
               />
             </div>
           </div>
@@ -663,22 +663,22 @@ function ReceiptForm({
         </p>
       )}
       {error && (
-        <p role="alert" className="text-sm text-destructive">
+        <p className="text-sm text-destructive" role="alert">
           {error}
         </p>
       )}
       <div className="flex justify-end gap-2">
         <Button
-          type="button"
-          variant="outline"
           disabled={busy}
           onClick={onClose}
+          type="button"
+          variant="outline"
         >
           Annuler
         </Button>
         <Button
-          type="submit"
           disabled={busy || !valid || !inventory.ready || !currentUser}
+          type="submit"
         >
           {busy ? "Réception…" : "Confirmer la réception"}
         </Button>
@@ -786,13 +786,13 @@ export function PurchasingPanel({
     <section aria-label="Approvisionnements" className="min-w-0">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border p-4">
         <Tabs
-          value={view}
           onValueChange={(value) => {
             setView(value);
             setSelected(null);
             setOrderEdit(null);
             setReceiving(false);
           }}
+          value={view}
         >
           <TabsList aria-label="Vue des approvisionnements">
             <TabsTrigger value="orders">Commandes</TabsTrigger>
@@ -803,7 +803,6 @@ export function PurchasingPanel({
           {view === "orders" ? (
             <>
               <Button
-                variant="outline"
                 disabled={
                   !(
                     purchasing.ready &&
@@ -815,6 +814,7 @@ export function PurchasingPanel({
                   setOrderEdit({ fromAlerts: true });
                   setSelected(null);
                 }}
+                variant="outline"
               >
                 Depuis les alertes ({needs.length})
               </Button>
@@ -842,20 +842,20 @@ export function PurchasingPanel({
       </div>
       {missingSupplierFor && !activeSuppliers.length && (
         <div
-          role="status"
           className="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-amber-50/60 px-4 py-3 text-sm dark:bg-amber-500/[0.06]"
+          role="status"
         >
           <span>
             Aucun fournisseur actif : ajoutez-en un pour commander{" "}
             {missingSupplierProduct?.name ?? "ce produit"}.
           </span>
           <Button
-            size="sm"
             onClick={() => {
               setView("suppliers");
               setSupplierEdit("new");
               setMissingSupplierFor(null);
             }}
+            size="sm"
           >
             <Plus className="size-4" />
             Ajouter un fournisseur
@@ -870,13 +870,13 @@ export function PurchasingPanel({
         />
       ) : (
         error && (
-          <p role="alert" className="p-4 text-sm text-destructive">
+          <p className="p-4 text-sm text-destructive" role="alert">
             {error}
           </p>
         )
       )}
       {!(purchasing.ready || purchasing.error) && (
-        <p role="status" className="p-4 text-sm text-muted-foreground">
+        <p className="p-4 text-sm text-muted-foreground" role="status">
           Chargement des approvisionnements…
         </p>
       )}
@@ -885,8 +885,8 @@ export function PurchasingPanel({
           {supplierEdit && (
             <SupplierForm
               key={supplierEdit === "new" ? "new" : supplierEdit.id}
-              supplier={supplierEdit === "new" ? undefined : supplierEdit}
               onClose={() => setSupplierEdit(null)}
+              supplier={supplierEdit === "new" ? undefined : supplierEdit}
             />
           )}
           <Table className="table-fixed">
@@ -906,7 +906,7 @@ export function PurchasingPanel({
                     <TableCell className="whitespace-normal break-words align-top">
                       <span className="font-medium">{item.name}</span>
                       {item.archived_at && (
-                        <Badge variant="outline" className="ml-2">
+                        <Badge className="ml-2" variant="outline">
                           Archivé
                         </Badge>
                       )}
@@ -920,25 +920,23 @@ export function PurchasingPanel({
                     <TableCell className="whitespace-normal align-top">
                       <div className="flex flex-wrap justify-end gap-1">
                         <Button
-                          size="sm"
-                          variant="ghost"
                           onClick={() => {
                             setView("orders");
                             setSupplierFilter(item.id);
                           }}
+                          size="sm"
+                          variant="ghost"
                         >
                           Historique
                         </Button>
                         <Button
+                          onClick={() => setSupplierEdit(item)}
                           size="sm"
                           variant="ghost"
-                          onClick={() => setSupplierEdit(item)}
                         >
                           Modifier
                         </Button>
                         <Button
-                          size="sm"
-                          variant="ghost"
                           disabled={busy}
                           onClick={() =>
                             void run(() =>
@@ -955,6 +953,8 @@ export function PurchasingPanel({
                               })
                             )
                           }
+                          size="sm"
+                          variant="ghost"
                         >
                           {item.archived_at ? "Restaurer" : "Archiver"}
                         </Button>
@@ -965,8 +965,8 @@ export function PurchasingPanel({
               ) : (
                 <TableRow>
                   <TableCell
-                    colSpan={3}
                     className="h-32 whitespace-normal text-center text-muted-foreground"
+                    colSpan={3}
                   >
                     Ajoutez un fournisseur pour préparer votre première
                     commande.
@@ -986,29 +986,29 @@ export function PurchasingPanel({
           )}
           {orderEdit ? (
             <OrderForm
-              key={orderEdit.order?.id ?? orderEdit.productId ?? "new"}
-              order={orderEdit.order}
               fromAlerts={orderEdit.fromAlerts}
-              productId={orderEdit.productId}
               initialLines={purchasing.lines.filter(
                 (line) => line.order_id === orderEdit.order?.id
               )}
+              key={orderEdit.order?.id ?? orderEdit.productId ?? "new"}
               onClose={() => setOrderEdit(null)}
               onSaved={(id) => {
                 setOrderEdit(null);
                 setSelected(id);
               }}
+              order={orderEdit.order}
+              productId={orderEdit.productId}
             />
           ) : order ? (
             <>
               <div className="space-y-4 p-5">
                 <Button
-                  size="sm"
-                  variant="ghost"
                   onClick={() => {
                     setSelected(null);
                     setReceiving(false);
                   }}
+                  size="sm"
+                  variant="ghost"
                 >
                   <ArrowLeft className="size-4" />
                   Toutes les commandes
@@ -1040,10 +1040,10 @@ export function PurchasingPanel({
                         Confirmer la commande
                       </Button>
                       <Button
-                        variant="outline"
                         onClick={() =>
                           setOrderEdit({ order, fromAlerts: false })
                         }
+                        variant="outline"
                       >
                         Modifier le brouillon
                       </Button>
@@ -1058,24 +1058,24 @@ export function PurchasingPanel({
                     </Button>
                   )}
                   <Button
-                    variant="outline"
                     disabled={busy || !supplier}
                     onClick={() =>
                       void run(() =>
                         exportPurchaseOrder(order, supplier!, lines)
                       )
                     }
+                    variant="outline"
                   >
                     Exporter le bon
                   </Button>
                   {["draft", "ordered", "partial"].includes(order.status) && (
                     <Button
-                      variant="ghost"
                       disabled={busy || !currentUser}
                       onClick={() => {
                         setError(null);
                         setCancelling(order);
                       }}
+                      variant="ghost"
                     >
                       {order.status === "partial"
                         ? "Annuler le reliquat"
@@ -1087,9 +1087,9 @@ export function PurchasingPanel({
               {receiving && (
                 <ReceiptForm
                   key={order.id}
-                  order={order}
                   lines={lines}
                   onClose={() => setReceiving(false)}
+                  order={order}
                 />
               )}
               <Table className="table-fixed">
@@ -1137,8 +1137,8 @@ export function PurchasingPanel({
                     .filter((item) => item.order_id === order.id)
                     .map((item) => (
                       <div
-                        key={item.id}
                         className="border-t border-border pt-3"
+                        key={item.id}
                       >
                         <p className="text-sm font-medium">
                           {item.reference || "Livraison sans référence"} ·{" "}
@@ -1180,9 +1180,8 @@ export function PurchasingPanel({
             <>
               <div className="max-w-sm p-4">
                 <SearchableSelect
-                  label="Historique du fournisseur"
                   controlClassName="[&_input]:text-foreground"
-                  value={supplierFilter}
+                  label="Historique du fournisseur"
                   onValueChange={setSupplierFilter}
                   options={[
                     { value: "", label: "Tous les fournisseurs" },
@@ -1191,6 +1190,7 @@ export function PurchasingPanel({
                       label: item.name,
                     })),
                   ]}
+                  value={supplierFilter}
                 />
               </div>
               <Table className="table-fixed">
@@ -1216,12 +1216,12 @@ export function PurchasingPanel({
                         <TableRow key={item.id}>
                           <TableCell className="whitespace-normal break-words">
                             <Button
-                              variant="link"
                               className="h-auto whitespace-normal p-0 text-left dark:text-blue-300 dark:hover:text-blue-200"
                               onClick={() => {
                                 setSelected(item.id);
                                 setReceiving(false);
                               }}
+                              variant="link"
                             >
                               {item.reference}
                             </Button>
@@ -1245,8 +1245,8 @@ export function PurchasingPanel({
                   ) : (
                     <TableRow>
                       <TableCell
-                        colSpan={4}
                         className="h-32 whitespace-normal text-center text-muted-foreground"
+                        colSpan={4}
                       >
                         Aucune commande pour ce filtre.
                       </TableCell>
@@ -1259,12 +1259,12 @@ export function PurchasingPanel({
         </>
       )}
       <AlertDialog
-        open={!!cancelling}
         onOpenChange={(open) => {
           if (!(open || busy)) {
             setCancelling(null);
           }
         }}
+        open={!!cancelling}
       >
         <AlertDialogContent className="data-[size=default]:max-w-[calc(100%-2rem)] data-[size=default]:sm:max-w-lg">
           <AlertDialogHeader>
@@ -1282,7 +1282,7 @@ export function PurchasingPanel({
             </AlertDialogDescription>
           </AlertDialogHeader>
           {error && (
-            <p role="alert" className="text-sm text-destructive">
+            <p className="text-sm text-destructive" role="alert">
               {error}
             </p>
           )}
@@ -1291,7 +1291,6 @@ export function PurchasingPanel({
               Conserver la commande
             </AlertDialogCancel>
             <Button
-              variant="destructive"
               className="text-red-700 hover:text-red-800 dark:text-red-300 dark:hover:text-red-200"
               disabled={busy || !cancelling || !currentUser}
               onClick={() =>
@@ -1305,6 +1304,7 @@ export function PurchasingPanel({
                   setReceiving(false);
                 })
               }
+              variant="destructive"
             >
               {busy
                 ? "Annulation…"

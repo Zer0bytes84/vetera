@@ -83,21 +83,21 @@ export function DatePicker({
     ...(to ? [{ after: to }] : []),
   ];
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover onOpenChange={setOpen} open={open}>
       <PopoverTrigger
         aria-label={ariaLabel}
         disabled={disabled}
         id={id}
         render={
           <Button
-            data-field="date"
-            type="button"
-            variant="outline"
             className={cn(
               "h-9 w-full min-w-0 justify-start gap-2 px-3 font-normal",
               !selected && "text-muted-foreground",
               className
             )}
+            data-field="date"
+            type="button"
+            variant="outline"
           />
         }
       >

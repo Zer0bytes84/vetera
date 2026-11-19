@@ -159,12 +159,12 @@ export function DocumentComposer({
   return (
     <>
       <Dialog
-        open={open && !createdId}
         onOpenChange={(value) => {
           if (!(value || busy)) {
             onClose();
           }
         }}
+        open={open && !createdId}
       >
         <DialogContent
           className="document-composer-dialog"
@@ -179,23 +179,23 @@ export function DocumentComposer({
               </DialogDescription>
             </div>
             <Button
-              variant="ghost"
-              size="icon"
               aria-label="Fermer la génération"
               disabled={busy}
               onClick={onClose}
+              size="icon"
+              variant="ghost"
             >
               <X strokeWidth={1} />
             </Button>
           </header>
           {(error || templatesError) && (
             <div
-              role="alert"
               className="mx-6 mt-4 rounded-lg border border-destructive/20 bg-destructive/5 p-3 text-sm text-destructive"
+              role="alert"
             >
               {error || String(templatesError)}
               {templatesError && (
-                <Button variant="ghost" onClick={() => void refresh()}>
+                <Button onClick={() => void refresh()} variant="ghost">
                   Réessayer
                 </Button>
               )}
@@ -208,24 +208,24 @@ export function DocumentComposer({
                   <label className="space-y-1 text-sm">
                     Titre
                     <Input
-                      value={title}
                       maxLength={160}
                       onChange={(event) => {
                         setTitle(event.target.value);
                         setReviewed(false);
                       }}
+                      value={title}
                     />
                   </label>
                   <label className="space-y-1 text-sm">
                     Texte du document
                     <Textarea
                       className="document-content-editor"
-                      value={content}
                       maxLength={60_000}
                       onChange={(event) => {
                         setContent(event.target.value);
                         setReviewed(false);
                       }}
+                      value={content}
                     />
                   </label>
                   <p className="text-xs leading-5 text-muted-foreground">
@@ -233,12 +233,12 @@ export function DocumentComposer({
                     Aucune information clinique n’est ajoutée automatiquement.
                   </p>
                   <Button
-                    variant="outline"
                     disabled={busy}
                     onClick={() => {
                       setPreparation(null);
                       setReviewed(false);
                     }}
+                    variant="outline"
                   >
                     Changer de modèle
                   </Button>
@@ -253,7 +253,7 @@ export function DocumentComposer({
                   />
                   J’ai relu ce document et je confirme son enregistrement.
                 </label>
-                <Button variant="outline" disabled={busy} onClick={onClose}>
+                <Button disabled={busy} onClick={onClose} variant="outline">
                   Fermer
                 </Button>
                 <Button
@@ -289,11 +289,11 @@ export function DocumentComposer({
                     Type de document
                     <NativeSelect
                       className="w-full"
-                      value={kind}
                       onChange={(event) => {
                         setKind(event.target.value as DocumentKind);
                         setTemplateId("");
                       }}
+                      value={kind}
                     >
                       {Object.entries(DOCUMENT_TYPES).map(([id, label]) => (
                         <NativeSelectOption key={id} value={id}>
@@ -306,9 +306,9 @@ export function DocumentComposer({
                     Modèle
                     <NativeSelect
                       className="w-full"
-                      value={chosenId}
-                      onChange={(event) => setTemplateId(event.target.value)}
                       disabled={loading || !choices.length}
+                      onChange={(event) => setTemplateId(event.target.value)}
+                      value={chosenId}
                     >
                       {!choices.length && (
                         <NativeSelectOption value="">
@@ -331,10 +331,10 @@ export function DocumentComposer({
                     Objet du certificat
                     <NativeSelect
                       className="w-full"
-                      value={certificateType}
                       onChange={(event) =>
                         setCertificateType(event.target.value)
                       }
+                      value={certificateType}
                     >
                       {CERTIFICATE_TYPES.map((type) => (
                         <NativeSelectOption key={type} value={type}>
@@ -353,21 +353,21 @@ export function DocumentComposer({
                     <label>
                       Confrère ou spécialiste destinataire
                       <Textarea
-                        value={recipient}
                         maxLength={1500}
-                        placeholder="Nom, établissement et coordonnées"
                         onChange={(event) => setRecipient(event.target.value)}
+                        placeholder="Nom, établissement et coordonnées"
+                        value={recipient}
                       />
                     </label>
                     <label>
                       Motif de référence
                       <Textarea
-                        value={referralReason}
                         maxLength={3000}
-                        placeholder="Indiquez le motif du courrier"
                         onChange={(event) =>
                           setReferralReason(event.target.value)
                         }
+                        placeholder="Indiquez le motif du courrier"
+                        value={referralReason}
                       />
                     </label>
                   </div>
@@ -378,13 +378,13 @@ export function DocumentComposer({
                   la note source.
                 </p>
                 {loading && (
-                  <p role="status" className="text-sm text-muted-foreground">
+                  <p className="text-sm text-muted-foreground" role="status">
                     Chargement des modèles…
                   </p>
                 )}
               </div>
               <footer className="document-composer-footer">
-                <Button variant="outline" disabled={busy} onClick={onClose}>
+                <Button disabled={busy} onClick={onClose} variant="outline">
                   Fermer
                 </Button>
                 <Button
@@ -415,11 +415,11 @@ export function DocumentComposer({
       </Dialog>
       <DocumentPreviewDialog
         documentId={createdId}
+        onChanged={onCreated}
         onClose={() => {
           setCreatedId(null);
           onClose();
         }}
-        onChanged={onCreated}
       />
     </>
   );

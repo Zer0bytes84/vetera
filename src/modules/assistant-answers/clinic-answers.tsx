@@ -244,7 +244,7 @@ export function ClinicAnswers({ patientId, renderAvatar }: Props) {
       at: turn.at,
       plain: true,
       content: (
-        <div data-question className="scroll-mt-1">
+        <div className="scroll-mt-1" data-question>
           <UserMessage data={{ id: `${turn.id}-q`, content: turn.question }} />
         </div>
       ),
@@ -279,8 +279,8 @@ export function ClinicAnswers({ patientId, renderAvatar }: Props) {
     >
       {/* The thread is a size container: an answer takes the whole column (see `ANSWER_WIDTH`), short or long. */}
       <div
-        ref={scroller}
         className="assistant-dictation-scroll flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto pr-1 [container-type:inline-size]"
+        ref={scroller}
       >
         {turns.length === 0 ? (
           <div className="flex flex-1 flex-col justify-center gap-3 py-6">
@@ -319,8 +319,8 @@ export function ClinicAnswers({ patientId, renderAvatar }: Props) {
 
       {readError ? (
         <div
-          role="alert"
           className="shrink-0 rounded-xl border border-negative/30 bg-negative/10 p-3 t-13 text-foreground"
+          role="alert"
         >
           Les données du cabinet n’ont pas pu être lues. Je ne réponds pas tant
           que la lecture échoue, pour ne pas afficher de chiffres faux.
@@ -415,7 +415,6 @@ export function AnswerView({
     <div className={`flex min-w-0 flex-col gap-3 ${ANSWER_WIDTH}`}>
       {answer.steps.map((step, index) => (
         <ToolCallBlock
-          key={step.id}
           data={{
             id: `${turn.id}-${step.id}`,
             name: step.name,
@@ -425,6 +424,7 @@ export function AnswerView({
               index === answer.steps.length - 1 ? turn.durationMs : undefined,
             details: step.details,
           }}
+          key={step.id}
         />
       ))}
       <StreamingMessage

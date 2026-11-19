@@ -260,25 +260,25 @@ export function HealthCardDialog({
 
   return (
     <Dialog
-      open
       onOpenChange={(open) => {
         if (!open) {
           close();
         }
       }}
+      open
     >
       <FormDialogContent
-        size="xl"
         className="patient-export-dialog patient-export-dialog-preview"
         data-testid="health-card-dialog"
+        size="xl"
       >
         <FormDialogHeader
           compact
+          description={`${patient.name} · Une page récapitulative à remettre au propriétaire. Relisez-la avant de l’imprimer.`}
           icon={
             <HeartPulse aria-hidden="true" className="size-5" strokeWidth={1} />
           }
           title="Carnet de santé"
-          description={`${patient.name} · Une page récapitulative à remettre au propriétaire. Relisez-la avant de l’imprimer.`}
         />
         <FormDialogBody className="patient-export-preview-body">
           {artifact ? (
@@ -301,8 +301,8 @@ export function HealthCardDialog({
                 variant="outline"
               >
                 <RotateCcw
-                  className="size-4"
                   aria-hidden="true"
+                  className="size-4"
                   strokeWidth={1}
                 />
                 Réessayer
@@ -315,20 +315,20 @@ export function HealthCardDialog({
             Établi à partir des données enregistrées dans le dossier.
           </p>
           <div className="patient-export-preview-actions">
-            <Button variant="ghost" disabled={saving} onClick={close}>
+            <Button disabled={saving} onClick={close} variant="ghost">
               Fermer
             </Button>
             <Button
-              variant="outline"
               disabled={!artifact || saving || printing}
               onClick={() => void printPdf()}
+              variant="outline"
             >
               {printing ? (
                 <Spinner className="size-4" />
               ) : (
                 <Printer
-                  className="size-4"
                   aria-hidden="true"
+                  className="size-4"
                   strokeWidth={1}
                 />
               )}
@@ -342,8 +342,8 @@ export function HealthCardDialog({
                 <Spinner className="size-4" />
               ) : (
                 <Download
-                  className="size-4"
                   aria-hidden="true"
+                  className="size-4"
                   strokeWidth={1}
                 />
               )}

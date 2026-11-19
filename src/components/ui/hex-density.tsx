@@ -271,11 +271,11 @@ export function HexDensity({
     <MotionConfig reducedMotion="user">
       <Shell className={cn("flex h-full flex-col", className)}>
         <ShellHeader
+          as="h2"
           aside={toolbar}
           icon={CalendarIcon}
           subtitle={subtitle}
           title={title}
-          as="h2"
         />
         <Panel className="flex flex-1 flex-col p-4">
           <div className="flex items-center" style={{ minHeight: areaHeight }}>
@@ -360,10 +360,6 @@ export function HexDensity({
                             data-future={cell.future || undefined}
                             data-level={cell.count}
                             data-today={cell.today || undefined}
-                            style={{
-                              fill: filled ? tone : "currentColor",
-                              fillOpacity: filled ? fill : 0.07,
-                            }}
                             stroke={
                               isActive || cell.today
                                 ? "var(--foreground)"
@@ -393,6 +389,10 @@ export function HexDensity({
                                 : 1
                             }
                             strokeWidth={isActive || cell.today ? 2 : 1}
+                            style={{
+                              fill: filled ? tone : "currentColor",
+                              fillOpacity: filled ? fill : 0.07,
+                            }}
                           />
                           {cell.label ? (
                             <text

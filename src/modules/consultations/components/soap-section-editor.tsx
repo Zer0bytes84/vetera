@@ -54,8 +54,6 @@ export function SoapSectionEditor({
 
   return (
     <div
-      data-soap-section={sectionKey}
-      style={{ "--soap-tone": SECTION_TONE[sectionKey] } as React.CSSProperties}
       className={cn(
         "soap-section-editor group relative overflow-hidden rounded-2xl border bg-card p-4 transition-[border-color,box-shadow] duration-200",
         status === "active"
@@ -63,7 +61,9 @@ export function SoapSectionEditor({
           : "border-border hover:border-foreground/15",
         className
       )}
+      data-soap-section={sectionKey}
       onClick={() => onFocusSection?.(sectionKey)}
+      style={{ "--soap-tone": SECTION_TONE[sectionKey] } as React.CSSProperties}
     >
       <div className="mb-3 flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">

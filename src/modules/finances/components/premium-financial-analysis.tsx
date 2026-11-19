@@ -220,6 +220,7 @@ export function PremiumFinancialAnalysis({
       />
 
       <Section
+        aria-label="Indicateurs financiers"
         aside={
           <ActionButton
             className="bg-brand text-white hover:bg-brand/90"
@@ -230,7 +231,6 @@ export function PremiumFinancialAnalysis({
             Finances
           </ActionButton>
         }
-        aria-label="Indicateurs financiers"
         icon={Landmark}
         panelClassName="bg-border"
         subtitle="Encaissements, panier moyen et consultations"

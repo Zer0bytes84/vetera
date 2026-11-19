@@ -18,7 +18,6 @@ export function ActivationOwnerUnlock({ children }: { children: ReactNode }) {
   return (
     <main className="flex min-h-dvh items-center justify-center bg-background p-6 text-foreground">
       <form
-        style={{ background: "var(--surface)" }}
         className="w-full max-w-md space-y-5 rounded-xl border border-border p-8"
         onSubmit={async (event) => {
           event.preventDefault();
@@ -52,6 +51,7 @@ export function ActivationOwnerUnlock({ children }: { children: ReactNode }) {
             }
           );
         }}
+        style={{ background: "var(--surface)" }}
       >
         <h1 className="t-18 font-medium">
           Déverrouiller le Centre d’Activation
@@ -63,23 +63,23 @@ export function ActivationOwnerUnlock({ children }: { children: ReactNode }) {
         <label className="grid gap-2 text-sm">
           Jeton de sécurité
           <input
-            type="password"
             autoComplete="off"
-            value={token}
+            className="h-11 rounded-lg border border-border bg-background px-3"
             onChange={(event) => setToken(event.target.value)}
             required
-            className="h-11 rounded-lg border border-border bg-background px-3"
+            type="password"
+            value={token}
           />
         </label>
         {error && (
-          <p role="alert" className="text-sm text-destructive">
+          <p className="text-sm text-destructive" role="alert">
             {error}
           </p>
         )}
         <button
-          type="submit"
-          disabled={busy || !token.trim()}
           className="h-11 w-full rounded-lg bg-primary px-4 text-primary-foreground disabled:opacity-50"
+          disabled={busy || !token.trim()}
+          type="submit"
         >
           {busy ? "Vérification…" : "Déverrouiller"}
         </button>

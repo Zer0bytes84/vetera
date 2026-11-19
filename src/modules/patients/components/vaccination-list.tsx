@@ -209,12 +209,12 @@ export function VaccinationList({
         )}
       </div>
       <AlertDialog
-        open={deleteTarget !== null}
         onOpenChange={(open) => {
           if (!open) {
             setDeleteTarget(null);
           }
         }}
+        open={deleteTarget !== null}
       >
         <AlertDialogContent size="sm">
           <AlertDialogHeader>
@@ -238,8 +238,8 @@ export function VaccinationList({
               {t("common.cancel", { defaultValue: "Annuler" })}
             </AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => void confirmDelete()}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={() => void confirmDelete()}
             >
               {t("common.delete", { defaultValue: "Supprimer" })}
             </AlertDialogAction>

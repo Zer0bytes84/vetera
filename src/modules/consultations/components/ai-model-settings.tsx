@@ -100,11 +100,11 @@ export function AIModelSettings() {
     <SettingsSection
       aria-label="Outils IA locaux"
       icon={Cpu}
-      title="Vos outils IA"
       subtitle={`Une installation facultative (${TOTAL_AI_MODELS_SIZE_LABEL}), puis une utilisation hors ligne. Vos dictées et dossiers restent sur cet ordinateur.`}
+      title="Vos outils IA"
     >
       {!desktop && (
-        <p role="status" className="p-6 text-sm text-muted-foreground">
+        <p className="p-6 text-sm text-muted-foreground" role="status">
           Ces outils sont disponibles dans l’application de bureau. Vous pouvez
           continuer à utiliser la version web sans les installer.
         </p>
@@ -126,8 +126,8 @@ export function AIModelSettings() {
           const installed = ready[model.id] || stage === "ready";
           return (
             <article
-              key={model.id}
               className="flex min-w-0 flex-col gap-3 rounded-2xl border bg-background p-4"
+              key={model.id}
             >
               <div className="flex items-center gap-2">
                 <Icon className="size-4 shrink-0 text-muted-foreground" />
@@ -158,9 +158,6 @@ export function AIModelSettings() {
                 </span>
               </div>
               <Button
-                variant="outline"
-                size="sm"
-                type="button"
                 disabled={!desktop || state.running || importing !== null}
                 onClick={() => {
                   const key = accessKey;
@@ -168,6 +165,9 @@ export function AIModelSettings() {
                   setImportError(null);
                   void aiModelInstallation.start(key);
                 }}
+                size="sm"
+                type="button"
+                variant="outline"
               >
                 <ArrowDown className="size-4" />
                 {state.running ? "Téléchargement…" : "Télécharger"}
@@ -178,11 +178,11 @@ export function AIModelSettings() {
       </div>
       {desktop && state.status.generatorReady && (
         <NewAssistantCard
-          installed={Boolean(state.status.generator4Ready)}
-          downloading={state.running && state.target === "generator4"}
           busy={state.running || importing !== null}
+          downloading={state.running && state.target === "generator4"}
           enabled={useNewAssistant}
           fellBack={hasGeneratorFallenBack()}
+          installed={Boolean(state.status.generator4Ready)}
           onEnable={(enabled) => {
             setGeneratorPreference(enabled ? "gemma4" : "gemma3");
             setUseNewAssistant(enabled);
@@ -193,9 +193,9 @@ export function AIModelSettings() {
         <div className="space-y-6 p-6 pt-0">
           {state.running && (
             <div
-              role="status"
               aria-live="polite"
               className="space-y-2 rounded-2xl border p-4"
+              role="status"
             >
               <div className="flex items-center justify-between gap-3 text-sm">
                 <span>
@@ -207,8 +207,8 @@ export function AIModelSettings() {
                 </span>
               </div>
               <Progress
-                value={state.progress?.percentage ?? 0}
                 aria-label="Progression de l’installation"
+                value={state.progress?.percentage ?? 0}
               />
               <p className="text-xs text-muted-foreground">
                 Vous pouvez changer de page. Le téléchargement continue en
@@ -218,16 +218,16 @@ export function AIModelSettings() {
           )}
           {(state.error || importError) && (
             <p
-              role="alert"
               className="rounded-2xl border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive"
+              role="alert"
             >
               {importError || state.error}
             </p>
           )}
           {!allReady && (
             <details
-              open={state.errorCode === "access_required" ? true : undefined}
               className="rounded-2xl border p-4"
+              open={state.errorCode === "access_required" ? true : undefined}
             >
               <summary className="cursor-pointer text-sm font-medium">
                 Accès au téléchargement
@@ -240,21 +240,21 @@ export function AIModelSettings() {
                   aussi utiliser des fichiers déjà téléchargés.
                 </p>
                 <a
-                  href="https://huggingface.co/litert-community/Gemma3-1B-IT"
-                  target="_blank"
-                  rel="noreferrer"
                   className="inline-block text-sm text-primary underline underline-offset-4"
+                  href="https://huggingface.co/litert-community/Gemma3-1B-IT"
+                  rel="noreferrer"
+                  target="_blank"
                 >
                   Autoriser l’accès chez le fournisseur
                 </a>
                 <div className="flex flex-wrap gap-2">
                   {AI_MODELS_CATALOG.map((model) => (
                     <Button
-                      key={model.id}
-                      variant="outline"
-                      size="sm"
                       disabled={state.running || importing !== null}
+                      key={model.id}
                       onClick={() => void importFiles(model.id)}
+                      size="sm"
+                      variant="outline"
                     >
                       <FolderOpen className="size-4" />
                       Importer {model.name}
@@ -266,12 +266,12 @@ export function AIModelSettings() {
                     Clé de téléchargement (facultatif)
                   </FieldLabel>
                   <Input
-                    id="ai-download-access"
-                    type="password"
                     autoComplete="off"
-                    value={accessKey}
                     disabled={state.running}
+                    id="ai-download-access"
                     onChange={(event) => setAccessKey(event.target.value)}
+                    type="password"
+                    value={accessKey}
                   />
                   <FieldDescription>
                     Utilisée uniquement pour ce téléchargement, sans sauvegarde
@@ -283,7 +283,6 @@ export function AIModelSettings() {
           )}
           <div className="flex flex-wrap items-center gap-3">
             <Button
-              type="button"
               disabled={state.running || importing !== null || allReady}
               onClick={() => {
                 const key = accessKey;
@@ -291,6 +290,7 @@ export function AIModelSettings() {
                 setImportError(null);
                 void aiModelInstallation.start(key);
               }}
+              type="button"
             >
               <ArrowDown className="size-4" />
               {state.running
@@ -339,13 +339,13 @@ export function NewAssistantCard({
         {NEW_ASSISTANT.description}
       </p>
       {suspended && (
-        <p role="status" className="text-xs text-muted-foreground">
+        <p className="text-xs text-muted-foreground" role="status">
           Temporairement indisponible : cette version est en cours de
           correction. L’assistant actuel rédige vos notes.
         </p>
       )}
       {!suspended && installed && enabled && fellBack && (
-        <p role="status" className="text-xs text-muted-foreground">
+        <p className="text-xs text-muted-foreground" role="status">
           Cet ordinateur n’a pas pu la charger : l’assistant actuel a pris le
           relais.
         </p>
@@ -353,14 +353,14 @@ export function NewAssistantCard({
       <div className="flex flex-wrap items-center justify-between gap-3">
         {installed ? (
           <Switch
-            checked={enabled && !suspended}
-            disabled={suspended}
-            onCheckedChange={onEnable}
             aria-label="Utiliser la nouvelle version de l’assistant"
-            label="Utiliser la nouvelle version"
+            checked={enabled && !suspended}
             className={
               suspended ? "cursor-not-allowed text-muted-foreground" : undefined
             }
+            disabled={suspended}
+            label="Utiliser la nouvelle version"
+            onCheckedChange={onEnable}
           />
         ) : (
           <Badge variant="outline">
@@ -374,13 +374,13 @@ export function NewAssistantCard({
           </Badge>
         ) : (
           <Button
-            variant="outline"
-            size="sm"
-            type="button"
             disabled={busy}
             onClick={() => {
               void aiModelInstallation.startNewAssistant();
             }}
+            size="sm"
+            type="button"
+            variant="outline"
           >
             <ArrowDown className="size-4" />
             {downloading

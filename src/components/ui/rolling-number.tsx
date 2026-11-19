@@ -47,13 +47,13 @@ export function RollingNumber({
           const fromRight = chars.length - 1 - i;
           return DIGITS.includes(char) ? (
             <Digit
-              key={fromRight}
-              digit={Number(char)}
               delay={reduce ? 0 : fromRight * stagger}
+              digit={Number(char)}
               instant={!!reduce}
+              key={fromRight}
             />
           ) : (
-            <span key={`${fromRight}${char}`} className="whitespace-pre">
+            <span className="whitespace-pre" key={`${fromRight}${char}`}>
               {char}
             </span>
           );
@@ -87,7 +87,7 @@ function Digit({
         }}
       >
         {Array.from(DIGITS, (d) => (
-          <span key={d} className="h-[1lh]">
+          <span className="h-[1lh]" key={d}>
             {d}
           </span>
         ))}

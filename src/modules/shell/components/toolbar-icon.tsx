@@ -33,11 +33,11 @@ export function ToolbarIcon({
 }) {
   return (
     <HugeiconsIcon
+      aria-hidden="true"
+      focusable="false"
       icon={toolbarGlyphs[name]}
       size={size}
       strokeWidth={Number(strokeWidth)}
-      aria-hidden="true"
-      focusable="false"
       {...props}
     />
   );

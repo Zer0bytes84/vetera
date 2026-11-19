@@ -32,7 +32,7 @@ export function AssistantBrandAvatar({
       className="inline-flex shrink-0 items-center justify-center rounded-full border border-border/70 bg-background shadow-xs overflow-hidden"
       style={{ width: size, height: size }}
     >
-      <Logo collapsed variant="refined" className="scale-75" />
+      <Logo className="scale-75" collapsed variant="refined" />
     </div>
   );
 }

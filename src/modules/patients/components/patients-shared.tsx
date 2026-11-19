@@ -825,10 +825,10 @@ export function PatientDetailsDialog({
               </div>
 
               <div
+                className="flex min-w-0 items-center gap-3 rounded-2xl bg-muted/30 px-3.5 py-3 text-foreground ring-1 ring-border/40 transition-colors dark:bg-muted/15 dark:ring-border/30"
                 data-clinical-alert={Boolean(
                   patient.allergies || patient.chronicConditions
                 )}
-                className="flex min-w-0 items-center gap-3 rounded-2xl bg-muted/30 px-3.5 py-3 text-foreground ring-1 ring-border/40 transition-colors dark:bg-muted/15 dark:ring-border/30"
               >
                 <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-emerald-500 text-white shadow-sm shadow-emerald-500/20">
                   <HugeiconsIcon icon={StethoscopeIcon} strokeWidth={1.5} />
@@ -1975,8 +1975,8 @@ export function PatientCreateDialog({
                     className="modal-section-icon modal-section-icon-patient"
                   >
                     <SpeciesComponentIcon
-                      species={newPatient.species}
                       className="size-[18px]"
+                      species={newPatient.species}
                       strokeWidth={1.9}
                     />
                   </span>
@@ -1991,8 +1991,8 @@ export function PatientCreateDialog({
                 </div>
                 <span className="modal-section-state modal-section-state-patient">
                   <SpeciesComponentIcon
-                    species={newPatient.species}
                     className="size-3.5"
+                    species={newPatient.species}
                     strokeWidth={1.5}
                   />
                   {newPatient.species?.trim() || "Animal à identifier"}
@@ -2120,7 +2120,7 @@ export function PatientCreateDialog({
               </div>
             ) : (
               <span className="inline-flex items-center gap-2 text-xs text-muted-foreground">
-                <span className="modal-footer-status-icon" aria-hidden="true">
+                <span aria-hidden="true" className="modal-footer-status-icon">
                   <HugeiconsIcon
                     icon={CheckmarkCircle02Icon}
                     size={14}

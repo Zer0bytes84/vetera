@@ -35,9 +35,9 @@ export function StatusStepper({
       </SignalBadge>
       {onFlux && status !== "cancelled" && status !== "no_show" ? (
         <ActionButton
-          quiet
-          onClick={onFlux}
           className="h-7 px-2 t-12 transition-[background-color,scale]"
+          onClick={onFlux}
+          quiet
           title="Suivre cette visite dans Flux"
         >
           Dans Flux

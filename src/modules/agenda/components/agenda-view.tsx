@@ -537,8 +537,8 @@ export function AgendaView(props: AgendaViewProps) {
         </Card>
 
         <aside
-          className="grid min-w-0 gap-6"
           aria-label="Détail et charge de la journée"
+          className="grid min-w-0 gap-6"
         >
           {selectedAppointment ? (
             <Card className="agenda-side-panel board-frame" id="agenda-detail">

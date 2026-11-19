@@ -27,9 +27,6 @@ export function LicenseStatusCard() {
       aside={
         <Button
           className="rounded-full"
-          type="button"
-          variant="outline"
-          size="sm"
           disabled={busy}
           onClick={async () => {
             setBusy(true);
@@ -44,6 +41,9 @@ export function LicenseStatusCard() {
               }
             );
           }}
+          size="sm"
+          type="button"
+          variant="outline"
         >
           {busy ? "Vérification…" : "Vérifier maintenant"}
         </Button>
@@ -53,7 +53,7 @@ export function LicenseStatusCard() {
       title="Licence de ce poste"
     >
       <SettingsBody className="gap-3">
-        <p role="status" className="text-sm">
+        <p className="text-sm" role="status">
           {access?.message || "Lecture de l’activation…"}
         </p>
         {access?.allowed && (

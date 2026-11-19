@@ -13,7 +13,7 @@ export function PatientStays({
   const { requestFocus } = useFocus();
   if (loading) {
     return (
-      <p role="status" className="t-13 text-muted-foreground">
+      <p className="t-13 text-muted-foreground" role="status">
         Chargement des séjours…
       </p>
     );
@@ -29,8 +29,8 @@ export function PatientStays({
       <h2 className="t-16 font-medium">Séjours hospitaliers</h2>
       {stays.map((stay) => (
         <article
-          key={stay.id}
           className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[#F2F2F2] p-4 dark:border-border"
+          key={stay.id}
         >
           <div>
             <p className="t-14 font-medium">{stay.reason}</p>
@@ -48,11 +48,11 @@ export function PatientStays({
           </div>
           <Button
             className="h-11"
-            variant="outline"
             onClick={() => {
               requestFocus("stay", stay.id);
               onOpen();
             }}
+            variant="outline"
           >
             Ouvrir le séjour
           </Button>

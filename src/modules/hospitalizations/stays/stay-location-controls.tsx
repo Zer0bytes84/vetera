@@ -21,7 +21,6 @@ export function LocationAvailability({
     <div className="mt-4 space-y-2">
       <Button
         className="h-11"
-        variant="outline"
         disabled={busy || !currentUser || occupied}
         onClick={async () => {
           if (!currentUser || busy) {
@@ -52,6 +51,7 @@ export function LocationAvailability({
             }
           );
         }}
+        variant="outline"
       >
         {busy ? "Enregistrement…" : location.active ? "Désactiver" : "Activer"}
       </Button>
@@ -61,7 +61,7 @@ export function LocationAvailability({
         </p>
       )}
       {error && (
-        <p role="alert" className="t-13 text-destructive">
+        <p className="t-13 text-destructive" role="alert">
           {error}
         </p>
       )}
@@ -132,8 +132,8 @@ export function StayTransfer({ stay }: { stay: Stay }) {
           Nouvel emplacement
           <select
             className="h-11 w-full rounded-xl border bg-background px-3"
-            value={locationId}
             onChange={(event) => setLocationId(event.target.value)}
+            value={locationId}
           >
             <option value="">Choisir un emplacement libre</option>
             {available.map((location) => (
@@ -147,14 +147,14 @@ export function StayTransfer({ stay }: { stay: Stay }) {
           Motif du transfert
           <Input
             className="h-11"
-            value={reason}
             onChange={(event) => setReason(event.target.value)}
+            value={reason}
           />
         </label>
         <Button
           className="h-11"
-          type="submit"
           disabled={busy || !currentUser || !locationId || !reason.trim()}
+          type="submit"
         >
           {busy ? "Enregistrement…" : "Transférer le patient"}
         </Button>
@@ -165,7 +165,7 @@ export function StayTransfer({ stay }: { stay: Stay }) {
         </p>
       )}
       {error && (
-        <p role="alert" className="t-13 text-destructive">
+        <p className="t-13 text-destructive" role="alert">
           {error}
         </p>
       )}

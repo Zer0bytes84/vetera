@@ -52,14 +52,14 @@ export default function StaysPage({
     return (
       <section className="hospitalisation-view p-4 lg:p-6">
         <StayDetail
-          stay={selectedStay}
+          onBack={() => setSelected(null)}
           patientName={patientName(selectedStay.patient_id)}
           species={
             patients.data.find(
               (patient) => patient.id === selectedStay.patient_id
             )?.species || ""
           }
-          onBack={() => setSelected(null)}
+          stay={selectedStay}
         />
       </section>
     );
@@ -76,7 +76,7 @@ export default function StaysPage({
       />
       <div className="flex flex-wrap items-center justify-between gap-3">
         {" "}
-        <Tabs value={view} onValueChange={setView}>
+        <Tabs onValueChange={setView} value={view}>
           <TabsList
             aria-label="Vues de l’hospitalisation"
             tabsStyle="segmented"
@@ -101,23 +101,23 @@ export default function StaysPage({
       {error ? (
         <ErrorState message={error} onRetry={() => void refresh()} />
       ) : loading ? (
-        <p role="status" className="t-13 text-muted-foreground">
+        <p className="t-13 text-muted-foreground" role="status">
           Chargement des séjours…
         </p>
       ) : view === "tournee" ? (
         <StayRounds
-          stays={active}
           locations={locations}
-          patientName={patientName}
           onOpen={setSelected}
+          patientName={patientName}
+          stays={active}
         />
       ) : view === "sejours" ? (
         <div className="stay-list space-y-3">
           {stays.length ? (
             stays.map((stay) => (
               <article
-                key={stay.id}
                 className="stay-summary-card flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-[#F2F2F2] bg-card p-5 dark:border-border"
+                key={stay.id}
               >
                 <div>
                   <h2 className="t-16 font-medium">
@@ -152,9 +152,9 @@ export default function StaysPage({
                 <div className="text-right">
                   <p className="t-13 font-medium">{labels[stay.status]}</p>
                   <Button
-                    variant="ghost"
                     className="mt-2 h-11"
                     onClick={() => setSelected(stay.id)}
+                    variant="ghost"
                   >
                     Ouvrir le séjour
                   </Button>
@@ -185,8 +185,8 @@ export default function StaysPage({
                 );
                 return (
                   <article
-                    key={location.id}
                     className="stay-location-card rounded-2xl border border-[#F2F2F2] bg-card p-5 dark:border-border"
+                    key={location.id}
                   >
                     <div className="flex items-center justify-between gap-3">
                       <h2 className="t-16 font-medium">{location.name}</h2>
@@ -212,10 +212,10 @@ export default function StaysPage({
                     </p>
                     {occupant && (
                       <Button
-                        type="button"
-                        variant="outline"
                         className="mt-4 h-11"
                         onClick={() => setSelected(occupant.id)}
+                        type="button"
+                        variant="outline"
                       >
                         Ouvrir le séjour
                       </Button>
@@ -238,12 +238,12 @@ export default function StaysPage({
         </>
       )}
       <Dialog
-        open={form !== null}
         onOpenChange={(open) => {
           if (!open) {
             setForm(null);
           }
         }}
+        open={form !== null}
       >
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>

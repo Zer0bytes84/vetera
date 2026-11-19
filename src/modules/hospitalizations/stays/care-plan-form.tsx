@@ -112,17 +112,17 @@ export function CarePlanForm({
         Soin
         <Input
           className="h-11"
-          value={label}
           onChange={(event) => setLabel(event.target.value)}
           required
+          value={label}
         />
       </label>
       <label className="block space-y-2 t-13">
         Type
         <select
           className="h-11 w-full rounded-xl border bg-background px-3"
-          value={type}
           onChange={(event) => setType(event.target.value as CareType)}
+          value={type}
         >
           {CARE_TYPES.map((item) => (
             <option key={item} value={item}>
@@ -136,18 +136,18 @@ export function CarePlanForm({
           <span>Début</span>
           <StayDateTimeField
             label="Date de début du plan"
+            onChange={setStarts}
             timeLabel="Heure de début"
             value={starts}
-            onChange={setStarts}
           />
         </div>
         <div className="space-y-2 t-13">
           <span>Fin</span>
           <StayDateTimeField
             label="Date de fin du plan"
+            onChange={setEnds}
             timeLabel="Heure de fin"
             value={ends}
-            onChange={setEnds}
           />
         </div>
       </div>
@@ -155,18 +155,18 @@ export function CarePlanForm({
         Horaires quotidiens
         <Input
           className="h-11"
-          placeholder="Ex. 08:00, 18:00"
-          value={times}
           onChange={(event) => setTimes(event.target.value)}
+          placeholder="Ex. 08:00, 18:00"
           required
+          value={times}
         />
       </label>
       <label className="block space-y-2 t-13">
         Produit lié (facultatif)
         <select
           className="h-11 w-full rounded-xl border bg-background px-3"
-          value={product}
           onChange={(event) => setProduct(event.target.value)}
+          value={product}
         >
           <option value="">Aucun produit</option>
           {products.data.map((item) => (
@@ -180,25 +180,25 @@ export function CarePlanForm({
         Consignes
         <Input
           className="h-11"
-          value={note}
           onChange={(event) => setNote(event.target.value)}
+          value={note}
         />
       </label>
-      <p role="status" className="t-13 text-muted-foreground">
+      <p className="t-13 text-muted-foreground" role="status">
         {validation ||
           `${count} soin(s) à planifier. ${plan ? "Les soins réalisés ou en cours sont conservés." : "Vérifiez les horaires avant confirmation."}`}
       </p>
       {error && (
-        <p role="alert" className="t-13 text-destructive">
+        <p className="t-13 text-destructive" role="alert">
           {error}
         </p>
       )}
       <Button
-        type="submit"
         className="h-11 w-full"
         disabled={
           busy || !currentUser || !label.trim() || !count || Boolean(validation)
         }
+        type="submit"
       >
         {busy ? "Enregistrement…" : "Confirmer le plan de soins"}
       </Button>

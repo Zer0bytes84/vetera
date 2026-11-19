@@ -84,24 +84,24 @@ export function PatientKpiStrip({
       aria-label="Suivi clinique consolidé"
       className={cn("medical-kpi-strip", className)}
     >
-      <article className="medical-kpi group" aria-label="Suivi du poids">
+      <article aria-label="Suivi du poids" className="medical-kpi group">
         <div className="medical-kpi-heading">
           <div className="flex items-center gap-2.5">
             <div className="size-8 rounded-lg flex items-center justify-center bg-indigo-50 text-indigo-600 border border-indigo-200/60 dark:bg-indigo-950/60 dark:text-indigo-400 dark:border-indigo-800/40 shrink-0 shadow-xs">
-              <Scales size={16} weight="duotone" aria-hidden="true" />
+              <Scales aria-hidden="true" size={16} weight="duotone" />
             </div>
             <h2 className="text-xs font-semibold text-foreground/80 tracking-wide uppercase">
               Poids
             </h2>
           </div>
           <button
-            onClick={onWeightClick}
-            type="button"
-            className="medical-icon-action"
             aria-label="Voir l’historique des pesées"
+            className="medical-icon-action"
+            onClick={onWeightClick}
             title="Historique des pesées"
+            type="button"
           >
-            <ArrowUpRight size={16} aria-hidden="true" />
+            <ArrowUpRight aria-hidden="true" size={16} />
           </button>
         </div>
         {lastWeight ? (
@@ -118,18 +118,18 @@ export function PatientKpiStrip({
               </p>
               {sparklineWeights.length > 1 && (
                 <svg
+                  aria-label={`Évolution des ${sparklineWeights.length} dernières pesées`}
                   className="medical-weight-sparkline w-20 h-8"
-                  viewBox="0 0 64 28"
                   fill="none"
                   role="img"
-                  aria-label={`Évolution des ${sparklineWeights.length} dernières pesées`}
+                  viewBox="0 0 64 28"
                 >
                   <defs>
                     <linearGradient
                       id="weight-spark-grad"
                       x1="0"
-                      y1="0"
                       x2="0"
+                      y1="0"
                       y2="1"
                     >
                       <stop
@@ -159,11 +159,11 @@ export function PatientKpiStrip({
                     />
                   )}
                   <polyline
+                    points={sparklinePoints}
                     stroke="#6366f1"
-                    strokeWidth="2"
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    points={sparklinePoints}
+                    strokeWidth="2"
                   />
                 </svg>
               )}
@@ -209,24 +209,24 @@ export function PatientKpiStrip({
         )}
       </article>
 
-      <article className="medical-kpi group" aria-label="Parcours de soins">
+      <article aria-label="Parcours de soins" className="medical-kpi group">
         <div className="medical-kpi-heading">
           <div className="flex items-center gap-2.5">
             <div className="size-8 rounded-lg flex items-center justify-center bg-violet-50 text-violet-600 border border-violet-200/60 dark:bg-violet-950/60 dark:text-violet-400 dark:border-violet-800/40 shrink-0 shadow-xs">
-              <Stethoscope size={16} weight="duotone" aria-hidden="true" />
+              <Stethoscope aria-hidden="true" size={16} weight="duotone" />
             </div>
             <h2 className="text-xs font-semibold text-foreground/80 tracking-wide uppercase">
               Parcours de soins
             </h2>
           </div>
           <button
-            onClick={onTimelineClick}
-            type="button"
-            className="medical-icon-action"
             aria-label="Voir la chronologie des soins"
+            className="medical-icon-action"
+            onClick={onTimelineClick}
             title="Chronologie des soins"
+            type="button"
           >
-            <ArrowUpRight size={16} aria-hidden="true" />
+            <ArrowUpRight aria-hidden="true" size={16} />
           </button>
         </div>
         {displayedVisit ? (
@@ -257,12 +257,12 @@ export function PatientKpiStrip({
         )}
         {showLastVisit && nextAppointment ? (
           <button
-            type="button"
             className="medical-next-visit medical-kpi-footer inline-flex items-center gap-2 mt-auto pt-2 text-xs font-medium text-violet-700 dark:text-violet-300 hover:underline cursor-pointer"
             onClick={onAppointmentClick}
             title="Ouvrir le rendez-vous dans l’agenda"
+            type="button"
           >
-            <CalendarBlank size={15} weight="duotone" aria-hidden="true" />
+            <CalendarBlank aria-hidden="true" size={15} weight="duotone" />
             <span>Prochaine visite :</span>
             <strong className="font-semibold">
               {nextApptFormatted || "Voir le rendez-vous"}
@@ -271,26 +271,26 @@ export function PatientKpiStrip({
         ) : showLastVisit ? (
           lastVisitFormatted ? (
             <button
-              type="button"
-              onClick={onAppointmentClick}
               className="medical-kpi-text-action medical-kpi-footer inline-flex items-center gap-1.5 mt-auto pt-2 text-xs font-medium text-muted-foreground hover:text-foreground cursor-pointer"
+              onClick={onAppointmentClick}
+              type="button"
             >
               <span>Planifier la suite</span>
-              <ArrowUpRight size={14} aria-hidden="true" />
+              <ArrowUpRight aria-hidden="true" size={14} />
             </button>
           ) : null
         ) : (
           <button
-            type="button"
-            onClick={nextAppointment ? onAppointmentClick : onTimelineClick}
             className="medical-kpi-text-action medical-kpi-footer inline-flex items-center gap-1.5 mt-auto pt-2 text-xs font-medium text-muted-foreground hover:text-foreground cursor-pointer"
+            onClick={nextAppointment ? onAppointmentClick : onTimelineClick}
+            type="button"
           >
             <span>
               {nextAppointment
                 ? "Ouvrir l’agenda"
                 : "Voir le parcours de soins"}
             </span>
-            <ArrowUpRight size={14} aria-hidden="true" />
+            <ArrowUpRight aria-hidden="true" size={14} />
           </button>
         )}
       </article>

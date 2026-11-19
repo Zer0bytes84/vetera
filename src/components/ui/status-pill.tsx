@@ -40,7 +40,7 @@ const TRIANGLE = (
 const BANG = (y: number) => (
   <>
     <path d={`M8 ${y}v3`} />
-    <circle cx="8" cy={y + 5.7} r="0.45" fill="black" />
+    <circle cx="8" cy={y + 5.7} fill="black" r="0.45" />
   </>
 );
 
@@ -65,7 +65,7 @@ const glyphs = new Map<
       shape: CIRCLE,
       mark: (
         <>
-          <circle cx="8" cy="4.9" r="0.45" fill="black" />
+          <circle cx="8" cy="4.9" fill="black" r="0.45" />
           <path d="M8 7.6v3.6" />
         </>
       ),
@@ -84,18 +84,18 @@ function Glyph({
   const id = useId();
   return (
     <svg
-      viewBox="0 0 16 16"
       aria-hidden="true"
       className={cn("shrink-0", className)}
+      viewBox="0 0 16 16"
     >
       <mask id={id}>
-        <rect width="16" height="16" fill="white" />
+        <rect fill="white" height="16" width="16" />
         <g
           fill="none"
           stroke="black"
-          strokeWidth="1.9"
           strokeLinecap="round"
           strokeLinejoin="round"
+          strokeWidth="1.9"
         >
           {glyph.mark}
         </g>
@@ -145,14 +145,14 @@ export function StatusPill({
       iconWeight === "fill" &&
       glyphs.has(IconComponent as LucideIcon) ? (
         <Glyph
-          glyph={glyphs.get(IconComponent as LucideIcon)!}
           className={sizes[size].icon}
+          glyph={glyphs.get(IconComponent as LucideIcon)!}
         />
       ) : IconComponent ? (
         <IconComponent
-          strokeWidth={iconWeight === "bold" ? 2.5 : 2}
-          className={sizes[size].icon}
           aria-hidden="true"
+          className={sizes[size].icon}
+          strokeWidth={iconWeight === "bold" ? 2.5 : 2}
         />
       ) : null}
       {children}

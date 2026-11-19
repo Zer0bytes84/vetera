@@ -37,12 +37,6 @@ function Calendar({
   return (
     <DayPicker
       captionLayout={captionLayout}
-      // The library names its month buttons in English; the app is French.
-      labels={{
-        labelPrevious: () => "Mois précédent",
-        labelNext: () => "Mois suivant",
-        ...labels,
-      }}
       className={cn(
         "group/calendar bg-background in-data-[slot=card-content]:bg-transparent in-data-[slot=popover-content]:bg-transparent p-2 [--cell-radius:var(--radius-md)] [--cell-size:--spacing(7)]",
         RTL_NEXT,
@@ -188,6 +182,12 @@ function Calendar({
         formatMonthDropdown: (date) =>
           date.toLocaleString(locale?.code, { month: "short" }),
         ...formatters,
+      }}
+      // The library names its month buttons in English; the app is French.
+      labels={{
+        labelPrevious: () => "Mois précédent",
+        labelNext: () => "Mois suivant",
+        ...labels,
       }}
       locale={locale}
       showOutsideDays={showOutsideDays}

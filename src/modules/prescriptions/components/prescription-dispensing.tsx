@@ -156,7 +156,7 @@ export function PrescriptionDispensing({
         <span>Dispensation enregistrée, stock déduit.</span>
         {saved && <StockInvoiceLink invoiceId={saved.invoice_id} />}
         {error && (
-          <p role="alert" className="text-destructive">
+          <p className="text-destructive" role="alert">
             {error}
           </p>
         )}
@@ -173,7 +173,7 @@ export function PrescriptionDispensing({
   if (!open) {
     return (
       <div className="mt-3 flex justify-end">
-        <Button variant="outline" onClick={() => setOpen(true)}>
+        <Button onClick={() => setOpen(true)} variant="outline">
           Dispenser
         </Button>
       </div>
@@ -181,9 +181,9 @@ export function PrescriptionDispensing({
   }
   return (
     <form
-      noValidate
       aria-label="Dispenser l’ordonnance"
       className="mt-4 space-y-4 border-t border-border pt-4"
+      noValidate
       onSubmit={async (event) => {
         event.preventDefault();
         if (!valid || shortage || !currentUser || busy) {
@@ -223,12 +223,9 @@ export function PrescriptionDispensing({
         l’ordonnance restent inchangées.
       </p>
       {items.map((item) => (
-        <div key={item.id} className="space-y-2">
+        <div className="space-y-2" key={item.id}>
           <h4 className="t-13 font-medium">{item.medicationName}</h4>
           <ProductStockFields
-            products={products.data.filter((p) => p.stockTracked !== false)}
-            productId={lines[item.id]?.productId ?? ""}
-            quantity={lines[item.id]?.quantity ?? "1"}
             disabled={busy}
             onProductChange={(productId) => {
               setLines((rows) => ({
@@ -252,14 +249,11 @@ export function PrescriptionDispensing({
               }));
               setRequestId(generateId());
             }}
+            productId={lines[item.id]?.productId ?? ""}
+            products={products.data.filter((p) => p.stockTracked !== false)}
+            quantity={lines[item.id]?.quantity ?? "1"}
           />
           <StockLotSelect
-            productId={lines[item.id]?.productId ?? ""}
-            unit={
-              products.data.find((row) => row.id === lines[item.id]?.productId)
-                ?.unit ?? "unité"
-            }
-            value={lines[item.id]?.lot ?? "fifo"}
             disabled={busy}
             onChange={(lot) => {
               setLines((rows) => ({
@@ -273,26 +267,32 @@ export function PrescriptionDispensing({
               }));
               setRequestId(generateId());
             }}
+            productId={lines[item.id]?.productId ?? ""}
+            unit={
+              products.data.find((row) => row.id === lines[item.id]?.productId)
+                ?.unit ?? "unité"
+            }
+            value={lines[item.id]?.lot ?? "fifo"}
           />
         </div>
       ))}
       {(shortage || error) && (
-        <p role="alert" className="t-13 text-destructive">
+        <p className="t-13 text-destructive" role="alert">
           {shortage || error}
         </p>
       )}
       <div className="flex flex-wrap justify-end gap-2">
         <Button
-          type="button"
-          variant="outline"
           disabled={busy}
           onClick={() => setOpen(false)}
+          type="button"
+          variant="outline"
         >
           Annuler
         </Button>
         <Button
-          type="submit"
           disabled={busy || !valid || !!shortage || !currentUser}
+          type="submit"
         >
           {busy ? "Dispensation…" : "Confirmer la dispensation"}
         </Button>

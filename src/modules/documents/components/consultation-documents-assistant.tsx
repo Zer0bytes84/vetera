@@ -103,8 +103,8 @@ function ChatMessage({
     <Message align={user ? "end" : "start"}>
       <MessageContent className="w-full max-w-full">
         <Bubble
-          variant={user ? "secondary" : "ghost"}
           className="w-full max-w-full"
+          variant={user ? "secondary" : "ghost"}
         >
           <BubbleContent>{children}</BubbleContent>
         </Bubble>
@@ -547,13 +547,13 @@ export default function ConsultationDocumentsAssistant({
         {onClose && (
           <Button
             aria-label="Fermer les documents"
-            size="icon-sm"
-            variant="ghost"
             disabled={saving}
             onClick={() => {
               controller.current?.abort();
               onClose();
             }}
+            size="icon-sm"
+            variant="ghost"
           >
             <X className="size-4" />
           </Button>
@@ -561,15 +561,15 @@ export default function ConsultationDocumentsAssistant({
       </header>
       <Segmented
         label="Parcours documents"
+        onValueChange={(next) => switchMode(next)}
         options={[
           { value: "generate", label: "Créer un document" },
           { value: "read", label: "Lire un document" },
         ]}
         value={mode}
-        onValueChange={(next) => switchMode(next)}
       />
       {unavailable && (
-        <p role="alert" className="text-sm text-destructive">
+        <p className="text-sm text-destructive" role="alert">
           Une partie du dossier n’a pas pu être chargée. Fermez puis rouvrez les
           documents.
         </p>
@@ -582,7 +582,7 @@ export default function ConsultationDocumentsAssistant({
             enregistrement.
           </ChatMessage>
           {!ready && (
-            <p role="status" className="text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground" role="status">
               {appointment
                 ? "Validez d’abord la note de cette consultation. Une modification de la note demande une nouvelle validation."
                 : "Choisissez une consultation pour créer un document à partir de sa note validée."}
@@ -593,10 +593,10 @@ export default function ConsultationDocumentsAssistant({
               Modèle de document
             </FieldLabel>
             <NativeSelect
-              id={`${id}-template`}
-              value={templateId}
-              onChange={(event) => setTemplateId(event.target.value)}
               disabled={busy || saving}
+              id={`${id}-template`}
+              onChange={(event) => setTemplateId(event.target.value)}
+              value={templateId}
             >
               {templates.templates.map((template) => (
                 <NativeSelectOption key={template.id} value={template.id}>
@@ -607,9 +607,9 @@ export default function ConsultationDocumentsAssistant({
           </Field>
           <div>
             <Button
-              size="sm"
-              onClick={createDraft}
               disabled={!ready || unavailable || templates.loading || saving}
+              onClick={createDraft}
+              size="sm"
             >
               Préparer le document
             </Button>
@@ -628,10 +628,10 @@ export default function ConsultationDocumentsAssistant({
               Document du dossier
             </FieldLabel>
             <NativeSelect
-              id={`${id}-source`}
-              value={reading?.sourceId ?? selectedManagedId}
-              onChange={(event) => chooseExisting(event.target.value)}
               disabled={busy || saving || unavailable}
+              id={`${id}-source`}
+              onChange={(event) => chooseExisting(event.target.value)}
+              value={reading?.sourceId ?? selectedManagedId}
             >
               <NativeSelectOption value="">
                 Choisir un document…
@@ -660,8 +660,6 @@ export default function ConsultationDocumentsAssistant({
             {selectedManaged?.attachment?.textState === "image" && !reading && (
               <Button
                 className="mt-2 w-fit"
-                size="sm"
-                variant="outline"
                 disabled={busy || saving}
                 onClick={() => {
                   try {
@@ -673,16 +671,16 @@ export default function ConsultationDocumentsAssistant({
                     setError((failure as Error).message);
                   }
                 }}
+                size="sm"
+                variant="outline"
               >
                 Reconnaître le texte de l’image
               </Button>
             )}
           </Field>
           <input
-            ref={picker}
-            type="file"
-            className="hidden"
             accept=".pdf,image/png,image/jpeg,image/webp"
+            className="hidden"
             onChange={(event) => {
               const file = event.target.files?.[0];
               event.target.value = "";
@@ -690,13 +688,15 @@ export default function ConsultationDocumentsAssistant({
                 void readFile(file);
               }
             }}
+            ref={picker}
+            type="file"
           />
           <div>
             <Button
-              size="sm"
-              variant="outline"
               disabled={busy || saving}
               onClick={() => picker.current?.click()}
+              size="sm"
+              variant="outline"
             >
               <UploadSimple className="size-4" /> Lire un fichier local
             </Button>
@@ -718,11 +718,10 @@ export default function ConsultationDocumentsAssistant({
                         : ""}
                     </FieldLabel>
                     <Textarea
-                      id={`${id}-page-${page.number}`}
                       aria-label={`Texte de la page ${page.number}`}
-                      disabled={busy || saving}
                       className="min-h-32 text-sm"
-                      value={page.text}
+                      disabled={busy || saving}
+                      id={`${id}-page-${page.number}`}
                       maxLength={MAX_DOCUMENT_CHARACTERS}
                       onChange={(event) => {
                         setReading((previous) =>
@@ -742,6 +741,7 @@ export default function ConsultationDocumentsAssistant({
                         setDraft(null);
                         resetReview();
                       }}
+                      value={page.text}
                     />
                   </Field>
                 ))}
@@ -755,37 +755,37 @@ export default function ConsultationDocumentsAssistant({
                   Votre question
                 </FieldLabel>
                 <Input
-                  id={`${id}-question`}
-                  value={question}
-                  maxLength={500}
                   disabled={busy || saving}
+                  id={`${id}-question`}
+                  maxLength={500}
                   onChange={(event) => setQuestion(event.target.value)}
+                  value={question}
                 />
               </Field>
               <div className="flex flex-wrap gap-2">
                 <Button
-                  size="sm"
                   disabled={
                     busy || saving || !question.trim() || !models.generatorReady
                   }
                   onClick={() => void ask()}
+                  size="sm"
                 >
                   Rechercher les passages
                 </Button>
                 <Button
-                  size="sm"
-                  variant="outline"
                   disabled={busy || saving}
                   onClick={reviewReading}
+                  size="sm"
+                  variant="outline"
                 >
                   Relire le texte pour l’enregistrer
                 </Button>
                 {!models.generatorReady && (
                   <Button
-                    size="sm"
-                    variant="ghost"
                     disabled={busy || importing}
                     onClick={() => void install()}
+                    size="sm"
+                    variant="ghost"
                   >
                     {importing
                       ? "Installation…"
@@ -807,8 +807,8 @@ export default function ConsultationDocumentsAssistant({
                 )}
                 {answer.extraits.map((quote, index) => (
                   <blockquote
-                    key={`${quote.page}:${index}`}
                     className="rounded-lg bg-muted p-3"
+                    key={`${quote.page}:${index}`}
                   >
                     <p className="whitespace-pre-wrap text-sm">{quote.texte}</p>
                     <cite className="mt-2 block text-xs not-italic text-muted-foreground">
@@ -817,10 +817,10 @@ export default function ConsultationDocumentsAssistant({
                   </blockquote>
                 ))}
                 <Button
+                  disabled={busy || saving}
+                  onClick={reviewReading}
                   size="sm"
                   variant="outline"
-                  onClick={reviewReading}
-                  disabled={busy || saving}
                 >
                   Préparer une note de lecture
                 </Button>
@@ -832,7 +832,7 @@ export default function ConsultationDocumentsAssistant({
       {busy && (
         <Collapsible className="rounded-lg border border-border">
           <CollapsibleTrigger className="flex w-full items-center gap-2 p-3 text-left">
-            <Marker render={<span />} role="status" aria-live="polite">
+            <Marker aria-live="polite" render={<span />} role="status">
               <MarkerIcon>
                 <CircleNotch className="animate-spin motion-reduce:animate-none" />
               </MarkerIcon>
@@ -852,10 +852,10 @@ export default function ConsultationDocumentsAssistant({
             )}
           </CollapsibleContent>
           <Button
-            size="sm"
-            variant="ghost"
             className="mx-2 mb-2"
             onClick={() => controller.current?.abort()}
+            size="sm"
+            variant="ghost"
           >
             Annuler la lecture
           </Button>
@@ -871,14 +871,14 @@ export default function ConsultationDocumentsAssistant({
                   Titre du document
                 </FieldLabel>
                 <Input
-                  id={`${id}-title`}
-                  value={draft.title}
                   disabled={saving}
+                  id={`${id}-title`}
                   maxLength={180}
                   onChange={(event) => {
                     setDraft({ ...draft, title: event.target.value });
                     resetReview();
                   }}
+                  value={draft.title}
                 />
               </Field>
               <Field>
@@ -886,32 +886,32 @@ export default function ConsultationDocumentsAssistant({
                   Texte du document
                 </FieldLabel>
                 <Textarea
-                  id={`${id}-draft`}
-                  value={draft.text}
-                  disabled={saving}
-                  maxLength={60_000}
                   className="min-h-72 text-sm"
+                  disabled={saving}
+                  id={`${id}-draft`}
+                  maxLength={60_000}
                   onChange={(event) => {
                     setDraft({ ...draft, text: event.target.value });
                     resetReview();
                   }}
+                  value={draft.text}
                 />
               </Field>
             </FieldGroup>
             {changedSource && (
-              <p role="alert" className="text-sm text-destructive">
+              <p className="text-sm text-destructive" role="alert">
                 La note source a changé. Validez-la puis préparez à nouveau le
                 document.
               </p>
             )}
             <div className="flex items-start gap-2">
               <Checkbox
-                id={`${id}-review`}
                 checked={reviewed}
                 disabled={saving || saved}
+                id={`${id}-review`}
                 onCheckedChange={(value) => setReviewed(value === true)}
               />
-              <label htmlFor={`${id}-review`} className="text-xs leading-5">
+              <label className="text-xs leading-5" htmlFor={`${id}-review`}>
                 J’ai vérifié le patient et relu le document, y compris les
                 valeurs, unités et traitements.
               </label>
@@ -924,25 +924,24 @@ export default function ConsultationDocumentsAssistant({
             )}
             {saved ? (
               <div className="space-y-2">
-                <p role="status" className="flex items-center gap-2 text-sm">
+                <p className="flex items-center gap-2 text-sm" role="status">
                   <Check className="size-4" /> Enregistré dans Documents et le
                   dossier de {patient?.name}.
                 </p>
                 <Button
-                  size="sm"
-                  variant="outline"
                   onClick={() =>
                     void exportClinicalDocument(draft.title, draft.text).catch(
                       () => toast.error("Le PDF n’a pas pu être exporté.")
                     )
                   }
+                  size="sm"
+                  variant="outline"
                 >
                   <FileText className="size-4" /> Exporter le PDF validé
                 </Button>
               </div>
             ) : (
               <Button
-                size="sm"
                 disabled={
                   !(reviewed && draft.text.trim() && draft.title.trim()) ||
                   saving ||
@@ -952,6 +951,7 @@ export default function ConsultationDocumentsAssistant({
                   !appointment
                 }
                 onClick={() => void save()}
+                size="sm"
               >
                 {saving
                   ? "Enregistrement…"
@@ -962,7 +962,7 @@ export default function ConsultationDocumentsAssistant({
         </ChatMessage>
       )}
       {error && (
-        <p role="alert" className="text-sm text-destructive">
+        <p className="text-sm text-destructive" role="alert">
           {error}
         </p>
       )}

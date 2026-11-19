@@ -186,12 +186,12 @@ export function DocumentPreviewDialog({
   }
   return (
     <Dialog
-      open={!!documentId}
       onOpenChange={(open) => {
         if (!(open || busy)) {
           onClose();
         }
       }}
+      open={!!documentId}
     >
       <DialogContent
         className="document-preview-dialog"
@@ -207,19 +207,19 @@ export function DocumentPreviewDialog({
             </DialogDescription>
           </div>
           <Button
-            variant="ghost"
-            size="icon"
             aria-label="Fermer l’aperçu"
             disabled={busy}
             onClick={onClose}
+            size="icon"
+            variant="ghost"
           >
             <X strokeWidth={1} />
           </Button>
         </header>
         {error && (
           <p
-            role="alert"
             className="mx-5 rounded-lg border border-destructive/20 bg-destructive/5 p-3 text-sm text-destructive"
+            role="alert"
           >
             {error}
           </p>
@@ -253,18 +253,18 @@ export function DocumentPreviewDialog({
                         <label className="block space-y-1 text-sm">
                           Titre
                           <Input
-                            value={title}
                             maxLength={160}
                             onChange={(event) => setTitle(event.target.value)}
+                            value={title}
                           />
                         </label>
                         <label className="block space-y-1 text-sm">
                           Contenu
                           <Textarea
                             className="document-content-editor"
-                            value={text}
                             maxLength={60_000}
                             onChange={(event) => setText(event.target.value)}
+                            value={text}
                           />
                         </label>
                         <div className="flex flex-wrap gap-2">
@@ -288,13 +288,13 @@ export function DocumentPreviewDialog({
                             <Save strokeWidth={1} /> Enregistrer
                           </Button>
                           <Button
-                            variant="outline"
                             disabled={busy}
                             onClick={() => {
                               setTitle(document.title);
                               setText(document.content);
                               setEditing(false);
                             }}
+                            variant="outline"
                           >
                             Abandonner
                           </Button>
@@ -303,19 +303,19 @@ export function DocumentPreviewDialog({
                     ) : (
                       <>
                         <Button
-                          variant="outline"
                           disabled={busy}
                           onClick={() => setEditing(true)}
+                          variant="outline"
                         >
                           <Pencil strokeWidth={1} /> Modifier le brouillon
                         </Button>
                         <label className="flex items-start gap-3 text-sm leading-6">
                           <Checkbox
                             checked={reviewed}
+                            className="mt-1"
                             onCheckedChange={(value) =>
                               setReviewed(value === true)
                             }
-                            className="mt-1"
                           />
                           J’ai relu le document et je valide son contenu.
                         </label>
@@ -361,7 +361,6 @@ export function DocumentPreviewDialog({
                       <Printer strokeWidth={1} /> Imprimer
                     </Button>
                     <Button
-                      variant="outline"
                       disabled={busy}
                       onClick={() =>
                         void perform(async () => {
@@ -370,12 +369,12 @@ export function DocumentPreviewDialog({
                           }
                         })
                       }
+                      variant="outline"
                     >
                       <Download strokeWidth={1} /> Exporter en PDF
                     </Button>
                     {!document.attachment && (
                       <Button
-                        variant="outline"
                         disabled={busy}
                         onClick={() =>
                           void perform(async () => {
@@ -392,6 +391,7 @@ export function DocumentPreviewDialog({
                             onChanged?.();
                           })
                         }
+                        variant="outline"
                       >
                         <Pencil strokeWidth={1} /> Nouvelle version
                       </Button>
@@ -400,9 +400,9 @@ export function DocumentPreviewDialog({
                 )}
                 {document.attachment && (
                   <Button
-                    variant="outline"
                     disabled={busy}
                     onClick={() => void perform(downloadOriginal)}
+                    variant="outline"
                   >
                     <Download strokeWidth={1} /> Télécharger l’original
                   </Button>
@@ -415,7 +415,6 @@ export function DocumentPreviewDialog({
                 )}
                 <div className="border-t border-border pt-4 space-y-3">
                   <Button
-                    variant="ghost"
                     disabled={busy}
                     onClick={() =>
                       void perform(async () => {
@@ -426,6 +425,7 @@ export function DocumentPreviewDialog({
                         );
                       })
                     }
+                    variant="ghost"
                   >
                     <History strokeWidth={1} /> Historique
                   </Button>
@@ -449,9 +449,9 @@ export function DocumentPreviewDialog({
                   {document.status !== "annule" &&
                     (reason === null ? (
                       <Button
-                        variant="ghost"
                         disabled={busy}
                         onClick={() => setReason("")}
+                        variant="ghost"
                       >
                         Annuler le document
                       </Button>
@@ -460,13 +460,12 @@ export function DocumentPreviewDialog({
                         <label className="block text-sm">
                           Motif de l’annulation
                           <Textarea
-                            value={reason}
                             maxLength={1000}
                             onChange={(event) => setReason(event.target.value)}
+                            value={reason}
                           />
                         </label>
                         <Button
-                          variant="destructive"
                           disabled={busy || !reason.trim()}
                           onClick={() =>
                             void perform(async () => {
@@ -483,13 +482,14 @@ export function DocumentPreviewDialog({
                               onChanged?.();
                             })
                           }
+                          variant="destructive"
                         >
                           Confirmer l’annulation
                         </Button>
                         <Button
-                          variant="ghost"
                           disabled={busy}
                           onClick={() => setReason(null)}
+                          variant="ghost"
                         >
                           Conserver
                         </Button>
@@ -497,7 +497,7 @@ export function DocumentPreviewDialog({
                     ))}
                 </div>
                 {busy && (
-                  <p role="status" className="text-sm text-muted-foreground">
+                  <p className="text-sm text-muted-foreground" role="status">
                     En cours…
                   </p>
                 )}
@@ -507,7 +507,7 @@ export function DocumentPreviewDialog({
           </>
         )}
         {!(document || error) && (
-          <p role="status" className="p-6 text-sm text-muted-foreground">
+          <p className="p-6 text-sm text-muted-foreground" role="status">
             Chargement du document…
           </p>
         )}

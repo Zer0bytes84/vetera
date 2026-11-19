@@ -66,7 +66,7 @@ export function StayBilling({ stay }: { stay: Stay }) {
       </p>
       {desktop ? (
         loading ? (
-          <p role="status" className="t-13">
+          <p className="t-13" role="status">
             Chargement de la facture…
           </p>
         ) : invoiceId ? (
@@ -117,8 +117,8 @@ export function StayBilling({ stay }: { stay: Stay }) {
               <select
                 aria-label="Tarif par journée"
                 className="h-11 w-full rounded-xl border border-border bg-background px-3 t-13"
-                value={productId}
                 onChange={(event) => setProductId(event.target.value)}
+                value={productId}
               >
                 <option value="">Choisir un tarif du catalogue</option>
                 {products.data
@@ -141,9 +141,9 @@ export function StayBilling({ stay }: { stay: Stay }) {
               </p>
             )}
             <Button
-              type="submit"
               className="h-11"
               disabled={!(product && currentUser) || busy}
+              type="submit"
             >
               {busy ? "Préparation…" : "Créer le brouillon de facture"}
             </Button>
@@ -155,7 +155,7 @@ export function StayBilling({ stay }: { stay: Stay }) {
         </p>
       )}
       {error && (
-        <p role="alert" className="t-13 text-destructive">
+        <p className="t-13 text-destructive" role="alert">
           {error}
         </p>
       )}

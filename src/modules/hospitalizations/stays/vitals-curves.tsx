@@ -37,7 +37,7 @@ export function VitalsCurves({
         // The species resting reference, shaded behind the curve when one is recorded.
         const range = referenceRange(species, metric.key);
         return (
-          <figure key={metric.key} className="min-w-0 rounded-xl border p-4">
+          <figure className="min-w-0 rounded-xl border p-4" key={metric.key}>
             <figcaption className="t-13 font-medium">
               {metric.label} ({metric.unit})
               {range && (
@@ -47,27 +47,27 @@ export function VitalsCurves({
               )}
             </figcaption>
             <div
+              aria-label={`${metric.label} : ${data.length} mesure(s)`}
               className="mt-3 h-36"
               role="img"
-              aria-label={`${metric.label} : ${data.length} mesure(s)`}
             >
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer height="100%" width="100%">
                 <LineChart data={data}>
                   <XAxis
                     dataKey="time"
+                    minTickGap={30}
+                    tick={{ fontSize: 12 }}
                     tickFormatter={(time) =>
                       new Date(time).toLocaleTimeString("fr-FR", {
                         hour: "2-digit",
                         minute: "2-digit",
                       })
                     }
-                    tick={{ fontSize: 12 }}
-                    minTickGap={30}
                   />
                   <YAxis
                     domain={["auto", "auto"]}
-                    width={40}
                     tick={{ fontSize: 12 }}
+                    width={40}
                   />
                   <Tooltip
                     labelFormatter={(time) =>
@@ -76,22 +76,22 @@ export function VitalsCurves({
                   />
                   {range && (
                     <ReferenceArea
-                      y1={range[0]}
-                      y2={range[1]}
-                      ifOverflow="extendDomain"
                       fill="var(--signal-positive)"
                       fillOpacity={0.08}
+                      ifOverflow="extendDomain"
                       stroke="none"
+                      y1={range[0]}
+                      y2={range[1]}
                     />
                   )}
                   <Line
-                    type="linear"
                     dataKey="value"
+                    dot={{ r: 3 }}
+                    isAnimationActive={false}
                     name={metric.label}
                     stroke="var(--primary)"
                     strokeWidth={1.5}
-                    dot={{ r: 3 }}
-                    isAnimationActive={false}
+                    type="linear"
                   />
                 </LineChart>
               </ResponsiveContainer>

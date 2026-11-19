@@ -70,20 +70,20 @@ function RoomRow({
         <Input
           aria-label={`Nom de la salle ${room.name}`}
           maxLength={ROOM_NAME_MAX_LENGTH}
-          value={name}
-          onChange={(event) => setName(event.target.value)}
           onBlur={() => {
             if (!name.trim()) {
               setName(room.name);
             }
           }}
+          onChange={(event) => setName(event.target.value)}
+          value={name}
         />
         {changed && (
           <Button
-            type="submit"
-            size="sm"
-            variant="outline"
             disabled={busy || !name.trim()}
+            size="sm"
+            type="submit"
+            variant="outline"
           >
             <Check className="size-4" />
             Renommer
@@ -95,35 +95,27 @@ function RoomRow({
       </span>
       <div className="flex shrink-0 items-center gap-1">
         <Button
-          type="button"
-          size="icon-sm"
-          variant="ghost"
           aria-label={`Monter ${room.name}`}
           disabled={busy || first}
           onClick={() => onMove(-1)}
+          size="icon-sm"
+          type="button"
+          variant="ghost"
         >
           <ArrowUp className="size-4" />
         </Button>
         <Button
-          type="button"
-          size="icon-sm"
-          variant="ghost"
           aria-label={`Descendre ${room.name}`}
           disabled={busy || last}
           onClick={() => onMove(1)}
+          size="icon-sm"
+          type="button"
+          variant="ghost"
         >
           <ArrowDown className="size-4" />
         </Button>
         <Button
-          type="button"
-          size="sm"
-          variant="ghost"
           disabled={busy || onlyActive}
-          title={
-            onlyActive
-              ? "Le cabinet doit garder au moins une salle."
-              : undefined
-          }
           onClick={() =>
             void run(
               () => roomsService.remove(room.id),
@@ -132,6 +124,14 @@ function RoomRow({
                 : `« ${room.name} » est supprimée.`
             )
           }
+          size="sm"
+          title={
+            onlyActive
+              ? "Le cabinet doit garder au moins une salle."
+              : undefined
+          }
+          type="button"
+          variant="ghost"
         >
           {used ? (
             <Archive className="size-4" />
@@ -210,14 +210,14 @@ export function RoomsSettings() {
             <ul className="divide-y rounded-2xl border bg-background">
               {active.map((room, index) => (
                 <RoomRow
-                  key={`${room.id}:${room.name}`}
                   busy={busy}
                   first={index === 0}
+                  key={`${room.id}:${room.name}`}
                   last={index === active.length - 1}
                   onlyActive={active.length === 1}
+                  onMove={(direction) => move(index, direction)}
                   room={room}
                   run={run}
-                  onMove={(direction) => move(index, direction)}
                 />
               ))}
             </ul>
@@ -233,11 +233,11 @@ export function RoomsSettings() {
               aria-label="Nom de la nouvelle salle"
               className="min-w-48 flex-1"
               maxLength={ROOM_NAME_MAX_LENGTH}
+              onChange={(event) => setDraft(event.target.value)}
               placeholder="Nouvelle salle, par exemple « Box urgences »"
               value={draft}
-              onChange={(event) => setDraft(event.target.value)}
             />
-            <Button type="submit" disabled={busy || !draft.trim()}>
+            <Button disabled={busy || !draft.trim()} type="submit">
               <Plus className="size-4" />
               Ajouter
             </Button>
@@ -245,8 +245,8 @@ export function RoomsSettings() {
 
           {(problem || error) && (
             <p
-              role="alert"
               className="rounded-2xl border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive"
+              role="alert"
             >
               {problem ?? error}
             </p>
@@ -260,17 +260,14 @@ export function RoomsSettings() {
               <ul className="divide-y border-t">
                 {archived.map((room) => (
                   <li
-                    key={room.id}
                     className="flex flex-wrap items-center gap-3 px-4 py-3"
+                    key={room.id}
                   >
                     <span className="min-w-48 flex-1 text-sm">{room.name}</span>
                     <span className="w-32 shrink-0 text-xs tabular-nums text-muted-foreground">
                       {bookings(room.appointmentCount)}
                     </span>
                     <Button
-                      type="button"
-                      size="sm"
-                      variant="ghost"
                       disabled={busy}
                       onClick={() =>
                         void run(
@@ -278,6 +275,9 @@ export function RoomsSettings() {
                           `« ${room.name} » est de nouveau active.`
                         )
                       }
+                      size="sm"
+                      type="button"
+                      variant="ghost"
                     >
                       <RotateCcw className="size-4" />
                       Réactiver

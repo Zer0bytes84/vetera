@@ -283,19 +283,24 @@ export function PatientRecordExportDialog({
 
   return (
     <Dialog
-      open
       onOpenChange={(open) => {
         if (!open) {
           close();
         }
       }}
+      open
     >
       <FormDialogContent
-        size={phase === "preview" ? "xl" : "md"}
         className={`patient-export-dialog${phase === "preview" ? " patient-export-dialog-preview" : ""}`}
+        size={phase === "preview" ? "xl" : "md"}
       >
         <FormDialogHeader
           compact
+          description={
+            phase === "preview"
+              ? `${artifact?.patientName ?? patientName} · Relisez le document avant de l’enregistrer ou de l’imprimer.`
+              : `${patientName} · Choisissez la période et le contenu du dossier.`
+          }
           icon={
             <FileText aria-hidden="true" className="size-5" strokeWidth={1} />
           }
@@ -303,11 +308,6 @@ export function PatientRecordExportDialog({
             phase === "preview"
               ? "Aperçu du dossier patient"
               : "Exporter le dossier en PDF"
-          }
-          description={
-            phase === "preview"
-              ? `${artifact?.patientName ?? patientName} · Relisez le document avant de l’enregistrer ou de l’imprimer.`
-              : `${patientName} · Choisissez la période et le contenu du dossier.`
           }
         />
         {phase === "options" ? (
@@ -318,19 +318,19 @@ export function PatientRecordExportDialog({
                 <div className="patient-export-period">
                   <label data-selected={!range}>
                     <input
-                      type="radio"
-                      name="patient-export-period"
                       checked={!range}
+                      name="patient-export-period"
                       onChange={() => setRange(false)}
+                      type="radio"
                     />
                     Tout l’historique
                   </label>
                   <label data-selected={range}>
                     <input
-                      type="radio"
-                      name="patient-export-period"
                       checked={range}
+                      name="patient-export-period"
                       onChange={() => setRange(true)}
+                      type="radio"
                     />
                     Choisir une période
                   </label>
@@ -341,20 +341,20 @@ export function PatientRecordExportDialog({
                       Du
                       <DatePicker
                         id="patient-export-from"
-                        required
                         max={to || undefined}
-                        value={from}
                         onChange={(value) => setFrom(value)}
+                        required
+                        value={from}
                       />
                     </label>
                     <label htmlFor="patient-export-to">
                       Au
                       <DatePicker
                         id="patient-export-to"
-                        required
                         min={from || undefined}
-                        value={to}
                         onChange={(value) => setTo(value)}
+                        required
+                        value={to}
                       />
                     </label>
                   </div>
@@ -365,16 +365,16 @@ export function PatientRecordExportDialog({
                 {SECTIONS.map((section) => (
                   <label
                     className="patient-export-option"
-                    key={section.id}
                     htmlFor={`patient-export-${section.id}`}
+                    key={section.id}
                   >
                     <span>
                       <strong>{section.label}</strong>
                       <span>{section.description}</span>
                     </span>
                     <Checkbox
-                      id={`patient-export-${section.id}`}
                       checked={sections[section.id]}
+                      id={`patient-export-${section.id}`}
                       onCheckedChange={(checked) =>
                         setSections((current) => ({
                           ...current,
@@ -396,8 +396,8 @@ export function PatientRecordExportDialog({
                   </span>
                 </span>
                 <Checkbox
-                  id="patient-export-attachments"
                   checked={attachments}
+                  id="patient-export-attachments"
                   onCheckedChange={setAttachments}
                 />
               </label>
@@ -414,10 +414,10 @@ export function PatientRecordExportDialog({
               <Button onClick={close} type="button" variant="outline">
                 Annuler
               </Button>
-              <Button type="submit" disabled={!hasContent}>
+              <Button disabled={!hasContent} type="submit">
                 <FileText
-                  className="size-4"
                   aria-hidden="true"
+                  className="size-4"
                   strokeWidth={1}
                 />
                 Générer
@@ -427,11 +427,11 @@ export function PatientRecordExportDialog({
         ) : phase === "generating" ? (
           <>
             <FormDialogBody
-              className="patient-export-generating"
               aria-busy="true"
+              className="patient-export-generating"
             >
               <Spinner className="size-6" />
-              <div role="status" aria-live="polite">
+              <div aria-live="polite" role="status">
                 <p className="font-medium">
                   {progress?.label || "Préparation du dossier…"}
                 </p>
@@ -455,7 +455,7 @@ export function PatientRecordExportDialog({
               )}
             </FormDialogBody>
             <FormDialogFooter>
-              <Button variant="outline" onClick={cancelGeneration}>
+              <Button onClick={cancelGeneration} variant="outline">
                 Annuler la génération
               </Button>
             </FormDialogFooter>
@@ -466,65 +466,65 @@ export function PatientRecordExportDialog({
               <FormDialogBody className="patient-export-preview-body">
                 <PatientRecordPreview artifact={artifact} page={page} />
                 {error && (
-                  <p role="alert" className="patient-export-error">
+                  <p className="patient-export-error" role="alert">
                     {error}
                   </p>
                 )}
               </FormDialogBody>
               <FormDialogFooter className="patient-export-preview-footer">
                 <div
-                  className="patient-export-pagination"
                   aria-label="Pages du dossier"
+                  className="patient-export-pagination"
                 >
                   <Button
-                    variant="outline"
-                    size="icon"
                     aria-label="Page précédente"
                     disabled={page === 1}
                     onClick={() => setPage((value) => value - 1)}
+                    size="icon"
+                    variant="outline"
                   >
                     <ChevronLeft className="size-4" strokeWidth={1} />
                   </Button>
-                  <span className="tabular-nums" aria-live="polite">
+                  <span aria-live="polite" className="tabular-nums">
                     {page} / {artifact.pageCount}
                   </span>
                   <Button
-                    variant="outline"
-                    size="icon"
                     aria-label="Page suivante"
                     disabled={page === artifact.pageCount}
                     onClick={() => setPage((value) => value + 1)}
+                    size="icon"
+                    variant="outline"
                   >
                     <ChevronRight className="size-4" strokeWidth={1} />
                   </Button>
                 </div>
                 <div className="patient-export-preview-actions">
                   <Button
-                    variant="ghost"
                     disabled={saving || printing}
                     onClick={() => {
                       setPhase("options");
                       setError("");
                     }}
+                    variant="ghost"
                   >
                     <ArrowLeft
-                      className="size-4"
                       aria-hidden="true"
+                      className="size-4"
                       strokeWidth={1}
                     />
                     Options
                   </Button>
                   <Button
-                    variant="outline"
                     disabled={saving || printing}
                     onClick={() => void printPdf()}
+                    variant="outline"
                   >
                     {printing ? (
                       <Spinner className="size-4" />
                     ) : (
                       <Printer
-                        className="size-4"
                         aria-hidden="true"
+                        className="size-4"
                         strokeWidth={1}
                       />
                     )}
@@ -538,8 +538,8 @@ export function PatientRecordExportDialog({
                       <Spinner className="size-4" />
                     ) : (
                       <Download
-                        className="size-4"
                         aria-hidden="true"
+                        className="size-4"
                         strokeWidth={1}
                       />
                     )}

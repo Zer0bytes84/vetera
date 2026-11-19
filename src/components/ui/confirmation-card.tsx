@@ -86,15 +86,15 @@ export function ConfirmationCard({
   return (
     <MotionConfig reducedMotion="user">
       <Shell aria-label={data.title} className={cn("max-w-none", className)}>
-        <AnimatePresence mode="popLayout" initial={false}>
+        <AnimatePresence initial={false} mode="popLayout">
           {status === "done" ? (
-            <Done key="done" data={data} label={doneLabel} />
+            <Done data={data} key="done" label={doneLabel} />
           ) : (
-            <motion.div key="review" exit={{ opacity: 0, transition: exit }}>
+            <motion.div exit={{ opacity: 0, transition: exit }} key="review">
               <ShellHeader
                 icon={BadgeCheck}
-                title={data.title}
                 subtitle={data.subtitle}
+                title={data.title}
               />
               <Panel className="border border-border">
                 {compact ? (
@@ -109,24 +109,24 @@ export function ConfirmationCard({
                   <ul className="px-2 pt-2">
                     {data.items.map((item) => (
                       <motion.li
-                        key={item.id}
-                        initial={{ opacity: 0, height: 0 }}
                         animate={{
                           opacity: 1,
                           height: "auto",
                           transition: spring,
                         }}
                         className="overflow-hidden"
+                        initial={{ opacity: 0, height: 0 }}
+                        key={item.id}
                       >
                         <div className="flex items-center gap-3 rounded-xl px-2 py-2">
                           <IconTile
-                            icon={item.filled ? Check : Minus}
                             className={cn(
                               "size-6 rounded-full",
                               item.filled
                                 ? "bg-positive/15 text-positive"
                                 : "bg-foreground/[0.06] text-muted-foreground"
                             )}
+                            icon={item.filled ? Check : Minus}
                           />
                           <div className="min-w-0 flex-1">
                             <p className="truncate text-sm">{item.label}</p>
@@ -145,12 +145,12 @@ export function ConfirmationCard({
                   <div className="flex flex-col gap-1.5 px-2 py-2">
                     {data.warnings.map((w) => (
                       <Inset
-                        key={w}
                         className="flex items-start gap-2 bg-warning/10 px-3 py-2 text-[0.8125rem] text-warning"
+                        key={w}
                       >
                         <TriangleAlert
-                          className="mt-0.5 size-3.5 shrink-0"
                           aria-hidden="true"
+                          className="mt-0.5 size-3.5 shrink-0"
                         />
                         <span className="whitespace-pre-line">
                           <span className="sr-only">Attention : </span>
@@ -174,32 +174,32 @@ export function ConfirmationCard({
               <div className="flex flex-wrap items-center justify-end gap-1.5 pt-1.5">
                 {onCancel && (
                   <Button
-                    variant="quiet"
-                    size="sm"
-                    onClick={onCancel}
                     disabled={status !== "review"}
+                    onClick={onCancel}
+                    size="sm"
+                    variant="quiet"
                   >
                     {cancelLabel}
                   </Button>
                 )}
                 {onEdit && (
                   <Button
-                    variant="secondary"
-                    size="sm"
-                    onClick={onEdit}
                     disabled={status !== "review"}
+                    onClick={onEdit}
+                    size="sm"
+                    variant="secondary"
                   >
                     {editLabel}
                   </Button>
                 )}
                 <Button
-                  variant="primary"
-                  size="sm"
-                  loading={status === "confirming"}
                   disabled={
                     Boolean(blocked) || !data.items.some((i) => i.filled)
                   }
+                  loading={status === "confirming"}
                   onClick={() => onConfirm?.()}
+                  size="sm"
+                  variant="primary"
                 >
                   {status === "confirming" ? confirmingLabel : confirmLabel}
                 </Button>
@@ -207,7 +207,7 @@ export function ConfirmationCard({
             </motion.div>
           )}
         </AnimatePresence>
-        <p role="status" aria-live="polite" className="sr-only">
+        <p aria-live="polite" className="sr-only" role="status">
           {status === "confirming"
             ? confirmingLabel
             : status === "done"
@@ -228,18 +228,18 @@ function Done({
 }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0, transition: enter }}
+      initial={{ opacity: 0, y: 6 }}
     >
       <Panel className="flex items-center gap-3 border border-border p-3">
-        <IconTile icon={CircleCheck} className="bg-positive/15 text-positive" />
+        <IconTile className="bg-positive/15 text-positive" icon={CircleCheck} />
         <div className="min-w-0 flex-1">
           <p className="text-[1rem] font-medium">{data.title}</p>
           <p className="truncate text-[0.8125rem] text-muted-foreground">
             {[data.reference, data.doneAt].filter(Boolean).join(" · ")}
           </p>
         </div>
-        <StatusPill tone="positive" icon={CircleCheck}>
+        <StatusPill icon={CircleCheck} tone="positive">
           {label}
         </StatusPill>
       </Panel>

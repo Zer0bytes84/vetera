@@ -91,7 +91,6 @@ export function PrescriptionList({
               const pItems = items.forPrescription(p.id);
               return (
                 <PrescriptionRow
-                  prescriptionId={p.id}
                   diagnosis={p.diagnosis}
                   items={pItems.map<PreviewItem>((it) => ({
                     id: it.id,
@@ -117,6 +116,7 @@ export function PrescriptionList({
                   key={p.id}
                   patient={patient}
                   prescriptionDate={p.prescriptionDate}
+                  prescriptionId={p.id}
                   status={p.status}
                   vet={vet}
                 />
@@ -208,9 +208,9 @@ function PrescriptionRow({
         </ul>
       </div>
       <PrescriptionDispensing
+        items={items}
         prescriptionId={prescriptionId}
         status={status}
-        items={items}
       />
     </div>
   );

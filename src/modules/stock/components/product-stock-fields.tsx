@@ -33,14 +33,15 @@ export function ProductStockFields({
     <div className="space-y-2">
       <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_9rem]">
         <div className="min-w-0 space-y-1.5">
-          <label htmlFor={`${inputId}-product`} className="t-13">
+          <label className="t-13" htmlFor={`${inputId}-product`}>
             {optional ? "Produit lié (facultatif)" : "Produit du stock"}
           </label>
           <SearchableSelect
+            controlClassName="h-11 rounded-xl"
+            disabled={disabled}
             id={`${inputId}-product`}
             label="Choisir un produit du stock"
-            disabled={disabled}
-            controlClassName="h-11 rounded-xl"
+            onValueChange={onProductChange}
             options={[
               ...(optional ? [{ value: "", label: "Aucun produit" }] : []),
               ...products
@@ -51,30 +52,29 @@ export function ProductStockFields({
                   keywords: `${p.category} ${p.unit}`,
                 })),
             ]}
-            value={productId}
-            onValueChange={onProductChange}
             placeholder="Rechercher un produit…"
+            value={productId}
           />
         </div>
         <div className="space-y-1.5">
-          <label htmlFor={`${inputId}-quantity`} className="t-13">
+          <label className="t-13" htmlFor={`${inputId}-quantity`}>
             Quantité{product ? ` (${product.unit})` : ""}
           </label>
           <Input
+            aria-describedby={`${inputId}-availability`}
+            className="h-11 rounded-xl tabular-nums"
+            disabled={disabled || !product || !tracked}
             id={`${inputId}-quantity`}
             inputMode="decimal"
-            className="h-11 rounded-xl tabular-nums"
-            value={quantity}
-            disabled={disabled || !product || !tracked}
-            aria-describedby={`${inputId}-availability`}
             onChange={(event) => onQuantityChange(event.target.value)}
+            value={quantity}
           />
         </div>
       </div>
       <p
-        id={`${inputId}-availability`}
-        className={`t-12 ${shortage ? "text-destructive" : "text-muted-foreground"}`}
         aria-live="polite"
+        className={`t-12 ${shortage ? "text-destructive" : "text-muted-foreground"}`}
+        id={`${inputId}-availability`}
       >
         {product
           ? tracked

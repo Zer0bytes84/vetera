@@ -615,12 +615,12 @@ export function PrescriptionBuilder({
   return (
     <div className={cn("space-y-4", className)}>
       <BuilderHeader
+        onOpenTemplates={() => setTemplatesDialog("manage")}
         onPreview={() => {
           setShowPreview(true);
           onPreviewChange?.(true);
         }}
         onSaveDraft={() => void saveWithFeedback("draft")}
-        onOpenTemplates={() => setTemplatesDialog("manage")}
         onSign={() => setSignConfirmOpen(true)}
         savedAt={savedAt}
         status={status}

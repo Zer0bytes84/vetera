@@ -58,18 +58,18 @@ export function SearchableSelect({
   );
   return (
     <Combobox<SearchableOption>
-      items={options}
-      value={selectedOption}
-      onValueChange={(option) => onValueChange(option?.value ?? "")}
-      itemToStringLabel={(option) => option.label}
-      itemToStringValue={(option) => option.value}
-      isItemEqualToValue={(option, selected) => option.value === selected.value}
+      disabled={disabled}
       filter={(option, query) =>
         normalize(`${option.label} ${option.keywords ?? ""}`).includes(
           normalize(query)
         )
       }
-      disabled={disabled}
+      isItemEqualToValue={(option, selected) => option.value === selected.value}
+      items={options}
+      itemToStringLabel={(option) => option.label}
+      itemToStringValue={(option) => option.value}
+      onValueChange={(option) => onValueChange(option?.value ?? "")}
+      value={selectedOption}
     >
       <div
         data-no-drag
@@ -80,10 +80,10 @@ export function SearchableSelect({
         }}
       >
         <ComboboxInput
-          id={id}
           aria-label={label}
-          placeholder={placeholder}
           className={`w-full ${controlClassName}`}
+          id={id}
+          placeholder={placeholder}
         />
       </div>
       <ComboboxContent

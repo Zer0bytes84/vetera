@@ -72,15 +72,15 @@ export function VitalsForm({
     >
       <div className="grid grid-cols-2 gap-4">
         {fields.map((field) => (
-          <label key={field.key} className="space-y-2 t-13">
+          <label className="space-y-2 t-13" key={field.key}>
             {field.label}
             <Input
               className="h-11"
               inputMode="decimal"
-              value={values[field.key] || ""}
               onChange={(event) =>
                 setValues({ ...values, [field.key]: event.target.value })
               }
+              value={values[field.key] || ""}
             />
           </label>
         ))}
@@ -90,10 +90,10 @@ export function VitalsForm({
           État général
           <select
             className="h-11 w-full rounded-xl border bg-background px-3"
-            value={values.generalState || ""}
             onChange={(event) =>
               setValues({ ...values, generalState: event.target.value })
             }
+            value={values.generalState || ""}
           >
             <option value="">Non renseigné</option>
             {["Alerte", "Abattu", "Agité", "Non réactif"].map((state) => (
@@ -105,10 +105,10 @@ export function VitalsForm({
           Appétit
           <select
             className="h-11 w-full rounded-xl border bg-background px-3"
-            value={values.appetite || ""}
             onChange={(event) =>
               setValues({ ...values, appetite: event.target.value })
             }
+            value={values.appetite || ""}
           >
             <option value="">Non renseigné</option>
             {["Conservé", "Diminué", "Absent"].map((state) => (
@@ -121,21 +121,21 @@ export function VitalsForm({
         Observations
         <Input
           className="h-11"
-          value={values.note || ""}
           onChange={(event) =>
             setValues({ ...values, note: event.target.value })
           }
+          value={values.note || ""}
         />
       </label>
       {error && (
-        <p role="alert" className="t-13 text-destructive">
+        <p className="t-13 text-destructive" role="alert">
           {error}
         </p>
       )}
       <Button
-        type="submit"
         className="h-11 w-full"
         disabled={busy || !currentUser}
+        type="submit"
       >
         {busy ? "Enregistrement…" : "Enregistrer le relevé"}
       </Button>

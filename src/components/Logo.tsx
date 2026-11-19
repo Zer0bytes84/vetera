@@ -13,11 +13,11 @@ function BrandMark() {
   return (
     <>
       <path
+        d="M8 4h8v12.1A13 13 0 1 1 8 28V4Zm8 24a5 5 0 1 0 10 0 5 5 0 0 0-10 0Z"
         fill="#139fdf"
         fillRule="evenodd"
-        d="M8 4h8v12.1A13 13 0 1 1 8 28V4Zm8 24a5 5 0 1 0 10 0 5 5 0 0 0-10 0Z"
       />
-      <path fill="#66dfd0" d="M25 5h6v5h5v6h-5v5h-6v-5h-5v-6h5Z" />
+      <path d="M25 5h6v5h5v6h-5v5h-6v-5h-5v-6h5Z" fill="#66dfd0" />
     </>
   );
 }
@@ -35,29 +35,29 @@ const Logo: FC<LogoProps> = ({
     return (
       <div
         aria-label="Baitari"
-        role="img"
         className={cn(
           "flex select-none items-center gap-2.5 text-current",
           className
         )}
+        role="img"
       >
         <svg
           aria-hidden="true"
-          focusable="false"
           className="shrink-0"
-          width={height}
+          focusable="false"
           height={height}
           viewBox="0 0 44 44"
+          width={height}
           xmlns="http://www.w3.org/2000/svg"
         >
           <defs>
             <linearGradient
+              gradientUnits="userSpaceOnUse"
               id={gradientId}
               x1="8"
-              y1="6"
               x2="35"
+              y1="6"
               y2="38"
-              gradientUnits="userSpaceOnUse"
             >
               <stop stopColor="#087e9c" />
               <stop offset="1" stopColor="#17adbf" />
@@ -67,16 +67,16 @@ const Logo: FC<LogoProps> = ({
             d="M12 7v21a10 10 0 1 0 10-10 10 10 0 0 0-10 10"
             fill="none"
             stroke={`url(#${gradientId})`}
-            strokeWidth="7"
             strokeLinecap="round"
             strokeLinejoin="round"
+            strokeWidth="7"
           />
           <path
             d="M29 5v12M23 11h12"
             fill="none"
             stroke="#63cfc0"
-            strokeWidth="5"
             strokeLinecap="round"
+            strokeWidth="5"
           />
         </svg>
         {!compact && (
@@ -90,15 +90,15 @@ const Logo: FC<LogoProps> = ({
   return (
     <div
       aria-label="Baitari"
-      role="img"
       className={cn("flex select-none items-center text-current", className)}
+      role="img"
     >
       <svg
         aria-hidden="true"
-        xmlns="http://www.w3.org/2000/svg"
         className="shrink-0"
         style={{ height, width: compact ? height : (height * 148) / 40 }}
         viewBox={compact ? "0 0 44 44" : "0 0 148 40"}
+        xmlns="http://www.w3.org/2000/svg"
       >
         <g transform={compact ? undefined : "translate(-3, -2)"}>
           <BrandMark />

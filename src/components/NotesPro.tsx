@@ -683,18 +683,18 @@ const NotesPro: React.FC = () => {
         workspaceMode === "assistant" ? "Bibliothèque" : "Assistant documents"
       }
       className="rounded-full"
-      size="icon-sm"
-      style={{ borderRadius: 999 }}
-      title={
-        workspaceMode === "assistant" ? "Bibliothèque" : "Assistant documents"
-      }
-      variant="outline"
       onClick={() => {
         setAssistantNoteId("");
         setWorkspaceMode(
           workspaceMode === "assistant" ? "library" : "assistant"
         );
       }}
+      size="icon-sm"
+      style={{ borderRadius: 999 }}
+      title={
+        workspaceMode === "assistant" ? "Bibliothèque" : "Assistant documents"
+      }
+      variant="outline"
     >
       {workspaceMode === "assistant" ? (
         <BookOpen className="size-4" />
@@ -708,8 +708,8 @@ const NotesPro: React.FC = () => {
     <div className="documents-workspace dashboard-stage flex h-full min-h-0 w-full min-w-0 flex-col gap-5 overflow-hidden px-4 pb-0 lg:px-6">
       <MotivationalHeader
         section="notes"
-        title="Documents"
         subtitle="notes cliniques"
+        title="Documents"
       />
 
       {/* The page's actions sit in the figures band of the library; elsewhere (assistant, templates, an open note) there is no band, so they keep a slim row. */}
@@ -790,8 +790,8 @@ const NotesPro: React.FC = () => {
                       {/* Save status */}
                       {saveFailed ? (
                         <span
-                          role="alert"
                           className="flex items-center gap-1.5 text-xs font-medium text-destructive"
+                          role="alert"
                         >
                           Non enregistré
                           <Button
@@ -1035,8 +1035,8 @@ const NotesPro: React.FC = () => {
 
                             {/* Rich text editor */}
                             <Editor
-                              key={activeNote.id}
                               content={content}
+                              key={activeNote.id}
                               onAiStatusChange={setAiStatus}
                               onEditorCreated={setEditorInstance}
                               onUpdate={handleContentChange}
@@ -1090,7 +1090,7 @@ const NotesPro: React.FC = () => {
         <div className="min-h-0 flex-1 overflow-y-auto rounded-t-xl border border-b-0 border-border bg-card">
           <Suspense
             fallback={
-              <p role="status" className="p-6 text-sm text-muted-foreground">
+              <p className="p-6 text-sm text-muted-foreground" role="status">
                 Ouverture des documents…
               </p>
             }

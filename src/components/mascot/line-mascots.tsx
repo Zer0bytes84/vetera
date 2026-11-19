@@ -216,8 +216,8 @@ export const LINE_ANIMALS = {
           d="M37 88 C37 80 46 78 60 78 C74 78 83 80 83 88 C83 98 74 104 60 104 C46 104 37 98 37 88 Z"
           fill="#f7c9d1"
         />
-        <ellipse cx="51" cy="87" rx="2.6" ry="3.2" fill={INK} stroke="none" />
-        <ellipse cx="69" cy="87" rx="2.6" ry="3.2" fill={INK} stroke="none" />
+        <ellipse cx="51" cy="87" fill={INK} rx="2.6" ry="3.2" stroke="none" />
+        <ellipse cx="69" cy="87" fill={INK} rx="2.6" ry="3.2" stroke="none" />
       </>
     ),
     eyeY: 66,

@@ -302,23 +302,21 @@ export function FinancesView(props: FinancesViewProps) {
             </Empty>
           ) : (
             <InvoicesTable
-              toolbar={viewToggle}
               busy={isSubmitting}
               detailLoading={isDetailLoading}
               filters={
                 <>
                   <FinancialPeriodFilter
                     from={invoiceFrom}
-                    to={invoiceTo}
                     onChange={(from, to) => {
                       setInvoiceFrom(from);
                       setInvoiceTo(to);
                       setInvoicePage(1);
                     }}
+                    to={invoiceTo}
                   />
                   <ListFilter
                     label="Document"
-                    value={invoiceDocumentFilter}
                     onValueChange={(value) =>
                       setInvoiceDocumentFilter(value as InvoiceDocumentFilter)
                     }
@@ -328,10 +326,10 @@ export function FinancesView(props: FinancesViewProps) {
                       { value: "issued", label: "Émises" },
                       { value: "void", label: "Annulées" },
                     ]}
+                    value={invoiceDocumentFilter}
                   />
                   <ListFilter
                     label="Règlement"
-                    value={invoiceSettlementFilter}
                     onValueChange={(value) =>
                       setInvoiceSettlementFilter(
                         value as InvoiceSettlementFilter
@@ -345,6 +343,7 @@ export function FinancesView(props: FinancesViewProps) {
                       { value: "overdue", label: "En retard" },
                       { value: "credited", label: "Créditées" },
                     ]}
+                    value={invoiceSettlementFilter}
                   />
                   {(invoiceFilterCount > 0 || invoiceFrom || invoiceTo) && (
                     <QuietButton onClick={resetInvoiceFilters}>
@@ -363,6 +362,7 @@ export function FinancesView(props: FinancesViewProps) {
               onVoid={requestVoidInvoice}
               owners={owners}
               patients={patients}
+              toolbar={viewToggle}
             />
           )}
         </TabsContent>
@@ -370,8 +370,8 @@ export function FinancesView(props: FinancesViewProps) {
         <TabsContent className="space-y-5" value="journal">
           <Shell>
             <ShellHeader
-              aside={viewToggle}
               as="h2"
+              aside={viewToggle}
               icon={ReceiptPercentIcon}
               subtitle={
                 <>
@@ -426,12 +426,12 @@ export function FinancesView(props: FinancesViewProps) {
                 </Button>
                 <FinancialPeriodFilter
                   from={journalFrom}
-                  to={journalTo}
                   onChange={(from, to) => {
                     setJournalFrom(from);
                     setJournalTo(to);
                     setJournalPage(1);
                   }}
+                  to={journalTo}
                 />
               </div>
               {journalAdvancedOpen ? (
@@ -448,7 +448,6 @@ export function FinancesView(props: FinancesViewProps) {
                   />
                   <ListFilter
                     label="Catégorie"
-                    value={journalCategory}
                     onValueChange={(value) => setJournalCategory(value)}
                     options={[
                       { value: "all", label: "Toutes les catégories" },
@@ -457,10 +456,10 @@ export function FinancesView(props: FinancesViewProps) {
                         label: value,
                       })),
                     ]}
+                    value={journalCategory}
                   />
                   <ListFilter
                     label="Paiement"
-                    value={journalMethod}
                     onValueChange={(value) =>
                       setJournalMethod(
                         value as TransactionPaymentMethod | "all"
@@ -473,10 +472,10 @@ export function FinancesView(props: FinancesViewProps) {
                         label: method.label,
                       })),
                     ]}
+                    value={journalMethod}
                   />
                   <ListFilter
                     label="Statut"
-                    value={journalStatus}
                     onValueChange={(value) =>
                       setJournalStatus(value as TransactionStatusFilter)
                     }
@@ -485,10 +484,10 @@ export function FinancesView(props: FinancesViewProps) {
                       { value: "paid", label: "Payées" },
                       { value: "pending", label: "En attente" },
                     ]}
+                    value={journalStatus}
                   />
                   <ListFilter
                     label="Origine"
-                    value={journalSource}
                     onValueChange={(value) =>
                       setJournalSource(value as TransactionSourceFilter)
                     }
@@ -497,6 +496,7 @@ export function FinancesView(props: FinancesViewProps) {
                       { value: "manual", label: "Saisie manuelle" },
                       { value: "billing", label: "Facturation" },
                     ]}
+                    value={journalSource}
                   />
                   <Input
                     aria-label="Montant minimum"
@@ -524,7 +524,6 @@ export function FinancesView(props: FinancesViewProps) {
                   />
                   <ListFilter
                     label="Trier"
-                    value={journalSort}
                     onValueChange={(value) =>
                       setJournalSort(value as TransactionSort)
                     }
@@ -534,6 +533,7 @@ export function FinancesView(props: FinancesViewProps) {
                       { value: "amount-desc", label: "Montant décroissant" },
                       { value: "amount-asc", label: "Montant croissant" },
                     ]}
+                    value={journalSort}
                   />
                   <div className="flex items-end">
                     <Button
@@ -776,13 +776,6 @@ export function FinancesView(props: FinancesViewProps) {
                   <SearchableSelect
                     id="invoice-owner"
                     label="Propriétaire de la facture"
-                    placeholder="Rechercher un propriétaire…"
-                    value={invoiceDraft.ownerId}
-                    options={owners.map((owner) => ({
-                      value: owner.id,
-                      label: `${owner.firstName} ${owner.lastName}`,
-                      keywords: owner.phone,
-                    }))}
                     onValueChange={(ownerId) =>
                       setInvoiceDraft((current) => ({
                         ...current,
@@ -790,6 +783,13 @@ export function FinancesView(props: FinancesViewProps) {
                         patientId: "",
                       }))
                     }
+                    options={owners.map((owner) => ({
+                      value: owner.id,
+                      label: `${owner.firstName} ${owner.lastName}`,
+                      keywords: owner.phone,
+                    }))}
+                    placeholder="Rechercher un propriétaire…"
+                    value={invoiceDraft.ownerId}
                   />
                 </Field>
                 <Field>
@@ -983,19 +983,19 @@ export function FinancesView(props: FinancesViewProps) {
           {selectedInvoice ? (
             <>
               <FormDialogHeader
-                compact
                 artwork="invoice-detail"
-                title={getInvoiceDisplayName(selectedInvoice)}
-                description={`Émise le ${formatDate(selectedInvoice.issuedAt)} · échéance ${formatDate(selectedInvoice.dueAt)}`}
-                icon={
-                  <HugeiconsIcon icon={ReceiptTextIcon} strokeWidth={1.5} />
-                }
                 aside={
                   <div className="flex flex-wrap justify-center gap-2">
                     {documentBadge(selectedInvoice.documentStatus)}
                     {settlementBadge(selectedInvoice.settlementStatus)}
                   </div>
                 }
+                compact
+                description={`Émise le ${formatDate(selectedInvoice.issuedAt)} · échéance ${formatDate(selectedInvoice.dueAt)}`}
+                icon={
+                  <HugeiconsIcon icon={ReceiptTextIcon} strokeWidth={1.5} />
+                }
+                title={getInvoiceDisplayName(selectedInvoice)}
               />
               <FormDialogBody className="space-y-4">
                 <div className="grid gap-3 sm:grid-cols-3">
@@ -1042,15 +1042,15 @@ export function FinancesView(props: FinancesViewProps) {
                                 <Input
                                   aria-label={`Prix unitaire en DA : ${line.description}`}
                                   className="w-32 text-right tabular-nums"
-                                  inputMode="decimal"
                                   disabled={isSubmitting}
-                                  value={invoicePrices[line.id] ?? ""}
+                                  inputMode="decimal"
                                   onChange={(event) =>
                                     setInvoicePrices((current) => ({
                                       ...current,
                                       [line.id]: event.target.value,
                                     }))
                                   }
+                                  value={invoicePrices[line.id] ?? ""}
                                 />
                                 <span className="text-xs text-muted-foreground">
                                   DA
@@ -1171,11 +1171,11 @@ export function FinancesView(props: FinancesViewProps) {
               <FormDialogFooter className="empty:hidden">
                 {selectedInvoice.documentStatus === "issued" && (
                   <Button
-                    variant="outline"
                     onClick={() => {
                       setPreviewInvoice(selectedInvoice);
                       setSelectedInvoice(null);
                     }}
+                    variant="outline"
                   >
                     Aperçu / PDF
                   </Button>
@@ -1184,9 +1184,9 @@ export function FinancesView(props: FinancesViewProps) {
                   editingInvoicePrices ? (
                     <>
                       <Button
-                        variant="outline"
                         disabled={isSubmitting}
                         onClick={() => setEditingInvoicePrices(false)}
+                        variant="outline"
                       >
                         Annuler les modifications
                       </Button>
@@ -1200,9 +1200,9 @@ export function FinancesView(props: FinancesViewProps) {
                   ) : (
                     <>
                       <Button
-                        variant="outline"
                         disabled={isSubmitting}
                         onClick={startEditingInvoicePrices}
+                        variant="outline"
                       >
                         Modifier les tarifs
                       </Button>
@@ -1337,8 +1337,8 @@ export function FinancesView(props: FinancesViewProps) {
           return (
             <InvoicePdfPreview
               data={document.data}
-              settings={document.settings}
               onClose={() => setPreviewInvoice(null)}
+              settings={document.settings}
             />
           );
         })()}

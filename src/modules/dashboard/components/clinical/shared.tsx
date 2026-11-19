@@ -14,7 +14,7 @@ export function RowSkeleton({ count = 3 }: { count?: number }) {
   return (
     <div className="space-y-3">
       {Array.from({ length: count }, (_, index) => (
-        <div key={index} className="flex h-14 items-center gap-3">
+        <div className="flex h-14 items-center gap-3" key={index}>
           <SkeletonBlock className="size-9 shrink-0" />
           <div className="flex-1">
             <SkeletonBlock className="h-3 w-1/2" />
@@ -34,9 +34,9 @@ export function ModuleLink({
 }) {
   return (
     <button
-      type="button"
       className={`inline-flex shrink-0 items-center gap-1.5 rounded-md t-12 font-medium text-ink-muted transition-colors duration-150 hover:text-ink ${focusRing}`}
       onClick={onClick}
+      type="button"
     >
       {children}
       <HugeiconsIcon icon={ArrowRight01Icon} size={14} strokeWidth={1.5} />
@@ -52,9 +52,9 @@ export function PatientPortrait({
 }) {
   return patient?.avatarUrl ? (
     <img
-      src={patient.avatarUrl}
       alt=""
       className="size-9 shrink-0 rounded-control bg-frame object-cover"
+      src={patient.avatarUrl}
     />
   ) : (
     <span
@@ -84,8 +84,8 @@ export function ModuleTotals({
     <dl className="module-totals-grid flex flex-wrap gap-x-6 gap-y-3 border-b border-hairline pb-4">
       {values.map((row, index) => (
         <div
-          key={row.label}
           className="module-totals-item flex items-baseline gap-2"
+          key={row.label}
         >
           <dd
             className={`font-display t-18 font-medium tabular-nums ${row.tone === "positive" ? "text-[color:var(--premium-green,var(--signal-positive))]" : row.tone === "watch" ? "text-[color:var(--premium-orange,var(--signal-watch))]" : "text-ink"}`}
@@ -93,7 +93,7 @@ export function ModuleTotals({
             {row.value}
           </dd>
           <dt className="flex items-center gap-1.5 t-12 text-ink-muted">
-            <i className={`finder-dot ${dotColor(index)}`} aria-hidden="true" />
+            <i aria-hidden="true" className={`finder-dot ${dotColor(index)}`} />
             {row.label}
           </dt>
         </div>

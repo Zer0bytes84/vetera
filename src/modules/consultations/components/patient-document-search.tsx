@@ -116,8 +116,8 @@ function Passage({ text, query }: { text: string; query: string }) {
       {highlightPassage(text, query).map((segment, index) =>
         segment.hit ? (
           <mark
-            key={index}
             className="rounded-[3px] bg-primary/12 px-0.5 text-foreground dark:bg-primary/25"
+            key={index}
           >
             {segment.text}
           </mark>
@@ -425,16 +425,16 @@ export function PatientDocumentSearch({
           </p>
         </div>
         <Button
-          size="sm"
+          className="gap-2"
           disabled={locked}
           onClick={() => void install()}
-          className="gap-2"
+          size="sm"
         >
           {busy ? <CircleNotch className="size-3.5 animate-spin" /> : null}
           Installer la recherche locale
         </Button>
         {error && (
-          <p role="alert" className="t-12 text-destructive">
+          <p className="t-12 text-destructive" role="alert">
             {error}
           </p>
         )}
@@ -457,29 +457,29 @@ export function PatientDocumentSearch({
           <Search className="pointer-events-none absolute left-3 size-4 text-muted-foreground" />
           <Input
             aria-label="Rechercher dans les dossiers"
+            className="h-9 pl-9 pr-16 t-13"
+            disabled={locked}
+            onChange={(event) => {
+              setQuery(event.target.value);
+              setResults([]);
+            }}
             placeholder={
               audience === "all" || !patientId
                 ? "Symptôme, pathologie, traitement…"
                 : "Observation, antécédent, examen…"
             }
             value={query}
-            onChange={(event) => {
-              setQuery(event.target.value);
-              setResults([]);
-            }}
-            disabled={locked}
-            className="h-9 pl-9 pr-16 t-13"
           />
           <div className="absolute right-1 flex items-center">
             {query && !locked && (
               <button
-                type="button"
                 aria-label="Effacer la recherche"
+                className="grid size-7 place-items-center rounded-md text-muted-foreground hover:text-foreground"
                 onClick={() => {
                   setQuery("");
                   resetResults();
                 }}
-                className="grid size-7 place-items-center rounded-md text-muted-foreground hover:text-foreground"
+                type="button"
               >
                 <X className="size-3.5" />
               </button>
@@ -488,17 +488,17 @@ export function PatientDocumentSearch({
               <TooltipTrigger
                 render={
                   <button
-                    type="button"
                     aria-label={
                       listening ? "Arrêter la dictée" : "Dicter la recherche"
                     }
-                    disabled={busy || (dictation.busy && !listening)}
-                    onClick={() => void dictate()}
                     className={
                       listening
                         ? "grid size-7 place-items-center rounded-md bg-destructive text-white"
                         : "grid size-7 place-items-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-50"
                     }
+                    disabled={busy || (dictation.busy && !listening)}
+                    onClick={() => void dictate()}
+                    type="button"
                   />
                 }
               >
@@ -515,10 +515,10 @@ export function PatientDocumentSearch({
           </div>
         </div>
         <Button
-          type="submit"
-          size="sm"
-          disabled={locked || !query.trim()}
           className="h-9 shrink-0 px-3 t-12"
+          disabled={locked || !query.trim()}
+          size="sm"
+          type="submit"
         >
           Rechercher
         </Button>
@@ -529,11 +529,11 @@ export function PatientDocumentSearch({
           <DropdownMenuTrigger
             render={
               <Button
-                variant="ghost"
-                size="xs"
-                disabled={locked}
-                className="-ml-1.5 h-7 min-w-0 gap-1 px-1.5 t-12 font-normal text-muted-foreground hover:text-foreground"
                 aria-label={`Filtres : ${filterSummary}`}
+                className="-ml-1.5 h-7 min-w-0 gap-1 px-1.5 t-12 font-normal text-muted-foreground hover:text-foreground"
+                disabled={locked}
+                size="xs"
+                variant="ghost"
               >
                 <span className="truncate">{filterSummary}</span>
                 <ChevronDown className="size-3 shrink-0" />
@@ -543,27 +543,26 @@ export function PatientDocumentSearch({
           <DropdownMenuContent align="start" className="w-60">
             <DropdownMenuLabel>Rechercher dans</DropdownMenuLabel>
             <DropdownMenuRadioGroup
-              value={patientId ? audience : "all"}
               onValueChange={(value) => {
                 setAudience(value as "patient" | "all");
                 resetResults();
               }}
+              value={patientId ? audience : "all"}
             >
               <DropdownMenuRadioItem
-                value="patient"
-                disabled={!patientId}
                 className="t-12"
+                disabled={!patientId}
+                value="patient"
               >
                 Ce dossier patient
               </DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="all" className="t-12">
+              <DropdownMenuRadioItem className="t-12" value="all">
                 Tous les patients
               </DropdownMenuRadioItem>
             </DropdownMenuRadioGroup>
             <DropdownMenuSeparator />
             <DropdownMenuLabel>Source</DropdownMenuLabel>
             <DropdownMenuRadioGroup
-              value={type}
               onValueChange={(value) => {
                 const source = (value ?? "all") as SourceType | "all";
                 setType(source);
@@ -572,12 +571,13 @@ export function PatientDocumentSearch({
                 );
                 setResults([]);
               }}
+              value={type}
             >
               {SOURCES.map((item) => (
                 <DropdownMenuRadioItem
+                  className="t-12"
                   key={item.key}
                   value={item.key}
-                  className="t-12"
                 >
                   {item.label}
                 </DropdownMenuRadioItem>
@@ -588,17 +588,17 @@ export function PatientDocumentSearch({
                 <DropdownMenuSeparator />
                 <DropdownMenuLabel>Rubrique SOAP</DropdownMenuLabel>
                 <DropdownMenuRadioGroup
-                  value={section}
                   onValueChange={(value) => {
                     setSection((value ?? "all") as SearchSection | "all");
                     setResults([]);
                   }}
+                  value={section}
                 >
                   {SECTIONS.map((item) => (
                     <DropdownMenuRadioItem
+                      className="t-12"
                       key={item.key}
                       value={item.key}
-                      className="t-12"
                     >
                       {item.label}
                     </DropdownMenuRadioItem>
@@ -619,8 +619,8 @@ export function PatientDocumentSearch({
 
         {!lastRun && (busy || dictation.busy) ? (
           <span
-            role="status"
             className="flex min-w-0 items-center gap-1.5 t-12 text-muted-foreground"
+            role="status"
           >
             <CircleNotch className="size-3 shrink-0 animate-spin" />
             <span className="assistant-thinking-text truncate">
@@ -631,7 +631,7 @@ export function PatientDocumentSearch({
           !lastRun &&
           message &&
           !error && (
-            <span role="status" className="truncate t-12 text-muted-foreground">
+            <span className="truncate t-12 text-muted-foreground" role="status">
               {message}
             </span>
           )
@@ -660,8 +660,8 @@ export function PatientDocumentSearch({
 
       {error && (
         <div
-          role="alert"
           className="shrink-0 rounded-lg bg-destructive/10 px-3 py-2 t-12 text-destructive"
+          role="alert"
         >
           {error}
         </div>

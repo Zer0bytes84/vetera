@@ -91,7 +91,7 @@ export function AgendaDayLoadCard({
                   />
                 ))}
               </div>
-              <ul className="grid gap-1.5" aria-label="Rendez-vous par type">
+              <ul aria-label="Rendez-vous par type" className="grid gap-1.5">
                 {typeSummary.map((entry) => (
                   <li className="agenda-load-legend" key={entry.type}>
                     <span className="flex items-center gap-2.5">
@@ -111,8 +111,8 @@ export function AgendaDayLoadCard({
 
             {dayLoadSummary.length > 0 ? (
               <ul
-                className="agenda-load-section grid gap-3"
                 aria-label="Rendez-vous par vétérinaire"
+                className="agenda-load-section grid gap-3"
               >
                 {dayLoadSummary.map((entry) => (
                   <li className="grid gap-1.5" key={entry.vet.id}>
@@ -254,7 +254,7 @@ function WeekStrip({
                 type="button"
               >
                 <span className="agenda-week-count">{day.count}</span>
-                <span className="agenda-week-track" aria-hidden="true">
+                <span aria-hidden="true" className="agenda-week-track">
                   <span
                     style={{
                       height: `${Math.max(day.ratio * 100, day.count > 0 ? 12 : 0)}%`,

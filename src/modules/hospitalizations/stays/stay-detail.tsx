@@ -96,7 +96,7 @@ export function StayDetail({
   const active = ACTIVE_STAY_STATUSES.includes(stay.status);
   return (
     <div className="stay-detail space-y-5">
-      <Button variant="ghost" className="h-11" onClick={onBack}>
+      <Button className="h-11" onClick={onBack} variant="ghost">
         Retour aux séjours
       </Button>
       <header>
@@ -115,7 +115,7 @@ export function StayDetail({
       </header>
       {active && <StayTransfer stay={stay} />}
       {error && (
-        <p role="alert" className="t-13 text-destructive">
+        <p className="t-13 text-destructive" role="alert">
           {error}
         </p>
       )}
@@ -136,9 +136,9 @@ export function StayDetail({
               <div className="w-full max-w-sm">
                 <StayDateTimeField
                   label="Date de sortie prévue"
+                  onChange={setPlanned}
                   timeLabel="Heure de sortie prévue"
                   value={planned}
-                  onChange={setPlanned}
                 />
               </div>
               <Button
@@ -156,8 +156,8 @@ export function StayDetail({
                 Résumé de sortie
                 <Input
                   className="mt-2 h-11"
-                  value={summary}
                   onChange={(event) => setSummary(event.target.value)}
+                  value={summary}
                 />
               </label>
               <Button
@@ -171,17 +171,17 @@ export function StayDetail({
           )}
           <div className="flex flex-wrap gap-3 border-t pt-4">
             <Input
-              className="h-11 min-w-48 flex-1"
-              placeholder="Motif d’annulation"
               aria-label="Motif d’annulation du séjour"
-              value={reason}
+              className="h-11 min-w-48 flex-1"
               onChange={(event) => setReason(event.target.value)}
+              placeholder="Motif d’annulation"
+              value={reason}
             />
             <Button
               className="h-11"
-              variant="outline"
               disabled={busy || !reason.trim()}
               onClick={() => void transition("annule")}
+              variant="outline"
             >
               Annuler le séjour
             </Button>
@@ -203,22 +203,22 @@ export function StayDetail({
           {active && (
             <Button
               className="h-11"
-              variant="outline"
               onClick={() => setVitalsOpen(true)}
+              variant="outline"
             >
               Ajouter un relevé
             </Button>
           )}
         </div>
-        <VitalsLatest vitals={vitals} species={species} />
+        <VitalsLatest species={species} vitals={vitals} />
         <VitalsByDay vitals={vitals} />
-        <VitalsCurves vitals={vitals} species={species} />
+        <VitalsCurves species={species} vitals={vitals} />
         {vitals.length > 0 &&
           vitalAlerts(species, vitals[vitals.length - 1]).map((alert) => (
             <p
+              className="rounded-xl bg-amber-50 px-3 py-2 t-13 text-amber-800 dark:bg-amber-950/30 dark:text-amber-200"
               key={alert}
               role="status"
-              className="rounded-xl bg-amber-50 px-3 py-2 t-13 text-amber-800 dark:bg-amber-950/30 dark:text-amber-200"
             >
               {alert}. Repère au repos, à interpréter selon le contexte
               clinique.
@@ -227,8 +227,8 @@ export function StayDetail({
         {vitals.length ? (
           vitals.map((vital) => (
             <div
-              key={vital.id}
               className="flex flex-wrap gap-4 border-t py-3 t-13"
+              key={vital.id}
             >
               <time className="text-muted-foreground tabular-nums">
                 {new Date(vital.recorded_at).toLocaleString("fr-FR", {
@@ -264,13 +264,13 @@ export function StayDetail({
       {active && (
         <Button
           className="h-11"
-          variant="outline"
           onClick={() => setPlanOpen(true)}
+          variant="outline"
         >
           Planifier des soins multi-jours
         </Button>
       )}
-      <Dialog open={planOpen} onOpenChange={setPlanOpen}>
+      <Dialog onOpenChange={setPlanOpen} open={planOpen}>
         <DialogContent className="max-h-[85dvh] overflow-y-auto sm:max-w-xl">
           <DialogHeader>
             <DialogTitle>Plan de soins</DialogTitle>
@@ -279,10 +279,10 @@ export function StayDetail({
               soins existant.
             </DialogDescription>
           </DialogHeader>
-          <CarePlanForm stayId={stay.id} onSaved={() => setPlanOpen(false)} />
+          <CarePlanForm onSaved={() => setPlanOpen(false)} stayId={stay.id} />
         </DialogContent>
       </Dialog>
-      <Dialog open={vitalsOpen} onOpenChange={setVitalsOpen}>
+      <Dialog onOpenChange={setVitalsOpen} open={vitalsOpen}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>Relevé des constantes</DialogTitle>
@@ -291,11 +291,11 @@ export function StayDetail({
             </DialogDescription>
           </DialogHeader>
           <VitalsForm
-            stayId={stay.id}
             onSaved={() => {
               setVitalsOpen(false);
               void refresh();
             }}
+            stayId={stay.id}
           />
         </DialogContent>
       </Dialog>

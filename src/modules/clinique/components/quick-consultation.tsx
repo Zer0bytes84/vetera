@@ -52,11 +52,11 @@ export default function QuickConsultation({
   }
   return (
     <QuickPatientPicker
-      open={open}
+      description="Choisissez le patient pour commencer la consultation clinique."
       onOpenChange={onOpenChange}
       onSelect={(patient) => void select(patient)}
+      open={open}
       title="Nouvelle consultation"
-      description="Choisissez le patient pour commencer la consultation clinique."
     />
   );
 }

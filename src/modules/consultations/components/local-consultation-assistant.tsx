@@ -855,12 +855,12 @@ export default function LocalConsultationAssistant({
       at: stepAt[0],
       content: (
         <StreamingMessage
+          bubble
           className="max-w-none"
           data={{
             status: welcomeWords < WELCOME_WORDS.length ? "streaming" : "done",
             content: WELCOME_WORDS.slice(0, welcomeWords).join(" "),
           }}
-          bubble
           showActions={false}
           showHeader={false}
         />
@@ -896,6 +896,7 @@ export default function LocalConsultationAssistant({
             content: (
               <div className="flex flex-col items-start gap-1">
                 <StreamingMessage
+                  bubble
                   className="assistant-section-prompt max-w-none"
                   data={{
                     status: opening ? "streaming" : "done",
@@ -903,7 +904,6 @@ export default function LocalConsultationAssistant({
                       ? FIRST_QUESTION_WORDS.slice(0, questionWords).join(" ")
                       : `**${step.letter} · ${step.title}**\n\n${step.question}`,
                   }}
-                  bubble
                   showActions={false}
                   showHeader={false}
                 />
@@ -969,10 +969,10 @@ export default function LocalConsultationAssistant({
             </h3>
             {!patientId && patients.data.length > 0 && (
               <Select
-                value={effectivePatientId || "none"}
                 onValueChange={(val) =>
                   setSelectedPatientId(val === "none" || !val ? undefined : val)
                 }
+                value={effectivePatientId || "none"}
               >
                 <SelectTrigger className="h-6 max-w-[140px] rounded-lg border-border/70 px-2 t-12">
                   <SelectValue placeholder="Patient…">
@@ -1015,14 +1015,14 @@ export default function LocalConsultationAssistant({
               <TooltipTrigger
                 render={
                   <Button
-                    data-assistant-panel-toggle
-                    variant="ghost"
-                    size="icon-sm"
-                    aria-label="Replier le panneau assistant"
                     aria-controls={panelControls.panelId}
                     aria-expanded={true}
-                    onClick={panelControls.collapse}
+                    aria-label="Replier le panneau assistant"
                     className="size-8 text-muted-foreground hover:text-foreground"
+                    data-assistant-panel-toggle
+                    onClick={panelControls.collapse}
+                    size="icon-sm"
+                    variant="ghost"
                   />
                 }
               >
@@ -1036,16 +1036,16 @@ export default function LocalConsultationAssistant({
             <TooltipTrigger
               render={
                 <Button
-                  variant="ghost"
-                  size="icon-sm"
-                  aria-label="Configuration des modèles locaux"
                   aria-expanded={setupOpen}
-                  disabled={ai.busy || importing || saving || saved}
-                  onClick={() => setSetupOpen((val) => !val)}
+                  aria-label="Configuration des modèles locaux"
                   className={cn(
                     "size-8 text-muted-foreground hover:text-foreground",
                     setupOpen && "bg-muted text-foreground"
                   )}
+                  disabled={ai.busy || importing || saving || saved}
+                  onClick={() => setSetupOpen((val) => !val)}
+                  size="icon-sm"
+                  variant="ghost"
                 />
               }
             >
@@ -1058,12 +1058,12 @@ export default function LocalConsultationAssistant({
             <TooltipTrigger
               render={
                 <Button
-                  variant="ghost"
-                  size="icon-sm"
                   aria-label="Fermer l’assistant"
+                  className="size-8 text-muted-foreground hover:text-foreground"
                   disabled={saving || importing}
                   onClick={requestClose}
-                  className="size-8 text-muted-foreground hover:text-foreground"
+                  size="icon-sm"
+                  variant="ghost"
                 />
               }
             >
@@ -1139,10 +1139,10 @@ export default function LocalConsultationAssistant({
                 Modèles IA sur cet ordinateur
               </h4>
               <Button
-                variant="ghost"
-                size="icon-xs"
-                onClick={() => setSetupOpen(false)}
                 className="size-6 text-muted-foreground hover:text-foreground"
+                onClick={() => setSetupOpen(false)}
+                size="icon-xs"
+                variant="ghost"
               >
                 <X className="size-3.5" />
               </Button>
@@ -1165,11 +1165,11 @@ export default function LocalConsultationAssistant({
                   </p>
                 </div>
                 <Button
-                  size="xs"
-                  variant={models.whisperReady ? "secondary" : "outline"}
+                  className="gap-1 t-12"
                   disabled={ai.busy || importing || saving}
                   onClick={() => void importModel("whisper")}
-                  className="gap-1 t-12"
+                  size="xs"
+                  variant={models.whisperReady ? "secondary" : "outline"}
                 >
                   {models.whisperReady ? (
                     <Check className="size-3 text-emerald-500" />
@@ -1190,11 +1190,11 @@ export default function LocalConsultationAssistant({
                   </p>
                 </div>
                 <Button
-                  size="xs"
-                  variant={models.generatorReady ? "secondary" : "outline"}
+                  className="gap-1 t-12"
                   disabled={ai.busy || importing || saving}
                   onClick={() => void importModel("generator")}
-                  className="gap-1 t-12"
+                  size="xs"
+                  variant={models.generatorReady ? "secondary" : "outline"}
                 >
                   {models.generatorReady ? (
                     <Check className="size-3 text-emerald-500" />
@@ -1210,8 +1210,8 @@ export default function LocalConsultationAssistant({
         {activeTab === "dictation" && (
           <div className="mt-3 flex min-h-0 flex-1 flex-col overflow-hidden">
             <div
-              ref={dictationScrollRef}
               className="assistant-dictation-scroll flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto pr-1"
+              ref={dictationScrollRef}
             >
               {/* The conversation: the assistant's questions, the vet's answers. The mascot speaks once, in the header. */}
               <ChatThread
@@ -1252,20 +1252,20 @@ export default function LocalConsultationAssistant({
                 ai.phase !== "microphone" &&
                 ai.phase !== "warming" && (
                   <AssistantActivity
-                    phase={ai.phase}
-                    progress={ai.progress}
+                    failed={!!visibleError}
+                    hasNote={!!note}
                     hasTranscript={!!fullTranscript}
                     patientVerified={Boolean(patient)}
-                    hasNote={!!note}
-                    failed={!!visibleError}
+                    phase={ai.phase}
+                    progress={ai.progress}
                   />
                 )}
 
               {/* Error banner */}
               {visibleError && (
                 <div
-                  role="alert"
                   className="flex items-center gap-2 rounded-xl border border-destructive/30 bg-destructive/10 p-3 t-12 text-destructive"
+                  role="alert"
                 >
                   <XCircle className="size-4 shrink-0" />
                   <span>{visibleError}</span>
@@ -1313,13 +1313,13 @@ export default function LocalConsultationAssistant({
                     <span aria-hidden="true" className="flex gap-1">
                       {sectionPrompts.map((step, index) => (
                         <span
-                          key={step.letter}
                           className={cn(
                             "h-1 w-6 rounded-full",
                             index <= sectionIndex
                               ? "bg-brand"
                               : "bg-foreground/[0.12]"
                           )}
+                          key={step.letter}
                         />
                       ))}
                     </span>
@@ -1330,13 +1330,13 @@ export default function LocalConsultationAssistant({
                     <div className="flex flex-wrap items-center gap-1.5">
                       {mentions.map((mention) => (
                         <span
-                          key={mention.key}
                           className={cn(
                             "inline-flex items-center gap-1 rounded-md px-2 py-0.5 t-12",
                             mention.patient
                               ? "bg-primary/10 font-medium text-primary"
                               : "bg-destructive/10 font-medium text-destructive"
                           )}
+                          key={mention.key}
                         >
                           @{mention.name}
                           {mention.patient
@@ -1350,8 +1350,8 @@ export default function LocalConsultationAssistant({
 
                 <AgentComposer
                   className="flex-1"
-                  fill
                   disabled={(ai.busy && ai.phase !== "listening") || importing}
+                  fill
                   label="Vos observations"
                   maxLength={MAX_TRANSCRIPT_LENGTH}
                   menu={
@@ -1530,6 +1530,7 @@ export default function LocalConsultationAssistant({
                     content: (
                       <div className="flex flex-col gap-3">
                         <StreamingMessage
+                          bubble
                           className="max-w-none"
                           data={{
                             status: "done",
@@ -1538,7 +1539,6 @@ export default function LocalConsultationAssistant({
                                 ? `J’ai reformulé ${proposalRequests.length === 1 ? "une rubrique" : `${proposalRequests.length} rubriques`}. Pour chacune, gardez ma formulation ou votre dictée, puis validez la note : rien n’est enregistré avant.`
                                 : "Voici votre note. Relisez chaque rubrique, puis validez : rien n’est enregistré avant votre accord.",
                           }}
-                          bubble
                           showActions={false}
                           showHeader={false}
                         />
@@ -1561,8 +1561,8 @@ export default function LocalConsultationAssistant({
 
               {visibleError && (
                 <div
-                  role="alert"
                   className="rounded-xl border border-destructive/30 bg-destructive/10 p-3 t-12 text-destructive"
+                  role="alert"
                 >
                   {visibleError}
                 </div>
@@ -1573,28 +1573,21 @@ export default function LocalConsultationAssistant({
                 const currentValue = activeSoapDraft[key] ?? "";
 
                 return (
-                  <div key={key} className="flex flex-col gap-2">
+                  <div className="flex flex-col gap-2" key={key}>
                     <div className="flex items-center justify-between gap-2">
                       <label
-                        htmlFor={`soap-field-${key}`}
                         className="t-13 font-semibold text-foreground"
+                        htmlFor={`soap-field-${key}`}
                       >
                         {SOAP_FULL_HEADINGS[key]}
                       </label>
                     </div>
 
                     <Textarea
-                      id={`soap-field-${key}`}
-                      rows={3}
-                      maxLength={6000}
-                      value={currentValue}
+                      className="min-h-20 resize-y bg-background t-13 leading-relaxed"
                       disabled={saving || saved}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
-                          e.preventDefault();
-                          void save();
-                        }
-                      }}
+                      id={`soap-field-${key}`}
+                      maxLength={6000}
                       onChange={(event) => {
                         const updatedValue = event.target.value;
                         setNote((previous) => ({
@@ -1602,8 +1595,15 @@ export default function LocalConsultationAssistant({
                           [key]: updatedValue,
                         }));
                       }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
+                          e.preventDefault();
+                          void save();
+                        }
+                      }}
                       placeholder="Aucune observation saisie pour cette rubrique."
-                      className="min-h-20 resize-y bg-background t-13 leading-relaxed"
+                      rows={3}
+                      value={currentValue}
                     />
                   </div>
                 );
@@ -1652,8 +1652,8 @@ export default function LocalConsultationAssistant({
           <div className="mt-3 flex min-h-0 flex-1 flex-col overflow-hidden">
             <PatientDocumentSearch
               key={patientId}
-              patientId={patientId}
               onInsertExcerpt={handleInsertExcerpt}
+              patientId={patientId}
             />
           </div>
         )}
@@ -1672,8 +1672,8 @@ export default function LocalConsultationAssistant({
       {/* Discard Dialog */}
       {discardOpen && (
         <div
-          role="alert"
           className="fixed inset-x-4 bottom-4 z-50 rounded-xl border border-border bg-card p-4 shadow-xl"
+          role="alert"
         >
           <p className="t-13 font-medium text-foreground">
             Abandonner cette session d’assistant ?
@@ -1683,21 +1683,21 @@ export default function LocalConsultationAssistant({
           </p>
           <div className="mt-3 flex items-center justify-end gap-2">
             <Button
+              className="t-12"
+              onClick={() => setDiscardOpen(false)}
               size="sm"
               variant="outline"
-              onClick={() => setDiscardOpen(false)}
-              className="t-12"
             >
               Poursuivre
             </Button>
             <Button
-              size="sm"
-              variant="destructive"
+              className="t-12"
               onClick={() => {
                 ai.cancel();
                 onClose();
               }}
-              className="t-12"
+              size="sm"
+              variant="destructive"
             >
               Abandonner
             </Button>

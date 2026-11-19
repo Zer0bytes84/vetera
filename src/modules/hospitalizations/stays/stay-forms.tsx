@@ -84,31 +84,31 @@ export function AdmissionForm({
     >
       <div className="flex flex-col gap-2">
         <label
-          htmlFor="admission-patient"
           className="flex items-center justify-between t-13"
+          htmlFor="admission-patient"
         >
           Patient <span className="modal-required">requis</span>
         </label>
         <SearchableSelect
+          disabled={busy}
           id="admission-patient"
           label="Patient à admettre"
-          placeholder="Rechercher un patient…"
-          value={patient}
           onValueChange={setPatient}
-          disabled={busy}
           options={patients.data.map((p) => ({
             value: p.id,
             label: p.name,
             keywords: `${p.species} ${p.breed || ""}`,
           }))}
+          placeholder="Rechercher un patient…"
+          value={patient}
         />
       </div>
       <label className="block space-y-2 t-13">
         Emplacement
         <select
           className="h-11 w-full rounded-xl border bg-background px-3"
-          value={location}
           onChange={(event) => setLocation(event.target.value)}
+          value={location}
         >
           <option value="">Sans emplacement</option>
           {locations
@@ -126,15 +126,15 @@ export function AdmissionForm({
           <span className="modal-required">requis</span>
         </span>
         <div className="flex gap-2">
-          <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+          <Popover onOpenChange={setCalendarOpen} open={calendarOpen}>
             <PopoverTrigger
               aria-label="Choisir la date d’admission"
               render={
                 <Button
+                  className="h-11 min-w-0 flex-1 justify-start gap-2 px-3"
                   data-field="date"
                   type="button"
                   variant="outline"
-                  className="h-11 min-w-0 flex-1 justify-start gap-2 px-3"
                 />
               }
             >
@@ -145,16 +145,16 @@ export function AdmissionForm({
             </PopoverTrigger>
             <PopoverContent align="start" className="w-auto p-2">
               <Calendar
-                mode="single"
-                required
-                locale={fr}
-                selected={date}
-                defaultMonth={date}
                 className={COMPACT_CALENDAR_CLASS}
+                defaultMonth={date}
+                locale={fr}
+                mode="single"
                 onSelect={(selected) => {
                   setDate(selected);
                   setCalendarOpen(false);
                 }}
+                required
+                selected={date}
               />
             </PopoverContent>
           </Popover>
@@ -162,19 +162,19 @@ export function AdmissionForm({
             Heure d’admission
           </label>
           <Input
-            id="admission-time"
-            className="h-11 w-28 tabular-nums"
-            type="text"
-            inputMode="numeric"
-            placeholder="Ex. 14:30"
-            value={time}
-            onChange={(event) => setTime(event.target.value)}
             aria-invalid={!admittedAt}
             autoComplete="off"
+            className="h-11 w-28 tabular-nums"
+            id="admission-time"
+            inputMode="numeric"
+            onChange={(event) => setTime(event.target.value)}
+            placeholder="Ex. 14:30"
+            type="text"
+            value={time}
           />
         </div>
         {!admittedAt && (
-          <p role="alert" className="text-destructive">
+          <p className="text-destructive" role="alert">
             Indiquez une heure valide au format 24 h, par exemple 14:30.
           </p>
         )}
@@ -185,23 +185,23 @@ export function AdmissionForm({
         </span>
         <Input
           className="h-11"
-          placeholder="Ex. surveillance post-opératoire"
-          value={reason}
           onChange={(event) => setReason(event.target.value)}
+          placeholder="Ex. surveillance post-opératoire"
           required
+          value={reason}
         />
       </label>
       {error && (
-        <p role="alert" className="t-13 text-destructive">
+        <p className="t-13 text-destructive" role="alert">
           {error}
         </p>
       )}
       <Button
-        type="submit"
         className="h-11 w-full"
         disabled={
           busy || !currentUser || !patient || !reason.trim() || !admittedAt
         }
+        type="submit"
       >
         {busy ? "Enregistrement…" : "Confirmer l’admission"}
       </Button>
@@ -250,20 +250,20 @@ export function LocationForm({ onSaved }: { onSaved: () => void }) {
         </span>
         <Input
           className="h-11"
-          placeholder="Ex. Cage 3, Box chirurgie"
-          value={name}
           onChange={(event) => setName(event.target.value)}
+          placeholder="Ex. Cage 3, Box chirurgie"
           required
+          value={name}
         />
       </label>
       <label className="block space-y-2 t-13">
         Type
         <select
           className="h-11 w-full rounded-xl border bg-background px-3"
-          value={type}
           onChange={(event) =>
             setType(event.target.value as StayLocation["type"])
           }
+          value={type}
         >
           <option value="cage">Cage</option>
           <option value="box">Box</option>
@@ -271,14 +271,14 @@ export function LocationForm({ onSaved }: { onSaved: () => void }) {
         </select>
       </label>
       {error && (
-        <p role="alert" className="t-13 text-destructive">
+        <p className="t-13 text-destructive" role="alert">
           {error}
         </p>
       )}
       <Button
-        type="submit"
         className="h-11 w-full"
         disabled={busy || !name.trim() || !currentUser}
+        type="submit"
       >
         {busy ? "Enregistrement…" : "Créer l’emplacement"}
       </Button>

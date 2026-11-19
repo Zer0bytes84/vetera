@@ -39,9 +39,9 @@ export function PageDate() {
 
   return (
     <time
+      className="block text-xs normal-case leading-4 text-muted-foreground"
       data-slot="page-date"
       dateTime={localDate}
-      className="block text-xs normal-case leading-4 text-muted-foreground"
     >
       {label}
     </time>

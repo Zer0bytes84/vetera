@@ -116,7 +116,6 @@ export function SectionGarden({
   }
   return (
     <SectionCards
-      subtitle="Vue d’ensemble de la rubrique"
       className="mx-4 mb-5 lg:mx-6"
       items={cards.map((card) => ({
         title: card.title,
@@ -132,6 +131,7 @@ export function SectionGarden({
         onClick: () => onNavigate(card.target),
         actionLabel: "Ouvrir la rubrique",
       }))}
+      subtitle="Vue d’ensemble de la rubrique"
     />
   );
 }

@@ -99,15 +99,15 @@ export function IconButton({
 }: ButtonHTMLAttributes<HTMLButtonElement> & { label: string }) {
   return (
     <button
-      type="button"
       aria-label={label}
-      title={label}
       className={cn(
         "inline-flex size-8 shrink-0 items-center justify-center rounded-control text-ink-muted hover:bg-frame hover:text-ink",
         focusRing,
         press,
         className
       )}
+      title={label}
+      type="button"
       {...props}
     >
       {children}
@@ -135,7 +135,7 @@ export function EmptyState({
       )}
     >
       {icon && (
-        <span className="text-ink-muted" aria-hidden="true">
+        <span aria-hidden="true" className="text-ink-muted">
           {icon}
         </span>
       )}
@@ -184,7 +184,6 @@ export function ActionButton({
 }: ButtonHTMLAttributes<HTMLButtonElement> & { quiet?: boolean }) {
   return (
     <button
-      type="button"
       className={cn(
         "inline-flex h-[30px] items-center justify-center gap-1.5 rounded-control px-3 text-xs font-medium",
         quiet
@@ -194,6 +193,7 @@ export function ActionButton({
         press,
         className
       )}
+      type="button"
       {...props}
     >
       {children}

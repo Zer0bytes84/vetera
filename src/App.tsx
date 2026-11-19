@@ -300,7 +300,7 @@ function AppStartupRecoveryState({ error }: { error: Error }) {
       <div className="absolute -top-40 left-1/2 size-[32rem] -translate-x-1/2 rounded-full bg-[#d7eee5]/75 blur-3xl" />
       <section className="relative w-full max-w-md rounded-[2rem] border border-white/80 bg-white/80 p-8 text-center shadow-[0_24px_80px_rgba(24,24,27,0.12)] backdrop-blur-xl">
         <div className="mx-auto mb-5 flex size-14 items-center justify-center rounded-2xl bg-amber-100 text-amber-700">
-          <span className="font-semibold text-2xl" aria-hidden="true">
+          <span aria-hidden="true" className="font-semibold text-2xl">
             !
           </span>
         </div>

@@ -79,8 +79,8 @@ export function StayRecords({ stayId }: { stayId: string }) {
           <h3 className="t-16 font-medium">Plans de soins</h3>
           {plans.map((plan) => (
             <div
-              key={plan.id}
               className="flex flex-wrap items-center justify-between gap-3 border-t py-3 t-13"
+              key={plan.id}
             >
               <div>
                 <p className="font-medium">{plan.label}</p>
@@ -92,9 +92,9 @@ export function StayRecords({ stayId }: { stayId: string }) {
               </div>
               {Boolean(plan.active) && (
                 <Button
-                  variant="outline"
                   className="h-11"
                   onClick={() => setEditing(plan)}
+                  variant="outline"
                 >
                   Modifier les soins futurs
                 </Button>
@@ -104,12 +104,12 @@ export function StayRecords({ stayId }: { stayId: string }) {
         </section>
       )}
       <Dialog
-        open={editing !== null}
         onOpenChange={(open) => {
           if (!open) {
             setEditing(null);
           }
         }}
+        open={editing !== null}
       >
         <DialogContent className="max-h-[85dvh] overflow-y-auto sm:max-w-xl">
           <DialogHeader>
@@ -122,15 +122,15 @@ export function StayRecords({ stayId }: { stayId: string }) {
           {editing && (
             <CarePlanForm
               key={editing.id}
-              stayId={stayId}
-              plan={editing}
               onSaved={() => setEditing(null)}
+              plan={editing}
+              stayId={stayId}
             />
           )}
         </DialogContent>
       </Dialog>
       {error && (
-        <p role="alert" className="t-13 text-destructive">
+        <p className="t-13 text-destructive" role="alert">
           {error}
         </p>
       )}
@@ -140,8 +140,8 @@ export function StayRecords({ stayId }: { stayId: string }) {
           <ul className="max-h-80 overflow-y-auto">
             {tasks.map((task) => (
               <li
-                key={task.id}
                 className="flex flex-wrap items-center justify-between gap-3 border-t py-3 t-13"
+                key={task.id}
               >
                 <div>
                   <p className="font-medium">{task.label}</p>
@@ -152,11 +152,11 @@ export function StayRecords({ stayId }: { stayId: string }) {
                 </div>
                 <Button
                   className="h-11"
-                  variant="outline"
                   onClick={() => {
                     requestFocus("care_task", task.id);
                     window.location.hash = "#/clinique";
                   }}
+                  variant="outline"
                 >
                   Ouvrir le soin
                 </Button>
@@ -173,7 +173,7 @@ export function StayRecords({ stayId }: { stayId: string }) {
         <h3 className="t-16 font-medium">Historique du séjour</h3>
         <ol className="max-h-64 overflow-y-auto">
           {history.map((event) => (
-            <li key={event.id} className="border-t py-3 t-13">
+            <li className="border-t py-3 t-13" key={event.id}>
               <p className="font-medium">
                 {eventLabels[event.event] || "Mise à jour du séjour"}
               </p>

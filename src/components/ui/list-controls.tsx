@@ -39,16 +39,16 @@ export function ListFilter({
   const current =
     options.find((option) => option.value === value)?.label ?? value;
   return (
-    <DropdownMenu open={open} onOpenChange={setOpen}>
+    <DropdownMenu onOpenChange={setOpen} open={open}>
       <DropdownMenuTrigger
         render={
           <Button
-            variant="outline"
+            aria-label={`${label} : ${current}`}
             className={cn(
               "list-filter-control h-[30px] min-w-0 gap-0 overflow-hidden px-0 text-xs",
               className
             )}
-            aria-label={`${label} : ${current}`}
+            variant="outline"
           >
             <span className="shrink-0 border-r border-border px-2.5 font-normal text-muted-foreground">
               {label}
@@ -66,17 +66,17 @@ export function ListFilter({
       >
         <DropdownMenuLabel>{label}</DropdownMenuLabel>
         <DropdownMenuRadioGroup
-          value={value}
           onValueChange={(next) => {
             onValueChange(next);
             setOpen(false);
           }}
+          value={value}
         >
           {options.map((option) => (
             <DropdownMenuRadioItem
+              className="py-2 text-xs"
               key={option.value}
               value={option.value}
-              className="py-2 text-xs"
             >
               {option.label}
             </DropdownMenuRadioItem>
@@ -106,18 +106,18 @@ export function ListSearch({
       />
       <Input
         {...props}
-        type="search"
         aria-label={label}
-        value={value}
-        onChange={(event) => onValueChange(event.target.value)}
         className="h-[30px] rounded-full bg-background pl-8 pr-8 text-xs md:text-xs focus-visible:ring-2 focus-visible:ring-ring/15 [&::-webkit-search-cancel-button]:appearance-none"
+        onChange={(event) => onValueChange(event.target.value)}
+        type="search"
+        value={value}
       />
       {value && (
         <button
-          type="button"
           aria-label={`Effacer : ${label}`}
-          onClick={() => onValueChange("")}
           className="absolute right-1 top-1/2 grid size-6 -translate-y-1/2 place-items-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring"
+          onClick={() => onValueChange("")}
+          type="button"
         >
           <X className="size-3" />
         </button>

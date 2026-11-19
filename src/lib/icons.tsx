@@ -165,8 +165,8 @@ function iconComponent(name: string, glyph: IconSvgElement): AppIcon {
       ref
     ) => (
       <HugeiconsIcon
-        ref={ref}
         icon={glyph}
+        ref={ref}
         strokeWidth={1.5}
         style={mirrored ? { ...style, transform: "scaleX(-1)" } : style}
         {...props}

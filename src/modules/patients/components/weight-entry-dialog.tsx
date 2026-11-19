@@ -331,7 +331,7 @@ export function WeightEntryDialog({
           </FormDialogFooter>
         </FormDialogContent>
       </Dialog>
-      <AlertDialog open={confirmDeleteOpen} onOpenChange={setConfirmDeleteOpen}>
+      <AlertDialog onOpenChange={setConfirmDeleteOpen} open={confirmDeleteOpen}>
         <AlertDialogContent size="sm">
           <AlertDialogHeader>
             <AlertDialogTitle>
@@ -351,8 +351,8 @@ export function WeightEntryDialog({
               {t("common.cancel", { defaultValue: "Annuler" })}
             </AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => void confirmDelete()}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={() => void confirmDelete()}
             >
               {t("common.delete", { defaultValue: "Supprimer" })}
             </AlertDialogAction>

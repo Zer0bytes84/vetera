@@ -152,12 +152,12 @@ export function InvoicePdfPreview({
   };
   return (
     <Dialog
-      open
       onOpenChange={(open) => {
         if (!open) {
           onClose();
         }
       }}
+      open
     >
       <DialogContent
         className="flex h-[min(90dvh,900px)] max-w-[calc(100%-2rem)] flex-col sm:max-w-4xl"
@@ -179,34 +179,34 @@ export function InvoicePdfPreview({
           </p>
         ) : (
           <div
-            className="min-h-0 flex-1 overflow-auto rounded-lg border bg-muted p-3 sm:p-6"
             aria-busy={rendering}
+            className="min-h-0 flex-1 overflow-auto rounded-lg border bg-muted p-3 sm:p-6"
           >
             {rendering && (
-              <p role="status" className="mb-3 text-sm text-muted-foreground">
+              <p className="mb-3 text-sm text-muted-foreground" role="status">
                 Préparation de l’aperçu…
               </p>
             )}
             {renderError && (
-              <p role="alert" className="text-destructive">
+              <p className="text-destructive" role="alert">
                 {renderError}
               </p>
             )}
             <canvas
-              ref={canvasRef}
-              role="img"
               aria-label={`Facture ${data.number}, page ${page} sur ${result.doc?.getNumberOfPages() ?? 1}`}
               className="mx-auto h-auto w-full max-w-[700px] bg-white"
+              ref={canvasRef}
+              role="img"
             />
           </div>
         )}
         {result.doc && result.doc.getNumberOfPages() > 1 && (
           <div className="flex items-center justify-center gap-3">
             <Button
-              variant="outline"
-              size="sm"
               disabled={page === 1}
               onClick={() => setPage(page - 1)}
+              size="sm"
+              variant="outline"
             >
               Précédente
             </Button>
@@ -214,10 +214,10 @@ export function InvoicePdfPreview({
               {page} / {result.doc.getNumberOfPages()}
             </span>
             <Button
-              variant="outline"
-              size="sm"
               disabled={page === result.doc.getNumberOfPages()}
               onClick={() => setPage(page + 1)}
+              size="sm"
+              variant="outline"
             >
               Suivante
             </Button>

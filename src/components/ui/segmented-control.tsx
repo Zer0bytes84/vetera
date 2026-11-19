@@ -80,28 +80,21 @@ export function Segmented<T extends string = string>({
   return (
     <MotionConfig reducedMotion="user">
       <div
-        ref={ref}
-        role="radiogroup"
         aria-label={label}
-        onKeyDown={onKeyDown}
         className={cn(
           "inline-flex items-center rounded-full bg-foreground/[0.05] p-0.5",
           size === "sm" ? "h-8" : "h-9",
           className
         )}
+        onKeyDown={onKeyDown}
+        ref={ref}
+        role="radiogroup"
       >
         {options.map((option) => {
           const active = option.value === value;
           return (
             <button
-              key={option.value}
-              type="button"
-              role="radio"
               aria-checked={active}
-              data-value={option.value}
-              tabIndex={active ? 0 : -1}
-              disabled={option.disabled}
-              onClick={(e) => select(option.value, e.detail === 0)}
               className={cn(
                 "relative h-full rounded-full font-medium transition-[color,scale] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] active:scale-[0.97] disabled:opacity-40",
                 size === "sm" ? "px-3 text-[0.8125rem]" : "px-4 text-sm",
@@ -109,12 +102,19 @@ export function Segmented<T extends string = string>({
                   ? "text-foreground"
                   : "text-muted-foreground hover:text-foreground"
               )}
+              data-value={option.value}
+              disabled={option.disabled}
+              key={option.value}
+              onClick={(e) => select(option.value, e.detail === 0)}
+              role="radio"
+              tabIndex={active ? 0 : -1}
+              type="button"
             >
               {active && (
                 <motion.span
+                  className="absolute inset-0 rounded-full bg-surface-raised"
                   layoutId={pillId}
                   transition={instant ? { duration: 0 } : spring}
-                  className="absolute inset-0 rounded-full bg-surface-raised"
                 />
               )}
               <span className="relative">{option.label}</span>

@@ -33,8 +33,8 @@ function DropdownMenuContent({
       <MenuPrimitive.Positioner
         align={align}
         alignOffset={alignOffset}
-        collisionPadding={collisionPadding}
         className="isolate z-50 outline-none"
+        collisionPadding={collisionPadding}
         side={side}
         sideOffset={sideOffset}
       >

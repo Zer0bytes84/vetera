@@ -22,8 +22,8 @@ export function StayRounds({
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
         {stays.map((item) => (
           <article
-            key={item.id}
             className={`rounded-2xl border bg-card p-5 ${selected === item.id ? "border-primary" : "border-[#F2F2F2] dark:border-border"}`}
+            key={item.id}
           >
             <h2 className="t-18 font-medium">{patientName(item.patient_id)}</h2>
             <p className="mt-1 t-13 text-muted-foreground">
@@ -33,18 +33,18 @@ export function StayRounds({
             <div className="mt-4 flex flex-wrap gap-3">
               <Button
                 className="h-11"
-                variant={selected === item.id ? "default" : "outline"}
                 onClick={() => {
                   setSelected(item.id);
                   setMeasure(false);
                 }}
+                variant={selected === item.id ? "default" : "outline"}
               >
                 Soins et constantes
               </Button>
               <Button
                 className="h-11"
-                variant="ghost"
                 onClick={() => onOpen(item.id)}
+                variant="ghost"
               >
                 Détail
               </Button>
@@ -63,8 +63,8 @@ export function StayRounds({
             <h2 className="t-18 font-medium">{patientName(stay.patient_id)}</h2>
             <Button
               className="h-11"
-              variant="outline"
               onClick={() => setMeasure(!measure)}
+              variant="outline"
             >
               {measure ? "Fermer le relevé" : "Relever les constantes"}
             </Button>
@@ -73,8 +73,8 @@ export function StayRounds({
             <div className="max-w-xl">
               <VitalsForm
                 key={stay.id}
-                stayId={stay.id}
                 onSaved={() => setMeasure(false)}
+                stayId={stay.id}
               />
             </div>
           )}

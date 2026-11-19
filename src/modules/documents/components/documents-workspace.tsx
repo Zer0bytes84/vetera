@@ -39,30 +39,30 @@ export default function DocumentsWorkspace({
         <SearchableSelect
           id="document-workspace-patient"
           label="Patient"
+          onValueChange={(value) => {
+            setPatientId(value);
+            setAppointmentId("");
+          }}
           options={patients.data.map((patient) => ({
             value: patient.id,
             label: `${patient.name} · ${patient.species}`,
             keywords: `${patient.name} ${patient.species} ${patient.breed ?? ""}`,
           }))}
-          value={patientId}
-          onValueChange={(value) => {
-            setPatientId(value);
-            setAppointmentId("");
-          }}
           placeholder="Choisir un patient…"
+          value={patientId}
         />
         <SearchableSelect
+          disabled={!patientId}
           id="document-workspace-consultation"
           label="Consultation · pour générer un document"
+          onValueChange={setAppointmentId}
           options={visits.map((visit) => ({
             value: visit.id,
             label: `${new Date(visit.startTime).toLocaleDateString("fr-FR")} · ${visit.reason || visit.type}`,
             keywords: `${visit.reason ?? ""} ${visit.type}`,
           }))}
-          value={appointmentId}
-          onValueChange={setAppointmentId}
           placeholder="Choisir une consultation…"
-          disabled={!patientId}
+          value={appointmentId}
         />
       </div>
       {sourceNote && (
@@ -81,7 +81,7 @@ export default function DocumentsWorkspace({
         </p>
       )}
       {(patients.error || appointments.error) && (
-        <p role="alert" className="text-sm text-destructive">
+        <p className="text-sm text-destructive" role="alert">
           Les dossiers n’ont pas pu être chargés.
         </p>
       )}
@@ -92,19 +92,19 @@ export default function DocumentsWorkspace({
       )}
       {composerOpen && (
         <DocumentComposer
-          open={composerOpen}
-          patientId={patientId}
           consultationId={appointmentId}
           onClose={() => setComposerOpen(false)}
+          open={composerOpen}
+          patientId={patientId}
         />
       )}
       {patientId && (
         <ConsultationDocumentsAssistant
-          key={patientId}
-          patientId={patientId}
           appointmentId={appointmentId}
           initialMode="read"
           initialNoteId={sourceNote?.id}
+          key={patientId}
+          patientId={patientId}
         />
       )}
     </div>

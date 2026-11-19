@@ -59,10 +59,10 @@ export function Button({
   const glyph = sizes[size].glyph;
   return (
     <button
-      type={type}
-      disabled={disabled || loading}
       aria-busy={loading || undefined}
       className={cn(base, sizes[size].base, variants[variant], className)}
+      disabled={disabled || loading}
+      type={type}
       {...props}
     >
       {loading ? (
@@ -70,9 +70,9 @@ export function Button({
       ) : (
         IconComponent && (
           <IconComponent
-            strokeWidth={iconWeight === "bold" ? 2.5 : 2}
-            className={glyph}
             aria-hidden="true"
+            className={glyph}
+            strokeWidth={iconWeight === "bold" ? 2.5 : 2}
           />
         )
       )}
@@ -116,21 +116,21 @@ export function IconButton({
   const glyph = sizes[size].glyph;
   const button = (
     <button
-      type={type}
-      aria-label={label}
-      title={tooltip ? undefined : label}
-      disabled={disabled || loading}
       aria-busy={loading || undefined}
+      aria-label={label}
       className={cn(base, sizes[size].icon, variants[variant], className)}
+      disabled={disabled || loading}
+      title={tooltip ? undefined : label}
+      type={type}
       {...props}
     >
       {loading ? (
         <Spinner className={glyph} />
       ) : (
         <IconComponent
-          strokeWidth={iconWeight === "bold" ? 2.5 : 2}
-          className={glyph}
           aria-hidden="true"
+          className={glyph}
+          strokeWidth={iconWeight === "bold" ? 2.5 : 2}
         />
       )}
     </button>
@@ -140,9 +140,9 @@ export function IconButton({
   }
   return (
     <Tooltip
+      align={tooltipAlign}
       content={tooltip === true ? label : tooltip}
       side={tooltipSide}
-      align={tooltipAlign}
     >
       {button}
     </Tooltip>
@@ -152,9 +152,9 @@ export function IconButton({
 function Spinner({ className }: { className?: string }) {
   return (
     <LoaderCircle
-      strokeWidth={2.5}
       aria-hidden="true"
       className={cn("animate-spin motion-reduce:animate-none", className)}
+      strokeWidth={2.5}
     />
   );
 }

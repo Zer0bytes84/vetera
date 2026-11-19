@@ -29,7 +29,7 @@ export function SidebarBrand({
       className="sidebar-brand"
       data-collapsed={collapsed ? "true" : "false"}
     >
-      <Popover open={open} onOpenChange={setOpen}>
+      <Popover onOpenChange={setOpen} open={open}>
         <PopoverTrigger
           aria-label="Changer de compagnon"
           className="sidebar-mascot-circle mascot-greeting-target"
@@ -50,7 +50,7 @@ export function SidebarBrand({
             <Logo collapsed variant="refined" />
           )}
         </PopoverTrigger>
-        <PopoverContent align="start" sideOffset={10} className="mascot-picker">
+        <PopoverContent align="start" className="mascot-picker" sideOffset={10}>
           <div className="mascot-picker-heading">
             <PopoverTitle>Votre petit compagnon</PopoverTitle>
             <PopoverDescription>
@@ -63,9 +63,9 @@ export function SidebarBrand({
               Animations discrètes
             </label>
             <Switch
-              id="sidebar-mascot-animation"
               checked={preferences.animated}
               disabled={!withMascot}
+              id="sidebar-mascot-animation"
               onCheckedChange={(animated) => {
                 if (!saveMascotPreferences({ ...preferences, animated })) {
                   toast.error(
@@ -79,10 +79,10 @@ export function SidebarBrand({
       </Popover>
       {!collapsed && (
         <button
-          type="button"
           aria-label="Tableau de bord Baitari"
           className="sidebar-brand-home"
           onClick={onHome}
+          type="button"
         >
           <span aria-hidden="true" className="sidebar-brand-wordmark">
             b<span className="sidebar-brand-ai">AI</span>tari

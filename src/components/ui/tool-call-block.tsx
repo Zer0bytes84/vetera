@@ -106,25 +106,25 @@ export function ToolCallBlock({
   const header = (
     <>
       <span className="relative flex size-6 shrink-0 items-center justify-center">
-        <AnimatePresence mode="popLayout" initial={false}>
+        <AnimatePresence initial={false} mode="popLayout">
           <motion.span
-            key={data.status}
-            initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.9, opacity: 0, transition: exitFast }}
-            transition={{ duration: 0.2, ease: EASE_OUT }}
             className={cn(
               "flex size-6 items-center justify-center rounded-full",
               status.className
             )}
+            exit={{ scale: 0.9, opacity: 0, transition: exitFast }}
+            initial={{ scale: 0.9, opacity: 0 }}
+            key={data.status}
+            transition={{ duration: 0.2, ease: EASE_OUT }}
           >
             <Icon
-              strokeWidth={Icon === Clock ? 2 : 2.5}
+              aria-hidden="true"
               className={cn(
                 "size-3.5",
                 running && "animate-spin motion-reduce:animate-none"
               )}
-              aria-hidden="true"
+              strokeWidth={Icon === Clock ? 2 : 2.5}
             />
           </motion.span>
         </AnimatePresence>
@@ -154,25 +154,25 @@ export function ToolCallBlock({
       >
         {hasBody ? (
           <button
-            type="button"
-            aria-expanded={open}
             aria-controls={panelId}
+            aria-expanded={open}
+            className="flex w-full items-center gap-2.5 rounded-[0.875rem] py-1.5 pr-2.5 pl-1.5 text-left text-sm transition-[background-color,scale] duration-150 ease-out hover:bg-foreground/[0.03] active:scale-[0.99]"
             onClick={(e) => {
               setViaKeys(e.detail === 0);
               setOpen((o) => !o);
             }}
-            className="flex w-full items-center gap-2.5 rounded-[0.875rem] py-1.5 pr-2.5 pl-1.5 text-left text-sm transition-[background-color,scale] duration-150 ease-out hover:bg-foreground/[0.03] active:scale-[0.99]"
+            type="button"
           >
             {header}
             <motion.span
               animate={{ rotate: open ? 90 : 0 }}
-              transition={still ? instant : morph}
               className="flex"
+              transition={still ? instant : morph}
             >
               <ChevronRight
-                strokeWidth={2.5}
-                className="size-4 text-muted-foreground"
                 aria-hidden="true"
+                className="size-4 text-muted-foreground"
+                strokeWidth={2.5}
               />
             </motion.span>
           </button>
@@ -184,28 +184,28 @@ export function ToolCallBlock({
         <AnimatePresence initial={false}>
           {open && hasBody && (
             <motion.div
-              id={panelId}
-              initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
+              className="overflow-hidden"
               exit={{
                 height: 0,
                 opacity: 0,
                 transition: still ? instant : exitFast,
               }}
+              id={panelId}
+              initial={{ height: 0, opacity: 0 }}
               transition={still ? instant : reveal}
-              className="overflow-hidden"
             >
               <Panel className="mt-1 flex flex-col gap-3 rounded-[0.875rem] border border-border p-3">
                 {data.details?.length ? (
                   <Section
-                    title="Détails"
                     copy={data.details
                       .map((d) => `${d.label} : ${d.value}`)
                       .join("\n")}
+                    title="Détails"
                   >
                     <dl className="flex flex-col gap-1 text-[0.8125rem]">
                       {data.details.map((d) => (
-                        <div key={d.label} className="flex gap-3">
+                        <div className="flex gap-3" key={d.label}>
                           <dt className="w-28 shrink-0 text-muted-foreground">
                             {d.label}
                           </dt>
@@ -220,27 +220,27 @@ export function ToolCallBlock({
                 {data.status === "error" ? (
                   <div className="flex items-start gap-2 rounded-xl bg-negative/10 py-2 pr-2 pl-3 text-[0.8125rem] text-negative">
                     <X
-                      strokeWidth={2.5}
-                      className="mt-0.5 size-3.5 shrink-0"
                       aria-hidden="true"
+                      className="mt-0.5 size-3.5 shrink-0"
+                      strokeWidth={2.5}
                     />
                     <p className="min-w-0 flex-1 text-xs leading-5 break-words">
                       {data.error ?? "L’opération n’a pas abouti."}
                     </p>
                     {onRetry && (
                       <Button
-                        variant="danger"
+                        className="h-7 gap-1 px-3 text-xs"
                         icon={RotateCcw}
                         iconWeight="bold"
                         onClick={() => onRetry(data)}
-                        className="h-7 gap-1 px-3 text-xs"
+                        variant="danger"
                       >
                         Réessayer
                       </Button>
                     )}
                   </div>
                 ) : data.status === "success" && data.result ? (
-                  <Section title="Résultat" copy={data.result}>
+                  <Section copy={data.result} title="Résultat">
                     <p className="text-[0.8125rem] leading-5 whitespace-pre-wrap">
                       {data.result}
                     </p>
@@ -250,7 +250,7 @@ export function ToolCallBlock({
             </motion.div>
           )}
         </AnimatePresence>
-        <p role="status" aria-live="polite" className="sr-only">
+        <p aria-live="polite" className="sr-only" role="status">
           {`${data.name} : ${status.label}`}
         </p>
       </Shell>
@@ -283,6 +283,10 @@ function Section({
           {title}
         </span>
         <IconButton
+          className={cn(
+            "size-7",
+            copied && "text-positive hover:text-positive"
+          )}
           icon={copied ? Check : Copy}
           iconWeight={copied ? "bold" : "fill"}
           label={copied ? `${title} copié` : `Copier : ${title.toLowerCase()}`}
@@ -294,10 +298,6 @@ function Section({
             }
             setCopied(true);
           }}
-          className={cn(
-            "size-7",
-            copied && "text-positive hover:text-positive"
-          )}
         />
       </div>
       <Inset className="px-3 py-2.5">{children}</Inset>

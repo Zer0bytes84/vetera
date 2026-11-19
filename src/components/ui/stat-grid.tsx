@@ -139,11 +139,11 @@ export function StatGrid({
           {data.map((stat) => (
             <StatCard
               key={stat.id}
-              stat={stat}
-              sparkline={sparklines}
-              showGoal={goals}
-              showBadge={badges}
               onSelect={onSelect}
+              showBadge={badges}
+              showGoal={goals}
+              sparkline={sparklines}
+              stat={stat}
             />
           ))}
         </div>
@@ -182,8 +182,6 @@ function StatCard({
 
   return (
     <Root
-      type={onSelect ? "button" : undefined}
-      onClick={onSelect ? () => onSelect(stat) : undefined}
       aria-label={onSelect ? stat.ariaLabel : undefined}
       // No entrance: a band read every morning is simply there, and a filter that changes a figure rolls the figure only.
       className={cn(
@@ -191,6 +189,8 @@ function StatCard({
         onSelect &&
           "rounded-2xl outline-offset-2 transition-[scale] duration-150 ease-out active:scale-[0.98]"
       )}
+      onClick={onSelect ? () => onSelect(stat) : undefined}
+      type={onSelect ? "button" : undefined}
     >
       {/*
         One template for every card, on rows of fixed height: label, figure (with its curve at the top
@@ -246,14 +246,14 @@ function StatCard({
             }
           >
             <RollingNumber
-              value={stat.value}
               className="text-[1.5rem] leading-none font-medium tracking-tight"
+              value={stat.value}
             />
           </span>
           {sparkline && stat.trend && stat.trend.length > 1 && (
             <Sparkline
-              values={stat.trend}
               tone={flat ? "neutral" : good ? "positive" : "negative"}
+              values={stat.trend}
             />
           )}
         </div>
@@ -261,10 +261,10 @@ function StatCard({
           <div className="flex h-5 items-center">
             {delta !== undefined && (
               <StatusPill
-                size="sm"
-                tone={flat ? "neutral" : good ? "positive" : "negative"}
                 icon={DeltaIcon}
                 iconWeight="bold"
+                size="sm"
+                tone={flat ? "neutral" : good ? "positive" : "negative"}
               >
                 <RollingNumber value={stat.deltaText ?? percent} />
                 <span className="sr-only">
@@ -280,12 +280,12 @@ function StatCard({
         {showGoal && stat.goal && (
           <div className="mt-auto flex flex-col gap-1.5 pt-1">
             <ProgressBar
-              value={stat.goal.ratio}
+              label={`${stat.label}: ${stat.goal.label}`}
               max={1}
               size="sm"
               striped
               tone={stat.goal.ratio >= 1 ? "positive" : "brand"}
-              label={`${stat.label}: ${stat.goal.label}`}
+              value={stat.goal.ratio}
               valueText={`${Math.round(stat.goal.ratio * 100)} % : ${stat.goal.label}`}
             />
             <p className="flex h-4 items-center justify-between gap-2 text-xs leading-4 text-muted-foreground">
@@ -335,10 +335,10 @@ function Sparkline({
 
   return (
     <svg
-      width={w}
-      height={h}
       aria-hidden="true"
       className="shrink-0 overflow-visible"
+      height={h}
+      width={w}
     >
       <defs>
         <linearGradient id={id} x1="0" x2="0" y1="0" y2="1">
@@ -348,27 +348,27 @@ function Sparkline({
       </defs>
       <motion.path
         animate={{ d: `${d}L${pts.at(-1)![0]},${h}L${pts[0][0]},${h}Z` }}
-        transition={{ duration: 0.4, ease: EASE_IN_OUT }}
         fill={`url(#${id})`}
+        transition={{ duration: 0.4, ease: EASE_IN_OUT }}
       />
       <motion.path
-        initial={{ pathLength: 0 }}
         animate={{ pathLength: 1, d }}
+        fill="none"
+        initial={{ pathLength: 0 }}
+        stroke={color}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={1.75}
         transition={{
           pathLength: { duration: 0.7, ease: EASE_OUT },
           d: { duration: 0.4, ease: EASE_IN_OUT },
         }}
-        fill="none"
-        stroke={color}
-        strokeWidth={1.75}
-        strokeLinecap="round"
-        strokeLinejoin="round"
       />
       <motion.circle
         animate={{ cx: lx, cy: ly }}
-        transition={{ duration: 0.4, ease: EASE_IN_OUT }}
-        r={2.5}
         fill={color}
+        r={2.5}
+        transition={{ duration: 0.4, ease: EASE_IN_OUT }}
       />
     </svg>
   );

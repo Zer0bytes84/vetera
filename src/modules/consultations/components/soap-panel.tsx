@@ -345,6 +345,7 @@ export function SoapPanel({
   return (
     <Shell className={cn("soap-panel", className)}>
       <ShellHeader
+        as="h3"
         aside={
           <>
             <Button
@@ -355,18 +356,18 @@ export function SoapPanel({
                 saveStatus === "saving" ||
                 !isSoapReviewed(payload)
               }
-              size="sm"
               onClick={() => setDocumentComposerOpen(true)}
+              size="sm"
             >
               <FileText className="size-3.5" /> Générer un document
             </Button>
             <Button
+              aria-expanded={documentsOpen}
               className="rounded-full px-4"
               disabled={!initialised || saveStatus === "saving"}
+              onClick={() => setDocumentsOpen(!documentsOpen)}
               size="sm"
               variant="outline"
-              onClick={() => setDocumentsOpen(!documentsOpen)}
-              aria-expanded={documentsOpen}
             >
               <FileText className="size-3.5" /> Documents
             </Button>
@@ -381,6 +382,8 @@ export function SoapPanel({
               {t("consultations.soap.meta.save")}
             </Button>
             <Button
+              aria-expanded={assistantOpen}
+              aria-label="Ouvrir l’assistant de consultation"
               className="rounded-full px-4"
               disabled={!initialised || saveStatus === "saving"}
               onClick={() => {
@@ -389,8 +392,6 @@ export function SoapPanel({
               }}
               size="sm"
               variant={assistantOpen ? "default" : "outline"}
-              aria-expanded={assistantOpen}
-              aria-label="Ouvrir l’assistant de consultation"
             >
               <AssistantBrandAvatar size={20} /> Assistant
             </Button>
@@ -406,7 +407,6 @@ export function SoapPanel({
             </Button>
           </>
         }
-        as="h3"
         className="soap-panel-header"
         icon={Notebook}
         subtitle={
@@ -418,19 +418,19 @@ export function SoapPanel({
       />
       <div className="soap-editor-grid grid gap-1.5 lg:grid-cols-2">
         {SOAP_SECTIONS.map(({ key }) => (
-          <div key={key} className="space-y-2">
+          <div className="space-y-2" key={key}>
             <SoapSectionEditor
-              sectionKey={key}
-              title={t(`consultations.soap.sections.${key}`)}
-              placeholder={t(`consultations.soap.placeholders.${key}`)}
-              value={payload[key]}
-              status={activeSection === key ? "active" : "default"}
-              onFocusSection={() => setActiveSection(key)}
               disabled={!initialised}
               onChange={(value) => {
                 setPayload((previous) => ({ ...previous, [key]: value }));
                 setSaveStatus("pending");
               }}
+              onFocusSection={() => setActiveSection(key)}
+              placeholder={t(`consultations.soap.placeholders.${key}`)}
+              sectionKey={key}
+              status={activeSection === key ? "active" : "default"}
+              title={t(`consultations.soap.sections.${key}`)}
+              value={payload[key]}
             />
           </div>
         ))}
@@ -466,25 +466,25 @@ export function SoapPanel({
       {documentsOpen && (
         <Suspense
           fallback={
-            <p role="status" className="text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground" role="status">
               Ouverture des documents…
             </p>
           }
         >
           <ConsultationDocumentsAssistant
             appointmentId={appointmentId}
-            patientId={patientId}
             onClose={() => setDocumentsOpen(false)}
+            patientId={patientId}
           />
         </Suspense>
       )}
       {documentComposerOpen && (
         <Suspense fallback={<p role="status">Ouverture de la génération…</p>}>
           <DocumentComposer
-            open={documentComposerOpen}
-            patientId={patientId}
             consultationId={appointmentId}
             onClose={() => setDocumentComposerOpen(false)}
+            open={documentComposerOpen}
+            patientId={patientId}
           />
         </Suspense>
       )}
@@ -492,8 +492,8 @@ export function SoapPanel({
         <Suspense
           fallback={
             <p
-              role="status"
               className="flex items-center gap-2 text-sm text-muted-foreground"
+              role="status"
             >
               <CircleNotch className="size-4 animate-spin" /> Ouverture de
               l’assistant…
@@ -502,14 +502,14 @@ export function SoapPanel({
         >
           <LocalConsultationAssistant
             appointmentId={appointmentId}
-            patientId={patientId}
             existingNote={payload}
             onClose={() => setAssistantOpen(false)}
             onValidate={validateNote}
+            patientId={patientId}
           />
         </Suspense>
       </ConsultationAssistantPanel>
-      <AlertDialog open={clearDialogOpen} onOpenChange={setClearDialogOpen}>
+      <AlertDialog onOpenChange={setClearDialogOpen} open={clearDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Effacer toute la note SOAP ?</AlertDialogTitle>
@@ -543,7 +543,7 @@ function SaveStatusPill({ status }: { status: SaveStatus }) {
     idle: "notSaved",
   }[status];
   return (
-    <Badge variant="outline" className="gap-1 t-12">
+    <Badge className="gap-1 t-12" variant="outline">
       {status === "saving" && (
         <CircleNotch className="size-3 animate-spin motion-reduce:animate-none" />
       )}

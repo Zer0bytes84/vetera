@@ -33,21 +33,21 @@ export function AboutTeam() {
   return (
     <SettingsSection
       icon={UsersRound}
-      title="Équipe Baitari"
-      subtitle="Produit, expertise clinique et validation terrain réunis autour d’un même outil."
       panelClassName="settings-credits"
+      subtitle="Produit, expertise clinique et validation terrain réunis autour d’un même outil."
+      title="Équipe Baitari"
     >
       <div className="settings-credits-grid grid gap-6 p-6 xl:grid-cols-3">
         {contributors.map((person) => (
           <article
-            key={person.name}
             className="settings-contributor flex min-w-0 flex-col gap-3 rounded-2xl border border-border p-6"
+            key={person.name}
           >
             <Avatar
-              name={person.name}
-              src={person.photo}
-              size="lg"
               className="size-14 shrink-0 rounded-full"
+              name={person.name}
+              size="lg"
+              src={person.photo}
             />
             <div className="min-w-0">
               <h4 className="text-sm font-medium leading-5">{person.name}</h4>
@@ -59,8 +59,8 @@ export function AboutTeam() {
               {person.description}
             </p>
             <ul
-              className="flex flex-wrap gap-1.5"
               aria-label={`Contributions de ${person.name}`}
+              className="flex flex-wrap gap-1.5"
             >
               {person.skills.map((skill) => (
                 <li

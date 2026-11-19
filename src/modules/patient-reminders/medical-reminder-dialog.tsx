@@ -78,14 +78,14 @@ export function MedicalReminderDialog({
 
   return (
     <Dialog
-      open
       onOpenChange={(open) => {
         if (!(open || busy)) {
           onClose();
         }
       }}
+      open
     >
-      <FormDialogContent size="sm" className="medical-reminder-dialog">
+      <FormDialogContent className="medical-reminder-dialog" size="sm">
         <FormDialogHeader
           description={
             editable
@@ -213,10 +213,8 @@ export function MedicalReminderDialog({
                   </FieldLabel>
                   <Input
                     id="medical-reminder-months"
-                    min={1}
                     max={120}
-                    step={1}
-                    required
+                    min={1}
                     onChange={(event) => {
                       const value = event.target.value;
                       setMonths(value);
@@ -236,6 +234,8 @@ export function MedicalReminderDialog({
                         }));
                       }
                     }}
+                    required
+                    step={1}
                     type="number"
                     value={months}
                   />
@@ -247,10 +247,10 @@ export function MedicalReminderDialog({
                   <FieldLabel htmlFor="medical-reminder-due">
                     Échéance
                   </FieldLabel>
-                  <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+                  <Popover onOpenChange={setCalendarOpen} open={calendarOpen}>
                     <PopoverTrigger
-                      id="medical-reminder-due"
                       aria-label="Choisir l’échéance du rappel"
+                      id="medical-reminder-due"
                       render={
                         <Button
                           className="medical-reminder-date-trigger w-full justify-start"

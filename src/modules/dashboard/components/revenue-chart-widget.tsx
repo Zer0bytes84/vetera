@@ -60,8 +60,6 @@ export function RevenueChartWidget({
   return (
     <section aria-label="Recettes & activité" className="recettesWidget">
       <ChartCard
-        // Switching between the cartesian views keeps the legend's choices; the donut starts afresh.
-        key={isDonut ? "donut" : "cartesian"}
         className="max-w-none"
         data={
           isDonut
@@ -72,6 +70,8 @@ export function RevenueChartWidget({
         footer={footer}
         format={(value) => formatNumber(value)}
         height={280}
+        // Switching between the cartesian views keeps the legend's choices; the donut starts afresh.
+        key={isDonut ? "donut" : "cartesian"}
         subtitle={
           isDonut ? `${rangeLabel} · consultations par type d’acte` : rangeLabel
         }

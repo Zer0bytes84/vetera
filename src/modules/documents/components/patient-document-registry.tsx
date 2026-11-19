@@ -140,25 +140,23 @@ export function PatientDocumentRegistry({
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <Button size="sm" variant="outline" onClick={() => setReader({})}>
+          <Button onClick={() => setReader({})} size="sm" variant="outline">
             <BookOpen className="size-4" strokeWidth={1} />
             Lire avec l’assistant
           </Button>
           <Button
-            size="sm"
             disabled={importing || !currentUser}
             onClick={openImporter}
+            size="sm"
           >
             <Upload className="size-4" strokeWidth={1} />
             {importing ? "Import en cours…" : "Importer une pièce"}
           </Button>
         </div>
         <input
-          ref={picker}
-          type="file"
           accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"
-          className="hidden"
           aria-label="Importer un PDF ou une image pour ce patient"
+          className="hidden"
           onChange={(event) => {
             const file = event.target.files?.[0];
             event.target.value = "";
@@ -166,6 +164,8 @@ export function PatientDocumentRegistry({
               void importFile(file);
             }
           }}
+          ref={picker}
+          type="file"
         />
       </header>
       <div className="grid items-end gap-3 sm:grid-cols-2 xl:grid-cols-[minmax(180px,1fr)_180px_150px_150px]">
@@ -178,17 +178,17 @@ export function PatientDocumentRegistry({
           />
           <Input
             className="pl-9"
+            onChange={(event) => changeFilter("search", event.target.value)}
             placeholder="Rechercher un document…"
             value={filters.search}
-            onChange={(event) => changeFilter("search", event.target.value)}
           />
         </label>
         <label className="block text-xs text-muted-foreground">
           <span className="sr-only">Type de document</span>
           <NativeSelect
             aria-label="Type de document"
-            value={filters.kind}
             onChange={(event) => changeFilter("kind", event.target.value)}
+            value={filters.kind}
           >
             <NativeSelectOption value="">Tous les types</NativeSelectOption>
             {Object.entries(DOCUMENT_TYPES).map(([kind, label]) => (
@@ -204,22 +204,22 @@ export function PatientDocumentRegistry({
         <label className="block text-xs text-muted-foreground">
           Du
           <DatePicker
-            clearable
-            className="mt-1"
             aria-label="Documents à partir du"
-            value={filters.from}
+            className="mt-1"
+            clearable
             onChange={(value) => changeFilter("from", value)}
+            value={filters.from}
           />
         </label>
         <label className="block text-xs text-muted-foreground">
           Au
           <DatePicker
-            clearable
-            className="mt-1"
             aria-label="Documents jusqu’au"
-            value={filters.to}
+            className="mt-1"
+            clearable
             min={filters.from || undefined}
             onChange={(value) => changeFilter("to", value)}
+            value={filters.to}
           />
         </label>
       </div>
@@ -236,8 +236,8 @@ export function PatientDocumentRegistry({
         />
       ) : registry.loading ? (
         <p
-          role="status"
           className="py-8 text-center text-sm text-muted-foreground"
+          role="status"
         >
           Chargement des documents…
         </p>
@@ -250,9 +250,9 @@ export function PatientDocumentRegistry({
             >
               <div className="min-w-0">
                 <button
-                  type="button"
-                  onClick={() => setPreviewId(document.id)}
                   className="max-w-full text-left text-sm font-medium underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+                  onClick={() => setPreviewId(document.id)}
+                  type="button"
                 >
                   <span className="break-words">{document.title}</span>
                 </button>
@@ -267,10 +267,10 @@ export function PatientDocumentRegistry({
                   </span>
                   <span>{document.authorName || "Équipe soignante"}</span>
                   <Badge
-                    variant="outline"
                     className={
                       document.status === "annule" ? "text-destructive" : ""
                     }
+                    variant="outline"
                   >
                     {DOCUMENT_STATUS_LABELS[document.status]}
                   </Badge>
@@ -281,18 +281,18 @@ export function PatientDocumentRegistry({
               </div>
               <div className="flex shrink-0 gap-2">
                 <Button
+                  onClick={() => setPreviewId(document.id)}
                   size="sm"
                   variant="outline"
-                  onClick={() => setPreviewId(document.id)}
                 >
                   <Eye className="size-4" strokeWidth={1} />
                   Aperçu
                 </Button>
                 {document.status === "finalise" && (
                   <Button
+                    onClick={() => setReader({ document })}
                     size="sm"
                     variant="ghost"
-                    onClick={() => setReader({ document })}
                   >
                     <BookOpen className="size-4" strokeWidth={1} />
                     Lire
@@ -317,16 +317,16 @@ export function PatientDocumentRegistry({
       )}
       <DocumentPreviewDialog
         documentId={previewId}
-        onClose={() => setPreviewId(null)}
         onChanged={() => void registry.refresh()}
+        onClose={() => setPreviewId(null)}
       />
       <Dialog
-        open={reader !== null}
         onOpenChange={(open) => {
           if (!open) {
             setReader(null);
           }
         }}
+        open={reader !== null}
       >
         <DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-4xl">
           <DialogHeader className="pr-12">
@@ -337,21 +337,21 @@ export function PatientDocumentRegistry({
             </DialogDescription>
           </DialogHeader>
           <Button
-            className="absolute right-4 top-4"
-            variant="ghost"
-            size="icon"
             aria-label="Fermer la lecture"
+            className="absolute right-4 top-4"
             onClick={() => setReader(null)}
+            size="icon"
+            variant="ghost"
           >
             <X strokeWidth={1} />
           </Button>
           {reader && (
             <ConsultationDocumentsAssistant
+              appointmentId={reader.document?.consultationId ?? ""}
+              initialDocument={reader.document}
+              initialMode="read"
               key={reader.document?.id ?? "patient-reader"}
               patientId={patientId}
-              appointmentId={reader.document?.consultationId ?? ""}
-              initialMode="read"
-              initialDocument={reader.document}
             />
           )}
         </DialogContent>

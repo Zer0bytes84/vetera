@@ -25,11 +25,11 @@ export function Shell({
 }: React.ComponentProps<"section">) {
   return (
     <section
-      data-slot="band"
       className={cn(
         "@container w-full rounded-[calc(var(--radius-panel)+var(--card-frame))] bg-[var(--card-band)] p-[var(--card-frame)]",
         className
       )}
+      data-slot="band"
       {...props}
     />
   );

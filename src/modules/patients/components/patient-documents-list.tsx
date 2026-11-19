@@ -178,8 +178,8 @@ export function PatientDocumentsList({
     <div className={cn("clinical-surface flex flex-col p-5 sm:p-6", className)}>
       <PatientDocumentRegistry
         key={patientId}
-        patientId={patientId}
         onUpload={onUpload}
+        patientId={patientId}
         uploadControl={uploadControl}
       />
       <div className="mt-8 border-t border-border pt-5">
@@ -345,12 +345,12 @@ export function PatientDocumentsList({
           )}
         </div>
         <AlertDialog
-          open={deleteTarget !== null}
           onOpenChange={(open) => {
             if (!open) {
               setDeleteTarget(null);
             }
           }}
+          open={deleteTarget !== null}
         >
           <AlertDialogContent size="sm">
             <AlertDialogHeader>
@@ -364,8 +364,8 @@ export function PatientDocumentsList({
             <AlertDialogFooter>
               <AlertDialogCancel>Annuler</AlertDialogCancel>
               <AlertDialogAction
-                onClick={() => void confirmDelete()}
                 className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                onClick={() => void confirmDelete()}
               >
                 Supprimer
               </AlertDialogAction>

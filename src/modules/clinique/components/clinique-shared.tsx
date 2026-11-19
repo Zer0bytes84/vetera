@@ -786,8 +786,8 @@ export function ConsultationSessionDialog({
         />
       </div>
       <ConsultationProducts
-        key={`products:${appointment.id}`}
         appointmentId={appointment.id}
+        key={`products:${appointment.id}`}
         patientId={patient.id}
       />
 

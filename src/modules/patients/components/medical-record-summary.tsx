@@ -75,20 +75,20 @@ export function PatientIdentity({
       >
         {patient.avatarUrl ? (
           <img
-            src={patient.avatarUrl}
             alt={patient.name}
             className="h-full w-full object-cover"
+            src={patient.avatarUrl}
           />
         ) : (
           <HugeiconsIcon
-            icon={getSpeciesGlyph(patient.species)}
-            size={compact ? 24 : 36}
-            strokeWidth={1.5}
+            aria-hidden="true"
             className={cn(
               "transition-transform duration-200",
               speciesTheme.avatarIconColor
             )}
-            aria-hidden="true"
+            icon={getSpeciesGlyph(patient.species)}
+            size={compact ? 24 : 36}
+            strokeWidth={1.5}
           />
         )}
       </div>
@@ -108,7 +108,7 @@ export function PatientIdentity({
           ) : null}
           {/* The status is the only tag with a hue; species and sex are facts. */}
           <span className={cn("medical-status", status.className)}>
-            <span className="medical-status-dot" aria-hidden="true" />
+            <span aria-hidden="true" className="medical-status-dot" />
             {status.label}
           </span>
         </div>
@@ -221,8 +221,8 @@ export function OwnerContact({
   if (!owner) {
     return (
       <section
-        className="medical-owner p-5"
         aria-label="Coordonnées du propriétaire"
+        className="medical-owner p-5"
       >
         <RecordBlockHeading icon={User}>Propriétaire</RecordBlockHeading>
         <p className="medical-contact-hint text-xs text-muted-foreground">
@@ -237,14 +237,14 @@ export function OwnerContact({
 
   return (
     <section
-      className="medical-owner p-5"
       aria-label="Coordonnées du propriétaire"
+      className="medical-owner p-5"
     >
       <RecordBlockHeading icon={User}>Propriétaire</RecordBlockHeading>
       <div className="medical-owner-card flex items-center gap-3.5 p-3 rounded-xl bg-muted/40 border border-border/60">
         <div
-          className="medical-owner-avatar size-11 rounded-xl flex items-center justify-center font-bold text-sm text-white bg-gradient-to-br from-indigo-500 to-purple-600 shadow-sm shrink-0"
           aria-hidden="true"
+          className="medical-owner-avatar size-11 rounded-xl flex items-center justify-center font-bold text-sm text-white bg-gradient-to-br from-indigo-500 to-purple-600 shadow-sm shrink-0"
         >
           {initials}
         </div>
@@ -263,11 +263,11 @@ export function OwnerContact({
       <div className="medical-owner-links mt-3 flex flex-wrap gap-2">
         {owner.phone && (
           <a
+            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200/80 transition-colors dark:bg-emerald-950/50 dark:text-emerald-300 dark:border-emerald-800/40"
             href={`tel:${owner.phone}`}
             title={`Appeler ${phoneLabel}`}
-            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200/80 transition-colors dark:bg-emerald-950/50 dark:text-emerald-300 dark:border-emerald-800/40"
           >
-            <Phone size={14} className="shrink-0" aria-hidden="true" />
+            <Phone aria-hidden="true" className="shrink-0" size={14} />
             <span>{phoneLabel}</span>
           </a>
         )}
@@ -281,11 +281,11 @@ export function OwnerContact({
         ) : null}
         {owner.email && (
           <a
+            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium bg-sky-50 text-sky-700 hover:bg-sky-100 border border-sky-200/80 transition-colors dark:bg-sky-950/50 dark:text-sky-300 dark:border-sky-800/40"
             href={`mailto:${owner.email}`}
             title={`Écrire à ${owner.email}`}
-            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium bg-sky-50 text-sky-700 hover:bg-sky-100 border border-sky-200/80 transition-colors dark:bg-sky-950/50 dark:text-sky-300 dark:border-sky-800/40"
           >
-            <Mail size={14} className="shrink-0" aria-hidden="true" />
+            <Mail aria-hidden="true" className="shrink-0" size={14} />
             <span>{owner.email}</span>
           </a>
         )}

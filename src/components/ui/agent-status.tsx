@@ -91,16 +91,16 @@ function Indicator({ status }: { status: AgentStatusState }) {
       <AnimatePresence initial={false} mode="popLayout">
         {status === "working" ? (
           <motion.span
-            key="working"
             aria-hidden="true"
-            exit={{ scale: 0.9, opacity: 0, transition: leave }}
             className="flex gap-[3px]"
+            exit={{ scale: 0.9, opacity: 0, transition: leave }}
+            key="working"
           >
             {[0, 1, 2].map((i) => (
               <motion.span
-                key={i}
-                className="size-[5px] rounded-full bg-brand"
                 animate={{ opacity: [0.25, 1, 0.25], scale: [0.8, 1, 0.8] }}
+                className="size-[5px] rounded-full bg-brand"
+                key={i}
                 transition={{
                   duration: 1,
                   repeat: Number.POSITIVE_INFINITY,
@@ -112,11 +112,8 @@ function Indicator({ status }: { status: AgentStatusState }) {
           </motion.span>
         ) : (
           <motion.span
-            key={status}
-            aria-hidden="true"
-            initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            transition={enter}
+            aria-hidden="true"
             className={cn(
               "flex size-5 items-center justify-center rounded-full",
               status === "done" && "bg-positive/15 text-positive",
@@ -124,6 +121,9 @@ function Indicator({ status }: { status: AgentStatusState }) {
                 "bg-foreground/[0.08] text-muted-foreground",
               status === "error" && "bg-negative/15 text-negative"
             )}
+            initial={{ scale: 0.9, opacity: 0 }}
+            key={status}
+            transition={enter}
           >
             {status === "done" && <Check className="size-3" strokeWidth={3} />}
             {status === "stopped" && (
@@ -153,8 +153,8 @@ export function AgentStatus({
   return (
     <MotionConfig reducedMotion="user">
       <Shell
-        aria-label="État de l’assistant"
         aria-busy={working}
+        aria-label="État de l’assistant"
         className={cn("max-w-none", className)}
       >
         {recent.length > 0 && (
@@ -162,19 +162,19 @@ export function AgentStatus({
             <AnimatePresence initial={false}>
               {recent.map((step) => (
                 <motion.li
+                  animate={{ opacity: 1, y: 0, transition: enter }}
+                  className="flex items-center gap-3 px-1.5 py-1.5 text-[0.8125rem] text-muted-foreground"
+                  exit={{ opacity: 0, y: -10, transition: leave }}
+                  initial={{ opacity: 0, y: 10 }}
                   key={step.id}
                   layout="position"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0, transition: enter }}
-                  exit={{ opacity: 0, y: -10, transition: leave }}
                   transition={shift}
-                  className="flex items-center gap-3 px-1.5 py-1.5 text-[0.8125rem] text-muted-foreground"
                 >
                   <span className="flex size-5 shrink-0 items-center justify-center">
                     <Check
-                      strokeWidth={2.5}
-                      className="size-3.5 text-positive"
                       aria-label="Terminée"
+                      className="size-3.5 text-positive"
+                      strokeWidth={2.5}
                     />
                   </span>
                   <span className="min-w-0 flex-1 truncate">{step.label}</span>
@@ -198,11 +198,11 @@ export function AgentStatus({
             <div className="relative h-5 overflow-hidden text-sm font-medium">
               <AnimatePresence initial={false} mode="popLayout">
                 <motion.p
-                  key={working ? label : status}
-                  initial={{ y: "100%", opacity: 0 }}
                   animate={{ y: 0, opacity: 1, transition: enter }}
-                  exit={{ y: "-100%", opacity: 0, transition: leave }}
                   className="truncate"
+                  exit={{ y: "-100%", opacity: 0, transition: leave }}
+                  initial={{ y: "100%", opacity: 0 }}
+                  key={working ? label : status}
                 >
                   {working ? label : `${finalLabel[status]} · ${label}`}
                 </motion.p>
@@ -212,11 +212,11 @@ export function AgentStatus({
               <div className="relative h-[1.125rem] overflow-hidden">
                 <AnimatePresence initial={false} mode="popLayout">
                   <motion.p
-                    key={detail}
-                    initial={{ opacity: 0, x: 6 }}
                     animate={{ opacity: 1, x: 0, transition: enter }}
-                    exit={{ opacity: 0, x: -6, transition: leave }}
                     className="truncate text-xs text-muted-foreground"
+                    exit={{ opacity: 0, x: -6, transition: leave }}
+                    initial={{ opacity: 0, x: 6 }}
+                    key={detail}
                   >
                     {detail}
                   </motion.p>
@@ -225,23 +225,23 @@ export function AgentStatus({
             )}
           </div>
           <time
-            dateTime={`PT${Math.floor(elapsed / 1000)}S`}
             className="shrink-0 font-mono text-xs text-muted-foreground tabular-nums"
+            dateTime={`PT${Math.floor(elapsed / 1000)}S`}
           >
             <RollingNumber value={formatElapsed(elapsed)} />
           </time>
           {working && onStop && (
             <Button
-              icon={CircleStop}
-              onClick={onStop}
               aria-label={`${stopLabel} : ${label}`}
               className="px-3"
+              icon={CircleStop}
+              onClick={onStop}
             >
               {stopLabel}
             </Button>
           )}
         </Panel>
-        <p role="status" aria-live="polite" className="sr-only">
+        <p aria-live="polite" className="sr-only" role="status">
           {working ? label : `${finalLabel[status]}: ${label}`}
         </p>
       </Shell>

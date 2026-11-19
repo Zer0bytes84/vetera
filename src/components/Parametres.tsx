@@ -562,13 +562,13 @@ const BackupSettings: React.FC = () => {
         )}
       </SettingsSection>
       <AlertDialog
-        open={pending !== null}
         onOpenChange={(open) => {
           if (!open) {
             setPending(null);
             setPassphrase("");
           }
         }}
+        open={pending !== null}
       >
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -955,8 +955,8 @@ const Parametres: React.FC<ParametresProps> = ({
                   <Field className="sm:col-span-2">
                     <FieldLabel htmlFor="settings-name">Nom complet</FieldLabel>
                     <Input
-                      id="settings-name"
                       autoComplete="name"
+                      id="settings-name"
                       onChange={(event) => setDisplayName(event.target.value)}
                       value={displayName}
                     />
@@ -964,8 +964,8 @@ const Parametres: React.FC<ParametresProps> = ({
                   <Field className="sm:col-span-2">
                     <FieldLabel htmlFor="settings-phone">Téléphone</FieldLabel>
                     <Input
-                      id="settings-phone"
                       autoComplete="tel"
+                      id="settings-phone"
                       onChange={(event) => setPhone(event.target.value)}
                       placeholder="Numéro de téléphone"
                       type="tel"
@@ -1076,7 +1076,7 @@ const Parametres: React.FC<ParametresProps> = ({
               >
                 <Button
                   className="rounded-full"
-                  variant="outline"
+                  disabled={!onNavigate}
                   onClick={() => {
                     window.sessionStorage.setItem(
                       "baitari:customize-dashboard",
@@ -1084,7 +1084,7 @@ const Parametres: React.FC<ParametresProps> = ({
                     );
                     onNavigate?.("dashboard");
                   }}
-                  disabled={!onNavigate}
+                  variant="outline"
                 >
                   Réorganiser les widgets
                 </Button>
@@ -1112,8 +1112,8 @@ const Parametres: React.FC<ParametresProps> = ({
                     Nouveau mot de passe
                   </FieldLabel>
                   <Input
-                    id="settings-password"
                     autoComplete="new-password"
+                    id="settings-password"
                     onChange={(e) => setNewPassword(e.target.value)}
                     placeholder="Au moins 6 caractères"
                     type="password"
@@ -1125,8 +1125,8 @@ const Parametres: React.FC<ParametresProps> = ({
                     Confirmer le mot de passe
                   </FieldLabel>
                   <Input
-                    id="settings-confirm"
                     autoComplete="new-password"
+                    id="settings-confirm"
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     placeholder="Saisir à nouveau"
                     type="password"
