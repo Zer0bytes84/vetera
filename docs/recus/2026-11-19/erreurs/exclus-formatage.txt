@@ -1,0 +1,9 @@
+src/components/CommandPalette.tsx
+src/design-system/clean.css
+src/design-system/premium.css
+src/index.css
+src/modules/consultation-workspace/use-consultation-session.ts
+src/modules/flow-board/open-in-flux.ts
+src/modules/shell/app-shell.tsx
+src/modules/shell/premium-sidebar.css
+src/modules/shell/window-controls.css
