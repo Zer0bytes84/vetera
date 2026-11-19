@@ -1,4 +1,4 @@
-import { Archive, Banknote, Building2, CalendarCheck, FileText, LayoutGrid, MessageCircle, MessageSquareText, Palette, PanelLeft, Pencil, Phone, Plus, Shapes, Type, UserPen, type LucideIcon } from "lucide-react";
+import { Archive, Banknote, Building2, CalendarCheck, FileText, LayoutGrid, MessageCircle, MessageSquareText, Palette, PanelLeft, Pencil, Phone, Plus, RefreshCw, Search, Shapes, Stethoscope, Type, UserPen, type LucideIcon } from "lucide-react";
 
 /**
  * Les notes de version : une entrée par version, à remplir à chaque publication.
@@ -27,6 +27,28 @@ export type ReleaseNote = {
 
 /** Les plus récentes en premier. */
 export const RELEASE_NOTES: ReleaseNote[] = [
+  {
+    version: "5.1.1",
+    status: "published",
+    date: "2026-11-18",
+    highlights: [
+      {
+        icon: Stethoscope,
+        title: "Le dossier patient, Soins et Hospitalisation s'ouvrent de nouveau",
+        text: "Ces trois pages affichaient « Cette vue n'a pas pu être chargée » dans l'application installée. Elles s'ouvrent normalement, avec la relance WhatsApp et la correction des coordonnées de la version 5.1.0.",
+      },
+      {
+        icon: RefreshCw,
+        title: "Une mise à jour qui n'a pas pu s'installer vous est reproposée",
+        text: "Si l'installation échoue, la version n'est plus considérée comme refusée : elle vous est proposée de nouveau au prochain lancement. Seul « Plus tard » la met de côté.",
+      },
+      {
+        icon: Search,
+        title: "Recherchez une mise à jour quand vous le voulez",
+        text: "Dans Paramètres, À propos, « Rechercher une mise à jour » vérifie si une version plus récente est publiée et propose de l'installer, même si vous l'aviez reportée.",
+      },
+    ],
+  },
   {
     version: "5.1.0",
     status: "published",
