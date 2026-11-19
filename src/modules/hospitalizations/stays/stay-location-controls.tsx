@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { MapPinIcon } from "@heroicons/react/20/solid";
+import { StaySection } from "./stay-section";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
@@ -35,8 +37,7 @@ export function StayTransfer({ stay }: { stay: Stay }) {
   const [locationId, setLocationId] = useState(""), [reason, setReason] = useState("");
   const [busy, setBusy] = useState(false), [error, setError] = useState<string | null>(null);
   const available = locations.filter(location => location.active && location.id !== stay.location_id && !stays.some(item => item.location_id === location.id && ACTIVE_STAY_STATUSES.includes(item.status)));
-  return <section className="space-y-3 rounded-2xl border border-[#F2F2F2] bg-card p-5 dark:border-border">
-    <h3 className="t-16 font-medium">Emplacement</h3>
+  return <StaySection icon={MapPinIcon} title="Emplacement">
     <p className="t-13 text-muted-foreground">{locations.find(location => location.id === stay.location_id)?.name || "Sans emplacement"}</p>
     <form className="flex flex-wrap items-end gap-3" onSubmit={async event => {
       event.preventDefault(); if (!currentUser || busy || !locationId || !reason.trim()) return;
@@ -58,5 +59,5 @@ export function StayTransfer({ stay }: { stay: Stay }) {
     </form>
     {!available.length && <p className="t-12 text-muted-foreground">Aucun autre emplacement libre.</p>}
     {error && <p role="alert" className="t-13 text-destructive">{error}</p>}
-  </section>;
+  </StaySection>;
 }
