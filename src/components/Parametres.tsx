@@ -128,18 +128,18 @@ import { roleLabel as displayRole } from "@/lib/user-role";
 import { PageHeader } from "@/design-system/patterns/page-header";
 import { guard } from "@/lib/guard";
 
-type SettingsNavItem = {
+interface SettingsNavItem {
   id: SettingsTab;
   label: string;
   description: string;
   icon: typeof UserCircle02Icon;
   keywords?: string[];
-};
+}
 
-type SettingsNavGroup = {
+interface SettingsNavGroup {
   label: string;
   items: SettingsNavItem[];
-};
+}
 
 const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
   {

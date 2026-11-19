@@ -17,11 +17,11 @@ export interface AIInstallationState {
   /** What the running or last installation was: the base tools or the new assistant. */
   target: "base" | "generator4";
 }
-type Dependencies = {
+interface Dependencies {
   check: typeof checkAIModelsStatus;
   provision: typeof provisionAllAIModels;
   provisionNewAssistant?: typeof provisionNewAssistant;
-};
+}
 
 export function createAIModelInstallation(dependencies: Dependencies) {
   let state: AIInstallationState = {

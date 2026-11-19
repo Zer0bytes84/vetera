@@ -25,7 +25,7 @@ import { enter, exit } from "@/lib/motion-tokens";
 import { cn } from "@/lib/utils";
 import { Spinner } from "@/components/ui/loader";
 
-export type UserMessageAttachment = {
+export interface UserMessageAttachment {
   id: string;
   name: string;
   kind: "image" | "file";
@@ -33,11 +33,11 @@ export type UserMessageAttachment = {
   size?: number;
   /** Optional thumbnail for images. */
   previewUrl?: string;
-};
+}
 
 export type UserMessageStatus = "sending" | "sent" | "failed";
 
-export type UserMessageData = {
+export interface UserMessageData {
   id: string;
   content: string;
   attachments?: UserMessageAttachment[];
@@ -45,16 +45,16 @@ export type UserMessageData = {
   sentAt?: string;
   status?: UserMessageStatus;
   edited?: boolean;
-};
+}
 
-export type UserMessageProps = {
+export interface UserMessageProps {
   data: UserMessageData;
   /** Save the edited text. Hides the edit action when omitted (the panel edits a rubric by going back to it). */
   onEdit?: (text: string) => void;
   onRetry?: () => void;
   onCopy?: (text: string) => void;
   className?: string;
-};
+}
 
 export const formatBytes = (n: number) =>
   n < 1024

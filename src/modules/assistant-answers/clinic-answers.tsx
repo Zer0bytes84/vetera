@@ -45,19 +45,19 @@ import { MAX_QUESTION_LENGTH } from "./language";
 import { saveProposal } from "./save-proposal";
 import type { Answer, AnswerColumn, CellKind, Proposal } from "./types";
 
-export type Turn = {
+export interface Turn {
   id: string;
   question: string;
   at: string;
   durationMs: number;
   answer: Answer;
-};
-type CardState = {
+}
+interface CardState {
   status: ConfirmationStatus | "dismissed";
   error?: string;
   reference?: string;
   doneAt?: string;
-};
+}
 
 /**
  * The thread's assistant turns shrink to their content, so a short answer would squeeze its « Ce que j'ai lu » block into a
@@ -104,11 +104,11 @@ const clock = (value: string | Date) =>
 const plural = (count: number, one: string, many: string) =>
   `${count} ${count > 1 ? many : one}`;
 
-type Props = {
+interface Props {
   /** The record open behind the panel: « ce patient » in a question means this one. */
   patientId?: string;
   renderAvatar?: (message: ThreadMessage) => ReactNode;
-};
+}
 
 export function ClinicAnswers({ patientId, renderAvatar }: Props) {
   const patients = useSQLite<Patient>("patients");

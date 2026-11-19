@@ -15,7 +15,7 @@ import { IconTile } from "@/components/ui/surface";
 import { EASE_OUT, exit } from "@/lib/motion-tokens";
 import { cn } from "@/lib/utils";
 
-export type PromptSuggestion = {
+export interface PromptSuggestion {
   id: string;
   title: string;
   /** Second line on cards; ignored by chips. */
@@ -23,9 +23,9 @@ export type PromptSuggestion = {
   icon?: LucideIcon;
   /** Text to run; defaults to the title. */
   prompt?: string;
-};
+}
 
-export type PromptSuggestionsProps = {
+export interface PromptSuggestionsProps {
   data: PromptSuggestion[];
   /** `cards` for an empty chat, `chips` for follow-ups under an answer. */
   variant?: "cards" | "chips";
@@ -35,7 +35,7 @@ export type PromptSuggestionsProps = {
   refreshing?: boolean;
   heading?: string;
   className?: string;
-};
+}
 
 const STAGGER = 0.04;
 

@@ -36,15 +36,15 @@ export type BrowserTableName =
   | "audit_log"
   | "notification_state";
 
-export type BrowserRow = {
+export interface BrowserRow {
   id?: string;
   createdAt?: string;
   updatedAt?: string;
-};
+}
 
-type BrowserDatabaseState = {
+interface BrowserDatabaseState {
   tables: Record<BrowserTableName, BrowserRow[]>;
-};
+}
 
 const STORAGE_KEY = "vetera.browser-db.v1";
 

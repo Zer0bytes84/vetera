@@ -393,7 +393,7 @@ export type ViewMode = "list" | "day" | "week" | "month";
 
 export type TableTab = (typeof TABLE_TABS)[number]["value"];
 
-export type AgendaTableRow = {
+export interface AgendaTableRow {
   appointment: Appointment;
   patient?: Patient;
   owner?: Owner;
@@ -406,7 +406,7 @@ export type AgendaTableRow = {
   statusClassName: string;
   tab: TableTab;
   searchIndex: string;
-};
+}
 
 export function normalizeDate(value?: string | Date | null) {
   if (!value) {

@@ -92,8 +92,12 @@ function ViewLoadingState() {
   );
 }
 
-type ViewErrorBoundaryProps = { children: ReactNode };
-type ViewErrorBoundaryState = { error: Error | null };
+interface ViewErrorBoundaryProps {
+  children: ReactNode;
+}
+interface ViewErrorBoundaryState {
+  error: Error | null;
+}
 
 class ViewErrorBoundary extends Component<
   ViewErrorBoundaryProps,

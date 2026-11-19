@@ -4,13 +4,13 @@ import type { GeneratorCandidate, GeneratorFamily } from "./generator-choice";
 /** Local search model: v1 (EmbeddingGemma 300M fp32), v2 (EmbeddingGemma 2 text, q8) or arctic-embed-l-v2 (q8). */
 export type SearchModel = "embeddinggemma" | "embeddinggemma2" | "arctic";
 
-export type LocalAiProgress = {
+export interface LocalAiProgress {
   message: string;
   progress?: number;
   stage?: "loading" | "generating" | "validating" | "retrying";
   characters?: number;
   attempt?: 1 | 2;
-};
+}
 export type WorkerRequest =
   // threads: ONNX threads for Whisper (applied only in a cross-origin isolated page).
   // folder: model folder under modelRoot, "whisper" unless the bench compares another one.

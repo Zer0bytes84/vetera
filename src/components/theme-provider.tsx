@@ -11,18 +11,18 @@ const loadTauriAppsApiWindow = () => import("@tauri-apps/api/window");
 type Theme = "dark" | "light" | "system";
 type ResolvedTheme = "dark" | "light";
 
-type ThemeProviderProps = {
+interface ThemeProviderProps {
   children: React.ReactNode;
   defaultTheme?: Theme;
   storageKey?: string;
   disableTransitionOnChange?: boolean;
-};
+}
 
-type ThemeProviderState = {
+interface ThemeProviderState {
   theme: Theme;
   resolvedTheme: ResolvedTheme;
   setTheme: (theme: Theme) => void;
-};
+}
 
 const COLOR_SCHEME_QUERY = "(prefers-color-scheme: dark)";
 const THEME_VALUES: Theme[] = ["dark", "light", "system"];

@@ -23,14 +23,14 @@ import { Button, IconButton } from "@/components/ui/action-button";
 import { EASE_OUT } from "@/lib/motion-tokens";
 import { cn } from "@/lib/utils";
 
-export type StreamingMessageData = {
+export interface StreamingMessageData {
   content: string;
   status: "streaming" | "done" | "error";
   reasoning?: { text: string; durationMs?: number; streaming?: boolean };
   error?: string;
-};
+}
 
-export type StreamingMessageProps = {
+export interface StreamingMessageProps {
   data: StreamingMessageData;
   /** Shown in the header: « Assistant IA », never a model name. */
   model?: string;
@@ -43,7 +43,7 @@ export type StreamingMessageProps = {
   onCopy?: (content: string) => void;
   onRetry?: () => void;
   className?: string;
-};
+}
 
 // Strong ease-out for things entering; exits are quicker than entrances.
 const enter = { duration: 0.22, ease: EASE_OUT };
@@ -220,7 +220,10 @@ function Reasoning({
   );
 }
 
-type Segment = { text: string; kind: "text" | "code" | "bold" };
+interface Segment {
+  text: string;
+  kind: "text" | "code" | "bold";
+}
 
 // Unclosed `code` or **bold** at the tail (mid-stream) already renders styled,
 // so markdown markers never flash on screen.

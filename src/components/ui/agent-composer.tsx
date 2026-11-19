@@ -23,13 +23,13 @@ import { MotionConfig } from "motion/react";
 import { Panel, Shell } from "@/components/ui/surface";
 import { cn } from "@/lib/utils";
 
-export type ComposerSuggestion = {
+export interface ComposerSuggestion {
   key: string;
   label: string;
   detail?: string;
-};
+}
 
-export type ComposerMenu = {
+export interface ComposerMenu {
   /** Accessible name of the list, e.g. « Suggestions de patients ». */
   label: string;
   items: ComposerSuggestion[];
@@ -38,9 +38,9 @@ export type ComposerMenu = {
   onPick: (item: ComposerSuggestion) => void;
   /** Escape closes the menu without choosing. */
   onDismiss: () => void;
-};
+}
 
-export type AgentComposerProps = {
+export interface AgentComposerProps {
   value: string;
   onValueChange: (value: string, caret: number) => void;
   /** The caret moved (selection, click, arrow keys): the caller finds the « @ » being typed from it. */
@@ -63,7 +63,7 @@ export type AgentComposerProps = {
   /** Takes the height the panel leaves: the field is the work area, not a fixed box. */
   fill?: boolean;
   className?: string;
-};
+}
 
 export function AgentComposer({
   value,

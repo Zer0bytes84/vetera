@@ -84,13 +84,13 @@ function useTourInvoices(enabled: boolean): {
   return state;
 }
 
-type Box = {
+interface Box {
   x: number;
   y: number;
   width: number;
   height: number;
   radius: string;
-};
+}
 
 /**
  * Où dessiner le repère. Il suit l'élément visé (la fenêtre bouge, le menu s'ouvre) et s'efface tant qu'un formulaire le

@@ -40,7 +40,7 @@ export type LocalAiPhase =
   | "transcribing"
   | "loading-soap"
   | "generating";
-type Attempt = {
+interface Attempt {
   controller: AbortController;
   language?: DictationLanguage;
   session?: LocalInferenceSession;
@@ -54,16 +54,16 @@ type Attempt = {
   loading?: Promise<void>;
   /** Native companion path: no WASM session, no parked model. */
   native?: boolean;
-};
+}
 type PreparedMicrophone = Awaited<ReturnType<typeof prepareMicrophone>>;
 /** Microphone kept open between the dictations of one guided note. */
-type HeldMicrophone = {
+interface HeldMicrophone {
   microphone: PreparedMicrophone;
   controller: AbortController;
   /** Its level has settled once: later dictations listen at once. */
   settled: boolean;
   idle?: ReturnType<typeof setTimeout>;
-};
+}
 /** A held microphone left unused this long is closed. */
 export const MICROPHONE_HOLD_MS = 120_000;
 export function useLocalConsultationAi({

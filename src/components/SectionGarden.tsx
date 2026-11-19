@@ -14,12 +14,12 @@ import {
 import type { View } from "@/types";
 import "@/modules/dashboard/v2/studio-dashboard.css";
 
-type Insight = {
+interface Insight {
   title: string;
   value: string | number;
   detail: string;
   target: View;
-};
+}
 export function SectionGarden({
   view,
   onNavigate,

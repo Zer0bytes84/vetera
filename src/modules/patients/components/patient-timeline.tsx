@@ -65,7 +65,7 @@ type TimelineKind =
   | "weight"
   | "piece";
 
-type TimelineEntry = {
+interface TimelineEntry {
   id: string;
   at: string;
   kind: TimelineKind;
@@ -82,7 +82,7 @@ type TimelineEntry = {
   pieces?: TimelinePiece[];
   /** A piece no visit produced stands as its own event. */
   piece?: TimelinePiece;
-};
+}
 
 const KIND_ICON: Record<TimelineKind, typeof Stethoscope> = {
   consultation: Stethoscope,

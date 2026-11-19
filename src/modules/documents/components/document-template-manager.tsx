@@ -56,13 +56,13 @@ import { useManagedTemplates } from "../hooks/use-managed-documents";
 import "../document-module.css";
 import { guard } from "@/lib/guard";
 
-type TemplateDraft = {
+interface TemplateDraft {
   source: ManagedDocumentTemplate | null;
   name: string;
   kind: DocumentKind;
   body: string;
   active: boolean;
-};
+}
 
 function templateDraft(
   template?: ManagedDocumentTemplate,

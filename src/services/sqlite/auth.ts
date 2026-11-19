@@ -52,7 +52,7 @@ async function getRegistrationRole(): Promise<string> {
   return result[0]?.count === 0 ? "admin" : "stagiaire";
 }
 
-type BrowserUserRecord = {
+interface BrowserUserRecord {
   id: string;
   email: string;
   passwordHash?: string;
@@ -61,14 +61,14 @@ type BrowserUserRecord = {
   role: string;
   status: "active" | "inactive";
   avatarUrl?: string | null;
-};
+}
 
-type BrowserSessionRecord = {
+interface BrowserSessionRecord {
   id: string;
   userId: string;
   token: string;
   expiresAt: string;
-};
+}
 
 function legacySha256(value: string): string {
   const rightRotate = (word: number, amount: number) =>

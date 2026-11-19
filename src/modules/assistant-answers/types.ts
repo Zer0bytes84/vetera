@@ -18,7 +18,7 @@ import type {
 } from "@/types/db";
 
 /** The rows the engine reads. It never reads anything else: no store, no network, no model. */
-export type ClinicData = {
+export interface ClinicData {
   patients: Patient[];
   owners: Owner[];
   appointments: Appointment[];
@@ -28,78 +28,83 @@ export type ClinicData = {
   vaccinations?: Vaccination[];
   products?: Product[];
   invoices?: Invoice[];
-};
+}
 
-export type AskContext = {
+export interface AskContext {
   now: Date;
   /** The record open behind the panel: « ce patient » means this one. */
   patientId?: string;
-};
+}
 
 /** A span of days, both ends included. `explicit` is false when the question named none and a default was taken. */
-export type Period = { from: Date; to: Date; label: string; explicit: boolean };
+export interface Period {
+  from: Date;
+  to: Date;
+  label: string;
+  explicit: boolean;
+}
 
 export type CellKind = "text" | "date" | "datetime" | "money" | "number";
 export type AnswerRow = { id: string } & Record<string, string | number | null>;
-export type AnswerColumn = {
+export interface AnswerColumn {
   key: string;
   label: string;
   kind: CellKind;
   priority?: 1 | 2 | 3;
-};
-export type AnswerTable = {
+}
+export interface AnswerTable {
   title: string;
   noun: [one: string, many: string];
   columns: AnswerColumn[];
   rows: AnswerRow[];
   exportName: string;
-};
+}
 
 /** What was read to answer, so the vet can check the answer against it. */
-export type AnswerSource = {
+export interface AnswerSource {
   id: string;
   label: string;
   read: number;
   kept: number;
   filter: string;
-};
+}
 
 /**
  * A number shown to the vet. `value` is an integer: a count, or centimes for money. `tie` says which part of the table the
  * figure must equal, so that `verifyAnswer` can recompute it from what is shown.
  */
-export type Figure = {
+export interface Figure {
   id: string;
   label: string;
   value: number;
   kind: "count" | "money";
   sourceId: string;
   tie?: "rows" | "income" | "expense" | "sum";
-};
+}
 
-export type AnswerStep = {
+export interface AnswerStep {
   id: string;
   name: string;
   summary?: string;
   details: { label: string; value: string }[];
-};
+}
 
-export type TaskDraft = {
+export interface TaskDraft {
   key: string;
   title: string;
   description: string;
   patientId: string;
   dueDate: string;
-};
+}
 /** A write the assistant suggests. Nothing is saved until the vet validates the card. */
-export type Proposal = {
+export interface Proposal {
   id: string;
   kind: "tasks";
   title: string;
   subtitle: string;
   tasks: TaskDraft[];
   skipped: number;
-};
+}
 
 export type Topic = "cash" | "appointments" | "tasks" | "patients";
 export type RefusalReason =

@@ -13,13 +13,13 @@ import { useId, useRef, useState } from "react";
 import { spring } from "@/lib/motion-tokens";
 import { cn } from "@/lib/utils";
 
-export type SegmentedOption<T extends string = string> = {
+export interface SegmentedOption<T extends string = string> {
   value: T;
   label: React.ReactNode;
   disabled?: boolean;
-};
+}
 
-export type SegmentedProps<T extends string = string> = {
+export interface SegmentedProps<T extends string = string> {
   options: SegmentedOption<T>[];
   value?: T;
   defaultValue?: T;
@@ -28,7 +28,7 @@ export type SegmentedProps<T extends string = string> = {
   label: string;
   size?: "sm" | "md";
   className?: string;
-};
+}
 
 /**
  * Segmented control with a sliding active pill. Pointer changes slide the pill;

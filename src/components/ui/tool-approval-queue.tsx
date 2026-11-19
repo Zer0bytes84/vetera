@@ -35,7 +35,7 @@ import { cn } from "@/lib/utils";
 
 export type ApprovalDecision = "approved" | "denied";
 
-export type ApprovalRequest = {
+export interface ApprovalRequest {
   id: string;
   /** What is proposed, in words: the rubric concerned. */
   title: string;
@@ -47,9 +47,9 @@ export type ApprovalRequest = {
   before: string;
   /** The assistant's proposed wording. */
   after: string;
-};
+}
 
-export type ToolApprovalQueueProps = {
+export interface ToolApprovalQueueProps {
   data: ApprovalRequest[];
   heading?: string;
   subtitle?: string;
@@ -59,7 +59,7 @@ export type ToolApprovalQueueProps = {
   onUndo?: (request: ApprovalRequest) => void;
   undoMs?: number;
   className?: string;
-};
+}
 
 // Height morphs on a damped spring; opacity leads on enter and exits faster.
 const reveal = {

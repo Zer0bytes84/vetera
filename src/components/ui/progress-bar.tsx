@@ -86,13 +86,13 @@ export function ProgressBar({
   );
 }
 
-export type BarSegment = {
+export interface BarSegment {
   id: string;
   value: number;
   label: string;
   /** Any CSS color. */
   color: string;
-};
+}
 
 export type SegmentedBarProps = Omit<React.ComponentProps<"div">, "role"> & {
   segments: BarSegment[];

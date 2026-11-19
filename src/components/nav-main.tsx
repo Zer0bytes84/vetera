@@ -12,13 +12,13 @@ import {
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 
-export type NavSubItem = {
+export interface NavSubItem {
   title: string;
   isActive?: boolean;
   onClick?: () => void;
-};
+}
 
-export type NavItem = {
+export interface NavItem {
   title: string;
   badge?: number;
   icon?: React.ReactNode;
@@ -30,7 +30,7 @@ export type NavItem = {
   children?: NavSubItem[];
   expanded?: boolean;
   onToggle?: () => void;
-};
+}
 
 export function NavMain({
   title,

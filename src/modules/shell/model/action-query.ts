@@ -1,7 +1,7 @@
-export type PaletteIntent = {
+export interface PaletteIntent {
   kind: "consultation" | "invoice" | "vaccination";
   entity: string;
-};
+}
 export function parseActionQuery(value: string): PaletteIntent | null {
   const query = value
     .toLocaleLowerCase()

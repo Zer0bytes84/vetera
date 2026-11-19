@@ -28,14 +28,14 @@ import { IconTile, Shell } from "@/components/ui/surface";
 import { enter, exit as leave } from "@/lib/motion-tokens";
 import { cn } from "@/lib/utils";
 
-export type QuestionOption = {
+export interface QuestionOption {
   id: string;
   label: string;
   description?: string;
   icon?: LucideIcon;
-};
+}
 
-export type AgentQuestionData = {
+export interface AgentQuestionData {
   question: string;
   options: QuestionOption[];
   /** Allow several answers instead of one. */
@@ -44,16 +44,16 @@ export type AgentQuestionData = {
   allowOther?: boolean;
   /** The option the agent would pick, and why. */
   suggested?: { optionId: string; reason: string };
-};
+}
 
-export type QuestionAnswer = {
+export interface QuestionAnswer {
   /** Ids of the picked options. */
   optionIds: string[];
   /** Free text from « Autre chose… ». */
   other?: string;
-};
+}
 
-export type AgentQuestionProps = {
+export interface AgentQuestionProps {
   data: AgentQuestionData;
   /** Controls the state; leave unset to let the card track it. */
   status?: "pending" | "answered" | "delegated";
@@ -70,7 +70,7 @@ export type AgentQuestionProps = {
   /** Name shown above the question: « Assistant IA », never a model name. */
   agent?: string;
   className?: string;
-};
+}
 
 // Cards morph into the summary on screen: a critically damped spring.
 const morph = { type: "spring", duration: 0.35, bounce: 0 } as const;

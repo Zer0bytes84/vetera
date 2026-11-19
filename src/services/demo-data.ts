@@ -17,11 +17,11 @@ import type {
   User,
 } from "@/types/db";
 
-type CurrentUser = {
+interface CurrentUser {
   id: string;
   email: string | null;
   displayName: string | null;
-};
+}
 
 function startOfDay(date: Date) {
   const value = new Date(date);

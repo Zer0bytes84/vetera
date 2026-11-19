@@ -16,7 +16,7 @@ import { Panel, Shell } from "@/components/ui/surface";
 import { cn } from "@/lib/utils";
 
 /** One part of what is counted (here: characters of the dictation). */
-export type ContextSegment = {
+export interface ContextSegment {
   id: string;
   label: string;
   tokens: number;
@@ -26,16 +26,16 @@ export type ContextSegment = {
   pinned?: boolean;
   /** Any CSS color. Defaults to the built-in palette by position. */
   color?: string;
-};
+}
 
-export type ContextWindowMeterProps = {
+export interface ContextWindowMeterProps {
   data: { limit: number; segments: ContextSegment[]; model?: string };
   /** Share of the limit (0–1) where the warning zone starts. */
   warnAt?: number;
   /** `card` for a panel, `inline` for a single row in a composer footer. */
   variant?: "card" | "inline";
   className?: string;
-};
+}
 
 // Segment colours: our own tones, in order (blue, violet, green, amber, rose, quiet grey).
 const palette = [

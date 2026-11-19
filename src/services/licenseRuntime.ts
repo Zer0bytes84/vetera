@@ -12,7 +12,7 @@ import {
 } from "./licenseActivationService";
 import { getLeaseTimeError, verifyLicenseLease } from "./licenseLease";
 
-export type LicenseAccess = {
+export interface LicenseAccess {
   allowed: boolean;
   message: string;
   offlineUntil?: number;
@@ -22,12 +22,12 @@ export type LicenseAccess = {
   email?: string;
   /** The check itself failed (local read, IPC): nothing was decided. */
   transient?: boolean;
-};
+}
 
-export type LicenseCheckOptions = {
+export interface LicenseCheckOptions {
   /** Network timeout for the activation server; background rechecks use a short one. */
   timeoutMs?: number;
-};
+}
 const TERMINAL_CODES = new Set([
   "REVOKED",
   "EXPIRED",

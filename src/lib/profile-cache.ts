@@ -1,9 +1,9 @@
 const PROFILE_CACHE_UPDATED_EVENT = "profile-cache-updated";
 
-type CachedProfile = {
+interface CachedProfile {
   displayName?: string;
   avatarUrl?: string;
-};
+}
 
 function getProfileCacheKey(email: string) {
   return `baitari.profile.${email.toLowerCase()}`;

@@ -18,7 +18,7 @@ import { Fragment, type ReactNode } from "react";
 import { enter, exit } from "@/lib/motion-tokens";
 import { cn } from "@/lib/utils";
 
-export type ThreadMessage = {
+export interface ThreadMessage {
   id: string;
   role: "user" | "assistant";
   content: ReactNode;
@@ -29,9 +29,9 @@ export type ThreadMessage = {
   streaming?: boolean;
   /** The content brings its own bubble (the vet's `UserMessage`): the thread draws none around it. */
   plain?: boolean;
-};
+}
 
-export type ChatThreadProps = {
+export interface ChatThreadProps {
   messages: ThreadMessage[];
   agentName?: string;
   userName?: string;
@@ -42,7 +42,7 @@ export type ChatThreadProps = {
   /** Rendered after the last message: the assistant's live state, its questions. */
   footer?: ReactNode;
   className?: string;
-};
+}
 
 /** Turns from the same side within this window share one header. */
 const GROUP_MS = 5 * 60_000;

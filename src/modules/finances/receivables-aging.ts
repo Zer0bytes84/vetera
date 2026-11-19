@@ -13,14 +13,14 @@ export const AGING_BUCKETS = [
   { id: "old", label: "Plus de 90 jours", from: 90, to: Infinity },
 ] as const;
 
-export type AgingBucket = {
+export interface AgingBucket {
   id: (typeof AGING_BUCKETS)[number]["id"];
   label: string;
   /** Dinars still to collect in this age band. */
   amount: number;
   /** Open invoices and pending entries in it. */
   count: number;
-};
+}
 
 const DAY = 86_400_000;
 

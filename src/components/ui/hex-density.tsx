@@ -27,7 +27,7 @@ import { cn } from "@/lib/utils";
  *  - the header's right side takes a toolbar (the views), and a slot under the grid holds the figures.
  */
 
-export type HexCell = {
+export interface HexCell {
   id: string;
   /** Grid position. Odd rows sit half a cell to the right. */
   col: number;
@@ -43,11 +43,14 @@ export type HexCell = {
   /** After now: booked, not happened. */
   future?: boolean;
   today?: boolean;
-};
+}
 
-export type HexCaption = { at: number; text: string };
+export interface HexCaption {
+  at: number;
+  text: string;
+}
 
-export type HexDensityProps = {
+export interface HexDensityProps {
   cells: HexCell[];
   cols: number;
   rows: number;
@@ -75,7 +78,7 @@ export type HexDensityProps = {
   /** Written on the fullest cell. */
   densestLabel?: string;
   className?: string;
-};
+}
 
 const SQRT3 = Math.sqrt(3);
 const TIP_W = 200;

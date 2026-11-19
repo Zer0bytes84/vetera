@@ -23,7 +23,7 @@ import { cn } from "@/lib/utils";
 let lastClosedAt = 0;
 const WARM_MS = 400;
 
-export type TooltipProps = {
+export interface TooltipProps {
   content: React.ReactNode;
   /** A single focusable element; it gets aria-describedby pointing at the tooltip. */
   children: React.ReactElement<{ "aria-describedby"?: string; title?: string }>;
@@ -32,7 +32,7 @@ export type TooltipProps = {
   /** Hover delay for the first tooltip, in ms. Focus always opens instantly. */
   delay?: number;
   className?: string;
-};
+}
 
 const placement = {
   top: {

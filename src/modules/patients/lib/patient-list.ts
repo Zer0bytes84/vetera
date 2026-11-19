@@ -30,7 +30,10 @@ export function isUpcomingVisit(appointment: Appointment, now: Date) {
 const NOTHING_TO_REPORT =
   /^(aucune?s?|ras|r\.a\.s|néant|neant|non|nc|n\/a|-+|\/)$/i;
 
-export type ClinicalFlag = { kind: "allergy" | "chronic"; label: string };
+export interface ClinicalFlag {
+  kind: "allergy" | "chronic";
+  label: string;
+}
 
 /**
  * Allergies and chronic conditions already entered in the record, one flag
@@ -90,11 +93,11 @@ export const PATIENT_SORT_OPTIONS: { value: PatientSort; label: string }[] = [
   { value: "nextVisit", label: "Prochain rendez-vous" },
 ];
 
-type SortableRecord = {
+interface SortableRecord {
   patient: Pick<Patient, "name" | "createdAt">;
   lastVisit?: string;
   upcomingAppointment?: Pick<Appointment, "startTime">;
-};
+}
 
 /**
  * "activity" keeps the historical order: next visit, else last visit, else

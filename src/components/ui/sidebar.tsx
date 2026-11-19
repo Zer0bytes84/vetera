@@ -36,7 +36,7 @@ const SIDEBAR_WIDTH_MOBILE = "18rem";
 const SIDEBAR_WIDTH_ICON = "3.5rem";
 const SIDEBAR_KEYBOARD_SHORTCUT = "b";
 
-type SidebarContextProps = {
+interface SidebarContextProps {
   state: "expanded" | "collapsed";
   open: boolean;
   setOpen: (open: boolean) => void;
@@ -49,7 +49,7 @@ type SidebarContextProps = {
   setSidebarWidth: (width: number) => void;
   resetSidebarWidth: () => void;
   toggleSidebar: () => void;
-};
+}
 
 const SidebarContext = React.createContext<SidebarContextProps | null>(null);
 

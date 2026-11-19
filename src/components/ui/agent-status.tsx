@@ -17,16 +17,16 @@ import { Panel, Shell } from "@/components/ui/surface";
 import { EASE_OUT } from "@/lib/motion-tokens";
 import { cn } from "@/lib/utils";
 
-export type AgentStatusStep = {
+export interface AgentStatusStep {
   id: string;
   label: string;
   /** Milliseconds the step took. */
   durationMs?: number;
-};
+}
 
 export type AgentStatusState = "working" | "done" | "stopped" | "error";
 
-export type AgentStatusData = {
+export interface AgentStatusData {
   /** What the assistant is doing right now, e.g. « Écoute en cours ». */
   label: string;
   /** A changing detail under the label. */
@@ -36,9 +36,9 @@ export type AgentStatusData = {
   /** Finished steps, oldest first. The last few show above the current one. */
   steps?: AgentStatusStep[];
   status?: AgentStatusState;
-};
+}
 
-export type AgentStatusProps = {
+export interface AgentStatusProps {
   data: AgentStatusData;
   /** Shows a « Arrêter » button while working. */
   onStop?: () => void;
@@ -49,7 +49,7 @@ export type AgentStatusProps = {
   /** How many finished steps to show; 0 hides them. */
   maxSteps?: number;
   className?: string;
-};
+}
 
 // Strong ease-out for things entering; exits are quicker than entrances.
 const enter = { duration: 0.24, ease: EASE_OUT };

@@ -22,16 +22,16 @@ const formatFr = (value: number) => value.toLocaleString("fr-FR");
  *  - the header's right side takes a toolbar (the views) and a slot under the legend holds the figures.
  */
 
-export type RadialSeries = {
+export interface RadialSeries {
   id: string;
   label: string;
   /** One value per sector. Series stack outward in order. */
   values: number[];
   /** Any CSS colour. */
   color: string;
-};
+}
 
-export type RadialDotsProps = {
+export interface RadialDotsProps {
   /** One label per sector, clockwise from the top: hours, weekdays. */
   labels: string[];
   series: RadialSeries[];
@@ -52,7 +52,7 @@ export type RadialDotsProps = {
   /** Unit written in « 1 point = 2 rendez-vous ». */
   unit?: string;
   className?: string;
-};
+}
 
 const SIZE = 300;
 const C = SIZE / 2;

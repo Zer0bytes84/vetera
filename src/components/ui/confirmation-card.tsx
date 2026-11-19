@@ -30,18 +30,18 @@ import {
 import { enter, exit, spring } from "@/lib/motion-tokens";
 import { cn } from "@/lib/utils";
 
-export type ConfirmationItem = {
+export interface ConfirmationItem {
   id: string;
   label: string;
   /** A short line under the label: what it holds. */
   detail?: string;
   /** Filled in: shown with a check; empty rubrics show a dash. */
   filled?: boolean;
-};
+}
 
 export type ConfirmationStatus = "review" | "confirming" | "done";
 
-export type ConfirmationCardProps = {
+export interface ConfirmationCardProps {
   data: {
     title: string;
     subtitle?: string;
@@ -66,7 +66,7 @@ export type ConfirmationCardProps = {
   /** One line instead of the list of items, for a card kept at the foot of a scrolling panel. */
   compact?: boolean;
   className?: string;
-};
+}
 
 export function ConfirmationCard({
   data,

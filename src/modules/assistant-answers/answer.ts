@@ -102,20 +102,20 @@ const THIS_PATIENT =
 /* ── Reading helpers ──────────────────────────────────────────────────── */
 
 type Data = ReturnType<typeof dashboardPresentationData>;
-type Scope = {
+interface Scope {
   ids: Set<string> | null;
   label: string;
   names: string[];
   missing: boolean;
-};
-type Build = {
+}
+interface Build {
   text: string;
   data: Data;
   now: Date;
   period: Period | null;
   scope: Scope;
   understood: (periodText: string | null) => AnswerStep;
-};
+}
 
 const plural = (count: number, one: string, many: string) =>
   `${formatNumber(count)} ${count > 1 ? many : one}`;

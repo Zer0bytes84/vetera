@@ -26,12 +26,18 @@ export const ANALYTICS_PERIODS = [
   { value: "12m", label: "12M", ariaLabel: "12 mois" },
 ] as const;
 export type AnalyticsPeriod = (typeof ANALYTICS_PERIODS)[number]["value"];
-export type AnalyticsRange = { from: Date; to: Date };
+export interface AnalyticsRange {
+  from: Date;
+  to: Date;
+}
 
 /** The dashboard's own periods: the presets, or two days picked by the user. */
 export type DashboardPeriod = AnalyticsPeriod | "custom";
 /** Two calendar days as « AAAA-MM-JJ », as the date picker writes them. */
-export type CustomRange = { from: string; to: string };
+export interface CustomRange {
+  from: string;
+  to: string;
+}
 /** The longest picked span: beyond two years a point per week still draws no curve worth reading. */
 export const MAX_CUSTOM_DAYS = 731;
 

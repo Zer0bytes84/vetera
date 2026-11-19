@@ -7,11 +7,11 @@ import type { View } from "@/types";
  * (which sits outside the page) reads it. `parent` is the view the first segment goes back to
  * (« Patients » in a patient's record); without it the first segment is plain text.
  */
-export type PageCrumb = {
+export interface PageCrumb {
   title: string;
   note?: string;
   parent?: View;
-};
+}
 
 let current: PageCrumb | null = null;
 const listeners = new Set<() => void>();

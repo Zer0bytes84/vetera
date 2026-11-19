@@ -1,14 +1,20 @@
 /** Shared, immutable snapshots. Pending writes are separate layers so rollback
  * never discards a later write, including edits made by another hook instance. */
-export type CachedRow = { id: string; [key: string]: unknown };
-type Layer<R> = { id: string; apply: (rows: R[]) => R[] };
-type Entry<R> = {
+export interface CachedRow {
+  id: string;
+  [key: string]: unknown;
+}
+interface Layer<R> {
+  id: string;
+  apply: (rows: R[]) => R[];
+}
+interface Entry<R> {
   base?: R[];
   visible?: R[];
   generation: number;
   layers: Map<number, Layer<R>>;
   listeners: Set<() => void>;
-};
+}
 
 export class TableSnapshotCache<R extends { id: string }> {
   private tables = new Map<string, Entry<R>>();

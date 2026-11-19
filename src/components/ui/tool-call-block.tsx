@@ -37,7 +37,7 @@ import { cn } from "@/lib/utils";
 
 export type ToolCallStatus = "pending" | "running" | "success" | "error";
 
-export type ToolCall = {
+export interface ToolCall {
   id: string;
   /** What the assistant does, in words: « Recherche dans les dossiers ». */
   name: string;
@@ -50,14 +50,14 @@ export type ToolCall = {
   details?: { label: string; value: string }[];
   result?: string;
   error?: string;
-};
+}
 
-export type ToolCallBlockProps = {
+export interface ToolCallBlockProps {
   data: ToolCall;
   defaultOpen?: boolean;
   onRetry?: (call: ToolCall) => void;
   className?: string;
-};
+}
 
 const statuses = {
   pending: {

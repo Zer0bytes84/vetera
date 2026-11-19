@@ -1374,13 +1374,13 @@ export function useAuditLogRepository() {
   };
 }
 
-export type NotificationStateRow = {
+export interface NotificationStateRow {
   id: string;
   notificationId: string;
   readAt: string | null;
   dismissedAt: string | null;
   createdAt: string;
-};
+}
 
 /**
  * Persistance du read/dismiss des notifications agrégées.

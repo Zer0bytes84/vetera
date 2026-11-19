@@ -30,7 +30,7 @@ export interface FocusRequest {
   nonce: number;
 }
 
-type FocusContextValue = {
+interface FocusContextValue {
   focus: FocusRequest | null;
   requestFocus: (kind: FocusEntityKind, id: string) => void;
   clearFocus: () => void;
@@ -40,7 +40,7 @@ type FocusContextValue = {
    * montée gagne). Retourne un cleanup.
    */
   registerHandler: (handler: ((req: FocusRequest) => void) | null) => void;
-};
+}
 
 const FocusContext = createContext<FocusContextValue | null>(null);
 

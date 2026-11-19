@@ -22,16 +22,16 @@ import { cn } from "@/lib/utils";
  *  - text is French and never under 12 px; the confirm button is our own Button.
  */
 
-export type Slot = {
+export interface Slot {
   id: string;
   /** Local day, "2026-11-10". */
   day: string;
   /** "HH:MM", local. */
   start: string;
   end: string;
-};
+}
 
-export type SlotPickerProps = {
+export interface SlotPickerProps {
   title?: string;
   subtitle?: ReactNode;
   /** Every column, in order, whether or not it has a free time. */
@@ -43,7 +43,7 @@ export type SlotPickerProps = {
   /** Under the panel: a footer line. */
   footer?: ReactNode;
   className?: string;
-};
+}
 
 const dayDate = (day: string) => new Date(`${day}T00:00:00`);
 const weekday = (day: string) =>

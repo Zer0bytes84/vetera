@@ -13,7 +13,10 @@ export const INVOICE_NATURES: { key: InvoiceNature; label: string }[] = [
   { key: "hospitalisation", label: "Hospitalisation" },
 ];
 
-type Range = { from: Date; to: Date };
+interface Range {
+  from: Date;
+  to: Date;
+}
 
 export interface NatureRow {
   /** Percentage change; null when the previous period had nothing to compare. */

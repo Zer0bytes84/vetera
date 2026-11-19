@@ -19,7 +19,7 @@ import { IconTile, Panel, Shell, ShellHeader } from "@/components/ui/surface";
 import { enter } from "@/lib/motion-tokens";
 import { cn } from "@/lib/utils";
 
-export type Source = {
+export interface Source {
   id: string;
   /** Whose and what: « Rex · Évaluation ». */
   title: ReactNode;
@@ -34,14 +34,14 @@ export type Source = {
   passage: ReactNode;
   /** The vet's actions on the passage: copy, insert. */
   actions?: ReactNode;
-};
+}
 
-export type SourceListProps = {
+export interface SourceListProps {
   sources: Source[];
   heading: string;
   subtitle?: string;
   className?: string;
-};
+}
 
 export function SourceList({
   sources,

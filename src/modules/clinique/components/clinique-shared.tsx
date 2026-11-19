@@ -79,27 +79,27 @@ import type {
 } from "@/types/db";
 import { guard } from "@/lib/guard";
 
-export type CliniqueProps = {
+export interface CliniqueProps {
   onNavigate?: (view: View) => void;
-};
+}
 
-export type BillingItem = {
+export interface BillingItem {
   desc: string;
   amount: number;
-};
+}
 
-export type SaveDraftOptions = {
+export interface SaveDraftOptions {
   silent?: boolean;
-};
+}
 
 export type ListTab = "all" | "scheduled" | "in_progress" | "completed";
 
 export type DetailTab = "overview" | "history";
 
-export type ConsultationDraftPayload = {
+export interface ConsultationDraftPayload {
   appointmentPatch: Partial<Appointment>;
   patientPatch: Partial<Patient>;
-};
+}
 
 export const MAX_DOCUMENT_SIZE_BYTES = 12 * 1024 * 1024;
 

@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ShortcutTooltip } from "@/design-system/patterns/shortcut-tooltip";
 
-export type AccountMenuProps = {
+export interface AccountMenuProps {
   avatarUrl?: string | null;
   email: string;
   name: string;
@@ -34,7 +34,7 @@ export type AccountMenuProps = {
   onNotifications: () => void;
   onSettings: () => void;
   onLogout: () => Promise<void> | void;
-};
+}
 
 /**
  * The signed-in account at the bottom of the sidebar, Catalyst style: the

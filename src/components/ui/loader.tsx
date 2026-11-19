@@ -21,13 +21,13 @@ import { cn } from "@/lib/utils";
 
 const spinnerSizes = { sm: "size-3.5", md: "size-4", lg: "size-6" } as const;
 
-export type SpinnerProps = {
+export interface SpinnerProps {
   size?: keyof typeof spinnerSizes;
   /** Spoken label; also shown as text next to the icon when `showLabel` is set. */
   label?: string;
   showLabel?: boolean;
   className?: string;
-};
+}
 
 /** A spinning ring. With reduced motion it holds still and the label carries the state. */
 export function Spinner({
@@ -67,7 +67,7 @@ const dotSizes = {
   lg: { dot: "size-2", gap: "gap-1.5", text: "text-sm" },
 } as const;
 
-export type ThinkingProps = {
+export interface ThinkingProps {
   size?: keyof typeof dotSizes;
   /**
    * Words to cycle through next to the dots, e.g. ["Écoute", "Lecture", "Rédaction"].
@@ -77,7 +77,7 @@ export type ThinkingProps = {
   /** How long each word stays, in ms. */
   interval?: number;
   className?: string;
-};
+}
 
 /** Three dots in a wave, optionally with a rolling verb that says what the agent is doing. */
 export function Thinking({

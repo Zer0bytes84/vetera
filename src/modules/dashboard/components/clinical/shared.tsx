@@ -4,12 +4,12 @@ import { ArrowRight01Icon } from "@/lib/hugeicons";
 import { focusRing, SkeletonBlock } from "@/design-system/primitives";
 import type { Patient } from "@/types/db";
 
-export type WidgetState = {
+export interface WidgetState {
   loading: boolean;
   skeleton: boolean;
   error?: string | null;
   retry: () => void;
-};
+}
 export function RowSkeleton({ count = 3 }: { count?: number }) {
   return (
     <div className="space-y-3">

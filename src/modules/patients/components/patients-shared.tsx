@@ -131,14 +131,14 @@ export const OWNER_CONTACT_LABELS: Record<
   email: "Email",
 };
 
-export type PatientRecord = {
+export interface PatientRecord {
   patient: Patient;
   owner?: Owner;
   completedAppointments: Appointment[];
   upcomingAppointment?: Appointment;
   lastVisit?: string;
   searchIndex: string;
-};
+}
 
 export const PATIENTS_PAGE_SIZE = 12;
 
