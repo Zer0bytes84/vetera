@@ -76,3 +76,30 @@ describe("la région d'annonce partagée", () => {
     expect(region.textContent).toBe("Réponse affichée");
   });
 });
+
+import { StatGrid } from "@/components/ui/stat-grid";
+
+describe("Chiffres clés pendant leur lecture (StatGrid)", () => {
+  const data = [
+    { id: "cash", label: "Trésorerie", value: "0 DA", hint: "Solde net : 0 DA" },
+    { id: "visits", label: "Rendez-vous", value: "0", hint: "0 honoré", goal: { ratio: 0, label: "0 sur 10" } },
+  ];
+  it("aucune valeur n'est montrée avant d'être connue : des cartes de squelette, une région status nommée et occupée", () => {
+    const html = renderToStaticMarkup(<StatGrid data={data} goals loading loadingLabel="Chargement des chiffres clés" title="Chiffres clés" />);
+    expect(html).not.toContain('data-slot="stat-value"');
+    expect(html).not.toContain("0 DA");
+    expect(html).toContain('role="status"');
+    expect(html).toContain('aria-busy="true"');
+    expect(html).toContain('aria-label="Chargement des chiffres clés"');
+    expect(html.match(/loading-skeleton-shape/g)!.length).toBeGreaterThan(8);
+    expect(html).toContain(">Chiffres clés<");
+  });
+  it("tant que le délai n'est pas passé, les cartes de squelette tiennent la place sans se montrer", () => {
+    expect(renderToStaticMarkup(<StatGrid data={data} loading loadingRevealed={false} />)).toContain("invisible");
+  });
+  it("une fois lues, les valeurs reviennent, sans région de chargement", () => {
+    const html = renderToStaticMarkup(<StatGrid data={data} />);
+    expect(html.match(/data-slot="stat-value"/g)).toHaveLength(2);
+    expect(html).not.toContain('role="status"');
+  });
+});

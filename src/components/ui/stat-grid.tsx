@@ -9,6 +9,7 @@ import type { ComponentType } from "react";
 export type StatIcon = ComponentType<{ className?: string; strokeWidth?: number | string }>;
 import { MotionConfig, motion } from "motion/react";
 import { useId, type CSSProperties, type ReactNode } from "react";
+import "./loading-skeleton.css";
 import { ProgressBar } from "@/components/ui/progress-bar";
 import { RollingNumber } from "@/components/ui/rolling-number";
 import { StatusPill } from "@/components/ui/status-pill";
@@ -77,6 +78,15 @@ export type StatGridProps = {
   badges?: boolean;
   /** `row`: every card on one single row, scrolling sideways when the window is too narrow. */
   layout?: "grid" | "row";
+  /**
+   * The figures are still being read: each card is drawn as the Cards variant of the Loading Skeleton, row for row
+   * (label, figure, badge, line, goal), so nothing moves when they arrive and no figure is shown before it is known
+   * (19 November 2026: the dashboard showed « 0 DA » for as long as its journal took to read).
+   */
+  loading?: boolean;
+  /** While loading, the placeholders stay invisible until this turns true (useDelayedSkeleton): no flash on a fast read. */
+  loadingRevealed?: boolean;
+  loadingLabel?: string;
   className?: string;
 };
 
@@ -92,6 +102,9 @@ export function StatGrid({
   badges = true,
   onSelect,
   layout = "grid",
+  loading = false,
+  loadingRevealed = true,
+  loadingLabel = "Chargement des chiffres",
   className,
 }: StatGridProps) {
   return (
@@ -115,8 +128,13 @@ export function StatGrid({
           />
         )}
         <div
+          aria-busy={loading || undefined}
+          aria-label={loading ? loadingLabel : undefined}
+          role={loading ? "status" : undefined}
           className={cn(
             "grid gap-1.5",
+            loading && "loading-skeleton",
+            loading && !loadingRevealed && "invisible",
             layout === "row"
               ? "grid-flow-col auto-cols-[minmax(11.5rem,1fr)] overflow-x-auto"
               : data.length > 2
@@ -124,19 +142,45 @@ export function StatGrid({
                 : "grid-cols-1 @md:grid-cols-2",
           )}
         >
-          {data.map((stat) => (
-            <StatCard
-              key={stat.id}
-              stat={stat}
-              sparkline={sparklines}
-              showGoal={goals}
-              showBadge={badges}
-              onSelect={onSelect}
-            />
-          ))}
+          {data.map((stat) =>
+            loading ? (
+              <StatCardPlaceholder key={stat.id} showBadge={badges} showGoal={goals && Boolean(stat.goal)} />
+            ) : (
+              <StatCard
+                key={stat.id}
+                stat={stat}
+                sparkline={sparklines}
+                showGoal={goals}
+                showBadge={badges}
+                onSelect={onSelect}
+              />
+            ),
+          )}
         </div>
       </Shell>
     </MotionConfig>
+  );
+}
+
+/** A card being read: the same rows as StatCard (24, 32, 20, 16 px and the goal), in the Loading Skeleton's sheen. */
+function StatCardPlaceholder({ showBadge, showGoal }: { showBadge: boolean; showGoal: boolean }) {
+  const shape = "loading-skeleton-shape";
+  return (
+    <Panel aria-hidden="true" className="flex h-full flex-col gap-2 p-4">
+      <div className="flex h-6 items-center gap-2">
+        <span className={cn(shape, "size-6 rounded-md")} />
+        <span className={cn(shape, "h-2 w-20")} />
+      </div>
+      <div className="flex h-8 items-center"><span className={cn(shape, "h-6 w-24 rounded-lg")} /></div>
+      {showBadge && <div className="flex h-5 items-center"><span className={cn(shape, "h-4 w-12")} /></div>}
+      <div className="flex h-4 items-center"><span className={cn(shape, "h-2 w-32")} /></div>
+      {showGoal && (
+        <div className="mt-auto flex flex-col gap-1.5 pt-1">
+          <span className={cn(shape, "h-1.5 w-full")} />
+          <div className="flex h-4 items-center"><span className={cn(shape, "h-2 w-24")} /></div>
+        </div>
+      )}
+    </Panel>
   );
 }
 

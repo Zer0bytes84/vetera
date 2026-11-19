@@ -514,6 +514,9 @@ export function PremiumAnalytics({
           icon={Squares2X2Icon}
           layout="row"
           goals={keyView === "kpi"}
+          loading={states.cash.loading || states.patients.loading || states.actions.loading}
+          loadingLabel="Chargement des chiffres clés"
+          loadingRevealed={states.cash.skeleton || states.patients.skeleton || states.actions.skeleton}
           sparklines={keyView === "sparklines"}
           subtitle={rangeLabel}
           title="Chiffres clés"
