@@ -39,12 +39,12 @@ const SAMPLE: InvoicePdfData = {
   patientName: "Milo",
   ownerName: "Propriétaire exemple",
   items: [
-    { description: "Consultation vétérinaire", amount: 400000 },
-    { description: "Soins complémentaires", amount: 300000 },
+    { description: "Consultation vétérinaire", amount: 400_000 },
+    { description: "Soins complémentaires", amount: 300_000 },
   ],
-  totalAmount: 700000,
-  paidAmount: 400000,
-  balanceAmount: 300000,
+  totalAmount: 700_000,
+  paidAmount: 400_000,
+  balanceAmount: 300_000,
 };
 
 /** What « Mon cabinet » edits; the invoice panel edits the rest. Together: every field of `InvoiceSettings`. */

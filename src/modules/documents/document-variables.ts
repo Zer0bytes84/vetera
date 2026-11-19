@@ -108,7 +108,7 @@ export function renderDocumentVariables(
 }
 
 export function validateDocumentTemplate(body: string): void {
-  if (!body.trim() || body.length > 12000) {
+  if (!body.trim() || body.length > 12_000) {
     throw new Error("Le modèle doit contenir entre 1 et 12 000 caractères.");
   }
   const residue = body.replace(/\{\{([^{}]*)\}\}/g, "");

@@ -890,7 +890,7 @@ export default function ConsultationDocumentsAssistant({
                   id={id + "-draft"}
                   value={draft.text}
                   disabled={saving}
-                  maxLength={60000}
+                  maxLength={60_000}
                   className="min-h-72 text-sm"
                   onChange={(event) => {
                     setDraft({ ...draft, text: event.target.value });

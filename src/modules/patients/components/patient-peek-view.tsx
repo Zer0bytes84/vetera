@@ -88,7 +88,7 @@ export function PatientPeekView({
   const id = useId();
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
-    const interval = window.setInterval(() => setNow(Date.now()), 60000);
+    const interval = window.setInterval(() => setNow(Date.now()), 60_000);
     return () => window.clearInterval(interval);
   }, []);
   const lastWeight = [...weights].sort((a, b) =>

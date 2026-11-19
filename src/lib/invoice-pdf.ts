@@ -32,10 +32,10 @@ export interface InvoicePdfData {
 
 /** 7 base-36 characters (FNV-1a), stable for one invoice across exports. */
 export function invoiceFileKey(id: string, issuedAt: string): string {
-  let hash = 0x811c9dc5;
+  let hash = 0x81_1c_9d_c5;
   for (const char of `${id}|${issuedAt}`) {
     hash ^= char.codePointAt(0)!;
-    hash = Math.imul(hash, 0x01000193) >>> 0;
+    hash = Math.imul(hash, 0x01_00_01_93) >>> 0;
   }
   return hash.toString(36).padStart(7, "0");
 }

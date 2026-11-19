@@ -291,7 +291,7 @@ class Layout {
     const doc = this.current();
     style(doc, size, bold, color);
     const wrapped = lines(doc, text);
-    const step = size * 0.352778 * 1.35;
+    const step = size * 0.352_778 * 1.35;
     for (const [index, line] of wrapped.entries()) {
       await this.space(step);
       style(doc, size, bold, color);

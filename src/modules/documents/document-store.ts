@@ -562,7 +562,7 @@ export function createDocumentStore(
       !title.trim() ||
       title.trim().length > 160 ||
       !content.trim() ||
-      content.length > 60000
+      content.length > 60_000
     ) {
       throw new Error(
         "Indiquez un titre et un contenu de moins de 60 000 caractères."
@@ -1082,7 +1082,7 @@ export function createDocumentStore(
         attachment.pages.reduce(
           (length, page) => length + page.text.length,
           0
-        ) > 60000
+        ) > 60_000
       ) {
         throw new Error(
           "Cette pièce ne peut pas être importée. Vérifiez son format et sa taille."

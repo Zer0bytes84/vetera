@@ -192,7 +192,9 @@ export function patientRecordPlainText(html: string): string {
         name[1].toLowerCase() === "x"
           ? Number.parseInt(name.slice(2), 16)
           : Number.parseInt(name.slice(1), 10);
-      return code > 0 && code <= 0x10ffff && !(code >= 0xd800 && code <= 0xdfff)
+      return code > 0 &&
+        code <= 0x10_ff_ff &&
+        !(code >= 0xd8_00 && code <= 0xdf_ff)
         ? String.fromCodePoint(code)
         : "�";
     })

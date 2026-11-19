@@ -10,7 +10,7 @@ const PERMISSION_STEPS =
   "Ouvrez Réglages Système → Confidentialité et sécurité → Microphone, autorisez Baitari, puis cliquez à nouveau sur Dicter.";
 export const MICROPHONE_REFUSED = `L’accès au micro est refusé. ${PERMISSION_STEPS}`;
 export const MICROPHONE_NO_ANSWER = `Baitari n’a pas reçu l’autorisation du micro. Si aucune fenêtre ne s’est affichée, ${PERMISSION_STEPS[0].toLowerCase()}${PERMISSION_STEPS.slice(1)}`;
-export const WHISPER_SAMPLE_RATE = 16000;
+export const WHISPER_SAMPLE_RATE = 16_000;
 
 export function normalizeMicrophoneAudio(input: Float32Array) {
   if (!input.length || input.some((sample) => !Number.isFinite(sample))) {

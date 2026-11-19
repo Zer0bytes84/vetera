@@ -275,7 +275,7 @@ export default function DocumentTemplateManager({
     const end = textarea.current?.selectionEnd ?? start;
     const token = `{{${key}}}`;
     const next = draft.body.slice(0, start) + token + draft.body.slice(end);
-    if (next.length > 12000) {
+    if (next.length > 12_000) {
       setError("Le texte du modèle est limité à 12 000 caractères.");
       return;
     }
@@ -620,7 +620,7 @@ export default function DocumentTemplateManager({
                         className="document-template-body"
                         disabled={!canEdit || busy}
                         id={`${id}-body`}
-                        maxLength={12000}
+                        maxLength={12_000}
                         onChange={(event) =>
                           setDraft({ ...draft, body: event.target.value })
                         }

@@ -221,7 +221,7 @@ export function DocumentComposer({
                     <Textarea
                       className="document-content-editor"
                       value={content}
-                      maxLength={60000}
+                      maxLength={60_000}
                       onChange={(event) => {
                         setContent(event.target.value);
                         setReviewed(false);

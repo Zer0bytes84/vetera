@@ -57,7 +57,7 @@ export function useStays(patientId?: string) {
     window.addEventListener(STAYS_CHANGED, listener);
     window.addEventListener("focus", listener);
     document.addEventListener("visibilitychange", visible);
-    const timer = window.setInterval(listener, 30000);
+    const timer = window.setInterval(listener, 30_000);
     return () => {
       window.removeEventListener(STAYS_CHANGED, listener);
       window.removeEventListener("focus", listener);

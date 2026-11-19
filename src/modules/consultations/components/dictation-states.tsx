@@ -65,7 +65,7 @@ export function DictationLevelMeter({
 }
 
 /** After this wait, the panel explains where the permission is given. */
-const HINT_AFTER_MS = 5_000;
+const HINT_AFTER_MS = 5000;
 
 /**
  * Waiting for macOS to answer the microphone permission: never a dead end.

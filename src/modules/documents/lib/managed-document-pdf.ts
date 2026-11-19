@@ -244,7 +244,7 @@ export async function exportManagedDocument(
         link.href = url;
         link.download = name;
         link.click();
-        setTimeout(() => URL.revokeObjectURL(url), 30000);
+        setTimeout(() => URL.revokeObjectURL(url), 30_000);
       },
     },
     documentPdfFilename(document)
@@ -353,5 +353,5 @@ export async function printManagedDocument(
   });
   frame.contentWindow.focus();
   frame.contentWindow.print();
-  setTimeout(() => frame.remove(), 300000);
+  setTimeout(() => frame.remove(), 300_000);
 }

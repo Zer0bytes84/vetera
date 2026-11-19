@@ -85,7 +85,7 @@ export function calculateLineAmounts(
     "La remise doit être comprise entre 0 et 10 000 points de base.",
     0
   );
-  if (discountBps > 10000) {
+  if (discountBps > 10_000) {
     throw new BillingDomainError(
       "DISCOUNT_BPS_INVALID",
       "La remise doit être comprise entre 0 et 10 000 points de base."

@@ -1,7 +1,7 @@
 const STORAGE_KEY = "baitari-ai-agent-state-v1";
 const MAX_CONVERSATIONS = 20;
 const MAX_MESSAGES_PER_CONVERSATION = 40;
-const MAX_MESSAGE_LENGTH = 8_000;
+const MAX_MESSAGE_LENGTH = 8000;
 const MAX_STATE_LENGTH = 1_500_000;
 const MAX_RAW_STATE_LENGTH = 2_000_000;
 
@@ -196,7 +196,7 @@ export function saveAIAgentState(state: PersistedAIAgentState): void {
       ...conversation,
       messages: conversation.messages.slice(-24).map((message) => ({
         ...message,
-        content: message.content.slice(-2_500),
+        content: message.content.slice(-2500),
       })),
     }));
 
@@ -231,7 +231,7 @@ export function saveAIAgentState(state: PersistedAIAgentState): void {
         ...conversation,
         messages: conversation.messages.slice(-12).map((message) => ({
           ...message,
-          content: message.content.slice(-1_200),
+          content: message.content.slice(-1200),
         })),
       }));
       serialized = JSON.stringify(payload);

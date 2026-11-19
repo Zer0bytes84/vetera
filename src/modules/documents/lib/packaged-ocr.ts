@@ -73,7 +73,7 @@ export class PackagedOcr {
               "La reconnaissance du texte n’a pas répondu. Essayez une image plus nette."
             )
           ),
-        90000
+        90_000
       );
       this.pending = { resolve, reject, timer, jobId };
       this.worker.postMessage(

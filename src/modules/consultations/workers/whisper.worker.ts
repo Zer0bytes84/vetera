@@ -85,7 +85,7 @@ self.onmessage = async ({ data }: MessageEvent<WorkerRequest>) => {
           message: "Reconnaissance locale de la langue…",
         });
         const features = await transcriber.processor(
-          data.audio.subarray(0, 30 * 16000)
+          data.audio.subarray(0, 30 * 16_000)
         );
         const model = transcriber.model;
         const config = model.generation_config as unknown as {

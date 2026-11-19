@@ -56,7 +56,7 @@ export function stayDays(admitted: Date, discharged: Date): number {
     discharged.getMilliseconds() === 0;
   return Math.max(
     1,
-    Math.round((calendarDay(discharged) - calendarDay(admitted)) / 86400000) +
+    Math.round((calendarDay(discharged) - calendarDay(admitted)) / 86_400_000) +
       (midnight ? 0 : 1)
   );
 }

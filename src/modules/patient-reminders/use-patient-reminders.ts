@@ -51,7 +51,7 @@ export function usePatientReminders() {
     };
     window.addEventListener(PATIENT_REMINDERS_CHANGED, listener);
     window.addEventListener("focus", listener);
-    const timer = window.setInterval(listener, 60000);
+    const timer = window.setInterval(listener, 60_000);
     return () => {
       window.removeEventListener(PATIENT_REMINDERS_CHANGED, listener);
       window.removeEventListener("focus", listener);

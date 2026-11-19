@@ -128,7 +128,7 @@ export async function readLocalDocument(
           result.pages.push({ number: index, text, method: "text" });
         } else {
           const viewport = page.getViewport({ scale: 2 });
-          if (viewport.width * viewport.height > 20000000) {
+          if (viewport.width * viewport.height > 20_000_000) {
             throw new Error(
               "Une page du PDF est trop grande pour être lue en sécurité."
             );
@@ -162,7 +162,7 @@ export async function readLocalDocument(
     } else {
       const bitmap = await createImageBitmap(file);
       try {
-        if (bitmap.width * bitmap.height > 20000000) {
+        if (bitmap.width * bitmap.height > 20_000_000) {
           throw new Error(
             "L’image est trop grande. Réduisez ses dimensions avant de la lire."
           );

@@ -18,7 +18,7 @@ export interface ReadDocument {
 }
 export const MAX_DOCUMENT_BYTES = 12 * 1024 * 1024;
 export const MAX_DOCUMENT_PAGES = 20;
-export const MAX_DOCUMENT_CHARACTERS = 60000;
+export const MAX_DOCUMENT_CHARACTERS = 60_000;
 export function assertReadableFile(file: Pick<File, "size" | "type">) {
   if (!file.size) {
     throw new Error("Ce fichier est vide.");

@@ -183,7 +183,7 @@ export function DayModule({
                     {Math.max(
                       0,
                       Math.round(
-                        (row.end.getTime() - row.start.getTime()) / 60000
+                        (row.end.getTime() - row.start.getTime()) / 60_000
                       )
                     )}{" "}
                     min

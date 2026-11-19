@@ -58,7 +58,7 @@ export const TEMPLATE_FIELDS = [
 export const documentTemplateSchema = z.object({
   name: z.string().trim().min(1, "Nommez le modèle.").max(100),
   kind: z.enum(["prescription", "certificate", "report"]),
-  body: z.string().trim().min(1, "Le modèle est vide.").max(12000),
+  body: z.string().trim().min(1, "Le modèle est vide.").max(12_000),
 });
 export function validateTemplate(input: unknown) {
   const value = documentTemplateSchema.parse(input);

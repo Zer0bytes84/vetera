@@ -209,7 +209,7 @@ self.onmessage = async ({ data }: MessageEvent<WorkerRequest>) => {
   try {
     if (
       data.texts.length > 100 ||
-      data.texts.some((text) => text.length > 100000)
+      data.texts.some((text) => text.length > 100_000)
     ) {
       throw new Error("Lot trop long.");
     }

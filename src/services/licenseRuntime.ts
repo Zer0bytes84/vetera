@@ -100,7 +100,7 @@ export function checkLicenseAccess(
 // ---------------------------------------------------------------------------
 export const LICENSE_LOCAL_RECHECK_MS = 5 * 60_000;
 export const LICENSE_ONLINE_RECHECK_MS = 15 * 60_000;
-export const LICENSE_BACKGROUND_TIMEOUT_MS = 4_000;
+export const LICENSE_BACKGROUND_TIMEOUT_MS = 4000;
 let lastAccess: LicenseAccess | null = null;
 let lastCheckAt = 0;
 let lastOnlineAt = 0;

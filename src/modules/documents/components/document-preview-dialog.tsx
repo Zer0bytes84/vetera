@@ -180,7 +180,7 @@ export function DocumentPreviewDialog({
       link.href = url;
       link.download = file.name;
       link.click();
-      setTimeout(() => URL.revokeObjectURL(url), 30000);
+      setTimeout(() => URL.revokeObjectURL(url), 30_000);
     }
     toast.success("Pièce jointe enregistrée.");
   }
@@ -263,7 +263,7 @@ export function DocumentPreviewDialog({
                           <Textarea
                             className="document-content-editor"
                             value={text}
-                            maxLength={60000}
+                            maxLength={60_000}
                             onChange={(event) => setText(event.target.value)}
                           />
                         </label>

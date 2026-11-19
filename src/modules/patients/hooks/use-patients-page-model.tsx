@@ -265,7 +265,7 @@ export function usePatientsPageModel({ onNavigateToPatient }: PatientsProps) {
     const households = new Set(living.map((patient) => patient.ownerId)).size;
     const newInMonth = living.filter((patient) => {
       const created = normalizeDate(patient.createdAt);
-      return !!created && now.getTime() - created.getTime() <= 30 * 86400000;
+      return !!created && now.getTime() - created.getTime() <= 30 * 86_400_000;
     }).length;
 
     const underTreatment = patients.filter(
