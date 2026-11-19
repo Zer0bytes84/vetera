@@ -1,47 +1,47 @@
 "use client";
 /* eslint-disable react-hooks/purity */
 
-import { useHospitalizationEnabled } from "@/modules/clinique/clinic-services";
 import {
-  BookOpenTextIcon,
-  Calendar01Icon,
-  CalendarAdd01Icon,
-  ClinicIcon,
-  DashboardSquare01Icon,
-  FileSearchIcon,
-  HospitalBed01Icon,
-  MedicalFileIcon,
-  Package02Icon,
-  PillIcon,
-  Settings02Icon,
-  StethoscopeIcon,
-  Task01Icon,
-  UserAdd01Icon,
-  UserGroupIcon,
-  VaccineIcon,
-  WalletIcon,
-  Cancel01Icon,
+  ArrowPathIcon,
+  BanknotesIcon,
+  BuildingOffice2Icon,
+  CalendarDateRangeIcon,
+  CalendarDaysIcon,
+  ClipboardDocumentCheckIcon,
+  CubeIcon,
+  DocumentMagnifyingGlassIcon,
+  DocumentTextIcon,
+  MagnifyingGlassIcon,
+  MoonIcon,
+  PencilSquareIcon,
+  ShieldCheckIcon,
   SparklesIcon,
-} from "@/lib/hugeicons";
-import { openAssistant } from "@/modules/consultations/assistant-events";
-import type { IconSvgElement } from "@hugeicons/react";
+  UserIcon,
+  UserPlusIcon,
+  XMarkIcon,
+} from "@heroicons/react/20/solid";
 import { HugeiconsIcon } from "@hugeicons/react";
+import { Command as CommandPrimitive } from "cmdk";
+import { useHospitalizationEnabled } from "@/modules/clinique/clinic-services";
+import { openAssistant } from "@/modules/consultations/assistant-events";
+import { SidebarIcon } from "@/modules/shell/components/sidebar-icon";
+import "./command-palette.css";
 import type { Locale } from "date-fns";
 import { format } from "date-fns";
 import { ar, de, enUS, es, fr, pt } from "date-fns/locale";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  type ComponentType,
+  type ReactNode,
+  type SVGProps,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useTranslation } from "react-i18next";
 
-import {
-  Command,
-  CommandDialog,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-  CommandSeparator,
-} from "@/components/ui/command";
+import { CommandDialog } from "@/components/ui/command";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { suggestedPatients } from "@/modules/shell/model/palette-suggestions";
 import { Kbd } from "@/components/ui/kbd";
@@ -109,6 +109,45 @@ const SECTION_LABELS: Record<string, string> = {
   consultation: "Consultation",
   product: "Pharmacie / Stock",
 };
+
+/** The Dossiers filter, nothing typed: frequent clinical searches; a choice fills the field with its query. */
+const CLINICAL_SUGGESTIONS = [
+  {
+    id: "sug-vaccin",
+    label: "Vaccination & Rappels",
+    sub: "Rechercher les protocoles, échéances et vaccins",
+    query: "vaccin",
+    badge: "Protocole",
+  },
+  {
+    id: "sug-bacterie",
+    label: "Infections bactériennes & Germes",
+    sub: "Rechercher les causes bactériennes et cultures",
+    query: "bactérie",
+    badge: "Diagnostic",
+  },
+  {
+    id: "sug-antibio",
+    label: "Traitements antibiotiques",
+    sub: "Rechercher amoxicilline, céfovécine, Synulox, Convenia",
+    query: "antibiotique",
+    badge: "Thérapeutique",
+  },
+  {
+    id: "sug-metacam",
+    label: "AINS & Méloxicam (Metacam)",
+    sub: "Anti-inflammatoires, gestion de la douleur et arthrose",
+    query: "Metacam",
+    badge: "Molécule",
+  },
+  {
+    id: "sug-irc",
+    label: "Insuffisance rénale chronique (IRC)",
+    sub: "MRC, néphropathies, créatinine et suivi rénal",
+    query: "IRC",
+    badge: "Pathologie",
+  },
+] as const;
 
 interface CommandPaletteProps {
   isOpen: boolean;
@@ -189,7 +228,6 @@ const pushRecent = (entry: RecentEntry) => {
 
 interface NavAction {
   category: string;
-  icon: IconSvgElement;
   id: View;
   keywords: string[];
   label: string;
@@ -389,7 +427,6 @@ export default function CommandPalette({
         id: "dashboard",
         label: t("commandPalette.nav.dashboard", { defaultValue: "Tableau de bord" }),
         sub: t("commandPalette.nav.dashboardSub", { defaultValue: "Vue d'ensemble et pilotage" }),
-        icon: DashboardSquare01Icon,
         category: t("commandPalette.category.pilotage", { defaultValue: "Pilotage" }),
         keywords: [
           "dashboard",
@@ -406,7 +443,6 @@ export default function CommandPalette({
         id: "patients",
         label: t("commandPalette.nav.patients", { defaultValue: "Patients" }),
         sub: t("commandPalette.nav.patientsSub", { defaultValue: "Dossiers médicaux et antécédents" }),
-        icon: StethoscopeIcon,
         category: t("commandPalette.category.parcours", { defaultValue: "Parcours patient" }),
         keywords: [
           "patients",
@@ -423,7 +459,6 @@ export default function CommandPalette({
         id: "agenda",
         label: t("commandPalette.nav.agenda", { defaultValue: "Agenda" }),
         sub: t("commandPalette.nav.agendaSub", { defaultValue: "Planning et rendez-vous" }),
-        icon: Calendar01Icon,
         category: t("commandPalette.category.parcours", { defaultValue: "Parcours patient" }),
         keywords: [
           "agenda",
@@ -438,7 +473,6 @@ export default function CommandPalette({
         id: "notes",
         label: "Documents",
         sub: t("commandPalette.nav.notesSub", { defaultValue: "Notes, ordonnances et comptes-rendus" }),
-        icon: BookOpenTextIcon,
         category: t("commandPalette.category.parcours", { defaultValue: "Parcours patient" }),
         keywords: [
           "documents",
@@ -456,7 +490,6 @@ export default function CommandPalette({
         id: "clinique",
         label: t("commandPalette.nav.clinique", { defaultValue: "Soins & hospitalisation" }),
         sub: t("commandPalette.nav.cliniqueSub", { defaultValue: "Soins du jour et hospitalisations" }),
-        icon: ClinicIcon,
         category: t("commandPalette.category.parcours", { defaultValue: "Parcours patient" }),
         keywords: [
           "clinique",
@@ -473,7 +506,6 @@ export default function CommandPalette({
         id: "taches",
         label: t("commandPalette.nav.tasks", { defaultValue: "Tâches" }),
         sub: t("commandPalette.nav.tasksSub", { defaultValue: "To-do list et rappels" }),
-        icon: Task01Icon,
         category: t("commandPalette.category.pilotage", { defaultValue: "Pilotage" }),
         keywords: [
           "taches",
@@ -489,7 +521,6 @@ export default function CommandPalette({
         id: "stock",
         label: t("commandPalette.nav.stock", { defaultValue: "Stock & Pharma" }),
         sub: t("commandPalette.nav.stockSub", { defaultValue: "Inventaire et délivrance médicaments" }),
-        icon: Package02Icon,
         category: t("commandPalette.category.exploitation", { defaultValue: "Exploitation" }),
         keywords: [
           "stock",
@@ -505,7 +536,6 @@ export default function CommandPalette({
         id: "finances",
         label: t("commandPalette.nav.finances", { defaultValue: "Finances" }),
         sub: t("commandPalette.nav.financesSub", { defaultValue: "Facturation, devis et recettes" }),
-        icon: WalletIcon,
         category: t("commandPalette.category.exploitation", { defaultValue: "Exploitation" }),
         keywords: [
           "finances",
@@ -522,7 +552,6 @@ export default function CommandPalette({
         id: "equipe",
         label: t("commandPalette.nav.team", { defaultValue: "Équipe" }),
         sub: t("commandPalette.nav.teamSub", { defaultValue: "Collaborateurs et plannings" }),
-        icon: UserGroupIcon,
         category: t("commandPalette.category.exploitation", { defaultValue: "Exploitation" }),
         keywords: [
           "equipe",
@@ -537,7 +566,6 @@ export default function CommandPalette({
         id: "parametres",
         label: t("commandPalette.nav.settings", { defaultValue: "Paramètres" }),
         sub: t("commandPalette.nav.settingsSub", { defaultValue: "Configuration et préférences" }),
-        icon: Settings02Icon,
         category: t("commandPalette.category.configuration", { defaultValue: "Configuration" }),
         keywords: [
           "parametres",
@@ -739,148 +767,287 @@ export default function CommandPalette({
     },
     [onNavigate, onClose],
   );
+  // With nothing typed, the quick actions lead as tiles; once the user types, every group reads as rows.
+  const actionsLayout = q ? "rows" : "tiles";
+  // Pages & Navigation is not on the opening screen: it answers a typed query, or the Commandes filter.
+  const showNavigationGroup = showNavigation && (Boolean(q) || group === "commands");
 
-  const commandItemClassName =
-    "group flex items-center gap-3 px-3.5 py-2.5 rounded-xl cursor-pointer text-sm outline-none transition-colors duration-100 data-[selected=true]:bg-black/[0.05] dark:data-[selected=true]:bg-white/[0.08] data-[selected=true]:text-foreground";
+  // The quick actions, one element shown first (tiles, nothing typed) or after the results (rows, once the user types).
+  const quickActions = (
+    <CommandPrimitive.Group
+      className="command-palette-actions"
+      data-layout={actionsLayout}
+      heading={t("commandPalette.group.actions", { defaultValue: "Actions rapides" })}
+    >
+      <CommandPrimitive.Item
+        className="command-palette-item"
+        keywords={[
+          "assistant",
+          "ia",
+          "intelligence artificielle",
+          "dictee",
+          "soap",
+          "cas similaires",
+          "vocal",
+        ]}
+        onSelect={() => {
+          onClose();
+          openAssistant();
+        }}
+        value="action:open-assistant Ouvrir l'Assistant IA Dictée SOAP et cas similaires"
+      >
+        <Glyph icon={SparklesIcon} />
+        <Text sub="Dictée guidée SOAP & recherche clinique" title="Ouvrir l'Assistant IA" />
+        <Kbd className="command-palette-shortcut">⌘J</Kbd>
+      </CommandPrimitive.Item>
+
+      <CommandPrimitive.Item
+        className="command-palette-item"
+        keywords={[
+          t("commandPalette.action.newPatient", { defaultValue: "Nouveau patient" }),
+          "patient",
+          "ajouter",
+          "creer",
+          "fiche",
+        ]}
+        onSelect={() => fireAction("patients", "vetera:new-patient")}
+        value="action:new-patient Nouveau patient Créer un dossier animal"
+      >
+        <Glyph icon={UserPlusIcon} />
+        <Text title={t("commandPalette.action.newPatient", { defaultValue: "Nouveau patient" })} />
+        <Kbd className="command-palette-shortcut">⌘N</Kbd>
+      </CommandPrimitive.Item>
+
+      <CommandPrimitive.Item
+        className="command-palette-item"
+        keywords={[
+          t("commandPalette.action.newAppointment", { defaultValue: "Nouveau rendez-vous" }),
+          "agenda",
+          "rdv",
+          "programmer",
+        ]}
+        onSelect={() => fireAction("agenda", "vetera:new-appointment")}
+        value="action:new-appointment Nouveau rendez-vous Programmer une visite"
+      >
+        <Glyph icon={CalendarDaysIcon} />
+        <Text title={t("commandPalette.action.newAppointment", { defaultValue: "Nouveau rendez-vous" })} />
+        <Kbd className="command-palette-shortcut">⌘R</Kbd>
+      </CommandPrimitive.Item>
+
+      <CommandPrimitive.Item
+        className="command-palette-item"
+        keywords={[
+          t("commandPalette.action.openConsultation", { defaultValue: "Ouvrir une consultation" }),
+          "clinique",
+          "soins",
+          "soap",
+        ]}
+        onSelect={() => {
+          onClose();
+          window.dispatchEvent(new Event("vetera:quick-consultation"));
+        }}
+        value="action:open-consultation Nouvelle consultation Ouvrir une consultation"
+      >
+        <Glyph icon={ClipboardDocumentCheckIcon} />
+        <Text title={t("commandPalette.action.openConsultation", { defaultValue: "Ouvrir une consultation" })} />
+        <Kbd className="command-palette-hint">↵</Kbd>
+      </CommandPrimitive.Item>
+
+      <CommandPrimitive.Item
+        className="command-palette-item"
+        keywords={[
+          t("commandPalette.action.newPrescription", { defaultValue: "Nouvelle ordonnance" }),
+          "ordonnance",
+          "prescription",
+          "medicaments",
+        ]}
+        onSelect={() => fireAction("clinique", "vetera:open-prescription")}
+        value="action:new-prescription Nouvelle ordonnance Prescription médicaments"
+      >
+        <Glyph icon={PencilSquareIcon} />
+        <Text title={t("commandPalette.action.newPrescription", { defaultValue: "Nouvelle ordonnance" })} />
+      </CommandPrimitive.Item>
+
+      <CommandPrimitive.Item
+        className="command-palette-item"
+        keywords={[
+          "nouvelle facture",
+          "facture",
+          "finances",
+          "devis",
+          "encaisser",
+        ]}
+        onSelect={() => fireAction("finances", "vetera:new-invoice")}
+        value="action:new-invoice Nouvelle facture Établir une facture"
+      >
+        <Glyph icon={BanknotesIcon} />
+        <Text title="Nouvelle facture" />
+      </CommandPrimitive.Item>
+
+      {/* A practice without hospitalization is not offered the action (Paramètres > Mon cabinet). */}
+      {hospitalizationEnabled && (
+        <CommandPrimitive.Item
+          className="command-palette-item"
+          keywords={[
+            t("commandPalette.action.newHospitalization", { defaultValue: "Nouvelle hospitalisation" }),
+            "hospitalisation",
+            "clinique",
+            "box",
+          ]}
+          onSelect={() => fireAction("clinique", "vetera:open-hospitalization")}
+          value="action:new-hospitalization Nouvelle hospitalisation Admission box"
+        >
+          <Glyph icon={BuildingOffice2Icon} />
+          <Text title={t("commandPalette.action.newHospitalization", { defaultValue: "Nouvelle hospitalisation" })} />
+        </CommandPrimitive.Item>
+      )}
+
+      <CommandPrimitive.Item
+        className="command-palette-item"
+        keywords={[
+          t("commandPalette.action.newAnesthesia", { defaultValue: "Nouvelle anesthésie" }),
+          "anesthesie",
+          "chirurgie",
+        ]}
+        onSelect={() => fireAction("clinique", "vetera:open-anesthesia")}
+        value="action:new-anesthesia Nouvelle anesthésie Protocole anesthésique"
+      >
+        <Glyph icon={MoonIcon} />
+        <Text title={t("commandPalette.action.newAnesthesia", { defaultValue: "Nouvelle anesthésie" })} />
+      </CommandPrimitive.Item>
+    </CommandPrimitive.Group>
+  );
 
   return (
     <CommandDialog
       title="Palette de commandes"
       description="Recherche rapide, navigation et dossiers patients."
-      className="command-palette sm:!top-[15%] sm:!-translate-y-0 !max-w-[680px] rounded-3xl! border-border/80 bg-popover/95 p-0 shadow-[0_24px_70px_-20px_rgba(0,0,0,0.22)] backdrop-blur-2xl dark:bg-zinc-900/95 dark:border-white/10 dark:shadow-[0_28px_80px_-24px_rgba(0,0,0,0.8)]"
+      className="command-palette sm:!top-[15%] sm:!-translate-y-0 !max-w-[680px]"
       onOpenChange={(open) => !open && onClose()}
       open={isOpen}
       overlayClassName="data-closed:!animate-none data-open:!animate-none bg-black/40 backdrop-blur-sm dark:bg-black/60"
     >
-      <Command
-        className="max-h-[min(720px,calc(100dvh-4rem))] rounded-3xl! bg-transparent text-popover-foreground [&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:font-semibold [&_[cmdk-group-heading]]:t-12 [&_[cmdk-group-heading]]:text-muted-foreground/70 [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-wider [&_[cmdk-group]]:px-2 [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-1 [&_[cmdk-item]]:px-3 [&_[cmdk-item]]:py-2.5"
+      <CommandPrimitive
+        className="command-palette-root"
+        data-slot="command"
         filter={scoreCommandMatch}
         label={t("commandPalette.title", {
           defaultValue: "Recherche globale",
         })}
         loop
       >
-        {/* Barre de recherche intégrée */}
-        <div className="border-b border-border/60 pb-2">
-          <CommandInput
+        {/* The field: the loupe, the query, the three filters and esc, on one white panel. */}
+        <div
+          className="command-palette-field"
+          onMouseDown={(event) => {
+            // The loupe and the field's padding hand the click to the input, as the former input group did.
+            const target = event.target as HTMLElement;
+            if (target.closest("input, button, [role='tab']")) return;
+            event.preventDefault();
+            event.currentTarget.querySelector<HTMLInputElement>("[data-command-palette-input]")?.focus();
+          }}
+        >
+          <MagnifyingGlassIcon aria-hidden="true" className="command-palette-field-icon" />
+          <CommandPrimitive.Input
             aria-label={t("commandPalette.placeholder", {
               defaultValue: "Rechercher ou exécuter une commande…",
             })}
             autoFocus={isOpen}
+            className="command-palette-input"
             data-command-palette-input="true"
+            data-slot="command-input"
             onValueChange={setQuery}
             placeholder="Rechercher un patient, une page…"
             value={query}
-            endAddon={
-              query ? (
-                <button
-                  type="button"
-                  onClick={() => setQuery("")}
-                  className="rounded-md p-1 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-                  aria-label="Effacer la recherche"
-                >
-                  <HugeiconsIcon icon={Cancel01Icon} className="size-3.5" />
-                </button>
-              ) : (
-                <Kbd className="command-palette-esc h-5 px-1.5 t-12">esc</Kbd>
-              )
-            }
           />
-
-          {/* Onglets de filtrage */}
-          <div className="px-3 pt-1">
-            <Tabs
-              value={group}
-              onValueChange={(value) =>
-                setGroup(value as "all" | "records" | "commands")
-              }
-              className="w-full"
+          {query ? (
+            <button
+              aria-label="Effacer la recherche"
+              className="command-palette-clear"
+              onClick={() => setQuery("")}
+              type="button"
             >
-              <TabsList
-                tabsStyle="segmented"
-                variant="line"
-                aria-label="Catégorie de résultats"
-                className="h-8 gap-1 border-none bg-transparent p-0"
-              >
-                {(
-                  [
-                    ["all", "Tout"],
-                    ["records", "Dossiers"],
-                    ["commands", "Commandes"],
-                  ] as const
-                ).map(([value, label]) => (
-                  <TabsTrigger
-                    key={value}
-                    value={value}
-                    className="h-7 rounded-lg px-2.5 text-xs font-medium text-muted-foreground transition-colors data-[state=active]:bg-muted data-[state=active]:text-foreground"
-                  >
-                    {label}
-                    {value === "records" &&
-                      q &&
-                      matchedPatients.length + semanticResults.length > 0 && (
-                        <span className="ml-1.5 tabular-nums text-muted-foreground">
-                          {matchedPatients.length + semanticResults.length}
-                        </span>
-                      )}
-                  </TabsTrigger>
-                ))}
-              </TabsList>
-            </Tabs>
-          </div>
+              <XMarkIcon aria-hidden="true" />
+            </button>
+          ) : null}
+          <Tabs
+            className="command-palette-filters"
+            onValueChange={(value) =>
+              setGroup(value as "all" | "records" | "commands")
+            }
+            value={group}
+          >
+            <TabsList
+              aria-label="Catégorie de résultats"
+              tabsStyle="segmented"
+              variant="line"
+            >
+              {(
+                [
+                  ["all", "Tout"],
+                  ["records", "Dossiers"],
+                  ["commands", "Commandes"],
+                ] as const
+              ).map(([value, label]) => (
+                <TabsTrigger key={value} value={value}>
+                  {label}
+                  {value === "records" &&
+                    q &&
+                    matchedPatients.length + semanticResults.length > 0 && (
+                      <span className="command-palette-count">
+                        {matchedPatients.length + semanticResults.length}
+                      </span>
+                    )}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </Tabs>
+          {!query && <Kbd className="command-palette-esc">esc</Kbd>}
         </div>
 
-        {/* Liste des résultats */}
-        <CommandList className="!max-h-[min(480px,calc(100dvh-14rem))] px-2 py-2">
-          <CommandEmpty>
-            <div className="flex flex-col items-center gap-3 py-10 text-center">
-              <span className="flex size-11 items-center justify-center rounded-2xl border border-border/70 bg-muted/60 text-muted-foreground shadow-2xs">
-                <HugeiconsIcon
-                  className="size-5"
-                  icon={FileSearchIcon}
-                  strokeWidth={1.5}
-                />
-              </span>
-              <div className="space-y-1">
-                <span className="block font-medium text-foreground text-sm">
-                  {q && (patientsLoading || appointmentsLoading)
-                    ? t("commandPalette.empty.loading", {
-                        defaultValue: "Recherche dans vos données…",
-                      })
-                    : q
-                      ? `Aucun résultat pour « ${query} »`
-                      : t("commandPalette.empty.title", {
-                          defaultValue: "Aucun résultat trouvé",
-                        })}
-                </span>
-                <span className="block max-w-[38ch] text-muted-foreground text-xs leading-relaxed">
-                  {q
-                    ? "Vérifiez l’orthographe ou cherchez un nom de patient, une page ou une action."
-                    : t("commandPalette.empty.hint", {
-                        defaultValue: "Tapez une commande ou cherchez un patient.",
-                      })}
-                </span>
-              </div>
-              {q && (
-                <button
-                  type="button"
-                  onClick={() => fireAction("patients", "vetera:new-patient")}
-                  className="mt-2 inline-flex items-center gap-2 rounded-xl border border-border bg-background px-3 py-1.5 text-xs font-medium text-foreground shadow-xs hover:bg-muted transition-colors"
-                >
-                  <HugeiconsIcon icon={UserAdd01Icon} className="size-3.5" />
-                  Créer un patient nommé « {query} »
-                </button>
-              )}
-            </div>
-          </CommandEmpty>
+        {/* The results, on a second white panel. */}
+        <CommandPrimitive.List className="command-palette-list">
+          <CommandPrimitive.Empty className="command-palette-empty">
+            <span aria-hidden="true" className="command-palette-empty-glyph">
+              <DocumentMagnifyingGlassIcon />
+            </span>
+            <span className="command-palette-empty-title">
+              {q && (patientsLoading || appointmentsLoading)
+                ? t("commandPalette.empty.loading", {
+                    defaultValue: "Recherche dans vos données…",
+                  })
+                : q
+                  ? `Aucun résultat pour « ${query} »`
+                  : t("commandPalette.empty.title", {
+                      defaultValue: "Aucun résultat trouvé",
+                    })}
+            </span>
+            <span className="command-palette-empty-hint">
+              {q
+                ? "Vérifiez l’orthographe ou cherchez un nom de patient, une page ou une action."
+                : t("commandPalette.empty.hint", {
+                    defaultValue: "Tapez une commande ou cherchez un patient.",
+                  })}
+            </span>
+            {q && (
+              <button
+                className="command-palette-empty-action"
+                onClick={() => fireAction("patients", "vetera:new-patient")}
+                type="button"
+              >
+                <UserPlusIcon aria-hidden="true" />
+                Créer un patient nommé « {query} »
+              </button>
+            )}
+          </CommandPrimitive.Empty>
 
           {/* Actions déduites de l'intention utilisateur */}
           {showActions && intent && (
-            <CommandGroup heading="Actions contextuelles">
+            <CommandPrimitive.Group heading="Actions contextuelles">
               {actionPatients.map((patient) => (
-                <CommandItem
+                <CommandPrimitive.Item
+                  className="command-palette-item"
                   key={`action:${patient.id}`}
-                  className={commandItemClassName}
-                  value={`${query} ${patient.name}`}
                   onSelect={() => {
                     if (intent.kind === "vaccination") {
                       prepareVaccination(patient.id);
@@ -893,173 +1060,126 @@ export default function CommandPalette({
                     }
                     onClose();
                   }}
+                  value={`${query} ${patient.name}`}
                 >
-                  <div className="flex size-8 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                    <HugeiconsIcon
-                      icon={
-                        intent.kind === "vaccination"
-                          ? VaccineIcon
-                          : StethoscopeIcon
-                      }
-                      strokeWidth={1.5}
-                      size={18}
-                    />
-                  </div>
-                  <div className="ml-1 min-w-0 flex-1">
-                    <p className="t-13 font-semibold text-foreground">
-                      {intent.kind === "vaccination"
+                  <Glyph
+                    icon={
+                      intent.kind === "vaccination"
+                        ? ShieldCheckIcon
+                        : ClipboardDocumentCheckIcon
+                    }
+                  />
+                  <Text
+                    sub={`${patient.species}${patient.breed ? ` · ${patient.breed}` : ""} · Dossier existant`}
+                    title={`${
+                      intent.kind === "vaccination"
                         ? "Ajouter un vaccin"
-                        : "Nouvelle consultation"}{" "}
-                      · {patient.name}
-                    </p>
-                    <p className="mt-0.5 truncate t-12 text-muted-foreground">
-                      {patient.species}
-                      {patient.breed ? ` · ${patient.breed}` : ""} · Dossier existant
-                    </p>
-                  </div>
-                  <Kbd className="ml-auto t-12">↵ Exécuter</Kbd>
-                </CommandItem>
+                        : "Nouvelle consultation"
+                    } · ${patient.name}`}
+                  />
+                  <Hint>↵ Exécuter</Hint>
+                </CommandPrimitive.Item>
               ))}
 
               {actionOwners.map((owner) => (
-                <CommandItem
+                <CommandPrimitive.Item
+                  className="command-palette-item"
                   key={`invoice:${owner.id}`}
-                  className={commandItemClassName}
-                  value={`${query} ${owner.firstName} ${owner.lastName}`}
                   onSelect={() => {
                     prepareInvoice(owner.id);
                     fireAction("finances", "vetera:new-invoice");
                   }}
+                  value={`${query} ${owner.firstName} ${owner.lastName}`}
                 >
-                  <div className="flex size-8 shrink-0 items-center justify-center rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400">
-                    <HugeiconsIcon
-                      icon={WalletIcon}
-                      strokeWidth={1.5}
-                      size={18}
-                    />
-                  </div>
-                  <div className="ml-1 min-w-0 flex-1">
-                    <p className="t-13 font-semibold text-foreground">
-                      Nouvelle facture · {owner.firstName} {owner.lastName}
-                    </p>
-                    <p className="mt-0.5 truncate t-12 text-muted-foreground">
-                      Propriétaire existant · Établir un devis ou une facture
-                    </p>
-                  </div>
-                  <Kbd className="ml-auto t-12">↵ Facturer</Kbd>
-                </CommandItem>
+                  <Glyph icon={BanknotesIcon} />
+                  <Text
+                    sub="Propriétaire existant · Établir un devis ou une facture"
+                    title={`Nouvelle facture · ${owner.firstName} ${owner.lastName}`}
+                  />
+                  <Hint>↵ Facturer</Hint>
+                </CommandPrimitive.Item>
               ))}
-            </CommandGroup>
+            </CommandPrimitive.Group>
           )}
+
+          {/* Actions rapides: first on the opening screen, as tiles; after the results once the user types. */}
+          {showActions && !q && quickActions}
 
           {/* Récents (quand aucune requête n'est saisie) */}
           {group === "all" && !q && recents.length > 0 && (
-            <CommandGroup heading={t("commandPalette.group.recents", { defaultValue: "Récents" })}>
+            <CommandPrimitive.Group heading={t("commandPalette.group.recents", { defaultValue: "Récents" })}>
               {recents
                 .filter(
                   (entry) =>
                     entry.kind !== "patient" || patientsById.has(entry.id),
                 )
-                .map((entry) => {
-                  const Icon =
-                    entry.kind === "patient"
-                      ? MedicalFileIcon
-                      : (navigationActions.find(
-                          (action) => action.id === entry.id,
-                        )?.icon ?? DashboardSquare01Icon);
-                  return (
-                    <CommandItem
-                      key={`${entry.kind}-${entry.id}`}
-                      className={commandItemClassName}
-                      keywords={[entry.sub ?? ""]}
-                      onSelect={() => handleSelectRecent(entry)}
-                      value={`recent:${entry.kind}:${entry.id} ${entry.label} ${entry.sub ?? ""}`}
-                    >
-                      <div className="flex size-8 shrink-0 items-center justify-center rounded-xl border border-border/70 bg-muted/70 text-muted-foreground">
-                        <HugeiconsIcon
-                          className="size-4"
-                          icon={Icon}
-                          strokeWidth={1.5}
-                        />
-                      </div>
-                      <div className="ml-1 min-w-0 flex-1 flex flex-col justify-center gap-0.5">
-                        <span className="font-medium text-foreground text-sm leading-none">
-                          {entry.label}
-                        </span>
-                        {entry.sub && (
-                          <span className="font-normal t-12 text-muted-foreground leading-none">
-                            {entry.sub}
-                          </span>
-                        )}
-                      </div>
-                      <span className="t-12 text-muted-foreground/60">
-                        Récemment ouvert
+                .map((entry) => (
+                  <CommandPrimitive.Item
+                    className="command-palette-item"
+                    key={`${entry.kind}-${entry.id}`}
+                    keywords={[entry.sub ?? ""]}
+                    onSelect={() => handleSelectRecent(entry)}
+                    value={`recent:${entry.kind}:${entry.id} ${entry.label} ${entry.sub ?? ""}`}
+                  >
+                    {entry.kind === "patient" ? (
+                      <Glyph icon={UserIcon} />
+                    ) : (
+                      <span aria-hidden="true" className="command-palette-glyph">
+                        <SidebarIcon view={entry.id as View} />
                       </span>
-                    </CommandItem>
-                  );
-                })}
-            </CommandGroup>
+                    )}
+                    <Text sub={entry.sub} title={entry.label} />
+                    <Hint>Récemment ouvert</Hint>
+                  </CommandPrimitive.Item>
+                ))}
+            </CommandPrimitive.Group>
           )}
 
           {/* Suggestions intelligentes (quand pas de recherche) */}
           {showPatients && !q && suggestions.length > 0 && (
-            <CommandGroup heading="À retrouver rapidement">
+            <CommandPrimitive.Group heading="À retrouver rapidement">
               {suggestions.map((patient) => {
-                const glyph = getSpeciesGlyph(patient.species);
                 const statusMeta = getPatientStatusMeta(patient.status);
                 const ownerName = ownerById.get(patient.ownerId);
-
                 return (
-                  <CommandItem
+                  <CommandPrimitive.Item
+                    className="command-palette-item"
                     key={`suggestion:${patient.id}`}
-                    value={`suggestion:${patient.id} ${patient.name}`}
-                    className={commandItemClassName}
                     onSelect={() => handleSelectPatient(patient)}
+                    value={`suggestion:${patient.id} ${patient.name}`}
                   >
-                    <div className="flex size-8 shrink-0 items-center justify-center rounded-xl bg-muted/80 text-foreground">
-                      <HugeiconsIcon icon={glyph} size={18} strokeWidth={1.5} />
-                    </div>
-                    <div className="ml-1 min-w-0 flex-1 flex flex-col justify-center gap-0.5">
-                      <div className="flex items-center gap-2">
-                        <span className="font-semibold text-foreground text-sm">
-                          {patient.name}
-                        </span>
-                        {patient.status && (
+                    <SpeciesGlyph species={patient.species} />
+                    <Text
+                      badge={
+                        patient.status && (
                           <Badge
+                            className={`command-palette-status ${statusMeta.className}`}
                             variant="outline"
-                            className={`h-4 px-1 t-12 font-normal ${statusMeta.className}`}
                           >
                             {statusMeta.label}
                           </Badge>
-                        )}
-                      </div>
-                      <span className="truncate text-xs text-muted-foreground">
-                        {patient.species}
-                        {patient.breed ? ` · ${patient.breed}` : ""}
-                        {ownerName ? ` · ${ownerName}` : ""}
-                      </span>
-                    </div>
-                    <span className="t-12 text-muted-foreground/60">
-                      Ouvrir ↵
-                    </span>
-                  </CommandItem>
+                        )
+                      }
+                      sub={`${patient.species}${patient.breed ? ` · ${patient.breed}` : ""}${ownerName ? ` · ${ownerName}` : ""}`}
+                      title={patient.name}
+                    />
+                    <Hint>Ouvrir ↵</Hint>
+                  </CommandPrimitive.Item>
                 );
               })}
-            </CommandGroup>
+            </CommandPrimitive.Group>
           )}
 
           {/* Résultats de recherche Patients */}
           {showPatients && matchedPatients.length > 0 && (
-            <CommandGroup heading={t("commandPalette.group.patients", { defaultValue: "Dossiers Patients" })}>
+            <CommandPrimitive.Group heading={t("commandPalette.group.patients", { defaultValue: "Dossiers Patients" })}>
               {matchedPatients.map((patient) => {
-                const glyph = getSpeciesGlyph(patient.species);
                 const statusMeta = getPatientStatusMeta(patient.status);
                 const ownerName = ownerById.get(patient.ownerId);
-
                 return (
-                  <CommandItem
+                  <CommandPrimitive.Item
+                    className="command-palette-item"
                     key={patient.id}
-                    className={commandItemClassName}
                     keywords={[
                       patient.species,
                       patient.breed ?? "",
@@ -1071,135 +1191,74 @@ export default function CommandPalette({
                     onSelect={() => handleSelectPatient(patient)}
                     value={`patient:${patient.id} ${patient.name} ${patient.species} ${patient.breed ?? ""}`}
                   >
-                    <div className="flex size-8 shrink-0 items-center justify-center rounded-xl border border-border/80 bg-muted/60 text-foreground">
-                      <HugeiconsIcon
-                        className="size-4.5"
-                        icon={glyph}
-                        strokeWidth={1.5}
-                      />
-                    </div>
-                    <div className="ml-1 min-w-0 flex-1 flex flex-col justify-center gap-0.5">
-                      <div className="flex items-center gap-2">
-                        <span className="font-semibold text-foreground text-sm leading-tight">
-                          {patient.name}
-                        </span>
-                        {patient.status && (
+                    <SpeciesGlyph species={patient.species} />
+                    <Text
+                      badge={
+                        patient.status && (
                           <Badge
+                            className={`command-palette-status ${statusMeta.className}`}
                             variant="outline"
-                            className={`h-4 px-1.5 t-12 font-normal ${statusMeta.className}`}
                           >
                             {statusMeta.label}
                           </Badge>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-1.5 truncate t-12 text-muted-foreground">
-                        {patient.reference && (
-                          <span className="font-mono tabular-nums">{patient.reference} ·</span>
-                        )}
-                        <span>{patient.species}</span>
-                        {patient.breed && <span>· {patient.breed}</span>}
-                        {ownerName && (
-                          <span className="truncate">· Propriétaire : {ownerName}</span>
-                        )}
-                      </div>
-                    </div>
-                    <Kbd className="ml-auto t-12">↵ Ouvrir</Kbd>
-                  </CommandItem>
+                        )
+                      }
+                      sub={
+                        <>
+                          {patient.reference && (
+                            <span className="command-palette-reference">{patient.reference} · </span>
+                          )}
+                          {patient.species}
+                          {patient.breed && ` · ${patient.breed}`}
+                          {ownerName && ` · Propriétaire : ${ownerName}`}
+                        </>
+                      }
+                      title={patient.name}
+                    />
+                    <Hint>↵ Ouvrir</Hint>
+                  </CommandPrimitive.Item>
                 );
               })}
-            </CommandGroup>
+            </CommandPrimitive.Group>
           )}
 
-          {/* Onglet Cas similaires sans requête : suggestions cliniques */}
+          {/* Onglet Dossiers sans requête : suggestions cliniques */}
           {group === "records" && !query.trim() && (
-            <CommandGroup heading="Suggestions cliniques · Recherches fréquentes">
-              {[
-                {
-                  id: "sug-vaccin",
-                  label: "Vaccination & Rappels",
-                  sub: "Rechercher les protocoles, échéances et vaccins",
-                  query: "vaccin",
-                  badge: "Protocole",
-                },
-                {
-                  id: "sug-bacterie",
-                  label: "Infections bactériennes & Germes",
-                  sub: "Rechercher les causes bactériennes et cultures",
-                  query: "bactérie",
-                  badge: "Diagnostic",
-                },
-                {
-                  id: "sug-antibio",
-                  label: "Traitements antibiotiques",
-                  sub: "Rechercher amoxicilline, céfovécine, Synulox, Convenia",
-                  query: "antibiotique",
-                  badge: "Thérapeutique",
-                },
-                {
-                  id: "sug-metacam",
-                  label: "AINS & Méloxicam (Metacam)",
-                  sub: "Anti-inflammatoires, gestion de la douleur et arthrose",
-                  query: "Metacam",
-                  badge: "Molécule",
-                },
-                {
-                  id: "sug-irc",
-                  label: "Insuffisance rénale chronique (IRC)",
-                  sub: "MRC, néphropathies, créatinine et suivi rénal",
-                  query: "IRC",
-                  badge: "Pathologie",
-                },
-              ].map((sug) => (
-                <CommandItem
+            <CommandPrimitive.Group heading="Suggestions cliniques · Recherches fréquentes">
+              {CLINICAL_SUGGESTIONS.map((sug) => (
+                <CommandPrimitive.Item
+                  className="command-palette-item"
                   key={sug.id}
-                  className={commandItemClassName}
-                  onSelect={() => setQuery(sug.query)}
                   onClick={() => setQuery(sug.query)}
+                  onSelect={() => setQuery(sug.query)}
                   value={`semantic:sug:${sug.id} ${sug.label} ${sug.query}`}
                 >
-                  <div className="flex size-8 shrink-0 items-center justify-center rounded-xl border border-amber-500/20 bg-amber-500/10 text-amber-700 dark:border-amber-400/20 dark:bg-amber-400/15 dark:text-amber-300">
-                    <HugeiconsIcon
-                      icon={StethoscopeIcon}
-                      className="size-4"
-                      strokeWidth={1.5}
-                    />
-                  </div>
-                  <div className="ml-1 min-w-0 flex-1 flex flex-col justify-center gap-0.5">
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold text-foreground text-sm">
-                        {sug.label}
-                      </span>
-                      <Badge
-                        variant="outline"
-                        className="h-4 px-1.5 t-12 font-medium border-amber-500/30 text-amber-800 dark:text-amber-300 bg-amber-500/5"
-                      >
-                        {sug.badge}
-                      </Badge>
-                    </div>
-                    <span className="truncate text-xs text-muted-foreground">
-                      {sug.sub}
-                    </span>
-                  </div>
-                  <Kbd className="t-12">Rechercher ↵</Kbd>
-                </CommandItem>
+                  <Glyph icon={MagnifyingGlassIcon} />
+                  <Text
+                    badge={<span className="command-palette-tag">{sug.badge}</span>}
+                    sub={sug.sub}
+                    title={sug.label}
+                  />
+                  <Hint>Rechercher ↵</Hint>
+                </CommandPrimitive.Item>
               ))}
-            </CommandGroup>
+            </CommandPrimitive.Group>
           )}
 
-          {/* Résultats Sémantiques : Cas similaires */}
+          {/* Résultats sémantiques : le passage trouvé d'abord, son dossier et sa rubrique dessous */}
           {showSemantic &&
             (semanticResults.length > 0 ||
               (semanticLoading && group === "records")) && (
-              <CommandGroup heading="Cas similaires · Recherche clinique">
+              <CommandPrimitive.Group heading="Cas similaires · Recherche clinique">
                 {semanticLoading && semanticResults.length === 0 ? (
-                  <CommandItem
+                  <CommandPrimitive.Item
+                    className="command-palette-item command-palette-loading"
                     disabled
                     value="semantic:loading-indicator"
-                    className="flex items-center gap-2.5 px-3 py-3 text-xs text-muted-foreground pointer-events-none cursor-default"
                   >
-                    <div className="size-3.5 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                    <ArrowPathIcon aria-hidden="true" className="command-palette-spinner" />
                     <span>Recherche clinique dans l’ensemble des dossiers…</span>
-                  </CommandItem>
+                  </CommandPrimitive.Item>
                 ) : (
                   semanticResults.map((result) => {
                     const sectionLabel =
@@ -1247,71 +1306,58 @@ export default function CommandPalette({
                     const isPatient = result.sourceType === "patient";
 
                     const itemIcon = isProduct
-                      ? PillIcon
+                      ? CubeIcon
                       : isConsult
-                        ? Calendar01Icon
+                        ? CalendarDateRangeIcon
                         : isPatient
-                          ? MedicalFileIcon
-                          : StethoscopeIcon;
+                          ? UserIcon
+                          : DocumentTextIcon;
 
                     const passage = focusExcerpt(bestPassage(result.text, query), query);
 
                     return (
-                      <CommandItem
+                      <CommandPrimitive.Item
+                        className="command-palette-item command-palette-passage"
                         key={`semantic:${result.sourceType}:${result.patientId}:${result.sourceId}:${result.section}:${result.chunkIndex}`}
-                        className={`${commandItemClassName} items-start`}
                         keywords={[query, result.section, sectionLabel, result.text]}
-                        onSelect={handleSelectCase}
                         onClick={handleSelectCase}
+                        onSelect={handleSelectCase}
                         value={`semantic:${result.sourceType}:${result.patientId}:${result.sourceId}:${result.section}:${result.chunkIndex} ${patientName} ${result.text}`}
                       >
-                        <div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-xl border border-border/70 bg-muted/60 text-muted-foreground">
-                          <HugeiconsIcon
-                            icon={itemIcon}
-                            className="size-4"
-                            strokeWidth={1.5}
-                          />
-                        </div>
-                        <div className="ml-1 min-w-0 flex-1 flex flex-col gap-1">
-                          <p className="truncate t-12 text-muted-foreground">
-                            <span className="font-medium text-foreground">{patientName}</span>
-                            {" · "}
-                            {sectionLabel}
-                          </p>
-                          <p className="line-clamp-2 text-[13px] leading-relaxed text-foreground/90">
-                            {highlightPassage(passage, query).map((segment, index) =>
+                        <Glyph icon={itemIcon} />
+                        <span className="command-palette-text">
+                          <span className="command-palette-excerpt">
+                            {joinAdjacentHits(highlightPassage(passage, query)).map((segment, index) =>
                               segment.hit ? (
-                                <mark
-                                  key={index}
-                                  className="rounded-[3px] bg-primary/12 px-0.5 text-foreground dark:bg-primary/25"
-                                >
-                                  {segment.text}
-                                </mark>
+                                <mark key={index}>{segment.text}</mark>
                               ) : (
                                 <span key={index}>{segment.text}</span>
                               ),
                             )}
-                          </p>
-                        </div>
-                        <Kbd className="ml-2 mt-0.5 shrink-0 t-12 opacity-0 transition-opacity group-data-[selected=true]:opacity-100">
-                          {isProduct ? "↵ Voir en stock" : "↵ Ouvrir"}
-                        </Kbd>
-                      </CommandItem>
+                          </span>
+                          <span className="command-palette-sub">
+                            <span className="command-palette-source">{patientName}</span>
+                            {" · "}
+                            {sectionLabel}
+                          </span>
+                        </span>
+                        <Hint>{isProduct ? "↵ Voir en stock" : "↵ Ouvrir"}</Hint>
+                      </CommandPrimitive.Item>
                     );
                   })
                 )}
-              </CommandGroup>
+              </CommandPrimitive.Group>
             )}
 
           {/* Résultats Rendez-vous */}
           {showAppointments && matchedAppointments.length > 0 && (
-            <CommandGroup heading={t("commandPalette.group.appointments", { defaultValue: "Rendez-vous" })}>
+            <CommandPrimitive.Group heading={t("commandPalette.group.appointments", { defaultValue: "Rendez-vous" })}>
               {matchedAppointments.map((appt) => {
                 const patient = patientsById.get(appt.patientId);
                 return (
-                  <CommandItem
+                  <CommandPrimitive.Item
+                    className="command-palette-item"
                     key={appt.id}
-                    className={commandItemClassName}
                     keywords={[
                       appt.type,
                       appt.notes ?? "",
@@ -1320,309 +1366,120 @@ export default function CommandPalette({
                     onSelect={() => handleSelectAppointment(appt)}
                     value={`appointment:${appt.id} ${appt.title} ${appt.type} ${patient?.name ?? ""}`}
                   >
-                    <div className="flex size-8 shrink-0 items-center justify-center rounded-xl border border-border bg-muted/60 text-muted-foreground">
-                      <HugeiconsIcon
-                        className="size-4"
-                        icon={Calendar01Icon}
-                        strokeWidth={1.5}
-                      />
-                    </div>
-                    <div className="ml-1 min-w-0 flex-1 flex flex-col justify-center gap-0.5">
-                      <span className="font-semibold text-foreground text-sm leading-none">
-                        {appt.title}
-                      </span>
-                      <span className="font-normal t-12 text-muted-foreground leading-none">
-                        {patient?.name ?? t("commandPalette.unlinkedPatient", { defaultValue: "Patient" })}
-                        {" · "}
-                        {format(new Date(appt.startTime), "PPP HH:mm", {
-                          locale: dateLocale,
-                        })}
-                      </span>
-                    </div>
-                    <span className="t-12 text-muted-foreground/60">
-                      Agenda ↵
-                    </span>
-                  </CommandItem>
+                    <Glyph icon={CalendarDateRangeIcon} />
+                    <Text
+                      sub={`${patient?.name ?? t("commandPalette.unlinkedPatient", { defaultValue: "Patient" })} · ${format(new Date(appt.startTime), "PPP HH:mm", { locale: dateLocale })}`}
+                      title={appt.title}
+                    />
+                    <Hint>Agenda ↵</Hint>
+                  </CommandPrimitive.Item>
                 );
               })}
-            </CommandGroup>
+            </CommandPrimitive.Group>
           )}
 
           {/* Pages et Navigation */}
-          {showNavigation && (
-            <CommandGroup heading="Pages & Navigation">
+          {showNavigationGroup && (
+            <CommandPrimitive.Group heading="Pages & Navigation">
               {navigationActions.map((action) => (
-                <CommandItem
+                <CommandPrimitive.Item
+                  className="command-palette-item"
                   key={action.id}
-                  className={commandItemClassName}
                   keywords={action.keywords}
                   onSelect={() => handleSelectNav(action)}
                   value={`navigation:${action.id} ${action.label} ${action.sub}`}
                 >
-                  <div className="flex size-8 shrink-0 items-center justify-center rounded-xl border border-border/70 bg-muted/70 text-muted-foreground">
-                    <HugeiconsIcon
-                      className="size-4"
-                      icon={action.icon}
-                      strokeWidth={1.5}
-                    />
-                  </div>
-                  <div className="ml-1 min-w-0 flex-1 flex flex-col justify-center gap-0.5">
-                    <span className="font-medium text-foreground text-sm leading-none">
-                      {action.label}
-                    </span>
-                    <span className="font-normal t-12 text-muted-foreground leading-none">
-                      {action.sub}
-                    </span>
-                  </div>
-                  <span className="t-12 text-muted-foreground/60">
-                    Naviguer ↵
+                  <span aria-hidden="true" className="command-palette-glyph">
+                    <SidebarIcon view={action.id} />
                   </span>
-                </CommandItem>
+                  <Text sub={action.sub} title={action.label} />
+                  <Hint>Naviguer ↵</Hint>
+                </CommandPrimitive.Item>
               ))}
-            </CommandGroup>
+            </CommandPrimitive.Group>
           )}
 
-          {/* Actions rapides */}
-          {showActions && (
-            <>
-              <CommandSeparator className="my-2" />
-              <CommandGroup heading={t("commandPalette.group.actions", { defaultValue: "Actions rapides" })}>
-                <CommandItem
-                  className={commandItemClassName}
-                  keywords={[
-                    "assistant",
-                    "ia",
-                    "intelligence artificielle",
-                    "dictee",
-                    "soap",
-                    "cas similaires",
-                    "vocal",
-                  ]}
-                  onSelect={() => {
-                    onClose();
-                    openAssistant();
-                  }}
-                  value="action:open-assistant Ouvrir l'Assistant IA Dictée SOAP et cas similaires"
-                >
-                  <div className="flex size-8 shrink-0 items-center justify-center rounded-xl border border-primary/20 bg-primary/10 text-primary">
-                    <HugeiconsIcon
-                      className="size-4"
-                      icon={SparklesIcon}
-                      strokeWidth={1.5}
-                    />
-                  </div>
-                  <div className="ml-1 flex flex-col">
-                    <span className="font-medium text-foreground text-sm">
-                      Ouvrir l'Assistant IA
-                    </span>
-                    <span className="t-12 text-muted-foreground">
-                      Dictée guidée SOAP & recherche clinique
-                    </span>
-                  </div>
-                  <Kbd className="ml-auto">⌘J</Kbd>
-                </CommandItem>
+          {/* Actions rapides, after the results once the user types */}
+          {showActions && q && quickActions}
+        </CommandPrimitive.List>
 
-                <CommandItem
-                  className={commandItemClassName}
-                  keywords={[
-                    t("commandPalette.action.newPatient", { defaultValue: "Nouveau patient" }),
-                    "patient",
-                    "ajouter",
-                    "creer",
-                    "fiche",
-                  ]}
-                  onSelect={() => fireAction("patients", "vetera:new-patient")}
-                  value="action:new-patient Nouveau patient Créer un dossier animal"
-                >
-                  <div className="flex size-8 shrink-0 items-center justify-center rounded-xl border border-primary/20 bg-primary/10 text-primary">
-                    <HugeiconsIcon
-                      className="size-4"
-                      icon={UserAdd01Icon}
-                      strokeWidth={1.5}
-                    />
-                  </div>
-                  <span className="ml-1 font-medium text-foreground text-sm">
-                    {t("commandPalette.action.newPatient", { defaultValue: "Nouveau patient" })}
-                  </span>
-                  <Kbd className="ml-auto">⌘N</Kbd>
-                </CommandItem>
-
-                <CommandItem
-                  className={commandItemClassName}
-                  keywords={[
-                    t("commandPalette.action.newAppointment", { defaultValue: "Nouveau rendez-vous" }),
-                    "agenda",
-                    "rdv",
-                    "programmer",
-                  ]}
-                  onSelect={() =>
-                    fireAction("agenda", "vetera:new-appointment")
-                  }
-                  value="action:new-appointment Nouveau rendez-vous Programmer une visite"
-                >
-                  <div className="flex size-8 shrink-0 items-center justify-center rounded-xl border border-blue-500/20 bg-blue-500/10 text-blue-600 dark:text-blue-400">
-                    <HugeiconsIcon
-                      className="size-4"
-                      icon={CalendarAdd01Icon}
-                      strokeWidth={1.5}
-                    />
-                  </div>
-                  <span className="ml-1 font-medium text-foreground text-sm">
-                    {t("commandPalette.action.newAppointment", { defaultValue: "Nouveau rendez-vous" })}
-                  </span>
-                  <Kbd className="ml-auto">⌘R</Kbd>
-                </CommandItem>
-
-                <CommandItem
-                  className={commandItemClassName}
-                  keywords={[
-                    t("commandPalette.action.openConsultation", { defaultValue: "Ouvrir une consultation" }),
-                    "clinique",
-                    "soins",
-                    "soap",
-                  ]}
-                  onSelect={() => {
-                    onClose();
-                    window.dispatchEvent(new Event("vetera:quick-consultation"));
-                  }}
-                  value="action:open-consultation Nouvelle consultation Ouvrir une consultation"
-                >
-                  <div className="flex size-8 shrink-0 items-center justify-center rounded-xl border border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
-                    <HugeiconsIcon
-                      className="size-4"
-                      icon={ClinicIcon}
-                      strokeWidth={1.5}
-                    />
-                  </div>
-                  <span className="ml-1 font-medium text-foreground text-sm">
-                    {t("commandPalette.action.openConsultation", { defaultValue: "Ouvrir une consultation" })}
-                  </span>
-                  <Kbd className="ml-auto">↵</Kbd>
-                </CommandItem>
-
-                <CommandItem
-                  className={commandItemClassName}
-                  keywords={[
-                    t("commandPalette.action.newPrescription", { defaultValue: "Nouvelle ordonnance" }),
-                    "ordonnance",
-                    "prescription",
-                    "medicaments",
-                  ]}
-                  onSelect={() =>
-                    fireAction("clinique", "vetera:open-prescription")
-                  }
-                  value="action:new-prescription Nouvelle ordonnance Prescription médicaments"
-                >
-                  <div className="flex size-8 shrink-0 items-center justify-center rounded-xl border border-border bg-muted text-muted-foreground">
-                    <HugeiconsIcon
-                      className="size-4"
-                      icon={PillIcon}
-                      strokeWidth={1.5}
-                    />
-                  </div>
-                  <span className="ml-1 font-medium text-foreground text-sm">
-                    {t("commandPalette.action.newPrescription", { defaultValue: "Nouvelle ordonnance" })}
-                  </span>
-                </CommandItem>
-
-                <CommandItem
-                  className={commandItemClassName}
-                  keywords={[
-                    "nouvelle facture",
-                    "facture",
-                    "finances",
-                    "devis",
-                    "encaisser",
-                  ]}
-                  onSelect={() =>
-                    fireAction("finances", "vetera:new-invoice")
-                  }
-                  value="action:new-invoice Nouvelle facture Établir une facture"
-                >
-                  <div className="flex size-8 shrink-0 items-center justify-center rounded-xl border border-amber-500/20 bg-amber-500/10 text-amber-600 dark:text-amber-400">
-                    <HugeiconsIcon
-                      className="size-4"
-                      icon={WalletIcon}
-                      strokeWidth={1.5}
-                    />
-                  </div>
-                  <span className="ml-1 font-medium text-foreground text-sm">
-                    Nouvelle facture
-                  </span>
-                </CommandItem>
-
-                {hospitalizationEnabled && (<CommandItem
-                  className={commandItemClassName}
-                  keywords={[
-                    t("commandPalette.action.newHospitalization", { defaultValue: "Nouvelle hospitalisation" }),
-                    "hospitalisation",
-                    "clinique",
-                    "box",
-                  ]}
-                  onSelect={() =>
-                    fireAction("clinique", "vetera:open-hospitalization")
-                  }
-                  value="action:new-hospitalization Nouvelle hospitalisation Admission box"
-                >
-                  <div className="flex size-8 shrink-0 items-center justify-center rounded-xl border border-border bg-muted text-muted-foreground">
-                    <HugeiconsIcon
-                      className="size-4"
-                      icon={HospitalBed01Icon}
-                      strokeWidth={1.5}
-                    />
-                  </div>
-                  <span className="ml-1 font-medium text-foreground text-sm">
-                    {t("commandPalette.action.newHospitalization", { defaultValue: "Nouvelle hospitalisation" })}
-                  </span>
-                </CommandItem>)}
-
-                <CommandItem
-                  className={commandItemClassName}
-                  keywords={[
-                    t("commandPalette.action.newAnesthesia", { defaultValue: "Nouvelle anesthésie" }),
-                    "anesthesie",
-                    "chirurgie",
-                  ]}
-                  onSelect={() =>
-                    fireAction("clinique", "vetera:open-anesthesia")
-                  }
-                  value="action:new-anesthesia Nouvelle anesthésie Protocole anesthésique"
-                >
-                  <div className="flex size-8 shrink-0 items-center justify-center rounded-xl border border-border bg-muted text-muted-foreground">
-                    <HugeiconsIcon
-                      className="size-4"
-                      icon={VaccineIcon}
-                      strokeWidth={1.5}
-                    />
-                  </div>
-                  <span className="ml-1 font-medium text-foreground text-sm">
-                    {t("commandPalette.action.newAnesthesia", { defaultValue: "Nouvelle anesthésie" })}
-                  </span>
-                </CommandItem>
-              </CommandGroup>
-            </>
-          )}
-        </CommandList>
-
-        {/* Pied de page avec raccourcis clavier */}
-        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-t border-border/60 px-4 py-2.5 t-12 text-muted-foreground">
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-            <span className="flex items-center gap-1.5">
-              <Kbd className="h-4 px-1 t-12">↑</Kbd>
-              <Kbd className="h-4 px-1 t-12">↓</Kbd>
-              {t("commandPalette.footer.navigate", { defaultValue: "Naviguer" })}
-            </span>
-            <span className="flex items-center gap-1.5">
-              <Kbd className="h-4 px-1 t-12">↵</Kbd>
-              {t("commandPalette.footer.select", { defaultValue: "Sélectionner" })}
-            </span>
-            <span className="hidden items-center gap-1.5 sm:flex">
-              <Kbd className="h-4 px-1 t-12">esc</Kbd>
-              {t("commandPalette.footer.close", { defaultValue: "Fermer" })}
-            </span>
-          </div>
+        {/* Pied de page avec raccourcis clavier, sur la bande */}
+        <div className="command-palette-footer">
+          <span>
+            <Kbd>↑</Kbd>
+            <Kbd>↓</Kbd>
+            {t("commandPalette.footer.navigate", { defaultValue: "Naviguer" })}
+          </span>
+          <span>
+            <Kbd>↵</Kbd>
+            {t("commandPalette.footer.select", { defaultValue: "Sélectionner" })}
+          </span>
+          <span className="command-palette-footer-close">
+            <Kbd>esc</Kbd>
+            {t("commandPalette.footer.close", { defaultValue: "Fermer" })}
+          </span>
         </div>
-      </Command>
+      </CommandPrimitive>
     </CommandDialog>
   );
+}
+
+type HeroIcon = ComponentType<SVGProps<SVGSVGElement>>;
+
+/** The row's icon: a Heroicon (20, solid) on a quiet fill, no border. */
+function Glyph({ icon: Icon }: { icon: HeroIcon }) {
+  return (
+    <span aria-hidden="true" className="command-palette-glyph">
+      <Icon />
+    </span>
+  );
+}
+
+/** A patient's species glyph on the same fill (Heroicons has no animals). */
+function SpeciesGlyph({ species }: { species: string }) {
+  return (
+    <span aria-hidden="true" className="command-palette-glyph">
+      <HugeiconsIcon icon={getSpeciesGlyph(species)} size={18} strokeWidth={1.5} />
+    </span>
+  );
+}
+
+/** Title (with an optional badge) over a quiet second line. */
+function Text({ title, sub, badge }: { title: ReactNode; sub?: ReactNode; badge?: ReactNode }) {
+  return (
+    <span className="command-palette-text">
+      <span className="command-palette-title">
+        <span className="command-palette-title-text">{title}</span>
+        {badge}
+      </span>
+      {sub && <span className="command-palette-sub">{sub}</span>}
+    </span>
+  );
+}
+
+/**
+ * Words found next to each other read as one marked run: a gap made only of spaces between two hits joins them, so
+ * « Insuffisance rénale chronique » is one highlight, not three. Presentation only; the hits are highlightPassage's.
+ */
+function joinAdjacentHits(segments: Array<{ text: string; hit: boolean }>) {
+  const out: Array<{ text: string; hit: boolean }> = [];
+  for (let i = 0; i < segments.length; i++) {
+    const segment = segments[i];
+    const previous = out.at(-1);
+    const next = segments[i + 1];
+    if (!segment.hit && previous?.hit && next?.hit && /^\s+$/.test(segment.text)) {
+      previous.text += segment.text + next.text;
+      i++;
+    } else if (segment.hit && previous?.hit) {
+      previous.text += segment.text;
+    } else {
+      out.push({ ...segment });
+    }
+  }
+  return out;
+}
+
+/** The row's hint («  Ouvrir ↵ », a shortcut): shown on the current row only. */
+function Hint({ children }: { children: ReactNode }) {
+  return <span className="command-palette-hint">{children}</span>;
 }

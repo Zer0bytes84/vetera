@@ -1,0 +1,24 @@
+light ouverture          items 23→13 | RETIRÉS ['navigation:agenda Agenda Rendez-vous et planning', 'navigation:clinique Soins & hospitalisation Soins du jour et hospitalisations', "navigation:dashboard Tableau de bord Vue d'ensemble", 'navigation:equipe Équipe Gestion du personnel', 'navigation:finances Finances Facturation et recettes', 'navigation:notes Documents Mémos et documents', 'navigation:parametres Paramètres Configuration', 'navigation:patients Patients Dossiers médicaux', 'navigation:stock Stock & Pharma Inventaire produits', 'navigation:taches Tâches To-do list et rappels'] | groupes ['Récents', 'À retrouver rapidement', 'Pages & Navigation', 'Actions rapides'] → ['Actions rapides', 'Récents', 'À retrouver rapidement'] | courant ['recent:patient:zz-p3 Rex Chien · Berger']→["action:open-assistant Ouvrir l'Assistant IA Dictée SOAP et cas similaires"]
+light dossiers           items  8→ 8
+light commandes          items 18→18 | groupes ['Pages & Navigation', 'Actions rapides'] → ['Actions rapides', 'Pages & Navigation'] | courant []→["action:open-assistant Ouvrir l'Assistant IA Dictée SOAP et cas similaires"]
+light patient-rex        items  2→ 2
+light clinique-vaccin    items 15→15
+light clinique-irc       items  1→ 1
+light clinique-metacam   items  1→ 1
+light intention-rdv      items  1→ 1
+light intention-facture  items  1→ 1
+light page-agenda        items  2→ 2
+light aucun-resultat     items  0→ 0
+light fleche-bas         items 23→13 | RETIRÉS ['navigation:agenda Agenda Rendez-vous et planning', 'navigation:clinique Soins & hospitalisation Soins du jour et hospitalisations', "navigation:dashboard Tableau de bord Vue d'ensemble", 'navigation:equipe Équipe Gestion du personnel', 'navigation:finances Finances Facturation et recettes', 'navigation:notes Documents Mémos et documents', 'navigation:parametres Paramètres Configuration', 'navigation:patients Patients Dossiers médicaux', 'navigation:stock Stock & Pharma Inventaire produits', 'navigation:taches Tâches To-do list et rappels'] | groupes ['Récents', 'À retrouver rapidement', 'Pages & Navigation', 'Actions rapides'] → ['Actions rapides', 'Récents', 'À retrouver rapidement'] | courant ['suggestion:mp1xm8tp7k7vpc3vs6d Réglisse']→['action:new-appointment Nouveau rendez-vous Programmer une visite']
+dark  ouverture          items 23→13 | RETIRÉS ['navigation:agenda Agenda Rendez-vous et planning', 'navigation:clinique Soins & hospitalisation Soins du jour et hospitalisations', "navigation:dashboard Tableau de bord Vue d'ensemble", 'navigation:equipe Équipe Gestion du personnel', 'navigation:finances Finances Facturation et recettes', 'navigation:notes Documents Mémos et documents', 'navigation:parametres Paramètres Configuration', 'navigation:patients Patients Dossiers médicaux', 'navigation:stock Stock & Pharma Inventaire produits', 'navigation:taches Tâches To-do list et rappels'] | groupes ['Récents', 'À retrouver rapidement', 'Pages & Navigation', 'Actions rapides'] → ['Actions rapides', 'Récents', 'À retrouver rapidement'] | courant ['recent:patient:zz-p3 Rex Chien · Berger']→["action:open-assistant Ouvrir l'Assistant IA Dictée SOAP et cas similaires"]
+dark  dossiers           items  8→ 8
+dark  commandes          items 18→18 | groupes ['Pages & Navigation', 'Actions rapides'] → ['Actions rapides', 'Pages & Navigation'] | courant []→["action:open-assistant Ouvrir l'Assistant IA Dictée SOAP et cas similaires"]
+dark  patient-rex        items  2→ 2
+dark  clinique-vaccin    items 15→15
+dark  clinique-irc       items  1→ 1
+dark  clinique-metacam   items  1→ 1
+dark  intention-rdv      items  1→ 1
+dark  intention-facture  items  1→ 1
+dark  page-agenda        items  2→ 2
+dark  aucun-resultat     items  0→ 0
+dark  fleche-bas         items 23→13 | RETIRÉS ['navigation:agenda Agenda Rendez-vous et planning', 'navigation:clinique Soins & hospitalisation Soins du jour et hospitalisations', "navigation:dashboard Tableau de bord Vue d'ensemble", 'navigation:equipe Équipe Gestion du personnel', 'navigation:finances Finances Facturation et recettes', 'navigation:notes Documents Mémos et documents', 'navigation:parametres Paramètres Configuration', 'navigation:patients Patients Dossiers médicaux', 'navigation:stock Stock & Pharma Inventaire produits', 'navigation:taches Tâches To-do list et rappels'] | groupes ['Récents', 'À retrouver rapidement', 'Pages & Navigation', 'Actions rapides'] → ['Actions rapides', 'Récents', 'À retrouver rapidement'] | courant ['suggestion:mp1xm8tp7k7vpc3vs6d Réglisse']→['action:new-appointment Nouveau rendez-vous Programmer une visite']

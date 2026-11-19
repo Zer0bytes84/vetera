@@ -1,0 +1,164 @@
+{
+ "action Nouveau patient (souris)": {
+  "hash": "#/patients",
+  "paletteOuverte": false,
+  "requete": null,
+  "evenements": [
+   "vetera:new-patient"
+  ],
+  "titre": "Patients",
+  "dialogues": [],
+  "assistant": false,
+  "erreurs": []
+ },
+ "action Nouveau rendez-vous (souris)": {
+  "hash": "#/agenda",
+  "paletteOuverte": false,
+  "requete": null,
+  "evenements": [
+   "vetera:new-appointment"
+  ],
+  "titre": "mercredi 18 novembre 2026",
+  "dialogues": [],
+  "assistant": false,
+  "erreurs": []
+ },
+ "action Nouvelle facture (souris)": {
+  "hash": "#/finances",
+  "paletteOuverte": false,
+  "requete": null,
+  "evenements": [
+   "vetera:new-invoice"
+  ],
+  "titre": null,
+  "dialogues": [],
+  "assistant": false,
+  "erreurs": []
+ },
+ "action Assistant (souris)": {
+  "hash": "#/dashboard",
+  "paletteOuverte": false,
+  "requete": null,
+  "evenements": [],
+  "titre": "Activité de la clinique",
+  "dialogues": [],
+  "assistant": true,
+  "erreurs": []
+ },
+ "récent Rex (souris)": {
+  "hash": "#/patient/zz-p3",
+  "paletteOuverte": false,
+  "requete": null,
+  "evenements": [],
+  "titre": null,
+  "dialogues": [],
+  "assistant": false,
+  "erreurs": []
+ },
+ "suggestion 1re (souris)": {
+  "hash": "#/patient/mp1xm8tp7k7vpc3vs6d",
+  "paletteOuverte": false,
+  "requete": null,
+  "evenements": [],
+  "titre": "RéglisseID-0007En bonne santé",
+  "dialogues": [],
+  "assistant": false,
+  "erreurs": []
+ },
+ "requête rex, Entrée": {
+  "hash": "#/patient/zz-p3",
+  "paletteOuverte": false,
+  "requete": null,
+  "evenements": [],
+  "titre": "RexID-0014En bonne santé",
+  "dialogues": [],
+  "assistant": false,
+  "erreurs": []
+ },
+ "requête agenda, Entrée": {
+  "hash": "#/agenda",
+  "paletteOuverte": false,
+  "requete": null,
+  "evenements": [],
+  "titre": "mercredi 18 novembre 2026",
+  "dialogues": [],
+  "assistant": false,
+  "erreurs": []
+ },
+ "requête IRC, Entrée": {
+  "hash": "#/patient/zz-p4",
+  "paletteOuverte": false,
+  "requete": null,
+  "evenements": [],
+  "titre": "MinouID-0015En bonne santé",
+  "dialogues": [],
+  "assistant": false,
+  "erreurs": []
+ },
+ "requête rdv minou, Entrée": {
+  "hash": "#/agenda",
+  "paletteOuverte": false,
+  "requete": null,
+  "evenements": [
+   "vetera:new-appointment"
+  ],
+  "titre": "mercredi 18 novembre 2026",
+  "dialogues": [
+   "Nouveau rendez-vous"
+  ],
+  "assistant": false,
+  "erreurs": []
+ },
+ "onglet Commandes, Paramètres (souris)": {
+  "hash": "#/parametres",
+  "paletteOuverte": false,
+  "requete": null,
+  "evenements": [],
+  "titre": null,
+  "dialogues": [],
+  "assistant": false,
+  "erreurs": []
+ },
+ "onglet Dossiers, suggestion IRC (souris)": {
+  "hash": "#/dashboard",
+  "paletteOuverte": true,
+  "requete": "IRC",
+  "evenements": [],
+  "titre": "Activité de la clinique",
+  "dialogues": [],
+  "assistant": false,
+  "erreurs": []
+ },
+ "aucun résultat, Créer un patient": {
+  "hash": "#/patients",
+  "paletteOuverte": false,
+  "requete": null,
+  "evenements": [
+   "vetera:new-patient"
+  ],
+  "titre": null,
+  "dialogues": [],
+  "assistant": false,
+  "erreurs": []
+ },
+ "effacer la requête": {
+  "hash": "#/dashboard",
+  "paletteOuverte": true,
+  "requete": "",
+  "evenements": [],
+  "titre": "Activité de la clinique",
+  "dialogues": [],
+  "assistant": false,
+  "erreurs": []
+ },
+ "Échap": {
+  "hash": "#/dashboard",
+  "paletteOuverte": false,
+  "requete": null,
+  "evenements": [],
+  "titre": "Activité de la clinique",
+  "dialogues": [],
+  "assistant": false,
+  "erreurs": []
+ }
+}
