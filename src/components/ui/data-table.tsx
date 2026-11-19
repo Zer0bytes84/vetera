@@ -48,6 +48,8 @@ export type DataColumn<R extends DataRow = DataRow> = {
   /** Display text for a cell. Sorting, filtering and CSV use the raw value. */
   format?: (value: R[keyof R], row: R) => ReactNode;
   sortable?: boolean;
+  /** What the column sorts by, when its raw value does not sort itself (a date in mixed formats sorts by its time). */
+  sortValue?: (value: R[keyof R], row: R) => number | string;
   width?: string;
   /** Left out of the CSV (an actions column). */
   noExport?: boolean;
@@ -140,7 +142,9 @@ export function selectRows<R extends DataRow>(
     : data;
   if (!sort) return filtered;
   const sign = sort.dir === "asc" ? 1 : -1;
-  return [...filtered].sort((a, b) => sign * compare(a[sort.key], b[sort.key]));
+  const column = columns.find((c) => c.key === sort.key);
+  const by = (row: R) => (column?.sortValue ? column.sortValue(row[sort.key as keyof R], row) : row[sort.key]);
+  return [...filtered].sort((a, b) => sign * compare(by(a), by(b)));
 }
 
 /** A header's clicks: descending, then ascending, then back to the order of the data. */
@@ -488,7 +492,7 @@ export function DataTable<R extends DataRow>({
         <p aria-live="polite" className="sr-only" role="status">
           {copied
             ? "Copié en CSV"
-            : `${rows.length} ${word}${sort ? `, triés par ${sort.key} ${sort.dir === "asc" ? "croissant" : "décroissant"}` : ""}`}
+            : `${rows.length} ${word}${sort ? `, triés par ${columns.find((c) => c.key === sort.key)?.label ?? sort.key} ${sort.dir === "asc" ? "croissant" : "décroissant"}` : ""}`}
         </p>
       </Shell>
     </MotionConfig>

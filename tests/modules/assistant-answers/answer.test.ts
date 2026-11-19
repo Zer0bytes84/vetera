@@ -248,9 +248,9 @@ describe("chaque chiffre a sa provenance", () => {
     const allowed = new Set([
       "@/modules/dashboard/model/premium-analytics", "@/modules/dashboard/v2/model", "@/utils/display-format", "@/types/db",
       "./language", "./period", "./types",
-      "./vocabulary",
+      "./vocabulary", "./presentation",
     ]);
-    for (const file of ["answer.ts", "language.ts", "period.ts", "types.ts", "vocabulary.ts"]) {
+    for (const file of ["answer.ts", "language.ts", "period.ts", "types.ts", "vocabulary.ts", "presentation.ts"]) {
       for (const source of imports(file)) expect(allowed.has(source), `${file} importe ${source}`).toBe(true);
     }
 

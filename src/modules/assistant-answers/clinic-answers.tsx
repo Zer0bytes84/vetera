@@ -20,6 +20,9 @@ import { DataTable, type DataColumn, type DataRow } from "@/components/ui/data-t
 import { PromptSuggestions } from "@/components/ui/prompt-suggestions";
 import { SourceList } from "@/components/ui/source-list";
 import { StreamingMessage } from "@/components/ui/streaming-message";
+import { MessageSkeleton } from "@/components/ui/loading-skeleton";
+import { StatCard, StatCardGrid } from "@/components/ui/stat-card";
+import { Panel, Shell } from "@/components/ui/surface";
 import { ToolCallBlock } from "@/components/ui/tool-call-block";
 import { UserMessage } from "@/components/ui/user-message";
 import { useSQLite } from "@/hooks/useSQLite";
@@ -27,8 +30,11 @@ import { guard } from "@/lib/guard";
 import { parseDashboardDate } from "@/modules/dashboard/v2/model";
 import type { Task } from "@/types/db";
 import { formatDinars, formatNumber } from "@/utils/display-format";
+import { splitUnit } from "@/modules/dashboard/components/chart-path";
 import { answerQuestion, STARTER_QUESTIONS } from "./answer";
+import { AnswerChart } from "./answer-chart";
 import { readClinicData, type ReadReceipt } from "./clinic-reads";
+import { announce } from "@/lib/announce";
 import { MAX_QUESTION_LENGTH } from "./language";
 import { saveProposal } from "./save-proposal";
 import type { Answer, AnswerColumn, CellKind, Proposal } from "./types";
@@ -60,6 +66,10 @@ const toColumn = (column: AnswerColumn): DataColumn<DataRow> => ({
   align: column.kind === "money" || column.kind === "number" ? "right" : "left",
   format: CELLS[column.kind],
   priority: column.priority,
+  // Tranche 1: every column of an answer's table sorts (descending, ascending, then as read); dates by their time, an
+  // empty date last whatever the direction would put it first.
+  sortable: true,
+  sortValue: column.kind === "date" || column.kind === "datetime" ? (value) => dateOf(value)?.getTime() ?? Number.MAX_SAFE_INTEGER : undefined,
 });
 const clock = (value: string | Date) => new Date(value).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
 const plural = (count: number, one: string, many: string) => `${count} ${count > 1 ? many : one}`;
@@ -77,6 +87,27 @@ export function ClinicAnswers({ patientId, renderAvatar }: Props) {
   // A table that could not be read is never answered as if it were empty.
   const [readError, setReadError] = useState<string | null>(null);
   const [lastQuestion, setLastQuestion] = useState<string | null>(null);
+  // The Message skeleton shows only for a read that lasts: a fast answer would make it flash.
+  const [slow, setSlow] = useState(false);
+  const slowRef = useRef(false);
+  useEffect(() => {
+    if (!loading) return;
+    const timer = setTimeout(() => {
+      slowRef.current = true;
+      setSlow(true);
+      // The skeleton comes after the thread: the thread scrolls to it.
+      requestAnimationFrame(() => {
+        const list = scroller.current;
+        const pending = list?.querySelector<HTMLElement>(".answer-pending");
+        if (list && pending) list.scrollTo({ top: list.scrollTop + pending.getBoundingClientRect().top - list.getBoundingClientRect().top });
+      });
+    }, 120);
+    return () => {
+      clearTimeout(timer);
+      slowRef.current = false;
+      setSlow(false);
+    };
+  }, [loading]);
   const blocked = loading;
 
   const [turns, setTurns] = useState<Turn[]>([]);
@@ -112,6 +143,8 @@ export function ClinicAnswers({ patientId, renderAvatar }: Props) {
       const durationMs = Math.max(1, Math.round(performance.now() - started));
       setReadError(null);
       setTurns((current) => [...current, { id: `${now.getTime()}-${current.length}`, question, at: now.toISOString(), durationMs, answer, receipt, tasksRead: data.tasks }]);
+      // The skeleton leaves with the answer: when it was shown, the end of the wait is said once.
+      if (slowRef.current) announce("Réponse affichée");
       setDraft("");
     }, {
       recover: (error) => {
@@ -222,6 +255,7 @@ export function ClinicAnswers({ patientId, renderAvatar }: Props) {
             userName="Vous"
           />
         )}
+        {loading && slow ? <MessageSkeleton className="answer-pending" label="Lecture des données du cabinet…" /> : null}
       </div>
 
       {readError ? (
@@ -314,6 +348,24 @@ export function AnswerView({
         showActions={false}
         showHeader={false}
       />
+      {answer.cards.length > 0 ? (
+        <Shell className="answer-cards">
+          <StatCardGrid count={answer.cards.length}>
+            {answer.cards.map((card) => {
+              const figure = answer.figures.find((item) => item.id === card.figure)!;
+              const [value, unit] = figure.kind === "money" ? splitUnit(formatDinars(figure.value / 100, 2)) : [formatNumber(figure.value), ""];
+              return <StatCard key={card.figure} label={figure.label} tone={card.tone} unit={unit || undefined} value={value} />;
+            })}
+          </StatCardGrid>
+        </Shell>
+      ) : null}
+      {answer.chart ? (
+        <Shell>
+          <Panel className="p-4">
+            <AnswerChart chart={answer.chart} />
+          </Panel>
+        </Shell>
+      ) : null}
       {table ? (
         <DataTable
           columns={table.columns.map(toColumn)}

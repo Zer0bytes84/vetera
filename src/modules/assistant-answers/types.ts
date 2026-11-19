@@ -55,9 +55,33 @@ export type Figure = {
   kind: "count" | "money";
   sourceId: string;
   tie?: "rows" | "income" | "expense" | "sum";
+  /** What the figure means for the practice, when its id does not say it (« rows » counting absences is bad news). */
+  meaning?: "positive" | "negative";
 };
 
 export type AnswerStep = { id: string; name: string; summary?: string; details: { label: string; value: string }[] };
+
+/**
+ * A figure shown as a card (19 November 2026). A card holds no number of its own: it names a figure of the answer, so
+ * what it shows is what the sentence says and the table adds up. `tone` is what the figure means for the practice
+ * (takings are good news, expenses are not), never the direction of a change.
+ */
+export type AnswerCard = { figure: string; tone: "positive" | "negative" | "neutral" };
+
+export type AnswerChartPoint = { key: string; label: string; value: number };
+/**
+ * A series drawn from the table's own rows. `tie` names the figure its points must add up to, to the centime:
+ * verifyAnswer checks it, so the chart, the card and the table cannot disagree.
+ */
+export type AnswerSeries = { id: string; label: string; tone: "income" | "expense" | "count"; tie: string; points: AnswerChartPoint[] };
+export type AnswerChart = {
+  title: string;
+  kind: "area" | "bars";
+  unit: "money" | "count";
+  /** How the points are grouped: by day up to 62 days, by week up to 26 weeks, by month beyond; by species for records. */
+  bucket: "jour" | "semaine" | "mois" | "espece";
+  series: AnswerSeries[];
+};
 
 export type TaskDraft = { key: string; title: string; description: string; patientId: string; dueDate: string };
 /** A write the assistant suggests. Nothing is saved until the vet validates the card. */
@@ -81,6 +105,8 @@ export type Answer =
       /** The wording that fills the non-figure tokens: « period », « scope ». */
       slots: Record<string, string>;
       steps: AnswerStep[];
+      cards: AnswerCard[];
+      chart: AnswerChart | null;
       table: AnswerTable | null;
       sources: AnswerSource[];
       proposal: Proposal | null;

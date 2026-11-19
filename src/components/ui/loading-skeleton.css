@@ -1,0 +1,38 @@
+/* Loading Skeleton (19 November 2026): the sheen, on the fill of the ink, at the radii of the bands and panels. */
+.loading-skeleton { --skeleton-fill: color-mix(in oklab, var(--ink) 7%, transparent); }
+:root.dark .loading-skeleton { --skeleton-fill: color-mix(in oklab, var(--ink) 11%, transparent); }
+.loading-skeleton-shape {
+  display: block;
+  border-radius: 999px;
+  background:
+    linear-gradient(100deg, transparent 30%, color-mix(in oklab, var(--card-inset) 70%, transparent) 50%, transparent 70%) 0 0 / 220% 100% no-repeat,
+    var(--skeleton-fill);
+  animation: loading-skeleton-sheen 1.4s ease-in-out infinite;
+}
+@keyframes loading-skeleton-sheen { from { background-position: 120% 0, 0 0; } to { background-position: -120% 0, 0 0; } }
+@media (prefers-reduced-motion: reduce) { .loading-skeleton-shape { animation: none; } }
+
+.loading-skeleton-message { display: flex; flex-direction: column; gap: 22px; padding: 12px 2px; }
+.loading-skeleton-question { display: flex; justify-content: flex-end; }
+.loading-skeleton-pill { width: 150px; height: 36px; border-radius: 18px; }
+.loading-skeleton-answer { display: flex; gap: 12px; align-items: flex-start; }
+.loading-skeleton-avatar { width: 28px; height: 28px; flex: none; }
+.loading-skeleton-lines { display: flex; flex: 1; flex-direction: column; gap: 9px; padding-top: 4px; }
+.loading-skeleton-line { height: 8px; }
+.loading-skeleton-l1 { width: 22%; }
+.loading-skeleton-l2 { width: 64%; }
+.loading-skeleton-l3 { width: 56%; }
+.loading-skeleton-l4 { width: 40%; }
+
+.loading-skeleton-band { border-radius: calc(var(--radius-panel) + var(--card-frame)); background: var(--card-band); padding: var(--card-frame); }
+.loading-skeleton-header { display: flex; min-height: 56px; align-items: center; gap: 12px; padding: 6px 14px 12px 6px; }
+.loading-skeleton-tile { width: 36px; height: 36px; flex: none; border-radius: 12px; }
+.loading-skeleton-heading { display: flex; flex-direction: column; gap: 7px; }
+.loading-skeleton-title { width: 140px; height: 10px; }
+.loading-skeleton-subtitle { width: 96px; height: 8px; }
+/* The stat card's geometry, line for line (stat-card.css): label 18 px, value row 38 px, chip 22 px, 10 px apart. */
+.loading-skeleton-card { display: flex; min-height: 112px; flex-direction: column; gap: 10px; padding: 16px; border-radius: var(--radius-panel); background: var(--card-inset); }
+.loading-skeleton-card-label { width: 46%; height: 8px; margin: 5px 0; }
+.loading-skeleton-card-row { display: flex; min-height: 38px; align-items: center; }
+.loading-skeleton-card-value { width: 52%; height: 26px; border-radius: 8px; }
+.loading-skeleton-card-chip { width: 64px; height: 22px; }

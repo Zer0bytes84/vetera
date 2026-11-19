@@ -1,0 +1,46 @@
+{
+ "light": {
+  "decalageCumule": 0.01,
+  "rangeeVisibleDes": 2208,
+  "valeursFinales": [
+   "31 500 DA0012345678900123456789 001234567890012345678900123456789 DA",
+   "500123456789",
+   "0 DA00123456789 DA",
+   "100123456789"
+  ],
+  "valeursFaussesAffichees": "2208–3462 ms (61 images)",
+  "exempleDeValeursFausses": [
+   "0 DA00123456789 DA",
+   "000123456789",
+   "0 DA00123456789 DA",
+   "000123456789"
+  ],
+  "squeletteAffiche": "jamais",
+  "hauteurs": [
+   264
+  ],
+  "erreurs": []
+ },
+ "dark": {
+  "decalageCumule": 0.01,
+  "rangeeVisibleDes": 2172,
+  "valeursFinales": [
+   "31 500 DA0012345678900123456789 001234567890012345678900123456789 DA",
+   "500123456789",
+   "0 DA00123456789 DA",
+   "100123456789"
+  ],
+  "valeursFaussesAffichees": "2172–3410 ms (65 images)",
+  "exempleDeValeursFausses": [
+   "0 DA00123456789 DA",
+   "000123456789",
+   "0 DA00123456789 DA",
+   "000123456789"
+  ],
+  "squeletteAffiche": "jamais",
+  "hauteurs": [
+   262
+  ],
+  "erreurs": []
+ }
+}

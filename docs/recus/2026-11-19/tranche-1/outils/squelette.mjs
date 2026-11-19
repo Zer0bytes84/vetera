@@ -1,0 +1,21 @@
+import { launch, open, boot } from "./banc.mjs";
+const browser = await launch();
+const page = await open(browser, { width: 1440, height: 900, scale: 2 });
+// A slow read on purpose: the browser path copies each table with structuredClone; 60 ms each while armed.
+await page.addInitScript(() => { const clone = window.structuredClone; window.__slow = false; window.structuredClone = (v) => { if (window.__slow) { const end = performance.now() + 60; while (performance.now() < end) {} } return clone(v); }; });
+await boot(page, process.argv[2]);
+await page.getByRole("button", { name: /Ouvrir l'Assistant IA/ }).click(); await page.waitForTimeout(1200);
+await page.getByRole("radio", { name: /Données/ }).click(); await page.waitForTimeout(500);
+const cdp = await page.context().newCDPSession(page);
+await page.locator("[data-clinic-answers] textarea").first().fill("Recettes du mois dernier");
+await page.evaluate(() => { window.__slow = true; });
+await page.keyboard.press("Enter");
+const seen = await page.waitForSelector('[data-clinic-answers] [data-slot="loading-skeleton"][aria-busy="true"]', { timeout: 8000 }).then(() => true).catch(() => false);
+if (seen) await page.locator('[data-clinic-answers] [data-slot="loading-skeleton"]').screenshot({ path: "tranche-apres/squelette-message-light.png" });
+const label = seen ? await page.locator('[data-clinic-answers] [data-slot="loading-skeleton"]').getAttribute("aria-label") : null;
+await page.evaluate(() => { window.__slow = false; });
+await page.waitForTimeout(3000);
+const announced = await page.evaluate(() => document.getElementById("app-announcer")?.textContent ?? null);
+const gone = await page.locator('[data-clinic-answers] [data-slot="loading-skeleton"]').count();
+console.log(JSON.stringify({ squeletteVu: seen, label, annonce: announced, squeletteRestant: gone, erreurs: page.errors }));
+await browser.close();
