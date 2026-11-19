@@ -1105,7 +1105,7 @@ async function replaceInvoiceDraftLines(
   for (const [sortOrder, line] of lines.entries()) {
     if (line.id) {
       await database.execute(
-        `UPDATE invoice_lines SET product_id=?,description=?,quantity_milli=?,unit_amount=?,discount_bps=?,tax_bps=?,base_amount=?,discount_amount=?,tax_amount=?,gross_amount=?,sort_order=?,updated_at=? WHERE id=? AND invoice_id=?`,
+        "UPDATE invoice_lines SET product_id=?,description=?,quantity_milli=?,unit_amount=?,discount_bps=?,tax_bps=?,base_amount=?,discount_amount=?,tax_amount=?,gross_amount=?,sort_order=?,updated_at=? WHERE id=? AND invoice_id=?",
         [
           line.productId ?? null,
           line.description,
@@ -1676,10 +1676,10 @@ export async function deleteInvoiceDraft(
         "Seul un brouillon de facture peut être supprimé."
       );
     }
-    await database.execute(`DELETE FROM invoice_lines WHERE invoice_id = ?`, [
+    await database.execute("DELETE FROM invoice_lines WHERE invoice_id = ?", [
       invoiceId,
     ]);
-    await database.execute(`DELETE FROM invoices WHERE id = ?`, [invoiceId]);
+    await database.execute("DELETE FROM invoices WHERE id = ?", [invoiceId]);
     await insertAudit(database, {
       action: "delete",
       actor: input.actor,

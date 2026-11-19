@@ -104,7 +104,7 @@ export function expiryWords(
     return `Périmé depuis le ${date}`;
   }
   if (days === 0) {
-    return `Expire aujourd’hui`;
+    return "Expire aujourd’hui";
   }
   return `Expire le ${date}, dans ${days} jour${days > 1 ? "s" : ""}`;
 }

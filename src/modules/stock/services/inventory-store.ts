@@ -297,7 +297,7 @@ export async function saveCatalogueProductInDatabase(
     }
   } else {
     await db.execute(
-      `UPDATE products SET name=?,category=?,sub_category=?,unit=?,min_stock=?,purchase_price_amount=?,sale_price_amount=?,expiry_date=?,stock_tracked=?,archived_at=?,updated_at=? WHERE id=?`,
+      "UPDATE products SET name=?,category=?,sub_category=?,unit=?,min_stock=?,purchase_price_amount=?,sale_price_amount=?,expiry_date=?,stock_tracked=?,archived_at=?,updated_at=? WHERE id=?",
       [
         name,
         category,
