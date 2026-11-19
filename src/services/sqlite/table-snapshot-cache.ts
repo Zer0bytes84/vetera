@@ -17,7 +17,7 @@ interface Entry<R> {
 }
 
 export class TableSnapshotCache<R extends { id: string }> {
-  private tables = new Map<string, Entry<R>>();
+  private readonly tables = new Map<string, Entry<R>>();
   private nextToken = 0;
   private entry(table: string): Entry<R> {
     let entry = this.tables.get(table);

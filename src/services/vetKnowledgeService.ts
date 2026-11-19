@@ -161,11 +161,11 @@ function objectToSearchableText(obj: unknown): string {
 }
 
 class VetKnowledgeService {
-  private medications: Medication[];
-  private diseases: Disease[];
-  private species: Species[];
-  private emergencies: Emergency[];
-  private referenceData: typeof referenceData;
+  private readonly medications: Medication[];
+  private readonly diseases: Disease[];
+  private readonly species: Species[];
+  private readonly emergencies: Emergency[];
+  private readonly referenceData: typeof referenceData;
 
   constructor() {
     // Merge base medications with extended medications
