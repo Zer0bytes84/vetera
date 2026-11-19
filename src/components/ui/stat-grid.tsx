@@ -115,6 +115,8 @@ export function StatGrid({
           />
         )}
         <div
+          // The band's row of cards: in Clean, its cards sit on the band by the contrast of fills alone.
+          data-slot="stat-grid"
           className={cn(
             "grid gap-1.5",
             layout === "row"
