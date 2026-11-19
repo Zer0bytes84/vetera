@@ -1,0 +1,19 @@
+{
+  "version": "5.1.0",
+  "notes": "bAItari 5.1.0",
+  "pub_date": "2026-11-18T17:25:24Z",
+  "platforms": {
+    "darwin-aarch64": {
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVSR1ZxV1FXZ2dPV2ovb2ZIYU1aV2wzcXU0ZkYwa29hWnhwVzNjODlJbTFSQ0VrbkdzMXZrR292WDNLTDl0cnR1VU1nMHhNbTFGSkF2YUVJZk9ib0lIOVNkREVubVA0andFPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzk1MDIyNjc4CWZpbGU6QmFpdGFyaS5hcHAudGFyLmd6Ck9wOTdpemdVd1R4K3dGU2J4SkRobGJBR0wwazVNYm5ndnJxQlRuMzhrNFN4WEJ4VVl6cGUvZTF1YzVnMm1Ua2s1RU1MWmFyU0syemw2WXZOUmRDZ0JRPT0K",
+      "url": "https://github.com/Zer0bytes84/vetera/releases/download/v5.1.0/Baitari.app.tar.gz"
+    },
+    "windows-x86_64": {
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVSR1ZxV1FXZ2dPV2laYjJrSmd0WDhNNGdtby9yNEJlNStmVnpaNnNpQWpmRVQ5NDlJV0lDbTVuYkNFNDBkZDc3N1pOOU1OYVI5WSsxRDExd1Q1NjZsaTN1d2pxYlVHSlFFPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzk1MDIxOTI1CWZpbGU6QmFpdGFyaV81LjEuMF94NjQtc2V0dXAuZXhlClFNUW9kK3NJMitZZythdEtwZHRMRU1lN0NIZURhNG1ReXY5OE45d05MTkZFTWMwTlNvOWx0VTV1QXBHdXVqbmpySlZ0VHVMVlBIaDFJbWJxdUtUYkJ3PT0K",
+      "url": "https://github.com/Zer0bytes84/vetera/releases/download/v5.1.0/Baitari_5.1.0_x64-setup.exe"
+    },
+    "linux-x86_64": {
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVSR1ZxV1FXZ2dPV3BMWlhtSzFMeXBCeFgyd2NXbllBUWNXYVcxK2RFNmk2RGg0aWFJSUN4WkViN3ZZVWJGQmdsNmJCWDFKdFd1UnQ3UVRzRzB6QWFwZzBjWnB2T0NJdEFJPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzk1MDIxODMxCWZpbGU6QmFpdGFyaV81LjEuMF9hbWQ2NC5BcHBJbWFnZQpsN0l4SVNlSGZnOXZlVlFwTkxyeSthRWlPQms4bjhzVktVZzJuQVlXeVFNLzQvY0lveStZQ25LWGpETS8xbitIbEUwMTBTeEdCcnVsUm5ETmVWd3VCdz09Cg==",
+      "url": "https://github.com/Zer0bytes84/vetera/releases/download/v5.1.0/Baitari_5.1.0_amd64.AppImage"
+    }
+  }
+}
