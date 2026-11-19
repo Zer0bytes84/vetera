@@ -1,0 +1,126 @@
+{
+ "light": [
+  {
+   "etape": "onglet ouvert",
+   "fenetre": 900,
+   "panneau": {
+    "top": 0,
+    "bottom": 900,
+    "height": 900
+   },
+   "entete": {
+    "top": 0,
+    "bottom": 68,
+    "height": 68
+   },
+   "enteteVisible": true,
+   "boutonFermerVisible": true,
+   "conteneursDefiles": [],
+   "degrade": "aucun",
+   "ombre": "none",
+   "bordure": "0px"
+  },
+  {
+   "etape": "après « recettes du mois dernier »",
+   "fenetre": 900,
+   "panneau": {
+    "top": 0,
+    "bottom": 900,
+    "height": 900
+   },
+   "entete": {
+    "top": 0,
+    "bottom": 68,
+    "height": 68
+   },
+   "enteteVisible": true,
+   "boutonFermerVisible": true,
+   "conteneursDefiles": [],
+   "degrade": "aucun",
+   "ombre": "none",
+   "bordure": "0px"
+  },
+  {
+   "etape": "après une 2e question",
+   "fenetre": 900,
+   "panneau": {
+    "top": 0,
+    "bottom": 900,
+    "height": 900
+   },
+   "entete": {
+    "top": 0,
+    "bottom": 68,
+    "height": 68
+   },
+   "enteteVisible": true,
+   "boutonFermerVisible": true,
+   "conteneursDefiles": [],
+   "degrade": "aucun",
+   "ombre": "none",
+   "bordure": "0px"
+  }
+ ],
+ "dark": [
+  {
+   "etape": "onglet ouvert",
+   "fenetre": 900,
+   "panneau": {
+    "top": 0,
+    "bottom": 900,
+    "height": 900
+   },
+   "entete": {
+    "top": 0,
+    "bottom": 68,
+    "height": 68
+   },
+   "enteteVisible": true,
+   "boutonFermerVisible": true,
+   "conteneursDefiles": [],
+   "degrade": "aucun",
+   "ombre": "none",
+   "bordure": "0px"
+  },
+  {
+   "etape": "après « recettes du mois dernier »",
+   "fenetre": 900,
+   "panneau": {
+    "top": 0,
+    "bottom": 900,
+    "height": 900
+   },
+   "entete": {
+    "top": 0,
+    "bottom": 68,
+    "height": 68
+   },
+   "enteteVisible": true,
+   "boutonFermerVisible": true,
+   "conteneursDefiles": [],
+   "degrade": "aucun",
+   "ombre": "none",
+   "bordure": "0px"
+  },
+  {
+   "etape": "après une 2e question",
+   "fenetre": 900,
+   "panneau": {
+    "top": 0,
+    "bottom": 900,
+    "height": 900
+   },
+   "entete": {
+    "top": 0,
+    "bottom": 68,
+    "height": 68
+   },
+   "enteteVisible": true,
+   "boutonFermerVisible": true,
+   "conteneursDefiles": [],
+   "degrade": "aucun",
+   "ombre": "none",
+   "bordure": "0px"
+  }
+ ]
+}

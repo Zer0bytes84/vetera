@@ -4,7 +4,10 @@
  * Each answer reads, in order: the steps taken (what was understood, what was read), one sentence, the table the figures come
  * from, « Ce que j'ai lu » (table, rows read and kept, filter, time) and, when a write is suggested, a card the vet validates.
  * Nothing streams: the answer is computed in a few milliseconds and appears whole. No model takes part, so none is named.
- * The tab only reads. The one write goes through `saveProposal`, from the card's « Valider », and nowhere else.
+ * The tab only reads, and only through the read port carried over from the agent harness (clinic-reads.ts): each
+ * question reads every table it may answer from in one snapshot, SELECT statements only, counted, with SQLite's own
+ * count of changes taken before and after (it must not move). The receipt is shown under the answer.
+ * The one write goes through `saveProposal`, from the card's « Valider », and nowhere else.
  */
 
 import { ArrowUp, Database, RotateCcw } from "lucide-react";
@@ -21,16 +24,16 @@ import { ToolCallBlock } from "@/components/ui/tool-call-block";
 import { UserMessage } from "@/components/ui/user-message";
 import { useSQLite } from "@/hooks/useSQLite";
 import { guard } from "@/lib/guard";
-import { useDashboardFinancials } from "@/modules/dashboard/hooks/use-dashboard-financials";
 import { parseDashboardDate } from "@/modules/dashboard/v2/model";
-import type { Appointment, Owner, Patient, Product, Task, Transaction, Vaccination } from "@/types/db";
+import type { Task } from "@/types/db";
 import { formatDinars, formatNumber } from "@/utils/display-format";
 import { answerQuestion, STARTER_QUESTIONS } from "./answer";
+import { readClinicData, type ReadReceipt } from "./clinic-reads";
 import { MAX_QUESTION_LENGTH } from "./language";
 import { saveProposal } from "./save-proposal";
 import type { Answer, AnswerColumn, CellKind, Proposal } from "./types";
 
-export type Turn = { id: string; question: string; at: string; durationMs: number; answer: Answer };
+export type Turn = { id: string; question: string; at: string; durationMs: number; answer: Answer; receipt?: ReadReceipt; tasksRead?: Task[] };
 type CardState = { status: ConfirmationStatus | "dismissed"; error?: string; reference?: string; doneAt?: string };
 
 /**
@@ -68,59 +71,70 @@ type Props = {
 };
 
 export function ClinicAnswers({ patientId, renderAvatar }: Props) {
-  const patients = useSQLite<Patient>("patients");
-  const owners = useSQLite<Owner>("owners");
-  const appointments = useSQLite<Appointment>("appointments");
+  // The tasks store serves only the card's write (and its check for tasks already open); answers never read from it.
   const tasks = useSQLite<Task>("tasks");
-  const transactions = useSQLite<Transaction>("transactions");
-  const vaccinations = useSQLite<Vaccination>("vaccinations");
-  const products = useSQLite<Product>("products");
-  // The invoices serve only the dashboard's exclusion of test records: both screens then count the same lines.
-  const financials = useDashboardFinancials();
-
-  const stores = [patients, owners, appointments, tasks, transactions, vaccinations, products];
-  const loading = stores.some((store) => store.loading) || financials.loading;
+  const [loading, setLoading] = useState(false);
   // A table that could not be read is never answered as if it were empty.
-  const readError = stores.find((store) => store.error)?.error ?? financials.error ?? null;
-  const blocked = loading || Boolean(readError);
+  const [readError, setReadError] = useState<string | null>(null);
+  const [lastQuestion, setLastQuestion] = useState<string | null>(null);
+  const blocked = loading;
 
   const [turns, setTurns] = useState<Turn[]>([]);
   const [draft, setDraft] = useState("");
   const [cards, setCards] = useState<Record<string, CardState>>({});
   const scroller = useRef<HTMLDivElement>(null);
   const saving = useRef(new Set<string>());
+  // A question already being read: a second Entrée before the answer is ignored.
+  const asking = useRef(false);
 
   useEffect(() => {
-    // The new question goes to the top of the view: the answer is read from its first line, not from its last.
-    const questions = scroller.current?.querySelectorAll("[data-question]");
-    questions?.[questions.length - 1]?.scrollIntoView({ block: "start" });
+    // The new question goes to the top of the view: the answer is read from its first line, not from its last. Only the
+    // thread scrolls: `scrollIntoView` also scrolled the panel's own containers, which pushed the panel's header out of
+    // the window (measured on 19 November 2026: -121 px after one question).
+    const list = scroller.current;
+    const questions = list?.querySelectorAll<HTMLElement>("[data-question]");
+    const last = questions?.[questions.length - 1];
+    if (list && last) list.scrollTo({ top: list.scrollTop + last.getBoundingClientRect().top - list.getBoundingClientRect().top });
   }, [turns.length]);
 
-  const ask = (text: string) => {
+  const ask = async (text: string) => {
     const question = text.trim().slice(0, MAX_QUESTION_LENGTH);
-    if (!question || blocked) return;
+    if (!question || blocked || asking.current) return;
+    asking.current = true;
     const started = performance.now();
     const now = new Date();
-    const answer = answerQuestion(
-      question,
-      {
-        patients: patients.data, owners: owners.data, appointments: appointments.data, tasks: tasks.data,
-        transactions: transactions.data, vaccinations: vaccinations.data, products: products.data, invoices: financials.invoices,
+    setLoading(true);
+    setLastQuestion(question);
+    await guard(async () => {
+      // One guarded snapshot per question: the answer is computed on what was read for it, and nothing else.
+      const { data, receipt } = await readClinicData({ now });
+      const answer = answerQuestion(question, data, { now, patientId });
+      const durationMs = Math.max(1, Math.round(performance.now() - started));
+      setReadError(null);
+      setTurns((current) => [...current, { id: `${now.getTime()}-${current.length}`, question, at: now.toISOString(), durationMs, answer, receipt, tasksRead: data.tasks }]);
+      setDraft("");
+    }, {
+      recover: (error) => {
+        setReadError(error instanceof Error ? error.message : "Lecture impossible");
       },
-      { now, patientId },
-    );
-    const durationMs = Math.max(1, Math.round(performance.now() - started));
-    setTurns((current) => [...current, { id: `${now.getTime()}-${current.length}`, question, at: now.toISOString(), durationMs, answer }]);
-    setDraft("");
+      cleanup: () => {
+        asking.current = false;
+        setLoading(false);
+        // The composer was disabled during the read: the keyboard goes back to it for the next question.
+        requestAnimationFrame(() => document.querySelector<HTMLTextAreaElement>("[data-clinic-answers] textarea")?.focus());
+      },
+    });
   };
 
   /** The only write of this tab, and only from the card's « Valider ». */
-  const confirm = async (turnId: string, proposal: Proposal) => {
+  const confirm = async (turnId: string, proposal: Proposal, tasksRead: Task[] = []) => {
     if (saving.current.has(turnId)) return;
     saving.current.add(turnId);
     setCards((current) => ({ ...current, [turnId]: { status: "confirming" } }));
     await guard(async () => {
-      const { created, expected } = await saveProposal(proposal, tasks.data, tasks.add);
+      // Tasks already open, as the store holds them and as the answer read them: none is created twice.
+      const known = [...tasks.data, ...tasksRead.filter((read) => !tasks.data.some((held) => held.id === read.id))];
+      const { created, expected } = await saveProposal(proposal, known, tasks.add);
       if (created < expected) {
         setCards((current) => ({
           ...current,
@@ -167,7 +181,7 @@ export function ClinicAnswers({ patientId, renderAvatar }: Props) {
           card={cards[turn.id]}
           onAsk={ask}
           onCancel={() => setCards((current) => ({ ...current, [turn.id]: { status: "dismissed" } }))}
-          onConfirm={(proposal) => void confirm(turn.id, proposal)}
+          onConfirm={(proposal) => void confirm(turn.id, proposal, turn.tasksRead)}
           turn={turn}
         />
       ),
@@ -211,17 +225,11 @@ export function ClinicAnswers({ patientId, renderAvatar }: Props) {
       </div>
 
       {readError ? (
-        <div role="alert" className="shrink-0 rounded-xl border border-negative/30 bg-negative/10 p-3 t-13 text-foreground">
-          Les données du cabinet n’ont pas pu être lues. Je ne réponds pas tant que la lecture échoue, pour ne pas afficher de chiffres faux.
+        <div role="alert" className="shrink-0 rounded-[var(--radius-panel)] bg-negative/10 p-3 t-13 text-foreground">
+          Les données du cabinet n’ont pas pu être lues : {readError} Je ne réponds pas tant que la lecture échoue, pour ne pas afficher de chiffres faux.
           <div className="mt-2">
-            <Button
-              icon={RotateCcw}
-              onClick={() => {
-                for (const store of stores) void store.refresh();
-                void financials.refresh();
-              }}
-            >
-              Relire les données
+            <Button icon={RotateCcw} onClick={() => lastQuestion && void ask(lastQuestion)}>
+              Relire et répondre
             </Button>
           </div>
         </div>
@@ -319,15 +327,31 @@ export function AnswerView({
       ) : null}
       <SourceList
         heading="Ce que j’ai lu"
-        sources={answer.sources.map((from) => ({
-          id: `${turn.id}-${from.id}`,
-          group: "Données du cabinet, sur cet ordinateur",
-          icon: Database,
-          title: from.label,
-          tag: `${formatNumber(from.kept)} sur ${formatNumber(from.read)}`,
-          date: clock(turn.at),
-          passage: from.filter,
-        }))}
+        sources={[
+          ...answer.sources.map((from) => ({
+            id: `${turn.id}-${from.id}`,
+            group: "Données du cabinet, sur cet ordinateur",
+            icon: Database,
+            title: from.label,
+            tag: `${formatNumber(from.kept)} sur ${formatNumber(from.read)}`,
+            date: clock(turn.at),
+            passage: from.filter,
+          })),
+          // How it was read: the port, the statements that went through it, and the changes counted by SQLite (always 0).
+          ...(turn.receipt
+            ? [{
+                id: `${turn.id}-port`,
+                group: "Lecture seule, vérifiée",
+                icon: Database,
+                title: turn.receipt.via === "sqlite" ? "Porte de lecture du harnais" : "Copie du navigateur",
+                tag: turn.receipt.via === "sqlite" ? `${plural(turn.receipt.statements, "requête", "requêtes")} · ${plural(turn.receipt.changes, "écriture", "écritures")}` : "aucune écriture possible",
+                date: clock(turn.receipt.at),
+                passage: turn.receipt.via === "sqlite"
+                  ? `Un seul instantané, instructions SELECT seulement ; modifications comptées par SQLite avant et après : ${formatNumber(turn.receipt.changes)}.`
+                  : "Dans le navigateur, les tables sont des copies : rien de ce qui écrit n’est atteint.",
+              }]
+            : []),
+        ]}
       />
       {proposal && card?.status !== "dismissed" ? <ProposalCard card={card} onCancel={onCancel} onConfirm={() => onConfirm(proposal)} proposal={proposal} /> : null}
     </div>

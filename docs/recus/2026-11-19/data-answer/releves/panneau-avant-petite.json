@@ -1,0 +1,134 @@
+{
+ "light": [
+  {
+   "etape": "onglet ouvert",
+   "fenetre": 640,
+   "panneau": {
+    "top": 0,
+    "bottom": 640,
+    "height": 640
+   },
+   "entete": {
+    "top": 0,
+    "bottom": 68,
+    "height": 68
+   },
+   "enteteVisible": true,
+   "boutonFermerVisible": true,
+   "conteneursDefiles": [],
+   "degrade": "radial-gradient(58% 90% at 10% 0%, oklab(0.562905 -0.0462419",
+   "ombre": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0",
+   "bordure": "1px"
+  },
+  {
+   "etape": "après « recettes du mois dernier »",
+   "fenetre": 640,
+   "panneau": {
+    "top": 0,
+    "bottom": 640,
+    "height": 640
+   },
+   "entete": {
+    "top": -121,
+    "bottom": -53,
+    "height": 68
+   },
+   "enteteVisible": false,
+   "boutonFermerVisible": false,
+   "conteneursDefiles": [
+    "div.relative.flex.min-h-0 scrollTop=121"
+   ],
+   "degrade": "radial-gradient(58% 90% at 10% 0%, oklab(0.562905 -0.0462419",
+   "ombre": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0",
+   "bordure": "1px"
+  },
+  {
+   "etape": "après une 2e question",
+   "fenetre": 640,
+   "panneau": {
+    "top": 0,
+    "bottom": 640,
+    "height": 640
+   },
+   "entete": {
+    "top": -121,
+    "bottom": -53,
+    "height": 68
+   },
+   "enteteVisible": false,
+   "boutonFermerVisible": false,
+   "conteneursDefiles": [
+    "div.relative.flex.min-h-0 scrollTop=121"
+   ],
+   "degrade": "radial-gradient(58% 90% at 10% 0%, oklab(0.562905 -0.0462419",
+   "ombre": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0",
+   "bordure": "1px"
+  }
+ ],
+ "dark": [
+  {
+   "etape": "onglet ouvert",
+   "fenetre": 640,
+   "panneau": {
+    "top": 0,
+    "bottom": 640,
+    "height": 640
+   },
+   "entete": {
+    "top": 0,
+    "bottom": 68,
+    "height": 68
+   },
+   "enteteVisible": true,
+   "boutonFermerVisible": true,
+   "conteneursDefiles": [],
+   "degrade": "radial-gradient(58% 90% at 10% 0%, oklab(0.624235 -0.0514993",
+   "ombre": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0",
+   "bordure": "1px"
+  },
+  {
+   "etape": "après « recettes du mois dernier »",
+   "fenetre": 640,
+   "panneau": {
+    "top": 0,
+    "bottom": 640,
+    "height": 640
+   },
+   "entete": {
+    "top": -121,
+    "bottom": -53,
+    "height": 68
+   },
+   "enteteVisible": false,
+   "boutonFermerVisible": false,
+   "conteneursDefiles": [
+    "div.relative.flex.min-h-0 scrollTop=121"
+   ],
+   "degrade": "radial-gradient(58% 90% at 10% 0%, oklab(0.624235 -0.0514993",
+   "ombre": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0",
+   "bordure": "1px"
+  },
+  {
+   "etape": "après une 2e question",
+   "fenetre": 640,
+   "panneau": {
+    "top": 0,
+    "bottom": 640,
+    "height": 640
+   },
+   "entete": {
+    "top": -121,
+    "bottom": -53,
+    "height": 68
+   },
+   "enteteVisible": false,
+   "boutonFermerVisible": false,
+   "conteneursDefiles": [
+    "div.relative.flex.min-h-0 scrollTop=121"
+   ],
+   "degrade": "radial-gradient(58% 90% at 10% 0%, oklab(0.624235 -0.0514993",
+   "ombre": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0",
+   "bordure": "1px"
+  }
+ ]
+}

@@ -124,8 +124,9 @@ export function ConsultationAssistantPanel({
         className={cn(
           "fixed bottom-0 right-0 z-50 flex w-full flex-col",
           "sm:max-w-[var(--assistant-width)]",
-          "border-l border-border bg-[var(--card-band)] rounded-tl-[20px]",
-          "shadow-[var(--clean-slideout-shadow,-16px_0_48px_-12px_rgba(0,0,0,0.18))]",
+          // A grey band anchored to the window's right edge, like the app's bands: no line, no shadow, its corner
+          // concentric with the panels it holds (16 + the 6 px frame).
+          "bg-[var(--card-band)] rounded-tl-[calc(var(--radius-panel)+var(--card-frame))]",
           "transition-transform motion-reduce:transition-none",
           visible && !collapsed
             ? "translate-x-0 duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]"
@@ -135,7 +136,8 @@ export function ConsultationAssistantPanel({
           if (!open && event.target === event.currentTarget && event.propertyName === "transform") { setRendered(false); onExited?.(); }
         }}
       >
-        <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden">
+        {/* `clip`, not `hidden`: a hidden box can still be scrolled by code, and a scrolled panel loses its header. */}
+        <div className="assistant-panel-body relative flex min-h-0 flex-1 flex-col">
           <PanelControlsContext.Provider
             value={{
               collapse: () => {

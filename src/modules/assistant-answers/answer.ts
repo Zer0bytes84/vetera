@@ -19,6 +19,7 @@ import type { Owner, Patient, Task, Transaction } from "@/types/db";
 import { formatDinars, formatNumber } from "@/utils/display-format";
 import { guardReason, has, hasUnsupportedPeriod, MAX_QUESTION_LENGTH, normalize } from "./language";
 import { inPeriod, lastThirtyDays, parsePeriod } from "./period";
+import { understood as understoodInFull } from "./vocabulary";
 import type {
   Answer, AnswerRow, AnswerSource, AnswerStep, AskContext, ClinicData, Figure, Period, Proposal, RefusalReason, TaskDraft, Topic,
 } from "./types";
@@ -56,12 +57,18 @@ const TOPIC_NAMES: Record<Topic, string> = {
   patients: "Patients",
 };
 const TOPIC_WORDS: { topic: Exclude<Topic, "patients">; pattern: RegExp }[] = [
-  { topic: "cash", pattern: /\b(recette|recettes|encaisse|encaisses|encaissement|encaissements|chiffre d affaires|revenu|revenus|tresorerie|caisse|depense|depenses|charge|charges|solde|gagne|rentrees)\b/ },
+  // « recette » alone and « gagné » are read below, with the conditions that keep « recette de couscous » and « qui a gagné
+  // le match » out of the cash journal.
+  { topic: "cash", pattern: /\b(recettes|encaisse|encaisses|encaissement|encaissements|chiffre d affaires|revenu|revenus|tresorerie|caisse|depense|depenses|charge|charges|solde|rentrees)\b/ },
   { topic: "appointments", pattern: /\b(rendez vous|rdv|consultation|consultations|agenda|planning|visite|visites|absence|absences|absent|absents|absente|absentes)\b/ },
   { topic: "tasks", pattern: /\b(tache|taches|todo)\b/ },
 ];
 // Looked at only when no other subject is named: « rendez-vous du patient Rex » is about appointments.
 const PATIENT_WORDS = /\b(patient|patients|dossier|dossiers|animal|animaux|chien|chiens|chat|chats)\b/;
+/** « Combien on a gagné », « ce qu'on a gagné ce mois »: earnings; « qui a gagné le match »: not a question for the journal. */
+const EARNINGS = /\b(combien|on a|j ai|avons|a t on|ai je|ce qu on a)\b.*\bgagne\b|\bgagne (?:ce|cette|cet|du|en|hier|aujourd|depuis|la semaine|le mois|l annee)\b/;
+/** The patients' subject counts records. A question that asks to show, find or name one record is a lookup this tab does not do. */
+const RECORD_LOOKUP = /\b(cherche|trouve|ouvre|son nom|de qui)\b|\bdossier (?:de|du|d)\b/;
 const THIS_PATIENT = /\b(ce patient|cet animal|ce dossier|ce chien|ce chat|cette chienne|cette chatte)\b/;
 
 /* ── Reading helpers ──────────────────────────────────────────────────── */
@@ -154,12 +161,28 @@ export function answerQuestion(question: string, raw: ClinicData, context: AskCo
   if (!text) return refuse("empty", REFUSALS.empty);
   const guard = guardReason(clipped, text);
   if (guard) return refuse(guard, REFUSALS[guard]);
+  // The normalized text keeps only Latin letters: another script or an emoji would vanish from it, and the rest of the
+  // question would look understood (« rendez-vous demain مل »). The tab reads French only, and says so.
+  if (/\p{Extended_Pictographic}/u.test(clipped) || [...clipped.normalize("NFKC")].some((char) => /\p{L}/u.test(char) && !/\p{Script=Latin}/u.test(char))) {
+    return refuse("unknown", "Je ne lis que les questions écrites en français, sans symbole : je préfère ne rien répondre que répondre à une partie de la question.");
+  }
 
   const data = dashboardPresentationData({ ...raw, vaccinations: raw.vaccinations ?? [], products: raw.products ?? [], invoices: raw.invoices ?? [] });
   const scope = patientScope(text, data.patients, context);
   // The patient's name is not a subject: « rendez-vous de Chat » must not read « chat » as the patients' subject.
   const bare = scope.names.reduce((rest, name) => rest.replace(new RegExp(`\\b${name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`, "g"), " "), text.replace(THIS_PATIENT, " "));
-  const named = TOPIC_WORDS.filter((entry) => has(bare, entry.pattern)).map((entry) => entry.topic);
+  // « On est chargé(s) » (busy) is not « les charges »: the accent the vet typed tells them apart, the normalized text cannot.
+  const busy = /charg(?:é|ée|és|ées)(?![\p{L}\p{N}])/iu.test(clipped.normalize("NFC"));
+  const subjectText = busy ? bare.replace(/\bcharges?\b/g, " ") : bare;
+  const named: Topic[] = TOPIC_WORDS.filter((entry) => has(subjectText, entry.pattern)).map((entry) => entry.topic);
+  // « Recette » in the singular is the cash journal only with a period (« recette du jour »), never « recette de couscous ».
+  const cashWord = has(subjectText, EARNINGS) || (has(subjectText, /\brecette\b/) && parsePeriod(text, context.now) !== null);
+  if (cashWord && !named.includes("cash")) named.unshift("cash");
+  // « On a gagné combien de patients » counts patients, not takings: two readings, no answer.
+  if (has(subjectText, /\bgagne\b/) && has(subjectText, PATIENT_WORDS) && !named.includes("patients")) named.push("patients");
+  if (busy) {
+    return refuse("unknown", "Je ne lis pas la charge de travail. Je réponds aux recettes et dépenses, aux rendez-vous, aux tâches et aux patients, sur une période que vous nommez.");
+  }
   if (named.length > 1) {
     return refuse(
       "ambiguous",
@@ -167,7 +190,7 @@ export function answerQuestion(question: string, raw: ClinicData, context: AskCo
       named.map((topic) => TOPIC_NAMES[topic]),
     );
   }
-  const topic: Topic | null = named[0] ?? (has(bare, PATIENT_WORDS) ? "patients" : null);
+  const topic: Topic | null = named[0] ?? (has(subjectText, PATIENT_WORDS) && !has(subjectText, RECORD_LOOKUP) ? "patients" : null);
   if (!topic) {
     return refuse(
       "unknown",
@@ -181,6 +204,21 @@ export function answerQuestion(question: string, raw: ClinicData, context: AskCo
     );
   }
   if (scope.missing) return refuse("unknown", "Aucun dossier n’est ouvert : nommez le patient, ou ouvrez son dossier puis reposez la question.");
+  const whole = understoodInFull(text, scope.names, topic);
+  if (!whole.ok) {
+    return refuse(
+      "unknown",
+      whole.reason === "words"
+        ? `Je n’ai pas compris ${whole.words.slice(0, 3).map((word) => `« ${word} »`).join(", ")}${whole.words.length > 3 ? "…" : ""}. Je ne réponds qu’à une question comprise en entier, pour ne pas répondre à une question voisine : recettes ou dépenses, rendez-vous, absences, tâches, patients, sur une période que vous nommez.`
+        : whole.reason === "periods"
+          ? "Votre question nomme plusieurs périodes. Je réponds sur une période à la fois : laquelle voulez-vous ?"
+          : `« ${whole.name} » est à la fois le nom d’un patient et un mot que je lis autrement. Écrivez « le patient ${whole.name} » ou reformulez.`,
+    );
+  }
+  // The patients' answer counts the whole practice: a patient named in the question would be ignored.
+  if (topic === "patients" && scope.ids) {
+    return refuse("unknown", "Je compte les dossiers du cabinet, je n’affiche pas un dossier : ouvrez-le depuis Patients. Pour un patient, je lis ses rendez-vous et ses tâches.");
+  }
 
   const period = parsePeriod(text, context.now);
   const understood = (periodText: string | null): AnswerStep => ({

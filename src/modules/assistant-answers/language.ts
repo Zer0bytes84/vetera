@@ -15,6 +15,9 @@ export const MAX_QUESTION_LENGTH = 300;
 /** Lower case, no accents, words separated by single spaces. « 5mg » stays one word, « mg/kg » keeps its slash. */
 export function normalize(text: string): string {
   return text
+    // Full-width digits and letters (« ２０ mg ») read as plain ones; zero-width characters do not split a word.
+    .normalize("NFKC")
+    .replace(/[\u200b-\u200d\u2060\ufeff]/g, "")
     .normalize("NFD")
     .replace(/[̀-ͯ]/g, "")
     .toLowerCase()
@@ -31,13 +34,22 @@ const DOSE_WORDS =
 /** A number glued to a unit (« 5mg », « 0,2ml »), which the word list above cannot see once the text is normalized. */
 const DOSE_AMOUNT = /\d\s?(?:mg|mcg|ug|ml|cc|ui|g|kg|cp)\b|\b(?:par|\/)\s?(?:kg|kilo)\b/;
 
+/**
+ * Forms the harness's red team (15 November) passed that are a dose whatever surrounds them: a frequency (« 3x/j »,
+ * « toutes les 8 heures »), a computation on the weight, a unit spelled out or split (« milligrammes », « 20 m g »), a
+ * dose fraction, a unit in another script. Anything else a dose question carries (« cachet », « pipette », « combien
+ * d'amoxicilline ») is a word the catalogue does not know: the question is refused as not understood (vocabulary.ts).
+ */
+const DOSE_FORMS =
+  /\b\d+ ?x ?\/? ?(?:j|jour|jours)\b|\btoutes les \d+ ?(?:h|heures?)\b|\bmultipli\w* par (?:le )?poids\b|\b(?:milli|mili|micro)gram\w*|\b\d+ m g\b|\b(?:demi|double) dose\b/;
+
 export const isDoseQuestion = (raw: string, normalized: string) =>
-  has(normalized, DOSE_WORDS) || has(normalized, DOSE_AMOUNT) || /[µμ]g/i.test(raw);
+  has(normalized, DOSE_WORDS) || has(normalized, DOSE_AMOUNT) || has(normalized, DOSE_FORMS) || /[µμ]g|мг|мл|ملغ|جرعة/iu.test(raw);
 
 /* ── Reminders ────────────────────────────────────────────────────────── */
 
 const REMINDER_WORDS =
-  /\b(vaccin|vaccins|vaccination|vaccinations|vaccinal|vaccinale|vaccinaux|rappel|rappels|relance|relances|vermifuge|vermifuges|vermifuger|antiparasitaire|antiparasitaires|rage|booster)\b/;
+  /\b(vaccin|vaccins|vaccination|vaccinations|vaccinal|vaccinale|vaccinaux|rappel|rappels|relance|relances|vermifug\w*|deparasit\w*|antiparasitaire|antiparasitaires|rage|booster)\b/;
 
 export const isReminderQuestion = (normalized: string) => has(normalized, REMINDER_WORDS);
 
@@ -81,6 +93,8 @@ const UNSUPPORTED_PERIOD = new RegExp(
     "\\bdu \\d{1,2}(?:er)?(?: \\w+)? au \\d{1,2}",
     "\\b(?:lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche)\\b",
     "\\b(?:trimestre|semestre|quinzaine|depuis le debut|depuis toujours|depuis le \\d)\\b",
+    // A part of a day: the catalogue reads whole days, and « ce matin » read as the day (or 30 days) is another question.
+    "\\b(?:ce matin|cet apres midi|cet aprem|ce soir|cette nuit|ce midi|a midi|matinee|apres midi)\\b",
   ].join("|"),
 );
 

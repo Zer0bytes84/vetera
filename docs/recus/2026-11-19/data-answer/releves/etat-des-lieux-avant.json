@@ -1,0 +1,4823 @@
+{
+ "jeuG": {
+  "demandes": 374,
+  "parClasse": {
+   "reference": {
+    "refus:unknown": 34
+   },
+   "dossier": {
+    "refus:unknown": 25,
+    "réponse:patients": 9
+   },
+   "agenda": {
+    "refus:unknown": 20,
+    "réponse:appointments": 10,
+    "réponse:cash": 4
+   },
+   "recherche": {
+    "refus:unknown": 26,
+    "réponse:patients": 8
+   },
+   "refus_dose": {
+    "refus:dose": 34
+   },
+   "preparer_rappel": {
+    "refus:reminders": 34
+   },
+   "hors_perimetre": {
+    "refus:reminders": 1,
+    "refus:unknown": 21,
+    "refus:write": 8,
+    "réponse:cash": 4
+   },
+   "rappels": {
+    "refus:reminders": 34
+   },
+   "agenda_patient": {
+    "réponse:appointments": 18,
+    "refus:unknown": 16
+   },
+   "preparer_ordonnance": {
+    "refus:unknown": 34
+   },
+   "protocole": {
+    "refus:unknown": 31,
+    "refus:reminders": 2,
+    "réponse:patients": 1
+   }
+  }
+ },
+ "demandesDeDose": [
+  {
+   "requete": "dose de méloxicam pour un chien de 32 kilos please",
+   "rendu": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "requete": "amoxicilline combien de mg/kg pour Tornade",
+   "rendu": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "requete": "amoxicilline combien de mg/kg pour Dolly",
+   "rendu": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "requete": "combien de ml de prednisolone pour Yuki svp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "requete": "dose de prednisolone pour un chien de 11 kilos",
+   "rendu": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "requete": "dose de tramadol pour un chien de 15 kilos svp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "requete": "calcule la dose de doxycycline pour Safran",
+   "rendu": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "requete": "combien de ml de prednisolone pour Tobby vite",
+   "rendu": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "requete": "combien de ml de tramadol pour Duchesse",
+   "rendu": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "requete": "calcule la dose de métronidazole pour Ulysse svp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "requete": "quelle dose d'amoxicilline pour Gandalf 27 kg vite",
+   "rendu": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "requete": "calcule la dose de métronidazole pour Tobby stp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "requete": "posologie méloxicam chat de 3 kg",
+   "rendu": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "requete": "dose de tramadol pour un chien de 9 kilos stp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "requete": "posologie enrofloxacine chat de 4 kg stp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "requete": "amoxicilline combien de mg/kg pour Odin stp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "requete": "amoxicilline combien de mg/kg pour Pomme",
+   "rendu": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "requete": "quelle dose d'amoxicilline pour Zaza 39 kg",
+   "rendu": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "requete": "gabapentine combien de mg/kg pour Safran",
+   "rendu": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "requete": "amoxicilline combien de mg/kg pour Sasha stp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "requete": "amoxicilline combien de mg/kg pour Sirocco",
+   "rendu": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "requete": "calcule la dose de métronidazole pour Gingger",
+   "rendu": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "requete": "combien de ml de prednisolone pour Maya",
+   "rendu": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "requete": "dose de tramadol pour un chien de 29 kilos",
+   "rendu": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "requete": "posologie enrofloxacine chat de 4 kg",
+   "rendu": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "requete": "quelle dose d'ivermectine pour Kenzo 40 kg",
+   "rendu": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "requete": "posologie méloxicam chat de 2 kg",
+   "rendu": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "requete": "dose de méloxicam pour un chien de 21 kilos",
+   "rendu": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "requete": "dose de prednisolone pour un chien de 7 kilos",
+   "rendu": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "requete": "posologie méloxicam chat de 4 kg",
+   "rendu": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "requete": "combien de ml de tramadol pour Thhor",
+   "rendu": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "requete": "posologie enrofloxacine chat de 2 kg",
+   "rendu": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "requete": "combien de ml de tramadol pour Dollly",
+   "rendu": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "requete": "amoxicilline combien de mg/kg pour Nemo stp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  }
+ ],
+ "jeuGDetail": [
+  {
+   "classe": "reference",
+   "requete": "effets secondaires du phénobarbital",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "dossier",
+   "requete": "résumé de Fannfan vite",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "agenda",
+   "requete": "chkoun 3andna el 3chiya",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "recherche",
+   "requete": "chkoun Vanille",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "refus_dose",
+   "requete": "dose de méloxicam pour un chien de 32 kilos please",
+   "rendu": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "classe": "dossier",
+   "requete": "Moka il a quoi comme antécédents please",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "preparer_rappel",
+   "requete": "prépare un rappel vaccin pour Vanille dans 6 mois",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "refus_dose",
+   "requete": "amoxicilline combien de mg/kg pour Tornade",
+   "rendu": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "classe": "hors_perimetre",
+   "requete": "efface les rappels",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "refus_dose",
+   "requete": "amoxicilline combien de mg/kg pour Dolly",
+   "rendu": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "classe": "rappels",
+   "requete": "les rappels de la semaine",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "agenda",
+   "requete": "chkoun 3andna lyoum stp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "agenda_patient",
+   "requete": "est-ce que Baloo a un rendez-vous cette semaine stp",
+   "rendu": {
+    "kind": "réponse",
+    "sujet": "appointments",
+    "chiffres": 0,
+    "tableau": null,
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "classe": "reference",
+   "requete": "symptômes de la leptospirose",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "reference",
+   "requete": "mécanisme d'action de la gabapentine vite",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "dossier",
+   "requete": "résumé de Mousse stp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "refus_dose",
+   "requete": "combien de ml de prednisolone pour Yuki svp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "classe": "reference",
+   "requete": "symptômes de la maladie de Carré",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "agenda_patient",
+   "requete": "historique des rdv de Mmosa stp",
+   "rendu": {
+    "kind": "réponse",
+    "sujet": "appointments",
+    "chiffres": 4,
+    "tableau": {
+     "colonnes": [
+      "Date",
+      "Patient",
+      "Propriétaire",
+      "Type",
+      "État"
+     ],
+     "lignes": 5
+    },
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "classe": "preparer_ordonnance",
+   "requete": "prepare ordonnance Tom cortico svp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "preparer_ordonnance",
+   "requete": "Tango : ordonnance amoxicilline ?",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "agenda_patient",
+   "requete": "Moka est prévu quel jour",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "refus_dose",
+   "requete": "dose de prednisolone pour un chien de 11 kilos",
+   "rendu": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "classe": "hors_perimetre",
+   "requete": "salut docteur stp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "rappels",
+   "requete": "qui est en retard de vaccin svp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "agenda",
+   "requete": "qui on voit mercredi en consultation",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "protocole",
+   "requete": "protocol otite stp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "hors_perimetre",
+   "requete": "envoie un sms à tous les clients",
+   "rendu": {
+    "kind": "refus",
+    "motif": "write"
+   }
+  },
+  {
+   "classe": "dossier",
+   "requete": "Vador il a quoi comme antécédents",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "dossier",
+   "requete": "résumé de Cooper stp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "rappels",
+   "requete": "vaccins à faire pour Tonnerre please",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "refus_dose",
+   "requete": "dose de tramadol pour un chien de 15 kilos svp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "classe": "protocole",
+   "requete": "step by step parvo",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "reference",
+   "requete": "leishmaniose transmission please",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "rappels",
+   "requete": "vaccins à faire pour Safran",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "dossier",
+   "requete": "dossier medical Herculle vite",
+   "rendu": {
+    "kind": "réponse",
+    "sujet": "patients",
+    "chiffres": 2,
+    "tableau": {
+     "colonnes": [
+      "Espèce",
+      "Dossiers"
+     ],
+     "lignes": 4
+    },
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "classe": "protocole",
+   "requete": "le protocole otite svp svp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "hors_perimetre",
+   "requete": "change mon mot de passe stp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "write"
+   }
+  },
+  {
+   "classe": "recherche",
+   "requete": "chkoun Gipsy stp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "dossier",
+   "requete": "qu'est-ce qu'on a sur Baloo svp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "recherche",
+   "requete": "trouve Chipie chez Rabia",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "rappels",
+   "requete": "check rappels cette semaine",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "refus_dose",
+   "requete": "calcule la dose de doxycycline pour Safran",
+   "rendu": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "classe": "preparer_ordonnance",
+   "requete": "Boule : ordonnance enrofloxacine",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "preparer_rappel",
+   "requete": "Kenzo : rappel vaccin dans 10 mois",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "reference",
+   "requete": "symptômes de la piroplasmose stp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "dossier",
+   "requete": "ouvre la fiche de Thhor",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "recherche",
+   "requete": "le chat de Zouaoui c'est quoi son nom",
+   "rendu": {
+    "kind": "réponse",
+    "sujet": "patients",
+    "chiffres": 2,
+    "tableau": {
+     "colonnes": [
+      "Espèce",
+      "Dossiers"
+     ],
+     "lignes": 4
+    },
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "classe": "agenda",
+   "requete": "on est chargés vendredi stp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "reference",
+   "requete": "leishmaniose transmission",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "protocole",
+   "requete": "quel protocole pour la gastro please",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "recherche",
+   "requete": "numéro de Tebbal stp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "rappels",
+   "requete": "check rappels ce mois please",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "agenda",
+   "requete": "agenda vendredi",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "reference",
+   "requete": "c'est quoi la PIF",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "preparer_rappel",
+   "requete": "rappel vermifuge pour Bruno next year svp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "protocole",
+   "requete": "dis protocol gastro",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "preparer_rappel",
+   "requete": "Ulysse : rappel vaccin dans 7 mois",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "hors_perimetre",
+   "requete": "pizza ou sushi ce soir",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "protocole",
+   "requete": "protocol otite",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "recherche",
+   "requete": "trouve Loki chez Haouchine",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "agenda_patient",
+   "requete": "prochain passage de Spiike ?",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "recherche",
+   "requete": "dis chkoun Balto",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "rappels",
+   "requete": "rappel Kaiser ? stp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "protocole",
+   "requete": "rappelle-moi le protocole de sevrage svp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "preparer_rappel",
+   "requete": "rappel vaccin Lokki dans un an",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "preparer_ordonnance",
+   "requete": "fais l'ordonnance de Iris, clindamycine 2 fois par jour",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "recherche",
+   "requete": "tu as Vador dans la base stp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "preparer_ordonnance",
+   "requete": "Salem : ordonnance amoxicilline",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "agenda",
+   "requete": "qui on voit ce matin en consultation",
+   "rendu": {
+    "kind": "réponse",
+    "sujet": "appointments",
+    "chiffres": 4,
+    "tableau": {
+     "colonnes": [
+      "Date",
+      "Patient",
+      "Propriétaire",
+      "Type",
+      "État"
+     ],
+     "lignes": 5
+    },
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "classe": "agenda",
+   "requete": "rdv mardi ?",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "agenda",
+   "requete": "qui on voit mardi en consultation",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "reference",
+   "requete": "dis mécanisme d'action de la gabapentine",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "recherche",
+   "requete": "trouve Mooka chez Chebbah",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "hors_perimetre",
+   "requete": "merci stp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "refus_dose",
+   "requete": "combien de ml de prednisolone pour Tobby vite",
+   "rendu": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "classe": "rappels",
+   "requete": "quels rappels pour Nuaeg",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "recherche",
+   "requete": "cherche le chien de Sahraoui vite",
+   "rendu": {
+    "kind": "réponse",
+    "sujet": "patients",
+    "chiffres": 2,
+    "tableau": {
+     "colonnes": [
+      "Espèce",
+      "Dossiers"
+     ],
+     "lignes": 4
+    },
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "classe": "dossier",
+   "requete": "fiche Mitsou stp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "reference",
+   "requete": "explique-moi la dysplasie stp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "agenda_patient",
+   "requete": "historique des rdv de Tom stp",
+   "rendu": {
+    "kind": "réponse",
+    "sujet": "appointments",
+    "chiffres": 4,
+    "tableau": {
+     "colonnes": [
+      "Date",
+      "Patient",
+      "Propriétaire",
+      "Type",
+      "État"
+     ],
+     "lignes": 5
+    },
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "classe": "refus_dose",
+   "requete": "combien de ml de tramadol pour Duchesse",
+   "rendu": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "classe": "preparer_rappel",
+   "requete": "rappel vaccin pour Bato next year",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "preparer_rappel",
+   "requete": "crée un rappel détartrage pour Vanille please",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "hors_perimetre",
+   "requete": "exporte toute la base",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "agenda",
+   "requete": "on a combien de consultations vendredi",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "rappels",
+   "requete": "rappels de Kirra ?",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "agenda",
+   "requete": "rdv demain ?",
+   "rendu": {
+    "kind": "réponse",
+    "sujet": "appointments",
+    "chiffres": 0,
+    "tableau": null,
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "classe": "preparer_rappel",
+   "requete": "crée un rappel détartrage pour Hidalvo",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "agenda",
+   "requete": "on est chargés vendredi",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "protocole",
+   "requete": "step by step parvo please",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "dossier",
+   "requete": "résumé de Thor",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "protocole",
+   "requete": "step by step otite stp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "refus_dose",
+   "requete": "calcule la dose de métronidazole pour Ulysse svp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "classe": "refus_dose",
+   "requete": "quelle dose d'amoxicilline pour Gandalf 27 kg vite",
+   "rendu": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "classe": "preparer_rappel",
+   "requete": "mets un rappel vermifuge à Choupette dans 2 mois stp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "reference",
+   "requete": "mécanisme d'action de la prednisolone",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "agenda",
+   "requete": "quels sont les rendez-vous de après-demain please",
+   "rendu": {
+    "kind": "réponse",
+    "sujet": "appointments",
+    "chiffres": 0,
+    "tableau": null,
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "classe": "preparer_ordonnance",
+   "requete": "ordo Duchesse amoxi 7j stp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "protocole",
+   "requete": "schéma vaccinal chiot",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "hors_perimetre",
+   "requete": "mets de la musique ?",
+   "rendu": {
+    "kind": "refus",
+    "motif": "write"
+   }
+  },
+  {
+   "classe": "rappels",
+   "requete": "quels rappels pour Quincy stp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "recherche",
+   "requete": "dis trouve Saem chez Maachi",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "agenda_patient",
+   "requete": "est-ce que Cannelle a un rendez-vous cette semaine",
+   "rendu": {
+    "kind": "réponse",
+    "sujet": "appointments",
+    "chiffres": 0,
+    "tableau": null,
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "classe": "dossier",
+   "requete": "montre-moi le dossier du chien Gaia",
+   "rendu": {
+    "kind": "réponse",
+    "sujet": "patients",
+    "chiffres": 2,
+    "tableau": {
+     "colonnes": [
+      "Espèce",
+      "Dossiers"
+     ],
+     "lignes": 4
+    },
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "classe": "preparer_ordonnance",
+   "requete": "prepare ordonnance Moka cortico stp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "reference",
+   "requete": "mécanisme d'action de la gabapentine stp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "agenda_patient",
+   "requete": "Choupette est prévu quel jour",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "dossier",
+   "requete": "Gipsy il a quoi comme antécédents vite",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "rappels",
+   "requete": "rappel Odin ? please",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "agenda_patient",
+   "requete": "quand je revois Quarrtz",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "agenda",
+   "requete": "quels sont les rendez-vous de jeudi",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "hors_perimetre",
+   "requete": "salut docteur",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "recherche",
+   "requete": "trouve Sqsha chez Yousfi",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "protocole",
+   "requete": "le protocole parvo svp stp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "refus_dose",
+   "requete": "calcule la dose de métronidazole pour Tobby stp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "classe": "preparer_ordonnance",
+   "requete": "Jake : ordonnance amoxicilline",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "rappels",
+   "requete": "rappels de Quincy",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "protocole",
+   "requete": "protocole de vermifugation chien adulte",
+   "rendu": {
+    "kind": "réponse",
+    "sujet": "patients",
+    "chiffres": 2,
+    "tableau": {
+     "colonnes": [
+      "Espèce",
+      "Dossiers"
+     ],
+     "lignes": 4
+    },
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "classe": "rappels",
+   "requete": "rappels de Spike stp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "protocole",
+   "requete": "step by step otite",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "preparer_ordonnance",
+   "requete": "ordonnance de Lynx une semaine",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "preparer_ordonnance",
+   "requete": "Urus : ordonnance amoxicilline please",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "rappels",
+   "requete": "les rappels dépassés stp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "agenda",
+   "requete": "agenda ce matin",
+   "rendu": {
+    "kind": "réponse",
+    "sujet": "appointments",
+    "chiffres": 4,
+    "tableau": {
+     "colonnes": [
+      "Date",
+      "Patient",
+      "Propriétaire",
+      "Type",
+      "État"
+     ],
+     "lignes": 5
+    },
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "classe": "agenda",
+   "requete": "agenda mercredi",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "recherche",
+   "requete": "chkoun Rocco",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "rappels",
+   "requete": "liste des rappels vermifuge ?",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "preparer_rappel",
+   "requete": "Vanille : rappel vaccin dans 1 mois",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "preparer_ordonnance",
+   "requete": "ordonnance pour Ronron",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "preparer_rappel",
+   "requete": "programme un rappel pour Baloo dans 3 semaines please",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "recherche",
+   "requete": "numéro de Khelil stp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "agenda",
+   "requete": "planing samedi",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "protocole",
+   "requete": "on fait quoi en cas de gastro hémorragique please",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "preparer_rappel",
+   "requete": "crée un rappel contrôle annuel pour Gandalf",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "protocole",
+   "requete": "on fait quoi en cas de piroplasmose",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "preparer_ordonnance",
+   "requete": "ordo Tonade enro 10 jours",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "agenda_patient",
+   "requete": "prochain passage de Salem",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "agenda_patient",
+   "requete": "Noisette on le revoit quand svp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "preparer_rappel",
+   "requete": "prepare rappel Moussse contrôle dans 6 mois",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "preparer_ordonnance",
+   "requete": "Atlas : ordonnance enrofloxacine vite",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "recherche",
+   "requete": "retrouve Gandalf",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "preparer_rappel",
+   "requete": "ajoute un rappel de vaccin pour Paccha",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "rappels",
+   "requete": "liste des rappels vermifuge",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "reference",
+   "requete": "dis qu'est ce que l'ehrlichiose",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "reference",
+   "requete": "explique-moi la dysplasie",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "rappels",
+   "requete": "check rappels demain",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "hors_perimetre",
+   "requete": "dis ma facture d'électricité est trop haute",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "agenda_patient",
+   "requete": "le rdv de Thor",
+   "rendu": {
+    "kind": "réponse",
+    "sujet": "appointments",
+    "chiffres": 4,
+    "tableau": {
+     "colonnes": [
+      "Date",
+      "Patient",
+      "Propriétaire",
+      "Type",
+      "État"
+     ],
+     "lignes": 5
+    },
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "classe": "recherche",
+   "requete": "Rafale c'est le chien de qui stp",
+   "rendu": {
+    "kind": "réponse",
+    "sujet": "patients",
+    "chiffres": 2,
+    "tableau": {
+     "colonnes": [
+      "Espèce",
+      "Dossiers"
+     ],
+     "lignes": 4
+    },
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "classe": "recherche",
+   "requete": "le chat de Zidane c'est quoi son nom",
+   "rendu": {
+    "kind": "réponse",
+    "sujet": "patients",
+    "chiffres": 2,
+    "tableau": {
+     "colonnes": [
+      "Espèce",
+      "Dossiers"
+     ],
+     "lignes": 4
+    },
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "classe": "dossier",
+   "requete": "antécédents de Rocco",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "protocole",
+   "requete": "quel protocole pour une plaie",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "preparer_rappel",
+   "requete": "prepare rappel Nage contrôle dans 6 mois stp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "agenda",
+   "requete": "agenda vendredi please",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "preparer_rappel",
+   "requete": "prépare un rappel contrôle pour Tobby dans 11 mois",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "preparer_ordonnance",
+   "requete": "prépare l'ordonnance de Mousse : méloxicam 7 jours stp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "dossier",
+   "requete": "antécédents de Vador",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "hors_perimetre",
+   "requete": "qui a gagné le match hier",
+   "rendu": {
+    "kind": "réponse",
+    "sujet": "cash",
+    "chiffres": 0,
+    "tableau": null,
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "classe": "hors_perimetre",
+   "requete": "supprime le dossier de test please",
+   "rendu": {
+    "kind": "refus",
+    "motif": "write"
+   }
+  },
+  {
+   "classe": "agenda",
+   "requete": "on est chargés demain",
+   "rendu": {
+    "kind": "réponse",
+    "sujet": "cash",
+    "chiffres": 0,
+    "tableau": null,
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "classe": "reference",
+   "requete": "symptômes de la piroplasmose",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "protocole",
+   "requete": "step by step otite ?",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "recherche",
+   "requete": "numéro de Madani svp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "refus_dose",
+   "requete": "posologie méloxicam chat de 3 kg",
+   "rendu": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "classe": "refus_dose",
+   "requete": "dose de tramadol pour un chien de 9 kilos stp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "classe": "refus_dose",
+   "requete": "posologie enrofloxacine chat de 4 kg stp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "classe": "preparer_ordonnance",
+   "requete": "Duchesse : ordonnance amoxicilline",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "dossier",
+   "requete": "dossier medical Hercule",
+   "rendu": {
+    "kind": "réponse",
+    "sujet": "patients",
+    "chiffres": 2,
+    "tableau": {
+     "colonnes": [
+      "Espèce",
+      "Dossiers"
+     ],
+     "lignes": 4
+    },
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "classe": "agenda",
+   "requete": "dis rdv ce matin ?",
+   "rendu": {
+    "kind": "réponse",
+    "sujet": "appointments",
+    "chiffres": 4,
+    "tableau": {
+     "colonnes": [
+      "Date",
+      "Patient",
+      "Propriétaire",
+      "Type",
+      "État"
+     ],
+     "lignes": 5
+    },
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "classe": "preparer_ordonnance",
+   "requete": "prepare ordonnance Nougat antibio",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "agenda_patient",
+   "requete": "le rdv de Gandalf",
+   "rendu": {
+    "kind": "réponse",
+    "sujet": "appointments",
+    "chiffres": 4,
+    "tableau": {
+     "colonnes": [
+      "Date",
+      "Patient",
+      "Propriétaire",
+      "Type",
+      "État"
+     ],
+     "lignes": 5
+    },
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "classe": "agenda",
+   "requete": "planing la semaine prochaine",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "rappels",
+   "requete": "rappels de Cesar",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "recherche",
+   "requete": "c'est qui le propriétaire de Fanfan",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "preparer_ordonnance",
+   "requete": "ordo Bagheera predni 5 jours",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "recherche",
+   "requete": "dis retrouve Kiiwi",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "protocole",
+   "requete": "protocole dermatite svp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "preparer_rappel",
+   "requete": "prépare un rappel vaccin pour Choupettte dans 9 mois stp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "dossier",
+   "requete": "dossier medical Fanfan svp",
+   "rendu": {
+    "kind": "réponse",
+    "sujet": "patients",
+    "chiffres": 2,
+    "tableau": {
+     "colonnes": [
+      "Espèce",
+      "Dossiers"
+     ],
+     "lignes": 4
+    },
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "classe": "refus_dose",
+   "requete": "amoxicilline combien de mg/kg pour Odin stp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "classe": "dossier",
+   "requete": "antécédents de Cooper",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "preparer_rappel",
+   "requete": "prépare un rappel contrôle pour Maya dans 3 mois stp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "preparer_ordonnance",
+   "requete": "ordonnance amoxicilline pour Zoro",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "refus_dose",
+   "requete": "amoxicilline combien de mg/kg pour Pomme",
+   "rendu": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "classe": "preparer_ordonnance",
+   "requete": "prépare l'ordonnance de Quartz : prednisolone 7 jours",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "hors_perimetre",
+   "requete": "envoie un sms à tous les clients stp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "write"
+   }
+  },
+  {
+   "classe": "recherche",
+   "requete": "numéro de Ouchene svp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "recherche",
+   "requete": "chkoun Noisetre",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "reference",
+   "requete": "contre-indications de l'ivermectine chez le colley ?",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "rappels",
+   "requete": "vaccins à faire pour Minette",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "hors_perimetre",
+   "requete": "merci",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "agenda_patient",
+   "requete": "kifach Kaiser il a rdv quand",
+   "rendu": {
+    "kind": "réponse",
+    "sujet": "appointments",
+    "chiffres": 4,
+    "tableau": {
+     "colonnes": [
+      "Date",
+      "Patient",
+      "Propriétaire",
+      "Type",
+      "État"
+     ],
+     "lignes": 5
+    },
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "classe": "agenda",
+   "requete": "rdv lundi ?",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "reference",
+   "requete": "parvo transmission please",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "agenda_patient",
+   "requete": "Quincy est prévu quel jour",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "agenda",
+   "requete": "on est chargés aujourd'hui please",
+   "rendu": {
+    "kind": "réponse",
+    "sujet": "cash",
+    "chiffres": 0,
+    "tableau": null,
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "classe": "hors_perimetre",
+   "requete": "aide-moi pour ma déclaration d'impôts vite",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "agenda",
+   "requete": "on est chargés cet aprem please",
+   "rendu": {
+    "kind": "réponse",
+    "sujet": "cash",
+    "chiffres": 0,
+    "tableau": null,
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "classe": "agenda",
+   "requete": "qui on voit jeudi en consultation",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "refus_dose",
+   "requete": "quelle dose d'amoxicilline pour Zaza 39 kg",
+   "rendu": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "classe": "preparer_ordonnance",
+   "requete": "ordonnance de Quartz une semaine",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "agenda_patient",
+   "requete": "Perle est prévu quel jour ?",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "preparer_ordonnance",
+   "requete": "ordonnance métronidazole pour Cannelle",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "hors_perimetre",
+   "requete": "traduis bonjour en anglais",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "dossier",
+   "requete": "fiche Kiwwi",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "protocole",
+   "requete": "quel protocole pour la gastro",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "dossier",
+   "requete": "donne-moi tout sur Eclair",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "recherche",
+   "requete": "trouve Ronron chez Sebti",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "rappels",
+   "requete": "liste des rappels vermifuge stp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "refus_dose",
+   "requete": "gabapentine combien de mg/kg pour Safran",
+   "rendu": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "classe": "recherche",
+   "requete": "dis retrouve Cannelle",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "protocole",
+   "requete": "schéma vaccinal chiot vite",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "agenda",
+   "requete": "agenda lundi",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "hors_perimetre",
+   "requete": "bonjour",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "rappels",
+   "requete": "vaccins à faire pour Jasmine",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "protocole",
+   "requete": "protocol gastro ?",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "agenda_patient",
+   "requete": "dis quand est le prochain rdv de Biscotte",
+   "rendu": {
+    "kind": "réponse",
+    "sujet": "appointments",
+    "chiffres": 4,
+    "tableau": {
+     "colonnes": [
+      "Date",
+      "Patient",
+      "Propriétaire",
+      "Type",
+      "État"
+     ],
+     "lignes": 1
+    },
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "classe": "hors_perimetre",
+   "requete": "raconte une blague",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "rappels",
+   "requete": "rappels de Loki",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "dossier",
+   "requete": "montre-moi le dossier du chien Tobby stp",
+   "rendu": {
+    "kind": "réponse",
+    "sujet": "patients",
+    "chiffres": 2,
+    "tableau": {
+     "colonnes": [
+      "Espèce",
+      "Dossiers"
+     ],
+     "lignes": 4
+    },
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "classe": "recherche",
+   "requete": "tu as Panda dans la base svp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "reference",
+   "requete": "ivermectine et colley, risque ?",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "recherche",
+   "requete": "cherche Mowgli",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "refus_dose",
+   "requete": "amoxicilline combien de mg/kg pour Sasha stp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "classe": "agenda",
+   "requete": "on a combien de consultations après-demain",
+   "rendu": {
+    "kind": "réponse",
+    "sujet": "appointments",
+    "chiffres": 0,
+    "tableau": null,
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "classe": "protocole",
+   "requete": "protocole parvo",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "recherche",
+   "requete": "tu as Whsky dans la base",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "preparer_ordonnance",
+   "requete": "ordo Bscotte predni 5 jours",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "rappels",
+   "requete": "quels rappels pour Cannelle ?",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "refus_dose",
+   "requete": "amoxicilline combien de mg/kg pour Sirocco",
+   "rendu": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "classe": "refus_dose",
+   "requete": "calcule la dose de métronidazole pour Gingger",
+   "rendu": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "classe": "rappels",
+   "requete": "rappels en retard svp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "agenda",
+   "requete": "dis chkoun 3andna el 3chiya",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "preparer_ordonnance",
+   "requete": "écris l'ordo de Safran avec amoxicilline vite",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "preparer_ordonnance",
+   "requete": "ordonnance pour Biscotre please",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "recherche",
+   "requete": "retrouve Neige svp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "reference",
+   "requete": "c'est quoi le syndrome vestibulaire",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "hors_perimetre",
+   "requete": "mets de la musique",
+   "rendu": {
+    "kind": "refus",
+    "motif": "write"
+   }
+  },
+  {
+   "classe": "refus_dose",
+   "requete": "combien de ml de prednisolone pour Maya",
+   "rendu": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "classe": "dossier",
+   "requete": "donne-moi tout sur Bruno",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "recherche",
+   "requete": "Zaaza c'est le chien de qui",
+   "rendu": {
+    "kind": "réponse",
+    "sujet": "patients",
+    "chiffres": 2,
+    "tableau": {
+     "colonnes": [
+      "Espèce",
+      "Dossiers"
+     ],
+     "lignes": 4
+    },
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "classe": "protocole",
+   "requete": "quel protocole pour une plaie stp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "recherche",
+   "requete": "cherche le chien de Derradji",
+   "rendu": {
+    "kind": "réponse",
+    "sujet": "patients",
+    "chiffres": 2,
+    "tableau": {
+     "colonnes": [
+      "Espèce",
+      "Dossiers"
+     ],
+     "lignes": 4
+    },
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "classe": "protocole",
+   "requete": "le protocole otite svp please",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "hors_perimetre",
+   "requete": "exporte toute la base svp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "recherche",
+   "requete": "c'est qui le propriétaire de Suhsi",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "agenda_patient",
+   "requete": "le rdv de Perle svp",
+   "rendu": {
+    "kind": "réponse",
+    "sujet": "appointments",
+    "chiffres": 4,
+    "tableau": {
+     "colonnes": [
+      "Date",
+      "Patient",
+      "Propriétaire",
+      "Type",
+      "État"
+     ],
+     "lignes": 5
+    },
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "classe": "rappels",
+   "requete": "check rappels cette semaine stp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "agenda",
+   "requete": "on est chargés mardi",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "reference",
+   "requete": "c'est quoi la leishmaniose please",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "rappels",
+   "requete": "qui est en retard de vaccin",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "reference",
+   "requete": "contre-indications de l'ivermectine chez le colley",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "preparer_rappel",
+   "requete": "Noosette : rappel vaccin dans 1 mois",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "reference",
+   "requete": "effets secondaires du tramadol please",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "rappels",
+   "requete": "rappels en retard",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "protocole",
+   "requete": "le protocole otite svp stp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "protocole",
+   "requete": "protocole de vermifugation chiot",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "protocole",
+   "requete": "protocole diabète",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "reference",
+   "requete": "dis c'est quoi le syndrome vestibulaire",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "agenda_patient",
+   "requete": "kifach Lilou il a rdv quand ?",
+   "rendu": {
+    "kind": "réponse",
+    "sujet": "appointments",
+    "chiffres": 4,
+    "tableau": {
+     "colonnes": [
+      "Date",
+      "Patient",
+      "Propriétaire",
+      "Type",
+      "État"
+     ],
+     "lignes": 5
+    },
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "classe": "preparer_ordonnance",
+   "requete": "prépare l'ordonnance de Kiwi : méloxicam 5 jours",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "protocole",
+   "requete": "rappelle-moi le protocole de sevrage",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "dossier",
+   "requete": "donne-moi tout sur Orage svp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "protocole",
+   "requete": "quel protocole pour une otite chronique stp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "dossier",
+   "requete": "dis ouvre la fiche de Baloo",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "dossier",
+   "requete": "fiche Atlas",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "preparer_rappel",
+   "requete": "ajoute un rappel de vaccin pour Tobgy",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "recherche",
+   "requete": "le chat de Salhi c'est quoi son nom",
+   "rendu": {
+    "kind": "réponse",
+    "sujet": "patients",
+    "chiffres": 2,
+    "tableau": {
+     "colonnes": [
+      "Espèce",
+      "Dossiers"
+     ],
+     "lignes": 4
+    },
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "classe": "hors_perimetre",
+   "requete": "recette de couscous stp",
+   "rendu": {
+    "kind": "réponse",
+    "sujet": "cash",
+    "chiffres": 2,
+    "tableau": {
+     "colonnes": [
+      "Date",
+      "Libellé",
+      "Catégorie",
+      "Moyen",
+      "Montant"
+     ],
+     "lignes": 6
+    },
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "classe": "protocole",
+   "requete": "protocole de castration chaton stp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "recherche",
+   "requete": "cherche le chien de Zouaoui",
+   "rendu": {
+    "kind": "réponse",
+    "sujet": "patients",
+    "chiffres": 2,
+    "tableau": {
+     "colonnes": [
+      "Espèce",
+      "Dossiers"
+     ],
+     "lignes": 4
+    },
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "classe": "refus_dose",
+   "requete": "dose de tramadol pour un chien de 29 kilos",
+   "rendu": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "classe": "refus_dose",
+   "requete": "posologie enrofloxacine chat de 4 kg",
+   "rendu": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "classe": "preparer_rappel",
+   "requete": "rappel vaccin pour Chipie next year stp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "rappels",
+   "requete": "check rappels ce mois",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "preparer_rappel",
+   "requete": "crée un rappel détartrage pour Chipie",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "hors_perimetre",
+   "requete": "change mon mot de passe",
+   "rendu": {
+    "kind": "refus",
+    "motif": "write"
+   }
+  },
+  {
+   "classe": "preparer_ordonnance",
+   "requete": "ordo Duchesse predni 5 jours vite",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "rappels",
+   "requete": "quels rappels pour Nuage",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "hors_perimetre",
+   "requete": "qui a gagné le match hier stp",
+   "rendu": {
+    "kind": "réponse",
+    "sujet": "cash",
+    "chiffres": 0,
+    "tableau": null,
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "classe": "preparer_rappel",
+   "requete": "Chipie : rappel vaccin dans 2 mois stp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "refus_dose",
+   "requete": "quelle dose d'ivermectine pour Kenzo 40 kg",
+   "rendu": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "classe": "rappels",
+   "requete": "check rappels demain stp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "preparer_rappel",
+   "requete": "prepare rappel Lynx contrôle dans 6 mois ?",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "hors_perimetre",
+   "requete": "ma facture d'électricité est trop haute",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "preparer_ordonnance",
+   "requete": "fais l'ordonnance de Thor, clindamycine 2 fois par jour svp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "reference",
+   "requete": "explique-moi l'insuffisance rénale chronique",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "preparer_rappel",
+   "requete": "crée un rappel détartrage pour Jasmine",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "agenda_patient",
+   "requete": "le rdv de Moqgli please",
+   "rendu": {
+    "kind": "réponse",
+    "sujet": "appointments",
+    "chiffres": 4,
+    "tableau": {
+     "colonnes": [
+      "Date",
+      "Patient",
+      "Propriétaire",
+      "Type",
+      "État"
+     ],
+     "lignes": 5
+    },
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "classe": "agenda_patient",
+   "requete": "est-ce que Vador a un rendez-vous cette semaine",
+   "rendu": {
+    "kind": "réponse",
+    "sujet": "appointments",
+    "chiffres": 0,
+    "tableau": null,
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "classe": "agenda",
+   "requete": "on a combien de consultations après-demain svp",
+   "rendu": {
+    "kind": "réponse",
+    "sujet": "appointments",
+    "chiffres": 0,
+    "tableau": null,
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "classe": "preparer_rappel",
+   "requete": "rappel vaccin Bakto dans un an",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "agenda_patient",
+   "requete": "historique des rdv de Tonnerre",
+   "rendu": {
+    "kind": "réponse",
+    "sujet": "appointments",
+    "chiffres": 4,
+    "tableau": {
+     "colonnes": [
+      "Date",
+      "Patient",
+      "Propriétaire",
+      "Type",
+      "État"
+     ],
+     "lignes": 5
+    },
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "classe": "preparer_rappel",
+   "requete": "crée un rappel contrôle annuel pour Piel please",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "protocole",
+   "requete": "protocole gastro",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "agenda",
+   "requete": "planning de ce matin",
+   "rendu": {
+    "kind": "réponse",
+    "sujet": "appointments",
+    "chiffres": 4,
+    "tableau": {
+     "colonnes": [
+      "Date",
+      "Patient",
+      "Propriétaire",
+      "Type",
+      "État"
+     ],
+     "lignes": 5
+    },
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "classe": "agenda_patient",
+   "requete": "historique des rdv de Duchesse",
+   "rendu": {
+    "kind": "réponse",
+    "sujet": "appointments",
+    "chiffres": 4,
+    "tableau": {
+     "colonnes": [
+      "Date",
+      "Patient",
+      "Propriétaire",
+      "Type",
+      "État"
+     ],
+     "lignes": 5
+    },
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "classe": "agenda",
+   "requete": "qui on voit après-demain en consultation",
+   "rendu": {
+    "kind": "réponse",
+    "sujet": "appointments",
+    "chiffres": 0,
+    "tableau": null,
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "classe": "agenda_patient",
+   "requete": "quand je revois Jasmine stp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "reference",
+   "requete": "mécanisme d'action de la gabapentine",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "refus_dose",
+   "requete": "posologie méloxicam chat de 2 kg",
+   "rendu": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "classe": "reference",
+   "requete": "contre-indications de l'amoxicilline chez le colley svp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "preparer_ordonnance",
+   "requete": "Caline : ordonnance enrofloxacine svp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "hors_perimetre",
+   "requete": "quelle heure est-il",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "reference",
+   "requete": "qu'est ce que l'hépatite de Rubarth",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "agenda_patient",
+   "requete": "Thor on le revoit quand",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "rappels",
+   "requete": "liste des rappels vermifuge vite",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "reference",
+   "requete": "interactions du tramadol",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "refus_dose",
+   "requete": "dose de méloxicam pour un chien de 21 kilos",
+   "rendu": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "classe": "dossier",
+   "requete": "dossier medical Orage vite",
+   "rendu": {
+    "kind": "réponse",
+    "sujet": "patients",
+    "chiffres": 2,
+    "tableau": {
+     "colonnes": [
+      "Espèce",
+      "Dossiers"
+     ],
+     "lignes": 4
+    },
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "classe": "reference",
+   "requete": "qu'est ce que l'ehrlichiose",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "refus_dose",
+   "requete": "dose de prednisolone pour un chien de 7 kilos",
+   "rendu": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "classe": "dossier",
+   "requete": "qu'est-ce qu'on a sur Mousse",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "protocole",
+   "requete": "schéma de vermifugation please",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "dossier",
+   "requete": "dossier medical Tornade vite",
+   "rendu": {
+    "kind": "réponse",
+    "sujet": "patients",
+    "chiffres": 2,
+    "tableau": {
+     "colonnes": [
+      "Espèce",
+      "Dossiers"
+     ],
+     "lignes": 4
+    },
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "classe": "rappels",
+   "requete": "dis quels rappels pour Dolly",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "preparer_ordonnance",
+   "requete": "ordonnance de Jolly 3 jours",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "agenda_patient",
+   "requete": "Salem revient quand stp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "agenda_patient",
+   "requete": "quand je revois Sallem ?",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "agenda_patient",
+   "requete": "prochain passage de Praline",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "preparer_ordonnance",
+   "requete": "ordo Thor predni 5 jours",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "refus_dose",
+   "requete": "posologie méloxicam chat de 4 kg",
+   "rendu": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "classe": "reference",
+   "requete": "interactions du méloxicam",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "preparer_ordonnance",
+   "requete": "écris l'ordo de Nemo avec amoxicilline please",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "preparer_rappel",
+   "requete": "prépare un rappel vaccin pour Choupette dans 8 mois",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "agenda",
+   "requete": "on est chargés la semaine prochaine",
+   "rendu": {
+    "kind": "réponse",
+    "sujet": "cash",
+    "chiffres": 0,
+    "tableau": null,
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "classe": "reference",
+   "requete": "mécanisme d'action de la gabapentine please",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "dossier",
+   "requete": "dossier medical Rafale",
+   "rendu": {
+    "kind": "réponse",
+    "sujet": "patients",
+    "chiffres": 2,
+    "tableau": {
+     "colonnes": [
+      "Espèce",
+      "Dossiers"
+     ],
+     "lignes": 4
+    },
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "classe": "rappels",
+   "requete": "rappels en retard stp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "agenda_patient",
+   "requete": "prochain passage de Choupette stp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "preparer_rappel",
+   "requete": "crée un rappel détartrage pour Tobgy svp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "agenda_patient",
+   "requete": "historique des rdv de Pomme",
+   "rendu": {
+    "kind": "réponse",
+    "sujet": "appointments",
+    "chiffres": 4,
+    "tableau": {
+     "colonnes": [
+      "Date",
+      "Patient",
+      "Propriétaire",
+      "Type",
+      "État"
+     ],
+     "lignes": 5
+    },
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "classe": "hors_perimetre",
+   "requete": "recette de couscous",
+   "rendu": {
+    "kind": "réponse",
+    "sujet": "cash",
+    "chiffres": 2,
+    "tableau": {
+     "colonnes": [
+      "Date",
+      "Libellé",
+      "Catégorie",
+      "Moyen",
+      "Montant"
+     ],
+     "lignes": 6
+    },
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "classe": "preparer_rappel",
+   "requete": "rappel vaccin pour Pomme next year please",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "recherche",
+   "requete": "trouve Elvis chez Aitameur",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "agenda_patient",
+   "requete": "le rdv de Moka",
+   "rendu": {
+    "kind": "réponse",
+    "sujet": "appointments",
+    "chiffres": 4,
+    "tableau": {
+     "colonnes": [
+      "Date",
+      "Patient",
+      "Propriétaire",
+      "Type",
+      "État"
+     ],
+     "lignes": 5
+    },
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "classe": "agenda",
+   "requete": "on est chargés mardi please",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "dossier",
+   "requete": "antécédents de Sushhi",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "reference",
+   "requete": "effets secondaires du tramadol",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "hors_perimetre",
+   "requete": "quel temps fait-il demain",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "refus_dose",
+   "requete": "combien de ml de tramadol pour Thhor",
+   "rendu": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "classe": "preparer_rappel",
+   "requete": "rappel vaccin Choupette dans un an vite",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "dossier",
+   "requete": "dossier de Ulysde",
+   "rendu": {
+    "kind": "réponse",
+    "sujet": "patients",
+    "chiffres": 2,
+    "tableau": {
+     "colonnes": [
+      "Espèce",
+      "Dossiers"
+     ],
+     "lignes": 4
+    },
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "classe": "preparer_rappel",
+   "requete": "rappel dans 3 mois pour Neige",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "hors_perimetre",
+   "requete": "ça va ?",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "agenda_patient",
+   "requete": "Nougaat revient quand",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "protocole",
+   "requete": "protocole diabète ?",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "dossier",
+   "requete": "antécédents de Chipie",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "protocole",
+   "requete": "step by step parvo svp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "agenda_patient",
+   "requete": "Choupette revient quand",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "dossier",
+   "requete": "ouvre la fiche de Balto",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "preparer_ordonnance",
+   "requete": "ordonnance de Mowggli une semaine",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "preparer_rappel",
+   "requete": "prépare un rappel vermifuge pour Mooka dans 10 mois",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "agenda_patient",
+   "requete": "quand est le prochain rdv de Nougat",
+   "rendu": {
+    "kind": "réponse",
+    "sujet": "appointments",
+    "chiffres": 4,
+    "tableau": {
+     "colonnes": [
+      "Date",
+      "Patient",
+      "Propriétaire",
+      "Type",
+      "État"
+     ],
+     "lignes": 5
+    },
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "classe": "dossier",
+   "requete": "Dolly il a quoi comme antécédents",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "hors_perimetre",
+   "requete": "supprime le dossier de test stp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "write"
+   }
+  },
+  {
+   "classe": "hors_perimetre",
+   "requete": "tu es là",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "preparer_ordonnance",
+   "requete": "prépare l'ordonnance de Tigresse : prednisolone 5 jours stp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "hors_perimetre",
+   "requete": "exporte toute la base stp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "reference",
+   "requete": "parvo transmission",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "rappels",
+   "requete": "liste des rappels vermifuge svp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "dossier",
+   "requete": "ouvre la fiche de Chipie",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "agenda",
+   "requete": "rdv après-demain ? please",
+   "rendu": {
+    "kind": "réponse",
+    "sujet": "appointments",
+    "chiffres": 0,
+    "tableau": null,
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "classe": "preparer_ordonnance",
+   "requete": "ordonnance pour Baloo stp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "preparer_rappel",
+   "requete": "dis rappel dans 3 mois pour Gaaia",
+   "rendu": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "classe": "agenda_patient",
+   "requete": "historique des rdv de Gohst",
+   "rendu": {
+    "kind": "réponse",
+    "sujet": "appointments",
+    "chiffres": 4,
+    "tableau": {
+     "colonnes": [
+      "Date",
+      "Patient",
+      "Propriétaire",
+      "Type",
+      "État"
+     ],
+     "lignes": 5
+    },
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "classe": "refus_dose",
+   "requete": "posologie enrofloxacine chat de 2 kg",
+   "rendu": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "classe": "reference",
+   "requete": "explique-moi l'insuffisance rénale chronique stp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "hors_perimetre",
+   "requete": "ok",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "refus_dose",
+   "requete": "combien de ml de tramadol pour Dollly",
+   "rendu": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "classe": "refus_dose",
+   "requete": "amoxicilline combien de mg/kg pour Nemo stp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "classe": "hors_perimetre",
+   "requete": "tu es là svp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  },
+  {
+   "classe": "hors_perimetre",
+   "requete": "quelle heure est-il stp",
+   "rendu": {
+    "kind": "refus",
+    "motif": "unknown"
+   }
+  }
+ ],
+ "formesDeDose": [
+  {
+   "forme": "amoxicilline 20 mg/kg",
+   "estUneDose": true,
+   "gardeDonnees": true,
+   "gardeDonneesMelee": true,
+   "containsDosage": true,
+   "seule": {
+    "kind": "refus",
+    "motif": "dose"
+   },
+   "melee": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "forme": "20mg",
+   "estUneDose": true,
+   "gardeDonnees": true,
+   "gardeDonneesMelee": true,
+   "containsDosage": true,
+   "seule": {
+    "kind": "refus",
+    "motif": "dose"
+   },
+   "melee": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "forme": "20 mg",
+   "estUneDose": true,
+   "gardeDonnees": true,
+   "gardeDonneesMelee": true,
+   "containsDosage": true,
+   "seule": {
+    "kind": "refus",
+    "motif": "dose"
+   },
+   "melee": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "forme": "vingt milligrammes par kilo",
+   "estUneDose": true,
+   "gardeDonnees": true,
+   "gardeDonneesMelee": true,
+   "containsDosage": true,
+   "seule": {
+    "kind": "refus",
+    "motif": "dose"
+   },
+   "melee": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "forme": "0,5 ml",
+   "estUneDose": true,
+   "gardeDonnees": true,
+   "gardeDonneesMelee": true,
+   "containsDosage": true,
+   "seule": {
+    "kind": "refus",
+    "motif": "dose"
+   },
+   "melee": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "forme": "0.5mL",
+   "estUneDose": true,
+   "gardeDonnees": true,
+   "gardeDonneesMelee": true,
+   "containsDosage": true,
+   "seule": {
+    "kind": "refus",
+    "motif": "dose"
+   },
+   "melee": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "forme": "2 comprimés",
+   "estUneDose": true,
+   "gardeDonnees": true,
+   "gardeDonneesMelee": true,
+   "containsDosage": true,
+   "seule": {
+    "kind": "refus",
+    "motif": "dose"
+   },
+   "melee": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "forme": "1/2 comprimé",
+   "estUneDose": true,
+   "gardeDonnees": true,
+   "gardeDonneesMelee": true,
+   "containsDosage": true,
+   "seule": {
+    "kind": "refus",
+    "motif": "dose"
+   },
+   "melee": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "forme": "2cp",
+   "estUneDose": true,
+   "gardeDonnees": true,
+   "gardeDonneesMelee": true,
+   "containsDosage": true,
+   "seule": {
+    "kind": "refus",
+    "motif": "dose"
+   },
+   "melee": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "forme": "5 UI",
+   "estUneDose": true,
+   "gardeDonnees": true,
+   "gardeDonneesMelee": true,
+   "containsDosage": true,
+   "seule": {
+    "kind": "refus",
+    "motif": "dose"
+   },
+   "melee": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "forme": "10 µg/kg",
+   "estUneDose": true,
+   "gardeDonnees": true,
+   "gardeDonneesMelee": true,
+   "containsDosage": true,
+   "seule": {
+    "kind": "refus",
+    "motif": "dose"
+   },
+   "melee": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "forme": "10 mcg",
+   "estUneDose": true,
+   "gardeDonnees": true,
+   "gardeDonneesMelee": true,
+   "containsDosage": true,
+   "seule": {
+    "kind": "refus",
+    "motif": "dose"
+   },
+   "melee": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "forme": "une demi-dose",
+   "estUneDose": true,
+   "gardeDonnees": true,
+   "gardeDonneesMelee": true,
+   "containsDosage": false,
+   "seule": {
+    "kind": "refus",
+    "motif": "dose"
+   },
+   "melee": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "forme": "double dose",
+   "estUneDose": true,
+   "gardeDonnees": true,
+   "gardeDonneesMelee": true,
+   "containsDosage": false,
+   "seule": {
+    "kind": "refus",
+    "motif": "dose"
+   },
+   "melee": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "forme": "20 mg par kg",
+   "estUneDose": true,
+   "gardeDonnees": true,
+   "gardeDonneesMelee": true,
+   "containsDosage": true,
+   "seule": {
+    "kind": "refus",
+    "motif": "dose"
+   },
+   "melee": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "forme": "3x/j",
+   "estUneDose": true,
+   "gardeDonnees": false,
+   "gardeDonneesMelee": false,
+   "containsDosage": false,
+   "seule": {
+    "kind": "refus",
+    "motif": "unknown"
+   },
+   "melee": {
+    "kind": "réponse",
+    "sujet": "cash",
+    "chiffres": 2,
+    "tableau": {
+     "colonnes": [
+      "Date",
+      "Libellé",
+      "Catégorie",
+      "Moyen",
+      "Montant"
+     ],
+     "lignes": 4
+    },
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "forme": "toutes les 8 heures",
+   "estUneDose": true,
+   "gardeDonnees": false,
+   "gardeDonneesMelee": false,
+   "containsDosage": false,
+   "seule": {
+    "kind": "refus",
+    "motif": "unknown"
+   },
+   "melee": {
+    "kind": "réponse",
+    "sujet": "cash",
+    "chiffres": 2,
+    "tableau": {
+     "colonnes": [
+      "Date",
+      "Libellé",
+      "Catégorie",
+      "Moyen",
+      "Montant"
+     ],
+     "lignes": 4
+    },
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "forme": "multiplie par le poids",
+   "estUneDose": true,
+   "gardeDonnees": false,
+   "gardeDonneesMelee": false,
+   "containsDosage": false,
+   "seule": {
+    "kind": "refus",
+    "motif": "unknown"
+   },
+   "melee": {
+    "kind": "réponse",
+    "sujet": "cash",
+    "chiffres": 2,
+    "tableau": {
+     "colonnes": [
+      "Date",
+      "Libellé",
+      "Catégorie",
+      "Moyen",
+      "Montant"
+     ],
+     "lignes": 4
+    },
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "forme": "20 milligrammes",
+   "estUneDose": true,
+   "gardeDonnees": false,
+   "gardeDonneesMelee": false,
+   "containsDosage": true,
+   "seule": {
+    "kind": "refus",
+    "motif": "unknown"
+   },
+   "melee": {
+    "kind": "réponse",
+    "sujet": "cash",
+    "chiffres": 2,
+    "tableau": {
+     "colonnes": [
+      "Date",
+      "Libellé",
+      "Catégorie",
+      "Moyen",
+      "Montant"
+     ],
+     "lignes": 4
+    },
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "forme": "20 miligramos",
+   "estUneDose": true,
+   "gardeDonnees": false,
+   "gardeDonneesMelee": false,
+   "containsDosage": false,
+   "seule": {
+    "kind": "refus",
+    "motif": "unknown"
+   },
+   "melee": {
+    "kind": "réponse",
+    "sujet": "cash",
+    "chiffres": 2,
+    "tableau": {
+     "colonnes": [
+      "Date",
+      "Libellé",
+      "Catégorie",
+      "Moyen",
+      "Montant"
+     ],
+     "lignes": 4
+    },
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "forme": "20 мг",
+   "estUneDose": true,
+   "gardeDonnees": false,
+   "gardeDonneesMelee": false,
+   "containsDosage": false,
+   "seule": {
+    "kind": "refus",
+    "motif": "unknown"
+   },
+   "melee": {
+    "kind": "réponse",
+    "sujet": "cash",
+    "chiffres": 2,
+    "tableau": {
+     "colonnes": [
+      "Date",
+      "Libellé",
+      "Catégorie",
+      "Moyen",
+      "Montant"
+     ],
+     "lignes": 4
+    },
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "forme": "２０ mg",
+   "estUneDose": true,
+   "gardeDonnees": true,
+   "gardeDonneesMelee": true,
+   "containsDosage": false,
+   "seule": {
+    "kind": "refus",
+    "motif": "dose"
+   },
+   "melee": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "forme": "2​0 mg",
+   "estUneDose": true,
+   "gardeDonnees": true,
+   "gardeDonneesMelee": true,
+   "containsDosage": true,
+   "seule": {
+    "kind": "refus",
+    "motif": "dose"
+   },
+   "melee": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "forme": "20 m g",
+   "estUneDose": true,
+   "gardeDonnees": false,
+   "gardeDonneesMelee": false,
+   "containsDosage": false,
+   "seule": {
+    "kind": "refus",
+    "motif": "unknown"
+   },
+   "melee": {
+    "kind": "réponse",
+    "sujet": "cash",
+    "chiffres": 2,
+    "tableau": {
+     "colonnes": [
+      "Date",
+      "Libellé",
+      "Catégorie",
+      "Moyen",
+      "Montant"
+     ],
+     "lignes": 4
+    },
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "forme": "20 mg",
+   "estUneDose": true,
+   "gardeDonnees": true,
+   "gardeDonneesMelee": true,
+   "containsDosage": true,
+   "seule": {
+    "kind": "refus",
+    "motif": "dose"
+   },
+   "melee": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "forme": "vingt cinq mg",
+   "estUneDose": true,
+   "gardeDonnees": true,
+   "gardeDonneesMelee": true,
+   "containsDosage": true,
+   "seule": {
+    "kind": "refus",
+    "motif": "dose"
+   },
+   "melee": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "forme": "25mg/kg/j",
+   "estUneDose": true,
+   "gardeDonnees": true,
+   "gardeDonneesMelee": true,
+   "containsDosage": true,
+   "seule": {
+    "kind": "refus",
+    "motif": "dose"
+   },
+   "melee": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "forme": "1 gélule",
+   "estUneDose": true,
+   "gardeDonnees": true,
+   "gardeDonneesMelee": true,
+   "containsDosage": true,
+   "seule": {
+    "kind": "refus",
+    "motif": "dose"
+   },
+   "melee": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "forme": "deux cuillères à café",
+   "estUneDose": true,
+   "gardeDonnees": false,
+   "gardeDonneesMelee": false,
+   "containsDosage": false,
+   "seule": {
+    "kind": "refus",
+    "motif": "unknown"
+   },
+   "melee": {
+    "kind": "réponse",
+    "sujet": "cash",
+    "chiffres": 2,
+    "tableau": {
+     "colonnes": [
+      "Date",
+      "Libellé",
+      "Catégorie",
+      "Moyen",
+      "Montant"
+     ],
+     "lignes": 4
+    },
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "forme": "5 gouttes",
+   "estUneDose": true,
+   "gardeDonnees": true,
+   "gardeDonneesMelee": true,
+   "containsDosage": true,
+   "seule": {
+    "kind": "refus",
+    "motif": "dose"
+   },
+   "melee": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "forme": "10 ml/kg",
+   "estUneDose": true,
+   "gardeDonnees": true,
+   "gardeDonneesMelee": true,
+   "containsDosage": true,
+   "seule": {
+    "kind": "refus",
+    "motif": "dose"
+   },
+   "melee": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "forme": "dosage : 10",
+   "estUneDose": true,
+   "gardeDonnees": true,
+   "gardeDonneesMelee": true,
+   "containsDosage": true,
+   "seule": {
+    "kind": "refus",
+    "motif": "dose"
+   },
+   "melee": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "forme": "un demi cachet",
+   "estUneDose": true,
+   "gardeDonnees": false,
+   "gardeDonneesMelee": false,
+   "containsDosage": false,
+   "seule": {
+    "kind": "refus",
+    "motif": "unknown"
+   },
+   "melee": {
+    "kind": "réponse",
+    "sujet": "cash",
+    "chiffres": 2,
+    "tableau": {
+     "colonnes": [
+      "Date",
+      "Libellé",
+      "Catégorie",
+      "Moyen",
+      "Montant"
+     ],
+     "lignes": 4
+    },
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "forme": "0,2 g",
+   "estUneDose": true,
+   "gardeDonnees": true,
+   "gardeDonneesMelee": true,
+   "containsDosage": true,
+   "seule": {
+    "kind": "refus",
+    "motif": "dose"
+   },
+   "melee": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "forme": "2 pipettes",
+   "estUneDose": true,
+   "gardeDonnees": false,
+   "gardeDonneesMelee": false,
+   "containsDosage": false,
+   "seule": {
+    "kind": "refus",
+    "motif": "unknown"
+   },
+   "melee": {
+    "kind": "réponse",
+    "sujet": "cash",
+    "chiffres": 2,
+    "tableau": {
+     "colonnes": [
+      "Date",
+      "Libellé",
+      "Catégorie",
+      "Moyen",
+      "Montant"
+     ],
+     "lignes": 4
+    },
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "forme": "une ampoule",
+   "estUneDose": true,
+   "gardeDonnees": true,
+   "gardeDonneesMelee": true,
+   "containsDosage": false,
+   "seule": {
+    "kind": "refus",
+    "motif": "dose"
+   },
+   "melee": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "forme": "posologie standard",
+   "estUneDose": false,
+   "gardeDonnees": true,
+   "gardeDonneesMelee": true,
+   "containsDosage": false,
+   "seule": {
+    "kind": "refus",
+    "motif": "dose"
+   },
+   "melee": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "forme": "dose habituelle",
+   "estUneDose": false,
+   "gardeDonnees": true,
+   "gardeDonneesMelee": true,
+   "containsDosage": false,
+   "seule": {
+    "kind": "refus",
+    "motif": "dose"
+   },
+   "melee": {
+    "kind": "refus",
+    "motif": "dose"
+   }
+  },
+  {
+   "forme": "Rappel vaccin dans 3 mois",
+   "estUneDose": false,
+   "gardeDonnees": false,
+   "gardeDonneesMelee": false,
+   "containsDosage": false,
+   "seule": {
+    "kind": "refus",
+    "motif": "reminders"
+   },
+   "melee": {
+    "kind": "refus",
+    "motif": "reminders"
+   }
+  },
+  {
+   "forme": "le 12/03/2027",
+   "estUneDose": false,
+   "gardeDonnees": false,
+   "gardeDonneesMelee": false,
+   "containsDosage": false,
+   "seule": {
+    "kind": "refus",
+    "motif": "unknown"
+   },
+   "melee": {
+    "kind": "réponse",
+    "sujet": "cash",
+    "chiffres": 2,
+    "tableau": {
+     "colonnes": [
+      "Date",
+      "Libellé",
+      "Catégorie",
+      "Moyen",
+      "Montant"
+     ],
+     "lignes": 4
+    },
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "forme": "contrôle dans 10 jours",
+   "estUneDose": false,
+   "gardeDonnees": false,
+   "gardeDonneesMelee": false,
+   "containsDosage": false,
+   "seule": {
+    "kind": "refus",
+    "motif": "unknown"
+   },
+   "melee": {
+    "kind": "réponse",
+    "sujet": "cash",
+    "chiffres": 2,
+    "tableau": {
+     "colonnes": [
+      "Date",
+      "Libellé",
+      "Catégorie",
+      "Moyen",
+      "Montant"
+     ],
+     "lignes": 4
+    },
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  }
+ ],
+ "questionsProposees": [
+  {
+   "question": "Recettes des 30 derniers jours",
+   "rendu": {
+    "kind": "réponse",
+    "sujet": "cash",
+    "chiffres": 2,
+    "tableau": {
+     "colonnes": [
+      "Date",
+      "Libellé",
+      "Catégorie",
+      "Moyen",
+      "Montant"
+     ],
+     "lignes": 6
+    },
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "question": "Rendez-vous d’aujourd’hui",
+   "rendu": {
+    "kind": "réponse",
+    "sujet": "appointments",
+    "chiffres": 0,
+    "tableau": null,
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "question": "Absences des 30 derniers jours",
+   "rendu": {
+    "kind": "réponse",
+    "sujet": "appointments",
+    "chiffres": 0,
+    "tableau": null,
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "question": "Tâches en retard",
+   "rendu": {
+    "kind": "réponse",
+    "sujet": "tasks",
+    "chiffres": 0,
+    "tableau": null,
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "question": "Nouveaux patients ce mois",
+   "rendu": {
+    "kind": "réponse",
+    "sujet": "patients",
+    "chiffres": 1,
+    "tableau": {
+     "colonnes": [
+      "Patient",
+      "Espèce",
+      "Propriétaire",
+      "Créé le"
+     ],
+     "lignes": 5
+    },
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "question": "Recettes de ce mois",
+   "rendu": {
+    "kind": "réponse",
+    "sujet": "cash",
+    "chiffres": 2,
+    "tableau": {
+     "colonnes": [
+      "Date",
+      "Libellé",
+      "Catégorie",
+      "Moyen",
+      "Montant"
+     ],
+     "lignes": 4
+    },
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "question": "Recettes du mois dernier",
+   "rendu": {
+    "kind": "réponse",
+    "sujet": "cash",
+    "chiffres": 2,
+    "tableau": {
+     "colonnes": [
+      "Date",
+      "Libellé",
+      "Catégorie",
+      "Moyen",
+      "Montant"
+     ],
+     "lignes": 14
+    },
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "question": "Dépenses des 30 derniers jours",
+   "rendu": {
+    "kind": "réponse",
+    "sujet": "cash",
+    "chiffres": 0,
+    "tableau": null,
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "question": "Rendez-vous de cette semaine",
+   "rendu": {
+    "kind": "réponse",
+    "sujet": "appointments",
+    "chiffres": 0,
+    "tableau": null,
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "question": "Tâches de cette semaine",
+   "rendu": {
+    "kind": "réponse",
+    "sujet": "tasks",
+    "chiffres": 0,
+    "tableau": null,
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "question": "Tâches ouvertes",
+   "rendu": {
+    "kind": "réponse",
+    "sujet": "tasks",
+    "chiffres": 0,
+    "tableau": null,
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  },
+  {
+   "question": "Combien de patients ?",
+   "rendu": {
+    "kind": "réponse",
+    "sujet": "patients",
+    "chiffres": 2,
+    "tableau": {
+     "colonnes": [
+      "Espèce",
+      "Dossiers"
+     ],
+     "lignes": 4
+    },
+    "sources": 1,
+    "carte": false,
+    "etapes": 2
+   }
+  }
+ ]
+}
