@@ -59,10 +59,12 @@ async function installUpdate(update: Update) {
     await relaunch();
   } catch (error) {
     toast.dismiss(loadingToastId);
-    await markDismissedVersion(update.version);
+    // A failed installation is not a refusal: the version stays offered at the next launch and from Paramètres >
+    // À propos. Only « Plus tard » records it as declined.
     console.error("[Updater] Failed to install update:", error);
     toast.error("Impossible d'installer la mise a jour pour le moment.", {
-      description: "Vous pourrez reessayer au prochain lancement.",
+      description:
+        "Elle vous sera reproposee au prochain lancement, ou depuis Parametres, A propos.",
       duration: 10_000,
       closeButton: true,
     });

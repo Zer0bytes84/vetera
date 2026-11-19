@@ -8,6 +8,7 @@ import DocumentTemplateManager from "@/modules/documents/components/document-tem
 import { PatientRemindersContent } from "@/modules/patient-reminders/patient-reminders-panel";
 import { usePatientReminders } from "@/modules/patient-reminders/use-patient-reminders";
 import { LicenseStatusCard } from "@/components/LicenseStatusCard";
+import { UpdateCheckRow } from "@/components/update-check-row";
 import {
   Building01Icon,
   DatabaseIcon,
@@ -1122,6 +1123,7 @@ const Parametres: React.FC<ParametresProps> = ({
                   </p>
                 </div>
               </div>
+              <UpdateCheckRow />
             </SettingsSection>
             <AboutTeam />
             <LicenseStatusCard />
