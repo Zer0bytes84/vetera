@@ -81,7 +81,7 @@ export function buildRevenueChart(points: FocusPoint[]): RevenueChartModel {
         (point.previousReceipts === undefined &&
           point.previousVisits === undefined)
       ) {
-        return undefined;
+        return;
       }
       return `Période précédente : ${money(point.previousReceipts ?? 0)} · ${formatNumber(point.previousVisits ?? 0)}`;
     },

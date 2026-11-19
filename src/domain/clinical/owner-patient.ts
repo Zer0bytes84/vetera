@@ -31,7 +31,7 @@ const trimOptional = (value?: string) => value?.trim() || undefined;
 function normalizePhone(value?: string): string | undefined {
   const trimmed = value?.trim();
   if (!trimmed) {
-    return undefined;
+    return;
   }
 
   const normalized = trimmed.replace(/[^\d+]/g, "");
@@ -48,7 +48,7 @@ function normalizePhone(value?: string): string | undefined {
 function normalizeEmail(value?: string): string | undefined {
   const normalized = value?.trim().toLocaleLowerCase("fr-FR");
   if (!normalized) {
-    return undefined;
+    return;
   }
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalized)) {
     throw new ClinicalValidationError(

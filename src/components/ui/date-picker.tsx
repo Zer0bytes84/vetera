@@ -22,7 +22,7 @@ export const COMPACT_CALENDAR_CLASS =
 export function parseDateValue(value?: string | null): Date | undefined {
   const match = value?.match(DAY);
   if (!match) {
-    return undefined;
+    return;
   }
   const date = new Date(
     Number(match[1]),

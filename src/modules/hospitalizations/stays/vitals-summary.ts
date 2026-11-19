@@ -32,7 +32,7 @@ export function referenceRange(
 ): readonly [number, number] | undefined {
   const reference = vitalReference(species);
   if (!reference) {
-    return undefined;
+    return;
   }
   if (key === "temperature_c") {
     return reference.temperature;
@@ -40,7 +40,7 @@ export function referenceRange(
   if (key === "heart_rate") {
     return reference.heartRate;
   }
-  return undefined;
+  return;
 }
 
 export function verdict(

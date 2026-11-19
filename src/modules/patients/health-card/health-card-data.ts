@@ -159,7 +159,7 @@ export function ageLabel(
     Number.isNaN(birth.getTime()) ||
     birth.getTime() > now.getTime()
   ) {
-    return undefined;
+    return;
   }
   let months =
     (now.getFullYear() - birth.getFullYear()) * 12 +
@@ -328,7 +328,7 @@ function doseLabel(item: PrescriptionItem): string | undefined {
   if (item.dosagePerKg > 0) {
     return `${format(item.dosagePerKg)} ${item.dosageUnit}`;
   }
-  return undefined;
+  return;
 }
 
 /** Treatments still running today, from signed or dispensed prescriptions. */

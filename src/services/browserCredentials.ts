@@ -9,5 +9,5 @@ export function getBrowserPasswordHash(user: {
   if (typeof user.password_hash === "string" && user.password_hash.length > 0) {
     return user.password_hash;
   }
-  return undefined;
+  return;
 }

@@ -211,11 +211,11 @@ export function formatDateInput(date: Date) {
 
 export function parseDateInput(value: string) {
   if (!value) {
-    return undefined;
+    return;
   }
   const [year, month, day] = value.split("-").map(Number);
   if (!year || !month || !day) {
-    return undefined;
+    return;
   }
   return new Date(year, month - 1, day);
 }
