@@ -2655,6 +2655,10 @@ button:focus-visible,
 /* The assistant panel's header ends on the line of the app's header, so the two rules meet: 60 px from the top of the
    window, 68 in the Clean theme, whose header sits 8 px inside its frame (the 1 px border is part of that height). */
 .assistant-panel-header { box-sizing: border-box; height: 60px; }
+/* The panel and its body clip their content without being scrollable: a box with overflow hidden can still be scrolled by
+   code (scrollIntoView did, and the panel lost its header, 19 November 2026). `hidden` first, for a WebKit older than
+   Safari 16, which drops `clip`. */
+[data-slot="assistant-panel"], .assistant-panel-body { overflow: hidden; overflow: clip; }
 
 /* Forced dark sidebar, both themes: the active item follows the sidebar tone. */
 :root[data-sidebar-tone="dark"] .app-sidebar [data-slot="sidebar-menu-button"][data-active],

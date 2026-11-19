@@ -131,9 +131,13 @@ describe("garde des doses : refusée avant toute lecture", () => {
   });
 
   it("ne refuse pas à tort les questions de lecture", () => {
-    for (const question of ["Tâches importantes", "Recettes de ce mois", "Rendez-vous de Rex", "Patients de l’agenda de demain"]) {
+    for (const question of ["Tâches en retard", "Recettes de ce mois", "Rendez-vous de Rex", "Patients de l’agenda de demain"]) {
       expect(ask(question).kind, question).toBe("answer");
     }
+    // Priority is not a filter the engine applies (since 19 November 2026 a word it cannot apply is refused, not ignored):
+    // « importantes » is not understood, and it is not taken for a dose either.
+    const important = ask("Tâches importantes");
+    expect(important.kind === "refusal" && important.reason).toBe("unknown");
   });
 });
 
@@ -244,10 +248,12 @@ describe("chaque chiffre a sa provenance", () => {
     const allowed = new Set([
       "@/modules/dashboard/model/premium-analytics", "@/modules/dashboard/v2/model", "@/utils/display-format", "@/types/db",
       "./language", "./period", "./types",
+      "./vocabulary",
     ]);
-    for (const file of ["answer.ts", "language.ts", "period.ts", "types.ts"]) {
+    for (const file of ["answer.ts", "language.ts", "period.ts", "types.ts", "vocabulary.ts"]) {
       for (const source of imports(file)) expect(allowed.has(source), `${file} importe ${source}`).toBe(true);
     }
+
   });
 });
 

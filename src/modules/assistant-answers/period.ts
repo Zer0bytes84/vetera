@@ -34,6 +34,9 @@ export function parsePeriod(text: string, now: Date): Period | null {
   if (has(text, /\bavant hier\b/)) return span(addDays(now, -2), addDays(now, -2));
   if (has(text, /\b(aujourd hui|ce jour|du jour)\b/)) return span(now, now);
   if (has(text, /\bhier\b/)) return span(addDays(now, -1), addDays(now, -1));
+  // « après-demain » holds « demain »: it is read first, like « avant-hier » before « hier » (until 19 November 2026 it
+  // was answered as tomorrow).
+  if (has(text, /\bapres demain\b/)) return span(addDays(now, 2), addDays(now, 2));
   if (has(text, /\bdemain\b/)) return span(addDays(now, 1), addDays(now, 1));
   if (has(text, /\bsemaine (derniere|passee|precedente)\b/)) return span(addDays(mondayOf(now), -7), addDays(mondayOf(now), -1));
   if (has(text, /\bsemaine prochaine\b/)) return span(addDays(mondayOf(now), 7), addDays(mondayOf(now), 13));

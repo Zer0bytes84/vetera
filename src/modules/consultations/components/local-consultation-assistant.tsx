@@ -823,7 +823,17 @@ export default function LocalConsultationAssistant({
   return (
     <section
       aria-label="Assistant de consultation"
-      className="flex h-full min-h-0 w-full flex-1 flex-col overflow-hidden text-foreground"
+      className="assistant-panel-body flex h-full min-h-0 w-full flex-1 flex-col text-foreground"
+      onKeyDown={(event) => {
+        // Échap closes the panel, through the same check as the close button (an unsaved note asks first). A menu, a
+        // list or a dialog open inside the panel keeps Échap for itself.
+        if (event.key !== "Escape" || event.defaultPrevented || event.nativeEvent.isComposing) return;
+        const target = event.target as HTMLElement;
+        // In a text field, Échap belongs to the field (an answer being written, a dictation): the panel stays.
+        if (target.closest("input, textarea, [contenteditable='true'], [role='dialog'], [role='alertdialog'], [role='listbox'], [role='menu'], [data-slot='select-content']")) return;
+        event.preventDefault();
+        requestClose();
+      }}
     >
       {/* 1. Header Pinned */}
       <div className="assistant-panel-header flex shrink-0 items-center justify-between gap-3 px-3">

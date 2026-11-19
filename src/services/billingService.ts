@@ -1228,35 +1228,44 @@ function requireIssuedInvoice(invoice: InvoiceDetail | null): InvoiceDetail {
 export async function listInvoices(
   options: ListInvoicesOptions = {},
 ): Promise<Invoice[]> {
-  return runDbRead(async (database) => {
-    const clauses: string[] = [];
-    const bindValues: unknown[] = [];
-    if (options.ownerId) {
-      clauses.push("i.owner_id = ?");
-      bindValues.push(options.ownerId);
-    }
-    if (options.documentStatus) {
-      clauses.push("i.document_status = ?");
-      bindValues.push(options.documentStatus);
-    }
-    const where = clauses.length > 0 ? ` WHERE ${clauses.join(" AND ")}` : "";
-    const rows = await database.select<DatabaseRow[]>(
-      `${INVOICE_SELECT}${where} ORDER BY COALESCE(i.issued_at, i.created_at) DESC, i.id DESC`,
-      bindValues,
-    );
-    const invoices = rows.map((row) => rowToInvoice(row, options.now));
-    const filtered = options.settlementStatus
-      ? invoices.filter(
-          (invoice) => invoice.settlementStatus === options.settlementStatus,
-        )
-      : invoices;
-    const limit = options.limit;
-    return typeof limit === "number" &&
-      Number.isSafeInteger(limit) &&
-      limit >= 0
-      ? filtered.slice(0, limit)
-      : filtered;
-  });
+  return runDbRead((database) => selectInvoices(database, options));
+}
+
+/**
+ * The invoices query on a connection given by the caller: the same statement and mapping as listInvoices, so that a
+ * guarded read-only connection (the assistant's Données tab) reads exactly what the dashboard reads.
+ */
+export async function selectInvoices(
+  database: { select<T>(query: string, values?: unknown[]): Promise<T> },
+  options: ListInvoicesOptions = {},
+): Promise<Invoice[]> {
+  const clauses: string[] = [];
+  const bindValues: unknown[] = [];
+  if (options.ownerId) {
+    clauses.push("i.owner_id = ?");
+    bindValues.push(options.ownerId);
+  }
+  if (options.documentStatus) {
+    clauses.push("i.document_status = ?");
+    bindValues.push(options.documentStatus);
+  }
+  const where = clauses.length > 0 ? ` WHERE ${clauses.join(" AND ")}` : "";
+  const rows = await database.select<DatabaseRow[]>(
+    `${INVOICE_SELECT}${where} ORDER BY COALESCE(i.issued_at, i.created_at) DESC, i.id DESC`,
+    bindValues,
+  );
+  const invoices = rows.map((row) => rowToInvoice(row, options.now));
+  const filtered = options.settlementStatus
+    ? invoices.filter(
+        (invoice) => invoice.settlementStatus === options.settlementStatus,
+      )
+    : invoices;
+  const limit = options.limit;
+  return typeof limit === "number" &&
+    Number.isSafeInteger(limit) &&
+    limit >= 0
+    ? filtered.slice(0, limit)
+    : filtered;
 }
 
 /** Returns an invoice document with its immutable lines and related ledger records. */

@@ -1,0 +1,1409 @@
+[
+ {
+  "question": "on est chargé demain",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je ne lis pas la charge de travail. Je réponds aux recettes et dépenses, aux rendez-vous, "
+ },
+ {
+  "question": "on est très chargé demain ?",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je ne lis pas la charge de travail. Je réponds aux recettes et dépenses, aux rendez-vous, "
+ },
+ {
+  "question": "demain c'est chargé ?",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je ne lis pas la charge de travail. Je réponds aux recettes et dépenses, aux rendez-vous, "
+ },
+ {
+  "question": "Chargés ce mois",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je ne lis pas la charge de travail. Je réponds aux recettes et dépenses, aux rendez-vous, "
+ },
+ {
+  "question": "rendez-vous de Rex et quelle quantité d'amoxicilline lui donner",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « quantite », « amoxicilline », « lui »…. Je ne réponds qu’à une quest"
+ },
+ {
+  "question": "tâches de Rex : combien d'amoxicilline",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « amoxicilline ». Je ne réponds qu’à une question comprise en entier, "
+ },
+ {
+  "question": "patients : quelle quantité de méloxicam pour un chien de 10 kilos",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « quantite », « meloxicam », « chien »…. Je ne réponds qu’à une questi"
+ },
+ {
+  "question": "rendez-vous de Rex, il pèse 12 kilos, combien de seringues de métacam",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « pese », « 12 », « kilos »…. Je ne réponds qu’à une question comprise"
+ },
+ {
+  "question": "rendez-vous demain 0.1 mgkg",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « 0 », « 1 », « mgkg ». Je ne réponds qu’à une question comprise en en"
+ },
+ {
+  "question": "rendez-vous demain 2 mgs",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « 2 », « mgs ». Je ne réponds qu’à une question comprise en entier, po"
+ },
+ {
+  "question": "rendez-vous demain 2 mgr",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « 2 », « mgr ». Je ne réponds qu’à une question comprise en entier, po"
+ },
+ {
+  "question": "rendez-vous demain 2 milligr",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « 2 », « milligr ». Je ne réponds qu’à une question comprise en entier"
+ },
+ {
+  "question": "rendez-vous demain 2 mls",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « 2 », « mls ». Je ne réponds qu’à une question comprise en entier, po"
+ },
+ {
+  "question": "rendez-vous demain 2 millis",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « 2 », « millis ». Je ne réponds qu’à une question comprise en entier,"
+ },
+ {
+  "question": "rendez-vous demain 2 c.c.",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « 2 ». Je ne réponds qu’à une question comprise en entier, pour ne pas"
+ },
+ {
+  "question": "rendez-vous demain 2 grammes",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « 2 », « grammes ». Je ne réponds qu’à une question comprise en entier"
+ },
+ {
+  "question": "rendez-vous demain 2 gr",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « 2 », « gr ». Je ne réponds qu’à une question comprise en entier, pou"
+ },
+ {
+  "question": "rendez-vous demain 5U",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « 5u ». Je ne réponds qu’à une question comprise en entier, pour ne pa"
+ },
+ {
+  "question": "rendez-vous demain 5 U d'insuline",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « 5 », « u », « insuline ». Je ne réponds qu’à une question comprise e"
+ },
+ {
+  "question": "rendez-vous demain 1 cps",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « 1 », « cps ». Je ne réponds qu’à une question comprise en entier, po"
+ },
+ {
+  "question": "rendez-vous demain 1 cpr",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « 1 », « cpr ». Je ne réponds qu’à une question comprise en entier, po"
+ },
+ {
+  "question": "rendez-vous demain 1 tablette",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « 1 », « tablette ». Je ne réponds qu’à une question comprise en entie"
+ },
+ {
+  "question": "rendez-vous demain 1 tablet",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « 1 », « tablet ». Je ne réponds qu’à une question comprise en entier,"
+ },
+ {
+  "question": "rendez-vous demain 2 pills",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « 2 », « pills ». Je ne réponds qu’à une question comprise en entier, "
+ },
+ {
+  "question": "rendez-vous demain 2 caps",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « 2 », « caps ». Je ne réponds qu’à une question comprise en entier, p"
+ },
+ {
+  "question": "rendez-vous demain 1 capsule",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « 1 », « capsule ». Je ne réponds qu’à une question comprise en entier"
+ },
+ {
+  "question": "rendez-vous demain 1 sachet",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « 1 », « sachet ». Je ne réponds qu’à une question comprise en entier,"
+ },
+ {
+  "question": "rendez-vous demain 1 seringue",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « 1 », « seringue ». Je ne réponds qu’à une question comprise en entie"
+ },
+ {
+  "question": "rendez-vous demain 1 dosette",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « 1 », « dosette ». Je ne réponds qu’à une question comprise en entier"
+ },
+ {
+  "question": "rendez-vous demain 1 spray",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « 1 », « spray ». Je ne réponds qu’à une question comprise en entier, "
+ },
+ {
+  "question": "rendez-vous demain 3 pulvérisations",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « 3 », « pulverisations ». Je ne réponds qu’à une question comprise en"
+ },
+ {
+  "question": "rendez-vous demain 2 bouffées",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « 2 », « bouffees ». Je ne réponds qu’à une question comprise en entie"
+ },
+ {
+  "question": "rendez-vous demain 2 gtt",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « 2 », « gtt ». Je ne réponds qu’à une question comprise en entier, po"
+ },
+ {
+  "question": "rendez-vous demain 2 gttes",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « 2 », « gttes ». Je ne réponds qu’à une question comprise en entier, "
+ },
+ {
+  "question": "rendez-vous demain 2x par jour",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « 2x », « par », « jour ». Je ne réponds qu’à une question comprise en"
+ },
+ {
+  "question": "rendez-vous demain 1/j",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « 1/j ». Je ne réponds qu’à une question comprise en entier, pour ne p"
+ },
+ {
+  "question": "rendez-vous demain 1 fois/j",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « 1 », « fois/j ». Je ne réponds qu’à une question comprise en entier,"
+ },
+ {
+  "question": "rendez-vous demain 1 par jour",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « 1 », « par », « jour ». Je ne réponds qu’à une question comprise en "
+ },
+ {
+  "question": "rendez-vous demain toutes les douze heures",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « toutes », « douze », « heures ». Je ne réponds qu’à une question com"
+ },
+ {
+  "question": "rendez-vous demain chaque 8 heures",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « chaque », « 8 », « heures ». Je ne réponds qu’à une question compris"
+ },
+ {
+  "question": "rendez-vous demain matin et soir",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « matin », « soir ». Je ne réponds qu’à une question comprise en entie"
+ },
+ {
+  "question": "rendez-vous demain bid",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « bid ». Je ne réponds qu’à une question comprise en entier, pour ne p"
+ },
+ {
+  "question": "rendez-vous demain q12h",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « q12h ». Je ne réponds qu’à une question comprise en entier, pour ne "
+ },
+ {
+  "question": "rendez-vous demain une fois quotidienne",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « fois », « quotidienne ». Je ne réponds qu’à une question comprise en"
+ },
+ {
+  "question": "rendez-vous demain un demi",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « demi ». Je ne réponds qu’à une question comprise en entier, pour ne "
+ },
+ {
+  "question": "rendez-vous demain une demi",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « demi ». Je ne réponds qu’à une question comprise en entier, pour ne "
+ },
+ {
+  "question": "rendez-vous demain un quart",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « quart ». Je ne réponds qu’à une question comprise en entier, pour ne"
+ },
+ {
+  "question": "rendez-vous demain 1/2",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « 1/2 ». Je ne réponds qu’à une question comprise en entier, pour ne p"
+ },
+ {
+  "question": "rendez-vous demain ½",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « 1 », « 2 ». Je ne réponds qu’à une question comprise en entier, pour"
+ },
+ {
+  "question": "rendez-vous demain 0.5",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « 0 », « 5 ». Je ne réponds qu’à une question comprise en entier, pour"
+ },
+ {
+  "question": "rendez-vous demain amoxicilline 250 deux fois",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « amoxicilline », « 250 », « deux »…. Je ne réponds qu’à une question "
+ },
+ {
+  "question": "rendez-vous demain amox 250",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « amox », « 250 ». Je ne réponds qu’à une question comprise en entier,"
+ },
+ {
+  "question": "rendez-vous demain metacam 1.5",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « metacam », « 1 », « 5 ». Je ne réponds qu’à une question comprise en"
+ },
+ {
+  "question": "rendez-vous demain dózis",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « dozis ». Je ne réponds qu’à une question comprise en entier, pour ne"
+ },
+ {
+  "question": "rendez-vous demain d o s e",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « o », « e ». Je ne réponds qu’à une question comprise en entier, pour"
+ },
+ {
+  "question": "rendez-vous demain d.o.s.e",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « o », « e ». Je ne réponds qu’à une question comprise en entier, pour"
+ },
+ {
+  "question": "rendez-vous demain dos3",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « dos3 ». Je ne réponds qu’à une question comprise en entier, pour ne "
+ },
+ {
+  "question": "rendez-vous demain pos0logie",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « pos0logie ». Je ne réponds qu’à une question comprise en entier, pou"
+ },
+ {
+  "question": "rendez-vous demain dosis",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « dosis ». Je ne réponds qu’à une question comprise en entier, pour ne"
+ },
+ {
+  "question": "rendez-vous demain combien d'amoxicilline",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « amoxicilline ». Je ne réponds qu’à une question comprise en entier, "
+ },
+ {
+  "question": "rendez-vous demain combien de médicament",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « medicament ». Je ne réponds qu’à une question comprise en entier, po"
+ },
+ {
+  "question": "rendez-vous demain combien de pilules",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « pilules ». Je ne réponds qu’à une question comprise en entier, pour "
+ },
+ {
+  "question": "rendez-vous demain how many tablets",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « how », « many », « tablets ». Je ne réponds qu’à une question compri"
+ },
+ {
+  "question": "rendez-vous demain how much amoxicillin",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « how », « much », « amoxicillin ». Je ne réponds qu’à une question co"
+ },
+ {
+  "question": "rendez-vous demain inject",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « inject ». Je ne réponds qu’à une question comprise en entier, pour n"
+ },
+ {
+  "question": "rendez-vous demain injecte",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « injecte ». Je ne réponds qu’à une question comprise en entier, pour "
+ },
+ {
+  "question": "rendez-vous demain piqûre",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « piqure ». Je ne réponds qu’à une question comprise en entier, pour n"
+ },
+ {
+  "question": "rendez-vous demain piqure de 2",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « piqure », « 2 ». Je ne réponds qu’à une question comprise en entier,"
+ },
+ {
+  "question": "rendez-vous demain perfuser 10",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « perfuser », « 10 ». Je ne réponds qu’à une question comprise en enti"
+ },
+ {
+  "question": "rendez-vous demain ملغ",
+  "attendu": "refus",
+  "obtenu": "refus:dose",
+  "ok": true,
+  "texte": "Je ne calcule et ne propose aucune dose. La posologie se décide dans l’ordonnance, avec le"
+ },
+ {
+  "question": "rendez-vous demain مل",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je ne lis que les questions écrites en français, sans symbole : je préfère ne rien répondr"
+ },
+ {
+  "question": "rendez-vous demain 5 ملغ",
+  "attendu": "refus",
+  "obtenu": "refus:dose",
+  "ok": true,
+  "texte": "Je ne calcule et ne propose aucune dose. La posologie se décide dans l’ordonnance, avec le"
+ },
+ {
+  "question": "rendez-vous demain جرعة",
+  "attendu": "refus",
+  "obtenu": "refus:dose",
+  "ok": true,
+  "texte": "Je ne calcule et ne propose aucune dose. La posologie se décide dans l’ordonnance, avec le"
+ },
+ {
+  "question": "rendez-vous demain شحال من الدوا",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je ne lis que les questions écrites en français, sans symbole : je préfère ne rien répondr"
+ },
+ {
+  "question": "rendez-vous demain qaddech men dwa",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « qaddech », « men », « dwa ». Je ne réponds qu’à une question compris"
+ },
+ {
+  "question": "rendez-vous demain jor3a",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « jor3a ». Je ne réponds qu’à une question comprise en entier, pour ne"
+ },
+ {
+  "question": "rendez-vous demain 💊💊",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je ne lis que les questions écrites en français, sans symbole : je préfère ne rien répondr"
+ },
+ {
+  "question": "rendez-vous demain soir",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « soir ». Je ne réponds qu’à une question comprise en entier, pour ne "
+ },
+ {
+  "question": "rendez-vous de demain matin",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « matin ». Je ne réponds qu’à une question comprise en entier, pour ne"
+ },
+ {
+  "question": "rendez-vous après-demain matin",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « matin ». Je ne réponds qu’à une question comprise en entier, pour ne"
+ },
+ {
+  "question": "rendez-vous hier soir",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « soir ». Je ne réponds qu’à une question comprise en entier, pour ne "
+ },
+ {
+  "question": "recette d'hier soir",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « soir ». Je ne réponds qu’à une question comprise en entier, pour ne "
+ },
+ {
+  "question": "rendez-vous aujourd'hui matin",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « matin ». Je ne réponds qu’à une question comprise en entier, pour ne"
+ },
+ {
+  "question": "rendez-vous d'aujourd'hui en soirée",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « soiree ». Je ne réponds qu’à une question comprise en entier, pour n"
+ },
+ {
+  "question": "rendez-vous à 10h demain",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « 10h ». Je ne réponds qu’à une question comprise en entier, pour ne p"
+ },
+ {
+  "question": "rendez-vous cette aprem",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « aprem ». Je ne réponds qu’à une question comprise en entier, pour ne"
+ },
+ {
+  "question": "rendez-vous du matin",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « matin ». Je ne réponds qu’à une question comprise en entier, pour ne"
+ },
+ {
+  "question": "rendez-vous matin",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « matin ». Je ne réponds qu’à une question comprise en entier, pour ne"
+ },
+ {
+  "question": "rendez-vous de 10 h",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « 10 », « h ». Je ne réponds qu’à une question comprise en entier, pou"
+ },
+ {
+  "question": "rendez-vous à 9 h 30",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « 9 », « h », « 30 ». Je ne réponds qu’à une question comprise en enti"
+ },
+ {
+  "question": "rendez-vous dans 3 jours",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « dans », « 3 », « jours ». Je ne réponds qu’à une question comprise e"
+ },
+ {
+  "question": "rendez-vous il y a 2 jours",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « 2 », « jours ». Je ne réponds qu’à une question comprise en entier, "
+ },
+ {
+  "question": "rendez-vous dans 15 jours",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « dans », « 15 », « jours ». Je ne réponds qu’à une question comprise "
+ },
+ {
+  "question": "recettes des 15 jours",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « 15 », « jours ». Je ne réponds qu’à une question comprise en entier,"
+ },
+ {
+  "question": "recettes ces 7 jours",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « 7 », « jours ». Je ne réponds qu’à une question comprise en entier, "
+ },
+ {
+  "question": "rendez-vous des 7 jours à venir",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « 7 », « jours », « venir ». Je ne réponds qu’à une question comprise "
+ },
+ {
+  "question": "rendez-vous des 3 jours prochains",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « 3 », « jours », « prochains ». Je ne réponds qu’à une question compr"
+ },
+ {
+  "question": "recettes le mois d'avant",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « mois », « avant ». Je ne réponds qu’à une question comprise en entie"
+ },
+ {
+  "question": "rendez-vous la veille",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « veille ». Je ne réponds qu’à une question comprise en entier, pour n"
+ },
+ {
+  "question": "rendez-vous l'avant-veille",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « avant », « veille ». Je ne réponds qu’à une question comprise en ent"
+ },
+ {
+  "question": "rendez-vous le lendemain",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « lendemain ». Je ne réponds qu’à une question comprise en entier, pou"
+ },
+ {
+  "question": "rendez-vous du week-end",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « week », « end ». Je ne réponds qu’à une question comprise en entier,"
+ },
+ {
+  "question": "rendez-vous de la nuit",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « nuit ». Je ne réponds qu’à une question comprise en entier, pour ne "
+ },
+ {
+  "question": "recettes 2025",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « 2025 ». Je ne réponds qu’à une question comprise en entier, pour ne "
+ },
+ {
+  "question": "recettes à venir",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « venir ». Je ne réponds qu’à une question comprise en entier, pour ne"
+ },
+ {
+  "question": "rendez-vous la semaine d'après",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « apres ». Je ne réponds qu’à une question comprise en entier, pour ne"
+ },
+ {
+  "question": "rendez-vous la semaine d'avant",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « avant ». Je ne réponds qu’à une question comprise en entier, pour ne"
+ },
+ {
+  "question": "rendez-vous la semaine qui vient",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « vient ». Je ne réponds qu’à une question comprise en entier, pour ne"
+ },
+ {
+  "question": "recettes novembre dernier",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « dernier ». Je ne réponds qu’à une question comprise en entier, pour "
+ },
+ {
+  "question": "recettes novembre de l'année dernière",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Votre question nomme plusieurs périodes. Je réponds sur une période à la fois : laquelle v"
+ },
+ {
+  "question": "recettes hier et aujourd'hui",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Votre question nomme plusieurs périodes. Je réponds sur une période à la fois : laquelle v"
+ },
+ {
+  "question": "recettes hier vs aujourd'hui",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Votre question nomme plusieurs périodes. Je réponds sur une période à la fois : laquelle v"
+ },
+ {
+  "question": "combien de chats",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « chats ». Je ne réponds qu’à une question comprise en entier, pour ne"
+ },
+ {
+  "question": "combien de dossiers de chats",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « chats ». Je ne réponds qu’à une question comprise en entier, pour ne"
+ },
+ {
+  "question": "chiens mâles",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « chiens », « males ». Je ne réponds qu’à une question comprise en ent"
+ },
+ {
+  "question": "patients décédés",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « decedes ». Je ne réponds qu’à une question comprise en entier, pour "
+ },
+ {
+  "question": "patients vivants",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « vivants ». Je ne réponds qu’à une question comprise en entier, pour "
+ },
+ {
+  "question": "patients hospitalisés",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « hospitalises ». Je ne réponds qu’à une question comprise en entier, "
+ },
+ {
+  "question": "patients sous traitement",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « sous », « traitement ». Je ne réponds qu’à une question comprise en "
+ },
+ {
+  "question": "patients de Karim",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « karim ». Je ne réponds qu’à une question comprise en entier, pour ne"
+ },
+ {
+  "question": "patients de Rex",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je compte les dossiers du cabinet, je n’affiche pas un dossier : ouvrez-le depuis Patients"
+ },
+ {
+  "question": "dossiers de Rex",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je compte les dossiers du cabinet, je n’affiche pas un dossier : ouvrez-le depuis Patients"
+ },
+ {
+  "question": "dossier Rex",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je compte les dossiers du cabinet, je n’affiche pas un dossier : ouvrez-le depuis Patients"
+ },
+ {
+  "question": "rendez-vous confirmés demain",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « confirmes ». Je ne réponds qu’à une question comprise en entier, pou"
+ },
+ {
+  "question": "rendez-vous en retard",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « retard ». Je ne réponds qu’à une question comprise en entier, pour n"
+ },
+ {
+  "question": "rendez-vous du Dr Benali",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « dr », « benali ». Je ne réponds qu’à une question comprise en entier"
+ },
+ {
+  "question": "rendez-vous du vétérinaire Karim",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « veterinaire », « karim ». Je ne réponds qu’à une question comprise e"
+ },
+ {
+  "question": "rendez-vous par jour",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « par », « jour ». Je ne réponds qu’à une question comprise en entier,"
+ },
+ {
+  "question": "patients sans rendez-vous",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « sans ». Je ne réponds qu’à une question comprise en entier, pour ne "
+ },
+ {
+  "question": "tâches faites ce mois",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « faites ». Je ne réponds qu’à une question comprise en entier, pour n"
+ },
+ {
+  "question": "tâches urgentes",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « urgentes ». Je ne réponds qu’à une question comprise en entier, pour"
+ },
+ {
+  "question": "tâches haute priorité",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « haute », « priorite ». Je ne réponds qu’à une question comprise en e"
+ },
+ {
+  "question": "recettes en espèces",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « especes ». Je ne réponds qu’à une question comprise en entier, pour "
+ },
+ {
+  "question": "recettes par carte",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « par », « carte ». Je ne réponds qu’à une question comprise en entier"
+ },
+ {
+  "question": "recettes par moyen de paiement",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « par », « moyen », « paiement ». Je ne réponds qu’à une question comp"
+ },
+ {
+  "question": "moyenne des recettes par jour",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « moyenne », « par », « jour ». Je ne réponds qu’à une question compri"
+ },
+ {
+  "question": "recettes prévues",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « prevues ». Je ne réponds qu’à une question comprise en entier, pour "
+ },
+ {
+  "question": "solde de Karim",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « karim ». Je ne réponds qu’à une question comprise en entier, pour ne"
+ },
+ {
+  "question": "solde du compte de Karim",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « compte », « karim ». Je ne réponds qu’à une question comprise en ent"
+ },
+ {
+  "question": "mon solde bancaire",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « bancaire ». Je ne réponds qu’à une question comprise en entier, pour"
+ },
+ {
+  "question": "chiffre d'affaires de Karim",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « karim ». Je ne réponds qu’à une question comprise en entier, pour ne"
+ },
+ {
+  "question": "chiffre d'affaires de l'heure",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « heure ». Je ne réponds qu’à une question comprise en entier, pour ne"
+ },
+ {
+  "question": "combien gagne un vétérinaire",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « veterinaire ». Je ne réponds qu’à une question comprise en entier, p"
+ },
+ {
+  "question": "combien a gagné Karim",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « karim ». Je ne réponds qu’à une question comprise en entier, pour ne"
+ },
+ {
+  "question": "on a gagné ce match",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « match ». Je ne réponds qu’à une question comprise en entier, pour ne"
+ },
+ {
+  "question": "on a gagné du temps aujourd'hui",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « temps ». Je ne réponds qu’à une question comprise en entier, pour ne"
+ },
+ {
+  "question": "on a gagné combien de patients ce mois",
+  "attendu": "refus",
+  "obtenu": "refus:ambiguous",
+  "ok": true,
+  "texte": "Votre question touche à plusieurs sujets (recettes et dépenses, patients). Je réponds à un"
+ },
+ {
+  "question": "combien de nouveaux patients a-t-on gagné ce mois",
+  "attendu": "refus",
+  "obtenu": "refus:ambiguous",
+  "ok": true,
+  "texte": "Votre question touche à plusieurs sujets (recettes et dépenses, patients). Je réponds à un"
+ },
+ {
+  "question": "qui a gagné le match hier",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je ne sais pas répondre à cette question. Je réponds aux recettes et dépenses, aux rendez-"
+ },
+ {
+  "question": "recette de couscous",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je ne sais pas répondre à cette question. Je réponds aux recettes et dépenses, aux rendez-"
+ },
+ {
+  "question": "on est chargés demain",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je ne lis pas la charge de travail. Je réponds aux recettes et dépenses, aux rendez-vous, "
+ },
+ {
+  "question": "qui on voit ce matin en consultation",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je ne lis pas cette période : je comprends aujourd’hui, hier, demain, cette semaine, le mo"
+ },
+ {
+  "question": "protocole de vermifugation chien adulte",
+  "attendu": "refus",
+  "obtenu": "refus:reminders",
+  "ok": true,
+  "texte": "Je ne lis pas encore les rappels vaccinaux et médicaux : ils sont dans la page Rappels, à "
+ },
+ {
+  "question": "dossier medical Hercule",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je n’ai pas compris « medical », « hercule ». Je ne réponds qu’à une question comprise en "
+ },
+ {
+  "question": "le chat de Zouaoui c'est quoi son nom",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "Je ne sais pas répondre à cette question. Je réponds aux recettes et dépenses, aux rendez-"
+ },
+ {
+  "question": "Recettes des 30 derniers jours",
+  "attendu": "réponse",
+  "obtenu": "réponse:cash",
+  "ok": true,
+  "texte": "Encaissé du 14 oct. 2026 au 12 nov. 2026 : 19 500,5 DA, sur 2 lignes."
+ },
+ {
+  "question": "Rendez-vous d’aujourd’hui",
+  "attendu": "réponse",
+  "obtenu": "réponse:appointments",
+  "ok": true,
+  "texte": "1 rendez-vous le 12 nov. 2026 : 0 terminé, 0 annulé, 0 absence."
+ },
+ {
+  "question": "Absences des 30 derniers jours",
+  "attendu": "réponse",
+  "obtenu": "réponse:appointments",
+  "ok": true,
+  "texte": "Aucune absence à un rendez-vous du 14 oct. 2026 au 12 nov. 2026."
+ },
+ {
+  "question": "Tâches en retard",
+  "attendu": "réponse",
+  "obtenu": "réponse:tasks",
+  "ok": true,
+  "texte": "Aucune tâche en retard."
+ },
+ {
+  "question": "Nouveaux patients ce mois",
+  "attendu": "réponse",
+  "obtenu": "réponse:patients",
+  "ok": true,
+  "texte": "Aucun dossier créé du 1 nov. 2026 au 30 nov. 2026."
+ },
+ {
+  "question": "Recettes de ce mois",
+  "attendu": "réponse",
+  "obtenu": "réponse:cash",
+  "ok": true,
+  "texte": "Encaissé du 1 nov. 2026 au 30 nov. 2026 : 19 500,5 DA, sur 2 lignes."
+ },
+ {
+  "question": "Recettes du mois dernier",
+  "attendu": "réponse",
+  "obtenu": "réponse:cash",
+  "ok": true,
+  "texte": "Aucune ligne réglée dans le journal de caisse du 1 oct. 2026 au 31 oct. 2026."
+ },
+ {
+  "question": "Dépenses des 30 derniers jours",
+  "attendu": "réponse",
+  "obtenu": "réponse:cash",
+  "ok": true,
+  "texte": "Dépensé du 14 oct. 2026 au 12 nov. 2026 : 3 125,75 DA, sur 1 ligne."
+ },
+ {
+  "question": "Rendez-vous d’aujourd’hui",
+  "attendu": "réponse",
+  "obtenu": "réponse:appointments",
+  "ok": true,
+  "texte": "1 rendez-vous le 12 nov. 2026 : 0 terminé, 0 annulé, 0 absence."
+ },
+ {
+  "question": "Rendez-vous de cette semaine",
+  "attendu": "réponse",
+  "obtenu": "réponse:appointments",
+  "ok": true,
+  "texte": "1 rendez-vous du 9 nov. 2026 au 15 nov. 2026 : 0 terminé, 0 annulé, 0 absence."
+ },
+ {
+  "question": "Absences des 30 derniers jours",
+  "attendu": "réponse",
+  "obtenu": "réponse:appointments",
+  "ok": true,
+  "texte": "Aucune absence à un rendez-vous du 14 oct. 2026 au 12 nov. 2026."
+ },
+ {
+  "question": "Tâches en retard",
+  "attendu": "réponse",
+  "obtenu": "réponse:tasks",
+  "ok": true,
+  "texte": "Aucune tâche en retard."
+ },
+ {
+  "question": "Tâches de cette semaine",
+  "attendu": "réponse",
+  "obtenu": "réponse:tasks",
+  "ok": true,
+  "texte": "Aucune tâche ouverte avec une échéance du 9 nov. 2026 au 15 nov. 2026."
+ },
+ {
+  "question": "Tâches ouvertes",
+  "attendu": "réponse",
+  "obtenu": "réponse:tasks",
+  "ok": true,
+  "texte": "1 tâche ouverte, dont 0 en retard."
+ },
+ {
+  "question": "Nouveaux patients ce mois",
+  "attendu": "réponse",
+  "obtenu": "réponse:patients",
+  "ok": true,
+  "texte": "Aucun dossier créé du 1 nov. 2026 au 30 nov. 2026."
+ },
+ {
+  "question": "Combien de patients ?",
+  "attendu": "réponse",
+  "obtenu": "réponse:patients",
+  "ok": true,
+  "texte": "1 dossier actif, sur 1 dossier au total."
+ },
+ {
+  "question": "recettes du mois dernier",
+  "attendu": "réponse",
+  "obtenu": "réponse:cash",
+  "ok": true,
+  "texte": "Aucune ligne réglée dans le journal de caisse du 1 oct. 2026 au 31 oct. 2026."
+ },
+ {
+  "question": "combien on a gagné ce mois",
+  "attendu": "réponse",
+  "obtenu": "réponse:cash",
+  "ok": true,
+  "texte": "Encaissé du 1 nov. 2026 au 30 nov. 2026 : 19 500,5 DA, sur 2 lignes."
+ },
+ {
+  "question": "recette du jour",
+  "attendu": "réponse",
+  "obtenu": "réponse:cash",
+  "ok": true,
+  "texte": "Encaissé le 12 nov. 2026 : 7 000,5 DA, sur 1 ligne."
+ },
+ {
+  "question": "charges du mois",
+  "attendu": "réponse",
+  "obtenu": "réponse:cash",
+  "ok": true,
+  "texte": "Dépensé du 1 nov. 2026 au 30 nov. 2026 : 3 125,75 DA, sur 1 ligne."
+ },
+ {
+  "question": "Rendez-vous de Rex",
+  "attendu": "réponse",
+  "obtenu": "réponse:appointments",
+  "ok": true,
+  "texte": "1 rendez-vous du 14 oct. 2026 au 12 nov. 2026 pour Rex : 0 terminé, 0 annulé, 0 absence."
+ },
+ {
+  "question": "rendez-vous de Rex cette semaine",
+  "attendu": "réponse",
+  "obtenu": "réponse:appointments",
+  "ok": true,
+  "texte": "1 rendez-vous du 9 nov. 2026 au 15 nov. 2026 pour Rex : 0 terminé, 0 annulé, 0 absence."
+ },
+ {
+  "question": "tâches de Rex",
+  "attendu": "réponse",
+  "obtenu": "réponse:tasks",
+  "ok": true,
+  "texte": "1 tâche ouverte pour Rex, dont 0 en retard."
+ },
+ {
+  "question": "rendez-vous d'après-demain",
+  "attendu": "réponse",
+  "obtenu": "réponse:appointments",
+  "ok": true,
+  "texte": "Aucun rendez-vous le 14 nov. 2026."
+ },
+ {
+  "question": "montre-moi les patients",
+  "attendu": "réponse",
+  "obtenu": "réponse:patients",
+  "ok": true,
+  "texte": "1 dossier actif, sur 1 dossier au total."
+ },
+ {
+  "question": "affiche le nombre de patients",
+  "attendu": "réponse",
+  "obtenu": "réponse:patients",
+  "ok": true,
+  "texte": "1 dossier actif, sur 1 dossier au total."
+ },
+ {
+  "question": "montre les nouveaux patients ce mois",
+  "attendu": "réponse",
+  "obtenu": "réponse:patients",
+  "ok": true,
+  "texte": "Aucun dossier créé du 1 nov. 2026 au 30 nov. 2026."
+ },
+ {
+  "question": "affiche les rendez-vous de demain",
+  "attendu": "réponse",
+  "obtenu": "réponse:appointments",
+  "ok": true,
+  "texte": "Aucun rendez-vous le 13 nov. 2026."
+ },
+ {
+  "question": "dépenses de l'année dernière",
+  "attendu": "réponse",
+  "obtenu": "réponse:cash",
+  "ok": true,
+  "texte": "Aucune ligne réglée dans le journal de caisse du 1 janv. 2025 au 31 déc. 2025."
+ },
+ {
+  "question": "recettes de novembre",
+  "attendu": "réponse",
+  "obtenu": "réponse:cash",
+  "ok": true,
+  "texte": "Encaissé du 1 nov. 2026 au 30 nov. 2026 : 19 500,5 DA, sur 2 lignes."
+ },
+ {
+  "question": "recettes de 2025",
+  "attendu": "réponse",
+  "obtenu": "réponse:cash",
+  "ok": true,
+  "texte": "Aucune ligne réglée dans le journal de caisse du 1 janv. 2025 au 31 déc. 2025."
+ },
+ {
+  "question": "rendez-vous annulés ce mois",
+  "attendu": "réponse",
+  "obtenu": "réponse:appointments",
+  "ok": true,
+  "texte": "1 rendez-vous du 1 nov. 2026 au 30 nov. 2026 : 0 terminé, 0 annulé, 0 absence."
+ },
+ {
+  "question": "absences de la semaine dernière",
+  "attendu": "réponse",
+  "obtenu": "réponse:appointments",
+  "ok": true,
+  "texte": "Aucune absence à un rendez-vous du 2 nov. 2026 au 8 nov. 2026."
+ },
+ {
+  "question": "rdv demain",
+  "attendu": "réponse",
+  "obtenu": "réponse:appointments",
+  "ok": true,
+  "texte": "Aucun rendez-vous le 13 nov. 2026."
+ },
+ {
+  "question": "planning de la semaine prochaine",
+  "attendu": "réponse",
+  "obtenu": "réponse:appointments",
+  "ok": true,
+  "texte": "Aucun rendez-vous du 16 nov. 2026 au 22 nov. 2026."
+ },
+ {
+  "question": "quels sont les rendez-vous de demain",
+  "attendu": "réponse",
+  "obtenu": "réponse:appointments",
+  "ok": true,
+  "texte": "Aucun rendez-vous le 13 nov. 2026."
+ },
+ {
+  "question": "qui on voit demain en consultation",
+  "attendu": "réponse",
+  "obtenu": "réponse:appointments",
+  "ok": true,
+  "texte": "Aucun rendez-vous le 13 nov. 2026."
+ },
+ {
+  "question": "combien de rendez-vous cette semaine",
+  "attendu": "réponse",
+  "obtenu": "réponse:appointments",
+  "ok": true,
+  "texte": "1 rendez-vous du 9 nov. 2026 au 15 nov. 2026 : 0 terminé, 0 annulé, 0 absence."
+ },
+ {
+  "question": "les 7 derniers jours de recettes",
+  "attendu": "réponse",
+  "obtenu": "réponse:cash",
+  "ok": true,
+  "texte": "Encaissé du 6 nov. 2026 au 12 nov. 2026 : 19 500,5 DA, sur 2 lignes."
+ },
+ {
+  "question": "trésorerie de ce mois",
+  "attendu": "réponse",
+  "obtenu": "réponse:cash",
+  "ok": true,
+  "texte": "Encaissé du 1 nov. 2026 au 30 nov. 2026 : 19 500,5 DA. Dépensé : 3 125,75 DA. Solde net : "
+ },
+ {
+  "question": "solde du mois",
+  "attendu": "réponse",
+  "obtenu": "réponse:cash",
+  "ok": true,
+  "texte": "Encaissé du 1 nov. 2026 au 30 nov. 2026 : 19 500,5 DA. Dépensé : 3 125,75 DA. Solde net : "
+ },
+ {
+  "question": "rendez-vous d'hier",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "« hier » est à la fois le nom d’un patient et un mot que je lis autrement. Écrivez « le pa"
+ },
+ {
+  "question": "rendez-vous du jour",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "« jour » est à la fois le nom d’un patient et un mot que je lis autrement. Écrivez « le pa"
+ },
+ {
+  "question": "tâches de Demain",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "« demain » est à la fois le nom d’un patient et un mot que je lis autrement. Écrivez « le "
+ },
+ {
+  "question": "rendez-vous de Mars ce mois",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "« mars » est à la fois le nom d’un patient et un mot que je lis autrement. Écrivez « le pa"
+ },
+ {
+  "question": "rendez-vous à midi",
+  "attendu": "refus",
+  "obtenu": "refus:unknown",
+  "ok": true,
+  "texte": "« midi » est à la fois le nom d’un patient et un mot que je lis autrement. Écrivez « le pa"
+ }
+]

@@ -132,9 +132,7 @@ const readTauriTable = async (tableName: string, force = false) => {
   }
 
   const promise = runDbRead((db) =>
-    db.select<Record<string, unknown>[]>(
-      tableName === "patients" ? PATIENTS_WITH_REFERENCE_SQL : `SELECT * FROM ${tableName}`
-    )
+    db.select<Record<string, unknown>[]>(tableReadSql(tableName))
   )
     .then((rows) => {
       const normalizedRows = rows ?? [];
@@ -261,6 +259,15 @@ const normalizeDbPayloadToExistingColumns = (
 
   return Object.fromEntries(mappedEntries);
 };
+
+/** The statement that reads a whole table, as every store reads it (a patient carries its reference). */
+export const tableReadSql = (tableName: string) =>
+  tableName === "patients" ? PATIENTS_WITH_REFERENCE_SQL : `SELECT * FROM ${tableName}`;
+
+/** A row as the stores hold it: camelCase keys, 0/1 columns read as booleans. Also used by the assistant's guarded reader. */
+export function mapTableRow(tableName: string, row: Record<string, unknown>): Record<string, unknown> {
+  return normalizeBooleanFields(tableName, mapKeys(row, toCamelCase));
+}
 
 const normalizeBooleanFields = (
   tableName: string,
@@ -478,7 +485,7 @@ async function loadTableSnapshot(table: string, force = false) {
   }
   const generation = getTableCacheGeneration(table);
   const rows = await readTauriTable(table, force);
-  const applied = tableSnapshotCache.replace(table, rows.map(row => normalizeBooleanFields(table, mapKeys(row, toCamelCase)) as CachedRow), generation);
+  const applied = tableSnapshotCache.replace(table, rows.map(row => mapTableRow(table, row) as CachedRow), generation);
   if (!applied && !tableSnapshotCache.has(table)) await loadTableSnapshot(table, true);
 }
 
@@ -531,7 +538,7 @@ export function useSQLite<T extends { id: string }>(tableName: string): UseSQLit
   const write = useCallback(<R,>(id: string, apply: (rows: CachedRow[]) => CachedRow[], operation: (db: SQLiteDatabase) => Promise<{ value: R; row?: CachedRow | null }>, retry: () => unknown): Promise<R> =>
     runTableWrite({ safeTableName, tableName, sourceId, setError, id, apply, operation, retry }), [safeTableName, sourceId, tableName]);
 
-  const mapRow = useCallback((row: Record<string, unknown>) => normalizeBooleanFields(tableName, mapKeys(row, toCamelCase)) as CachedRow, [tableName]);
+  const mapRow = useCallback((row: Record<string, unknown>) => mapTableRow(tableName, row) as CachedRow, [tableName]);
   const authoritativeRow = useCallback((db: SQLiteDatabase, id: string, fallback: CachedRow) => readAuthoritativeRow(db, safeTableName, mapRow, id, fallback), [mapRow, safeTableName]);
 
   const add = useCallback((item: Omit<T, "id" | "createdAt" | "updatedAt">) => addRow<T>({ safeTableName, tableName, sourceId, loadData, write, authoritativeRow }, item), [authoritativeRow, loadData, safeTableName, sourceId, tableName, write]);
