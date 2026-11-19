@@ -101,8 +101,13 @@ export default defineConfig(({ command, mode }) => ({
               includeDependenciesRecursively: false,
             },
             {
+              // Recharts 3 runs on its own stack (es-toolkit, Redux Toolkit, victory-vendor, immer, reselect…).
+              // Left outside the group, that stack lands in a chunk shared with the clinical views, which
+              // imports vendor-charts while vendor-charts imports it back: the record and Soins load the
+              // shared chunk first, and recharts calls es-toolkit's `get` before it exists
+              // (« require_get is not a function »). The whole stack stays in one chunk, with no cycle.
               name: "vendor-charts",
-              test: /node_modules[\\/](recharts|d3-)/,
+              test: /node_modules[\\/](recharts|d3-[^\\/]+|victory-vendor|es-toolkit|@reduxjs[\\/]toolkit|react-redux|redux|redux-thunk|reselect|immer|decimal\.js-light|internmap|eventemitter3|use-sync-external-store)[\\/]/,
               includeDependenciesRecursively: false,
             },
           ],
