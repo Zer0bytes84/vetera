@@ -60,15 +60,14 @@ function localAsset(url: string): void {
       "Une ressource distante est interdite dans cet export local."
     );
   }
-  if (/^[a-z][a-z\d+.-]*:/i.test(url)) {
-    if (
-      typeof window === "undefined" ||
-      new URL(url).origin !== window.location.origin
-    ) {
-      throw new Error(
-        "Une ressource distante est interdite dans cet export local."
-      );
-    }
+  if (
+    /^[a-z][a-z\d+.-]*:/i.test(url) &&
+    (typeof window === "undefined" ||
+      new URL(url).origin !== window.location.origin)
+  ) {
+    throw new Error(
+      "Une ressource distante est interdite dans cet export local."
+    );
   }
 }
 
