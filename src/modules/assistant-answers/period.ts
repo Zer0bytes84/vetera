@@ -61,17 +61,27 @@ const mondayOf = (date: Date) =>
 export function parsePeriod(text: string, now: Date): Period | null {
   const year = now.getFullYear();
   const month = now.getMonth();
-  if (has(text, /\bavant hier\b/))
+  if (has(text, /\bavant hier\b/)) {
     return span(addDays(now, -2), addDays(now, -2));
-  if (has(text, /\b(aujourd hui|ce jour|du jour)\b/)) return span(now, now);
-  if (has(text, /\bhier\b/)) return span(addDays(now, -1), addDays(now, -1));
-  if (has(text, /\bdemain\b/)) return span(addDays(now, 1), addDays(now, 1));
-  if (has(text, /\bsemaine (derniere|passee|precedente)\b/))
+  }
+  if (has(text, /\b(aujourd hui|ce jour|du jour)\b/)) {
+    return span(now, now);
+  }
+  if (has(text, /\bhier\b/)) {
+    return span(addDays(now, -1), addDays(now, -1));
+  }
+  if (has(text, /\bdemain\b/)) {
+    return span(addDays(now, 1), addDays(now, 1));
+  }
+  if (has(text, /\bsemaine (derniere|passee|precedente)\b/)) {
     return span(addDays(mondayOf(now), -7), addDays(mondayOf(now), -1));
-  if (has(text, /\bsemaine prochaine\b/))
+  }
+  if (has(text, /\bsemaine prochaine\b/)) {
     return span(addDays(mondayOf(now), 7), addDays(mondayOf(now), 13));
-  if (has(text, /\b(cette|la) semaine\b/))
+  }
+  if (has(text, /\b(cette|la) semaine\b/)) {
     return span(mondayOf(now), addDays(mondayOf(now), 6));
+  }
 
   const named = new RegExp(`\\b(${MONTHS.join("|")})(?: (20\\d{2}))?\\b`).exec(
     text
@@ -86,28 +96,36 @@ export function parsePeriod(text: string, now: Date): Period | null {
         : year;
     return span(new Date(inYear, index, 1), new Date(inYear, index + 1, 0));
   }
-  if (has(text, /\bmois (dernier|passe|precedent)\b/))
+  if (has(text, /\bmois (dernier|passe|precedent)\b/)) {
     return span(new Date(year, month - 1, 1), new Date(year, month, 0));
-  if (has(text, /\bmois prochain\b/))
+  }
+  if (has(text, /\bmois prochain\b/)) {
     return span(new Date(year, month + 1, 1), new Date(year, month + 2, 0));
-  if (has(text, /\b(ce|du) mois\b/))
+  }
+  if (has(text, /\b(ce|du) mois\b/)) {
     return span(new Date(year, month, 1), new Date(year, month + 1, 0));
-  if (has(text, /\b(annee|an) (derniere|dernier|passee|passe|precedente)\b/))
+  }
+  if (has(text, /\b(annee|an) (derniere|dernier|passee|passe|precedente)\b/)) {
     return span(new Date(year - 1, 0, 1), new Date(year - 1, 11, 31));
-  if (has(text, /\b(cette annee|cet an)\b/))
+  }
+  if (has(text, /\b(cette annee|cet an)\b/)) {
     return span(new Date(year, 0, 1), new Date(year, 11, 31));
+  }
 
   const last =
     /\b(\d{1,4}) (?:derniers|dernieres) (jours|semaines|mois)\b/.exec(text) ??
     /\bdepuis (\d{1,4}) (jours|semaines|mois)\b/.exec(text);
   if (last) {
     const count = Math.min(Number(last[1]), MAX_COUNT);
-    if (count < 1) return null;
-    if (last[2] === "mois")
+    if (count < 1) {
+      return null;
+    }
+    if (last[2] === "mois") {
       return span(
         addDays(new Date(year, month - Math.min(count, 24), now.getDate()), 1),
         now
       );
+    }
     const days = last[2] === "jours" ? count : count * 7;
     return span(addDays(now, 1 - Math.min(days, MAX_CUSTOM_DAYS)), now);
   }
@@ -116,7 +134,9 @@ export function parsePeriod(text: string, now: Date): Period | null {
   );
   if (next) {
     const count = Math.min(Number(next[1]), MAX_COUNT);
-    if (count < 1) return null;
+    if (count < 1) {
+      return null;
+    }
     return span(
       now,
       addDays(
@@ -126,11 +146,12 @@ export function parsePeriod(text: string, now: Date): Period | null {
     );
   }
   const yearOnly = /\b(?:en|de|annee) (20\d{2})\b/.exec(text);
-  if (yearOnly)
+  if (yearOnly) {
     return span(
       new Date(Number(yearOnly[1]), 0, 1),
       new Date(Number(yearOnly[1]), 11, 31)
     );
+  }
   return null;
 }
 

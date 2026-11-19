@@ -139,8 +139,9 @@ export const sanitizeAssistantOutput = (value: string): string => {
 export const getAssistantErrorMessage = (error: unknown): string => {
   const detail =
     error instanceof Error ? error.message.trim() : String(error ?? "");
-  if (error instanceof Error && error.name === "LocalModelLoadError")
+  if (error instanceof Error && error.name === "LocalModelLoadError") {
     return detail;
+  }
   const normalized = detail.toLocaleLowerCase("fr-FR");
 
   if (normalized.includes("webgpu") || normalized.includes("gpu")) {

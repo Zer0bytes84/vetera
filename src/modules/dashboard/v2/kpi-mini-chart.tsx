@@ -9,12 +9,16 @@ function readingKey(
   count: number,
   set: (value: number | null) => void
 ) {
-  if (!count) return;
+  if (!count) {
+    return;
+  }
   if (event.key === "Escape") {
     set(null);
     return;
   }
-  if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+  if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") {
+    return;
+  }
   event.preventDefault();
   set(
     Math.max(
@@ -198,7 +202,9 @@ export function KpiSegments({
         tabIndex={0}
         aria-label={`${caption}. ${segments.map((segment) => `${segment.label} : ${number(segment.value)} ${unit}`).join(", ")}. Flèches pour parcourir.`}
         onFocus={() => {
-          if (visible.length) setHovered(0);
+          if (visible.length) {
+            setHovered(0);
+          }
         }}
         onBlur={() => setHovered(null)}
         onKeyDown={(event) =>

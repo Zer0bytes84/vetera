@@ -3,7 +3,9 @@ import { ChevronLeft, ChevronRight } from "@/lib/icons";
 import { handleRecordTabKeys } from "./medical-record-summary";
 
 function revealTab(rail: HTMLDivElement, tab: HTMLElement) {
-  if (rail.scrollWidth <= rail.clientWidth) return;
+  if (rail.scrollWidth <= rail.clientWidth) {
+    return;
+  }
   const railBounds = rail.getBoundingClientRect();
   const tabBounds = tab.getBoundingClientRect();
   const inset =
@@ -27,7 +29,9 @@ export function MedicalRecordTabs({
 
   useEffect(() => {
     const rail = railRef.current;
-    if (!rail) return;
+    if (!rail) {
+      return;
+    }
 
     const updateEdges = () => {
       const start = rail.scrollLeft > 1;
@@ -42,7 +46,9 @@ export function MedicalRecordTabs({
       const selected = rail.querySelector<HTMLButtonElement>(
         '[role="tab"][aria-selected="true"]'
       );
-      if (selected) revealTab(rail, selected);
+      if (selected) {
+        revealTab(rail, selected);
+      }
       updateEdges();
     };
 
@@ -71,7 +77,9 @@ export function MedicalRecordTabs({
 
   const scrollTabs = (direction: -1 | 1) => {
     const rail = railRef.current;
-    if (!rail) return;
+    if (!rail) {
+      return;
+    }
     rail.scrollBy({
       left: direction * Math.max(160, rail.clientWidth * 0.65),
       behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches

@@ -134,7 +134,9 @@ function useWidth() {
   const [width, setWidth] = useState<number | null>(null);
   useLayoutEffect(() => {
     const el = ref.current;
-    if (!el) return;
+    if (!el) {
+      return;
+    }
     setWidth(el.getBoundingClientRect().width);
     const observer = new ResizeObserver(([entry]) =>
       setWidth(entry.contentRect.width)
@@ -186,11 +188,15 @@ export function ChartCard({
   const select = (index: number | null, keyboard: boolean) => {
     setFromKeyboard(keyboard);
     setActive(index);
-    if (index !== null) onSelect?.(index);
+    if (index !== null) {
+      onSelect?.(index);
+    }
   };
 
   const onKeyDown = (event: React.KeyboardEvent) => {
-    if (!count) return;
+    if (!count) {
+      return;
+    }
     const keys: Record<string, number> = {
       ArrowRight: (activeIndex ?? -1) + 1,
       ArrowLeft: (activeIndex ?? count) - 1,
@@ -198,7 +204,9 @@ export function ChartCard({
       End: count - 1,
     };
     if (!(event.key in keys)) {
-      if (event.key === "Escape") select(null, true);
+      if (event.key === "Escape") {
+        select(null, true);
+      }
       return;
     }
     event.preventDefault();

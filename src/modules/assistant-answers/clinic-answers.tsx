@@ -150,7 +150,9 @@ export function ClinicAnswers({ patientId, renderAvatar }: Props) {
 
   const ask = (text: string) => {
     const question = text.trim().slice(0, MAX_QUESTION_LENGTH);
-    if (!question || blocked) return;
+    if (!question || blocked) {
+      return;
+    }
     const started = performance.now();
     const now = new Date();
     const answer = answerQuestion(
@@ -183,7 +185,9 @@ export function ClinicAnswers({ patientId, renderAvatar }: Props) {
 
   /** The only write of this tab, and only from the card's « Valider ». */
   const confirm = async (turnId: string, proposal: Proposal) => {
-    if (saving.current.has(turnId)) return;
+    if (saving.current.has(turnId)) {
+      return;
+    }
     saving.current.add(turnId);
     setCards((current) => ({ ...current, [turnId]: { status: "confirming" } }));
     await guard(
@@ -324,7 +328,9 @@ export function ClinicAnswers({ patientId, renderAvatar }: Props) {
             <Button
               icon={RotateCcw}
               onClick={() => {
-                for (const store of stores) void store.refresh();
+                for (const store of stores) {
+                  void store.refresh();
+                }
                 void financials.refresh();
               }}
             >

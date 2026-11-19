@@ -61,8 +61,12 @@ const SQL =
   /\b(drop table|drop database|truncate|alter table|insert into|delete from|update \w+ set|select .+ from|union select|exec )\b/;
 
 export function isWriteRequest(normalized: string): boolean {
-  if (has(normalized, WRITE_VERBS) || has(normalized, SQL)) return true;
-  if (!has(normalized, CANCEL_VERB)) return false;
+  if (has(normalized, WRITE_VERBS) || has(normalized, SQL)) {
+    return true;
+  }
+  if (!has(normalized, CANCEL_VERB)) {
+    return false;
+  }
   // « annule le rendez-vous de Rex » asks for a change; « rendez-vous annulés ce mois » asks to read.
   const reading =
     has(normalized, CANCELLED_NOUN) &&
@@ -76,9 +80,15 @@ export function guardReason(
   raw: string,
   normalized: string
 ): Extract<RefusalReason, "dose" | "reminders" | "write"> | null {
-  if (isDoseQuestion(raw, normalized)) return "dose";
-  if (isReminderQuestion(normalized)) return "reminders";
-  if (isWriteRequest(normalized)) return "write";
+  if (isDoseQuestion(raw, normalized)) {
+    return "dose";
+  }
+  if (isReminderQuestion(normalized)) {
+    return "reminders";
+  }
+  if (isWriteRequest(normalized)) {
+    return "write";
+  }
   return null;
 }
 

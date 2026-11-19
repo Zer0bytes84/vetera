@@ -42,8 +42,9 @@ export function buildDashboardInsights(
       date < start ||
       date >= end ||
       ["cancelled", "no_show"].includes(appointment.status)
-    )
+    ) {
       continue;
+    }
     const weekday = (date.getDay() + 6) % 7;
     weekdays[weekday].count++;
     types[appointment.type || "Non renseigné"] =
@@ -52,11 +53,14 @@ export function buildDashboardInsights(
   }
   for (const transaction of transactions) {
     const date = parseDashboardDate(transaction.date);
-    if (!date || date >= end || transaction.status !== "paid") continue;
+    if (!date || date >= end || transaction.status !== "paid") {
+      continue;
+    }
     const month = monthsByKey.get(`${date.getFullYear()}-${date.getMonth()}`);
-    if (month)
+    if (month) {
       month[transaction.type === "income" ? "income" : "expense"] +=
         transaction.amount / 100;
+    }
   }
   return {
     weekdays,

@@ -40,17 +40,20 @@ export interface PatientRecordReadDatabase {
 }
 
 function checkAbort(signal?: AbortSignal): void {
-  if (signal?.aborted)
+  if (signal?.aborted) {
     throw new DOMException(
       "L’export du dossier patient a été annulé.",
       "AbortError"
     );
+  }
 }
 const text = (value: unknown): string =>
   typeof value === "string" ? value : "";
 const nullableText = (value: unknown): string | null => text(value) || null;
 function parse<T>(value: unknown, fallback: T, label: string): T {
-  if (value === null || value === undefined || value === "") return fallback;
+  if (value === null || value === undefined || value === "") {
+    return fallback;
+  }
   try {
     return typeof value === "string" ? (JSON.parse(value) as T) : (value as T);
   } catch {
@@ -72,9 +75,11 @@ function camelRow(row: Row): Row {
 }
 function dto<T>(row: Row, booleanFields: string[] = []): T {
   const result = camelRow(row);
-  for (const field of booleanFields)
-    if (result[field] === 0 || result[field] === 1)
+  for (const field of booleanFields) {
+    if (result[field] === 0 || result[field] === 1) {
       result[field] = result[field] === 1;
+    }
+  }
   return result as T;
 }
 function documentDto(input: Row): PatientDocument {
@@ -128,8 +133,9 @@ function clinicDto(settings: Row[]): InvoiceSettings {
     {},
     "la clinique"
   );
-  if (!saved || typeof saved !== "object" || Array.isArray(saved))
+  if (!saved || typeof saved !== "object" || Array.isArray(saved)) {
     throw new Error("Les réglages de la clinique sont illisibles.");
+  }
   const normalized = normalizeInvoiceSettings(saved);
   return {
     ...normalized,
@@ -177,24 +183,29 @@ async function readRecord(
         rows.some(
           (row) => !row || typeof row !== "object" || Array.isArray(row)
         )
-      )
+      ) {
         throw new Error("Format local invalide.");
+      }
       checkAbort(signal);
       return rows;
     } catch (error) {
-      if (error instanceof Error && error.name === "AbortError") throw error;
-      if (table === "medical_reminders" || table === "reminder_types")
+      if (error instanceof Error && error.name === "AbortError") {
+        throw error;
+      }
+      if (table === "medical_reminders" || table === "reminder_types") {
         throw new Error(
           "Les rappels médicaux ne sont pas disponibles dans cet environnement. Leur lecture locale a échoué."
         );
+      }
       throw new Error(
         `Impossible de lire ${sourceLabels[table] || "une source sélectionnée du dossier patient"}. Réessayez après avoir actualisé le dossier.`
       );
     }
   };
   const patientRow = (await list("patients", { id: patientId }))[0];
-  if (!patientRow)
+  if (!patientRow) {
     throw new Error("Ce patient n’existe plus. Actualisez le dossier.");
+  }
   const patient = dto<Patient>(patientRow, ["sterilized"]);
   // Relations are read by patient first, then checked again by the pure assembler.
   const ownerRows = patient.ownerId
@@ -214,14 +225,16 @@ async function readRecord(
     users,
     clinic: clinicDto(await list("app_settings")),
   };
-  if (options.sections.identity)
+  if (options.sections.identity) {
     raw.weights = (await list("weight_entries", { patient_id: patientId })).map(
       (row) => dto<WeightEntry>(row)
     );
-  if (options.sections.consultations || options.sections.documents)
+  }
+  if (options.sections.consultations || options.sections.documents) {
     raw.soaps = (
       await list("consultation_soaps", { patient_id: patientId })
     ).map((row) => dto<ConsultationSoap>(row));
+  }
   if (options.sections.consultations) {
     raw.prescriptions = (
       await list("prescriptions", { patient_id: patientId })
@@ -235,8 +248,9 @@ async function readRecord(
             visit.patientId === patientId
         ) ||
         !["signed", "dispensed"].includes(prescription.status)
-      )
+      ) {
         continue;
+      }
       raw.prescriptionItems.push(
         ...(
           await list("prescription_items", { prescription_id: prescription.id })
@@ -244,11 +258,12 @@ async function readRecord(
       );
     }
   }
-  if (options.sections.documents || options.sections.notes)
+  if (options.sections.documents || options.sections.notes) {
     raw.notes = (await list("notes", { patient_id: patientId })).map((row) =>
       dto<Note>(row, ["isFavorite"])
     );
-  if (options.sections.documents || options.includeAttachments)
+  }
+  if (options.sections.documents || options.includeAttachments) {
     raw.documents = (await list("documents", { patient_id: patientId }))
       .filter((row) => {
         const normalized = camelRow(row);
@@ -260,6 +275,7 @@ async function readRecord(
         );
       })
       .map(documentDto);
+  }
   if (options.sections.reminders) {
     raw.reminders = (
       await list("medical_reminders", { patient_id: patientId })
@@ -269,10 +285,11 @@ async function readRecord(
       name: text(row.libelle) || text(row.name),
     }));
   }
-  if (options.includeAttachments)
+  if (options.includeAttachments) {
     raw.attachments = (
       await list("consultation_documents", { patient_id: patientId })
     ).map((row) => dto<ConsultationDocument>(row));
+  }
   return raw;
 }
 
@@ -312,8 +329,9 @@ export async function readPatientRecordSnapshotData(
           if (
             !TABLES.has(table) ||
             columns.some((column) => !/^[a-z][a-z_]*$/.test(column))
-          )
+          ) {
             throw new Error("La lecture du dossier patient est invalide.");
+          }
           // A patient is read with its reference, kept in its own table.
           const source =
             table === "patients"
@@ -349,10 +367,11 @@ async function browserSnapshotData(
   requestedBy: string,
   signal?: AbortSignal
 ): Promise<PatientRecordRawData> {
-  if (options.sections.reminders)
+  if (options.sections.reminders) {
     throw new Error(
       "Les rappels médicaux ne sont pas disponibles dans le navigateur. Désélectionnez cette section pour exporter les sources locales disponibles."
     );
+  }
   // Capture supported browser tables synchronously before the first await.
   const tables = new Map<Table, Row[]>();
   const requiredTables: BrowserTableName[] = [
@@ -362,30 +381,41 @@ async function browserSnapshotData(
     "users",
     "app_settings",
   ];
-  if (options.sections.identity) requiredTables.push("weight_entries");
-  if (options.sections.consultations || options.sections.documents)
+  if (options.sections.identity) {
+    requiredTables.push("weight_entries");
+  }
+  if (options.sections.consultations || options.sections.documents) {
     requiredTables.push("consultation_soaps");
-  if (options.sections.consultations)
+  }
+  if (options.sections.consultations) {
     requiredTables.push("prescriptions", "prescription_items");
-  if (options.sections.documents || options.sections.notes)
+  }
+  if (options.sections.documents || options.sections.notes) {
     requiredTables.push("notes");
-  if (options.sections.documents || options.includeAttachments)
+  }
+  if (options.sections.documents || options.includeAttachments) {
     requiredTables.push("documents");
-  if (options.includeAttachments) requiredTables.push("consultation_documents");
+  }
+  if (options.includeAttachments) {
+    requiredTables.push("consultation_documents");
+  }
   for (const table of requiredTables) {
     checkAbort(signal);
     const rows = getBrowserTable(table);
-    if (!Array.isArray(rows))
+    if (!Array.isArray(rows)) {
       throw new Error(
         `Impossible de lire ${sourceLabels[table] || "une source locale"}.`
       );
+    }
     tables.set(table, rows as Row[]);
   }
   return readRecord(
     {
       async list(table, filters = {}) {
         const rows = tables.get(table);
-        if (!rows) throw new Error("Cette source locale est indisponible.");
+        if (!rows) {
+          throw new Error("Cette source locale est indisponible.");
+        }
         return rows.filter((row) => {
           const normalized = camelRow(row);
           return Object.entries(filters).every(
@@ -412,12 +442,14 @@ export async function loadPatientRecord(
   { signal }: { signal?: AbortSignal } = {}
 ): Promise<PatientRecordSnapshot> {
   const options = validatePatientRecordOptions(input);
-  if (!patientId.trim())
+  if (!patientId.trim()) {
     throw new Error("Choisissez un patient pour exporter son dossier.");
+  }
   checkAbort(signal);
   const user = await authRepository.getCurrentUser();
-  if (!user?.id)
+  if (!user?.id) {
     throw new Error("Connectez-vous pour exporter le dossier patient.");
+  }
   checkAbort(signal);
   const raw = isTauriRuntime()
     ? await runDbRead((db) =>
@@ -427,10 +459,11 @@ export async function loadPatientRecord(
   checkAbort(signal);
   // Outside runDbRead: authentication uses that same serial queue itself.
   const currentUser = await authRepository.getCurrentUser();
-  if (!currentUser?.id || currentUser.id !== user.id)
+  if (!currentUser?.id || currentUser.id !== user.id) {
     throw new Error(
       "La session a changé ou expiré. Reconnectez-vous pour exporter le dossier."
     );
+  }
   checkAbort(signal);
   return assemblePatientRecordSnapshot(raw, options, new Date());
 }

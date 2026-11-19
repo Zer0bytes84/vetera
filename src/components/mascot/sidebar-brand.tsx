@@ -67,10 +67,11 @@ export function SidebarBrand({
               checked={preferences.animated}
               disabled={!withMascot}
               onCheckedChange={(animated) => {
-                if (!saveMascotPreferences({ ...preferences, animated }))
+                if (!saveMascotPreferences({ ...preferences, animated })) {
                   toast.error(
                     "Le réglage n’a pas pu être enregistré. Réessayez."
                   );
+                }
               }}
             />
           </div>

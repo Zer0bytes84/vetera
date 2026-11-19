@@ -33,9 +33,13 @@ export class LocalInferenceSession {
   }
   private attach(worker: Worker) {
     worker.onmessage = ({ data }: MessageEvent<WorkerResponse>) => {
-      if (this.closed) return;
+      if (this.closed) {
+        return;
+      }
       if (data.type === "progress") {
-        if (!this.unpark) this.onProgress(data);
+        if (!this.unpark) {
+          this.onProgress(data);
+        }
         return;
       }
       if (data.type === "error") {
@@ -46,7 +50,9 @@ export class LocalInferenceSession {
         this.retryWithout(data.url);
         return;
       }
-      if (data.type === "generated" && data.fellBack) recordGeneratorFallback();
+      if (data.type === "generated" && data.fellBack) {
+        recordGeneratorFallback();
+      }
       if (this.pending && data.type === this.pending.expected) {
         const { resolve, timer } = this.pending;
         this.pending = null;
@@ -71,7 +77,9 @@ export class LocalInferenceSession {
   /** Same request, fresh worker, without the generation model that failed. */
   private retryWithout(url: string) {
     const request = this.lastRequest;
-    if (!this.pending || request?.type !== "generate") return;
+    if (!this.pending || request?.type !== "generate") {
+      return;
+    }
     this.unavailable.add(url);
     this.worker.terminate();
     this.worker = this.spawn();
@@ -100,10 +108,14 @@ export class LocalInferenceSession {
     signal: AbortSignal,
     onProgress: (event: LocalAiProgress) => void
   ) {
-    if (signal.aborted) throw abortError();
+    if (signal.aborted) {
+      throw abortError();
+    }
     const release = reserveClinicalModel();
     try {
-      if (signal.aborted) throw abortError();
+      if (signal.aborted) {
+        throw abortError();
+      }
       const worker =
         kind === "whisper"
           ? new Worker(
@@ -142,10 +154,12 @@ export class LocalInferenceSession {
     expected: WorkerResponse["type"],
     transfer: Transferable[] = []
   ) {
-    if (this.closed || this.unpark || this.signal.aborted)
+    if (this.closed || this.unpark || this.signal.aborted) {
       return Promise.reject(abortError());
-    if (this.pending)
+    }
+    if (this.pending) {
       return Promise.reject(new Error("Le moteur local est occupé."));
+    }
     return new Promise<WorkerResponse>((resolve, reject) => {
       const timer = setTimeout(() => {
         this.reject(
@@ -182,15 +196,21 @@ export class LocalInferenceSession {
    * local task evicts it (worker terminated) before starting.
    */
   park() {
-    if (this.closed || this.unpark || this.pending) return;
+    if (this.closed || this.unpark || this.pending) {
+      return;
+    }
     this.signal.removeEventListener("abort", this.onAbort);
     this.release();
     this.unpark = parkIdleModel(() => this.close());
   }
   /** Takes the lease again for a parked session; throws if another task holds it. */
   resume(signal: AbortSignal, onProgress: (event: LocalAiProgress) => void) {
-    if (this.closed || !this.unpark) throw new Error("Session locale fermée.");
-    if (signal.aborted) throw abortError();
+    if (this.closed || !this.unpark) {
+      throw new Error("Session locale fermée.");
+    }
+    if (signal.aborted) {
+      throw abortError();
+    }
     this.unpark();
     this.unpark = null;
     try {
@@ -204,7 +224,9 @@ export class LocalInferenceSession {
     signal.addEventListener("abort", this.onAbort, { once: true });
   }
   close() {
-    if (this.closed) return;
+    if (this.closed) {
+      return;
+    }
     this.closed = true;
     this.unpark?.();
     this.signal.removeEventListener("abort", this.onAbort);

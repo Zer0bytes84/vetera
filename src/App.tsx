@@ -240,7 +240,9 @@ function ActivationAdminAccess() {
           }
         })
         .catch(() => {
-          if (active) setAllowed(false);
+          if (active) {
+            setAllowed(false);
+          }
         });
     };
     check();
@@ -254,8 +256,10 @@ function ActivationAdminAccess() {
       window.removeEventListener("sqlite-data-changed", check);
     };
   }, []);
-  if (allowed === null) return <AppLoadingState />;
-  if (!allowed)
+  if (allowed === null) {
+    return <AppLoadingState />;
+  }
+  if (!allowed) {
     return (
       <main className="flex min-h-dvh flex-col items-center justify-center gap-4 bg-background p-8 text-foreground">
         <h1 className="t-18 font-medium">Accès réservé au propriétaire</h1>
@@ -263,6 +267,7 @@ function ActivationAdminAccess() {
         <a href="/">Revenir à Baitari</a>
       </main>
     );
+  }
   return (
     <ActivationOwnerUnlock key={sessionKey}>
       <ActivationAdminPage />

@@ -26,18 +26,26 @@ export function StayBilling({ stay }: { stay: Stay }) {
     [loading, setLoading] = useState(desktop);
   const [error, setError] = useState<string | null>(null);
   useEffect(() => {
-    if (!desktop) return;
+    if (!desktop) {
+      return;
+    }
     let alive = true;
     void billingService
       .getInvoice(`stay-invoice:${stay.id}`)
       .then((invoice) => {
-        if (alive) setInvoiceId(invoice?.id ?? null);
+        if (alive) {
+          setInvoiceId(invoice?.id ?? null);
+        }
       })
       .catch(() => {
-        if (alive) setError("La facture du séjour n’a pas pu être chargée.");
+        if (alive) {
+          setError("La facture du séjour n’a pas pu être chargée.");
+        }
       })
       .finally(() => {
-        if (alive) setLoading(false);
+        if (alive) {
+          setLoading(false);
+        }
       });
     return () => {
       alive = false;
@@ -76,7 +84,9 @@ export function StayBilling({ stay }: { stay: Stay }) {
             const patient = patients.data.find(
               (item) => item.id === stay.patient_id
             );
-            if (!currentUser || !patient || !product || busy) return;
+            if (!currentUser || !patient || !product || busy) {
+              return;
+            }
             setBusy(true);
             setError(null);
             await guard(

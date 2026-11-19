@@ -23,7 +23,9 @@ export function AuthBrandPanel({
     <section
       className="relative hidden min-h-screen flex-col justify-between border-white/50 border-r p-10 lg:flex xl:p-14 dark:border-white/[0.06]"
       onPointerMove={(event) => {
-        if (event.pointerType !== "mouse") return;
+        if (event.pointerType !== "mouse") {
+          return;
+        }
         const box = event.currentTarget.getBoundingClientRect();
         event.currentTarget.style.setProperty(
           "--auth-light-x",

@@ -22,7 +22,9 @@ export function OccupancyUnits({
   stays: Stay[];
 }) {
   const summary = occupancySummary(locations, stays, new Date());
-  if (!summary.total) return null;
+  if (!summary.total) {
+    return null;
+  }
   const states = (["occupied", "leaving", "free"] as const).filter((state) =>
     summary.units.some((unit) => unit.state === state)
   );

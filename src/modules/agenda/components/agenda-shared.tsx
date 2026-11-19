@@ -129,19 +129,27 @@ const PICKER_MINUTES = Array.from(
  */
 export function parseTypedTime(text: string): string | null {
   const clean = text.trim().toLowerCase().replace(/\s+/g, "");
-  if (!clean) return null;
+  if (!clean) {
+    return null;
+  }
   const match =
     /^(\d{1,2})(?:[:h.]?(\d{2})?)?$/.exec(clean) ??
     /^(\d{1,2})(\d{2})$/.exec(clean);
-  if (!match) return null;
+  if (!match) {
+    return null;
+  }
   let hours = Number(match[1]);
   let minutes = Number(match[2] ?? 0);
-  if (!match[2] && match[1].length === 2 && hours > 23) return null;
+  if (!match[2] && match[1].length === 2 && hours > 23) {
+    return null;
+  }
   if (match[1].length === 1 && !match[2] && clean.length === 3) {
     hours = Number(clean[0]);
     minutes = Number(clean.slice(1));
   }
-  if (hours > 23 || minutes > 59) return null;
+  if (hours > 23 || minutes > 59) {
+    return null;
+  }
   return minutesToTime(hours * 60 + minutes);
 }
 
@@ -165,8 +173,9 @@ export function nextFreeTime(
 ): string | null {
   const first = Math.ceil(from / STEP_MINUTES) * STEP_MINUTES;
   for (let start = first; start <= lastStart; start += STEP_MINUTES) {
-    if (!overlappingSlot(start, durationMinutes, busy))
+    if (!overlappingSlot(start, durationMinutes, busy)) {
       return minutesToTime(start);
+    }
   }
   return null;
 }
@@ -192,9 +201,13 @@ export function AppointmentTimePicker({
     : [...PICKER_HOURS, hour].sort((a, b) => a - b);
 
   const commit = () => {
-    if (draft === null) return;
+    if (draft === null) {
+      return;
+    }
     const parsed = parseTypedTime(draft);
-    if (parsed) onChange(parsed);
+    if (parsed) {
+      onChange(parsed);
+    }
     setDraft(null);
   };
 

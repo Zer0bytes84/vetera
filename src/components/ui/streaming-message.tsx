@@ -288,7 +288,7 @@ function Content({
                 </motion.span>
               );
             });
-            if (segment.kind === "code")
+            if (segment.kind === "code") {
               return (
                 <code
                   key={s}
@@ -297,12 +297,14 @@ function Content({
                   {nodes}
                 </code>
               );
-            if (segment.kind === "bold")
+            }
+            if (segment.kind === "bold") {
               return (
                 <strong key={s} className="font-semibold">
                   {nodes}
                 </strong>
               );
+            }
             return <Fragment key={s}>{nodes}</Fragment>;
           })}
           {streaming && p === paragraphs.length - 1 && (
@@ -328,7 +330,9 @@ function CopyAction({
 }) {
   const [copied, setCopied] = useState(false);
   useEffect(() => {
-    if (!copied) return;
+    if (!copied) {
+      return;
+    }
     const timer = setTimeout(() => setCopied(false), 1600);
     return () => clearTimeout(timer);
   }, [copied]);

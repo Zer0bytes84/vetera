@@ -68,7 +68,9 @@ export function VaccinationList({
   const entries = repo.forPatient(patientId);
 
   const confirmDelete = async () => {
-    if (!deleteTarget) return;
+    if (!deleteTarget) {
+      return;
+    }
     const ok = await repo.remove(deleteTarget.id);
     if (ok) {
       toast.success(t("patientDetail.vaccinations.delete"));
@@ -209,7 +211,9 @@ export function VaccinationList({
       <AlertDialog
         open={deleteTarget !== null}
         onOpenChange={(open) => {
-          if (!open) setDeleteTarget(null);
+          if (!open) {
+            setDeleteTarget(null);
+          }
         }}
       >
         <AlertDialogContent size="sm">

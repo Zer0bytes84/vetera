@@ -63,14 +63,18 @@ export type CareMarkKind = "done" | "late" | "soon" | "later";
  */
 export function careTimeline<T extends DayTask>(tasks: T[], now: Date) {
   const live = tasks.filter((task) => task.statut !== "annule").sort(byTime);
-  if (live.length === 0) return null;
+  if (live.length === 0) {
+    return null;
+  }
   const day = new Date(time(live[0]));
   day.setHours(0, 0, 0, 0);
   const sameDay =
     now.getTime() >= day.getTime() &&
     now.getTime() < day.getTime() + 24 * HOUR_MS;
   const hours = live.map((task) => new Date(time(task)).getHours());
-  if (sameDay) hours.push(now.getHours());
+  if (sameDay) {
+    hours.push(now.getHours());
+  }
   const startHour = Math.max(0, Math.min(...hours) - 1);
   const endHour = Math.min(24, Math.max(...hours) + 2);
   const start = day.getTime() + startHour * HOUR_MS;
@@ -78,8 +82,12 @@ export function careTimeline<T extends DayTask>(tasks: T[], now: Date) {
   const at = (ms: number) =>
     Math.min(100, Math.max(0, ((ms - start) / span) * 100));
   const kind = (task: T): CareMarkKind => {
-    if (task.statut === "fait") return "done";
-    if (careDisplayStatus(task, now) === "en_retard") return "late";
+    if (task.statut === "fait") {
+      return "done";
+    }
+    if (careDisplayStatus(task, now) === "en_retard") {
+      return "late";
+    }
     return time(task) - now.getTime() <= SOON_HOURS * HOUR_MS
       ? "soon"
       : "later";

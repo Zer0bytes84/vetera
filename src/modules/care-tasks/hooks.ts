@@ -15,7 +15,9 @@ export function registerCareCompletionHook(hook: CompletionHook) {
   const previous = completionHook;
   completionHook = hook;
   return () => {
-    if (completionHook === hook) completionHook = previous;
+    if (completionHook === hook) {
+      completionHook = previous;
+    }
   };
 }
 export async function onCareTaskCompleted(task: CareTask): Promise<void> {
@@ -55,8 +57,9 @@ export async function notifyCareTaskCompleted(task: CareTask) {
       console.error("[Care] Completion event listener failed", error);
     }
   }
-  if (typeof window !== "undefined")
+  if (typeof window !== "undefined") {
     window.dispatchEvent(
       new CustomEvent("careTaskCompleted", { detail: event })
     );
+  }
 }

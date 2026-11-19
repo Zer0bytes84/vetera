@@ -77,7 +77,9 @@ function SpeciesAvatar({ species }: { species?: string }) {
 
 function Flags({ patient }: { patient: Patient }) {
   const flags = clinicalFlags(patient);
-  if (!flags.length) return null;
+  if (!flags.length) {
+    return null;
+  }
   const [first, ...more] = flags;
   return (
     <>
@@ -311,7 +313,9 @@ export function PatientsTable({
         "aria-label": `Ouvrir le dossier de ${row.patient}`,
         tabIndex: 0,
         onKeyDown: (event) => {
-          if (event.target !== event.currentTarget) return;
+          if (event.target !== event.currentTarget) {
+            return;
+          }
           if (event.key === "Enter" || event.key === " ") {
             event.preventDefault();
             onOpen(byId.get(row.id)!.patient);

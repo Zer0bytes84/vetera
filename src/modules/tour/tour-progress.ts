@@ -52,7 +52,9 @@ const NAIVE_SQLITE = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}(\.\d+)?$/;
  * créé après le départ du tour paraîtrait créé avant). Les autres formes (ISO avec fuseau) passent telles quelles.
  */
 export function storedInstantMs(value: unknown): number | null {
-  if (typeof value !== "string") return null;
+  if (typeof value !== "string") {
+    return null;
+  }
   const ms = Date.parse(
     NAIVE_SQLITE.test(value) ? `${value.replace(" ", "T")}Z` : value
   );
@@ -76,8 +78,12 @@ function earliest<T extends { createdAt: string }>(
   let best: { row: T; ms: number } | null = null;
   for (const row of rows) {
     const ms = storedInstantMs(row.createdAt);
-    if (ms === null || ms < startMs) continue;
-    if (!best || ms < best.ms) best = { row, ms };
+    if (ms === null || ms < startMs) {
+      continue;
+    }
+    if (!best || ms < best.ms) {
+      best = { row, ms };
+    }
   }
   return best?.row ?? null;
 }
@@ -99,9 +105,13 @@ export function evaluateStep(
   state: TourState,
   snapshot: TourSnapshot
 ): StepOutcome {
-  if (state.status !== "running") return NOT_DONE;
+  if (state.status !== "running") {
+    return NOT_DONE;
+  }
   const startMs = storedInstantMs(state.startedAt);
-  if (startMs === null) return NOT_DONE;
+  if (startMs === null) {
+    return NOT_DONE;
+  }
   const step: TourStepId | undefined = TOUR_STEP_IDS[state.step];
   const patient = tourPatient(state, snapshot);
 
@@ -134,8 +144,12 @@ export function evaluateStep(
   if (step === "consultation") {
     // « Valider » est le geste qui compte : une note validée après le départ, pour le patient du tour.
     const validated = snapshot.soaps.find((soap) => {
-      if (patient && soap.patientId !== patient.id) return false;
-      if (!isSoapReviewed(soap)) return false;
+      if (patient && soap.patientId !== patient.id) {
+        return false;
+      }
+      if (!isSoapReviewed(soap)) {
+        return false;
+      }
       const review = soapMetadata(soap.content).soapReview as
         | { reviewedAt?: unknown }
         | undefined;
@@ -152,7 +166,9 @@ export function evaluateStep(
   }
 
   if (step === "invoice") {
-    if (!snapshot.invoicesKnown) return NOT_DONE;
+    if (!snapshot.invoicesKnown) {
+      return NOT_DONE;
+    }
     // Le client du patient du tour : une facture à son nom, qu'elle nomme l'animal ou seulement le propriétaire.
     const mine = earliest(
       snapshot.invoices.filter(
@@ -163,7 +179,9 @@ export function evaluateStep(
       ),
       startMs
     );
-    if (!mine) return NOT_DONE;
+    if (!mine) {
+      return NOT_DONE;
+    }
     const paid = snapshot.invoices.some(
       (row) =>
         row.completedPaymentAmount > 0 &&

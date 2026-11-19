@@ -55,11 +55,15 @@ const asDateString = (value: unknown): string => {
 };
 
 const parseMessage = (value: unknown): PersistedAIMessage | null => {
-  if (!isRecord(value)) return null;
+  if (!isRecord(value)) {
+    return null;
+  }
   const role =
     value.role === "user" || value.role === "assistant" ? value.role : null;
   const content = asString(value.content);
-  if (!role || !asString(value.id) || !content) return null;
+  if (!role || !asString(value.id) || !content) {
+    return null;
+  }
 
   return {
     actionCard: value.actionCard,
@@ -87,9 +91,13 @@ const parseMessage = (value: unknown): PersistedAIMessage | null => {
 };
 
 const parseConversation = (value: unknown): PersistedAIConversation | null => {
-  if (!isRecord(value)) return null;
+  if (!isRecord(value)) {
+    return null;
+  }
   const id = asString(value.id);
-  if (!id) return null;
+  if (!id) {
+    return null;
+  }
 
   const messages = Array.isArray(value.messages)
     ? value.messages
@@ -110,11 +118,15 @@ const parseConversation = (value: unknown): PersistedAIConversation | null => {
 
 export function loadAIAgentState(): PersistedAIAgentState | null {
   const storage = getStorage();
-  if (!storage) return null;
+  if (!storage) {
+    return null;
+  }
 
   try {
     const raw = storage.getItem(STORAGE_KEY);
-    if (!raw) return null;
+    if (!raw) {
+      return null;
+    }
     if (raw.length > MAX_RAW_STATE_LENGTH) {
       // Do not make every app launch parse an oversized or runaway cache.
       storage.removeItem(STORAGE_KEY);
@@ -122,7 +134,9 @@ export function loadAIAgentState(): PersistedAIAgentState | null {
     }
 
     const parsed: unknown = JSON.parse(raw);
-    if (!isRecord(parsed) || !Array.isArray(parsed.conversations)) return null;
+    if (!isRecord(parsed) || !Array.isArray(parsed.conversations)) {
+      return null;
+    }
 
     const conversations = parsed.conversations
       .map(parseConversation)
@@ -130,7 +144,9 @@ export function loadAIAgentState(): PersistedAIAgentState | null {
         Boolean(conversation)
       )
       .slice(0, MAX_CONVERSATIONS);
-    if (conversations.length === 0) return null;
+    if (conversations.length === 0) {
+      return null;
+    }
 
     const requestedActiveId = asString(parsed.activeConversationId);
     const activeConversationId = conversations.some(
@@ -154,7 +170,9 @@ export function loadAIAgentState(): PersistedAIAgentState | null {
 
 export function saveAIAgentState(state: PersistedAIAgentState): void {
   const storage = getStorage();
-  if (!storage) return;
+  if (!storage) {
+    return;
+  }
 
   try {
     const boundedConversations = state.conversations
@@ -201,7 +219,9 @@ export function saveAIAgentState(state: PersistedAIAgentState): void {
           break;
         }
       }
-      if (removableIndex < 0) break;
+      if (removableIndex < 0) {
+        break;
+      }
       payload.conversations.splice(removableIndex, 1);
       serialized = JSON.stringify(payload);
     }

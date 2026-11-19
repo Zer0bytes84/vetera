@@ -24,7 +24,9 @@ export function vaccinationBannerEntries(
 ): VaccinationBannerEntry[] {
   return currentVaccineReminders(patientId, vaccinations, now).flatMap(
     (vaccine): VaccinationBannerEntry[] => {
-      if (!vaccine.nextDueAt) return [];
+      if (!vaccine.nextDueAt) {
+        return [];
+      }
       if (vaccine.status === "overdue") {
         return [
           {

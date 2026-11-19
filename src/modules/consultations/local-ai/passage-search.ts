@@ -71,7 +71,9 @@ export function splitPassages(
     .map((sentence) => sentence.trim())
     .filter(Boolean)
     .flatMap((sentence) => {
-      if (sentence.length <= size) return [sentence];
+      if (sentence.length <= size) {
+        return [sentence];
+      }
       const pieces: string[] = [];
       let current = "";
       for (const word of sentence.split(/\s+/)) {
@@ -81,7 +83,9 @@ export function splitPassages(
         }
         current = current ? `${current} ${word}` : word.slice(0, size);
       }
-      if (current) pieces.push(current);
+      if (current) {
+        pieces.push(current);
+      }
       return pieces;
     });
   const passages: string[] = [];
@@ -98,7 +102,9 @@ export function splitPassages(
     current.push(sentence);
     length += sentence.length + 1;
   }
-  if (current.length) passages.push(current.join(" "));
+  if (current.length) {
+    passages.push(current.join(" "));
+  }
   return passages;
 }
 
@@ -138,8 +144,9 @@ export function focusExcerpt(text: string, query: string, lead = 90) {
   let offset = 0;
   for (const sentence of text.split(/(?<=[.!?;:])\s+/u)) {
     const start = text.indexOf(sentence, offset);
-    if (matchesSearchTerms(query, sentence))
+    if (matchesSearchTerms(query, sentence)) {
       return start > lead ? `… ${text.slice(start)}` : text;
+    }
     offset = start + sentence.length;
   }
   return text;
@@ -169,10 +176,13 @@ export const MODEL_CALIBRATION: Record<SearchModel, SearchCalibration> = {
 };
 /** Unit vector of any dimension (rankPassages compares query and passages of the same model). */
 const unitVector = (vector: number[]) => {
-  if (!vector.length || vector.some((value) => !Number.isFinite(value)))
+  if (!vector.length || vector.some((value) => !Number.isFinite(value))) {
     throw new Error("L’extrait n’a pas pu être préparé pour la recherche.");
+  }
   const norm = Math.hypot(...vector);
-  if (!norm) throw new Error("L’extrait de recherche est vide.");
+  if (!norm) {
+    throw new Error("L’extrait de recherche est vide.");
+  }
   return vector.map((value) => value / norm);
 };
 
@@ -205,7 +215,9 @@ export function rankPassages<T extends SearchChunk & { vector: number[] }>(
     matchesNumericConstraints(queryText, row.text);
   const scored: RankedPassage<SearchChunk>[] = [];
   for (const row of rows) {
-    if (!inScope(row)) continue;
+    if (!inScope(row)) {
+      continue;
+    }
     const lexical = matchesSearchTerms(queryText, row.text);
     const cosine = unit
       ? unitVector(row.vector).reduce(
@@ -220,7 +232,9 @@ export function rankPassages<T extends SearchChunk & { vector: number[] }>(
       (lexical &&
         (cosine >= calibration.lexicalFloor ||
           matchesExactSearchTerms(queryText, row.text)));
-    if (!eligible) continue;
+    if (!eligible) {
+      continue;
+    }
     const { vector: _vector, ...chunk } = row;
     void _vector;
     scored.push({
@@ -230,7 +244,9 @@ export function rankPassages<T extends SearchChunk & { vector: number[] }>(
     });
   }
   for (const chunk of lexicalOnly) {
-    if (!inScope(chunk) || !matchesSearchTerms(queryText, chunk.text)) continue;
+    if (!inScope(chunk) || !matchesSearchTerms(queryText, chunk.text)) {
+      continue;
+    }
     scored.push({
       ...chunk,
       text: bestPassage(chunk.text, queryText),
@@ -242,7 +258,9 @@ export function rankPassages<T extends SearchChunk & { vector: number[] }>(
   for (const row of scored) {
     const key = `${row.sourceType}:${row.sourceId}`;
     const current = best.get(key);
-    if (!current || row.score > current.score) best.set(key, row);
+    if (!current || row.score > current.score) {
+      best.set(key, row);
+    }
   }
   return [...best.values()]
     .sort(
@@ -263,7 +281,9 @@ export function mergeLexicalFirst<T extends SearchChunk>(
   const found = new Map<string, T>();
   for (const row of [...lexical, ...semantic]) {
     const key = `${row.sourceType}:${row.sourceId}:${row.section}:${row.chunkIndex}`;
-    if (!found.has(key)) found.set(key, row);
+    if (!found.has(key)) {
+      found.set(key, row);
+    }
   }
   return [...found.values()].slice(0, limit);
 }

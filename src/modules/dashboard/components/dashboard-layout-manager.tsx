@@ -190,14 +190,20 @@ export function DashboardLayoutManager({
 
     getSetting(storageKey)
       .then(async (value) => {
-        if (value || !migrateFromPrefix) return value;
+        if (value || !migrateFromPrefix) {
+          return value;
+        }
         const previous = await getSetting(
           `${migrateFromPrefix}:${currentUser?.id ?? "local"}`
         );
-        if (!previous) return null;
+        if (!previous) {
+          return null;
+        }
         try {
           const oldOrder: unknown = JSON.parse(previous);
-          if (!Array.isArray(oldOrder)) return null;
+          if (!Array.isArray(oldOrder)) {
+            return null;
+          }
           const migrated = migrateClassicDashboardOrder(oldOrder, availableIds);
           const serialized = JSON.stringify(migrated);
           await setSetting(storageKey, serialized);

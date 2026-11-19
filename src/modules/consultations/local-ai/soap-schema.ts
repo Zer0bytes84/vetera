@@ -84,14 +84,19 @@ export function parseGeneratedSoap(
     parsed &&
     typeof parsed === "object" &&
     !Array.isArray(parsed)
-  )
-    for (const key of omitted)
-      if (!(key in parsed)) (parsed as Record<string, unknown>)[key] = "";
+  ) {
+    for (const key of omitted) {
+      if (!(key in parsed)) {
+        (parsed as Record<string, unknown>)[key] = "";
+      }
+    }
+  }
   const result = localSoapSchema.safeParse(parsed);
-  if (!result.success)
+  if (!result.success) {
     throw new SoapFormatError(
       "Le format de réponse de l’assistant n’est pas conforme aux quatre sections SOAP attendues. Votre dictée est conservée ; aucune note n’a été enregistrée."
     );
+  }
   if (Object.values(result.data).some(containsDosage)) {
     throw new Error(
       "La note proposée contient une posologie. Elle a été rejetée : les doses doivent être saisies ou calculées dans le module d’ordonnance, jamais par l’IA."

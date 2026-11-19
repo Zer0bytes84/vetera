@@ -72,17 +72,21 @@ export function buildOffVisitNote(
   input: OffVisitNoteInput,
   now = new Date().toISOString()
 ): Note {
-  if (!input.validated)
+  if (!input.validated) {
     throw new Error("Relisez et validez la note avant de l’enregistrer.");
-  if (!input.patientId || !input.userId)
+  }
+  if (!input.patientId || !input.userId) {
     throw new Error("Le patient et le vétérinaire doivent être identifiés.");
-  if (!(input.kind in OFF_VISIT_KINDS))
+  }
+  if (!(input.kind in OFF_VISIT_KINDS)) {
     throw new Error("Choisissez la nature de la note.");
+  }
   const parsed = localSoapSchema.safeParse(input.note);
-  if (!parsed.success)
+  if (!parsed.success) {
     throw new Error(
       "La note est vide : écrivez ou dictez au moins une section."
     );
+  }
   const meta: OffVisitNoteMeta = {
     kind: input.kind,
     soap: parsed.data,
@@ -115,7 +119,9 @@ export async function saveOffVisitNote(
         "SELECT id FROM patients WHERE id = ?",
         [note.patientId]
       );
-      if (!found[0]) throw new Error("Ce patient n’existe plus.");
+      if (!found[0]) {
+        throw new Error("Ce patient n’existe plus.");
+      }
       await db.execute(
         "INSERT INTO notes (id, user_id, patient_id, title, content, is_favorite, tags, created_at, updated_at) VALUES (?, ?, ?, ?, ?, 0, ?, ?, ?)",
         [
@@ -135,8 +141,9 @@ export async function saveOffVisitNote(
       !getBrowserTable<Patient>("patients").some(
         (patient) => patient.id === note.patientId
       )
-    )
+    ) {
       throw new Error("Ce patient n’existe plus.");
+    }
     insertBrowserRow("notes", note);
   }
   window.dispatchEvent(

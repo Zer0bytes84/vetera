@@ -80,7 +80,9 @@ export function MedicalReminderDialog({
     <Dialog
       open
       onOpenChange={(open) => {
-        if (!open && !busy) onClose();
+        if (!open && !busy) {
+          onClose();
+        }
       }}
     >
       <FormDialogContent size="sm" className="medical-reminder-dialog">
@@ -100,7 +102,9 @@ export function MedicalReminderDialog({
           className="contents"
           onSubmit={async (event) => {
             event.preventDefault();
-            if (!valid || busy) return;
+            if (!valid || busy) {
+              return;
+            }
             setBusy(true);
             setError(null);
             await guard(
@@ -156,7 +160,9 @@ export function MedicalReminderDialog({
                         const selected = types.find(
                           (entry) => entry.id === type
                         );
-                        if (!selected) return;
+                        if (!selected) {
+                          return;
+                        }
                         setMonths(String(selected.interval_months));
                         setDraft((current) => ({
                           ...current,
@@ -280,7 +286,9 @@ export function MedicalReminderDialog({
                         locale={fr}
                         mode="single"
                         onSelect={(date) => {
-                          if (!date) return;
+                          if (!date) {
+                            return;
+                          }
                           setDraft((current) => ({
                             ...current,
                             echeance: localToday(date),

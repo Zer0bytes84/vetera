@@ -51,7 +51,9 @@ export function Segmented<T extends string = string>({
 
   const select = (next: T, fromKeyboard: boolean) => {
     setInstant(fromKeyboard);
-    if (valueProp === undefined) setInner(next);
+    if (valueProp === undefined) {
+      setInner(next);
+    }
     onValueChange?.(next);
   };
 
@@ -59,12 +61,16 @@ export function Segmented<T extends string = string>({
     const step = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[
       e.key
     ];
-    if (!step) return;
+    if (!step) {
+      return;
+    }
     e.preventDefault();
     const enabled = options.filter((o) => !o.disabled);
     const at = enabled.findIndex((o) => o.value === value);
     const next = enabled[(at + step + enabled.length) % enabled.length];
-    if (!next) return;
+    if (!next) {
+      return;
+    }
     select(next.value, true);
     ref.current
       ?.querySelector<HTMLButtonElement>(`[data-value="${next.value}"]`)

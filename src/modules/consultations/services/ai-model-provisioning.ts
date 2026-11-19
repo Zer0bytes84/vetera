@@ -141,7 +141,9 @@ export async function checkAIModelsStatus(): Promise<LocalModelStatus> {
 }
 export async function shouldShowAIOnboarding() {
   // Web access never depends on a native command, local files or an installation flag.
-  if (!isTauriRuntime() || hasDismissedAIOnboarding()) return false;
+  if (!isTauriRuntime() || hasDismissedAIOnboarding()) {
+    return false;
+  }
   const actual = await checkAIModelsStatus();
   if (allAIModelsReady(actual)) {
     setAIOnboardingCompleted();
@@ -174,11 +176,14 @@ export async function provisionNewAssistant(
   onProgress?: (progress: AIProvisioningProgress) => void,
   options?: { signal?: AbortSignal }
 ): Promise<LocalModelStatus> {
-  if (!isTauriRuntime())
+  if (!isTauriRuntime()) {
     throw new Error(
       "Ces outils sont disponibles dans l’application de bureau. La version web reste utilisable sans installation."
     );
-  if (options?.signal?.aborted) throw new Error("Opération annulée");
+  }
+  if (options?.signal?.aborted) {
+    throw new Error("Opération annulée");
+  }
   const cancel = () => {
     void cancelLocalModelDownload().catch(() => {});
   };
@@ -186,10 +191,11 @@ export async function provisionNewAssistant(
   try {
     await downloadLocalModels(onProgress, undefined, [NEW_ASSISTANT.id]);
     const actual = await getLocalModels();
-    if (!actual.generator4Ready)
+    if (!actual.generator4Ready) {
       throw new Error(
         "L’installation n’a pas pu être vérifiée. L’assistant actuel reste disponible ; réessayez."
       );
+    }
     window.dispatchEvent(new Event(AI_MODELS_CHANGED_EVENT));
     return actual;
   } finally {
@@ -201,11 +207,14 @@ export async function provisionAllAIModels(
   onProgress?: (progress: AIProvisioningProgress) => void,
   options?: { signal?: AbortSignal; accessToken?: string }
 ): Promise<LocalModelStatus> {
-  if (!isTauriRuntime())
+  if (!isTauriRuntime()) {
     throw new Error(
       "Ces outils sont disponibles dans l’application de bureau. La version web reste utilisable sans installation."
     );
-  if (options?.signal?.aborted) throw new Error("Opération annulée");
+  }
+  if (options?.signal?.aborted) {
+    throw new Error("Opération annulée");
+  }
   const cancel = () => {
     void cancelLocalModelDownload().catch(() => {});
   };
@@ -213,10 +222,11 @@ export async function provisionAllAIModels(
   try {
     await downloadLocalModels(onProgress, options?.accessToken);
     const actual = await getLocalModels();
-    if (!allAIModelsReady(actual))
+    if (!allAIModelsReady(actual)) {
       throw new Error(
         "L’installation n’a pas pu être vérifiée. Les outils déjà installés sont conservés ; réessayez."
       );
+    }
     setAIOnboardingCompleted();
     window.dispatchEvent(new Event(AI_MODELS_CHANGED_EVENT));
     return actual;

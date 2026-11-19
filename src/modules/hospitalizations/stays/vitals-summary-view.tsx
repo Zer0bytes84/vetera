@@ -34,7 +34,9 @@ export function VitalsLatest({
   species: string;
 }) {
   const readings = latestReadings(species, vitals);
-  if (!readings.length) return null;
+  if (!readings.length) {
+    return null;
+  }
   const animal = species ? species.toLocaleLowerCase("fr") : "l’espèce";
   return (
     <div className="vitals-latest">
@@ -70,7 +72,9 @@ export function VitalsLatest({
 /** Lowest and highest value of each measure, one row per day. */
 export function VitalsByDay({ vitals }: { vitals: VitalSign[] }) {
   const days = vitalsByDay(vitals);
-  if (!days.length) return null;
+  if (!days.length) {
+    return null;
+  }
   const metrics = VITAL_METRICS.filter(({ key }) =>
     days.some((day) => day.ranges[key])
   );

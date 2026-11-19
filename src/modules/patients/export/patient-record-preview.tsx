@@ -33,7 +33,9 @@ export function PatientRecordPreview({
       try {
         const pdfjs = await loadPdfjsDist();
         const worker = await loadPdfjsDistBuildPdfWorkerMinMjs();
-        if (cancelled) return;
+        if (cancelled) {
+          return;
+        }
         pdfjs.GlobalWorkerOptions.workerSrc = worker.default;
         const root = new URL(
           import.meta.env.BASE_URL + "local-ai-runtime/pdf/",
@@ -53,7 +55,9 @@ export function PatientRecordPreview({
           void task.destroy();
         };
         const loaded = await task.promise;
-        if (!cancelled) setPdf(loaded);
+        if (!cancelled) {
+          setPdf(loaded);
+        }
       } catch {
         if (!cancelled) {
           setError(
@@ -70,7 +74,9 @@ export function PatientRecordPreview({
   }, [artifact, retry]);
 
   useEffect(() => {
-    if (!pdf) return;
+    if (!pdf) {
+      return;
+    }
     let cancelled = false;
     let cancelRender: (() => void) | undefined;
     void (async () => {
@@ -82,7 +88,9 @@ export function PatientRecordPreview({
         await guard(
           async () => {
             const canvas = canvasRef.current;
-            if (!canvas || cancelled) return;
+            if (!canvas || cancelled) {
+              return;
+            }
             const original = current.getViewport({ scale: 1 });
             const viewport = current.getViewport({
               scale: Math.min(
@@ -95,7 +103,9 @@ export function PatientRecordPreview({
             const task = current.render({ canvas, viewport });
             cancelRender = () => task.cancel();
             await task.promise;
-            if (!cancelled) setRendering(false);
+            if (!cancelled) {
+              setRendering(false);
+            }
           },
           {
             cleanup: () => {

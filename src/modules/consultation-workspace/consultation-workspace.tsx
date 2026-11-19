@@ -26,8 +26,9 @@ function scrollParents(node: HTMLElement | null) {
     if (
       (overflowY === "auto" || overflowY === "scroll") &&
       parent.scrollHeight > parent.clientHeight
-    )
+    ) {
       boxes.push(parent);
+    }
   }
   boxes.push(window);
   return boxes;
@@ -88,8 +89,12 @@ export function ConsultationWorkspace({
       ? activeConsultation.id
       : null;
   useEffect(() => {
-    if (!openedId) return;
-    for (const box of scrollParents(anchor.current)) box.scrollTo({ top: 0 });
+    if (!openedId) {
+      return;
+    }
+    for (const box of scrollParents(anchor.current)) {
+      box.scrollTo({ top: 0 });
+    }
   }, [openedId]);
 
   return (

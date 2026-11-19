@@ -21,20 +21,22 @@ export function buildPatientContext(
   const current = appointments.find(
     (appointment) => appointment.id === currentAppointmentId
   );
-  if (!current || current.patientId !== patient.id)
+  if (!current || current.patientId !== patient.id) {
     throw new Error(
       "La consultation ne correspond pas à ce patient. Rechargez sa fiche."
     );
+  }
   const soapByAppointment = new Map(
     soaps
       .filter((soap) => soap.patientId === patient.id)
       .map((soap) => [soap.appointmentId, soap])
   );
   const cutoff = Math.min(clinicalDate(current.startTime), Date.now());
-  if (!Number.isFinite(cutoff))
+  if (!Number.isFinite(cutoff)) {
     throw new Error(
       "La date de consultation est invalide. Corrigez-la avant de générer la note."
     );
+  }
   const history = appointments
     .filter(
       (appointment) =>
@@ -95,11 +97,14 @@ export function createSoapPrompt(
     dictation?: string;
   } = {}
 ) {
-  if (!transcript.trim()) throw new Error("La dictée est vide.");
-  if (transcript.length > MAX_TRANSCRIPT_LENGTH)
+  if (!transcript.trim()) {
+    throw new Error("La dictée est vide.");
+  }
+  if (transcript.length > MAX_TRANSCRIPT_LENGTH) {
     throw new Error(
       "La dictée est trop longue. Limitez-la à 6 000 caractères ou scindez la consultation."
     );
+  }
   const modelTranscript =
     options.dictation ?? prepareModelDictation(transcript).text;
   const omitted = options.omitted ?? [];

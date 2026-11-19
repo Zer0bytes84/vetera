@@ -37,9 +37,15 @@ export interface NatureRow {
 export function lineNature(
   line: Pick<IssuedInvoiceLine, "invoiceId" | "productId" | "appointmentType">
 ): InvoiceNature {
-  if (line.invoiceId.startsWith("stay-invoice:")) return "hospitalisation";
-  if (line.productId) return "produits";
-  if (line.appointmentType === "Chirurgie") return "chirurgie";
+  if (line.invoiceId.startsWith("stay-invoice:")) {
+    return "hospitalisation";
+  }
+  if (line.productId) {
+    return "produits";
+  }
+  if (line.appointmentType === "Chirurgie") {
+    return "chirurgie";
+  }
   return "consultations";
 }
 

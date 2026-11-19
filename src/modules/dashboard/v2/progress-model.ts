@@ -7,7 +7,9 @@ export function isInProgressPeriod(
   referenceDate: Date,
   days: number
 ) {
-  if (!value) return false;
+  if (!value) {
+    return false;
+  }
   const date = /^\d{4}-\d{2}-\d{2}$/.test(value)
     ? new Date(`${value}T12:00:00`)
     : parseDashboardDate(value);

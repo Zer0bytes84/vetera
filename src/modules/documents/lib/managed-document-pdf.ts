@@ -12,13 +12,15 @@ import {
 let fonts: Promise<[string, string]> | undefined;
 function base64(bytes: Uint8Array): string {
   let value = "";
-  for (let offset = 0; offset < bytes.length; offset += 8192)
+  for (let offset = 0; offset < bytes.length; offset += 8192) {
     value += String.fromCharCode(...bytes.subarray(offset, offset + 8192));
+  }
   return btoa(value);
 }
 export function pdfBytes(dataUrl: string): Uint8Array {
-  if (!/^data:application\/pdf(?:;[^,]*)?;base64,/.test(dataUrl))
+  if (!/^data:application\/pdf(?:;[^,]*)?;base64,/.test(dataUrl)) {
     throw new Error("Le fichier PDF enregistré est illisible.");
+  }
   const binary = atob(dataUrl.slice(dataUrl.indexOf(",") + 1));
   return Uint8Array.from(binary, (char) => char.charCodeAt(0));
 }
@@ -27,10 +29,11 @@ async function installFonts(doc: jsPDF) {
     [regularFontUrl, boldFontUrl].map(async (url) => {
       // These font files are bundled with the app, never fetched from a CDN.
       const response = await fetch(url);
-      if (!response.ok)
+      if (!response.ok) {
         throw new Error(
           "La police locale du document n’a pas pu être chargée."
         );
+      }
       return base64(new Uint8Array(await response.arrayBuffer()));
     })
   ) as Promise<[string, string]>;
@@ -155,8 +158,9 @@ export async function buildManagedDocumentPdf(
       header(true);
       normal(10.5);
     }
-    if (doc.getNumberOfPages() > 60)
+    if (doc.getNumberOfPages() > 60) {
       throw new Error("Le document dépasse 60 pages. Réduisez son contenu.");
+    }
     doc.text(line, left, y);
     y += 5.5;
   }
@@ -192,9 +196,12 @@ export function documentPdfFilename(
 export async function patientDocumentPdf(
   document: PatientDocument
 ): Promise<string> {
-  if (document.pdfDataUrl) return document.pdfDataUrl;
-  if (document.attachment?.mimeType === "application/pdf")
+  if (document.pdfDataUrl) {
+    return document.pdfDataUrl;
+  }
+  if (document.attachment?.mimeType === "application/pdf") {
     return document.attachment.dataUrl;
+  }
   if (document.attachment) {
     const pdf = new jsPDF({ format: "a4", unit: "mm" });
     const image = pdf.getImageProperties(document.attachment.dataUrl);
@@ -222,8 +229,9 @@ export async function patientDocumentPdf(
 export async function exportManagedDocument(
   document: PatientDocument
 ): Promise<boolean> {
-  if (document.status !== "finalise")
+  if (document.status !== "finalise") {
     throw new Error("Finalisez le document avant de l’exporter.");
+  }
   const data = pdfBytes(await patientDocumentPdf(document));
   return savePdf(
     {
@@ -274,8 +282,9 @@ export async function renderPdfPages(
     const pdf = await loading.promise;
     const pages: string[] = [];
     for (let index = 1; index <= pdf.numPages; index++) {
-      if (signal?.aborted)
+      if (signal?.aborted) {
         throw new DOMException("Lecture annulée", "AbortError");
+      }
       const page = await pdf.getPage(index),
         original = page.getViewport({ scale: 1 });
       const viewport = page.getViewport({
@@ -306,8 +315,9 @@ export async function renderPdfPages(
 export async function printManagedDocument(
   document: PatientDocument
 ): Promise<void> {
-  if (document.status !== "finalise")
+  if (document.status !== "finalise") {
     throw new Error("Seul un document finalisé peut être imprimé.");
+  }
   const pages = await renderPdfPages(await patientDocumentPdf(document));
   const frame = window.document.createElement("iframe");
   frame.title = "Impression du document";

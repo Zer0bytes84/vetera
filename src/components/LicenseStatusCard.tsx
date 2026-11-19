@@ -14,7 +14,9 @@ export function LicenseStatusCard() {
   useEffect(() => {
     let active = true;
     void checkLicenseAccess().then((value) => {
-      if (active) setAccess(value);
+      if (active) {
+        setAccess(value);
+      }
     });
     return () => {
       active = false;

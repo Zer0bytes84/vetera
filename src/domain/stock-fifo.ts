@@ -37,11 +37,12 @@ export function selectFifoAllocations(
   } & StockSelection
 ): StockAllocation[] {
   const requested = stockQuantity(input.quantity);
-  if (!stockDate(input.onDate))
+  if (!stockDate(input.onDate)) {
     throw new StockError(
       "SOURCE_CONFLICT",
       "La date de consommation est requise."
     );
+  }
   const candidates = buckets.filter(
     (bucket) =>
       bucket.productId === input.productId &&
@@ -68,7 +69,7 @@ export function selectFifoAllocations(
   const available = stockBalance(
     eligible.reduce((sum, bucket) => sum + bucket.quantity, 0)
   );
-  if (available < requested)
+  if (available < requested) {
     throw new StockError(
       "INSUFFICIENT_STOCK",
       insufficientStockMessage(
@@ -78,18 +79,24 @@ export function selectFifoAllocations(
         input.unit
       )
     );
+  }
   const allocations: StockAllocation[] = [];
   let remaining = requested;
   for (const bucket of eligible) {
-    if (remaining === 0) break;
+    if (remaining === 0) {
+      break;
+    }
     const quantity = stockBalance(Math.min(remaining, bucket.quantity));
-    if (quantity > 0) allocations.push({ balanceId: bucket.id, quantity });
+    if (quantity > 0) {
+      allocations.push({ balanceId: bucket.id, quantity });
+    }
     remaining = stockBalance(remaining - quantity);
   }
-  if (remaining !== 0)
+  if (remaining !== 0) {
     throw new StockError(
       "SOURCE_CONFLICT",
       "La répartition du stock est incohérente. Vérifiez les quantités avant de valider."
     );
+  }
   return allocations;
 }

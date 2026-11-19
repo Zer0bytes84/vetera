@@ -60,7 +60,9 @@ export function useFlowBoard(vetId: string, query = "") {
   const idsKey = ids.join(",");
 
   const refresh = useCallback(async () => {
-    if (!isTauriRuntime()) return;
+    if (!isTauriRuntime()) {
+      return;
+    }
     const current = ++request.current;
     await guard(
       async () => {
@@ -74,10 +76,11 @@ export function useFlowBoard(vetId: string, query = "") {
       },
       {
         recover: () => {
-          if (current === request.current)
+          if (current === request.current) {
             setStatesError(
               "Le tableau n'a pas pu lire les étapes des visites."
             );
+          }
         },
       }
     );
@@ -138,7 +141,9 @@ export function useFlowBoard(vetId: string, query = "") {
       onClose?: (card: FlowCard) => void
     ) => {
       const outcome = boardMove(card.lane, to);
-      if (!outcome) return;
+      if (!outcome) {
+        return;
+      }
       if ("refused" in outcome) {
         toast.info(outcome.refused);
         return;
@@ -150,7 +155,9 @@ export function useFlowBoard(vetId: string, query = "") {
         onClose?.(card);
         return;
       }
-      if (busyId) return;
+      if (busyId) {
+        return;
+      }
       setBusyId(card.appointmentId);
       const label = to === "planned" ? "" : VISIT_FLOW_STAGE_LABELS[to];
       await guard(
@@ -198,11 +205,13 @@ export function useFlowBoard(vetId: string, query = "") {
    */
   const walkIn = useCallback(
     async (patient: Patient) => {
-      if (!patient.ownerId)
+      if (!patient.ownerId) {
         throw new Error("Ce patient doit être rattaché à un propriétaire.");
+      }
       const actor = currentUser?.id;
-      if (!actor)
+      if (!actor) {
         throw new Error("Reconnectez-vous avant d'enregistrer une arrivée.");
+      }
       const found = walkInFor(patient.id, appointments.data, new Date());
       if (found.kind === "already-here") {
         toast.info(`${patient.name} est déjà au cabinet aujourd'hui.`);
@@ -227,8 +236,9 @@ export function useFlowBoard(vetId: string, query = "") {
           type: "Consultation",
           vetId: vetId || actor,
         } as Omit<Appointment, "id" | "createdAt" | "updatedAt">);
-        if (!appointment)
+        if (!appointment) {
           throw new Error("L'arrivée n'a pas pu être enregistrée. Réessayez.");
+        }
         // Just created: not in this render's data yet, so set the status by id.
         if (
           !(await appointments.update(appointment.id, { status: "arrived" }))

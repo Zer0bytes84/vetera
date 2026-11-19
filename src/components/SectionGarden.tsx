@@ -111,7 +111,9 @@ export function SectionGarden({
     parametres: [stock, reminders],
   };
   const cards = pairs[view];
-  if (!cards) return null;
+  if (!cards) {
+    return null;
+  }
   return (
     <SectionCards
       subtitle="Vue d’ensemble de la rubrique"

@@ -8,8 +8,9 @@ export function soapSourceKey(note: LocalSoapNote): string {
 export function soapMetadata(content: string): Record<string, unknown> {
   try {
     const value: unknown = JSON.parse(content);
-    if (value && typeof value === "object" && !Array.isArray(value))
+    if (value && typeof value === "object" && !Array.isArray(value)) {
       return value as Record<string, unknown>;
+    }
   } catch {
     /* Older notes may have no metadata. */
   }
@@ -34,8 +35,9 @@ export function reviewedSoapContent(
 export function isSoapReviewed(
   note: Pick<ConsultationSoap, keyof LocalSoapNote | "content" | "aiDraft">
 ): boolean {
-  if (note.aiDraft || !SOAP_SECTIONS.some(({ key }) => note[key].trim()))
+  if (note.aiDraft || !SOAP_SECTIONS.some(({ key }) => note[key].trim())) {
     return false;
+  }
   const review = soapMetadata(note.content).soapReview as
     | Record<string, unknown>
     | undefined;

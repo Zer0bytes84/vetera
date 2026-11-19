@@ -73,7 +73,9 @@ export function CareTaskForm({
       noValidate
       onSubmit={async (e) => {
         e.preventDefault();
-        if (busy) return;
+        if (busy) {
+          return;
+        }
         if (!label.trim()) {
           setError("Indiquez le soin à planifier.");
           return;

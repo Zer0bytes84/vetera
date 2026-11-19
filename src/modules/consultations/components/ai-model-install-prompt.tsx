@@ -31,7 +31,9 @@ export function AIModelInstallPrompt() {
   const progressHidden = useRef(false);
 
   useEffect(() => {
-    if (!isTauriRuntime()) return;
+    if (!isTauriRuntime()) {
+      return;
+    }
     let alive = true;
     void shouldShowAIOnboarding()
       .then(async (show) => {
@@ -39,8 +41,9 @@ export function AIModelInstallPrompt() {
           !alive ||
           offered.current ||
           aiModelInstallation.getSnapshot().running
-        )
+        ) {
           return;
+        }
         if (show) {
           offered.current = true;
           toast.info("Vos outils IA locaux", {
@@ -58,8 +61,9 @@ export function AIModelInstallPrompt() {
           return;
         }
         // Base tools installed first; only then the new assistant, in one tap.
-        if (!shouldOfferNewAssistant(await checkAIModelsStatus()) || !alive)
+        if (!shouldOfferNewAssistant(await checkAIModelsStatus()) || !alive) {
           return;
+        }
         offered.current = true;
         toast.info(NEW_ASSISTANT.name, {
           id: TOAST_ID,
@@ -84,9 +88,11 @@ export function AIModelInstallPrompt() {
 
   useEffect(() => {
     if (state.running) {
-      if (!wasRunning.current) progressHidden.current = false;
+      if (!wasRunning.current) {
+        progressHidden.current = false;
+      }
       wasRunning.current = true;
-      if (!progressHidden.current)
+      if (!progressHidden.current) {
         toast.loading("Installation en arrière-plan", {
           id: TOAST_ID,
           duration: Infinity,
@@ -99,9 +105,12 @@ export function AIModelInstallPrompt() {
             progressHidden.current = true;
           },
         });
+      }
       return;
     }
-    if (!wasRunning.current) return;
+    if (!wasRunning.current) {
+      return;
+    }
     wasRunning.current = false;
     if (state.error) {
       toast.error("Installation à reprendre", {
@@ -147,7 +156,9 @@ export function AIModelInstallPrompt() {
         description: "Vous pouvez désormais les utiliser hors ligne.",
         duration: 6000,
       });
-    } else toast.dismiss(TOAST_ID);
+    } else {
+      toast.dismiss(TOAST_ID);
+    }
   }, [state]);
 
   return null;

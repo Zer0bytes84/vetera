@@ -115,7 +115,9 @@ export function VaccinationDialog({
   };
 
   const handleSave = async () => {
-    if (isSubmitting) return;
+    if (isSubmitting) {
+      return;
+    }
     if (!vaccineName.trim()) {
       setError(t("patientDetail.vaccinations.invalidName"));
       return;

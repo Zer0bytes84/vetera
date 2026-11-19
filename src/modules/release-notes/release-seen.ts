@@ -29,7 +29,9 @@ export function markVersionSeen(
   storage: KeyValueStorage | null = browserStorage()
 ): boolean {
   try {
-    if (!storage) return false;
+    if (!storage) {
+      return false;
+    }
     storage.setItem(LAST_SEEN_VERSION_KEY, version);
     return storage.getItem(LAST_SEEN_VERSION_KEY) === version;
   } catch {
@@ -50,6 +52,8 @@ export function releaseNoteToShow(
   lastSeenVersion: string | null,
   notes?: readonly ReleaseNote[]
 ): ReleaseNote | null {
-  if (lastSeenVersion === currentVersion) return null;
+  if (lastSeenVersion === currentVersion) {
+    return null;
+  }
   return releaseNoteFor(currentVersion, notes);
 }

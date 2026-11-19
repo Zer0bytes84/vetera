@@ -77,7 +77,9 @@ export function UserMessage({
   const editButton = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
-    if (!copied) return;
+    if (!copied) {
+      return;
+    }
     const timer = setTimeout(() => setCopied(false), 1500);
     return () => clearTimeout(timer);
   }, [copied]);
@@ -93,9 +95,13 @@ export function UserMessage({
   };
   const save = () => {
     const text = draft.trim();
-    if (!text) return;
+    if (!text) {
+      return;
+    }
     setEditing(false);
-    if (text !== content) onEdit?.(text);
+    if (text !== content) {
+      onEdit?.(text);
+    }
   };
   const copy = () => {
     navigator.clipboard?.writeText(content).catch(() => {});
@@ -172,7 +178,9 @@ export function UserMessage({
                   e.target.setSelectionRange(draft.length, draft.length)
                 }
                 onKeyDown={(e) => {
-                  if (e.key === "Escape") cancel();
+                  if (e.key === "Escape") {
+                    cancel();
+                  }
                   if (e.key === "Enter" && !e.shiftKey) {
                     e.preventDefault();
                     save();
@@ -263,14 +271,15 @@ function Delivery({
   edited?: boolean;
   onRetry?: () => void;
 }) {
-  if (status === "sending")
+  if (status === "sending") {
     return (
       <span className="flex items-center gap-1 px-1">
         <Spinner size="sm" label="Envoi" className="text-current" />
         <span aria-hidden="true">Envoi…</span>
       </span>
     );
-  if (status === "failed")
+  }
+  if (status === "failed") {
     return (
       <span className="flex items-center gap-1.5 pl-1 text-negative">
         <CircleAlert className="size-3.5" aria-hidden="true" />
@@ -288,8 +297,11 @@ function Delivery({
         )}
       </span>
     );
+  }
   // Nothing to say about a message that went through, unless it was edited or a time is given.
-  if (!edited && !sentAt) return null;
+  if (!edited && !sentAt) {
+    return null;
+  }
   return (
     <span className="px-1 tabular-nums">
       {edited ? "Modifié" : "Envoyé"}

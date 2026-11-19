@@ -27,11 +27,15 @@ export async function guard<T, E = never>(
   try {
     return await run();
   } catch (error) {
-    if (!steps.recover) throw error;
+    if (!steps.recover) {
+      throw error;
+    }
     return await steps.recover(error);
   } finally {
     const done = steps.cleanup?.();
-    if (done) await done;
+    if (done) {
+      await done;
+    }
   }
 }
 
@@ -42,7 +46,9 @@ export function guardSync<T, E = never>(
   try {
     return run();
   } catch (error) {
-    if (!steps.recover) throw error;
+    if (!steps.recover) {
+      throw error;
+    }
     return steps.recover(error);
   } finally {
     steps.cleanup?.();

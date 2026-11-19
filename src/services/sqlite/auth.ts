@@ -170,8 +170,9 @@ export async function verifyPassword(
   password: string,
   hash: unknown
 ): Promise<boolean> {
-  if (typeof password !== "string" || typeof hash !== "string" || !hash)
+  if (typeof password !== "string" || typeof hash !== "string" || !hash) {
     return false;
+  }
   if (
     hash.startsWith("$2") ||
     hash.startsWith("$2a") ||
@@ -389,7 +390,9 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
       );
     }
 
-    if (!user || user.status !== "active") return null;
+    if (!user || user.status !== "active") {
+      return null;
+    }
 
     return {
       id: user.id,
@@ -415,7 +418,9 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
     );
   }
 
-  if (users.length === 0 || users[0].status !== "active") return null;
+  if (users.length === 0 || users[0].status !== "active") {
+    return null;
+  }
 
   const user = users[0];
 

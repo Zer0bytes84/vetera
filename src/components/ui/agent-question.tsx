@@ -114,7 +114,9 @@ export function AgentQuestion({
     onSubmit?.(a);
   };
   const pick = (optionId: string) => {
-    if (!data.multiple) return submit({ optionIds: [optionId] });
+    if (!data.multiple) {
+      return submit({ optionIds: [optionId] });
+    }
     setSelected(
       selected.includes(optionId)
         ? selected.filter((x) => x !== optionId)
@@ -134,7 +136,9 @@ export function AgentQuestion({
       ...(grid.current?.querySelectorAll<HTMLElement>("[data-card]") ?? []),
     ];
     const i = cards.indexOf(document.activeElement as HTMLElement);
-    if (i < 0) return;
+    if (i < 0) {
+      return;
+    }
     const cols = getComputedStyle(grid.current!).gridTemplateColumns.split(
       " "
     ).length;
@@ -144,7 +148,9 @@ export function AgentQuestion({
       ArrowDown: cols,
       ArrowUp: -cols,
     }[e.key];
-    if (!step) return;
+    if (!step) {
+      return;
+    }
     e.preventDefault();
     cards[Math.min(Math.max(i + step, 0), cards.length - 1)]?.focus();
   };
@@ -208,8 +214,9 @@ export function AgentQuestion({
                     transition={morph}
                     onSubmit={(e) => {
                       e.preventDefault();
-                      if (!data.multiple && other.trim())
+                      if (!data.multiple && other.trim()) {
                         submit({ optionIds: [], other: other.trim() });
+                      }
                     }}
                     className="flex items-center gap-2 rounded-2xl bg-[var(--card-inset)] p-2 @md:col-span-2"
                   >

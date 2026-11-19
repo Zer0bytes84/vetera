@@ -210,9 +210,12 @@ export function buildClinicalCash(
   period: ClinicalCashPeriod
 ) {
   const start = startOfDay(period === "quarter" ? addDays(now, -89) : now);
-  if (period === "month") start.setDate(1);
-  if (period === "week")
+  if (period === "month") {
+    start.setDate(1);
+  }
+  if (period === "week") {
     start.setDate(start.getDate() - ((start.getDay() + 6) % 7));
+  }
   if (period === "year") {
     start.setMonth(0, 1);
   }
@@ -261,8 +264,12 @@ export function buildDayContext(
       ...new Set(
         rows.flatMap((row) => {
           const date = parseDashboardDate(row.startTime);
-          if (!date || (next ? date <= endOfDay(now) : date >= startOfDay(now)))
+          if (
+            !date ||
+            (next ? date <= endOfDay(now) : date >= startOfDay(now))
+          ) {
             return [];
+          }
           return [startOfDay(date).getTime()];
         })
       ),
@@ -279,7 +286,9 @@ export function buildDayContext(
       })
     )
     .slice(0, 3);
-  if (upcoming.length) return { label: "Prochaines visites", rows: upcoming };
+  if (upcoming.length) {
+    return { label: "Prochaines visites", rows: upcoming };
+  }
   const completed = appointments.filter((row) => row.status === "completed");
   return {
     label: "Dernières visites",

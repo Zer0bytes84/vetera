@@ -87,19 +87,24 @@ export function createStayStore(
   clock = () => new Date()
 ) {
   const authorRequired = (author: string) => {
-    if (!author.trim()) throw new Error("Un utilisateur connecté est requis.");
+    if (!author.trim()) {
+      throw new Error("Un utilisateur connecté est requis.");
+    }
   };
   const iso = (value: string) => {
     const date = new Date(value);
-    if (!Number.isFinite(date.getTime()))
+    if (!Number.isFinite(date.getTime())) {
       throw new Error("Vérifiez la date du séjour.");
+    }
     return date.toISOString();
   };
   const get = async (db: CareDatabase, stayId: string) => {
     const [stay] = await db.select<Stay[]>("SELECT * FROM stays WHERE id=$1", [
       stayId,
     ]);
-    if (!stay) throw new Error("Ce séjour n’existe plus.");
+    if (!stay) {
+      throw new Error("Ce séjour n’existe plus.");
+    }
     return stay;
   };
   const history = (
@@ -162,7 +167,9 @@ export function createStayStore(
       species?: string
     ) {
       authorRequired(author);
-      if (!name.trim()) throw new Error("Indiquez le nom de l’emplacement.");
+      if (!name.trim()) {
+        throw new Error("Indiquez le nom de l’emplacement.");
+      }
       const locationId = id(),
         now = clock().toISOString();
       await persistence.transaction((db) =>
@@ -184,16 +191,19 @@ export function createStayStore(
           "SELECT * FROM locations WHERE id=$1",
           [locationId]
         );
-        if (!location) throw new Error("Cet emplacement n’existe plus.");
+        if (!location) {
+          throw new Error("Cet emplacement n’existe plus.");
+        }
         if (!active) {
           const occupants = await db.select<{ id: string }[]>(
             "SELECT id FROM stays WHERE location_id=$1 AND status IN ('admis','en_cours','sortie_prevue')",
             [locationId]
           );
-          if (occupants.length)
+          if (occupants.length) {
             throw new Error(
               "Un emplacement occupé ne peut pas être désactivé."
             );
+          }
         }
         await db.execute(
           "UPDATE locations SET active=$1,updated_at=$2 WHERE id=$3",
@@ -211,8 +221,9 @@ export function createStayStore(
       author: string
     ) {
       authorRequired(author);
-      if (!draft.patientId || !draft.reason.trim())
+      if (!draft.patientId || !draft.reason.trim()) {
         throw new Error("Choisissez le patient et indiquez le motif.");
+      }
       const stayId = id(),
         now = clock().toISOString(),
         admittedAt = iso(draft.admittedAt);
@@ -264,10 +275,12 @@ export function createStayStore(
         const planned = options.plannedAt
           ? iso(options.plannedAt)
           : stay.planned_discharge_at;
-        if (to === "sortie_prevue" && !planned)
+        if (to === "sortie_prevue" && !planned) {
           throw new Error("Indiquez la date de sortie prévue.");
-        if (to === "sorti" && !options.summary?.trim())
+        }
+        if (to === "sorti" && !options.summary?.trim()) {
           throw new Error("Renseignez le résumé de sortie.");
+        }
         const result = await db.execute(
           "UPDATE stays SET status=$1,planned_discharge_at=$2,discharged_at=$3,discharge_summary=$4,cancellation_reason=$5,updated_at=$6 WHERE id=$7 AND status=$8",
           [
@@ -281,8 +294,9 @@ export function createStayStore(
             stay.status,
           ]
         );
-        if (result.rowsAffected !== 1)
+        if (result.rowsAffected !== 1) {
           throw new Error("Le séjour a changé. Rechargez son détail.");
+        }
         if (to === "sorti" || to === "annule") {
           const cutoff = to === "sorti" ? discharge! : clock().toISOString();
           const tasks = await db.select<{ id: string; statut: string }[]>(
@@ -343,27 +357,31 @@ export function createStayStore(
         !/^\d{4}-\d{2}-\d{2}$/.test(dueDate) ||
         !Number.isFinite(parsed.getTime()) ||
         parsed.toISOString().slice(0, 10) !== dueDate
-      )
+      ) {
         throw new Error("Choisissez une date de contrôle valide.");
+      }
       return persistence.transaction(async (db) => {
         const stay = await get(db, stayId);
-        if (stay.status !== "sorti" || !stay.discharged_at)
+        if (stay.status !== "sorti" || !stay.discharged_at) {
           throw new Error(
             "Confirmez la sortie avant de planifier le contrôle."
           );
+        }
         const discharge = new Date(stay.discharged_at);
         const dischargeDay = `${discharge.getFullYear()}-${String(discharge.getMonth() + 1).padStart(2, "0")}-${String(discharge.getDate()).padStart(2, "0")}`;
-        if (dueDate < dischargeDay)
+        if (dueDate < dischargeDay) {
           throw new Error("Le contrôle ne peut pas précéder la sortie.");
+        }
         const taskId = `stay-follow-up:${stayId}`;
         const existing = await db.select<{ id: string }[]>(
           "SELECT id FROM tasks WHERE id=$1",
           [taskId]
         );
-        if (existing.length)
+        if (existing.length) {
           throw new Error(
             "Un contrôle est déjà planifié pour ce séjour. Modifiez-le dans Rappels."
           );
+        }
         const now = clock().toISOString();
         await db.execute(
           "INSERT INTO tasks(id,title,description,status,priority,due_date,is_reminder,patient_id,created_at,updated_at) VALUES($1,$2,$3,'todo','medium',$4,1,$5,$6,$7)",
@@ -411,22 +429,26 @@ export function createStayStore(
         values.some(
           (value) => value != null && (!Number.isFinite(value) || value <= 0)
         )
-      )
+      ) {
         throw new Error("Les constantes doivent être des nombres positifs.");
+      }
       if (
         values.every((value) => value == null) &&
         !draft.generalState?.trim() &&
         !draft.appetite?.trim()
-      )
+      ) {
         throw new Error("Renseignez au moins une constante.");
+      }
       const vitalId = id(),
         now = clock().toISOString();
       await persistence.transaction(async (db) => {
         const stay = await get(db, stayId);
-        if (stay.status === "sorti" || stay.status === "annule")
+        if (stay.status === "sorti" || stay.status === "annule") {
           throw new Error("Ce séjour est terminé.");
-        if (recorded < stay.admitted_at)
+        }
+        if (recorded < stay.admitted_at) {
           throw new Error("La mesure ne peut pas précéder l’admission.");
+        }
         await db.execute(
           "INSERT INTO vital_signs(id,stay_id,recorded_at,temperature_c,heart_rate,respiratory_rate,weight_kg,general_state,appetite,note,author_id,created_at,updated_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)",
           [
@@ -474,16 +496,20 @@ export function createStayStore(
             active: number;
           }[]
         >("SELECT * FROM care_plans WHERE id=$1", [planId]);
-        if (!plan || !plan.active) throw new Error("Ce plan n’est plus actif.");
+        if (!plan || !plan.active) {
+          throw new Error("Ce plan n’est plus actif.");
+        }
         const stay = await get(db, plan.stay_id);
-        if (stay.status === "sorti" || stay.status === "annule")
+        if (stay.status === "sorti" || stay.status === "annule") {
           throw new Error("Ce séjour est terminé.");
+        }
         const times: unknown = JSON.parse(plan.times_json);
         if (
           !Array.isArray(times) ||
           times.some((value) => typeof value !== "string")
-        )
+        ) {
           throw new Error("Les horaires du plan sont invalides.");
+        }
         const occurrences = carePlanOccurrences(
           new Date(plan.starts_at),
           new Date(plan.ends_at),
@@ -497,7 +523,9 @@ export function createStayStore(
             "SELECT id FROM care_tasks WHERE occurrence_key=$1",
             [key]
           );
-          if (existing.length) continue;
+          if (existing.length) {
+            continue;
+          }
           const taskId = id();
           await db.execute(
             "INSERT INTO care_tasks(id,patient_id,label,type,heure_prevue,statut,note,produit_id,created_at,updated_at,stay_id,care_plan_id,occurrence_key) VALUES($1,$2,$3,$4,$5,'a_faire',$6,$7,$8,$9,$10,$11,$12)",
@@ -543,7 +571,9 @@ export function createStayStore(
     },
     async updatePlan(planId: string, draft: CarePlanDraft, author: string) {
       authorRequired(author);
-      if (!draft.label.trim()) throw new Error("Indiquez le soin à planifier.");
+      if (!draft.label.trim()) {
+        throw new Error("Indiquez le soin à planifier.");
+      }
       const starts = iso(draft.startsAt),
         ends = iso(draft.endsAt);
       const occurrences = carePlanOccurrences(
@@ -557,12 +587,16 @@ export function createStayStore(
           "SELECT * FROM care_plans WHERE id=$1",
           [planId]
         );
-        if (!plan?.active) throw new Error("Ce plan n’est plus actif.");
+        if (!plan?.active) {
+          throw new Error("Ce plan n’est plus actif.");
+        }
         const stay = await get(db, plan.stay_id);
-        if (stay.status === "sorti" || stay.status === "annule")
+        if (stay.status === "sorti" || stay.status === "annule") {
           throw new Error("Ce séjour est terminé.");
-        if (starts < stay.admitted_at)
+        }
+        if (starts < stay.admitted_at) {
           throw new Error("Le plan ne peut pas commencer avant l’admission.");
+        }
         if (
           plan.label === draft.label.trim() &&
           plan.type === draft.type &&
@@ -571,8 +605,9 @@ export function createStayStore(
           plan.times_json === times &&
           plan.product_id === (draft.productId || null) &&
           plan.note === (draft.note || "")
-        )
+        ) {
           return 0;
+        }
         const now = clock().toISOString();
         await db.execute(
           "UPDATE care_plans SET label=$1,type=$2,product_id=$3,note=$4,starts_at=$5,ends_at=$6,times_json=$7,updated_at=$8 WHERE id=$9",
@@ -609,7 +644,9 @@ export function createStayStore(
             "SELECT id FROM care_tasks WHERE occurrence_key=$1",
             [key]
           );
-          if (existing.length) continue;
+          if (existing.length) {
+            continue;
+          }
           const taskId = id();
           await db.execute(
             "INSERT INTO care_tasks(id,patient_id,label,type,heure_prevue,statut,note,produit_id,created_at,updated_at,stay_id,care_plan_id,occurrence_key) VALUES($1,$2,$3,$4,$5,'a_faire',$6,$7,$8,$9,$10,$11,$12)",
@@ -649,7 +686,9 @@ export function createStayStore(
     },
     async createPlan(stayId: string, draft: CarePlanDraft, author: string) {
       authorRequired(author);
-      if (!draft.label.trim()) throw new Error("Indiquez le soin à planifier.");
+      if (!draft.label.trim()) {
+        throw new Error("Indiquez le soin à planifier.");
+      }
       const starts = iso(draft.startsAt),
         ends = iso(draft.endsAt);
       const occurrences = carePlanOccurrences(
@@ -657,16 +696,19 @@ export function createStayStore(
         new Date(ends),
         draft.times
       );
-      if (!occurrences.length)
+      if (!occurrences.length) {
         throw new Error("Aucun horaire ne se trouve dans la période choisie.");
+      }
       const planId = id(),
         now = clock().toISOString();
       return persistence.transaction(async (db) => {
         const stay = await get(db, stayId);
-        if (stay.status === "sorti" || stay.status === "annule")
+        if (stay.status === "sorti" || stay.status === "annule") {
           throw new Error("Ce séjour est terminé.");
-        if (starts < stay.admitted_at)
+        }
+        if (starts < stay.admitted_at) {
           throw new Error("Le plan ne peut pas commencer avant l’admission.");
+        }
         await db.execute(
           "INSERT INTO care_plans(id,stay_id,label,type,product_id,note,starts_at,ends_at,times_json,author_id,created_at,updated_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)",
           [
@@ -728,26 +770,31 @@ export function createStayStore(
       reason: string
     ) {
       authorRequired(author);
-      if (!reason.trim())
+      if (!reason.trim()) {
         throw new Error("Indiquez le motif du changement d’emplacement.");
+      }
       return persistence.transaction(async (db) => {
         const stay = await get(db, stayId);
-        if (stay.status === "sorti" || stay.status === "annule")
+        if (stay.status === "sorti" || stay.status === "annule") {
           throw new Error("Ce séjour est terminé.");
-        if (stay.location_id === locationId)
+        }
+        if (stay.location_id === locationId) {
           throw new Error("Le patient occupe déjà cet emplacement.");
+        }
         const [location] = await db.select<StayLocation[]>(
           "SELECT * FROM locations WHERE id=$1",
           [locationId]
         );
-        if (!location?.active)
+        if (!location?.active) {
           throw new Error("Cet emplacement n’est pas disponible.");
+        }
         const occupants = await db.select<{ id: string }[]>(
           "SELECT id FROM stays WHERE location_id=$1 AND status IN ('admis','en_cours','sortie_prevue')",
           [locationId]
         );
-        if (occupants.length)
+        if (occupants.length) {
           throw new Error("Cet emplacement est déjà occupé.");
+        }
         await db.execute(
           "UPDATE stays SET location_id=$1,updated_at=$2 WHERE id=$3",
           [locationId, clock().toISOString(), stayId]

@@ -25,7 +25,9 @@ function useControllable<T>(
   const [inner, setInner] = useState(initial);
   const current = value === undefined ? inner : value;
   const set = (next: T) => {
-    if (value === undefined) setInner(next);
+    if (value === undefined) {
+      setInner(next);
+    }
     onChange?.(next);
   };
   return [current, set] as const;
@@ -46,7 +48,9 @@ function Field({
   className,
   children,
 }: Labelled & { children: React.ReactNode }) {
-  if (!label) return <>{children}</>;
+  if (!label) {
+    return <>{children}</>;
+  }
   return (
     <label
       className={cn(
@@ -249,7 +253,9 @@ export function RadioGroup({
   ...props
 }: RadioGroupProps) {
   const [value, setValue] = useControllable(valueProp, defaultValue, (v) => {
-    if (v !== undefined) onValueChange?.(v);
+    if (v !== undefined) {
+      onValueChange?.(v);
+    }
   });
   const ref = useRef<HTMLDivElement>(null);
 
@@ -257,7 +263,9 @@ export function RadioGroup({
     const step = { ArrowDown: 1, ArrowRight: 1, ArrowUp: -1, ArrowLeft: -1 }[
       e.key
     ];
-    if (!step) return;
+    if (!step) {
+      return;
+    }
     e.preventDefault();
     const radios = [
       ...(ref.current?.querySelectorAll<HTMLButtonElement>(
@@ -298,7 +306,9 @@ export function Radio({
   ...props
 }: RadioProps) {
   const group = useContext(RadioCtx);
-  if (!group) throw new Error("<Radio> must be used inside <RadioGroup>");
+  if (!group) {
+    throw new Error("<Radio> must be used inside <RadioGroup>");
+  }
   const checked = group.value === value;
   // The checked radio is the group's tab stop; with none checked, every radio is.
   const tabStop = checked || group.value === undefined;

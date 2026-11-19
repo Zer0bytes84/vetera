@@ -85,7 +85,9 @@ function LotDate({
             className={COMPACT_CALENDAR_CLASS}
             onSelect={(date) => {
               onChange(date);
-              if (date) setOpen(false);
+              if (date) {
+                setOpen(false);
+              }
             }}
           />
         </PopoverContent>
@@ -158,8 +160,9 @@ function LotForm({
           !product ||
           !number.trim() ||
           !(requested > 0)
-        )
+        ) {
           return;
+        }
         setBusy(true);
         setError(null);
         await guard(
@@ -172,11 +175,12 @@ function LotForm({
                 stockDay(receivedAt) !== stockDay(received) ||
                 `${String(receivedAt.getHours()).padStart(2, "0")}:${String(receivedAt.getMinutes()).padStart(2, "0")}` !==
                   time)
-            )
+            ) {
               throw new StockError(
                 "SOURCE_CONFLICT",
                 "Choisissez une date et une heure de réception valides."
               );
+            }
             await inventoryService.registerLot({
               id: requestId,
               productId,
@@ -318,7 +322,9 @@ function LotForm({
                 label="Choisir la date de réception"
                 value={received}
                 onChange={(value) => {
-                  if (value) changed(() => setReceived(value));
+                  if (value) {
+                    changed(() => setReceived(value));
+                  }
                 }}
               />
               <CareTimePicker
@@ -389,7 +395,9 @@ function CountForm({
       className="space-y-3 border-y border-border bg-muted/10 p-5"
       onSubmit={async (event) => {
         event.preventDefault();
-        if (busy || !currentUser || !reason.trim() || !(count >= 0)) return;
+        if (busy || !currentUser || !reason.trim() || !(count >= 0)) {
+          return;
+        }
         setBusy(true);
         setError(null);
         await guard(
@@ -509,13 +517,14 @@ export function StockLotsPanel() {
   const uniqueAlerts = new Set(
     alerts.map((row) => row.lotId ?? `unassigned-${row.productId}`)
   ).size;
-  if (!isTauriRuntime())
+  if (!isTauriRuntime()) {
     return (
       <p className="p-5 text-sm text-muted-foreground">
         Les lots et leur traçabilité sont disponibles dans l’application de
         bureau. Le catalogue web reste utilisable.
       </p>
     );
+  }
   return (
     <section aria-label="Lots et réceptions" className="min-w-0">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border p-4">

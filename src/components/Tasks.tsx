@@ -151,7 +151,9 @@ function reminderDate(reminder: Reminder) {
 
 /** A reminder only has an hour when one was entered: never show an invented 12:00. */
 function itemHasTime(item: ReminderItem) {
-  if (item.kind === "manual") return Boolean(item.task.startTime);
+  if (item.kind === "manual") {
+    return Boolean(item.task.startTime);
+  }
   return item.kind === "automatic";
 }
 
@@ -163,8 +165,12 @@ function dateLabel(date: Date | null, view: ReminderView, withTime = true) {
     const key = toDateKey(date);
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
-    if (key === toDateKey(new Date())) return "Aujourd'hui";
-    if (key === toDateKey(tomorrow)) return "Demain";
+    if (key === toDateKey(new Date())) {
+      return "Aujourd'hui";
+    }
+    if (key === toDateKey(tomorrow)) {
+      return "Demain";
+    }
     return date.toLocaleDateString("fr-FR", {
       day: "numeric",
       month: "short",
@@ -209,7 +215,9 @@ function itemIsCompleted(item: ReminderItem) {
   if (item.kind === "manual") {
     return item.task.status === "done";
   }
-  if (item.kind === "medical") return item.reminder.statut !== "en_cours";
+  if (item.kind === "medical") {
+    return item.reminder.statut !== "en_cours";
+  }
   return (
     item.reminder.status === "sent" || item.reminder.status === "dismissed"
   );
@@ -529,7 +537,9 @@ const Tasks: React.FC = () => {
           startTime: editDraft.startTime || undefined,
           title: editDraft.title.trim(),
         });
-        if (!updated) return;
+        if (!updated) {
+          return;
+        }
         setEditingTaskId(null);
         toast.success("Rappel mis à jour");
       },
@@ -547,8 +557,9 @@ const Tasks: React.FC = () => {
 
   const toggleTask = async (task: Task) => {
     const nextStatus = task.status === "done" ? "todo" : "done";
-    if (!(await tasksRepository.update(task.id, { status: nextStatus })))
+    if (!(await tasksRepository.update(task.id, { status: nextStatus }))) {
       return;
+    }
     toast.success(
       nextStatus === "done" ? "Rappel terminé" : "Rappel réouvert",
       {
@@ -586,8 +597,11 @@ const Tasks: React.FC = () => {
   const toggleSelected = (taskId: string) =>
     setSelectedIds((current) => {
       const next = new Set(current);
-      if (next.has(taskId)) next.delete(taskId);
-      else next.add(taskId);
+      if (next.has(taskId)) {
+        next.delete(taskId);
+      } else {
+        next.add(taskId);
+      }
       return next;
     });
   const selectableIds = new Set(
@@ -606,20 +620,24 @@ const Tasks: React.FC = () => {
         event.ctrlKey ||
         event.altKey ||
         event.defaultPrevented
-      )
+      ) {
         return;
+      }
       const target = event.target as HTMLElement | null;
       if (
         target?.closest(
           "input, textarea, select, [contenteditable='true'], [role='dialog'], [role='menu'], [role='listbox']"
         )
-      )
+      ) {
         return;
+      }
       if (event.key === "x" || event.key === "X") {
         const row = document.querySelector<HTMLElement>(
           ".reminders-page [data-list-row][data-current][data-task-id]"
         );
-        if (!row?.dataset.taskId) return;
+        if (!row?.dataset.taskId) {
+          return;
+        }
         event.preventDefault();
         toggleSelected(row.dataset.taskId);
       } else if (event.key === "Escape" && selectedIds.size) {
@@ -631,7 +649,9 @@ const Tasks: React.FC = () => {
   }, [selectedIds.size]);
   const completeSelected = async () => {
     const tasks = selectedTasks.filter((task) => task.status !== "done");
-    if (!tasks.length) return;
+    if (!tasks.length) {
+      return;
+    }
     setSaving(true);
     return await guard(
       async () => {
@@ -642,7 +662,9 @@ const Tasks: React.FC = () => {
         );
         const done = tasks.filter((_, index) => results[index]);
         setSelectedIds(new Set());
-        if (!done.length) return;
+        if (!done.length) {
+          return;
+        }
         toast.success(
           `${done.length} rappel${done.length > 1 ? "s" : ""} terminé${done.length > 1 ? "s" : ""}`,
           {
@@ -650,8 +672,9 @@ const Tasks: React.FC = () => {
             action: {
               label: "Annuler",
               onClick: () => {
-                for (const task of done)
+                for (const task of done) {
                   void tasksRepository.update(task.id, { status: task.status });
+                }
               },
             },
           }
@@ -666,7 +689,9 @@ const Tasks: React.FC = () => {
   };
   const postponeSelected = async () => {
     const tasks = selectedTasks.filter((task) => task.status !== "done");
-    if (!tasks.length) return;
+    if (!tasks.length) {
+      return;
+    }
     setSaving(true);
     await guard(
       async () => {

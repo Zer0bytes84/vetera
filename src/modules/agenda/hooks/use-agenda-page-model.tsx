@@ -379,20 +379,27 @@ export function useAgendaPageModel(onNavigate?: (view: View) => void) {
     const vetId = selectedVetId || vets[0]?.id || "";
     const [year, month, day] = formDate.split("-").map(Number);
     return appointments.flatMap((appointment) => {
-      if (appointment.id === editingAppointmentId) return [];
-      if (TERMINAL_APPOINTMENT_STATUSES.includes(appointment.status)) return [];
+      if (appointment.id === editingAppointmentId) {
+        return [];
+      }
+      if (TERMINAL_APPOINTMENT_STATUSES.includes(appointment.status)) {
+        return [];
+      }
       const sameVet = Boolean(vetId) && appointment.vetId === vetId;
       const sameRoom =
         Boolean(selectedRoom) && appointment.room === selectedRoom;
-      if (!sameVet && !sameRoom) return [];
+      if (!sameVet && !sameRoom) {
+        return [];
+      }
       const start = new Date(appointment.startTime);
       const end = new Date(appointment.endTime);
       if (
         start.getFullYear() !== year ||
         start.getMonth() + 1 !== month ||
         start.getDate() !== day
-      )
+      ) {
         return [];
+      }
       const endMinutes =
         end.toDateString() === start.toDateString()
           ? end.getHours() * 60 + end.getMinutes()
@@ -834,7 +841,9 @@ export function useAgendaPageModel(onNavigate?: (view: View) => void) {
             requestedDate && !Number.isNaN(requestedDate.getTime())
               ? requestedDate
               : undefined;
-          if (date) setSelectedDate(date);
+          if (date) {
+            setSelectedDate(date);
+          }
           if (!pending.patientId) {
             window.sessionStorage.removeItem("vetera:pending-appointment");
             if (pending.create) {

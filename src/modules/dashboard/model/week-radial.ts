@@ -46,14 +46,18 @@ export function buildWeekFacts(data: {
   const income = (from: Date, to: Date) =>
     transactions
       .filter((t) => {
-        if (t.type !== "income" || t.status !== "paid" || !t.date) return false;
+        if (t.type !== "income" || t.status !== "paid" || !t.date) {
+          return false;
+        }
         const d = new Date(t.date);
         return d >= from && d <= to;
       })
       .reduce((sum, t) => sum + (t.amount || 0), 0);
   const visitsBetween = (from: Date, to: Date) =>
     appointments.filter((a) => {
-      if (!a.startTime || NOT_VISITS.includes(a.status)) return false;
+      if (!a.startTime || NOT_VISITS.includes(a.status)) {
+        return false;
+      }
       const d = new Date(a.startTime);
       return d >= from && d <= to;
     }).length;
@@ -92,9 +96,13 @@ export function buildWeekRadial(
   const weekday = empty(7);
   let total = 0;
   for (const a of appointments) {
-    if (!a.startTime || NOT_VISITS.includes(a.status)) continue;
+    if (!a.startTime || NOT_VISITS.includes(a.status)) {
+      continue;
+    }
     const d = new Date(a.startTime);
-    if (d < startOfWeek || d > endOfToday) continue;
+    if (d < startOfWeek || d > endOfToday) {
+      continue;
+    }
     const state = stateOf(a.status);
     hour[state][d.getHours()] += 1;
     weekday[state][(d.getDay() + 6) % 7] += 1;

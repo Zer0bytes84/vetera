@@ -377,8 +377,9 @@ const BackupSettings: React.FC = () => {
       async () => {
         const result = await operation();
         if (!result) {
-          if (success.startsWith("Sauvegarde"))
+          if (success.startsWith("Sauvegarde")) {
             toast.error("L’opération a échoué. Réessayez.");
+          }
           return;
         }
         toast.success(success);
@@ -408,7 +409,9 @@ const BackupSettings: React.FC = () => {
   };
 
   const confirmPending = () => {
-    if (!pending) return;
+    if (!pending) {
+      return;
+    }
     const action = pending;
     const password = passphrase || undefined;
     setPending(null);
@@ -641,10 +644,14 @@ const Parametres: React.FC<ParametresProps> = ({
   };
 
   const [activeTab, setActiveTab] = useState<SettingsTab>(() => {
-    if (typeof window === "undefined") return "profil";
+    if (typeof window === "undefined") {
+      return "profil";
+    }
     // A section asked for from elsewhere (the account menu's « Mon cabinet ») opens directly.
     const requested = window.sessionStorage.getItem(SETTINGS_SECTION_KEY);
-    if (isSettingsTab(requested)) return requested;
+    if (isSettingsTab(requested)) {
+      return requested;
+    }
     return window.sessionStorage.getItem(AI_SETTINGS_PENDING_KEY) === "true"
       ? "ia"
       : "profil";
@@ -657,12 +664,17 @@ const Parametres: React.FC<ParametresProps> = ({
     const openRequestedSection = () => {
       const requested = window.sessionStorage.getItem(SETTINGS_SECTION_KEY);
       window.sessionStorage.removeItem(SETTINGS_SECTION_KEY);
-      if (isSettingsTab(requested)) setActiveTab(requested);
+      if (isSettingsTab(requested)) {
+        setActiveTab(requested);
+      }
     };
-    if (window.sessionStorage.getItem(SETTINGS_SECTION_KEY))
+    if (window.sessionStorage.getItem(SETTINGS_SECTION_KEY)) {
       openRequestedSection();
-    else if (window.sessionStorage.getItem(AI_SETTINGS_PENDING_KEY) === "true")
+    } else if (
+      window.sessionStorage.getItem(AI_SETTINGS_PENDING_KEY) === "true"
+    ) {
       openAISettings();
+    }
     window.addEventListener(AI_ONBOARDING_OPEN_EVENT, openAISettings);
     window.addEventListener(SETTINGS_SECTION_EVENT, openRequestedSection);
     return () => {
@@ -1293,7 +1305,9 @@ function SidebarToneSetting({ userId }: { userId: string | undefined }) {
       <Segmented<SidebarTone>
         label="Teinte de la barre latérale"
         onValueChange={(next) => {
-          if (!userId) return;
+          if (!userId) {
+            return;
+          }
           setChosen({ userId, tone: next });
           saveSidebarTone(userId, next);
         }}

@@ -21,7 +21,9 @@ export interface ExistingInvoice {
 /** Whole dinars typed by a person; anything else (empty, negative, letters) is null. */
 export function parseDinars(text: string): number | null {
   const clean = text.replace(/\s/g, "").replace(",", ".");
-  if (!clean) return null;
+  if (!clean) {
+    return null;
+  }
   const value = Number(clean);
   return Number.isFinite(value) && value >= 0 ? value : null;
 }
@@ -61,14 +63,18 @@ export function billingDraft(
   const received = free ? 0 : parseDinars(receivedText);
 
   let problem: string | null = null;
-  if (items.length === 0) problem = "Ajoutez au moins une prestation.";
-  else if (missingLabel) problem = "Donnez un libellé à chaque prestation.";
-  else if (missingPrice) problem = "Indiquez le prix de chaque prestation.";
-  else if (received === null)
+  if (items.length === 0) {
+    problem = "Ajoutez au moins une prestation.";
+  } else if (missingLabel) {
+    problem = "Donnez un libellé à chaque prestation.";
+  } else if (missingPrice) {
+    problem = "Indiquez le prix de chaque prestation.";
+  } else if (received === null) {
     problem =
       "Indiquez le montant réglé aujourd'hui, 0 DA si le client ne paie pas maintenant.";
-  else if (received > due)
+  } else if (received > due) {
     problem = `Le règlement dépasse le reste dû (${due.toLocaleString("fr-FR")} DA).`;
+  }
 
   return {
     balanceAfter: Math.max(0, due - (received ?? 0)),

@@ -49,9 +49,13 @@ export function parkWhisperSession(
 ) {
   idleWhisper?.session.close();
   session.park();
-  if (session.isClosed) return;
+  if (session.isClosed) {
+    return;
+  }
   const timer = setTimeout(() => {
-    if (idleWhisper?.session === session) idleWhisper = null;
+    if (idleWhisper?.session === session) {
+      idleWhisper = null;
+    }
     session.close();
   }, WHISPER_IDLE_MS);
   idleWhisper = { session, key, timer };
@@ -61,7 +65,9 @@ export function parkWhisperSession(
 export function releaseWhisperSession() {
   const idle = idleWhisper;
   idleWhisper = null;
-  if (!idle) return;
+  if (!idle) {
+    return;
+  }
   clearTimeout(idle.timer);
   idle.session.close();
 }

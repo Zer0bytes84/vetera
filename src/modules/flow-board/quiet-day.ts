@@ -90,7 +90,9 @@ export function buildQuietDay({
       .length,
     receiptsToday: transactions
       .filter((row) => {
-        if (row.type !== "income" || row.status !== "paid") return false;
+        if (row.type !== "income" || row.status !== "paid") {
+          return false;
+        }
         // Read as the dashboard's Trésorerie reads it: a SQLite timestamp is UTC, a bare day is local.
         const day = parseDashboardDate(row.date);
         return Boolean(day && day.toDateString() === now.toDateString());

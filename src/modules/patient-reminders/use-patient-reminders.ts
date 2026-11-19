@@ -20,18 +20,23 @@ export function usePatientReminders() {
           patientRemindersService.list(),
           patientRemindersService.types(),
         ]);
-        if (request !== sequence.current) return;
+        if (request !== sequence.current) {
+          return;
+        }
         setReminders(rows);
         setTypes(kinds);
         setError(null);
       },
       {
         recover: () => {
-          if (request === sequence.current)
+          if (request === sequence.current) {
             setError("Les rappels patients n’ont pas pu être chargés.");
+          }
         },
         cleanup: () => {
-          if (request === sequence.current) setLoading(false);
+          if (request === sequence.current) {
+            setLoading(false);
+          }
         },
       }
     );

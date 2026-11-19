@@ -53,8 +53,9 @@ export const TEST_INVOICE_MARK =
   "TEST — sans valeur : émise depuis un dossier de données de test";
 
 export function invoiceMoney(amount: number): string {
-  if (!Number.isSafeInteger(amount) || amount < 0)
+  if (!Number.isSafeInteger(amount) || amount < 0) {
     throw new Error("Montant de facture invalide.");
+  }
   return `${(amount / 100).toLocaleString("fr-FR", { minimumFractionDigits: amount % 100 ? 2 : 0, maximumFractionDigits: 2 }).replace(/[\u00a0\u202f]/g, " ")} DA`;
 }
 
@@ -85,8 +86,9 @@ export function buildInvoicePdf(
   ) {
     throw new Error("Les montants de la facture ne sont pas cohérents.");
   }
-  if (!Number.isFinite(data.date.getTime()))
+  if (!Number.isFinite(data.date.getTime())) {
     throw new Error("Date de facture invalide.");
+  }
   const doc = new jsPDF({ unit: "mm", format: "a4" });
   doc.setProperties({
     title: `${test ? "TEST - " : ""}Facture ${data.number}`,
@@ -97,8 +99,9 @@ export function buildInvoicePdf(
   doc.setFontSize(8);
   doc.setFont("helvetica", "normal");
   const footer: string[] = doc.splitTextToSize(settings.footer, 148);
-  if (footer.length > 12)
+  if (footer.length > 12) {
     throw new Error("Le pied de page est trop long. Limitez-le à 12 lignes.");
+  }
   const footerTop = Math.min(271, 288 - footer.length * 3.5);
   const left = 18,
     right = 192,
@@ -168,7 +171,7 @@ export function buildInvoicePdf(
       "#52525b",
       "right"
     );
-    if (continued)
+    if (continued) {
       text(
         "Suite",
         right,
@@ -178,6 +181,7 @@ export function buildInvoicePdf(
         "#52525b",
         "right"
       );
+    }
     y = Math.max(50, infoY + 5, 47 + numberLines.length * 4);
     doc.setDrawColor("#d4d4d8");
     doc.line(left, y, right, y);
@@ -193,10 +197,14 @@ export function buildInvoicePdf(
   const nextPage = (table = false) => {
     doc.addPage();
     header(true);
-    if (table) tableHeader();
+    if (table) {
+      tableHeader();
+    }
   };
   const ensure = (height: number, table = false) => {
-    if (y + height > bottom) nextPage(table);
+    if (y + height > bottom) {
+      nextPage(table);
+    }
   };
   header();
   text("FACTURÉ À", left, y, 8, true, "#71717a");
@@ -239,7 +247,7 @@ export function buildInvoicePdf(
     lines.forEach((line, index) => {
       ensure(6, true);
       text(line, left + 4, y, 10);
-      if (index === 0)
+      if (index === 0) {
         text(
           invoiceMoney(item.amount),
           right - 4,
@@ -249,6 +257,7 @@ export function buildInvoicePdf(
           "#27272a",
           "right"
         );
+      }
       y += 5;
     });
     y += 5;

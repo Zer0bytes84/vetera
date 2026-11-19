@@ -80,7 +80,9 @@ export function patientAlerts(
   vaccinations: readonly Vaccination[],
   now: Date
 ): FlowAlert[] {
-  if (!patient) return [];
+  if (!patient) {
+    return [];
+  }
   const alerts: FlowAlert[] = [];
   const allergies = patient.allergies?.trim();
   if (allergies && !NO_ALLERGY.test(allergies)) {
@@ -150,7 +152,9 @@ export function matchesQuery(card: FlowCard, query: string | undefined) {
   const words = fold(query ?? "")
     .split(/\s+/)
     .filter(Boolean);
-  if (words.length === 0) return true;
+  if (words.length === 0) {
+    return true;
+  }
   const haystack = fold(
     [
       card.patientName,
@@ -179,17 +183,23 @@ export function buildFlowBoard(input: BoardInput): FlowBoard {
   const leftOpen: FlowCard[] = [];
 
   for (const appointment of input.appointments) {
-    if (input.vetId && appointment.vetId !== input.vetId) continue;
+    if (input.vetId && appointment.vetId !== input.vetId) {
+      continue;
+    }
     const state = states.get(appointment.id);
     const stage = state?.stage ?? null;
     const today = isSameLocalDay(appointment.startTime, input.now);
     const stillOpen =
       stage === "waiting" || stage === "consultation" || stage === "care";
-    if (!today && !stillOpen) continue;
+    if (!today && !stillOpen) {
+      continue;
+    }
     const planned =
       appointment.status === "scheduled" || appointment.status === "confirmed";
     const lane: BoardLane | null = planned ? PLANNED : stage;
-    if (!lane) continue;
+    if (!lane) {
+      continue;
+    }
     const patient = patients.get(appointment.patientId);
     const owner = owners.get(appointment.ownerId);
     const card: FlowCard = {
@@ -210,18 +220,26 @@ export function buildFlowBoard(input: BoardInput): FlowBoard {
       vetId: appointment.vetId,
       vetName: users.get(appointment.vetId)?.displayName ?? "",
     };
-    if (!matchesQuery(card, input.query)) continue;
-    if (today) lanes[lane].push(card);
-    else leftOpen.push(card);
+    if (!matchesQuery(card, input.query)) {
+      continue;
+    }
+    if (today) {
+      lanes[lane].push(card);
+    } else {
+      leftOpen.push(card);
+    }
   }
 
   const time = (value: string | null, fallback: string) =>
     new Date(value ?? fallback).getTime();
   for (const lane of BOARD_LANES) {
     lanes[lane].sort((a, b) => {
-      if (a.urgent !== b.urgent) return a.urgent ? -1 : 1;
-      if (lane === PLANNED || lane === "done")
+      if (a.urgent !== b.urgent) {
+        return a.urgent ? -1 : 1;
+      }
+      if (lane === PLANNED || lane === "done") {
         return time(null, a.startTime) - time(null, b.startTime);
+      }
       return time(a.since, a.startTime) - time(b.since, b.startTime);
     });
   }
@@ -233,7 +251,9 @@ export function buildFlowBoard(input: BoardInput): FlowBoard {
 }
 
 export function minutesSince(iso: string | null, now: Date): number | null {
-  if (!iso) return null;
+  if (!iso) {
+    return null;
+  }
   return Math.max(
     0,
     Math.floor((now.getTime() - new Date(iso).getTime()) / 60_000)
@@ -241,8 +261,12 @@ export function minutesSince(iso: string | null, now: Date): number | null {
 }
 
 export function durationLabel(minutes: number): string {
-  if (minutes < 1) return "à l'instant";
-  if (minutes < 60) return `${minutes} min`;
+  if (minutes < 1) {
+    return "à l'instant";
+  }
+  if (minutes < 60) {
+    return `${minutes} min`;
+  }
   const hours = Math.floor(minutes / 60);
   const rest = minutes % 60;
   return rest ? `${hours} h ${String(rest).padStart(2, "0")}` : `${hours} h`;
@@ -262,24 +286,33 @@ export function boardMove(
   from: BoardLane,
   to: BoardLane
 ): BoardMove | { refused: string } | null {
-  if (from === to) return null;
-  if (from === PLANNED && to === "waiting")
+  if (from === to) {
+    return null;
+  }
+  if (from === PLANNED && to === "waiting") {
     return { kind: "status", status: "arrived" };
-  if (from === PLANNED && to === "consultation")
+  }
+  if (from === PLANNED && to === "consultation") {
     return { kind: "status", status: "in_progress" };
-  if (from === "waiting" && to === "consultation")
+  }
+  if (from === "waiting" && to === "consultation") {
     return { kind: "status", status: "in_progress" };
-  if (from === "consultation" && to === "care")
+  }
+  if (from === "consultation" && to === "care") {
     return { kind: "care", care: true };
-  if (from === "care" && to === "consultation")
+  }
+  if (from === "care" && to === "consultation") {
     return { kind: "care", care: false };
-  if ((from === "consultation" || from === "care") && to === "billing")
+  }
+  if ((from === "consultation" || from === "care") && to === "billing") {
     return { kind: "close" };
-  if (to === "done")
+  }
+  if (to === "done") {
     return {
       refused:
         "Terminé arrive seul, dès que la facture est entièrement réglée.",
     };
+  }
   return {
     refused:
       "Pour revenir en arrière, utilisez « Annuler » juste après le déplacement.",
@@ -340,13 +373,17 @@ export function walkInFor(
       a.status === "waiting" ||
       a.status === "in_progress"
   );
-  if (here) return { kind: "already-here", appointment: here };
+  if (here) {
+    return { kind: "already-here", appointment: here };
+  }
   const booked = todays
     .filter((a) => a.status === "scheduled" || a.status === "confirmed")
     .sort(
       (a, b) =>
         new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
     )[0];
-  if (booked) return { kind: "booked", appointment: booked };
+  if (booked) {
+    return { kind: "booked", appointment: booked };
+  }
   return { kind: "new" };
 }

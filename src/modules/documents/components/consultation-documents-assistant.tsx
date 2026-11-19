@@ -75,8 +75,9 @@ import { guard, guardSync } from "@/lib/guard";
 type Draft = Pick<ReviewedDocumentInput, "title" | "text" | "source">;
 function fileFromAttachment(document: ConsultationDocument): File {
   const match = /^data:([^;,]+);base64,([\s\S]+)$/.exec(document.dataUrl);
-  if (!match || match[1] !== document.mimeType)
+  if (!match || match[1] !== document.mimeType) {
     throw new Error("Ce fichier local est invalide.");
+  }
   const binary = atob(match[2]);
   const bytes = Uint8Array.from(binary, (character) => character.charCodeAt(0));
   return new File([bytes], document.fileName, { type: document.mimeType });
@@ -173,14 +174,20 @@ export default function ConsultationDocumentsAssistant({
   const picker = useRef<HTMLInputElement>(null);
   const id = useId();
   useEffect(() => {
-    if (!initialDocument) return;
+    if (!initialDocument) {
+      return;
+    }
     let active = true;
     void readPatientDocument(initialDocument, { patientId })
       .then((source) => {
-        if (active) setReading(source);
+        if (active) {
+          setReading(source);
+        }
       })
       .catch((failure) => {
-        if (active) setError((failure as Error).message);
+        if (active) {
+          setError((failure as Error).message);
+        }
       });
     return () => {
       active = false;
@@ -190,15 +197,18 @@ export default function ConsultationDocumentsAssistant({
     let active = true;
     void getLocalModels()
       .then((status) => {
-        if (active) setModels(status);
+        if (active) {
+          setModels(status);
+        }
       })
       .catch(() => {
-        if (active)
+        if (active) {
           setError(
             (previous) =>
               previous ||
               "L’installation de l’assistant n’a pas pu être vérifiée."
           );
+        }
       });
     return () => {
       active = false;
@@ -235,7 +245,9 @@ export default function ConsultationDocumentsAssistant({
     setSaved(false);
   };
   const switchMode = (next: "generate" | "read") => {
-    if (busy || saving) return;
+    if (busy || saving) {
+      return;
+    }
     setMode(next);
     setDraft(null);
     setAskedQuestion("");
@@ -258,13 +270,17 @@ export default function ConsultationDocumentsAssistant({
     managedDocuments.error
   );
   const createDraft = () => {
-    if (!ready || !patient || !appointment || !soap) return;
+    if (!ready || !patient || !appointment || !soap) {
+      return;
+    }
     guardSync(
       () => {
         const template = templates.templates.find(
           (entry) => entry.id === templateId
         );
-        if (!template) throw new Error("Choisissez un modèle disponible.");
+        if (!template) {
+          throw new Error("Choisissez un modèle disponible.");
+        }
         const text = renderClinicalDocument(template, {
           patient,
           owner,
@@ -297,7 +313,9 @@ export default function ConsultationDocumentsAssistant({
     );
   };
   const readFile = async (file: File, sourceId?: string) => {
-    if (controller.current || saving) return;
+    if (controller.current || saving) {
+      return;
+    }
     try {
       assertReadableFile(file);
     } catch (failure) {
@@ -318,13 +336,19 @@ export default function ConsultationDocumentsAssistant({
     await guard(
       async () => {
         const source = await readLocalDocument(file, task.signal, (update) => {
-          if (controller.current === task) setProgress(update);
+          if (controller.current === task) {
+            setProgress(update);
+          }
         });
-        if (!task.signal.aborted) setReading({ ...source, sourceId });
+        if (!task.signal.aborted) {
+          setReading({ ...source, sourceId });
+        }
       },
       {
         recover: (failure) => {
-          if (!task.signal.aborted) setError((failure as Error).message);
+          if (!task.signal.aborted) {
+            setError((failure as Error).message);
+          }
         },
         cleanup: () => {
           if (controller.current === task) {
@@ -364,11 +388,16 @@ export default function ConsultationDocumentsAssistant({
       } catch (failure) {
         setError((failure as Error).message);
       }
-    } else if (note) readNote(note);
-    else setReading(null);
+    } else if (note) {
+      readNote(note);
+    } else {
+      setReading(null);
+    }
   };
   const ask = async () => {
-    if (!reading || controller.current || saving) return;
+    if (!reading || controller.current || saving) {
+      return;
+    }
     const task = new AbortController();
     controller.current = task;
     setBusy(true);
@@ -400,7 +429,9 @@ export default function ConsultationDocumentsAssistant({
       },
       {
         recover: (failure) => {
-          if (!task.signal.aborted) setError((failure as Error).message);
+          if (!task.signal.aborted) {
+            setError((failure as Error).message);
+          }
         },
         cleanup: () => {
           if (controller.current === task) {
@@ -412,7 +443,9 @@ export default function ConsultationDocumentsAssistant({
     );
   };
   const reviewReading = () => {
-    if (!reading) return;
+    if (!reading) {
+      return;
+    }
     const text = answer
       ? answer.extraits
           .map((quote) => `Page ${quote.page}\n${quote.texte}`)
@@ -434,7 +467,9 @@ export default function ConsultationDocumentsAssistant({
     resetReview();
   };
   const save = async () => {
-    if (!draft || !reviewed || savingRef.current || busy) return;
+    if (!draft || !reviewed || savingRef.current || busy) {
+      return;
+    }
     savingRef.current = true;
     setSaving(true);
     setError("");
@@ -462,13 +497,17 @@ export default function ConsultationDocumentsAssistant({
     );
   };
   const install = async () => {
-    if (importing || busy) return;
+    if (importing || busy) {
+      return;
+    }
     setImporting(true);
     setError("");
     await guard(
       async () => {
         const status = await importLocalModel("generator");
-        if (status) setModels(status);
+        if (status) {
+          setModels(status);
+        }
       },
       {
         recover: (failure) => {
@@ -648,7 +687,9 @@ export default function ConsultationDocumentsAssistant({
             onChange={(event) => {
               const file = event.target.files?.[0];
               event.target.value = "";
-              if (file) void readFile(file);
+              if (file) {
+                void readFile(file);
+              }
             }}
           />
           <div>

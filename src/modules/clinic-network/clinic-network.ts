@@ -38,8 +38,12 @@ const migrations = () => SQLITE_MIGRATIONS.map(({ version }) => version);
 
 /** Native errors arrive as plain strings already written for the user. */
 export function networkErrorMessage(error: unknown): string {
-  if (typeof error === "string") return error;
-  if (error instanceof Error) return error.message;
+  if (typeof error === "string") {
+    return error;
+  }
+  if (error instanceof Error) {
+    return error.message;
+  }
   return "Le réseau local n'a pas répondu. Réessayez.";
 }
 

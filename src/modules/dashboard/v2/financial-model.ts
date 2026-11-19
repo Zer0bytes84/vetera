@@ -101,8 +101,9 @@ export function buildFinancialOverview(
   for (const transaction of manual) {
     const value = Math.max(0, transaction.amount) / 100;
     categories[1].totalValue += value;
-    if (transaction.status === "paid") categories[1].safeValue += value;
-    else {
+    if (transaction.status === "paid") {
+      categories[1].safeValue += value;
+    } else {
       categories[1].riskValue += value;
       if (value > 0) {
         categories[1].riskCount++;
@@ -145,8 +146,9 @@ export function isOpenInvoice(
   if (
     invoice.documentStatus !== "issued" ||
     !(invoice.issuedAt ?? invoice.createdAt)
-  )
+  ) {
     return false;
+  }
   const net = Math.max(0, invoice.grossAmount - invoice.creditAmount) / 100;
   return Math.min(net, Math.max(0, invoice.balanceAmount) / 100) > 0;
 }
@@ -236,14 +238,20 @@ export function receivablesTrend(
     const at = localDay(end);
     let owed = 0;
     for (const invoice of open) {
-      if (invoice.day > at) continue;
+      if (invoice.day > at) {
+        continue;
+      }
       // Paid after that day: still outstanding then. Never more than the invoice's net.
       const later = invoice.payments
         .filter((payment) => payment.day > at)
         .reduce((sum, payment) => sum + payment.amount, 0);
       owed += Math.min(invoice.net, invoice.balance + later);
     }
-    for (const entry of entries) if (entry.day <= at) owed += entry.amount;
+    for (const entry of entries) {
+      if (entry.day <= at) {
+        owed += entry.amount;
+      }
+    }
     return Math.round(owed * 100) / 100;
   });
 }
@@ -261,7 +269,9 @@ export function settlementRate(invoices: Invoice[]): number | null {
     { from: "", to: "" },
     "invoices"
   ).categories;
-  if (!category || category.totalValue <= 0) return null;
+  if (!category || category.totalValue <= 0) {
+    return null;
+  }
   const rate =
     Math.round((category.safeValue / category.totalValue) * 1000) / 10;
   return category.riskValue > 0 ? Math.min(rate, 99.9) : rate;
@@ -273,7 +283,9 @@ export function collectionProgress(
   collected: number,
   segments = 40
 ) {
-  if (total <= 0) return { percentage: null, filledSegments: 0 };
+  if (total <= 0) {
+    return { percentage: null, filledSegments: 0 };
+  }
   const fraction = Math.max(0, Math.min(1, collected / total));
   const incomplete = collected < total;
   return {

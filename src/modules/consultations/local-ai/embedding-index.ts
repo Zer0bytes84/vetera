@@ -76,15 +76,17 @@ export function assertSearchScope(scope: SearchScope) {
           "product",
         ].includes(section)
     )
-  )
+  ) {
     throw new Error("Choisissez un patient, une source et une rubrique.");
+  }
 }
 // One semantic unit per SOAP section, without character-based subdivision.
 export function soapSearchChunks(note: ConsultationSoap): SearchChunk[] {
-  if (!note.patientId || !isSoapReviewed(note))
+  if (!note.patientId || !isSoapReviewed(note)) {
     throw new Error(
       "Seules les notes relues et validées peuvent être recherchées."
     );
+  }
   return SOAP_SECTIONS.filter(({ key }) => note[key].trim()).map(
     ({ key }, chunkIndex) => ({
       patientId: note.patientId,
@@ -115,10 +117,11 @@ export function documentSearchChunks(
     !note.patientId ||
     typeof review?.reviewedAt !== "string" ||
     !Number.isFinite(Date.parse(review.reviewedAt))
-  )
+  ) {
     throw new Error(
       "Le document doit être lié au patient et validé avant son indexation."
     );
+  }
   const type = documentType === "protocol" ? "protocol" : "document";
   return plainText.trim()
     ? [
@@ -151,14 +154,19 @@ export function managedDocumentSearchChunks(
     | "updatedAt"
   >
 ): SearchChunk[] {
-  if (!document.patientId || document.status !== "finalise") return [];
-  if (document.attachment && document.attachment.textState !== "extractible")
+  if (!document.patientId || document.status !== "finalise") {
     return [];
+  }
+  if (document.attachment && document.attachment.textState !== "extractible") {
+    return [];
+  }
   const pages = document.attachment?.pages;
   const text = pages
     ? pages.map((page) => `Page ${page.page}\n${page.text}`).join("\n\n")
     : document.content;
-  if (!text.trim()) return [];
+  if (!text.trim()) {
+    return [];
+  }
   return [
     {
       patientId: document.patientId,
@@ -191,22 +199,30 @@ export function patientSearchChunks(patient: {
   generalNotes?: string | null;
   general_notes?: string | null;
 }): SearchChunk[] {
-  if (!patient.id) return [];
+  if (!patient.id) {
+    return [];
+  }
   const parts: string[] = [];
   const speciesBreed = [patient.species, patient.breed]
     .filter(Boolean)
     .join(" · ");
   parts.push(`Patient : ${patient.name} (${speciesBreed})`);
   const chip = patient.chipNumber || patient.chip_number;
-  if (chip) parts.push(`Identification / Puce : ${chip}`);
+  if (chip) {
+    parts.push(`Identification / Puce : ${chip}`);
+  }
   const allergies = patient.allergies;
-  if (allergies && allergies.trim())
+  if (allergies && allergies.trim()) {
     parts.push(`Allergies : ${allergies.trim()}`);
+  }
   const chronic = patient.chronicConditions || patient.chronic_conditions;
-  if (chronic && chronic.trim())
+  if (chronic && chronic.trim()) {
     parts.push(`Affections chroniques : ${chronic.trim()}`);
+  }
   const notes = patient.generalNotes || patient.general_notes;
-  if (notes && notes.trim()) parts.push(`Notes médicales : ${notes.trim()}`);
+  if (notes && notes.trim()) {
+    parts.push(`Notes médicales : ${notes.trim()}`);
+  }
 
   const text = parts.join(" — ");
   return [
@@ -245,7 +261,9 @@ export function consultationSearchChunks(
   patientName?: string
 ): SearchChunk[] {
   const patientId = appointment.patientId || appointment.patient_id;
-  if (!appointment.id || !patientId) return [];
+  if (!appointment.id || !patientId) {
+    return [];
+  }
 
   const parts: string[] = [];
   if (appointment.type || appointment.title) {
@@ -267,7 +285,9 @@ export function consultationSearchChunks(
   }
 
   const text = parts.join(" — ");
-  if (!text.trim()) return [];
+  if (!text.trim()) {
+    return [];
+  }
 
   return [
     {
@@ -300,12 +320,18 @@ export function productSearchChunks(product: {
   unit?: string | null;
   quantity?: number | null;
 }): SearchChunk[] {
-  if (!product.id || !product.name) return [];
+  if (!product.id || !product.name) {
+    return [];
+  }
   const sub = product.subCategory || product.sub_category;
   const cat = [product.category, sub].filter(Boolean).join(" / ");
   const parts: string[] = [`Produit : ${product.name}`];
-  if (cat) parts.push(`Catégorie : ${cat}`);
-  if (product.unit) parts.push(`Unité : ${product.unit}`);
+  if (cat) {
+    parts.push(`Catégorie : ${cat}`);
+  }
+  if (product.unit) {
+    parts.push(`Unité : ${product.unit}`);
+  }
   if (product.quantity !== undefined && product.quantity !== null) {
     parts.push(`En stock : ${product.quantity} ${product.unit || "unités"}`);
   }
@@ -330,10 +356,16 @@ export function productSearchChunks(product: {
   ];
 }
 export function normalizedEmbedding(vector: number[]) {
-  if (vector.length !== 768 || vector.some((value) => !Number.isFinite(value)))
+  if (
+    vector.length !== 768 ||
+    vector.some((value) => !Number.isFinite(value))
+  ) {
     throw new Error("L’extrait n’a pas pu être préparé pour la recherche.");
+  }
   const norm = Math.hypot(...vector);
-  if (!norm) throw new Error("L’extrait de recherche est vide.");
+  if (!norm) {
+    throw new Error("L’extrait de recherche est vide.");
+  }
   return vector.map((value) => value / norm);
 }
 export function embeddingToHex(vector: number[]) {
@@ -347,8 +379,9 @@ export function embeddingToHex(vector: number[]) {
   ).join("");
 }
 export function embeddingFromHex(hex: string) {
-  if (!/^[a-fA-F0-9]{6144}$/.test(hex))
+  if (!/^[a-fA-F0-9]{6144}$/.test(hex)) {
     throw new Error("Un extrait de recherche est invalide.");
+  }
   const bytes = Uint8Array.from(hex.match(/../g)!, (value) =>
       Number.parseInt(value, 16)
     ),
@@ -373,8 +406,9 @@ export function rankPatientChunks<T extends SearchChunk & { vector: number[] }>(
   queryText = ""
 ) {
   assertSearchScope(scope);
-  if (!Number.isFinite(minimum) || minimum < MIN_SEARCH_SCORE || minimum > 1)
+  if (!Number.isFinite(minimum) || minimum < MIN_SEARCH_SCORE || minimum > 1) {
     throw new Error("Le seuil de recherche est invalide.");
+  }
   const unit = normalizedEmbedding(query);
   return (
     rows

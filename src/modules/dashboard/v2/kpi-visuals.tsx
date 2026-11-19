@@ -25,12 +25,16 @@ function handleKeyNavigation(
   count: number,
   set: (val: number | null) => void
 ) {
-  if (!count) return;
+  if (!count) {
+    return;
+  }
   if (event.key === "Escape") {
     set(null);
     return;
   }
-  if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+  if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") {
+    return;
+  }
   event.preventDefault();
   set(
     Math.max(
@@ -218,7 +222,9 @@ export function KpiConsultationsCadence({
 // 2. ENCAISSEMENTS: SMOOTH SPLINE WAVE (Baitari Blue theme)
 // ---------------------------------------------------------------------------
 function buildSplinePath(pts: [number, number][]) {
-  if (pts.length < 2) return "";
+  if (pts.length < 2) {
+    return "";
+  }
   let d = `M ${pts[0][0].toFixed(1)},${pts[0][1].toFixed(1)}`;
   for (let i = 0; i < pts.length - 1; i++) {
     const p0 = pts[Math.max(0, i - 1)];
@@ -422,23 +428,36 @@ export function KpiIncomeSplineWave({
 // ---------------------------------------------------------------------------
 function resolveSpeciesGlyph(name: string) {
   const norm = name.toLowerCase();
-  if (norm.includes("chien") || norm.includes("canin")) return Dog;
-  if (norm.includes("chat") || norm.includes("felin") || norm.includes("félin"))
+  if (norm.includes("chien") || norm.includes("canin")) {
+    return Dog;
+  }
+  if (
+    norm.includes("chat") ||
+    norm.includes("felin") ||
+    norm.includes("félin")
+  ) {
     return Cat;
+  }
   if (
     norm.includes("lapin") ||
     norm.includes("rongeur") ||
     norm.includes("nac")
-  )
+  ) {
     return Rabbit;
-  if (norm.includes("oiseau") || norm.includes("perroquet")) return Bird;
-  if (norm.includes("tortue") || norm.includes("reptile")) return Turtle;
+  }
+  if (norm.includes("oiseau") || norm.includes("perroquet")) {
+    return Bird;
+  }
+  if (norm.includes("tortue") || norm.includes("reptile")) {
+    return Turtle;
+  }
   if (
     norm.includes("cheval") ||
     norm.includes("equin") ||
     norm.includes("équin")
-  )
+  ) {
     return Horse;
+  }
   return PawPrint;
 }
 

@@ -174,15 +174,20 @@ const LEGACY_MIGRATION_KEYS = [
  * The mode, the type set and the sidebar tone are left as they are.
  */
 export function migrateToCleanOnly() {
-  if (localStorage.getItem(CLEAN_ONLY_MIGRATION_KEY) === "true") return;
+  if (localStorage.getItem(CLEAN_ONLY_MIGRATION_KEY) === "true") {
+    return;
+  }
   if (localStorage.getItem("baitari-clean-default-v1") !== "true") {
     const installed =
       localStorage.getItem("theme-config") !== null ||
       localStorage.getItem("baitari-premium-default-v1") === "true";
-    if (installed && localStorage.getItem("theme") === null)
+    if (installed && localStorage.getItem("theme") === null) {
       localStorage.setItem("theme", "dark");
+    }
   }
-  for (const key of LEGACY_MIGRATION_KEYS) localStorage.removeItem(key);
+  for (const key of LEGACY_MIGRATION_KEYS) {
+    localStorage.removeItem(key);
+  }
   localStorage.setItem(CLEAN_ONLY_MIGRATION_KEY, "true");
 }
 
@@ -216,14 +221,18 @@ export function cleanUpRemovedDisplaySettings(): ThemeConfig {
     if (
       typeof cleanFont === "string" &&
       Object.hasOwn(CLEAN_FONT_SETS, cleanFont)
-    )
+    ) {
       config.cleanFont = cleanFont as CleanFontSet;
+    }
   }
   try {
     const next = JSON.stringify(config);
-    if (parsed !== null && localStorage.getItem("theme-config") !== next)
+    if (parsed !== null && localStorage.getItem("theme-config") !== next) {
       localStorage.setItem("theme-config", next);
-    for (const key of REMOVED_DISPLAY_KEYS) localStorage.removeItem(key);
+    }
+    for (const key of REMOVED_DISPLAY_KEYS) {
+      localStorage.removeItem(key);
+    }
   } catch {
     // Storage unavailable: the fixed appearance still applies.
   }
@@ -241,7 +250,9 @@ export function getThemeConfig(): ThemeConfig {
 
 export function saveThemeConfig(config: ThemeConfig) {
   const next: ThemeConfig = {};
-  if (config.cleanFont) next.cleanFont = normalizeCleanFont(config.cleanFont);
+  if (config.cleanFont) {
+    next.cleanFont = normalizeCleanFont(config.cleanFont);
+  }
   localStorage.setItem("theme-config", JSON.stringify(next));
   window.dispatchEvent(new Event("baitari-theme-config-changed"));
 }

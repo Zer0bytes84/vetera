@@ -16,7 +16,9 @@ const dayAndTime = (iso: string, today: boolean) => {
     hour: "2-digit",
     minute: "2-digit",
   });
-  if (today) return `Aujourd’hui · ${time}`;
+  if (today) {
+    return `Aujourd’hui · ${time}`;
+  }
   const day = date.toLocaleDateString("fr-FR", {
     weekday: "long",
     day: "numeric",

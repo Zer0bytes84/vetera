@@ -42,11 +42,12 @@ export function createAIModelInstallation(dependencies: Dependencies) {
   const refresh = async () => {
     const request = ++statusRequest;
     const status = await dependencies.check();
-    if (request === statusRequest)
+    if (request === statusRequest) {
       update({
         status,
         ...(allAIModelsReady(status) ? { error: null, errorCode: null } : {}),
       });
+    }
     return status;
   };
   // One installation at a time (the native side holds a single lock).
@@ -55,7 +56,9 @@ export function createAIModelInstallation(dependencies: Dependencies) {
     install: () => Promise<LocalModelStatus>,
     installed: (status: LocalModelStatus) => boolean
   ) => {
-    if (pending) return pending;
+    if (pending) {
+      return pending;
+    }
     update({
       running: true,
       progress: null,
@@ -66,10 +69,11 @@ export function createAIModelInstallation(dependencies: Dependencies) {
     pending = (async () => {
       try {
         const status = await install();
-        if (!installed(status))
+        if (!installed(status)) {
           throw new Error(
             "L’installation n’a pas pu être vérifiée. Réessayez depuis les paramètres."
           );
+        }
         ++statusRequest;
         update({ status });
       } catch (error) {

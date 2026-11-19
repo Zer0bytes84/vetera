@@ -147,14 +147,16 @@ export function ClinicIdentityPanel() {
   const { settings, change, save, saving, dirty, loading, error, reload } =
     useInvoiceSettings(IDENTITY_KEYS);
   const [uploading, setUploading] = useState(false);
-  if (loading)
+  if (loading) {
     return (
       <div className="flex justify-center p-12">
         <Spinner />
       </div>
     );
-  if (error)
+  }
+  if (error) {
     return <ErrorState message={error} onRetry={() => void reload()} />;
+  }
   return (
     <SettingsStack>
       <SettingsSection
@@ -257,7 +259,9 @@ export function ClinicIdentityPanel() {
             onChange={async (event) => {
               const file = event.target.files?.[0];
               event.target.value = "";
-              if (!file) return;
+              if (!file) {
+                return;
+              }
               setUploading(true);
               await guard(
                 async () => {
@@ -371,14 +375,16 @@ export function InvoiceSettingsPanel({
   const { settings, change, save, saving, dirty, loading, error, reload } =
     useInvoiceSettings(INVOICE_KEYS);
   const [preview, setPreview] = useState(false);
-  if (loading)
+  if (loading) {
     return (
       <div className="flex justify-center p-12">
         <Spinner />
       </div>
     );
-  if (error)
+  }
+  if (error) {
     return <ErrorState message={error} onRetry={() => void reload()} />;
+  }
   return (
     <SettingsStack>
       <SettingsSection

@@ -44,9 +44,13 @@ export function getGeneratorPreference(
   suspended = GEMMA4_SUSPENDED
 ): GeneratorFamily {
   const forced = benchGenerator();
-  if (forced) return forced;
+  if (forced) {
+    return forced;
+  }
   const stored = storage()?.getItem(GENERATOR_PREFERENCE_KEY);
-  if (stored === "gemma4") return suspended ? DEFAULT_GENERATOR : stored;
+  if (stored === "gemma4") {
+    return suspended ? DEFAULT_GENERATOR : stored;
+  }
   return stored === "gemma3" ? stored : DEFAULT_GENERATOR;
 }
 export function setGeneratorPreference(family: GeneratorFamily) {
@@ -77,8 +81,9 @@ export function generatorCandidates(
     status.generator4Ready &&
     getGeneratorPreference(suspended) === "gemma4" &&
     !generatorFellBack
-  )
+  ) {
     return [candidate("gemma4"), ...fallback];
+  }
   return fallback;
 }
 

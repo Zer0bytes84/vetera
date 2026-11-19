@@ -131,7 +131,9 @@ const written = (figure: Figure) =>
 const TOKEN = /\{(\w+)\}/g;
 const fill = (template: string, values: Record<string, string>) =>
   template.replace(TOKEN, (_, key: string) => {
-    if (!(key in values)) throw new Error(`Jeton inconnu : ${key}`);
+    if (!(key in values)) {
+      throw new Error(`Jeton inconnu : ${key}`);
+    }
     return values[key];
   });
 /** « {rows} ligne » or « {rows} lignes », by the figure's value. */
@@ -202,18 +204,24 @@ function patientScope(
       !new RegExp(`\\b${name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`).test(
         text
       )
-    )
+    ) {
       continue;
+    }
     ids.add(patient.id);
     names.add(name);
   }
   let missing = false;
   if (has(text, THIS_PATIENT)) {
     const open = patients.find((patient) => patient.id === context.patientId);
-    if (open) ids.add(open.id);
-    else missing = ids.size === 0;
+    if (open) {
+      ids.add(open.id);
+    } else {
+      missing = ids.size === 0;
+    }
   }
-  if (ids.size === 0) return { ids: null, label: "", names: [], missing };
+  if (ids.size === 0) {
+    return { ids: null, label: "", names: [], missing };
+  }
   const kept = patients.filter((patient) => ids.has(patient.id));
   const label = kept.map((patient) => patient.name).join(", ");
   return {
@@ -233,9 +241,13 @@ export function answerQuestion(
 ): Answer {
   const clipped = question.slice(0, MAX_QUESTION_LENGTH);
   const text = normalize(clipped);
-  if (!text) return refuse("empty", REFUSALS.empty);
+  if (!text) {
+    return refuse("empty", REFUSALS.empty);
+  }
   const guard = guardReason(clipped, text);
-  if (guard) return refuse(guard, REFUSALS[guard]);
+  if (guard) {
+    return refuse(guard, REFUSALS[guard]);
+  }
 
   const data = dashboardPresentationData({
     ...raw,
@@ -277,11 +289,12 @@ export function answerQuestion(
       "Je ne lis pas cette période : je comprends aujourd’hui, hier, demain, cette semaine, le mois, l’année, un mois nommé, une année et « les derniers jours, semaines ou mois ». Je préfère ne pas répondre sur une période voisine."
     );
   }
-  if (scope.missing)
+  if (scope.missing) {
     return refuse(
       "unknown",
       "Aucun dossier n’est ouvert : nommez le patient, ou ouvrez son dossier puis reposez la question."
     );
+  }
 
   const period = parsePeriod(text, context.now);
   const understood = (periodText: string | null): AnswerStep => ({
@@ -396,7 +409,9 @@ function cash({
       : both
         ? [income, expense, net, rows]
         : [wantsIncome ? income : expense, rows];
-  if (pending > 0) figures.push(waiting);
+  if (pending > 0) {
+    figures.push(waiting);
+  }
   const say = speaker(figures, { period: period.label });
   const sentence = say.say(
     kept.length === 0
@@ -406,19 +421,23 @@ function cash({
         : `${wantsIncome ? "Encaissé" : "Dépensé"} {period} : {${wantsIncome ? "income" : "expense"}}, sur ${unit(rows, "ligne", "lignes")}.`
   );
   const notes: string[] = [];
-  if (!asked) notes.push(say.say(DEFAULT_PERIOD_NOTE));
-  if (pending > 0)
+  if (!asked) {
+    notes.push(say.say(DEFAULT_PERIOD_NOTE));
+  }
+  if (pending > 0) {
     notes.push(
       say.say(
         `${unit(waiting, "ligne en attente n’est pas comptée", "lignes en attente ne sont pas comptées")}.`
       )
     );
-  if (scope.ids)
+  }
+  if (scope.ids) {
     notes.push(
       say.say(
         "Le journal de caisse ne rattache pas les lignes à un patient : ce sont les chiffres du cabinet."
       )
     );
+  }
   const shown = kept.slice().sort((a, b) => timeOf(b.date) - timeOf(a.date));
   return {
     kind: "answer",
@@ -637,7 +656,9 @@ export function proposeTasks(
     (draft) => !open.has(`${draft.patientId}|${normalize(draft.title)}`)
   );
   const tasks = fresh.slice(0, MAX_PROPOSED_TASKS);
-  if (tasks.length === 0) return null;
+  if (tasks.length === 0) {
+    return null;
+  }
   return {
     id: `tasks:${tasks.map((task) => task.key).join(",")}`,
     kind: "tasks",
@@ -677,13 +698,20 @@ function tasks({
   );
   const kept = data.tasks
     .flatMap((task) => {
-      if (task.status === "done") return [];
-      if (scope.ids && !(task.patientId && scope.ids.has(task.patientId)))
+      if (task.status === "done") {
         return [];
+      }
+      if (scope.ids && !(task.patientId && scope.ids.has(task.patientId))) {
+        return [];
+      }
       const due = parseDashboardDate(task.dueDate);
       const late = Boolean(due && due < today);
-      if (lateOnly && !late) return [];
-      if (asked && !(due && due >= asked.from && due <= asked.to)) return [];
+      if (lateOnly && !late) {
+        return [];
+      }
+      if (asked && !(due && due >= asked.from && due <= asked.to)) {
+        return [];
+      }
       return [{ task, due, late }];
     })
     .sort(
@@ -889,11 +917,12 @@ function patients({
     (patient) => patient.status !== "decede" && !patient.archivedAt
   );
   const bySpecies = new Map<string, number>();
-  for (const patient of active)
+  for (const patient of active) {
     bySpecies.set(
       patient.species || "Non renseignée",
       (bySpecies.get(patient.species || "Non renseignée") ?? 0) + 1
     );
+  }
   const from = source(
     "patients",
     "Dossiers patients",
@@ -974,7 +1003,9 @@ function patients({
  * Otherwise it becomes a refusal: a wrong or unsourced number is never displayed.
  */
 export function verifyAnswer(answer: Answer): Answer {
-  if (answer.kind !== "answer") return answer;
+  if (answer.kind !== "answer") {
+    return answer;
+  }
   const fail = () => refuse("unverifiable", REFUSALS.unverifiable);
   const sourceIds = new Set(answer.sources.map((from) => from.id));
   if (
@@ -982,8 +1013,9 @@ export function verifyAnswer(answer: Answer): Answer {
       (figure) =>
         !sourceIds.has(figure.sourceId) || !Number.isInteger(figure.value)
     )
-  )
+  ) {
     return fail();
+  }
 
   const values: Record<string, string> = {
     ...answer.slots,
@@ -992,24 +1024,34 @@ export function verifyAnswer(answer: Answer): Answer {
     ),
   };
   const shown = [answer.text, ...answer.notes];
-  if (answer.templates.length !== shown.length) return fail();
+  if (answer.templates.length !== shown.length) {
+    return fail();
+  }
   for (const [index, template] of answer.templates.entries()) {
     // The default-period note carries « 30 » on purpose: it is a rule of the tab, not a computed figure.
-    if (/\d/.test(template.split(DEFAULT_PERIOD_NOTE).join(""))) return fail();
+    if (/\d/.test(template.split(DEFAULT_PERIOD_NOTE).join(""))) {
+      return fail();
+    }
     let written_: string;
     try {
       written_ = fill(template, values);
     } catch {
       return fail();
     }
-    if (written_ !== shown[index]) return fail();
+    if (written_ !== shown[index]) {
+      return fail();
+    }
   }
 
   const table = answer.table;
   for (const figure of answer.figures) {
-    if (!figure.tie) continue;
+    if (!figure.tie) {
+      continue;
+    }
     if (!table) {
-      if (figure.value !== 0) return fail();
+      if (figure.value !== 0) {
+        return fail();
+      }
       continue;
     }
     const amounts = table.rows.map((row) =>
@@ -1027,7 +1069,9 @@ export function verifyAnswer(answer: Answer): Answer {
                 .filter((amount) => amount < 0)
                 .reduce((sum, amount) => sum + amount, 0)
             : amounts.reduce((sum, amount) => sum + amount, 0);
-    if (expected !== figure.value) return fail();
+    if (expected !== figure.value) {
+      return fail();
+    }
   }
   const byId = new Map(answer.figures.map((figure) => [figure.id, figure]));
   const [income, expense, net] = [
@@ -1035,7 +1079,8 @@ export function verifyAnswer(answer: Answer): Answer {
     byId.get("expense"),
     byId.get("net"),
   ];
-  if (net && income && expense && net.value !== income.value - expense.value)
+  if (net && income && expense && net.value !== income.value - expense.value) {
     return fail();
+  }
   return answer;
 }

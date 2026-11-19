@@ -18,7 +18,9 @@ export function MovementAllocationDetails({
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(false);
-  if (!isTauriRuntime()) return null;
+  if (!isTauriRuntime()) {
+    return null;
+  }
   return (
     <div className="mt-1">
       <Button

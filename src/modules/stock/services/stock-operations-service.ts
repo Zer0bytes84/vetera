@@ -19,9 +19,11 @@ import {
 
 function changed() {
   announceInventoryChanged();
-  if (typeof window !== "undefined")
-    for (const table of ["product_barcodes", "stock_transfers"])
+  if (typeof window !== "undefined") {
+    for (const table of ["product_barcodes", "stock_transfers"]) {
       emitSQLiteDataChanged(table);
+    }
+  }
 }
 export const stockOperationsService = {
   snapshot: () =>

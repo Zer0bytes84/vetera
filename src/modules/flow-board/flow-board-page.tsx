@@ -117,7 +117,9 @@ const ALERT_ICON: Record<FlowAlert["kind"], typeof AlertTriangle> = {
 };
 
 function Alerts({ alerts }: { alerts: FlowAlert[] }) {
-  if (alerts.length === 0) return null;
+  if (alerts.length === 0) {
+    return null;
+  }
   const shown = alerts.slice(0, 2);
   const rest = alerts.slice(2);
   return (
@@ -194,8 +196,9 @@ function Timer({
     );
   }
   const minutes = minutesSince(card.since, now);
-  if (minutes === null)
+  if (minutes === null) {
     return <span className="flow-timer">prévu {clock(card.startTime)}</span>;
+  }
   const warn = card.lane === "waiting" && minutes >= WAIT_WARNING_MINUTES;
   return (
     <span
@@ -395,7 +398,9 @@ function DraggableCard(props: CardProps) {
           card.urgent && "is-urgent"
         )}
         onClick={() => {
-          if (!isDragging) openPatientPeek(card.patientId);
+          if (!isDragging) {
+            openPatientPeek(card.patientId);
+          }
         }}
         onFocus={onFocus}
         ref={(node) => {
@@ -452,7 +457,9 @@ function PlannedStrip({
   children: ReactNode;
 }) {
   const { setNodeRef, isOver } = useDroppable({ id: PLANNED });
-  if (cards.length === 0) return null;
+  if (cards.length === 0) {
+    return null;
+  }
   return (
     <section
       aria-label={`Prévus aujourd'hui, ${cards.length}`}
@@ -477,7 +484,9 @@ function LeftOpen({
   cards: FlowCard[];
   children: ReactNode;
 }) {
-  if (cards.length === 0) return null;
+  if (cards.length === 0) {
+    return null;
+  }
   return (
     <details className="flow-left-open" open>
       <summary className="flow-lane-head">
@@ -614,7 +623,9 @@ export function FlowBoardPage({
   const startBilling = useCallback(
     (card: FlowCard) => {
       const appointment = appointmentById(card.appointmentId);
-      if (appointment) setBillingAppointment(appointment);
+      if (appointment) {
+        setBillingAppointment(appointment);
+      }
     },
     [appointmentById, setBillingAppointment]
   );
@@ -638,8 +649,11 @@ export function FlowBoardPage({
         return;
       }
       const action = PRIMARY_ACTION[card.lane];
-      if (action) void move(card, action.to);
-      else open(card);
+      if (action) {
+        void move(card, action.to);
+      } else {
+        open(card);
+      }
     },
     [leftOpenIds, move, open, startBilling]
   );
@@ -649,14 +663,17 @@ export function FlowBoardPage({
       !current ||
       !(event.target instanceof HTMLElement) ||
       !event.target.matches(".flow-card")
-    )
+    ) {
       return;
+    }
     const cards =
       groups.find((group) =>
         group.cards.some((c) => c.appointmentId === current.id)
       )?.cards ?? [];
     const card = cards.find((c) => c.appointmentId === current.id);
-    if (!card) return;
+    if (!card) {
+      return;
+    }
     const key = event.key;
     if ((key === "ArrowRight" || key === "ArrowLeft") && event.shiftKey) {
       event.preventDefault();
@@ -664,8 +681,11 @@ export function FlowBoardPage({
       const target = BOARD_LANES[all + (key === "ArrowRight" ? 1 : -1)];
       if (target) {
         pendingFocus.current = card.appointmentId;
-        if (target === "done" && card.lane === "billing") startBilling(card);
-        else void move(card, target, open);
+        if (target === "done" && card.lane === "billing") {
+          startBilling(card);
+        } else {
+          void move(card, target, open);
+        }
       }
       return;
     }
@@ -675,7 +695,9 @@ export function FlowBoardPage({
       const here = refs.current
         .get(card.appointmentId)
         ?.getBoundingClientRect();
-      if (!here) return;
+      if (!here) {
+        return;
+      }
       const candidates = groups.flatMap((group) =>
         group.cards.flatMap((other) => {
           const box =
@@ -686,7 +708,9 @@ export function FlowBoardPage({
         })
       );
       const next = nearestInDirection(here, candidates, direction);
-      if (next) focusCard(next.id);
+      if (next) {
+        focusCard(next.id);
+      }
     } else if (key === "Home" || key === "End") {
       event.preventDefault();
       focusCard(cards[key === "Home" ? 0 : cards.length - 1].appointmentId);
@@ -715,15 +739,17 @@ export function FlowBoardPage({
         event.altKey ||
         event.metaKey ||
         event.ctrlKey
-      )
+      ) {
         return;
+      }
       const target = event.target as HTMLElement | null;
       if (
         target?.closest(
           ".flow-card, input, textarea, select, [contenteditable='true'], [role='dialog'], [role='menu'], [role='listbox']"
         )
-      )
+      ) {
         return;
+      }
       event.preventDefault();
       refs.current.get(currentId)?.focus();
     };
@@ -738,8 +764,11 @@ export function FlowBoardPage({
     const card = (event.active.data.current as { card: FlowCard } | undefined)
       ?.card;
     const to = event.over?.id as BoardLane | undefined;
-    if (card && to === "done" && card.lane === "billing") startBilling(card);
-    else if (card && to) void move(card, to, open);
+    if (card && to === "done" && card.lane === "billing") {
+      startBilling(card);
+    } else if (card && to) {
+      void move(card, to, open);
+    }
   };
 
   const longestWait = board.lanes.waiting.reduce(
@@ -772,8 +801,11 @@ export function FlowBoardPage({
         onOpenRecord={openRecord}
         onPrimary={primary}
         registerRef={(node) => {
-          if (node) refs.current.set(card.appointmentId, node);
-          else refs.current.delete(card.appointmentId);
+          if (node) {
+            refs.current.set(card.appointmentId, node);
+          } else {
+            refs.current.delete(card.appointmentId);
+          }
         }}
       />
     ));
@@ -820,7 +852,9 @@ export function FlowBoardPage({
                 <input
                   onChange={(event) => setQuery(event.target.value)}
                   onKeyDown={(event) => {
-                    if (event.key === "Escape") setQuery("");
+                    if (event.key === "Escape") {
+                      setQuery("");
+                    }
                   }}
                   placeholder="Patient, propriétaire, motif…"
                   type="search"
@@ -985,7 +1019,9 @@ export function FlowBoardPage({
             onConfirm={async (patient) => {
               try {
                 const id = await walkIn(patient);
-                if (id) focusCard(id);
+                if (id) {
+                  focusCard(id);
+                }
               } catch (reason) {
                 toast.error(
                   reason instanceof Error

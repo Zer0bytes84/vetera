@@ -63,14 +63,16 @@ export const documentTemplateSchema = z.object({
 export function validateTemplate(input: unknown) {
   const value = documentTemplateSchema.parse(input);
   for (const match of value.body.matchAll(/\{\{([^{}]+)\}\}/g)) {
-    if (!(TEMPLATE_FIELDS as readonly string[]).includes(match[1].trim()))
+    if (!(TEMPLATE_FIELDS as readonly string[]).includes(match[1].trim())) {
       throw new Error(
         `Champ inconnu dans le modèle : ${match[1]}. Utilisez les champs proposés.`
       );
+    }
   }
   const residue = value.body.replace(/\{\{([^{}]+)\}\}/g, "");
-  if (residue.includes("{{") || residue.includes("}}"))
+  if (residue.includes("{{") || residue.includes("}}")) {
     throw new Error("Un champ du modèle est mal fermé.");
+  }
   return value;
 }
 export function renderClinicalDocument(

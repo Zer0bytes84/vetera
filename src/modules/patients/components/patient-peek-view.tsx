@@ -117,7 +117,9 @@ export function PatientPeekView({
       open
       modal={!follow}
       onOpenChange={(open) => {
-        if (!open) onClose();
+        if (!open) {
+          onClose();
+        }
       }}
     >
       <SheetContent

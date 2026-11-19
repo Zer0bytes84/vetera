@@ -77,8 +77,9 @@ function fail(message: string): never {
   throw new StockError("SOURCE_CONFLICT", message);
 }
 function actor(value: string) {
-  if (!value.trim())
+  if (!value.trim()) {
     fail("Un utilisateur connecté est requis pour cette opération.");
+  }
 }
 
 export function normalizeBarcode(value: string) {
@@ -90,10 +91,11 @@ export function normalizeBarcode(value: string) {
       (character) =>
         character.charCodeAt(0) < 32 || character.charCodeAt(0) === 127
     )
-  )
+  ) {
     fail(
       "Scannez ou saisissez un code-barres de 1 à 128 caractères, sans caractère de contrôle."
     );
+  }
   return code;
 }
 
@@ -104,18 +106,22 @@ export async function saveBarcodeInDatabase(
 ) {
   const code = normalizeBarcode(input.code);
   const product = await stockProductInDatabase(db, input.productId);
-  if (!product.stock_tracked)
+  if (!product.stock_tracked) {
     fail("Un code de stock doit être associé à un produit physique.");
+  }
   const [existing] = await db.select<{ id: string; product_id: string }[]>(
     "SELECT id,product_id FROM product_barcodes WHERE code=?",
     [code]
   );
   if (existing) {
-    if (existing.product_id !== product.id)
+    if (existing.product_id !== product.id) {
       fail("Ce code-barres est déjà associé à un autre produit.");
+    }
     return existing.id;
   }
-  if (!input.id.trim()) fail("La référence du code-barres est requise.");
+  if (!input.id.trim()) {
+    fail("La référence du code-barres est requise.");
+  }
   await db.execute(
     "INSERT INTO product_barcodes(id,product_id,code,created_at) VALUES (?,?,?,?)",
     [input.id, product.id, code, now]
@@ -132,10 +138,11 @@ export async function barcodeProductInDatabase(
     "SELECT product_id FROM product_barcodes WHERE code=?",
     [code]
   );
-  if (!barcode)
+  if (!barcode) {
     fail(
       "Ce code-barres n’est associé à aucun produit. Associez-le dans l’onglet Codes-barres."
     );
+  }
   return stockProductInDatabase(db, barcode.product_id);
 }
 
@@ -145,8 +152,9 @@ export async function saveLocationInDatabase(
   now: string
 ) {
   const name = input.name.trim();
-  if (!input.id.trim() || !name || name.length > 80)
+  if (!input.id.trim() || !name || name.length > 80) {
     fail("Indiquez un nom d’emplacement de 1 à 80 caractères.");
+  }
   const [old] = await db.select<{ active: number; created_at: string }[]>(
     "SELECT active,created_at FROM stock_locations WHERE id=?",
     [input.id]
@@ -154,22 +162,26 @@ export async function saveLocationInDatabase(
   const active =
     input.active === undefined ? (old?.active ?? 1) : Number(input.active);
   if (!active) {
-    if (input.id === "stock-main")
+    if (input.id === "stock-main") {
       fail("L’emplacement principal doit rester actif.");
+    }
     const [occupied] = await db.select<{ id: string }[]>(
       "SELECT id FROM stock_balances WHERE location_id=? AND quantity!=0 LIMIT 1",
       [input.id]
     );
-    if (occupied)
+    if (occupied) {
       fail(
         "Transférez ou comptez le stock de cet emplacement à zéro avant de le désactiver."
       );
+    }
   }
   const [duplicate] = await db.select<{ id: string }[]>(
     "SELECT id FROM stock_locations WHERE lower(name)=lower(?) AND id!=?",
     [name, input.id]
   );
-  if (duplicate) fail("Un emplacement porte déjà ce nom.");
+  if (duplicate) {
+    fail("Un emplacement porte déjà ce nom.");
+  }
   await db.execute(
     `INSERT INTO stock_locations(id,name,active,created_at,updated_at) VALUES (?,?,?,?,?)
     ON CONFLICT(id) DO UPDATE SET name=excluded.name,active=excluded.active,updated_at=excluded.updated_at`,
@@ -186,8 +198,9 @@ export async function transferStockInDatabase(
 ) {
   actor(input.authorId);
   const quantity = stockQuantity(input.quantity);
-  if (!input.id.trim() || input.fromLocationId === input.toLocationId)
+  if (!input.id.trim() || input.fromLocationId === input.toLocationId) {
     fail("Choisissez deux emplacements différents pour le transfert.");
+  }
   const fingerprint = JSON.stringify({
     productId: input.productId,
     quantity,
@@ -201,15 +214,19 @@ export async function transferStockInDatabase(
     "transfer",
     fingerprint
   );
-  if (previous) return previous;
+  if (previous) {
+    return previous;
+  }
   const sourceLocation = await activeLocation(db, input.fromLocationId);
   const targetLocation = await activeLocation(db, input.toLocationId);
   const product = await stockProductInDatabase(db, input.productId);
-  if (!product.stock_tracked)
+  if (!product.stock_tracked) {
     fail("Une prestation ne possède pas de stock à transférer.");
+  }
   const buckets = await assertInventoryBalance(db, product);
-  if (buckets.some((bucket) => bucket.quantity < 0))
+  if (buckets.some((bucket) => bucket.quantity < 0)) {
     fail("Corrigez les soldes négatifs avant de transférer ce produit.");
+  }
   // Internal transfers can move expired stock to isolation. They do not make it usable.
   const available = buckets
     .filter(
@@ -226,11 +243,12 @@ export async function transferStockInDatabase(
   const total = stockBalance(
     available.reduce((sum, row) => sum + row.quantity, 0)
   );
-  if (total < quantity)
+  if (total < quantity) {
     throw new StockError(
       "INSUFFICIENT_STOCK",
       insufficientStockMessage(product.name, total, quantity, product.unit)
     );
+  }
   const movementId = id();
   await recordInventoryMovement(db, product, {
     movementId,
@@ -246,7 +264,9 @@ export async function transferStockInDatabase(
   let remaining = quantity;
   for (const source of available) {
     const part = stockBalance(Math.min(source.quantity, remaining));
-    if (!part) break;
+    if (!part) {
+      break;
+    }
     await applyStockAllocations(
       db,
       movementId,
@@ -309,15 +329,18 @@ export async function barcodeStockOperationInDatabase(
   actor(input.authorId);
   const code = normalizeBarcode(input.code);
   const quantity = stockQuantity(input.quantity);
-  if (!input.id.trim() || !["in", "out"].includes(input.direction))
+  if (!input.id.trim() || !["in", "out"].includes(input.direction)) {
     fail("Choisissez une entrée ou une sortie de stock.");
-  if (input.direction === "in" && input.lotId !== undefined)
+  }
+  if (input.direction === "in" && input.lotId !== undefined) {
     fail("À l’entrée, saisissez le numéro du lot reçu.");
+  }
   if (
     input.direction === "out" &&
     (input.lotNumber?.trim() || input.expiryDate)
-  )
+  ) {
     fail("À la sortie, choisissez un lot existant ou le FIFO automatique.");
+  }
   const fingerprint = JSON.stringify({
     code,
     quantity,
@@ -333,9 +356,13 @@ export async function barcodeStockOperationInDatabase(
     "barcode-" + input.direction,
     fingerprint
   );
-  if (previous) return previous;
+  if (previous) {
+    return previous;
+  }
   const product = await barcodeProductInDatabase(db, code);
-  if (!product.stock_tracked) fail("Ce produit n’est pas suivi en stock.");
+  if (!product.stock_tracked) {
+    fail("Ce produit n’est pas suivi en stock.");
+  }
   await activeLocation(db, input.locationId);
   let result: { movementId: string; quantityAfter: number };
   if (input.direction === "in") {
@@ -357,10 +384,11 @@ export async function barcodeStockOperationInDatabase(
         now
       );
     } else {
-      if (input.expiryDate || input.lotId !== undefined)
+      if (input.expiryDate || input.lotId !== undefined) {
         fail(
           "Saisissez le numéro du lot pour enregistrer sa péremption à l’entrée."
         );
+      }
       result = await receiveStockInDatabase(
         db,
         product,
@@ -400,7 +428,7 @@ export async function barcodeStockOperationInDatabase(
     await applyStockAllocations(db, movementId, buckets, allocations, now, id);
     result = { movementId, quantityAfter: after };
   }
-  if (input.direction === "in" && input.lotNumber?.trim())
+  if (input.direction === "in" && input.lotNumber?.trim()) {
     await db.execute(
       "UPDATE stock_movements SET source_label=?,reason=? WHERE id=?",
       [
@@ -409,6 +437,7 @@ export async function barcodeStockOperationInDatabase(
         result.movementId,
       ]
     );
+  }
   await completeInventoryOperation(db, {
     id: input.id,
     kind: "barcode-" + input.direction,
@@ -464,10 +493,14 @@ export async function applyConsumptionThresholdInDatabase(
   const proposal = snapshot.consumption.find(
     (row) => row.product_id === productId
   );
-  if (!proposal || proposal.suggested_minimum !== stockQuantity(expected, true))
+  if (
+    !proposal ||
+    proposal.suggested_minimum !== stockQuantity(expected, true)
+  ) {
     fail(
       "La consommation a changé. Actualisez la proposition avant de l’appliquer."
     );
+  }
   await stockProductInDatabase(db, productId);
   await db.execute("UPDATE products SET min_stock=?,updated_at=? WHERE id=?", [
     proposal.suggested_minimum,

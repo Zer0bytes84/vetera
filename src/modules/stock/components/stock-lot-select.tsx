@@ -62,7 +62,9 @@ export function StockLotSelect({
         receivedAt: row.receivedAt,
       };
       group.quantity = stockBalance(group.quantity + row.quantity);
-      if (row.receivedAt < group.receivedAt) group.receivedAt = row.receivedAt;
+      if (row.receivedAt < group.receivedAt) {
+        group.receivedAt = row.receivedAt;
+      }
       groups.set(key, group);
     }
     return [
@@ -75,7 +77,9 @@ export function StockLotSelect({
         })),
     ];
   }, [inventory.balances, productId, unit, today, locationId]);
-  if (!inventory.supported) return null;
+  if (!inventory.supported) {
+    return null;
+  }
   return (
     <div className="space-y-1.5">
       <label htmlFor={inputId} className="text-sm">

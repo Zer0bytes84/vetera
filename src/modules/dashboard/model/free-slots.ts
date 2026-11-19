@@ -54,7 +54,9 @@ export function bookingHours(
   const spans = appointments.filter(isActive).flatMap((a) => {
     const start = parseDashboardDate(a.startTime);
     const end = parseDashboardDate(a.endTime);
-    if (!start || !end || start.getTime() < since || start > now) return [];
+    if (!start || !end || start.getTime() < since || start > now) {
+      return [];
+    }
     return [
       {
         start: start.getHours() + start.getMinutes() / 60,
@@ -65,8 +67,9 @@ export function bookingHours(
       },
     ];
   });
-  if (spans.length < MIN_BOOKINGS)
+  if (spans.length < MIN_BOOKINGS) {
     return { ...DEFAULT_WINDOW, basis: "default" };
+  }
   const starts = spans.map((s) => s.start).sort((a, b) => a - b);
   const ends = spans.map((s) => s.end).sort((a, b) => a - b);
   const low = starts[Math.floor((starts.length - 1) * 0.05)];
@@ -117,7 +120,9 @@ export function buildFreeSlots({
         endHour: hours.to - 1,
         now,
       })) {
-        if (!byStart.has(minutes)) byStart.set(minutes, pool.id);
+        if (!byStart.has(minutes)) {
+          byStart.set(minutes, pool.id);
+        }
       }
     }
     const starts = [...byStart.keys()].sort((a, b) => a - b);

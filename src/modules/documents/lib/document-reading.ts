@@ -20,17 +20,21 @@ export const MAX_DOCUMENT_BYTES = 12 * 1024 * 1024;
 export const MAX_DOCUMENT_PAGES = 20;
 export const MAX_DOCUMENT_CHARACTERS = 60000;
 export function assertReadableFile(file: Pick<File, "size" | "type">) {
-  if (!file.size) throw new Error("Ce fichier est vide.");
-  if (file.size > MAX_DOCUMENT_BYTES)
+  if (!file.size) {
+    throw new Error("Ce fichier est vide.");
+  }
+  if (file.size > MAX_DOCUMENT_BYTES) {
     throw new Error(
       "Le document dépasse 12 Mo. Choisissez un fichier plus léger."
     );
+  }
   if (
     !["application/pdf", "image/png", "image/jpeg", "image/webp"].includes(
       file.type
     )
-  )
+  ) {
     throw new Error("Utilisez un PDF, une image JPG, PNG ou WebP.");
+  }
 }
 export const normalizeExtract = (text: string) =>
   text.replace(/\s+/g, " ").trim();
@@ -65,8 +69,9 @@ export function parseDocumentAnswer(
       if (
         !page ||
         !normalizeExtract(page.text).includes(normalizeExtract(quote.texte))
-      )
+      ) {
         throw new Error("L’extrait ne correspond pas au document.");
+      }
     }
     return answer;
   } catch {
@@ -80,8 +85,9 @@ export function createDocumentReadingPrompt(
   question: string,
   retry = false
 ) {
-  if (!question.trim() || question.length > 500)
+  if (!question.trim() || question.length > 500) {
     throw new Error("Posez une question de 500 caractères maximum.");
+  }
   const terms: string[] = Array.from(
     question.toLocaleLowerCase("fr").match(/[\p{L}\d]{4,}/gu) ?? []
   );
@@ -109,12 +115,15 @@ export function createDocumentReadingPrompt(
   for (const part of passages) {
     const excerpt = { page: part.page, texte: part.text };
     const cost = JSON.stringify(excerpt).length + 1;
-    if (length + cost > 6500 || selected.length >= 12) continue;
+    if (length + cost > 6500 || selected.length >= 12) {
+      continue;
+    }
     selected.push(excerpt);
     length += cost;
   }
-  if (!selected.length)
+  if (!selected.length) {
     throw new Error("Le document ne contient pas de texte lisible.");
+  }
   const payload = JSON.stringify({
     question,
     document: source.name,

@@ -18,7 +18,9 @@ export function parseActionQuery(value: string): PaletteIntent | null {
   ] as const;
   for (const [kind, rule] of rules) {
     const match = query.match(rule);
-    if (match) return { kind, entity: (match[1] ?? "").trim() };
+    if (match) {
+      return { kind, entity: (match[1] ?? "").trim() };
+    }
   }
   return null;
 }

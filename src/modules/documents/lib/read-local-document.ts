@@ -12,7 +12,9 @@ import {
 
 export type { ReadingProgress };
 const checkAbort = (signal: AbortSignal) => {
-  if (signal.aborted) throw abortError();
+  if (signal.aborted) {
+    throw abortError();
+  }
 };
 
 export async function readLocalDocument(
@@ -41,7 +43,9 @@ export async function readLocalDocument(
       checkAbort(signal);
       if (!ocr) {
         ocr = new PackagedOcr(root + "ocr/", signal, (event) => {
-          if (!signal.aborted) onProgress(event);
+          if (!signal.aborted) {
+            onProgress(event);
+          }
         });
         await ocr.initialize();
       }
@@ -89,10 +93,11 @@ export async function readLocalDocument(
         disableStream: true,
       });
       pdf = await loading.promise;
-      if (pdf.numPages > MAX_DOCUMENT_PAGES)
+      if (pdf.numPages > MAX_DOCUMENT_PAGES) {
         throw new Error(
           "Le PDF dépasse 20 pages. Séparez-le en documents plus courts ; aucune page n’a été ignorée."
         );
+      }
       for (let index = 1; index <= pdf.numPages; index++) {
         checkAbort(signal);
         onProgress({
@@ -119,14 +124,15 @@ export async function readLocalDocument(
           operations?.fnArray.some((operator) =>
             imageOperators.has(operator)
           ) ?? false;
-        if (!needsPageOcr(text, containsImage))
+        if (!needsPageOcr(text, containsImage)) {
           result.pages.push({ number: index, text, method: "text" });
-        else {
+        } else {
           const viewport = page.getViewport({ scale: 2 });
-          if (viewport.width * viewport.height > 20000000)
+          if (viewport.width * viewport.height > 20000000) {
             throw new Error(
               "Une page du PDF est trop grande pour être lue en sécurité."
             );
+          }
           const canvas = document.createElement("canvas");
           canvas.width = viewport.width;
           canvas.height = viewport.height;
@@ -134,8 +140,9 @@ export async function readLocalDocument(
             await page.render({ canvas, viewport }).promise;
             const recognized = await recognize(canvas, index);
             // Keep the existing digital header if recognition did not reproduce it.
-            if (text && !recognized.text.includes(text))
+            if (text && !recognized.text.includes(text)) {
               recognized.text = `${text}\n${recognized.text}`;
+            }
             result.pages.push(recognized);
           } finally {
             canvas.width = 0;
@@ -146,18 +153,20 @@ export async function readLocalDocument(
         if (
           result.pages.reduce((sum, entry) => sum + entry.text.length, 0) >
           MAX_DOCUMENT_CHARACTERS
-        )
+        ) {
           throw new Error(
             "Le texte dépasse la capacité de lecture. Séparez le document ; le résultat n’a pas été tronqué."
           );
+        }
       }
     } else {
       const bitmap = await createImageBitmap(file);
       try {
-        if (bitmap.width * bitmap.height > 20000000)
+        if (bitmap.width * bitmap.height > 20000000) {
           throw new Error(
             "L’image est trop grande. Réduisez ses dimensions avant de la lire."
           );
+        }
       } finally {
         bitmap.close();
       }
@@ -166,25 +175,30 @@ export async function readLocalDocument(
     if (
       result.pages.reduce((sum, page) => sum + page.text.length, 0) >
       MAX_DOCUMENT_CHARACTERS
-    )
+    ) {
       throw new Error(
         "Le texte dépasse la capacité de lecture. Séparez le document ; le résultat n’a pas été tronqué."
       );
-    if (!result.pages.some((page) => page.text.trim()))
+    }
+    if (!result.pages.some((page) => page.text.trim())) {
       throw new Error(
         "Aucun texte n’a été reconnu. Essayez une image plus nette ou saisissez les observations."
       );
+    }
     checkAbort(signal);
     return result;
   } catch (error) {
-    if (signal.aborted) throw abortError();
+    if (signal.aborted) {
+      throw abortError();
+    }
     const known = error instanceof Error ? error.message : "";
     if (
       /20 pages|trop grand|dépasse|Aucun texte|autre modèle|n’a pas répondu/.test(
         known
       )
-    )
+    ) {
       throw error;
+    }
     throw new Error(
       file.type === "application/pdf"
         ? "Le PDF n’a pas pu être lu. Vérifiez qu’il n’est ni protégé par un mot de passe, ni endommagé."

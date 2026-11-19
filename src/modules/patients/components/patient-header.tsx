@@ -71,12 +71,16 @@ function useOwnerBalance(ownerId?: string) {
     late: boolean;
   } | null>(null);
   useEffect(() => {
-    if (!ownerId || !isTauriRuntime()) return;
+    if (!ownerId || !isTauriRuntime()) {
+      return;
+    }
     let cancelled = false;
     void loadServicesBillingService()
       .then(({ listInvoices }) => listInvoices())
       .then((invoices) => {
-        if (cancelled) return;
+        if (cancelled) {
+          return;
+        }
         const { cents, late } = summarizeOwnerBalance(invoices, ownerId);
         setBalance({ ownerId, cents, late });
       })

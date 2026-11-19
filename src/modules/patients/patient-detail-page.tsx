@@ -270,7 +270,9 @@ export function PatientDetailPage({
   const [archiveConfirmOpen, setArchiveConfirmOpen] = useState(false);
 
   const handleArchivePatient = async () => {
-    if (!patient) return;
+    if (!patient) {
+      return;
+    }
     try {
       await patientsRepo.archive(patient.id);
       setArchiveConfirmOpen(false);
@@ -284,7 +286,9 @@ export function PatientDetailPage({
   };
 
   const handleUnarchivePatient = async () => {
-    if (!patient) return;
+    if (!patient) {
+      return;
+    }
     try {
       await patientsRepo.unarchive(patient.id);
       toast.success("Dossier désarchivé.");
@@ -318,8 +322,9 @@ export function PatientDetailPage({
   const [handledNoteId, setHandledNoteId] = useState<string | null>(null);
   if (wantedNote && handledNoteId !== wantedNote.id) {
     setHandledNoteId(wantedNote.id);
-    if (wantedNote.patientId === patientId && readOffVisitNote(wantedNote))
+    if (wantedNote.patientId === patientId && readOffVisitNote(wantedNote)) {
       setOffVisitNote(wantedNote.id);
+    }
   } else if (!wantedNote && handledNoteId !== null) {
     setHandledNoteId(null);
   }
@@ -660,12 +665,14 @@ export function PatientDetailPage({
       const scrollPanel = pageRef.current?.closest<HTMLElement>(
         '[data-slot="shell-scroll-panel"]'
       );
-      if (scrollPanel) scrollPanel.scrollTo({ top: 0, behavior: "instant" });
-      else
+      if (scrollPanel) {
+        scrollPanel.scrollTo({ top: 0, behavior: "instant" });
+      } else {
         pageRef.current?.scrollIntoView({
           block: "start",
           behavior: "instant",
         });
+      }
     });
   const openOffVisitNote = (target: "new" | string) => {
     setSoapAppointmentId(null);

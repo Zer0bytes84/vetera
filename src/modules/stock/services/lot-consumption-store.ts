@@ -59,7 +59,9 @@ export async function consumeStockLotsInDatabase(
     return existing.id;
   }
   const product = await stockProductInDatabase(db, input.productId);
-  if (!product.stock_tracked) return null;
+  if (!product.stock_tracked) {
+    return null;
+  }
   const { buckets, allocations } = await prepareStockAllocations(
     db,
     product,
@@ -72,11 +74,12 @@ export async function consumeStockLotsInDatabase(
     "UPDATE products SET quantity=?,updated_at=? WHERE id=? AND quantity=? AND stock_tracked=1 AND (archived_at IS NULL OR archived_at='')",
     [after, input.occurredAt, product.id, product.quantity]
   )) as { rowsAffected?: number };
-  if (result?.rowsAffected !== 1)
+  if (result?.rowsAffected !== 1) {
     throw new StockError(
       "SOURCE_CONFLICT",
       "Le stock vient de changer. Actualisez avant de valider."
     );
+  }
   const movementId = id();
   await db.execute(
     `INSERT INTO stock_movements(id,product_id,type,quantity_delta,quantity_after,reason,reference_id,

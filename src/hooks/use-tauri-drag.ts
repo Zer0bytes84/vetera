@@ -60,8 +60,11 @@ export function useTauriDrag<T extends HTMLElement = HTMLElement>(
             cleanup();
             return;
           }
-          if (Math.hypot(event.screenX - screenX, event.screenY - screenY) < 4)
+          if (
+            Math.hypot(event.screenX - screenX, event.screenY - screenY) < 4
+          ) {
             return;
+          }
           cleanup();
           void appWindow.startDragging().catch(console.error);
         };

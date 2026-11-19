@@ -47,7 +47,9 @@ export async function generateValidatedSoap({
   validate,
 }: SoapGenerationOptions) {
   const assertActive = () => {
-    if (signal.aborted) throw new DOMException("Tâche annulée.", "AbortError");
+    if (signal.aborted) {
+      throw new DOMException("Tâche annulée.", "AbortError");
+    }
   };
   const byRubric = async () => {
     const note: LocalSoapNote = { ...EMPTY_SOAP };
@@ -81,8 +83,9 @@ export async function generateValidatedSoap({
           error instanceof SoapFormatError || error instanceof SoapFidelityError
         ) ||
         attempt === 2
-      )
+      ) {
         throw error;
+      }
       onRetry(error);
     }
   }

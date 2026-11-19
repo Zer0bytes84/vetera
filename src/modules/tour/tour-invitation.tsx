@@ -36,7 +36,9 @@ export function TourInvitation() {
     writable: tourStore.isWritable(),
     shownThisSession: tourStore.invitationShownThisSession(),
   });
-  if (!visible) return null;
+  if (!visible) {
+    return null;
+  }
   return (
     <section aria-label="Tour guidé" className="tour-invitation" data-tour-ui>
       <Shell>

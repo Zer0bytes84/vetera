@@ -44,7 +44,7 @@ export function AgendaStays({
       )
     )
     .sort((a, b) => a.date.localeCompare(b.date));
-  if (error)
+  if (error) {
     return (
       <ErrorState
         className="px-6"
@@ -52,7 +52,10 @@ export function AgendaStays({
         onRetry={() => void refresh()}
       />
     );
-  if (!events.length) return null;
+  }
+  if (!events.length) {
+    return null;
+  }
   return (
     <section aria-label="Admissions et sorties" className="border-t px-6 py-4">
       <h3 className="mb-3 flex items-center gap-2 t-14 font-medium">

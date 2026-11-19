@@ -8,7 +8,9 @@ import {
 /** Privileged actions require an existing, unexpired session. Never auto-login. */
 async function requireActiveSession() {
   const token = localStorage.getItem("auth_token");
-  if (!token) throw new Error("Connectez-vous avec un compte administrateur.");
+  if (!token) {
+    throw new Error("Connectez-vous avec un compte administrateur.");
+  }
   let user:
     | { id: string; email: string; role: string; status: string }
     | undefined;
@@ -28,15 +30,17 @@ async function requireActiveSession() {
       "sessions",
       (row) => row.token === token && Date.parse(row.expiresAt) > Date.now()
     );
-    if (session)
+    if (session) {
       user =
         findBrowserRow<BrowserRow & NonNullable<typeof user>>(
           "users",
           (row) => row.id === session.userId
         ) ?? undefined;
+    }
   }
-  if (!user || user.status !== "active")
+  if (!user || user.status !== "active") {
     throw new Error("Cet accès est réservé aux administrateurs.");
+  }
   return user;
 }
 
@@ -49,8 +53,9 @@ export async function requireAdministrator(): Promise<{
   email: string;
 }> {
   const user = await requireActiveSession();
-  if (user.role !== "admin")
+  if (user.role !== "admin") {
     throw new Error("Cet accès est réservé aux administrateurs.");
+  }
   return { id: user.id, email: user.email };
 }
 export async function requireActivationOwner(): Promise<{
@@ -58,8 +63,9 @@ export async function requireActivationOwner(): Promise<{
   email: string;
 }> {
   const user = await requireActiveSession();
-  if (!isActivationOwner(user.email))
+  if (!isActivationOwner(user.email)) {
     throw new Error("Cet accès est réservé au propriétaire de Baitari.");
+  }
   return { id: user.id, email: user.email };
 }
 
@@ -82,7 +88,8 @@ export async function verifyAdministratorPassword(password: string) {
     hash = user ? getBrowserPasswordHash(user) : undefined;
   }
   const { verifyPassword } = await import("./sqlite/auth");
-  if (!hash || !(await verifyPassword(password, hash)))
+  if (!hash || !(await verifyPassword(password, hash))) {
     throw new Error("Mot de passe incorrect.");
+  }
   return administrator;
 }

@@ -18,9 +18,13 @@ export interface PreventionCountdown {
 const DAY_MS = 86_400_000;
 
 function localDay(value: string) {
-  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return value;
+  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    return value;
+  }
   const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return null;
+  if (Number.isNaN(date.getTime())) {
+    return null;
+  }
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 }
 
@@ -77,7 +81,9 @@ export function preventionCountdowns({
   const items: PreventionCountdown[] = [];
   for (const vaccine of currentVaccineReminders(patientId, vaccinations, now)) {
     const day = vaccine.nextDueAt ? localDay(vaccine.nextDueAt) : null;
-    if (!day || followed.has(family(vaccine.name))) continue;
+    if (!day || followed.has(family(vaccine.name))) {
+      continue;
+    }
     items.push({
       id: `vaccine-${vaccine.name}`,
       label: vaccine.name,
@@ -88,7 +94,9 @@ export function preventionCountdowns({
   }
   for (const reminder of open) {
     const day = localDay(reminder.echeance);
-    if (!day) continue;
+    if (!day) {
+      continue;
+    }
     const source = reminder.acte_source_id
       ? vaccinationById.get(reminder.acte_source_id)
       : undefined;
@@ -108,11 +116,16 @@ export function preventionCountdowns({
 
 /** « dans 12 jours », « aujourd’hui », « en retard de 3 jours ». */
 export function countdownLabel(days: number) {
-  if (days === 0) return "aujourd’hui";
-  if (days === 1) return "demain";
-  if (days > 1)
+  if (days === 0) {
+    return "aujourd’hui";
+  }
+  if (days === 1) {
+    return "demain";
+  }
+  if (days > 1) {
     return days > 60
       ? `dans ${Math.round(days / 30)} mois`
       : `dans ${days} jours`;
+  }
   return days === -1 ? "en retard d’1 jour" : `en retard de ${-days} jours`;
 }

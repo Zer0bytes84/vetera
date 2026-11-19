@@ -132,11 +132,17 @@ export function ToolApprovalQueue({
   const onRowKey = (e: KeyboardEvent, r: ApprovalRequest) => {
     const i = pending.findIndex((x) => x.id === r.id);
     const move = (to: number) => rows.current.get(pending[to]?.id)?.focus();
-    if (e.key === "ArrowDown") move(Math.min(i + 1, pending.length - 1));
-    else if (e.key === "ArrowUp") move(Math.max(i - 1, 0));
-    else if (e.key === " ") toggle(r.id);
-    else if (e.key === "Enter") setExpanded(expanded === r.id ? null : r.id);
-    else return;
+    if (e.key === "ArrowDown") {
+      move(Math.min(i + 1, pending.length - 1));
+    } else if (e.key === "ArrowUp") {
+      move(Math.max(i - 1, 0));
+    } else if (e.key === " ") {
+      toggle(r.id);
+    } else if (e.key === "Enter") {
+      setExpanded(expanded === r.id ? null : r.id);
+    } else {
+      return;
+    }
     setViaKeys(true);
     e.preventDefault();
   };
@@ -237,8 +243,11 @@ export function ToolApprovalQueue({
                     >
                       <div
                         ref={(el) => {
-                          if (el) rows.current.set(r.id, el);
-                          else rows.current.delete(r.id);
+                          if (el) {
+                            rows.current.set(r.id, el);
+                          } else {
+                            rows.current.delete(r.id);
+                          }
                         }}
                         role="button"
                         tabIndex={0}

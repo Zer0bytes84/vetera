@@ -41,16 +41,22 @@ export function createWarmupDetector(options = MICROPHONE_WARMUP) {
   const levels: number[] = [];
   let result: WarmupResult = { state: "warming" };
   const close = (at: number) => {
-    if (!chunks) return;
+    if (!chunks) {
+      return;
+    }
     const level = decibels(energy / chunks);
     energy = 0;
     chunks = 0;
     // Digital zeros before the first samples are not a level.
-    if (level <= -119) return;
+    if (level <= -119) {
+      return;
+    }
     levels.push(level);
     const count = levels.length;
     // Candidate: the window before this one; confirmed by this one.
-    if (count < 5) return;
+    if (count < 5) {
+      return;
+    }
     // The loudest earlier window is set aside once there are enough of them:
     // one click in the room must not hide the step.
     const earlier = levels.slice(1, count - 3).sort((a, b) => b - a);
@@ -58,7 +64,7 @@ export function createWarmupDetector(options = MICROPHONE_WARMUP) {
     if (
       levels[count - 2] >= reference + options.riseDb &&
       level >= reference + options.riseDb
-    )
+    ) {
       result = {
         state: "stable",
         reason: "montée",
@@ -66,10 +72,13 @@ export function createWarmupDetector(options = MICROPHONE_WARMUP) {
         referenceDb: reference,
         levelDb: level,
       };
+    }
   };
   return {
     push(rms: number, seconds: number): WarmupResult {
-      if (result.state === "stable") return result;
+      if (result.state === "stable") {
+        return result;
+      }
       const index = Math.floor(seconds / options.windowSeconds);
       if (index !== window) {
         close(seconds);
@@ -77,7 +86,7 @@ export function createWarmupDetector(options = MICROPHONE_WARMUP) {
       }
       energy += rms * rms;
       chunks += 1;
-      if (result.state === "warming" && seconds >= options.maxSeconds)
+      if (result.state === "warming" && seconds >= options.maxSeconds) {
         result = {
           state: "stable",
           reason: "délai",
@@ -85,6 +94,7 @@ export function createWarmupDetector(options = MICROPHONE_WARMUP) {
           referenceDb: levels.length > 1 ? Math.max(...levels.slice(1)) : null,
           levelDb: decibels(rms * rms),
         };
+      }
       return result;
     },
   };

@@ -28,7 +28,9 @@ import { guard } from "@/lib/guard";
 export function LicenseGate({ children }: { children: ReactNode }) {
   // Browser-only development demos have no desktop installation to license.
   // Production builds never bypass the check, even outside Tauri.
-  if (import.meta.env.DEV && !isTauriRuntime()) return children;
+  if (import.meta.env.DEV && !isTauriRuntime()) {
+    return children;
+  }
   return <CheckedLicenseGate>{children}</CheckedLicenseGate>;
 }
 
@@ -60,14 +62,18 @@ function CheckedLicenseGate({ children }: { children: ReactNode }) {
   const { handleMouseDown: handleWindowMouseDown, ref: windowDragRef } =
     useTauriDrag<HTMLDivElement>(true);
   const apply = useCallback((result: LicenseAccess) => {
-    if (!mounted.current) return;
+    if (!mounted.current) {
+      return;
+    }
     setAccess((previous) => (sameAccess(previous, result) ? previous : result));
     setEmail((previous) => previous || result.email || "");
   }, []);
   // Startup and explicit retries: the full check, with its usual wait.
   const check = useCallback(
     async (online: boolean) => {
-      if (inFlight.current) return;
+      if (inFlight.current) {
+        return;
+      }
       inFlight.current = true;
       await guard(
         async () => {
@@ -76,7 +82,9 @@ function CheckedLicenseGate({ children }: { children: ReactNode }) {
         {
           cleanup: () => {
             inFlight.current = false;
-            if (mounted.current) setBusy(false);
+            if (mounted.current) {
+              setBusy(false);
+            }
           },
         }
       );
@@ -85,7 +93,9 @@ function CheckedLicenseGate({ children }: { children: ReactNode }) {
   );
   const refresh = useCallback(
     async (online: boolean) => {
-      if (inFlight.current) return;
+      if (inFlight.current) {
+        return;
+      }
       setBusy(true);
       await check(online);
     },
@@ -95,15 +105,21 @@ function CheckedLicenseGate({ children }: { children: ReactNode }) {
   useEffect(() => {
     mounted.current = true;
     // One full check per process; a remount reuses the verified access.
-    if (!getCachedLicenseAccess()) void check(true);
+    if (!getCachedLicenseAccess()) {
+      void check(true);
+    }
     // Background rechecks: no busy state, no wait, a verdict only if it changes.
     const recheck = (cause: "interval" | "visibility" | "online") => {
-      if (inFlight.current) return;
+      if (inFlight.current) {
+        return;
+      }
       void recheckLicenseInBackground(cause)?.then(apply);
     };
     const tick = () => recheck("interval");
     const focus = () => {
-      if (document.visibilityState === "visible") recheck("visibility");
+      if (document.visibilityState === "visible") {
+        recheck("visibility");
+      }
     };
     const reconnect = () => recheck("online");
     const timer = window.setInterval(tick, LICENSE_LOCAL_RECHECK_MS);
@@ -119,7 +135,9 @@ function CheckedLicenseGate({ children }: { children: ReactNode }) {
 
   const activate = async (event: FormEvent) => {
     event.preventDefault();
-    if (inFlight.current) return;
+    if (inFlight.current) {
+      return;
+    }
     inFlight.current = true;
     setBusy(true);
     setError("");
@@ -144,7 +162,7 @@ function CheckedLicenseGate({ children }: { children: ReactNode }) {
     );
   };
 
-  if (access?.allowed)
+  if (access?.allowed) {
     return (
       <>
         {access.offlineUntil && (
@@ -169,10 +187,13 @@ function CheckedLicenseGate({ children }: { children: ReactNode }) {
         {children}
       </>
     );
+  }
 
   // While the check runs, the same quiet wait as the rest of startup; the
   // licence screen below only appears once there is something to say.
-  if (!access) return <StartupSplash />;
+  if (!access) {
+    return <StartupSplash />;
+  }
 
   return (
     <main className="relative flex min-h-dvh items-center justify-center bg-background px-6 py-16 text-foreground">

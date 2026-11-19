@@ -13,8 +13,9 @@ export function getActiveSearchGeneration(): SearchGeneration {
       stored === "passages" ||
       stored === "passages2" ||
       stored === "passages3"
-    )
+    ) {
       return stored;
+    }
   } catch {
     /* Storage unavailable: keep the default. */
   }

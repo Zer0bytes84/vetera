@@ -3,7 +3,9 @@ export function roleLabel(
   role: string | null | undefined,
   email?: string | null
 ): string {
-  if (email === "zohir.kh@gmail.com") return "Super Administrateur";
+  if (email === "zohir.kh@gmail.com") {
+    return "Super Administrateur";
+  }
   switch (role || "stagiaire") {
     case "admin":
       return "Administrateur";

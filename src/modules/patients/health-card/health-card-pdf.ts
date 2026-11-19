@@ -47,8 +47,9 @@ let fontPromise: Promise<[string, string]> | undefined;
 
 function encodeBase64(bytes: Uint8Array): string {
   let binary = "";
-  for (let offset = 0; offset < bytes.length; offset += 8192)
+  for (let offset = 0; offset < bytes.length; offset += 8192) {
     binary += String.fromCharCode(...bytes.subarray(offset, offset + 8192));
+  }
   return btoa(binary);
 }
 
@@ -59,13 +60,15 @@ async function fonts(): Promise<[string, string]> {
       if (
         /^(?:[a-z][a-z\d+.-]*:)?\/\//i.test(url) &&
         new URL(url, window.location.href).origin !== window.location.origin
-      )
+      ) {
         throw new Error(
           "Une ressource distante est interdite dans le carnet de santé."
         );
+      }
       const response = await fetch(url);
-      if (!response.ok)
+      if (!response.ok) {
         throw new Error("La police locale du carnet n’a pas pu être chargée.");
+      }
       return encodeBase64(new Uint8Array(await response.arrayBuffer()));
     })
   ) as Promise<[string, string]>;
@@ -79,7 +82,9 @@ async function fonts(): Promise<[string, string]> {
 
 export function civilDate(value: string | undefined): string {
   const date = parseClinicalDate(value);
-  if (!date) return "";
+  if (!date) {
+    return "";
+  }
   const pad = (n: number) => String(n).padStart(2, "0");
   return `${pad(date.getDate())}/${pad(date.getMonth() + 1)}/${date.getFullYear()}`;
 }
@@ -113,10 +118,13 @@ class Page {
   /** Texte sur une ligne, tronqué proprement à la largeur donnée. */
   fit(text: string, width: number): string {
     const value = text.replace(/\s+/g, " ").trim();
-    if (this.doc.getTextWidth(value) <= width) return value;
+    if (this.doc.getTextWidth(value) <= width) {
+      return value;
+    }
     let cut = value;
-    while (cut.length > 1 && this.doc.getTextWidth(`${cut}…`) > width)
+    while (cut.length > 1 && this.doc.getTextWidth(`${cut}…`) > width) {
       cut = cut.slice(0, -1);
+    }
     return `${cut.trimEnd()}…`;
   }
 
@@ -147,11 +155,12 @@ class Page {
       width
     ) as string[];
     const shown = lines.slice(0, max);
-    if (lines.length > max)
+    if (lines.length > max) {
       shown[max - 1] = this.fit(
         `${shown[max - 1]} ${lines.slice(max).join(" ")}`,
         width
       );
+    }
     shown.forEach((line, index) => this.doc.text(line, x, y + index * leading));
     return shown.length;
   }
@@ -232,7 +241,9 @@ function drawHeader(page: Page, card: HealthCard, clinic: InvoiceSettings) {
     page.text(clinic.name, right, 18, 80, "right");
     page.style(7.5, false, MUTED);
     const contact = [clinic.phone, clinic.email].filter(Boolean).join(" · ");
-    if (contact) page.text(contact, right, 22.5, 80, "right");
+    if (contact) {
+      page.text(contact, right, 22.5, 80, "right");
+    }
   }
   doc.setDrawColor(RULE);
   doc.setLineWidth(0.3);
@@ -598,7 +609,9 @@ function drawWeight(
     top + 25,
     COL - 10
   );
-  if (points.length < 2) return top + height;
+  if (points.length < 2) {
+    return top + height;
+  }
 
   // Courbe : axe vertical au plus près des valeurs, marges de 10 %.
   const cx = x + 13,
@@ -631,13 +644,14 @@ function drawWeight(
   doc.setLineWidth(0.6);
   doc.setLineJoin("round");
   doc.setLineCap("round");
-  for (let index = 1; index < points.length; index += 1)
+  for (let index = 1; index < points.length; index += 1) {
     doc.line(
       px(times[index - 1]),
       py(values[index - 1]),
       px(times[index]),
       py(values[index])
     );
+  }
   page.fill(WEIGHT);
   points.forEach((point, index) =>
     doc.circle(

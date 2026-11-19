@@ -83,14 +83,18 @@ export function ClinicNetworkSettings() {
   }, []);
 
   useEffect(() => {
-    if (!desktop) return;
+    if (!desktop) {
+      return;
+    }
     clinicNetwork.status().then(apply, (e) => setError(networkErrorMessage(e)));
   }, [apply, desktop]);
 
   // Keep the list of connected workstations fresh on the main workstation.
   const hosting = status?.host.running ?? false;
   useEffect(() => {
-    if (!hosting) return;
+    if (!hosting) {
+      return;
+    }
     const timer = window.setInterval(() => {
       clinicNetwork.status().then(setStatus, () => undefined);
     }, 3000);
@@ -99,7 +103,9 @@ export function ClinicNetworkSettings() {
 
   const linked = status?.launchMode === "client";
   useEffect(() => {
-    if (!linked) return;
+    if (!linked) {
+      return;
+    }
     const check = () =>
       clinicNetwork.ping().then(
         (info) => {
@@ -153,8 +159,9 @@ export function ClinicNetworkSettings() {
     run("discover", async () => {
       const hosts = await clinicNetwork.discover();
       setFound(hosts);
-      if (hosts.length === 1)
+      if (hosts.length === 1) {
         setAddress(`${hosts[0].address}:${hosts[0].port}`);
+      }
     });
 
   const test = () =>

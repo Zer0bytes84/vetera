@@ -24,7 +24,9 @@ export function LocationAvailability({
         variant="outline"
         disabled={busy || !currentUser || occupied}
         onClick={async () => {
-          if (!currentUser || busy) return;
+          if (!currentUser || busy) {
+            return;
+          }
           setBusy(true);
           setError(null);
           await guard(
@@ -94,7 +96,9 @@ export function StayTransfer({ stay }: { stay: Stay }) {
         className="flex flex-wrap items-end gap-3"
         onSubmit={async (event) => {
           event.preventDefault();
-          if (!currentUser || busy || !locationId || !reason.trim()) return;
+          if (!currentUser || busy || !locationId || !reason.trim()) {
+            return;
+          }
           setBusy(true);
           setError(null);
           await guard(

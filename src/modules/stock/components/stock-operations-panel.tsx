@@ -51,7 +51,9 @@ function BarcodeMappingForm({ onClose }: { onClose: () => void }) {
       className="space-y-4 border-y border-border bg-muted/10 p-5"
       onSubmit={async (event) => {
         event.preventDefault();
-        if (busy || !code.trim() || !product) return;
+        if (busy || !code.trim() || !product) {
+          return;
+        }
         setBusy(true);
         setError(null);
         await guard(
@@ -146,7 +148,9 @@ function Scanner({ onOpenMovements }: { onOpenMovements?: () => void }) {
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState<string | null>(null);
   useEffect(() => {
-    if (saved && !busy && !matched) field.current?.focus();
+    if (saved && !busy && !matched) {
+      field.current?.focus();
+    }
   }, [saved, busy, matched]);
   const changed = (operation: () => void) => {
     operation();
@@ -205,7 +209,9 @@ function Scanner({ onOpenMovements }: { onOpenMovements?: () => void }) {
         className="flex flex-wrap items-end gap-2"
         onSubmit={async (event) => {
           event.preventDefault();
-          if (busy || !code.trim()) return;
+          if (busy || !code.trim()) {
+            return;
+          }
           setBusy(true);
           setError(null);
           setSaved(null);
@@ -267,7 +273,9 @@ function Scanner({ onOpenMovements }: { onOpenMovements?: () => void }) {
           className="space-y-4 border-t border-border pt-5"
           onSubmit={async (event) => {
             event.preventDefault();
-            if (busy || !valid || !currentUser) return;
+            if (busy || !valid || !currentUser) {
+              return;
+            }
             setBusy(true);
             setError(null);
             await guard(
@@ -480,7 +488,9 @@ function LocationForm({
       className="space-y-4 border-y border-border bg-muted/10 p-5"
       onSubmit={async (event) => {
         event.preventDefault();
-        if (busy || !name.trim()) return;
+        if (busy || !name.trim()) {
+          return;
+        }
         setBusy(true);
         setError(null);
         await guard(
@@ -594,7 +604,9 @@ function TransferForm({ onClose }: { onClose: () => void }) {
       className="space-y-4 border-y border-border bg-muted/10 p-5"
       onSubmit={async (event) => {
         event.preventDefault();
-        if (busy || !valid || !currentUser) return;
+        if (busy || !valid || !currentUser) {
+          return;
+        }
         setBusy(true);
         setError(null);
         await guard(
@@ -679,7 +691,9 @@ function TransferForm({ onClose }: { onClose: () => void }) {
               changed(() => {
                 setFrom(value);
                 setLot("fifo");
-                if (to === value) setTo("");
+                if (to === value) {
+                  setTo("");
+                }
               })
             }
             options={inventory.locations
@@ -771,7 +785,9 @@ export function StockOperationsPanel({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const run = async (action: () => Promise<unknown>) => {
-    if (busy) return;
+    if (busy) {
+      return;
+    }
     setBusy(true);
     setError(null);
     await guard(
@@ -788,13 +804,14 @@ export function StockOperationsPanel({
       }
     );
   };
-  if (!isTauriRuntime())
+  if (!isTauriRuntime()) {
     return (
       <p className="p-5 text-sm text-muted-foreground">
         Les codes-barres, transferts et analyses de consommation sont
         disponibles dans l’application de bureau.
       </p>
     );
+  }
   return (
     <section aria-label="Opérations de stock" className="min-w-0">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border p-4">

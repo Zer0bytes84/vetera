@@ -37,7 +37,9 @@ export function ConsultationProducts({
   const [loadError, setLoadError] = useState(false);
   const [revision, setRevision] = useState(0);
   useEffect(() => {
-    if (!desktop) return;
+    if (!desktop) {
+      return;
+    }
     let alive = true;
     void clinicalStockService
       .uses(appointmentId)
@@ -48,7 +50,9 @@ export function ConsultationProducts({
         }
       })
       .catch(() => {
-        if (alive) setLoadError(true);
+        if (alive) {
+          setLoadError(true);
+        }
       });
     return () => {
       alive = false;
@@ -64,13 +68,14 @@ export function ConsultationProducts({
       (!product.availabilityPending &&
         !product.inventoryInvalid &&
         (product.availableQuantity ?? product.quantity) >= requested));
-  if (!desktop)
+  if (!desktop) {
     return (
       <p className="t-13 text-muted-foreground">
         L’utilisation des produits et sa facturation sont disponibles dans
         l’application de bureau.
       </p>
     );
+  }
   return (
     <Shell
       aria-label="Produits utilisés en consultation"
@@ -117,7 +122,9 @@ export function ConsultationProducts({
           className="space-y-3"
           onSubmit={async (event) => {
             event.preventDefault();
-            if (busy || !valid || !currentUser) return;
+            if (busy || !valid || !currentUser) {
+              return;
+            }
             setBusy(true);
             setError(null);
             await guard(

@@ -123,7 +123,9 @@ export function parsePosology(input: string): ParsedPosology | null {
 export function prescriptionUnitFor(
   unit: DoseUnit
 ): PrescriptionDosageUnit | null {
-  if (unit === "mg") return "mg/tot";
+  if (unit === "mg") {
+    return "mg/tot";
+  }
   const known: PrescriptionDosageUnit[] = [
     "mg/kg",
     "mg/tot",

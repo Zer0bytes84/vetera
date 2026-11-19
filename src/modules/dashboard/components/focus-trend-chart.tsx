@@ -116,7 +116,9 @@ export function FocusTrendChart({
 
   useEffect(() => {
     const el = boxRef.current;
-    if (!el) return;
+    if (!el) {
+      return;
+    }
     const observer = new ResizeObserver(([entry]) =>
       setWidth(Math.floor(entry.contentRect.width))
     );
@@ -185,7 +187,9 @@ export function FocusTrendChart({
   const flip = active !== null && x(active) > width - 260;
 
   const onMove = (event: React.PointerEvent<SVGSVGElement>) => {
-    if (n < 2 || plotW <= 0) return;
+    if (n < 2 || plotW <= 0) {
+      return;
+    }
     const box = event.currentTarget.getBoundingClientRect();
     const k = Math.round(
       ((event.clientX - box.left - G.left) / plotW) * (n - 1)
@@ -194,7 +198,9 @@ export function FocusTrendChart({
   };
   // The keyboard walks the days as the pointer does.
   const onKey = (event: React.KeyboardEvent<SVGSVGElement>) => {
-    if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+    if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") {
+      return;
+    }
     event.preventDefault();
     const step = event.key === "ArrowLeft" ? -1 : 1;
     setActive((current) =>

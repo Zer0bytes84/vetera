@@ -37,17 +37,22 @@ export function vitalAlerts(
       vital.temperature_c != null &&
       (vital.temperature_c < reference.temperature[0] ||
         vital.temperature_c > reference.temperature[1])
-    )
+    ) {
       alerts.push("Température hors du repère de l’espèce");
+    }
     if (
       vital.heart_rate != null &&
       (vital.heart_rate < reference.heartRate[0] ||
         vital.heart_rate > reference.heartRate[1])
-    )
+    ) {
       alerts.push("Fréquence cardiaque hors du repère au repos");
+    }
   }
-  if (vital.general_state === "Non réactif")
+  if (vital.general_state === "Non réactif") {
     alerts.push("État général à vérifier");
-  if (vital.appetite === "Absent") alerts.push("Absence d’appétit à suivre");
+  }
+  if (vital.appetite === "Absent") {
+    alerts.push("Absence d’appétit à suivre");
+  }
   return alerts;
 }

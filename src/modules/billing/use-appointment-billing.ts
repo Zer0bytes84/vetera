@@ -156,10 +156,11 @@ export function useAppointmentBilling({
                     `appointment-invoice-${billingAppointment.id}`
                   )
                 : null;
-              if (isTauriRuntime() && !invoice)
+              if (isTauriRuntime() && !invoice) {
                 throw new Error(
                   "Facture enregistrée introuvable. Réessayez depuis Finances."
                 );
+              }
               const document = invoice
                 ? invoiceDocument(
                     invoice,

@@ -28,7 +28,9 @@ export function CareCompletionRollbackDialog({
     <Dialog
       open
       onOpenChange={(open) => {
-        if (!open && !busy) onClose();
+        if (!open && !busy) {
+          onClose();
+        }
       }}
     >
       <DialogContent className="care-page sm:max-w-[480px] sm:p-6">
@@ -45,7 +47,9 @@ export function CareCompletionRollbackDialog({
           aria-busy={busy}
           onSubmit={(event) => {
             event.preventDefault();
-            if (!busy && reason.trim()) onConfirm(reason.trim());
+            if (!busy && reason.trim()) {
+              onConfirm(reason.trim());
+            }
           }}
         >
           <div className="space-y-2">

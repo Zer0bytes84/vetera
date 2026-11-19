@@ -7,14 +7,20 @@ export function useRowSaveFlash() {
     const frames = new Set<number>();
     const flash = (event: Event) => {
       const id = (event as CustomEvent<{ id?: string }>).detail?.id;
-      if (!id || window.matchMedia("(prefers-reduced-motion: reduce)").matches)
+      if (
+        !id ||
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      ) {
         return;
+      }
       const frame = requestAnimationFrame(() => {
         frames.delete(frame);
         document
           .querySelectorAll<HTMLElement>("[data-row-id]")
           .forEach((row) => {
-            if (row.dataset.rowId !== id) return;
+            if (row.dataset.rowId !== id) {
+              return;
+            }
             running.get(row)?.cancel();
             const animation = row.animate(
               [

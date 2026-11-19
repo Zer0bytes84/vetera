@@ -48,8 +48,9 @@ export const careTasksService = {
         "invoices",
         "invoice_lines",
         "audit_log",
-      ])
+      ]) {
         emitSQLiteDataChanged(table);
+      }
     }
     return task;
   },

@@ -97,7 +97,9 @@ export function getDeviceId(): Promise<string> {
         });
       }
       const stored = localStorage.getItem(DEVICE_ID_SETTING);
-      if (stored) return stored;
+      if (stored) {
+        return stored;
+      }
       const id = createUuid();
       localStorage.setItem(DEVICE_ID_SETTING, id);
       return id;
@@ -144,8 +146,9 @@ async function licenseRequest(
     timeoutMs
   );
   const payload = await readAdminResponse<LicenseActivationResult>(response);
-  if (!payload?.activationToken || !payload.license?.email)
+  if (!payload?.activationToken || !payload.license?.email) {
     throw new LicenseActivationError("Réponse d’activation invalide.");
+  }
   const email = body.email || payload.license.email;
   const lease = await verifyLicenseLease(
     payload.activationToken,
@@ -153,8 +156,9 @@ async function licenseRequest(
     deviceId,
     email
   );
-  if (lease.sub !== payload.license.id)
+  if (lease.sub !== payload.license.id) {
     throw new LicenseActivationError("Réponse d’activation incohérente.");
+  }
   return payload;
 }
 

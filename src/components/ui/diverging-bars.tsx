@@ -81,7 +81,9 @@ const compact = (n: number) =>
 
 /** A round upper bound so ticks land on readable numbers. */
 function niceMax(value: number) {
-  if (value <= 0) return 2;
+  if (value <= 0) {
+    return 2;
+  }
   const step = 10 ** Math.floor(Math.log10(value));
   const top = Math.ceil(value / (step / 2)) * (step / 2);
   // Whole numbers at both gridlines: the half is a count too.
@@ -95,7 +97,9 @@ function useWidth() {
   const [width, setWidth] = useState<number | null>(null);
   useLayoutEffect(() => {
     const el = ref.current;
-    if (!el) return;
+    if (!el) {
+      return;
+    }
     setWidth(el.getBoundingClientRect().width);
     const observer = new ResizeObserver(([entry]) =>
       setWidth(entry.contentRect.width)
@@ -160,19 +164,27 @@ export function DivergingBars({
   const select = (index: number | null, keyboard: boolean) => {
     setFromKeyboard(keyboard);
     setActive(index);
-    if (index !== null) onSelect?.(index);
+    if (index !== null) {
+      onSelect?.(index);
+    }
   };
 
   const onKeyDown = (event: React.KeyboardEvent) => {
-    if (!count) return;
+    if (!count) {
+      return;
+    }
     const keys: Record<string, number> = {
       ArrowRight: (activeIndex ?? -1) + 1,
       ArrowLeft: (activeIndex ?? count) - 1,
       Home: 0,
       End: count - 1,
     };
-    if (event.key === "Escape") return select(null, true);
-    if (!(event.key in keys)) return;
+    if (event.key === "Escape") {
+      return select(null, true);
+    }
+    if (!(event.key in keys)) {
+      return;
+    }
     event.preventDefault();
     select((keys[event.key] + count) % count, true);
   };
@@ -386,7 +398,9 @@ export function DivergingBars({
                   >
                     {visible.map((s) => {
                       const h = up(s.values[i] ?? 0);
-                      if (h <= 0) return null;
+                      if (h <= 0) {
+                        return null;
+                      }
                       top -= h;
                       // Every segment gives up the gap at its top; tiny ones keep 1px.
                       const segH = Math.max(h - gap, 1);

@@ -83,7 +83,7 @@ export function DocumentPreviewDialog({
   }
   useEffect(() => {
     let active = true;
-    if (documentId)
+    if (documentId) {
       void documentsService
         .get(documentId)
         .then((value) => {
@@ -94,8 +94,11 @@ export function DocumentPreviewDialog({
           }
         })
         .catch((cause) => {
-          if (active) setError(cause.message);
+          if (active) {
+            setError(cause.message);
+          }
         });
+    }
     return () => {
       active = false;
     };
@@ -108,20 +111,27 @@ export function DocumentPreviewDialog({
   }
   useEffect(() => {
     let active = true;
-    if (document)
+    if (document) {
       void patientDocumentPdf(document)
         .then((dataUrl) => {
-          if (active) setPdf({ dataUrl, version: document.updatedAt });
+          if (active) {
+            setPdf({ dataUrl, version: document.updatedAt });
+          }
         })
         .catch((cause) => {
-          if (active) setError(cause.message);
+          if (active) {
+            setError(cause.message);
+          }
         });
+    }
     return () => {
       active = false;
     };
   }, [document]);
   async function perform(action: () => Promise<void>) {
-    if (busy) return;
+    if (busy) {
+      return;
+    }
     setBusy(true);
     setError("");
     await guard(
@@ -144,7 +154,9 @@ export function DocumentPreviewDialog({
   }
   const author = currentUser?.id ?? "";
   async function downloadOriginal() {
-    if (!document?.attachment) return;
+    if (!document?.attachment) {
+      return;
+    }
     const file = document.attachment;
     const data = Uint8Array.from(atob(file.dataUrl.split(",")[1]), (char) =>
       char.charCodeAt(0)
@@ -155,7 +167,9 @@ export function DocumentPreviewDialog({
         title: "Enregistrer la pièce jointe",
         defaultPath: file.name,
       });
-      if (!path) return;
+      if (!path) {
+        return;
+      }
       const { writeFile } = await loadTauriAppsPluginFs();
       await writeFile(path, data);
     } else {
@@ -174,7 +188,9 @@ export function DocumentPreviewDialog({
     <Dialog
       open={!!documentId}
       onOpenChange={(open) => {
-        if (!open && !busy) onClose();
+        if (!open && !busy) {
+          onClose();
+        }
       }}
     >
       <DialogContent
@@ -349,8 +365,9 @@ export function DocumentPreviewDialog({
                       disabled={busy}
                       onClick={() =>
                         void perform(async () => {
-                          if (await exportManagedDocument(document))
+                          if (await exportManagedDocument(document)) {
                             toast.success("PDF enregistré.");
+                          }
                         })
                       }
                     >

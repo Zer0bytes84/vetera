@@ -45,7 +45,9 @@ export function AdmissionForm({
       className="space-y-4"
       onSubmit={async (event) => {
         event.preventDefault();
-        if (!currentUser || busy) return;
+        if (!currentUser || busy) {
+          return;
+        }
         if (!admittedAt) {
           setError("Choisissez une date et une heure d’admission valides.");
           return;
@@ -217,7 +219,9 @@ export function LocationForm({ onSaved }: { onSaved: () => void }) {
       className="space-y-4"
       onSubmit={async (event) => {
         event.preventDefault();
-        if (!currentUser || busy) return;
+        if (!currentUser || busy) {
+          return;
+        }
         setBusy(true);
         setError(null);
         await guard(

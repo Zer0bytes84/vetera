@@ -9,17 +9,22 @@ export function stayInvoiceInput(
   product: Product,
   author: string
 ): CreateInvoiceDraftInput {
-  if (!author.trim()) throw new Error("Un utilisateur connecté est requis.");
-  if (stay.status !== "sorti" || !stay.discharged_at)
+  if (!author.trim()) {
+    throw new Error("Un utilisateur connecté est requis.");
+  }
+  if (stay.status !== "sorti" || !stay.discharged_at) {
     throw new Error("Confirmez la sortie avant de préparer la facture.");
-  if (patient.id !== stay.patient_id || !patient.ownerId)
+  }
+  if (patient.id !== stay.patient_id || !patient.ownerId) {
     throw new Error("Vérifiez le patient et son propriétaire.");
+  }
   if (
     product.archivedAt ||
     !Number.isSafeInteger(product.salePriceAmount) ||
     product.salePriceAmount < 0
-  )
+  ) {
     throw new Error("Choisissez un tarif actif et valide.");
+  }
   const days = stayDays(
     new Date(stay.admitted_at),
     new Date(stay.discharged_at)
@@ -50,16 +55,21 @@ export async function prepareStayInvoice(
     ) => Promise<InvoiceDetail>;
   }
 ): Promise<InvoiceDetail> {
-  if (!input.id?.startsWith("stay-invoice:"))
+  if (!input.id?.startsWith("stay-invoice:")) {
     throw new Error("Référence de séjour invalide.");
+  }
   const existing = await billing.getInvoice(input.id);
-  if (existing) return existing;
+  if (existing) {
+    return existing;
+  }
   try {
     return await billing.createInvoiceDraft(input);
   } catch (error) {
     // A concurrent request may have committed the same deterministic reference.
     const committed = await billing.getInvoice(input.id);
-    if (committed) return committed;
+    if (committed) {
+      return committed;
+    }
     throw error;
   }
 }

@@ -173,7 +173,9 @@ export function PatientDocumentSearch({
     let alive = true;
     void getLocalModels()
       .then((models) => {
-        if (alive) setReady(!!models.embeddingReady);
+        if (alive) {
+          setReady(!!models.embeddingReady);
+        }
       })
       .catch(() => {});
     return () => {
@@ -411,7 +413,7 @@ export function PatientDocumentSearch({
     .filter(Boolean)
     .join(" · ");
 
-  if (!ready)
+  if (!ready) {
     return (
       <div className="flex flex-col items-center justify-center gap-3 px-6 py-10 text-center text-foreground">
         <Search className="size-5 text-muted-foreground" />
@@ -438,6 +440,7 @@ export function PatientDocumentSearch({
         )}
       </div>
     );
+  }
 
   return (
     <div className="flex h-full min-h-0 flex-1 flex-col gap-2.5 overflow-hidden text-foreground">
@@ -445,7 +448,9 @@ export function PatientDocumentSearch({
         className="flex shrink-0 items-center gap-2"
         onSubmit={(event) => {
           event.preventDefault();
-          if (!locked) void run(false);
+          if (!locked) {
+            void run(false);
+          }
         }}
       >
         <div className="relative flex min-w-0 flex-1 items-center">

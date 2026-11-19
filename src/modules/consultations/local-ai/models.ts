@@ -48,15 +48,18 @@ export async function downloadLocalModels(
   });
 }
 export async function cancelLocalModelDownload() {
-  if (isTauriRuntime()) await invoke("cancel_local_ai_download");
+  if (isTauriRuntime()) {
+    await invoke("cancel_local_ai_download");
+  }
 }
 export async function importLocalModel(
   kind: "whisper" | "generator" | "embeddinggemma"
 ) {
-  if (!isTauriRuntime())
+  if (!isTauriRuntime()) {
     throw new Error(
       "L’import des modèles se fait dans l’application Baitari de bureau."
     );
+  }
   const { open } = await import("@tauri-apps/plugin-dialog");
   const path = await open(
     kind !== "generator"
@@ -75,15 +78,18 @@ export async function importLocalModel(
           filters: [{ name: "Préparation des notes", extensions: ["task"] }],
         }
   );
-  if (!path || Array.isArray(path)) return null;
+  if (!path || Array.isArray(path)) {
+    return null;
+  }
   return invoke<LocalModelStatus>("import_local_ai_model", {
     kind,
     source: path,
   });
 }
 export function getLocalModelUrls(status: LocalModelStatus) {
-  if (!status.root)
+  if (!status.root) {
     throw new Error("Importez d’abord les modèles locaux depuis le disque.");
+  }
   const modelRoot = `${convertFileSrc(status.root).replace(/\/$/, "")}/`;
   return {
     modelRoot,

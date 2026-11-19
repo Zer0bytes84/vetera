@@ -49,7 +49,9 @@ const DAY_MS = 86_400_000;
 /** "2026-10-18" is midnight local, with no time-zone shift. */
 function dateOnly(value: string): Date | null {
   const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(value);
-  if (!match) return parseDashboardDate(value);
+  if (!match) {
+    return parseDashboardDate(value);
+  }
   return new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
 }
 
@@ -138,60 +140,83 @@ export function buildAlertBars({
     const index = dayDiff(from, day);
     if (index < 0) {
       older[category] += 1;
-      if (isLate) olderLate += 1;
+      if (isLate) {
+        olderLate += 1;
+      }
       return;
     }
-    if (index >= count) return;
+    if (index >= count) {
+      return;
+    }
     values[category][index] += 1;
-    if (isLate) late[index] += 1;
+    if (isLate) {
+      late[index] += 1;
+    }
   };
 
   const deceased = new Set(
     patients.filter((p) => p.status === "decede").map((p) => p.id)
   );
   for (const reminder of reminders) {
-    if (reminder.statut !== "en_cours" || deceased.has(reminder.patient_id))
+    if (reminder.statut !== "en_cours" || deceased.has(reminder.patient_id)) {
       continue;
+    }
     const due = dateOnly(reminder.echeance);
-    if (due) file("reminders", due, due < today);
+    if (due) {
+      file("reminders", due, due < today);
+    }
   }
 
   for (const task of careTasks) {
-    if (task.statut !== "a_faire" && task.statut !== "en_cours") continue;
+    if (task.statut !== "a_faire" && task.statut !== "en_cours") {
+      continue;
+    }
     const planned = parseDashboardDate(task.heure_prevue);
-    if (planned)
+    if (planned) {
       file("care", planned, careDisplayStatus(task, now) === "en_retard");
+    }
   }
 
   for (const product of products) {
-    if (product.archivedAt || product.stockTracked === false) continue;
+    if (product.archivedAt || product.stockTracked === false) {
+      continue;
+    }
     const quantity = product.availableQuantity ?? product.quantity;
-    if (quantity <= 0 || quantity <= product.minStock)
+    if (quantity <= 0 || quantity <= product.minStock) {
       file("stock", today, false);
+    }
     const expiryValue = product.nearestExpiryDate ?? product.expiryDate;
     const expiry = expiryValue ? dateOnly(expiryValue) : null;
-    if ((product.expiredQuantity ?? 0) > 0 || (expiry && expiry < today))
+    if ((product.expiredQuantity ?? 0) > 0 || (expiry && expiry < today)) {
       file("stock", expiry ?? today, true);
-    else if (expiry) file("stock", expiry, false);
+    } else if (expiry) {
+      file("stock", expiry, false);
+    }
   }
 
   for (const invoice of invoices) {
-    if (!isOpenInvoice(invoice)) continue;
+    if (!isOpenInvoice(invoice)) {
+      continue;
+    }
     // No due date: what is owed is a state, dated today like a shortage, never lost before the window.
     const due = invoice.dueAt ? dateOnly(invoice.dueAt) : today;
-    if (due) file("receivables", due, invoice.settlementStatus === "overdue");
+    if (due) {
+      file("receivables", due, invoice.settlementStatus === "overdue");
+    }
   }
 
   for (const appointment of appointments) {
     if (
       appointment.status !== "scheduled" &&
       appointment.status !== "confirmed"
-    )
+    ) {
       continue;
+    }
     const start = parseDashboardDate(appointment.startTime);
     const end = parseDashboardDate(appointment.endTime) ?? start;
-    if (start && end && end.getTime() < now.getTime())
+    if (start && end && end.getTime() < now.getTime()) {
       file("appointments", start, true);
+    }
   }
 
   const olderTotal =

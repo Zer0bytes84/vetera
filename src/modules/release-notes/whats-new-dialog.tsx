@@ -35,18 +35,24 @@ export function WhatsNewGate() {
   useEffect(() => {
     const version = getAppVersion();
     const lastSeen = readLastSeenVersion();
-    if (lastSeen === version) return;
+    if (lastSeen === version) {
+      return;
+    }
     const toShow = releaseNoteToShow(version, lastSeen);
     const timer = window.setTimeout(() => {
       // Sans note pour cette version, on rattrape le marqueur sans rien montrer ; si le stockage refuse, on ne montre rien.
-      if (!markVersionSeen(version) || !toShow) return;
+      if (!markVersionSeen(version) || !toShow) {
+        return;
+      }
       setNote(toShow);
       setOpen(true);
     }, SHOW_DELAY_MS);
     return () => window.clearTimeout(timer);
   }, []);
 
-  if (!note) return null;
+  if (!note) {
+    return null;
+  }
   return (
     <Dialog modal={false} onOpenChange={setOpen} open={open}>
       <DialogContent className="whats-new-dialog" overlayClassName="hidden">

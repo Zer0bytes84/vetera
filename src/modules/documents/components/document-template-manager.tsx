@@ -153,12 +153,19 @@ export default function DocumentTemplateManager({
     setDraft(templateDraft(template, duplicate));
   };
   const requestClose = () => {
-    if (busy) return;
-    if (dirty && canEdit) setDiscardOpen(true);
-    else setDraft(null);
+    if (busy) {
+      return;
+    }
+    if (dirty && canEdit) {
+      setDiscardOpen(true);
+    } else {
+      setDraft(null);
+    }
   };
   const save = async () => {
-    if (!draft || !currentUser || !canEdit || busy) return;
+    if (!draft || !currentUser || !canEdit || busy) {
+      return;
+    }
     setBusy(true);
     setError("");
     await guard(
@@ -193,7 +200,9 @@ export default function DocumentTemplateManager({
     );
   };
   const setTemplateActive = async (template: ManagedDocumentTemplate) => {
-    if (!currentUser || !canEdit || busy) return;
+    if (!currentUser || !canEdit || busy) {
+      return;
+    }
     setBusy(true);
     setError("");
     await guard(
@@ -231,7 +240,9 @@ export default function DocumentTemplateManager({
     );
   };
   const remove = async () => {
-    if (!pendingDelete || !currentUser || !canEdit || busy) return;
+    if (!pendingDelete || !currentUser || !canEdit || busy) {
+      return;
+    }
     setBusy(true);
     setError("");
     await guard(
@@ -257,7 +268,9 @@ export default function DocumentTemplateManager({
     );
   };
   const insertVariable = (key: string) => {
-    if (!draft || busy || !canEdit) return;
+    if (!draft || busy || !canEdit) {
+      return;
+    }
     const start = textarea.current?.selectionStart ?? draft.body.length;
     const end = textarea.current?.selectionEnd ?? start;
     const token = `{{${key}}}`;
@@ -520,7 +533,9 @@ export default function DocumentTemplateManager({
 
       <Dialog
         onOpenChange={(open) => {
-          if (!open) requestClose();
+          if (!open) {
+            requestClose();
+          }
         }}
         open={Boolean(draft)}
       >
@@ -725,7 +740,9 @@ export default function DocumentTemplateManager({
 
       <AlertDialog
         onOpenChange={(open) => {
-          if (!busy && !open) setPendingDelete(null);
+          if (!busy && !open) {
+            setPendingDelete(null);
+          }
         }}
         open={Boolean(pendingDelete)}
       >

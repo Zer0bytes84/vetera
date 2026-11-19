@@ -73,7 +73,9 @@ export function SettleSparkLine({
   values: number[];
   tone?: SettleTone;
 }) {
-  if (!values || values.length < 2) return null;
+  if (!values || values.length < 2) {
+    return null;
+  }
   const min = Math.min(...values);
   const max = Math.max(...values);
   const range = max - min || 1;

@@ -98,15 +98,19 @@ function badgeOf(
     item.tone === "positive" ? 1 : item.tone === "critical" ? -1 : 0;
   if (item.change !== undefined && item.change !== null) {
     const kind = item.changeKind ?? "variation";
-    if (kind === "count")
+    if (kind === "count") {
       return { delta: sense, deltaText: formatNumber(item.change) };
+    }
     // A percentage of nothing says nothing: hide it when the base is zero.
-    if (item.changeBase === 0) return {};
-    if (kind === "rate")
+    if (item.changeBase === 0) {
+      return {};
+    }
+    if (kind === "rate") {
       return {
         delta: 0,
         deltaText: `${formatNumber(item.change, { maximumFractionDigits: 1 })} %`,
       };
+    }
     const unit = kind === "difference" ? "" : " %";
     return {
       delta: item.change,
@@ -115,7 +119,9 @@ function badgeOf(
     };
   }
   // A text badge is a status, never a trend: its colour comes from the tone only.
-  if (item.badge) return { delta: sense, deltaText: item.badge };
+  if (item.badge) {
+    return { delta: sense, deltaText: item.badge };
+  }
   return {};
 }
 

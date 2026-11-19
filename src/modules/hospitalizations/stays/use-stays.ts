@@ -20,18 +20,23 @@ export function useStays(patientId?: string) {
           staysService.list(patientId),
           staysService.locations(),
         ]);
-        if (request !== sequence.current) return;
+        if (request !== sequence.current) {
+          return;
+        }
         setStays(records);
         setLocations(places);
         setError(null);
       },
       {
         recover: () => {
-          if (request === sequence.current)
+          if (request === sequence.current) {
             setError("Les séjours n’ont pas pu être chargés. Réessayez.");
+          }
         },
         cleanup: () => {
-          if (request === sequence.current) setLoading(false);
+          if (request === sequence.current) {
+            setLoading(false);
+          }
         },
       }
     );
@@ -45,7 +50,9 @@ export function useStays(patientId?: string) {
       void refresh();
     };
     const visible = () => {
-      if (document.visibilityState === "visible") listener();
+      if (document.visibilityState === "visible") {
+        listener();
+      }
     };
     window.addEventListener(STAYS_CHANGED, listener);
     window.addEventListener("focus", listener);

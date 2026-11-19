@@ -113,7 +113,9 @@ export function matchesQuery(entry: LibraryEntry, query: string) {
     .toLocaleLowerCase("fr")
     .split(/\s+/)
     .filter(Boolean);
-  if (!words.length) return true;
+  if (!words.length) {
+    return true;
+  }
   const haystack = entry.text.toLocaleLowerCase("fr");
   return words.every((word) => haystack.includes(word));
 }
@@ -129,7 +131,9 @@ export function countByKind(
     image: 0,
     link: 0,
   };
-  for (const entry of entries) counts[entry.kind] += 1;
+  for (const entry of entries) {
+    counts[entry.kind] += 1;
+  }
   return counts;
 }
 
@@ -139,7 +143,9 @@ export function countByKind(
  */
 export function normalizeLinkUrl(input: string): string | null {
   const text = input.trim();
-  if (!text || /\s/.test(text)) return null;
+  if (!text || /\s/.test(text)) {
+    return null;
+  }
   const hasScheme = /^[a-z][a-z0-9+.-]*:/i.test(text);
   // « localhost:3000 » and « exemple.dz:8080 » look like a scheme but are a host and a port.
   const hostAndPort = /^[^/?#:]+:\d+(?:[/?#]|$)/.test(text);
@@ -150,12 +156,17 @@ export function normalizeLinkUrl(input: string): string | null {
   } catch {
     return null;
   }
-  if (url.protocol === "mailto:")
+  if (url.protocol === "mailto:") {
     return /^mailto:[^@\s]+@[^@\s]+\.[^@\s]+/i.test(candidate)
       ? url.href
       : null;
-  if (url.protocol !== "http:" && url.protocol !== "https:") return null;
-  if (!url.hostname.includes(".") && url.hostname !== "localhost") return null;
+  }
+  if (url.protocol !== "http:" && url.protocol !== "https:") {
+    return null;
+  }
+  if (!url.hostname.includes(".") && url.hostname !== "localhost") {
+    return null;
+  }
   return url.href;
 }
 
@@ -163,7 +174,9 @@ export function normalizeLinkUrl(input: string): string | null {
 export function linkTitle(url: string) {
   try {
     const parsed = new URL(url);
-    if (parsed.protocol === "mailto:") return parsed.pathname;
+    if (parsed.protocol === "mailto:") {
+      return parsed.pathname;
+    }
     return parsed.hostname.replace(/^www\./, "");
   } catch {
     return url;
@@ -186,8 +199,9 @@ export function judgeFile(
   file: Pick<File, "name" | "size" | "type">,
   wanted: "file" | "image"
 ): FileVerdict {
-  if (file.size === 0)
+  if (file.size === 0) {
     return { ok: false, reason: `« ${file.name} » est vide.` };
+  }
   if (file.size > MAX_FILE_BYTES) {
     return {
       ok: false,
@@ -219,20 +233,30 @@ export const readFileAsDataUrl = (file: Blob) =>
   });
 
 export const formatSize = (bytes?: number | null) => {
-  if (!bytes || bytes < 0) return "";
-  if (bytes < 1024) return `${bytes} o`;
-  if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} Ko`;
+  if (!bytes || bytes < 0) {
+    return "";
+  }
+  if (bytes < 1024) {
+    return `${bytes} o`;
+  }
+  if (bytes < 1024 * 1024) {
+    return `${Math.round(bytes / 1024)} Ko`;
+  }
   return `${(bytes / 1024 / 1024).toFixed(1).replace(".", ",")} Mo`;
 };
 
 /** Bytes of a data URL back into a Blob, to hand a kept file to the person who asks for it. */
 export function dataUrlToBlob(dataUrl: string): Blob | null {
   const match = /^data:([^;,]*)(;base64)?,(.*)$/s.exec(dataUrl);
-  if (!match) return null;
+  if (!match) {
+    return null;
+  }
   try {
     const raw = match[2] ? atob(match[3]) : decodeURIComponent(match[3]);
     const bytes = new Uint8Array(raw.length);
-    for (let i = 0; i < raw.length; i += 1) bytes[i] = raw.charCodeAt(i);
+    for (let i = 0; i < raw.length; i += 1) {
+      bytes[i] = raw.charCodeAt(i);
+    }
     return new Blob([bytes], { type: match[1] || "application/octet-stream" });
   } catch {
     return null;

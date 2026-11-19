@@ -122,7 +122,9 @@ export interface HealthCardInput {
 export function parseClinicalDate(
   value: string | null | undefined
 ): Date | null {
-  if (!value) return null;
+  if (!value) {
+    return null;
+  }
   const parsed = /^\d{4}-\d{2}-\d{2}$/.test(value)
     ? new Date(`${value}T00:00:00`)
     : new Date(value);
@@ -178,8 +180,12 @@ export function ageLabel(
   const years = Math.floor(months / 12);
   const rest = months % 12;
   const parts: string[] = [];
-  if (years > 0) parts.push(years > 1 ? `${years} ans` : "1 an");
-  if (rest > 0) parts.push(`${rest} mois`);
+  if (years > 0) {
+    parts.push(years > 1 ? `${years} ans` : "1 an");
+  }
+  if (rest > 0) {
+    parts.push(`${rest} mois`);
+  }
   return parts.join(" ");
 }
 
@@ -214,10 +220,16 @@ export function vaccineStatus(
   now: Date
 ): VaccineStatus {
   const due = time(nextDueAt);
-  if (Number.isNaN(due)) return "no_reminder";
+  if (Number.isNaN(due)) {
+    return "no_reminder";
+  }
   const today = startOfDay(now);
-  if (due < today) return "overdue";
-  if (due < today + (DUE_SOON_DAYS + 1) * DAY_MS) return "due_soon";
+  if (due < today) {
+    return "overdue";
+  }
+  if (due < today + (DUE_SOON_DAYS + 1) * DAY_MS) {
+    return "due_soon";
+  }
   return "up_to_date";
 }
 
@@ -245,7 +257,9 @@ export function currentVaccineReminders(
 /** Jours entiers écoulés depuis l'échéance (0 si elle n'est pas dépassée). */
 export function daysOverdue(nextDueAt: string | undefined, now: Date): number {
   const due = time(nextDueAt);
-  if (Number.isNaN(due)) return 0;
+  if (Number.isNaN(due)) {
+    return 0;
+  }
   return Math.max(
     0,
     Math.round((startOfDay(now) - startOfDay(new Date(due))) / DAY_MS)

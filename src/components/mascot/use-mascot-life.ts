@@ -45,7 +45,9 @@ export function useMascotLife(
   useEffect(() => {
     const el = root.current;
     // Without life the face is neutral: the returned mood says so.
-    if (!el || !enabled || still) return;
+    if (!el || !enabled || still) {
+      return;
+    }
     const pupils = [...el.querySelectorAll<SVGGElement>(".lm-pupils")];
     const face = el.querySelector<SVGGElement>(".lm-face");
     const eyes = [...el.querySelectorAll<SVGGElement>(".lm-eye-open ellipse")];
@@ -59,7 +61,9 @@ export function useMascotLife(
     let hovered = false;
 
     const aim = () => {
-      if (!pointer || !eyes.length) return;
+      if (!pointer || !eyes.length) {
+        return;
+      }
       // The gaze aims from between the eyes; the drawing's scale turns pixels into units.
       const a = eyes[0].getBoundingClientRect();
       const b = eyes[eyes.length - 1].getBoundingClientRect();
@@ -77,10 +81,12 @@ export function useMascotLife(
     };
 
     const paint = () => {
-      for (const group of pupils)
+      for (const group of pupils) {
         group.style.transform = `translate(${current.x.toFixed(2)}px, ${current.y.toFixed(2)}px)`;
-      if (face)
+      }
+      if (face) {
         face.style.transform = `translateX(${current.drift.toFixed(2)}px) rotate(${current.tilt.toFixed(2)}deg)`;
+      }
     };
 
     const tick = (time: number) => {
@@ -90,20 +96,28 @@ export function useMascotLife(
       let moving = false;
       for (const key of ["x", "y", "tilt", "drift"] as const) {
         current[key] += (target[key] - current[key]) * k;
-        if (Math.abs(target[key] - current[key]) > 0.01) moving = true;
+        if (Math.abs(target[key] - current[key]) > 0.01) {
+          moving = true;
+        }
       }
       paint();
       frame = moving ? requestAnimationFrame(tick) : 0;
-      if (!moving) last = 0;
+      if (!moving) {
+        last = 0;
+      }
     };
     const run = () => {
-      if (!frame && !document.hidden) frame = requestAnimationFrame(tick);
+      if (!frame && !document.hidden) {
+        frame = requestAnimationFrame(tick);
+      }
     };
 
     const rest = () => {
       clearTimeout(daydream);
       daydream = setTimeout(() => {
-        if (!hovered) setMood("thinking");
+        if (!hovered) {
+          setMood("thinking");
+        }
       }, DAYDREAM_MS);
     };
     const onPointer = (event: PointerEvent) => {
@@ -163,7 +177,9 @@ export function useMascotLife(
       cancelAnimationFrame(frame);
       frame = 0;
       last = 0;
-      for (const timer of timers.splice(0)) clearTimeout(timer);
+      for (const timer of timers.splice(0)) {
+        clearTimeout(timer);
+      }
       clearTimeout(daydream);
       setBlink(false);
       setTwitch(null);
@@ -174,15 +190,21 @@ export function useMascotLife(
     host.addEventListener("pointerenter", onEnter);
     host.addEventListener("pointerleave", onLeave);
     document.addEventListener("visibilitychange", onVisibility);
-    if (!document.hidden) start();
+    if (!document.hidden) {
+      start();
+    }
     return () => {
       stop();
       window.removeEventListener("pointermove", onPointer);
       host.removeEventListener("pointerenter", onEnter);
       host.removeEventListener("pointerleave", onLeave);
       document.removeEventListener("visibilitychange", onVisibility);
-      for (const group of pupils) group.style.transform = "";
-      if (face) face.style.transform = "";
+      for (const group of pupils) {
+        group.style.transform = "";
+      }
+      if (face) {
+        face.style.transform = "";
+      }
     };
   }, [root, trigger, enabled, still]);
 

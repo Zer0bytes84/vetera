@@ -139,8 +139,11 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
       window.sessionStorage.getItem("baitari:customize-dashboard") === "true"
   );
   useEffect(() => {
-    if (window.sessionStorage.getItem("baitari:customize-dashboard") !== "true")
+    if (
+      window.sessionStorage.getItem("baitari:customize-dashboard") !== "true"
+    ) {
       return;
+    }
     window.sessionStorage.removeItem("baitari:customize-dashboard");
     void setVersion("clinical");
   }, [setVersion]);
@@ -187,8 +190,9 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
   );
   const openMorning = (item: MorningItem) => {
     // The Rappels view opens on the medical reminders, as the « À surveiller » row did.
-    if (item.id === "reminders")
+    if (item.id === "reminders") {
       window.sessionStorage.setItem("baitari:reminders-source", "medical");
+    }
     navigate(item.view);
   };
   const createSlot = (slot: FreeSlot) => {
@@ -353,12 +357,16 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
     id ? showInFlux(id, navigate) : navigate("flux");
   const completeTask = async (id: string) => {
     const row = presentation.tasks.find((task) => task.id === id);
-    if (!row || row.status === "done" || pending.current.has(id)) return;
+    if (!row || row.status === "done" || pending.current.has(id)) {
+      return;
+    }
     pending.current.add(id);
     setBusyIds([...pending.current]);
     return await guard(
       async () => {
-        if (!(await tasks.update(id, { status: "done" }))) return;
+        if (!(await tasks.update(id, { status: "done" }))) {
+          return;
+        }
         toast.success("Tâche terminée", {
           duration: 5000,
           action: {

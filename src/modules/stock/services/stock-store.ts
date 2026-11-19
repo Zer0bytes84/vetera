@@ -51,11 +51,12 @@ export async function stockProductInDatabase(
     "SELECT id,name,unit,quantity,stock_tracked,archived_at,sale_price_amount FROM products WHERE id = ?",
     [productId]
   );
-  if (!product || product.archived_at)
+  if (!product || product.archived_at) {
     throw new StockError(
       "PRODUCT_MISSING",
       "Le produit n’est plus disponible. Choisissez un produit actif avant de valider."
     );
+  }
   return product;
 }
 
@@ -98,12 +99,15 @@ export async function consumeStockInDatabase(
   input: StockConsumption,
   id: () => string
 ): Promise<string | null> {
-  if (await hasStockLots(db)) return consumeStockLotsInDatabase(db, input, id);
-  if (input.lotId !== undefined || input.locationId)
+  if (await hasStockLots(db)) {
+    return consumeStockLotsInDatabase(db, input, id);
+  }
+  if (input.lotId !== undefined || input.locationId) {
     throw new StockError(
       "SOURCE_CONFLICT",
       "La gestion des lots doit être activée avant cette sélection. Rouvrez l’application pour appliquer la mise à jour."
     );
+  }
   const quantity = stockQuantity(input.quantity);
   if (
     !input.sourceId.trim() ||
@@ -134,17 +138,20 @@ export async function consumeStockInDatabase(
     return existing.id;
   }
   const product = await assertStockAvailable(db, input.productId, quantity);
-  if (!product.stock_tracked) return null;
+  if (!product.stock_tracked) {
+    return null;
+  }
   const after = stockBalance(product.quantity - quantity);
   const result = (await db.execute(
     "UPDATE products SET quantity=?,updated_at=? WHERE id=? AND quantity=? AND stock_tracked=1 AND (archived_at IS NULL OR archived_at='')",
     [after, input.occurredAt, product.id, product.quantity]
   )) as { rowsAffected?: number } | undefined;
-  if (result?.rowsAffected !== 1)
+  if (result?.rowsAffected !== 1) {
     throw new StockError(
       "SOURCE_CONFLICT",
       "Le stock vient de changer. Actualisez avant de valider."
     );
+  }
   const movementId = id();
   await db.execute(
     `INSERT INTO stock_movements (id,product_id,type,quantity_delta,quantity_after,reason,reference_id,
@@ -186,11 +193,12 @@ export async function changeStockInDatabase(
   id: () => string
 ): Promise<StockProduct> {
   const quantity = stockQuantity(input.quantity, input.mode === "adjustment");
-  if (!input.reason.trim())
+  if (!input.reason.trim()) {
     throw new StockError(
       "SOURCE_CONFLICT",
       "Indiquez le motif du mouvement de stock."
     );
+  }
   const product = await stockProductInDatabase(db, input.productId);
   if (await hasStockLots(db)) {
     const tracked = await lotProductInDatabase(db, input.productId);
@@ -224,16 +232,19 @@ export async function changeStockInDatabase(
       ? stockBalance(product.quantity + quantity)
       : quantity;
   const delta = stockBalance(after - product.quantity);
-  if (delta === 0) return product;
+  if (delta === 0) {
+    return product;
+  }
   const result = (await db.execute(
     "UPDATE products SET quantity=?,updated_at=? WHERE id=? AND quantity=?",
     [after, input.occurredAt, product.id, product.quantity]
   )) as { rowsAffected?: number };
-  if (result?.rowsAffected !== 1)
+  if (result?.rowsAffected !== 1) {
     throw new StockError(
       "SOURCE_CONFLICT",
       "Le stock vient de changer. Actualisez avant de valider."
     );
+  }
   await db.execute(
     `INSERT INTO stock_movements(id,product_id,type,quantity_delta,quantity_after,unit_cost_amount,reason,unit_snapshot,product_name_snapshot,created_at,updated_at)
     VALUES (?,?,?,?,?,?,?,?,?,?,?)`,

@@ -186,7 +186,9 @@ export function DeltaBadge({
  * segment of a single bar, in the same tones as the species split.
  */
 export function MiniKinds({ rows }: { rows: VisitKindRow[] }) {
-  if (!rows.length) return null;
+  if (!rows.length) {
+    return null;
+  }
   const detail = rows
     .map((row) => `${row.name} ${formatNumber(row.count)} (${row.share} %)`)
     .join(" · ");
@@ -230,7 +232,9 @@ export function MiniArea({
   values: number[];
   label: string;
 }) {
-  if (values.length < 2) return null;
+  if (values.length < 2) {
+    return null;
+  }
   const width = 84;
   const height = 28;
   const running = values.reduce<number[]>(
@@ -415,8 +419,9 @@ export function PremiumAnalytics({
 
       const receiptsSum = transactions
         .filter((t) => {
-          if (t.type !== "income" || t.status !== "paid" || !t.date)
+          if (t.type !== "income" || t.status !== "paid" || !t.date) {
             return false;
+          }
           // Read as the Trésorerie card reads it: a SQLite timestamp is UTC.
           const d = parseDashboardDate(t.date);
           return Boolean(d && d >= cursor && d <= bucketEnd);
@@ -424,7 +429,9 @@ export function PremiumAnalytics({
         .reduce((sum, t) => sum + (t.amount || 0), 0);
 
       const visitsCount = appointments.filter((a) => {
-        if (!isVisit(a)) return false;
+        if (!isVisit(a)) {
+          return false;
+        }
         const d = new Date(a.startTime);
         return d >= cursor && d <= bucketEnd;
       }).length;
@@ -470,14 +477,17 @@ export function PremiumAnalytics({
       const previousFrom = cursor.getTime() - shift;
       const previousTo = bucketEnd.getTime() - shift;
       const previousVisits = appointments.filter((a) => {
-        if (!isVisit(a)) return false;
+        if (!isVisit(a)) {
+          return false;
+        }
         const time = new Date(a.startTime).getTime();
         return time >= previousFrom && time <= previousTo;
       }).length;
       const previousReceipts = transactions
         .filter((t) => {
-          if (t.type !== "income" || t.status !== "paid" || !t.date)
+          if (t.type !== "income" || t.status !== "paid" || !t.date) {
             return false;
+          }
           const time = parseDashboardDate(t.date)?.getTime() ?? Number.NaN;
           return time >= previousFrom && time <= previousTo;
         })
@@ -523,8 +533,9 @@ export function PremiumAnalytics({
           !a.startTime ||
           ["cancelled", "no_show"].includes(a.status) ||
           !known.has(a.patientId ?? "")
-        )
+        ) {
           return false;
+        }
         const d = new Date(a.startTime);
         return d >= from && d <= to;
       })
@@ -580,7 +591,9 @@ export function PremiumAnalytics({
     <Popover
       onOpenChange={(open) => {
         setChartPickerOpen(open);
-        if (!open) setChartAnchor(null);
+        if (!open) {
+          setChartAnchor(null);
+        }
       }}
       open={chartPickerOpen}
     >

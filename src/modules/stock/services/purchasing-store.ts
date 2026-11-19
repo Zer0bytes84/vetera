@@ -95,18 +95,21 @@ function fail(message: string): never {
   throw new StockError("SOURCE_CONFLICT", message);
 }
 function actor(value: string) {
-  if (!value.trim())
+  if (!value.trim()) {
     fail("Un utilisateur connecté est requis pour cette opération.");
+  }
 }
 function text(value: string, label: string, max = 500) {
   const result = value.trim();
-  if (result.length > max)
+  if (result.length > max) {
     fail(`${label} est trop long (${max} caractères maximum).`);
+  }
   return result;
 }
 function cost(value: number) {
-  if (!Number.isSafeInteger(value) || value < 0)
+  if (!Number.isSafeInteger(value) || value < 0) {
     fail("Le coût unitaire doit être un montant positif ou nul.");
+  }
   return value;
 }
 
@@ -153,15 +156,18 @@ export async function saveSupplierInDatabase(
   now: string
 ) {
   const name = text(input.name, "Le nom", 120);
-  if (!name || !input.id.trim()) fail("Indiquez le nom du fournisseur.");
+  if (!name || !input.id.trim()) {
+    fail("Indiquez le nom du fournisseur.");
+  }
   const [old] = await db.select<StockSupplier[]>(
     "SELECT * FROM stock_suppliers WHERE id=?",
     [input.id]
   );
   const phone = text(input.phone ?? old?.phone ?? "", "Le téléphone", 60);
   const email = text(input.email ?? old?.email ?? "", "L’adresse e-mail", 200);
-  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     fail("Vérifiez l’adresse e-mail du fournisseur.");
+  }
   const archived =
     input.archivedAt === undefined
       ? (old?.archived_at ?? null)
@@ -192,8 +198,9 @@ async function activeSupplier(db: StockDatabase, id: string) {
     "SELECT * FROM stock_suppliers WHERE id=?",
     [id]
   );
-  if (!supplier || supplier.archived_at)
+  if (!supplier || supplier.archived_at) {
     fail("Choisissez un fournisseur actif.");
+  }
   return supplier;
 }
 
@@ -204,13 +211,15 @@ export async function savePurchaseOrderInDatabase(
   now: string
 ) {
   actor(input.authorId);
-  if (!input.id.trim() || !input.lines.length)
+  if (!input.id.trim() || !input.lines.length) {
     fail("Ajoutez au moins un produit à commander.");
+  }
   if (
     new Set(input.lines.map((line) => line.productId)).size !==
     input.lines.length
-  )
+  ) {
     fail("Regroupez les quantités d’un produit sur une seule ligne.");
+  }
   const prepared: (OrderDraftLine & { productName: string; unit: string })[] =
     [];
   let total = 0;
@@ -218,11 +227,13 @@ export async function savePurchaseOrderInDatabase(
     const quantity = stockQuantity(line.quantity);
     const unitCostAmount = cost(line.unitCostAmount);
     const product = await stockProductInDatabase(db, line.productId);
-    if (!product.stock_tracked)
+    if (!product.stock_tracked) {
       fail("Une commande de stock contient uniquement des produits physiques.");
+    }
     total += Math.round(quantity * unitCostAmount);
-    if (!Number.isSafeInteger(total))
+    if (!Number.isSafeInteger(total)) {
       fail("Le montant de la commande dépasse la limite autorisée.");
+    }
     prepared.push({
       productId: product.id,
       productName: product.name,
@@ -239,20 +250,24 @@ export async function savePurchaseOrderInDatabase(
     "SELECT * FROM purchase_orders WHERE id=?",
     [input.id]
   );
-  if (old?.fingerprint === fingerprint) return old.id;
-  if (input.create ? !!old : !old)
+  if (old?.fingerprint === fingerprint) {
+    return old.id;
+  }
+  if (input.create ? !!old : !old) {
     fail(
       input.create
         ? "Cette commande existe déjà avec d’autres lignes."
         : "Cette commande n’existe plus."
     );
+  }
   if (
     old &&
     (old.status !== "draft" || input.expectedFingerprint !== old.fingerprint)
-  )
+  ) {
     fail(
       "La commande a changé. Actualisez-la avant de modifier son brouillon."
     );
+  }
   await activeSupplier(db, input.supplierId);
   if (!old) {
     const reference = `BC-${stockDay(new Date(stockTimestamp(now))).replaceAll("-", "")}-${input.id.slice(0, 8).toLocaleUpperCase("fr-FR")}`;
@@ -305,32 +320,42 @@ export async function transitionPurchaseOrderInDatabase(
   now: string
 ) {
   actor(authorId);
-  if (!["order", "cancel"].includes(action))
+  if (!["order", "cancel"].includes(action)) {
     fail("Choisissez une confirmation ou une annulation de commande.");
+  }
   const [order] = await db.select<PurchaseOrder[]>(
     "SELECT * FROM purchase_orders WHERE id=?",
     [orderId]
   );
-  if (!order) fail("Cette commande n’existe plus.");
+  if (!order) {
+    fail("Cette commande n’existe plus.");
+  }
   if (action === "order") {
-    if (["ordered", "partial", "received"].includes(order.status)) return;
-    if (order.status !== "draft")
+    if (["ordered", "partial", "received"].includes(order.status)) {
+      return;
+    }
+    if (order.status !== "draft") {
       fail("Une commande annulée ne peut pas être confirmée.");
+    }
     await activeSupplier(db, order.supplier_id);
     const lines = await db.select<{ id: string }[]>(
       "SELECT id FROM purchase_order_lines WHERE order_id=?",
       [orderId]
     );
-    if (!lines.length)
+    if (!lines.length) {
       fail("Ajoutez des produits avant de confirmer la commande.");
+    }
     await db.execute(
       "UPDATE purchase_orders SET status='ordered',ordered_at=?,updated_at=? WHERE id=?",
       [now, now, orderId]
     );
   } else {
-    if (order.status === "cancelled") return;
-    if (order.status === "received")
+    if (order.status === "cancelled") {
+      return;
+    }
+    if (order.status === "received") {
       fail("Une commande entièrement reçue ne peut pas être annulée.");
+    }
     await db.execute(
       "UPDATE purchase_orders SET status='cancelled',updated_at=? WHERE id=?",
       [now, orderId]
@@ -348,13 +373,15 @@ export async function receivePurchaseOrderInDatabase(
   actor(input.authorId);
   const receivedAt = stockTimestamp(input.receivedAt);
   const reference = text(input.reference, "La référence de livraison", 120);
-  if (!input.id.trim() || !input.lines.length)
+  if (!input.id.trim() || !input.lines.length) {
     fail("Saisissez au moins une quantité reçue.");
+  }
   if (
     new Set(input.lines.map((line) => line.orderLineId)).size !==
     input.lines.length
-  )
+  ) {
     fail("Une ligne de commande ne peut apparaître qu’une fois par réception.");
+  }
   const lines = input.lines.map((line) => ({
     ...line,
     quantity: stockQuantity(line.quantity),
@@ -374,18 +401,20 @@ export async function receivePurchaseOrderInDatabase(
     [input.id]
   );
   if (existing) {
-    if (existing.fingerprint !== fingerprint)
+    if (existing.fingerprint !== fingerprint) {
       fail(
         "Cette réception a déjà été enregistrée avec d’autres informations."
       );
+    }
     return existing.id;
   }
   const [order] = await db.select<PurchaseOrder[]>(
     "SELECT * FROM purchase_orders WHERE id=?",
     [input.orderId]
   );
-  if (!order || !["ordered", "partial"].includes(order.status))
+  if (!order || !["ordered", "partial"].includes(order.status)) {
     fail("Confirmez la commande avant de réceptionner ses produits.");
+  }
   const ordered = await db.select<PurchaseOrderLine[]>(
     `SELECT l.*,coalesce((SELECT sum(r.quantity) FROM purchase_receipt_lines r WHERE r.order_line_id=l.id),0) AS received_quantity
     FROM purchase_order_lines l WHERE l.order_id=? ORDER BY l.sort_order,l.id`,
@@ -405,17 +434,21 @@ export async function receivePurchaseOrderInDatabase(
   );
   for (const line of lines) {
     const source = ordered.find((row) => row.id === line.orderLineId);
-    if (!source) fail("Une ligne reçue n’appartient pas à cette commande.");
+    if (!source) {
+      fail("Une ligne reçue n’appartient pas à cette commande.");
+    }
     const remaining = stockBalance(source.quantity - source.received_quantity);
-    if (line.quantity > remaining)
+    if (line.quantity > remaining) {
       fail(
         `La quantité reçue de ${source.product_name} dépasse les ${remaining.toLocaleString("fr-FR")} ${source.unit} restant à recevoir.`
       );
+    }
     const product = await stockProductInDatabase(db, source.product_id);
-    if (!product.stock_tracked || product.unit !== source.unit)
+    if (!product.stock_tracked || product.unit !== source.unit) {
       fail(
         `L’unité ou le suivi de ${source.product_name} a changé. Vérifiez le catalogue avant réception.`
       );
+    }
     const operation = `purchase:${input.id}:${source.id}`;
     let movementId: string;
     if (line.lotNumber) {
@@ -438,8 +471,9 @@ export async function receivePurchaseOrderInDatabase(
       );
       movementId = result.movementId;
     } else {
-      if (line.expiryDate)
+      if (line.expiryDate) {
         fail("Indiquez le numéro du lot pour enregistrer sa péremption.");
+      }
       const result = await receiveStockInDatabase(
         db,
         product,

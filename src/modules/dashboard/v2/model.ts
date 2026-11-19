@@ -256,7 +256,9 @@ export function buildClinicalAlerts({
       return [];
     }
     const patient = patientById.get(reminder.patient_id);
-    if (!patient || patient.status === "decede") return [];
+    if (!patient || patient.status === "decede") {
+      return [];
+    }
     return [
       {
         id: `vaccine:${reminder.id}`,

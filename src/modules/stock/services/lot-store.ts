@@ -95,7 +95,9 @@ export async function assertInventoryBalance(
   product: StockProduct
 ): Promise<InventoryBucket[]> {
   const buckets = await stockBucketsInDatabase(db, product.id);
-  for (const bucket of buckets) stockQuantity(Math.abs(bucket.quantity), true);
+  for (const bucket of buckets) {
+    stockQuantity(Math.abs(bucket.quantity), true);
+  }
   if (
     !Number.isFinite(product.quantity) ||
     stockBalance(buckets.reduce((sum, row) => sum + row.quantity, 0)) !==
@@ -122,14 +124,17 @@ export async function prepareStockAllocations(
       "SELECT product_id FROM product_lots WHERE id=?",
       [selection.lotId]
     );
-    if (!lot || lot.product_id !== product.id)
+    if (!lot || lot.product_id !== product.id) {
       throw new StockError(
         "PRODUCT_MISSING",
         "Ce lot n’appartient pas au produit sélectionné."
       );
+    }
   }
-  if (selection.locationId) await activeLocation(db, selection.locationId);
-  if (product.quantity < quantity)
+  if (selection.locationId) {
+    await activeLocation(db, selection.locationId);
+  }
+  if (product.quantity < quantity) {
     throw new StockError(
       "INSUFFICIENT_STOCK",
       insufficientStockMessage(
@@ -139,6 +144,7 @@ export async function prepareStockAllocations(
         product.unit
       )
     );
+  }
   const allocations = selectFifoAllocations(
     buckets.filter((row) => row.locationActive === 1),
     {
@@ -161,11 +167,12 @@ export async function activeLocation(
     "SELECT id,name,active FROM stock_locations WHERE id=?",
     [locationId]
   );
-  if (!location || !location.active)
+  if (!location || !location.active) {
     throw new StockError(
       "SOURCE_CONFLICT",
       "Choisissez un emplacement de stockage actif."
     );
+  }
   return location;
 }
 
@@ -179,11 +186,12 @@ async function updateBucket(
     "UPDATE stock_balances SET quantity=?,updated_at=? WHERE id=? AND quantity=?",
     [stockBalance(bucket.quantity + delta), now, bucket.id, bucket.quantity]
   )) as { rowsAffected?: number };
-  if (result?.rowsAffected !== 1)
+  if (result?.rowsAffected !== 1) {
     throw new StockError(
       "SOURCE_CONFLICT",
       "Le stock du lot vient de changer. Actualisez avant de valider."
     );
+  }
 }
 
 export async function recordAllocation(
@@ -273,11 +281,12 @@ export async function updateProductBalance(
     "UPDATE products SET quantity=?,updated_at=? WHERE id=? AND quantity=?",
     [after, now, product.id, product.quantity]
   )) as { rowsAffected?: number };
-  if (result?.rowsAffected !== 1)
+  if (result?.rowsAffected !== 1) {
     throw new StockError(
       "SOURCE_CONFLICT",
       "Le stock vient de changer. Actualisez avant de valider."
     );
+  }
 }
 
 export async function createStockBucket(
@@ -343,12 +352,15 @@ export async function previousInventoryOperation(
     "SELECT o.*,m.quantity_after FROM stock_inventory_operations o JOIN stock_movements m ON m.id=o.movement_id WHERE o.id=?",
     [operationId]
   );
-  if (!previous) return null;
-  if (previous.kind !== kind || previous.fingerprint !== fingerprint)
+  if (!previous) {
+    return null;
+  }
+  if (previous.kind !== kind || previous.fingerprint !== fingerprint) {
     throw new StockError(
       "SOURCE_CONFLICT",
       "Cette opération a déjà été enregistrée avec d’autres informations."
     );
+  }
   return {
     movementId: previous.movement_id,
     quantityAfter: previous.quantity_after,
@@ -397,26 +409,29 @@ export async function receiveStockInDatabase(
   id: () => string
 ): Promise<StockOperationResult> {
   const quantity = stockQuantity(input.quantity);
-  if (!product.stock_tracked)
+  if (!product.stock_tracked) {
     throw new StockError(
       "PRODUCT_MISSING",
       "Une prestation ne reçoit pas de stock physique."
     );
+  }
   await assertInventoryBalance(db, product);
   const receivedAt = stockTimestamp(input.receivedAt);
-  if (Date.parse(receivedAt) > Date.parse(stockTimestamp(input.now)))
+  if (Date.parse(receivedAt) > Date.parse(stockTimestamp(input.now))) {
     throw new StockError(
       "SOURCE_CONFLICT",
       "La réception ne peut pas être datée dans le futur."
     );
+  }
   if (
     input.unitCostAmount !== undefined &&
     (!Number.isSafeInteger(input.unitCostAmount) || input.unitCostAmount < 0)
-  )
+  ) {
     throw new StockError(
       "SOURCE_CONFLICT",
       "Indiquez un coût unitaire positif ou nul."
     );
+  }
   let lot: { lot_number: string; expiry_date: string | null } | undefined;
   if (input.lotId) {
     [lot] = await db.select<
@@ -425,11 +440,12 @@ export async function receiveStockInDatabase(
       "SELECT lot_number,expiry_date FROM product_lots WHERE id=? AND product_id=?",
       [input.lotId, product.id]
     );
-    if (!lot)
+    if (!lot) {
       throw new StockError(
         "PRODUCT_MISSING",
         "Ce lot n’appartient pas au produit sélectionné."
       );
+    }
   }
   const after = stockQuantity(stockBalance(product.quantity + quantity), true);
   const movementId = id();
@@ -479,7 +495,9 @@ export async function countUnassignedStockInDatabase(
   const counted = stockQuantity(quantity, true);
   const buckets = await assertInventoryBalance(db, product);
   const delta = stockBalance(counted - product.quantity);
-  if (!delta) return null;
+  if (!delta) {
+    return null;
+  }
   if (
     !product.stock_tracked ||
     buckets.some(
@@ -521,7 +539,9 @@ export async function countUnassignedStockInDatabase(
     const decrease = stockBalance(
       Math.min(bucket.quantity, Math.max(0, total - counted))
     );
-    if (!decrease) continue;
+    if (!decrease) {
+      continue;
+    }
     await updateBucket(db, bucket, -decrease, now);
     await recordAllocation(db, movementId, bucket, -decrease, id);
     total = stockBalance(total - decrease);
@@ -554,24 +574,27 @@ export async function registerLotInDatabase(
   id: () => string,
   now: string
 ) {
-  if (!input.id.trim() || !input.authorId.trim())
+  if (!input.id.trim() || !input.authorId.trim()) {
     throw new StockError(
       "SOURCE_CONFLICT",
       "Un utilisateur connecté est requis pour enregistrer un lot."
     );
+  }
   const lotNumber = input.lotNumber.trim();
-  if (!lotNumber || lotNumber.length > 120)
+  if (!lotNumber || lotNumber.length > 120) {
     throw new StockError(
       "SOURCE_CONFLICT",
       "Indiquez un numéro de lot de 1 à 120 caractères."
     );
+  }
   const expiry = stockDate(input.expiryDate);
   const quantity = stockQuantity(input.quantity);
-  if (input.mode === "receive" && !input.receivedAt)
+  if (input.mode === "receive" && !input.receivedAt) {
     throw new StockError(
       "SOURCE_CONFLICT",
       "Choisissez la date de réception du lot."
     );
+  }
   const receivedAt =
     input.mode === "receive" ? stockTimestamp(input.receivedAt!) : null;
   const fingerprint = JSON.stringify({
@@ -590,29 +613,34 @@ export async function registerLotInDatabase(
     "lot-" + input.mode,
     fingerprint
   );
-  if (previous) return previous;
-  if (!["receive", "identify"].includes(input.mode))
+  if (previous) {
+    return previous;
+  }
+  if (!["receive", "identify"].includes(input.mode)) {
     throw new StockError(
       "SOURCE_CONFLICT",
       "Choisissez une réception ou l’identification du stock existant."
     );
+  }
   const product = await stockProductInDatabase(db, input.productId);
-  if (!product.stock_tracked)
+  if (!product.stock_tracked) {
     throw new StockError(
       "PRODUCT_MISSING",
       "Une prestation ne possède pas de lots physiques."
     );
+  }
   const buckets = await assertInventoryBalance(db, product);
   await activeLocation(db, input.locationId);
   let [lot] = await db.select<{ id: string; expiry_date: string | null }[]>(
     "SELECT id,expiry_date FROM product_lots WHERE product_id=? AND lot_number=?",
     [product.id, lotNumber]
   );
-  if (lot && lot.expiry_date !== expiry)
+  if (lot && lot.expiry_date !== expiry) {
     throw new StockError(
       "SOURCE_CONFLICT",
       "Ce numéro de lot a déjà une autre péremption. Vérifiez le numéro et la date."
     );
+  }
   if (!lot) {
     lot = { id: id(), expiry_date: expiry };
     await db.execute(
@@ -654,11 +682,12 @@ export async function registerLotInDatabase(
     const available = stockBalance(
       unassigned.reduce((sum, row) => sum + row.quantity, 0)
     );
-    if (available < quantity || product.quantity < quantity)
+    if (available < quantity || product.quantity < quantity) {
       throw new StockError(
         "INSUFFICIENT_STOCK",
         "Le stock sans lot de cet emplacement est insuffisant. Choisissez une réception pour ajouter du stock."
       );
+    }
     const movementId = id();
     await recordInventoryMovement(db, product, {
       movementId,
@@ -673,7 +702,9 @@ export async function registerLotInDatabase(
     let remaining = quantity;
     for (const source of unassigned) {
       const part = stockBalance(Math.min(remaining, source.quantity));
-      if (!part) break;
+      if (!part) {
+        break;
+      }
       await updateBucket(db, source, -part, now);
       await recordAllocation(db, movementId, source, -part, id);
       const target = await createStockBucket(
@@ -736,11 +767,12 @@ export async function countStockBucketInDatabase(
   now: string
 ) {
   const quantity = stockQuantity(input.quantity, true);
-  if (!input.id.trim() || !input.authorId.trim() || !input.reason.trim())
+  if (!input.id.trim() || !input.authorId.trim() || !input.reason.trim()) {
     throw new StockError(
       "SOURCE_CONFLICT",
       "Un motif et un utilisateur sont requis pour corriger un lot."
     );
+  }
   const fingerprint = JSON.stringify({
     balanceId: input.balanceId,
     quantity,
@@ -752,12 +784,16 @@ export async function countStockBucketInDatabase(
     "count",
     fingerprint
   );
-  if (previous) return previous;
+  if (previous) {
+    return previous;
+  }
   const [row] = await db.select<{ product_id: string }[]>(
     "SELECT product_id FROM stock_balances WHERE id=?",
     [input.balanceId]
   );
-  if (!row) throw new StockError("PRODUCT_MISSING", "Ce stock n’existe plus.");
+  if (!row) {
+    throw new StockError("PRODUCT_MISSING", "Ce stock n’existe plus.");
+  }
   const product = await stockProductInDatabase(db, row.product_id);
   const buckets = await assertInventoryBalance(db, product);
   const bucket = buckets.find((item) => item.id === input.balanceId)!;

@@ -125,7 +125,9 @@ function PatientPicker({
     <Popover
       onOpenChange={(next) => {
         setOpen(next);
-        if (!next) setQuery("");
+        if (!next) {
+          setQuery("");
+        }
       }}
       open={open}
     >
@@ -286,7 +288,9 @@ const NotesPro: React.FC = () => {
   useEffect(() => {
     const requestedId = requestedNoteIdRef.current;
     const note = notes.find((entry) => entry.id === requestedId);
-    if (!note) return;
+    if (!note) {
+      return;
+    }
     requestedNoteIdRef.current = null;
     setSelectedNoteId(note.id);
     setTitle(note.title);
@@ -344,7 +348,9 @@ const NotesPro: React.FC = () => {
       saveTimeoutRef.current = null;
     }
     const pending = pendingSaveRef.current;
-    if (!pending) return;
+    if (!pending) {
+      return;
+    }
     pendingSaveRef.current = null;
     let saved = false;
     try {
@@ -357,12 +363,16 @@ const NotesPro: React.FC = () => {
     }
     if (!saved) {
       // Keep the edit: the next keystroke or « Réessayer » writes it again.
-      if (!pendingSaveRef.current) pendingSaveRef.current = pending;
+      if (!pendingSaveRef.current) {
+        pendingSaveRef.current = pending;
+      }
       setIsSaving(false);
       setSaveFailed(true);
       return;
     }
-    if (pendingSaveRef.current) return; // a newer edit is already waiting
+    if (pendingSaveRef.current) {
+      return; // a newer edit is already waiting
+    }
     setIsSaving(false);
     setSaveFailed(false);
     setLastSaved(new Date());
@@ -414,8 +424,9 @@ const NotesPro: React.FC = () => {
     }
     const newNote = await createEmptyNote(currentUser.uid);
     if (newNote) {
-      if (patientFilter)
+      if (patientFilter) {
         await updateNote(newNote.id, { patientId: patientFilter });
+      }
       setSelectedNoteId(newNote.id);
       setTitle("");
       setContent("");
@@ -438,12 +449,16 @@ const NotesPro: React.FC = () => {
   };
 
   const handleDuplicateNote = async (note: Note) => {
-    if (!currentUser) return;
+    if (!currentUser) {
+      return;
+    }
     const sourceIsOpen = note.id === selectedNoteId;
     const copiedTitle = `${(sourceIsOpen ? title : note.title) || "Sans titre"} · copie`;
     const copiedContent = sourceIsOpen ? content : note.content;
     const created = await createEmptyNote(currentUser.uid);
-    if (!created) return;
+    if (!created) {
+      return;
+    }
     await updateNote(created.id, {
       title: copiedTitle,
       content: copiedContent,
@@ -472,32 +487,47 @@ const NotesPro: React.FC = () => {
 
   // The library's rows are notes or items: each action goes to the right table.
   const toggleEntryFavorite = async (entry: LibraryEntry) => {
-    if (entry.note) return toggleFavorite(entry.note);
-    if (entry.item)
+    if (entry.note) {
+      return toggleFavorite(entry.note);
+    }
+    if (entry.item) {
       await updateItem(entry.item.id, { isFavorite: !entry.item.isFavorite });
+    }
   };
   const toggleEntryPin = async (entry: LibraryEntry) => {
-    if (entry.note) return togglePin(entry.note);
-    if (entry.item)
+    if (entry.note) {
+      return togglePin(entry.note);
+    }
+    if (entry.item) {
       await updateItem(entry.item.id, { isPinned: !entry.item.isPinned });
+    }
   };
   const deleteEntry = async (entry: LibraryEntry) => {
-    if (entry.note) return handleDeleteNote(entry.note.id);
-    if (!entry.item) return;
+    if (entry.note) {
+      return handleDeleteNote(entry.note.id);
+    }
+    if (!entry.item) {
+      return;
+    }
     const what =
       entry.kind === "link"
         ? "ce lien"
         : entry.kind === "image"
           ? "cette image"
           : "ce fichier";
-    if (!window.confirm(`Supprimer ${what} ?`)) return;
-    if (!(await removeItem(entry.item.id)))
+    if (!window.confirm(`Supprimer ${what} ?`)) {
+      return;
+    }
+    if (!(await removeItem(entry.item.id))) {
       toast.error("La suppression n’a pas abouti.");
+    }
   };
 
   // Files and images are read here, one by one: a refused one is named and the others go on.
   const handleAddFiles = async (files: File[], wanted: "file" | "image") => {
-    if (!currentUser) return;
+    if (!currentUser) {
+      return;
+    }
     let added = 0;
     for (const file of files) {
       const verdict = judgeFile(file, wanted);
@@ -520,8 +550,11 @@ const NotesPro: React.FC = () => {
             isFavorite: false,
             isPinned: false,
           });
-          if (saved) added += 1;
-          else toast.error(`« ${file.name} » n’a pas pu être enregistré.`);
+          if (saved) {
+            added += 1;
+          } else {
+            toast.error(`« ${file.name} » n’a pas pu être enregistré.`);
+          }
         },
         {
           recover: () => {
@@ -530,16 +563,19 @@ const NotesPro: React.FC = () => {
         }
       );
     }
-    if (added)
+    if (added) {
       toast.success(
         added === 1
           ? "Ajouté à vos documents."
           : `${added} éléments ajoutés à vos documents.`
       );
+    }
   };
 
   const handleAddLink = async (url: string, linkName: string) => {
-    if (!currentUser) return;
+    if (!currentUser) {
+      return;
+    }
     const saved = await addItem({
       userId: currentUser.uid,
       kind: "link",
@@ -552,8 +588,11 @@ const NotesPro: React.FC = () => {
       isFavorite: false,
       isPinned: false,
     });
-    if (saved) toast.success("Lien ajouté.");
-    else toast.error("Le lien n’a pas pu être enregistré.");
+    if (saved) {
+      toast.success("Lien ajouté.");
+    } else {
+      toast.error("Le lien n’a pas pu être enregistré.");
+    }
   };
 
   const handleDownload = (entry: LibraryEntry) => {
@@ -571,8 +610,9 @@ const NotesPro: React.FC = () => {
   };
 
   const handleOpenLink = async (url: string) => {
-    if (!(await openExternalLink(url)))
+    if (!(await openExternalLink(url))) {
       toast.error("Ce lien n’a pas pu être ouvert.");
+    }
   };
   const handleCopyLink = async (url: string) => {
     try {
@@ -587,7 +627,9 @@ const NotesPro: React.FC = () => {
   const handleDeleteNote = async (id: string, e?: React.MouseEvent) => {
     e?.stopPropagation();
     if (window.confirm("Supprimer cette note ?")) {
-      if (pendingSaveRef.current?.id === id) pendingSaveRef.current = null;
+      if (pendingSaveRef.current?.id === id) {
+        pendingSaveRef.current = null;
+      }
       await removeNote(id);
       if (selectedNoteId === id) {
         setSelectedNoteId(null);
@@ -769,8 +811,9 @@ const NotesPro: React.FC = () => {
                         void updateNote(activeNote.id, {
                           patientId: patientId || null,
                         });
-                        if (patientFilter && patientFilter !== patientId)
+                        if (patientFilter && patientFilter !== patientId) {
                           setPatientFilter(patientId);
+                        }
                       }}
                       patients={patients}
                       value={activeNote.patientId ?? ""}

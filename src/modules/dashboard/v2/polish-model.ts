@@ -64,12 +64,15 @@ export function conflictingVisits(appointments: Appointment[]) {
   const live = appointments.filter(
     (a) => !["cancelled", "no_show"].includes(a.status)
   );
-  for (let i = 0; i < live.length; i++)
+  for (let i = 0; i < live.length; i++) {
     for (let j = i + 1; j < live.length; j++) {
       const a = live[i],
         b = live[j];
-      if (!((a.vetId && a.vetId === b.vetId) || (a.room && a.room === b.room)))
+      if (
+        !((a.vetId && a.vetId === b.vetId) || (a.room && a.room === b.room))
+      ) {
         continue;
+      }
       const sa = parseDashboardDate(a.startTime),
         ea = parseDashboardDate(a.endTime);
       const sb = parseDashboardDate(b.startTime),
@@ -79,5 +82,6 @@ export function conflictingVisits(appointments: Appointment[]) {
         conflicts.add(b.id);
       }
     }
+  }
   return conflicts;
 }

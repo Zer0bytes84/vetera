@@ -17,7 +17,9 @@ export function createStockSnapshotHook<T>(
   const listeners = new Set<() => void>();
   const notify = () => listeners.forEach((listener) => listener());
   async function refresh() {
-    if (!isTauriRuntime() || pending) return pending;
+    if (!isTauriRuntime() || pending) {
+      return pending;
+    }
     const request = generation;
     pending = (async () => {
       try {
@@ -33,7 +35,9 @@ export function createStockSnapshotHook<T>(
         }
       } finally {
         pending = null;
-        if (request !== generation && listeners.size) void refresh();
+        if (request !== generation && listeners.size) {
+          void refresh();
+        }
       }
     })();
     return pending;
@@ -51,17 +55,20 @@ export function createStockSnapshotHook<T>(
       tables.includes(
         (event as CustomEvent<{ tableName: string }>).detail?.tableName
       )
-    )
+    ) {
       invalidate();
+    }
   }
   function subscribe(listener: () => void) {
     listeners.add(listener);
-    if (listeners.size === 1 && typeof window !== "undefined")
+    if (listeners.size === 1 && typeof window !== "undefined") {
       window.addEventListener("sqlite-data-changed", changed);
+    }
     return () => {
       listeners.delete(listener);
-      if (!listeners.size && typeof window !== "undefined")
+      if (!listeners.size && typeof window !== "undefined") {
         window.removeEventListener("sqlite-data-changed", changed);
+      }
     };
   }
   return function useStockSnapshot() {
@@ -72,7 +79,9 @@ export function createStockSnapshotHook<T>(
     );
     useEffect(() => {
       void refresh();
-      if (!refreshAtMidnight || !isTauriRuntime()) return;
+      if (!refreshAtMidnight || !isTauriRuntime()) {
+        return;
+      }
       let timeout: ReturnType<typeof setTimeout>;
       const schedule = () => {
         const now = new Date();

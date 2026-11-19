@@ -25,11 +25,17 @@ const dayKey = (date: Date) =>
   `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 
 export function reminderBucket(date: Date | null, now: Date): ReminderBucket {
-  if (!date) return "undated";
+  if (!date) {
+    return "undated";
+  }
   const key = dayKey(date);
   const today = dayKey(now);
-  if (key < today) return "overdue";
-  if (key === today) return "today";
+  if (key < today) {
+    return "overdue";
+  }
+  if (key === today) {
+    return "today";
+  }
   const tomorrow = new Date(now);
   tomorrow.setDate(tomorrow.getDate() + 1);
   return key === dayKey(tomorrow) ? "tomorrow" : "later";

@@ -74,8 +74,9 @@ export function SearchableSelect({
       <div
         data-no-drag
         onContextMenu={(event) => {
-          if (!(event.target instanceof HTMLInputElement))
+          if (!(event.target instanceof HTMLInputElement)) {
             event.preventDefault();
+          }
         }}
       >
         <ComboboxInput

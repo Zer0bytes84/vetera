@@ -22,10 +22,11 @@ export async function stockProductInDatabase(
     "SELECT id,name,unit,quantity,stock_tracked,archived_at,sale_price_amount,expiry_date FROM products WHERE id=?",
     [productId]
   );
-  if (!product || product.archived_at)
+  if (!product || product.archived_at) {
     throw new StockError(
       "PRODUCT_MISSING",
       "Le produit n’est plus disponible. Choisissez un produit actif avant de valider."
     );
+  }
   return product;
 }

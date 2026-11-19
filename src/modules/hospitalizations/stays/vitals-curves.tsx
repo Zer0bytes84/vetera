@@ -31,7 +31,9 @@ export function VitalsCurves({
             time: new Date(vital.recorded_at).getTime(),
             value: vital[metric.key],
           }));
-        if (!data.length) return null;
+        if (!data.length) {
+          return null;
+        }
         // The species resting reference, shaded behind the curve when one is recorded.
         const range = referenceRange(species, metric.key);
         return (

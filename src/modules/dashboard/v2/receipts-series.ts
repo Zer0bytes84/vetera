@@ -52,7 +52,9 @@ export function buildReceiptsSeries(
   const to = parseISO(
     range.to || dates.at(-1) || format(new Date(), "yyyy-MM-dd")
   );
-  if (!isValid(from) || !isValid(to) || from > to) return [];
+  if (!isValid(from) || !isValid(to) || from > to) {
+    return [];
+  }
   const days = differenceInCalendarDays(to, from) + 1;
   const monthly = days > 92;
   const monthStep = Math.max(

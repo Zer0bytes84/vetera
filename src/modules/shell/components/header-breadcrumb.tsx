@@ -17,7 +17,9 @@ export function HeaderBreadcrumb({
   onNavigate: (view: View) => void;
 }) {
   const crumb = usePublishedCrumb();
-  if (greetingName) return <HeaderGreeting name={greetingName} />;
+  if (greetingName) {
+    return <HeaderGreeting name={greetingName} />;
+  }
   const title = crumb?.title ?? fallbackTitle;
   const note = crumb?.note;
   const parent = crumb?.parent;
@@ -84,10 +86,11 @@ let lastGreeting = -1;
 function HeaderGreeting({ name }: { name: string }) {
   const [index] = useState(() => {
     let next = Math.floor(Math.random() * GREETINGS.length);
-    if (next === lastGreeting)
+    if (next === lastGreeting) {
       next =
         (next + 1 + Math.floor(Math.random() * (GREETINGS.length - 1))) %
         GREETINGS.length;
+    }
     return next;
   });
   useEffect(() => {

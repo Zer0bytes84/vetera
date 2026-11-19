@@ -43,7 +43,9 @@ export const MAX_CUSTOM_DAYS = 731;
 
 function parseDay(value: string): Date | null {
   const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
-  if (!match) return null;
+  if (!match) {
+    return null;
+  }
   const date = new Date(
     Number(match[1]),
     Number(match[2]) - 1,
@@ -61,10 +63,14 @@ function parseDay(value: string): Date | null {
 export function customAnalyticsRange(
   custom: CustomRange | null | undefined
 ): AnalyticsRange | null {
-  if (!custom) return null;
+  if (!custom) {
+    return null;
+  }
   const a = parseDay(custom.from);
   const b = parseDay(custom.to);
-  if (!a || !b) return null;
+  if (!a || !b) {
+    return null;
+  }
   const [first, last] = a <= b ? [a, b] : [b, a];
   const days = Math.round((last.getTime() - first.getTime()) / 86_400_000) + 1;
   const from =
@@ -90,7 +96,9 @@ export function analyticsRanges(
   if (period === "custom") {
     const range = customAnalyticsRange(custom);
     // Nothing valid picked yet: the thirty days the page opens on.
-    if (!range) return analyticsRanges("30d", now);
+    if (!range) {
+      return analyticsRanges("30d", now);
+    }
     const days = calendarDays(range);
     return {
       current: range,
@@ -132,10 +140,14 @@ export function trendBuckets(
   period: DashboardPeriod,
   range: AnalyticsRange
 ): AnalyticsRange[] {
-  if (period === "today") return [];
+  if (period === "today") {
+    return [];
+  }
   if (period === "custom") {
     const days = calendarDays(range);
-    if (days <= 1) return [];
+    if (days <= 1) {
+      return [];
+    }
     // A bar a day up to a month, a week beyond.
     const step = days <= 31 ? 1 : 7;
     const buckets: AnalyticsRange[] = [];
@@ -193,7 +205,9 @@ export function trendBuckets(
 }
 
 export function metricChange(value: number, previous: number) {
-  if (previous === 0) return value === 0 ? 0 : null;
+  if (previous === 0) {
+    return value === 0 ? 0 : null;
+  }
   return ((value - previous) / Math.abs(previous)) * 100;
 }
 

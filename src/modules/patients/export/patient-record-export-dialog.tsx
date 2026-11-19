@@ -117,7 +117,9 @@ export function PatientRecordExportDialog({
   );
 
   const close = () => {
-    if (saving) return;
+    if (saving) {
+      return;
+    }
     sequence.current += 1;
     generation.current?.abort();
     print.current?.abort();
@@ -145,7 +147,9 @@ export function PatientRecordExportDialog({
         },
       }
     );
-    if (!options) return;
+    if (!options) {
+      return;
+    }
     const controller = new AbortController();
     generation.current?.abort();
     generation.current = controller;
@@ -160,7 +164,9 @@ export function PatientRecordExportDialog({
             loadPatientRecordService(),
             loadPatientRecordPdf(),
           ]);
-        if (controller.signal.aborted) return;
+        if (controller.signal.aborted) {
+          return;
+        }
         setProgress({
           stage: "preparing",
           current: 0,
@@ -173,17 +179,23 @@ export function PatientRecordExportDialog({
         const result = await buildPatientRecordPdf(snapshot, {
           signal: controller.signal,
           onProgress: (value) => {
-            if (token === sequence.current) setProgress(value);
+            if (token === sequence.current) {
+              setProgress(value);
+            }
           },
         });
-        if (token !== sequence.current || controller.signal.aborted) return;
+        if (token !== sequence.current || controller.signal.aborted) {
+          return;
+        }
         setArtifact(result);
         setPage(1);
         setPhase("preview");
       },
       {
         recover: (cause) => {
-          if (token !== sequence.current || controller.signal.aborted) return;
+          if (token !== sequence.current || controller.signal.aborted) {
+            return;
+          }
           setError(
             userMessage(
               cause,
@@ -202,20 +214,23 @@ export function PatientRecordExportDialog({
     setPhase("options");
   };
   const save = async () => {
-    if (!artifact) return;
+    if (!artifact) {
+      return;
+    }
     setSaving(true);
     setError("");
     await guard(
       async () => {
         const { savePatientRecordPdf } = await loadPatientRecordSave();
         const result = await savePatientRecordPdf(artifact);
-        if (result)
+        if (result) {
           toast.success(
             result.downloaded
               ? "Téléchargement du dossier PDF lancé."
               : "Dossier PDF enregistré.",
             { description: result.path, duration: 8000 }
           );
+        }
       },
       {
         recover: (cause) => {
@@ -233,7 +248,9 @@ export function PatientRecordExportDialog({
     );
   };
   const printPdf = async () => {
-    if (!artifact) return;
+    if (!artifact) {
+      return;
+    }
     const controller = new AbortController();
     print.current = controller;
     setPrinting(true);
@@ -245,16 +262,19 @@ export function PatientRecordExportDialog({
       },
       {
         recover: (cause) => {
-          if (!controller.signal.aborted)
+          if (!controller.signal.aborted) {
             setError(
               userMessage(
                 cause,
                 "L’impression du dossier n’a pas pu être préparée. Réessayez ou enregistrez le PDF."
               )
             );
+          }
         },
         cleanup: () => {
-          if (!controller.signal.aborted) setPrinting(false);
+          if (!controller.signal.aborted) {
+            setPrinting(false);
+          }
         },
       }
     );
@@ -265,7 +285,9 @@ export function PatientRecordExportDialog({
     <Dialog
       open
       onOpenChange={(open) => {
-        if (!open) close();
+        if (!open) {
+          close();
+        }
       }}
     >
       <FormDialogContent

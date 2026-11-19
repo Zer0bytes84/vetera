@@ -20,7 +20,9 @@ export async function savePdf(
     defaultPath: filename,
     filters: [{ name: "Document PDF", extensions: ["pdf"] }],
   });
-  if (!path) return false;
+  if (!path) {
+    return false;
+  }
   const { writeFile } = await import("@tauri-apps/plugin-fs");
   await writeFile(path, new Uint8Array(doc.output("arraybuffer")));
   return true;

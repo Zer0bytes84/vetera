@@ -116,9 +116,15 @@ export function sortPatientRecords<T extends SortableRecord>(
     (left: T, right: T) => {
       const a = pick(left);
       const b = pick(right);
-      if (a === null && b === null) return byName(left, right);
-      if (a === null) return 1;
-      if (b === null) return -1;
+      if (a === null && b === null) {
+        return byName(left, right);
+      }
+      if (a === null) {
+        return 1;
+      }
+      if (b === null) {
+        return -1;
+      }
       return (a - b) * direction || byName(left, right);
     };
   const compare = {

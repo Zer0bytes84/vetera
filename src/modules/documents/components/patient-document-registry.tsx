@@ -71,8 +71,11 @@ export function PatientDocumentRegistry({
   );
   const openImporter = () => {
     if (!importing) {
-      if (onUpload) onUpload();
-      else picker.current?.click();
+      if (onUpload) {
+        onUpload();
+      } else {
+        picker.current?.click();
+      }
     }
   };
   useImperativeHandle(uploadControl, () => ({ open: openImporter }));
@@ -80,7 +83,9 @@ export function PatientDocumentRegistry({
   const changeFilter = (key: keyof DocumentFilters, value: string) =>
     setFilters((previous) => ({ ...previous, [key]: value }));
   const importFile = async (file: File) => {
-    if (!currentUser || importing) return;
+    if (!currentUser || importing) {
+      return;
+    }
     setImporting(true);
     setProgress("Préparation du fichier…");
     await guard(
@@ -97,10 +102,11 @@ export function PatientDocumentRegistry({
         );
         await registry.refresh();
         toast.success("La pièce a été ajoutée au dossier du patient.");
-        if (attachment.textState === "scan")
+        if (attachment.textState === "scan") {
           toast.info(
             "PDF numérisé : l’assistant ne dispose pas de texte extractible. La pièce reste consultable."
           );
+        }
         setPreviewId(document.id);
       },
       {
@@ -156,7 +162,9 @@ export function PatientDocumentRegistry({
           onChange={(event) => {
             const file = event.target.files?.[0];
             event.target.value = "";
-            if (file) void importFile(file);
+            if (file) {
+              void importFile(file);
+            }
           }}
         />
       </header>
@@ -315,7 +323,9 @@ export function PatientDocumentRegistry({
       <Dialog
         open={reader !== null}
         onOpenChange={(open) => {
-          if (!open) setReader(null);
+          if (!open) {
+            setReader(null);
+          }
         }}
       >
         <DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-4xl">

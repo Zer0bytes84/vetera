@@ -447,7 +447,9 @@ export function useAppointmentsRepository() {
           status: "paid",
           date: new Date().toISOString(),
         } as Omit<Transaction, "id" | "createdAt" | "updatedAt">);
-        if (!payment) throw new Error("L’encaissement n’a pas été enregistré.");
+        if (!payment) {
+          throw new Error("L’encaissement n’a pas été enregistré.");
+        }
       }
     }
 
@@ -721,7 +723,9 @@ export function useProductsRepository() {
   const products = useMemo(
     () =>
       productsStore.data.map((product) => {
-        if (!isTauriRuntime()) return product;
+        if (!isTauriRuntime()) {
+          return product;
+        }
         const summary = summaries.get(product.id);
         return {
           ...product,
@@ -867,7 +871,9 @@ export function useProductsRepository() {
       throw new Error("Un motif est requis pour corriger le stock.");
     }
     const product = productsStore.data.find((entry) => entry.id === productId);
-    if (!product) throw new Error("Produit introuvable.");
+    if (!product) {
+      throw new Error("Produit introuvable.");
+    }
     const delta = Number(quantity) - Number(product.quantity);
 
     if (isTauriRuntime()) {
@@ -884,7 +890,9 @@ export function useProductsRepository() {
       return;
     }
 
-    if (delta === 0) return;
+    if (delta === 0) {
+      return;
+    }
     await productsStore.update(product.id, { quantity });
     await movementsStore.add({
       productId: product.id,
@@ -904,8 +912,9 @@ export function useProductsRepository() {
         ? saveProduct(undefined, draft)
         : productsStore.add(draft),
     update: async (productId: string, draft: Partial<Product>) => {
-      if (!isTauriRuntime() || !(await inventoryService.supported()))
+      if (!isTauriRuntime() || !(await inventoryService.supported())) {
         return productsStore.update(productId, draft);
+      }
       try {
         await saveProduct(productId, draft);
         return true;

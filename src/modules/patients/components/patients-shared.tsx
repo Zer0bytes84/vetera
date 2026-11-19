@@ -263,10 +263,18 @@ export { getSpeciesGlyph as getSpeciesIcon } from "@/lib/species-icons";
 export function getSpeciesComponent(species?: string) {
   const normalized = species?.toLowerCase() ?? "";
 
-  if (normalized.includes("chien")) return Dog;
-  if (normalized.includes("chat")) return Cat;
-  if (normalized.includes("lapin")) return Rabbit;
-  if (normalized.includes("oiseau")) return Bird;
+  if (normalized.includes("chien")) {
+    return Dog;
+  }
+  if (normalized.includes("chat")) {
+    return Cat;
+  }
+  if (normalized.includes("lapin")) {
+    return Rabbit;
+  }
+  if (normalized.includes("oiseau")) {
+    return Bird;
+  }
   return PawPrint;
 }
 
@@ -276,10 +284,18 @@ export function SpeciesComponentIcon({
   ...props
 }: { species?: string } & React.ComponentProps<typeof Dog>) {
   const normalized = species?.toLowerCase() ?? "";
-  if (normalized.includes("chien")) return <Dog {...props} />;
-  if (normalized.includes("chat")) return <Cat {...props} />;
-  if (normalized.includes("lapin")) return <Rabbit {...props} />;
-  if (normalized.includes("oiseau")) return <Bird {...props} />;
+  if (normalized.includes("chien")) {
+    return <Dog {...props} />;
+  }
+  if (normalized.includes("chat")) {
+    return <Cat {...props} />;
+  }
+  if (normalized.includes("lapin")) {
+    return <Rabbit {...props} />;
+  }
+  if (normalized.includes("oiseau")) {
+    return <Bird {...props} />;
+  }
   return <PawPrint {...props} />;
 }
 
@@ -1644,7 +1660,9 @@ export function PatientCreateDialog({
     null
   );
   if (selectedOwnerId === "new") {
-    if (lastLinkedOwnerId !== null) setLastLinkedOwnerId(null);
+    if (lastLinkedOwnerId !== null) {
+      setLastLinkedOwnerId(null);
+    }
   } else if (lastLinkedOwnerId !== selectedOwnerId) {
     const linkedOwner = owners.find((entry) => entry.id === selectedOwnerId);
     if (linkedOwner) {

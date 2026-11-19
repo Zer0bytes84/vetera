@@ -66,11 +66,15 @@ function validDay(value: string): boolean {
   }
 }
 function validatePeriod(period: PatientRecordOptions["period"]): void {
-  if (period === null) return;
-  if (!period || !validDay(period.from) || !validDay(period.to))
+  if (period === null) {
+    return;
+  }
+  if (!period || !validDay(period.from) || !validDay(period.to)) {
     throw new Error("Indiquez deux dates civiles valides pour la période.");
-  if (period.from > period.to)
+  }
+  if (period.from > period.to) {
     throw new Error("La date de début doit précéder ou égaler la date de fin.");
+  }
 }
 
 /** Validate before any storage reads, and detach options from the dialog state. */
@@ -89,11 +93,16 @@ export function validatePatientRecordOptions(
     !options.sections ||
     keys.some((key) => typeof options.sections[key] !== "boolean") ||
     typeof options.includeAttachments !== "boolean"
-  )
+  ) {
     throw new Error("Les options du dossier patient sont invalides.");
+  }
   validatePeriod(options.period);
-  if (!options.includeAttachments && !keys.some((key) => options.sections[key]))
+  if (
+    !options.includeAttachments &&
+    !keys.some((key) => options.sections[key])
+  ) {
     throw new Error("Choisissez au moins une section ou les annexes.");
+  }
   return {
     period: options.period ? { ...options.period } : null,
     sections: { ...options.sections },
@@ -106,7 +115,9 @@ export function patientRecordFilename(
   exportDay: string,
   period: PatientRecordOptions["period"]
 ): string {
-  if (!validDay(exportDay)) throw new Error("La date d’export est invalide.");
+  if (!validDay(exportDay)) {
+    throw new Error("La date d’export est invalide.");
+  }
   validatePeriod(period);
   const name =
     patientName
@@ -157,19 +168,26 @@ export function patientRecordPlainText(html: string): string {
     .replace(
       /<\/?([a-z][a-z\d:-]*)(?:\s+(?:"[^"]*"|'[^']*'|[^'">])*)?\s*\/?>/gi,
       (tag, name: string) => {
-        if (/^(br|hr)$/i.test(name)) return "\n";
+        if (/^(br|hr)$/i.test(name)) {
+          return "\n";
+        }
         if (
           /^(p|div|li|ul|ol|h[1-6]|blockquote|pre|tr|table|section|article)$/i.test(
             name
           )
-        )
+        ) {
           return "\n";
-        if (/^(td|th)$/i.test(name) && tag.startsWith("</")) return "\t";
+        }
+        if (/^(td|th)$/i.test(name) && tag.startsWith("</")) {
+          return "\t";
+        }
         return "";
       }
     )
     .replace(/&(#x[\da-f]+|#\d+|[a-z][a-z\d]+);/gi, (entity, name: string) => {
-      if (!name.startsWith("#")) return entities[name] ?? entity;
+      if (!name.startsWith("#")) {
+        return entities[name] ?? entity;
+      }
       const code =
         name[1].toLowerCase() === "x"
           ? Number.parseInt(name.slice(2), 16)
@@ -194,14 +212,16 @@ const numberText = (value: number | undefined) =>
     : "";
 function day(value: string): string {
   const result = documentLocalDay(value);
-  if (!validDay(result))
+  if (!validDay(result)) {
     throw new Error("Une date enregistrée dans le dossier est invalide.");
+  }
   return result;
 }
 function dateText(value: string, civilPrefix = false): string {
   const date = civilPrefix ? value.slice(0, 10) : day(value);
-  if (!validDay(date))
+  if (!validDay(date)) {
     throw new Error("Une date enregistrée dans le dossier est invalide.");
+  }
   const [year, month, dateOfMonth] = date.split("-");
   return `${dateOfMonth}/${month}/${year}`;
 }
@@ -254,10 +274,11 @@ function sourceBlock(source: PatientRecordSource): PatientRecordBlock {
     !source.dataUrl.startsWith(`${prefix};`) ||
     !/;base64$/i.test(source.dataUrl.slice(prefix.length, comma)) ||
     !/^[a-z\d+/=\r\n]+$/i.test(source.dataUrl.slice(comma + 1))
-  )
+  ) {
     throw new Error(
       `L’original de la pièce « ${source.fileName || source.title} » est absent ou illisible.`
     );
+  }
   return { kind: "source", source };
 }
 
@@ -284,10 +305,12 @@ export function assemblePatientRecordSnapshot(
   generatedAt: string | Date
 ): PatientRecordSnapshot {
   const options = validatePatientRecordOptions(input);
-  if (!raw.patient?.id || !present(raw.patient.name))
+  if (!raw.patient?.id || !present(raw.patient.name)) {
     throw new Error("Ce patient n’existe plus ou son identité est incomplète.");
-  if (!present(raw.requestedBy))
+  }
+  if (!present(raw.requestedBy)) {
     throw new Error("Connectez-vous pour exporter le dossier patient.");
+  }
   const timestamp =
     generatedAt instanceof Date ? generatedAt.toISOString() : generatedAt;
   const exportDay = day(timestamp);
@@ -322,7 +345,9 @@ export function assemblePatientRecordSnapshot(
     title: string,
     blocks: PatientRecordBlock[]
   ) => {
-    if (blocks.length) sections.push({ id, title, blocks });
+    if (blocks.length) {
+      sections.push({ id, title, blocks });
+    }
   };
   const textBlock = (
     title: string,
@@ -338,7 +363,9 @@ export function assemblePatientRecordSnapshot(
   if (options.sections.identity) {
     const rows: string[][] = [];
     const field = (label: string, value: unknown) => {
-      if (present(value)) rows.push([label, value]);
+      if (present(value)) {
+        rows.push([label, value]);
+      }
     };
     field("Nom", patient.name);
     field("Référence", patient.reference);
@@ -348,12 +375,14 @@ export function assemblePatientRecordSnapshot(
       "Sexe",
       patient.sex === "F" ? "Femelle" : patient.sex === "M" ? "Mâle" : ""
     );
-    if (typeof patient.sterilized === "boolean")
+    if (typeof patient.sterilized === "boolean") {
       field("Stérilisation", patient.sterilized ? "Oui" : "Non");
+    }
     if (patient.dateOfBirth) {
       const born = patient.dateOfBirth.slice(0, 10);
-      if (!validDay(born))
+      if (!validDay(born)) {
         throw new Error("La date de naissance enregistrée est invalide.");
+      }
       field("Naissance", dateText(born));
       if (born <= exportDay) {
         const [year, month, date] = born.split("-").map(Number);
@@ -380,11 +409,12 @@ export function assemblePatientRecordSnapshot(
       ),
       (entry) => entry.measuredAt
     )[0];
-    if (weight)
+    if (weight) {
       field(
         "Dernier poids enregistré",
         `${numberText(weight.weightKg)} kg (${dateText(weight.measuredAt, true)})`
       );
+    }
     field("Identification électronique", patient.chipNumber);
     field("Tatouage", patient.tattooNumber);
     field("Statut", patientStatuses[patient.status]);
@@ -454,7 +484,7 @@ export function assemblePatientRecordSnapshot(
           ["A · Évaluation", soap.assessment],
           ["P · Plan", soap.plan],
         ].filter(([, value]) => present(value));
-        if (fields.length)
+        if (fields.length) {
           blocks.push(
             textBlock(
               isSoapReviewed(soap)
@@ -471,6 +501,7 @@ export function assemblePatientRecordSnapshot(
                 .join(" · ")
             )
           );
+        }
       }
       const prescriptions = (raw.prescriptions ?? []).filter(
         (prescription) =>
@@ -506,7 +537,7 @@ export function assemblePatientRecordSnapshot(
           .sort(
             (a, b) => a.sortOrder - b.sortOrder || a.id.localeCompare(b.id)
           );
-        if (items.length)
+        if (items.length) {
           blocks.push({
             kind: "table",
             columns: [
@@ -539,6 +570,7 @@ export function assemblePatientRecordSnapshot(
                 .join("\n"),
             ]),
           });
+        }
       }
     }
     append("consultations", "Consultations", blocks);
@@ -569,7 +601,9 @@ export function assemblePatientRecordSnapshot(
             entry.kind !== "import" &&
             entry.status === "finalise"
         );
-        if (!previous || visited.has(previous.id)) break;
+        if (!previous || visited.has(previous.id)) {
+          break;
+        }
         visited.add(previous.id);
         result += 1;
         current = previous;
@@ -589,7 +623,7 @@ export function assemblePatientRecordSnapshot(
         .filter(present)
         .join(" · ");
       blocks.push(textBlock(document.title, "", meta));
-      if (document.pdfDataUrl)
+      if (document.pdfDataUrl) {
         blocks.push(
           sourceBlock({
             id: `document:${document.id}`,
@@ -602,12 +636,13 @@ export function assemblePatientRecordSnapshot(
             origin: "generated",
           })
         );
-      else if (present(document.content))
+      } else if (present(document.content)) {
         blocks.push(textBlock("Texte finalisé conservé", document.content));
-      else
+      } else {
         throw new Error(
           `Le document « ${document.title || document.id} » ne contient aucun PDF ni texte finalisé exportable.`
         );
+      }
     }
     for (const note of newest(
       notes.filter(
@@ -625,15 +660,16 @@ export function assemblePatientRecordSnapshot(
             ? metadata.appointmentId
             : null
         )
-      )
+      ) {
         continue;
+      }
       // The reviewed text is its own historical source. Its patient and visit
       // remain checked, without requiring today's SOAP or imported file to
       // still exist or be selected in the export options.
       day(metadata.reviewedAt);
       const content = patientRecordPlainText(note.content);
       const reviewer = author(metadata.reviewedBy);
-      if (content)
+      if (content) {
         blocks.push(
           textBlock(
             note.title || "Document clinique historique",
@@ -648,6 +684,7 @@ export function assemblePatientRecordSnapshot(
               .join(" · ")
           )
         );
+      }
     }
     append("documents", "Documents générés", blocks);
   }
@@ -700,7 +737,7 @@ export function assemblePatientRecordSnapshot(
     const blocks: PatientRecordBlock[] = [];
     if (present(patient.generalNotes)) {
       const content = patientRecordPlainText(patient.generalNotes);
-      if (content)
+      if (content) {
         blocks.push(
           textBlock(
             "Notes générales",
@@ -708,6 +745,7 @@ export function assemblePatientRecordSnapshot(
             "Profil actuel, sans date enregistrée"
           )
         );
+      }
     }
     for (const note of newest(
       notes.filter(
@@ -717,7 +755,7 @@ export function assemblePatientRecordSnapshot(
       (entry) => entry.createdAt
     )) {
       const content = patientRecordPlainText(note.content);
-      if (content)
+      if (content) {
         blocks.push(
           textBlock(
             note.title || "Note libre",
@@ -727,6 +765,7 @@ export function assemblePatientRecordSnapshot(
               .join(" · ")
           )
         );
+      }
     }
     append("notes", "Notes libres", blocks);
   }
@@ -740,12 +779,14 @@ export function assemblePatientRecordSnapshot(
         attachment.patientId !== patient.id ||
         !sameConsultation(attachment.appointmentId) ||
         !inPeriod(attachment.createdAt, options.period)
-      )
+      ) {
         continue;
-      if (!supported(attachment.mimeType))
+      }
+      if (!supported(attachment.mimeType)) {
         throw new Error(
           `Le format de la pièce « ${attachment.fileName || attachment.id} » n’est pas pris en charge. Les annexes doivent être des PDF, JPG ou PNG.`
         );
+      }
       sources.push({
         id: `attachment:${attachment.id}`,
         patientId: patient.id,
@@ -764,13 +805,15 @@ export function assemblePatientRecordSnapshot(
         (document.consultationId &&
           !sameConsultation(document.consultationId)) ||
         !inPeriod(document.createdAt, options.period)
-      )
+      ) {
         continue;
+      }
       const attachment = document.attachment;
-      if (!attachment || !supported(attachment.mimeType))
+      if (!attachment || !supported(attachment.mimeType)) {
         throw new Error(
           `La pièce « ${document.title || document.id} » ne contient aucun original PDF, JPG ou PNG lisible.`
         );
+      }
       sources.push({
         id: `document:${document.id}`,
         patientId: patient.id,
@@ -783,14 +826,16 @@ export function assemblePatientRecordSnapshot(
       });
     }
     const blocks: PatientRecordBlock[] = [];
-    for (const source of newest(sources, (entry) => entry.createdAt || ""))
+    for (const source of newest(sources, (entry) => entry.createdAt || "")) {
       blocks.push(sourceBlock(source));
+    }
     append("attachments", "Annexes", blocks);
   }
-  if (!sections.length)
+  if (!sections.length) {
     throw new Error(
       "Aucune donnée exportable ne correspond au périmètre choisi."
     );
+  }
   return freeze({
     patientId: patient.id,
     patientName: patientDocumentName(patient),

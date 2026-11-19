@@ -90,7 +90,9 @@ function CareDayStrip({
   onOpen: (task: CareTask) => void;
 }) {
   const line = careTimeline(tasks, now);
-  if (!line) return null;
+  if (!line) {
+    return null;
+  }
   return (
     <div className="care-strip" aria-label="Frise des soins du jour">
       <div className="care-strip-track">
@@ -152,10 +154,14 @@ export default function CarePage({
       typeof sessionStorage === "undefined"
         ? null
         : sessionStorage.getItem(CARE_LIST_DAY_KEY);
-    if (!day) return null;
+    if (!day) {
+      return null;
+    }
     sessionStorage.removeItem(CARE_LIST_DAY_KEY);
     const match = day.match(/^(\d{4})-(\d{2})-(\d{2})$/);
-    if (!match) return null;
+    if (!match) {
+      return null;
+    }
     const date = new Date(
       Number(match[1]),
       Number(match[2]) - 1,
@@ -199,17 +205,23 @@ export default function CarePage({
   const patients = usePatientsRepository();
   const products = useProductsRepository();
   const stockWarning = (task: CareTask) => {
-    if (!task.produit_id || ["fait", "annule"].includes(task.statut))
+    if (!task.produit_id || ["fait", "annule"].includes(task.statut)) {
       return null;
+    }
     const product = products.data.find((p) => p.id === task.produit_id);
-    if (products.loading) return null;
-    if (!product || product.archivedAt)
+    if (products.loading) {
+      return null;
+    }
+    if (!product || product.archivedAt) {
       return "Ce produit n’est plus disponible. Vérifiez le stock avant de valider.";
+    }
     const requested = task.produit_quantite ?? 1;
-    if (product.stockTracked !== false && product.availabilityPending)
+    if (product.stockTracked !== false && product.availabilityPending) {
       return "Vérification du stock utilisable…";
-    if (product.inventoryInvalid)
+    }
+    if (product.inventoryInvalid) {
       return "Les données d’un lot sont à vérifier avant validation.";
+    }
     const available = product.availableQuantity ?? product.quantity;
     return product.stockTracked !== false && available < requested
       ? insufficientStockMessage(
@@ -230,7 +242,9 @@ export default function CarePage({
   >({});
   const hasUnsavedProductUsage = (task: CareTask) => {
     const draft = usageDrafts[task.id];
-    if (!draft) return false;
+    if (!draft) {
+      return false;
+    }
     const product = products.data.find((p) => p.id === draft.productId);
     const quantity =
       !draft.productId || product?.stockTracked === false
@@ -247,7 +261,9 @@ export default function CarePage({
       sessionStorage.removeItem("vetera:pending-care-form");
       setCreating(true);
     };
-    if (sessionStorage.getItem("vetera:pending-care-form") === "true") open();
+    if (sessionStorage.getItem("vetera:pending-care-form") === "true") {
+      open();
+    }
     window.addEventListener("vetera:plan-care", open);
     return () => window.removeEventListener("vetera:plan-care", open);
   }, []);
@@ -261,7 +277,9 @@ export default function CarePage({
   const [savedMessage, setSavedMessage] = useState<string | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
   useEffect(() => {
-    if (!initialTaskId) return;
+    if (!initialTaskId) {
+      return;
+    }
     let live = true;
     void careTasksService
       .get(initialTaskId)
@@ -272,7 +290,9 @@ export default function CarePage({
         }
       })
       .catch(() => {
-        if (live) setActionError("Le soin n’a pas pu être ouvert.");
+        if (live) {
+          setActionError("Le soin n’a pas pu être ouvert.");
+        }
       });
     return () => {
       live = false;
@@ -299,10 +319,14 @@ export default function CarePage({
       void careTasksService
         .history(selected)
         .then((rows) => {
-          if (live) setHistory(rows);
+          if (live) {
+            setHistory(rows);
+          }
         })
         .catch(() => {
-          if (live) setHistoryError(true);
+          if (live) {
+            setHistoryError(true);
+          }
         });
     }
     return () => {
@@ -310,7 +334,9 @@ export default function CarePage({
     };
   }, [selected, tasks]);
   async function transition(task: CareTask, status: CareStatus) {
-    if (busy) return;
+    if (busy) {
+      return;
+    }
     if (status === "fait" && hasUnsavedProductUsage(task)) {
       setActionError(
         "Enregistrez la modification du produit ou de la quantité avant de valider le soin."
@@ -347,7 +373,9 @@ export default function CarePage({
     );
   }
   async function undoCompletion(task: CareTask, correctionReason: string) {
-    if (busy) return;
+    if (busy) {
+      return;
+    }
     setBusy(task.id);
     setUndoError(null);
     await guard(
@@ -500,7 +528,9 @@ export default function CarePage({
       className="h-11 w-44"
       value={`${careDate.getFullYear()}-${String(careDate.getMonth() + 1).padStart(2, "0")}-${String(careDate.getDate()).padStart(2, "0")}`}
       onChange={(value) => {
-        if (value) setCareDate(new Date(`${value}T12:00:00`));
+        if (value) {
+          setCareDate(new Date(`${value}T12:00:00`));
+        }
       }}
     />
   );
@@ -817,7 +847,9 @@ export default function CarePage({
       <Sheet
         open={!!selected}
         onOpenChange={(open) => {
-          if (!open) setSelected(null);
+          if (!open) {
+            setSelected(null);
+          }
         }}
       >
         <SheetContent
@@ -934,7 +966,9 @@ export default function CarePage({
                       }
                       onClick={async () => {
                         const draft = usageDrafts[detail.id];
-                        if (!draft || busy) return;
+                        if (!draft || busy) {
+                          return;
+                        }
                         setBusy(detail.id);
                         setActionError(null);
                         await guard(

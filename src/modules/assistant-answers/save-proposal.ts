@@ -30,7 +30,9 @@ export async function saveProposal(
       status: "todo",
       isReminder: false,
     });
-    if (row) created += 1;
+    if (row) {
+      created += 1;
+    }
   }
   return { created, expected: pending.length };
 }

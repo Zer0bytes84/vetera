@@ -42,16 +42,18 @@ export async function generateText(
   } = {}
 ) {
   const models = await getLocalModels();
-  if (!models.generatorReady)
+  if (!models.generatorReady) {
     throw new Error(
       "La préparation assistée n’est pas installée. La saisie manuelle reste disponible."
     );
+  }
   const protectedInput = prepareModelDictation(text);
-  if (!protectedInput.text)
+  if (!protectedInput.text) {
     return [
       ...protectedInput.planSentences,
       ...Object.values(protectedInput.protectedSections ?? {}),
     ].join("\n\n");
+  }
   const signal = new AbortController().signal;
   const session = await LocalInferenceSession.create("soap", signal, (event) =>
     report({ progress: 0, text: event.message, status: "loading" })
@@ -69,10 +71,11 @@ export async function generateText(
       { type: "generate", ...urls, prompt, purpose: "document" },
       "generated"
     );
-    if (result.type !== "generated" || containsDosage(result.text))
+    if (result.type !== "generated" || containsDosage(result.text)) {
       throw new Error(
         "La proposition n’a pas passé la vérification. Votre texte est conservé."
       );
+    }
     report({ progress: 1, text: "Proposition à relire", status: "ready" });
     return [
       result.text,

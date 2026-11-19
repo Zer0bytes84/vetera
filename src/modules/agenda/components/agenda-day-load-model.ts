@@ -21,7 +21,9 @@ export function findNextAppointmentAfter(
   let best: Appointment | null = null;
   let bestTime = Number.POSITIVE_INFINITY;
   for (const appointment of appointments) {
-    if (CLOSED.includes(appointment.status)) continue;
+    if (CLOSED.includes(appointment.status)) {
+      continue;
+    }
     const time = new Date(appointment.startTime).getTime();
     if (Number.isFinite(time) && time >= from && time < bestTime) {
       best = appointment;

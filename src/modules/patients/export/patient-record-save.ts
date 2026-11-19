@@ -55,7 +55,9 @@ export async function savePatientRecordPdf(
       { name: labels.filterName ?? "Dossier PDF", extensions: ["pdf"] },
     ],
   });
-  if (!path) return null;
+  if (!path) {
+    return null;
+  }
   await requirePatientRecordSession(artifact);
   await writeFile(path, artifact.bytes);
   try {
@@ -84,8 +86,9 @@ export async function printPatientRecordPdf(
     "@/modules/documents/lib/managed-document-pdf"
   );
   const pages = await renderPdfPages(artifactDataUrl(artifact.bytes), signal);
-  if (signal?.aborted)
+  if (signal?.aborted) {
     throw new DOMException("Impression annulée", "AbortError");
+  }
   await requirePatientRecordSession(artifact);
   const frame = document.createElement("iframe");
   frame.title = `Impression du dossier de ${artifact.patientName}`;
@@ -112,7 +115,9 @@ export async function printPatientRecordPdf(
       abortLoading = () =>
         reject(new DOMException("Impression annulée", "AbortError"));
       signal?.addEventListener("abort", abortLoading, { once: true });
-      if (signal?.aborted) abortLoading();
+      if (signal?.aborted) {
+        abortLoading();
+      }
     });
     const loaded = Promise.all(
       pages.map(
@@ -135,10 +140,13 @@ export async function printPatientRecordPdf(
     try {
       await Promise.race([loaded, interrupted]);
     } finally {
-      if (abortLoading) signal?.removeEventListener("abort", abortLoading);
+      if (abortLoading) {
+        signal?.removeEventListener("abort", abortLoading);
+      }
     }
-    if (signal?.aborted)
+    if (signal?.aborted) {
       throw new DOMException("Impression annulée", "AbortError");
+    }
     view.addEventListener("afterprint", cleanup, { once: true });
     view.focus();
     view.print();

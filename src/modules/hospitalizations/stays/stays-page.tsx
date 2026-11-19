@@ -48,7 +48,7 @@ export default function StaysPage({
   const patientName = (id: string) =>
     patients.data.find((patient) => patient.id === id)?.name || "Patient";
   const selectedStay = stays.find((stay) => stay.id === selected);
-  if (selectedStay)
+  if (selectedStay) {
     return (
       <section className="hospitalisation-view p-4 lg:p-6">
         <StayDetail
@@ -63,6 +63,7 @@ export default function StaysPage({
         />
       </section>
     );
+  }
   return (
     <section className="hospitalisation-view space-y-6 p-4 lg:p-6">
       <PageHeader
@@ -239,7 +240,9 @@ export default function StaysPage({
       <Dialog
         open={form !== null}
         onOpenChange={(open) => {
-          if (!open) setForm(null);
+          if (!open) {
+            setForm(null);
+          }
         }}
       >
         <DialogContent className="sm:max-w-lg">

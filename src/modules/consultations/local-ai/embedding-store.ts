@@ -54,8 +54,12 @@ const forGeneration = (chunks: SearchChunk[], generation: SearchGeneration) =>
 /** The active index, falling back to the v1 passages while the v2 model is not installed. */
 const effectiveGeneration = (models: LocalModelStatus): SearchGeneration => {
   const active = getActiveSearchGeneration();
-  if (active === "passages2" && !models.embedding2Ready) return "passages";
-  if (active === "passages3" && !models.arcticReady) return "passages";
+  if (active === "passages2" && !models.embedding2Ready) {
+    return "passages";
+  }
+  if (active === "passages3" && !models.arcticReady) {
+    return "passages";
+  }
   return active;
 };
 export interface SearchDatabase {
@@ -107,9 +111,12 @@ export async function persistSearchChunks(
   vectors: number[][],
   generation: SearchGeneration = "sections"
 ) {
-  if (!chunks.length) return;
-  if (chunks.length !== vectors.length)
+  if (!chunks.length) {
+    return;
+  }
+  if (chunks.length !== vectors.length) {
     throw new Error("La préparation des extraits est incomplète.");
+  }
   const first = chunks[0];
   if (
     chunks.some(
@@ -120,24 +127,29 @@ export async function persistSearchChunks(
         chunk.sourceKey !== first.sourceKey ||
         chunk.documentType !== first.documentType
     )
-  )
+  ) {
     throw new Error(
       "Un lot doit appartenir à un seul document et un seul patient."
     );
+  }
   let actual: SearchChunk[];
   if (first.sourceType === "soap") {
     const rows = await db.select<ConsultationSoap[]>(
       `SELECT ${SOAP_COLUMNS} FROM consultation_soaps WHERE id=? AND patient_id=?`,
       [first.sourceId, first.patientId]
     );
-    if (!rows[0]) throw new Error("La note n’appartient pas à ce patient.");
+    if (!rows[0]) {
+      throw new Error("La note n’appartient pas à ce patient.");
+    }
     actual = forGeneration(soapSearchChunks(rows[0]), generation);
   } else {
     const rows = await db.select<Note[]>(
       `SELECT ${NOTE_COLUMNS} FROM notes WHERE id=? AND patient_id=?`,
       [first.sourceId, first.patientId]
     );
-    if (!rows[0]) throw new Error("Le document n’appartient pas à ce patient.");
+    if (!rows[0]) {
+      throw new Error("Le document n’appartient pas à ce patient.");
+    }
     actual = forGeneration(
       documentSearchChunks(
         rows[0],
@@ -147,10 +159,11 @@ export async function persistSearchChunks(
       generation
     );
   }
-  if (JSON.stringify(actual) !== JSON.stringify(chunks))
+  if (JSON.stringify(actual) !== JSON.stringify(chunks)) {
     throw new Error(
       "La source a changé. Relisez-la avant de préparer la recherche."
     );
+  }
   const blobs = vectors.map(embeddingToHex);
   // Bindings in the native SQL plugin do not support binary arrays. This literal
   // is constructed solely from validated float32 bytes, never user input.
@@ -235,10 +248,11 @@ export async function embedTexts(
     embeddinggemma2: models.embedding2Ready,
     arctic: models.arcticReady,
   };
-  if (!ready[model])
+  if (!ready[model]) {
     throw new Error(
       "La recherche locale n’est pas installée. Vos documents restent accessibles."
     );
+  }
   const urls = getLocalModelUrls(models);
   const session = await takeEmbeddingSession(
     urls.modelRoot,
@@ -259,8 +273,9 @@ export async function embedTexts(
       },
       "embedded"
     );
-    if (result.type !== "embedded")
+    if (result.type !== "embedded") {
       throw new Error("La préparation de la recherche a échoué.");
+    }
     succeeded = true;
     lastEngine = result.engine ?? null;
     // Vectors are stored in SQLite as 768 dimensions. arctic (1 024, trained for
@@ -269,8 +284,11 @@ export async function embedTexts(
       normalizedEmbedding(model === "arctic" ? vector.slice(0, 768) : vector)
     );
   } finally {
-    if (succeeded) parkEmbeddingSession(session, urls.modelRoot);
-    else session.close();
+    if (succeeded) {
+      parkEmbeddingSession(session, urls.modelRoot);
+    } else {
+      session.close();
+    }
   }
 }
 
@@ -283,7 +301,7 @@ async function embedInBatches(
   model: SearchModel = "embeddinggemma"
 ) {
   const vectors: number[][] = [];
-  for (let start = 0; start < texts.length; start += 100)
+  for (let start = 0; start < texts.length; start += 100) {
     vectors.push(
       ...(await embedTexts(
         models,
@@ -294,6 +312,7 @@ async function embedInBatches(
         model
       ))
     );
+  }
   return vectors;
 }
 
@@ -334,9 +353,13 @@ function parkEmbeddingSession(
 ) {
   idleEmbedding?.session.close();
   session.park();
-  if (session.isClosed) return;
+  if (session.isClosed) {
+    return;
+  }
   const timer = setTimeout(() => {
-    if (idleEmbedding?.session === session) idleEmbedding = null;
+    if (idleEmbedding?.session === session) {
+      idleEmbedding = null;
+    }
     session.close();
   }, EMBEDDING_IDLE_MS);
   idleEmbedding = { session, modelRoot, timer };
@@ -355,7 +378,9 @@ export async function indexReviewedSource(
           plainDocumentText((source as Note).content),
           type
         );
-  if (!chunks.length) return;
+  if (!chunks.length) {
+    return;
+  }
   const models = await getLocalModels();
   for (const generation of indexedGenerations(models)) {
     const rows = forGeneration(chunks, generation);
@@ -375,7 +400,9 @@ export async function detectSearchOrphans(
   db: SearchDatabase,
   patientId: string
 ) {
-  if (!patientId) throw new Error("Le patient est requis.");
+  if (!patientId) {
+    throw new Error("Le patient est requis.");
+  }
   return db.select<Array<{ id: string }>>(
     "SELECT id FROM embeddings WHERE patient_id=? AND (NOT EXISTS(SELECT 1 FROM patients p WHERE p.id=embeddings.patient_id) OR (source_type='soap' AND NOT EXISTS(SELECT 1 FROM consultation_soaps s WHERE s.id=embeddings.source_id AND s.patient_id=embeddings.patient_id)) OR (source_type!='soap' AND NOT EXISTS(SELECT 1 FROM notes n WHERE n.id=embeddings.source_id AND n.patient_id=embeddings.patient_id)))",
     [patientId]
@@ -428,8 +455,9 @@ function noteType(note: Note): Exclude<DocumentType, "consultation"> {
         "laboratory",
         "protocol",
       ].includes(type)
-    )
+    ) {
       return type;
+    }
   } catch {
     /* Legacy document. */
   }
@@ -440,8 +468,9 @@ export async function indexPatientDocuments(
   signal: AbortSignal,
   onProgress: (event: LocalAiProgress) => void
 ) {
-  if (!patientId)
+  if (!patientId) {
     throw new Error("Ouvrez une fiche patient avant de préparer la recherche.");
+  }
   const models = await getLocalModels();
   const sources = await runDbRead(async (db) => {
     const soaps = await db.select<ConsultationSoap[]>(
@@ -470,7 +499,7 @@ export async function indexPatientDocuments(
       generation: SearchGeneration;
       chunks: SearchChunk[];
     }> = [];
-    for (const generation of indexedGenerations(models))
+    for (const generation of indexedGenerations(models)) {
       for (const chunks of groups
         .filter((group) => group.length)
         .map((group) => forGeneration(group, generation))) {
@@ -490,32 +519,40 @@ export async function indexPatientDocuments(
           existing.length !== 1 ||
           existing[0].sourceKey !== first.sourceKey ||
           existing[0].count !== chunks.length
-        )
+        ) {
           stale.push({ generation, chunks });
+        }
       }
+    }
     return stale;
   });
   const orphans = await runDbRead((db) => detectSearchOrphans(db, patientId));
-  if (orphans.length)
+  if (orphans.length) {
     await runDbTransaction(async (db) => {
-      for (const orphan of orphans)
+      for (const orphan of orphans) {
         await db.execute("DELETE FROM embeddings WHERE id=? AND patient_id=?", [
           orphan.id,
           patientId,
         ]);
+      }
     });
-  if (!sources.length) return 0;
+  }
+  if (!sources.length) {
+    return 0;
+  }
   // One worker per batch, only one patient's data; split batches at source boundaries.
   let count = 0;
   let batch: Array<{ generation: SearchGeneration; chunks: SearchChunk[] }> =
     [];
   const flush = async () => {
-    if (!batch.length) return;
+    if (!batch.length) {
+      return;
+    }
     const groups = batch;
     batch = [];
     // One model per request: each generation is embedded with its own model.
     const vectors: number[][] = [];
-    for (const group of groups)
+    for (const group of groups) {
       vectors.push(
         ...(await embedInBatches(
           models,
@@ -525,6 +562,7 @@ export async function indexPatientDocuments(
           GENERATION_MODEL[group.generation]
         ))
       );
+    }
     const flat = groups.flatMap((group) => group.chunks);
     let offset = 0;
     await runDbTransaction(async (db) => {
@@ -541,9 +579,13 @@ export async function indexPatientDocuments(
     count += flat.length;
   };
   for (const source of sources) {
-    if (signal.aborted) throw new DOMException("Tâche annulée.", "AbortError");
+    if (signal.aborted) {
+      throw new DOMException("Tâche annulée.", "AbortError");
+    }
     const pending = batch.reduce((sum, group) => sum + group.chunks.length, 0);
-    if (pending + source.chunks.length > 100) await flush();
+    if (pending + source.chunks.length > 100) {
+      await flush();
+    }
     batch.push(source);
   }
   await flush();
@@ -589,8 +631,9 @@ export async function readPatientLexicalMatches(
   if (
     scope.sourceTypes.includes("document") &&
     scope.sections.includes("document")
-  )
+  ) {
     chunks.push(...(await managedPatientChunks(db, scope.patientId)));
+  }
   return chunks
     .filter(
       (chunk) =>
@@ -608,8 +651,9 @@ export async function searchPatientDocuments(
   onProgress: (event: LocalAiProgress) => void = () => {}
 ) {
   assertSearchScope(scope);
-  if (!query.trim())
+  if (!query.trim()) {
     throw new Error("Écrivez ce que vous souhaitez retrouver.");
+  }
   const generation = effectiveGeneration(await getLocalModels());
   return generation === "sections"
     ? searchPatientSections(scope, query, signal, onProgress)
@@ -629,8 +673,12 @@ async function searchPatientSections(
     const rows = await runDbRead((db) =>
       readPatientSearchRows(db, scope, "sections")
     );
-    if (signal.aborted) throw new DOMException("Tâche annulée.", "AbortError");
-    if (!rows.length) return (await readLexical()).slice(0, 5);
+    if (signal.aborted) {
+      throw new DOMException("Tâche annulée.", "AbortError");
+    }
+    if (!rows.length) {
+      return (await readLexical()).slice(0, 5);
+    }
     const models = await getLocalModels();
     const [vector] = await embedTexts(
       models,
@@ -657,10 +705,13 @@ async function searchPatientSections(
     if (
       signal.aborted ||
       (error instanceof Error && error.name === "AbortError")
-    )
+    ) {
       throw error;
+    }
     const current = await readLexical();
-    if (current.length) return current.slice(0, 5);
+    if (current.length) {
+      return current.slice(0, 5);
+    }
     throw error;
   }
 }
@@ -692,8 +743,12 @@ async function searchPatientPassages(
     const rows = await runDbRead((db) =>
       readPatientSearchRows(db, scope, generation)
     );
-    if (signal.aborted) throw new DOMException("Tâche annulée.", "AbortError");
-    if (!rows.length) return lexicalFallback();
+    if (signal.aborted) {
+      throw new DOMException("Tâche annulée.", "AbortError");
+    }
+    if (!rows.length) {
+      return lexicalFallback();
+    }
     const models = await getLocalModels();
     const [vector] = await embedTexts(
       models,
@@ -719,10 +774,13 @@ async function searchPatientPassages(
     if (
       signal.aborted ||
       (error instanceof Error && error.name === "AbortError")
-    )
+    ) {
       throw error;
+    }
     const current = await lexicalFallback();
-    if (current.length) return current;
+    if (current.length) {
+      return current;
+    }
     throw error;
   }
 }
@@ -737,7 +795,9 @@ export async function indexAllPatientsDocuments(
   );
   let count = 0;
   for (const patient of patients) {
-    if (signal.aborted) throw new DOMException("Tâche annulée.", "AbortError");
+    if (signal.aborted) {
+      throw new DOMException("Tâche annulée.", "AbortError");
+    }
     count += await indexPatientDocuments(patient.id, signal, onProgress);
   }
   return count;
@@ -749,8 +809,9 @@ export async function searchAllPatientsDocuments(
   onProgress: (event: LocalAiProgress) => void = () => {}
 ) {
   assertSearchScope({ patientId: "explicit-all-patients", ...filters });
-  if (!query.trim())
+  if (!query.trim()) {
     throw new Error("Écrivez ce que vous souhaitez retrouver.");
+  }
   await indexAllPatientsDocuments(signal, onProgress);
   const patients = await runDbRead((db) =>
     db.select<Array<{ id: string; name: string }>>(
@@ -772,8 +833,9 @@ export async function searchAllPatientsDocuments(
       Awaited<ReturnType<typeof rankPassages>>[number] & { patientName: string }
     > = [];
     for (const patient of patients) {
-      if (signal.aborted)
+      if (signal.aborted) {
         throw new DOMException("Tâche annulée.", "AbortError");
+      }
       const scope = { patientId: patient.id, ...filters };
       const rows = await runDbRead((db) =>
         readPatientSearchRows(db, scope, generation)
@@ -806,7 +868,9 @@ export async function searchAllPatientsDocuments(
   }
   const found = [] as Awaited<ReturnType<typeof searchPatientSections>>;
   for (const patient of patients) {
-    if (signal.aborted) throw new DOMException("Tâche annulée.", "AbortError");
+    if (signal.aborted) {
+      throw new DOMException("Tâche annulée.", "AbortError");
+    }
     const scope = { patientId: patient.id, ...filters };
     const rows = await runDbRead((db) =>
       readPatientSearchRows(db, scope, "sections")
@@ -848,7 +912,9 @@ export async function searchAllPatientsFastLexical(
 ) {
   assertSearchScope({ patientId: "explicit-all-patients", ...filters });
   const trimmed = query.trim();
-  if (!trimmed) return [];
+  if (!trimmed) {
+    return [];
+  }
 
   return runDbRead(async (db) => {
     const matches: Array<
@@ -880,12 +946,13 @@ export async function searchAllPatientsFastLexical(
       filters.sections.includes("document")
     ) {
       for (const chunk of await managedPatientChunks(db)) {
-        if (matchesSearchTerms(trimmed, chunk.text))
+        if (matchesSearchTerms(trimmed, chunk.text)) {
           addMatch({
             ...chunk,
             patientName: chunk.patientName || "Patient",
             score: 0.95,
           });
+        }
       }
     }
 
@@ -956,7 +1023,9 @@ export async function searchAllPatientsFastLexical(
       }
     }
 
-    if (signal.aborted) return [];
+    if (signal.aborted) {
+      return [];
+    }
 
     // 2. Direct SOAP Notes query (covers active/newly reviewed SOAP notes)
     if (allowedSources.has("soap")) {
@@ -1010,7 +1079,9 @@ export async function searchAllPatientsFastLexical(
       }
     }
 
-    if (signal.aborted) return [];
+    if (signal.aborted) {
+      return [];
+    }
 
     // 3. Consultations & Appointments (title, type, reason, diagnosis, treatment, notes)
     if (allowedSources.has("consultation")) {
@@ -1049,7 +1120,9 @@ export async function searchAllPatientsFastLexical(
       }
     }
 
-    if (signal.aborted) return [];
+    if (signal.aborted) {
+      return [];
+    }
 
     // 4. Products / Stock / Pharmacie (name, category, sub_category, unit, quantity)
     if (allowedSources.has("product")) {
@@ -1088,7 +1161,9 @@ export async function searchAllPatientsFastLexical(
       }
     }
 
-    if (signal.aborted) return [];
+    if (signal.aborted) {
+      return [];
+    }
 
     // 5. Patient profiles (signalement, allergies, chronic conditions, medical notes)
     if (allowedSources.has("patient")) {
@@ -1123,7 +1198,9 @@ export async function searchAllPatientsFastLexical(
       }
     }
 
-    if (signal.aborted) return [];
+    if (signal.aborted) {
+      return [];
+    }
 
     // 6. Clinical Documents & Protocols from notes table
     if (allowedSources.has("document") || allowedSources.has("protocol")) {
@@ -1148,12 +1225,15 @@ export async function searchAllPatientsFastLexical(
 
         for (const n of docNotes) {
           const plain = plainDocumentText(n.content);
-          if (!plain) continue;
+          if (!plain) {
+            continue;
+          }
           const type = noteType(n as unknown as Note);
           if (
             !allowedSources.has(type === "protocol" ? "protocol" : "document")
-          )
+          ) {
             continue;
+          }
 
           const fullText = `${n.title ? `${n.title} — ` : ""}${plain}`;
           if (matchesSearchTerms(trimmed, fullText)) {
@@ -1182,7 +1262,9 @@ export async function searchAllPatientsFastLexical(
       return matches
         .filter((match) => {
           const source = `${match.sourceType}:${match.sourceId}`;
-          if (seen.has(source)) return false;
+          if (seen.has(source)) {
+            return false;
+          }
           seen.add(source);
           return true;
         })
@@ -1213,7 +1295,9 @@ export async function searchAllPatientsClinical(
   >
 > {
   const trimmed = query.trim();
-  if (!trimmed) return [];
+  if (!trimmed) {
+    return [];
+  }
 
   // 1. Fast lexical retrieval with French veterinary dictionary across all 6 domains
   const instantMatches = await searchAllPatientsFastLexical(
@@ -1221,7 +1305,9 @@ export async function searchAllPatientsClinical(
     trimmed,
     signal
   );
-  if (signal.aborted) return [];
+  if (signal.aborted) {
+    return [];
+  }
 
   // 2. Vector search if local embedding models are available
   try {
@@ -1248,7 +1334,9 @@ export async function searchAllPatientsClinical(
           signal,
           onProgress
         );
-        if (signal.aborted) return instantMatches;
+        if (signal.aborted) {
+          return instantMatches;
+        }
 
         const map = new Map<
           string,
@@ -1278,7 +1366,9 @@ export async function searchAllPatientsClinical(
             ...instantMatches
               .filter((m) => {
                 const source = `${m.sourceType}:${m.sourceId}`;
-                if (sources.has(source)) return false;
+                if (sources.has(source)) {
+                  return false;
+                }
                 sources.add(source);
                 return true;
               })

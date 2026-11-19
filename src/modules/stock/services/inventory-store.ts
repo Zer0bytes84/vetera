@@ -33,8 +33,9 @@ export interface ProductStockSummary {
 export async function inventorySnapshotInDatabase(
   db: StockDatabase
 ): Promise<StockInventorySnapshot> {
-  if (!(await hasStockLots(db)))
+  if (!(await hasStockLots(db))) {
     return { supported: false, balances: [], locations: [] };
+  }
   const rows = await db.select<
     {
       id: string;
@@ -84,11 +85,12 @@ export function summarizeInventory(
   balances: readonly StockInventoryBalance[],
   today = stockDay()
 ) {
-  if (!stockDate(today))
+  if (!stockDate(today)) {
     throw new StockError(
       "SOURCE_CONFLICT",
       "La date de contrôle du stock est requise."
     );
+  }
   const horizon = new Date(`${today}T12:00:00Z`);
   horizon.setUTCDate(horizon.getUTCDate() + 90);
   const near = horizon.toISOString().slice(0, 10);
@@ -113,7 +115,9 @@ export function summarizeInventory(
       summary.invalid = true;
       continue;
     }
-    if (row.quantity <= 0 || row.productArchived) continue;
+    if (row.quantity <= 0 || row.productArchived) {
+      continue;
+    }
     if (row.lotId) {
       const set = lots.get(row.productId) ?? new Set<string>();
       set.add(row.lotId);
@@ -123,28 +127,34 @@ export function summarizeInventory(
     if (
       expiry &&
       (!summary.nearestExpiryDate || expiry < summary.nearestExpiryDate)
-    )
+    ) {
       summary.nearestExpiryDate = expiry;
+    }
     if (expiry && expiry < today) {
       summary.expiredQuantity = stockBalance(
         summary.expiredQuantity + row.quantity
       );
       continue;
     }
-    if (expiry && expiry <= near)
+    if (expiry && expiry <= near) {
       summary.expiringQuantity = stockBalance(
         summary.expiringQuantity + row.quantity
       );
+    }
     if (
       row.locationActive &&
       stockDay(new Date(stockTimestamp(row.receivedAt))) <= today
-    )
+    ) {
       summary.availableQuantity = stockBalance(
         summary.availableQuantity + row.quantity
       );
+    }
   }
-  for (const summary of result.values())
-    if (summary.invalid) summary.availableQuantity = 0;
+  for (const summary of result.values()) {
+    if (summary.invalid) {
+      summary.availableQuantity = 0;
+    }
+  }
   return result;
 }
 
@@ -182,23 +192,25 @@ export async function saveCatalogueProductInDatabase(
     "SELECT * FROM products WHERE id=?",
     [input.id]
   );
-  if (input.create ? !!old : !old)
+  if (input.create ? !!old : !old) {
     throw new StockError(
       "SOURCE_CONFLICT",
       input.create
         ? "Cette référence existe déjà. Modifiez-la depuis le catalogue."
         : "Ce produit n’existe plus."
     );
+  }
   const existing = old ? mapProduct(old) : null;
   const draft = { ...existing, ...input.draft };
   const name = draft.name?.trim();
   const unit = draft.unit?.trim();
   const category = draft.category?.trim();
-  if (!name || !unit || !category)
+  if (!name || !unit || !category) {
     throw new StockError(
       "SOURCE_CONFLICT",
       "Indiquez le nom, la catégorie et l’unité du produit."
     );
+  }
   const quantity = stockQuantity(draft.quantity ?? 0, true);
   const minStock = stockQuantity(draft.minStock ?? 0, true);
   const tracked = draft.stockTracked !== false;
@@ -208,17 +220,19 @@ export async function saveCatalogueProductInDatabase(
     ![purchase, sale].every(
       (value) => Number.isSafeInteger(value) && value >= 0
     )
-  )
+  ) {
     throw new StockError(
       "SOURCE_CONFLICT",
       "Les tarifs doivent être des montants positifs ou nuls."
     );
+  }
   const expiry = stockDate(draft.expiryDate?.slice(0, 10));
-  if (!tracked && quantity !== 0)
+  if (!tracked && quantity !== 0) {
     throw new StockError(
       "SOURCE_CONFLICT",
       "Une prestation sans suivi de stock doit avoir une quantité physique nulle."
     );
+  }
   const physical =
     existing && (existing.unit !== unit || !tracked)
       ? (await stockBucketsInDatabase(db, input.id)).some(
@@ -229,21 +243,23 @@ export async function saveCatalogueProductInDatabase(
     existing?.unit !== unit &&
     existing &&
     (existing.quantity !== 0 || physical)
-  )
+  ) {
     throw new StockError(
       "SOURCE_CONFLICT",
       "L’unité ne peut pas changer tant que du stock est présent. Comptez d’abord le stock à zéro."
     );
+  }
   if (
     existing?.stockTracked !== false &&
     existing &&
     (existing.quantity !== 0 || physical) &&
     !tracked
-  )
+  ) {
     throw new StockError(
       "SOURCE_CONFLICT",
       "Le suivi ne peut pas être désactivé tant que du stock est présent."
     );
+  }
   if (input.create) {
     await db.execute(
       `INSERT INTO products(id,name,category,sub_category,quantity,unit,min_stock,purchase_price_amount,sale_price_amount,expiry_date,stock_tracked,created_at,updated_at)
@@ -263,7 +279,7 @@ export async function saveCatalogueProductInDatabase(
         now,
       ]
     );
-    if (tracked && quantity > 0)
+    if (tracked && quantity > 0) {
       await receiveStockInDatabase(
         db,
         await stockProductInDatabase(db, input.id),
@@ -278,6 +294,7 @@ export async function saveCatalogueProductInDatabase(
         },
         id
       );
+    }
   } else {
     await db.execute(
       `UPDATE products SET name=?,category=?,sub_category=?,unit=?,min_stock=?,purchase_price_amount=?,sale_price_amount=?,expiry_date=?,stock_tracked=?,archived_at=?,updated_at=? WHERE id=?`,
@@ -296,7 +313,7 @@ export async function saveCatalogueProductInDatabase(
         input.id,
       ]
     );
-    if (existing!.quantity !== quantity)
+    if (existing!.quantity !== quantity) {
       await countUnassignedStockInDatabase(
         db,
         await stockProductInDatabase(db, input.id),
@@ -305,6 +322,7 @@ export async function saveCatalogueProductInDatabase(
         now,
         id
       );
+    }
   }
   const [saved] = await db.select<Record<string, unknown>[]>(
     "SELECT * FROM products WHERE id=?",

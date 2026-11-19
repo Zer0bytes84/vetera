@@ -52,11 +52,12 @@ export interface Dispensation {
 }
 
 function requireActor(author: string) {
-  if (!author.trim())
+  if (!author.trim()) {
     throw new StockError(
       "SOURCE_CONFLICT",
       "Un utilisateur connecté est requis pour valider l’utilisation du stock."
     );
+  }
 }
 
 export function stockInvoiceLine(
@@ -138,11 +139,12 @@ export async function consumeConsultationProductInDatabase(
     "SELECT p.owner_id,a.status FROM appointments a JOIN patients p ON p.id=a.patient_id WHERE a.id=? AND a.patient_id=?",
     [input.appointmentId, input.patientId]
   );
-  if (!context || ["cancelled", "no_show"].includes(context.status))
+  if (!context || ["cancelled", "no_show"].includes(context.status)) {
     throw new StockError(
       "SOURCE_CONFLICT",
       "Choisissez une consultation valide pour ce patient avant d’utiliser un produit."
     );
+  }
   const product = await assertStockAvailable(
     db,
     input.productId,
@@ -175,11 +177,12 @@ export async function consumeConsultationProductInDatabase(
     [stockInvoiceLine(product, quantity, "Consultation")]
   );
   const invoiceLine = invoice.lines.at(-1)!;
-  if (movementId)
+  if (movementId) {
     await db.execute(
       "UPDATE stock_movements SET invoice_id=?,invoice_line_id=? WHERE id=?",
       [invoice.id, invoiceLine.id, movementId]
     );
+  }
   await db.execute(
     "INSERT INTO clinical_stock_uses(id,appointment_id,patient_id,product_id,quantity,author_id,invoice_id,movement_id,created_at) VALUES (?,?,?,?,?,?,?,?,?)",
     [
@@ -225,8 +228,9 @@ export async function dispensePrescriptionInDatabase(
     "SELECT r.*,p.owner_id FROM prescriptions r JOIN patients p ON p.id=r.patient_id WHERE r.id=?",
     [input.prescriptionId]
   );
-  if (!rx)
+  if (!rx) {
     throw new StockError("SOURCE_CONFLICT", "Cette ordonnance n’existe plus.");
+  }
   const preparedInput = input.lines.map((line) => ({
     ...line,
     quantity: stockQuantity(line.quantity),
@@ -235,11 +239,12 @@ export async function dispensePrescriptionInDatabase(
   if (
     !lotsEnabled &&
     preparedInput.some((line) => line.lotId !== undefined || line.locationId)
-  )
+  ) {
     throw new StockError(
       "SOURCE_CONFLICT",
       "Rouvrez l’application pour activer la gestion des lots avant cette sélection."
     );
+  }
   const [existing] = await db.select<Dispensation[]>(
     "SELECT * FROM prescription_dispensations WHERE prescription_id=?",
     [rx.id]
@@ -275,11 +280,12 @@ export async function dispensePrescriptionInDatabase(
     }
     return existing;
   }
-  if (rx.status !== "signed")
+  if (rx.status !== "signed") {
     throw new StockError(
       "SOURCE_CONFLICT",
       "Signez l’ordonnance avant de la dispenser."
     );
+  }
   const items = await db.select<{ id: string; medication_name: string }[]>(
     "SELECT id,medication_name FROM prescription_items WHERE prescription_id=? ORDER BY sort_order,id",
     [rx.id]
@@ -300,18 +306,20 @@ export async function dispensePrescriptionInDatabase(
     );
   }
   const totals = new Map<string, number>();
-  for (const line of preparedInput)
+  for (const line of preparedInput) {
     totals.set(
       line.productId,
       stockQuantity((totals.get(line.productId) ?? 0) + line.quantity)
     );
+  }
   for (const [productId, total] of totals) {
     const product = await assertStockAvailable(db, productId, total, {}, now);
-    if (!product.stock_tracked)
+    if (!product.stock_tracked) {
       throw new StockError(
         "PRODUCT_MISSING",
         "Une ordonnance se dispense avec des produits physiques, pas avec une prestation."
       );
+    }
   }
   const prepared: {
     line: DispensingLineInput;

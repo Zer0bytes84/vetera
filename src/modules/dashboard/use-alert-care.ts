@@ -30,17 +30,22 @@ export function useAlertCare(now: Date) {
           careTasksService.list(from, end),
           careTasksService.overdueBefore(from),
         ]);
-        if (request !== sequence.current) return;
+        if (request !== sequence.current) {
+          return;
+        }
         setTasks([...older, ...rows]);
         setError(null);
       },
       {
         recover: () => {
-          if (request === sequence.current)
+          if (request === sequence.current) {
             setError("Les soins n’ont pas pu être chargés.");
+          }
         },
         cleanup: () => {
-          if (request === sequence.current) setLoading(false);
+          if (request === sequence.current) {
+            setLoading(false);
+          }
         },
       }
     );

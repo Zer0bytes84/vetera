@@ -106,7 +106,9 @@ export function DocumentComposer({
   }
   useEffect(() => {
     let active = true;
-    if (!preparation) return;
+    if (!preparation) {
+      return;
+    }
     const timer = setTimeout(() => {
       void buildManagedDocumentPdf({
         title,
@@ -115,10 +117,14 @@ export function DocumentComposer({
         patientReference: preparation.values["patient.reference"] || undefined,
       })
         .then((document) => {
-          if (active) setPdf(document.output("datauristring"));
+          if (active) {
+            setPdf(document.output("datauristring"));
+          }
         })
         .catch((cause) => {
-          if (active) setError(cause.message);
+          if (active) {
+            setError(cause.message);
+          }
         });
     }, 250);
     return () => {
@@ -127,7 +133,9 @@ export function DocumentComposer({
     };
   }, [preparation, title, content]);
   async function perform(operation: () => Promise<void>) {
-    if (busy) return;
+    if (busy) {
+      return;
+    }
     setBusy(true);
     setError("");
     await guard(
@@ -153,7 +161,9 @@ export function DocumentComposer({
       <Dialog
         open={open && !createdId}
         onOpenChange={(value) => {
-          if (!value && !busy) onClose();
+          if (!value && !busy) {
+            onClose();
+          }
         }}
       >
         <DialogContent

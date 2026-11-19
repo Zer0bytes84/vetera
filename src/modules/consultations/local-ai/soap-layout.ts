@@ -59,7 +59,9 @@ export function dropSoapHeading(key: keyof LocalSoapNote, text: string) {
   const lines = text.trim().split("\n");
   const short = SOAP_SECTIONS.find((section) => section.key === key)!.title;
   const headings = [SOAP_FULL_HEADINGS[key], short].map(comparable);
-  if (headings.includes(comparable(lines[0] ?? ""))) lines.shift();
+  if (headings.includes(comparable(lines[0] ?? ""))) {
+    lines.shift();
+  }
   return lines.join("\n").trim();
 }
 

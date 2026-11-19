@@ -64,7 +64,9 @@ export function StayDetail({
   }, [refresh]);
   const now = useNow();
   async function transition(to: StayStatus) {
-    if (!currentUser || busy) return;
+    if (!currentUser || busy) {
+      return;
+    }
     setBusy(true);
     setError(null);
     await guard(

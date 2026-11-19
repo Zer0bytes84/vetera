@@ -116,7 +116,9 @@ export async function checkForAppUpdates(options?: {
   try {
     update = await check();
   } catch (error) {
-    if (!isPlatformNotInFeedError(error)) throw error;
+    if (!isPlatformNotInFeedError(error)) {
+      throw error;
+    }
     if (userInitiated) {
       toast.info("Aucune mise à jour n’est proposée pour ce système.", {
         duration: 5000,

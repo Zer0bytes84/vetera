@@ -88,14 +88,24 @@ export function SlotPicker({
     const at = (document.activeElement as HTMLElement | null)?.dataset.cell
       ?.split(":")
       .map(Number);
-    if (!move || !at) return;
+    if (!move || !at) {
+      return;
+    }
     event.preventDefault();
     let col = at[0] + move[0];
     // Skip the days with nothing free.
-    while (move[0] && col >= 0 && col < columns.length && !columns[col].length)
+    while (
+      move[0] &&
+      col >= 0 &&
+      col < columns.length &&
+      !columns[col].length
+    ) {
       col += move[0];
+    }
     col = Math.min(Math.max(col, 0), columns.length - 1);
-    if (!columns[col].length) return;
+    if (!columns[col].length) {
+      return;
+    }
     const row = Math.min(Math.max(at[1] + move[1], 0), columns[col].length - 1);
     grid.current
       ?.querySelector<HTMLElement>(`[data-cell="${col}:${row}"]`)

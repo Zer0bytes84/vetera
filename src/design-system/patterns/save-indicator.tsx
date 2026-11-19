@@ -11,8 +11,9 @@ export function SaveIndicator({
   state: "idle" | "saving" | "saved" | "error";
   onRetry?: () => void;
 }) {
-  if (state === "idle")
+  if (state === "idle") {
     return <span className="w-[112px]" aria-hidden="true" />;
+  }
   const text =
     state === "saving"
       ? "Enregistrement…"

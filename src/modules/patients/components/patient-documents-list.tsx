@@ -128,20 +128,28 @@ export function PatientDocumentsList({
 
   const openNotes = (noteId?: string) => {
     sessionStorage.setItem("documents:open-patient", patientId);
-    if (noteId) sessionStorage.setItem("documents:open-note", noteId);
+    if (noteId) {
+      sessionStorage.setItem("documents:open-note", noteId);
+    }
     onOpenNotes?.();
   };
 
   const createClinicalNote = async () => {
-    if (!currentUser) return;
+    if (!currentUser) {
+      return;
+    }
     const created = await notesRepo.createEmptyNote(currentUser.uid);
-    if (!created) return;
+    if (!created) {
+      return;
+    }
     await notesRepo.update(created.id, { patientId, title: "Note clinique" });
     openNotes(created.id);
   };
 
   const confirmDelete = async () => {
-    if (!deleteTarget) return;
+    if (!deleteTarget) {
+      return;
+    }
     await guard(
       async () => {
         await repo.remove(deleteTarget.id);
@@ -339,7 +347,9 @@ export function PatientDocumentsList({
         <AlertDialog
           open={deleteTarget !== null}
           onOpenChange={(open) => {
-            if (!open) setDeleteTarget(null);
+            if (!open) {
+              setDeleteTarget(null);
+            }
           }}
         >
           <AlertDialogContent size="sm">

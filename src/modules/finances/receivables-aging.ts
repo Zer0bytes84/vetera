@@ -45,7 +45,9 @@ export function receivablesAging(
   }));
   const place = (since: string, amount: number) => {
     const issued = new Date(since).getTime();
-    if (!Number.isFinite(issued) || amount <= 0) return;
+    if (!Number.isFinite(issued) || amount <= 0) {
+      return;
+    }
     const bucket = bucketOf(
       Math.max(0, Math.floor((now.getTime() - issued) / DAY))
     );
@@ -54,7 +56,9 @@ export function receivablesAging(
     row.count += 1;
   };
   for (const invoice of invoices) {
-    if (!isOpenInvoice(invoice)) continue;
+    if (!isOpenInvoice(invoice)) {
+      continue;
+    }
     const net = Math.max(0, invoice.grossAmount - invoice.creditAmount) / 100;
     place(
       (invoice.issuedAt ?? invoice.createdAt)!,
@@ -74,8 +78,9 @@ export function receivablesAging(
       entry.sourceType ||
       migrated.has(entry.id) ||
       entry.status === "paid"
-    )
+    ) {
       continue;
+    }
     place(entry.date, Math.max(0, entry.amount) / 100);
   }
   return rows;

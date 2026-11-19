@@ -13,7 +13,9 @@ export function noteMarkdownToHTML(text: string): string {
   const blocks: string[] = [];
   let list: "ul" | "ol" | null = null;
   const closeList = () => {
-    if (list) blocks.push(`</${list}>`);
+    if (list) {
+      blocks.push(`</${list}>`);
+    }
     list = null;
   };
 
@@ -40,7 +42,9 @@ export function noteMarkdownToHTML(text: string): string {
       blocks.push(`<li><p>${inline(item[2])}</p></li>`);
     } else {
       closeList();
-      if (line) blocks.push(`<p>${inline(line)}</p>`);
+      if (line) {
+        blocks.push(`<p>${inline(line)}</p>`);
+      }
     }
   }
   closeList();

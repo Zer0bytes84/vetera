@@ -18,14 +18,18 @@ export async function prepareQuickConsultation({
   create: CreateAppointment;
   now?: Date;
 }): Promise<Appointment> {
-  if (!userId)
+  if (!userId) {
     throw new Error("Reconnectez-vous avant de démarrer une consultation.");
-  if (!patient.ownerId)
+  }
+  if (!patient.ownerId) {
     throw new Error("Ce patient doit être rattaché à un propriétaire.");
+  }
   const current = appointments.find(
     (item) => item.patientId === patient.id && item.status === "in_progress"
   );
-  if (current) return current;
+  if (current) {
+    return current;
+  }
   const appointment = await create({
     patientId: patient.id,
     ownerId: patient.ownerId,
@@ -36,7 +40,8 @@ export async function prepareQuickConsultation({
     startTime: now.toISOString(),
     endTime: new Date(now.getTime() + 30 * 60_000).toISOString(),
   });
-  if (!appointment)
+  if (!appointment) {
     throw new Error("La consultation n’a pas pu être créée. Réessayez.");
+  }
   return appointment;
 }

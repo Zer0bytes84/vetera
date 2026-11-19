@@ -93,7 +93,9 @@ function SupplierForm({
       className="space-y-4 border-y border-border bg-muted/10 p-5"
       onSubmit={async (event) => {
         event.preventDefault();
-        if (busy || !draft.name.trim()) return;
+        if (busy || !draft.name.trim()) {
+          return;
+        }
         setBusy(true);
         setError(null);
         await guard(
@@ -264,7 +266,9 @@ function OrderForm({
       className="space-y-4 border-y border-border bg-muted/10 p-5"
       onSubmit={async (event) => {
         event.preventDefault();
-        if (busy || !valid || !currentUser) return;
+        if (busy || !valid || !currentUser) {
+          return;
+        }
         setBusy(true);
         setError(null);
         await guard(
@@ -486,7 +490,9 @@ function ReceiptForm({
       className="space-y-5 border-y border-border bg-muted/10 p-5"
       onSubmit={async (event) => {
         event.preventDefault();
-        if (busy || !valid || !currentUser) return;
+        if (busy || !valid || !currentUser) {
+          return;
+        }
         setBusy(true);
         setError(null);
         await guard(
@@ -498,11 +504,12 @@ function ReceiptForm({
               stockDay(receivedAt) !== stockDay(date) ||
               `${String(receivedAt.getHours()).padStart(2, "0")}:${String(receivedAt.getMinutes()).padStart(2, "0")}` !==
                 time
-            )
+            ) {
               throw new StockError(
                 "SOURCE_CONFLICT",
                 "Choisissez une date et une heure de réception valides."
               );
+            }
             await purchasingService.receive({
               id: requestId,
               orderId: order.id,
@@ -561,7 +568,9 @@ function ReceiptForm({
               label="Date de réception de commande"
               value={date}
               onChange={(value) => {
-                if (value) setDate(value);
+                if (value) {
+                  setDate(value);
+                }
               }}
             />
             <CareTimePicker
@@ -736,13 +745,17 @@ export function PurchasingPanel({
     setOpenedFor(null);
   }
   useEffect(() => {
-    if (orderFor && openedFor === orderFor) onOrderOpened?.();
+    if (orderFor && openedFor === orderFor) {
+      onOrderOpened?.();
+    }
   }, [orderFor, openedFor, onOrderOpened]);
   const missingSupplierProduct = missingSupplierFor
     ? products.data.find((item) => item.id === missingSupplierFor)
     : undefined;
   const run = async (operation: () => Promise<unknown>) => {
-    if (busy) return;
+    if (busy) {
+      return;
+    }
     setBusy(true);
     setError(null);
     await guard(
@@ -759,13 +772,14 @@ export function PurchasingPanel({
       }
     );
   };
-  if (!isTauriRuntime())
+  if (!isTauriRuntime()) {
     return (
       <p className="p-5 text-sm text-muted-foreground">
         Les fournisseurs, commandes et réceptions sont disponibles dans
         l’application de bureau.
       </p>
     );
+  }
   return (
     <section aria-label="Approvisionnements" className="min-w-0">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border p-4">
@@ -1244,7 +1258,9 @@ export function PurchasingPanel({
       <AlertDialog
         open={!!cancelling}
         onOpenChange={(open) => {
-          if (!open && !busy) setCancelling(null);
+          if (!open && !busy) {
+            setCancelling(null);
+          }
         }}
       >
         <AlertDialogContent className="data-[size=default]:max-w-[calc(100%-2rem)] data-[size=default]:sm:max-w-lg">

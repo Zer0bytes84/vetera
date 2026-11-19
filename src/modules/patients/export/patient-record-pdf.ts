@@ -41,30 +41,34 @@ const SECTION_ORDER = [
 let fontPromise: Promise<[string, string]> | undefined;
 
 function cancelled(signal?: AbortSignal): void {
-  if (signal?.aborted)
+  if (signal?.aborted) {
     throw new DOMException("Génération annulée", "AbortError");
+  }
 }
 
 function encodeBase64(bytes: Uint8Array): string {
   let binary = "";
-  for (let offset = 0; offset < bytes.length; offset += 8192)
+  for (let offset = 0; offset < bytes.length; offset += 8192) {
     binary += String.fromCharCode(...bytes.subarray(offset, offset + 8192));
+  }
   return btoa(binary);
 }
 
 function localAsset(url: string): void {
-  if (url.startsWith("//"))
+  if (url.startsWith("//")) {
     throw new Error(
       "Une ressource distante est interdite dans cet export local."
     );
+  }
   if (/^[a-z][a-z\d+.-]*:/i.test(url)) {
     if (
       typeof window === "undefined" ||
       new URL(url).origin !== window.location.origin
-    )
+    ) {
       throw new Error(
         "Une ressource distante est interdite dans cet export local."
       );
+    }
   }
 }
 
@@ -73,8 +77,9 @@ async function fonts(): Promise<[string, string]> {
     [regularFontUrl, boldFontUrl].map(async (url) => {
       localAsset(url);
       const response = await fetch(url);
-      if (!response.ok)
+      if (!response.ok) {
         throw new Error("La police locale du dossier n’a pas pu être chargée.");
+      }
       return encodeBase64(new Uint8Array(await response.arrayBuffer()));
     })
   ) as Promise<[string, string]>;
@@ -129,10 +134,11 @@ function dataBytes(value: string, mimeType: string): Uint8Array {
     match[1].toLowerCase() !== mimeType ||
     !match[2] ||
     match[2].length % 4 !== 0
-  )
+  ) {
     throw new Error(
       "Le contenu local du fichier est illisible ou non pris en charge."
     );
+  }
   const binary = atob(match[2]);
   return Uint8Array.from(binary, (char) => char.charCodeAt(0));
 }
@@ -180,10 +186,11 @@ function measureMargins(doc: jsPDF, snapshot: PatientRecordSnapshot): Margins {
     clinic,
     legal,
   };
-  if (result.bottom - result.top < 80)
+  if (result.bottom - result.top < 80) {
     throw new Error(
       "L’identité du cabinet ou les mentions de pied de page sont trop longues pour une page A4."
     );
+  }
   return result;
 }
 
@@ -232,14 +239,17 @@ class Layout {
   }
 
   async page(continuation = false): Promise<void> {
-    if (this.doc && this.pageHasContent) this.doc.addPage();
+    if (this.doc && this.pageHasContent) {
+      this.doc.addPage();
+    }
     this.current();
     this.y = this.margins.top;
     this.pageHasContent = false;
-    if (this.sectionTitle)
+    if (this.sectionTitle) {
       this.heading(
         continuation ? `${this.sectionTitle} (suite)` : this.sectionTitle
       );
+    }
     await this.progress.report(
       "content",
       this.pages,
@@ -263,8 +273,12 @@ class Layout {
   }
 
   async space(height: number): Promise<void> {
-    if (!this.doc) await this.page(Boolean(this.sectionTitle));
-    if (this.y + height > this.margins.bottom) await this.page(true);
+    if (!this.doc) {
+      await this.page(Boolean(this.sectionTitle));
+    }
+    if (this.y + height > this.margins.bottom) {
+      await this.page(true);
+    }
   }
 
   async paragraph(
@@ -284,12 +298,13 @@ class Layout {
       doc.text(line, LEFT, this.y + step * 0.78);
       this.y += step;
       this.pageHasContent = true;
-      if (index > 0 && index % 36 === 0)
+      if (index > 0 && index % 36 === 0) {
         await this.progress.report(
           "content",
           this.pages,
           `Mise en page du dossier, page ${this.pages}`
         );
+      }
     }
     this.y += gap;
   }
@@ -298,16 +313,25 @@ class Layout {
     block: Extract<PatientRecordBlock, { kind: "text" }>
   ): Promise<void> {
     await this.space(16);
-    if (block.title) await this.paragraph(block.title, 11, true, INK, 2);
-    if (block.meta) await this.paragraph(block.meta, 8.5, false, MUTED, 3);
-    if (block.text.trim()) await this.paragraph(block.text, 10, false, INK, 7);
-    else this.y += 4;
+    if (block.title) {
+      await this.paragraph(block.title, 11, true, INK, 2);
+    }
+    if (block.meta) {
+      await this.paragraph(block.meta, 8.5, false, MUTED, 3);
+    }
+    if (block.text.trim()) {
+      await this.paragraph(block.text, 10, false, INK, 7);
+    } else {
+      this.y += 4;
+    }
   }
 
   async table(
     block: Extract<PatientRecordBlock, { kind: "table" }>
   ): Promise<void> {
-    if (!block.columns.length || !block.rows.length) return;
+    if (!block.columns.length || !block.rows.length) {
+      return;
+    }
     const doc = this.current();
     const weights =
       block.widths?.length === block.columns.length &&
@@ -318,10 +342,11 @@ class Layout {
     const widths = weights.map((value) => (BODY_WIDTH * value) / total);
     const padding = 2.2,
       lineHeight = 4.4;
-    if (widths.some((width) => width <= padding * 2 + 1))
+    if (widths.some((width) => width <= padding * 2 + 1)) {
       throw new Error(
         "Les colonnes du tableau sont trop étroites pour une page A4."
       );
+    }
     const wrapCells = (row: string[]) =>
       row.map((cell, index) => lines(doc, cell, widths[index] - padding * 2));
     style(doc, 8.5, true);
@@ -332,10 +357,11 @@ class Layout {
     if (
       headingHeight + lineHeight + padding * 2 >
       this.margins.bottom - this.margins.top - 17
-    )
+    ) {
       throw new Error(
         "Les en-têtes du tableau sont trop longs pour une page A4."
       );
+    }
     const drawCells = (
       cells: string[][],
       height: number,
@@ -404,10 +430,11 @@ class Layout {
           );
         }
         const count = Math.min(remainingLines, capacity);
-        if (count < 1)
+        if (count < 1) {
           throw new Error(
             "Le tableau ne peut pas être mis en page dans les marges du dossier."
           );
+        }
         drawCells(
           cells.map((cell) => cell.slice(offset, offset + count)),
           count * lineHeight + padding * 2,
@@ -420,18 +447,21 @@ class Layout {
           await header();
         }
       }
-      if (rowIndex > 0 && rowIndex % 20 === 0)
+      if (rowIndex > 0 && rowIndex % 20 === 0) {
         await this.progress.report(
           "content",
           this.pages,
           `Mise en page du tableau, page ${this.pages}`
         );
+      }
     }
     this.y += 7;
   }
 
   async flush(): Promise<void> {
-    if (!this.doc) return;
+    if (!this.doc) {
+      return;
+    }
     const pending = await PDFDocument.load(this.doc.output("arraybuffer"), {
       updateMetadata: false,
     });
@@ -439,7 +469,9 @@ class Layout {
       pending,
       pending.getPageIndices()
     );
-    for (const page of pages) this.output.addPage(page);
+    for (const page of pages) {
+      this.output.addPage(page);
+    }
     this.doc = undefined;
     this.pageHasContent = false;
     this.y = this.margins.top;
@@ -460,10 +492,11 @@ async function cover(
     const logoType = snapshot.clinic.logoDataUrl
       .match(/^data:(image\/(?:png|jpeg));base64,/i)?.[1]
       ?.toLowerCase();
-    if (!logoType)
+    if (!logoType) {
       throw new Error(
         "Le logo du cabinet doit être une image PNG ou JPEG locale."
       );
+    }
     dataBytes(snapshot.clinic.logoDataUrl, logoType);
     try {
       const image = doc.getImageProperties(snapshot.clinic.logoDataUrl);
@@ -486,8 +519,10 @@ async function cover(
   const profile = [snapshot.cover.species, snapshot.cover.breed]
     .filter(Boolean)
     .join(" · ");
-  if (profile) await layout.paragraph(profile, 12, false, MUTED, 4);
-  if (snapshot.cover.ownerName)
+  if (profile) {
+    await layout.paragraph(profile, 12, false, MUTED, 4);
+  }
+  if (snapshot.cover.ownerName) {
     await layout.paragraph(
       `Propriétaire : ${snapshot.cover.ownerName}`,
       11,
@@ -495,6 +530,7 @@ async function cover(
       INK,
       12
     );
+  }
   layout.y += 4;
   await layout.paragraph(
     `Export du ${civilDate(snapshot.exportDay)}`,
@@ -517,11 +553,12 @@ async function cover(
     snapshot.clinic.address,
     [snapshot.clinic.phone, snapshot.clinic.email].filter(Boolean).join(" · "),
     snapshot.clinic.registrationNumber,
-  ].filter(Boolean))
+  ].filter(Boolean)) {
     await layout.paragraph(item, 9, false, MUTED, 2);
+  }
   layout.y += 10;
   await layout.paragraph("Contenu du dossier", 10, true, INK, 4);
-  for (const [index, section] of sections.entries())
+  for (const [index, section] of sections.entries()) {
     await layout.paragraph(
       `${String(index + 1).padStart(2, "0")}   ${section.title}`,
       9.5,
@@ -529,6 +566,7 @@ async function cover(
       MUTED,
       2
     );
+  }
 }
 
 function sourceCaption(
@@ -562,10 +600,11 @@ function sourceCaption(
     y += 3.8;
   }
   y += 5;
-  if (margins.bottom - y < 30)
+  if (margins.bottom - y < 30) {
     throw new Error(
       "Le titre ou le nom de la pièce est trop long pour une page A4."
     );
+  }
   return { bytes: doc.output("arraybuffer"), bottom: y };
 }
 
@@ -575,8 +614,9 @@ function dimensions(
   top: number,
   bottom: number
 ) {
-  if (![width, height].every((value) => Number.isFinite(value) && value > 0))
+  if (![width, height].every((value) => Number.isFinite(value) && value > 0)) {
     throw new Error("Les dimensions de la page source sont illisibles.");
+  }
   const ratio = Math.min(
     (BODY_WIDTH * POINTS_PER_MM) / width,
     ((bottom - top) * POINTS_PER_MM) / height
@@ -654,11 +694,13 @@ async function appendSource(
       updateMetadata: false,
       throwOnInvalidObject: true,
     });
-    if (!original.getPageCount())
+    if (!original.getPageCount()) {
       throw new Error("Le PDF ne contient aucune page.");
+    }
     const form = original.catalog.lookupMaybe(PDFName.of("AcroForm"), PDFDict);
-    if (form?.has(PDFName.of("XFA")))
+    if (form?.has(PDFName.of("XFA"))) {
       throw new Error("Les formulaires XFA ne sont pas pris en charge.");
+    }
     const hasForm =
       (form?.lookupMaybe(PDFName.of("Fields"), PDFArray)?.size() ?? 0) > 0;
     let raster:
@@ -748,10 +790,11 @@ async function appendSource(
           // unsupported stream could no longer be attributed to its file.
           await embedded.embed();
           const angle = ((originalPage.getRotation().angle % 360) + 360) % 360;
-          if (![0, 90, 180, 270].includes(angle))
+          if (![0, 90, 180, 270].includes(angle)) {
             throw new Error(
               "La rotation de la page source n’est pas prise en charge."
             );
+          }
           const rotated = angle === 90 || angle === 270;
           const fitted = dimensions(
             rotated ? box.height : box.width,
@@ -786,8 +829,9 @@ async function appendSource(
     if (
       signal?.aborted ||
       (error instanceof Error && error.name === "AbortError")
-    )
+    ) {
       throw new DOMException("Génération annulée", "AbortError");
+    }
     const message = error instanceof Error ? error.message : "";
     const detail = /encrypt|password/i.test(message)
       ? "Le PDF est protégé par un mot de passe."
@@ -809,7 +853,9 @@ async function stamp(
   // One overlay document shares its two embedded Unicode fonts across pages.
   const overlay = document(layout.fontData);
   for (let index = 0; index < total; index++) {
-    if (index) overlay.addPage();
+    if (index) {
+      overlay.addPage();
+    }
     const margins = layout.margins;
     style(overlay, 7.5, false, MUTED);
     overlay.text("DOSSIER PATIENT", LEFT, 11.5);
@@ -881,25 +927,30 @@ export async function buildPatientRecordPdf(
     }))
     .filter((section) => section.blocks.length)
     .sort((a, b) => SECTION_ORDER.indexOf(a.id) - SECTION_ORDER.indexOf(b.id));
-  if (!sections.length)
+  if (!sections.length) {
     throw new Error(
       "Le périmètre choisi ne contient aucune donnée exportable."
     );
-  for (const section of sections)
-    for (const block of section.blocks)
+  }
+  for (const section of sections) {
+    for (const block of section.blocks) {
       if (block.kind === "source") {
-        if (block.source.patientId !== snapshot.patientId)
+        if (block.source.patientId !== snapshot.patientId) {
           throw new Error(
             "Une pièce sélectionnée n’appartient pas au patient de ce dossier."
           );
+        }
         if (
           (block.source.origin === "generated" && section.id !== "documents") ||
           (block.source.origin === "import" && section.id !== "attachments")
-        )
+        ) {
           throw new Error(
             "Une pièce n’est pas classée dans la bonne section du dossier."
           );
+        }
       }
+    }
+  }
   const fontData = await fonts();
   cancelled(options.signal);
   const output = await PDFDocument.create();
@@ -924,9 +975,13 @@ export async function buildPatientRecordPdf(
     await layout.page();
     const sources: PatientRecordSource[] = [];
     for (const block of section.blocks) {
-      if (block.kind === "text") await layout.text(block);
-      else if (block.kind === "table") await layout.table(block);
-      else sources.push(block.source);
+      if (block.kind === "text") {
+        await layout.text(block);
+      } else if (block.kind === "table") {
+        await layout.table(block);
+      } else {
+        sources.push(block.source);
+      }
     }
     if (sources.length) {
       const annexes = section.id === "attachments";
@@ -951,7 +1006,9 @@ export async function buildPatientRecordPdf(
         ),
       });
       await layout.flush();
-      for (const source of sources) await appendSource(layout, section, source);
+      for (const source of sources) {
+        await appendSource(layout, section, source);
+      }
     }
   }
   await layout.flush();

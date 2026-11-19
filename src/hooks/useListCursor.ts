@@ -18,7 +18,9 @@ export function nextCursorIndex(
   index: number,
   length: number
 ) {
-  if (key === "ArrowDown") return Math.min(length - 1, index + 1);
+  if (key === "ArrowDown") {
+    return Math.min(length - 1, index + 1);
+  }
   return index < 0 ? length - 1 : Math.max(0, index - 1);
 }
 
@@ -36,7 +38,9 @@ export function useListCursor({
 }) {
   const [container, setContainer] = useState<HTMLElement | null>(null);
   useEffect(() => {
-    if (!container) return;
+    if (!container) {
+      return;
+    }
     const memoryKey = `baitari:list-cursor:${storageKey}`;
     const rows = () =>
       Array.from(container.querySelectorAll<HTMLElement>("[data-list-row]"));
@@ -44,15 +48,23 @@ export function useListCursor({
       container.querySelector<HTMLElement>("[data-list-row][data-current]");
     const setCurrent = (row: HTMLElement | null, reveal = false) => {
       const previous = current();
-      if (previous === row) return;
+      if (previous === row) {
+        return;
+      }
       previous?.removeAttribute("data-current");
-      if (!row) return;
+      if (!row) {
+        return;
+      }
       row.setAttribute("data-current", "");
-      if (reveal) row.scrollIntoView({ block: "nearest" });
+      if (reveal) {
+        row.scrollIntoView({ block: "nearest" });
+      }
     };
     const remember = (row: HTMLElement | null) => {
       const id = row?.dataset.rowId;
-      if (!id) return;
+      if (!id) {
+        return;
+      }
       try {
         sessionStorage.setItem(memoryKey, id);
       } catch {
@@ -62,14 +74,18 @@ export function useListCursor({
     // The remembered row comes back once, when the list first shows it.
     let settled = false;
     const restore = () => {
-      if (settled) return;
+      if (settled) {
+        return;
+      }
       let id: string | null = null;
       try {
         id = sessionStorage.getItem(memoryKey);
       } catch {
         return;
       }
-      if (!id || current()) return;
+      if (!id || current()) {
+        return;
+      }
       const row = rows().find((candidate) => candidate.dataset.rowId === id);
       if (row) {
         settled = true;
@@ -78,12 +94,16 @@ export function useListCursor({
     };
 
     const onPointerOver = (event: PointerEvent) => {
-      if (event.pointerType !== "mouse") return;
+      if (event.pointerType !== "mouse") {
+        return;
+      }
       settled = true;
       const row = (event.target as Element).closest<HTMLElement>(
         "[data-list-row]"
       );
-      if (row && container.contains(row)) setCurrent(row);
+      if (row && container.contains(row)) {
+        setCurrent(row);
+      }
     };
     const onPointerLeave = () => setCurrent(null);
     const onClick = (event: MouseEvent) => {
@@ -95,7 +115,9 @@ export function useListCursor({
       const row = (event.target as Element).closest<HTMLElement>(
         "[data-list-row]"
       );
-      if (row && container.contains(row)) setCurrent(row);
+      if (row && container.contains(row)) {
+        setCurrent(row);
+      }
     };
     const onKeyDown = (event: KeyboardEvent) => {
       if (
@@ -103,9 +125,12 @@ export function useListCursor({
         event.metaKey ||
         event.ctrlKey ||
         event.altKey
-      )
+      ) {
         return;
-      if (!container.isConnected || container.offsetParent === null) return;
+      }
+      if (!container.isConnected || container.offsetParent === null) {
+        return;
+      }
       const target = event.target as HTMLElement | null;
       const peek = document.querySelector("[data-peek-follow]");
       const inPeek = !!(peek && target && peek.contains(target));
@@ -115,14 +140,20 @@ export function useListCursor({
         target?.closest(
           `input, textarea, select, [contenteditable='true'], ${blocking}`
         )
-      )
+      ) {
         return;
-      if (document.querySelector(blocking)) return;
+      }
+      if (document.querySelector(blocking)) {
+        return;
+      }
       // Inside the following peek, only the arrows reach the list.
-      if (inPeek && event.key !== "ArrowDown" && event.key !== "ArrowUp")
+      if (inPeek && event.key !== "ArrowDown" && event.key !== "ArrowUp") {
         return;
+      }
       const list = rows();
-      if (!list.length) return;
+      if (!list.length) {
+        return;
+      }
       settled = true;
       const row = current();
       const index = row ? list.indexOf(row) : -1;
@@ -136,8 +167,9 @@ export function useListCursor({
         event.preventDefault();
         const next = list[nextCursorIndex(key, index, list.length)];
         setCurrent(next, true);
-        if (peek && onPeek && next.dataset.rowId)
+        if (peek && onPeek && next.dataset.rowId) {
           onPeek(next.dataset.rowId, "follow");
+        }
       } else if (key === "Enter" && row && free) {
         event.preventDefault();
         remember(row);
@@ -152,7 +184,9 @@ export function useListCursor({
         ).click();
       } else if ((key === " " || key === "a") && row && onPeek && free) {
         event.preventDefault();
-        if (row.dataset.rowId) onPeek(row.dataset.rowId, "key");
+        if (row.dataset.rowId) {
+          onPeek(row.dataset.rowId, "key");
+        }
       } else if (key === "Escape" && row && !peek) {
         setCurrent(null);
       }

@@ -24,7 +24,9 @@ export function reminderTypesForSelect<
   const family = (type: T) => LEGACY_REMINDER_TYPES.get(type.id) ?? type.id;
 
   for (const type of types) {
-    if (!type.active && type.id !== selectedId) continue;
+    if (!type.active && type.id !== selectedId) {
+      continue;
+    }
     const index = result.findIndex(
       (entry) => family(entry) === family(type) || label(entry) === label(type)
     );
@@ -48,13 +50,18 @@ export function medicalReminderTypeForAct(label: string): string | null {
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .toLocaleLowerCase("fr-FR");
-  if (/\b(vaccin\w*|immunisation)\b/.test(normalized)) return "vaccin";
-  if (/\b(vermifug\w*|deparasitage interne)\b/.test(normalized))
+  if (/\b(vaccin\w*|immunisation)\b/.test(normalized)) {
+    return "vaccin";
+  }
+  if (/\b(vermifug\w*|deparasitage interne)\b/.test(normalized)) {
     return "vermifuge";
-  if (/\b(detartrage|soins? dentaires?|bilan dentaire)\b/.test(normalized))
+  }
+  if (/\b(detartrage|soins? dentaires?|bilan dentaire)\b/.test(normalized)) {
     return "soin_dentaire";
-  if (/\b(controle annuel|bilan annuel|visite annuelle)\b/.test(normalized))
+  }
+  if (/\b(controle annuel|bilan annuel|visite annuelle)\b/.test(normalized)) {
     return "controle_annuel";
+  }
   return null;
 }
 

@@ -113,7 +113,9 @@ export function MorningWatch({
         }
         onSelect={(stat) => {
           const item = items.find((entry) => entry.id === stat.id);
-          if (item) onOpen(item);
+          if (item) {
+            onOpen(item);
+          }
         }}
         sparklines={false}
         subtitle={`${day[0].toLocaleUpperCase("fr-FR")}${day.slice(1)} · état à ${time} · ${status === "late" ? (total ? `${formatNumber(total)} en retard` : "aucun retard") : `${formatNumber(total)} ouvert${total > 1 ? "s" : ""}`}`}

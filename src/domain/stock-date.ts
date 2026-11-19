@@ -1,16 +1,19 @@
 import { StockError } from "./stock";
 
 export function stockDay(value: Date = new Date()): string {
-  if (!Number.isFinite(value.getTime()))
+  if (!Number.isFinite(value.getTime())) {
     throw new StockError(
       "SOURCE_CONFLICT",
       "La date du mouvement est incorrecte."
     );
+  }
   return `${value.getFullYear()}-${String(value.getMonth() + 1).padStart(2, "0")}-${String(value.getDate()).padStart(2, "0")}`;
 }
 
 export function stockDate(value: string | null | undefined): string | null {
-  if (!value) return null;
+  if (!value) {
+    return null;
+  }
   if (
     !/^\d{4}-\d{2}-\d{2}$/.test(value) ||
     !Number.isFinite(Date.parse(`${value}T12:00:00Z`)) ||
@@ -31,10 +34,11 @@ export function stockTimestamp(value: string): string {
   )
     ? value.replace(" ", "T") + "Z"
     : value;
-  if (!Number.isFinite(Date.parse(normalized)))
+  if (!Number.isFinite(Date.parse(normalized))) {
     throw new StockError(
       "SOURCE_CONFLICT",
       "La date de réception est incorrecte."
     );
+  }
   return new Date(normalized).toISOString();
 }

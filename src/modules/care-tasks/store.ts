@@ -79,15 +79,18 @@ export function createCareStore(
       );
     },
     async create(draft: NewCareTask, author: string): Promise<CareTask> {
-      if (!author.trim())
+      if (!author.trim()) {
         throw new Error("Un utilisateur connecté est requis.");
-      if (!draft.patientId || !draft.label.trim())
+      }
+      if (!draft.patientId || !draft.label.trim()) {
         throw new Error("Choisissez un patient et indiquez le soin.");
+      }
       if (
         !CARE_TYPES.includes(draft.type) ||
         !Number.isFinite(new Date(draft.scheduledAt).getTime())
-      )
+      ) {
         throw new Error("Vérifiez le type et l’heure prévue du soin.");
+      }
       const now = clock().toISOString();
       const task: CareTask = {
         id: id(),
@@ -110,7 +113,9 @@ export function createCareStore(
         completion_revision: 0,
       };
       await persistence.transaction(async (db) => {
-        if (task.produit_id) await stockProductInDatabase(db, task.produit_id);
+        if (task.produit_id) {
+          await stockProductInDatabase(db, task.produit_id);
+        }
         await db.execute(
           "INSERT INTO care_tasks (id, patient_id, label, type, heure_prevue, statut, execute_par, produit_id, note, motif_annulation, recurrence, created_at, updated_at, completed_at, produit_quantite) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)",
           [
@@ -144,25 +149,32 @@ export function createCareStore(
       quantity: number,
       author: string
     ): Promise<CareTask> {
-      if (!author.trim())
+      if (!author.trim()) {
         throw new Error("Un utilisateur connecté est requis.");
+      }
       const requested = productId ? stockQuantity(quantity) : 1;
       return persistence.transaction(async (db) => {
         const [task] = await db.select<CareTask[]>(
           "SELECT * FROM care_tasks WHERE id=?",
           [taskId]
         );
-        if (!task) throw new Error("Ce soin n’existe plus.");
-        if (task.statut === "fait" || task.statut === "annule")
+        if (!task) {
+          throw new Error("Ce soin n’existe plus.");
+        }
+        if (task.statut === "fait" || task.statut === "annule") {
           throw new Error(
             "Le produit d’un soin terminé ne peut plus être modifié."
           );
-        if (productId) await stockProductInDatabase(db, productId);
+        }
+        if (productId) {
+          await stockProductInDatabase(db, productId);
+        }
         if (
           task.produit_id === productId &&
           (task.produit_quantite ?? 1) === requested
-        )
+        ) {
           return task;
+        }
         const now = clock().toISOString();
         await db.execute(
           "UPDATE care_tasks SET produit_id=?,produit_quantite=?,updated_at=? WHERE id=?",
@@ -196,19 +208,24 @@ export function createCareStore(
       reason: string,
       expectedRevision: number
     ): Promise<CareTask> {
-      if (!author.trim())
+      if (!author.trim()) {
         throw new Error("Un utilisateur connecté est requis.");
-      if (!reason.trim())
+      }
+      if (!reason.trim()) {
         throw new Error("Indiquez le motif de l’annulation de validation.");
+      }
       return persistence.transaction(async (db) => {
         const [task] = await db.select<CareTask[]>(
           "SELECT * FROM care_tasks WHERE id=?",
           [taskId]
         );
-        if (!task) throw new Error("Ce soin n’existe plus.");
+        if (!task) {
+          throw new Error("Ce soin n’existe plus.");
+        }
         const revision = task.completion_revision ?? 0;
-        if (task.statut !== "fait" || revision !== expectedRevision)
+        if (task.statut !== "fait" || revision !== expectedRevision) {
           throw new Error("Ce soin vient d’être modifié. Actualisez la vue.");
+        }
         const completionKey = careCompletionKey(task.id, revision);
         const now = clock().toISOString();
         const invoiceId = careInvoiceId(task.id, revision);
@@ -250,8 +267,9 @@ export function createCareStore(
           motif_annulation=NULL,completion_revision=completion_revision+1,updated_at=? WHERE id=? AND statut='fait' AND completion_revision=?`,
           [now, task.id, revision]
         );
-        if (updated.rowsAffected !== 1)
+        if (updated.rowsAffected !== 1) {
           throw new Error("Ce soin vient d’être modifié. Actualisez la vue.");
+        }
         await db.execute(
           "INSERT INTO care_task_history(id,task_id,from_status,to_status,author_id,changed_at,reason) VALUES (?,?,'fait','a_faire',?,?,?)",
           [id(), task.id, author, now, reason.trim()]
@@ -278,7 +296,9 @@ export function createCareStore(
           "SELECT * FROM care_tasks WHERE id = $1",
           [taskId]
         );
-        if (!task) throw new Error("Ce soin n’existe plus.");
+        if (!task) {
+          throw new Error("Ce soin n’existe plus.");
+        }
         assertCareTransition(task.statut, to, author, reason);
         const now = clock().toISOString();
         if (to === "fait" && task.produit_id) {
@@ -322,15 +342,18 @@ export function createCareStore(
             task.statut,
           ]
         );
-        if (updated.rowsAffected !== 1)
+        if (updated.rowsAffected !== 1) {
           throw new Error("Ce soin vient d’être modifié. Actualisez la vue.");
+        }
         await db.execute(
           "INSERT INTO care_task_history (id,task_id,from_status,to_status,author_id,changed_at,reason) VALUES ($1,$2,$3,$4,$5,$6,$7)",
           [id(), task.id, task.statut, to, author, now, next.motif_annulation]
         );
         return next;
       });
-      if (to === "fait") await notifyCareTaskCompleted(result);
+      if (to === "fait") {
+        await notifyCareTaskCompleted(result);
+      }
       return result;
     },
   };

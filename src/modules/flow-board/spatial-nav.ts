@@ -36,7 +36,9 @@ export function nearestInDirection<T extends { box: Box }>(
           : direction === "down"
             ? box.top - from.bottom
             : from.top - box.bottom;
-    if (along < -4) continue;
+    if (along < -4) {
+      continue;
+    }
     const across =
       direction === "left" || direction === "right"
         ? Math.abs(cy - center.y)

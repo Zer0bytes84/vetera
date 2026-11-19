@@ -43,8 +43,11 @@ export async function exportPurchaseOrder(
   );
   y += 5;
   write(supplier.name, 13, true);
-  for (const value of [supplier.address, supplier.phone, supplier.email])
-    if (value) write(value);
+  for (const value of [supplier.address, supplier.phone, supplier.email]) {
+    if (value) {
+      write(value);
+    }
+  }
   y += 8;
   for (const line of lines) {
     if (y > 248) {

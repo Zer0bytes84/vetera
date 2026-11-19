@@ -22,7 +22,9 @@ export default function QuickConsultation({
   const appointments = useAppointmentsRepository();
   const busy = useRef(false);
   async function select(patient: Patient) {
-    if (busy.current) return;
+    if (busy.current) {
+      return;
+    }
     busy.current = true;
     await guard(
       async () => {

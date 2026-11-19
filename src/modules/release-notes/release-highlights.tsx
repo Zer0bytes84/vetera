@@ -31,7 +31,9 @@ export function ReleaseHighlights({
 
 /** « 8 novembre 2026 », pour une date `AAAA-MM-JJ`. */
 export function formatReleaseDate(date?: string): string | null {
-  if (!date) return null;
+  if (!date) {
+    return null;
+  }
   const parsed = new Date(`${date}T12:00:00`);
   return Number.isNaN(parsed.getTime())
     ? null

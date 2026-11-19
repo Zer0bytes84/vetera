@@ -105,8 +105,9 @@ export function useStockPageModel() {
       !(await updateProduct(product.id, {
         archivedAt: new Date().toISOString(),
       }))
-    )
+    ) {
       return;
+    }
     toast.success(product.name + " a été archivé.", {
       duration: 5000,
       action: {
@@ -167,8 +168,9 @@ export function useStockPageModel() {
           productId = saved.id;
         } else if (selectedProduct) {
           const { quantity, ...details } = productData;
-          if (!(await updateProduct(selectedProduct.id, details)))
+          if (!(await updateProduct(selectedProduct.id, details))) {
             throw new Error("Le produit n’a pas pu être enregistré.");
+          }
           if (quantity !== selectedProduct.quantity) {
             await adjustProductStock({
               productId: selectedProduct.id,
@@ -178,7 +180,9 @@ export function useStockPageModel() {
           }
         } else {
           const added = await addProduct(productData as any);
-          if (!added) throw new Error("Le produit n’a pas pu être enregistré.");
+          if (!added) {
+            throw new Error("Le produit n’a pas pu être enregistré.");
+          }
           if (added) {
             productId = added.id;
             if (productData.quantity > 0) {

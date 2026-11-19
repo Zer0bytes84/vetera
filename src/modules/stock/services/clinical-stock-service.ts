@@ -14,14 +14,17 @@ import {
 } from "./clinical-stock-store";
 
 function changed() {
-  if (typeof window === "undefined") return;
+  if (typeof window === "undefined") {
+    return;
+  }
   for (const table of [
     "products",
     "stock_movements",
     "prescriptions",
     "invoices",
-  ])
+  ]) {
     emitSQLiteDataChanged(table);
+  }
 }
 
 export const clinicalStockService = {

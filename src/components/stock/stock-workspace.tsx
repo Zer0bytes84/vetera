@@ -111,7 +111,9 @@ interface StockWorkspaceProps {
 const PAGE_SIZE = 8;
 
 const formatDate = (value?: string) => {
-  if (!value) return "Non renseignée";
+  if (!value) {
+    return "Non renseignée";
+  }
   return new Intl.DateTimeFormat("fr-DZ", {
     day: "2-digit",
     month: "short",
@@ -396,7 +398,9 @@ function ProductDetail({
   onRestock: (product: Product) => void;
   product: Product | null;
 }) {
-  if (!product) return null;
+  if (!product) {
+    return null;
+  }
   const margin = product.salePriceAmount - product.purchasePriceAmount;
   const target = Math.max(product.minStock * 3, 1);
 
@@ -1283,7 +1287,9 @@ export function StockWorkspace({
                 const product = products.find(
                   (item) => item.id === inventoryProductId
                 );
-                if (!product) return;
+                if (!product) {
+                  return;
+                }
                 setInventorySaving(true);
                 await guard(
                   async () => {

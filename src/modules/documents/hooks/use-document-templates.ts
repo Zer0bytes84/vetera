@@ -8,7 +8,9 @@ export function useDocumentTemplates() {
   const store = useManagedTemplates();
   const templates = useMemo(() => {
     return store.templates.filter((template) => {
-      if (template.kind === "referral" || !template.active) return false;
+      if (template.kind === "referral" || !template.active) {
+        return false;
+      }
       try {
         validateTemplate(template);
         return true;

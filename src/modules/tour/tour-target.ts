@@ -1,7 +1,9 @@
 import type { TourStepCopy } from "./tour-steps";
 
 function visible(element: Element | null | undefined): element is HTMLElement {
-  if (!(element instanceof HTMLElement)) return false;
+  if (!(element instanceof HTMLElement)) {
+    return false;
+  }
   const box = element.getBoundingClientRect();
   return box.width > 0 && box.height > 0;
 }
@@ -57,7 +59,9 @@ export function locateTourTarget(
       element = visible(trigger) ? trigger : null;
     }
   }
-  if (!element) return { element: null, covered: false };
+  if (!element) {
+    return { element: null, covered: false };
+  }
   return reachable(element, doc)
     ? { element, covered: false }
     : { element: null, covered: true };
@@ -75,7 +79,9 @@ const route = (hash: string) => hash.replace(/^#\/?/, "");
 
 /** Étape de la barre latérale : l'utilisateur est-il arrivé à l'écran visé, ou plus avant dans le geste ? */
 export function sidebarOpened(step: TourStepCopy, hash: string): boolean {
-  if (!("sidebarLabel" in step.target)) return false;
+  if (!("sidebarLabel" in step.target)) {
+    return false;
+  }
   const current = route(hash);
   return (
     current.startsWith(step.target.sidebarLabel.toLowerCase()) ||
@@ -93,9 +99,13 @@ export function inDeeperScreen(step: TourStepCopy, hash: string): boolean {
 
 /** Étape du menu « + » : l'utilisateur vient de cliquer l'entrée du menu qui correspond. */
 export function clickedMenuEntry(step: TourStepCopy, event: Event): boolean {
-  if (!("menuLabel" in step.target)) return false;
+  if (!("menuLabel" in step.target)) {
+    return false;
+  }
   const target = event.target;
-  if (!(target instanceof Element)) return false;
+  if (!(target instanceof Element)) {
+    return false;
+  }
   return (
     target.closest(".quick-actions-menu-item")?.textContent?.trim() ===
     step.target.menuLabel

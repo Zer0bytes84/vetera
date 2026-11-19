@@ -19,18 +19,24 @@ const listeners = new Set<() => void>();
 
 function publish(next: RoomsSnapshot) {
   snapshot = next;
-  for (const listener of listeners) listener();
+  for (const listener of listeners) {
+    listener();
+  }
 }
 
 export function refreshRooms(): Promise<void> {
   if (!isTauriRuntime()) {
-    if (!snapshot.loaded) publish({ error: null, loaded: true, rooms: [] });
+    if (!snapshot.loaded) {
+      publish({ error: null, loaded: true, rooms: [] });
+    }
     return Promise.resolve();
   }
   const current = ++request;
   pending = roomsService.list().then(
     (rooms) => {
-      if (current === request) publish({ error: null, loaded: true, rooms });
+      if (current === request) {
+        publish({ error: null, loaded: true, rooms });
+      }
     },
     () => {
       if (current === request) {
@@ -51,7 +57,9 @@ export function announceRoomsChanged() {
 
 function subscribe(listener: () => void) {
   listeners.add(listener);
-  if (listeners.size === 1 && !snapshot.loaded && !pending) void refreshRooms();
+  if (listeners.size === 1 && !snapshot.loaded && !pending) {
+    void refreshRooms();
+  }
   return () => {
     listeners.delete(listener);
   };
@@ -68,7 +76,9 @@ export function useRooms() {
     () => snapshot
   );
   useEffect(() => {
-    if (!state.loaded && !pending) void refreshRooms();
+    if (!state.loaded && !pending) {
+      void refreshRooms();
+    }
   }, [state.loaded]);
   const active = useMemo(
     () => state.rooms.filter((room) => !room.archivedAt),

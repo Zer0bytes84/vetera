@@ -33,8 +33,9 @@ export function useDashboardVersion() {
           active &&
           initialRevision === revision &&
           (value === "clinical" || value === "analytics" || value === "classic")
-        )
+        ) {
           publish(value === "clinical" ? "clinical" : "analytics");
+        }
       })
       .catch(() => undefined);
     return () => {
@@ -48,7 +49,9 @@ export function useDashboardVersion() {
     try {
       await setSetting(KEY, next);
     } catch {
-      if (request === revision) publish(previous);
+      if (request === revision) {
+        publish(previous);
+      }
       toast.error("Le choix du tableau de bord n’a pas été enregistré.", {
         action: {
           label: "Réessayer",

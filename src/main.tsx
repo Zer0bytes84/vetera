@@ -18,7 +18,9 @@ import { initWindowControls } from "@/modules/shell/window-controls";
 import "@/modules/shell/window-controls.css";
 
 // Windows: our header is the title bar (minimize, maximize, close from tauri-plugin-decorum). Nothing happens elsewhere.
-if (!isActivationAdminRoute()) initWindowControls();
+if (!isActivationAdminRoute()) {
+  initWindowControls();
+}
 
 interface ErrorBoundaryState {
   hasError: boolean;

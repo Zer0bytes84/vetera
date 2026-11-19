@@ -74,7 +74,9 @@ export function FinancialPeriodFilter({
       <Popover
         open={open}
         onOpenChange={(next) => {
-          if (next) setDraft({ from: parse(from), to: parse(to) });
+          if (next) {
+            setDraft({ from: parse(from), to: parse(to) });
+          }
           setOpen(next);
         }}
       >

@@ -45,8 +45,9 @@ export function modelScaffold(
   transcript: string,
   guidedSource?: LocalSoapNote
 ): LocalSoapNote {
-  if (!guidedSource)
+  if (!guidedSource) {
     return buildDictationScaffold(prepareModelDictation(transcript).text);
+  }
   const sections = prepareGuidedSections(
     routeGuidedTreatments(guidedSource),
     guidedSource
@@ -151,10 +152,11 @@ export async function prepareSoapDraft({
     promptOptions
   );
   const urls = getLocalModelUrls(models);
-  if (!models.generatorReady)
+  if (!models.generatorReady) {
     throw new Error(
       "Installez la préparation des notes sur cet ordinateur avant de continuer."
     );
+  }
   onProgress({
     message: "Préparation de l’assistant…",
     stage: "loading",
@@ -185,8 +187,9 @@ export async function prepareSoapDraft({
           },
           "generated"
         );
-        if (result.type !== "generated")
+        if (result.type !== "generated") {
           throw new Error("La préparation locale de la note a échoué.");
+        }
         onAttempt?.({
           number,
           text: result.text,

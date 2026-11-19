@@ -8,7 +8,9 @@ export const CLINIC_TAB_PENDING_KEY = "vetera:pending-clinic-tab";
 export function takePendingClinicTab(): string | null {
   try {
     const tab = sessionStorage.getItem(CLINIC_TAB_PENDING_KEY);
-    if (tab) sessionStorage.removeItem(CLINIC_TAB_PENDING_KEY);
+    if (tab) {
+      sessionStorage.removeItem(CLINIC_TAB_PENDING_KEY);
+    }
     return tab;
   } catch {
     return null;

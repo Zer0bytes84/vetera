@@ -130,13 +130,16 @@ export function HealthCardDialog({
   }
   useEffect(() => {
     const input = snapshot;
-    if (loading || !input) return;
+    if (loading || !input) {
+      return;
+    }
     let cancelled = false;
     void (async () => {
       await guard(
         async () => {
-          if (!currentUser?.id)
+          if (!currentUser?.id) {
             throw new Error("Connectez-vous pour préparer le carnet de santé.");
+          }
           let clinic: InvoiceSettings = DEFAULT_INVOICE_SETTINGS;
           try {
             clinic = await getInvoiceSettings();
@@ -152,18 +155,21 @@ export function HealthCardDialog({
               requestedBy: currentUser.id,
             }
           );
-          if (!cancelled) setArtifact(pdf);
+          if (!cancelled) {
+            setArtifact(pdf);
+          }
         },
         {
           recover: (cause) => {
             console.error(cause);
-            if (!cancelled)
+            if (!cancelled) {
               setError(
                 message(
                   cause,
                   "Le carnet de santé n’a pas pu être préparé. Réessayez."
                 )
               );
+            }
           },
         }
       );
@@ -174,13 +180,17 @@ export function HealthCardDialog({
   }, [attempt, currentUser?.id, loading, patient.id, snapshot]);
 
   const close = () => {
-    if (saving) return;
+    if (saving) {
+      return;
+    }
     print.current?.abort();
     onClose();
   };
 
   const save = async () => {
-    if (!artifact) return;
+    if (!artifact) {
+      return;
+    }
     setSaving(true);
     setError("");
     await guard(
@@ -190,13 +200,14 @@ export function HealthCardDialog({
           title: "Enregistrer le carnet de santé",
           filterName: "Carnet de santé PDF",
         });
-        if (result)
+        if (result) {
           toast.success(
             result.downloaded
               ? "Téléchargement du carnet de santé lancé."
               : "Carnet de santé enregistré.",
             { description: result.path, duration: 8000 }
           );
+        }
       },
       {
         recover: (cause) => {
@@ -215,7 +226,9 @@ export function HealthCardDialog({
   };
 
   const printPdf = async () => {
-    if (!artifact) return;
+    if (!artifact) {
+      return;
+    }
     const controller = new AbortController();
     print.current = controller;
     setPrinting(true);
@@ -227,16 +240,19 @@ export function HealthCardDialog({
       },
       {
         recover: (cause) => {
-          if (!controller.signal.aborted)
+          if (!controller.signal.aborted) {
             setError(
               message(
                 cause,
                 "L’impression n’a pas pu être préparée. Réessayez ou enregistrez le PDF."
               )
             );
+          }
         },
         cleanup: () => {
-          if (!controller.signal.aborted) setPrinting(false);
+          if (!controller.signal.aborted) {
+            setPrinting(false);
+          }
         },
       }
     );
@@ -246,7 +262,9 @@ export function HealthCardDialog({
     <Dialog
       open
       onOpenChange={(open) => {
-        if (!open) close();
+        if (!open) {
+          close();
+        }
       }}
     >
       <FormDialogContent

@@ -45,10 +45,11 @@ export function encodePcmBase64(pcm: Float32Array) {
   const octets = new Uint8Array(pcm.buffer, pcm.byteOffset, pcm.byteLength);
   let binaire = "";
   const morceau = 0x2000;
-  for (let index = 0; index < octets.length; index += morceau)
+  for (let index = 0; index < octets.length; index += morceau) {
     binaire += String.fromCharCode(
       ...octets.subarray(index, Math.min(index + morceau, octets.length))
     );
+  }
   return btoa(binaire);
 }
 

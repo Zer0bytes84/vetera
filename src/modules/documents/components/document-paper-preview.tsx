@@ -9,14 +9,15 @@ export function DocumentPaperPreview({ dataUrl }: { dataUrl: string | null }) {
   } | null>(null);
   useEffect(() => {
     const controller = new AbortController();
-    if (dataUrl)
+    if (dataUrl) {
       void renderPdfPages(dataUrl, controller.signal)
         .then((pages) => {
-          if (!controller.signal.aborted)
+          if (!controller.signal.aborted) {
             setResult({ source: dataUrl, pages, error: "" });
+          }
         })
         .catch((cause) => {
-          if (!controller.signal.aborted)
+          if (!controller.signal.aborted) {
             setResult({
               source: dataUrl,
               pages: [],
@@ -25,7 +26,9 @@ export function DocumentPaperPreview({ dataUrl }: { dataUrl: string | null }) {
                   ? cause.message
                   : "L’aperçu n’a pas pu être chargé.",
             });
+          }
         });
+    }
     return () => controller.abort();
   }, [dataUrl]);
   const pages = result?.source === dataUrl ? result.pages : [];

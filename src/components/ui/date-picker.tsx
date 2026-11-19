@@ -21,7 +21,9 @@ export const COMPACT_CALENDAR_CLASS =
 /** Parse a civil YYYY-MM-DD day as a local date, never through UTC. */
 export function parseDateValue(value?: string | null): Date | undefined {
   const match = value?.match(DAY);
-  if (!match) return undefined;
+  if (!match) {
+    return undefined;
+  }
   const date = new Date(
     Number(match[1]),
     Number(match[2]) - 1,
@@ -132,7 +134,9 @@ export function DatePicker({
           disabled={disabledDays.length ? disabledDays : undefined}
           mode="single"
           onSelect={(date) => {
-            if (!date) return;
+            if (!date) {
+              return;
+            }
             onChange(formatDateValue(date));
             setOpen(false);
           }}

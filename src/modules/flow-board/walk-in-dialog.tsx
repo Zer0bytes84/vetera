@@ -55,7 +55,9 @@ export function WalkInDialog({
   };
 
   const confirm = async () => {
-    if (!selected || busy) return;
+    if (!selected || busy) {
+      return;
+    }
     setBusy(true);
     await guard(
       async () => {

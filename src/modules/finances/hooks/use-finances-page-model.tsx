@@ -150,12 +150,16 @@ export function useFinancesPageModel({
     setIsDetailLoading(true);
   }
   useEffect(() => {
-    if (focus?.kind !== "invoice") return;
+    if (focus?.kind !== "invoice") {
+      return;
+    }
     let alive = true;
     void billingService
       .getInvoice(focus.id)
       .then((invoice) => {
-        if (!alive) return;
+        if (!alive) {
+          return;
+        }
         if (!invoice) {
           toast.error("Cette facture est introuvable.");
           return;
@@ -166,10 +170,11 @@ export function useFinancesPageModel({
         setSelectedInvoice(invoice);
       })
       .catch(() => {
-        if (alive)
+        if (alive) {
           toast.error(
             "Impossible d’ouvrir cette facture. Réessayez depuis la liste."
           );
+        }
       })
       .finally(() => {
         if (alive) {
@@ -253,13 +258,17 @@ export function useFinancesPageModel({
   };
 
   useEffect(() => {
-    if (isTauriRuntime()) void fetchInvoices();
+    if (isTauriRuntime()) {
+      void fetchInvoices();
+    }
   }, [fetchInvoices]);
 
   useEffect(() => {
     const consume = () => {
       const raw = sessionStorage.getItem("vetera:pending-invoice");
-      if (!raw) return;
+      if (!raw) {
+        return;
+      }
       return guardSync(
         () => {
           const context = JSON.parse(raw) as {
@@ -267,12 +276,15 @@ export function useFinancesPageModel({
             patientId?: string;
             appointmentId?: string;
           };
-          if (context.appointmentId && invoicesLoading) return;
+          if (context.appointmentId && invoicesLoading) {
+            return;
+          }
           if (
             !context.ownerId ||
             !owners.some((owner) => owner.id === context.ownerId)
-          )
+          ) {
             return;
+          }
           sessionStorage.removeItem("vetera:pending-invoice");
           setActiveTab("invoices");
           const existing =
@@ -764,8 +776,9 @@ export function useFinancesPageModel({
       !selectedInvoice ||
       selectedInvoice.documentStatus !== "draft" ||
       isSubmitting
-    )
+    ) {
       return;
+    }
     setInvoicePrices(
       Object.fromEntries(
         selectedInvoice.lines.map((line) => [
@@ -777,7 +790,9 @@ export function useFinancesPageModel({
     setEditingInvoicePrices(true);
   };
   const saveInvoicePrices = async () => {
-    if (!selectedInvoice || isSubmitting) return;
+    if (!selectedInvoice || isSubmitting) {
+      return;
+    }
     setIsSubmitting(true);
     await guard(
       async () => {

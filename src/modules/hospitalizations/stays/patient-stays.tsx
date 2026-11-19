@@ -11,15 +11,19 @@ export function PatientStays({
 }) {
   const { stays, error, loading, refresh } = useStays(patientId);
   const { requestFocus } = useFocus();
-  if (loading)
+  if (loading) {
     return (
       <p role="status" className="t-13 text-muted-foreground">
         Chargement des séjours…
       </p>
     );
-  if (error)
+  }
+  if (error) {
     return <ErrorState message={error} onRetry={() => void refresh()} />;
-  if (!stays.length) return null;
+  }
+  if (!stays.length) {
+    return null;
+  }
   return (
     <section className="mb-6 space-y-3">
       <h2 className="t-16 font-medium">Séjours hospitaliers</h2>

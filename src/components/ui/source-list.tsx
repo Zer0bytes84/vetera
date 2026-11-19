@@ -53,8 +53,11 @@ export function SourceList({
     { name: string; icon?: LucideIcon; items: Source[] }[]
   >((acc, source) => {
     const group = acc.find((g) => g.name === source.group);
-    if (group) group.items.push(source);
-    else acc.push({ name: source.group, icon: source.icon, items: [source] });
+    if (group) {
+      group.items.push(source);
+    } else {
+      acc.push({ name: source.group, icon: source.icon, items: [source] });
+    }
     return acc;
   }, []);
 

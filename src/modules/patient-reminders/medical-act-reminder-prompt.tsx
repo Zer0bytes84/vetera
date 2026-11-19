@@ -23,10 +23,14 @@ export function MedicalActReminderPrompt() {
   const seen = useRef(new Set<string>());
 
   useEffect(() => {
-    if (!authorId) return;
+    if (!authorId) {
+      return;
+    }
     let mounted = true;
     const offer = async (act: MedicalAct) => {
-      if (!isTauriRuntime() || seen.current.has(act.id)) return;
+      if (!isTauriRuntime() || seen.current.has(act.id)) {
+        return;
+      }
       seen.current.add(act.id);
       await guard(
         async () => {
@@ -34,8 +38,9 @@ export function MedicalActReminderPrompt() {
             act,
             patientRemindersService
           );
-          if (mounted && proposal)
+          if (mounted && proposal) {
             setQueue((current) => [...current, proposal]);
+          }
         },
         {
           recover: () => {
@@ -69,7 +74,9 @@ export function MedicalActReminderPrompt() {
     const fromCare = (event: Event) => {
       const care = (event as CustomEvent<CareCompletedEvent>).detail;
       const type = medicalReminderTypeForAct(care.act);
-      if (!type) return;
+      if (!type) {
+        return;
+      }
       void offer({
         id: `soin:${care.taskId}`,
         patientId: care.patientId,
@@ -90,7 +97,9 @@ export function MedicalActReminderPrompt() {
   }, [authorId]);
 
   const proposal = queue[0];
-  if (!proposal) return null;
+  if (!proposal) {
+    return null;
+  }
   return (
     <MedicalReminderDialog
       key={proposal.acteSourceId}

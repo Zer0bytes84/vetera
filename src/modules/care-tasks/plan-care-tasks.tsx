@@ -52,7 +52,9 @@ export function PlanCareTasks({
   const openCareList = () => {
     setOpen(false);
     const lastDay = created.at(-1)?.scheduledAt.slice(0, 10);
-    if (lastDay) sessionStorage.setItem(CARE_LIST_DAY_KEY, lastDay);
+    if (lastDay) {
+      sessionStorage.setItem(CARE_LIST_DAY_KEY, lastDay);
+    }
     // Same route as the patient file: the clinical workspace opens its Soins tab filtered on this patient.
     requestFocus("care_patient", patientId);
     window.location.hash = "#/clinique";

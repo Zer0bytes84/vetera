@@ -70,13 +70,18 @@ const load = async (
     loaded?.root === modelRoot &&
     loaded.name === name &&
     (name !== "arctic" || loaded.threads === threads)
-  )
+  ) {
     return loaded;
+  }
   await release();
   // v2 needs transformers.js 4 (alias), with its own ONNX runtime files;
   // v1 and Whisper stay on transformers.js 3.
-  if (name === "embeddinggemma2") return loadV2(modelRoot, runtimeRoot);
-  if (name === "arctic") return loadArctic(modelRoot, runtimeRoot, threads);
+  if (name === "embeddinggemma2") {
+    return loadV2(modelRoot, runtimeRoot);
+  }
+  if (name === "arctic") {
+    return loadArctic(modelRoot, runtimeRoot, threads);
+  }
   const { env, AutoTokenizer, AutoModel } = await import(
     "@huggingface/transformers"
   );
@@ -86,7 +91,9 @@ const load = async (
   env.useFSCache = false;
   env.localModelPath = modelRoot;
   const wasm = env.backends.onnx.wasm;
-  if (!wasm) throw new Error("Runtime indisponible.");
+  if (!wasm) {
+    throw new Error("Runtime indisponible.");
+  }
   wasm.wasmPaths = runtimeRoot + "onnx/";
   wasm.numThreads = 1;
   wasm.proxy = false;
@@ -121,10 +128,14 @@ const loadArctic = async (
   env.useFSCache = false;
   env.localModelPath = modelRoot;
   const wasm = env.backends.onnx.wasm;
-  if (!wasm) throw new Error("Runtime indisponible.");
+  if (!wasm) {
+    throw new Error("Runtime indisponible.");
+  }
   wasm.wasmPaths = runtimeRoot + "onnx/";
   // Threads need SharedArrayBuffer, i.e. a cross-origin isolated page.
-  if (threads > 1) exposeSharedMemory();
+  if (threads > 1) {
+    exposeSharedMemory();
+  }
   wasm.numThreads = typeof SharedArrayBuffer === "function" ? threads : 1;
   onnxWasm = wasm;
   wasm.proxy = false;
@@ -154,7 +165,9 @@ const loadV2 = async (modelRoot: string, runtimeRoot: string) => {
   env.useFSCache = false;
   env.localModelPath = modelRoot;
   const wasm = env.backends.onnx.wasm;
-  if (!wasm) throw new Error("Runtime indisponible.");
+  if (!wasm) {
+    throw new Error("Runtime indisponible.");
+  }
   wasm.wasmPaths = runtimeRoot + "onnx-v4/";
   wasm.numThreads = 1;
   wasm.proxy = false;
@@ -190,13 +203,16 @@ const loadV2 = async (modelRoot: string, runtimeRoot: string) => {
   return loaded;
 };
 self.onmessage = async ({ data }: MessageEvent<WorkerRequest>) => {
-  if (data.type !== "embed") return;
+  if (data.type !== "embed") {
+    return;
+  }
   try {
     if (
       data.texts.length > 100 ||
       data.texts.some((text) => text.length > 100000)
-    )
+    ) {
       throw new Error("Lot trop long.");
+    }
     enforceOfflineWorker([data.modelRoot, data.runtimeRoot]);
     const name = data.model ?? "embeddinggemma";
     const { tokenizer, model } = await load(
@@ -212,27 +228,31 @@ self.onmessage = async ({ data }: MessageEvent<WorkerRequest>) => {
         padding: true,
         truncation: false,
       });
-      if (Number(inputs.input_ids.dims.at(-1)) > MAX_TOKENS[name])
+      if (Number(inputs.input_ids.dims.at(-1)) > MAX_TOKENS[name]) {
         throw new Error(
           "La rubrique dépasse la capacité de lecture locale. Aucun texte n’a été tronqué."
         );
+      }
       const output = await model(inputs);
       if (name === "arctic") {
         // CLS pooling (first token), unless the export already pools it, then L2.
         const pooled = output.sentence_embedding;
         const hidden = output.last_hidden_state ?? output.token_embeddings;
         const source = pooled ?? hidden;
-        if (!source)
+        if (!source) {
           throw new Error(
             `Sortie incompatible (${Object.keys(output).join(", ")}).`
           );
+        }
         const size = Number(source.dims.at(-1));
         const cls = Array.from((source.data as Float32Array).subarray(0, size));
         const norm = Math.hypot(...cls);
         vectors.push(cls.map((value) => value / norm));
       } else {
         const tensor = output.sentence_embedding;
-        if (!tensor) throw new Error("Sortie incompatible.");
+        if (!tensor) {
+          throw new Error("Sortie incompatible.");
+        }
         vectors.push(
           normalizedEmbedding(Array.from(tensor.data as Float32Array))
         );
@@ -249,7 +269,9 @@ self.onmessage = async ({ data }: MessageEvent<WorkerRequest>) => {
     // A too-long section is a property of the input: keep the loaded model.
     const tooLong =
       error instanceof Error && error.message.startsWith("La rubrique dépasse");
-    if (!tooLong) await release();
+    if (!tooLong) {
+      await release();
+    }
     send({
       type: "error",
       message: tooLong

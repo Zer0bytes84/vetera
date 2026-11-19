@@ -93,9 +93,13 @@ function useWidth() {
   const [width, setWidth] = useState<number | null>(null);
   useLayoutEffect(() => {
     const el = ref.current;
-    if (!el) return;
+    if (!el) {
+      return;
+    }
     setWidth(el.getBoundingClientRect().width);
-    if (typeof ResizeObserver === "undefined") return;
+    if (typeof ResizeObserver === "undefined") {
+      return;
+    }
     const observer = new ResizeObserver(([entry]) =>
       setWidth(entry.contentRect.width)
     );
@@ -159,8 +163,9 @@ export function HexDensity({
   const placed = cells.map((cell) => ({ ...cell, ...centre(cell) }));
   const byId = new Map(placed.map((cell) => [cell.id, cell]));
   const columns = new Map<number, typeof placed>();
-  for (const cell of placed)
+  for (const cell of placed) {
     columns.set(cell.col, [...(columns.get(cell.col) ?? []), cell]);
+  }
   const lastCol = Math.max(1, ...columns.keys());
   const activeCell = active === null ? undefined : byId.get(active);
   const filledCells = placed.filter((cell) => cell.count > 0);
@@ -208,12 +213,18 @@ export function HexDensity({
         best = cell.id;
       }
     }
-    if (best !== active) select(best, false);
+    if (best !== active) {
+      select(best, false);
+    }
   };
 
   const onKeyDown = (event: React.KeyboardEvent) => {
-    if (!placed.length) return;
-    if (event.key === "Escape") return select(null, true);
+    if (!placed.length) {
+      return;
+    }
+    if (event.key === "Escape") {
+      return select(null, true);
+    }
     const from = activeCell ?? placed.find((cell) => cell.today) ?? placed[0];
     const dirs: Record<string, [number, number]> = {
       ArrowRight: [1, 0],
@@ -222,17 +233,22 @@ export function HexDensity({
       ArrowUp: [0, -1],
     };
     let next: string | undefined;
-    if (event.key === "Home") next = placed[0].id;
-    else if (event.key === "End") next = placed.at(-1)!.id;
-    else if (event.key in dirs) {
-      if (!activeCell) next = from.id;
-      else {
+    if (event.key === "Home") {
+      next = placed[0].id;
+    } else if (event.key === "End") {
+      next = placed.at(-1)!.id;
+    } else if (event.key in dirs) {
+      if (!activeCell) {
+        next = from.id;
+      } else {
         // Nearest cell in that direction, preferring the same row or column.
         const [ux, uy] = dirs[event.key];
         let best = Infinity;
         for (const cell of placed) {
           const along = (cell.cx - from.cx) * ux + (cell.cy - from.cy) * uy;
-          if (along <= 1) continue;
+          if (along <= 1) {
+            continue;
+          }
           const across = Math.abs(
             (cell.cx - from.cx) * uy - (cell.cy - from.cy) * ux
           );
@@ -244,7 +260,9 @@ export function HexDensity({
         }
         next = next ?? from.id;
       }
-    } else return;
+    } else {
+      return;
+    }
     event.preventDefault();
     select(next, true);
   };

@@ -134,16 +134,24 @@ export function routeGuidedTreatments(answers: LocalSoapNote): LocalSoapNote {
     const statements = analyzeTreatmentDictation(answers[key]);
     for (const part of statements) {
       const target = destination(part.kind);
-      if (target && target !== key)
+      if (target && target !== key) {
         moved[target] = [moved[target], part.text].filter(Boolean).join("\n\n");
-      else kept.push(part.text);
+      } else {
+        kept.push(part.text);
+      }
     }
     // Preserve whitespace in sections that have no routing change.
     result[key] =
       kept.length === statements.length ? answers[key] : kept.join(" ");
   }
-  for (const key of ["subjective", "objective", "assessment", "plan"] as const)
+  for (const key of [
+    "subjective",
+    "objective",
+    "assessment",
+    "plan",
+  ] as const) {
     result[key] = [result[key], moved[key]].filter(Boolean).join("\n\n");
+  }
   return result;
 }
 export function prepareModelDictation(transcript: string) {
@@ -156,14 +164,19 @@ export function prepareModelDictation(transcript: string) {
     if (
       target === "plan" ||
       (!target && part.kind === "observation" && containsDosage(part.text))
-    )
+    ) {
       planSentences.push(part.text);
-    else if (target || (part.kind === "negated" && containsDosage(part.text))) {
+    } else if (
+      target ||
+      (part.kind === "negated" && containsDosage(part.text))
+    ) {
       const key = target ?? "subjective";
       protectedSections[key] = [protectedSections[key], part.text]
         .filter(Boolean)
         .join("\n\n");
-    } else kept.push(part.text);
+    } else {
+      kept.push(part.text);
+    }
   }
   return {
     text: kept.join(" "),
@@ -220,8 +233,12 @@ interface Piece {
 function modelText(pieces: Piece[]) {
   const groups: string[][] = [];
   for (const piece of pieces) {
-    if (piece.opens) groups.push([]);
-    if (!piece.kept) groups[groups.length - 1].push(piece.text);
+    if (piece.opens) {
+      groups.push([]);
+    }
+    if (!piece.kept) {
+      groups[groups.length - 1].push(piece.text);
+    }
   }
   return groups
     .filter((parts) => parts.length)
@@ -246,8 +263,11 @@ function restoreClauses(output: string, pieces: Piece[]) {
       continue;
     }
     const last = groups[groups.length - 1];
-    if (last && last.at === seen) last.parts.push(piece.text);
-    else groups.push({ at: seen, opens: piece.opens, parts: [piece.text] });
+    if (last && last.at === seen) {
+      last.parts.push(piece.text);
+    } else {
+      groups.push({ at: seen, opens: piece.opens, parts: [piece.text] });
+    }
   }
   // From the end, so earlier positions stay valid.
   for (const group of groups.reverse()) {
@@ -345,8 +365,12 @@ export function prepareGuidedSections(
     // A dose pattern may span clauses the model sees ("traitement, …, une visite
     // dans 10 jours"): the clause that completes it stays away from the model too.
     pieces.forEach((piece, index) => {
-      if (!piece.kept && containsDosage(modelText(pieces.slice(0, index + 1))))
+      if (
+        !piece.kept &&
+        containsDosage(modelText(pieces.slice(0, index + 1)))
+      ) {
         piece.kept = true;
+      }
     });
     const model = modelText(pieces);
     sections[key] = model
@@ -372,9 +396,15 @@ export function mergeProtectedDictation(
   input: ReturnType<typeof prepareModelDictation>
 ): LocalSoapNote {
   const result = appendVerbatimPlan(note, input.planSentences);
-  for (const key of ["subjective", "objective", "assessment", "plan"] as const)
+  for (const key of [
+    "subjective",
+    "objective",
+    "assessment",
+    "plan",
+  ] as const) {
     result[key] = [result[key], input.protectedSections?.[key]]
       .filter(Boolean)
       .join("\n\n");
+  }
   return result;
 }

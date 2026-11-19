@@ -20,7 +20,9 @@ export function selectedDossierSearchLabel(
 
 export function matchesEveryWord(searchIndex: string, query: string) {
   const words = query.trim().toLowerCase().split(/\s+/).filter(Boolean);
-  if (!words.length) return false;
+  if (!words.length) {
+    return false;
+  }
   const index = searchIndex.toLowerCase();
   return words.every((word) => index.includes(word));
 }
@@ -51,7 +53,9 @@ export function findDossiers<
   query: string,
   limit = 8
 ): DossierMatch<P, O>[] {
-  if (!query.trim()) return [];
+  if (!query.trim()) {
+    return [];
+  }
   return patients
     .map((patient) => {
       const owner = ownersById.get(patient.ownerId);

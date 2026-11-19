@@ -126,7 +126,9 @@ export function RadialDots({
   };
 
   const onKeyDown = (event: React.KeyboardEvent) => {
-    if (!n) return;
+    if (!n) {
+      return;
+    }
     const keys: Record<string, number> = {
       ArrowRight: (active ?? -1) + 1,
       ArrowDown: (active ?? -1) + 1,
@@ -135,8 +137,12 @@ export function RadialDots({
       Home: 0,
       End: n - 1,
     };
-    if (event.key === "Escape") return select(null, true);
-    if (!(event.key in keys)) return;
+    if (event.key === "Escape") {
+      return select(null, true);
+    }
+    if (!(event.key in keys)) {
+      return;
+    }
     event.preventDefault();
     select((keys[event.key] + n) % n, true);
   };
@@ -232,8 +238,9 @@ export function RadialDots({
                 let at = 0;
                 for (const s of series) {
                   const dots = dotsFor(s.values[i] ?? 0, per);
-                  for (let k = 0; k < dots && at < slots.length; k++)
+                  for (let k = 0; k < dots && at < slots.length; k++) {
                     slots[at++] = s.color;
+                  }
                 }
                 const dim = active !== null && active !== i;
                 return (

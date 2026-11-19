@@ -17,15 +17,18 @@ import {
 } from "./lot-store";
 
 export function announceInventoryChanged() {
-  if (typeof window === "undefined") return;
+  if (typeof window === "undefined") {
+    return;
+  }
   for (const table of [
     "products",
     "stock_movements",
     "product_lots",
     "stock_balances",
     "stock_locations",
-  ])
+  ]) {
     emitSQLiteDataChanged(table);
+  }
 }
 
 export const inventoryService = {

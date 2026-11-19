@@ -28,8 +28,12 @@ function dayLabel(date: Date, now: Date) {
   const days = Math.round(
     (startOfDay(date).getTime() - startOfDay(now).getTime()) / DAY
   );
-  if (days === 0) return "aujourd’hui";
-  if (days === 1) return "demain";
+  if (days === 0) {
+    return "aujourd’hui";
+  }
+  if (days === 1) {
+    return "demain";
+  }
   return `le ${date.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "short" })}`;
 }
 
@@ -53,7 +57,9 @@ export function occupancySummary(
       const stay = active.find(
         (candidate) => candidate.location_id === location.id
       );
-      if (!stay) return { id: location.id, name: location.name, state: "free" };
+      if (!stay) {
+        return { id: location.id, name: location.name, state: "free" };
+      }
       const discharge = stay.planned_discharge_at
         ? new Date(stay.planned_discharge_at)
         : null;

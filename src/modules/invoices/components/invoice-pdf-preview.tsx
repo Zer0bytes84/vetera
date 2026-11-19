@@ -63,7 +63,9 @@ export function InvoicePdfPreview({
     setRenderError("");
   }
   useEffect(() => {
-    if (!result.doc) return;
+    if (!result.doc) {
+      return;
+    }
     let cancelled = false;
     let dispose: (() => void) | undefined;
     let cancelRender: (() => void) | undefined;
@@ -72,7 +74,9 @@ export function InvoicePdfPreview({
         async () => {
           const pdfjs = await loadPdfjsDist();
           const worker = await loadPdfjsDistBuildPdfWorkerMinMjs();
-          if (cancelled) return;
+          if (cancelled) {
+            return;
+          }
           pdfjs.GlobalWorkerOptions.workerSrc = worker.default;
           const task = pdfjs.getDocument({
             data: new Uint8Array(result.doc!.output("arraybuffer")),
@@ -82,17 +86,23 @@ export function InvoicePdfPreview({
             void task.destroy();
           };
           const pdf = await task.promise;
-          if (cancelled) return;
+          if (cancelled) {
+            return;
+          }
           const current = await pdf.getPage(page);
           const canvas = canvasRef.current;
-          if (!canvas || cancelled) return;
+          if (!canvas || cancelled) {
+            return;
+          }
           const viewport = current.getViewport({ scale: 1.8 });
           canvas.width = viewport.width;
           canvas.height = viewport.height;
           const render = current.render({ canvas, viewport });
           cancelRender = () => render.cancel();
           await render.promise;
-          if (!cancelled) setRendering(false);
+          if (!cancelled) {
+            setRendering(false);
+          }
         },
         {
           recover: (error) => {
@@ -115,14 +125,17 @@ export function InvoicePdfPreview({
     };
   }, [result, page]);
   const download = async () => {
-    if (!result.doc) return;
+    if (!result.doc) {
+      return;
+    }
     setSaving(true);
     await guard(
       async () => {
         if (
           await savePdf(result.doc, invoicePdfFileName(data, { test, sample }))
-        )
+        ) {
           toast.success("PDF enregistré.");
+        }
       },
       {
         recover: (error) => {
@@ -142,7 +155,9 @@ export function InvoicePdfPreview({
     <Dialog
       open
       onOpenChange={(open) => {
-        if (!open) onClose();
+        if (!open) {
+          onClose();
+        }
       }}
     >
       <DialogContent

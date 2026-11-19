@@ -34,7 +34,9 @@ const PLACEHOLDERS = new Set([
 
 export function meaningful(value?: string | null): string {
   const text = value?.replace(/\s+/g, " ").trim();
-  if (!text) return "";
+  if (!text) {
+    return "";
+  }
   const key = text
     .normalize("NFD")
     .replace(/[̀-ͯ]/g, "")

@@ -69,11 +69,23 @@ export const PawPrintGlyph: IconSvgElement = [
 
 export function getSpeciesGlyph(species?: string): IconSvgElement {
   const value = species?.toLocaleLowerCase("fr") ?? "";
-  if (value.includes("chien")) return DogGlyph;
-  if (value.includes("chat")) return CatGlyph;
-  if (value.includes("lapin")) return RabbitGlyph;
-  if (value.includes("oiseau")) return BirdIcon;
-  if (value.includes("poisson")) return FishSymbolIcon;
-  if (value.includes("tortue") || value.includes("reptile")) return TurtleGlyph;
+  if (value.includes("chien")) {
+    return DogGlyph;
+  }
+  if (value.includes("chat")) {
+    return CatGlyph;
+  }
+  if (value.includes("lapin")) {
+    return RabbitGlyph;
+  }
+  if (value.includes("oiseau")) {
+    return BirdIcon;
+  }
+  if (value.includes("poisson")) {
+    return FishSymbolIcon;
+  }
+  if (value.includes("tortue") || value.includes("reptile")) {
+    return TurtleGlyph;
+  }
   return PawPrintGlyph;
 }

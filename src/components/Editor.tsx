@@ -106,7 +106,9 @@ function InlineBlockMenu({
       editor.off("blur", update);
     };
   }, [editor, rootRef]);
-  if (top === null && !open) return null;
+  if (top === null && !open) {
+    return null;
+  }
   return (
     <div className="absolute -left-9 z-10" style={{ top: top ?? 0 }}>
       <DropdownMenu onOpenChange={setOpen} open={open}>
@@ -172,8 +174,9 @@ const Editor: React.FC<EditorProps> = ({
   // La barre d'outils se range dans l'emplacement de la page hôte dès que le bloc est monté (rappel de ref : même moment que l'ancien effet de mise en page).
   const attachRoot = useCallback((node: HTMLDivElement | null) => {
     rootRef.current = node;
-    if (node)
+    if (node) {
       setToolbarSlot(document.getElementById("note-editor-toolbar-slot"));
+    }
   }, []);
 
   const handleAiAction = async (instruction: string) => {
@@ -224,7 +227,9 @@ const Editor: React.FC<EditorProps> = ({
           new DOMParser()
             .parseFromString(previewHtml, "text/html")
             .body.textContent?.trim() || "";
-        if (!preview) throw new Error("La proposition est vide. Réessayez.");
+        if (!preview) {
+          throw new Error("La proposition est vide. Réessayez.");
+        }
         setSuggestion({
           html: result,
           text: preview,
@@ -331,7 +336,9 @@ const Editor: React.FC<EditorProps> = ({
   });
 
   useEffect(() => {
-    if (!editor) return;
+    if (!editor) {
+      return;
+    }
     const updateTableSelection = () => setIsInTable(editor.isActive("table"));
     editor.on("selectionUpdate", updateTableSelection);
     editor.on("transaction", updateTableSelection);
@@ -525,7 +532,9 @@ const Editor: React.FC<EditorProps> = ({
       <Dialog
         open={Boolean(suggestion)}
         onOpenChange={(open) => {
-          if (!open) setSuggestion(null);
+          if (!open) {
+            setSuggestion(null);
+          }
         }}
       >
         <FormDialogContent size="md">

@@ -68,15 +68,18 @@ function asInstant(value: unknown): string | null {
  * inconnue retombe sur le défaut, sans perdre les autres.
  */
 export function parseTourState(raw: string | null): TourState {
-  if (raw === null) return FRESH_TOUR_STATE;
+  if (raw === null) {
+    return FRESH_TOUR_STATE;
+  }
   let value: unknown;
   try {
     value = JSON.parse(raw);
   } catch {
     return UNREADABLE_TOUR_STATE;
   }
-  if (!value || typeof value !== "object" || Array.isArray(value))
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
     return UNREADABLE_TOUR_STATE;
+  }
   const record = value as Record<string, unknown>;
   const invitation = INVITATIONS.includes(record.invitation as TourInvitation)
     ? (record.invitation as TourInvitation)
@@ -92,7 +95,9 @@ export function parseTourState(raw: string | null): TourState {
     : 0;
   const startedAt = asInstant(record.startedAt);
   // Un tour « en cours » sans heure de départ ne peut rien reconnaître : on le tient pour quitté plutôt que de le laisser bloqué.
-  if (status === "running" && !startedAt) status = "quit";
+  if (status === "running" && !startedAt) {
+    status = "quit";
+  }
   return {
     // Un champ invalide est un signe de corruption : on ne rouvre jamais l'invitation sur un enregistrement douteux.
     invitation: status === "idle" && statusValid ? invitation : "closed",
@@ -139,7 +144,9 @@ export function advanceTour(
   state: TourState,
   found: { patientId?: string | null; appointmentId?: string | null } = {}
 ): TourState {
-  if (state.status !== "running") return state;
+  if (state.status !== "running") {
+    return state;
+  }
   const next: TourState = {
     ...state,
     patientId: found.patientId ?? state.patientId,
@@ -168,7 +175,8 @@ export function invitationVisible(
     !context.writable ||
     state.status !== "idle" ||
     state.invitation === "closed"
-  )
+  ) {
     return false;
+  }
   return state.invitation === "unseen" || context.shownThisSession;
 }

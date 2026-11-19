@@ -55,7 +55,9 @@ export function AIModelSettings() {
     () => getGeneratorPreference() === "gemma4"
   );
   useEffect(() => {
-    if (!desktop) return;
+    if (!desktop) {
+      return;
+    }
     const refresh = () => {
       void aiModelInstallation.refresh();
     };

@@ -92,7 +92,9 @@ export function Thinking({
   const word = words.length ? words[index % words.length] : undefined;
 
   useEffect(() => {
-    if (words.length < 2) return;
+    if (words.length < 2) {
+      return;
+    }
     const timer = setInterval(() => setIndex((i) => i + 1), interval);
     return () => clearInterval(timer);
   }, [words.length, interval]);

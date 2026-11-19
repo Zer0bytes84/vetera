@@ -23,38 +23,76 @@ export function normalizeLexical(text: string): string {
  */
 export function stemFrenchWord(raw: string): string {
   const word = normalizeLexical(raw);
-  if (word.length <= 3) return word;
+  if (word.length <= 3) {
+    return word;
+  }
 
   // Dedicated veterinary / clinical root normalizations
-  if (word.startsWith("bacteri")) return "bacteri";
-  if (word.startsWith("vaccin")) return "vaccin";
-  if (word.startsWith("antibiot")) return "antibiot";
-  if (word.startsWith("infect")) return "infect";
-  if (word.startsWith("vom")) return "vom";
-  if (word.startsWith("diarrhe")) return "diarrhe";
-  if (word.startsWith("respir")) return "respir";
-  if (word.startsWith("inflamm")) return "inflamm";
-  if (word.startsWith("allerg")) return "allerg";
-  if (word.startsWith("dermat")) return "dermat";
-  if (word.startsWith("arthr")) return "arthr";
-  if (word.startsWith("digest")) return "digest";
-  if (word.startsWith("claudic") || word.startsWith("boit")) return "boit";
-  if (word.startsWith("letharg") || word.startsWith("abatt")) return "abatt";
-  if (word.startsWith("anorex") || word.startsWith("inappet")) return "inappet";
+  if (word.startsWith("bacteri")) {
+    return "bacteri";
+  }
+  if (word.startsWith("vaccin")) {
+    return "vaccin";
+  }
+  if (word.startsWith("antibiot")) {
+    return "antibiot";
+  }
+  if (word.startsWith("infect")) {
+    return "infect";
+  }
+  if (word.startsWith("vom")) {
+    return "vom";
+  }
+  if (word.startsWith("diarrhe")) {
+    return "diarrhe";
+  }
+  if (word.startsWith("respir")) {
+    return "respir";
+  }
+  if (word.startsWith("inflamm")) {
+    return "inflamm";
+  }
+  if (word.startsWith("allerg")) {
+    return "allerg";
+  }
+  if (word.startsWith("dermat")) {
+    return "dermat";
+  }
+  if (word.startsWith("arthr")) {
+    return "arthr";
+  }
+  if (word.startsWith("digest")) {
+    return "digest";
+  }
+  if (word.startsWith("claudic") || word.startsWith("boit")) {
+    return "boit";
+  }
+  if (word.startsWith("letharg") || word.startsWith("abatt")) {
+    return "abatt";
+  }
+  if (word.startsWith("anorex") || word.startsWith("inappet")) {
+    return "inappet";
+  }
   if (
     word.startsWith("fievre") ||
     word.startsWith("febril") ||
     word.startsWith("hypertherm")
-  )
+  ) {
     return "fievre";
+  }
   if (
     word.startsWith("prurit") ||
     word.startsWith("demange") ||
     word.startsWith("gratt")
-  )
+  ) {
     return "prurit";
-  if (word.startsWith("touss") || word === "toux") return "toux";
-  if (word.startsWith("dyspne") || word.startsWith("polypne")) return "dyspne";
+  }
+  if (word.startsWith("touss") || word === "toux") {
+    return "toux";
+  }
+  if (word.startsWith("dyspne") || word.startsWith("polypne")) {
+    return "dyspne";
+  }
 
   // Standard French medical and grammatical suffix stripping (longest match first)
   const stripped = word
@@ -288,8 +326,12 @@ const DCI_TO_BRANDS: Record<string, string[]> = {};
 for (const [brand, dcis] of Object.entries(BRAND_TO_DCI_RAW)) {
   for (const dci of dcis) {
     const key = normalizeLexical(dci);
-    if (!DCI_TO_BRANDS[key]) DCI_TO_BRANDS[key] = [];
-    if (!DCI_TO_BRANDS[key].includes(brand)) DCI_TO_BRANDS[key].push(brand);
+    if (!DCI_TO_BRANDS[key]) {
+      DCI_TO_BRANDS[key] = [];
+    }
+    if (!DCI_TO_BRANDS[key].includes(brand)) {
+      DCI_TO_BRANDS[key].push(brand);
+    }
   }
 }
 
@@ -297,9 +339,12 @@ const EXPANSION_TO_ACRONYMS: Record<string, string[]> = {};
 for (const [acronym, expansions] of Object.entries(ACRONYMS_RAW)) {
   for (const exp of expansions) {
     const key = normalizeLexical(exp);
-    if (!EXPANSION_TO_ACRONYMS[key]) EXPANSION_TO_ACRONYMS[key] = [];
-    if (!EXPANSION_TO_ACRONYMS[key].includes(acronym))
+    if (!EXPANSION_TO_ACRONYMS[key]) {
+      EXPANSION_TO_ACRONYMS[key] = [];
+    }
+    if (!EXPANSION_TO_ACRONYMS[key].includes(acronym)) {
       EXPANSION_TO_ACRONYMS[key].push(acronym);
+    }
   }
 }
 
@@ -355,43 +400,58 @@ export function expandSearchQuery(query: string): QueryExpansion {
   // Check whole query as a phrase or acronym/DCI key
   if (normalized.length >= 2) {
     if (ACRONYMS_RAW[normalized]) {
-      for (const exp of ACRONYMS_RAW[normalized])
+      for (const exp of ACRONYMS_RAW[normalized]) {
         phrases.add(normalizeLexical(exp));
+      }
     }
     if (EXPANSION_TO_ACRONYMS[normalized]) {
-      for (const acr of EXPANSION_TO_ACRONYMS[normalized]) phrases.add(acr);
+      for (const acr of EXPANSION_TO_ACRONYMS[normalized]) {
+        phrases.add(acr);
+      }
     }
     if (BRAND_TO_DCI_RAW[normalized]) {
-      for (const dci of BRAND_TO_DCI_RAW[normalized])
+      for (const dci of BRAND_TO_DCI_RAW[normalized]) {
         phrases.add(normalizeLexical(dci));
+      }
     }
     if (DCI_TO_BRANDS[normalized]) {
-      for (const br of DCI_TO_BRANDS[normalized]) phrases.add(br);
+      for (const br of DCI_TO_BRANDS[normalized]) {
+        phrases.add(br);
+      }
     }
     if (CLINICAL_SYNONYMS_RAW[normalized]) {
-      for (const syn of CLINICAL_SYNONYMS_RAW[normalized])
+      for (const syn of CLINICAL_SYNONYMS_RAW[normalized]) {
         phrases.add(normalizeLexical(syn));
+      }
     }
   }
 
   // Check each individual term for acronyms, brand/DCI, and synonyms
   for (const term of terms) {
     if (ACRONYMS_RAW[term]) {
-      for (const exp of ACRONYMS_RAW[term]) phrases.add(normalizeLexical(exp));
+      for (const exp of ACRONYMS_RAW[term]) {
+        phrases.add(normalizeLexical(exp));
+      }
     }
     if (EXPANSION_TO_ACRONYMS[term]) {
-      for (const acr of EXPANSION_TO_ACRONYMS[term]) phrases.add(acr);
+      for (const acr of EXPANSION_TO_ACRONYMS[term]) {
+        phrases.add(acr);
+      }
     }
     if (BRAND_TO_DCI_RAW[term]) {
-      for (const dci of BRAND_TO_DCI_RAW[term])
+      for (const dci of BRAND_TO_DCI_RAW[term]) {
         phrases.add(normalizeLexical(dci));
+      }
     }
     if (DCI_TO_BRANDS[term]) {
-      for (const br of DCI_TO_BRANDS[term]) phrases.add(br);
+      for (const br of DCI_TO_BRANDS[term]) {
+        phrases.add(br);
+      }
     }
     if (CLINICAL_SYNONYMS_RAW[term]) {
-      for (const syn of CLINICAL_SYNONYMS_RAW[term])
+      for (const syn of CLINICAL_SYNONYMS_RAW[term]) {
         phrases.add(normalizeLexical(syn));
+      }
     }
   }
 
@@ -403,7 +463,9 @@ export function expandSearchQuery(query: string): QueryExpansion {
 }
 
 function containsBoundary(text: string, phrase: string): boolean {
-  if (!phrase) return false;
+  if (!phrase) {
+    return false;
+  }
   const regex = new RegExp(
     `(?:^|\\s)${phrase.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?:\\s|$)`
   );
@@ -448,10 +510,14 @@ export function matchesNumericConstraints(
 }
 
 export function matchesSearchTerms(query: string, text: string): boolean {
-  if (!matchesNumericConstraints(query, text)) return false;
+  if (!matchesNumericConstraints(query, text)) {
+    return false;
+  }
   const normQuery = normalizeLexical(query);
   const normText = normalizeLexical(text);
-  if (!normQuery || !normText) return false;
+  if (!normQuery || !normText) {
+    return false;
+  }
 
   const expansion = expandSearchQuery(query);
   const textWords = normText.split(/\s+/).filter(Boolean);
@@ -459,7 +525,9 @@ export function matchesSearchTerms(query: string, text: string): boolean {
   const textStemSet = new Set(textWords.map(stemFrenchWord));
 
   // If query is an exact phrase found as a whole unit in text
-  if (containsBoundary(normText, normQuery)) return true;
+  if (containsBoundary(normText, normQuery)) {
+    return true;
+  }
 
   // If query itself was an acronym or full multi-word expression matching an equivalence phrase
   const isSingleConceptPhrase =
@@ -470,11 +538,15 @@ export function matchesSearchTerms(query: string, text: string): boolean {
 
   if (isSingleConceptPhrase) {
     for (const phrase of expansion.phrases) {
-      if (phrase && containsBoundary(normText, phrase)) return true;
+      if (phrase && containsBoundary(normText, phrase)) {
+        return true;
+      }
     }
   }
 
-  if (!expansion.terms.length) return false;
+  if (!expansion.terms.length) {
+    return false;
+  }
 
   // Every significant query term must be represented in text (direct, stem, brand/DCI, acronym, or synonym)
   return expansion.terms.every((term, i) => {
@@ -484,30 +556,39 @@ export function matchesSearchTerms(query: string, text: string): boolean {
     }
 
     // Direct token match
-    if (textWordSet.has(term)) return true;
+    if (textWordSet.has(term)) {
+      return true;
+    }
 
     // Morphological stem match
     const stem = expansion.stems[i];
-    if (stem && textStemSet.has(stem)) return true;
+    if (stem && textStemSet.has(stem)) {
+      return true;
+    }
 
     // Acronym / full-name expansions for this specific term
     if (
       ACRONYMS_RAW[term]?.some((exp) =>
         containsBoundary(normText, normalizeLexical(exp))
       )
-    )
+    ) {
       return true;
-    if (EXPANSION_TO_ACRONYMS[term]?.some((acr) => textWordSet.has(acr)))
+    }
+    if (EXPANSION_TO_ACRONYMS[term]?.some((acr) => textWordSet.has(acr))) {
       return true;
+    }
 
     // Brand / DCI equivalence for this specific term
     if (
       BRAND_TO_DCI_RAW[term]?.some((dci) =>
         containsBoundary(normText, normalizeLexical(dci))
       )
-    )
+    ) {
       return true;
-    if (DCI_TO_BRANDS[term]?.some((br) => textWordSet.has(br))) return true;
+    }
+    if (DCI_TO_BRANDS[term]?.some((br) => textWordSet.has(br))) {
+      return true;
+    }
 
     // Clinical synonyms for this specific term
     if (
@@ -522,8 +603,9 @@ export function matchesSearchTerms(query: string, text: string): boolean {
           containsBoundary(normText, normSyn)
         );
       })
-    )
+    ) {
       return true;
+    }
 
     return false;
   });
@@ -531,7 +613,9 @@ export function matchesSearchTerms(query: string, text: string): boolean {
 
 /** Literal terms form an independent retrieval channel; synonyms remain calibrated. */
 export function matchesExactSearchTerms(query: string, text: string): boolean {
-  if (!matchesNumericConstraints(query, text)) return false;
+  if (!matchesNumericConstraints(query, text)) {
+    return false;
+  }
   const terms = normalizeLexical(query)
     .split(/\s+/)
     .filter((term) => term && !STOP_WORDS.has(term));

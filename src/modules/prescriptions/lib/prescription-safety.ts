@@ -330,10 +330,18 @@ export function durationToDays(
       match[2] ? toNumber(match[2]) : 0
     );
     const unit = match[3];
-    if (unit.startsWith("sem")) return amount * 7;
-    if (unit === "mois") return amount * 30;
-    if (unit.startsWith("an")) return amount * 365;
-    if (unit.startsWith("h")) return Math.max(1, Math.ceil(amount / 24));
+    if (unit.startsWith("sem")) {
+      return amount * 7;
+    }
+    if (unit === "mois") {
+      return amount * 30;
+    }
+    if (unit.startsWith("an")) {
+      return amount * 365;
+    }
+    if (unit.startsWith("h")) {
+      return Math.max(1, Math.ceil(amount / 24));
+    }
     return amount;
   }
   if (/\b(dose unique|injection unique|une fois|unique)\b/.test(text)) {

@@ -135,7 +135,9 @@ export function IconButton({
       )}
     </button>
   );
-  if (!tooltip) return button;
+  if (!tooltip) {
+    return button;
+  }
   return (
     <Tooltip
       content={tooltip === true ? label : tooltip}

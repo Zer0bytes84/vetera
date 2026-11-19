@@ -38,8 +38,11 @@ export function getSidebarTone(userId: string | null | undefined): SidebarTone {
 
 export function saveSidebarTone(userId: string, tone: SidebarTone) {
   const all = readAll();
-  if (tone === "auto") delete all[userId];
-  else all[userId] = tone;
+  if (tone === "auto") {
+    delete all[userId];
+  } else {
+    all[userId] = tone;
+  }
   localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
   window.dispatchEvent(new Event(SIDEBAR_TONE_EVENT));
 }
@@ -57,10 +60,15 @@ function tokenNames(): string[] {
   const walk = (rules: CSSRuleList) => {
     for (const rule of Array.from(rules)) {
       if (rule instanceof CSSStyleRule) {
-        for (const property of Array.from(rule.style))
-          if (property.startsWith("--")) names.add(property);
+        for (const property of Array.from(rule.style)) {
+          if (property.startsWith("--")) {
+            names.add(property);
+          }
+        }
       }
-      if ("cssRules" in rule) walk((rule as CSSGroupingRule).cssRules);
+      if ("cssRules" in rule) {
+        walk((rule as CSSGroupingRule).cssRules);
+      }
     }
   };
   for (const sheet of Array.from(document.styleSheets)) {
@@ -70,8 +78,11 @@ function tokenNames(): string[] {
       /* cross-origin sheet */
     }
   }
-  for (const property of Array.from(document.documentElement.style))
-    if (property.startsWith("--")) names.add(property);
+  for (const property of Array.from(document.documentElement.style)) {
+    if (property.startsWith("--")) {
+      names.add(property);
+    }
+  }
   // Tailwind's per-element variables never inherit: leave them to the utilities.
   return [...names].filter((name) => !name.startsWith("--tw-"));
 }
@@ -99,8 +110,12 @@ function otherModeTokens(dark: boolean): string {
     .map((name) => [name, other.getPropertyValue(name).trim()] as const)
     .filter(([name, value]) => value && value !== before.get(name))
     .map(([name, value]) => `${name}: ${value};`);
-  for (const name of root.getAttributeNames()) root.removeAttribute(name);
-  for (const [name, value] of attributes) root.setAttribute(name, value);
+  for (const name of root.getAttributeNames()) {
+    root.removeAttribute(name);
+  }
+  for (const [name, value] of attributes) {
+    root.setAttribute(name, value);
+  }
   return declarations.join(" ");
 }
 
@@ -123,7 +138,9 @@ export function applySidebarTone(tone: SidebarTone) {
     existing ??
     Object.assign(document.createElement("style"), { id: STYLE_ID });
   style.textContent = `:root[data-sidebar-tone="${forced}"] ${SIDEBAR} { color-scheme: ${forced}; ${tokens} }`;
-  if (!existing) document.head.append(style);
+  if (!existing) {
+    document.head.append(style);
+  }
   root.dataset.sidebarTone = forced;
 }
 

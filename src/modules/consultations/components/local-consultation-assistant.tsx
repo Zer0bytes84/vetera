@@ -256,7 +256,9 @@ export default function LocalConsultationAssistant({
       : 1
   );
   useEffect(() => {
-    if (openingWords >= OPENING_WORDS) return;
+    if (openingWords >= OPENING_WORDS) {
+      return;
+    }
     const timer = setTimeout(() => setOpeningWords((count) => count + 1), 70);
     return () => clearTimeout(timer);
   }, [openingWords]);
@@ -265,7 +267,9 @@ export default function LocalConsultationAssistant({
   const changeSection = (next: number) => {
     setStepAt((previous) => {
       const grown = [...previous];
-      while (grown.length <= next) grown.push(new Date().toISOString());
+      while (grown.length <= next) {
+        grown.push(new Date().toISOString());
+      }
       return grown;
     });
     setSectionResponses(responses);
@@ -321,15 +325,20 @@ export default function LocalConsultationAssistant({
     }
   };
   const activeSoapDraft: LocalSoapNote = useMemo(() => {
-    if (note) return note;
-    if (!fullTranscript.trim())
+    if (note) {
+      return note;
+    }
+    if (!fullTranscript.trim()) {
       return hasExistingNote ? resolvedExistingNote : EMPTY_SOAP;
+    }
     return dictationNote();
     // dictationNote reads the same rubric answers as fullTranscript.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [note, fullTranscript, hasExistingNote, resolvedExistingNote]);
   const proposalRequests: ApprovalRequest[] = useMemo(() => {
-    if (!reviewSource || !assistantProposal) return [];
+    if (!reviewSource || !assistantProposal) {
+      return [];
+    }
     return SOAP_SECTIONS.filter(
       ({ key }) => !sameWords(reviewSource[key], assistantProposal[key])
     ).map(({ key, title }) => ({
@@ -410,11 +419,14 @@ export default function LocalConsultationAssistant({
     let alive = true;
     getLocalModels()
       .then((status) => {
-        if (!alive) return;
+        if (!alive) {
+          return;
+        }
         setModels(status);
         setCheckingModels(false);
-        if (!nativeDictationEnabled() && !status.whisperReady)
+        if (!nativeDictationEnabled() && !status.whisperReady) {
           setSetupOpen(true);
+        }
       })
       .catch(() => {
         if (alive) {
@@ -430,7 +442,9 @@ export default function LocalConsultationAssistant({
   }, []);
 
   const choosePatient = (entry: Patient) => {
-    if (!range) return;
+    if (!range) {
+      return;
+    }
     const inserted = insertPatientMention(transcript, range, entry.name);
     setTranscript(inserted.value);
     setCaret(inserted.caret);
@@ -469,8 +483,9 @@ export default function LocalConsultationAssistant({
   };
 
   useEffect(() => {
-    if (ai.phase === "listening")
+    if (ai.phase === "listening") {
       setListeningSince(Date.now() - ai.seconds * 1000);
+    }
     // Only the moment it starts: the timer then counts on its own.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ai.phase]);
@@ -485,7 +500,9 @@ export default function LocalConsultationAssistant({
   }, [ai.transcription]);
 
   const generate = async () => {
-    if (dataUnavailable || mentionError) return;
+    if (dataUnavailable || mentionError) {
+      return;
+    }
     if (sectionIndex < 3) {
       changeSection(sectionIndex + 1);
       return;
@@ -563,28 +580,33 @@ export default function LocalConsultationAssistant({
 
       const statements = analyzeTreatmentDictation(fullTranscript);
       const notices: string[] = [];
-      if (statements.some((part) => part.kind === "treatment"))
+      if (statements.some((part) => part.kind === "treatment")) {
         notices.push(
           "Les traitements sont conservés mot pour mot dans le Plan. Relisez-les avant de valider."
         );
-      if (statements.some((part) => part.kind === "avoidance"))
+      }
+      if (statements.some((part) => part.kind === "avoidance")) {
         notices.push(
           "Alerte d’éviction : une consigne de ne pas administrer a été conservée dans le Plan. Elle ne constitue pas une prescription."
         );
+      }
       if (
         statements.some(
           (part) => part.kind === "history" || part.kind === "hypothesis"
         )
-      )
+      ) {
         notices.push(
           "Les antécédents restent en Anamnèse (S), les hypothèses en Évaluation (A)."
         );
-      if (statements.some((part) => part.setting === "acte-clinique"))
+      }
+      if (statements.some((part) => part.setting === "acte-clinique")) {
         notices.push("Acte en clinique repéré.");
-      if (statements.some((part) => part.setting === "ordonnance-maison"))
+      }
+      if (statements.some((part) => part.setting === "ordonnance-maison")) {
         notices.push(
           "Administration à domicile repérée : ordonnance à relire."
         );
+      }
       const medications = [
         ...new Map(
           statements
@@ -592,7 +614,7 @@ export default function LocalConsultationAssistant({
             .map((drug) => [drug.brand.toLowerCase(), drug])
         ).values(),
       ];
-      if (medications.length)
+      if (medications.length) {
         notices.push(
           "Repères marque–DCI : " +
             medications
@@ -600,7 +622,10 @@ export default function LocalConsultationAssistant({
               .join(" ; ") +
             ". La dictée n’est pas modifiée."
         );
-      if (notices.length) setNotice(notices.join("\n\n"));
+      }
+      if (notices.length) {
+        setNotice(notices.join("\n\n"));
+      }
 
       const source = dictationNote();
       let proposal = source;
@@ -655,7 +680,9 @@ export default function LocalConsultationAssistant({
 
   const save = async () => {
     const candidate = note ?? activeSoapDraft;
-    if (!candidate || saving || saved) return;
+    if (!candidate || saving || saved) {
+      return;
+    }
     setMessage(null);
     // Nothing the assistant proposed is written before the vet has examined it.
     if (pendingProposals > 0) {
@@ -680,10 +707,11 @@ export default function LocalConsultationAssistant({
           choices
         );
       }
-      if (effectivePatientId && !patient && !dataUnavailable)
+      if (effectivePatientId && !patient && !dataUnavailable) {
         throw new Error(
           "La fiche patient n’est pas disponible. Réessayez après sa relecture."
         );
+      }
       if (patient && appointmentId) {
         buildPatientContext(
           patient,
@@ -720,7 +748,9 @@ export default function LocalConsultationAssistant({
   };
 
   const requestClose = () => {
-    if (saving || importing) return;
+    if (saving || importing) {
+      return;
+    }
     if (!saved && (ai.busy || fullTranscript.trim() || note)) {
       setDiscardOpen(true);
       return;
@@ -769,7 +799,9 @@ export default function LocalConsultationAssistant({
     requests: ApprovalRequest[],
     decision: ApprovalDecision
   ) => {
-    if (!reviewSource || !assistantProposal) return;
+    if (!reviewSource || !assistantProposal) {
+      return;
+    }
     setDecisions((previous) => ({
       ...previous,
       ...Object.fromEntries(requests.map((request) => [request.id, decision])),
@@ -811,7 +843,9 @@ export default function LocalConsultationAssistant({
   // push Stop and the language below the edge: follow it too.
   useLayoutEffect(() => {
     const list = dictationScrollRef.current;
-    if (list) list.scrollTop = list.scrollHeight;
+    if (list) {
+      list.scrollTop = list.scrollHeight;
+    }
   }, [activeTab, sectionIndex, setupOpen, ai.phase, visibleError]);
 
   const threadMessages: ThreadMessage[] = [
@@ -840,7 +874,9 @@ export default function LocalConsultationAssistant({
           questionWords < FIRST_QUESTION_WORDS.length &&
           sectionIndex === 0;
         // The first question waits for the end of the welcome, then writes itself out.
-        if (opening && questionWords === 0) return [];
+        if (opening && questionWords === 0) {
+          return [];
+        }
         const answered = index < sectionIndex;
         const reply = responses[index].trim();
         const edit = answered ? (
@@ -1259,8 +1295,9 @@ export default function LocalConsultationAssistant({
                   }}
                   onSubmit={(answer) => {
                     const choice = answer.optionIds[0];
-                    if (choice === "review") reviewDictation();
-                    else if (choice?.startsWith("edit-")) {
+                    if (choice === "review") {
+                      reviewDictation();
+                    } else if (choice?.startsWith("edit-")) {
                       ai.clearError();
                       changeSection(Number(choice.slice(5)));
                     }
@@ -1332,7 +1369,9 @@ export default function LocalConsultationAssistant({
                             const entry = suggestions.find(
                               (candidate) => candidate.id === item.key
                             );
-                            if (entry) choosePatient(entry);
+                            if (entry) {
+                              choosePatient(entry);
+                            }
                           },
                           onDismiss: () => setCaret(0),
                         }
@@ -1355,8 +1394,11 @@ export default function LocalConsultationAssistant({
                   }
                   onCaretChange={setCaret}
                   onSubmit={() => {
-                    if (refused && sectionIndex === 3) reviewDictation();
-                    else void generate();
+                    if (refused && sectionIndex === 3) {
+                      reviewDictation();
+                    } else {
+                      void generate();
+                    }
                   }}
                   onValueChange={(value, nextCaret) => {
                     setTranscript(value);

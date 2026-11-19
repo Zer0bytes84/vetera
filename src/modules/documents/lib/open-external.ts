@@ -11,7 +11,9 @@ import { normalizeLinkUrl } from "./library";
  */
 export async function openExternalLink(url: string): Promise<boolean> {
   const allowed = WHATSAPP_APP_LINK.test(url) || normalizeLinkUrl(url) !== null;
-  if (!allowed) return false;
+  if (!allowed) {
+    return false;
+  }
   if (isTauriRuntime()) {
     try {
       const { invoke } = await import("@tauri-apps/api/core");

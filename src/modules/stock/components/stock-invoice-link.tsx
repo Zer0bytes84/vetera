@@ -2,12 +2,13 @@ import { useFocus } from "@/contexts/focus-provider";
 
 export function StockInvoiceLink({ invoiceId }: { invoiceId: string | null }) {
   const { requestFocus } = useFocus();
-  if (!invoiceId)
+  if (!invoiceId) {
     return (
       <span className="text-xs text-muted-foreground">
         Facture supprimée, mouvement conservé.
       </span>
     );
+  }
   return (
     <a
       href="#/finances"

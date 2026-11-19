@@ -138,7 +138,9 @@ export function selectRows<R extends DataRow>(
         )
       )
     : data;
-  if (!sort) return filtered;
+  if (!sort) {
+    return filtered;
+  }
   const sign = sort.dir === "asc" ? 1 : -1;
   return [...filtered].sort((a, b) => sign * compare(a[sort.key], b[sort.key]));
 }

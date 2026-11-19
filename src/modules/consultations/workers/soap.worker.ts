@@ -28,12 +28,15 @@ const release = () => {
 };
 const openWeights = async (url: string) => {
   const response = await fetch(url);
-  if (!response.ok || !response.body)
+  if (!response.ok || !response.body) {
     throw new Error("Fichier de modèle inaccessible.");
+  }
   return response.body.getReader();
 };
 self.onmessage = async ({ data }: MessageEvent<WorkerRequest>) => {
-  if (data.type !== "generate") return;
+  if (data.type !== "generate") {
+    return;
+  }
   let stage: "load" | "generate" = "load";
   try {
     enforceOfflineWorker([
@@ -50,8 +53,9 @@ self.onmessage = async ({ data }: MessageEvent<WorkerRequest>) => {
           ? 768
           : 512;
     const candidates = data.generators;
-    if (!candidates.length)
+    if (!candidates.length) {
       throw new Error("Aucun modèle de rédaction disponible.");
+    }
     if (
       !model ||
       !candidates.some((candidate) => candidate.url === loadedUrl)
@@ -101,13 +105,16 @@ self.onmessage = async ({ data }: MessageEvent<WorkerRequest>) => {
           if (
             model.sizeInTokens(wrapUserTurn(data.prompt, candidate.family)) ===
             undefined
-          )
+          ) {
             throw new Error("Tokenizer indisponible.");
+          }
         } catch (error) {
           // Not enough memory or graphics, or an unusable file: the session
           // moves on silently to the next model (Gemma 3) in a fresh worker.
           release();
-          if (candidates.length === 1) throw error;
+          if (candidates.length === 1) {
+            throw error;
+          }
           send({ type: "generator-unavailable", url: candidate.url });
           return;
         }
@@ -115,15 +122,18 @@ self.onmessage = async ({ data }: MessageEvent<WorkerRequest>) => {
         loadedFamily = candidate.family;
         capacity = nextCapacity;
       }
-      if (!model) throw new Error("Aucun modèle de rédaction disponible.");
+      if (!model) {
+        throw new Error("Aucun modèle de rédaction disponible.");
+      }
     }
     const prompt = wrapUserTurn(data.prompt, loadedFamily);
     const inputTokens = model.sizeInTokens(prompt);
     const templateTokens = data.responseTemplate
       ? model.sizeInTokens(data.responseTemplate)
       : 448;
-    if (inputTokens === undefined || templateTokens === undefined)
+    if (inputTokens === undefined || templateTokens === undefined) {
       throw new Error("Le moteur local n’a pas pu mesurer la note.");
+    }
     const needed = inputTokens + reserve(templateTokens);
     if (needed > capacity) {
       // Rare: unusually dense text. setOptions releases the converted engine

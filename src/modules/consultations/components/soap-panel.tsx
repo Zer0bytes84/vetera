@@ -88,8 +88,9 @@ const emptyPayload: Payload = {
 function readContentObject(raw: string): Record<string, unknown> {
   try {
     const parsed: unknown = JSON.parse(raw);
-    if (parsed && typeof parsed === "object" && !Array.isArray(parsed))
+    if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
       return parsed as Record<string, unknown>;
+    }
   } catch {
     /* Legacy content can be empty. */
   }
@@ -136,8 +137,9 @@ export function SoapPanel({
       if (
         (event as CustomEvent<{ appointmentId: string }>).detail
           ?.appointmentId === appointmentId
-      )
+      ) {
         setAssistantOpen(true);
+      }
     };
     window.addEventListener(OPEN_SOAP_ASSISTANT_EVENT, open);
     return () => window.removeEventListener(OPEN_SOAP_ASSISTANT_EVENT, open);
@@ -168,7 +170,9 @@ export function SoapPanel({
     setSaveStatus(existing ? "saved" : "idle");
   }
   useEffect(() => {
-    if (!initialised) return;
+    if (!initialised) {
+      return;
+    }
     latest.current = payload;
     lastSaved.current = savedSnapshot;
     hydrated.current = true;
@@ -188,10 +192,11 @@ export function SoapPanel({
               snapshot,
               currentUser?.id
             );
-            if (!saved)
+            if (!saved) {
               throw new Error(
                 "La base locale n’a pas confirmé l’enregistrement."
               );
+            }
             lastSaved.current = snapshot;
             setSavedSnapshot(snapshot);
             setSaveStatus("saved");
@@ -211,7 +216,9 @@ export function SoapPanel({
         },
         {
           cleanup: () => {
-            if (pendingSave.current === operation) pendingSave.current = null;
+            if (pendingSave.current === operation) {
+              pendingSave.current = null;
+            }
           },
         }
       );
@@ -224,7 +231,9 @@ export function SoapPanel({
     persistRef.current = persist;
   }, [payload, persist]);
   const clearTimer = useCallback(() => {
-    if (timer.current) clearTimeout(timer.current);
+    if (timer.current) {
+      clearTimeout(timer.current);
+    }
     timer.current = null;
   }, []);
   const reportSaveError = useCallback(
@@ -240,9 +249,13 @@ export function SoapPanel({
     saved: savedSnapshot,
     payload,
   });
-  if (autosaveDue && saveStatus !== "pending") setSaveStatus("pending");
+  if (autosaveDue && saveStatus !== "pending") {
+    setSaveStatus("pending");
+  }
   useEffect(() => {
-    if (!autosaveDue) return;
+    if (!autosaveDue) {
+      return;
+    }
     timer.current = setTimeout(() => {
       void persist(payload).catch(reportSaveError);
     }, 800);

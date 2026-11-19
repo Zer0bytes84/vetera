@@ -23,7 +23,9 @@ export function useCreationRequest(kind: CreationKind, open: () => void) {
   }, [open]);
   useEffect(() => {
     const run = () => {
-      if (sessionStorage.getItem(KEY) !== kind) return;
+      if (sessionStorage.getItem(KEY) !== kind) {
+        return;
+      }
       sessionStorage.removeItem(KEY);
       openRef.current();
     };

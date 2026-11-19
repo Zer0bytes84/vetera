@@ -88,10 +88,18 @@ function SpeciesIcon({ species }: { species?: string }) {
     className: "size-5",
     strokeWidth: 1.6,
   };
-  if (normalized.includes("chien")) return <Dog {...props} />;
-  if (normalized.includes("chat")) return <Cat {...props} />;
-  if (normalized.includes("lapin")) return <Rabbit {...props} />;
-  if (normalized.includes("oiseau")) return <Bird {...props} />;
+  if (normalized.includes("chien")) {
+    return <Dog {...props} />;
+  }
+  if (normalized.includes("chat")) {
+    return <Cat {...props} />;
+  }
+  if (normalized.includes("lapin")) {
+    return <Rabbit {...props} />;
+  }
+  if (normalized.includes("oiseau")) {
+    return <Bird {...props} />;
+  }
   return <PawPrint {...props} />;
 }
 

@@ -1,8 +1,9 @@
 // WebKit isolates the tauri:// page and shares WebAssembly memory, but does not
 // expose the SharedArrayBuffer global that ONNX checks before using threads.
 export const exposeSharedMemory = () => {
-  if (typeof SharedArrayBuffer === "function" || !self.crossOriginIsolated)
+  if (typeof SharedArrayBuffer === "function" || !self.crossOriginIsolated) {
     return;
+  }
   try {
     const shared = new WebAssembly.Memory({
       initial: 1,

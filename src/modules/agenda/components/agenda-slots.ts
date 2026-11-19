@@ -57,8 +57,12 @@ export function freeSlotStarts({
   ) {
     const start = dayStart.getTime() + minutes * 60_000;
     const end = start + SLOT_MINUTES * 60_000;
-    if (end <= now.getTime()) continue;
-    if (busy.some(([from, to]) => from < end && to > start)) continue;
+    if (end <= now.getTime()) {
+      continue;
+    }
+    if (busy.some(([from, to]) => from < end && to > start)) {
+      continue;
+    }
     free.push(minutes);
   }
   return free;

@@ -46,28 +46,34 @@ export function PrescriptionDispensing({
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState<Dispensation | null>(null);
   useEffect(() => {
-    if (status !== "dispensed" || !desktop) return;
+    if (status !== "dispensed" || !desktop) {
+      return;
+    }
     let alive = true;
     void clinicalStockService
       .dispensation(prescriptionId)
       .then((value) => {
-        if (alive) setSaved(value);
+        if (alive) {
+          setSaved(value);
+        }
       })
       .catch(() => {
-        if (alive)
+        if (alive) {
           setError("La trace de dispensation n’a pas pu être chargée.");
+        }
       });
     return () => {
       alive = false;
     };
   }, [prescriptionId, status, desktop]);
-  if (!desktop)
+  if (!desktop) {
     return (
       <p className="mt-3 t-12 text-muted-foreground">
         La dispensation et sa facturation sont disponibles dans l’application de
         bureau.
       </p>
     );
+  }
   const payload: DispensingLineInput[] = items.map((item) => ({
     prescriptionItemId: item.id,
     productId: lines[item.id]?.productId ?? "",
@@ -92,7 +98,7 @@ export function PrescriptionDispensing({
       );
     });
   const totals = new Map<string, number>();
-  for (const line of payload)
+  for (const line of payload) {
     totals.set(
       line.productId,
       stockBalance(
@@ -100,17 +106,19 @@ export function PrescriptionDispensing({
           (Number.isFinite(line.quantity) ? line.quantity : 0)
       )
     );
+  }
   let shortage: string | null = null;
   for (const [id, total] of totals) {
     const product = products.data.find((p) => p.id === id);
     const available = product?.availableQuantity ?? product?.quantity ?? 0;
-    if (product && total > available)
+    if (product && total > available) {
       shortage = insufficientStockMessage(
         product.name,
         available,
         total,
         product.unit
       );
+    }
   }
   const selectedTotals = new Map<string, number>();
   for (const line of payload.filter((row) => row.lotId !== undefined)) {
@@ -138,10 +146,11 @@ export function PrescriptionDispensing({
         )
         .reduce((sum, row) => sum + row.quantity, 0)
     );
-    if (product && total > available)
+    if (product && total > available) {
       shortage = `Lot choisi : ${insufficientStockMessage(product.name, available, total, product.unit)}`;
+    }
   }
-  if (saved || status === "dispensed")
+  if (saved || status === "dispensed") {
     return (
       <div className="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-3 t-12">
         <span>Dispensation enregistrée, stock déduit.</span>
@@ -153,13 +162,15 @@ export function PrescriptionDispensing({
         )}
       </div>
     );
-  if (status !== "signed")
+  }
+  if (status !== "signed") {
     return (
       <p className="mt-3 t-12 text-muted-foreground">
         Signez l’ordonnance pour accéder à la dispensation.
       </p>
     );
-  if (!open)
+  }
+  if (!open) {
     return (
       <div className="mt-3 flex justify-end">
         <Button variant="outline" onClick={() => setOpen(true)}>
@@ -167,6 +178,7 @@ export function PrescriptionDispensing({
         </Button>
       </div>
     );
+  }
   return (
     <form
       noValidate
@@ -174,7 +186,9 @@ export function PrescriptionDispensing({
       className="mt-4 space-y-4 border-t border-border pt-4"
       onSubmit={async (event) => {
         event.preventDefault();
-        if (!valid || shortage || !currentUser || busy) return;
+        if (!valid || shortage || !currentUser || busy) {
+          return;
+        }
         setBusy(true);
         setError(null);
         await guard(

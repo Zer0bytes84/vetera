@@ -74,7 +74,9 @@ export function ConsultationAssistantPanel({
   const panelRef = useRef<HTMLElement>(null);
   const reopenRef = useRef<HTMLButtonElement>(null);
   useEffect(() => {
-    if (collapsed) reopenRef.current?.focus();
+    if (collapsed) {
+      reopenRef.current?.focus();
+    }
   }, [collapsed]);
   const expand = () => {
     setCollapsed(false);
@@ -109,7 +111,9 @@ export function ConsultationAssistantPanel({
   }, [open, onCollapsedChange, onExited]);
   /* eslint-enable react-hooks/set-state-in-effect */
 
-  if (!rendered || typeof document === "undefined") return null;
+  if (!rendered || typeof document === "undefined") {
+    return null;
+  }
 
   return createPortal(
     <>

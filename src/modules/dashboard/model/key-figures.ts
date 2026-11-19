@@ -46,9 +46,12 @@ export function changeBadge(
   current: number,
   absolute: (n: number) => string
 ): { delta: number; deltaText?: string } {
-  if (previous === 0 && current === 0) return { delta: 0 };
-  if (previous === 0)
+  if (previous === 0 && current === 0) {
+    return { delta: 0 };
+  }
+  if (previous === 0) {
     return { delta: current, deltaText: `+${absolute(current)}` };
+  }
   return {
     delta:
       change ??
@@ -66,7 +69,9 @@ export function actionsGoal(
   open: number
 ): { ratio: number; label: string } {
   const total = done + open;
-  if (total === 0) return { ratio: 1, label: "Aucune action à terminer" };
+  if (total === 0) {
+    return { ratio: 1, label: "Aucune action à terminer" };
+  }
   return {
     ratio: done / total,
     label: `${plural(done, "action")} terminée${done > 1 ? "s" : ""} sur ${total}`,

@@ -15,7 +15,9 @@ const decodeQuotedValue = (value: string): string =>
 
 export const parseToolArguments = (raw: string): Record<string, string> => {
   const normalized = raw.trim();
-  if (!normalized) return {};
+  if (!normalized) {
+    return {};
+  }
 
   try {
     const parsed: unknown = JSON.parse(normalized);
@@ -47,18 +49,28 @@ export const parseToolArguments = (raw: string): Record<string, string> => {
 
 export const extractToolCall = (text: string): ToolCall | null => {
   const markerStart = text.indexOf("[TOOL:");
-  if (markerStart < 0) return null;
+  if (markerStart < 0) {
+    return null;
+  }
 
   let cursor = markerStart + "[TOOL:".length;
-  while (/\s/.test(text[cursor] ?? "")) cursor += 1;
+  while (/\s/.test(text[cursor] ?? "")) {
+    cursor += 1;
+  }
 
   const nameMatch = text.slice(cursor).match(/^([A-Za-z][A-Za-z0-9_]*)/);
-  if (!nameMatch) return null;
+  if (!nameMatch) {
+    return null;
+  }
 
   const name = nameMatch[1];
   cursor += name.length;
-  while (/\s/.test(text[cursor] ?? "")) cursor += 1;
-  if (text[cursor] !== "(") return null;
+  while (/\s/.test(text[cursor] ?? "")) {
+    cursor += 1;
+  }
+  if (text[cursor] !== "(") {
+    return null;
+  }
 
   const argsStart = cursor + 1;
   let depth = 1;

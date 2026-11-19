@@ -17,7 +17,9 @@ export function assertStayTransition(
   author: string,
   reason?: string
 ) {
-  if (!author.trim()) throw new Error("Un utilisateur connecté est requis.");
+  if (!author.trim()) {
+    throw new Error("Un utilisateur connecté est requis.");
+  }
   const next: Record<StayStatus, readonly StayStatus[]> = {
     admis: ["en_cours", "annule"],
     en_cours: ["sortie_prevue", "annule"],
@@ -25,14 +27,17 @@ export function assertStayTransition(
     sorti: [],
     annule: [],
   };
-  if (!next[from].includes(to))
+  if (!next[from].includes(to)) {
     throw new Error("Ce changement de statut du séjour n’est pas autorisé.");
-  if (to === "annule" && !reason?.trim())
+  }
+  if (to === "annule" && !reason?.trim()) {
     throw new Error("Indiquez le motif de l’annulation.");
+  }
 }
 function validDate(value: Date) {
-  if (!Number.isFinite(value.getTime()))
+  if (!Number.isFinite(value.getTime())) {
     throw new Error("La date du séjour est invalide.");
+  }
 }
 function calendarDay(value: Date) {
   return Date.UTC(value.getFullYear(), value.getMonth(), value.getDate());
@@ -41,8 +46,9 @@ function calendarDay(value: Date) {
 export function stayDays(admitted: Date, discharged: Date): number {
   validDate(admitted);
   validDate(discharged);
-  if (discharged < admitted)
+  if (discharged < admitted) {
     throw new Error("La sortie ne peut pas précéder l’admission.");
+  }
   const midnight =
     discharged.getHours() === 0 &&
     discharged.getMinutes() === 0 &&
@@ -62,13 +68,15 @@ export function carePlanOccurrences(
 ): string[] {
   validDate(start);
   validDate(end);
-  if (end < start)
+  if (end < start) {
     throw new Error("La fin du plan ne peut pas précéder son début.");
+  }
   if (
     !times.length ||
     times.some((time) => !/^([01]\d|2[0-3]):[0-5]\d$/.test(time))
-  )
+  ) {
     throw new Error("Choisissez des horaires valides pour les soins.");
+  }
   const result: string[] = [];
   const unique = [...new Set(times)].sort();
   const cursor = new Date(
@@ -78,8 +86,9 @@ export function carePlanOccurrences(
   );
   let days = 0;
   while (calendarDay(cursor) <= calendarDay(end)) {
-    if (++days > 366)
+    if (++days > 366) {
       throw new Error("Un plan ne peut pas dépasser 366 jours.");
+    }
     for (const time of unique) {
       const [hours, minutes] = time.split(":").map(Number);
       const occurrence = new Date(
@@ -93,12 +102,14 @@ export function carePlanOccurrences(
       if (
         occurrence.getHours() !== hours ||
         occurrence.getMinutes() !== minutes
-      )
+      ) {
         throw new Error(
           "Un horaire choisi n’existe pas lors du changement d’heure. Ajustez le plan."
         );
-      if (occurrence >= start && occurrence <= end)
+      }
+      if (occurrence >= start && occurrence <= end) {
         result.push(occurrence.toISOString());
+      }
     }
     cursor.setDate(cursor.getDate() + 1);
   }

@@ -27,10 +27,14 @@ export function useIssuedInvoiceLines(
     billingService
       .listIssuedInvoiceLines({ from: new Date(fromIso), to: new Date(toIso) })
       .then((lines) => {
-        if (!cancelled) setResult({ key: readKey, lines });
+        if (!cancelled) {
+          setResult({ key: readKey, lines });
+        }
       })
       .catch(() => {
-        if (!cancelled) setResult({ key: readKey, lines: "error" });
+        if (!cancelled) {
+          setResult({ key: readKey, lines: "error" });
+        }
       });
     return () => {
       cancelled = true;

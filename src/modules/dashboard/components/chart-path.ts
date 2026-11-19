@@ -8,8 +8,12 @@ const fmt = (value: number) => value.toFixed(1);
 
 export function monotonePath(points: readonly ChartPoint[]): string {
   const n = points.length;
-  if (n === 0) return "";
-  if (n === 1) return `M${fmt(points[0][0])},${fmt(points[0][1])}`;
+  if (n === 0) {
+    return "";
+  }
+  if (n === 1) {
+    return `M${fmt(points[0][0])},${fmt(points[0][1])}`;
+  }
   if (n === 2) {
     return `M${fmt(points[0][0])},${fmt(points[0][1])} L${fmt(points[1][0])},${fmt(points[1][1])}`;
   }

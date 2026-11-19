@@ -130,22 +130,27 @@ const shortDay = (date: Date) =>
 
 /** The forecast sentence, written from the computed figures only. */
 export function forecastSentence(forecast: MonthForecast): string {
-  if (forecast.kind === "empty")
+  if (forecast.kind === "empty") {
     return `Aucun encaissement en ${forecast.monthLabel} : rien à prévoir.`;
+  }
   if (forecast.kind === "early") {
     return `${formatCentimes(forecast.collected)} encaissés en ${forecast.daysElapsed} jour${forecast.daysElapsed > 1 ? "s" : ""} : trop tôt pour prévoir, prévision dès le ${forecast.minimumDays} ${forecast.monthLabel}.`;
   }
   const end = `${forecast.monthLabel} finit vers ${formatCentimes(forecast.projected)}`;
   const previous = `${forecast.previousLabel} (${formatCentimes(forecast.previousTotal)})`;
-  if (!forecast.previousTotal) return `À ce rythme, ${end}.`;
-  if (forecast.passed)
+  if (!forecast.previousTotal) {
+    return `À ce rythme, ${end}.`;
+  }
+  if (forecast.passed) {
     return `${previous[0].toUpperCase()}${previous.slice(1)} est déjà dépassé. À ce rythme, ${end}.`;
+  }
   // "30 oct." already ends with its own full stop.
-  if (forecast.crossing)
+  if (forecast.crossing) {
     return `À ce rythme, ${end} et dépasse ${previous} vers le ${shortDay(forecast.crossing)}`.replace(
       /\.?$/,
       "."
     );
+  }
   return `À ce rythme, ${end}, sous ${previous}.`;
 }
 
@@ -274,17 +279,28 @@ export function WidgetFooter({
 
 function speciesGlyph(name: string) {
   const norm = name.toLocaleLowerCase("fr-FR");
-  if (norm.includes("chien")) return Dog;
-  if (norm.includes("chat")) return Cat;
+  if (norm.includes("chien")) {
+    return Dog;
+  }
+  if (norm.includes("chat")) {
+    return Cat;
+  }
   if (
     norm.includes("lapin") ||
     norm.includes("nac") ||
     norm.includes("rongeur")
-  )
+  ) {
     return Rabbit;
-  if (norm.includes("oiseau")) return Bird;
-  if (norm.includes("tortue") || norm.includes("reptile")) return Turtle;
-  if (norm.includes("cheval")) return Horse;
+  }
+  if (norm.includes("oiseau")) {
+    return Bird;
+  }
+  if (norm.includes("tortue") || norm.includes("reptile")) {
+    return Turtle;
+  }
+  if (norm.includes("cheval")) {
+    return Horse;
+  }
   return PawPrint;
 }
 

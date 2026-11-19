@@ -22,8 +22,9 @@ export function draftPriceLines(
   invoice: PriceInvoice,
   values: Record<string, string>
 ): BillingLineInput[] {
-  if (invoice.documentStatus !== "draft")
+  if (invoice.documentStatus !== "draft") {
     throw new Error("Seul un brouillon peut être modifié.");
+  }
   return invoice.lines.map((line) => {
     const value = (values[line.id] ?? "").trim();
     if (!/^\d+(?:[.,]\d{1,2})?$/.test(value)) {
@@ -33,8 +34,9 @@ export function draftPriceLines(
     }
     const [whole, fraction = ""] = value.split(/[.,]/);
     const amount = BigInt(whole) * 100n + BigInt(fraction.padEnd(2, "0"));
-    if (amount > BigInt(Number.MAX_SAFE_INTEGER))
+    if (amount > BigInt(Number.MAX_SAFE_INTEGER)) {
       throw new Error("Ce prix dépasse le montant autorisé.");
+    }
     return {
       id: line.id,
       description: line.description,

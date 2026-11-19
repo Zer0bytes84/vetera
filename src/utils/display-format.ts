@@ -25,17 +25,25 @@ export function formatDinars(value: number, maximumFractionDigits = 2) {
 /** Group the national number by pairs without guessing a country. */
 export function formatPhone(value?: string | null) {
   const text = value?.trim() || "";
-  if (!text || !/^\+?[\d\s().-]+$/.test(text)) return text;
+  if (!text || !/^\+?[\d\s().-]+$/.test(text)) {
+    return text;
+  }
   const digits = text.replace(/\D/g, "");
-  if (!digits) return text;
+  if (!digits) {
+    return text;
+  }
   const pairs = (number: string) =>
     number.replace(/(\d)(?=(\d{2})+$)/g, "$1\u00a0");
-  if (!text.startsWith("+")) return pairs(digits);
+  if (!text.startsWith("+")) {
+    return pairs(digits);
+  }
   const code = [1, 2, 3]
     .map((length) => digits.slice(0, length))
     .find((prefix) => callingCodes.has(prefix));
   // Keep incomplete or unknown international numbers as entered.
-  if (!code || digits.length <= code.length) return text;
+  if (!code || digits.length <= code.length) {
+    return text;
+  }
   return `+${code}\u00a0${pairs(digits.slice(code.length))}`;
 }
 
@@ -74,10 +82,16 @@ export function formatLongDay(date: Date) {
 /** "Il y a 2 min", "Il y a 3 h", "Il y a 2 j": units separated by a non-breaking space. */
 export function formatElapsed(date: Date, now = new Date()) {
   const minutes = Math.floor((now.getTime() - date.getTime()) / 60_000);
-  if (minutes < 1) return "À l’instant";
-  if (minutes < 60) return `Il y a ${minutes}\u00a0min`;
+  if (minutes < 1) {
+    return "À l’instant";
+  }
+  if (minutes < 60) {
+    return `Il y a ${minutes}\u00a0min`;
+  }
   const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `Il y a ${hours}\u00a0h`;
+  if (hours < 24) {
+    return `Il y a ${hours}\u00a0h`;
+  }
   return `Il y a ${Math.floor(hours / 24)}\u00a0j`;
 }
 

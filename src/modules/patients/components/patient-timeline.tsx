@@ -130,9 +130,13 @@ export function pieceDetail(
   piece: Pick<TimelinePiece, "kind" | "detail">,
   eventAt: string
 ) {
-  if (piece.kind !== "invoice" || !piece.detail) return piece.detail;
+  if (piece.kind !== "invoice" || !piece.detail) {
+    return piece.detail;
+  }
   const [number, ...rest] = piece.detail.split(" · ");
-  if (!number.startsWith("LEGACY-")) return piece.detail;
+  if (!number.startsWith("LEGACY-")) {
+    return piece.detail;
+  }
   const date = new Date(eventAt);
   return (
     [Number.isNaN(date.getTime()) ? "" : PIECE_DATE.format(date), ...rest]
@@ -146,7 +150,9 @@ export function isOverdueVisit(
   apt: Pick<Appointment, "status" | "startTime" | "endTime">,
   now: number
 ) {
-  if (apt.status !== "scheduled" && apt.status !== "confirmed") return false;
+  if (apt.status !== "scheduled" && apt.status !== "confirmed") {
+    return false;
+  }
   const end = new Date(apt.endTime || apt.startTime).getTime();
   return !Number.isNaN(end) && end < now;
 }
@@ -258,7 +264,9 @@ function buildEntries(
   // Notes kept without a visit: dated by their validation, never a consultation.
   for (const note of notes) {
     const meta = readOffVisitNote(note);
-    if (!meta) continue;
+    if (!meta) {
+      continue;
+    }
     items.push({
       id: `note-${note.id}`,
       at: note.createdAt,
@@ -372,7 +380,9 @@ const MONTH_FORMAT = new Intl.DateTimeFormat("fr-FR", {
 
 function monthLabel(iso: string) {
   const date = new Date(iso);
-  if (Number.isNaN(date.getTime())) return "Date inconnue";
+  if (Number.isNaN(date.getTime())) {
+    return "Date inconnue";
+  }
   const label = MONTH_FORMAT.format(date);
   return label.charAt(0).toUpperCase() + label.slice(1);
 }
@@ -381,15 +391,18 @@ function monthLabel(iso: string) {
 function usePatientInvoices(patientId: string) {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   useEffect(() => {
-    if (!isTauriRuntime()) return;
+    if (!isTauriRuntime()) {
+      return;
+    }
     let cancelled = false;
     void loadServicesBillingService()
       .then(({ listInvoices }) => listInvoices())
       .then((rows) => {
-        if (!cancelled)
+        if (!cancelled) {
           setInvoices(
             rows.filter((invoice) => invoice.patientId === patientId)
           );
+        }
       })
       .catch(() => {
         // A missing invoice list leaves the visits themselves readable.
@@ -509,8 +522,11 @@ export function PatientTimeline({
   for (const entry of visible) {
     const label = monthLabel(entry.at);
     const current = months.at(-1);
-    if (current?.label === label) current.entries.push(entry);
-    else months.push({ label, entries: [entry] });
+    if (current?.label === label) {
+      current.entries.push(entry);
+    } else {
+      months.push({ label, entries: [entry] });
+    }
   }
 
   return (

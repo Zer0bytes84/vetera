@@ -107,13 +107,19 @@ const IMAGE_ACCEPT = "image/png,image/jpeg,image/webp,image/gif";
 /** What a row says under its title: its kind first, then what tells it apart. */
 function detailOf(entry: LibraryEntry, folder: string) {
   const parts: string[] = [KIND_LABELS[entry.kind]];
-  if (entry.kind === "link" && entry.item?.url)
+  if (entry.kind === "link" && entry.item?.url) {
     parts.push(linkTitle(entry.item.url));
-  if ((entry.kind === "file" || entry.kind === "image") && entry.item?.size)
+  }
+  if ((entry.kind === "file" || entry.kind === "image") && entry.item?.size) {
     parts.push(formatSize(entry.item.size));
-  if (entry.patientId) parts.push(folder);
+  }
+  if (entry.patientId) {
+    parts.push(folder);
+  }
   const changed = date(entry.updatedAt);
-  if (entry.kind === "document" && changed) parts.push(`Modifié le ${changed}`);
+  if (entry.kind === "document" && changed) {
+    parts.push(`Modifié le ${changed}`);
+  }
   return parts.join(" · ");
 }
 
@@ -196,12 +202,16 @@ export function DocumentsLibrary({
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const files = Array.from(event.target.files ?? []);
       event.target.value = "";
-      if (files.length) onAddFiles(files, wanted);
+      if (files.length) {
+        onAddFiles(files, wanted);
+      }
     };
 
   const submitLink = (event: FormEvent) => {
     event.preventDefault();
-    if (!normalizedUrl) return;
+    if (!normalizedUrl) {
+      return;
+    }
     onAddLink(normalizedUrl, linkName.trim() || linkTitle(normalizedUrl));
     setLinkOpen(false);
     setLinkUrl("");
@@ -209,11 +219,15 @@ export function DocumentsLibrary({
   };
 
   const open = (entry: LibraryEntry) => {
-    if (entry.kind === "document") onOpenDocument(entry.id);
-    else if (entry.kind === "link" && entry.item?.url)
+    if (entry.kind === "document") {
+      onOpenDocument(entry.id);
+    } else if (entry.kind === "link" && entry.item?.url) {
       onOpenLink(entry.item.url);
-    else if (entry.kind === "image") setPreview(entry);
-    else onDownload(entry);
+    } else if (entry.kind === "image") {
+      setPreview(entry);
+    } else {
+      onDownload(entry);
+    }
   };
 
   const emptyTitle = searching
@@ -321,7 +335,9 @@ export function DocumentsLibrary({
             onChange={(event) => setQuery(event.target.value)}
             onClear={() => setQuery("")}
             onKeyDown={(event) => {
-              if (event.key === "Escape") toggleSearch();
+              if (event.key === "Escape") {
+                toggleSearch();
+              }
             }}
             placeholder="Rechercher un document"
             value={query}
@@ -523,7 +539,9 @@ export function DocumentsLibrary({
 
       <Dialog
         onOpenChange={(next) => {
-          if (!next) setLinkOpen(false);
+          if (!next) {
+            setLinkOpen(false);
+          }
         }}
         open={linkOpen}
       >
@@ -593,7 +611,9 @@ export function DocumentsLibrary({
 
       <Dialog
         onOpenChange={(next) => {
-          if (!next) setPreview(null);
+          if (!next) {
+            setPreview(null);
+          }
         }}
         open={preview !== null}
       >

@@ -7,8 +7,9 @@ export function admissionDateTime(
     !day ||
     !Number.isFinite(day.getTime()) ||
     !/^([01]\d|2[0-3]):[0-5]\d$/.test(time)
-  )
+  ) {
     return null;
+  }
   const [hours, minutes] = time.split(":").map(Number);
   const date = new Date(
     day.getFullYear(),
@@ -18,6 +19,8 @@ export function admissionDateTime(
     minutes
   );
   // A nonexistent local hour during a DST transition must not silently roll forward.
-  if (date.getHours() !== hours || date.getMinutes() !== minutes) return null;
+  if (date.getHours() !== hours || date.getMinutes() !== minutes) {
+    return null;
+  }
   return date.toISOString();
 }

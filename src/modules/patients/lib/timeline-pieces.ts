@@ -66,7 +66,9 @@ export function collectTimelinePieces({
     });
   }
   for (const invoice of invoices) {
-    if (invoice.documentStatus === "draft") continue;
+    if (invoice.documentStatus === "draft") {
+      continue;
+    }
     pieces.push({
       at: invoice.issuedAt || invoice.createdAt,
       id: `invoice-${invoice.id}`,
@@ -95,7 +97,9 @@ export function collectTimelinePieces({
     });
   }
   for (const document of documents) {
-    if (document.status === "annule") continue;
+    if (document.status === "annule") {
+      continue;
+    }
     pieces.push({
       at: document.finalizedAt || document.createdAt,
       id: `document-${document.id}`,

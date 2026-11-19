@@ -15,7 +15,9 @@ export function PageDate() {
       Math.max(1000, midnight.getTime() - Date.now())
     );
     const refresh = () => {
-      if (document.visibilityState === "visible") setToday(new Date());
+      if (document.visibilityState === "visible") {
+        setToday(new Date());
+      }
     };
     document.addEventListener("visibilitychange", refresh);
     return () => {

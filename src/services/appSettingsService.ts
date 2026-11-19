@@ -85,8 +85,9 @@ export async function setSettings(
   values: Record<string, string>
 ): Promise<void> {
   if (!isTauriRuntime()) {
-    for (const [key, value] of Object.entries(values))
+    for (const [key, value] of Object.entries(values)) {
       setBrowserSetting(key, value);
+    }
     return;
   }
   await ensureTable();
@@ -168,8 +169,9 @@ export async function getLicenseInfo(): Promise<StoredLicense | null> {
       !parsed ||
       typeof parsed.email !== "string" ||
       typeof parsed.activationToken !== "string"
-    )
+    ) {
       throw new Error("Activation locale endommagée.");
+    }
     return parsed;
   }
   const [key, email, token, activatedAt] = await Promise.all([

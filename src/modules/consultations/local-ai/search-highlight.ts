@@ -18,7 +18,9 @@ export function highlightPassage(
   text: string,
   query: string
 ): HighlightSegment[] {
-  if (!query.trim()) return [{ text, hit: false }];
+  if (!query.trim()) {
+    return [{ text, hit: false }];
+  }
   const expansion = expandSearchQuery(query);
   // An equivalent phrase is highlighted only where it appears whole in the passage.
   const passage = ` ${normalizeLexical(text)} `;
@@ -34,7 +36,9 @@ export function highlightPassage(
   const segments: HighlightSegment[] = [];
   // Elisions (d’, l’) are separators: « d’antibiotique » highlights « antibiotique ».
   for (const part of text.split(/([\p{L}\p{N}]+(?:-[\p{L}\p{N}]+)*)/u)) {
-    if (!part) continue;
+    if (!part) {
+      continue;
+    }
     const normalized = normalizeLexical(part);
     const hit =
       /[\p{L}\p{N}]/u.test(part) &&
@@ -42,8 +46,11 @@ export function highlightPassage(
       (words.has(normalized) ||
         (normalized.length >= 4 && stems.has(stemFrenchWord(normalized))));
     const last = segments.at(-1);
-    if (last && last.hit === hit) last.text += part;
-    else segments.push({ text: part, hit });
+    if (last && last.hit === hit) {
+      last.text += part;
+    } else {
+      segments.push({ text: part, hit });
+    }
   }
   return segments;
 }

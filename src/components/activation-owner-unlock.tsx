@@ -12,7 +12,9 @@ export function ActivationOwnerUnlock({ children }: { children: ReactNode }) {
   const [token, setToken] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
-  if (unlocked) return children;
+  if (unlocked) {
+    return children;
+  }
   return (
     <main className="flex min-h-dvh items-center justify-center bg-background p-6 text-foreground">
       <form
@@ -20,16 +22,19 @@ export function ActivationOwnerUnlock({ children }: { children: ReactNode }) {
         className="w-full max-w-md space-y-5 rounded-xl border border-border p-8"
         onSubmit={async (event) => {
           event.preventDefault();
-          if (busy || !token.trim()) return;
+          if (busy || !token.trim()) {
+            return;
+          }
           setBusy(true);
           setError("");
           await guard(
             async () => {
               await requireActivationOwner();
-              if (!(await verifyAdminToken(token.trim())))
+              if (!(await verifyAdminToken(token.trim()))) {
                 throw new Error(
                   "Jeton refusé ou serveur indisponible. Vérifiez le jeton puis réessayez."
                 );
+              }
               await requireActivationOwner();
               setStoredAdminToken(token);
               setToken("");

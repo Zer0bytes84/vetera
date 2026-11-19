@@ -40,7 +40,9 @@ export function useCareTasks(date?: Date, rangeEnd?: Date) {
             Number(endKey.split("-")[1]),
             Number(endKey.split("-")[2])
           );
-    if (endKey === "day") end.setDate(end.getDate() + 1);
+    if (endKey === "day") {
+      end.setDate(end.getDate() + 1);
+    }
     return await guard(
       async () => {
         const rows = await careTasksService.list(start, end);
@@ -49,18 +51,24 @@ export function useCareTasks(date?: Date, rangeEnd?: Date) {
           dateKey === "today" && endKey === "day"
             ? await careTasksService.overdueBefore(start)
             : [];
-        if (sequence !== requestSequence.current) return;
+        if (sequence !== requestSequence.current) {
+          return;
+        }
         setTasks([...carried, ...rows]);
         setNow(current);
         setError(null);
       },
       {
         recover: () => {
-          if (sequence !== requestSequence.current) return;
+          if (sequence !== requestSequence.current) {
+            return;
+          }
           setError("Les soins du jour n’ont pas pu être chargés. Réessayez.");
         },
         cleanup: () => {
-          if (sequence === requestSequence.current) setLoading(false);
+          if (sequence === requestSequence.current) {
+            setLoading(false);
+          }
         },
       }
     );
@@ -74,7 +82,9 @@ export function useCareTasks(date?: Date, rangeEnd?: Date) {
       void refresh();
     };
     const onVisible = () => {
-      if (document.visibilityState === "visible") void refresh();
+      if (document.visibilityState === "visible") {
+        void refresh();
+      }
     };
     document.addEventListener("visibilitychange", onVisible);
     window.addEventListener(CARE_TASKS_CHANGED, onChange);

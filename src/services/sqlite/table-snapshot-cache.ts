@@ -53,15 +53,18 @@ export class TableSnapshotCache<R extends { id: string }> {
     let rows = entry.base;
     if (rows !== undefined || entry.layers.size) {
       rows ??= [];
-      for (const layer of entry.layers.values()) rows = layer.apply(rows);
+      for (const layer of entry.layers.values()) {
+        rows = layer.apply(rows);
+      }
     }
     entry.visible = rows;
     entry.listeners.forEach((listener) => listener());
   }
   replace(table: string, rows: R[], generation?: number) {
     const entry = this.entry(table);
-    if (generation !== undefined && generation !== entry.generation)
+    if (generation !== undefined && generation !== entry.generation) {
       return false;
+    }
     entry.base = rows;
     this.publish(entry);
     return true;
@@ -77,7 +80,9 @@ export class TableSnapshotCache<R extends { id: string }> {
   commit(table: string, token: number, row?: R | null) {
     const entry = this.entry(table);
     const layer = entry.layers.get(token);
-    if (!layer) return;
+    if (!layer) {
+      return;
+    }
     if (entry.base !== undefined) {
       entry.base =
         row === undefined

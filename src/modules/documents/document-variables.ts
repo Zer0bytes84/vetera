@@ -97,7 +97,9 @@ export function renderDocumentVariables(
 ): string {
   return body.replace(/\{\{([^{}]*)\}\}/g, (_match, variable: string) => {
     const key = variable.trim();
-    if (!allowedVariables.has(key)) return DOCUMENT_MISSING_VALUE;
+    if (!allowedVariables.has(key)) {
+      return DOCUMENT_MISSING_VALUE;
+    }
     const value = Object.hasOwn(values, key) ? values[key] : undefined;
     return typeof value === "string" && value.trim()
       ? value
@@ -106,9 +108,11 @@ export function renderDocumentVariables(
 }
 
 export function validateDocumentTemplate(body: string): void {
-  if (!body.trim() || body.length > 12000)
+  if (!body.trim() || body.length > 12000) {
     throw new Error("Le modèle doit contenir entre 1 et 12 000 caractères.");
+  }
   const residue = body.replace(/\{\{([^{}]*)\}\}/g, "");
-  if (residue.includes("{{") || residue.includes("}}"))
+  if (residue.includes("{{") || residue.includes("}}")) {
     throw new Error("Une variable du modèle est mal fermée.");
+  }
 }

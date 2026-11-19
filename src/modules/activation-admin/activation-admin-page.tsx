@@ -656,7 +656,9 @@ function GeneratorTabView({
                 <Label htmlFor="gen-plan">Formule</Label>
                 <Select
                   onValueChange={(value) => {
-                    if (value) setPlan(value);
+                    if (value) {
+                      setPlan(value);
+                    }
                   }}
                   value={plan}
                 >
@@ -678,7 +680,9 @@ function GeneratorTabView({
                 <Label htmlFor="gen-devices">Postes autorisés</Label>
                 <Select
                   onValueChange={(value) => {
-                    if (value) setMaxDevices(value);
+                    if (value) {
+                      setMaxDevices(value);
+                    }
                   }}
                   value={maxDevices}
                 >
@@ -1069,7 +1073,9 @@ export default function ActivationAdminPage() {
   if (probedToken !== adminToken) {
     setProbedToken(adminToken);
     setServerStatus("checking");
-    if (adminToken.trim()) setIsLoadingLicenses(true);
+    if (adminToken.trim()) {
+      setIsLoadingLicenses(true);
+    }
   }
   useEffect(() => {
     void checkServer();
@@ -2001,8 +2007,9 @@ export default function ActivationAdminPage() {
                               !window.confirm(
                                 "Libérer ce poste ? Son accès sera retiré au prochain contrôle en ligne, au plus tard à la fin de son autorisation hors connexion."
                               )
-                            )
+                            ) {
                               return;
+                            }
                             try {
                               const updated = await releaseActivationDevice(
                                 adminToken,

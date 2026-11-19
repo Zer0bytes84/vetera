@@ -31,9 +31,15 @@ export function referenceRange(
   key: VitalKey
 ): readonly [number, number] | undefined {
   const reference = vitalReference(species);
-  if (!reference) return undefined;
-  if (key === "temperature_c") return reference.temperature;
-  if (key === "heart_rate") return reference.heartRate;
+  if (!reference) {
+    return undefined;
+  }
+  if (key === "temperature_c") {
+    return reference.temperature;
+  }
+  if (key === "heart_rate") {
+    return reference.heartRate;
+  }
   return undefined;
 }
 
@@ -41,7 +47,9 @@ export function verdict(
   value: number,
   range?: readonly [number, number]
 ): Verdict | null {
-  if (!range) return null;
+  if (!range) {
+    return null;
+  }
   return value < range[0] ? "below" : value > range[1] ? "above" : "within";
 }
 
@@ -92,7 +100,9 @@ export function latestReadings(species: string, vitals: VitalSign[]) {
   return VITAL_METRICS.flatMap((metric) => {
     const taken = ordered.filter((vital) => vital[metric.key] != null);
     const last = taken.at(-1);
-    if (!last) return [];
+    if (!last) {
+      return [];
+    }
     const previous = taken.at(-2);
     const value = last[metric.key] as number;
     const range = referenceRange(species, metric.key);

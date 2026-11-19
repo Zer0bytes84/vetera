@@ -27,7 +27,9 @@ export function CareTimePicker({
     <Popover
       open={open}
       onOpenChange={(nextOpen) => {
-        if (nextOpen) setDraft(value);
+        if (nextOpen) {
+          setDraft(value);
+        }
         setOpen(nextOpen);
       }}
     >

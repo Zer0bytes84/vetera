@@ -51,7 +51,9 @@ export function StockDatePicker({
             className={COMPACT_CALENDAR_CLASS}
             onSelect={(date) => {
               onChange(date);
-              if (date) setOpen(false);
+              if (date) {
+                setOpen(false);
+              }
             }}
           />
         </PopoverContent>

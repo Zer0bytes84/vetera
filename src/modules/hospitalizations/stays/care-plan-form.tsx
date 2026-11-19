@@ -13,7 +13,9 @@ import { announceStaysChanged } from "./use-stays";
 import { StayDateTimeField } from "./stay-date-time-field";
 import { guard, guardSync } from "@/lib/guard";
 function localDate(value?: string) {
-  if (!value) return "";
+  if (!value) {
+    return "";
+  }
   const date = new Date(value);
   return new Date(date.getTime() - date.getTimezoneOffset() * 60000)
     .toISOString()
@@ -46,12 +48,13 @@ export function CarePlanForm({
     validation = "";
   guardSync(
     () => {
-      if (starts && ends && hours.length)
+      if (starts && ends && hours.length) {
         count = carePlanOccurrences(
           new Date(starts),
           new Date(ends),
           hours
         ).filter((value) => !plan || new Date(value) >= new Date()).length;
+      }
     },
     {
       recover: (error) => {
@@ -65,7 +68,9 @@ export function CarePlanForm({
       className="space-y-4"
       onSubmit={async (event) => {
         event.preventDefault();
-        if (!currentUser || busy || !count) return;
+        if (!currentUser || busy || !count) {
+          return;
+        }
         setBusy(true);
         setError(null);
         await guard(
@@ -79,9 +84,11 @@ export function CarePlanForm({
               times: hours,
               note,
             };
-            if (plan)
+            if (plan) {
               await staysService.updatePlan(plan.id, draft, currentUser.id);
-            else await staysService.createPlan(stayId, draft, currentUser.id);
+            } else {
+              await staysService.createPlan(stayId, draft, currentUser.id);
+            }
             announceStaysChanged();
             announceCareTasksChanged();
             onSaved();

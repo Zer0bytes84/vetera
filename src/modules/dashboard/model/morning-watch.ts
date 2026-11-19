@@ -56,7 +56,9 @@ const plural = (n: number, one: string, many = `${one}s`) =>
 
 function dateOnly(value: string): Date | null {
   const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(value);
-  if (!match) return parseDashboardDate(value);
+  if (!match) {
+    return parseDashboardDate(value);
+  }
   return new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
 }
 
@@ -129,17 +131,25 @@ export function buildMorningWatch({
   let absentToday = 0;
   for (const appointment of appointments) {
     const start = parseDashboardDate(appointment.startTime);
-    if (!start) continue;
+    if (!start) {
+      continue;
+    }
     const end = parseDashboardDate(appointment.endTime) ?? start;
     const isToday = start >= today && start < tomorrow;
-    if (appointment.status === "no_show" && isToday) absentToday += 1;
+    if (appointment.status === "no_show" && isToday) {
+      absentToday += 1;
+    }
     if (
       appointment.status !== "scheduled" &&
       appointment.status !== "confirmed"
-    )
+    ) {
       continue;
-    if (end.getTime() < now.getTime()) untreated += 1;
-    else if (isToday) upcomingToday += 1;
+    }
+    if (end.getTime() < now.getTime()) {
+      untreated += 1;
+    } else if (isToday) {
+      upcomingToday += 1;
+    }
   }
   const visits: MorningItem = {
     id: "appointments",
@@ -166,12 +176,18 @@ export function buildMorningWatch({
   let due = 0;
   let soon = 0;
   for (const reminder of reminders) {
-    if (reminder.statut !== "en_cours" || deceased.has(reminder.patient_id))
+    if (reminder.statut !== "en_cours" || deceased.has(reminder.patient_id)) {
       continue;
+    }
     const day = dateOnly(reminder.echeance);
-    if (!day) continue;
-    if (day < today) due += 1;
-    else if (day < horizon) soon += 1;
+    if (!day) {
+      continue;
+    }
+    if (day < today) {
+      due += 1;
+    } else if (day < horizon) {
+      soon += 1;
+    }
   }
   const remindersItem: MorningItem = {
     id: "reminders",
@@ -213,7 +229,9 @@ export function buildMorningWatch({
   };
 
   const items = [care, visits, remindersItem, invoicesItem];
-  if (!hospitalization) return items;
+  if (!hospitalization) {
+    return items;
+  }
 
   // Hospitalisés
   const active = stays.filter((stay) => ACTIVE_STAY.has(stay.status));

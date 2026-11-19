@@ -20,7 +20,9 @@ const UNDERWAY = new Set(["arrived", "waiting", "in_progress"]);
 const NOT_SEEN = new Set(["cancelled", "no_show"]);
 
 export function stateOf(status: string): DayUnitState {
-  if (status === "completed") return "done";
+  if (status === "completed") {
+    return "done";
+  }
   return UNDERWAY.has(status) ? "underway" : "upcoming";
 }
 
@@ -58,7 +60,9 @@ export function buildDayUnits(today: ScheduleEntry[]) {
  */
 export function shares(counts: number[]): number[] {
   const total = counts.reduce((sum, count) => sum + count, 0);
-  if (!total) return counts.map(() => 0);
+  if (!total) {
+    return counts.map(() => 0);
+  }
   const exact = counts.map((count) => (count * 100) / total);
   const floors = exact.map(Math.floor);
   let missing = 100 - floors.reduce((sum, value) => sum + value, 0);
@@ -66,7 +70,9 @@ export function shares(counts: number[]): number[] {
     .map((value, index) => ({ index, rest: value - floors[index] }))
     .sort((a, b) => b.rest - a.rest);
   for (const { index } of order) {
-    if (missing <= 0) break;
+    if (missing <= 0) {
+      break;
+    }
     floors[index] += 1;
     missing -= 1;
   }
@@ -116,7 +122,9 @@ export function buildMonthForecast(
   const paidBetween = (from: Date, to: Date) =>
     transactions
       .filter((t) => {
-        if (t.type !== "income" || t.status !== "paid") return false;
+        if (t.type !== "income" || t.status !== "paid") {
+          return false;
+        }
         const date = parseDashboardDate(t.date);
         return Boolean(date && date >= from && date < to && date <= now);
       })
@@ -127,7 +135,9 @@ export function buildMonthForecast(
     (nextMonth.getTime() - monthStart.getTime()) / 86_400_000
   );
   const daysElapsed = now.getDate();
-  if (!collected) return { kind: "empty", monthLabel };
+  if (!collected) {
+    return { kind: "empty", monthLabel };
+  }
   if (daysElapsed < FORECAST_MINIMUM_DAYS) {
     return {
       kind: "early",
@@ -315,16 +325,24 @@ const mondayOf = (date: Date) =>
  * the busiest day.
  */
 export function heatLevel(count: number, max: number) {
-  if (count <= 0) return 0;
-  if (max <= HEAT_STEPS) return Math.min(count, HEAT_STEPS);
+  if (count <= 0) {
+    return 0;
+  }
+  if (max <= HEAT_STEPS) {
+    return Math.min(count, HEAT_STEPS);
+  }
   return Math.min(HEAT_STEPS, Math.ceil((count * HEAT_STEPS) / max));
 }
 
 /** What each step covers, in appointments, for the legend's tooltips. */
 export function heatLegend(max: number) {
   return Array.from({ length: HEAT_STEPS + 1 }, (_, level) => {
-    if (!level) return { level, min: 0, max: 0 };
-    if (max <= HEAT_STEPS) return { level, min: level, max: level };
+    if (!level) {
+      return { level, min: 0, max: 0 };
+    }
+    if (max <= HEAT_STEPS) {
+      return { level, min: level, max: level };
+    }
     return {
       level,
       min: Math.floor(((level - 1) * max) / HEAT_STEPS) + 1,
@@ -366,9 +384,13 @@ export function buildActivityHeatmap(
   const end = plusDays(to, 1);
   const counts = new Map<string, number>();
   for (const appointment of appointments) {
-    if (NOT_SEEN.has(appointment.status)) continue;
+    if (NOT_SEEN.has(appointment.status)) {
+      continue;
+    }
     const start = parseDashboardDate(appointment.startTime ?? undefined);
-    if (!start || start < from || start >= end) continue;
+    if (!start || start < from || start >= end) {
+      continue;
+    }
     const key = dayKey(start);
     counts.set(key, (counts.get(key) ?? 0) + 1);
   }
@@ -451,7 +473,9 @@ export function buildActivityHeatmap(
   const active = days.filter((day) => day.count > 0);
   // Monday first, as the grid reads.
   const weekdays = [0, 0, 0, 0, 0, 0, 0];
-  for (const day of active) weekdays[(day.date.getDay() + 6) % 7] += day.count;
+  for (const day of active) {
+    weekdays[(day.date.getDay() + 6) % 7] += day.count;
+  }
   const busiest = active.reduce<HeatDay | null>(
     (best, day) => (!best || day.count > best.count ? day : best),
     null
@@ -491,12 +515,19 @@ export function buildHourlyActivity(
   const week = Array.from({ length: 7 }, () => Array<number>(24).fill(0));
   const today = Array<number>(24).fill(0);
   for (const appointment of appointments) {
-    if (NOT_SEEN.has(appointment.status)) continue;
+    if (NOT_SEEN.has(appointment.status)) {
+      continue;
+    }
     const start = parseDashboardDate(appointment.startTime ?? undefined);
-    if (!start) continue;
-    if (start >= weekFrom && start < weekEnd)
+    if (!start) {
+      continue;
+    }
+    if (start >= weekFrom && start < weekEnd) {
       week[(start.getDay() + 6) % 7][start.getHours()] += 1;
-    if (start >= dayStart && start < dayEnd) today[start.getHours()] += 1;
+    }
+    if (start >= dayStart && start < dayEnd) {
+      today[start.getHours()] += 1;
+    }
   }
   return { weekFrom, week, today };
 }

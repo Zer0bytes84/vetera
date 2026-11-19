@@ -35,18 +35,21 @@ export async function returnCareStockInDatabase(
   },
   id: () => string
 ): Promise<string | null> {
-  if (!input.authorId.trim() || !input.reason.trim())
+  if (!input.authorId.trim() || !input.reason.trim()) {
     throw new StockError(
       "SOURCE_CONFLICT",
       "Indiquez le motif et l’auteur de l’annulation de validation."
     );
+  }
   const [movement] = await db.select<CareMovement[]>(
     `SELECT id,product_id,quantity_delta,patient_id,unit_snapshot,product_name_snapshot
     FROM stock_movements WHERE source_type='care' AND source_id=? AND source_line_id=? AND type='usage'`,
     [input.taskId, input.completionKey]
   );
   // Historical care and services may never have consumed stock.
-  if (!movement) return null;
+  if (!movement) {
+    return null;
+  }
   const quantity = stockQuantity(-movement.quantity_delta);
   const sourceLineId = `rollback:${movement.id}`;
   const [previous] = await db.select<
@@ -59,22 +62,24 @@ export async function returnCareStockInDatabase(
     if (
       previous.reference_id !== movement.id ||
       previous.quantity_delta !== quantity
-    )
+    ) {
       throw new StockError(
         "SOURCE_CONFLICT",
         "La restitution de ce soin est à vérifier dans les mouvements de stock."
       );
+    }
     return previous.id;
   }
   const [product] = await db.select<StockProduct[]>(
     "SELECT * FROM products WHERE id=?",
     [movement.product_id]
   );
-  if (!product)
+  if (!product) {
     throw new StockError(
       "PRODUCT_MISSING",
       "Le produit consommé est introuvable. Vérifiez le catalogue avant d’annuler la validation."
     );
+  }
   if (
     !product.stock_tracked ||
     (movement.unit_snapshot && product.unit !== movement.unit_snapshot)
@@ -175,11 +180,12 @@ export async function returnCareStockInDatabase(
         bucket.quantity,
       ]
     )) as { rowsAffected?: number };
-    if (updated?.rowsAffected !== 1)
+    if (updated?.rowsAffected !== 1) {
       throw new StockError(
         "SOURCE_CONFLICT",
         "Le stock du lot vient de changer. Actualisez avant de valider."
       );
+    }
     await db.execute(
       `INSERT INTO stock_movement_allocations(id,movement_id,balance_id,quantity_delta,lot_number_snapshot,expiry_date_snapshot,location_name_snapshot)
       VALUES (?,?,?,?,?,?,?)`,

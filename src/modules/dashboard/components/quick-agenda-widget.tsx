@@ -65,7 +65,9 @@ export function QuickAgendaWidget({
       }
       onConfirm={(slot) => {
         const full = byId.get(slot.id);
-        if (full) onCreate(full);
+        if (full) {
+          onCreate(full);
+        }
       }}
       slots={slots}
       subtitle="Créneaux libres des 5 prochains jours"

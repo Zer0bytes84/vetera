@@ -27,7 +27,9 @@ export function VitalsForm({
       className="space-y-4"
       onSubmit={async (event) => {
         event.preventDefault();
-        if (!currentUser || busy) return;
+        if (!currentUser || busy) {
+          return;
+        }
         setBusy(true);
         setError(null);
         await guard(

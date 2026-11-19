@@ -87,20 +87,28 @@ export function useLocalConsultationAi({
   const releaseMicrophone = useCallback(() => {
     const current = held.current;
     held.current = null;
-    if (!current) return;
+    if (!current) {
+      return;
+    }
     clearTimeout(current.idle);
     current.controller.abort();
     current.microphone.close();
   }, []);
   useEffect(() => {
-    if (!native) return;
+    if (!native) {
+      return;
+    }
     let alive = true;
     nativeDictationStatus()
       .then((status) => {
-        if (alive) setNativeReady(status.disponible);
+        if (alive) {
+          setNativeReady(status.disponible);
+        }
       })
       .catch(() => {
-        if (alive) setNativeReady(false);
+        if (alive) {
+          setNativeReady(false);
+        }
       });
     return () => {
       alive = false;
@@ -113,51 +121,64 @@ export function useLocalConsultationAi({
     attempt.meter?.close();
     attempt.microphone?.close();
     attempt.session?.close();
-    if (active.current === attempt) active.current = null;
+    if (active.current === attempt) {
+      active.current = null;
+    }
   }, []);
   /** Current microphone level (0..1), read by the indicator outside React renders. */
   const readLevel = useCallback(() => active.current?.meter?.read() ?? 0, []);
   const cancel = useCallback(() => {
-    if (active.current) dispose(active.current);
+    if (active.current) {
+      dispose(active.current);
+    }
     releaseMicrophone();
     setPhase("idle");
     setProgress({ message: "" });
   }, [dispose, releaseMicrophone]);
   const reportFailure = useCallback(
     (attempt: Attempt, failure: unknown) => {
-      if (active.current !== attempt) return;
+      if (active.current !== attempt) {
+        return;
+      }
       const aborted =
         attempt.controller.signal.aborted ||
         (failure instanceof Error && failure.name === "AbortError");
       dispose(attempt);
       releaseMicrophone();
       setPhase("idle");
-      if (!aborted)
+      if (!aborted) {
         setError(
           failure instanceof Error
             ? failure.message
             : "Le traitement local a échoué. Réessayez."
         );
+      }
     },
     [dispose, releaseMicrophone]
   );
   useEffect(
     () => () => {
-      if (active.current) dispose(active.current);
+      if (active.current) {
+        dispose(active.current);
+      }
       releaseMicrophone();
       releaseWhisperSession();
     },
     [dispose, releaseMicrophone]
   );
   useEffect(() => {
-    if (phase !== "listening") return;
+    if (phase !== "listening") {
+      return;
+    }
     const timer = setInterval(() => setSeconds((value) => value + 1), 1000);
     return () => clearInterval(timer);
   }, [phase]);
 
   const start = useCallback(
     async (models: LocalModelStatus, language: DictationLanguage = "fr") => {
-      if (active.current) return;
+      if (active.current) {
+        return;
+      }
       setError(null);
       setSeconds(0);
       setTranscription(null);
@@ -169,7 +190,9 @@ export function useLocalConsultationAi({
       active.current = attempt;
       const signal = attempt.controller.signal;
       const update = (event: LocalAiProgress) => {
-        if (active.current === attempt) setProgress(event);
+        if (active.current === attempt) {
+          setProgress(event);
+        }
       };
       await guard(
         async () => {
@@ -178,17 +201,19 @@ export function useLocalConsultationAi({
             // model is said before the microphone opens.
             const status = await nativeDictationStatus();
             setNativeReady(status.disponible);
-            if (!status.disponible)
+            if (!status.disponible) {
               throw new Error(
                 status.raison ??
                   "Le moteur de dictée natif n’est pas disponible sur cet ordinateur."
               );
+            }
           } else {
             const urls = getLocalModelUrls(models);
-            if (!models.whisperReady)
+            if (!models.whisperReady) {
               throw new Error(
                 "Installez la dictée sur cet ordinateur avant de commencer."
               );
+            }
             setPhase("loading-whisper");
             setProgress({ message: "Préparation de la dictée…" });
             const threads = whisperThreads();
@@ -208,7 +233,9 @@ export function useLocalConsultationAi({
                   .then(() => undefined);
             attempt.loading.catch((failure) => {
               // A load failure while listening stops the dictation and says why.
-              if (attempt.capture) reportFailure(attempt, failure);
+              if (attempt.capture) {
+                reportFailure(attempt, failure);
+              }
             });
           }
           let microphone: PreparedMicrophone;
@@ -246,7 +273,9 @@ export function useLocalConsultationAi({
               attempt.microphone = microphone;
             }
           }
-          if (signal.aborted) throw abortError();
+          if (signal.aborted) {
+            throw abortError();
+          }
           const warmup =
             holdMicrophone && !held.current?.settled
               ? createWarmupDetector()
@@ -266,7 +295,9 @@ export function useLocalConsultationAi({
               keepOpen: holdMicrophone,
               onLevel: warmup
                 ? (rms, recorded) => {
-                    if (warmup.push(rms, recorded).state === "stable") settle();
+                    if (warmup.push(rms, recorded).state === "stable") {
+                      settle();
+                    }
                   }
                 : undefined,
             }
@@ -278,14 +309,18 @@ export function useLocalConsultationAi({
             setProgress({ message: "Préparation du micro…" });
             await new Promise<void>((resolve, reject) => {
               const onAbort = () => reject(abortError());
-              if (signal.aborted) return onAbort();
+              if (signal.aborted) {
+                return onAbort();
+              }
               signal.addEventListener("abort", onAbort, { once: true });
               void settled.then(() => {
                 signal.removeEventListener("abort", onAbort);
                 resolve();
               });
             });
-            if (held.current) held.current.settled = true;
+            if (held.current) {
+              held.current.settled = true;
+            }
           }
           setPhase("listening");
           setProgress({
@@ -308,8 +343,12 @@ export function useLocalConsultationAi({
   );
   const stop = useCallback(async () => {
     const attempt = active.current;
-    if (!attempt?.capture || phase !== "listening") return null;
-    if (!attempt.native && !attempt.session) return null;
+    if (!attempt?.capture || phase !== "listening") {
+      return null;
+    }
+    if (!attempt.native && !attempt.session) {
+      return null;
+    }
     // Synchronously detach the capture so repeated clicks/limit events cannot
     // request a second transcription with the same transferred buffer.
     const capture = attempt.capture;
@@ -329,12 +368,15 @@ export function useLocalConsultationAi({
             audio,
             attempt.language ?? "fr"
           );
-          if (active.current !== attempt || attempt.controller.signal.aborted)
+          if (active.current !== attempt || attempt.controller.signal.aborted) {
             throw abortError();
+          }
           raw = result.texte;
         } else {
           const session = attempt.session;
-          if (!session) throw new Error("Session de dictée absente.");
+          if (!session) {
+            throw new Error("Session de dictée absente.");
+          }
           // A dictation shorter than the load waits for the model here.
           await attempt.loading;
           const result = await session.request(
@@ -347,22 +389,27 @@ export function useLocalConsultationAi({
             "transcript",
             [audio.buffer as ArrayBuffer]
           );
-          if (result.type !== "transcript")
+          if (result.type !== "transcript") {
             throw new Error("Échec de transcription.");
-          if (active.current !== attempt || attempt.controller.signal.aborted)
+          }
+          if (active.current !== attempt || attempt.controller.signal.aborted) {
             throw abortError();
+          }
           raw = result.text;
           // The model stays loaded for the next rubric; any other local task evicts it.
           attempt.session = undefined;
-          if (attempt.whisperKey)
+          if (attempt.whisperKey) {
             parkWhisperSession(session, attempt.whisperKey);
-          else session.close();
+          } else {
+            session.close();
+          }
         }
         const text = normalizeSpokenMentions(normalizeTemperatureSymbols(raw));
         setTranscription(text);
         dispose(attempt);
-        if (held.current)
+        if (held.current) {
           held.current.idle = setTimeout(releaseMicrophone, MICROPHONE_HOLD_MS);
+        }
         setPhase("idle");
         setProgress({
           message: "Transcription terminée. Vous pouvez relire votre dictée.",
@@ -387,7 +434,9 @@ export function useLocalConsultationAi({
       context: LocalPatientContext,
       guidedSource?: LocalSoapNote
     ) => {
-      if (active.current) return null;
+      if (active.current) {
+        return null;
+      }
       setError(null);
       // The dictation is over: the microphone closes before the note is written.
       releaseMicrophone();
@@ -405,15 +454,19 @@ export function useLocalConsultationAi({
             attempt.session = session;
           },
           onProgress: (event) => {
-            if (active.current !== attempt) return;
+            if (active.current !== attempt) {
+              return;
+            }
             setProgress(event);
-            if (event.stage === "loading") setPhase("loading-soap");
-            else if (
+            if (event.stage === "loading") {
+              setPhase("loading-soap");
+            } else if (
               event.stage === "generating" ||
               event.stage === "validating" ||
               event.stage === "retrying"
-            )
+            ) {
               setPhase("generating");
+            }
           },
         }).finally(() => {
           attempt.session = undefined;

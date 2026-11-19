@@ -40,9 +40,10 @@ export function selectWhisperLanguage(
       language = code;
     }
   }
-  if (!language)
+  if (!language) {
     throw new Error(
       "La langue n’a pas pu être reconnue. Choisissez Français et réessayez."
     );
+  }
   return language;
 }

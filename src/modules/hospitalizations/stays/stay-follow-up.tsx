@@ -53,7 +53,9 @@ export function StayFollowUp({ stayId }: { stayId: string }) {
           className="flex flex-wrap items-end gap-3"
           onSubmit={async (event) => {
             event.preventDefault();
-            if (!currentUser || busy || !date) return;
+            if (!currentUser || busy || !date) {
+              return;
+            }
             setBusy(true);
             setError(null);
             await guard(

@@ -49,7 +49,9 @@ export async function acceptLicenseActivation(
     email
   );
   const error = getLeaseTimeError(lease, Date.now());
-  if (error) throw new Error(error);
+  if (error) {
+    throw new Error(error);
+  }
   await saveLicenseState({
     key: "",
     email: lease.email,
@@ -66,8 +68,9 @@ export function checkLicenseAccess(
   options: LicenseCheckOptions = {}
 ): Promise<LicenseAccess> {
   // A local check in flight does not answer a request to ask the server.
-  if (pending && forceOnline && !pendingOnline)
+  if (pending && forceOnline && !pendingOnline) {
     return pending.then(() => checkLicenseAccess(true, options));
+  }
   if (!pending) {
     pendingOnline = forceOnline;
     pending = check(forceOnline, options)
@@ -103,7 +106,9 @@ let lastCheckAt = 0;
 let lastOnlineAt = 0;
 
 function record(result: LicenseAccess, online: boolean): LicenseAccess {
-  if (result.transient) return result;
+  if (result.transient) {
+    return result;
+  }
   const now = Date.now();
   // A local check cannot tell that the server is back: an offline access stays
   // offline (banner and reconnection retry) until the server answers again.
@@ -121,16 +126,23 @@ function record(result: LicenseAccess, online: boolean): LicenseAccess {
       : result;
   lastAccess = access;
   lastCheckAt = now;
-  if (online) lastOnlineAt = now;
+  if (online) {
+    lastOnlineAt = now;
+  }
   return access;
 }
 
 /** The last granted access, while its signed lease and licence term still hold. */
 export function getCachedLicenseAccess(now = Date.now()): LicenseAccess | null {
-  if (!lastAccess?.allowed) return null;
-  if (lastAccess.leaseUntil === undefined || now >= lastAccess.leaseUntil)
+  if (!lastAccess?.allowed) {
     return null;
-  if (lastAccess.expiresAt != null && now >= lastAccess.expiresAt) return null;
+  }
+  if (lastAccess.leaseUntil === undefined || now >= lastAccess.leaseUntil) {
+    return null;
+  }
+  if (lastAccess.expiresAt != null && now >= lastAccess.expiresAt) {
+    return null;
+  }
   return lastAccess;
 }
 
@@ -150,7 +162,9 @@ export function recheckLicenseInBackground(
   const online =
     now - lastOnlineAt >= LICENSE_ONLINE_RECHECK_MS ||
     (reason === "online" && Boolean(lastAccess?.offlineUntil));
-  if (!online && now - lastCheckAt < LICENSE_LOCAL_RECHECK_MS) return null;
+  if (!online && now - lastCheckAt < LICENSE_LOCAL_RECHECK_MS) {
+    return null;
+  }
   return checkLicenseAccess(online, {
     timeoutMs: LICENSE_BACKGROUND_TIMEOUT_MS,
   }).then((access) => (access.transient && getCachedLicenseAccess()) || access);
@@ -168,11 +182,12 @@ async function check(
   options: LicenseCheckOptions = {}
 ): Promise<LicenseAccess> {
   let stored = await getLicenseInfo();
-  if (!stored)
+  if (!stored) {
     return {
       allowed: false,
       message: "Activez la licence de ce poste pour ouvrir votre cabinet.",
     };
+  }
   const deviceId = await getDeviceId();
   let lease;
   try {
@@ -211,8 +226,9 @@ async function check(
         stored.email
       );
       const freshError = getLeaseTimeError(lease, Date.now(), lastSeen);
-      if (freshError)
+      if (freshError) {
         return { allowed: false, message: freshError, email: stored.email };
+      }
       const updated: StoredLicense = {
         key: "",
         email: lease.email,
@@ -237,7 +253,7 @@ async function check(
       const invalidTime = lease
         ? getLeaseTimeError(lease, Date.now(), lastSeen)
         : null;
-      if (stored.denied || !lease || invalidTime)
+      if (stored.denied || !lease || invalidTime) {
         return {
           allowed: false,
           email: stored.email,
@@ -248,6 +264,7 @@ async function check(
               ? error.message
               : "Une connexion est nécessaire pour vérifier cette licence."),
         };
+      }
       // Only a still-valid signed lease permits a network outage, rate limit,
       // or server failure. The lease deadline is never extended locally.
       await saveLicenseState({
@@ -265,15 +282,17 @@ async function check(
       };
     }
   }
-  if (!lease)
+  if (!lease) {
     return {
       allowed: false,
       message: "Cette installation doit être réactivée.",
       email: stored.email,
     };
+  }
   const finalError = getLeaseTimeError(lease, Date.now(), lastSeen);
-  if (finalError)
+  if (finalError) {
     return { allowed: false, message: finalError, email: stored.email };
+  }
   await saveLicenseState({
     ...stored,
     lastSeen: Math.max(Date.now(), lastSeen),

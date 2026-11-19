@@ -1085,18 +1085,22 @@ async function replaceInvoiceDraftLines(
   const oldIds = new Set(oldLines.map((line) => line.id));
   const kept = new Set<string>();
   for (const line of lines) {
-    if (line.id && (!oldIds.has(line.id) || kept.has(line.id)))
+    if (line.id && (!oldIds.has(line.id) || kept.has(line.id))) {
       throw new Error(
         "Cette ligne n’appartient pas au brouillon ou apparaît deux fois."
       );
-    if (line.id) kept.add(line.id);
+    }
+    if (line.id) {
+      kept.add(line.id);
+    }
   }
   for (const old of oldLines) {
-    if (!kept.has(old.id))
+    if (!kept.has(old.id)) {
       await database.execute(
         "DELETE FROM invoice_lines WHERE id=? AND invoice_id=?",
         [old.id, invoiceId]
       );
+    }
   }
   for (const [sortOrder, line] of lines.entries()) {
     if (line.id) {
@@ -1119,8 +1123,9 @@ async function replaceInvoiceDraftLines(
           invoiceId,
         ]
       );
-    } else
+    } else {
       await insertInvoiceLine(database, invoiceId, line, sortOrder, occurredAt);
+    }
   }
 }
 
@@ -1449,7 +1454,7 @@ export async function appendInvoiceDraftLinesInDatabase(
     ...current.lines.map(normalizeBillingLine),
     ...additions,
   ]);
-  for (const [index, line] of additions.entries())
+  for (const [index, line] of additions.entries()) {
     await insertInvoiceLine(
       database,
       invoiceId,
@@ -1457,6 +1462,7 @@ export async function appendInvoiceDraftLinesInDatabase(
       current.lines.length + index,
       now
     );
+  }
   await database.execute(
     "UPDATE invoices SET subtotal_amount=?,discount_amount=?,tax_amount=?,gross_amount=?,updated_at=? WHERE id=? AND document_status='draft'",
     [
@@ -1511,7 +1517,9 @@ export async function billCompletedCareTask(
       Number(task.completion_revision ?? 0)
     );
     const existing = await loadInvoiceDetail(database, invoiceId);
-    if (existing) return existing;
+    if (existing) {
+      return existing;
+    }
     const product = task.produit_id
       ? (
           await database.select<DatabaseRow[]>(

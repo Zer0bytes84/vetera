@@ -63,9 +63,13 @@ function fillCells(
     // Every non-empty segment gets at least one cell, so small ones stay visible.
     const n =
       s.tokens > 0 ? Math.max(1, Math.round((s.tokens / limit) * count)) : 0;
-    for (let i = 0; i < n && cells.length < count; i++) cells.push(s.color);
+    for (let i = 0; i < n && cells.length < count; i++) {
+      cells.push(s.color);
+    }
   }
-  while (cells.length < count) cells.push(null);
+  while (cells.length < count) {
+    cells.push(null);
+  }
   return cells;
 }
 

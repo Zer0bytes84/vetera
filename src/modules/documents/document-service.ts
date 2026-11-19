@@ -40,14 +40,17 @@ const store = createDocumentStore(persistence, generateId, () => new Date(), {
 
 export const MANAGED_DOCUMENTS_CHANGED = "baitari-managed-documents-changed";
 function changed() {
-  if (typeof window === "undefined") return;
+  if (typeof window === "undefined") {
+    return;
+  }
   for (const table of [
     "documents",
     "document_templates",
     "document_events",
     "document_versions",
-  ])
+  ]) {
     emitSQLiteDataChanged(table);
+  }
   window.dispatchEvent(new CustomEvent(MANAGED_DOCUMENTS_CHANGED));
 }
 

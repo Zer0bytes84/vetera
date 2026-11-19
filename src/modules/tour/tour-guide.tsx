@@ -34,9 +34,12 @@ export function TourGuide() {
   const state = useTourState();
   const finished = useTourFinished();
   // Une clé par étape : chaque étape repart d'un composant neuf (le geste d'ouverture n'est pas encore fait).
-  if (state.status === "running")
+  if (state.status === "running") {
     return <TourRunner key={state.step} state={state} />;
-  if (finished) return <TourFinishedCard />;
+  }
+  if (finished) {
+    return <TourFinishedCard />;
+  }
   return null;
 }
 
@@ -54,7 +57,9 @@ function useTourInvoices(enabled: boolean): {
     known: false,
   });
   useEffect(() => {
-    if (!enabled || !isTauriRuntime()) return;
+    if (!enabled || !isTauriRuntime()) {
+      return;
+    }
     let active = true;
     const read = () => {
       billingService
@@ -118,15 +123,18 @@ function useTargetBox(
         clearSince = null;
       } else if (wasCovered) {
         // Le voile d'une fenêtre s'anime : la cible paraît dégagée un instant. Il faut qu'elle le reste pour rendre la main.
-        if (clearSince === null) clearSince = Date.now();
+        if (clearSince === null) {
+          clearSince = Date.now();
+        }
         if (Date.now() - clearSince >= CLEAR_AFTER_MS) {
           wasCovered = false;
           clearSince = null;
           uncovered.current();
         }
       }
-      if (!element || hidden)
+      if (!element || hidden) {
         return setBox((previous) => (previous ? null : previous));
+      }
       const rect = element.getBoundingClientRect();
       const next = {
         x: rect.x,
@@ -147,7 +155,9 @@ function useTargetBox(
       );
     };
     const schedule = () => {
-      if (!frame) frame = window.requestAnimationFrame(measure);
+      if (!frame) {
+        frame = window.requestAnimationFrame(measure);
+      }
     };
     schedule();
     const observer = new MutationObserver(schedule);
@@ -161,7 +171,9 @@ function useTargetBox(
     window.addEventListener("scroll", schedule, true);
     const interval = window.setInterval(schedule, 600);
     return () => {
-      if (frame) window.cancelAnimationFrame(frame);
+      if (frame) {
+        window.cancelAnimationFrame(frame);
+      }
       observer.disconnect();
       window.removeEventListener("resize", schedule);
       window.removeEventListener("scroll", schedule, true);
@@ -203,18 +215,27 @@ function TourRunner({ state }: { state: TourState }) {
 
   // L'étape en cours est-elle réellement faite ? On lit les données ; l'étape suivante ne s'ouvre pas autrement.
   useEffect(() => {
-    if (loading) return;
+    if (loading) {
+      return;
+    }
     const outcome = evaluateStep(state, snapshot);
-    if (!outcome.done) return;
+    if (!outcome.done) {
+      return;
+    }
     tourStore.update((current) => advanceTour(current, outcome));
-    if (tourStore.get().status === "done") tourStore.markFinished(true);
+    if (tourStore.get().status === "done") {
+      tourStore.markFinished(true);
+    }
   }, [loading, snapshot, state]);
 
   // Le menu « + » : un clic sur l'entrée ouvre le geste, un nouveau clic sur « + » le reprend du début. L'Agenda : le chemin d'écran.
   useEffect(() => {
     const onClick = (event: Event) => {
-      if (clickedMenuEntry(step, event)) setClicked(true);
-      else if (restartedGesture(event)) setClicked(false);
+      if (clickedMenuEntry(step, event)) {
+        setClicked(true);
+      } else if (restartedGesture(event)) {
+        setClicked(false);
+      }
     };
     const onHash = () => setHash(window.location.hash);
     document.addEventListener("click", onClick, true);
@@ -237,7 +258,9 @@ function TourRunner({ state }: { state: TourState }) {
 
   const skip = () => {
     tourStore.update((current) => advanceTour(current));
-    if (tourStore.get().status === "done") tourStore.markFinished(true);
+    if (tourStore.get().status === "done") {
+      tourStore.markFinished(true);
+    }
   };
 
   // Dans <body>, comme les menus et les fenêtres : la coque est un contexte d'empilement, le menu « + » passerait par-dessus le repère.

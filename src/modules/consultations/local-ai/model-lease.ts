@@ -6,10 +6,11 @@ export function isClinicalModelReserved() {
   return reserved;
 }
 export function reserveClinicalModel() {
-  if (reserved)
+  if (reserved) {
     throw new Error(
       "Une tâche locale est déjà en cours. Attendez sa fin ou annulez-la."
     );
+  }
   if (idleEvictor) {
     const evict = idleEvictor;
     idleEvictor = null;
@@ -29,12 +30,15 @@ export function parkIdleModel(evict: () => void) {
   idleEvictor?.();
   idleEvictor = evict;
   return () => {
-    if (idleEvictor === evict) idleEvictor = null;
+    if (idleEvictor === evict) {
+      idleEvictor = null;
+    }
   };
 }
 export function assertChatModelAvailable() {
-  if (reserved)
+  if (reserved) {
     throw new Error(
       "Le modèle est réservé à une tâche locale. Terminez ou annulez cette tâche avant d’ouvrir un autre modèle."
     );
+  }
 }

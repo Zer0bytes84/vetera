@@ -37,7 +37,9 @@ const toRoom = (row: RoomRow): Room => ({
 
 export function cleanRoomName(name: string): string {
   const clean = name.replace(/\s+/g, " ").trim();
-  if (!clean) throw new Error("Donnez un nom à la salle.");
+  if (!clean) {
+    throw new Error("Donnez un nom à la salle.");
+  }
   if (clean.length > ROOM_NAME_MAX_LENGTH) {
     throw new Error(
       `Le nom d'une salle tient en ${ROOM_NAME_MAX_LENGTH} caractères.`
@@ -51,7 +53,9 @@ export function roomLabel(
   roomId: string | null | undefined,
   rooms: readonly Room[]
 ): string | null {
-  if (!roomId) return null;
+  if (!roomId) {
+    return null;
+  }
   return rooms.find((room) => room.id === roomId)?.name ?? roomId;
 }
 
@@ -69,8 +73,9 @@ export function createRoomStore(
       "SELECT id FROM rooms WHERE archived_at IS NULL AND lower(trim(name)) = lower(?) AND id <> ?",
       [name, exceptId ?? ""]
     );
-    if (taken.length > 0)
+    if (taken.length > 0) {
       throw new Error("Une salle active porte déjà ce nom.");
+    }
   }
 
   async function find(db: RoomDatabase, roomId: string) {
@@ -80,7 +85,9 @@ export function createRoomStore(
        FROM rooms r WHERE r.id = ?`,
       [roomId]
     );
-    if (!rows[0]) throw new Error("Cette salle n'existe plus.");
+    if (!rows[0]) {
+      throw new Error("Cette salle n'existe plus.");
+    }
     return toRoom(rows[0]);
   }
 
@@ -142,7 +149,9 @@ export function createRoomStore(
     archive(roomId: string): Promise<Room> {
       return persistence.transaction(async (db) => {
         const room = await find(db, roomId);
-        if (room.archivedAt) return room;
+        if (room.archivedAt) {
+          return room;
+        }
         await db.execute(
           "UPDATE rooms SET archived_at = ?, updated_at = ? WHERE id = ?",
           [clock().toISOString(), clock().toISOString(), roomId]
@@ -154,7 +163,9 @@ export function createRoomStore(
     restore(roomId: string): Promise<Room> {
       return persistence.transaction(async (db) => {
         const room = await find(db, roomId);
-        if (!room.archivedAt) return room;
+        if (!room.archivedAt) {
+          return room;
+        }
         await assertNameFree(db, room.name, roomId);
         await db.execute(
           "UPDATE rooms SET archived_at = NULL, updated_at = ? WHERE id = ?",

@@ -21,7 +21,9 @@ const subscribers = new Set<() => void>();
 const notify = () => subscribers.forEach((listener) => listener());
 
 async function refresh() {
-  if (!isTauriRuntime() || pending) return pending;
+  if (!isTauriRuntime() || pending) {
+    return pending;
+  }
   const request = generation;
   pending = (async () => {
     try {
@@ -42,7 +44,9 @@ async function refresh() {
       }
     } finally {
       pending = null;
-      if (request !== generation && subscribers.size) void refresh();
+      if (request !== generation && subscribers.size) {
+        void refresh();
+      }
     }
   })();
   return pending;
@@ -66,17 +70,20 @@ function changed(event: Event) {
       "stock_balances",
       "stock_locations",
     ].includes(table ?? "")
-  )
+  ) {
     invalidate();
+  }
 }
 function subscribe(listener: () => void) {
   subscribers.add(listener);
-  if (subscribers.size === 1 && typeof window !== "undefined")
+  if (subscribers.size === 1 && typeof window !== "undefined") {
     window.addEventListener(DATA_CHANGED_EVENT, changed);
+  }
   return () => {
     subscribers.delete(listener);
-    if (!subscribers.size && typeof window !== "undefined")
+    if (!subscribers.size && typeof window !== "undefined") {
       window.removeEventListener(DATA_CHANGED_EVENT, changed);
+    }
   };
 }
 
@@ -87,7 +94,9 @@ export function useStockInventory() {
     () => web
   );
   useEffect(() => {
-    if (!isTauriRuntime()) return;
+    if (!isTauriRuntime()) {
+      return;
+    }
     void refresh();
     let timeout: ReturnType<typeof setTimeout>;
     const schedule = () => {

@@ -82,8 +82,9 @@ export default function ClinicalWorkspace({
         clearFocus();
         return;
       }
-      if (request.kind !== "care_patient" && request.kind !== "care_task")
+      if (request.kind !== "care_patient" && request.kind !== "care_task") {
         return;
+      }
       setOpenedStay(false);
       setTab("soins");
       setPatientId(request.kind === "care_patient" ? request.id : undefined);
@@ -92,7 +93,9 @@ export default function ClinicalWorkspace({
     };
     registerHandler(handleFocus);
     // Consume requests received before the workspace mounted, once only.
-    if (focus) handleFocus(focus);
+    if (focus) {
+      handleFocus(focus);
+    }
     return () => registerHandler(null);
   }, [registerHandler, clearFocus, focus]);
   // The section tabs sit right under each page's common header; the workspace

@@ -63,11 +63,14 @@ const LEGACY_ANIMAL_MAP: Record<string, MascotAnimal> = {
 };
 
 export function parseMascotPreferences(raw: string | null): MascotPreferences {
-  if (!raw) return DEFAULT_MASCOT_PREFERENCES;
+  if (!raw) {
+    return DEFAULT_MASCOT_PREFERENCES;
+  }
   try {
     const value: unknown = JSON.parse(raw);
-    if (!value || typeof value !== "object" || Array.isArray(value))
+    if (!value || typeof value !== "object" || Array.isArray(value)) {
       return DEFAULT_MASCOT_PREFERENCES;
+    }
     const config = value as Record<string, unknown>;
 
     const rawAnimal = typeof config.animal === "string" ? config.animal : "";
@@ -92,7 +95,9 @@ let cachedRaw: string | null | undefined;
 let cachedPreferences = DEFAULT_MASCOT_PREFERENCES;
 
 export function getMascotPreferences(): MascotPreferences {
-  if (typeof window === "undefined") return DEFAULT_MASCOT_PREFERENCES;
+  if (typeof window === "undefined") {
+    return DEFAULT_MASCOT_PREFERENCES;
+  }
   try {
     const raw = window.localStorage.getItem(MASCOT_STORAGE_KEY);
     if (raw !== cachedRaw) {
@@ -120,7 +125,9 @@ export function saveMascotPreferences(preferences: MascotPreferences): boolean {
 
 export function subscribeToMascotPreferences(onChange: () => void) {
   const onStorage = (event: StorageEvent) => {
-    if (event.key === MASCOT_STORAGE_KEY || event.key === null) onChange();
+    if (event.key === MASCOT_STORAGE_KEY || event.key === null) {
+      onChange();
+    }
   };
   window.addEventListener(CHANGE_EVENT, onChange);
   window.addEventListener("storage", onStorage);

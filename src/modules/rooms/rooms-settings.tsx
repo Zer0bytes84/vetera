@@ -28,7 +28,9 @@ const message = (error: unknown) =>
       : "La salle n'a pas pu être enregistrée.";
 
 function bookings(count: number) {
-  if (count === 0) return "Aucun rendez-vous";
+  if (count === 0) {
+    return "Aucun rendez-vous";
+  }
   return count === 1
     ? "1 rendez-vous"
     : `${count.toLocaleString("fr-FR")} rendez-vous`;
@@ -57,8 +59,9 @@ function RoomRow({
 
   const save = (event: FormEvent) => {
     event.preventDefault();
-    if (changed)
+    if (changed) {
       void run(() => roomsService.rename(room.id, name), "Salle renommée.");
+    }
   };
 
   return (
@@ -70,7 +73,9 @@ function RoomRow({
           value={name}
           onChange={(event) => setName(event.target.value)}
           onBlur={() => {
-            if (!name.trim()) setName(room.name);
+            if (!name.trim()) {
+              setName(room.name);
+            }
           }}
         />
         {changed && (
@@ -156,7 +161,9 @@ export function RoomsSettings() {
         await action();
         await refreshRooms();
         announceRoomsChanged();
-        if (done) toast.success(done);
+        if (done) {
+          toast.success(done);
+        }
       },
       {
         recover: (e) => {

@@ -37,7 +37,9 @@ function readFrom(storage: Storage | null): {
   state: TourState;
   writable: boolean;
 } {
-  if (!storage) return { state: UNREADABLE_TOUR_STATE, writable: false };
+  if (!storage) {
+    return { state: UNREADABLE_TOUR_STATE, writable: false };
+  }
   let raw: string | null;
   try {
     raw = storage.getItem(TOUR_STORAGE_KEY);
@@ -71,7 +73,9 @@ export function createTourStore(storage: Storage | null): TourStore {
     },
     update(transition) {
       const next = transition(state);
-      if (next === state) return;
+      if (next === state) {
+        return;
+      }
       state = next;
       try {
         storage?.setItem(TOUR_STORAGE_KEY, serializeTourState(next));
@@ -86,7 +90,9 @@ export function createTourStore(storage: Storage | null): TourStore {
     },
     invitationShownThisSession: () => shownThisSession,
     markFinished(value) {
-      if (finished === value) return;
+      if (finished === value) {
+        return;
+      }
       finished = value;
       notify();
     },
@@ -113,7 +119,9 @@ export const tourStore: TourStore = createTourStore(browserStorage());
 if (typeof window !== "undefined") {
   // Un autre poste de travail de la même machine (une seconde fenêtre) change le tour : on suit, sans le relancer.
   window.addEventListener("storage", (event) => {
-    if (event.key === TOUR_STORAGE_KEY) tourStore.reload();
+    if (event.key === TOUR_STORAGE_KEY) {
+      tourStore.reload();
+    }
   });
 }
 

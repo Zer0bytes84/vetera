@@ -41,7 +41,9 @@ function shortDate(date: Date): string {
 /** "2026-10-18" → minuit local, sans décalage de fuseau. */
 function dateOnly(value: string): Date | null {
   const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(value);
-  if (!match) return parseDashboardDate(value);
+  if (!match) {
+    return parseDashboardDate(value);
+  }
   return new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
 }
 
@@ -96,13 +98,21 @@ export function buildUpcomingReminders({
   const patientById = new Map(patients.map((p) => [p.id, p]));
   const typeById = new Map(types.map((t) => [t.id, t.name]));
   const rows = reminders.flatMap((reminder) => {
-    if (reminder.statut !== "en_cours") return [];
+    if (reminder.statut !== "en_cours") {
+      return [];
+    }
     const due = dateOnly(reminder.echeance);
-    if (!due) return [];
+    if (!due) {
+      return [];
+    }
     const delta = daysBetween(today, due);
-    if (delta > horizonDays) return [];
+    if (delta > horizonDays) {
+      return [];
+    }
     const patient = patientById.get(reminder.patient_id);
-    if (patient?.status === "decede") return [];
+    if (patient?.status === "decede") {
+      return [];
+    }
     const tone: WatchTone =
       delta < 0 ? "critical" : delta === 0 ? "warning" : "neutral";
     return [
@@ -149,7 +159,9 @@ export function buildStockWatch({
 }): WatchList {
   const today = startOfDay(now);
   const rows = products.flatMap((product) => {
-    if (product.archivedAt || product.stockTracked === false) return [];
+    if (product.archivedAt || product.stockTracked === false) {
+      return [];
+    }
     const quantity = product.availableQuantity ?? product.quantity;
     const parts: string[] = [];
     const tones: WatchTone[] = [];
@@ -176,7 +188,9 @@ export function buildStockWatch({
       order = expiry.getTime();
     }
 
-    if (tones.length === 0) return [];
+    if (tones.length === 0) {
+      return [];
+    }
     const tone = tones.reduce((worst, next) =>
       toneWeight[next] < toneWeight[worst] ? next : worst
     );
@@ -222,7 +236,9 @@ export function buildHospitalizedWatch({
 }): WatchList {
   const patientById = new Map(patients.map((p) => [p.id, p]));
   const rows = stays.flatMap((stay) => {
-    if (!ACTIVE_STAY.has(stay.status)) return [];
+    if (!ACTIVE_STAY.has(stay.status)) {
+      return [];
+    }
     const admitted = parseDashboardDate(stay.admissionDate);
     const day = admitted ? Math.max(1, daysBetween(admitted, now) + 1) : null;
     const patient = patientById.get(stay.patientId);

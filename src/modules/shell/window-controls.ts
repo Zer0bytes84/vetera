@@ -52,18 +52,29 @@ function nameButtons(host: HTMLElement) {
           ? "Restaurer"
           : "Agrandir"
         : LABELS[button.id];
-    if (!label) continue;
-    if (button.getAttribute("aria-label") !== label)
+    if (!label) {
+      continue;
+    }
+    if (button.getAttribute("aria-label") !== label) {
       button.setAttribute("aria-label", label);
-    if (button.title !== label) button.title = label;
-    if (button.type !== "button") button.type = "button";
+    }
+    if (button.title !== label) {
+      button.title = label;
+    }
+    if (button.type !== "button") {
+      button.type = "button";
+    }
     // Like Windows' own caption buttons, out of the Tab order: the first Tab of a screen goes to the screen, not to « Réduire ».
-    if (button.tabIndex !== -1) button.tabIndex = -1;
+    if (button.tabIndex !== -1) {
+      button.tabIndex = -1;
+    }
   }
 }
 
 function addPreviewButtons(host: HTMLElement) {
-  if (host.querySelector("button")) return;
+  if (host.querySelector("button")) {
+    return;
+  }
   for (const id of ["minimize", "maximize", "close"]) {
     const button = document.createElement("button");
     button.id = `decorum-tb-${id}`;
@@ -77,15 +88,21 @@ function addPreviewButtons(host: HTMLElement) {
 
 export function initWindowControls() {
   const host = document.getElementById("window-controls");
-  if (!host) return;
+  if (!host) {
+    return;
+  }
   const preview = !isWindowsDesktop() && previewRequested();
-  if (!isWindowsDesktop() && !preview) return;
+  if (!isWindowsDesktop() && !preview) {
+    return;
+  }
 
   ROOT.dataset.windowControls = "decorum";
   host.hidden = false;
   host.setAttribute("role", "group");
   host.setAttribute("aria-label", "Contrôles de la fenêtre");
-  if (preview) addPreviewButtons(host);
+  if (preview) {
+    addPreviewButtons(host);
+  }
 
   // decorum adds its buttons a moment after the page loads, and swaps the maximize glyph on every resize.
   new MutationObserver(() => nameButtons(host)).observe(host, {
@@ -95,13 +112,17 @@ export function initWindowControls() {
   });
   nameButtons(host);
 
-  if (preview) return;
+  if (preview) {
+    return;
+  }
   const appWindow = getCurrentWindow();
 
   // Safety net: decorum injects its buttons when the page loads. If none have come after a few seconds, the window has no
   // bar and no buttons at all: give it back its native bar rather than leave only Alt+F4.
   window.setTimeout(() => {
-    if (host.querySelector("button")) return;
+    if (host.querySelector("button")) {
+      return;
+    }
     delete ROOT.dataset.windowControls;
     host.hidden = true;
     void appWindow.setDecorations(true).catch(() => undefined);

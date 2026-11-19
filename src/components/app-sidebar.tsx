@@ -69,16 +69,23 @@ export function AppSidebar({
   const isCollapsed = state === "collapsed";
   React.useEffect(() => {
     const navigation = navigationRef.current;
-    if (!navigation) return;
+    if (!navigation) {
+      return;
+    }
     const revealActiveItem = () => {
       const active = navigation.querySelector<HTMLElement>("[data-active]");
-      if (!active) return;
+      if (!active) {
+        return;
+      }
       const viewport = navigation.getBoundingClientRect();
       const item = active.getBoundingClientRect();
       const top = item.top - viewport.top;
       const bottom = item.bottom - viewport.bottom;
-      if (top < 8) navigation.scrollTop += top - 8;
-      else if (bottom > -8) navigation.scrollTop += bottom + 8;
+      if (top < 8) {
+        navigation.scrollTop += top - 8;
+      } else if (bottom > -8) {
+        navigation.scrollTop += bottom + 8;
+      }
     };
     const frame = requestAnimationFrame(revealActiveItem);
     const observer = new ResizeObserver(revealActiveItem);

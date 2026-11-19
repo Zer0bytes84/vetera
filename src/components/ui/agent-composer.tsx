@@ -93,7 +93,9 @@ export function AgentComposer({
 
   useLayoutEffect(() => {
     const el = inner.current;
-    if (!el || fill) return;
+    if (!el || fill) {
+      return;
+    }
     el.style.height = "auto";
     el.style.height = `${Math.min(el.scrollHeight, 220)}px`;
   }, [value, fill]);

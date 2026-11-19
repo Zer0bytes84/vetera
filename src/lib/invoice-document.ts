@@ -7,8 +7,9 @@ import { invoiceFileKey, type InvoicePdfData } from "./invoice-pdf";
 
 /** Re-exports use the identity frozen at issue time, not today's settings. */
 export function invoiceDocument(invoice: InvoiceDetail, patientName: string) {
-  if (invoice.documentStatus !== "issued")
+  if (invoice.documentStatus !== "issued") {
     throw new Error("Seules les factures émises peuvent être exportées.");
+  }
   const owner = invoice.ownerSnapshot;
   const data: InvoicePdfData = {
     number: invoice.number || invoice.id,

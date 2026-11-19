@@ -14,10 +14,13 @@ export function categoryFinding(
   const sources = categories
     .filter((category) => category.value > 0)
     .sort((left, right) => right.value - left.value);
-  if (total <= 0 || !sources.length) return "";
+  if (total <= 0 || !sources.length) {
+    return "";
+  }
   const [first, second] = sources;
-  if (first.value >= total)
+  if (first.value >= total) {
     return `Tous les encaissements des 30 derniers jours viennent de ${name(first.label)}.`;
+  }
   const lead = `${name(first.label)} représente ${share(first.value, total)} des encaissements des 30 derniers jours`;
   return second
     ? `${lead}, devant ${name(second.label)} (${share(second.value, total)}).`

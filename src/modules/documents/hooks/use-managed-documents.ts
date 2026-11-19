@@ -37,7 +37,9 @@ function useDocumentRows<T>(load: () => Promise<T[]>) {
           }
         },
         cleanup: () => {
-          if (request === generation.current.value) setLoading(false);
+          if (request === generation.current.value) {
+            setLoading(false);
+          }
         },
       }
     );

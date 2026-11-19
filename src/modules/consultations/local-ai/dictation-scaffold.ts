@@ -25,10 +25,15 @@ const headingSection: Record<string, keyof LocalSoapNote> = Object.fromEntries(
 );
 const sectionFor = (label: string): keyof LocalSoapNote => {
   label = label.trim().replace(/^ne\s+(?:pas\s+)?/iu, "");
-  if (/^(?:objectif|examen|à)/iu.test(label)) return "objective";
-  if (/^(?:évaluation|analyse|diagnostic)/iu.test(label)) return "assessment";
-  if (/^(?:plan|prévoir|prévu|contrôle|nécessite|besoin)/iu.test(label))
+  if (/^(?:objectif|examen|à)/iu.test(label)) {
+    return "objective";
+  }
+  if (/^(?:évaluation|analyse|diagnostic)/iu.test(label)) {
+    return "assessment";
+  }
+  if (/^(?:plan|prévoir|prévu|contrôle|nécessite|besoin)/iu.test(label)) {
     return "plan";
+  }
   return "subjective";
 };
 // « Le patient a », « la patiente est » : un fragment sujet + auxiliaire sans
@@ -57,11 +62,15 @@ export function buildDictationScaffold(transcript: string): LocalSoapNote {
   let current: keyof LocalSoapNote = "subjective";
   const append = (part: string) => {
     const value = part.trim().replace(/^[,;:]\s*/, "");
-    if (!value) return;
+    if (!value) {
+      return;
+    }
     // Les posologies n'interrompent plus la dictée : le segment est écarté de
     // la trame (le vétérinaire le saisit dans l'ordonnance) et signalé dans
     // l'interface. La sortie du modèle reste vérifiée séparément.
-    if (containsDosage(value)) return;
+    if (containsDosage(value)) {
+      return;
+    }
     result[current] = [result[current], value].filter(Boolean).join(" ");
   };
   const segments: { section: keyof LocalSoapNote; text: string }[] = [];
@@ -112,7 +121,9 @@ export function removeDosageSentences(transcript: string): {
   const kept: string[] = [];
   const dosageSentences: string[] = [];
   for (const sentence of transcript.split(/(?<=[.!?])\s+|\n+/u)) {
-    if (!sentence.trim()) continue;
+    if (!sentence.trim()) {
+      continue;
+    }
     if (containsDosage(sentence)) {
       dosageSentences.push(sentence.trim());
       continue;
@@ -133,7 +144,9 @@ export function mergeDosageIntoPlan(
   note: LocalSoapNote,
   dosageSentences: string[]
 ): LocalSoapNote {
-  if (!dosageSentences.length) return note;
+  if (!dosageSentences.length) {
+    return note;
+  }
   return {
     ...note,
     plan: [note.plan, ...dosageSentences].filter(Boolean).join("\n\n"),
@@ -167,7 +180,8 @@ export function assertFaithfulSoap(note: LocalSoapNote, source: LocalSoapNote) {
   // moved facts are refused. Decimal commas and points are equivalent.
   // The layout canvas (the section's own heading, list markers) is not content.
   for (const key of Object.keys(source) as (keyof LocalSoapNote)[]) {
-    if (evidence(stripSoapLayout(key, note[key])) !== evidence(source[key]))
+    if (evidence(stripSoapLayout(key, note[key])) !== evidence(source[key])) {
       throw new SoapFidelityError();
+    }
   }
 }

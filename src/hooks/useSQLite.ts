@@ -283,7 +283,9 @@ const normalizeDbPayloadToExistingColumns = (
   const mappedEntries: Array<[string, unknown]> = [];
   for (const [key, value] of Object.entries(payload)) {
     // A patient's reference is read from its own table and is never written back.
-    if (key === "reference" && !availableColumns.has(key)) continue;
+    if (key === "reference" && !availableColumns.has(key)) {
+      continue;
+    }
     const resolvedKey = resolveDbFieldName(key, availableColumns);
     mappedEntries.push([resolvedKey, value]);
   }
@@ -365,7 +367,9 @@ async function reloadTable(
   const { safeTableName, tableName, setError, setLoading, setIsRefreshing } =
     ops;
   try {
-    if (!safeTableName) throw new Error(`Table non autorisée: ${tableName}`);
+    if (!safeTableName) {
+      throw new Error(`Table non autorisée: ${tableName}`);
+    }
     setError(null);
     setIsRefreshing(tableSnapshotCache.has(safeTableName));
     await loadTableSnapshot(safeTableName, force);
@@ -422,7 +426,9 @@ async function addRow<T extends { id: string }>(
     write,
     authoritativeRow,
   } = ops;
-  if (!safeTableName) throw new Error(`Table non autorisée: ${tableName}`);
+  if (!safeTableName) {
+    throw new Error(`Table non autorisée: ${tableName}`);
+  }
   const id = generateId();
   if (!isTauriRuntime()) {
     const created = insertBrowserRow(safeTableName as BrowserTableName, {
@@ -479,10 +485,14 @@ async function updateRow<T extends { id: string }>(
     write,
     authoritativeRow,
   } = ops;
-  if (!safeTableName) throw new Error(`Table non autorisée: ${tableName}`);
+  if (!safeTableName) {
+    throw new Error(`Table non autorisée: ${tableName}`);
+  }
   const patch = stripUndefinedEntries(updates as Record<string, unknown>);
   delete patch.id;
-  if (!Object.keys(patch).length) return true;
+  if (!Object.keys(patch).length) {
+    return true;
+  }
   if (!isTauriRuntime()) {
     const updated = updateBrowserRow(
       safeTableName as BrowserTableName,
@@ -513,8 +523,9 @@ async function updateRow<T extends { id: string }>(
           `UPDATE ${safeTableName} SET ${fields.map((field) => `${field} = ?`).join(", ")} WHERE id = ?`,
           [...fields.map((field) => sanitizeParam(payload[field])), id]
         );
-        if (!result.rowsAffected)
+        if (!result.rowsAffected) {
           throw new Error("L’élément n’existe plus. Actualisez la liste.");
+        }
         return { value: true, row: await authoritativeRow(db, id, fallback) };
       },
       () => updateRow(ops, id, updates)
@@ -529,7 +540,9 @@ async function removeRow<T extends { id: string }>(
   id: string
 ): Promise<boolean> {
   const { safeTableName, tableName, sourceId, loadData, write } = ops;
-  if (!safeTableName) throw new Error(`Table non autorisée: ${tableName}`);
+  if (!safeTableName) {
+    throw new Error(`Table non autorisée: ${tableName}`);
+  }
   if (!isTauriRuntime()) {
     const removed = removeBrowserRow(safeTableName as BrowserTableName, id);
     await loadData();
@@ -545,15 +558,17 @@ async function removeRow<T extends { id: string }>(
           `DELETE FROM ${safeTableName} WHERE id = ?`,
           [id]
         );
-        if (!result.rowsAffected)
+        if (!result.rowsAffected) {
           throw new Error("L’élément n’existe plus. Actualisez la liste.");
+        }
         return { value: true, row: null };
       },
       () => removeRow(ops, id)
     );
     // Cascades and SET NULL affect related tables; invalidate only those tables.
-    for (const dependent of tablesAffectedByDelete(safeTableName))
+    for (const dependent of tablesAffectedByDelete(safeTableName)) {
       emitSQLiteDataChanged(dependent);
+    }
     return removed;
   } catch {
     return false;
@@ -574,7 +589,9 @@ async function setRow<T extends { id: string }>(
     write,
     authoritativeRow,
   } = ops;
-  if (!safeTableName) throw new Error(`Table non autorisée: ${tableName}`);
+  if (!safeTableName) {
+    throw new Error(`Table non autorisée: ${tableName}`);
+  }
   if (!isTauriRuntime()) {
     setBrowserRow(
       safeTableName as BrowserTableName,
@@ -592,8 +609,9 @@ async function setRow<T extends { id: string }>(
     )
   );
   if (existing.length) {
-    if (!(await update(id, item)))
+    if (!(await update(id, item))) {
       throw new Error("La modification n’a pas été enregistrée.");
+    }
     return;
   }
   const optimistic = { ...item, id } as unknown as CachedRow;
@@ -647,7 +665,9 @@ async function runTableWrite<R>({
   ) => Promise<{ value: R; row?: CachedRow | null }>;
   retry: () => unknown;
 }): Promise<R> {
-  if (!safeTableName) throw new Error(`Table non autorisée: ${tableName}`);
+  if (!safeTableName) {
+    throw new Error(`Table non autorisée: ${tableName}`);
+  }
   const token = tableSnapshotCache.begin(safeTableName, id, apply);
   setError(null);
   updateWriteStatus({ pending: writeStatus.pending + 1, error: null });
@@ -696,8 +716,9 @@ async function loadTableSnapshot(table: string, force = false) {
     ),
     generation
   );
-  if (!applied && !tableSnapshotCache.has(table))
+  if (!applied && !tableSnapshotCache.has(table)) {
     await loadTableSnapshot(table, true);
+  }
 }
 
 /** Intent-only prefetch. Consumers keep exactly the same repository contracts. */
@@ -713,19 +734,21 @@ function publishPatchedTable(table: string, sourceId: string, rowId?: string) {
   const rows = tableSnapshotCache.getConfirmedRows(table);
   // Pending optimistic layers must never become the confirmed read-cache:
   // another subscriber can revalidate while a later write is still in flight.
-  if (rows)
+  if (rows) {
     tableRowsCache.set(table, {
       expiresAt: Date.now() + TABLE_CACHE_TTL_MS,
       generation: getTableCacheGeneration(table),
       rows: rows.map((row) => mapKeys(row, toSnakeCase)),
     });
+  }
   emitSQLiteDataChanged(table, true, sourceId);
-  if (rowId)
+  if (rowId) {
     window.dispatchEvent(
       new CustomEvent("sqlite-row-saved", {
         detail: { tableName: table, id: rowId },
       })
     );
+  }
 }
 
 export function useSQLite<T extends { id: string }>(
@@ -789,10 +812,13 @@ export function useSQLite<T extends { id: string }>(
           sourceId?: string;
         }>
       ).detail;
-      if (detail?.tableName !== tableName || detail.sourceId === sourceId)
+      if (detail?.tableName !== tableName || detail.sourceId === sourceId) {
         return;
+      }
       // Optimistic/confirmed patches already reached every subscriber synchronously.
-      if (detail.cacheFresh && tableSnapshotCache.has(tableName)) return;
+      if (detail.cacheFresh && tableSnapshotCache.has(tableName)) {
+        return;
+      }
       void loadData();
     };
     window.addEventListener(DATA_CHANGED_EVENT, changed);
@@ -908,7 +934,9 @@ export function useSQLite<T extends { id: string }>(
   );
 
   const refresh = useCallback(async () => {
-    if (safeTableName) invalidateTableRows(safeTableName);
+    if (safeTableName) {
+      invalidateTableRows(safeTableName);
+    }
     await loadData(true);
   }, [loadData, safeTableName]);
 

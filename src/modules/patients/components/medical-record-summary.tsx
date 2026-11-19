@@ -25,9 +25,13 @@ function ownerInitials(owner: {
 }
 
 export function recordDate(value?: string | null, withTime = false) {
-  if (!value) return "À compléter";
+  if (!value) {
+    return "À compléter";
+  }
   const parsed = normalizeDate(value);
-  if (!parsed) return "Date indisponible";
+  if (!parsed) {
+    return "Date indisponible";
+  }
   return parsed.toLocaleDateString("fr-FR", {
     day: "numeric",
     month: "short",
@@ -180,7 +184,9 @@ export function PatientIdentity({
 
 // Les réponses négatives explicites ne constituent pas une alerte clinique.
 export function isClinicalSignal(value?: string) {
-  if (!value?.trim()) return false;
+  if (!value?.trim()) {
+    return false;
+  }
   const normalized = value
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
@@ -304,12 +310,16 @@ export function handleRecordTabKeys(event: KeyboardEvent<HTMLDivElement>) {
     "Home",
     "End",
   ];
-  if (!keys.includes(event.key)) return;
+  if (!keys.includes(event.key)) {
+    return;
+  }
   const tabs = Array.from(
     event.currentTarget.querySelectorAll<HTMLButtonElement>("[role=tab]")
   );
   const index = tabs.indexOf(event.target as HTMLButtonElement);
-  if (index < 0) return;
+  if (index < 0) {
+    return;
+  }
   event.preventDefault();
   const next =
     event.key === "Home"

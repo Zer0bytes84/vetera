@@ -64,8 +64,9 @@ export function OffVisitNotePanel({
     transcript: string,
     origin: SoapNoteOrigin | "saisie"
   ) => {
-    if (!currentUser)
+    if (!currentUser) {
       throw new Error("Connectez-vous pour enregistrer une note.");
+    }
     setSaving(true);
     await guard(
       async () => {

@@ -67,8 +67,9 @@ export function sqliteDocumentPersistence(
       if (
         !(TABLES as readonly string[]).includes(table) ||
         columns.some((column) => !/^[a-z][a-z_]*$/.test(column))
-      )
+      ) {
         throw new Error("Requête documentaire invalide.");
+      }
     };
     return {
       async list(table, filters = {}) {
@@ -99,8 +100,9 @@ export function sqliteDocumentPersistence(
           `UPDATE ${table} SET ${keys.map((key) => `${key} = ?`).join(",")} WHERE id = ?`,
           [...Object.values(row), id]
         );
-        if (result.rowsAffected === 0)
+        if (result.rowsAffected === 0) {
           throw new Error("Cet élément n’existe plus. Actualisez la vue.");
+        }
       },
       async remove(table, id) {
         check(table, []);
@@ -139,14 +141,16 @@ export function browserDocumentDatabase(
         );
     },
     async insert(table, row) {
-      if (row.id && tables[table].some((entry) => entry.id === row.id))
+      if (row.id && tables[table].some((entry) => entry.id === row.id)) {
         throw new Error("Cet élément existe déjà.");
+      }
       tables[table].push(toBrowser(row));
     },
     async update(table, id, row) {
       const index = tables[table].findIndex((entry) => entry.id === id);
-      if (index < 0)
+      if (index < 0) {
         throw new Error("Cet élément n’existe plus. Actualisez la vue.");
+      }
       tables[table][index] = { ...tables[table][index], ...toBrowser(row) };
     },
     async remove(table, id) {
@@ -159,8 +163,12 @@ const text = (value: unknown) => (typeof value === "string" ? value : "");
 const nullableText = (value: unknown) =>
   typeof value === "string" && value ? value : null;
 const parse = <T>(value: unknown, fallback: T): T => {
-  if (value === null || value === undefined || value === "") return fallback;
-  if (typeof value !== "string") return value as T;
+  if (value === null || value === undefined || value === "") {
+    return fallback;
+  }
+  if (typeof value !== "string") {
+    return value as T;
+  }
   try {
     return JSON.parse(value) as T;
   } catch {
@@ -174,7 +182,9 @@ const numberText = (value: unknown) =>
     ? String(value).replace(".", ",")
     : DOCUMENT_MISSING_VALUE;
 const dateText = (value: unknown) => {
-  if (!text(value)) return "";
+  if (!text(value)) {
+    return "";
+  }
   const raw = text(value);
   const date = new Date(
     /^\d{4}-\d{2}-\d{2}$/.test(raw) ? `${raw}T12:00:00` : raw
@@ -189,8 +199,9 @@ function templateFromRow(
   usageCount = 0
 ): ManagedDocumentTemplate {
   const kind = text(row.type_document) || text(row.kind);
-  if (!Object.hasOwn(DOCUMENT_TYPES, kind))
+  if (!Object.hasOwn(DOCUMENT_TYPES, kind)) {
     throw new Error("Le type de ce modèle est inconnu.");
+  }
   return {
     id: text(row.id),
     name: text(row.nom) || text(row.name),
@@ -295,26 +306,31 @@ export function createDocumentStore(
         ? (await db.list("sessions", { token }))[0]
         : undefined;
       const expiry = new Date(text(session?.expires_at)).getTime();
-      if (!session || !Number.isFinite(expiry) || expiry <= clock().getTime())
+      if (!session || !Number.isFinite(expiry) || expiry <= clock().getTime()) {
         throw new Error("Connectez-vous pour accéder aux documents.");
+      }
       currentId = text(session.user_id);
-      if (authorId && authorId !== currentId)
+      if (authorId && authorId !== currentId) {
         throw new Error("L’auteur doit être l’utilisateur connecté.");
+      }
     }
     if (!currentId) {
-      if (authorId !== undefined)
+      if (authorId !== undefined) {
         throw new Error("Un utilisateur connecté est requis.");
+      }
       return null;
     }
     const user = (await db.list("users", { id: currentId }))[0];
-    if (!user || user.status === "inactive")
+    if (!user || user.status === "inactive") {
       throw new Error("Un utilisateur actif est requis.");
+    }
     return user;
   }
   async function administrator(db: DocumentDatabase, authorId: string) {
     const user = await actor(db, authorId);
-    if (user?.role !== "admin")
+    if (user?.role !== "admin") {
       throw new Error("Seul un administrateur peut gérer les modèles.");
+    }
     return user;
   }
   async function ensureTemplates(db: DocumentDatabase) {
@@ -324,13 +340,16 @@ export function createDocumentStore(
           key: "managed_document_templates_seeded",
         })
       ).length
-    )
+    ) {
       return;
+    }
     const existing = new Set(
       (await db.list("document_templates")).map((row) => row.id)
     );
     for (const template of MANAGED_DOCUMENT_DEFAULTS) {
-      if (existing.has(template.id)) continue;
+      if (existing.has(template.id)) {
+        continue;
+      }
       await db.insert("document_templates", {
         id: template.id,
         kind: template.kind === "referral" ? "report" : template.kind,
@@ -368,8 +387,9 @@ export function createDocumentStore(
         const tags =
           typeof note.tags === "string" ? JSON.parse(note.tags) : note.tags;
         const templateId = tags?.clinicalDocument?.source?.template?.id;
-        if (typeof templateId === "string")
+        if (typeof templateId === "string") {
           counts.set(templateId, (counts.get(templateId) ?? 0) + 1);
+        }
       } catch {
         /* Ordinary note tags need not be documentary metadata. */
       }
@@ -378,7 +398,9 @@ export function createDocumentStore(
   }
   async function get(db: DocumentDatabase, documentId: string) {
     const row = (await db.list("documents", { id: documentId }))[0];
-    if (!row) throw new Error("Ce document n’existe plus.");
+    if (!row) {
+      throw new Error("Ce document n’existe plus.");
+    }
     return documentFromRow(row);
   }
   async function clinic(db: DocumentDatabase): Promise<InvoiceSettings> {
@@ -418,10 +440,12 @@ export function createDocumentStore(
       consultation.patient_id !== patientId ||
       !soap ||
       soap.patient_id !== patientId
-    )
+    ) {
       throw new Error("Choisissez une consultation et une note de ce patient.");
-    if (["cancelled", "no_show"].includes(text(consultation.status)))
+    }
+    if (["cancelled", "no_show"].includes(text(consultation.status))) {
       throw new Error("Cette consultation ne peut pas produire un document.");
+    }
     const note = {
       subjective: text(soap.subjective),
       objective: text(soap.objective),
@@ -430,8 +454,9 @@ export function createDocumentStore(
       content: text(soap.content),
       aiDraft: nullableText(soap.ai_draft),
     };
-    if (!isSoapReviewed(note))
+    if (!isSoapReviewed(note)) {
       throw new Error("Validez la note clinique avant de générer un document.");
+    }
     return {
       patient,
       consultation,
@@ -468,7 +493,9 @@ export function createDocumentStore(
           Number(a.sort_order) - Number(b.sort_order) ||
           text(a.id).localeCompare(text(b.id))
       );
-      if (!items.length) continue;
+      if (!items.length) {
+        continue;
+      }
       result.push(
         `Prescription du ${dateText(prescription.prescription_date) || DOCUMENT_MISSING_VALUE}${prescription.weight_kg != null ? ` · Poids de référence : ${numberText(prescription.weight_kg)} kg` : ""}`
       );
@@ -476,33 +503,40 @@ export function createDocumentStore(
         const present = (value: unknown) =>
           text(value).trim() || DOCUMENT_MISSING_VALUE;
         const lines = [present(item.medication_name)];
-        if (item.dosage_per_kg != null)
+        if (item.dosage_per_kg != null) {
           lines.push(
             `Posologie consignée : ${numberText(item.dosage_per_kg)} ${present(item.dosage_unit)}`
           );
-        if (item.computed_dose_mg != null)
+        }
+        if (item.computed_dose_mg != null) {
           lines.push(
             `Dose calculée enregistrée : ${numberText(item.computed_dose_mg)} mg`
           );
-        if (item.computed_volume_ml != null)
+        }
+        if (item.computed_volume_ml != null) {
           lines.push(
             `Volume calculé enregistré : ${numberText(item.computed_volume_ml)} mL`
           );
+        }
         lines.push(
           `Fréquence : ${present(item.frequency)}`,
           `Durée : ${present(item.duration)}`,
           `Voie : ${present(item.route)}`
         );
-        if (text(item.quantity))
+        if (text(item.quantity)) {
           lines.push(`Quantité : ${text(item.quantity)}`);
-        if (text(item.instructions))
+        }
+        if (text(item.instructions)) {
           lines.push(`Instructions : ${text(item.instructions)}`);
-        if (text(item.warnings))
+        }
+        if (text(item.warnings)) {
           lines.push(`Précautions : ${text(item.warnings)}`);
+        }
         result.push(lines.join("\n"));
       }
-      if (text(prescription.general_instructions))
+      if (text(prescription.general_instructions)) {
         result.push(text(prescription.general_instructions));
+      }
     }
     return result.join("\n\n");
   }
@@ -529,14 +563,16 @@ export function createDocumentStore(
       title.trim().length > 160 ||
       !content.trim() ||
       content.length > 60000
-    )
+    ) {
       throw new Error(
         "Indiquez un titre et un contenu de moins de 60 000 caractères."
       );
+    }
   };
   const assertCurrent = (document: PatientDocument, expected: string) => {
-    if (!expected || expected !== document.updatedAt)
+    if (!expected || expected !== document.updatedAt) {
       throw new Error("Ce document vient d’être modifié. Actualisez l’aperçu.");
+    }
   };
   async function assertSource(db: DocumentDatabase, document: PatientDocument) {
     if (document.previousDocumentId) {
@@ -547,8 +583,9 @@ export function createDocumentStore(
         previous.consultationId !== document.consultationId ||
         previous.soapId !== document.soapId ||
         previous.sourceKey !== document.sourceKey
-      )
+      ) {
         throw new Error("La source de cette nouvelle version est incohérente.");
+      }
       return;
     }
     const source = await clinicalSource(
@@ -559,10 +596,11 @@ export function createDocumentStore(
     if (
       source.soap.id !== document.soapId ||
       source.sourceKey !== document.sourceKey
-    )
+    ) {
       throw new Error(
         "La note a changé. Préparez un nouveau document depuis sa version validée."
       );
+    }
   }
 
   return {
@@ -583,8 +621,9 @@ export function createDocumentStore(
         !input.name.trim() ||
         input.name.trim().length > 100 ||
         !Object.hasOwn(DOCUMENT_TYPES, input.kind)
-      )
+      ) {
         throw new Error("Nommez le modèle et choisissez son type.");
+      }
       validateDocumentTemplate(input.body);
       return persistence.transaction(async (db) => {
         await administrator(db, authorId);
@@ -592,15 +631,18 @@ export function createDocumentStore(
         const existing = input.id
           ? (await db.list("document_templates", { id: input.id }))[0]
           : null;
-        if (input.id && !existing) throw new Error("Ce modèle n’existe plus.");
+        if (input.id && !existing) {
+          throw new Error("Ce modèle n’existe plus.");
+        }
         if (
           existing &&
           input.expectedUpdatedAt &&
           existing.updated_at !== input.expectedUpdatedAt
-        )
+        ) {
           throw new Error(
             "Ce modèle vient d’être modifié. Actualisez la liste."
           );
+        }
         const templateId = input.id || id();
         const updatedAt = now(text(existing?.updated_at));
         const row = {
@@ -613,14 +655,16 @@ export function createDocumentStore(
           actif: input.active ? 1 : 0,
           updated_at: updatedAt,
         };
-        if (existing) await db.update("document_templates", templateId, row);
-        else
+        if (existing) {
+          await db.update("document_templates", templateId, row);
+        } else {
           await db.insert("document_templates", {
             id: templateId,
             ...row,
             created_at: updatedAt,
             created_by: authorId,
           });
+        }
         return templateId;
       });
     },
@@ -630,12 +674,14 @@ export function createDocumentStore(
         if (
           (await db.list("documents", { template_id: templateId })).length ||
           (await legacyTemplateUsage(db)).has(templateId)
-        )
+        ) {
           throw new Error(
             "Ce modèle a déjà été utilisé. Désactivez-le pour conserver la traçabilité."
           );
-        if (!(await db.list("document_templates", { id: templateId })).length)
+        }
+        if (!(await db.list("document_templates", { id: templateId })).length) {
           throw new Error("Ce modèle n’existe plus.");
+        }
         await db.remove("document_templates", templateId);
       });
     },
@@ -649,24 +695,28 @@ export function createDocumentStore(
       if (
         (prepareOptions.recipient?.length ?? 0) > 1500 ||
         (prepareOptions.referralReason?.length ?? 0) > 3000
-      )
+      ) {
         throw new Error(
           "Limitez le destinataire à 1 500 caractères et le motif à 3 000 caractères."
         );
+      }
       return persistence.transaction(async (db) => {
         await actor(db, authorId);
         await ensureTemplates(db);
         const template = (await templates(db)).find(
           (entry) => entry.id === templateId && entry.active
         );
-        if (!template) throw new Error("Choisissez un modèle actif.");
+        if (!template) {
+          throw new Error("Choisissez un modèle actif.");
+        }
         if (
           prepareOptions.certificateType &&
           !(CERTIFICATE_TYPES as readonly string[]).includes(
             prepareOptions.certificateType
           )
-        )
+        ) {
           throw new Error("Choisissez un objet de certificat proposé.");
+        }
         const { patient, consultation, soap, note, sourceKey } =
           await clinicalSource(db, consultationId, patientId);
         const owner = (await db.list("owners", { id: patient.owner_id }))[0];
@@ -722,14 +772,16 @@ export function createDocumentStore(
         if (
           template.kind === "certificate" &&
           !template.body.includes("{{certificat.type}}")
-        )
+        ) {
           content += `\n\nObjet du certificat : ${values["certificat.type"] || DOCUMENT_MISSING_VALUE}`;
+        }
         if (
           template.kind === "prescription" &&
           values["prescription.medicaments"] &&
           !template.body.includes("{{prescription.medicaments}}")
-        )
+        ) {
           content += `\n\nMédicaments validés\n${values["prescription.medicaments"]}`;
+        }
         return {
           patientId,
           patientName: text(patient.name),
@@ -750,8 +802,9 @@ export function createDocumentStore(
       authorId: string,
       reviewed: boolean
     ): Promise<PatientDocument> {
-      if (!reviewed)
+      if (!reviewed) {
         throw new Error("Relisez le document et confirmez sa création.");
+      }
       assertText(draft.title, draft.content);
       return persistence.transaction(async (db) => {
         const user = (await actor(db, authorId))!;
@@ -768,15 +821,17 @@ export function createDocumentStore(
           currentTemplate.updatedAt !== preparation.template.updatedAt ||
           currentTemplate.body !== preparation.template.body ||
           currentTemplate.kind !== preparation.template.kind
-        )
+        ) {
           throw new Error(
             "Le modèle a changé. Préparez à nouveau le document."
           );
+        }
         if (
           source.soap.id !== preparation.soapId ||
           source.sourceKey !== preparation.sourceKey
-        )
+        ) {
           throw new Error("La note a changé. Préparez à nouveau le document.");
+        }
         if (
           preparation.values["prescription.medicaments"] !==
           (await medicines(
@@ -784,10 +839,11 @@ export function createDocumentStore(
             preparation.consultationId,
             preparation.patientId
           ))
-        )
+        ) {
           throw new Error(
             "Une prescription a changé. Préparez à nouveau le document."
           );
+        }
         const timestamp = now();
         const document: PatientDocument = {
           id: id(),
@@ -848,10 +904,11 @@ export function createDocumentStore(
       return persistence.transaction(async (db) => {
         const user = (await actor(db, authorId))!;
         const document = await get(db, documentId);
-        if (document.status !== "brouillon")
+        if (document.status !== "brouillon") {
           throw new Error(
             "Ce document est verrouillé. Créez une nouvelle version."
           );
+        }
         assertCurrent(document, expectedUpdatedAt);
         const next = {
           ...document,
@@ -875,26 +932,30 @@ export function createDocumentStore(
       reviewed: boolean,
       expectedUpdatedAt: string
     ): Promise<PatientDocument> {
-      if (!reviewed)
+      if (!reviewed) {
         throw new Error("Relisez l’aperçu avant de finaliser le document.");
+      }
       if (
         !/^data:application\/pdf(?:;filename=[^;,]+)?;base64,JVBERi0[a-zA-Z0-9+/=\r\n]*$/.test(
           pdfDataUrl
         ) ||
         pdfDataUrl.length > 32_000_000
-      )
+      ) {
         throw new Error("L’aperçu PDF est invalide. Générez-le à nouveau.");
+      }
       return persistence.transaction(async (db) => {
         const user = (await actor(db, authorId))!;
         if (
           !["admin", "vet_principal", "vet_adjoint"].includes(text(user.role))
-        )
+        ) {
           throw new Error(
             "La finalisation doit être validée par un vétérinaire."
           );
+        }
         const document = await get(db, documentId);
-        if (document.status !== "brouillon" || document.kind === "import")
+        if (document.status !== "brouillon" || document.kind === "import") {
           throw new Error("Seul un document en brouillon peut être finalisé.");
+        }
         assertCurrent(document, expectedUpdatedAt);
         await assertSource(db, document);
         const timestamp = now(document.updatedAt);
@@ -928,15 +989,17 @@ export function createDocumentStore(
       reason: string,
       authorId: string
     ): Promise<void> {
-      if (!reason.trim() || reason.trim().length > 2000)
+      if (!reason.trim() || reason.trim().length > 2000) {
         throw new Error(
           "Indiquez le motif de l’annulation (2 000 caractères maximum)."
         );
+      }
       await persistence.transaction(async (db) => {
         const user = (await actor(db, authorId))!;
         const document = await get(db, documentId);
-        if (document.status === "annule")
+        if (document.status === "annule") {
           throw new Error("Ce document est déjà annulé.");
+        }
         const timestamp = now(document.updatedAt);
         await db.update("documents", documentId, {
           statut: "annule",
@@ -959,10 +1022,11 @@ export function createDocumentStore(
       return persistence.transaction(async (db) => {
         const user = (await actor(db, authorId))!;
         const previous = await get(db, documentId);
-        if (previous.status !== "finalise" || previous.kind === "import")
+        if (previous.status !== "finalise" || previous.kind === "import") {
           throw new Error(
             "Créez une nouvelle version depuis un document finalisé."
           );
+        }
         const timestamp = now();
         const next: PatientDocument = {
           ...previous,
@@ -1001,8 +1065,9 @@ export function createDocumentStore(
         attachment.name.length > 200 ||
         attachment.size <= 0 ||
         attachment.size > 12 * 1024 * 1024
-      )
+      ) {
         throw new Error("Choisissez un PDF, JPG ou PNG de moins de 12 Mo.");
+      }
       if (
         !attachment.dataUrl.startsWith(`data:${attachment.mimeType};base64,`) ||
         attachment.dataUrl.length > 17_000_000 ||
@@ -1018,14 +1083,17 @@ export function createDocumentStore(
           (length, page) => length + page.text.length,
           0
         ) > 60000
-      )
+      ) {
         throw new Error(
           "Cette pièce ne peut pas être importée. Vérifiez son format et sa taille."
         );
+      }
       return persistence.transaction(async (db) => {
         const user = (await actor(db, authorId))!;
         const patient = (await db.list("patients", { id: patientId }))[0];
-        if (!patient) throw new Error("Ce patient n’existe plus.");
+        if (!patient) {
+          throw new Error("Ce patient n’existe plus.");
+        }
         const timestamp = now();
         const document: PatientDocument = {
           id: id(),

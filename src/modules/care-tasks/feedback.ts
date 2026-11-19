@@ -15,14 +15,18 @@ export function careErrorMessage(
   error: unknown,
   operation: "create" | "update"
 ) {
-  if (error instanceof StockError) return error.message;
+  if (error instanceof StockError) {
+    return error.message;
+  }
   const message =
     error instanceof Error
       ? error.message
       : typeof error === "string"
         ? error
         : "";
-  if (careBusinessMessages.has(message)) return message;
+  if (careBusinessMessages.has(message)) {
+    return message;
+  }
   return operation === "create"
     ? "Le soin n’a pas pu être enregistré. Réessayez."
     : "Le soin n’a pas pu être modifié. Réessayez.";

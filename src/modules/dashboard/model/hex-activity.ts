@@ -91,10 +91,11 @@ const shortDay = (date: Date) =>
 
 /** What a cell's tooltip says: done cells count visits, later ones what is booked. */
 export function slotDetail(count: number, future: boolean) {
-  if (future)
+  if (future) {
     return count
       ? `${plural(count, "rendez-vous")} prévu${count > 1 ? "s" : ""}`
       : "Rien de prévu";
+  }
   return count ? plural(count, "rendez-vous") : "Aucun rendez-vous";
 }
 
@@ -290,16 +291,18 @@ export function buildHexActivity(
   const columnCaptions: HexCaption[] = [];
   map.months.forEach((month, block) => {
     const offset = block * 8;
-    if (view === "quarter")
+    if (view === "quarter") {
       columnCaptions.push({ at: offset, text: month.label });
+    }
     month.weeks.forEach((week, row) =>
       week.forEach(
         (day, col) => day && cells.push(dayCell(day, offset + col, row))
       )
     );
   });
-  if (view === "month")
+  if (view === "month") {
     WEEKDAY_SHORT.forEach((text, at) => columnCaptions.push({ at, text }));
+  }
   const figures = periodFigures(map);
   return {
     view,

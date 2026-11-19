@@ -34,9 +34,13 @@ function minutesFrom(
   day: Date,
   value: string | null | undefined
 ): number | null {
-  if (!value) return null;
+  if (!value) {
+    return null;
+  }
   const time = new Date(value).getTime();
-  if (Number.isNaN(time)) return null;
+  if (Number.isNaN(time)) {
+    return null;
+  }
   const midnight = new Date(
     day.getFullYear(),
     day.getMonth(),
@@ -48,7 +52,9 @@ function minutesFrom(
     date.getFullYear() === day.getFullYear() &&
     date.getMonth() === day.getMonth() &&
     date.getDate() === day.getDate();
-  if (sameDay) return date.getHours() * 60 + date.getMinutes();
+  if (sameDay) {
+    return date.getHours() * 60 + date.getMinutes();
+  }
   return time < midnight ? 0 : DAY_MINUTES;
 }
 
@@ -66,10 +72,14 @@ export function layoutDayEvents<T extends TimedItem>(
 ): PlacedEvent<T>[] {
   const timed = items.flatMap((item) => {
     const start = minutesFrom(day, item.startTime);
-    if (start === null) return [];
+    if (start === null) {
+      return [];
+    }
     const rawEnd = minutesFrom(day, item.endTime);
     // An appointment that starts at 24:00 (the next day) is not on this day.
-    if (start >= DAY_MINUTES) return [];
+    if (start >= DAY_MINUTES) {
+      return [];
+    }
     const end = Math.min(
       DAY_MINUTES,
       Math.max(rawEnd ?? 0, start + minBlockMinutes)
@@ -91,15 +101,21 @@ export function layoutDayEvents<T extends TimedItem>(
   let columnEnds: number[] = [];
   let groupIndex = 0;
   const closeGroup = () => {
-    for (const event of group) event.columns = columnEnds.length;
-    if (group.length) groupIndex += 1;
+    for (const event of group) {
+      event.columns = columnEnds.length;
+    }
+    if (group.length) {
+      groupIndex += 1;
+    }
     group = [];
     columnEnds = [];
     groupEnd = -1;
   };
 
   for (const entry of timed) {
-    if (group.length && entry.start >= groupEnd) closeGroup();
+    if (group.length && entry.start >= groupEnd) {
+      closeGroup();
+    }
     let column = columnEnds.findIndex((end) => end <= entry.start);
     if (column === -1) {
       column = columnEnds.length;
@@ -167,7 +183,9 @@ export function fitHourPx(
   min: number,
   max: number
 ) {
-  if (hours <= 0) return max;
+  if (hours <= 0) {
+    return max;
+  }
   return Math.max(min, Math.min(max, Math.floor(availablePx / hours)));
 }
 
@@ -233,7 +251,9 @@ export function layoutTimeGrid<T extends TimedItem>(
 
   const offsetsOf = () => {
     const out = [0];
-    for (const h of heights) out.push(out[out.length - 1] + h);
+    for (const h of heights) {
+      out.push(out[out.length - 1] + h);
+    }
     return out;
   };
   const yWith = (offsets: number[], minutes: number) => {
@@ -246,10 +266,13 @@ export function layoutTimeGrid<T extends TimedItem>(
   const crowded: { start: number; end: number; needed: number }[] = [];
   for (const placed of days) {
     const byGroup = new Map<number, PlacedEvent<T>[]>();
-    for (const event of placed)
+    for (const event of placed) {
       byGroup.set(event.group, [...(byGroup.get(event.group) ?? []), event]);
+    }
     for (const group of byGroup.values()) {
-      if (group[0].columns <= maxLanes) continue;
+      if (group[0].columns <= maxLanes) {
+        continue;
+      }
       crowded.push({
         start: Math.min(...group.map((e) => e.start)),
         end: Math.max(...group.map((e) => e.end)),
@@ -262,19 +285,24 @@ export function layoutTimeGrid<T extends TimedItem>(
     const offsets = offsetsOf();
     const shortage =
       group.needed - (yWith(offsets, group.end) - yWith(offsets, group.start));
-    if (shortage <= 0) continue;
+    if (shortage <= 0) {
+      continue;
+    }
     const grow = (shortage * 60) / (group.end - group.start);
     const first = Math.max(0, Math.floor(group.start / 60) - fromHour);
     const last = Math.min(count - 1, Math.ceil(group.end / 60) - 1 - fromHour);
-    for (let h = first; h <= last; h += 1) heights[h] += grow;
+    for (let h = first; h <= last; h += 1) {
+      heights[h] += grow;
+    }
   }
 
   const offsets = offsetsOf();
   const yAt = (minutes: number) => yWith(offsets, minutes);
   const blocks = days.map((placed) => {
     const byGroup = new Map<number, PlacedEvent<T>[]>();
-    for (const event of placed)
+    for (const event of placed) {
       byGroup.set(event.group, [...(byGroup.get(event.group) ?? []), event]);
+    }
     const out: GridBlock<T>[] = [];
     for (const group of byGroup.values()) {
       if (group[0].columns > maxLanes) {
@@ -316,7 +344,9 @@ export function layoutTimeGrid<T extends TimedItem>(
   const minuteAt = (px: number) => {
     const y = Math.max(0, Math.min(offsets[count], px));
     let i = 0;
-    while (i < count - 1 && y >= offsets[i + 1]) i += 1;
+    while (i < count - 1 && y >= offsets[i + 1]) {
+      i += 1;
+    }
     return (fromHour + i) * 60 + ((y - offsets[i]) / heights[i]) * 60;
   };
   return {

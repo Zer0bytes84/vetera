@@ -8,8 +8,9 @@ export async function openPatientRecordRasterSource(
   signal?: AbortSignal,
   annotationCounts?: number[]
 ) {
-  if (signal?.aborted)
+  if (signal?.aborted) {
     throw new DOMException("Génération annulée", "AbortError");
+  }
   const pdfjs = await import("pdfjs-dist");
   const { default: workerSrc } = await import(
     "pdfjs-dist/build/pdf.worker.min.mjs?url"
@@ -19,8 +20,9 @@ export async function openPatientRecordRasterSource(
     import.meta.env.BASE_URL + "local-ai-runtime/pdf/",
     window.location.href
   );
-  if (root.origin !== window.location.origin)
+  if (root.origin !== window.location.origin) {
     throw new Error("Les ressources PDF doivent être locales à l’application.");
+  }
   const loading = pdfjs.getDocument({
     // PDF.js may transfer the input buffer to its worker. Never give it the
     // snapshot's bytes, nor the buffer used by the vector assembly.
@@ -42,17 +44,20 @@ export async function openPatientRecordRasterSource(
   signal?.addEventListener("abort", cancel, { once: true });
   try {
     const pdf = await loading.promise;
-    if (signal?.aborted)
+    if (signal?.aborted) {
       throw new DOMException("Génération annulée", "AbortError");
-    if (pdf.isPureXfa)
+    }
+    if (pdf.isPureXfa) {
       throw new Error("Les formulaires XFA ne sont pas pris en charge.");
+    }
     return {
       pageCount: pdf.numPages,
       async render(
         pageNumber: number
       ): Promise<{ data: Uint8Array; width: number; height: number }> {
-        if (signal?.aborted)
+        if (signal?.aborted) {
           throw new DOMException("Génération annulée", "AbortError");
+        }
         const page = await pdf.getPage(pageNumber);
         const allAnnotations = await page.getAnnotations({ intent: "any" });
         if (
@@ -108,10 +113,12 @@ export async function openPatientRecordRasterSource(
             !rect ||
             rect[2] <= rect[0] ||
             rect[3] <= rect[1]
-          )
+          ) {
             continue;
-          if (!link || annotation.hasAppearance)
+          }
+          if (!link || annotation.hasAppearance) {
             expectedAppearanceIds.push(annotation.id);
+          }
         }
         // PDF.js can warn and skip a broken appearance stream even with
         // stopAtErrors. Verify that every visible drawable annotation reached
@@ -154,8 +161,9 @@ export async function openPatientRecordRasterSource(
         signal?.addEventListener("abort", cancelRender, { once: true });
         try {
           await render.promise;
-          if (signal?.aborted)
+          if (signal?.aborted) {
             throw new DOMException("Génération annulée", "AbortError");
+          }
           const image = canvas.toDataURL("image/png");
           const binary = atob(image.slice(image.indexOf(",") + 1));
           return {
@@ -178,8 +186,9 @@ export async function openPatientRecordRasterSource(
   } catch (error) {
     signal?.removeEventListener("abort", cancel);
     await loading.destroy();
-    if (signal?.aborted)
+    if (signal?.aborted) {
       throw new DOMException("Génération annulée", "AbortError");
+    }
     throw error;
   }
 }

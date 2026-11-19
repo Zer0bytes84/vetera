@@ -207,8 +207,9 @@ export function createPatientReminderStore(
               !reminder.vaccine_family ||
               family(reminder.vaccine_family) !==
                 family(draft.vaccineType?.trim() || draft.vaccineName)
-            )
+            ) {
               continue;
+            }
             await db.execute(
               `UPDATE medical_reminders SET statut = 'termine', completed_at = ?,
                updated_at = ? WHERE id = ?`,

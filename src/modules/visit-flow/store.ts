@@ -130,8 +130,9 @@ export function createVisitFlowStore(persistence: FlowPersistence) {
       [appointmentId]
     );
     const row = rows[0];
-    if (!row)
+    if (!row) {
       throw new VisitFlowError("not_found", "Ce rendez-vous n'existe plus.");
+    }
     return {
       appointmentId: row.appointment_id,
       care: Number(row.care) === 1,
@@ -153,7 +154,9 @@ export function createVisitFlowStore(persistence: FlowPersistence) {
     boardStates(
       appointmentIds: readonly string[]
     ): Promise<VisitFlowBoardState[]> {
-      if (appointmentIds.length === 0) return Promise.resolve([]);
+      if (appointmentIds.length === 0) {
+        return Promise.resolve([]);
+      }
       return persistence.read(async (db) =>
         (
           await db.select<
@@ -232,7 +235,9 @@ export function createVisitFlowStore(persistence: FlowPersistence) {
            ON CONFLICT(appointment_id) DO UPDATE SET care = excluded.care`,
           [appointmentId, care ? 1 : 0]
         );
-        if (actorId) await attribute(db, appointmentId, actorId);
+        if (actorId) {
+          await attribute(db, appointmentId, actorId);
+        }
         return state(db, appointmentId);
       });
     },
@@ -255,17 +260,20 @@ export function createVisitFlowStore(persistence: FlowPersistence) {
            ON CONFLICT(appointment_id) DO UPDATE SET no_charge = 1`,
           [appointmentId]
         );
-        if (actorId) await attribute(db, appointmentId, actorId);
+        if (actorId) {
+          await attribute(db, appointmentId, actorId);
+        }
         return state(db, appointmentId);
       });
     },
 
     /** Names who made the transition the triggers just journaled. */
     async attribute(appointmentId: string, actorId: string | null) {
-      if (actorId)
+      if (actorId) {
         await persistence.transaction((db) =>
           attribute(db, appointmentId, actorId)
         );
+      }
     },
 
     /** The last move of a visit, if it can still be taken back, and for how long. */
@@ -278,7 +286,9 @@ export function createVisitFlowStore(persistence: FlowPersistence) {
           [appointmentId, WINDOW_SECONDS]
         );
         const row = rows[0];
-        if (!row) return null;
+        if (!row) {
+          return null;
+        }
         return {
           ...toEvent(row),
           remainingMs: Math.max(
@@ -300,11 +310,12 @@ export function createVisitFlowStore(persistence: FlowPersistence) {
           [eventId]
         );
         const row = rows[0];
-        if (!row)
+        if (!row) {
           throw new VisitFlowError(
             "not_found",
             "Ce déplacement n'existe plus."
           );
+        }
         const event = toEvent(row);
         const latest = await latestEvent(db, event.appointmentId);
         if (latest?.id !== event.id) {

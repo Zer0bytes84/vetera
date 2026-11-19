@@ -50,18 +50,21 @@ export function assertMentionsForPatient(
 ) {
   const mentions = resolvePatientMentions(text, patients, choices);
   for (const mention of mentions) {
-    if (!mention.candidates.length)
+    if (!mention.candidates.length) {
       throw new Error(
         `Le patient @${mention.name} est introuvable. Corrigez sa mention avant de générer la note.`
       );
-    if (!mention.patient)
+    }
+    if (!mention.patient) {
       throw new Error(
         `Plusieurs patients portent le nom ${mention.name}. Choisissez la fiche exacte.`
       );
-    if (mention.patient.id !== patientId)
+    }
+    if (mention.patient.id !== patientId) {
       throw new Error(
         `@${mention.name} désigne un autre patient. Ouvrez sa consultation pour dicter sa note ; cette note reste liée au patient de la fiche actuelle.`
       );
+    }
   }
   return mentions;
 }

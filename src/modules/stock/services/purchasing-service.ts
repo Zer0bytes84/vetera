@@ -16,15 +16,18 @@ import {
 } from "./purchasing-store";
 
 function changed() {
-  if (typeof window === "undefined") return;
+  if (typeof window === "undefined") {
+    return;
+  }
   for (const table of [
     "stock_suppliers",
     "purchase_orders",
     "purchase_order_lines",
     "purchase_receipts",
     "purchase_receipt_lines",
-  ])
+  ]) {
     emitSQLiteDataChanged(table);
+  }
 }
 export const purchasingService = {
   snapshot: () => runDbRead(purchasingSnapshotInDatabase),

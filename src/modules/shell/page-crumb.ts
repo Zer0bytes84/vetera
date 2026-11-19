@@ -23,9 +23,13 @@ function same(a: PageCrumb | null, b: PageCrumb | null) {
 }
 
 function publish(next: PageCrumb | null) {
-  if (same(current, next)) return;
+  if (same(current, next)) {
+    return;
+  }
   current = next;
-  for (const listener of listeners) listener();
+  for (const listener of listeners) {
+    listener();
+  }
 }
 
 function subscribe(listener: () => void) {
@@ -51,7 +55,9 @@ export function usePageCrumb(title: string, note?: string, parent?: View) {
     publish(mine);
     return () => {
       // Only withdraw our own: the next page may already have published.
-      if (current && same(current, mine)) publish(null);
+      if (current && same(current, mine)) {
+        publish(null);
+      }
     };
   }, [title, note, parent]);
 }

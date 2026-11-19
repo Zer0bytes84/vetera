@@ -24,7 +24,9 @@ export function LocalDataResetSettings() {
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
-  if (currentUser?.role !== "admin") return null;
+  if (currentUser?.role !== "admin") {
+    return null;
+  }
   return (
     <SettingsSection
       aria-label="Réinitialisation"
@@ -52,7 +54,9 @@ export function LocalDataResetSettings() {
       <AlertDialog
         open={open}
         onOpenChange={(value) => {
-          if (!busy) setOpen(value);
+          if (!busy) {
+            setOpen(value);
+          }
         }}
       >
         <AlertDialogContent>

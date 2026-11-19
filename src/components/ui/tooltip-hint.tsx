@@ -77,7 +77,9 @@ export function Tooltip({
   };
   const hide = () => {
     clearTimeout(timer.current);
-    if (open) lastClosedAt = Date.now();
+    if (open) {
+      lastClosedAt = Date.now();
+    }
     setOpen(false);
   };
 

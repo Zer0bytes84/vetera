@@ -19,7 +19,9 @@ export function useFlowUndo() {
 
   const record = useCallback(
     async (appointmentId: string) => {
-      if (!isTauriRuntime()) return;
+      if (!isTauriRuntime()) {
+        return;
+      }
       await visitFlowService
         .attribute(appointmentId, actorId)
         .catch(() => undefined);

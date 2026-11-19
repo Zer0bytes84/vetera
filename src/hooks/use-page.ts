@@ -52,7 +52,9 @@ export function usePage(pageCount: number, resetKey = "") {
   const [state, setState] = useState<PageState>({ key: resetKey, page: 1 });
   // Correction pendant le rendu (conditionnelle, sur son propre état) : l'état est réécrit comme avant, sans rendu intermédiaire périmé.
   const corrected = normalizePage(state, resetKey, pageCount);
-  if (corrected !== state) setState(corrected);
+  if (corrected !== state) {
+    setState(corrected);
+  }
   const page = corrected.page;
   const setPage = useCallback(
     (next: number | ((page: number) => number)) => {

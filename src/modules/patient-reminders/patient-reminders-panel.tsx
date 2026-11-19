@@ -502,7 +502,9 @@ export function PatientRemindersContent({
         <Dialog
           open
           onOpenChange={(open) => {
-            if (!open && !busy) setAction(null);
+            if (!open && !busy) {
+              setAction(null);
+            }
           }}
         >
           <FormDialogContent size="sm">

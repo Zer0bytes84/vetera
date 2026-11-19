@@ -28,8 +28,9 @@ export interface CareTask {
   updated_at: string;
 }
 export function careCompletionKey(taskId: string, revision = 0): string {
-  if (!Number.isSafeInteger(revision) || revision < 0)
+  if (!Number.isSafeInteger(revision) || revision < 0) {
     throw new Error("Ce soin vient d’être modifié. Actualisez la vue.");
+  }
   return revision === 0 ? taskId : `${taskId}:validation:${revision}`;
 }
 export function careInvoiceId(taskId: string, revision = 0): string {
@@ -59,17 +60,21 @@ export function assertCareTransition(
   author: string,
   reason?: string
 ) {
-  if (!author.trim()) throw new Error("Un utilisateur connecté est requis.");
+  if (!author.trim()) {
+    throw new Error("Un utilisateur connecté est requis.");
+  }
   const allowed: Record<CareStatus, readonly CareStatus[]> = {
     a_faire: ["en_cours", "fait", "annule"],
     en_cours: ["fait", "annule"],
     fait: [],
     annule: [],
   };
-  if (!allowed[from].includes(to))
+  if (!allowed[from].includes(to)) {
     throw new Error("Ce changement de statut n’est pas autorisé.");
-  if (to === "annule" && !reason?.trim())
+  }
+  if (to === "annule" && !reason?.trim()) {
     throw new Error("Indiquez le motif de l’annulation.");
+  }
 }
 export interface CareSuggestion {
   label: string;

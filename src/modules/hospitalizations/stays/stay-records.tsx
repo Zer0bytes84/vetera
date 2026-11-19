@@ -57,7 +57,9 @@ export function StayRecords({ stayId }: { stayId: string }) {
   useEffect(() => {
     let active = true;
     queueMicrotask(() => {
-      if (active) void refresh();
+      if (active) {
+        void refresh();
+      }
     });
     const listener = () => {
       void refresh();
@@ -104,7 +106,9 @@ export function StayRecords({ stayId }: { stayId: string }) {
       <Dialog
         open={editing !== null}
         onOpenChange={(open) => {
-          if (!open) setEditing(null);
+          if (!open) {
+            setEditing(null);
+          }
         }}
       >
         <DialogContent className="max-h-[85dvh] overflow-y-auto sm:max-w-xl">

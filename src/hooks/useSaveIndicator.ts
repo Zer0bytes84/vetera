@@ -8,7 +8,9 @@ export function useSaveIndicator() {
   );
   const [expiredSavedAt, setExpiredSavedAt] = useState<number | null>(null);
   useEffect(() => {
-    if (!status.savedAt) return;
+    if (!status.savedAt) {
+      return;
+    }
     const savedAt = status.savedAt;
     const timer = setTimeout(
       () => setExpiredSavedAt(savedAt),

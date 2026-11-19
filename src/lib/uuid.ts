@@ -1,7 +1,9 @@
 /** UUID v4 backed by Web Crypto, including HTTP browsers without randomUUID. */
 export function createUuid(): string {
   const source = globalThis.crypto;
-  if (typeof source?.randomUUID === "function") return source.randomUUID();
+  if (typeof source?.randomUUID === "function") {
+    return source.randomUUID();
+  }
   if (typeof source?.getRandomValues !== "function") {
     throw new Error(
       "La génération sécurisée d’identifiants est indisponible dans ce navigateur."

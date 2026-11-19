@@ -20,10 +20,14 @@ export class PackagedOcr {
     private signal: AbortSignal,
     onProgress: (event: ReadingProgress) => void
   ) {
-    if (signal.aborted) throw abortError();
+    if (signal.aborted) {
+      throw abortError();
+    }
     this.worker = new Worker(root + "ocr.worker.js");
     this.worker.onmessage = ({ data }) => {
-      if (this.closed) return;
+      if (this.closed) {
+        return;
+      }
       if (data.status === "progress") {
         onProgress({
           message: "Reconnaissance du texte sur cet ordinateur…",
@@ -34,9 +38,11 @@ export class PackagedOcr {
         const job = this.pending;
         this.pending = null;
         clearTimeout(job.timer);
-        if (data.status === "reject")
+        if (data.status === "reject") {
           job.reject(new Error("Le texte n’a pas pu être reconnu localement."));
-        else job.resolve(data.data as Record<string, unknown>);
+        } else {
+          job.resolve(data.data as Record<string, unknown>);
+        }
       }
     };
     this.worker.onerror = (event) => {
@@ -50,11 +56,14 @@ export class PackagedOcr {
     payload: Record<string, unknown>,
     transfer: Transferable[] = []
   ): Promise<Record<string, unknown>> {
-    if (this.closed || this.signal.aborted) return Promise.reject(abortError());
-    if (this.pending)
+    if (this.closed || this.signal.aborted) {
+      return Promise.reject(abortError());
+    }
+    if (this.pending) {
       return Promise.reject(
         new Error("La lecture du document est déjà en cours.")
       );
+    }
     return new Promise((resolve, reject) => {
       const jobId = "document-" + ++this.nextJob;
       const timer = setTimeout(
@@ -101,7 +110,9 @@ export class PackagedOcr {
     };
   }
   close(error: Error = abortError()) {
-    if (this.closed) return;
+    if (this.closed) {
+      return;
+    }
     this.closed = true;
     this.signal.removeEventListener("abort", this.onAbort);
     this.worker.terminate();

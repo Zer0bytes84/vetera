@@ -60,9 +60,11 @@ const sameDay = (left: Date, right: Date) =>
 
 function shift(view: CalendarView, date: Date, direction: -1 | 1) {
   const next = new Date(date);
-  if (view === "day") next.setDate(next.getDate() + direction);
-  else if (view === "week") next.setDate(next.getDate() + 7 * direction);
-  else {
+  if (view === "day") {
+    next.setDate(next.getDate() + direction);
+  } else if (view === "week") {
+    next.setDate(next.getDate() + 7 * direction);
+  } else {
     next.setDate(1);
     next.setMonth(next.getMonth() + direction);
   }
@@ -70,15 +72,17 @@ function shift(view: CalendarView, date: Date, direction: -1 | 1) {
 }
 
 function title(view: CalendarView, date: Date, weekDays: Date[]) {
-  if (view === "day")
+  if (view === "day") {
     return date.toLocaleDateString("fr-FR", {
       weekday: "long",
       day: "numeric",
       month: "long",
       year: "numeric",
     });
-  if (view === "month")
+  }
+  if (view === "month") {
     return date.toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
+  }
   const first = weekDays[0];
   const last = weekDays[weekDays.length - 1];
   const sameMonth = first.getMonth() === last.getMonth();
@@ -504,7 +508,9 @@ export function AgendaCalendar({
                   defaultMonth={selectedDate}
                   mode="single"
                   onSelect={(date) => {
-                    if (!date) return;
+                    if (!date) {
+                      return;
+                    }
                     onSelectDate(date);
                     setJumpOpen(false);
                   }}

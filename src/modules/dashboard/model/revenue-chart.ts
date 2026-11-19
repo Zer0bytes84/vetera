@@ -19,7 +19,9 @@ const sum = (values: (number | undefined)[]) =>
 
 /** « +203,4 % contre 8 800 DA la période précédente », or the reason there is none. */
 export function changeText(change: number | null, previous: string) {
-  if (change === null) return "Pas de période précédente comparable";
+  if (change === null) {
+    return "Pas de période précédente comparable";
+  }
   return `${change > 0 ? "+" : ""}${formatNumber(change, { maximumFractionDigits: 1 })} % contre ${previous} la période précédente`;
 }
 
@@ -78,8 +80,9 @@ export function buildRevenueChart(points: FocusPoint[]): RevenueChartModel {
         !point ||
         (point.previousReceipts === undefined &&
           point.previousVisits === undefined)
-      )
+      ) {
         return undefined;
+      }
       return `Période précédente : ${money(point.previousReceipts ?? 0)} · ${formatNumber(point.previousVisits ?? 0)}`;
     },
     series: [
