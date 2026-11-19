@@ -623,7 +623,7 @@ function drawWeight(
     max = Math.max(...values);
   const span = Math.max(max - min, max * 0.04, 0.2);
   min = Math.max(0, min - span * 0.15);
-  max = max + span * 0.15;
+  max += span * 0.15;
   const times = points.map((p) => parseClinicalDate(p.date)!.getTime());
   const t0 = times[0],
     t1 = times.at(-1)!;
