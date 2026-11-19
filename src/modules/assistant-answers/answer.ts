@@ -20,6 +20,7 @@ import { formatDinars, formatNumber } from "@/utils/display-format";
 import { guardReason, has, hasUnsupportedPeriod, MAX_QUESTION_LENGTH, normalize } from "./language";
 import { inPeriod, lastThirtyDays, parsePeriod } from "./period";
 import { understood as understoodInFull } from "./vocabulary";
+import { type Built, presentationOf, withPresentation } from "./presentation";
 import type {
   Answer, AnswerRow, AnswerSource, AnswerStep, AskContext, ClinicData, Figure, Period, Proposal, RefusalReason, TaskDraft, Topic,
 } from "./types";
@@ -232,14 +233,14 @@ export function answerQuestion(question: string, raw: ClinicData, context: AskCo
     ],
   });
   const answer = { cash, appointments, tasks, patients }[topic]({ text, data, now: context.now, period, scope, understood });
-  return verifyAnswer(answer);
+  return verifyAnswer(withPresentation(answer));
 }
 
 /* ── Cash ─────────────────────────────────────────────────────────────── */
 
 const METHODS: Record<string, string> = { cash: "Espèces", card: "Carte", bank_transfer: "Virement", check: "Chèque", other: "Autre" };
 
-function cash({ text, data, now, period: asked, scope, understood }: Build): Answer {
+function cash({ text, data, now, period: asked, scope, understood }: Build): Built {
   const period = asked ?? lastThirtyDays(now);
   const wantsIncome = has(text, /\b(recette|recettes|encaisse|encaisses|encaissement|encaissements|chiffre d affaires|revenu|revenus|gagne|rentrees)\b/);
   const wantsExpense = has(text, /\b(depense|depenses|charge|charges)\b/);
@@ -302,7 +303,7 @@ const STATUSES: Record<string, string> = {
   in_progress: "En cours", completed: "Terminé", cancelled: "Annulé", no_show: "Absent",
 };
 
-function appointments({ text, data, now, period: asked, scope, understood }: Build): Answer {
+function appointments({ text, data, now, period: asked, scope, understood }: Build): Built {
   const missedOnly = has(text, /\b(absence|absences|absent|absents|absente|absentes)\b/);
   const period = asked ?? lastThirtyDays(now);
   const patients = new Map(data.patients.map((patient) => [patient.id, patient]));
@@ -313,7 +314,9 @@ function appointments({ text, data, now, period: asked, scope, understood }: Bui
   const from = source("appointments", "Agenda", data.appointments.length, kept.length,
     `${missedOnly ? "Rendez-vous marqués absents" : "Rendez-vous"} ${period.label}${scope.ids ? `, ${scope.label}` : ""}`);
   const count = (status: string): Figure => ({ id: status, label: STATUSES[status] ?? status, value: kept.filter((row) => row.status === status).length, kind: "count", sourceId: from.id });
-  const rows: Figure = { id: "rows", label: "Rendez-vous", value: kept.length, kind: "count", sourceId: from.id, tie: "rows" };
+  const rows: Figure = missedOnly
+    ? { id: "rows", label: "Absences", value: kept.length, kind: "count", sourceId: from.id, tie: "rows", meaning: "negative" }
+    : { id: "rows", label: "Rendez-vous", value: kept.length, kind: "count", sourceId: from.id, tie: "rows" };
   const done = count("completed");
   const cancelled = count("cancelled");
   const missed = count("no_show");
@@ -385,7 +388,7 @@ export function proposeTasks(drafts: TaskDraft[], existing: Task[], purpose = "s
 
 const PRIORITIES: Record<string, string> = { low: "Basse", medium: "Normale", high: "Haute" };
 
-function tasks({ text, data, now, period: asked, scope, understood }: Build): Answer {
+function tasks({ text, data, now, period: asked, scope, understood }: Build): Built {
   const today = startOfDay(now);
   const lateOnly = has(text, /\b(retard|depasse|depasses|depassee|depassees)\b/);
   const patients = new Map(data.patients.map((patient) => [patient.id, patient]));
@@ -440,7 +443,7 @@ function tasks({ text, data, now, period: asked, scope, understood }: Build): An
 
 /* ── Patients ─────────────────────────────────────────────────────────── */
 
-function patients({ text, data, now, period: asked, understood }: Build): Answer {
+function patients({ text, data, now, period: asked, understood }: Build): Built {
   const fresh = has(text, /\b(nouveau|nouveaux|nouvelle|nouvelles|crees|ouverts|inscrits)\b/) || asked !== null;
   if (fresh) {
     const period = asked ?? lastThirtyDays(now);
@@ -552,5 +555,16 @@ export function verifyAnswer(answer: Answer): Answer {
   const byId = new Map(answer.figures.map((figure) => [figure.id, figure]));
   const [income, expense, net] = [byId.get("income"), byId.get("expense"), byId.get("net")];
   if (net && income && expense && net.value !== income.value - expense.value) return fail();
+  // The cards and the chart are what the figures and the table give, point for point, label for label (derived again
+  // here: a point moved between days, a series tied to another figure, a tone flipped is refused).
+  if (!Array.isArray(answer.cards)) return fail();
+  const { cards, chart } = presentationOf(answer);
+  if (JSON.stringify(cards) !== JSON.stringify(answer.cards) || JSON.stringify(chart) !== JSON.stringify(answer.chart ?? null)) return fail();
+  // And, independently of that derivation, each series adds up to its figure, to the centime, without a negative point.
+  for (const series of answer.chart?.series ?? []) {
+    const figure = byId.get(series.tie);
+    if (!figure || !figure.tie || series.points.some((point) => !Number.isInteger(point.value) || point.value < 0)) return fail();
+    if (series.points.reduce((sum, point) => sum + point.value, 0) !== figure.value) return fail();
+  }
   return answer;
 }
