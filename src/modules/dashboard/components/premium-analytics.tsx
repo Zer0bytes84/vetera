@@ -13,7 +13,8 @@ import {
   Squares2X2Icon,
   WalletIcon,
 } from "@heroicons/react/20/solid";
-import React, { useMemo, useState } from "react";
+import type React from "react";
+import { useMemo, useState } from "react";
 import { formatNumber } from "@/utils/display-format";
 import { parseDashboardDate, type ScheduleEntry } from "../v2/model";
 import { receivablesSummary, settlementRate } from "../v2/financial-model";
@@ -49,7 +50,7 @@ import {
   type VisitKindRow,
 } from "../model/dashboard-widgets";
 import { ForecastBar, WidgetFooter } from "./widget-units";
-import { type FocusPoint } from "./focus-trend-chart";
+import type { FocusPoint } from "./focus-trend-chart";
 import { RevenueChartWidget } from "./revenue-chart-widget";
 import { ActivityHexWidget } from "./activity-hex-widget";
 import { AlertsWidget } from "./alerts-widget";

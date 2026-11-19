@@ -24,7 +24,7 @@ import {
 } from "@/services/browser-store";
 import {
   generateId,
-  getDatabase,
+  type getDatabase,
   runDbOperation,
   runDbRead,
   toSQLiteTimestamp,

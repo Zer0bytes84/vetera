@@ -6,7 +6,7 @@ import {
 } from "../local-ai/audio-capture";
 import { createWarmupDetector } from "../local-ai/microphone-warmup";
 import {
-  LocalInferenceSession,
+  type LocalInferenceSession,
   abortError,
 } from "../local-ai/inference-client";
 import { getLocalModelUrls, type LocalModelStatus } from "../local-ai/models";

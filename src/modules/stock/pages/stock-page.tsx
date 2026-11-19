@@ -1,4 +1,4 @@
-import React from "react";
+import type React from "react";
 
 import { useStockPageModel } from "../hooks/use-stock-page-model";
 import { StockView } from "../components/stock-view";

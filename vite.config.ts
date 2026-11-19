@@ -24,8 +24,11 @@ const crossOriginIsolation = (): Plugin => {
     response: { setHeader(name: string, value: string): void },
     next: () => void
   ) => {
-    for (const [name, value] of Object.entries(CROSS_ORIGIN_ISOLATION_HEADERS))
+    for (const [name, value] of Object.entries(
+      CROSS_ORIGIN_ISOLATION_HEADERS
+    )) {
       response.setHeader(name, value);
+    }
     next();
   };
   return {

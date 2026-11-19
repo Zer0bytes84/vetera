@@ -79,13 +79,13 @@ import { cn } from "@/lib/utils";
 import type { Transaction, TransactionPaymentMethod } from "@/types/db";
 import { formatDZD } from "@/utils/currency";
 import {
-  FinanceTab,
-  TransactionFilter,
-  InvoiceDocumentFilter,
-  InvoiceSettlementFilter,
-  TransactionStatusFilter,
-  TransactionSourceFilter,
-  TransactionSort,
+  type FinanceTab,
+  type TransactionFilter,
+  type InvoiceDocumentFilter,
+  type InvoiceSettlementFilter,
+  type TransactionStatusFilter,
+  type TransactionSourceFilter,
+  type TransactionSort,
   PAYMENT_METHODS,
   PAYMENT_METHOD_LABELS,
   createInvoiceLine,

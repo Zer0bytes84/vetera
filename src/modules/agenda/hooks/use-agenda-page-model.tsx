@@ -16,7 +16,7 @@ import {
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
-import { type SectionCardItem } from "@/components/section-cards";
+import type { SectionCardItem } from "@/components/section-cards";
 
 import { APPOINTMENT_STATUS_META } from "@/config/status-meta";
 import { useFocus } from "@/contexts/focus-provider";
@@ -43,9 +43,9 @@ import {
   CALENDAR_END_HOUR,
   DAY_HOUR_HEIGHT,
   TABLE_TABS,
-  ViewMode,
-  TableTab,
-  AgendaTableRow,
+  type ViewMode,
+  type TableTab,
+  type AgendaTableRow,
   normalizeDate,
   formatDateInput,
   isSameDay,

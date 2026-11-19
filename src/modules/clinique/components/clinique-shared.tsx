@@ -17,13 +17,14 @@ import {
   HourglassIcon,
   Mail01Icon,
   PrinterIcon,
-  StethoscopeIcon,
+  type StethoscopeIcon,
   TimerIcon,
 } from "@/lib/hugeicons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Hospital, Pill, Syringe } from "@/lib/icons";
 import { jsPDF } from "jspdf";
-import React, { useEffect, useEffectEvent, useRef, useState } from "react";
+import type React from "react";
+import { useEffect, useEffectEvent, useRef, useState } from "react";
 
 import { toast } from "sonner";
 

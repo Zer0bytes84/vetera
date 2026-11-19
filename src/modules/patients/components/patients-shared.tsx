@@ -12,7 +12,8 @@ import {
 } from "@/lib/hugeicons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Bird, Cat, Dog, PawPrint, Rabbit, UserRound } from "@/lib/icons";
-import React, { useCallback, useMemo, useState } from "react";
+import type React from "react";
+import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import { computeAge, formatAgeFr } from "../lib";

@@ -9,7 +9,7 @@ import {
 } from "react";
 import { toast } from "sonner";
 
-import { type SectionCardItem } from "@/components/section-cards";
+import type { SectionCardItem } from "@/components/section-cards";
 
 import {
   useAppointmentsRepository,
@@ -25,12 +25,12 @@ import { usePage } from "@/hooks/use-page";
 import { patientReferenceSearchText } from "@/modules/patients/reference/reference";
 
 import {
-  DetailsTab,
-  PatientRecord,
+  type DetailsTab,
+  type PatientRecord,
   PATIENTS_PAGE_SIZE,
   formatPatientDateTime,
   normalizeDate,
-  PatientsProps,
+  type PatientsProps,
 } from "@/modules/patients/components/patients-shared";
 import {
   isUpcomingVisit,

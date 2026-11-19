@@ -7,7 +7,7 @@ import { getInvoiceSettings } from "@/services/invoiceSettingsService";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
-import { type SectionCardItem } from "@/components/section-cards";
+import type { SectionCardItem } from "@/components/section-cards";
 
 import { useAuth } from "@/contexts/AuthContext";
 import { useFocus } from "@/contexts/focus-provider";
@@ -29,16 +29,16 @@ import type {
 } from "@/types/db";
 import { formatDZD, toCentimes } from "@/utils/currency";
 import {
-  FinanceTab,
-  TransactionFilter,
-  InvoiceDocumentFilter,
-  InvoiceSettlementFilter,
-  TransactionStatusFilter,
-  TransactionSourceFilter,
-  TransactionSort,
-  InvoiceDraft,
-  PaymentDraft,
-  TransactionDraft,
+  type FinanceTab,
+  type TransactionFilter,
+  type InvoiceDocumentFilter,
+  type InvoiceSettlementFilter,
+  type TransactionStatusFilter,
+  type TransactionSourceFilter,
+  type TransactionSort,
+  type InvoiceDraft,
+  type PaymentDraft,
+  type TransactionDraft,
   PAYMENT_METHOD_LABELS,
   createInvoiceDraft,
   createTransactionDraft,

@@ -6,7 +6,7 @@ import {
   useTransactionsRepository,
 } from "@/data/repositories";
 
-import { COMMON_VET_PRODUCTS } from "@/modules/stock/components/stock-shared";
+import type { COMMON_VET_PRODUCTS } from "@/modules/stock/components/stock-shared";
 import type { Product, Transaction } from "@/types/db";
 import { toCentimes } from "@/utils/currency";
 import { StockError } from "@/domain/stock";
