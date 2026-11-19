@@ -1,0 +1,13 @@
+import fs from "node:fs";
+import { chromium } from "/media/psf/Home/.dev-browser/node_modules/playwright-core/index.mjs";
+const STORE = fs.readFileSync("/home/parallels/work/recherche-banc/store-recherche.json", "utf8");
+const browser = await chromium.launch({ executablePath: "/home/parallels/.cache/ms-playwright/chromium-1254/chrome-linux-arm64/chrome", args: ["--no-sandbox", "--disable-gpu"] });
+const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+await ctx.addInitScript((s) => { localStorage.setItem("vetera.browser-db.v1", s); localStorage.setItem("auth_token", "banc"); localStorage.setItem("theme-config", JSON.stringify({ skin: "clean" })); localStorage.setItem("baitari:last-seen-version", "9.9.9"); localStorage.setItem("baitari-guided-tour-v1", JSON.stringify({ dismissed: true }));
+  window.__lcpe = []; new PerformanceObserver((l) => { for (const e of l.getEntries()) window.__lcpe.push({ t: Math.round(e.startTime), size: e.size, el: e.element ? `${e.element.tagName.toLowerCase()}.${[...e.element.classList].slice(0,3).join(".")} ${e.element.textContent?.slice(0,40) ?? ""}` : e.url }); }).observe({ type: "largest-contentful-paint", buffered: true });
+  window.__marks = []; const t = setInterval(() => { const n = document.querySelectorAll('main [data-slot="band"] [data-slot="panel"]').length; const c = document.querySelectorAll("main .recharts-surface, main svg.recharts-surface").length; window.__marks.push([Math.round(performance.now()), n, c]); if (performance.now() > 4000) clearInterval(t); }, 50); }, STORE);
+const page = await ctx.newPage();
+await page.goto("http://127.0.0.1:4630/"); await page.waitForTimeout(4500);
+const r = await page.evaluate(() => ({ lcp: window.__lcpe, firstPanels: window.__marks.find((m) => m[1] >= 3), firstChart: window.__marks.find((m) => m[2] > 0), lastChange: window.__marks.reduce((a, m, i, arr) => (i && (m[1] !== arr[i-1][1] || m[2] !== arr[i-1][2]) ? m : a), null), charts: document.querySelectorAll("main .recharts-surface").length }));
+console.log(JSON.stringify(r, null, 1));
+await page.screenshot({ path: "dashboard.png" }); await browser.close();

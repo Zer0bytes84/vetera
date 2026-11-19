@@ -1,0 +1,188 @@
+[
+ {
+  "pret": 934,
+  "domContentLoaded": 252,
+  "load": 253,
+  "fcp": 924,
+  "lcp": 1968,
+  "longtasks": [
+   {
+    "start": 175,
+    "ms": 77
+   },
+   {
+    "start": 660,
+    "ms": 175
+   },
+   {
+    "start": 836,
+    "ms": 53
+   }
+  ],
+  "longtasksTotal": 305,
+  "longtasksAvantPret": 305,
+  "scriptMs": 417,
+  "layoutMs": 62,
+  "recalcStyleMs": 160,
+  "taskMs": 945,
+  "heapMo": 18,
+  "avantPret": {
+   "requetes": 85,
+   "js": 2107469,
+   "css": 844326,
+   "total": 3029086
+  },
+  "apres3s": {
+   "requetes": 86,
+   "js": 2107469,
+   "total": 3029349
+  },
+  "scriptsAvantPret": [
+   "/assets/index-BsNNZ6GW.js 571 Ko",
+   "/assets/app-shell-Cti4WdnQ.js 559 Ko",
+   "/assets/database-FOK3DBql.js 140 Ko",
+   "/assets/proxy-7oXW1NKt.js 122 Ko",
+   "/assets/date-picker-Drg_vO2M.js 79 Ko",
+   "/assets/card-CsNLB9uD.js 71 Ko",
+   "/assets/schemas-DYi8E0wy.js 63 Ko",
+   "/assets/searchable-select-DY3AP6V_.js 40 Ko",
+   "/assets/patients-shared-BZjPsqZM.js 36 Ko",
+   "/assets/dist-ulsD380S.js 35 Ko",
+   "/assets/popupStateMapping-i_SmV1qM.js 31 Ko",
+   "/assets/utils-BpLumZwj.js 28 Ko",
+   "/assets/usePositioner-CBECSiko.js 27 Ko",
+   "/assets/dropdown-menu-BqP4X08R.js 26 Ko",
+   "/assets/auth-C1utNs2G.js 25 Ko",
+   "/assets/use-mascot-preferences-DZ9dcH9k.js 19 Ko",
+   "/assets/visuallyHidden-BQRA44xM.js 17 Ko",
+   "/assets/window-DpsOIhlt.js 15 Ko",
+   "/assets/use-stays-BGEy_mm6.js 15 Ko",
+   "/assets/theme-store-CztKljlZ.js 14 Ko",
+   "/assets/medical-record-summary-CgBmCLVo.js 13 Ko",
+   "/assets/useSQLite-BTpYqnAs.js 10 Ko",
+   "/assets/licenseActivationService-CxXLSnFY.js 10 Ko",
+   "/assets/service-VyM_0zhw.js 8 Ko",
+   "/assets/react-9WV3M1gM.js 7 Ko"
+  ]
+ },
+ {
+  "pret": 757,
+  "domContentLoaded": 142,
+  "load": 143,
+  "fcp": 744,
+  "lcp": 1820,
+  "longtasks": [
+   {
+    "start": 492,
+    "ms": 170
+   }
+  ],
+  "longtasksTotal": 170,
+  "longtasksAvantPret": 170,
+  "scriptMs": 302,
+  "layoutMs": 45,
+  "recalcStyleMs": 171,
+  "taskMs": 755,
+  "heapMo": 18,
+  "avantPret": {
+   "requetes": 85,
+   "js": 2107469,
+   "css": 844326,
+   "total": 3029086
+  },
+  "apres3s": {
+   "requetes": 86,
+   "js": 2107469,
+   "total": 3029349
+  },
+  "scriptsAvantPret": [
+   "/assets/index-BsNNZ6GW.js 571 Ko",
+   "/assets/app-shell-Cti4WdnQ.js 559 Ko",
+   "/assets/database-FOK3DBql.js 140 Ko",
+   "/assets/proxy-7oXW1NKt.js 122 Ko",
+   "/assets/date-picker-Drg_vO2M.js 79 Ko",
+   "/assets/card-CsNLB9uD.js 71 Ko",
+   "/assets/schemas-DYi8E0wy.js 63 Ko",
+   "/assets/searchable-select-DY3AP6V_.js 40 Ko",
+   "/assets/patients-shared-BZjPsqZM.js 36 Ko",
+   "/assets/dist-ulsD380S.js 35 Ko",
+   "/assets/popupStateMapping-i_SmV1qM.js 31 Ko",
+   "/assets/utils-BpLumZwj.js 28 Ko",
+   "/assets/usePositioner-CBECSiko.js 27 Ko",
+   "/assets/dropdown-menu-BqP4X08R.js 26 Ko",
+   "/assets/auth-C1utNs2G.js 25 Ko",
+   "/assets/use-mascot-preferences-DZ9dcH9k.js 19 Ko",
+   "/assets/visuallyHidden-BQRA44xM.js 17 Ko",
+   "/assets/window-DpsOIhlt.js 15 Ko",
+   "/assets/use-stays-BGEy_mm6.js 15 Ko",
+   "/assets/theme-store-CztKljlZ.js 14 Ko",
+   "/assets/medical-record-summary-CgBmCLVo.js 13 Ko",
+   "/assets/useSQLite-BTpYqnAs.js 10 Ko",
+   "/assets/licenseActivationService-CxXLSnFY.js 10 Ko",
+   "/assets/service-VyM_0zhw.js 8 Ko",
+   "/assets/react-9WV3M1gM.js 7 Ko"
+  ]
+ },
+ {
+  "pret": 754,
+  "domContentLoaded": 150,
+  "load": 150,
+  "fcp": 744,
+  "lcp": 1800,
+  "longtasks": [
+   {
+    "start": 518,
+    "ms": 147
+   },
+   {
+    "start": 666,
+    "ms": 50
+   }
+  ],
+  "longtasksTotal": 197,
+  "longtasksAvantPret": 197,
+  "scriptMs": 306,
+  "layoutMs": 39,
+  "recalcStyleMs": 159,
+  "taskMs": 733,
+  "heapMo": 18,
+  "avantPret": {
+   "requetes": 85,
+   "js": 2107469,
+   "css": 844326,
+   "total": 3029086
+  },
+  "apres3s": {
+   "requetes": 86,
+   "js": 2107469,
+   "total": 3029349
+  },
+  "scriptsAvantPret": [
+   "/assets/index-BsNNZ6GW.js 571 Ko",
+   "/assets/app-shell-Cti4WdnQ.js 559 Ko",
+   "/assets/database-FOK3DBql.js 140 Ko",
+   "/assets/proxy-7oXW1NKt.js 122 Ko",
+   "/assets/date-picker-Drg_vO2M.js 79 Ko",
+   "/assets/card-CsNLB9uD.js 71 Ko",
+   "/assets/schemas-DYi8E0wy.js 63 Ko",
+   "/assets/searchable-select-DY3AP6V_.js 40 Ko",
+   "/assets/patients-shared-BZjPsqZM.js 36 Ko",
+   "/assets/dist-ulsD380S.js 35 Ko",
+   "/assets/popupStateMapping-i_SmV1qM.js 31 Ko",
+   "/assets/utils-BpLumZwj.js 28 Ko",
+   "/assets/usePositioner-CBECSiko.js 27 Ko",
+   "/assets/dropdown-menu-BqP4X08R.js 26 Ko",
+   "/assets/auth-C1utNs2G.js 25 Ko",
+   "/assets/use-mascot-preferences-DZ9dcH9k.js 19 Ko",
+   "/assets/visuallyHidden-BQRA44xM.js 17 Ko",
+   "/assets/window-DpsOIhlt.js 15 Ko",
+   "/assets/use-stays-BGEy_mm6.js 15 Ko",
+   "/assets/theme-store-CztKljlZ.js 14 Ko",
+   "/assets/medical-record-summary-CgBmCLVo.js 13 Ko",
+   "/assets/useSQLite-BTpYqnAs.js 10 Ko",
+   "/assets/licenseActivationService-CxXLSnFY.js 10 Ko",
+   "/assets/service-VyM_0zhw.js 8 Ko",
+   "/assets/react-9WV3M1gM.js 7 Ko"
+  ]
+ }
+]

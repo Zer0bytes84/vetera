@@ -1,0 +1,25 @@
+diff --git a/vite.config.ts b/vite.config.ts
+index e93e4d1..d406e13 100644
+--- a/vite.config.ts
++++ b/vite.config.ts
+@@ -100,6 +100,11 @@ export default defineConfig(({ command, mode }) => ({
+               test: /node_modules[\\/](jspdf|html2canvas)/,
+               includeDependenciesRecursively: false,
+             },
++            {
++              name: "vendor-uses",
++              test: /node_modules[\\/]use-sync-external-store[\\/]/,
++              includeDependenciesRecursively: false,
++            },
+             {
+               // Recharts 3 runs on its own stack (es-toolkit, Redux Toolkit, victory-vendor, immer, reselect…).
+               // Left outside the group, that stack lands in a chunk shared with the clinical views, which
+@@ -107,7 +112,7 @@ export default defineConfig(({ command, mode }) => ({
+               // shared chunk first, and recharts calls es-toolkit's `get` before it exists
+               // (« require_get is not a function »). The whole stack stays in one chunk, with no cycle.
+               name: "vendor-charts",
+-              test: /node_modules[\\/](recharts|d3-[^\\/]+|victory-vendor|es-toolkit|@reduxjs[\\/]toolkit|react-redux|redux|redux-thunk|reselect|immer|decimal\.js-light|internmap|eventemitter3|use-sync-external-store)[\\/]/,
++              test: /node_modules[\\/](recharts|d3-[^\\/]+|victory-vendor|es-toolkit|@reduxjs[\\/]toolkit|react-redux|redux|redux-thunk|reselect|immer|decimal\.js-light|internmap|eventemitter3)[\\/]/,
+               includeDependenciesRecursively: false,
+             },
+           ],
