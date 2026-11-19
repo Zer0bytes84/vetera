@@ -37,7 +37,10 @@ export function getStoredAdminToken(): string {
   } catch {
     /* Storage unavailable. */
   }
-  if (tokenSession !== localStorage.getItem("auth_token") || Date.now() >= tokenExpiresAt) {
+  if (
+    tokenSession !== localStorage.getItem("auth_token") ||
+    Date.now() >= tokenExpiresAt
+  ) {
     sessionAdminToken = "";
   }
   return sessionAdminToken;
@@ -131,11 +134,15 @@ async function licenseRequest(
     );
   }
   const deviceId = await getDeviceId();
-  const response = await fetchAdminResponse(`${ACTIVATION_SERVER_URL}${path}`, {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({ ...body, deviceId }),
-  }, timeoutMs);
+  const response = await fetchAdminResponse(
+    `${ACTIVATION_SERVER_URL}${path}`,
+    {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ ...body, deviceId }),
+    },
+    timeoutMs
+  );
   const payload = await readAdminResponse<LicenseActivationResult>(response);
   if (!payload?.activationToken || !payload.license?.email)
     throw new LicenseActivationError("Réponse d’activation invalide.");
@@ -156,10 +163,14 @@ export async function activateLicense(
   key: string,
   timeoutMs?: number
 ): Promise<LicenseActivationResult> {
-  return licenseRequest("/v1/activate", {
-    email: email.trim().toLowerCase(),
-    key,
-  }, timeoutMs);
+  return licenseRequest(
+    "/v1/activate",
+    {
+      email: email.trim().toLowerCase(),
+      key,
+    },
+    timeoutMs
+  );
 }
 
 export function renewLicenseActivation(

@@ -11,7 +11,9 @@
   background: transparent;
   color: rgb(24 24 27 / 0.75);
   box-shadow: none;
-  transition: background-color var(--speed-highlight-out) ease, color var(--speed-highlight-out) ease;
+  transition:
+    background-color var(--speed-highlight-out) ease,
+    color var(--speed-highlight-out) ease;
 }
 
 .shell-toolbar .shell-toolbar-control:focus-visible {
@@ -32,7 +34,13 @@
   box-shadow: none;
 }
 
-.dark .shell-toolbar .shell-toolbar-control:is(:active, [aria-expanded="true"], [aria-pressed="true"]) {
+.dark
+  .shell-toolbar
+  .shell-toolbar-control:is(
+    :active,
+    [aria-expanded="true"],
+    [aria-pressed="true"]
+  ) {
   background: rgb(255 255 255 / 0.1);
   color: #fafafa;
 }
@@ -50,11 +58,15 @@
 }
 
 @container shell-toolbar (max-width: 350px) {
-  .shell-toolbar-actions { gap: 6px; }
+  .shell-toolbar-actions {
+    gap: 6px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .shell-toolbar .shell-toolbar-control { transition: none; }
+  .shell-toolbar .shell-toolbar-control {
+    transition: none;
+  }
 }
 
 /* Liquid Glass Header — surface horizontale en verre dépoli */
@@ -64,7 +76,10 @@
   top: 0;
   z-index: 40;
   width: 100%;
-  height: calc(var(--header-height) + var(--header-content-clearance)) !important;
+  height: calc(
+    var(--header-height) +
+    var(--header-content-clearance)
+  ) !important;
   min-height: var(--header-height);
   display: flex;
   align-items: center;
@@ -72,8 +87,13 @@
   -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
   backdrop-filter: blur(20px) saturate(180%) !important;
   border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important;
-  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.8), 0 4px 20px -2px rgba(0, 0, 0, 0.03) !important;
-  transition: background-color 200ms ease, border-color 200ms ease, box-shadow 200ms ease;
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.8),
+    0 4px 20px -2px rgba(0, 0, 0, 0.03) !important;
+  transition:
+    background-color 200ms ease,
+    border-color 200ms ease,
+    box-shadow 200ms ease;
   overflow: visible;
 }
 
@@ -83,13 +103,16 @@
   -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
   backdrop-filter: blur(20px) saturate(180%) !important;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
-  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.06), 0 4px 24px -2px rgba(0, 0, 0, 0.4) !important;
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.06),
+    0 4px 24px -2px rgba(0, 0, 0, 0.4) !important;
 }
 
-:root[data-chrome-style="liquid-glass"] :is(
-  [data-slot="app-header-separator"],
-  [data-slot="sidebar-header-separator"]
-) {
+:root[data-chrome-style="liquid-glass"]
+  :is(
+    [data-slot="app-header-separator"],
+    [data-slot="sidebar-header-separator"]
+  ) {
   display: none;
 }
 
@@ -108,13 +131,19 @@
   display: none;
 }
 
-:root[data-chrome-style="liquid-glass"] .shell-toolbar-actions .shell-toolbar-control.sm\:hidden,
-:root[data-chrome-style="liquid-glass"] .shell-toolbar-actions .shell-toolbar-control[class*="sm:hidden"] {
+:root[data-chrome-style="liquid-glass"]
+  .shell-toolbar-actions
+  .shell-toolbar-control.sm\:hidden,
+:root[data-chrome-style="liquid-glass"]
+  .shell-toolbar-actions
+  .shell-toolbar-control[class*="sm:hidden"] {
   display: none !important;
 }
 
 /* Individual glass wells keep each filled silhouette distinct. */
-:root[data-chrome-style="liquid-glass"] .shell-toolbar-actions .shell-toolbar-control {
+:root[data-chrome-style="liquid-glass"]
+  .shell-toolbar-actions
+  .shell-toolbar-control {
   display: grid;
   place-items: center;
   width: 40px;
@@ -122,66 +151,118 @@
   border-radius: 50%;
   border: 1px solid rgb(24 24 27 / 0.18);
   color: #202124;
-  background: linear-gradient(160deg, rgb(255 255 255 / 0.4), rgb(255 255 255 / 0.08));
+  background: linear-gradient(
+    160deg,
+    rgb(255 255 255 / 0.4),
+    rgb(255 255 255 / 0.08)
+  );
   box-shadow:
     inset 0 0 0 1px rgb(255 255 255 / 0.78),
     inset 0 -1px 2px rgb(24 24 27 / 0.09),
     0 2px 5px -3px rgb(24 24 27 / 0.24);
-  transition: background-color 160ms ease, color 160ms ease, box-shadow 160ms ease;
+  transition:
+    background-color 160ms ease,
+    color 160ms ease,
+    box-shadow 160ms ease;
 }
 
-:root[data-chrome-style="liquid-glass"] .shell-toolbar-actions .shell-toolbar-control svg {
+:root[data-chrome-style="liquid-glass"]
+  .shell-toolbar-actions
+  .shell-toolbar-control
+  svg {
   width: 22px;
   height: 22px;
   flex-shrink: 0;
   filter: drop-shadow(0 1px 0 rgb(255 255 255 / 0.7));
 }
 
-:root.dark[data-chrome-style="liquid-glass"] .shell-toolbar-actions .shell-toolbar-control {
+:root.dark[data-chrome-style="liquid-glass"]
+  .shell-toolbar-actions
+  .shell-toolbar-control {
   border-color: rgb(255 255 255 / 0.32);
   color: #f4f4f5;
-  background: linear-gradient(160deg, rgb(255 255 255 / 0.11), rgb(255 255 255 / 0.03));
+  background: linear-gradient(
+    160deg,
+    rgb(255 255 255 / 0.11),
+    rgb(255 255 255 / 0.03)
+  );
   box-shadow:
     inset 0 0 0 1px rgb(255 255 255 / 0.19),
     inset 0 1px 1px rgb(255 255 255 / 0.13),
     0 2px 5px -3px rgb(0 0 0 / 0.45);
 }
 
-:root.dark[data-chrome-style="liquid-glass"] .shell-toolbar-actions .shell-toolbar-control svg {
+:root.dark[data-chrome-style="liquid-glass"]
+  .shell-toolbar-actions
+  .shell-toolbar-control
+  svg {
   filter: drop-shadow(0 1px 1px rgb(0 0 0 / 0.5));
 }
 
 @media (hover: hover) and (pointer: fine) {
-  :root[data-chrome-style="liquid-glass"] .shell-toolbar-actions .shell-toolbar-control:hover {
+  :root[data-chrome-style="liquid-glass"]
+    .shell-toolbar-actions
+    .shell-toolbar-control:hover {
     background: rgb(255 255 255 / 0.85);
     color: #09090b;
-    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.95), 0 3px 7px -4px rgb(24 24 27 / 0.3);
+    box-shadow:
+      inset 0 0 0 1px rgb(255 255 255 / 0.95),
+      0 3px 7px -4px rgb(24 24 27 / 0.3);
   }
-  :root.dark[data-chrome-style="liquid-glass"] .shell-toolbar-actions .shell-toolbar-control:hover {
+  :root.dark[data-chrome-style="liquid-glass"]
+    .shell-toolbar-actions
+    .shell-toolbar-control:hover {
     background: rgb(255 255 255 / 0.18);
     color: #fff;
-    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.3), 0 3px 7px -4px rgb(0 0 0 / 0.5);
+    box-shadow:
+      inset 0 0 0 1px rgb(255 255 255 / 0.3),
+      0 3px 7px -4px rgb(0 0 0 / 0.5);
   }
 }
 
-:root[data-chrome-style="liquid-glass"] .shell-toolbar-actions .shell-toolbar-control:is(:active, [aria-expanded="true"], [aria-pressed="true"]) {
+:root[data-chrome-style="liquid-glass"]
+  .shell-toolbar-actions
+  .shell-toolbar-control:is(
+    :active,
+    [aria-expanded="true"],
+    [aria-pressed="true"]
+  ) {
   background: color-mix(in srgb, var(--primary) 12%, var(--background));
   color: var(--foreground);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--primary) 35%, transparent), inset 0 1px 3px rgb(24 24 27 / 0.1);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--primary) 35%, transparent),
+    inset 0 1px 3px rgb(24 24 27 / 0.1);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  :root[data-chrome-style="liquid-glass"] .shell-toolbar-actions .shell-toolbar-control { transition: none; }
+  :root[data-chrome-style="liquid-glass"]
+    .shell-toolbar-actions
+    .shell-toolbar-control {
+    transition: none;
+  }
 }
 
 @media (max-width: 480px) {
-  :root[data-chrome-style="liquid-glass"] .shell-toolbar { padding-inline: 12px; gap: 8px; }
-  :root[data-chrome-style="liquid-glass"] .shell-toolbar-actions { padding-inline: 6px; gap: 3px; }
+  :root[data-chrome-style="liquid-glass"] .shell-toolbar {
+    padding-inline: 12px;
+    gap: 8px;
+  }
+  :root[data-chrome-style="liquid-glass"] .shell-toolbar-actions {
+    padding-inline: 6px;
+    gap: 3px;
+  }
 }
 
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  :root[data-chrome-style="liquid-glass"] .shell-toolbar-actions { background: rgb(255 255 255 / 0.94); }
-  :root.dark[data-chrome-style="liquid-glass"] .shell-toolbar-actions { background: rgb(30 30 36 / 0.96); }
+@supports not (
+    (backdrop-filter: blur(1px)) or
+    (-webkit-backdrop-filter: blur(1px))
+  ) {
+  :root[data-chrome-style="liquid-glass"] .shell-toolbar-actions {
+    background: rgb(255 255 255 / 0.94);
+  }
+  :root.dark[data-chrome-style="liquid-glass"] .shell-toolbar-actions {
+    background: rgb(30 30 36 / 0.96);
+  }
 }
 
 /* The floating mode has no full-width header or framed workspace. */
@@ -215,7 +296,9 @@
   pointer-events: auto;
 }
 
-:root[data-chrome-style="liquid-glass"] .shell-toolbar > [data-slot="sidebar-trigger"],
+:root[data-chrome-style="liquid-glass"]
+  .shell-toolbar
+  > [data-slot="sidebar-trigger"],
 :root[data-chrome-style="liquid-glass"] .shell-toolbar-actions {
   pointer-events: auto;
 }
@@ -240,11 +323,13 @@
     backdrop-filter: none;
   }
 
-  :root[data-chrome-style="liquid-glass"] [data-slot="sidebar-container"]::before {
+  :root[data-chrome-style="liquid-glass"]
+    [data-slot="sidebar-container"]::before {
     display: none;
   }
 
-  :root[data-chrome-style="liquid-glass"] [data-slot="sidebar-container"]::after {
+  :root[data-chrome-style="liquid-glass"]
+    [data-slot="sidebar-container"]::after {
     content: "";
     position: absolute;
     inset-block: 0;
@@ -259,16 +344,22 @@
     background: var(--sidebar);
   }
 
-  :root[data-chrome-style="liquid-glass"] [data-slot="sidebar"][data-collapsible="icon"] :is([data-slot="sidebar-gap"], [data-slot="sidebar-container"]) {
+  :root[data-chrome-style="liquid-glass"]
+    [data-slot="sidebar"][data-collapsible="icon"]
+    :is([data-slot="sidebar-gap"], [data-slot="sidebar-container"]) {
     width: var(--sidebar-width-icon);
   }
 
-  :root[data-chrome-style="liquid-glass"] [data-slot="sidebar"][data-collapsible="offcanvas"] [data-slot="sidebar-gap"] {
+  :root[data-chrome-style="liquid-glass"]
+    [data-slot="sidebar"][data-collapsible="offcanvas"]
+    [data-slot="sidebar-gap"] {
     width: 0;
   }
 }
 
-:root[data-chrome-style="liquid-glass"] .restored-sidebar [data-slot="sidebar-footer"]::before {
+:root[data-chrome-style="liquid-glass"]
+  .restored-sidebar
+  [data-slot="sidebar-footer"]::before {
   display: none;
 }
 
@@ -295,7 +386,9 @@
   height: 74px !important;
 }
 
-:root[data-chrome-style="liquid-glass"] [data-slot="sidebar-header"] [data-slot="sidebar-trigger"] {
+:root[data-chrome-style="liquid-glass"]
+  [data-slot="sidebar-header"]
+  [data-slot="sidebar-trigger"] {
   transform: none;
 }
 
@@ -305,11 +398,19 @@
 }
 
 /* The outline family is exclusive to Liquid Glass. */
-[data-toolbar-glyph="rounded"] { display: none; }
-:root[data-chrome-style="liquid-glass"] [data-toolbar-glyph="filled"] { display: none; }
-:root[data-chrome-style="liquid-glass"] [data-toolbar-glyph="rounded"] { display: inline; }
+[data-toolbar-glyph="rounded"] {
+  display: none;
+}
+:root[data-chrome-style="liquid-glass"] [data-toolbar-glyph="filled"] {
+  display: none;
+}
+:root[data-chrome-style="liquid-glass"] [data-toolbar-glyph="rounded"] {
+  display: inline;
+}
 
-:root[data-chrome-style="liquid-glass"] [data-slot="sidebar-header"] [data-slot="sidebar-trigger"] {
+:root[data-chrome-style="liquid-glass"]
+  [data-slot="sidebar-header"]
+  [data-slot="sidebar-trigger"] {
   border: 0;
   background: transparent;
   box-shadow: none;
@@ -318,17 +419,24 @@
 /* Only native Liquid Glass places the toggle on the traffic-light axis.
    Classic chrome keeps the original toggle in the logo row. */
 @media (min-width: 768px) {
-  :root[data-chrome-style="liquid-glass"] [data-slot="sidebar-wrapper"]:has(.restored-sidebar[data-desktop-runtime="true"]) {
+  :root[data-chrome-style="liquid-glass"]
+    [data-slot="sidebar-wrapper"]:has(
+      .restored-sidebar[data-desktop-runtime="true"]
+    ) {
     --sidebar-width-icon: 80px !important;
   }
-  :root[data-chrome-style="liquid-glass"] [data-collapsible="icon"] .restored-sidebar[data-desktop-runtime="true"] [data-slot="sidebar-header"] {
+  :root[data-chrome-style="liquid-glass"]
+    [data-collapsible="icon"]
+    .restored-sidebar[data-desktop-runtime="true"]
+    [data-slot="sidebar-header"] {
     height: 106px !important;
     padding-bottom: 32px;
   }
 }
 
 @media (min-width: 1024px) {
-  :root[data-chrome-style="liquid-glass"] :is(div, header):has(> [data-slot="page-header-actions"]) {
+  :root[data-chrome-style="liquid-glass"]
+    :is(div, header):has(> [data-slot="page-header-actions"]) {
     align-items: flex-end;
   }
   :root[data-chrome-style="liquid-glass"] [data-slot="page-header-actions"] {
@@ -358,7 +466,10 @@
     width: 6px;
   }
   [data-slot="shell-scroll-panel"]::-webkit-scrollbar-track {
-    margin-top: var(--shell-scroll-start, calc(var(--titlebar-clearance, 0px) + 63px));
+    margin-top: var(
+      --shell-scroll-start,
+      calc(var(--titlebar-clearance, 0px) + 63px)
+    );
     margin-bottom: 10px;
   }
   [data-slot="shell-scroll-panel"]::-webkit-scrollbar-thumb {
@@ -368,7 +479,9 @@
 
 /* Header controls share one optical axis and quiet, consistent surfaces. */
 .shell-toolbar-actions .shell-toolbar-control,
-:root[data-chrome-style="liquid-glass"] .shell-toolbar-actions .shell-toolbar-control {
+:root[data-chrome-style="liquid-glass"]
+  .shell-toolbar-actions
+  .shell-toolbar-control {
   width: 40px;
   height: 40px;
   border-radius: 12px;
@@ -377,31 +490,47 @@
   box-shadow: none;
 }
 .shell-toolbar-actions .shell-toolbar-control svg,
-:root[data-chrome-style="liquid-glass"] .shell-toolbar-actions .shell-toolbar-control svg {
+:root[data-chrome-style="liquid-glass"]
+  .shell-toolbar-actions
+  .shell-toolbar-control
+  svg {
   width: 20px;
   height: 20px;
   filter: none;
 }
-:root.dark[data-chrome-style="liquid-glass"] .shell-toolbar-actions .shell-toolbar-control {
+:root.dark[data-chrome-style="liquid-glass"]
+  .shell-toolbar-actions
+  .shell-toolbar-control {
   border-color: transparent;
   background: transparent;
   box-shadow: none;
 }
-:root.dark[data-chrome-style="liquid-glass"] .shell-toolbar-actions .shell-toolbar-control svg { filter: none; }
-@media (hover:hover) and (pointer:fine) {
+:root.dark[data-chrome-style="liquid-glass"]
+  .shell-toolbar-actions
+  .shell-toolbar-control
+  svg {
+  filter: none;
+}
+@media (hover: hover) and (pointer: fine) {
   .shell-toolbar-actions .shell-toolbar-control:hover,
-  :root[data-chrome-style="liquid-glass"] .shell-toolbar-actions .shell-toolbar-control:hover {
+  :root[data-chrome-style="liquid-glass"]
+    .shell-toolbar-actions
+    .shell-toolbar-control:hover {
     background: color-mix(in srgb, var(--foreground) 5%, transparent);
     box-shadow: none;
   }
-  :root.dark[data-chrome-style="liquid-glass"] .shell-toolbar-actions .shell-toolbar-control:hover {
+  :root.dark[data-chrome-style="liquid-glass"]
+    .shell-toolbar-actions
+    .shell-toolbar-control:hover {
     background: rgb(255 255 255 / 0.08);
     box-shadow: none;
   }
 }
 
 /* Compact command field and a single glass capsule for the utility actions. */
-.shell-toolbar { column-gap: 20px; }
+.shell-toolbar {
+  column-gap: 20px;
+}
 .shell-toolbar-actions,
 :root[data-chrome-style="liquid-glass"] .shell-toolbar-actions {
   flex: 0 0 auto;
@@ -413,35 +542,56 @@
   background: rgb(255 255 255 / 0.46);
   -webkit-backdrop-filter: blur(22px) saturate(150%);
   backdrop-filter: blur(22px) saturate(150%);
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.95), inset 0 -1px 0 rgb(24 24 27 / 0.04), 0 3px 12px -7px rgb(24 24 27 / 0.25);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.95),
+    inset 0 -1px 0 rgb(24 24 27 / 0.04),
+    0 3px 12px -7px rgb(24 24 27 / 0.25);
 }
 .dark .shell-toolbar-actions,
 :root.dark[data-chrome-style="liquid-glass"] .shell-toolbar-actions {
   border-color: rgb(255 255 255 / 0.14);
   background: rgb(255 255 255 / 0.055);
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.1), 0 3px 12px -7px rgb(0 0 0 / 0.4);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.1),
+    0 3px 12px -7px rgb(0 0 0 / 0.4);
 }
 [data-slot="app-header"],
 :root[data-chrome-style="liquid-glass"] [data-slot="app-header"] {
   background: rgb(255 255 255 / 0.5) !important;
   -webkit-backdrop-filter: blur(28px) saturate(150%) !important;
   backdrop-filter: blur(28px) saturate(150%) !important;
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.9), inset 0 -1px 0 rgb(255 255 255 / 0.45), 0 6px 20px -16px rgb(24 24 27 / 0.18) !important;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.9),
+    inset 0 -1px 0 rgb(255 255 255 / 0.45),
+    0 6px 20px -16px rgb(24 24 27 / 0.18) !important;
 }
 .dark [data-slot="app-header"],
 :root.dark[data-chrome-style="liquid-glass"] [data-slot="app-header"] {
   background: rgb(18 18 22 / 0.5) !important;
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.08), inset 0 -1px 0 rgb(255 255 255 / 0.04), 0 6px 20px -16px rgb(0 0 0 / 0.3) !important;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.08),
+    inset 0 -1px 0 rgb(255 255 255 / 0.04),
+    0 6px 20px -16px rgb(0 0 0 / 0.3) !important;
 }
-.shell-header-search { box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.5); }
-@media (max-width:639px) { .shell-toolbar { column-gap:8px; } }
-@media (prefers-reduced-transparency:reduce), (prefers-contrast:more) {
-  [data-slot="app-header"],:root[data-chrome-style="liquid-glass"] [data-slot="app-header"] {
-    background: var(--background) !important;
-    -webkit-backdrop-filter:none !important;
-    backdrop-filter:none !important;
+.shell-header-search {
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.5);
+}
+@media (max-width: 639px) {
+  .shell-toolbar {
+    column-gap: 8px;
   }
-  .shell-toolbar-actions,:root[data-chrome-style="liquid-glass"] .shell-toolbar-actions { background:var(--background); }
+}
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  [data-slot="app-header"],
+  :root[data-chrome-style="liquid-glass"] [data-slot="app-header"] {
+    background: var(--background) !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+  .shell-toolbar-actions,
+  :root[data-chrome-style="liquid-glass"] .shell-toolbar-actions {
+    background: var(--background);
+  }
 }
 
 /* Header search (Premium and Clean), rebuilt on 5 November 2026 when it moved
@@ -462,7 +612,8 @@
   align-items: center;
   gap: 8px;
   padding: 0 4px 0 12px;
-  border: 1px solid color-mix(in srgb, var(--ink, var(--foreground)) 8%, transparent);
+  border: 1px solid
+    color-mix(in srgb, var(--ink, var(--foreground)) 8%, transparent);
   border-radius: 999px;
   background: color-mix(in srgb, var(--ink, var(--foreground)) 4%, transparent);
   color: var(--ink-muted, var(--muted-foreground));
@@ -477,14 +628,22 @@
     color var(--speed-highlight-out) ease,
     transform 160ms cubic-bezier(0.23, 1, 0.32, 1);
 }
-.shell-header-search-icon { flex: none; }
-.shell-header-search-field:active { transform: scale(0.99); }
+.shell-header-search-icon {
+  flex: none;
+}
+.shell-header-search-field:active {
+  transform: scale(0.99);
+}
 .shell-header-search-field:focus-visible {
   outline: 2px solid var(--ring);
   outline-offset: 2px;
 }
 .shell-header-search-field[aria-expanded="true"] {
-  border-color: color-mix(in srgb, var(--ink, var(--foreground)) 16%, transparent);
+  border-color: color-mix(
+    in srgb,
+    var(--ink, var(--foreground)) 16%,
+    transparent
+  );
   background: color-mix(in srgb, var(--ink, var(--foreground)) 7%, transparent);
   color: var(--ink, var(--foreground));
 }
@@ -504,28 +663,47 @@
   padding: 0 8px;
   border-radius: 999px;
   background: var(--surface, var(--card));
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--ink, var(--foreground)) 8%, transparent);
+  box-shadow: 0 0 0 1px
+    color-mix(in srgb, var(--ink, var(--foreground)) 8%, transparent);
   font-family: inherit;
   font-size: 12px;
   font-weight: 500;
   line-height: 1;
   letter-spacing: 0;
   color: var(--ink-soft, var(--foreground));
-  transition: background-color var(--speed-highlight-out) ease, color var(--speed-highlight-out) ease;
+  transition:
+    background-color var(--speed-highlight-out) ease,
+    color var(--speed-highlight-out) ease;
 }
 @media (hover: hover) and (pointer: fine) {
   .shell-header-search-field:hover {
-    border-color: color-mix(in srgb, var(--ink, var(--foreground)) 14%, transparent);
-    background: color-mix(in srgb, var(--ink, var(--foreground)) 7%, transparent);
+    border-color: color-mix(
+      in srgb,
+      var(--ink, var(--foreground)) 14%,
+      transparent
+    );
+    background: color-mix(
+      in srgb,
+      var(--ink, var(--foreground)) 7%,
+      transparent
+    );
     color: var(--ink, var(--foreground));
-    transition-duration: var(--speed-highlight-in), var(--speed-highlight-in), var(--speed-highlight-in), 160ms;
+    transition-duration:
+      var(--speed-highlight-in), var(--speed-highlight-in),
+      var(--speed-highlight-in), 160ms;
   }
-  .shell-header-search-field:hover .shell-header-search-key { color: var(--ink, var(--foreground)); }
+  .shell-header-search-field:hover .shell-header-search-key {
+    color: var(--ink, var(--foreground));
+  }
 }
 @media (prefers-reduced-motion: reduce) {
-  .shell-header-search-field:active { transform: none; }
+  .shell-header-search-field:active {
+    transform: none;
+  }
 }
-.shell-header-search-slot { flex: none; }
+.shell-header-search-slot {
+  flex: none;
+}
 
 /* The account: the avatar alone, at the header's right end. */
 .shell-account-trigger {
@@ -538,9 +716,18 @@
   cursor: pointer;
   transition: box-shadow var(--speed-highlight-out) ease;
 }
-.shell-account-trigger .shell-account-avatar { width: 28px; height: 28px; font-size: 14px; }
-.shell-account-trigger:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
-.shell-account-trigger[aria-expanded="true"] { box-shadow: 0 0 0 2px var(--border); }
+.shell-account-trigger .shell-account-avatar {
+  width: 28px;
+  height: 28px;
+  font-size: 14px;
+}
+.shell-account-trigger:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+.shell-account-trigger[aria-expanded="true"] {
+  box-shadow: 0 0 0 2px var(--border);
+}
 @media (hover: hover) and (pointer: fine) {
   .shell-account-trigger:hover {
     box-shadow: 0 0 0 2px var(--border);
@@ -569,9 +756,19 @@
   font-size: 12px;
   color: var(--ink-muted, var(--muted-foreground));
 }
-.shell-account-menu .shell-account-item { min-height: 32px; gap: 10px; padding-inline: 8px; }
-.shell-account-menu .shell-account-item svg { width: 16px; height: 16px; }
-.shell-account-menu .shell-account-count { letter-spacing: 0; font-variant-numeric: tabular-nums; }
+.shell-account-menu .shell-account-item {
+  min-height: 32px;
+  gap: 10px;
+  padding-inline: 8px;
+}
+.shell-account-menu .shell-account-item svg {
+  width: 16px;
+  height: 16px;
+}
+.shell-account-menu .shell-account-count {
+  letter-spacing: 0;
+  font-variant-numeric: tabular-nums;
+}
 
 /* The sidebar's slide-out toggle opens the header, then a short rule, then the
    search pill: one group at the header's left edge. */
@@ -585,9 +782,14 @@
   border-radius: 999px;
   color: var(--ink-muted, var(--muted-foreground));
   cursor: pointer;
-  transition: background-color var(--speed-highlight-out) ease, color var(--speed-highlight-out) ease;
+  transition:
+    background-color var(--speed-highlight-out) ease,
+    color var(--speed-highlight-out) ease;
 }
-.shell-sidebar-toggle:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+.shell-sidebar-toggle:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
 /* The thin rule between the toggle and the search: 20 px, the line colour. */
 .shell-header-divider {
   width: 1px;
@@ -604,8 +806,19 @@
 
 /* The header's buttons are pills (circles for the icon ones), at the same level of roundness as the rest of the interface:
    the Data Table's round buttons, the slot pills, the view switches. This sits above the skins' own radii (8 px squares). */
-:root:root [data-slot="app-header"] :is(.topIcon, .shell-toolbar-control, .shell-sidebar-toggle, .header-quick-actions, .shell-toolbar-actions button),
-:root:root [data-slot="app-header"] .shell-toolbar-actions .shell-toolbar-control {
+:root:root
+  [data-slot="app-header"]
+  :is(
+    .topIcon,
+    .shell-toolbar-control,
+    .shell-sidebar-toggle,
+    .header-quick-actions,
+    .shell-toolbar-actions button
+  ),
+:root:root
+  [data-slot="app-header"]
+  .shell-toolbar-actions
+  .shell-toolbar-control {
   border-radius: 9999px !important;
 }
 :root:root [data-slot="page-header-actions"] :is(button, [data-slot="button"]),
@@ -620,7 +833,10 @@
 }
 
 /* The breadcrumb, « Page : section »: small, grey, after the slide-out toggle; it takes the room the search leaves and truncates. */
-:root:root .shell-toolbar .shell-toolbar-leading { flex: 1 1 0 !important; min-width: 0; }
+:root:root .shell-toolbar .shell-toolbar-leading {
+  flex: 1 1 0 !important;
+  min-width: 0;
+}
 .shell-crumb {
   display: flex;
   min-width: 0;
@@ -638,9 +854,20 @@
   /* A grey that reads on the header in both modes (about 5:1), softer than the body text. */
   color: color-mix(in srgb, var(--ink, var(--foreground)) 62%, transparent);
 }
-.shell-crumb > * { overflow: hidden; text-overflow: ellipsis; }
-.shell-crumb-sep { flex: none; white-space: pre; opacity: 0.7; padding-inline: 0.1em; }
-.shell-crumb-page { font-weight: 500; color: color-mix(in srgb, var(--ink, var(--foreground)) 78%, transparent); }
+.shell-crumb > * {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.shell-crumb-sep {
+  flex: none;
+  white-space: pre;
+  opacity: 0.7;
+  padding-inline: 0.1em;
+}
+.shell-crumb-page {
+  font-weight: 500;
+  color: color-mix(in srgb, var(--ink, var(--foreground)) 78%, transparent);
+}
 .shell-crumb-link {
   flex: 0 1 auto;
   min-width: 0;
@@ -652,9 +879,16 @@
   cursor: pointer;
   border-radius: 4px;
 }
-.shell-crumb-link:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+.shell-crumb-link:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
 @media (hover: hover) and (pointer: fine) {
-  .shell-crumb-link:hover { color: var(--ink, var(--foreground)); text-decoration: underline; text-underline-offset: 3px; }
+  .shell-crumb-link:hover {
+    color: var(--ink, var(--foreground));
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
 }
 
 /* The page's main action, in its band's header: a full pill, above the skins' own button radii. */
@@ -677,8 +911,12 @@
   color: var(--ink, var(--foreground));
   -webkit-font-smoothing: antialiased;
 }
-.shell-greeting-name { color: var(--tone-blue); }
-.shell-greeting .dashboard-greeting-wave { display: inline-block; }
+.shell-greeting-name {
+  color: var(--tone-blue);
+}
+.shell-greeting .dashboard-greeting-wave {
+  display: inline-block;
+}
 
 /* The slideout toggle's circle sits left of the content's left edge;
    shift the button right so its left edge lines up with the widgets band. */

@@ -33,9 +33,24 @@ export interface DossierMatch<P, O> {
 
 /** Dossiers whose patient or owner holds every word of the query, at most `limit`. */
 export function findDossiers<
-  P extends { breed?: string | null; name: string; ownerId: string; species: string },
-  O extends { email?: string | null; firstName?: string | null; lastName?: string | null; phone?: string | null },
->(patients: readonly P[], ownersById: ReadonlyMap<string, O>, query: string, limit = 8): DossierMatch<P, O>[] {
+  P extends {
+    breed?: string | null;
+    name: string;
+    ownerId: string;
+    species: string;
+  },
+  O extends {
+    email?: string | null;
+    firstName?: string | null;
+    lastName?: string | null;
+    phone?: string | null;
+  },
+>(
+  patients: readonly P[],
+  ownersById: ReadonlyMap<string, O>,
+  query: string,
+  limit = 8
+): DossierMatch<P, O>[] {
   if (!query.trim()) return [];
   return patients
     .map((patient) => {

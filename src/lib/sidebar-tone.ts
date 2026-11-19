@@ -19,7 +19,8 @@ export const SIDEBAR_TONE_EVENT = "baitari-sidebar-tone-changed";
 // One choice per user, kept on this device: preferences have no server store.
 const STORAGE_KEY = "baitari-sidebar-tone";
 const STYLE_ID = "baitari-sidebar-tone";
-const SIDEBAR = ':is([data-slot="sidebar"], [data-sidebar="sidebar"][data-mobile="true"])';
+const SIDEBAR =
+  ':is([data-slot="sidebar"], [data-sidebar="sidebar"][data-mobile="true"])';
 
 function readAll(): Record<string, SidebarTone> {
   try {
@@ -56,15 +57,21 @@ function tokenNames(): string[] {
   const walk = (rules: CSSRuleList) => {
     for (const rule of Array.from(rules)) {
       if (rule instanceof CSSStyleRule) {
-        for (const property of Array.from(rule.style)) if (property.startsWith("--")) names.add(property);
+        for (const property of Array.from(rule.style))
+          if (property.startsWith("--")) names.add(property);
       }
       if ("cssRules" in rule) walk((rule as CSSGroupingRule).cssRules);
     }
   };
   for (const sheet of Array.from(document.styleSheets)) {
-    try { walk(sheet.cssRules); } catch { /* cross-origin sheet */ }
+    try {
+      walk(sheet.cssRules);
+    } catch {
+      /* cross-origin sheet */
+    }
   }
-  for (const property of Array.from(document.documentElement.style)) if (property.startsWith("--")) names.add(property);
+  for (const property of Array.from(document.documentElement.style))
+    if (property.startsWith("--")) names.add(property);
   // Tailwind's per-element variables never inherit: leave them to the utilities.
   return [...names].filter((name) => !name.startsWith("--tw-"));
 }
@@ -78,8 +85,12 @@ function otherModeTokens(dark: boolean): string {
   const root = document.documentElement;
   const names = tokenNames();
   const current = getComputedStyle(root);
-  const before = new Map(names.map((name) => [name, current.getPropertyValue(name).trim()]));
-  const attributes = root.getAttributeNames().map((name) => [name, root.getAttribute(name) ?? ""] as const);
+  const before = new Map(
+    names.map((name) => [name, current.getPropertyValue(name).trim()])
+  );
+  const attributes = root
+    .getAttributeNames()
+    .map((name) => [name, root.getAttribute(name) ?? ""] as const);
   root.classList.remove("light", "dark");
   root.classList.add(dark ? "dark" : "light");
   applyTheme(getThemeConfig(), dark);
@@ -108,7 +119,9 @@ export function applySidebarTone(tone: SidebarTone) {
     return;
   }
   const tokens = otherModeTokens(forced === "dark");
-  const style = existing ?? Object.assign(document.createElement("style"), { id: STYLE_ID });
+  const style =
+    existing ??
+    Object.assign(document.createElement("style"), { id: STYLE_ID });
   style.textContent = `:root[data-sidebar-tone="${forced}"] ${SIDEBAR} { color-scheme: ${forced}; ${tokens} }`;
   if (!existing) document.head.append(style);
   root.dataset.sidebarTone = forced;
@@ -116,13 +129,20 @@ export function applySidebarTone(tone: SidebarTone) {
 
 function subscribeRootTone(onChange: () => void) {
   const observer = new MutationObserver(onChange);
-  observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-sidebar-tone"] });
+  observer.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ["data-sidebar-tone"],
+  });
   return () => observer.disconnect();
 }
 
 /** True while a dark sidebar is forced in a light theme. */
 export function useForcedDarkSidebar() {
-  return useSyncExternalStore(subscribeRootTone, () => document.documentElement.dataset.sidebarTone === "dark", () => false);
+  return useSyncExternalStore(
+    subscribeRootTone,
+    () => document.documentElement.dataset.sidebarTone === "dark",
+    () => false
+  );
 }
 
 /**
@@ -137,7 +157,10 @@ export function useSidebarTone(userId: string | null | undefined) {
       // The tokens' read briefly switches the root's mode: not a theme change.
       observer.takeRecords();
     };
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class", "data-skin"] });
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class", "data-skin"],
+    });
     window.addEventListener(SIDEBAR_TONE_EVENT, apply);
     window.addEventListener("baitari-theme-config-changed", apply);
     apply();

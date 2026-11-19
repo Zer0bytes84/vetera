@@ -34,13 +34,22 @@ export function LicenseGate({ children }: { children: ReactNode }) {
 
 /** Same verdict, same object: a background recheck that changes nothing renders nothing. */
 function sameAccess(a: LicenseAccess | null, b: LicenseAccess) {
-  return Boolean(a) && a!.allowed === b.allowed && a!.message === b.message && a!.offlineUntil === b.offlineUntil && a!.expiresAt === b.expiresAt && a!.email === b.email;
+  return (
+    Boolean(a) &&
+    a!.allowed === b.allowed &&
+    a!.message === b.message &&
+    a!.offlineUntil === b.offlineUntil &&
+    a!.expiresAt === b.expiresAt &&
+    a!.email === b.email
+  );
 }
 
 function CheckedLicenseGate({ children }: { children: ReactNode }) {
   // Remounted (React 19 hides a suspended tree and reruns its effects), the
   // gate starts from the access this process already verified: no wait.
-  const [access, setAccess] = useState<LicenseAccess | null>(() => getCachedLicenseAccess());
+  const [access, setAccess] = useState<LicenseAccess | null>(() =>
+    getCachedLicenseAccess()
+  );
   const [email, setEmail] = useState("");
   const [key, setKey] = useState("");
   // Au démarrage, sans accès déjà vérifié, la vérification complète part tout de suite : l'écran est déjà « occupé ».
@@ -48,30 +57,40 @@ function CheckedLicenseGate({ children }: { children: ReactNode }) {
   const [error, setError] = useState("");
   const inFlight = useRef(false);
   const mounted = useRef(true);
-  const { handleMouseDown: handleWindowMouseDown, ref: windowDragRef } = useTauriDrag<HTMLDivElement>(true);
+  const { handleMouseDown: handleWindowMouseDown, ref: windowDragRef } =
+    useTauriDrag<HTMLDivElement>(true);
   const apply = useCallback((result: LicenseAccess) => {
     if (!mounted.current) return;
     setAccess((previous) => (sameAccess(previous, result) ? previous : result));
     setEmail((previous) => previous || result.email || "");
   }, []);
   // Startup and explicit retries: the full check, with its usual wait.
-  const check = useCallback(async (online: boolean) => {
-    if (inFlight.current) return;
-    inFlight.current = true;
-    await guard(async () => {
-      apply(await checkLicenseAccess(online));
-    }, {
-      cleanup: () => {
-        inFlight.current = false;
-        if (mounted.current) setBusy(false);
-      },
-    });
-  }, [apply]);
-  const refresh = useCallback(async (online: boolean) => {
-    if (inFlight.current) return;
-    setBusy(true);
-    await check(online);
-  }, [check]);
+  const check = useCallback(
+    async (online: boolean) => {
+      if (inFlight.current) return;
+      inFlight.current = true;
+      await guard(
+        async () => {
+          apply(await checkLicenseAccess(online));
+        },
+        {
+          cleanup: () => {
+            inFlight.current = false;
+            if (mounted.current) setBusy(false);
+          },
+        }
+      );
+    },
+    [apply]
+  );
+  const refresh = useCallback(
+    async (online: boolean) => {
+      if (inFlight.current) return;
+      setBusy(true);
+      await check(online);
+    },
+    [check]
+  );
 
   useEffect(() => {
     mounted.current = true;
@@ -104,22 +123,25 @@ function CheckedLicenseGate({ children }: { children: ReactNode }) {
     inFlight.current = true;
     setBusy(true);
     setError("");
-    await guard(async () => {
-      const result = await activateLicense(email, key);
-      await acceptLicenseActivation(email, result.activationToken);
-      setAccess(await checkLicenseAccess(false));
-      setKey("");
-    }, {
-      recover: (cause) => {
-        setError(
-          cause instanceof Error ? cause.message : "Activation impossible."
-        );
+    await guard(
+      async () => {
+        const result = await activateLicense(email, key);
+        await acceptLicenseActivation(email, result.activationToken);
+        setAccess(await checkLicenseAccess(false));
+        setKey("");
       },
-      cleanup: () => {
-        inFlight.current = false;
-        setBusy(false);
-      },
-    });
+      {
+        recover: (cause) => {
+          setError(
+            cause instanceof Error ? cause.message : "Activation impossible."
+          );
+        },
+        cleanup: () => {
+          inFlight.current = false;
+          setBusy(false);
+        },
+      }
+    );
   };
 
   if (access?.allowed)

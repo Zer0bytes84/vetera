@@ -48,7 +48,10 @@ export function estimateQueue(
   let cursor = Math.max(now.getTime(), current ? current.end.getTime() : 0);
   return waiting.map((entry, index) => {
     const estimatedAt = new Date(cursor);
-    cursor += Math.max(MINIMUM_SLOT_MS, entry.end.getTime() - entry.start.getTime());
+    cursor += Math.max(
+      MINIMUM_SLOT_MS,
+      entry.end.getTime() - entry.start.getTime()
+    );
     return { entry, position: index + 1, estimatedAt };
   });
 }

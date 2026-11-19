@@ -14,18 +14,22 @@ export type ButtonSize = "sm" | "md";
 
 const variants: Record<ButtonVariant, string> = {
   // The primary is the app's own: the primary token, flat.
-  primary:
-    "bg-primary text-primary-foreground hover:bg-primary/90",
-  secondary:
-    "bg-foreground/[0.06] text-foreground hover:bg-foreground/[0.1]",
-  quiet: "text-muted-foreground hover:bg-foreground/[0.06] hover:text-foreground",
+  primary: "bg-primary text-primary-foreground hover:bg-primary/90",
+  secondary: "bg-foreground/[0.06] text-foreground hover:bg-foreground/[0.1]",
+  quiet:
+    "text-muted-foreground hover:bg-foreground/[0.06] hover:text-foreground",
   danger: "bg-negative/15 text-negative hover:bg-negative/25",
 };
 
-const sizes: Record<ButtonSize, { base: string; icon: string; glyph: string }> = {
-  sm: { base: "h-8 gap-1.5 px-3.5 text-[0.8125rem]", icon: "size-8", glyph: "size-3.5" },
-  md: { base: "h-9 gap-2 px-4 text-sm", icon: "size-9", glyph: "size-4" },
-};
+const sizes: Record<ButtonSize, { base: string; icon: string; glyph: string }> =
+  {
+    sm: {
+      base: "h-8 gap-1.5 px-3.5 text-[0.8125rem]",
+      icon: "size-8",
+      glyph: "size-3.5",
+    },
+    md: { base: "h-9 gap-2 px-4 text-sm", icon: "size-9", glyph: "size-4" },
+  };
 
 const base =
   "inline-flex shrink-0 items-center justify-center rounded-full font-medium whitespace-nowrap transition-[background-color,color,scale,opacity] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] select-none active:scale-[0.97] disabled:pointer-events-none disabled:opacity-40";
@@ -65,7 +69,11 @@ export function Button({
         <Spinner className={glyph} />
       ) : (
         IconComponent && (
-          <IconComponent strokeWidth={iconWeight === "bold" ? 2.5 : 2} className={glyph} aria-hidden="true" />
+          <IconComponent
+            strokeWidth={iconWeight === "bold" ? 2.5 : 2}
+            className={glyph}
+            aria-hidden="true"
+          />
         )
       )}
       {children}
@@ -119,7 +127,11 @@ export function IconButton({
       {loading ? (
         <Spinner className={glyph} />
       ) : (
-        <IconComponent strokeWidth={iconWeight === "bold" ? 2.5 : 2} className={glyph} aria-hidden="true" />
+        <IconComponent
+          strokeWidth={iconWeight === "bold" ? 2.5 : 2}
+          className={glyph}
+          aria-hidden="true"
+        />
       )}
     </button>
   );

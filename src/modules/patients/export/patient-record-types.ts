@@ -14,7 +14,13 @@ export interface PatientRecordOptions {
 
 export const DEFAULT_PATIENT_RECORD_OPTIONS: PatientRecordOptions = {
   period: null,
-  sections: { identity: true, consultations: true, documents: true, reminders: true, notes: true },
+  sections: {
+    identity: true,
+    consultations: true,
+    documents: true,
+    reminders: true,
+    notes: true,
+  },
   includeAttachments: true,
 };
 

@@ -1,12 +1,21 @@
 /** Convert the small Markdown subset used by note drafts to safe editor HTML. */
 export function noteMarkdownToHTML(text: string): string {
-  const escape = (value: string) => value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-  const inline = (value: string) => escape(value)
-    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
-    .replace(/\*(.+?)\*/g, "<em>$1</em>");
+  const escape = (value: string) =>
+    value
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  const inline = (value: string) =>
+    escape(value)
+      .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+      .replace(/\*(.+?)\*/g, "<em>$1</em>");
   const blocks: string[] = [];
   let list: "ul" | "ol" | null = null;
-  const closeList = () => { if (list) blocks.push(`</${list}>`); list = null; };
+  const closeList = () => {
+    if (list) blocks.push(`</${list}>`);
+    list = null;
+  };
 
   for (const raw of text.replace(/\r\n?/g, "\n").split("\n")) {
     let line = raw.trim();
@@ -23,7 +32,11 @@ export function noteMarkdownToHTML(text: string): string {
       blocks.push(`<h${level}>${inline(heading[2])}</h${level}>`);
     } else if (item) {
       const kind = item[1] ? "ul" : "ol";
-      if (list !== kind) { closeList(); blocks.push(`<${kind}>`); list = kind; }
+      if (list !== kind) {
+        closeList();
+        blocks.push(`<${kind}>`);
+        list = kind;
+      }
       blocks.push(`<li><p>${inline(item[2])}</p></li>`);
     } else {
       closeList();

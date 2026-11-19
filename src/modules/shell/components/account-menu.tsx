@@ -66,14 +66,24 @@ export function AccountSidebarFooter({
             aria-label={`Ouvrir le menu du compte de ${name}`}
             className="flex size-11 items-center justify-center rounded-xl outline-none transition-colors hover:bg-sidebar-accent focus-visible:ring-2 focus-visible:ring-sidebar-ring"
           >
-            <Avatar className="size-8 shrink-0" name={name} size="sm" src={src} />
+            <Avatar
+              className="size-8 shrink-0"
+              name={name}
+              size="sm"
+              src={src}
+            />
           </DropdownMenuTrigger>
         ) : (
           <DropdownMenuTrigger
             aria-label={`Ouvrir le menu du compte de ${name}`}
             className="flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left outline-none transition-colors hover:bg-sidebar-accent focus-visible:ring-2 focus-visible:ring-sidebar-ring"
           >
-            <Avatar className="size-9 shrink-0" name={name} size="sm" src={src} />
+            <Avatar
+              className="size-9 shrink-0"
+              name={name}
+              size="sm"
+              src={src}
+            />
             <span className="grid min-w-0 flex-1">
               <span className="truncate font-semibold text-sm leading-5 text-sidebar-foreground">
                 {name}
@@ -94,7 +104,12 @@ export function AccountSidebarFooter({
       >
         <DropdownMenuGroup>
           <DropdownMenuLabel className="shell-account-identity">
-            <Avatar className="size-8 shrink-0" name={name} size="sm" src={src} />
+            <Avatar
+              className="size-8 shrink-0"
+              name={name}
+              size="sm"
+              src={src}
+            />
             <span className="grid min-w-0">
               <span className="shell-account-name">{name}</span>
               <span className="shell-account-detail">{role}</span>
@@ -112,11 +127,16 @@ export function AccountSidebarFooter({
             <HugeiconsIcon icon={Building01Icon} strokeWidth={1.5} />
             Mon cabinet
           </DropdownMenuItem>
-          <DropdownMenuItem className="shell-account-item" onClick={onNotifications}>
+          <DropdownMenuItem
+            className="shell-account-item"
+            onClick={onNotifications}
+          >
             <HugeiconsIcon icon={Notification01Icon} strokeWidth={1.5} />
             Notifications
             {unreadCount > 0 ? (
-              <DropdownMenuShortcut className="shell-account-count">{unreadCount}</DropdownMenuShortcut>
+              <DropdownMenuShortcut className="shell-account-count">
+                {unreadCount}
+              </DropdownMenuShortcut>
             ) : null}
           </DropdownMenuItem>
           <DropdownMenuItem className="shell-account-item" onClick={onFinances}>

@@ -75,11 +75,18 @@ export function ModuleTotals({
   }[];
 }) {
   const dotColor = (index: number) =>
-    index === 0 ? "finder-dot-blue" : index === 1 ? "finder-dot-orange" : "finder-dot-red";
+    index === 0
+      ? "finder-dot-blue"
+      : index === 1
+        ? "finder-dot-orange"
+        : "finder-dot-red";
   return (
     <dl className="module-totals-grid flex flex-wrap gap-x-6 gap-y-3 border-b border-hairline pb-4">
       {values.map((row, index) => (
-        <div key={row.label} className="module-totals-item flex items-baseline gap-2">
+        <div
+          key={row.label}
+          className="module-totals-item flex items-baseline gap-2"
+        >
           <dd
             className={`font-display t-18 font-medium tabular-nums ${row.tone === "positive" ? "text-[color:var(--premium-green,var(--signal-positive))]" : row.tone === "watch" ? "text-[color:var(--premium-orange,var(--signal-watch))]" : "text-ink"}`}
           >

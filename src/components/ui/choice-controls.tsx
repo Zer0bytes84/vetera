@@ -17,7 +17,11 @@ const inset =
   "shadow-[inset_0_1px_2px_rgb(0_0_0/0.14)] dark:shadow-[inset_0_1px_2px_rgb(0_0_0/0.5)]";
 
 /** Controlled when `value` is set, otherwise keeps its own state. */
-function useControllable<T>(value: T | undefined, initial: T, onChange?: (v: T) => void) {
+function useControllable<T>(
+  value: T | undefined,
+  initial: T,
+  onChange?: (v: T) => void
+) {
   const [inner, setInner] = useState(initial);
   const current = value === undefined ? inner : value;
   const set = (next: T) => {
@@ -44,7 +48,12 @@ function Field({
 }: Labelled & { children: React.ReactNode }) {
   if (!label) return <>{children}</>;
   return (
-    <label className={cn("flex cursor-pointer items-start gap-3 select-none", className)}>
+    <label
+      className={cn(
+        "flex cursor-pointer items-start gap-3 select-none",
+        className
+      )}
+    >
       <span className="flex min-h-5 items-center">{children}</span>
       <span className="min-w-0 flex-1">
         <span className="block text-sm">{label}</span>
@@ -59,7 +68,10 @@ function Field({
 }
 
 export type SwitchProps = Labelled &
-  Omit<React.ComponentProps<"button">, "onChange" | "value" | "defaultChecked"> & {
+  Omit<
+    React.ComponentProps<"button">,
+    "onChange" | "value" | "defaultChecked"
+  > & {
     checked?: boolean;
     defaultChecked?: boolean;
     onCheckedChange?: (checked: boolean) => void;
@@ -79,7 +91,7 @@ export function Switch({
   const [checked, setChecked] = useControllable(
     checkedProp,
     defaultChecked,
-    onCheckedChange,
+    onCheckedChange
   );
   // Keyboard toggles skip the slide; pointer toggles get it.
   const [instant, setInstant] = useState(false);
@@ -101,7 +113,7 @@ export function Switch({
         // Switch green, brighter than the text-safe --positive.
         inset,
         checked ? "bg-[#34c759] dark:bg-[#30d158]" : "bg-foreground/[0.12]",
-        !label && className,
+        !label && className
       )}
       {...props}
     >
@@ -109,7 +121,7 @@ export function Switch({
         aria-hidden="true"
         className={cn(
           "absolute top-1/2 left-[11px] h-2.5 w-[2px] -translate-y-1/2 rounded-full bg-white/80 transition-opacity duration-150",
-          !checked && "opacity-0",
+          !checked && "opacity-0"
         )}
       />
       <svg
@@ -117,7 +129,7 @@ export function Switch({
         viewBox="0 0 10 10"
         className={cn(
           "absolute top-1/2 right-[8px] size-2.5 -translate-y-1/2 text-foreground/40 transition-opacity duration-150",
-          checked && "opacity-0",
+          checked && "opacity-0"
         )}
       >
         <circle
@@ -136,7 +148,7 @@ export function Switch({
           ease,
           checked
             ? "translate-x-5 group-enabled:group-active:translate-x-4"
-            : "dark:bg-[linear-gradient(180deg,#a8a8a8,#7a7a7a)]",
+            : "dark:bg-[linear-gradient(180deg,#a8a8a8,#7a7a7a)]"
         )}
       />
     </button>
@@ -150,7 +162,10 @@ export function Switch({
 }
 
 export type CheckboxProps = Labelled &
-  Omit<React.ComponentProps<"button">, "onChange" | "value" | "defaultChecked"> & {
+  Omit<
+    React.ComponentProps<"button">,
+    "onChange" | "value" | "defaultChecked"
+  > & {
     checked?: boolean | "mixed";
     defaultChecked?: boolean | "mixed";
     onCheckedChange?: (checked: boolean) => void;
@@ -170,7 +185,7 @@ export function Checkbox({
   const [checked, setChecked] = useControllable<boolean | "mixed">(
     checkedProp,
     defaultChecked,
-    (v) => onCheckedChange?.(v === true),
+    (v) => onCheckedChange?.(v === true)
   );
   const on = checked !== false;
 
@@ -186,15 +201,19 @@ export function Checkbox({
           "flex size-5 shrink-0 items-center justify-center rounded-[6px] transition-[background-color,scale] duration-150 active:scale-[0.92] disabled:opacity-40",
           ease,
           inset,
-          on ? "bg-brand text-white" : "bg-foreground/[0.12] hover:bg-foreground/[0.18]",
-          !label && className,
+          on
+            ? "bg-brand text-white"
+            : "bg-foreground/[0.12] hover:bg-foreground/[0.18]",
+          !label && className
         )}
         {...props}
       >
         {checked === "mixed" ? (
           <Minus strokeWidth={2.5} className="size-3" aria-hidden="true" />
         ) : (
-          checked && <Check strokeWidth={2.5} className="size-3" aria-hidden="true" />
+          checked && (
+            <Check strokeWidth={2.5} className="size-3" aria-hidden="true" />
+          )
         )}
       </button>
     </Field>
@@ -235,12 +254,14 @@ export function RadioGroup({
   const ref = useRef<HTMLDivElement>(null);
 
   const onKeyDown = (e: React.KeyboardEvent) => {
-    const step = { ArrowDown: 1, ArrowRight: 1, ArrowUp: -1, ArrowLeft: -1 }[e.key];
+    const step = { ArrowDown: 1, ArrowRight: 1, ArrowUp: -1, ArrowLeft: -1 }[
+      e.key
+    ];
     if (!step) return;
     e.preventDefault();
     const radios = [
       ...(ref.current?.querySelectorAll<HTMLButtonElement>(
-        '[role="radio"]:not(:disabled)',
+        '[role="radio"]:not(:disabled)'
       ) ?? []),
     ];
     const at = radios.findIndex((r) => r === document.activeElement);
@@ -295,8 +316,10 @@ export function Radio({
           "flex size-5 shrink-0 items-center justify-center rounded-full transition-[background-color,scale] duration-150 active:scale-[0.92] disabled:opacity-40",
           ease,
           inset,
-          checked ? "bg-brand" : "bg-foreground/[0.12] hover:bg-foreground/[0.18]",
-          !label && className,
+          checked
+            ? "bg-brand"
+            : "bg-foreground/[0.12] hover:bg-foreground/[0.18]",
+          !label && className
         )}
         {...props}
       >
@@ -305,7 +328,7 @@ export function Radio({
           className={cn(
             "size-2 rounded-full bg-white transition-[scale,opacity] duration-150",
             ease,
-            checked ? "scale-100 opacity-100" : "scale-50 opacity-0",
+            checked ? "scale-100 opacity-100" : "scale-50 opacity-0"
           )}
         />
       </button>

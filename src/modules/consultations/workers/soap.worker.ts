@@ -2,7 +2,10 @@
 import type { LlmInference } from "@mediapipe/tasks-genai";
 import { enforceOfflineWorker } from "../local-ai/offline-policy";
 import { estimateTokenCapacity } from "../local-ai/token-capacity";
-import { wrapUserTurn, type GeneratorFamily } from "../local-ai/generator-choice";
+import {
+  wrapUserTurn,
+  type GeneratorFamily,
+} from "../local-ai/generator-choice";
 import type {
   WorkerRequest,
   WorkerResponse,
@@ -33,7 +36,10 @@ self.onmessage = async ({ data }: MessageEvent<WorkerRequest>) => {
   if (data.type !== "generate") return;
   let stage: "load" | "generate" = "load";
   try {
-    enforceOfflineWorker([...data.generators.map((candidate) => candidate.url), data.runtimeRoot]);
+    enforceOfflineWorker([
+      ...data.generators.map((candidate) => candidate.url),
+      data.runtimeRoot,
+    ]);
     // MediaPipe counts BOTH input and output in maxTokens. The reply reserve
     // follows the dictation scaffold plus a small formatting margin, so long
     // inputs can never silently exhaust the reply.
@@ -44,8 +50,12 @@ self.onmessage = async ({ data }: MessageEvent<WorkerRequest>) => {
           ? 768
           : 512;
     const candidates = data.generators;
-    if (!candidates.length) throw new Error("Aucun modèle de rédaction disponible.");
-    if (!model || !candidates.some((candidate) => candidate.url === loadedUrl)) {
+    if (!candidates.length)
+      throw new Error("Aucun modèle de rédaction disponible.");
+    if (
+      !model ||
+      !candidates.some((candidate) => candidate.url === loadedUrl)
+    ) {
       release();
       const gpu = (
         navigator as Navigator & {
@@ -88,7 +98,10 @@ self.onmessage = async ({ data }: MessageEvent<WorkerRequest>) => {
           });
           // A damaged file can be accepted and only fail at its first use:
           // the tokenizer must answer before the model counts as loaded.
-          if (model.sizeInTokens(wrapUserTurn(data.prompt, candidate.family)) === undefined)
+          if (
+            model.sizeInTokens(wrapUserTurn(data.prompt, candidate.family)) ===
+            undefined
+          )
             throw new Error("Tokenizer indisponible.");
         } catch (error) {
           // Not enough memory or graphics, or an unusable file: the session
@@ -151,7 +164,12 @@ self.onmessage = async ({ data }: MessageEvent<WorkerRequest>) => {
         });
       }
     });
-    send({ type: "generated", text, generator: loadedFamily, fellBack: data.fellBack ?? false });
+    send({
+      type: "generated",
+      text,
+      generator: loadedFamily,
+      fellBack: data.fellBack ?? false,
+    });
   } catch (error) {
     release();
     send({
@@ -162,7 +180,9 @@ self.onmessage = async ({ data }: MessageEvent<WorkerRequest>) => {
           : stage === "load"
             ? "L’assistant n’a pas pu être chargé. Vérifiez le fichier de préparation des notes installé et la mémoire disponible." +
               // Development builds keep the engine's own message for diagnosis.
-              (import.meta.env.DEV ? ` (${String(error instanceof Error ? error.message : error)})` : "")
+              (import.meta.env.DEV
+                ? ` (${String(error instanceof Error ? error.message : error)})`
+                : "")
             : data.purpose === "document"
               ? "La lecture assistée a échoué. Le texte du document reste disponible pour votre relecture."
               : "La préparation locale de la note a échoué. Votre dictée est conservée ; vous pouvez réessayer.",

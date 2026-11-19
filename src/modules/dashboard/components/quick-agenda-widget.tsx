@@ -15,15 +15,37 @@ export function QuickAgendaWidget({
   now,
   onCreate,
 }: {
-  appointments: { startTime: string; endTime: string; status: string; vetId: string }[];
+  appointments: {
+    startTime: string;
+    endTime: string;
+    status: string;
+    vetId: string;
+  }[];
   vets: { id: string }[];
   now: Date;
   onCreate: (slot: FreeSlot) => void;
 }) {
-  const model = useMemo(() => buildFreeSlots({ appointments: appointments as never, vets, now, days: DAYS }), [appointments, vets, now]);
-  const byId = useMemo(() => new Map(model.slots.map((slot) => [slot.id, slot])), [model]);
+  const model = useMemo(
+    () =>
+      buildFreeSlots({
+        appointments: appointments as never,
+        vets,
+        now,
+        days: DAYS,
+      }),
+    [appointments, vets, now]
+  );
+  const byId = useMemo(
+    () => new Map(model.slots.map((slot) => [slot.id, slot])),
+    [model]
+  );
   const totalFree = Object.values(model.free).reduce((n, v) => n + v, 0);
-  const slots: Slot[] = model.slots.map(({ id, day, start, end }) => ({ id, day, start, end }));
+  const slots: Slot[] = model.slots.map(({ id, day, start, end }) => ({
+    id,
+    day,
+    start,
+    end,
+  }));
 
   return (
     <SlotPicker
@@ -36,7 +58,9 @@ export function QuickAgendaWidget({
             ? `${formatNumber(totalFree)} créneau${totalFree > 1 ? "x" : ""} libre${totalFree > 1 ? "s" : ""} sur ${DAYS} jours`
             : `Aucun créneau libre sur ${DAYS} jours`}
           {` · de ${model.window.from} h à ${model.window.to} h`}
-          {model.window.basis === "default" ? " (heures par défaut)" : " (d’après vos rendez-vous)"}
+          {model.window.basis === "default"
+            ? " (heures par défaut)"
+            : " (d’après vos rendez-vous)"}
         </p>
       }
       onConfirm={(slot) => {

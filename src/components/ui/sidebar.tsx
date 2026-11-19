@@ -236,7 +236,10 @@ function Sidebar({
     return (
       <Sheet onOpenChange={setOpenMobile} open={openMobile} {...props}>
         <SheetContent
-          className={cn("w-(--sidebar-width) bg-sidebar p-0 text-sidebar-foreground [&>button]:hidden", toneClass)}
+          className={cn(
+            "w-(--sidebar-width) bg-sidebar p-0 text-sidebar-foreground [&>button]:hidden",
+            toneClass
+          )}
           data-mobile="true"
           data-sidebar="sidebar"
           data-slot="sidebar"
@@ -273,7 +276,10 @@ function Sidebar({
 
   return (
     <div
-      className={cn("group peer hidden text-sidebar-foreground md:block", toneClass)}
+      className={cn(
+        "group peer hidden text-sidebar-foreground md:block",
+        toneClass
+      )}
       data-collapsible={state === "collapsed" ? collapsible : ""}
       data-side={side}
       data-slot="sidebar"

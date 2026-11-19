@@ -46,26 +46,42 @@ export function NavMain({
       <SidebarGroupContent>
         <SidebarMenu className="gap-1 group-data-[collapsible=icon]:gap-2">
           {title ? (
-            <SidebarGroupLabel className={groupLabelClass}>{title}</SidebarGroupLabel>
+            <SidebarGroupLabel className={groupLabelClass}>
+              {title}
+            </SidebarGroupLabel>
           ) : null}
           {items.map((item) => (
             <SidebarMenuItem className="group/item" key={item.title}>
               <SidebarMenuButton
-                aria-label={item.badge ? `${item.title}, ${item.badge} soins en retard` : item.title}
+                aria-label={
+                  item.badge
+                    ? `${item.title}, ${item.badge} soins en retard`
+                    : item.title
+                }
                 className="sidebar-nav-link group-data-[collapsible=icon]:size-11! group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:rounded-xl group-data-[collapsible=icon]:p-0! group-data-[collapsible=icon]:[&_svg]:size-[26px]!"
                 isActive={item.isActive}
-                render={<button onClick={item.onClick} onFocus={item.onIntent} onPointerEnter={item.onIntent} type="button" />}
+                render={
+                  <button
+                    onClick={item.onClick}
+                    onFocus={item.onIntent}
+                    onPointerEnter={item.onIntent}
+                    type="button"
+                  />
+                }
                 tooltip={item.title}
               >
-                <div
-                  className="sidebar-nav-icon"
-                >
-                  {item.icon}
-                </div>
+                <div className="sidebar-nav-icon">{item.icon}</div>
                 <span className="min-w-0 truncate whitespace-nowrap font-sans leading-5 group-data-[collapsible=icon]:hidden">
                   {item.title}
                 </span>
-                {!!item.badge && <span className="ml-auto grid min-w-5 shrink-0 place-items-center rounded-full bg-rose-600 px-1 t-12 font-medium text-white group-data-[collapsible=icon]:absolute group-data-[collapsible=icon]:right-0 group-data-[collapsible=icon]:top-0" aria-hidden="true">{item.badge}</span>}
+                {!!item.badge && (
+                  <span
+                    className="ml-auto grid min-w-5 shrink-0 place-items-center rounded-full bg-rose-600 px-1 t-12 font-medium text-white group-data-[collapsible=icon]:absolute group-data-[collapsible=icon]:right-0 group-data-[collapsible=icon]:top-0"
+                    aria-hidden="true"
+                  >
+                    {item.badge}
+                  </span>
+                )}
               </SidebarMenuButton>
               {item.children?.length ? (
                 <>
@@ -77,7 +93,11 @@ export function NavMain({
                     onClick={item.onToggle}
                     showOnHover={!item.expanded}
                   >
-                    <ChevronRight aria-hidden="true" className="sidebar-disclosure" data-open={item.expanded ? "true" : undefined} />
+                    <ChevronRight
+                      aria-hidden="true"
+                      className="sidebar-disclosure"
+                      data-open={item.expanded ? "true" : undefined}
+                    />
                   </SidebarMenuAction>
                   {item.expanded ? (
                     <SidebarMenuSub className="sidebar-subpages">
@@ -87,7 +107,9 @@ export function NavMain({
                             aria-current={child.isActive ? "page" : undefined}
                             className="sidebar-subpage-link"
                             isActive={child.isActive}
-                            render={<button onClick={child.onClick} type="button" />}
+                            render={
+                              <button onClick={child.onClick} type="button" />
+                            }
                           >
                             <span>{child.title}</span>
                           </SidebarMenuSubButton>

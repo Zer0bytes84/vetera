@@ -13,7 +13,12 @@ import { useId } from "react";
 import { cn } from "@/lib/utils";
 
 /* Adapted for Baitari: lucide icons instead of Phosphor, 12 px minimum text (the app's scale). */
-export type StatusTone = "neutral" | "brand" | "positive" | "negative" | "warning";
+export type StatusTone =
+  | "neutral"
+  | "brand"
+  | "positive"
+  | "negative"
+  | "warning";
 
 const tones: Record<StatusTone, string> = {
   neutral: "bg-foreground/[0.07] text-muted-foreground",
@@ -43,9 +48,15 @@ const BANG = (y: number) => (
  * Filled status glyphs (the lucide icons below, drawn solid) with heavier cut-out lines,
  * so the check, cross and "!" stay legible at pill sizes.
  */
-const glyphs = new Map<LucideIcon, { shape: React.ReactNode; mark: React.ReactNode }>([
+const glyphs = new Map<
+  LucideIcon,
+  { shape: React.ReactNode; mark: React.ReactNode }
+>([
   [CircleCheck, { shape: CIRCLE, mark: <path d="M4.9 8.3 7 10.3l4.1-4.5" /> }],
-  [CircleX, { shape: CIRCLE, mark: <path d="m5.6 5.6 4.8 4.8m0-4.8-4.8 4.8" /> }],
+  [
+    CircleX,
+    { shape: CIRCLE, mark: <path d="m5.6 5.6 4.8 4.8m0-4.8-4.8 4.8" /> },
+  ],
   [TriangleAlert, { shape: TRIANGLE, mark: BANG(5.2) }],
   [CircleAlert, { shape: CIRCLE, mark: BANG(4.2) }],
   [
@@ -72,7 +83,11 @@ function Glyph({
 }) {
   const id = useId();
   return (
-    <svg viewBox="0 0 16 16" aria-hidden="true" className={cn("shrink-0", className)}>
+    <svg
+      viewBox="0 0 16 16"
+      aria-hidden="true"
+      className={cn("shrink-0", className)}
+    >
       <mask id={id}>
         <rect width="16" height="16" fill="white" />
         <g
@@ -96,7 +111,13 @@ export type StatusPillProps = React.ComponentProps<"span"> & {
   tone?: StatusTone;
   size?: keyof typeof sizes;
   /** Optional icon before the text. The text always stays, so tone is never the only signal. */
-  icon?: LucideIcon | React.ComponentType<{ className?: string; strokeWidth?: number | string; "aria-hidden"?: boolean | "true" | "false" }>;
+  icon?:
+    | LucideIcon
+    | React.ComponentType<{
+        className?: string;
+        strokeWidth?: number | string;
+        "aria-hidden"?: boolean | "true" | "false";
+      }>;
   iconWeight?: "fill" | "bold";
 };
 
@@ -116,12 +137,17 @@ export function StatusPill({
         "inline-flex shrink-0 items-center rounded-full font-medium tracking-normal whitespace-nowrap",
         sizes[size].pill,
         tones[tone],
-        className,
+        className
       )}
       {...props}
     >
-      {IconComponent && iconWeight === "fill" && glyphs.has(IconComponent as LucideIcon) ? (
-        <Glyph glyph={glyphs.get(IconComponent as LucideIcon)!} className={sizes[size].icon} />
+      {IconComponent &&
+      iconWeight === "fill" &&
+      glyphs.has(IconComponent as LucideIcon) ? (
+        <Glyph
+          glyph={glyphs.get(IconComponent as LucideIcon)!}
+          className={sizes[size].icon}
+        />
       ) : IconComponent ? (
         <IconComponent
           strokeWidth={iconWeight === "bold" ? 2.5 : 2}
@@ -140,7 +166,7 @@ export function Tag({ className, ...props }: React.ComponentProps<"span">) {
     <span
       className={cn(
         "inline-flex h-5 shrink-0 items-center rounded-md bg-foreground/[0.06] px-1.5 font-mono text-xs text-muted-foreground",
-        className,
+        className
       )}
       {...props}
     />

@@ -19,16 +19,18 @@ function time(value: string | undefined) {
 export function isUpcomingVisit(appointment: Appointment, now: Date) {
   const start = time(appointment.startTime);
   return (
-    (appointment.status === "scheduled" || appointment.status === "confirmed") &&
+    (appointment.status === "scheduled" ||
+      appointment.status === "confirmed") &&
     start !== null &&
     start >= now.getTime()
   );
 }
 
 /** What people type when there is nothing: never shown as a flag. */
-const NOTHING_TO_REPORT = /^(aucune?s?|ras|r\.a\.s|néant|neant|non|nc|n\/a|-+|\/)$/i;
+const NOTHING_TO_REPORT =
+  /^(aucune?s?|ras|r\.a\.s|néant|neant|non|nc|n\/a|-+|\/)$/i;
 
-export type ClinicalFlag ={ kind: "allergy" | "chronic"; label: string };
+export type ClinicalFlag = { kind: "allergy" | "chronic"; label: string };
 
 /**
  * Allergies and chronic conditions already entered in the record, one flag
@@ -73,7 +75,10 @@ export function isVisitOverdue(
     return false;
   }
   const reference = time(lastVisit) ?? time(patient.createdAt);
-  return reference !== null && now.getTime() - reference > OVERDUE_VISIT_DAYS * DAY_MS;
+  return (
+    reference !== null &&
+    now.getTime() - reference > OVERDUE_VISIT_DAYS * DAY_MS
+  );
 }
 
 export type PatientSort = "activity" | "name" | "lastVisit" | "nextVisit";
@@ -100,18 +105,19 @@ export function sortPatientRecords<T extends SortableRecord>(
   sort: PatientSort
 ): T[] {
   const byName = (left: T, right: T) =>
-    left.patient.name.localeCompare(right.patient.name, "fr", { sensitivity: "base" });
-  const missingLast = (
-    pick: (record: T) => number | null,
-    direction: 1 | -1
-  ) => (left: T, right: T) => {
-    const a = pick(left);
-    const b = pick(right);
-    if (a === null && b === null) return byName(left, right);
-    if (a === null) return 1;
-    if (b === null) return -1;
-    return (a - b) * direction || byName(left, right);
-  };
+    left.patient.name.localeCompare(right.patient.name, "fr", {
+      sensitivity: "base",
+    });
+  const missingLast =
+    (pick: (record: T) => number | null, direction: 1 | -1) =>
+    (left: T, right: T) => {
+      const a = pick(left);
+      const b = pick(right);
+      if (a === null && b === null) return byName(left, right);
+      if (a === null) return 1;
+      if (b === null) return -1;
+      return (a - b) * direction || byName(left, right);
+    };
   const compare = {
     activity: missingLast(
       (record) =>
@@ -122,7 +128,10 @@ export function sortPatientRecords<T extends SortableRecord>(
     ),
     name: byName,
     lastVisit: missingLast((record) => time(record.lastVisit), -1),
-    nextVisit: missingLast((record) => time(record.upcomingAppointment?.startTime), 1),
+    nextVisit: missingLast(
+      (record) => time(record.upcomingAppointment?.startTime),
+      1
+    ),
   }[sort];
   return [...records].sort(compare);
 }

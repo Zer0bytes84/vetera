@@ -119,7 +119,7 @@ export function AnesthesiaMonitoringEntryDialog({
     <Dialog onOpenChange={onOpenChange} open={open}>
       <FormDialogContent size="md">
         <FormDialogHeader
-            artwork="monitoring"
+          artwork="monitoring"
           description={`${sheet.procedureName}`}
           icon={<Heartbeat weight="duotone" />}
           title={t(

@@ -14,8 +14,14 @@ import { WhatsAppLink } from "@/components/whatsapp-link";
 import { contactMessage } from "@/lib/whatsapp";
 import "../medical-record.css";
 
-function ownerInitials(owner: { firstName?: string | null; lastName?: string | null }): string {
-  return `${owner.firstName?.[0] || ""}${owner.lastName?.[0] || ""}`.toUpperCase() || "P";
+function ownerInitials(owner: {
+  firstName?: string | null;
+  lastName?: string | null;
+}): string {
+  return (
+    `${owner.firstName?.[0] || ""}${owner.lastName?.[0] || ""}`.toUpperCase() ||
+    "P"
+  );
 }
 
 export function recordDate(value?: string | null, withTime = false) {
@@ -60,7 +66,7 @@ export function PatientIdentity({
           "medical-avatar relative shrink-0 transition duration-200 hover:scale-[1.03]",
           speciesTheme.avatarBg,
           speciesTheme.avatarBorder,
-          speciesTheme.avatarGlow,
+          speciesTheme.avatarGlow
         )}
       >
         {patient.avatarUrl ? (
@@ -76,7 +82,7 @@ export function PatientIdentity({
             strokeWidth={1.5}
             className={cn(
               "transition-transform duration-200",
-              speciesTheme.avatarIconColor,
+              speciesTheme.avatarIconColor
             )}
             aria-hidden="true"
           />
@@ -199,7 +205,13 @@ export function isClinicalSignal(value?: string) {
 }
 
 /** `animal` is the patient's name: with it, a WhatsApp button opens a first message about the animal. */
-export function OwnerContact({ animal, owner }: { animal?: string; owner?: Owner }) {
+export function OwnerContact({
+  animal,
+  owner,
+}: {
+  animal?: string;
+  owner?: Owner;
+}) {
   if (!owner) {
     return (
       <section
@@ -284,10 +296,17 @@ export function OwnerContact({ animal, owner }: { animal?: string; owner?: Owner
 }
 
 export function handleRecordTabKeys(event: KeyboardEvent<HTMLDivElement>) {
-  const keys = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"];
+  const keys = [
+    "ArrowLeft",
+    "ArrowRight",
+    "ArrowUp",
+    "ArrowDown",
+    "Home",
+    "End",
+  ];
   if (!keys.includes(event.key)) return;
   const tabs = Array.from(
-    event.currentTarget.querySelectorAll<HTMLButtonElement>("[role=tab]"),
+    event.currentTarget.querySelectorAll<HTMLButtonElement>("[role=tab]")
   );
   const index = tabs.indexOf(event.target as HTMLButtonElement);
   if (index < 0) return;
@@ -297,7 +316,9 @@ export function handleRecordTabKeys(event: KeyboardEvent<HTMLDivElement>) {
       ? 0
       : event.key === "End"
         ? tabs.length - 1
-        : (index + (event.key === "ArrowRight" || event.key === "ArrowDown" ? 1 : -1) + tabs.length) %
+        : (index +
+            (event.key === "ArrowRight" || event.key === "ArrowDown" ? 1 : -1) +
+            tabs.length) %
           tabs.length;
   tabs[next]?.focus();
   tabs[next]?.click();

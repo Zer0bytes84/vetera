@@ -26,7 +26,8 @@ export function monotonePath(points: readonly ChartPoint[]): string {
   tangent[0] = slope[0];
   tangent[n - 1] = slope[n - 2];
   for (let i = 1; i < n - 1; i++) {
-    tangent[i] = slope[i - 1] * slope[i] <= 0 ? 0 : (slope[i - 1] + slope[i]) / 2;
+    tangent[i] =
+      slope[i - 1] * slope[i] <= 0 ? 0 : (slope[i - 1] + slope[i]) / 2;
   }
   // Limite les tangentes pour garantir la monotonie entre deux points.
   for (let i = 0; i < n - 1; i++) {

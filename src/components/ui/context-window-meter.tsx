@@ -56,12 +56,13 @@ export const formatTokens = (n: number) =>
 function fillCells(
   segments: { tokens: number; color: string }[],
   limit: number,
-  count: number,
+  count: number
 ) {
   const cells: (string | null)[] = [];
   for (const s of segments) {
     // Every non-empty segment gets at least one cell, so small ones stay visible.
-    const n = s.tokens > 0 ? Math.max(1, Math.round((s.tokens / limit) * count)) : 0;
+    const n =
+      s.tokens > 0 ? Math.max(1, Math.round((s.tokens / limit) * count)) : 0;
     for (let i = 0; i < n && cells.length < count; i++) cells.push(s.color);
   }
   while (cells.length < count) cells.push(null);
@@ -97,7 +98,7 @@ export function ContextWindowMeter({
       aria-valuetext={`${used.toLocaleString("fr-FR")} sur ${limit.toLocaleString("fr-FR")} caractères (${percent} %)`}
       className={cn(
         "grid",
-        inline ? "w-28 grid-cols-[repeat(20,1fr)] gap-px" : "grid-cols-20 gap-1",
+        inline ? "w-28 grid-cols-[repeat(20,1fr)] gap-px" : "grid-cols-20 gap-1"
       )}
     >
       {cells.map((color, i) => (
@@ -110,7 +111,7 @@ export function ContextWindowMeter({
             !color &&
               (i >= Math.round(warnAt * count)
                 ? "bg-warning/20"
-                : "bg-foreground/[0.07]"),
+                : "bg-foreground/[0.07]")
           )}
           style={{ background: color ?? undefined }}
         />
@@ -118,9 +119,7 @@ export function ContextWindowMeter({
     </div>
   );
 
-  const announcement = warning
-      ? "Limite de la dictée proche"
-      : "";
+  const announcement = warning ? "Limite de la dictée proche" : "";
 
   if (inline) {
     return (
@@ -128,7 +127,6 @@ export function ContextWindowMeter({
         <div className={cn("flex items-center gap-2 text-xs", className)}>
           {warning && (
             <TriangleAlert
-             
               className="size-3.5 text-warning"
               aria-label="Proche de la limite"
             />
@@ -151,13 +149,18 @@ export function ContextWindowMeter({
 
   return (
     <MotionConfig reducedMotion="user">
-      <Shell aria-label="Longueur de la dictée" className={cn("max-w-md", className)}>
+      <Shell
+        aria-label="Longueur de la dictée"
+        className={cn("max-w-md", className)}
+      >
         <Panel className="p-4">
           <div className="mb-1 flex items-center justify-between gap-3">
             <h3 className="text-[0.8125rem] text-muted-foreground">
               Dictée
               {data.model && (
-                <Tag className="ml-2 rounded-full px-2 text-foreground">{data.model}</Tag>
+                <Tag className="ml-2 rounded-full px-2 text-foreground">
+                  {data.model}
+                </Tag>
               )}
             </h3>
           </div>
@@ -165,20 +168,21 @@ export function ContextWindowMeter({
             <span
               className={cn(
                 "font-mono text-[1.5rem] leading-tight font-medium tracking-tight tabular-nums",
-                warning && "text-warning",
+                warning && "text-warning"
               )}
             >
               <RollingNumber value={formatTokens(used)} />
             </span>
             <span className="text-[0.8125rem] text-muted-foreground">
-              sur {formatTokens(limit)} · <RollingNumber value={`${percent} %`} /> utilisé
+              sur {formatTokens(limit)} ·{" "}
+              <RollingNumber value={`${percent} %`} /> utilisé
             </span>
           </p>
           {grid}
           <p
             className={cn(
               "mt-3 flex items-center gap-1.5 text-xs",
-              warning ? "text-warning" : "text-muted-foreground",
+              warning ? "text-warning" : "text-muted-foreground"
             )}
           >
             {warning && (
@@ -202,7 +206,6 @@ export function ContextWindowMeter({
                   {s.label}
                   {s.pinned && (
                     <Lock
-                     
                       className="size-3 shrink-0 text-muted-foreground"
                       aria-label="Conservé"
                     />

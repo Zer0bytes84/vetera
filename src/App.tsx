@@ -87,30 +87,33 @@ function MainApp() {
 
   useEffect(() => {
     const checkSetup = async () => {
-      await guard(async () => {
-        const setupDone = await withTimeout(
-          appSettingsRepository.isSetupComplete(),
-          SETUP_CHECK_TIMEOUT_MS,
-          "La base locale met trop de temps à répondre."
-        );
-        setNeedsSetup(!setupDone);
-        setStartupError(null);
-      }, {
-        recover: (error) => {
-          console.error("[App] Error checking setup status:", error);
-          // Never open the setup wizard after an uncertain database read. It
-          // could make an existing installation look like a new one.
-          setNeedsSetup(false);
-          setStartupError(
-            error instanceof Error
-              ? error
-              : new Error("Impossible de vérifier la base locale.")
+      await guard(
+        async () => {
+          const setupDone = await withTimeout(
+            appSettingsRepository.isSetupComplete(),
+            SETUP_CHECK_TIMEOUT_MS,
+            "La base locale met trop de temps à répondre."
           );
+          setNeedsSetup(!setupDone);
+          setStartupError(null);
         },
-        cleanup: () => {
-          setIsCheckingSetup(false);
-        },
-      });
+        {
+          recover: (error) => {
+            console.error("[App] Error checking setup status:", error);
+            // Never open the setup wizard after an uncertain database read. It
+            // could make an existing installation look like a new one.
+            setNeedsSetup(false);
+            setStartupError(
+              error instanceof Error
+                ? error
+                : new Error("Impossible de vérifier la base locale.")
+            );
+          },
+          cleanup: () => {
+            setIsCheckingSetup(false);
+          },
+        }
+      );
     };
 
     // Never block initial UI boot on maintenance tasks.
@@ -173,10 +176,7 @@ function MainApp() {
   }, []);
 
   const handleSetupComplete = async (userData: SetupPayload) => {
-    await acceptLicenseActivation(
-      userData.email,
-      userData.activationToken
-    );
+    await acceptLicenseActivation(userData.email, userData.activationToken);
     await createInitialAdmin({
       email: userData.email,
       password: userData.password,
@@ -231,16 +231,43 @@ function ActivationAdminAccess() {
   const [sessionKey, setSessionKey] = useState("");
   useEffect(() => {
     let active = true;
-    const check = () => { void requireActivationOwner().then(() => { if (active) { setAllowed(true); setSessionKey(localStorage.getItem("auth_token") ?? ""); } }).catch(() => { if (active) setAllowed(false); }); };
+    const check = () => {
+      void requireActivationOwner()
+        .then(() => {
+          if (active) {
+            setAllowed(true);
+            setSessionKey(localStorage.getItem("auth_token") ?? "");
+          }
+        })
+        .catch(() => {
+          if (active) setAllowed(false);
+        });
+    };
     check();
     window.addEventListener("storage", check);
     window.addEventListener("focus", check);
     window.addEventListener("sqlite-data-changed", check);
-    return () => { active = false; window.removeEventListener("storage", check); window.removeEventListener("focus", check); window.removeEventListener("sqlite-data-changed", check); };
+    return () => {
+      active = false;
+      window.removeEventListener("storage", check);
+      window.removeEventListener("focus", check);
+      window.removeEventListener("sqlite-data-changed", check);
+    };
   }, []);
   if (allowed === null) return <AppLoadingState />;
-  if (!allowed) return <main className="flex min-h-dvh flex-col items-center justify-center gap-4 bg-background p-8 text-foreground"><h1 className="t-18 font-medium">Accès réservé au propriétaire</h1><p>Ce compte ne peut pas accéder à la gestion des licences.</p><a href="/">Revenir à Baitari</a></main>;
-  return <ActivationOwnerUnlock key={sessionKey}><ActivationAdminPage /></ActivationOwnerUnlock>;
+  if (!allowed)
+    return (
+      <main className="flex min-h-dvh flex-col items-center justify-center gap-4 bg-background p-8 text-foreground">
+        <h1 className="t-18 font-medium">Accès réservé au propriétaire</h1>
+        <p>Ce compte ne peut pas accéder à la gestion des licences.</p>
+        <a href="/">Revenir à Baitari</a>
+      </main>
+    );
+  return (
+    <ActivationOwnerUnlock key={sessionKey}>
+      <ActivationAdminPage />
+    </ActivationOwnerUnlock>
+  );
 }
 
 export function App() {
@@ -276,8 +303,9 @@ function AppStartupRecoveryState({ error }: { error: Error }) {
           Baitari n&apos;a pas pu démarrer
         </h1>
         <p className="mt-3 text-sm text-zinc-600 leading-6">
-          Vos données sont conservées. Si cette base provient d’une version plus récente,
-          installez la dernière version de Baitari. Sinon, réessayez l’initialisation.
+          Vos données sont conservées. Si cette base provient d’une version plus
+          récente, installez la dernière version de Baitari. Sinon, réessayez
+          l’initialisation.
         </p>
         <p className="mt-3 rounded-xl bg-zinc-100 px-3 py-2 text-left text-xs text-zinc-500">
           {error.message}

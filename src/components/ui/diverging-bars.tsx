@@ -98,7 +98,7 @@ function useWidth() {
     if (!el) return;
     setWidth(el.getBoundingClientRect().width);
     const observer = new ResizeObserver(([entry]) =>
-      setWidth(entry.contentRect.width),
+      setWidth(entry.contentRect.width)
     );
     observer.observe(el);
     return () => observer.disconnect();
@@ -154,7 +154,7 @@ export function DivergingBars({
           id === below?.id || visible.length > 1
           ? [...h, id]
           : h
-        : h.filter((x) => x !== id),
+        : h.filter((x) => x !== id)
     );
 
   const select = (index: number | null, keyboard: boolean) => {
@@ -178,7 +178,7 @@ export function DivergingBars({
   };
 
   const totals = labels.map((_, i) =>
-    sum(visible.map((s) => s.values[i] ?? 0)),
+    sum(visible.map((s) => s.values[i] ?? 0))
   );
   const upMax = niceMax(Math.max(0, ...totals));
   const downMax = below
@@ -264,7 +264,7 @@ export function DivergingBars({
                     "inline-flex h-7 items-center gap-1.5 rounded-full px-2.5 text-xs transition-[background-color,color,opacity,scale] duration-150 ease-out active:scale-[0.97]",
                     on
                       ? "bg-foreground/[0.06] text-foreground"
-                      : "text-muted-foreground opacity-60 hover:opacity-100",
+                      : "text-muted-foreground opacity-60 hover:opacity-100"
                   )}
                 >
                   <span
@@ -381,7 +381,7 @@ export function DivergingBars({
                     className={cn(
                       "transition-opacity duration-150 ease-out",
                       dim && "opacity-40",
-                      fromKeyboard && "duration-0",
+                      fromKeyboard && "duration-0"
                     )}
                   >
                     {visible.map((s) => {
@@ -433,12 +433,12 @@ export function DivergingBars({
                     className={cn(
                       activeIndex === i || marker === i
                         ? "fill-foreground"
-                        : "fill-muted-foreground",
+                        : "fill-muted-foreground"
                     )}
                   >
                     {label}
                   </text>
-                ) : null,
+                ) : null
               )}
 
               {/* Hit areas: the whole band, both sides of the line. */}
@@ -469,7 +469,7 @@ export function DivergingBars({
                       ? {
                           right: Math.max(
                             width - x(activeIndex) + band / 2 + 6,
-                            0,
+                            0
                           ),
                           transformOrigin: "top right",
                         }
@@ -540,7 +540,7 @@ export function DivergingBars({
           <p role="status" aria-live="polite" className="sr-only">
             {fromKeyboard && activeIndex !== null
               ? `${titles?.[activeIndex] ?? labels[activeIndex]} : total ${format(total(activeIndex))}, ${rows(
-                  activeIndex,
+                  activeIndex
                 )
                   .map((r) => `${r.label} ${format(r.value)}`)
                   .join(", ")}`

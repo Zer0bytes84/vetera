@@ -12,12 +12,23 @@
  */
 
 import { Check, ChevronDown, ShieldCheck, Undo2, X } from "lucide-react";
-import { AnimatePresence, MotionConfig, motion, useReducedMotion } from "motion/react";
+import {
+  AnimatePresence,
+  MotionConfig,
+  motion,
+  useReducedMotion,
+} from "motion/react";
 import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { Button } from "@/components/ui/action-button";
 import { Checkbox } from "@/components/ui/choice-controls";
 import { RollingNumber } from "@/components/ui/rolling-number";
-import { IconTile, Inset, Panel, Shell, ShellHeader } from "@/components/ui/surface";
+import {
+  IconTile,
+  Inset,
+  Panel,
+  Shell,
+  ShellHeader,
+} from "@/components/ui/surface";
 import { EmptyState } from "@/components/ui/tuff-controls";
 import { EASE_OUT, exit as exitFast, instant } from "@/lib/motion-tokens";
 import { cn } from "@/lib/utils";
@@ -85,19 +96,26 @@ export function ToolApprovalQueue({
   const resolved = data.filter((r) => r.status && r.status !== "pending");
   const selectedIds = selected.filter((id) => pending.some((r) => r.id === id));
   const toggle = (id: string) =>
-    setSelected(selectedIds.includes(id) ? selectedIds.filter((x) => x !== id) : [...selectedIds, id]);
+    setSelected(
+      selectedIds.includes(id)
+        ? selectedIds.filter((x) => x !== id)
+        : [...selectedIds, id]
+    );
 
   const decide = (requests: ApprovalRequest[], decision: ApprovalDecision) => {
     setUndoable((ids) => [...ids, ...requests.map((r) => r.id)]);
     for (const r of requests) {
       timers.current.set(
         r.id,
-        setTimeout(() => setUndoable((ids) => ids.filter((x) => x !== r.id)), undoMs),
+        setTimeout(
+          () => setUndoable((ids) => ids.filter((x) => x !== r.id)),
+          undoMs
+        )
       );
     }
     setSelected(selectedIds.filter((id) => !requests.some((r) => r.id === id)));
     setAnnouncement(
-      `${requests.length === 1 ? requests[0].title : `${requests.length} reformulations`} : ${decision === "approved" ? "acceptée" : "refusée"}`,
+      `${requests.length === 1 ? requests[0].title : `${requests.length} reformulations`} : ${decision === "approved" ? "acceptée" : "refusée"}`
     );
     onDecide?.(requests, decision);
   };
@@ -149,13 +167,18 @@ export function ToolApprovalQueue({
                 key="bulk"
                 initial={{ height: 0, opacity: 0 }}
                 animate={{ height: "auto", opacity: 1 }}
-                exit={{ height: 0, opacity: 0, transition: still ? instant : exitFast }}
+                exit={{
+                  height: 0,
+                  opacity: 0,
+                  transition: still ? instant : exitFast,
+                }}
                 transition={still ? instant : reveal}
                 className="overflow-hidden"
               >
                 <div className="m-1.5 mb-0 flex flex-wrap items-center gap-2 rounded-xl bg-brand/10 py-1.5 pr-1.5 pl-3 text-[0.8125rem]">
                   <span className="font-medium text-brand tabular-nums">
-                    <RollingNumber value={String(bulk.length)} /> sélectionnée{bulk.length > 1 ? "s" : ""}
+                    <RollingNumber value={String(bulk.length)} /> sélectionnée
+                    {bulk.length > 1 ? "s" : ""}
                   </span>
                   <button
                     type="button"
@@ -164,10 +187,16 @@ export function ToolApprovalQueue({
                   >
                     Effacer
                   </button>
-                  <Button className="ml-auto" onClick={() => decide(bulk, "denied")}>
+                  <Button
+                    className="ml-auto"
+                    onClick={() => decide(bulk, "denied")}
+                  >
                     Garder ma dictée
                   </Button>
-                  <Button variant="primary" onClick={() => decide(bulk, "approved")}>
+                  <Button
+                    variant="primary"
+                    onClick={() => decide(bulk, "approved")}
+                  >
                     Accepter
                   </Button>
                 </div>
@@ -175,7 +204,12 @@ export function ToolApprovalQueue({
             )}
           </AnimatePresence>
           {pending.length === 0 && (
-            <EmptyState compact icon={ShieldCheck} title="Rien à examiner" description="Les reformulations proposées apparaissent ici." />
+            <EmptyState
+              compact
+              icon={ShieldCheck}
+              title="Rien à examiner"
+              description="Les reformulations proposées apparaissent ici."
+            />
           )}
           <div className={cn("p-1.5", pending.length === 0 && "hidden")}>
             <AnimatePresence initial={false}>
@@ -187,11 +221,20 @@ export function ToolApprovalQueue({
                     key={r.id}
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: "auto" }}
-                    exit={{ opacity: 0, height: 0, transition: reduce ? instant : exitFast }}
+                    exit={{
+                      opacity: 0,
+                      height: 0,
+                      transition: reduce ? instant : exitFast,
+                    }}
                     transition={reduce ? instant : reveal}
                     className="overflow-hidden"
                   >
-                    <div className={cn("rounded-xl transition-colors", (open || checked) && "bg-foreground/[0.035]")}>
+                    <div
+                      className={cn(
+                        "rounded-xl transition-colors",
+                        (open || checked) && "bg-foreground/[0.035]"
+                      )}
+                    >
                       <div
                         ref={(el) => {
                           if (el) rows.current.set(r.id, el);
@@ -219,14 +262,20 @@ export function ToolApprovalQueue({
                           }}
                         />
                         <span className="min-w-0 flex-1">
-                          <span className="block truncate text-sm">{r.title}</span>
-                          {r.detail && <span className="block truncate text-xs text-muted-foreground">{r.detail}</span>}
+                          <span className="block truncate text-sm">
+                            {r.title}
+                          </span>
+                          {r.detail && (
+                            <span className="block truncate text-xs text-muted-foreground">
+                              {r.detail}
+                            </span>
+                          )}
                         </span>
                         <ChevronDown
                           strokeWidth={2.5}
                           className={cn(
                             "size-4 shrink-0 text-muted-foreground transition-transform duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:transition-none",
-                            open && "rotate-180",
+                            open && "rotate-180"
                           )}
                           aria-hidden="true"
                         />
@@ -236,24 +285,41 @@ export function ToolApprovalQueue({
                           <motion.div
                             initial={{ height: 0, opacity: 0 }}
                             animate={{ height: "auto", opacity: 1 }}
-                            exit={{ height: 0, opacity: 0, transition: still ? instant : exitFast }}
+                            exit={{
+                              height: 0,
+                              opacity: 0,
+                              transition: still ? instant : exitFast,
+                            }}
                             transition={still ? instant : reveal}
                             className="overflow-hidden"
                           >
                             <div className="px-2.5 pb-2.5">
                               <div className="flex flex-col gap-1.5">
                                 <Inset className="px-3.5 py-2.5 text-[0.8125rem]">
-                                  <p className="mb-0.5 text-xs text-muted-foreground">Votre dictée</p>
-                                  <p className="whitespace-pre-wrap">{r.before || "Vide"}</p>
+                                  <p className="mb-0.5 text-xs text-muted-foreground">
+                                    Votre dictée
+                                  </p>
+                                  <p className="whitespace-pre-wrap">
+                                    {r.before || "Vide"}
+                                  </p>
                                 </Inset>
                                 <Inset className="bg-brand/10 px-3.5 py-2.5 text-[0.8125rem]">
-                                  <p className="mb-0.5 text-xs text-brand">Formulation proposée</p>
-                                  <p className="whitespace-pre-wrap">{r.after}</p>
+                                  <p className="mb-0.5 text-xs text-brand">
+                                    Formulation proposée
+                                  </p>
+                                  <p className="whitespace-pre-wrap">
+                                    {r.after}
+                                  </p>
                                 </Inset>
                               </div>
                               <div className="mt-2.5 flex flex-wrap items-center justify-end gap-2">
-                                <Button onClick={() => decide([r], "denied")}>Garder ma dictée</Button>
-                                <Button variant="primary" onClick={() => decide([r], "approved")}>
+                                <Button onClick={() => decide([r], "denied")}>
+                                  Garder ma dictée
+                                </Button>
+                                <Button
+                                  variant="primary"
+                                  onClick={() => decide([r], "approved")}
+                                >
                                   Accepter la formulation
                                 </Button>
                               </div>
@@ -274,16 +340,27 @@ export function ToolApprovalQueue({
               key="resolved"
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0, transition: reduce ? instant : exitFast }}
+              exit={{
+                height: 0,
+                opacity: 0,
+                transition: reduce ? instant : exitFast,
+              }}
               transition={reduce ? instant : reveal}
               className="overflow-hidden"
             >
               <div className="px-2 pt-2.5 pb-1">
-                <p className="px-1.5 pb-1 text-xs text-muted-foreground">Examinées · {resolved.length}</p>
+                <p className="px-1.5 pb-1 text-xs text-muted-foreground">
+                  Examinées · {resolved.length}
+                </p>
                 <ul>
                   <AnimatePresence initial={false}>
                     {resolved.map((r) => (
-                      <ResolvedRow key={r.id} request={r} undoable={undoable.includes(r.id)} onUndo={undo} />
+                      <ResolvedRow
+                        key={r.id}
+                        request={r}
+                        undoable={undoable.includes(r.id)}
+                        onUndo={undo}
+                      />
                     ))}
                   </AnimatePresence>
                 </ul>
@@ -321,7 +398,12 @@ function ResolvedRow({
       <div className="flex min-h-9 items-center gap-2.5 px-1.5 text-[0.8125rem]">
         <IconTile
           icon={Icon}
-          className={cn("size-5 rounded-full", ok ? "bg-positive/15 text-positive" : "bg-foreground/[0.08] text-muted-foreground")}
+          className={cn(
+            "size-5 rounded-full",
+            ok
+              ? "bg-positive/15 text-positive"
+              : "bg-foreground/[0.08] text-muted-foreground"
+          )}
         />
         <span className="min-w-0 flex-1 truncate text-muted-foreground">
           <span className="text-foreground">{request.title}</span>
@@ -329,7 +411,12 @@ function ResolvedRow({
           {ok ? "formulation acceptée" : "votre dictée conservée"}
         </span>
         {undoable && (
-          <Button icon={Undo2} iconWeight="bold" onClick={() => onUndo(request)} className="h-7 gap-1 px-2.5 text-xs">
+          <Button
+            icon={Undo2}
+            iconWeight="bold"
+            onClick={() => onUndo(request)}
+            className="h-7 gap-1 px-2.5 text-xs"
+          >
             Annuler
           </Button>
         )}

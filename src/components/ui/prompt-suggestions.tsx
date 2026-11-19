@@ -64,7 +64,9 @@ export function PromptSuggestions({
       <MotionConfig reducedMotion="user">
         <div className={cn("flex w-full flex-col gap-2", className)}>
           {heading && (
-            <p className="px-1 text-xs font-medium text-muted-foreground">{heading}</p>
+            <p className="px-1 text-xs font-medium text-muted-foreground">
+              {heading}
+            </p>
           )}
           <ul
             aria-label={heading ?? "Suggestions"}
@@ -101,7 +103,7 @@ export function PromptSuggestions({
                   className={cn(
                     "[&_svg]:transition-transform",
                     refreshing &&
-                      "[&_svg]:animate-spin motion-reduce:[&_svg]:animate-none",
+                      "[&_svg]:animate-spin motion-reduce:[&_svg]:animate-none"
                   )}
                 />
               </li>
@@ -117,7 +119,12 @@ export function PromptSuggestions({
 
   return (
     <MotionConfig reducedMotion="user">
-      <div className={cn("@container flex w-full max-w-xl flex-col gap-3", className)}>
+      <div
+        className={cn(
+          "@container flex w-full max-w-xl flex-col gap-3",
+          className
+        )}
+      >
         {heading && <p className="px-1 text-[1rem] font-medium">{heading}</p>}
         <ul
           aria-label={heading ?? "Suggestions de recherche"}

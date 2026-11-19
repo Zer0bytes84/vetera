@@ -1,7 +1,12 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { StatGrid, type Stat, type StatIcon, type StatTone } from "@/components/ui/stat-grid";
+import {
+  StatGrid,
+  type Stat,
+  type StatIcon,
+  type StatTone,
+} from "@/components/ui/stat-grid";
 import {
   BanknotesIcon,
   CalendarDaysIcon,
@@ -76,13 +81,18 @@ function resolveDefaultIcon(title: string, index: number) {
     return matchedRule[1];
   }
 
-  const defaultIcons = [BanknotesIcon, CalendarDaysIcon, UsersIcon, ClipboardDocumentListIcon];
+  const defaultIcons = [
+    BanknotesIcon,
+    CalendarDaysIcon,
+    UsersIcon,
+    ClipboardDocumentListIcon,
+  ];
   return defaultIcons[index % defaultIcons.length] || BanknotesIcon;
 }
 
 /** What the card's badge says: a variation, a rate, a count, or a status text; and whether it reads as good news. */
 function badgeOf(
-  item: SectionCardItem,
+  item: SectionCardItem
 ): Pick<Stat, "delta" | "deltaText" | "higherIsBetter"> {
   const sense =
     item.tone === "positive" ? 1 : item.tone === "critical" ? -1 : 0;
@@ -158,7 +168,7 @@ export function SectionCards({
       className={cn(
         "section-atlas",
         compact && "section-atlas-compact",
-        className,
+        className
       )}
     >
       <StatGrid

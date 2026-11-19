@@ -20,7 +20,10 @@ export interface GuardSteps<E> {
   cleanup?: () => void | Promise<void>;
 }
 
-export async function guard<T, E = never>(run: () => T | Promise<T>, steps: GuardSteps<E> = {}): Promise<T | E> {
+export async function guard<T, E = never>(
+  run: () => T | Promise<T>,
+  steps: GuardSteps<E> = {}
+): Promise<T | E> {
   try {
     return await run();
   } catch (error) {
@@ -32,7 +35,10 @@ export async function guard<T, E = never>(run: () => T | Promise<T>, steps: Guar
   }
 }
 
-export function guardSync<T, E = never>(run: () => T, steps: { recover?: (error: unknown) => E; cleanup?: () => void } = {}): T | E {
+export function guardSync<T, E = never>(
+  run: () => T,
+  steps: { recover?: (error: unknown) => E; cleanup?: () => void } = {}
+): T | E {
   try {
     return run();
   } catch (error) {

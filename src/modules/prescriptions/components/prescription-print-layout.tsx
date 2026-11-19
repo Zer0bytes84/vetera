@@ -59,7 +59,9 @@ export function PrescriptionPrintLayout({
               {t("prescriptions.preview.clinicName")}
             </h1>
             <p className="text-[11px] text-muted-foreground uppercase tracking-[0.18em]">
-              {(vet?.displayName && formatPersonName(vet.displayName)) || vet?.email || "—"}
+              {(vet?.displayName && formatPersonName(vet.displayName)) ||
+                vet?.email ||
+                "—"}
             </p>
             <p className="mt-0.5 text-[11px] text-muted-foreground">
               {vet?.specialty ?? "Vétérinaire"}

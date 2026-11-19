@@ -37,7 +37,11 @@ LEFT JOIN visit_flow f ON f.appointment_id = a.id;`;
  * `statusChange` gives the old and new status when the trigger is a status
  * change, which is journaled even inside one stage (arrived to waiting).
  */
-function syncFlow(id: string, cause: "status" | "care" | "billing", statusChange?: { from: string; to: string }) {
+function syncFlow(
+  id: string,
+  cause: "status" | "care" | "billing",
+  statusChange?: { from: string; to: string }
+) {
   const fromStatus = statusChange?.from ?? "s.status";
   const toStatus = statusChange?.to ?? "s.status";
   const changed = statusChange
@@ -65,7 +69,8 @@ ${body}
 END;`;
 }
 
-const invoiceAppointment = (invoiceId: string) => `(SELECT appointment_id FROM invoices WHERE id = ${invoiceId})`;
+const invoiceAppointment = (invoiceId: string) =>
+  `(SELECT appointment_id FROM invoices WHERE id = ${invoiceId})`;
 
 export const VISIT_FLOW_MIGRATION_SQL = `
 CREATE TABLE visit_flow (
@@ -112,12 +117,22 @@ ${trigger("visit_flow_on_payment_status", "UPDATE OF status ON payments", syncFl
 ${trigger(
   "visit_flow_on_refund_insert",
   "INSERT ON refunds",
-  syncFlow(invoiceAppointment("(SELECT invoice_id FROM payments WHERE id = NEW.payment_id)"), "billing")
+  syncFlow(
+    invoiceAppointment(
+      "(SELECT invoice_id FROM payments WHERE id = NEW.payment_id)"
+    ),
+    "billing"
+  )
 )}
 ${trigger(
   "visit_flow_on_refund_status",
   "UPDATE OF status ON refunds",
-  syncFlow(invoiceAppointment("(SELECT invoice_id FROM payments WHERE id = NEW.payment_id)"), "billing")
+  syncFlow(
+    invoiceAppointment(
+      "(SELECT invoice_id FROM payments WHERE id = NEW.payment_id)"
+    ),
+    "billing"
+  )
 )}
 ${trigger(
   "visit_flow_on_credit_note_status",

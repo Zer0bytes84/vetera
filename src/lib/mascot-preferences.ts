@@ -19,9 +19,18 @@ export const MASCOT_CHOICE_KEYS = [
 ] as const;
 
 /** Names saved by earlier versions, read back as one of the twelve. */
-const LEGACY_ANIMALS = ["dog", "cat", "rabbit", "fox", "panda", "bear"] as const;
+const LEGACY_ANIMALS = [
+  "dog",
+  "cat",
+  "rabbit",
+  "fox",
+  "panda",
+  "bear",
+] as const;
 
-export type MascotAnimal = (typeof MASCOT_CHOICE_KEYS)[number] | (typeof LEGACY_ANIMALS)[number];
+export type MascotAnimal =
+  | (typeof MASCOT_CHOICE_KEYS)[number]
+  | (typeof LEGACY_ANIMALS)[number];
 
 export interface MascotPreferences {
   mode: "mascot" | "logo";
@@ -38,7 +47,10 @@ export const DEFAULT_MASCOT_PREFERENCES: MascotPreferences = {
   animated: true,
 };
 
-export const VALID_ANIMALS: readonly MascotAnimal[] = [...MASCOT_CHOICE_KEYS, ...LEGACY_ANIMALS];
+export const VALID_ANIMALS: readonly MascotAnimal[] = [
+  ...MASCOT_CHOICE_KEYS,
+  ...LEGACY_ANIMALS,
+];
 export const MASCOT_ANIMALS = VALID_ANIMALS;
 
 const LEGACY_ANIMAL_MAP: Record<string, MascotAnimal> = {
@@ -60,9 +72,11 @@ export function parseMascotPreferences(raw: string | null): MascotPreferences {
 
     const rawAnimal = typeof config.animal === "string" ? config.animal : "";
     const mappedAnimal = LEGACY_ANIMAL_MAP[rawAnimal];
-    const animal = mappedAnimal || (VALID_ANIMALS.includes(rawAnimal as MascotAnimal)
-      ? (rawAnimal as MascotAnimal)
-      : DEFAULT_MASCOT_PREFERENCES.animal);
+    const animal =
+      mappedAnimal ||
+      (VALID_ANIMALS.includes(rawAnimal as MascotAnimal)
+        ? (rawAnimal as MascotAnimal)
+        : DEFAULT_MASCOT_PREFERENCES.animal);
 
     return {
       mode: config.mode === "logo" ? "logo" : "mascot",
@@ -85,8 +99,7 @@ export function getMascotPreferences(): MascotPreferences {
       cachedRaw = raw;
       cachedPreferences = parseMascotPreferences(raw);
     }
-  } catch {
-  }
+  } catch {}
   return cachedPreferences;
 }
 

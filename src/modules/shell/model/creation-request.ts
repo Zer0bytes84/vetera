@@ -20,7 +20,7 @@ export function useCreationRequest(kind: CreationKind, open: () => void) {
   const openRef = useRef(open);
   useEffect(() => {
     openRef.current = open;
-  }, [open ]);
+  }, [open]);
   useEffect(() => {
     const run = () => {
       if (sessionStorage.getItem(KEY) !== kind) return;

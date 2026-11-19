@@ -16,10 +16,14 @@
   --btn-primary-hover: var(--primary-hover);
   --btn-primary-fg: var(--on-primary);
 
-  --hair-t: inset 0 1px 0 var(--rule-highlight), inset 0 2px 0 var(--rule-shadow);
-  --hair-b: inset 0 -1px 0 var(--rule-shadow), inset 0 -2px 0 var(--rule-highlight);
-  --hair-l: inset 1px 0 0 var(--rule-highlight), inset 2px 0 0 var(--rule-shadow);
-  --hair-r: inset -1px 0 0 var(--rule-shadow), inset -2px 0 0 var(--rule-highlight);
+  --hair-t:
+    inset 0 1px 0 var(--rule-highlight), inset 0 2px 0 var(--rule-shadow);
+  --hair-b:
+    inset 0 -1px 0 var(--rule-shadow), inset 0 -2px 0 var(--rule-highlight);
+  --hair-l:
+    inset 1px 0 0 var(--rule-highlight), inset 2px 0 0 var(--rule-shadow);
+  --hair-r:
+    inset -1px 0 0 var(--rule-shadow), inset -2px 0 0 var(--rule-highlight);
 
   --analytics-font: var(--app-font-sans);
   --ease-out-quint: cubic-bezier(0.33, 1, 0.68, 1);
@@ -28,10 +32,14 @@
 :root.dark[data-skin="clean"],
 .dark[data-skin="clean"],
 .dark :is([data-skin="clean"], .premium-analytics-dashboard) {
-  --hair-t: inset 0 1px 0 var(--rule-highlight), inset 0 2px 0 var(--rule-shadow);
-  --hair-b: inset 0 -1px 0 var(--rule-shadow), inset 0 -2px 0 var(--rule-highlight);
-  --hair-l: inset 1px 0 0 var(--rule-highlight), inset 2px 0 0 var(--rule-shadow);
-  --hair-r: inset -1px 0 0 var(--rule-shadow), inset -2px 0 0 var(--rule-highlight);
+  --hair-t:
+    inset 0 1px 0 var(--rule-highlight), inset 0 2px 0 var(--rule-shadow);
+  --hair-b:
+    inset 0 -1px 0 var(--rule-shadow), inset 0 -2px 0 var(--rule-highlight);
+  --hair-l:
+    inset 1px 0 0 var(--rule-highlight), inset 2px 0 0 var(--rule-shadow);
+  --hair-r:
+    inset -1px 0 0 var(--rule-shadow), inset -2px 0 0 var(--rule-highlight);
 }
 
 /* Background ground override */
@@ -136,7 +144,10 @@
   color: var(--ink);
   cursor: pointer;
   white-space: nowrap;
-  transition: background-color 160ms var(--ease-out-quint), border-color 160ms var(--ease-out-quint), transform 160ms var(--ease-out-quint);
+  transition:
+    background-color 160ms var(--ease-out-quint),
+    border-color 160ms var(--ease-out-quint),
+    transform 160ms var(--ease-out-quint);
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -196,7 +207,9 @@
   letter-spacing: -0.02em;
   color: var(--soft);
   cursor: pointer;
-  transition: background-color 160ms var(--ease-out-quint), color 160ms var(--ease-out-quint);
+  transition:
+    background-color 160ms var(--ease-out-quint),
+    color 160ms var(--ease-out-quint);
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -321,11 +334,21 @@
   border-radius: 2px;
   background: var(--tone);
 }
-[data-skin="clean"] .kpiKindsBar > i[data-tone="0"] { --tone: var(--series-1, var(--premium-blue)); }
-[data-skin="clean"] .kpiKindsBar > i[data-tone="1"] { --tone: color-mix(in srgb, var(--ink) 70%, transparent); }
-[data-skin="clean"] .kpiKindsBar > i[data-tone="2"] { --tone: color-mix(in srgb, var(--ink) 46%, transparent); }
-[data-skin="clean"] .kpiKindsBar > i[data-tone="3"] { --tone: color-mix(in srgb, var(--ink) 28%, transparent); }
-[data-skin="clean"] .kpiKindsBar > i[data-tone="4"] { --tone: color-mix(in srgb, var(--ink) 16%, transparent); }
+[data-skin="clean"] .kpiKindsBar > i[data-tone="0"] {
+  --tone: var(--series-1, var(--premium-blue));
+}
+[data-skin="clean"] .kpiKindsBar > i[data-tone="1"] {
+  --tone: color-mix(in srgb, var(--ink) 70%, transparent);
+}
+[data-skin="clean"] .kpiKindsBar > i[data-tone="2"] {
+  --tone: color-mix(in srgb, var(--ink) 46%, transparent);
+}
+[data-skin="clean"] .kpiKindsBar > i[data-tone="3"] {
+  --tone: color-mix(in srgb, var(--ink) 28%, transparent);
+}
+[data-skin="clean"] .kpiKindsBar > i[data-tone="4"] {
+  --tone: color-mix(in srgb, var(--ink) 16%, transparent);
+}
 
 [data-skin="clean"] .delta {
   display: inline-flex;
@@ -353,10 +376,18 @@
   color: var(--bad);
 }
 
-[data-skin="clean"] .delta[data-sense="good"] { color: var(--ok); }
-[data-skin="clean"] .delta[data-sense="bad"] { color: var(--bad); }
-[data-skin="clean"] .delta[data-sense="watch"] { color: var(--premium-orange); }
-[data-skin="clean"] .delta[data-sense="neutral"] { color: var(--faint); }
+[data-skin="clean"] .delta[data-sense="good"] {
+  color: var(--ok);
+}
+[data-skin="clean"] .delta[data-sense="bad"] {
+  color: var(--bad);
+}
+[data-skin="clean"] .delta[data-sense="watch"] {
+  color: var(--premium-orange);
+}
+[data-skin="clean"] .delta[data-sense="neutral"] {
+  color: var(--faint);
+}
 
 /* ------------------------------------------------------------ Table Styles matching table.module.css */
 [data-skin="clean"] table {
@@ -520,7 +551,10 @@
 /* ------------------------------------------------------------ Ruled Lattice Quick Modules (.tiles) */
 [data-skin="clean"] .tiles {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(max(240px, calc((100% - 1px) / 4)), 1fr));
+  grid-template-columns: repeat(
+      auto-fill,
+      minmax(max(240px, calc((100% - 1px) / 4)), 1fr)
+    );
   background: transparent;
 }
 
@@ -627,8 +661,14 @@
 }
 
 /* Secondary / Outline button: white card with hairline */
-[data-skin="clean"] [data-slot="page-header-actions"] > button[class*="outline"],
-[data-skin="clean"] [data-slot="page-header-actions"] > button:not([class*="primary"]):not(:last-child):not(.dashboard-mode-toggle *),
+[data-skin="clean"]
+  [data-slot="page-header-actions"]
+  > button[class*="outline"],
+[data-skin="clean"]
+  [data-slot="page-header-actions"]
+  > button:not([class*="primary"]):not(:last-child):not(
+    .dashboard-mode-toggle *
+  ),
 [data-skin="clean"] [data-slot="page-header-actions"] .btnSecondary {
   background: var(--surface) !important;
   border: 1px solid var(--border) !important;
@@ -637,15 +677,31 @@
 }
 
 @media (hover: hover) and (pointer: fine) {
-  [data-skin="clean"] [data-slot="page-header-actions"] > button[class*="outline"]:hover, [data-skin="clean"] [data-slot="page-header-actions"] > button:not([class*="primary"]):not(:last-child):not(.dashboard-mode-toggle *):hover, [data-skin="clean"] [data-slot="page-header-actions"] .btnSecondary:hover {
+  [data-skin="clean"]
+    [data-slot="page-header-actions"]
+    > button[class*="outline"]:hover,
+  [data-skin="clean"]
+    [data-slot="page-header-actions"]
+    > button:not([class*="primary"]):not(:last-child):not(
+      .dashboard-mode-toggle *
+    ):hover,
+  [data-skin="clean"] [data-slot="page-header-actions"] .btnSecondary:hover {
     background: var(--surface-hover) !important;
     border-color: var(--border-hover) !important;
   }
 }
 
 /* Primary button: the charter primary token (deep ink in light, accent in dark) */
-[data-skin="clean"] [data-slot="page-header-actions"] > button:last-child:not([class*="outline"]):not(.dashboard-mode-toggle *):not([data-slot="toggle-group-item"]),
-[data-skin="clean"] [data-slot="page-header-actions"] button[class*="bg-primary"]:not(.dashboard-mode-toggle *):not([data-slot="toggle-group-item"]),
+[data-skin="clean"]
+  [data-slot="page-header-actions"]
+  > button:last-child:not([class*="outline"]):not(.dashboard-mode-toggle *):not(
+    [data-slot="toggle-group-item"]
+  ),
+[data-skin="clean"]
+  [data-slot="page-header-actions"]
+  button[class*="bg-primary"]:not(.dashboard-mode-toggle *):not(
+    [data-slot="toggle-group-item"]
+  ),
 [data-skin="clean"] [data-slot="page-header-actions"] .btnPrimary {
   background: var(--primary) !important;
   border: 1px solid var(--primary) !important;
@@ -654,7 +710,17 @@
 }
 
 @media (hover: hover) and (pointer: fine) {
-  [data-skin="clean"] [data-slot="page-header-actions"] > button:last-child:not([class*="outline"]):not(.dashboard-mode-toggle *):not([data-slot="toggle-group-item"]):hover, [data-skin="clean"] [data-slot="page-header-actions"] button[class*="bg-primary"]:not(.dashboard-mode-toggle *):not([data-slot="toggle-group-item"]):hover, [data-skin="clean"] [data-slot="page-header-actions"] .btnPrimary:hover {
+  [data-skin="clean"]
+    [data-slot="page-header-actions"]
+    > button:last-child:not([class*="outline"]):not(
+      .dashboard-mode-toggle *
+    ):not([data-slot="toggle-group-item"]):hover,
+  [data-skin="clean"]
+    [data-slot="page-header-actions"]
+    button[class*="bg-primary"]:not(.dashboard-mode-toggle *):not(
+      [data-slot="toggle-group-item"]
+    ):hover,
+  [data-skin="clean"] [data-slot="page-header-actions"] .btnPrimary:hover {
     background: var(--primary-hover) !important;
     border-color: var(--primary-hover) !important;
   }
@@ -714,7 +780,8 @@
   background: transparent !important;
   border: none !important;
   border-radius: 0 !important;
-  box-shadow: var(--hair-t), var(--hair-b), var(--hair-l), var(--hair-r) !important;
+  box-shadow:
+    var(--hair-t), var(--hair-b), var(--hair-l), var(--hair-r) !important;
 }
 
 /* The engraved cross-corner frame on table containers */
@@ -757,9 +824,18 @@
 
 /* Filter search input and select dropdowns */
 [data-skin="clean"] .dashboard-stage .border-b:has(input) input,
-[data-skin="clean"] .dashboard-stage .border-b:has(input) [data-slot="list-search"],
-[data-skin="clean"] .dashboard-stage .border-b:has(input) [data-slot="list-filter"],
-[data-skin="clean"] .dashboard-stage div:has(> [data-slot="list-search"]) input {
+[data-skin="clean"]
+  .dashboard-stage
+  .border-b:has(input)
+  [data-slot="list-search"],
+[data-skin="clean"]
+  .dashboard-stage
+  .border-b:has(input)
+  [data-slot="list-filter"],
+[data-skin="clean"]
+  .dashboard-stage
+  div:has(> [data-slot="list-search"])
+  input {
   height: 36px !important;
   border-radius: 8px !important;
   background: var(--surface) !important;
@@ -821,7 +897,8 @@
 }
 
 @media (hover: hover) and (pointer: fine) {
-  [data-skin="clean"] table tbody tr:hover td, [data-skin="clean"] .medical-data-table tbody tr:hover td {
+  [data-skin="clean"] table tbody tr:hover td,
+  [data-skin="clean"] .medical-data-table tbody tr:hover td {
     background: var(--lift) !important;
   }
 }
@@ -893,23 +970,32 @@
 }
 
 /* ------------------------------------------------------------ Global Command Palette Search Bar Refinement */
-[data-skin="clean"] [data-slot="command-input-wrapper"] [data-slot="input-group"] {
+[data-skin="clean"]
+  [data-slot="command-input-wrapper"]
+  [data-slot="input-group"] {
   height: 48px !important;
   border-radius: 14px !important;
   border: 1px solid var(--line-strong) !important;
   background: var(--lift) !important;
   box-shadow: none !important;
-  transition: border-color 160ms var(--ease-out-quint), box-shadow 160ms var(--ease-out-quint), background-color 160ms var(--ease-out-quint) !important;
+  transition:
+    border-color 160ms var(--ease-out-quint),
+    box-shadow 160ms var(--ease-out-quint),
+    background-color 160ms var(--ease-out-quint) !important;
 }
 
-[data-skin="clean"] [data-slot="command-input-wrapper"] [data-slot="input-group"]:focus-within {
+[data-skin="clean"]
+  [data-slot="command-input-wrapper"]
+  [data-slot="input-group"]:focus-within {
   border-color: var(--ink-soft) !important;
   background: var(--surface) !important;
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--ink) 8%, transparent) !important;
 }
 
 [data-skin="clean"] [data-slot="command-input-wrapper"] input,
-[data-skin="clean"] [data-slot="command-input-wrapper"] [data-slot="command-input"] {
+[data-skin="clean"]
+  [data-slot="command-input-wrapper"]
+  [data-slot="command-input"] {
   outline: none !important;
   outline-style: none !important;
   border: none !important;
@@ -926,16 +1012,16 @@
 
 @media (hover: hover) and (pointer: fine) {
   button:hover [data-collapsed="true"] .toggleLine,
-button:hover [data-state="collapsed"] .toggleLine,
-button:hover .toggleIcon[data-collapsed="true"] .toggleLine {
+  button:hover [data-state="collapsed"] .toggleLine,
+  button:hover .toggleIcon[data-collapsed="true"] .toggleLine {
     transform: translateX(-2px);
   }
 }
 
 @media (hover: hover) and (pointer: fine) {
   button:hover [data-collapsed="true"] .toggleChevron,
-button:hover [data-state="collapsed"] .toggleChevron,
-button:hover .toggleIcon[data-collapsed="true"] .toggleChevron {
+  button:hover [data-state="collapsed"] .toggleChevron,
+  button:hover .toggleIcon[data-collapsed="true"] .toggleChevron {
     transform: translateX(0.5px) rotate(180deg);
   }
 }
@@ -968,7 +1054,12 @@ button:hover .toggleIcon[data-collapsed="true"] .toggleChevron {
 
 [data-skin="clean"] .facts > div[data-attention] dt::before {
   background: var(--premium-orange, var(--signal-watch));
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--premium-orange, var(--signal-watch)) 18%, transparent);
+  box-shadow: 0 0 0 3px
+    color-mix(
+      in srgb,
+      var(--premium-orange, var(--signal-watch)) 18%,
+      transparent
+    );
 }
 
 [data-skin="clean"] .facts dd {
@@ -1030,7 +1121,9 @@ button:hover .toggleIcon[data-collapsed="true"] .toggleChevron {
   margin-bottom: -8px;
 }
 
-.premium-analytics-dashboard .premium-overview-shell:has(> .kpis) > :is(.split, .watchGrid) {
+.premium-analytics-dashboard
+  .premium-overview-shell:has(> .kpis)
+  > :is(.split, .watchGrid) {
   gap: 16px;
 }
 
@@ -1063,11 +1156,21 @@ button:hover .toggleIcon[data-collapsed="true"] .toggleChevron {
 .premium-analytics-dashboard .kpi {
   --tone: var(--ink);
 }
-.premium-analytics-dashboard .kpi[data-tone="green"] { --tone: var(--tone-green); }
-.premium-analytics-dashboard .kpi[data-tone="blue"] { --tone: var(--tone-blue); }
-.premium-analytics-dashboard .kpi[data-tone="violet"] { --tone: var(--tone-violet); }
-.premium-analytics-dashboard .kpi[data-tone="amber"] { --tone: var(--tone-amber); }
-.premium-analytics-dashboard .kpi[data-tone="rose"] { --tone: var(--tone-rose); }
+.premium-analytics-dashboard .kpi[data-tone="green"] {
+  --tone: var(--tone-green);
+}
+.premium-analytics-dashboard .kpi[data-tone="blue"] {
+  --tone: var(--tone-blue);
+}
+.premium-analytics-dashboard .kpi[data-tone="violet"] {
+  --tone: var(--tone-violet);
+}
+.premium-analytics-dashboard .kpi[data-tone="amber"] {
+  --tone: var(--tone-amber);
+}
+.premium-analytics-dashboard .kpi[data-tone="rose"] {
+  --tone: var(--tone-rose);
+}
 
 .premium-analytics-dashboard .kpi[data-tone] .kpiHead > span:first-child > svg {
   box-sizing: content-box;
@@ -1079,10 +1182,11 @@ button:hover .toggleIcon[data-collapsed="true"] .toggleChevron {
   background: color-mix(in oklab, var(--tone) 16%, transparent);
 }
 /* The figure of a warning tone: premium.css pins .kpiValue to the ink with !important. */
-.premium-analytics-dashboard .kpis .kpi:is([data-tone="amber"], [data-tone="rose"]) .kpiValue {
+.premium-analytics-dashboard .kpis
+  .kpi:is([data-tone="amber"], [data-tone="rose"])
+  .kpiValue {
   color: var(--tone) !important;
 }
-
 
 /* ------------------------------------------------------------ Welcome
    The greeting alone, flush at the top of the page, the quick actions on its right. No frame, no
@@ -1106,13 +1210,32 @@ button:hover .toggleIcon[data-collapsed="true"] .toggleChevron {
 
 /* The period filters sit on the « Chiffres clés » band's header line, between its title and the view icons: the band keeps its natural
    height. Pills and date fields are 28 px, the height of the band's own small controls. */
-[data-slot="band-lead"] .filters { margin: 0; gap: 8px 12px; flex-wrap: nowrap; }
-[data-slot="band-lead"] .filter-segments { align-items: center; }
-[data-slot="band-lead"] .filter:not(.keyViewIcon) { height: 28px; padding: 0 12px; }
-:root:root:root [data-slot="band-lead"] .filterDates button.filterDate { height: 28px !important; min-height: 28px !important; max-height: 28px !important; padding-block: 0 !important; font-size: 13px; }
+[data-slot="band-lead"] .filters {
+  margin: 0;
+  gap: 8px 12px;
+  flex-wrap: nowrap;
+}
+[data-slot="band-lead"] .filter-segments {
+  align-items: center;
+}
+[data-slot="band-lead"] .filter:not(.keyViewIcon) {
+  height: 28px;
+  padding: 0 12px;
+}
+:root:root:root [data-slot="band-lead"] .filterDates button.filterDate {
+  height: 28px !important;
+  min-height: 28px !important;
+  max-height: 28px !important;
+  padding-block: 0 !important;
+  font-size: 13px;
+}
 /* The view switch is two icons: a grid (indicators) and a small curve (mini-charts). */
-.keyViewIcons .filter.keyViewIcon { padding: 0; width: 36px; height: 32px; justify-content: center; }
-
+.keyViewIcons .filter.keyViewIcon {
+  padding: 0;
+  width: 36px;
+  height: 32px;
+  justify-content: center;
+}
 
 /* Trial v2 (2026-11-11): Catalyst dosage on the dashboard, light only, the
    widgets keep their grey band. Stat labels step up to the demo's 14 medium

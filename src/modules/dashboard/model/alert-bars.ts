@@ -27,7 +27,11 @@ export interface AlertReminder {
 }
 
 export type AlertCategory =
-  "reminders" | "care" | "stock" | "receivables" | "appointments";
+  | "reminders"
+  | "care"
+  | "stock"
+  | "receivables"
+  | "appointments";
 
 export const ALERT_CATEGORIES: { id: AlertCategory; label: string }[] = [
   { id: "reminders", label: "Rappels" },
@@ -58,12 +62,12 @@ export function alertWindow(now: Date) {
     from: new Date(
       today.getFullYear(),
       today.getMonth(),
-      today.getDate() - ALERT_DAYS_BACK,
+      today.getDate() - ALERT_DAYS_BACK
     ),
     to: new Date(
       today.getFullYear(),
       today.getMonth(),
-      today.getDate() + ALERT_DAYS_AHEAD,
+      today.getDate() + ALERT_DAYS_AHEAD
     ),
   };
 }
@@ -110,7 +114,7 @@ export function buildAlertBars({
   const count = ALERT_DAYS_BACK + ALERT_DAYS_AHEAD + 1;
   const days = Array.from(
     { length: count },
-    (_, i) => new Date(from.getFullYear(), from.getMonth(), from.getDate() + i),
+    (_, i) => new Date(from.getFullYear(), from.getMonth(), from.getDate() + i)
   );
   const values: Record<AlertCategory, number[]> = {
     reminders: Array(count).fill(0),
@@ -143,7 +147,7 @@ export function buildAlertBars({
   };
 
   const deceased = new Set(
-    patients.filter((p) => p.status === "decede").map((p) => p.id),
+    patients.filter((p) => p.status === "decede").map((p) => p.id)
   );
   for (const reminder of reminders) {
     if (reminder.statut !== "en_cours" || deceased.has(reminder.patient_id))
@@ -204,14 +208,14 @@ export function buildAlertBars({
       values.care[i] +
       values.stock[i] +
       values.receivables[i] +
-      values.appointments[i],
+      values.appointments[i]
   );
   const sum = (list: number[]) => list.reduce((n, v) => n + v, 0);
   const lateInWindow = sum(late);
   return {
     days,
     labels: days.map((d) =>
-      d.toLocaleDateString("fr-FR", { day: "numeric", month: "short" }),
+      d.toLocaleDateString("fr-FR", { day: "numeric", month: "short" })
     ),
     titles: days.map((d) => {
       const text = d.toLocaleDateString("fr-FR", {
@@ -236,7 +240,7 @@ export function buildAlertBars({
       labels: [
         "Avant",
         ...days.map((d) =>
-          d.toLocaleDateString("fr-FR", { day: "numeric", month: "short" }),
+          d.toLocaleDateString("fr-FR", { day: "numeric", month: "short" })
         ),
       ],
       titles: [

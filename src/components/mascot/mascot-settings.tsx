@@ -4,7 +4,10 @@ import Logo from "@/components/Logo";
 import { SettingsRow, SettingsSection } from "@/components/settings-section";
 import { Switch } from "@/components/ui/choice-controls";
 import { useMascotPreferences } from "@/hooks/use-mascot-preferences";
-import { saveMascotPreferences, type MascotPreferences } from "@/lib/mascot-preferences";
+import {
+  saveMascotPreferences,
+  type MascotPreferences,
+} from "@/lib/mascot-preferences";
 import { MascotAvatar } from "./mascot-avatar";
 import { MascotChoices } from "./mascot-choices";
 
@@ -12,7 +15,9 @@ export function MascotSettings() {
   const preferences = useMascotPreferences();
   const update = (next: Partial<MascotPreferences>) => {
     if (!saveMascotPreferences({ ...preferences, ...next })) {
-      toast.error("Le choix n’a pas pu être enregistré sur cet appareil. Réessayez.");
+      toast.error(
+        "Le choix n’a pas pu être enregistré sur cet appareil. Réessayez."
+      );
     }
   };
   return (
@@ -20,8 +25,15 @@ export function MascotSettings() {
       aside={
         <div className="mascot-settings-preview mascot-greeting-target">
           {preferences.mode === "mascot" ? (
-            <MascotAvatar animal={preferences.animal} animated={preferences.animated} overflow size={56} />
-          ) : <Logo collapsed size="lg" variant="refined" />}
+            <MascotAvatar
+              animal={preferences.animal}
+              animated={preferences.animated}
+              overflow
+              size={56}
+            />
+          ) : (
+            <Logo collapsed size="lg" variant="refined" />
+          )}
         </div>
       }
       className="mascot-settings"
@@ -41,7 +53,7 @@ export function MascotSettings() {
           checked={preferences.animated}
           disabled={preferences.mode === "logo"}
           id="mascot-animation"
-          onCheckedChange={animated => update({ animated })}
+          onCheckedChange={(animated) => update({ animated })}
         />
       </SettingsRow>
     </SettingsSection>

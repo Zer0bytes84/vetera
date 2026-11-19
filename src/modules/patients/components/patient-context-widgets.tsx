@@ -55,11 +55,11 @@ export function PatientContextWidgets({
     );
   });
   const firstVisit = [...visitsToday].sort((a, b) =>
-    a.startTime.localeCompare(b.startTime),
+    a.startTime.localeCompare(b.startTime)
   )[0];
   const visitTime = normalizeDate(firstVisit?.startTime)?.toLocaleTimeString(
     "fr-FR",
-    { hour: "2-digit", minute: "2-digit" },
+    { hour: "2-digit", minute: "2-digit" }
   );
   const visitDetail = appointmentsLoading
     ? "Chargement des rendez-vous"
@@ -73,7 +73,7 @@ export function PatientContextWidgets({
     : tasksError
       ? "Actions indisponibles"
       : formatDisplayText(
-          tasks[0]?.title || "Aucune action en attente pour ce patient",
+          tasks[0]?.title || "Aucune action en attente pour ce patient"
         );
   return (
     <section
@@ -110,7 +110,7 @@ export function PatientContextWidgets({
               visitsToday.length === 0
               ? "is-zero"
               : "",
-            visitsToday.length > 0 ? "text-sky-600 dark:text-sky-400" : "",
+            visitsToday.length > 0 ? "text-sky-600 dark:text-sky-400" : ""
           )}
         >
           {appointmentsLoading
@@ -153,7 +153,7 @@ export function PatientContextWidgets({
               !tasksLoading && !tasksError && tasks.length === 0
                 ? "is-zero"
                 : "",
-              tasks.length > 0 ? "text-amber-600 dark:text-amber-400" : "",
+              tasks.length > 0 ? "text-amber-600 dark:text-amber-400" : ""
             )}
           >
             {tasksLoading

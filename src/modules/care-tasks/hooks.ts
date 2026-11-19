@@ -25,7 +25,7 @@ const listeners = new Set<
   (event: CareCompletedEvent) => void | Promise<void>
 >();
 export function subscribeCareTaskCompleted(
-  listener: (event: CareCompletedEvent) => void | Promise<void>,
+  listener: (event: CareCompletedEvent) => void | Promise<void>
 ) {
   listeners.add(listener);
   return () => {
@@ -57,6 +57,6 @@ export async function notifyCareTaskCompleted(task: CareTask) {
   }
   if (typeof window !== "undefined")
     window.dispatchEvent(
-      new CustomEvent("careTaskCompleted", { detail: event }),
+      new CustomEvent("careTaskCompleted", { detail: event })
     );
 }

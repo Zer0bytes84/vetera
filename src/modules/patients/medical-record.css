@@ -189,7 +189,9 @@
     var(--titlebar-clearance, 0px) +
     16px
   );
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03), 0 4px 12px -2px rgba(0, 0, 0, 0.02);
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.03),
+    0 4px 12px -2px rgba(0, 0, 0, 0.02);
   transition:
     transform 180ms cubic-bezier(0.2, 0, 0, 1),
     box-shadow 180ms cubic-bezier(0.2, 0, 0, 1),
@@ -201,7 +203,9 @@
   transform: translateY(-2px);
   border-color: var(--medical-hover);
   background: var(--medical-panel);
-  box-shadow: 0 4px 14px -2px rgba(0, 0, 0, 0.08), 0 12px 24px -6px rgba(0, 0, 0, 0.04);
+  box-shadow:
+    0 4px 14px -2px rgba(0, 0, 0, 0.08),
+    0 12px 24px -6px rgba(0, 0, 0, 0.04);
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -209,7 +213,9 @@
     transform: translateY(-2px);
     border-color: var(--medical-hover);
     background: var(--medical-panel);
-    box-shadow: 0 4px 14px -2px rgba(0, 0, 0, 0.08), 0 12px 24px -6px rgba(0, 0, 0, 0.04);
+    box-shadow:
+      0 4px 14px -2px rgba(0, 0, 0, 0.08),
+      0 12px 24px -6px rgba(0, 0, 0, 0.04);
   }
 }
 
@@ -257,7 +263,6 @@
   font-size: 18px;
   letter-spacing: -0.015em;
 }
-
 
 .patient-context-detail {
   min-width: 0;
@@ -373,7 +378,8 @@
   }
   /* With its own actions (the way back to the list), the heading spans the
      content width so they line up with the cards' right edge. */
-  :root[data-chrome-style="liquid-glass"] .patient-record-heading:has([data-slot="page-header-actions"]) {
+  :root[data-chrome-style="liquid-glass"]
+    .patient-record-heading:has([data-slot="page-header-actions"]) {
     padding-inline-end: 0;
   }
 }
@@ -415,7 +421,9 @@
   border: 1px solid var(--medical-border);
   border-radius: 16px;
   background: var(--medical-panel);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03), 0 8px 24px -4px rgba(0, 0, 0, 0.05);
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.03),
+    0 8px 24px -4px rgba(0, 0, 0, 0.05);
 }
 
 .medical-header-main {
@@ -635,7 +643,9 @@
   border: 1px solid var(--medical-border);
   border-radius: 14px;
   background: var(--medical-panel);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03), 0 4px 12px -2px rgba(0, 0, 0, 0.02);
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.03),
+    0 4px 12px -2px rgba(0, 0, 0, 0.02);
   transition:
     transform 180ms cubic-bezier(0.2, 0, 0, 1),
     box-shadow 180ms cubic-bezier(0.2, 0, 0, 1),
@@ -645,7 +655,9 @@
   .medical-kpi:hover {
     transform: translateY(-2px);
     border-color: var(--medical-hover);
-    box-shadow: 0 4px 14px -2px rgba(0, 0, 0, 0.08), 0 12px 24px -6px rgba(0, 0, 0, 0.04);
+    box-shadow:
+      0 4px 14px -2px rgba(0, 0, 0, 0.08),
+      0 12px 24px -6px rgba(0, 0, 0, 0.04);
   }
 }
 .medical-kpi-heading {
@@ -801,7 +813,7 @@
 }
 @media (hover: hover) and (pointer: fine) {
   .medical-kpi-text-action:hover,
-.medical-next-visit:hover {
+  .medical-next-visit:hover {
     color: var(--medical-ink);
   }
 }
@@ -1409,7 +1421,8 @@
   .patient-record-indicators {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
-  .patient-record-indicators > :is(.patient-context-widgets, .medical-kpi-strip) {
+  .patient-record-indicators
+    > :is(.patient-context-widgets, .medical-kpi-strip) {
     display: contents;
   }
   .patient-record-indicators > .medical-kpi-load-error {
@@ -1451,7 +1464,8 @@
 .medical-permanent-grid > section + section {
   border-top: 1px solid var(--medical-border);
 }
-.medical-permanent-grid :is(.medical-section-title, .medical-owner h3, .medical-health-heading h3) {
+.medical-permanent-grid
+  :is(.medical-section-title, .medical-owner h3, .medical-health-heading h3) {
   margin: 0 0 12px;
   padding: 0;
   background: none;
@@ -1580,7 +1594,6 @@
     animation-duration: 0ms !important;
   }
 }
-
 
 /* Chronologie: a vertical thread. Each event hangs on it by a small neutral
    marker whose glyph says its kind; the papers it produced (prescription,
@@ -1781,7 +1794,9 @@
 }
 button.patient-timeline-piece {
   cursor: pointer;
-  transition: background-color 160ms ease, border-color 160ms ease;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease;
 }
 @media (hover: hover) and (pointer: fine) {
   button.patient-timeline-piece:hover {
@@ -1821,7 +1836,10 @@ button.patient-timeline-piece:focus-visible {
 .patient-overview-last-meta > [data-slot="badge"]::before {
   display: none !important;
 }
-.patient-record-page .patient-overview-main .patient-overview-last .patient-overview-reason {
+.patient-record-page
+  .patient-overview-main
+  .patient-overview-last
+  .patient-overview-reason {
   margin: 6px 0 0;
   color: var(--medical-ink);
   font-size: 18px;
@@ -2062,7 +2080,8 @@ button.patient-timeline-piece:focus-visible {
 /* Block headings: the same signature on every block of the record, a small
    grey line icon and a light grey label, same size, gap and spacing. Scoped
    and firm, because Premium and Clean style these titles with strong rules. */
-:is(.patient-record-page, .patient-peek-panel) :is(h2, h3).record-block-heading {
+:is(.patient-record-page, .patient-peek-panel)
+  :is(h2, h3).record-block-heading {
   display: flex;
   align-items: center;
   gap: 8px;

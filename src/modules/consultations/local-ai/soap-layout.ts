@@ -27,7 +27,9 @@ const items = (text: string) =>
 /** One bullet per sentence; the plan is numbered. Words are left untouched. */
 export function layoutSection(key: keyof LocalSoapNote, text: string) {
   return items(text)
-    .map((item, index) => (key === "plan" ? `${index + 1}. ${item}` : `- ${item}`))
+    .map((item, index) =>
+      key === "plan" ? `${index + 1}. ${item}` : `- ${item}`
+    )
     .join("\n");
 }
 
@@ -45,7 +47,12 @@ export function soapNoteText(note: LocalSoapNote) {
 }
 
 const comparable = (text: string) =>
-  text.normalize("NFD").replace(/\p{M}/gu, "").toLocaleLowerCase("fr-FR").replace(/[^\p{L}]+/gu, " ").trim();
+  text
+    .normalize("NFD")
+    .replace(/\p{M}/gu, "")
+    .toLocaleLowerCase("fr-FR")
+    .replace(/[^\p{L}]+/gu, " ")
+    .trim();
 
 /** The section without its own heading on the first line (full or short title). */
 export function dropSoapHeading(key: keyof LocalSoapNote, text: string) {

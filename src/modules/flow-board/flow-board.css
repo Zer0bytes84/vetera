@@ -48,7 +48,9 @@
   box-shadow: var(--shadow-hairline);
   padding: 10px;
   scroll-snap-align: start;
-  transition: box-shadow var(--duration-fast) var(--ease-out), background-color var(--duration-fast) var(--ease-out);
+  transition:
+    box-shadow var(--duration-fast) var(--ease-out),
+    background-color var(--duration-fast) var(--ease-out);
 }
 
 .flow-lane {
@@ -138,7 +140,9 @@
   padding: 10px 10px 8px;
   outline: none;
   touch-action: none;
-  transition: box-shadow var(--duration-fast) var(--ease-out), opacity var(--duration-fast) var(--ease-out);
+  transition:
+    box-shadow var(--duration-fast) var(--ease-out),
+    opacity var(--duration-fast) var(--ease-out);
 }
 
 /* The selected card must read at a glance, in light and dark themes. */
@@ -149,11 +153,18 @@
 }
 
 .flow-card:focus:not(:focus-visible) {
-  outline-color: color-mix(in oklch, var(--ring, var(--primary)) 55%, transparent);
+  outline-color: color-mix(
+    in oklch,
+    var(--ring, var(--primary)) 55%,
+    transparent
+  );
 }
 
 .flow-card.is-urgent {
-  box-shadow: inset 3px 0 0 var(--signal-critical), var(--shadow-hairline), var(--shadow-card);
+  box-shadow:
+    inset 3px 0 0 var(--signal-critical),
+    var(--shadow-hairline),
+    var(--shadow-card);
 }
 
 .flow-card.is-dragging {
@@ -348,7 +359,11 @@
 }
 
 .flow-search:focus-within {
-  border-color: color-mix(in oklch, var(--ring, var(--primary)) 60%, var(--hairline));
+  border-color: color-mix(
+    in oklch,
+    var(--ring, var(--primary)) 60%,
+    var(--hairline)
+  );
 }
 
 .flow-search input {
@@ -420,7 +435,9 @@
   border-radius: 8px;
   background: var(--surface);
   color: var(--ink);
-  transition: background-color var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out);
+  transition:
+    background-color var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out);
 }
 
 .flow-record-button ~ .flow-record-button {
@@ -456,7 +473,9 @@
   padding: 0 10px;
   font-size: 12px;
   color: var(--ink-muted);
-  transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
+  transition:
+    background-color var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out);
 }
 
 .flow-density button[aria-pressed="true"] {
@@ -541,7 +560,8 @@
 .dark .flow-board-page .flow-timer.is-warning,
 .dark .flow-board-page .flow-timer.is-late {
   background: color-mix(in oklch, var(--signal-watch) 12%, var(--flow-card));
-  box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--signal-watch) 38%, transparent);
+  box-shadow: inset 0 0 0 1px
+    color-mix(in oklch, var(--signal-watch) 38%, transparent);
   color: var(--signal-watch);
 }
 
@@ -633,7 +653,10 @@
   white-space: nowrap;
 }
 
-:root[data-skin="clean"] .flow-board-page .flow-quiet-actions .flow-quiet-label {
+:root[data-skin="clean"]
+  .flow-board-page
+  .flow-quiet-actions
+  .flow-quiet-label {
   margin-bottom: 2px;
 }
 

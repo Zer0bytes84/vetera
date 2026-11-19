@@ -48,7 +48,10 @@ export type ChatThreadProps = {
 const GROUP_MS = 5 * 60_000;
 
 const time = (iso: string) =>
-  new Date(iso).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+  new Date(iso).toLocaleTimeString("fr-FR", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 
 export function ChatThread({
   messages,
@@ -85,7 +88,8 @@ export function ChatThread({
             const prev = messages[i - 1];
             const grouped =
               prev?.role === message.role &&
-              new Date(message.at).getTime() - new Date(prev.at).getTime() < GROUP_MS;
+              new Date(message.at).getTime() - new Date(prev.at).getTime() <
+                GROUP_MS;
             const user = message.role === "user";
             const name = message.author ?? (user ? userName : agentName);
 
@@ -102,17 +106,26 @@ export function ChatThread({
                     <span aria-hidden="true" className="w-8 shrink-0" />
                   ) : (
                     // Centred on the first line of the bubble (its 8 px padding and 24 px line put the middle 20 px down).
-                    <span className="mt-1 flex size-8 shrink-0 items-center justify-center">{avatar(message)}</span>
+                    <span className="mt-1 flex size-8 shrink-0 items-center justify-center">
+                      {avatar(message)}
+                    </span>
                   )}
                   <div
                     className={cn(
                       "flex min-w-0 flex-col gap-1",
                       // The assistant's turns stretch, so cards get the whole column.
-                      user ? "max-w-[85%] items-end" : "max-w-full flex-1 items-start",
+                      user
+                        ? "max-w-[85%] items-end"
+                        : "max-w-full flex-1 items-start"
                     )}
                   >
                     {!grouped && showNames && (
-                      <p className={cn("flex items-baseline gap-3 text-[0.8125rem]", user && "flex-row-reverse")}>
+                      <p
+                        className={cn(
+                          "flex items-baseline gap-3 text-[0.8125rem]",
+                          user && "flex-row-reverse"
+                        )}
+                      >
                         <span className="font-medium">{name}</span>
                         <time
                           dateTime={message.at}
@@ -125,8 +138,10 @@ export function ChatThread({
                     <div
                       className={cn(
                         "max-w-full text-sm leading-relaxed",
-                        user && !message.plain && "rounded-2xl bg-brand/10 px-3.5 py-2 whitespace-pre-wrap",
-                        user && !message.plain && !grouped && "rounded-tr-md",
+                        user &&
+                          !message.plain &&
+                          "rounded-2xl bg-brand/10 px-3.5 py-2 whitespace-pre-wrap",
+                        user && !message.plain && !grouped && "rounded-tr-md"
                       )}
                     >
                       {message.content}

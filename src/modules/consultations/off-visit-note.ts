@@ -47,10 +47,17 @@ export interface OffVisitNoteInput {
 }
 
 /** The note's own metadata, or null for any other note of the record. */
-export function readOffVisitNote(note: Pick<Note, "tags">): OffVisitNoteMeta | null {
+export function readOffVisitNote(
+  note: Pick<Note, "tags">
+): OffVisitNoteMeta | null {
   try {
     const meta = JSON.parse(note.tags ?? "{}")?.offVisitNote;
-    return meta && typeof meta === "object" && meta.kind in OFF_VISIT_KINDS && typeof meta.reviewedAt === "string" ? meta : null;
+    return meta &&
+      typeof meta === "object" &&
+      meta.kind in OFF_VISIT_KINDS &&
+      typeof meta.reviewedAt === "string"
+      ? meta
+      : null;
   } catch {
     return null;
   }
@@ -61,12 +68,21 @@ export function offVisitTitle(kind: OffVisitKind) {
 }
 
 /** Checks the input and builds the row; throws before anything is written. */
-export function buildOffVisitNote(input: OffVisitNoteInput, now = new Date().toISOString()): Note {
-  if (!input.validated) throw new Error("Relisez et validez la note avant de l’enregistrer.");
-  if (!input.patientId || !input.userId) throw new Error("Le patient et le vétérinaire doivent être identifiés.");
-  if (!(input.kind in OFF_VISIT_KINDS)) throw new Error("Choisissez la nature de la note.");
+export function buildOffVisitNote(
+  input: OffVisitNoteInput,
+  now = new Date().toISOString()
+): Note {
+  if (!input.validated)
+    throw new Error("Relisez et validez la note avant de l’enregistrer.");
+  if (!input.patientId || !input.userId)
+    throw new Error("Le patient et le vétérinaire doivent être identifiés.");
+  if (!(input.kind in OFF_VISIT_KINDS))
+    throw new Error("Choisissez la nature de la note.");
   const parsed = localSoapSchema.safeParse(input.note);
-  if (!parsed.success) throw new Error("La note est vide : écrivez ou dictez au moins une section.");
+  if (!parsed.success)
+    throw new Error(
+      "La note est vide : écrivez ou dictez au moins une section."
+    );
   const meta: OffVisitNoteMeta = {
     kind: input.kind,
     soap: parsed.data,
@@ -89,22 +105,42 @@ export function buildOffVisitNote(input: OffVisitNoteInput, now = new Date().toI
 }
 
 /** Writes a validated note to the patient's record, after checking the patient exists. */
-export async function saveOffVisitNote(input: OffVisitNoteInput): Promise<Note> {
+export async function saveOffVisitNote(
+  input: OffVisitNoteInput
+): Promise<Note> {
   const note = buildOffVisitNote(input);
   if (isTauriRuntime()) {
     await runDbTransaction(async (db) => {
-      const found = await db.select<Pick<Patient, "id">[]>("SELECT id FROM patients WHERE id = ?", [note.patientId]);
+      const found = await db.select<Pick<Patient, "id">[]>(
+        "SELECT id FROM patients WHERE id = ?",
+        [note.patientId]
+      );
       if (!found[0]) throw new Error("Ce patient n’existe plus.");
       await db.execute(
         "INSERT INTO notes (id, user_id, patient_id, title, content, is_favorite, tags, created_at, updated_at) VALUES (?, ?, ?, ?, ?, 0, ?, ?, ?)",
-        [note.id, note.userId, note.patientId, note.title, note.content, note.tags, note.createdAt, note.updatedAt],
+        [
+          note.id,
+          note.userId,
+          note.patientId,
+          note.title,
+          note.content,
+          note.tags,
+          note.createdAt,
+          note.updatedAt,
+        ]
       );
     });
   } else {
-    if (!getBrowserTable<Patient>("patients").some((patient) => patient.id === note.patientId))
+    if (
+      !getBrowserTable<Patient>("patients").some(
+        (patient) => patient.id === note.patientId
+      )
+    )
       throw new Error("Ce patient n’existe plus.");
     insertBrowserRow("notes", note);
   }
-  window.dispatchEvent(new CustomEvent("sqlite-data-changed", { detail: { tableName: "notes" } }));
+  window.dispatchEvent(
+    new CustomEvent("sqlite-data-changed", { detail: { tableName: "notes" } })
+  );
   return note;
 }

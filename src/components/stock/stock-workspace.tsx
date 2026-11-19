@@ -25,7 +25,12 @@ import {
 } from "@/components/ui/data-table";
 import { StatusPill, type StatusTone } from "@/components/ui/status-pill";
 import { QuietButton } from "@/components/ui/tuff-controls";
-import { CheckCircleIcon, ClockIcon, CubeIcon, WalletIcon } from "@heroicons/react/20/solid";
+import {
+  CheckCircleIcon,
+  ClockIcon,
+  CubeIcon,
+  WalletIcon,
+} from "@heroicons/react/20/solid";
 import { Panel, Shell, ShellHeader } from "@/components/ui/surface";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -95,7 +100,7 @@ interface StockWorkspaceProps {
   onAdjust: (
     product: Product,
     quantity: number,
-    reason: string,
+    reason: string
   ) => Promise<void>;
   onDelete: (product: Product) => void;
   onEdit: (product: Product) => void;
@@ -154,7 +159,7 @@ function StatusBadge({ product }: { product: Product }) {
     <Badge
       className={cn(
         "rounded-full border-0 px-2.5 font-medium",
-        status.className,
+        status.className
       )}
     >
       {status.label}
@@ -582,7 +587,7 @@ export function StockWorkspace({
       [
         ...new Set(products.map((product) => product.category).filter(Boolean)),
       ].sort((a, b) => a.localeCompare(b, "fr")),
-    [products],
+    [products]
   );
   const stockValue = products.reduce(
     (sum, product) =>
@@ -590,25 +595,25 @@ export function StockWorkspace({
       (product.stockTracked === false
         ? 0
         : product.quantity * product.purchasePriceAmount),
-    0,
+    0
   );
   const reorder = products.filter((product) => restockNeed(product) > 0);
   const expiries = products
     .filter((product) => ["expired", "expiring"].includes(stockAlert(product)))
     .sort((left, right) =>
-      (stockExpiry(left) ?? "9999").localeCompare(stockExpiry(right) ?? "9999"),
+      (stockExpiry(left) ?? "9999").localeCompare(stockExpiry(right) ?? "9999")
     );
   const reorderWords = reorder
     .slice()
     .sort(
       (left, right) =>
         restockNeed(right) / Math.max(1, right.minStock) -
-        restockNeed(left) / Math.max(1, left.minStock),
+        restockNeed(left) / Math.max(1, left.minStock)
     )
     .slice(0, 2)
     .map(
       (product) =>
-        `${formatDisplayText(product.name)} : ${formatNumber(product.availableQuantity ?? product.quantity)} sur ${formatNumber(product.minStock)}`,
+        `${formatDisplayText(product.name)} : ${formatNumber(product.availableQuantity ?? product.quantity)} sur ${formatNumber(product.minStock)}`
     );
 
   const filtered = useMemo(() => {
@@ -635,7 +640,7 @@ export function StockWorkspace({
   const [page, setPage] = usePage(pages, `${query}|${category}|${status}`);
   const visibleProducts = filtered.slice(
     (page - 1) * PAGE_SIZE,
-    page * PAGE_SIZE,
+    page * PAGE_SIZE
   );
 
   const filterControls = (
@@ -769,7 +774,7 @@ export function StockWorkspace({
             trend: "neutral",
             detailRow: (() => {
               const tracked = products.filter(
-                (p) => p.stockTracked !== false,
+                (p) => p.stockTracked !== false
               ).length;
               const untracked = products.length - tracked;
               return `${formatNumber(tracked)} avec stock suivi${untracked ? ` · ${formatNumber(untracked)} sans suivi de stock` : ""}`;
@@ -1005,7 +1010,7 @@ export function StockWorkspace({
                       .slice(0, 20)
                       .map((movement) => {
                         const product = products.find(
-                          (item) => item.id === movement.productId,
+                          (item) => item.id === movement.productId
                         );
                         const positive = movement.quantityDelta > 0;
                         return (
@@ -1045,7 +1050,7 @@ export function StockWorkspace({
                                   ? "text-muted-foreground"
                                   : positive
                                     ? "text-emerald-700 dark:text-emerald-300"
-                                    : "text-rose-700 dark:text-rose-300",
+                                    : "text-rose-700 dark:text-rose-300"
                               )}
                             >
                               {positive ? "+" : ""}
@@ -1161,8 +1166,8 @@ export function StockWorkspace({
                     products.reduce(
                       (sum, product) =>
                         sum + product.quantity * product.salePriceAmount,
-                      0,
-                    ),
+                      0
+                    )
                   )}
                 </p>
               </div>
@@ -1217,7 +1222,7 @@ export function StockWorkspace({
                 className="w-full"
                 onChange={(event) => {
                   const next = products.find(
-                    (product) => product.id === event.target.value,
+                    (product) => product.id === event.target.value
                   );
                   setInventoryProductId(event.target.value);
                   setCountedQuantity(next?.quantity || 0);
@@ -1257,7 +1262,7 @@ export function StockWorkspace({
                 <strong className="tabular-nums">
                   {countedQuantity -
                     (products.find(
-                      (product) => product.id === inventoryProductId,
+                      (product) => product.id === inventoryProductId
                     )?.quantity || 0)}
                 </strong>
               </div>
@@ -1276,18 +1281,21 @@ export function StockWorkspace({
               }
               onClick={async () => {
                 const product = products.find(
-                  (item) => item.id === inventoryProductId,
+                  (item) => item.id === inventoryProductId
                 );
                 if (!product) return;
                 setInventorySaving(true);
-                await guard(async () => {
-                  await onAdjust(product, countedQuantity, inventoryReason);
-                  setInventoryOpen(false);
-                }, {
-                  cleanup: () => {
-                    setInventorySaving(false);
+                await guard(
+                  async () => {
+                    await onAdjust(product, countedQuantity, inventoryReason);
+                    setInventoryOpen(false);
                   },
-                });
+                  {
+                    cleanup: () => {
+                      setInventorySaving(false);
+                    },
+                  }
+                );
               }}
             >
               {inventorySaving ? "Enregistrement…" : "Valider le comptage"}

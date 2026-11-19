@@ -80,8 +80,17 @@ export class LocalInferenceSession {
   }
   private post(message: WorkerRequest, transfer: Transferable[]) {
     const request =
-      message.type === "generate" && message.generators.some((candidate) => this.unavailable.has(candidate.url))
-        ? { ...message, generators: message.generators.filter((candidate) => !this.unavailable.has(candidate.url)), fellBack: true }
+      message.type === "generate" &&
+      message.generators.some((candidate) =>
+        this.unavailable.has(candidate.url)
+      )
+        ? {
+            ...message,
+            generators: message.generators.filter(
+              (candidate) => !this.unavailable.has(candidate.url)
+            ),
+            fellBack: true,
+          }
         : message;
     this.lastRequest = message;
     this.worker.postMessage(request, transfer);
@@ -113,8 +122,16 @@ export class LocalInferenceSession {
                 }
               );
       const spawn = () =>
-        new Worker(new URL("../workers/soap.worker.ts", import.meta.url), { type: "module" });
-      return new LocalInferenceSession(worker, release, signal, onProgress, kind === "soap" ? spawn : undefined);
+        new Worker(new URL("../workers/soap.worker.ts", import.meta.url), {
+          type: "module",
+        });
+      return new LocalInferenceSession(
+        worker,
+        release,
+        signal,
+        onProgress,
+        kind === "soap" ? spawn : undefined
+      );
     } catch (error) {
       release();
       throw error;

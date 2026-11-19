@@ -174,7 +174,8 @@ function medToDraft(
     route: poso?.voie,
     // Schéma complet du catalogue (dose d'entretien, voie…) quand seule la
     // dose de tête a été reprise : rien n'est perdu, le vétérinaire ajuste.
-    instructions: parsed && catalog?.remainder ? `Schéma : ${poso?.dose}` : undefined,
+    instructions:
+      parsed && catalog?.remainder ? `Schéma : ${poso?.dose}` : undefined,
     warnings: med.effetsSecondaires?.join(" · "),
     sortOrder,
   };
@@ -236,7 +237,9 @@ export function PrescriptionBuilder({
 
   // Init : si une prescription existe pour cette consultation, on hydrate
   useEffect(() => {
-    const existing = prescriptionsRepo.forAppointment(appointmentId).find(row => row.status === "draft" || row.status === "signed");
+    const existing = prescriptionsRepo
+      .forAppointment(appointmentId)
+      .find((row) => row.status === "draft" || row.status === "signed");
     if (existing) {
       setWeightKg(existing.weightKg);
       setDiagnosis(existing.diagnosis ?? "");
@@ -420,31 +423,38 @@ export function PrescriptionBuilder({
 
       setItems((prev) => [
         ...prev,
-        ...instantiateTemplateItems(template, prev.length, (item, sortOrder) => {
-          const line: DraftItem = { ...item, id: makeId(), sortOrder };
-          const computation = computeItemDose(line, effectiveWeight);
-          return {
-            ...line,
-            computedDoseMg: computation?.computedMg,
-            computedVolumeMl: computation?.computedMl,
-          };
-        }),
+        ...instantiateTemplateItems(
+          template,
+          prev.length,
+          (item, sortOrder) => {
+            const line: DraftItem = { ...item, id: makeId(), sortOrder };
+            const computation = computeItemDose(line, effectiveWeight);
+            return {
+              ...line,
+              computedDoseMg: computation?.computedMg,
+              computedVolumeMl: computation?.computedMl,
+            };
+          }
+        ),
       ]);
       if (usedLatestWeight) {
         setWeightKg(latestWeight.weightKg);
       }
       // Les champs déjà saisis par le vétérinaire ne sont jamais écrasés.
       if (template.diagnosis) {
-        setDiagnosis((current) => current.trim() ? current : template.diagnosis ?? "");
+        setDiagnosis((current) =>
+          current.trim() ? current : (template.diagnosis ?? "")
+        );
       }
       if (template.generalInstructions) {
         setGeneralInstructions((current) =>
-          current.trim() ? current : template.generalInstructions ?? ""
+          current.trim() ? current : (template.generalInstructions ?? "")
         );
       }
 
       const count = template.items.length;
-      const added = count > 1 ? `${count} médicaments ajoutés` : "1 médicament ajouté";
+      const added =
+        count > 1 ? `${count} médicaments ajoutés` : "1 médicament ajouté";
       const weightNote = effectiveWeight
         ? `Doses calculées pour ${effectiveWeight} kg${usedLatestWeight ? " (dernière pesée)" : ""}.`
         : "Renseignez le poids pour calculer les doses.";
@@ -490,7 +500,9 @@ export function PrescriptionBuilder({
       // Upsert : une seule ordonnance par consultation. On met à jour la
       // ligne existante au lieu d'en empiler une nouvelle à chaque
       // sauvegarde (les anciennes lignes vides polluaient la liste).
-      const existing = prescriptionsRepo.forAppointment(appointmentId).find(row => row.status === "draft" || row.status === "signed");
+      const existing = prescriptionsRepo
+        .forAppointment(appointmentId)
+        .find((row) => row.status === "draft" || row.status === "signed");
       let prescriptionId: string;
       let finalStatus = newStatus;
       if (existing) {
@@ -761,8 +773,8 @@ export function PrescriptionBuilder({
             <AlertDialogTitle>Signer l'ordonnance ?</AlertDialogTitle>
             <AlertDialogDescription>
               La signature fige l'ordonnance pour {patient.name} : elle ne
-              pourra plus repasser en brouillon. Vérifiez les médicaments,
-              les doses et les instructions avant de confirmer.
+              pourra plus repasser en brouillon. Vérifiez les médicaments, les
+              doses et les instructions avant de confirmer.
             </AlertDialogDescription>
             {safetyAlerts.length > 0 ? (
               <p
@@ -1011,7 +1023,9 @@ function ItemRow({
     item.concentrationMgPerMl != null
       ? `${item.concentrationMgPerMl} mg/mL`
       : null,
-    item.instructions?.trim() ? t("prescriptions.item.instructionsFilled") : null,
+    item.instructions?.trim()
+      ? t("prescriptions.item.instructionsFilled")
+      : null,
     item.warnings?.trim() ? t("prescriptions.item.warningsFilled") : null,
   ].filter((part): part is string => Boolean(part));
 

@@ -48,11 +48,11 @@ export function PatientKpiStrip({
   const sparklineWeights = sortedWeights.slice(-6);
   const minWeight = Math.min(
     ...sparklineWeights.map((entry) => entry.weightKg),
-    (lastWeight?.weightKg || 1) * 0.9,
+    (lastWeight?.weightKg || 1) * 0.9
   );
   const maxWeight = Math.max(
     ...sparklineWeights.map((entry) => entry.weightKg),
-    (lastWeight?.weightKg || 1) * 1.1,
+    (lastWeight?.weightKg || 1) * 1.1
   );
   const sparklinePoints = sparklineWeights
     .map((entry, index) => {
@@ -148,7 +148,7 @@ export function PatientKpiStrip({
                     {sparklineWeights
                       .map(
                         (entry) =>
-                          `${formatDateShort(entry.measuredAt)} : ${entry.weightKg.toLocaleString("fr-FR")} kg`,
+                          `${formatDateShort(entry.measuredAt)} : ${entry.weightKg.toLocaleString("fr-FR")} kg`
                       )
                       .join(" ; ")}
                   </title>
@@ -178,7 +178,7 @@ export function PatientKpiStrip({
                     "medical-weight-delta inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold border shadow-2xs",
                     weightChange.deltaKg < 0
                       ? "bg-amber-50 text-amber-700 border-amber-200/80 dark:bg-amber-950/50 dark:text-amber-300 dark:border-amber-800/40"
-                      : "bg-emerald-50 text-emerald-700 border-emerald-200/80 dark:bg-emerald-950/50 dark:text-emerald-300 dark:border-emerald-800/40",
+                      : "bg-emerald-50 text-emerald-700 border-emerald-200/80 dark:bg-emerald-950/50 dark:text-emerald-300 dark:border-emerald-800/40"
                   )}
                   title="Variation depuis la pesée précédente"
                 >

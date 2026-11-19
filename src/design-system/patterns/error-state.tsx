@@ -34,7 +34,9 @@ export function ErrorState({
         strokeWidth={1.5}
       />
       <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-4 gap-y-2">
-        <p className="t-13 leading-5 text-[color:var(--ink-soft,#5d5d5d)]">{message}</p>
+        <p className="t-13 leading-5 text-[color:var(--ink-soft,#5d5d5d)]">
+          {message}
+        </p>
         {onRetry && (
           <Button onClick={onRetry} size="sm" type="button" variant="outline">
             {retryLabel}

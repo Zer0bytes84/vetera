@@ -102,33 +102,42 @@ export function CareTaskForm({
         }
         setBusy(true);
         setError(null);
-        await guard(async () => {
-          await careTasksService.create(
-            {
-              patientId: patient,
-              label,
-              type,
-              scheduledAt: scheduled,
-              productId: product || null,
-              productQuantity: products.data.find(p => p.id === product)?.stockTracked === false ? 1 : parseStockQuantityInput(productQuantity),
-              note,
+        await guard(
+          async () => {
+            await careTasksService.create(
+              {
+                patientId: patient,
+                label,
+                type,
+                scheduledAt: scheduled,
+                productId: product || null,
+                productQuantity:
+                  products.data.find((p) => p.id === product)?.stockTracked ===
+                  false
+                    ? 1
+                    : parseStockQuantityInput(productQuantity),
+                note,
+              },
+              currentUser?.id ?? ""
+            );
+            announceCareTasksChanged();
+            onSaved(scheduled);
+          },
+          {
+            recover: (e) => {
+              setError(careErrorMessage(e, "create"));
             },
-            currentUser?.id ?? ""
-          );
-          announceCareTasksChanged();
-          onSaved(scheduled);
-        }, {
-          recover: (e) => {
-            setError(careErrorMessage(e, "create"));
-          },
-          cleanup: () => {
-            setBusy(false);
-          },
-        });
+            cleanup: () => {
+              setBusy(false);
+            },
+          }
+        );
       }}
     >
       <div className="space-y-1.5 t-13">
-        <span className="flex items-center justify-between">Patient <span className="modal-required">requis</span></span>
+        <span className="flex items-center justify-between">
+          Patient <span className="modal-required">requis</span>
+        </span>
         <Popover open={patientPickerOpen} onOpenChange={setPatientPickerOpen}>
           <PopoverTrigger
             disabled={!!patientId}
@@ -194,7 +203,9 @@ export function CareTaskForm({
         </Popover>
       </div>
       <label className="block space-y-1.5 t-13">
-        <span className="flex items-center justify-between">Soin <span className="modal-required">requis</span></span>
+        <span className="flex items-center justify-between">
+          Soin <span className="modal-required">requis</span>
+        </span>
         <Input
           className="h-11 w-full rounded-xl t-13"
           placeholder="Ex. pansement, injection, contrôle de plaie"
@@ -220,7 +231,9 @@ export function CareTaskForm({
           </select>
         </label>
         <div className="min-w-0 space-y-1.5 t-13">
-          <span className="flex items-center justify-between">Date et heure prévues <span className="modal-required">requis</span></span>
+          <span className="flex items-center justify-between">
+            Date et heure prévues <span className="modal-required">requis</span>
+          </span>
           <div className="flex gap-2">
             <DatePicker
               aria-label="Choisir la date du soin"
@@ -233,8 +246,18 @@ export function CareTaskForm({
           </div>
         </div>
       </div>
-      <ProductStockFields products={products.data} productId={product} quantity={productQuantity}
-        onProductChange={id => { setProduct(id); setProductQuantity("1"); }} onQuantityChange={setProductQuantity} disabled={busy} optional />
+      <ProductStockFields
+        products={products.data}
+        productId={product}
+        quantity={productQuantity}
+        onProductChange={(id) => {
+          setProduct(id);
+          setProductQuantity("1");
+        }}
+        onQuantityChange={setProductQuantity}
+        disabled={busy}
+        optional
+      />
       <label className="block space-y-1.5 t-13">
         Note
         <textarea

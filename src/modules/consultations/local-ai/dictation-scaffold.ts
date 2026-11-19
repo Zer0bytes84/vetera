@@ -18,10 +18,10 @@ const marker =
 const escape = (text: string) => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 const heading = new RegExp(
   `(?<![\\p{L}\\p{N}])([SOAP])\\s*·(?:\\s*(?:${SOAP_SECTIONS.map(({ title }) => escape(title.slice(title.indexOf("·") + 1).trim())).join("|")})(?![\\p{L}\\p{N}]))?`,
-  "gu",
+  "gu"
 );
 const headingSection: Record<string, keyof LocalSoapNote> = Object.fromEntries(
-  SOAP_SECTIONS.map(({ key, title }) => [title[0], key]),
+  SOAP_SECTIONS.map(({ key, title }) => [title[0], key])
 );
 const sectionFor = (label: string): keyof LocalSoapNote => {
   label = label.trim().replace(/^ne\s+(?:pas\s+)?/iu, "");
@@ -35,7 +35,7 @@ const sectionFor = (label: string): keyof LocalSoapNote => {
 // observation propre rejoint le segment de plan au lieu de rester seul en S.
 const isSubjectFragment = (text: string) =>
   /^(?:le|la|l[’'])\s+(?:patient(?:e)?|animal|chat(?:te)?|chien(?:ne)?)\s+(?:a|ont|est|sont|présente|présentent)\s*$/iu.test(
-    text.trim(),
+    text.trim()
   );
 
 export function buildDictationScaffold(transcript: string): LocalSoapNote {
@@ -46,7 +46,7 @@ export function buildDictationScaffold(transcript: string): LocalSoapNote {
   // mentions, and apostrophes or quoted compound names must be removed whole.
   for (const mention of parsePatientMentions(transcript).reverse()) {
     const prefix = /\b(?:pour|patient)\s+$/iu.exec(
-      text.slice(0, mention.start),
+      text.slice(0, mention.start)
     );
     const start = prefix?.index ?? mention.start;
     text =
@@ -131,7 +131,7 @@ export function removeDosageSentences(transcript: string): {
 // jamais de posologie ; la vérification stricte de sa sortie est inchangée.
 export function mergeDosageIntoPlan(
   note: LocalSoapNote,
-  dosageSentences: string[],
+  dosageSentences: string[]
 ): LocalSoapNote {
   if (!dosageSentences.length) return note;
   return {
@@ -155,7 +155,7 @@ const evidence = (text: string) => evidenceTokens(text).join(" ");
 export class SoapFidelityError extends Error {
   constructor() {
     super(
-      "La réponse de l’assistant ne reprend pas fidèlement les observations dictées. Votre dictée est conservée ; aucune note n’a été enregistrée.",
+      "La réponse de l’assistant ne reprend pas fidèlement les observations dictées. Votre dictée est conservée ; aucune note n’a été enregistrée."
     );
     this.name = "SoapFidelityError";
   }

@@ -11,7 +11,11 @@ const STATE_LABEL: Record<OccupancyState, string> = {
  * Capacity at a glance: one unit per active location, then the forecast that
  * planned discharges support.
  */
-export function OccupancyUnits({ compact = false, locations, stays }: {
+export function OccupancyUnits({
+  compact = false,
+  locations,
+  stays,
+}: {
   /** Inside another card (the dashboard's Hospitalisés): no card of its own. */
   compact?: boolean;
   locations: StayLocation[];
@@ -20,17 +24,20 @@ export function OccupancyUnits({ compact = false, locations, stays }: {
   const summary = occupancySummary(locations, stays, new Date());
   if (!summary.total) return null;
   const states = (["occupied", "leaving", "free"] as const).filter((state) =>
-    summary.units.some((unit) => unit.state === state),
+    summary.units.some((unit) => unit.state === state)
   );
   return (
     <section
       aria-label="Capacité d’hospitalisation"
-      className={compact ? "stay-occupancy stay-occupancy-compact" : "stay-occupancy"}
+      className={
+        compact ? "stay-occupancy stay-occupancy-compact" : "stay-occupancy"
+      }
     >
       <p className="stay-occupancy-head">
         <strong>{summary.occupied}</strong>
         <span>
-          sur {summary.total} place{summary.total > 1 ? "s" : ""} occupée{summary.occupied > 1 ? "s" : ""}
+          sur {summary.total} place{summary.total > 1 ? "s" : ""} occupée
+          {summary.occupied > 1 ? "s" : ""}
         </span>
       </p>
       <div
@@ -39,7 +46,11 @@ export function OccupancyUnits({ compact = false, locations, stays }: {
         role="img"
       >
         {summary.units.map((unit) => (
-          <span data-state={unit.state} key={unit.id} title={`${unit.name} · ${STATE_LABEL[unit.state]}`} />
+          <span
+            data-state={unit.state}
+            key={unit.id}
+            title={`${unit.name} · ${STATE_LABEL[unit.state]}`}
+          />
         ))}
       </div>
       <ul aria-hidden="true" className="stay-occupancy-legend">
@@ -50,7 +61,9 @@ export function OccupancyUnits({ compact = false, locations, stays }: {
           </li>
         ))}
       </ul>
-      {summary.forecast ? <p className="stay-occupancy-forecast">{summary.forecast}</p> : null}
+      {summary.forecast ? (
+        <p className="stay-occupancy-forecast">{summary.forecast}</p>
+      ) : null}
     </section>
   );
 }

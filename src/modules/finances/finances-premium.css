@@ -5,10 +5,25 @@
   /* No square engraved frame around the register: its table carries its own rounded grey band. */
   box-shadow: none;
 }
-:root[data-skin="clean"] .finance-register > [data-slot="tabs-content"] { margin: 0; min-width: 0; }
-:root[data-skin="clean"] .finance-register > [data-slot="tabs-content"] > [data-slot="card"] { box-shadow: none !important; }
-:root[data-skin="clean"] .finance-register > [data-slot="tabs-content"] > [data-slot="card"]::before { display: none !important; }
-:root[data-skin="clean"] .finance-register [data-slot="card-header"] { padding: 16px 20px !important; }
+:root[data-skin="clean"] .finance-register > [data-slot="tabs-content"] {
+  margin: 0;
+  min-width: 0;
+}
+:root[data-skin="clean"]
+  .finance-register
+  > [data-slot="tabs-content"]
+  > [data-slot="card"] {
+  box-shadow: none !important;
+}
+:root[data-skin="clean"]
+  .finance-register
+  > [data-slot="tabs-content"]
+  > [data-slot="card"]::before {
+  display: none !important;
+}
+:root[data-skin="clean"] .finance-register [data-slot="card-header"] {
+  padding: 16px 20px !important;
+}
 
 /* Compact solid segmented controls, separate from the engraved table header. */
 

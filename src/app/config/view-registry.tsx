@@ -13,7 +13,8 @@ import type { View } from "@/types";
 // Each page's code is fetched once, by the first of two callers: the page itself when it opens, or
 // `prefetchView` when the pointer or the keyboard reaches its navigation entry. The entry is then
 // already there at the click, and the loading line below has nothing to announce.
-const loadClinicalWorkspace = () => import("@/modules/clinique/pages/clinical-workspace");
+const loadClinicalWorkspace = () =>
+  import("@/modules/clinique/pages/clinical-workspace");
 const loadAgendaPage = () => import("@/modules/agenda/pages/agenda-page");
 const loadFlowBoardPage = () => import("@/modules/flow-board/flow-board-page");
 const loadFinancesPage = () => import("@/modules/finances/pages/finances-page");
@@ -23,8 +24,10 @@ const loadPatientsPage = () => import("@/modules/patients/pages/patients-page");
 const loadStockPage = () => import("@/modules/stock/pages/stock-page");
 const loadTasksPage = () => import("@/components/Tasks");
 const loadTeamPage = () => import("@/components/Team");
-const loadFinancialAnalyticsPage = () => import("@/modules/finances/financial-analytics-page");
-const loadPatientDetailPage = () => import("@/modules/patients/patient-detail-page");
+const loadFinancialAnalyticsPage = () =>
+  import("@/modules/finances/financial-analytics-page");
+const loadPatientDetailPage = () =>
+  import("@/modules/patients/patient-detail-page");
 
 const ClinicalWorkspace = lazy(loadClinicalWorkspace);
 const AgendaPage = lazy(loadAgendaPage);
@@ -114,9 +117,12 @@ class ViewErrorBoundary extends Component<
     return (
       <div className="flex min-h-[40vh] items-center justify-center p-8">
         <div className="w-full max-w-lg rounded-2xl border border-border bg-card p-6 text-card-foreground shadow-sm">
-          <p className="font-semibold text-base">Cette vue n’a pas pu être chargée.</p>
+          <p className="font-semibold text-base">
+            Cette vue n’a pas pu être chargée.
+          </p>
           <p className="mt-2 text-muted-foreground text-sm">
-            L’application reste disponible. Rechargez uniquement cette vue pour reprendre.
+            L’application reste disponible. Rechargez uniquement cette vue pour
+            reprendre.
           </p>
           <button
             className="mt-5 rounded-lg bg-primary px-4 py-2 font-medium text-primary-foreground text-sm"
@@ -151,16 +157,36 @@ export function renderView(view: View, props: ViewRegistryProps) {
         />
       );
     case "soins":
-      return renderLazyView(<ClinicalWorkspace initialTab="soins" onNavigate={props.onNavigate} onNavigateToPatient={props.onNavigateToPatient} />);
+      return renderLazyView(
+        <ClinicalWorkspace
+          initialTab="soins"
+          onNavigate={props.onNavigate}
+          onNavigateToPatient={props.onNavigateToPatient}
+        />
+      );
     case "agenda":
       return renderLazyView(<AgendaPage onNavigate={props.onNavigate} />);
     case "clinique":
-      return renderLazyView(<ClinicalWorkspace onNavigate={props.onNavigate} onNavigateToPatient={props.onNavigateToPatient} />);
+      return renderLazyView(
+        <ClinicalWorkspace
+          onNavigate={props.onNavigate}
+          onNavigateToPatient={props.onNavigateToPatient}
+        />
+      );
     case "flux":
-      return renderLazyView(<FlowBoardPage onNavigate={props.onNavigate} onNavigateToPatient={props.onNavigateToPatient} />);
+      return renderLazyView(
+        <FlowBoardPage
+          onNavigate={props.onNavigate}
+          onNavigateToPatient={props.onNavigateToPatient}
+        />
+      );
     case "patients":
       return renderLazyView(
-        <PatientsPage onNavigateToPatient={props.onOpenPatientRecord ?? props.onNavigateToPatient} />
+        <PatientsPage
+          onNavigateToPatient={
+            props.onOpenPatientRecord ?? props.onNavigateToPatient
+          }
+        />
       );
     case "patient_detail":
       return renderLazyView(

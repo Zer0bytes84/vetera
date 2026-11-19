@@ -26,7 +26,7 @@ import { guard } from "@/lib/guard";
 
 const LocalConsultationAssistant = lazy(
   () =>
-    import("@/modules/consultations/components/local-consultation-assistant"),
+    import("@/modules/consultations/components/local-consultation-assistant")
 );
 
 const hasText = (note: LocalSoapNote) =>
@@ -62,27 +62,30 @@ export function OffVisitNotePanel({
   const save = async (
     soap: LocalSoapNote,
     transcript: string,
-    origin: SoapNoteOrigin | "saisie",
+    origin: SoapNoteOrigin | "saisie"
   ) => {
     if (!currentUser)
       throw new Error("Connectez-vous pour enregistrer une note.");
     setSaving(true);
-    await guard(async () => {
-      const saved = await saveOffVisitNote({
-        patientId,
-        userId: currentUser.uid,
-        kind,
-        note: soap,
-        transcript,
-        origin,
-        validated: true,
-      });
-      onSaved(saved);
-    }, {
-      cleanup: () => {
-        setSaving(false);
+    await guard(
+      async () => {
+        const saved = await saveOffVisitNote({
+          patientId,
+          userId: currentUser.uid,
+          kind,
+          note: soap,
+          transcript,
+          origin,
+          validated: true,
+        });
+        onSaved(saved);
       },
-    });
+      {
+        cleanup: () => {
+          setSaving(false);
+        },
+      }
+    );
   };
 
   if (note && existing) {
@@ -120,7 +123,7 @@ export function OffVisitNotePanel({
                   {existing.soap[key]}
                 </dd>
               </div>
-            ),
+            )
           )}
         </dl>
       </section>
@@ -173,7 +176,7 @@ export function OffVisitNotePanel({
               "rounded-full border px-3 py-1 text-xs font-medium transition-colors",
               kind === value
                 ? "border-foreground bg-foreground text-background"
-                : "border-border text-muted-foreground hover:text-foreground",
+                : "border-border text-muted-foreground hover:text-foreground"
             )}
             key={value}
             onClick={() => setKind(value)}
@@ -210,14 +213,14 @@ export function OffVisitNotePanel({
           onClick={() =>
             void save(draft, "", "saisie")
               .then(() =>
-                toast.success("Note validée et enregistrée au dossier."),
+                toast.success("Note validée et enregistrée au dossier.")
               )
               .catch((error: unknown) =>
                 toast.error(
                   error instanceof Error
                     ? error.message
-                    : "La note n’a pas été enregistrée.",
-                ),
+                    : "La note n’a pas été enregistrée."
+                )
               )
           }
           size="sm"

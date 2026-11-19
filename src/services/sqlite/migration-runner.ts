@@ -61,7 +61,9 @@ export function parseSqlStatements(sql: string): string[] {
   return statements;
 }
 
-function validateMigrationRegistry(migrations: readonly SqliteMigration[]): void {
+function validateMigrationRegistry(
+  migrations: readonly SqliteMigration[]
+): void {
   const versions = new Set<string>();
   let previousVersion = -1;
 
@@ -123,10 +125,11 @@ export async function runSqliteMigrations(
     let foreignKeysWereEnabled = false;
 
     if (migration.disableForeignKeys) {
-      const foreignKeyRows = await database.select<Array<{ foreign_keys: number }>>(
-        "PRAGMA foreign_keys"
-      );
-      foreignKeysWereEnabled = Number(foreignKeyRows[0]?.foreign_keys ?? 0) === 1;
+      const foreignKeyRows = await database.select<
+        Array<{ foreign_keys: number }>
+      >("PRAGMA foreign_keys");
+      foreignKeysWereEnabled =
+        Number(foreignKeyRows[0]?.foreign_keys ?? 0) === 1;
       await database.execute("PRAGMA foreign_keys = OFF");
     }
 
@@ -147,7 +150,9 @@ export async function runSqliteMigrations(
       }
 
       if (migration.disableForeignKeys) {
-        const violations = await database.select<unknown[]>("PRAGMA foreign_key_check");
+        const violations = await database.select<unknown[]>(
+          "PRAGMA foreign_key_check"
+        );
         if (violations.length > 0) {
           throw new Error(
             `Foreign key check failed with ${violations.length} violation(s)`

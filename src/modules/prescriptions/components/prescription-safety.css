@@ -90,7 +90,8 @@
   color: var(--ink);
 }
 
-:root[data-skin="clean"] :is(.rx-safety-sub, .rx-safety-reason, .rx-safety-source) {
+:root[data-skin="clean"]
+  :is(.rx-safety-sub, .rx-safety-reason, .rx-safety-source) {
   color: var(--ink-soft);
 }
 

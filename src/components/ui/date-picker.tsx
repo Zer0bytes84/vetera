@@ -2,7 +2,11 @@ import { useState } from "react";
 import { CalendarDaysIcon } from "@heroicons/react/16/solid";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 
 const DAY = /^(\d{4})-(\d{2})-(\d{2})$/;
@@ -11,13 +15,19 @@ const DAY = /^(\d{4})-(\d{2})-(\d{2})$/;
  * Compact popover calendar: 36px days. The width is explicit because a popover
  * sized from its content would otherwise let the stretchable day cells grow.
  */
-export const COMPACT_CALENDAR_CLASS = "p-1 [--cell-size:--spacing(9)] w-[calc(var(--cell-size)*7+0.5rem)]";
+export const COMPACT_CALENDAR_CLASS =
+  "p-1 [--cell-size:--spacing(9)] w-[calc(var(--cell-size)*7+0.5rem)]";
 
 /** Parse a civil YYYY-MM-DD day as a local date, never through UTC. */
 export function parseDateValue(value?: string | null): Date | undefined {
   const match = value?.match(DAY);
   if (!match) return undefined;
-  const date = new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]), 12);
+  const date = new Date(
+    Number(match[1]),
+    Number(match[2]) - 1,
+    Number(match[3]),
+    12
+  );
   return Number.isNaN(date.getTime()) ? undefined : date;
 }
 
@@ -48,8 +58,19 @@ export interface DatePickerProps {
  * follows the system language instead of the app's.
  */
 export function DatePicker({
-  value, onChange, id, name, min, max, required, disabled, clearable,
-  placeholder = "Choisir une date", "aria-label": ariaLabel, className, align = "start",
+  value,
+  onChange,
+  id,
+  name,
+  min,
+  max,
+  required,
+  disabled,
+  clearable,
+  placeholder = "Choisir une date",
+  "aria-label": ariaLabel,
+  className,
+  align = "start",
 }: DatePickerProps) {
   const [open, setOpen] = useState(false);
   const selected = parseDateValue(value);
@@ -70,13 +91,26 @@ export function DatePicker({
             data-field="date"
             type="button"
             variant="outline"
-            className={cn("h-9 w-full min-w-0 justify-start gap-2 px-3 font-normal", !selected && "text-muted-foreground", className)}
+            className={cn(
+              "h-9 w-full min-w-0 justify-start gap-2 px-3 font-normal",
+              !selected && "text-muted-foreground",
+              className
+            )}
           />
         }
       >
-        <CalendarDaysIcon aria-hidden="true" className="size-4 shrink-0 text-muted-foreground" />
+        <CalendarDaysIcon
+          aria-hidden="true"
+          className="size-4 shrink-0 text-muted-foreground"
+        />
         <span className="truncate tabular-nums">
-          {selected ? selected.toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit", year: "numeric" }) : placeholder}
+          {selected
+            ? selected.toLocaleDateString("fr-FR", {
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric",
+              })
+            : placeholder}
         </span>
       </PopoverTrigger>
       {name && <input name={name} type="hidden" value={value} />}
@@ -107,7 +141,10 @@ export function DatePicker({
         {clearable && value && (
           <Button
             className="w-full"
-            onClick={() => { onChange(""); setOpen(false); }}
+            onClick={() => {
+              onChange("");
+              setOpen(false);
+            }}
             size="sm"
             type="button"
             variant="ghost"

@@ -7,7 +7,10 @@ import FishSymbolIcon from "@hugeicons/core-free-icons/FishSymbolIcon";
 export const CatGlyph: IconSvgElement = [
   [
     "path",
-    { key: "cat-head", d: "M4 10V3l6 4h4l6-4v7c1 2 1 5 0 7-2 3-6 4-8 4s-6-1-8-4c-1-2-1-5 0-7Z" },
+    {
+      key: "cat-head",
+      d: "M4 10V3l6 4h4l6-4v7c1 2 1 5 0 7-2 3-6 4-8 4s-6-1-8-4c-1-2-1-5 0-7Z",
+    },
   ],
   [
     "path",
@@ -35,7 +38,10 @@ export const RabbitGlyph: IconSvgElement = [
       d: "M8 11C5 6 5 2 7 2s3 4 3 8M14 10c0-6 1-8 3-8s2 5-1 9M5 15c0-3 3-5 7-5s7 2 7 5-3 6-7 6-7-3-7-6Z",
     },
   ],
-  ["path", { key: "rabbit-face", d: "M9 14h.01M15 14h.01M10 17l2 1 2-1M12 18v2" }],
+  [
+    "path",
+    { key: "rabbit-face", d: "M9 14h.01M15 14h.01M10 17l2 1 2-1M12 18v2" },
+  ],
 ];
 export const TurtleGlyph: IconSvgElement = [
   ["ellipse", { key: "turtle-shell", cx: 11, cy: 12, rx: 7, ry: 6 }],

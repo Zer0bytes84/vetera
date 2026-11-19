@@ -19,8 +19,13 @@ export const CROSS_ORIGIN_ISOLATION_HEADERS = {
 // On every dev response, plugin middlewares (local AI runtime) included: workers
 // and WASM files must carry the policy of the page that loads them.
 const crossOriginIsolation = (): Plugin => {
-  const apply = (_request: unknown, response: { setHeader(name: string, value: string): void }, next: () => void) => {
-    for (const [name, value] of Object.entries(CROSS_ORIGIN_ISOLATION_HEADERS)) response.setHeader(name, value);
+  const apply = (
+    _request: unknown,
+    response: { setHeader(name: string, value: string): void },
+    next: () => void
+  ) => {
+    for (const [name, value] of Object.entries(CROSS_ORIGIN_ISOLATION_HEADERS))
+      response.setHeader(name, value);
     next();
   };
   return {
@@ -35,15 +40,31 @@ export default defineConfig(({ command, mode }) => ({
   test: {
     exclude: [...configDefaults.exclude, "tests/activation-server.test.mjs"],
   },
-  define: licenseBuildConfig(command, { ...loadEnv(mode, process.cwd(), ""), ...process.env }, process.cwd()),
+  define: licenseBuildConfig(
+    command,
+    { ...loadEnv(mode, process.cwd(), ""), ...process.env },
+    process.cwd()
+  ),
   // Tauri desktop bundles should resolve assets relative to index.html.
   // Keeping "/" here breaks packaged builds with "Importing a module script failed".
   base: process.env.TAURI_ENV_PLATFORM ? "./" : "/",
-  plugins: [crossOriginIsolation(), react(), tailwindcss(), localAiRuntimePlugin(), ...testHarnessPlugin(command)],
+  plugins: [
+    crossOriginIsolation(),
+    react(),
+    tailwindcss(),
+    localAiRuntimePlugin(),
+    ...testHarnessPlugin(command),
+  ],
   worker: { format: "es" },
   // Warm worker-only dependencies before the first consultation. Lazy discovery
   // during an inference otherwise invalidates the desktop window's module cache.
-  optimizeDeps: { include: ["@huggingface/transformers", "transformers-v4", "@mediapipe/tasks-genai"] },
+  optimizeDeps: {
+    include: [
+      "@huggingface/transformers",
+      "transformers-v4",
+      "@mediapipe/tasks-genai",
+    ],
+  },
   server: {
     port: 5180,
     host: "0.0.0.0",

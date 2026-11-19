@@ -73,6 +73,11 @@
     border-color: var(--muted-foreground);
   }
 }
-.studio-dashboard, .dark .studio-dashboard { padding: 0; border: 0; border-radius: 0; }
+.studio-dashboard,
+.dark .studio-dashboard {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+}
 
 /* Classic reporting: opaque surfaces, precise charts, quiet operational lists. */

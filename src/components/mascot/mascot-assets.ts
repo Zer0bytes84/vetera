@@ -1,4 +1,7 @@
-import { MASCOT_CHOICE_KEYS, type MascotAnimal } from "@/lib/mascot-preferences";
+import {
+  MASCOT_CHOICE_KEYS,
+  type MascotAnimal,
+} from "@/lib/mascot-preferences";
 import { LINE_ANIMALS, type LineAnimalKey } from "./line-mascots";
 
 export interface MascotAssetItem {
@@ -23,13 +26,26 @@ export const lineAnimalOf = (animal: MascotAnimal): LineAnimalKey =>
 export const MASCOT_ASSETS = Object.fromEntries(
   [...MASCOT_CHOICE_KEYS, ...Object.keys(LEGACY_DRAWING)].map((animal) => [
     animal,
-    { label: LINE_ANIMALS[lineAnimalOf(animal as MascotAnimal)].label, kind: "vector" },
-  ]),
+    {
+      label: LINE_ANIMALS[lineAnimalOf(animal as MascotAnimal)].label,
+      kind: "vector",
+    },
+  ])
 ) as Record<MascotAnimal, MascotAssetItem>;
 
 /** The fifteen offered in the settings, in their order. */
 export const MASCOT_CHOICES: readonly MascotAnimal[] = MASCOT_CHOICE_KEYS;
 
-export const LEGACY_VECTOR_MASCOTS: readonly MascotAnimal[] = ["dog", "cat", "rabbit", "fox", "panda", "bear"];
+export const LEGACY_VECTOR_MASCOTS: readonly MascotAnimal[] = [
+  "dog",
+  "cat",
+  "rabbit",
+  "fox",
+  "panda",
+  "bear",
+];
 
-export const MASCOT_ANIMALS: readonly MascotAnimal[] = [...MASCOT_CHOICES, ...LEGACY_VECTOR_MASCOTS];
+export const MASCOT_ANIMALS: readonly MascotAnimal[] = [
+  ...MASCOT_CHOICES,
+  ...LEGACY_VECTOR_MASCOTS,
+];

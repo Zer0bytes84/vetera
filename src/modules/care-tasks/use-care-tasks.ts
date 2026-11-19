@@ -41,26 +41,29 @@ export function useCareTasks(date?: Date, rangeEnd?: Date) {
             Number(endKey.split("-")[2])
           );
     if (endKey === "day") end.setDate(end.getDate() + 1);
-    return await guard(async () => {
-      const rows = await careTasksService.list(start, end);
-      // Today also carries every earlier care still not done, with its own date.
-      const carried =
-        dateKey === "today" && endKey === "day"
-          ? await careTasksService.overdueBefore(start)
-          : [];
-      if (sequence !== requestSequence.current) return;
-      setTasks([...carried, ...rows]);
-      setNow(current);
-      setError(null);
-    }, {
-      recover: () => {
+    return await guard(
+      async () => {
+        const rows = await careTasksService.list(start, end);
+        // Today also carries every earlier care still not done, with its own date.
+        const carried =
+          dateKey === "today" && endKey === "day"
+            ? await careTasksService.overdueBefore(start)
+            : [];
         if (sequence !== requestSequence.current) return;
-        setError("Les soins du jour n’ont pas pu être chargés. Réessayez.");
+        setTasks([...carried, ...rows]);
+        setNow(current);
+        setError(null);
       },
-      cleanup: () => {
-        if (sequence === requestSequence.current) setLoading(false);
-      },
-    });
+      {
+        recover: () => {
+          if (sequence !== requestSequence.current) return;
+          setError("Les soins du jour n’ont pas pu être chargés. Réessayez.");
+        },
+        cleanup: () => {
+          if (sequence === requestSequence.current) setLoading(false);
+        },
+      }
+    );
   }, [dateKey, endKey]);
   useEffect(() => {
     void refresh();

@@ -22,14 +22,21 @@ const LayoutContext = createContext<LayoutContextType | null>(null);
 
 export function LayoutProvider({ children }: { children: React.ReactNode }) {
   const [collapsible, _setCollapsible] = useState<Collapsible>(() => {
-    return guardSync(() => {
-      const saved = localStorage.getItem(LAYOUT_COLLAPSIBLE_KEY) as Collapsible | null;
-      return saved && COLLAPSIBLES.includes(saved) ? saved : DEFAULT_COLLAPSIBLE;
-    }, {
-      recover: () => {
-        return DEFAULT_COLLAPSIBLE;
+    return guardSync(
+      () => {
+        const saved = localStorage.getItem(
+          LAYOUT_COLLAPSIBLE_KEY
+        ) as Collapsible | null;
+        return saved && COLLAPSIBLES.includes(saved)
+          ? saved
+          : DEFAULT_COLLAPSIBLE;
       },
-    });
+      {
+        recover: () => {
+          return DEFAULT_COLLAPSIBLE;
+        },
+      }
+    );
   });
 
   const setCollapsible = (value: Collapsible) => {

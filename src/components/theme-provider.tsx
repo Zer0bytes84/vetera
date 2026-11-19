@@ -140,10 +140,16 @@ export function ThemeProvider({
     if (!isTauri()) return;
     let cancelled = false;
     // Native titlebar controls must follow the chosen app theme, not macOS alone.
-    void loadTauriAppsApiWindow().then(({ getCurrentWindow }) => {
-      if (!cancelled) return getCurrentWindow().setTheme(resolvedTheme);
-    }).catch((error) => console.warn("Native window theme could not be synchronized", error));
-    return () => { cancelled = true; };
+    void loadTauriAppsApiWindow()
+      .then(({ getCurrentWindow }) => {
+        if (!cancelled) return getCurrentWindow().setTheme(resolvedTheme);
+      })
+      .catch((error) =>
+        console.warn("Native window theme could not be synchronized", error)
+      );
+    return () => {
+      cancelled = true;
+    };
   }, [resolvedTheme]);
 
   React.useEffect(() => {

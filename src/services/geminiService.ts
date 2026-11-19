@@ -1,10 +1,7 @@
 import { noteMarkdownToHTML } from "@/lib/note-markdown";
 import { APP_NAME } from "@/lib/brand";
 import type { ChatMessage } from "../types";
-import {
-  generateText,
-  type LocalChatTurn,
-} from "./localTextService";
+import { generateText, type LocalChatTurn } from "./localTextService";
 
 const ASSISTANT_SYSTEM_PROMPT = `Tu es l'assistant officiel de ${APP_NAME}, logiciel de clinique veterinaire.
 Tu aides l'equipe sur l'organisation, les dossiers patients, les notes cliniques et les actions quotidiennes.
@@ -33,7 +30,10 @@ const NOTE_PROMPTS: Record<string, (text: string) => string> = {
 };
 
 const isWriteInstruction = (instruction: string): boolean => {
-  const normalized = instruction.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  const normalized = instruction
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
   return (
     normalized.includes("redige") ||
     normalized.includes("ecris") ||
@@ -52,7 +52,6 @@ export const sendMessageToGemini = async (
   newMessage: string
 ): Promise<string> => {
   try {
-
     const response = await generateText(newMessage, "", {
       history: toLocalHistory(history),
       systemPrompt: ASSISTANT_SYSTEM_PROMPT,
@@ -75,7 +74,6 @@ export const assistWithNote = async (
   content: string,
   instruction: string
 ): Promise<string> => {
-
   const promptFn = NOTE_PROMPTS[instruction];
 
   let prompt = "";

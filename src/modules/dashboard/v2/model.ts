@@ -20,7 +20,11 @@ export function parseDashboardDate(value?: string): Date | null {
   if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
     const [year, month, day] = value.split("-").map(Number);
     const date = new Date(year, month - 1, day);
-    return date.getFullYear() === year && date.getMonth() === month - 1 && date.getDate() === day ? date : null;
+    return date.getFullYear() === year &&
+      date.getMonth() === month - 1 &&
+      date.getDate() === day
+      ? date
+      : null;
   }
 
   const sqliteLike = SQLITE_TIMESTAMP_REGEX.test(value);
@@ -176,7 +180,11 @@ export function buildClinicalAlerts({
       return [];
     }
     const dueDate = parseDashboardDate(task.dueDate);
-    if (dueDate ? dueDate > endOfDay(addDays(referenceDate,7)) : task.priority !== "high") {
+    if (
+      dueDate
+        ? dueDate > endOfDay(addDays(referenceDate, 7))
+        : task.priority !== "high"
+    ) {
       return [];
     }
     const patient = task.patientId
@@ -188,7 +196,16 @@ export function buildClinicalAlerts({
         source: "task",
         tone: task.priority === "high" ? "critical" : "warning",
         title: task.title,
-        detail: [patient?.name, dueDate ? dueDate <= endOfDay(referenceDate) ? "Action arrivée à échéance" : `Échéance le ${dueDate.toLocaleDateString("fr-FR",{day:"numeric",month:"short"})}` : "Priorité haute · sans date"].filter(Boolean).join(" · "),
+        detail: [
+          patient?.name,
+          dueDate
+            ? dueDate <= endOfDay(referenceDate)
+              ? "Action arrivée à échéance"
+              : `Échéance le ${dueDate.toLocaleDateString("fr-FR", { day: "numeric", month: "short" })}`
+            : "Priorité haute · sans date",
+        ]
+          .filter(Boolean)
+          .join(" · "),
         patientId: task.patientId,
       },
     ];
@@ -222,7 +239,10 @@ export function buildClinicalAlerts({
     const type = typeById.get(typeId);
     const label = [typeId, type?.code ?? "", type?.name ?? ""]
       .map((value) =>
-        value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("fr-FR")
+        value
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .toLocaleLowerCase("fr-FR")
       )
       .join(" ");
     return /\b(vaccin\w*|immunisation)\b/.test(label);
@@ -244,10 +264,13 @@ export function buildClinicalAlerts({
         tone:
           dueDate <= endOfDay(addDays(referenceDate, 7)) ? "warning" : "info",
         title: `${patient.name} · ${typeById.get(reminder.type)?.name ?? "Vaccination"}`,
-        detail: `${dueDate < today ? "Rappel dépassé ·" : "Rappel le"} ${dueDate.toLocaleDateString("fr-FR", {
-          day: "numeric",
-          month: "short",
-        })}`,
+        detail: `${dueDate < today ? "Rappel dépassé ·" : "Rappel le"} ${dueDate.toLocaleDateString(
+          "fr-FR",
+          {
+            day: "numeric",
+            month: "short",
+          }
+        )}`,
         patientId: reminder.patient_id,
       },
     ];
@@ -256,7 +279,12 @@ export function buildClinicalAlerts({
   const noShowAlerts = appointments.flatMap<ClinicalAlert>((appointment) => {
     const start = parseDashboardDate(appointment.startTime);
     if (
-      !(start && start >= lastSevenDays && start <= referenceDate && appointment.status === "no_show")
+      !(
+        start &&
+        start >= lastSevenDays &&
+        start <= referenceDate &&
+        appointment.status === "no_show"
+      )
     ) {
       return [];
     }

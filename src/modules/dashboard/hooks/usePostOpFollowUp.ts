@@ -42,11 +42,12 @@ export function usePostOpFollowUp() {
   const [error, setError] = useState<Error | null>(null);
 
   const loadPatients = async () => {
-    await guard(async () => {
-      setIsLoading(true);
-      const data = await runDbRead(async (db) => {
-        const rows = await db.select<PostOpPatientRaw[]>(
-          `SELECT
+    await guard(
+      async () => {
+        setIsLoading(true);
+        const data = await runDbRead(async (db) => {
+          const rows = await db.select<PostOpPatientRaw[]>(
+            `SELECT
             p.id AS patientId,
             p.name AS patientName,
             p.species AS species,
@@ -89,20 +90,24 @@ export function usePostOpFollowUp() {
             AND a.ended_at >= datetime('now', '-30 days')
           ORDER BY a.ended_at DESC
           LIMIT 50`
+          );
+          return rows;
+        });
+        const computed: PostOpPatient[] = data.map((row) =>
+          computePatient(row)
         );
-        return rows;
-      });
-      const computed: PostOpPatient[] = data.map((row) => computePatient(row));
-      setPatients(computed);
-      setError(null);
-    }, {
-      recover: (err) => {
-        setError(err instanceof Error ? err : new Error(String(err)));
+        setPatients(computed);
+        setError(null);
       },
-      cleanup: () => {
-        setIsLoading(false);
-      },
-    });
+      {
+        recover: (err) => {
+          setError(err instanceof Error ? err : new Error(String(err)));
+        },
+        cleanup: () => {
+          setIsLoading(false);
+        },
+      }
+    );
   };
 
   useEffect(() => {

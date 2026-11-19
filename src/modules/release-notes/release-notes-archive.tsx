@@ -14,7 +14,13 @@ export function ReleaseNotesArchive() {
         const date = formatReleaseDate(note.date);
         return (
           <SettingsSection
-            aside={note.version === current ? <span className="text-[0.8125rem] text-muted-foreground">Version installée</span> : undefined}
+            aside={
+              note.version === current ? (
+                <span className="text-[0.8125rem] text-muted-foreground">
+                  Version installée
+                </span>
+              ) : undefined
+            }
             icon={Sparkles}
             key={note.version}
             panelClassName="p-6"

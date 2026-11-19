@@ -94,7 +94,7 @@ function useWidth() {
     setWidth(el.getBoundingClientRect().width);
     if (typeof ResizeObserver === "undefined") return;
     const observer = new ResizeObserver(([entry]) =>
-      setWidth(entry.contentRect.width),
+      setWidth(entry.contentRect.width)
     );
     observer.observe(el);
     return () => observer.disconnect();
@@ -140,7 +140,7 @@ export function HexDensity({
   const plotW = Math.max(width - gutter, 40);
   const fitH = (areaHeight - top - 4) / (1.5 * (rows - 1) + 2);
   const r = round(
-    Math.max(5, Math.min(radius, plotW / ((cols + 0.5) * SQRT3), fitH)),
+    Math.max(5, Math.min(radius, plotW / ((cols + 0.5) * SQRT3), fitH))
   );
   const dx = SQRT3 * r;
   const dy = 1.5 * r;
@@ -164,7 +164,7 @@ export function HexDensity({
   const peak = Math.max(1, ...placed.map((cell) => cell.count));
   const densest = filledCells.reduce<(typeof placed)[number] | undefined>(
     (best, cell) => (!best || cell.count > best.count ? cell : best),
-    undefined,
+    undefined
   );
   // Runners-up get the same outline, so a cluster reads as a cluster.
   const marked = new Set(
@@ -172,7 +172,7 @@ export function HexDensity({
       .sort((a, b) => b.count - a.count)
       .slice(0, 4)
       .filter((cell) => cell.count >= peak * 0.85)
-      .map((cell) => cell.id),
+      .map((cell) => cell.id)
   );
   const markColor = tone.includes("--tone-blue")
     ? "var(--foreground)"
@@ -181,7 +181,7 @@ export function HexDensity({
     STEPS[
       Math.min(
         STEPS.length - 1,
-        Math.ceil(Math.sqrt(count / peak) * STEPS.length) - 1,
+        Math.ceil(Math.sqrt(count / peak) * STEPS.length) - 1
       )
     ];
   const callout = densest && !activeCell;
@@ -231,7 +231,7 @@ export function HexDensity({
           const along = (cell.cx - from.cx) * ux + (cell.cy - from.cy) * uy;
           if (along <= 1) continue;
           const across = Math.abs(
-            (cell.cx - from.cx) * uy - (cell.cy - from.cy) * ux,
+            (cell.cx - from.cx) * uy - (cell.cy - from.cy) * ux
           );
           const score = along + across * 3;
           if (score < best) {
@@ -335,7 +335,7 @@ export function HexDensity({
                             className={cn(
                               "text-foreground transition-[opacity,fill-opacity] duration-200 ease-out",
                               active !== null && !isActive && "opacity-55",
-                              fromKeyboard && "duration-0",
+                              fromKeyboard && "duration-0"
                             )}
                             d={path}
                             data-future={cell.future || undefined}
@@ -431,7 +431,7 @@ export function HexDensity({
                       width: Math.min(TIP_W, width),
                       left: Math.min(
                         Math.max(activeCell.cx - TIP_W / 2, 0),
-                        Math.max(width - TIP_W, 0),
+                        Math.max(width - TIP_W, 0)
                       ),
                       top: activeCell.cy + (tipBelow ? r + 6 : -r - 6),
                       y: tipBelow ? 0 : "-100%",

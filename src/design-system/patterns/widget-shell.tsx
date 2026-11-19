@@ -40,8 +40,18 @@ export function WidgetShell({
     .filter((token) => token && token !== "frame" && token !== "card")
     .join(" ");
   return (
-    <Shell aria-busy={busy} aria-label={title} className={cn("flex flex-col", own)}>
-      <ShellHeader aside={actions} as="h2" icon={icon} subtitle={subtitle} title={title} />
+    <Shell
+      aria-busy={busy}
+      aria-label={title}
+      className={cn("flex flex-col", own)}
+    >
+      <ShellHeader
+        aside={actions}
+        as="h2"
+        icon={icon}
+        subtitle={subtitle}
+        title={title}
+      />
       <Panel className={cn("flex-1 p-5", bodyClassName)}>
         {busy ? (
           <div

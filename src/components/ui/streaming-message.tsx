@@ -8,7 +8,14 @@
  * `negative`, `warning` are our tones; never the TuffUI theme); text is French, never under 12 px; no demo data.
  */
 
-import { RotateCcw, Brain, ChevronRight, Check, Copy, CircleAlert } from "lucide-react";
+import {
+  RotateCcw,
+  Brain,
+  ChevronRight,
+  Check,
+  Copy,
+  CircleAlert,
+} from "lucide-react";
 import { Mascot } from "@/components/mascot";
 import { AnimatePresence, MotionConfig, motion } from "motion/react";
 import { Fragment, useEffect, useState } from "react";
@@ -74,7 +81,9 @@ export function StreamingMessage({
             <Mascot className="shrink-0" size={28} />
             <span className="font-medium">{model}</span>
             {streaming && (
-              <span className="text-[0.8125rem] text-muted-foreground">Rédaction en cours…</span>
+              <span className="text-[0.8125rem] text-muted-foreground">
+                Rédaction en cours…
+              </span>
             )}
           </header>
         )}
@@ -83,7 +92,8 @@ export function StreamingMessage({
           {(content || !reasoning?.streaming) && (
             <div
               className={cn(
-                bubble && "w-fit max-w-full rounded-2xl rounded-tl-md bg-[var(--card-band)] px-3.5 py-2",
+                bubble &&
+                  "w-fit max-w-full rounded-2xl rounded-tl-md bg-[var(--card-band)] px-3.5 py-2"
               )}
             >
               <Content text={content} streaming={streaming} settled={settled} />
@@ -94,7 +104,6 @@ export function StreamingMessage({
               <motion.div role="alert" {...fold} className="overflow-hidden">
                 <div className="mt-3 flex items-center gap-2.5 rounded-2xl bg-negative/10 py-2 pr-2 pl-3.5">
                   <CircleAlert
-                   
                     className="size-4 shrink-0 text-negative"
                     aria-hidden="true"
                   />
@@ -191,7 +200,11 @@ function Reasoning({
           transition={{ duration: 0.2, ease: [0.77, 0, 0.175, 1] }}
           className="ml-auto inline-flex"
         >
-          <ChevronRight strokeWidth={2.5} className="size-3.5" aria-hidden="true" />
+          <ChevronRight
+            strokeWidth={2.5}
+            className="size-3.5"
+            aria-hidden="true"
+          />
         </motion.span>
       </button>
       <AnimatePresence initial={false}>
@@ -220,7 +233,7 @@ function parseInline(paragraph: string): Segment[] {
         ? { text: part.replace(/^`|`$/g, ""), kind: "code" }
         : part.startsWith("**")
           ? { text: part.replace(/^\*\*|\*\*$/g, ""), kind: "bold" }
-          : { text: part, kind: "text" },
+          : { text: part, kind: "text" }
     );
 }
 

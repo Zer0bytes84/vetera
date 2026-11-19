@@ -11,12 +11,23 @@
  * text is French and never under 12 px.
  */
 
-import { useId, useImperativeHandle, useLayoutEffect, useRef, type ReactNode, type Ref } from "react";
+import {
+  useId,
+  useImperativeHandle,
+  useLayoutEffect,
+  useRef,
+  type ReactNode,
+  type Ref,
+} from "react";
 import { MotionConfig } from "motion/react";
 import { Panel, Shell } from "@/components/ui/surface";
 import { cn } from "@/lib/utils";
 
-export type ComposerSuggestion = { key: string; label: string; detail?: string };
+export type ComposerSuggestion = {
+  key: string;
+  label: string;
+  detail?: string;
+};
 
 export type ComposerMenu = {
   /** Accessible name of the list, e.g. « Suggestions de patients ». */
@@ -107,7 +118,12 @@ export function AgentComposer({
       }
     }
     // While an input method is composing (accents, Arabic), Entrée belongs to it.
-    if (event.key === "Enter" && submitOnEnter && !event.shiftKey && !event.nativeEvent.isComposing) {
+    if (
+      event.key === "Enter" &&
+      submitOnEnter &&
+      !event.shiftKey &&
+      !event.nativeEvent.isComposing
+    ) {
       event.preventDefault();
       onSubmit?.();
       return;
@@ -120,7 +136,13 @@ export function AgentComposer({
 
   return (
     <MotionConfig reducedMotion="user">
-      <Shell className={cn("relative max-w-none bg-transparent p-0", fill && "flex min-h-0 flex-col", className)}>
+      <Shell
+        className={cn(
+          "relative max-w-none bg-transparent p-0",
+          fill && "flex min-h-0 flex-col",
+          className
+        )}
+      >
         {/* Opened by typing « @ », so it appears instantly: keyboard actions never animate. */}
         {menuOpen && menu && (
           <ul
@@ -142,13 +164,20 @@ export function AgentComposer({
               >
                 <span className="truncate font-medium">{item.label}</span>
                 {item.detail && (
-                  <span className="truncate text-xs text-muted-foreground">{item.detail}</span>
+                  <span className="truncate text-xs text-muted-foreground">
+                    {item.detail}
+                  </span>
                 )}
               </li>
             ))}
           </ul>
         )}
-        <Panel className={cn("relative border border-border", fill && "flex min-h-0 flex-1 flex-col")}>
+        <Panel
+          className={cn(
+            "relative border border-border",
+            fill && "flex min-h-0 flex-1 flex-col"
+          )}
+        >
           <label htmlFor={`${id}-input`} className="sr-only">
             {label}
           </label>
@@ -160,19 +189,32 @@ export function AgentComposer({
             maxLength={maxLength}
             disabled={disabled}
             placeholder={placeholder}
-            onChange={(event) => onValueChange(event.target.value, event.target.selectionStart)}
-            onSelect={(event) => onCaretChange?.(event.currentTarget.selectionStart)}
+            onChange={(event) =>
+              onValueChange(event.target.value, event.target.selectionStart)
+            }
+            onSelect={(event) =>
+              onCaretChange?.(event.currentTarget.selectionStart)
+            }
             onKeyDown={onKeyDown}
             role={menu ? "combobox" : undefined}
             aria-autocomplete={menu ? "list" : undefined}
             aria-expanded={menu ? menuOpen : undefined}
             aria-controls={menu && menuOpen ? `${id}-menu` : undefined}
             aria-activedescendant={menuOpen ? `${id}-opt-${active}` : undefined}
-            className={cn("block w-full resize-none bg-transparent px-3 pt-3 pb-0 text-sm leading-6 outline-none placeholder:text-muted-foreground disabled:opacity-60", fill ? "min-h-[14rem] flex-1" : "max-h-[220px] min-h-[5.5rem]")}
+            className={cn(
+              "block w-full resize-none bg-transparent px-3 pt-3 pb-0 text-sm leading-6 outline-none placeholder:text-muted-foreground disabled:opacity-60",
+              fill ? "min-h-[14rem] flex-1" : "max-h-[220px] min-h-[5.5rem]"
+            )}
           />
           <div className="flex flex-wrap items-center justify-between gap-3 p-3">
-            <div className="flex min-w-0 flex-wrap items-center gap-3">{toolbar}</div>
-            {meter ? <div className="shrink-0 text-xs text-muted-foreground">{meter}</div> : null}
+            <div className="flex min-w-0 flex-wrap items-center gap-3">
+              {toolbar}
+            </div>
+            {meter ? (
+              <div className="shrink-0 text-xs text-muted-foreground">
+                {meter}
+              </div>
+            ) : null}
           </div>
         </Panel>
       </Shell>

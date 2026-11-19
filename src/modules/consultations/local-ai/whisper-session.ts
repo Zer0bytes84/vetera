@@ -34,12 +34,19 @@ export async function takeWhisperSession(
     }
     idle.session.close();
   }
-  const session = await LocalInferenceSession.create("whisper", signal, onProgress);
+  const session = await LocalInferenceSession.create(
+    "whisper",
+    signal,
+    onProgress
+  );
   return { session, loaded: false };
 }
 
 /** Keeps the loaded model for the next dictation, without its lease. */
-export function parkWhisperSession(session: LocalInferenceSession, key: string) {
+export function parkWhisperSession(
+  session: LocalInferenceSession,
+  key: string
+) {
   idleWhisper?.session.close();
   session.park();
   if (session.isClosed) return;

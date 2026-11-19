@@ -11,7 +11,8 @@ const EASE = 0.14;
 /** A still pointer for this long and the mascot looks up, thinking. */
 const DAYDREAM_MS = 25_000;
 
-const reducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const reducedMotion = () =>
+  window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 /**
  * Brings a line mascot to life: eyes that follow the pointer anywhere in the
@@ -22,11 +23,17 @@ const reducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)"
  * while the window is hidden; with « réduire les animations », nothing moves
  * and the face stays neutral.
  */
-export function useMascotLife(root: RefObject<HTMLElement | null>, enabled: boolean, trigger?: RefObject<HTMLElement | null>) {
+export function useMascotLife(
+  root: RefObject<HTMLElement | null>,
+  enabled: boolean,
+  trigger?: RefObject<HTMLElement | null>
+) {
   const [mood, setMood] = useState<LineMood>("neutral");
   const [blink, setBlink] = useState(false);
   const [twitch, setTwitch] = useState<"l" | "r" | null>(null);
-  const [still, setStill] = useState(() => typeof window !== "undefined" && reducedMotion());
+  const [still, setStill] = useState(
+    () => typeof window !== "undefined" && reducedMotion()
+  );
 
   useEffect(() => {
     const query = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -70,8 +77,10 @@ export function useMascotLife(root: RefObject<HTMLElement | null>, enabled: bool
     };
 
     const paint = () => {
-      for (const group of pupils) group.style.transform = `translate(${current.x.toFixed(2)}px, ${current.y.toFixed(2)}px)`;
-      if (face) face.style.transform = `translateX(${current.drift.toFixed(2)}px) rotate(${current.tilt.toFixed(2)}deg)`;
+      for (const group of pupils)
+        group.style.transform = `translate(${current.x.toFixed(2)}px, ${current.y.toFixed(2)}px)`;
+      if (face)
+        face.style.transform = `translateX(${current.drift.toFixed(2)}px) rotate(${current.tilt.toFixed(2)}deg)`;
     };
 
     const tick = (time: number) => {
@@ -117,24 +126,30 @@ export function useMascotLife(root: RefObject<HTMLElement | null>, enabled: bool
     // Blinks every 3 to 6 s, sometimes twice; an ear twitches now and then.
     const scheduleBlink = () => {
       timers.push(
-        setTimeout(() => {
-          setBlink(true);
-          timers.push(setTimeout(() => setBlink(false), 130));
-          if (Math.random() < 0.2) {
-            timers.push(setTimeout(() => setBlink(true), 260));
-            timers.push(setTimeout(() => setBlink(false), 390));
-          }
-          scheduleBlink();
-        }, 3000 + Math.random() * 3000),
+        setTimeout(
+          () => {
+            setBlink(true);
+            timers.push(setTimeout(() => setBlink(false), 130));
+            if (Math.random() < 0.2) {
+              timers.push(setTimeout(() => setBlink(true), 260));
+              timers.push(setTimeout(() => setBlink(false), 390));
+            }
+            scheduleBlink();
+          },
+          3000 + Math.random() * 3000
+        )
       );
     };
     const scheduleTwitch = () => {
       timers.push(
-        setTimeout(() => {
-          setTwitch(Math.random() < 0.5 ? "l" : "r");
-          timers.push(setTimeout(() => setTwitch(null), 420));
-          scheduleTwitch();
-        }, 7000 + Math.random() * 7000),
+        setTimeout(
+          () => {
+            setTwitch(Math.random() < 0.5 ? "l" : "r");
+            timers.push(setTimeout(() => setTwitch(null), 420));
+            scheduleTwitch();
+          },
+          7000 + Math.random() * 7000
+        )
       );
     };
 
@@ -171,5 +186,10 @@ export function useMascotLife(root: RefObject<HTMLElement | null>, enabled: bool
     };
   }, [root, trigger, enabled, still]);
 
-  return { mood: still || !enabled ? ("neutral" as const) : mood, blink, twitch, still };
+  return {
+    mood: still || !enabled ? ("neutral" as const) : mood,
+    blink,
+    twitch,
+    still,
+  };
 }

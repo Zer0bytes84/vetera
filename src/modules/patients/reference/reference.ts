@@ -18,7 +18,10 @@ export function patientReferenceNumber(query: string) {
 }
 
 /** True when the query designates exactly this reference. */
-export function matchesPatientReference(reference: string | undefined, query: string) {
+export function matchesPatientReference(
+  reference: string | undefined,
+  query: string
+) {
   const typed = patientReferenceNumber(query);
   const stored = reference ? patientReferenceNumber(reference) : null;
   return typed !== null && typed === stored;
@@ -40,6 +43,11 @@ export function patientReferenceSearchText(reference: string | undefined) {
 }
 
 /** The patient as printed on a document: « Rex · ID-0011 ». */
-export function patientDocumentName(patient: { name: string; reference?: string }) {
-  return patient.reference ? `${patient.name} · ${patient.reference}` : patient.name;
+export function patientDocumentName(patient: {
+  name: string;
+  reference?: string;
+}) {
+  return patient.reference
+    ? `${patient.name} · ${patient.reference}`
+    : patient.name;
 }

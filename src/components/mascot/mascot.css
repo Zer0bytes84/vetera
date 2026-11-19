@@ -1,5 +1,3 @@
-
-
 .sidebar-brand-wordmark {
   display: block;
   /* Centred on the mascot's whole height, ears included (measured: the ink sat 0.7 px low). */
@@ -7,7 +5,7 @@
   color: var(--sidebar-foreground);
   font-size: 18px;
   font-weight: 600;
-  letter-spacing: -.035em;
+  letter-spacing: -0.035em;
   line-height: 1;
 }
 /* « bAItari »: the AI in the middle of the name, in the blue and teal of our charts. The gradient runs twice its width so a
@@ -17,23 +15,37 @@
      the chart tones themselves fell to 4.1 and 2.9 at this size. */
   --brand-ai-blue: #3d9bff;
   --brand-ai-teal: #2fb7a3;
-  background-image: linear-gradient(100deg, var(--brand-ai-blue) 0%, var(--brand-ai-teal) 50%, var(--brand-ai-blue) 100%);
+  background-image: linear-gradient(
+    100deg,
+    var(--brand-ai-blue) 0%,
+    var(--brand-ai-teal) 50%,
+    var(--brand-ai-blue) 100%
+  );
   background-size: 200% 100%;
   background-position: 0% 50%;
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
   -webkit-text-fill-color: transparent;
-  transition: background-position 900ms var(--ease-out, cubic-bezier(.22, 1, .36, 1));
+  transition: background-position 900ms
+    var(--ease-out, cubic-bezier(0.22, 1, 0.36, 1));
 }
 @media (hover: hover) and (pointer: fine) {
-  .sidebar-brand-home:hover .sidebar-brand-ai { background-position: 100% 50%; }
+  .sidebar-brand-home:hover .sidebar-brand-ai {
+    background-position: 100% 50%;
+  }
 }
 @media (prefers-reduced-motion: reduce) {
-  .sidebar-brand-ai { transition: none; }
+  .sidebar-brand-ai {
+    transition: none;
+  }
 }
 @media (forced-colors: active) {
-  .sidebar-brand-ai { color: CanvasText; -webkit-text-fill-color: CanvasText; background: none; }
+  .sidebar-brand-ai {
+    color: CanvasText;
+    -webkit-text-fill-color: CanvasText;
+    background: none;
+  }
 }
 .mascot-settings-preview {
   display: grid;
@@ -47,7 +59,11 @@
   position: absolute;
   inset: 4px;
   border-radius: 50%;
-  background: radial-gradient(ellipse at 50% 65%, color-mix(in srgb, #cbad87 13%, transparent), transparent 70%);
+  background: radial-gradient(
+    ellipse at 50% 65%,
+    color-mix(in srgb, #cbad87 13%, transparent),
+    transparent 70%
+  );
 }
 .mascot-choices {
   display: grid;
@@ -71,7 +87,10 @@
   font-size: 12px;
   font-weight: 500;
   cursor: pointer;
-  transition: background-color 160ms ease, border-color 160ms ease, transform 120ms cubic-bezier(.22, 1, .36, 1);
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    transform 120ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 @media (hover: hover) and (pointer: fine) {
   .mascot-choice:hover {
@@ -79,9 +98,17 @@
     background: var(--sidebar);
   }
 }
-.mascot-choice:active { transform: scale(.98); }
-.mascot-choice:focus-visible { outline: 2px solid var(--ring); outline-offset: 3px; }
-.mascot-choice[data-selected="true"] { border-color: color-mix(in srgb, var(--foreground) 44%, var(--border)); background: var(--sidebar); }
+.mascot-choice:active {
+  transform: scale(0.98);
+}
+.mascot-choice:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 3px;
+}
+.mascot-choice[data-selected="true"] {
+  border-color: color-mix(in srgb, var(--foreground) 44%, var(--border));
+  background: var(--sidebar);
+}
 .mascot-choice-check {
   display: grid;
   position: absolute;
@@ -95,18 +122,39 @@
   font-weight: 650;
   place-items: center;
 }
-.mascot-choice[data-selected="true"] .mascot-choice-check { background: var(--primary); }
-.mascot-classic-mark { display: grid; width: 64px; height: 64px; place-items: center; }
+.mascot-choice[data-selected="true"] .mascot-choice-check {
+  background: var(--primary);
+}
+.mascot-classic-mark {
+  display: grid;
+  width: 64px;
+  height: 64px;
+  place-items: center;
+}
 @media (max-width: 600px) {
-  .mascot-choices { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 24px 12px; }
+  .mascot-choices {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding: 24px 12px;
+  }
 }
 @media (prefers-reduced-motion: reduce) {
-  .mascot-choice { transition: none; }
-  .mascot-choice:active { transform: none; }
+  .mascot-choice {
+    transition: none;
+  }
+  .mascot-choice:active {
+    transform: none;
+  }
 }
 
-.sidebar-brand { display: flex; align-items: center; gap: 8px; min-width: 0; }
-.sidebar-brand[data-collapsed="true"] { justify-content: center; }
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.sidebar-brand[data-collapsed="true"] {
+  justify-content: center;
+}
 .sidebar-mascot-circle {
   display: inline-flex;
   align-items: center;
@@ -127,7 +175,10 @@
   }
 }
 .sidebar-mascot-circle:focus-visible,
-.sidebar-brand-home:focus-visible { outline: 2px solid var(--ring); outline-offset: 3px; }
+.sidebar-brand-home:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 3px;
+}
 
 /* Single defined circle container for classic logo */
 .sidebar-mascot-circle[data-sidebar-brand="logo"] {
@@ -137,21 +188,33 @@
   border: 1.5px solid color-mix(in srgb, var(--sidebar-border) 80%, transparent);
   border-radius: 50%;
   background: var(--card);
-  box-shadow: 0 3px 10px -2px rgb(0 0 0 / .06);
+  box-shadow: 0 3px 10px -2px rgb(0 0 0 / 0.06);
   place-items: center;
-  transition: border-color 160ms ease, background-color 160ms ease, transform 160ms ease;
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease,
+    transform 160ms ease;
 }
 .sidebar-mascot-circle[data-sidebar-brand="logo"][data-popup-open] {
-  border-color: color-mix(in srgb, var(--sidebar-foreground) 24%, var(--sidebar-border));
+  border-color: color-mix(
+    in srgb,
+    var(--sidebar-foreground) 24%,
+    var(--sidebar-border)
+  );
   background: var(--sidebar);
 }
 @media (hover: hover) and (pointer: fine) {
   .sidebar-mascot-circle[data-sidebar-brand="logo"]:hover {
-    border-color: color-mix(in srgb, var(--sidebar-foreground) 24%, var(--sidebar-border));
+    border-color: color-mix(
+      in srgb,
+      var(--sidebar-foreground) 24%,
+      var(--sidebar-border)
+    );
     background: var(--sidebar);
   }
 }
-.sidebar-brand[data-collapsed="true"] .sidebar-mascot-circle[data-sidebar-brand="logo"] {
+.sidebar-brand[data-collapsed="true"]
+  .sidebar-mascot-circle[data-sidebar-brand="logo"] {
   width: 44px;
   height: 44px;
 }
@@ -177,7 +240,11 @@
     box-shadow: none;
   }
 }
-.sidebar-brand-home { padding: 6px 0; border-radius: 6px; cursor: pointer; }
+.sidebar-brand-home {
+  padding: 6px 0;
+  border-radius: 6px;
+  cursor: pointer;
+}
 .mascot-picker {
   width: min(330px, calc(100vw - 24px));
   gap: 0;
@@ -185,13 +252,29 @@
   overflow: hidden;
   border-radius: 17px;
   background: var(--card);
-  box-shadow: 0 12px 40px rgb(0 0 0 / .12);
+  box-shadow: 0 12px 40px rgb(0 0 0 / 0.12);
 }
-.mascot-picker-heading { padding: 18px 18px 12px; }
-.mascot-picker-heading [data-slot="popover-title"] { font-size: 14px; font-weight: 600; letter-spacing: -.02em; }
-.mascot-picker-heading [data-slot="popover-description"] { margin-top: 4px; font-size: 12px; }
-.mascot-choices[data-compact="true"] { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px; padding: 0 16px 14px; }
-.mascot-choices[data-compact="true"] .mascot-choice { min-height: 97px; font-size: 12px; }
+.mascot-picker-heading {
+  padding: 18px 18px 12px;
+}
+.mascot-picker-heading [data-slot="popover-title"] {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.mascot-picker-heading [data-slot="popover-description"] {
+  margin-top: 4px;
+  font-size: 12px;
+}
+.mascot-choices[data-compact="true"] {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 7px;
+  padding: 0 16px 14px;
+}
+.mascot-choices[data-compact="true"] .mascot-choice {
+  min-height: 97px;
+  font-size: 12px;
+}
 .mascot-choices[data-compact="true"] .mascot-choice-logo {
   grid-column: auto;
   flex-direction: column;
@@ -211,22 +294,48 @@
   background: radial-gradient(circle at 50% 35%, #ffffff 0%, #f1f3f5 100%);
   box-shadow: 0 2px 8px -2px rgba(0, 0, 0, 0.08);
 }
-.dark .mascot-choices[data-compact="true"] .mascot-choice-logo .mascot-classic-mark {
-  border-color: color-mix(in srgb, var(--border) 60%, rgba(255, 255, 255, 0.12));
+.dark
+  .mascot-choices[data-compact="true"]
+  .mascot-choice-logo
+  .mascot-classic-mark {
+  border-color: color-mix(
+    in srgb,
+    var(--border) 60%,
+    rgba(255, 255, 255, 0.12)
+  );
   background: radial-gradient(circle at 50% 35%, #2a2d36 0%, #181a20 100%);
 }
-.mascot-choices[data-compact="true"] .mascot-classic-mark svg { width: 26px; height: 26px; }
-.mascot-picker-motion { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 18px; border-top: 1px solid var(--border); color: var(--muted-foreground); font-size: 12px; }
-.mascot-picker-motion label { cursor: pointer; }
+.mascot-choices[data-compact="true"] .mascot-classic-mark svg {
+  width: 26px;
+  height: 26px;
+}
+.mascot-picker-motion {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 18px;
+  border-top: 1px solid var(--border);
+  color: var(--muted-foreground);
+  font-size: 12px;
+}
+.mascot-picker-motion label {
+  cursor: pointer;
+}
 @media (prefers-reduced-motion: reduce) {
-  .sidebar-mascot-circle { transition: none; }
-  .mascot-picker { animation: none !important; }
+  .sidebar-mascot-circle {
+    transition: none;
+  }
+  .mascot-picker {
+    animation: none !important;
+  }
 }
 
 /* 3-layer animation system */
 /* Layer 1: Amplified visible floating */
 @keyframes mascot-gentle-float {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0px) rotate(0deg) scale(1);
   }
   50% {
@@ -242,7 +351,8 @@
 
 /* Layer 3: Mood API support — Joyeux, Réflexion, Neutre */
 @keyframes mascot-happy-bounce {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1.38) translateY(0);
   }
   30% {
@@ -254,7 +364,8 @@
 }
 
 @keyframes mascot-thinking-sway {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1.37) rotate(3.5deg) translateY(-2%);
   }
   50% {
@@ -268,7 +379,8 @@
   width: 56px;
   height: 56px;
 }
-.sidebar-brand[data-collapsed="true"] .sidebar-mascot-circle[data-sidebar-brand="mascot"] {
+.sidebar-brand[data-collapsed="true"]
+  .sidebar-mascot-circle[data-sidebar-brand="mascot"] {
   width: 42px;
   height: 42px;
 }

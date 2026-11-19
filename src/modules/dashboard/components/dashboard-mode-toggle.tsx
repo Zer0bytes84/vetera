@@ -4,12 +4,19 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
-import { ClipboardDocumentListIcon, Squares2X2Icon } from "@heroicons/react/16/solid";
+import {
+  ClipboardDocumentListIcon,
+  Squares2X2Icon,
+} from "@heroicons/react/16/solid";
 import type { DashboardVersion } from "../hooks/use-dashboard-version";
 
 const modes = [
   { value: "analytics", label: "Vue d’ensemble", icon: Squares2X2Icon },
-  { value: "clinical", label: "Journée clinique", icon: ClipboardDocumentListIcon },
+  {
+    value: "clinical",
+    label: "Journée clinique",
+    icon: ClipboardDocumentListIcon,
+  },
 ] as const;
 
 /** Two equally discoverable views; the choice changes immediately. */
@@ -52,9 +59,7 @@ export function DashboardModeToggle({
                 aria-hidden="true"
                 className={cn(
                   "relative z-10 size-4",
-                  isSelected
-                    ? "text-ink"
-                    : "text-ink-muted"
+                  isSelected ? "text-ink" : "text-ink-muted"
                 )}
               />
             </TooltipTrigger>

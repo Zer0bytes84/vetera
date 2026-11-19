@@ -93,7 +93,8 @@
   --rx-safety-color: var(--premium-red);
 }
 
-:root[data-skin="clean"] :is(.rx-template-chip, .rx-template-row, .rx-template-empty) {
+:root[data-skin="clean"]
+  :is(.rx-template-chip, .rx-template-row, .rx-template-empty) {
   border-radius: var(--premium-control-radius);
 }
 

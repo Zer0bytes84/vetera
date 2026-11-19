@@ -79,7 +79,12 @@ export function parseGeneratedSoap(
   }
   // Rubrics the model was not sent come back empty; it may not fill them (the
   // fidelity check refuses any text there), and no other key is accepted.
-  if (omitted.length && parsed && typeof parsed === "object" && !Array.isArray(parsed))
+  if (
+    omitted.length &&
+    parsed &&
+    typeof parsed === "object" &&
+    !Array.isArray(parsed)
+  )
     for (const key of omitted)
       if (!(key in parsed)) (parsed as Record<string, unknown>)[key] = "";
   const result = localSoapSchema.safeParse(parsed);

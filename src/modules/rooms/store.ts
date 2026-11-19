@@ -39,24 +39,38 @@ export function cleanRoomName(name: string): string {
   const clean = name.replace(/\s+/g, " ").trim();
   if (!clean) throw new Error("Donnez un nom à la salle.");
   if (clean.length > ROOM_NAME_MAX_LENGTH) {
-    throw new Error(`Le nom d'une salle tient en ${ROOM_NAME_MAX_LENGTH} caractères.`);
+    throw new Error(
+      `Le nom d'une salle tient en ${ROOM_NAME_MAX_LENGTH} caractères.`
+    );
   }
   return clean;
 }
 
 /** Readable name for an appointment's room, even an archived or unknown one. */
-export function roomLabel(roomId: string | null | undefined, rooms: readonly Room[]): string | null {
+export function roomLabel(
+  roomId: string | null | undefined,
+  rooms: readonly Room[]
+): string | null {
   if (!roomId) return null;
   return rooms.find((room) => room.id === roomId)?.name ?? roomId;
 }
 
-export function createRoomStore(persistence: RoomPersistence, id: () => string, clock = () => new Date()) {
-  async function assertNameFree(db: RoomDatabase, name: string, exceptId?: string) {
+export function createRoomStore(
+  persistence: RoomPersistence,
+  id: () => string,
+  clock = () => new Date()
+) {
+  async function assertNameFree(
+    db: RoomDatabase,
+    name: string,
+    exceptId?: string
+  ) {
     const taken = await db.select<Array<{ id: string }>>(
       "SELECT id FROM rooms WHERE archived_at IS NULL AND lower(trim(name)) = lower(?) AND id <> ?",
       [name, exceptId ?? ""]
     );
-    if (taken.length > 0) throw new Error("Une salle active porte déjà ce nom.");
+    if (taken.length > 0)
+      throw new Error("Une salle active porte déjà ce nom.");
   }
 
   async function find(db: RoomDatabase, roomId: string) {
@@ -117,11 +131,10 @@ export function createRoomStore(persistence: RoomPersistence, id: () => string, 
       return persistence.transaction(async (db) => {
         await find(db, roomId);
         await assertNameFree(db, clean, roomId);
-        await db.execute("UPDATE rooms SET name = ?, updated_at = ? WHERE id = ?", [
-          clean,
-          clock().toISOString(),
-          roomId,
-        ]);
+        await db.execute(
+          "UPDATE rooms SET name = ?, updated_at = ? WHERE id = ?",
+          [clean, clock().toISOString(), roomId]
+        );
         return find(db, roomId);
       });
     },
@@ -130,11 +143,10 @@ export function createRoomStore(persistence: RoomPersistence, id: () => string, 
       return persistence.transaction(async (db) => {
         const room = await find(db, roomId);
         if (room.archivedAt) return room;
-        await db.execute("UPDATE rooms SET archived_at = ?, updated_at = ? WHERE id = ?", [
-          clock().toISOString(),
-          clock().toISOString(),
-          roomId,
-        ]);
+        await db.execute(
+          "UPDATE rooms SET archived_at = ?, updated_at = ? WHERE id = ?",
+          [clock().toISOString(), clock().toISOString(), roomId]
+        );
         return find(db, roomId);
       });
     },
@@ -144,10 +156,10 @@ export function createRoomStore(persistence: RoomPersistence, id: () => string, 
         const room = await find(db, roomId);
         if (!room.archivedAt) return room;
         await assertNameFree(db, room.name, roomId);
-        await db.execute("UPDATE rooms SET archived_at = NULL, updated_at = ? WHERE id = ?", [
-          clock().toISOString(),
-          roomId,
-        ]);
+        await db.execute(
+          "UPDATE rooms SET archived_at = NULL, updated_at = ? WHERE id = ?",
+          [clock().toISOString(), roomId]
+        );
         return find(db, roomId);
       });
     },
@@ -161,11 +173,10 @@ export function createRoomStore(persistence: RoomPersistence, id: () => string, 
         const room = await find(db, roomId);
         if (room.appointmentCount > 0) {
           if (!room.archivedAt) {
-            await db.execute("UPDATE rooms SET archived_at = ?, updated_at = ? WHERE id = ?", [
-              clock().toISOString(),
-              clock().toISOString(),
-              roomId,
-            ]);
+            await db.execute(
+              "UPDATE rooms SET archived_at = ?, updated_at = ? WHERE id = ?",
+              [clock().toISOString(), clock().toISOString(), roomId]
+            );
           }
           return "archived";
         }
@@ -179,7 +190,10 @@ export function createRoomStore(persistence: RoomPersistence, id: () => string, 
       return persistence.transaction(async (db) => {
         const now = clock().toISOString();
         for (const [index, roomId] of roomIds.entries()) {
-          await db.execute("UPDATE rooms SET sort_order = ?, updated_at = ? WHERE id = ?", [index, now, roomId]);
+          await db.execute(
+            "UPDATE rooms SET sort_order = ?, updated_at = ? WHERE id = ?",
+            [index, now, roomId]
+          );
         }
       });
     },

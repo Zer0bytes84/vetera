@@ -257,7 +257,8 @@ export function usePatientsPageModel({ onNavigateToPatient }: PatientsProps) {
       `${formatNumber(count)} ${word}${count > 1 ? "s" : ""}`;
     const living = patients.filter((patient) => patient.status !== "decede");
     const species = (name: string) =>
-      living.filter((p) => (p.species || "").toLowerCase().includes(name)).length;
+      living.filter((p) => (p.species || "").toLowerCase().includes(name))
+        .length;
     const canine = species("chien");
     const feline = species("chat");
     const others = living.length - canine - feline;
@@ -267,8 +268,12 @@ export function usePatientsPageModel({ onNavigateToPatient }: PatientsProps) {
       return !!created && now.getTime() - created.getTime() <= 30 * 86400000;
     }).length;
 
-    const underTreatment = patients.filter((p) => p.status === "traitement").length;
-    const hospitalized = patients.filter((p) => p.status === "hospitalise").length;
+    const underTreatment = patients.filter(
+      (p) => p.status === "traitement"
+    ).length;
+    const hospitalized = patients.filter(
+      (p) => p.status === "hospitalise"
+    ).length;
     const monitoredPatients = underTreatment + hospitalized;
 
     const upcoming = appointments
@@ -298,7 +303,10 @@ export function usePatientsPageModel({ onNavigateToPatient }: PatientsProps) {
       {
         title: "Patients actifs",
         value: formatNumber(living.length),
-        badge: newInMonth > 0 ? `+${plural(newInMonth, "nouveau")} sur 30 jours` : undefined,
+        badge:
+          newInMonth > 0
+            ? `+${plural(newInMonth, "nouveau")} sur 30 jours`
+            : undefined,
         tone: newInMonth > 0 ? "positive" : undefined,
         detailRow: [
           plural(households, "foyer"),
@@ -314,7 +322,10 @@ export function usePatientsPageModel({ onNavigateToPatient }: PatientsProps) {
       {
         title: "Suivi clinique",
         value: formatNumber(monitoredPatients),
-        badge: monitoredPatients > 0 ? "Surveillance active" : "Aucun sous surveillance",
+        badge:
+          monitoredPatients > 0
+            ? "Surveillance active"
+            : "Aucun sous surveillance",
         tone: monitoredPatients > 0 ? "watch" : "positive",
         detailRow: `${formatNumber(underTreatment)} sous traitement · ${plural(hospitalized, "hospitalisé")}`,
         footerTitle: "Sous traitement ou hospitalisés",
@@ -323,7 +334,10 @@ export function usePatientsPageModel({ onNavigateToPatient }: PatientsProps) {
       {
         title: "Rendez-vous à venir",
         value: formatNumber(upcoming.length),
-        badge: upcoming.length > 0 ? `pour ${plural(upcomingPatients, "patient")}` : "Aucun de prévu",
+        badge:
+          upcoming.length > 0
+            ? `pour ${plural(upcomingPatients, "patient")}`
+            : "Aucun de prévu",
         detailRow: next
           ? `Prochain : ${formatPatientDateTime(next.startTime)}${nextName ? ` · ${nextName}` : ""}`
           : "Planifiez depuis l'Agenda ou le dossier",
@@ -333,7 +347,10 @@ export function usePatientsPageModel({ onNavigateToPatient }: PatientsProps) {
       {
         title: "Relances à prévoir",
         value: formatNumber(overdue),
-        badge: overdue > 0 ? "Sans visite depuis plus de 90 jours" : "Tous vus dans les 90 jours",
+        badge:
+          overdue > 0
+            ? "Sans visite depuis plus de 90 jours"
+            : "Tous vus dans les 90 jours",
         tone: overdue > 0 ? "critical" : "positive",
         detailRow: "Depuis la dernière visite terminée, hors décédés",
         footerTitle: "Sans visite depuis 90 jours",
@@ -444,79 +461,82 @@ export function usePatientsPageModel({ onNavigateToPatient }: PatientsProps) {
       owner: Partial<Owner>;
       patient: Partial<Patient>;
     }) => {
-      await guard(async () => {
-        const createdBundle = await createWithOwner({
-          ownerId: selectedOwnerId,
-          owner: {
-            firstName: owner.firstName || "",
-            lastName: owner.lastName || "",
-            phone: owner.phone || "",
-            email: owner.email || "",
-            address: owner.address || "",
-            city: owner.city || "",
-          },
-          patient: {
-            name: patient.name || "",
-            species: patient.species || "",
-            breed: patient.breed || "",
-            sex: (patient.sex || "M") as Patient["sex"],
-            status: (patient.status || "sante") as Patient["status"],
-          },
-        });
+      await guard(
+        async () => {
+          const createdBundle = await createWithOwner({
+            ownerId: selectedOwnerId,
+            owner: {
+              firstName: owner.firstName || "",
+              lastName: owner.lastName || "",
+              phone: owner.phone || "",
+              email: owner.email || "",
+              address: owner.address || "",
+              city: owner.city || "",
+            },
+            patient: {
+              name: patient.name || "",
+              species: patient.species || "",
+              breed: patient.breed || "",
+              sex: (patient.sex || "M") as Patient["sex"],
+              status: (patient.status || "sante") as Patient["status"],
+            },
+          });
 
-        if (!createdBundle?.patient) {
-          throw new Error("La création du patient a échoué.");
-        }
-
-        await audit.log({
-          action: "create",
-          entity: "patient",
-          entityId: createdBundle.patient.id,
-          payload: {
-            name: createdBundle.patient.name,
-            species: createdBundle.patient.species,
-          },
-        });
-
-        toast.success("Dossier patient créé.", {
-          description: "Vous pouvez maintenant créer le rendez-vous associé.",
-        });
-        setIsCreateOpen(false);
-        setRecentlySavedPatientId(createdBundle.patient.id);
-        const createdOwner = createdBundle.owner;
-        if (createdOwner) {
-          setRecentOwnersById((current) => ({
-            ...current,
-            [createdOwner.id]: createdOwner,
-          }));
-        }
-        setCreatedPatientPrompt({
-          owner:
-            createdBundle.owner ||
-            ownersMap.get(createdBundle.patient.ownerId) ||
-            (selectedOwnerId ? ownersMap.get(selectedOwnerId) : undefined),
-          patient: createdBundle.patient,
-        });
-      }, {
-        recover: (error) => {
-          console.error(error);
-          const message =
-            error instanceof Error
-              ? error.message
-              : typeof error === "string"
-                ? error
-                : "Impossible de créer le dossier patient.";
-          if (
-            message.toLowerCase().includes("database is locked") ||
-            message.toLowerCase().includes("code: 5")
-          ) {
-            toast.error("Base occupée, réessayez dans quelques secondes.");
-          } else {
-            toast.error(message);
+          if (!createdBundle?.patient) {
+            throw new Error("La création du patient a échoué.");
           }
-          throw new Error(message);
+
+          await audit.log({
+            action: "create",
+            entity: "patient",
+            entityId: createdBundle.patient.id,
+            payload: {
+              name: createdBundle.patient.name,
+              species: createdBundle.patient.species,
+            },
+          });
+
+          toast.success("Dossier patient créé.", {
+            description: "Vous pouvez maintenant créer le rendez-vous associé.",
+          });
+          setIsCreateOpen(false);
+          setRecentlySavedPatientId(createdBundle.patient.id);
+          const createdOwner = createdBundle.owner;
+          if (createdOwner) {
+            setRecentOwnersById((current) => ({
+              ...current,
+              [createdOwner.id]: createdOwner,
+            }));
+          }
+          setCreatedPatientPrompt({
+            owner:
+              createdBundle.owner ||
+              ownersMap.get(createdBundle.patient.ownerId) ||
+              (selectedOwnerId ? ownersMap.get(selectedOwnerId) : undefined),
+            patient: createdBundle.patient,
+          });
         },
-      });
+        {
+          recover: (error) => {
+            console.error(error);
+            const message =
+              error instanceof Error
+                ? error.message
+                : typeof error === "string"
+                  ? error
+                  : "Impossible de créer le dossier patient.";
+            if (
+              message.toLowerCase().includes("database is locked") ||
+              message.toLowerCase().includes("code: 5")
+            ) {
+              toast.error("Base occupée, réessayez dans quelques secondes.");
+            } else {
+              toast.error(message);
+            }
+            throw new Error(message);
+          },
+        }
+      );
     },
     [audit, createWithOwner, ownersMap]
   );

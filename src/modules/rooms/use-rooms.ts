@@ -34,7 +34,11 @@ export function refreshRooms(): Promise<void> {
     },
     () => {
       if (current === request) {
-        publish({ ...snapshot, error: "Les salles n'ont pas pu être chargées.", loaded: true });
+        publish({
+          ...snapshot,
+          error: "Les salles n'ont pas pu être chargées.",
+          loaded: true,
+        });
       }
     }
   );
@@ -58,11 +62,18 @@ if (typeof window !== "undefined") {
 }
 
 export function useRooms() {
-  const state = useSyncExternalStore(subscribe, () => snapshot, () => snapshot);
+  const state = useSyncExternalStore(
+    subscribe,
+    () => snapshot,
+    () => snapshot
+  );
   useEffect(() => {
     if (!state.loaded && !pending) void refreshRooms();
   }, [state.loaded]);
-  const active = useMemo(() => state.rooms.filter((room) => !room.archivedAt), [state.rooms]);
+  const active = useMemo(
+    () => state.rooms.filter((room) => !room.archivedAt),
+    [state.rooms]
+  );
   return { ...state, active };
 }
 
@@ -73,7 +84,8 @@ export function useRooms() {
 export function useRoomLabel() {
   const { rooms } = useRooms();
   return useCallback(
-    (roomId: string | null | undefined) => (rooms.length > 1 ? roomLabel(roomId, rooms) : null),
+    (roomId: string | null | undefined) =>
+      rooms.length > 1 ? roomLabel(roomId, rooms) : null,
     [rooms]
   );
 }

@@ -102,7 +102,11 @@ import "../finances-premium.css";
 import { DatePicker } from "@/components/ui/date-picker";
 import { useListCursor } from "@/hooks/useListCursor";
 import { InvoicesTable } from "./invoices-table";
-import { IconButton, QuietButton, SearchField } from "@/components/ui/tuff-controls";
+import {
+  IconButton,
+  QuietButton,
+  SearchField,
+} from "@/components/ui/tuff-controls";
 import { Inset, Panel, Shell, ShellHeader } from "@/components/ui/surface";
 import { StatusPill } from "@/components/ui/status-pill";
 import { RollingNumber } from "@/components/ui/rolling-number";
@@ -330,7 +334,7 @@ export function FinancesView(props: FinancesViewProps) {
                     value={invoiceSettlementFilter}
                     onValueChange={(value) =>
                       setInvoiceSettlementFilter(
-                        value as InvoiceSettlementFilter,
+                        value as InvoiceSettlementFilter
                       )
                     }
                     options={[
@@ -391,7 +395,7 @@ export function FinancesView(props: FinancesViewProps) {
                   multiple={false}
                   onValueChange={(value) =>
                     setJournalFilter(
-                      (value[0] as TransactionFilter | undefined) ?? "all",
+                      (value[0] as TransactionFilter | undefined) ?? "all"
                     )
                   }
                   size="sm"
@@ -459,7 +463,7 @@ export function FinancesView(props: FinancesViewProps) {
                     value={journalMethod}
                     onValueChange={(value) =>
                       setJournalMethod(
-                        value as TransactionPaymentMethod | "all",
+                        value as TransactionPaymentMethod | "all"
                       )
                     }
                     options={[
@@ -577,7 +581,10 @@ export function FinancesView(props: FinancesViewProps) {
                     <caption className="sr-only">Journal de trésorerie</caption>
                     <thead>
                       <tr className="text-muted-foreground">
-                        <th className="px-2 py-2 text-left font-medium" scope="col">
+                        <th
+                          className="px-2 py-2 text-left font-medium"
+                          scope="col"
+                        >
                           Opération
                         </th>
                         <th
@@ -598,7 +605,10 @@ export function FinancesView(props: FinancesViewProps) {
                         >
                           Origine
                         </th>
-                        <th className="px-2 py-2 text-right font-medium" scope="col">
+                        <th
+                          className="px-2 py-2 text-right font-medium"
+                          scope="col"
+                        >
                           Montant
                         </th>
                         <th className="px-2 py-2 font-medium" scope="col">
@@ -653,7 +663,7 @@ export function FinancesView(props: FinancesViewProps) {
                               <span
                                 className={cn(
                                   "font-sans text-[0.8125rem] font-medium tabular-nums",
-                                  isIncome ? "text-positive" : "text-negative",
+                                  isIncome ? "text-positive" : "text-negative"
                                 )}
                               >
                                 {isIncome ? "+" : "-"}
@@ -724,7 +734,9 @@ export function FinancesView(props: FinancesViewProps) {
                   disabled={journalPage <= 1}
                   icon={ChevronLeft}
                   label="Page précédente"
-                  onClick={() => setJournalPage((page) => Math.max(1, page - 1))}
+                  onClick={() =>
+                    setJournalPage((page) => Math.max(1, page - 1))
+                  }
                   strokeWidth={3}
                 />
                 <span className="w-14 text-center tabular-nums">
@@ -735,7 +747,9 @@ export function FinancesView(props: FinancesViewProps) {
                   icon={ChevronRight}
                   label="Page suivante"
                   onClick={() =>
-                    setJournalPage((page) => Math.min(journalPageCount, page + 1))
+                    setJournalPage((page) =>
+                      Math.min(journalPageCount, page + 1)
+                    )
                   }
                   strokeWidth={3}
                 />
@@ -854,7 +868,7 @@ export function FinancesView(props: FinancesViewProps) {
                                   ...candidate,
                                   description: event.target.value,
                                 }
-                              : candidate,
+                              : candidate
                           ),
                         }))
                       }
@@ -870,7 +884,7 @@ export function FinancesView(props: FinancesViewProps) {
                           lines: current.lines.map((candidate) =>
                             candidate.id === line.id
                               ? { ...candidate, quantity: event.target.value }
-                              : candidate,
+                              : candidate
                           ),
                         }))
                       }
@@ -887,7 +901,7 @@ export function FinancesView(props: FinancesViewProps) {
                           lines: current.lines.map((candidate) =>
                             candidate.id === line.id
                               ? { ...candidate, unitAmount: event.target.value }
-                              : candidate,
+                              : candidate
                           ),
                         }))
                       }
@@ -903,7 +917,7 @@ export function FinancesView(props: FinancesViewProps) {
                         setInvoiceDraft((current) => ({
                           ...current,
                           lines: current.lines.filter(
-                            (candidate) => candidate.id !== line.id,
+                            (candidate) => candidate.id !== line.id
                           ),
                         }))
                       }
@@ -1080,7 +1094,7 @@ export function FinancesView(props: FinancesViewProps) {
                           className={cn(
                             "font-semibold tabular-nums",
                             payment.status === "void" &&
-                              "text-muted-foreground line-through",
+                              "text-muted-foreground line-through"
                           )}
                         >
                           {formatDZD(payment.amount)}
@@ -1106,7 +1120,7 @@ export function FinancesView(props: FinancesViewProps) {
                           </div>
                           <p className="text-muted-foreground text-xs">
                             {formatDate(
-                              creditNote.issuedAt ?? creditNote.createdAt,
+                              creditNote.issuedAt ?? creditNote.createdAt
                             )}
                             {creditNote.reason ? ` · ${creditNote.reason}` : ""}
                           </p>
@@ -1144,7 +1158,7 @@ export function FinancesView(props: FinancesViewProps) {
                           className={cn(
                             "font-semibold text-rose-600 tabular-nums dark:text-rose-300",
                             refund.status === "void" &&
-                              "text-muted-foreground line-through dark:text-muted-foreground",
+                              "text-muted-foreground line-through dark:text-muted-foreground"
                           )}
                         >
                           -{formatDZD(refund.amount)}
@@ -1230,7 +1244,7 @@ export function FinancesView(props: FinancesViewProps) {
             description={
               paymentInvoice
                 ? `${getInvoiceDisplayName(paymentInvoice)} · solde ${formatDZD(
-                    paymentInvoice.balanceAmount,
+                    paymentInvoice.balanceAmount
                   )}`
                 : "Facture sélectionnée"
             }
@@ -1311,14 +1325,14 @@ export function FinancesView(props: FinancesViewProps) {
       {previewInvoice &&
         (() => {
           const invoicePatient = patients.find(
-            (patient) => patient.id === previewInvoice.patientId,
+            (patient) => patient.id === previewInvoice.patientId
           );
           const document = invoiceDocument(
             previewInvoice,
             invoicePatient
               ? patientDocumentName(invoicePatient)
               : getInvoicePatientName(previewInvoice, patients) ||
-                  "Patient non renseigné",
+                  "Patient non renseigné"
           );
           return (
             <InvoicePdfPreview

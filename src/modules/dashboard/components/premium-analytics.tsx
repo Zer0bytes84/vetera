@@ -1,6 +1,11 @@
 "use client";
 
-import { ArrowDownRightIcon, ArrowUpRightIcon, PresentationChartBarIcon, PresentationChartLineIcon } from "@heroicons/react/16/solid";
+import {
+  ArrowDownRightIcon,
+  ArrowUpRightIcon,
+  PresentationChartBarIcon,
+  PresentationChartLineIcon,
+} from "@heroicons/react/16/solid";
 import {
   CalendarDaysIcon,
   ClipboardDocumentCheckIcon,
@@ -25,12 +30,24 @@ import {
 } from "../model/premium-analytics";
 import { Button } from "@/components/ui/button";
 import { Calendar as DateRangeCalendar } from "@/components/ui/calendar";
-import { COMPACT_CALENDAR_CLASS, DatePicker, formatDateValue } from "@/components/ui/date-picker";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  COMPACT_CALENDAR_CLASS,
+  DatePicker,
+  formatDateValue,
+} from "@/components/ui/date-picker";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { ShortcutTooltip } from "@/design-system/patterns/shortcut-tooltip";
 import type { WidgetState } from "./clinical/shared";
 import { buildWeekFacts } from "../model/week-radial";
-import { buildMonthForecast, buildVisitKinds, type VisitKindRow } from "../model/dashboard-widgets";
+import {
+  buildMonthForecast,
+  buildVisitKinds,
+  type VisitKindRow,
+} from "../model/dashboard-widgets";
 import { ForecastBar, WidgetFooter } from "./widget-units";
 import { type FocusPoint } from "./focus-trend-chart";
 import { RevenueChartWidget } from "./revenue-chart-widget";
@@ -91,7 +108,11 @@ interface PremiumAnalyticsProps {
   /** Le vétérinaire a choisi un créneau libre : la création du rendez-vous s'ouvre dessus. */
   onCreateSlot?: (slot: FreeSlot) => void;
   /** Rappels et soins lus à part des autres données ; `unavailable` nomme ce qui n'a pas pu être chargé. */
-  alertSources?: { reminders: AlertReminder[]; careTasks: CareTask[]; unavailable: string[] };
+  alertSources?: {
+    reminders: AlertReminder[];
+    careTasks: CareTask[];
+    unavailable: string[];
+  };
 }
 
 export function DeltaBadge({
@@ -112,7 +133,9 @@ export function DeltaBadge({
   if (previous === 0 && current === 0) {
     return (
       <span className="delta" data-sense="neutral">
-        <span className="delta-label">Rien à comparer : 0 sur les deux périodes</span>
+        <span className="delta-label">
+          Rien à comparer : 0 sur les deux périodes
+        </span>
       </span>
     );
   }
@@ -120,12 +143,15 @@ export function DeltaBadge({
   if (value === null && previous === 0) {
     return (
       <span className="delta" data-sense="neutral">
-        <span className="delta-label">Pas de période précédente comparable</span>
+        <span className="delta-label">
+          Pas de période précédente comparable
+        </span>
       </span>
     );
   }
   const computed =
-    value ?? Math.round(((current - previous) / Math.abs(previous)) * 1000) / 10;
+    value ??
+    Math.round(((current - previous) / Math.abs(previous)) * 1000) / 10;
 
   const positive = computed !== 0 && (inverse ? computed < 0 : computed > 0);
   const negative = computed !== 0 && !positive;
@@ -147,7 +173,9 @@ export function DeltaBadge({
             : "vs période précédente"}
       </span>
       {!previousLabel && (
-        <span className="sr-only">Valeur précédente : {formatNumber(previous)}</span>
+        <span className="sr-only">
+          Valeur précédente : {formatNumber(previous)}
+        </span>
       )}
     </span>
   );
@@ -159,16 +187,32 @@ export function DeltaBadge({
  */
 export function MiniKinds({ rows }: { rows: VisitKindRow[] }) {
   if (!rows.length) return null;
-  const detail = rows.map((row) => `${row.name} ${formatNumber(row.count)} (${row.share} %)`).join(" · ");
+  const detail = rows
+    .map((row) => `${row.name} ${formatNumber(row.count)} (${row.share} %)`)
+    .join(" · ");
   return (
-    <span aria-label={`Consultations par motif : ${detail}`} className="kpiKinds" role="img" title={detail}>
+    <span
+      aria-label={`Consultations par motif : ${detail}`}
+      className="kpiKinds"
+      role="img"
+      title={detail}
+    >
       <span className="kpiKindsLead">
         {rows[0].name} · {rows[0].share} %
-        {rows.length > 1 ? <span className="kpiKindsMore"> · {rows.length - 1} autre{rows.length > 2 ? "s" : ""}</span> : null}
+        {rows.length > 1 ? (
+          <span className="kpiKindsMore">
+            {" "}
+            · {rows.length - 1} autre{rows.length > 2 ? "s" : ""}
+          </span>
+        ) : null}
       </span>
       <span aria-hidden="true" className="kpiKindsBar">
         {rows.map((row, index) => (
-          <i data-tone={Math.min(index, 4)} key={row.key} style={{ flexGrow: row.count }} />
+          <i
+            data-tone={Math.min(index, 4)}
+            key={row.key}
+            style={{ flexGrow: row.count }}
+          />
         ))}
       </span>
     </span>
@@ -179,15 +223,29 @@ export function MiniKinds({ rows }: { rows: VisitKindRow[] }) {
  * A KPI's running total across the period, as a quiet area: its last point is
  * the figure the card shows. Trésorerie only: one chart, one card.
  */
-export function MiniArea({ values, label }: { values: number[]; label: string }) {
+export function MiniArea({
+  values,
+  label,
+}: {
+  values: number[];
+  label: string;
+}) {
   if (values.length < 2) return null;
   const width = 84;
   const height = 28;
-  const running = values.reduce<number[]>((sums, value) => [...sums, (sums.at(-1) ?? 0) + value], []);
+  const running = values.reduce<number[]>(
+    (sums, value) => [...sums, (sums.at(-1) ?? 0) + value],
+    []
+  );
   const max = Math.max(...running, 0);
   const x = (i: number) => (i * width) / (running.length - 1);
-  const y = (value: number) => (max ? height - 1 - (value / max) * (height - 2) : height - 1);
-  const line = running.map((value, i) => `${i ? "L" : "M"}${x(i).toFixed(1)},${y(value).toFixed(1)}`).join(" ");
+  const y = (value: number) =>
+    max ? height - 1 - (value / max) * (height - 2) : height - 1;
+  const line = running
+    .map(
+      (value, i) => `${i ? "L" : "M"}${x(i).toFixed(1)},${y(value).toFixed(1)}`
+    )
+    .join(" ");
   return (
     <svg
       aria-label={label}
@@ -197,7 +255,10 @@ export function MiniArea({ values, label }: { values: number[]; label: string })
       viewBox={`0 0 ${width} ${height}`}
       width={width}
     >
-      <path className="kpiAreaFill" d={`${line} L${width},${height} L0,${height} Z`} />
+      <path
+        className="kpiAreaFill"
+        d={`${line} L${width},${height} L0,${height} Z`}
+      />
       <path className="kpiAreaLine" d={line} />
     </svg>
   );
@@ -206,7 +267,12 @@ export function MiniArea({ values, label }: { values: number[]; label: string })
 type TrendPoint = FocusPoint;
 
 /** The chart's own periods: a single day draws no curve, so « today » is left to the page's. */
-const KEY_FIGURE_ICONS = { cash: WalletIcon, appointments: CalendarDaysIcon, receivables: ReceiptPercentIcon, actions: ClipboardDocumentCheckIcon } as const;
+const KEY_FIGURE_ICONS = {
+  cash: WalletIcon,
+  appointments: CalendarDaysIcon,
+  receivables: ReceiptPercentIcon,
+  actions: ClipboardDocumentCheckIcon,
+} as const;
 
 type ChartPeriod = Exclude<AnalyticsPeriod, "today"> | "custom";
 
@@ -249,19 +315,25 @@ export function PremiumAnalytics({
   const updatedAt = now ?? new Date();
 
   const dateOptions = { day: "numeric", month: "short" } as const;
-  const sameDay = ranges.current.from.toDateString() === ranges.current.to.toDateString();
-  const rangeLabel =
-    sameDay
-      ? ranges.current.from.toLocaleDateString("fr-FR", {
-          day: "numeric",
-          month: "long",
-          year: "numeric",
-        })
-      : `Du ${ranges.current.from.toLocaleDateString("fr-FR", dateOptions)} au ${ranges.current.to.toLocaleDateString("fr-FR", { ...dateOptions, year: "numeric" })}`;
+  const sameDay =
+    ranges.current.from.toDateString() === ranges.current.to.toDateString();
+  const rangeLabel = sameDay
+    ? ranges.current.from.toLocaleDateString("fr-FR", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      })
+    : `Du ${ranges.current.from.toLocaleDateString("fr-FR", dateOptions)} au ${ranges.current.to.toLocaleDateString("fr-FR", { ...dateOptions, year: "numeric" })}`;
 
   // The days the two pickers show: the picked ones, else those of the preset in force.
-  const pickedFrom = period === "custom" && customRange ? customRange.from : formatDateValue(ranges.current.from);
-  const pickedTo = period === "custom" && customRange ? customRange.to : formatDateValue(ranges.current.to);
+  const pickedFrom =
+    period === "custom" && customRange
+      ? customRange.from
+      : formatDateValue(ranges.current.from);
+  const pickedTo =
+    period === "custom" && customRange
+      ? customRange.to
+      : formatDateValue(ranges.current.to);
 
   // The chart's own period, set from its card; it follows the page's period
   // when that one changes (a single day has no curve: a week instead).
@@ -270,7 +342,9 @@ export function PremiumAnalytics({
   const pageKey = `${pagePeriod}|${period === "custom" ? `${customRange?.from}|${customRange?.to}` : ""}`;
   const [chartPeriod, setChartPeriod] = useState<ChartPeriod>(pagePeriod);
   // The days picked on the chart itself; they follow the page's when the page picks days.
-  const [chartCustom, setChartCustom] = useState<CustomRange | null>(period === "custom" ? (customRange ?? null) : null);
+  const [chartCustom, setChartCustom] = useState<CustomRange | null>(
+    period === "custom" ? (customRange ?? null) : null
+  );
   const [chartPickerOpen, setChartPickerOpen] = useState(false);
   // The key figures' two views: the cards alone, or with their sparklines (the row's current look).
   const [keyView, setKeyView] = useState<"kpi" | "sparklines">("kpi");
@@ -295,7 +369,9 @@ export function PremiumAnalytics({
   })();
   const chartIsWeekly =
     chartPeriod === "12m" ||
-    (chartPeriod === "custom" && chartRanges.current.to.getTime() - chartRanges.current.from.getTime() > 92 * 86_400_000);
+    (chartPeriod === "custom" &&
+      chartRanges.current.to.getTime() - chartRanges.current.from.getTime() >
+        92 * 86_400_000);
 
   // Compute trend points for the chart's period
   const chartPoints = useMemo<TrendPoint[]>(() => {
@@ -307,9 +383,17 @@ export function PremiumAnalytics({
     const shift = from.getTime() - ranges.previous.from.getTime();
     // The same visits as the Consultations figure: a visit whose patient no longer exists is not counted
     // there, so it is not counted here either (the two figures sit side by side and must agree).
-    const knownPatients = new Set((presentation?.patients ?? []).map((patient) => patient.id));
-    const isVisit = (a: { startTime?: string; status: string; patientId?: string }) =>
-      Boolean(a.startTime) && !["cancelled", "no_show"].includes(a.status) && knownPatients.has(a.patientId ?? "");
+    const knownPatients = new Set(
+      (presentation?.patients ?? []).map((patient) => patient.id)
+    );
+    const isVisit = (a: {
+      startTime?: string;
+      status: string;
+      patientId?: string;
+    }) =>
+      Boolean(a.startTime) &&
+      !["cancelled", "no_show"].includes(a.status) &&
+      knownPatients.has(a.patientId ?? "");
 
     const daysCount = Math.max(
       1,
@@ -323,12 +407,16 @@ export function PremiumAnalytics({
     const cursor = new Date(from);
     while (cursor <= to) {
       const bucketEnd = new Date(
-        Math.min(cursor.getTime() + step * 24 * 60 * 60 * 1000 - 1, to.getTime())
+        Math.min(
+          cursor.getTime() + step * 24 * 60 * 60 * 1000 - 1,
+          to.getTime()
+        )
       );
 
       const receiptsSum = transactions
         .filter((t) => {
-          if (t.type !== "income" || t.status !== "paid" || !t.date) return false;
+          if (t.type !== "income" || t.status !== "paid" || !t.date)
+            return false;
           // Read as the Trésorerie card reads it: a SQLite timestamp is UTC.
           const d = parseDashboardDate(t.date);
           return Boolean(d && d >= cursor && d <= bucketEnd);
@@ -343,15 +431,34 @@ export function PremiumAnalytics({
 
       const label =
         daysCount <= 1
-          ? cursor.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })
-          : cursor.toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
+          ? cursor.toLocaleTimeString("fr-FR", {
+              hour: "2-digit",
+              minute: "2-digit",
+            })
+          : cursor.toLocaleDateString("fr-FR", {
+              day: "numeric",
+              month: "short",
+            });
 
       // A bucket of several days is named by its span, not by its first day.
-      const spanEnd = new Date(bucketEnd.getFullYear(), bucketEnd.getMonth(), bucketEnd.getDate());
+      const spanEnd = new Date(
+        bucketEnd.getFullYear(),
+        bucketEnd.getMonth(),
+        bucketEnd.getDate()
+      );
       const long =
         daysCount <= 1
-          ? cursor.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })
-          : step > 1 && spanEnd.getTime() !== new Date(cursor.getFullYear(), cursor.getMonth(), cursor.getDate()).getTime()
+          ? cursor.toLocaleTimeString("fr-FR", {
+              hour: "2-digit",
+              minute: "2-digit",
+            })
+          : step > 1 &&
+              spanEnd.getTime() !==
+                new Date(
+                  cursor.getFullYear(),
+                  cursor.getMonth(),
+                  cursor.getDate()
+                ).getTime()
             ? `Du ${cursor.toLocaleDateString("fr-FR", { day: "numeric", month: "short" })} au ${spanEnd.toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" })}`
             : cursor.toLocaleDateString("fr-FR", {
                 weekday: "short",
@@ -369,7 +476,8 @@ export function PremiumAnalytics({
       }).length;
       const previousReceipts = transactions
         .filter((t) => {
-          if (t.type !== "income" || t.status !== "paid" || !t.date) return false;
+          if (t.type !== "income" || t.status !== "paid" || !t.date)
+            return false;
           const time = parseDashboardDate(t.date)?.getTime() ?? Number.NaN;
           return time >= previousFrom && time <= previousTo;
         })
@@ -396,15 +504,27 @@ export function PremiumAnalytics({
     }
 
     return points;
-  }, [chartRanges, presentation?.transactions, presentation?.appointments, presentation?.patients]);
+  }, [
+    chartRanges,
+    presentation?.transactions,
+    presentation?.appointments,
+    presentation?.patients,
+  ]);
 
   // The visits the chart counts, split by type of act, for its « Répartition » view.
   const chartKinds = useMemo(() => {
-    const known = new Set((presentation?.patients ?? []).map((patient) => patient.id));
+    const known = new Set(
+      (presentation?.patients ?? []).map((patient) => patient.id)
+    );
     const { from, to } = chartRanges.current;
     return buildVisitKinds(
       (presentation?.appointments ?? []).filter((a) => {
-        if (!a.startTime || ["cancelled", "no_show"].includes(a.status) || !known.has(a.patientId ?? "")) return false;
+        if (
+          !a.startTime ||
+          ["cancelled", "no_show"].includes(a.status) ||
+          !known.has(a.patientId ?? "")
+        )
+          return false;
         const d = new Date(a.startTime);
         return d >= from && d <= to;
       })
@@ -413,7 +533,8 @@ export function PremiumAnalytics({
 
   // The month's receipts and where their pace leads (Recettes card).
   const forecast = useMemo(
-    () => buildMonthForecast(presentation?.transactions ?? [], now ?? new Date()),
+    () =>
+      buildMonthForecast(presentation?.transactions ?? [], now ?? new Date()),
     [presentation?.transactions, now]
   );
   const alertInputs = useMemo(
@@ -425,7 +546,14 @@ export function PremiumAnalytics({
       invoices: presentation?.invoices ?? [],
       appointments: presentation?.appointments ?? [],
     }),
-    [alertSources?.reminders, alertSources?.careTasks, presentation?.products, presentation?.patients, presentation?.invoices, presentation?.appointments],
+    [
+      alertSources?.reminders,
+      alertSources?.careTasks,
+      presentation?.products,
+      presentation?.patients,
+      presentation?.invoices,
+      presentation?.appointments,
+    ]
   );
 
   const weekStats = useMemo(
@@ -438,202 +566,277 @@ export function PremiumAnalytics({
       }),
     // `updatedAt` is a fresh date on each render when the dashboard gets none; the data is what moves the figures.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [presentation?.transactions, presentation?.appointments, presentation?.invoices, now],
+    [
+      presentation?.transactions,
+      presentation?.appointments,
+      presentation?.invoices,
+      now,
+    ]
   );
 
   // One small calendar icon: the chart's period is a choice made now and then, not a row of buttons.
   const chartPeriodControl = (
-      // One small calendar icon: the chart's period is a choice made now and then, not a row of buttons.
-      <Popover
-        onOpenChange={(open) => {
-          setChartPickerOpen(open);
-          if (!open) setChartAnchor(null);
-        }}
-        open={chartPickerOpen}
-      >
-        <PopoverTrigger
-          aria-label={`Choisir les dates du graphique : ${chartRangeLabel}`}
-          render={<Button className="size-8" size="icon-sm" title={chartRangeLabel} type="button" variant="ghost" />}
-        >
-          <CalendarDaysIcon aria-hidden="true" className="size-4" />
-        </PopoverTrigger>
-        <PopoverContent align="end" className="w-auto p-2">
-          {/* Two clicks: the first day, then the last. A second range replaces the first. */}
-          <DateRangeCalendar
-            className={COMPACT_CALENDAR_CLASS}
-            defaultMonth={chartRanges.current.to}
-            mode="range"
-            onDayClick={(day) => {
-              // First click starts a new range, second one ends it: never an edit of the old range.
-              if (!chartAnchor) {
-                setChartAnchor(day);
-                return;
-              }
-              const [first, last] = day < chartAnchor ? [day, chartAnchor] : [chartAnchor, day];
-              setChartCustom({ from: formatDateValue(first), to: formatDateValue(last) });
-              setChartPeriod("custom");
-              setChartAnchor(null);
-              setChartPickerOpen(false);
-            }}
-            selected={chartAnchor ? { from: chartAnchor, to: chartAnchor } : { from: chartRanges.current.from, to: chartRanges.current.to }}
+    // One small calendar icon: the chart's period is a choice made now and then, not a row of buttons.
+    <Popover
+      onOpenChange={(open) => {
+        setChartPickerOpen(open);
+        if (!open) setChartAnchor(null);
+      }}
+      open={chartPickerOpen}
+    >
+      <PopoverTrigger
+        aria-label={`Choisir les dates du graphique : ${chartRangeLabel}`}
+        render={
+          <Button
+            className="size-8"
+            size="icon-sm"
+            title={chartRangeLabel}
+            type="button"
+            variant="ghost"
           />
-          <p className="px-2 pt-1 pb-1 text-muted-foreground text-xs">
-            {chartAnchor ? "Choisissez le dernier jour de la période" : chartRangeLabel}
-          </p>
-        </PopoverContent>
-      </Popover>
+        }
+      >
+        <CalendarDaysIcon aria-hidden="true" className="size-4" />
+      </PopoverTrigger>
+      <PopoverContent align="end" className="w-auto p-2">
+        {/* Two clicks: the first day, then the last. A second range replaces the first. */}
+        <DateRangeCalendar
+          className={COMPACT_CALENDAR_CLASS}
+          defaultMonth={chartRanges.current.to}
+          mode="range"
+          onDayClick={(day) => {
+            // First click starts a new range, second one ends it: never an edit of the old range.
+            if (!chartAnchor) {
+              setChartAnchor(day);
+              return;
+            }
+            const [first, last] =
+              day < chartAnchor ? [day, chartAnchor] : [chartAnchor, day];
+            setChartCustom({
+              from: formatDateValue(first),
+              to: formatDateValue(last),
+            });
+            setChartPeriod("custom");
+            setChartAnchor(null);
+            setChartPickerOpen(false);
+          }}
+          selected={
+            chartAnchor
+              ? { from: chartAnchor, to: chartAnchor }
+              : { from: chartRanges.current.from, to: chartRanges.current.to }
+          }
+        />
+        <p className="px-2 pt-1 pb-1 text-muted-foreground text-xs">
+          {chartAnchor
+            ? "Choisissez le dernier jour de la période"
+            : chartRangeLabel}
+        </p>
+      </PopoverContent>
+    </Popover>
   );
 
   // The key figures: the same data, the same comparisons, the same details as the row has always shown.
   const receivables = useMemo(
-    () => receivablesSummary(presentation?.invoices ?? [], presentation?.transactions ?? []),
+    () =>
+      receivablesSummary(
+        presentation?.invoices ?? [],
+        presentation?.transactions ?? []
+      ),
     [presentation?.invoices, presentation?.transactions]
   );
   // Share of the invoiced amount already settled: the Créances card's goal.
-  const settlement = useMemo(() => settlementRate(presentation?.invoices ?? []), [presentation?.invoices]);
+  const settlement = useMemo(
+    () => settlementRate(presentation?.invoices ?? []),
+    [presentation?.invoices]
+  );
   const keyStats = useMemo<Stat[]>(
     () =>
-      buildKeyFigures(model, receivables, settlement).map(({ line, ...figure }) => ({
-        ...figure,
-        hint: line,
-        icon: KEY_FIGURE_ICONS[figure.id],
-      })),
+      buildKeyFigures(model, receivables, settlement).map(
+        ({ line, ...figure }) => ({
+          ...figure,
+          hint: line,
+          icon: KEY_FIGURE_ICONS[figure.id],
+        })
+      ),
     [model, receivables, settlement]
   );
 
   return (
     <div className="premium-overview-shell flex flex-col gap-6 w-full">
-      {clinicalView ? <div className="premium-clinical-overview">
-        {clinicalView}
-      </div> : <>
-      {/* 3. The key figures, on one single row: Trésorerie, Rendez-vous, Créances, Actions à suivre. */}
-      <div aria-atomic="true" aria-live="polite">
-        <StatGrid
-          className="max-w-none"
-          data={keyStats}
-          icon={Squares2X2Icon}
-          layout="row"
-          goals={keyView === "kpi"}
-          sparklines={keyView === "sparklines"}
-          subtitle={rangeLabel}
-          title="Chiffres clés"
-          lead={
-            <div className="filters">
-              <div aria-label="Période du tableau de bord" className="filter-segments" data-tabs-style="segmented" role="group">
-              {ANALYTICS_PERIODS.map((opt) => (
-                <button
-                  key={opt.value}
-                  type="button"
-                  className="filter"
-                  data-active={period === opt.value}
-                  aria-label={opt.ariaLabel}
-                  aria-pressed={period === opt.value}
-                  onClick={() => onPeriod(opt.value)}
-                >
-                  {opt.label}
-                </button>
-              ))}
-              </div>
-              {/* Any two days: the figures and the chart below follow them. */}
-              <div aria-label="Période personnalisée" className="filterDates" data-active={period === "custom" || undefined} role="group">
-                <DatePicker
-                  aria-label="Début de la période"
-                  className="filterDate"
-                  max={pickedTo}
-                  onChange={(value) => value && onCustomRange?.({ from: value, to: pickedTo })}
-                  value={pickedFrom}
-                />
-                <span aria-hidden="true" className="filterDatesTo">au</span>
-                <DatePicker
-                  aria-label="Fin de la période"
-                  className="filterDate"
-                  min={pickedFrom}
-                  onChange={(value) => value && onCustomRange?.({ from: pickedFrom, to: value })}
-                  value={pickedTo}
-                />
-              </div>
-            </div>
-          }
-          // The widget's two views, as TuffUI has them, named in French: « Indicateurs » (the cards with their goal bar)
-          // and « Mini-graphiques » (the cards with their sparkline).
-          toolbar={
-            <>
-            <div aria-label="Affichage des chiffres clés" className="filter-segments keyViewIcons" data-tabs-style="segmented" role="group">
-              {(
-                [
-                  { view: "kpi", label: "Indicateurs", Icon: PresentationChartBarIcon },
-                  { view: "sparklines", label: "Mini-graphiques", Icon: PresentationChartLineIcon },
-                ] as const
-              ).map(({ view, label, Icon }) => (
-                <ShortcutTooltip key={view} label={label}>
-                  <button
-                    aria-label={label}
-                    aria-pressed={keyView === view}
-                    className="filter keyViewIcon"
-                    data-active={keyView === view}
-                    onClick={() => setKeyView(view)}
-                    type="button"
+      {clinicalView ? (
+        <div className="premium-clinical-overview">{clinicalView}</div>
+      ) : (
+        <>
+          {/* 3. The key figures, on one single row: Trésorerie, Rendez-vous, Créances, Actions à suivre. */}
+          <div aria-atomic="true" aria-live="polite">
+            <StatGrid
+              className="max-w-none"
+              data={keyStats}
+              icon={Squares2X2Icon}
+              layout="row"
+              goals={keyView === "kpi"}
+              sparklines={keyView === "sparklines"}
+              subtitle={rangeLabel}
+              title="Chiffres clés"
+              lead={
+                <div className="filters">
+                  <div
+                    aria-label="Période du tableau de bord"
+                    className="filter-segments"
+                    data-tabs-style="segmented"
+                    role="group"
                   >
-                    <Icon aria-hidden="true" className="size-4" />
-                  </button>
-                </ShortcutTooltip>
-              ))}
-            </div>
-            {dashboardViewControl}
-            </>
-          }
-          onSelect={(stat) =>
-            ({
-              cash: onFinances,
-              appointments: () => onNavigate?.("agenda"),
-              receivables: onFinances,
-              actions: onActions,
-            })[stat.id as KeyFigureId]()
-          }
-        />
-      </div>
+                    {ANALYTICS_PERIODS.map((opt) => (
+                      <button
+                        key={opt.value}
+                        type="button"
+                        className="filter"
+                        data-active={period === opt.value}
+                        aria-label={opt.ariaLabel}
+                        aria-pressed={period === opt.value}
+                        onClick={() => onPeriod(opt.value)}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                  {/* Any two days: the figures and the chart below follow them. */}
+                  <div
+                    aria-label="Période personnalisée"
+                    className="filterDates"
+                    data-active={period === "custom" || undefined}
+                    role="group"
+                  >
+                    <DatePicker
+                      aria-label="Début de la période"
+                      className="filterDate"
+                      max={pickedTo}
+                      onChange={(value) =>
+                        value && onCustomRange?.({ from: value, to: pickedTo })
+                      }
+                      value={pickedFrom}
+                    />
+                    <span aria-hidden="true" className="filterDatesTo">
+                      au
+                    </span>
+                    <DatePicker
+                      aria-label="Fin de la période"
+                      className="filterDate"
+                      min={pickedFrom}
+                      onChange={(value) =>
+                        value &&
+                        onCustomRange?.({ from: pickedFrom, to: value })
+                      }
+                      value={pickedTo}
+                    />
+                  </div>
+                </div>
+              }
+              // The widget's two views, as TuffUI has them, named in French: « Indicateurs » (the cards with their goal bar)
+              // and « Mini-graphiques » (the cards with their sparkline).
+              toolbar={
+                <>
+                  <div
+                    aria-label="Affichage des chiffres clés"
+                    className="filter-segments keyViewIcons"
+                    data-tabs-style="segmented"
+                    role="group"
+                  >
+                    {(
+                      [
+                        {
+                          view: "kpi",
+                          label: "Indicateurs",
+                          Icon: PresentationChartBarIcon,
+                        },
+                        {
+                          view: "sparklines",
+                          label: "Mini-graphiques",
+                          Icon: PresentationChartLineIcon,
+                        },
+                      ] as const
+                    ).map(({ view, label, Icon }) => (
+                      <ShortcutTooltip key={view} label={label}>
+                        <button
+                          aria-label={label}
+                          aria-pressed={keyView === view}
+                          className="filter keyViewIcon"
+                          data-active={keyView === view}
+                          onClick={() => setKeyView(view)}
+                          type="button"
+                        >
+                          <Icon aria-hidden="true" className="size-4" />
+                        </button>
+                      </ShortcutTooltip>
+                    ))}
+                  </div>
+                  {dashboardViewControl}
+                </>
+              }
+              onSelect={(stat) =>
+                ({
+                  cash: onFinances,
+                  appointments: () => onNavigate?.("agenda"),
+                  receivables: onFinances,
+                  actions: onActions,
+                })[stat.id as KeyFigureId]()
+              }
+            />
+          </div>
 
-      {/* 4. Recettes & activité, full width. */}
-      <RevenueChartWidget
-        footer={
-          <>
-            {/* The month's forecast: no figure from a journal still loading. */}
-            {states.cash.loading ? null : <ForecastBar forecast={forecast} />}
-            <WidgetFooter action="Finances" onAction={onFinances}>
-              Encaissements payés, {chartIsWeekly ? "par semaine" : "par jour"} · consultations hors annulations et absences
-            </WidgetFooter>
-          </>
-        }
-        kinds={chartKinds}
-        periodControl={chartPeriodControl}
-        points={chartPoints}
-        rangeLabel={chartRangeLabel}
-      />
+          {/* 4. Recettes & activité, full width. */}
+          <RevenueChartWidget
+            footer={
+              <>
+                {/* The month's forecast: no figure from a journal still loading. */}
+                {states.cash.loading ? null : (
+                  <ForecastBar forecast={forecast} />
+                )}
+                <WidgetFooter action="Finances" onAction={onFinances}>
+                  Encaissements payés,{" "}
+                  {chartIsWeekly ? "par semaine" : "par jour"} · consultations
+                  hors annulations et absences
+                </WidgetFooter>
+              </>
+            }
+            kinds={chartKinds}
+            periodControl={chartPeriodControl}
+            points={chartPoints}
+            rangeLabel={chartRangeLabel}
+          />
 
-      {morningWatch}
+          {morningWatch}
 
-      {/* 5. Under the chart, half and half: the clinic's activity, then Cette semaine. */}
-      <div className="pairRow">
-        <ActivityHexWidget appointments={presentation?.appointments ?? []} now={updatedAt} />
+          {/* 5. Under the chart, half and half: the clinic's activity, then Cette semaine. */}
+          <div className="pairRow">
+            <ActivityHexWidget
+              appointments={presentation?.appointments ?? []}
+              now={updatedAt}
+            />
 
-        <WeekRadialWidget appointments={presentation?.appointments ?? []} facts={weekStats} now={updatedAt} />
-      </div>
+            <WeekRadialWidget
+              appointments={presentation?.appointments ?? []}
+              facts={weekStats}
+              now={updatedAt}
+            />
+          </div>
 
-      {/* 6. The last row, half and half: Agenda rapide (free slots), then Alertes. */}
-      <div className="pairRow">
-        <QuickAgendaWidget
-          appointments={presentation?.appointments ?? []}
-          now={updatedAt}
-          onCreate={(slot) => onCreateSlot?.(slot)}
-          vets={vets ?? []}
-        />
-        <AlertsWidget
-          inputs={alertInputs}
-          now={updatedAt}
-          unavailable={alertSources?.unavailable ?? []}
-        />
-      </div>
-      </>}
+          {/* 6. The last row, half and half: Agenda rapide (free slots), then Alertes. */}
+          <div className="pairRow">
+            <QuickAgendaWidget
+              appointments={presentation?.appointments ?? []}
+              now={updatedAt}
+              onCreate={(slot) => onCreateSlot?.(slot)}
+              vets={vets ?? []}
+            />
+            <AlertsWidget
+              inputs={alertInputs}
+              now={updatedAt}
+              unavailable={alertSources?.unavailable ?? []}
+            />
+          </div>
+        </>
+      )}
     </div>
   );
 }

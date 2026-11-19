@@ -1,6 +1,10 @@
 import { useId, useRef, type RefObject } from "react";
 import { cn } from "@/lib/utils";
-import { LineMascotArt, type LineAnimalKey, type LineMood } from "./line-mascots";
+import {
+  LineMascotArt,
+  type LineAnimalKey,
+  type LineMood,
+} from "./line-mascots";
 import { useMascotLife } from "./use-mascot-life";
 import "./line-mascot.css";
 
@@ -45,7 +49,12 @@ export function LineMascot({
       ref={ref}
       style={{ width: size, height: size }}
     >
-      <LineMascotArt animal={animal} clipId={clipId} frame={frame} overflow={overflow} />
+      <LineMascotArt
+        animal={animal}
+        clipId={clipId}
+        frame={frame}
+        overflow={overflow}
+      />
     </span>
   );
 }

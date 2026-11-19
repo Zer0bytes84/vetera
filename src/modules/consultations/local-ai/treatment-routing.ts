@@ -181,7 +181,12 @@ export function mergeGuidedProtected(
   routed: LocalSoapNote
 ): LocalSoapNote {
   const result = { ...note };
-  for (const key of ["subjective", "objective", "assessment", "plan"] as const) {
+  for (const key of [
+    "subjective",
+    "objective",
+    "assessment",
+    "plan",
+  ] as const) {
     const input = prepareModelDictation(routed[key]);
     result[key] = [
       result[key],
@@ -221,7 +226,10 @@ function modelText(pieces: Piece[]) {
   return groups
     .filter((parts) => parts.length)
     .map((parts) =>
-      [...parts.slice(0, -1), parts[parts.length - 1].replace(/[,;]$/u, ".")].join(" ")
+      [
+        ...parts.slice(0, -1),
+        parts[parts.length - 1].replace(/[,;]$/u, "."),
+      ].join(" ")
     )
     .join(" ");
 }
@@ -243,7 +251,9 @@ function restoreClauses(output: string, pieces: Piece[]) {
   }
   // From the end, so earlier positions stay valid.
   for (const group of groups.reverse()) {
-    const ends = [...text.matchAll(EVIDENCE)].map((match) => match.index + match[0].length);
+    const ends = [...text.matchAll(EVIDENCE)].map(
+      (match) => match.index + match[0].length
+    );
     const cut = group.at === 0 ? 0 : ends[group.at - 1];
     const head = text.slice(0, cut);
     const after = text.slice(cut);
@@ -251,10 +261,16 @@ function restoreClauses(output: string, pieces: Piece[]) {
     if (group.opens) {
       // A sentence of its own: after the model's end of the previous sentence.
       const stop = /^[.!?]*/u.exec(after)![0];
-      text = [head + stop, insert, after.slice(stop.length).trim()].filter(Boolean).join(" ");
+      text = [head + stop, insert, after.slice(stop.length).trim()]
+        .filter(Boolean)
+        .join(" ");
     } else if (/^\s*[.,;:!?]/u.test(after)) {
       // Inside a sentence: the model's own punctuation follows the clauses.
-      text = head + (head ? ", " : "") + insert.replace(/[.,;:!?]+$/u, "") + after.trimStart();
+      text =
+        head +
+        (head ? ", " : "") +
+        insert.replace(/[.,;:!?]+$/u, "") +
+        after.trimStart();
     } else {
       const rest = after.trim();
       const tail = rest ? (/[.!?,;]$/u.test(insert) ? " " : ", ") + rest : "";
@@ -289,7 +305,12 @@ export function prepareGuidedSections(
   dictated: LocalSoapNote = routed
 ): Record<keyof LocalSoapNote, GuidedSection> {
   const sections = {} as Record<keyof LocalSoapNote, GuidedSection>;
-  for (const key of ["subjective", "objective", "assessment", "plan"] as const) {
+  for (const key of [
+    "subjective",
+    "objective",
+    "assessment",
+    "plan",
+  ] as const) {
     const source = routed[key];
     const input = prepareModelDictation(source);
     if (!source.trim() && dictated[key].trim()) {
@@ -301,7 +322,11 @@ export function prepareGuidedSections(
         model: input.text,
         mode: "phrase",
         restore: (output) =>
-          [output, ...input.planSentences, ...Object.values(input.protectedSections ?? {})]
+          [
+            output,
+            ...input.planSentences,
+            ...Object.values(input.protectedSections ?? {}),
+          ]
             .filter(Boolean)
             .join("\n\n"),
       };
@@ -329,7 +354,10 @@ export function prepareGuidedSections(
           model,
           mode: "proposition",
           restore: (output) => {
-            const restored = restoreClauses(stripSoapLayout(key, output), pieces);
+            const restored = restoreClauses(
+              stripSoapLayout(key, output),
+              pieces
+            );
             // Word for word or the dictation itself: never a lost or moved word.
             return sameEvidence(restored, source) ? restored : source;
           },

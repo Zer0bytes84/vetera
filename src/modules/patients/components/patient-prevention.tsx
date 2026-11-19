@@ -31,7 +31,7 @@ export function PatientPrevention({
         types,
         vaccinations,
       }),
-    [now, patientId, reminders, types, vaccinations],
+    [now, patientId, reminders, types, vaccinations]
   );
 
   return (

@@ -108,14 +108,14 @@ export function PatientDocumentsList({
   const { currentUser } = useAuth();
   const uploadControl = useRef<{ open: () => void }>(null);
   const [deleteTarget, setDeleteTarget] = useState<ConsultationDocument | null>(
-    null,
+    null
   );
 
   const docs = repo.data
     .filter((doc) => doc.patientId === patientId)
     .sort(
       (a, b) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     );
   // Les écrits du dossier sont visibles par toute l'équipe soignante,
   // pas seulement leur auteur.
@@ -123,7 +123,7 @@ export function PatientDocumentsList({
     .filter((note) => note.patientId === patientId)
     .sort(
       (a, b) =>
-        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
+        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
     );
 
   const openNotes = (noteId?: string) => {
@@ -142,17 +142,20 @@ export function PatientDocumentsList({
 
   const confirmDelete = async () => {
     if (!deleteTarget) return;
-    await guard(async () => {
-      await repo.remove(deleteTarget.id);
-      toast.success("Document supprimé avec succès.");
-    }, {
-      recover: (_err) => {
-        toast.error("Erreur lors de la suppression.");
+    await guard(
+      async () => {
+        await repo.remove(deleteTarget.id);
+        toast.success("Document supprimé avec succès.");
       },
-      cleanup: () => {
-        setDeleteTarget(null);
-      },
-    });
+      {
+        recover: (_err) => {
+          toast.error("Erreur lors de la suppression.");
+        },
+        cleanup: () => {
+          setDeleteTarget(null);
+        },
+      }
+    );
   };
 
   const handleOpen = (doc: ConsultationDocument) => {
@@ -278,7 +281,7 @@ export function PatientDocumentsList({
                     <span
                       className={cn(
                         "flex size-9 shrink-0 items-center justify-center rounded-lg",
-                        meta.className,
+                        meta.className
                       )}
                     >
                       <Icon className="size-4" weight="duotone" />

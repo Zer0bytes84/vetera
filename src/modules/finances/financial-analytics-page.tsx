@@ -38,7 +38,7 @@ export function FinancialAnalyticsV2Page({
         transactions,
         locale,
       }),
-    [appointments, owners, patients, tasks, transactions, locale],
+    [appointments, owners, patients, tasks, transactions, locale]
   );
 
   return (

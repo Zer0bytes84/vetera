@@ -28,7 +28,11 @@ export interface WatchList {
 }
 
 const DAY_MS = 24 * 60 * 60 * 1000;
-const toneWeight: Record<WatchTone, number> = { critical: 0, warning: 1, neutral: 2 };
+const toneWeight: Record<WatchTone, number> = {
+  critical: 0,
+  warning: 1,
+  neutral: 2,
+};
 
 function shortDate(date: Date): string {
   return date.toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
@@ -42,10 +46,15 @@ function dateOnly(value: string): Date | null {
 }
 
 function daysBetween(from: Date, to: Date): number {
-  return Math.round((startOfDay(to).getTime() - startOfDay(from).getTime()) / DAY_MS);
+  return Math.round(
+    (startOfDay(to).getTime() - startOfDay(from).getTime()) / DAY_MS
+  );
 }
 
-function finalize(rows: (WatchRow & { order: number })[], limit: number): WatchList {
+function finalize(
+  rows: (WatchRow & { order: number })[],
+  limit: number
+): WatchList {
   const sorted = [...rows].sort(
     (a, b) => toneWeight[a.tone] - toneWeight[b.tone] || a.order - b.order
   );
@@ -94,7 +103,8 @@ export function buildUpcomingReminders({
     if (delta > horizonDays) return [];
     const patient = patientById.get(reminder.patient_id);
     if (patient?.status === "decede") return [];
-    const tone: WatchTone = delta < 0 ? "critical" : delta === 0 ? "warning" : "neutral";
+    const tone: WatchTone =
+      delta < 0 ? "critical" : delta === 0 ? "warning" : "neutral";
     return [
       {
         id: `reminder:${reminder.id}`,
@@ -121,7 +131,8 @@ export function buildUpcomingReminders({
 
 /** "3 dose" reads "3 doses": units are stored singular; a plural form is kept. */
 export function quantityLabel(quantity: number, unit: string) {
-  const plural = Math.abs(quantity) > 1 && unit && !/[sx]$/i.test(unit) && !/\s/.test(unit);
+  const plural =
+    Math.abs(quantity) > 1 && unit && !/[sx]$/i.test(unit) && !/\s/.test(unit);
   return `${quantity} ${plural ? `${unit}s` : unit}`.trim();
 }
 
@@ -187,7 +198,11 @@ export function buildStockWatch({
 // Hospitalisés
 // ---------------------------------------------------------------------------
 
-const ACTIVE_STAY = new Set<Hospitalization["status"]>(["admitted", "monitoring", "critical"]);
+const ACTIVE_STAY = new Set<Hospitalization["status"]>([
+  "admitted",
+  "monitoring",
+  "critical",
+]);
 const STAY_LABEL: Partial<Record<Hospitalization["status"], string>> = {
   admitted: "Admis",
   monitoring: "Sous surveillance",
@@ -215,7 +230,9 @@ export function buildHospitalizedWatch({
       {
         id: `stay:${stay.id}`,
         title: patient?.name ?? "Patient",
-        detail: [STAY_LABEL[stay.status], stay.diagnosis?.trim()].filter(Boolean).join(" · "),
+        detail: [STAY_LABEL[stay.status], stay.diagnosis?.trim()]
+          .filter(Boolean)
+          .join(" · "),
         meta: [stay.cage ? `Cage ${stay.cage}` : null, day ? `J${day}` : null]
           .filter(Boolean)
           .join(" · "),

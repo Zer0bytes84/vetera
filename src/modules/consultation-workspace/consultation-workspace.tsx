@@ -17,9 +17,17 @@ import type { ConsultationSession } from "./use-consultation-session";
 /** Every scrolling box above `node`, the page included. */
 function scrollParents(node: HTMLElement | null) {
   const boxes: Array<HTMLElement | Window> = [];
-  for (let parent = node?.parentElement; parent; parent = parent.parentElement) {
+  for (
+    let parent = node?.parentElement;
+    parent;
+    parent = parent.parentElement
+  ) {
     const { overflowY } = getComputedStyle(parent);
-    if ((overflowY === "auto" || overflowY === "scroll") && parent.scrollHeight > parent.clientHeight) boxes.push(parent);
+    if (
+      (overflowY === "auto" || overflowY === "scroll") &&
+      parent.scrollHeight > parent.clientHeight
+    )
+      boxes.push(parent);
   }
   boxes.push(window);
   return boxes;
@@ -75,7 +83,10 @@ export function ConsultationWorkspace({
 
   // A consultation opens at its top, not where the list or board was scrolled.
   const anchor = useRef<HTMLSpanElement>(null);
-  const openedId = activeConsultation && activeConsultationPatient ? activeConsultation.id : null;
+  const openedId =
+    activeConsultation && activeConsultationPatient
+      ? activeConsultation.id
+      : null;
   useEffect(() => {
     if (!openedId) return;
     for (const box of scrollParents(anchor.current)) box.scrollTo({ top: 0 });

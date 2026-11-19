@@ -12,7 +12,9 @@ export function DashboardVersionSetting() {
     >
       <Segmented<"analytics" | "clinical">
         label="Version du tableau de bord"
-        onValueChange={(next) => { void setVersion(next); }}
+        onValueChange={(next) => {
+          void setVersion(next);
+        }}
         options={[
           { value: "analytics", label: "Vue d’ensemble" },
           { value: "clinical", label: "Journée clinique" },

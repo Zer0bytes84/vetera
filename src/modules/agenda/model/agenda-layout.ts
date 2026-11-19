@@ -30,14 +30,24 @@ export interface PlacedEvent<T extends TimedItem> {
 export const MIN_BLOCK_MINUTES = 20;
 const DAY_MINUTES = 24 * 60;
 
-function minutesFrom(day: Date, value: string | null | undefined): number | null {
+function minutesFrom(
+  day: Date,
+  value: string | null | undefined
+): number | null {
   if (!value) return null;
   const time = new Date(value).getTime();
   if (Number.isNaN(time)) return null;
-  const midnight = new Date(day.getFullYear(), day.getMonth(), day.getDate()).getTime();
+  const midnight = new Date(
+    day.getFullYear(),
+    day.getMonth(),
+    day.getDate()
+  ).getTime();
   // Calendar minutes, not elapsed ones: a day of 23 or 25 hours at the clock change still ends at 24:00.
   const date = new Date(time);
-  const sameDay = date.getFullYear() === day.getFullYear() && date.getMonth() === day.getMonth() && date.getDate() === day.getDate();
+  const sameDay =
+    date.getFullYear() === day.getFullYear() &&
+    date.getMonth() === day.getMonth() &&
+    date.getDate() === day.getDate();
   if (sameDay) return date.getHours() * 60 + date.getMinutes();
   return time < midnight ? 0 : DAY_MINUTES;
 }
@@ -49,18 +59,31 @@ function minutesFrom(day: Date, value: string | null | undefined): number | null
  * grouped by the space their block really takes, so a short one that is drawn over its
  * neighbour is placed beside it.
  */
-export function layoutDayEvents<T extends TimedItem>(items: T[], day: Date, minBlockMinutes: number = MIN_BLOCK_MINUTES): PlacedEvent<T>[] {
+export function layoutDayEvents<T extends TimedItem>(
+  items: T[],
+  day: Date,
+  minBlockMinutes: number = MIN_BLOCK_MINUTES
+): PlacedEvent<T>[] {
   const timed = items.flatMap((item) => {
     const start = minutesFrom(day, item.startTime);
     if (start === null) return [];
     const rawEnd = minutesFrom(day, item.endTime);
     // An appointment that starts at 24:00 (the next day) is not on this day.
     if (start >= DAY_MINUTES) return [];
-    const end = Math.min(DAY_MINUTES, Math.max(rawEnd ?? 0, start + minBlockMinutes));
-    const realEnd = rawEnd !== null && rawEnd > start ? Math.min(DAY_MINUTES, rawEnd) : Math.min(DAY_MINUTES, start + MIN_BLOCK_MINUTES);
+    const end = Math.min(
+      DAY_MINUTES,
+      Math.max(rawEnd ?? 0, start + minBlockMinutes)
+    );
+    const realEnd =
+      rawEnd !== null && rawEnd > start
+        ? Math.min(DAY_MINUTES, rawEnd)
+        : Math.min(DAY_MINUTES, start + MIN_BLOCK_MINUTES);
     return [{ item, start, end, realEnd }];
   });
-  timed.sort((a, b) => a.start - b.start || b.end - a.end || a.item.id.localeCompare(b.item.id));
+  timed.sort(
+    (a, b) =>
+      a.start - b.start || b.end - a.end || a.item.id.localeCompare(b.item.id)
+  );
 
   const placed: PlacedEvent<T>[] = [];
   let group: PlacedEvent<T>[] = [];
@@ -84,7 +107,12 @@ export function layoutDayEvents<T extends TimedItem>(items: T[], day: Date, minB
     } else {
       columnEnds[column] = entry.end;
     }
-    const event: PlacedEvent<T> = { ...entry, column, columns: 1, group: groupIndex };
+    const event: PlacedEvent<T> = {
+      ...entry,
+      column,
+      columns: 1,
+      group: groupIndex,
+    };
     group.push(event);
     placed.push(event);
     groupEnd = Math.max(groupEnd, entry.end);
@@ -117,7 +145,13 @@ export function clock(minutes: number) {
 }
 
 /** The slot under a click: minutes from midnight, snapped down to `step`, kept on the grid. */
-export function slotAt(offsetPx: number, hourPx: number, fromHour: number, toHour: number, step = 30) {
+export function slotAt(
+  offsetPx: number,
+  hourPx: number,
+  fromHour: number,
+  toHour: number,
+  step = 30
+) {
   const raw = fromHour * 60 + (offsetPx / hourPx) * 60;
   const snapped = Math.floor(raw / step) * step;
   return Math.max(fromHour * 60, Math.min(toHour * 60 - step, snapped));
@@ -127,7 +161,12 @@ export function slotAt(offsetPx: number, hourPx: number, fromHour: number, toHou
  * The height of an hour so that every shown hour fits in `availablePx`, kept between a
  * floor that still leaves room to read a block and the comfortable height of a lighter day.
  */
-export function fitHourPx(availablePx: number, hours: number, min: number, max: number) {
+export function fitHourPx(
+  availablePx: number,
+  hours: number,
+  min: number,
+  max: number
+) {
   if (hours <= 0) return max;
   return Math.max(min, Math.min(max, Math.floor(availablePx / hours)));
 }
@@ -176,7 +215,14 @@ export const MAX_LANES = 2;
  */
 export function layoutTimeGrid<T extends TimedItem>(
   days: PlacedEvent<T>[][],
-  options: { fromHour: number; toHour: number; hourPx: number; rowPx?: number; minBlockPx?: number; maxLanes?: number }
+  options: {
+    fromHour: number;
+    toHour: number;
+    hourPx: number;
+    rowPx?: number;
+    minBlockPx?: number;
+    maxLanes?: number;
+  }
 ): TimeGridLayout<T> {
   const { fromHour, toHour, hourPx } = options;
   const rowPx = options.rowPx ?? ROW_PX;
@@ -200,7 +246,8 @@ export function layoutTimeGrid<T extends TimedItem>(
   const crowded: { start: number; end: number; needed: number }[] = [];
   for (const placed of days) {
     const byGroup = new Map<number, PlacedEvent<T>[]>();
-    for (const event of placed) byGroup.set(event.group, [...(byGroup.get(event.group) ?? []), event]);
+    for (const event of placed)
+      byGroup.set(event.group, [...(byGroup.get(event.group) ?? []), event]);
     for (const group of byGroup.values()) {
       if (group[0].columns <= maxLanes) continue;
       crowded.push({
@@ -213,7 +260,8 @@ export function layoutTimeGrid<T extends TimedItem>(
   // Growing hours only widens the span of every other group, so one pass settles them all.
   for (const group of crowded.sort((a, b) => a.start - b.start)) {
     const offsets = offsetsOf();
-    const shortage = group.needed - (yWith(offsets, group.end) - yWith(offsets, group.start));
+    const shortage =
+      group.needed - (yWith(offsets, group.end) - yWith(offsets, group.start));
     if (shortage <= 0) continue;
     const grow = (shortage * 60) / (group.end - group.start);
     const first = Math.max(0, Math.floor(group.start / 60) - fromHour);
@@ -225,19 +273,40 @@ export function layoutTimeGrid<T extends TimedItem>(
   const yAt = (minutes: number) => yWith(offsets, minutes);
   const blocks = days.map((placed) => {
     const byGroup = new Map<number, PlacedEvent<T>[]>();
-    for (const event of placed) byGroup.set(event.group, [...(byGroup.get(event.group) ?? []), event]);
+    for (const event of placed)
+      byGroup.set(event.group, [...(byGroup.get(event.group) ?? []), event]);
     const out: GridBlock<T>[] = [];
     for (const group of byGroup.values()) {
       if (group[0].columns > maxLanes) {
         const groupStart = Math.min(...group.map((e) => e.start));
-        const ordered = [...group].sort((a, b) => a.start - b.start || a.item.id.localeCompare(b.item.id));
+        const ordered = [...group].sort(
+          (a, b) => a.start - b.start || a.item.id.localeCompare(b.item.id)
+        );
         ordered.forEach((event, i) =>
-          out.push({ item: event.item, start: event.start, end: event.realEnd, top: yAt(groupStart) + i * rowPx, height: rowPx - 2, column: 0, columns: 1, stacked: true })
+          out.push({
+            item: event.item,
+            start: event.start,
+            end: event.realEnd,
+            top: yAt(groupStart) + i * rowPx,
+            height: rowPx - 2,
+            column: 0,
+            columns: 1,
+            stacked: true,
+          })
         );
       } else {
         for (const event of group) {
           const top = yAt(event.start);
-          out.push({ item: event.item, start: event.start, end: event.realEnd, top, height: Math.max(yAt(event.realEnd) - top, minBlockPx) - 2, column: event.column, columns: event.columns, stacked: false });
+          out.push({
+            item: event.item,
+            start: event.start,
+            end: event.realEnd,
+            top,
+            height: Math.max(yAt(event.realEnd) - top, minBlockPx) - 2,
+            column: event.column,
+            columns: event.columns,
+            stacked: false,
+          });
         }
       }
     }
@@ -250,5 +319,12 @@ export function layoutTimeGrid<T extends TimedItem>(
     while (i < count - 1 && y >= offsets[i + 1]) i += 1;
     return (fromHour + i) * 60 + ((y - offsets[i]) / heights[i]) * 60;
   };
-  return { heights, offsets, total: offsets[count], days: blocks, yAt, minuteAt };
+  return {
+    heights,
+    offsets,
+    total: offsets[count],
+    days: blocks,
+    yAt,
+    minuteAt,
+  };
 }

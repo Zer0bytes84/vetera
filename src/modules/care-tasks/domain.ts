@@ -28,7 +28,8 @@ export interface CareTask {
   completion_revision?: number;
 }
 export function careCompletionKey(taskId: string, revision = 0): string {
-  if (!Number.isSafeInteger(revision) || revision < 0) throw new Error("Ce soin vient d’être modifié. Actualisez la vue.");
+  if (!Number.isSafeInteger(revision) || revision < 0)
+    throw new Error("Ce soin vient d’être modifié. Actualisez la vue.");
   return revision === 0 ? taskId : `${taskId}:validation:${revision}`;
 }
 export function careInvoiceId(taskId: string, revision = 0): string {

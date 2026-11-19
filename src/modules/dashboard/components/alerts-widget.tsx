@@ -37,7 +37,7 @@ export function AlertsWidget({
 }) {
   const model = useMemo(
     () => buildAlertBars({ now, ...inputs }),
-    [now, inputs],
+    [now, inputs]
   );
   const series: ComponentProps<typeof DivergingBars>["series"] =
     ALERT_CATEGORIES.map((category) => ({

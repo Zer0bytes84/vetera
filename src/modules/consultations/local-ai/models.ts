@@ -35,11 +35,17 @@ export async function downloadLocalModels(
   only?: string[]
 ): Promise<LocalModelStatus> {
   if (!isTauriRuntime()) {
-    throw new Error("Le téléchargement des outils locaux se fait dans l’application de bureau. Vous pouvez continuer à utiliser la version web.");
+    throw new Error(
+      "Le téléchargement des outils locaux se fait dans l’application de bureau. Vous pouvez continuer à utiliser la version web."
+    );
   }
   const channel = new Channel<AIProvisioningProgress>();
-  channel.onmessage = progress => onProgress?.(progress);
-  return invoke("download_local_ai_models", { onProgress: channel, accessToken: accessToken?.trim() || null, only: only ?? null });
+  channel.onmessage = (progress) => onProgress?.(progress);
+  return invoke("download_local_ai_models", {
+    onProgress: channel,
+    accessToken: accessToken?.trim() || null,
+    only: only ?? null,
+  });
 }
 export async function cancelLocalModelDownload() {
   if (isTauriRuntime()) await invoke("cancel_local_ai_download");

@@ -24,8 +24,12 @@
   font-size: 12px;
   font-weight: 500;
 }
-.reminder-group-head span { color: var(--foreground); }
-.reminder-group[data-bucket="overdue"] .reminder-group-head { color: var(--signal-critical); }
+.reminder-group-head span {
+  color: var(--foreground);
+}
+.reminder-group[data-bucket="overdue"] .reminder-group-head {
+  color: var(--signal-critical);
+}
 
 /* Selection box: shown on hover, cursor or focus, always once a row is selected. */
 .reminder-select {
@@ -37,16 +41,25 @@
   opacity: 0;
   transition: opacity var(--speed-highlight-out) ease;
 }
-.reminder-select input { width: 16px; height: 16px; accent-color: var(--primary); cursor: pointer; }
+.reminder-select input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--primary);
+  cursor: pointer;
+}
 .reminder-select[data-visible],
 [data-list-row]:is([data-current], :focus-within) .reminder-select {
   opacity: 1;
   transition-duration: var(--speed-highlight-in);
 }
 @media (hover: none), (pointer: coarse) {
-  .reminder-select { opacity: 1; }
+  .reminder-select {
+    opacity: 1;
+  }
 }
-article[data-selected] { background: color-mix(in oklab, var(--primary) 6%, transparent); }
+article[data-selected] {
+  background: color-mix(in oklab, var(--primary) 6%, transparent);
+}
 
 /* Floating bar acting on the selection. */
 .reminder-bulk-bar {
@@ -94,7 +107,11 @@ article[data-selected] { background: color-mix(in oklab, var(--primary) 6%, tran
 }
 
 /* Les libellés des détails parlent comme ceux de la rangée : 12 px, medium, encre douce. */
-:root[data-skin="clean"] .reminders-page .quick-reminder-fields + div :is(span.font-medium, label.font-medium) {
+:root[data-skin="clean"]
+  .reminders-page
+  .quick-reminder-fields
+  + div
+  :is(span.font-medium, label.font-medium) {
   font-size: 12px;
   font-weight: 500;
   line-height: 16px;

@@ -43,7 +43,13 @@ import { DashboardModeToggle } from "../components/dashboard-mode-toggle";
 import { useDashboardFinancials } from "../hooks/use-dashboard-financials";
 import { TourInvitation } from "@/modules/tour/tour-invitation";
 import { PremiumAnalytics } from "../components/premium-analytics";
-import { buildPremiumAnalytics, dashboardPresentationData, type AnalyticsPeriod, type CustomRange, type DashboardPeriod } from "../model/premium-analytics";
+import {
+  buildPremiumAnalytics,
+  dashboardPresentationData,
+  type AnalyticsPeriod,
+  type CustomRange,
+  type DashboardPeriod,
+} from "../model/premium-analytics";
 import "../components/premium-analytics.css";
 import { DashboardWatch } from "../components/dashboard-watch";
 import { OccupancyUnits } from "@/modules/hospitalizations/stays/occupancy-units";
@@ -57,7 +63,11 @@ import { buildSpeciesSplit } from "../model/dashboard-widgets";
 import { usePatientReminders } from "@/modules/patient-reminders/use-patient-reminders";
 import { useHospitalizationEnabled } from "@/modules/clinique/clinic-services";
 import { MorningWatch } from "../components/morning-watch";
-import { buildMorningWatch, type MorningItem, type MorningStatus } from "../model/morning-watch";
+import {
+  buildMorningWatch,
+  type MorningItem,
+  type MorningStatus,
+} from "../model/morning-watch";
 import { guard } from "@/lib/guard";
 
 export interface DashboardPageProps {
@@ -73,9 +83,7 @@ function useWidgetState(
 ): WidgetState {
   return { loading, skeleton: useDelayedSkeleton(loading), error, retry };
 }
-export function DashboardPage({
-  onNavigate,
-}: DashboardPageProps) {
+export function DashboardPage({ onNavigate }: DashboardPageProps) {
   const appointments = useAppointmentsRepository();
   const owners = useOwnersRepository();
   const patients = usePatientsRepository();
@@ -90,21 +98,49 @@ export function DashboardPage({
   const medicalReminders = usePatientReminders();
   const users = useUsersRepository();
   const vets = useMemo(
-    () => users.data.filter((user) => user.status === "active" && (user.role === "vet_principal" || user.role === "vet_adjoint")),
-    [users.data],
+    () =>
+      users.data.filter(
+        (user) =>
+          user.status === "active" &&
+          (user.role === "vet_principal" || user.role === "vet_adjoint")
+      ),
+    [users.data]
   );
-  const [analyticsPeriod, setAnalyticsPeriod] = useState<DashboardPeriod>("30d");
+  const [analyticsPeriod, setAnalyticsPeriod] =
+    useState<DashboardPeriod>("30d");
   const [customRange, setCustomRange] = useState<CustomRange | null>(null);
-  const presentation = useMemo(() => dashboardPresentationData({
-    appointments: appointments.data, owners: owners.data, patients: patients.data,
-    products: products.data, tasks: tasks.data, transactions: transactions.data,
-    vaccinations: vaccinations.data, invoices: invoices.invoices,
-  }), [appointments.data, owners.data, patients.data, products.data, tasks.data, transactions.data, vaccinations.data, invoices.invoices]);
+  const presentation = useMemo(
+    () =>
+      dashboardPresentationData({
+        appointments: appointments.data,
+        owners: owners.data,
+        patients: patients.data,
+        products: products.data,
+        tasks: tasks.data,
+        transactions: transactions.data,
+        vaccinations: vaccinations.data,
+        invoices: invoices.invoices,
+      }),
+    [
+      appointments.data,
+      owners.data,
+      patients.data,
+      products.data,
+      tasks.data,
+      transactions.data,
+      vaccinations.data,
+      invoices.invoices,
+    ]
+  );
   const { version, setVersion } = useDashboardVersion();
   // « Personnaliser » demandé depuis les réglages : la demande est lue au montage ; l'effet l'efface et passe en version clinique.
-  const [isCustomizing, setIsCustomizing] = useState(() => window.sessionStorage.getItem("baitari:customize-dashboard") === "true");
+  const [isCustomizing, setIsCustomizing] = useState(
+    () =>
+      window.sessionStorage.getItem("baitari:customize-dashboard") === "true"
+  );
   useEffect(() => {
-    if (window.sessionStorage.getItem("baitari:customize-dashboard") !== "true") return;
+    if (window.sessionStorage.getItem("baitari:customize-dashboard") !== "true")
+      return;
     window.sessionStorage.removeItem("baitari:customize-dashboard");
     void setVersion("clinical");
   }, [setVersion]);
@@ -135,18 +171,34 @@ export function DashboardPage({
         stays: stays.data,
         hospitalization,
       }),
-    [now, morningStatus, alertCare.tasks, alertCare.error, presentation.appointments, medicalReminders.reminders, medicalReminders.error, presentation.patients, presentation.invoices, stays.data, hospitalization]
+    [
+      now,
+      morningStatus,
+      alertCare.tasks,
+      alertCare.error,
+      presentation.appointments,
+      medicalReminders.reminders,
+      medicalReminders.error,
+      presentation.patients,
+      presentation.invoices,
+      stays.data,
+      hospitalization,
+    ]
   );
   const openMorning = (item: MorningItem) => {
     // The Rappels view opens on the medical reminders, as the « À surveiller » row did.
-    if (item.id === "reminders") window.sessionStorage.setItem("baitari:reminders-source", "medical");
+    if (item.id === "reminders")
+      window.sessionStorage.setItem("baitari:reminders-source", "medical");
     navigate(item.view);
   };
   const createSlot = (slot: FreeSlot) => {
     prepareAppointment(undefined, slot.startsAt, slot.start, slot.vetId);
     navigate("agenda");
     // The agenda reads the marker when it mounts; the event covers a view that is already mounted.
-    window.setTimeout(() => window.dispatchEvent(new Event("vetera:new-appointment")), 150);
+    window.setTimeout(
+      () => window.dispatchEvent(new Event("vetera:new-appointment")),
+      150
+    );
   };
   const reduced = useReducedMotion();
   const intent = usePatientIntentPrefetch();
@@ -175,19 +227,37 @@ export function DashboardPage({
             referenceDate: selectedDay,
           })
         : today,
-    [presentation.appointments, presentation.owners, presentation.patients, selectedDay, today]
+    [
+      presentation.appointments,
+      presentation.owners,
+      presentation.patients,
+      selectedDay,
+      today,
+    ]
   );
   const context = useMemo(
     () =>
-      buildDayContext(presentation.appointments, presentation.owners, presentation.patients, dayDate),
-    [presentation.appointments, presentation.owners, presentation.patients, dayDate]
+      buildDayContext(
+        presentation.appointments,
+        presentation.owners,
+        presentation.patients,
+        dayDate
+      ),
+    [
+      presentation.appointments,
+      presentation.owners,
+      presentation.patients,
+      dayDate,
+    ]
   );
   const alerts = useMemo(
     () =>
       buildClinicalAlerts({
         appointments: presentation.appointments,
         patients: presentation.patients,
-        products: presentation.products.filter((product) => !product.archivedAt),
+        products: presentation.products.filter(
+          (product) => !product.archivedAt
+        ),
         tasks: presentation.tasks,
         reminders: medicalReminders.reminders,
         reminderTypes: medicalReminders.types,
@@ -279,23 +349,40 @@ export function DashboardPage({
   );
   const navigate = (view: View) => onNavigate?.(view);
   // Visits move on in Flux only: the dashboard shows them there.
-  const showVisit = (id?: string) => (id ? showInFlux(id, navigate) : navigate("flux"));
+  const showVisit = (id?: string) =>
+    id ? showInFlux(id, navigate) : navigate("flux");
   const completeTask = async (id: string) => {
-    const row = presentation.tasks.find(task => task.id === id);
+    const row = presentation.tasks.find((task) => task.id === id);
     if (!row || row.status === "done" || pending.current.has(id)) return;
     pending.current.add(id);
     setBusyIds([...pending.current]);
-    return await guard(async () => {
-      if (!(await tasks.update(id, { status: "done" }))) return;
-      toast.success("Tâche terminée", { duration: 5000, action: { label: "Annuler", onClick: () => { void tasks.update(id, { status: row.status }); } } });
-    }, {
-      recover: (error) => {
-   toast.error(error instanceof Error ? error.message : "La tâche n’a pas pu être terminée.");
+    return await guard(
+      async () => {
+        if (!(await tasks.update(id, { status: "done" }))) return;
+        toast.success("Tâche terminée", {
+          duration: 5000,
+          action: {
+            label: "Annuler",
+            onClick: () => {
+              void tasks.update(id, { status: row.status });
+            },
+          },
+        });
       },
-      cleanup: () => {
-   pending.current.delete(id); setBusyIds([...pending.current]);
-      },
-    });
+      {
+        recover: (error) => {
+          toast.error(
+            error instanceof Error
+              ? error.message
+              : "La tâche n’a pas pu être terminée."
+          );
+        },
+        cleanup: () => {
+          pending.current.delete(id);
+          setBusyIds([...pending.current]);
+        },
+      }
+    );
   };
   const plan = (date?: Date) => {
     prepareAppointment(undefined, date instanceof Date ? date : new Date());
@@ -358,14 +445,14 @@ export function DashboardPage({
           : navigate(alert.source === "stock" ? "stock" : "taches")
       }
       viewControl={
-            <DashboardModeToggle
-              value={version}
-              reducedMotion={Boolean(reduced)}
-              onChange={(next) => {
-                setIsCustomizing(false);
-                void setVersion(next);
-              }}
-            />
+        <DashboardModeToggle
+          value={version}
+          reducedMotion={Boolean(reduced)}
+          onChange={(next) => {
+            setIsCustomizing(false);
+            void setVersion(next);
+          }}
+        />
       }
       onAgenda={() => navigate("agenda")}
       onPatients={() => navigate("patients")}
@@ -374,83 +461,110 @@ export function DashboardPage({
       renderRow={(id, _index, content) => <div key={id}>{content}</div>}
     />
   );
-    return (
-      <div className="dashboard-stage flex w-full min-w-0 flex-col gap-6 px-4 pt-4 pb-12 lg:px-6 premium-analytics-dashboard">
-        <TourInvitation />
-        <PremiumAnalytics
-          clinicalView={version === "clinical" ? clinicalView : undefined}
-          morningWatch={<MorningWatch items={morning} now={now} onOpen={openMorning} onStatus={setMorningStatus} status={morningStatus} />}
-          model={buildPremiumAnalytics({ ...presentation, alerts, reminders: medicalReminders.reminders }, analyticsPeriod, now, customRange)}
-          period={analyticsPeriod}
-          onPeriod={(next: AnalyticsPeriod) => setAnalyticsPeriod(next)}
-          customRange={customRange}
-          onCustomRange={(range) => {
-            setCustomRange(range);
-            setAnalyticsPeriod("custom");
-          }}
-          states={{ cash: cashState, patients: nowState, actions: actionsState }}
-          onFinances={() => navigate("finances")}
-          onPatients={() => navigate("patients")}
-          onActions={() => navigate("taches")}
-          onNavigate={navigate}
-          dashboardViewControl={
-            <DashboardModeToggle
-              value={version}
-              reducedMotion={Boolean(reduced)}
-              onChange={(next) => {
-                setIsCustomizing(false);
-                void setVersion(next);
-              }}
-            />
-          }
-          now={now}
-          presentation={presentation}
-          vets={vets}
-          onCreateSlot={createSlot}
-          alertSources={{
-            reminders: medicalReminders.reminders,
-            careTasks: alertCare.tasks,
-            unavailable: [medicalReminders.error ? "rappels" : "", alertCare.error ? "soins" : ""].filter(Boolean),
-          }}
-          watch={
-            <DashboardWatch
-              hospitalized={buildHospitalizedWatch({
-                now,
-                patients: presentation.patients,
-                stays: stays.data,
-              })}
-              hospitalizedCapacity={
-                <OccupancyUnits compact locations={capacity.locations} stays={capacity.stays} />
-              }
-              onOpenPatient={openPatientPeek}
-              onReminders={() => {
-                window.sessionStorage.setItem("baitari:reminders-source", "medical");
-                navigate("taches");
-              }}
-              onRemindersRetry={() => void medicalReminders.refresh()}
-              onStays={() => navigate("soins")}
-              onStock={() => navigate("stock")}
-              reminders={buildUpcomingReminders({
-                now,
-                patients: presentation.patients,
-                reminders: medicalReminders.reminders,
-                types: medicalReminders.types,
-              })}
-              remindersError={medicalReminders.error}
-              remindersLoading={medicalReminders.loading}
-              stock={buildStockWatch({ now, products: presentation.products })}
-              species={patients.loading ? undefined : buildSpeciesSplit(presentation.patients, now)}
-              onPatients={() => navigate("patients")}
-            />
-          }
-          today={today}
-          financials={{
-            income: cash.income,
-            pending: cashPending,
-            receivables: financials.receivables,
-          }}
-          onStartConsultation={showVisit}
-        />
-      </div>
-    );
+  return (
+    <div className="dashboard-stage flex w-full min-w-0 flex-col gap-6 px-4 pt-4 pb-12 lg:px-6 premium-analytics-dashboard">
+      <TourInvitation />
+      <PremiumAnalytics
+        clinicalView={version === "clinical" ? clinicalView : undefined}
+        morningWatch={
+          <MorningWatch
+            items={morning}
+            now={now}
+            onOpen={openMorning}
+            onStatus={setMorningStatus}
+            status={morningStatus}
+          />
+        }
+        model={buildPremiumAnalytics(
+          { ...presentation, alerts, reminders: medicalReminders.reminders },
+          analyticsPeriod,
+          now,
+          customRange
+        )}
+        period={analyticsPeriod}
+        onPeriod={(next: AnalyticsPeriod) => setAnalyticsPeriod(next)}
+        customRange={customRange}
+        onCustomRange={(range) => {
+          setCustomRange(range);
+          setAnalyticsPeriod("custom");
+        }}
+        states={{ cash: cashState, patients: nowState, actions: actionsState }}
+        onFinances={() => navigate("finances")}
+        onPatients={() => navigate("patients")}
+        onActions={() => navigate("taches")}
+        onNavigate={navigate}
+        dashboardViewControl={
+          <DashboardModeToggle
+            value={version}
+            reducedMotion={Boolean(reduced)}
+            onChange={(next) => {
+              setIsCustomizing(false);
+              void setVersion(next);
+            }}
+          />
+        }
+        now={now}
+        presentation={presentation}
+        vets={vets}
+        onCreateSlot={createSlot}
+        alertSources={{
+          reminders: medicalReminders.reminders,
+          careTasks: alertCare.tasks,
+          unavailable: [
+            medicalReminders.error ? "rappels" : "",
+            alertCare.error ? "soins" : "",
+          ].filter(Boolean),
+        }}
+        watch={
+          <DashboardWatch
+            hospitalized={buildHospitalizedWatch({
+              now,
+              patients: presentation.patients,
+              stays: stays.data,
+            })}
+            hospitalizedCapacity={
+              <OccupancyUnits
+                compact
+                locations={capacity.locations}
+                stays={capacity.stays}
+              />
+            }
+            onOpenPatient={openPatientPeek}
+            onReminders={() => {
+              window.sessionStorage.setItem(
+                "baitari:reminders-source",
+                "medical"
+              );
+              navigate("taches");
+            }}
+            onRemindersRetry={() => void medicalReminders.refresh()}
+            onStays={() => navigate("soins")}
+            onStock={() => navigate("stock")}
+            reminders={buildUpcomingReminders({
+              now,
+              patients: presentation.patients,
+              reminders: medicalReminders.reminders,
+              types: medicalReminders.types,
+            })}
+            remindersError={medicalReminders.error}
+            remindersLoading={medicalReminders.loading}
+            stock={buildStockWatch({ now, products: presentation.products })}
+            species={
+              patients.loading
+                ? undefined
+                : buildSpeciesSplit(presentation.patients, now)
+            }
+            onPatients={() => navigate("patients")}
+          />
+        }
+        today={today}
+        financials={{
+          income: cash.income,
+          pending: cashPending,
+          receivables: financials.receivables,
+        }}
+        onStartConsultation={showVisit}
+      />
+    </div>
+  );
 }

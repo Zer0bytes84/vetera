@@ -30,7 +30,9 @@ export function sortWeightEntries(entries: WeightEntry[]) {
 /** Change between the last weighing and the one before it. */
 export function describeWeightChange(entries: WeightEntry[]): WeightChange {
   const sorted = sortWeightEntries(
-    entries.filter((entry) => Number.isFinite(entry.weightKg) && entry.weightKg > 0)
+    entries.filter(
+      (entry) => Number.isFinite(entry.weightKg) && entry.weightKg > 0
+    )
   );
   const last = sorted.at(-1);
   const previous = sorted.at(-2);

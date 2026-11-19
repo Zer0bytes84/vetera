@@ -59,7 +59,11 @@ import type {
 const loadServicesBillingService = () => import("@/services/billingService");
 
 type TimelineKind =
-  "consultation" | "note" | "vaccination" | "weight" | "piece";
+  | "consultation"
+  | "note"
+  | "vaccination"
+  | "weight"
+  | "piece";
 
 type TimelineEntry = {
   id: string;
@@ -124,7 +128,7 @@ const PIECE_DATE = new Intl.DateTimeFormat("fr-FR", {
  */
 export function pieceDetail(
   piece: Pick<TimelinePiece, "kind" | "detail">,
-  eventAt: string,
+  eventAt: string
 ) {
   if (piece.kind !== "invoice" || !piece.detail) return piece.detail;
   const [number, ...rest] = piece.detail.split(" · ");
@@ -140,7 +144,7 @@ export function pieceDetail(
 /** Planned or confirmed, and its end is behind us: the visit is not history yet. */
 export function isOverdueVisit(
   apt: Pick<Appointment, "status" | "startTime" | "endTime">,
-  now: number,
+  now: number
 ) {
   if (apt.status !== "scheduled" && apt.status !== "confirmed") return false;
   const end = new Date(apt.endTime || apt.startTime).getTime();
@@ -161,7 +165,7 @@ function formatDateParts(iso: string, includeTime: boolean) {
     if (civilDate) {
       const [, year, month, day] = civilDate;
       const date = new Date(
-        Date.UTC(Number(year), Number(month) - 1, Number(day)),
+        Date.UTC(Number(year), Number(month) - 1, Number(day))
       );
       return {
         date: date.toLocaleDateString("fr-FR", {
@@ -205,7 +209,7 @@ const oneLine = (value?: string | null) => meaningful(value);
  */
 export function consultationSummary(
   apt: Pick<Appointment, "diagnosis" | "treatment" | "notes">,
-  soap?: ConsultationSoap | null,
+  soap?: ConsultationSoap | null
 ): { summary: string; summaryDetail?: string } {
   const assessment = oneLine(soap?.assessment);
   const plan = oneLine(soap?.plan);
@@ -243,12 +247,12 @@ function buildEntries(
   notes: Note[] = [],
   getSoap: (appointmentId: string) => ConsultationSoap | null = () => null,
   pieces: TimelinePiece[] = [],
-  now = Date.now(),
+  now = Date.now()
 ): TimelineEntry[] {
   const items: TimelineEntry[] = [];
   const { attached, loose } = piecesByVisit(
     pieces,
-    new Set(appointments.map((apt) => apt.id)),
+    new Set(appointments.map((apt) => apt.id))
   );
 
   // Notes kept without a visit: dated by their validation, never a consultation.
@@ -357,7 +361,7 @@ function buildEntries(
   }
 
   return items.sort(
-    (a, b) => new Date(b.at).getTime() - new Date(a.at).getTime(),
+    (a, b) => new Date(b.at).getTime() - new Date(a.at).getTime()
   );
 }
 
@@ -384,7 +388,7 @@ function usePatientInvoices(patientId: string) {
       .then((rows) => {
         if (!cancelled)
           setInvoices(
-            rows.filter((invoice) => invoice.patientId === patientId),
+            rows.filter((invoice) => invoice.patientId === patientId)
           );
       })
       .catch(() => {
@@ -455,12 +459,12 @@ export function PatientTimeline({
     () =>
       collectTimelinePieces({
         attachments: attachmentsRepo.data.filter(
-          (doc) => doc.patientId === patientId,
+          (doc) => doc.patientId === patientId
         ),
         documents,
         invoices,
         prescriptions: prescriptionsRepo.data.filter(
-          (rx) => rx.patientId === patientId,
+          (rx) => rx.patientId === patientId
         ),
       }),
     [
@@ -469,7 +473,7 @@ export function PatientTimeline({
       invoices,
       prescriptionsRepo.data,
       patientId,
-    ],
+    ]
   );
 
   const entries = useMemo(
@@ -480,7 +484,7 @@ export function PatientTimeline({
         weightsRepo.forPatient(patientId),
         notesRepo.data.filter((note) => note.patientId === patientId),
         soapsRepo.forAppointment,
-        pieces,
+        pieces
       ),
     [
       appointmentsRepo.data,
@@ -490,7 +494,7 @@ export function PatientTimeline({
       soapsRepo.forAppointment,
       patientId,
       pieces,
-    ],
+    ]
   );
 
   // A few events first; « Afficher plus » adds the next ones. The count
@@ -542,7 +546,7 @@ export function PatientTimeline({
                     : KIND_ICON[entry.kind];
                   const dateParts = formatDateParts(
                     entry.at,
-                    entry.kind === "consultation" || entry.kind === "note",
+                    entry.kind === "consultation" || entry.kind === "note"
                   );
                   // The visit the Synthèse shows in full: its note is not repeated here.
                   const compact = entry.id === `apt-${summarizedVisitId}`;
@@ -556,15 +560,23 @@ export function PatientTimeline({
                       data-compact={compact || undefined}
                       data-overdue={entry.overdue || undefined}
                     >
-                      <time className="patient-timeline-date" dateTime={entry.at}>
+                      <time
+                        className="patient-timeline-date"
+                        dateTime={entry.at}
+                      >
                         {dateParts.date}
                         {dateParts.time ? ` · ${dateParts.time}` : ""}
                       </time>
                       <div className="patient-timeline-kind">
-                        <span className="patient-timeline-marker" aria-hidden="true">
+                        <span
+                          className="patient-timeline-marker"
+                          aria-hidden="true"
+                        >
                           <Icon className="size-3.5" />
                         </span>
-                        <span className="patient-timeline-title">{entry.label}</span>
+                        <span className="patient-timeline-title">
+                          {entry.label}
+                        </span>
                       </div>
                       <div className="patient-timeline-body">
                         {entry.context || entry.kind === "consultation" ? (
@@ -575,8 +587,13 @@ export function PatientTimeline({
                             {entry.context || "Non renseigné"}
                           </p>
                         ) : null}
-                        {!entry.context && !entry.summary && !entry.summaryDetail && entry.kind !== "consultation" ? (
-                          <p className="patient-timeline-note">Aucun détail renseigné</p>
+                        {!entry.context &&
+                        !entry.summary &&
+                        !entry.summaryDetail &&
+                        entry.kind !== "consultation" ? (
+                          <p className="patient-timeline-note">
+                            Aucun détail renseigné
+                          </p>
                         ) : null}
                         {compact ? null : noReport ? (
                           <p className="patient-timeline-note">{NO_REPORT}</p>
@@ -620,7 +637,7 @@ export function PatientTimeline({
                           <Badge
                             className={cn(
                               "rounded-full px-2 py-0.5 font-medium t-12",
-                              entry.statusBadge.className,
+                              entry.statusBadge.className
                             )}
                             variant="secondary"
                           >
@@ -634,7 +651,7 @@ export function PatientTimeline({
                               className="h-7 gap-1 rounded-full px-3 text-xs"
                               onClick={() =>
                                 onJumpToAppointment(
-                                  entry.id.replace(/^apt-/, ""),
+                                  entry.id.replace(/^apt-/, "")
                                 )
                               }
                               size="sm"

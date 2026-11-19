@@ -12,7 +12,10 @@ const MAX_DOTS = 4;
 const MAX_NAMED = 2;
 
 function formatClock(value: string) {
-  return new Date(value).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+  return new Date(value).toLocaleTimeString("fr-FR", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 }
 
 function shiftMonth(value: Date, amount: number) {
@@ -64,38 +67,44 @@ export function AgendaMonthCalendar({
       aria-label="Calendrier des rendez-vous"
       className="agenda-month-calendar surface-card rounded-panel border border-border bg-card"
     >
-      {showHeader ? <header className="flex items-center justify-between gap-3 border-border border-b px-5 py-3 sm:px-6">
-        <h2 className="font-medium text-[18px] text-foreground tracking-[-0.02em]">
-          {monthLabel}
-        </h2>
-        {/* One place to move in time: previous, today and next sit together. */}
-        <div aria-label="Navigation du mois" className="agenda-month-nav flex items-center gap-1" role="group">
-          <Button
-            aria-label="Mois précédent"
-            onClick={() => onSelectDate(shiftMonth(selectedDate, -1))}
-            size="icon-sm"
-            variant="ghost"
+      {showHeader ? (
+        <header className="flex items-center justify-between gap-3 border-border border-b px-5 py-3 sm:px-6">
+          <h2 className="font-medium text-[18px] text-foreground tracking-[-0.02em]">
+            {monthLabel}
+          </h2>
+          {/* One place to move in time: previous, today and next sit together. */}
+          <div
+            aria-label="Navigation du mois"
+            className="agenda-month-nav flex items-center gap-1"
+            role="group"
           >
-            <HugeiconsIcon icon={ArrowLeft01Icon} strokeWidth={1.5} />
-          </Button>
-          <Button
-            disabled={sameDay(selectedDate, today)}
-            onClick={() => onSelectDate(new Date())}
-            size="sm"
-            variant="outline"
-          >
-            Aujourd&apos;hui
-          </Button>
-          <Button
-            aria-label="Mois suivant"
-            onClick={() => onSelectDate(shiftMonth(selectedDate, 1))}
-            size="icon-sm"
-            variant="ghost"
-          >
-            <HugeiconsIcon icon={ArrowRight01Icon} strokeWidth={1.5} />
-          </Button>
-        </div>
-      </header> : null}
+            <Button
+              aria-label="Mois précédent"
+              onClick={() => onSelectDate(shiftMonth(selectedDate, -1))}
+              size="icon-sm"
+              variant="ghost"
+            >
+              <HugeiconsIcon icon={ArrowLeft01Icon} strokeWidth={1.5} />
+            </Button>
+            <Button
+              disabled={sameDay(selectedDate, today)}
+              onClick={() => onSelectDate(new Date())}
+              size="sm"
+              variant="outline"
+            >
+              Aujourd&apos;hui
+            </Button>
+            <Button
+              aria-label="Mois suivant"
+              onClick={() => onSelectDate(shiftMonth(selectedDate, 1))}
+              size="icon-sm"
+              variant="ghost"
+            >
+              <HugeiconsIcon icon={ArrowRight01Icon} strokeWidth={1.5} />
+            </Button>
+          </div>
+        </header>
+      ) : null}
 
       <div className="p-3 sm:p-4">
         {/* Outlook-style month: every day sits in its own bordered box. */}
@@ -135,7 +144,8 @@ export function AgendaMonthCalendar({
                 aria-label={label}
                 className={cn(
                   "agenda-month-day relative flex h-[84px] min-w-0 flex-col items-start justify-start gap-1 bg-card px-2 py-1.5 text-left text-foreground outline-none transition-colors hover:bg-muted/50 focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-inset",
-                  isSelected && "z-[1] shadow-[inset_0_0_0_2px_var(--foreground)]"
+                  isSelected &&
+                    "z-[1] shadow-[inset_0_0_0_2px_var(--foreground)]"
                 )}
                 data-selected={isSelected || undefined}
                 data-today={isToday || undefined}
@@ -154,26 +164,37 @@ export function AgendaMonthCalendar({
                 </span>
                 {count > 0 ? (
                   <>
-                    <span className="flex shrink-0 items-center gap-0.5 sm:hidden" aria-hidden="true">
+                    <span
+                      className="flex shrink-0 items-center gap-0.5 sm:hidden"
+                      aria-hidden="true"
+                    >
                       {dayAppointments.slice(0, MAX_DOTS).map((appointment) => (
                         <span
                           className={cn(
                             "size-1.5 rounded-full",
-                            getAppointmentTypeMeta(appointment.type).dotClassName
+                            getAppointmentTypeMeta(appointment.type)
+                              .dotClassName
                           )}
                           key={appointment.id}
                         />
                       ))}
                     </span>
-                    <span className="agenda-month-events hidden w-full min-w-0 flex-col gap-0.5 sm:flex" aria-hidden="true">
+                    <span
+                      className="agenda-month-events hidden w-full min-w-0 flex-col gap-0.5 sm:flex"
+                      aria-hidden="true"
+                    >
                       {dayAppointments
                         .slice(0, count > MAX_NAMED ? MAX_NAMED - 1 : MAX_NAMED)
                         .map((appointment) => (
-                          <span className="agenda-month-event flex min-w-0 items-center gap-1.5 text-[12px] leading-4" key={appointment.id}>
+                          <span
+                            className="agenda-month-event flex min-w-0 items-center gap-1.5 text-[12px] leading-4"
+                            key={appointment.id}
+                          >
                             <span
                               className={cn(
                                 "size-1.5 shrink-0 rounded-full",
-                                getAppointmentTypeMeta(appointment.type).dotClassName
+                                getAppointmentTypeMeta(appointment.type)
+                                  .dotClassName
                               )}
                             />
                             <span className="shrink-0 text-muted-foreground tabular-nums">

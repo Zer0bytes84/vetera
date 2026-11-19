@@ -4,7 +4,11 @@ export interface ToolCall {
   raw: string;
 }
 
-const MUTATING_TOOLS = new Set(["create_reminder", "save_patient_note", "add_note"]);
+const MUTATING_TOOLS = new Set([
+  "create_reminder",
+  "save_patient_note",
+  "add_note",
+]);
 
 const decodeQuotedValue = (value: string): string =>
   value.replace(/\\(["'])/g, "$1");

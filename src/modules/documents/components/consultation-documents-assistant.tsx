@@ -49,7 +49,10 @@ import { Segmented } from "@/components/ui/segmented-control";
 import { useDocumentTemplates } from "../hooks/use-document-templates";
 import { usePatientDocuments } from "../hooks/use-managed-documents";
 import type { PatientDocument } from "../document-domain";
-import { attachmentFile, readPatientDocument } from "../lib/patient-document-reading";
+import {
+  attachmentFile,
+  readPatientDocument,
+} from "../lib/patient-document-reading";
 import { renderClinicalDocument } from "../lib/document-templates";
 import {
   readLocalDocument,
@@ -147,7 +150,9 @@ export default function ConsultationDocumentsAssistant({
   const [templateId, setTemplateId] = useState("document-report");
   const [models, setModels] = useState<LocalModelStatus>(EMPTY_MODEL_STATUS);
   const [reading, setReading] = useState<ReadDocument | null>(null);
-  const [selectedManagedId, setSelectedManagedId] = useState(initialDocument?.id ?? "");
+  const [selectedManagedId, setSelectedManagedId] = useState(
+    initialDocument?.id ?? ""
+  );
   const [question, setQuestion] = useState(
     "Quels sont les principaux résultats mentionnés dans ce document ?"
   );
@@ -171,9 +176,15 @@ export default function ConsultationDocumentsAssistant({
     if (!initialDocument) return;
     let active = true;
     void readPatientDocument(initialDocument, { patientId })
-      .then(source => { if (active) setReading(source); })
-      .catch(failure => { if (active) setError((failure as Error).message); });
-    return () => { active = false; };
+      .then((source) => {
+        if (active) setReading(source);
+      })
+      .catch((failure) => {
+        if (active) setError((failure as Error).message);
+      });
+    return () => {
+      active = false;
+    };
   }, [initialDocument, patientId]);
   useEffect(() => {
     let active = true;
@@ -183,7 +194,11 @@ export default function ConsultationDocumentsAssistant({
       })
       .catch(() => {
         if (active)
-          setError(previous => previous || "L’installation de l’assistant n’a pas pu être vérifiée.");
+          setError(
+            (previous) =>
+              previous ||
+              "L’installation de l’assistant n’a pas pu être vérifiée."
+          );
       });
     return () => {
       active = false;
@@ -204,7 +219,8 @@ export default function ConsultationDocumentsAssistant({
   };
   // The note the user came from is offered even before it is linked to this patient.
   const offered = (note: Note) =>
-    note.patientId === patientId || (note.id === initialNoteId && !note.patientId);
+    note.patientId === patientId ||
+    (note.id === initialNoteId && !note.patientId);
   const initialNote = initialNoteId
     ? notes.data.find((entry) => entry.id === initialNoteId && offered(entry))
     : undefined;
@@ -243,39 +259,42 @@ export default function ConsultationDocumentsAssistant({
   );
   const createDraft = () => {
     if (!ready || !patient || !appointment || !soap) return;
-    guardSync(() => {
-      const template = templates.templates.find(
-        (entry) => entry.id === templateId
-      );
-      if (!template) throw new Error("Choisissez un modèle disponible.");
-      const text = renderClinicalDocument(template, {
-        patient,
-        owner,
-        appointment,
-        soap,
-        vetName: currentUser?.displayName ?? "",
-      });
-      setDraft({
-        title: template.name + " · " + patient.name,
-        text,
-        source: {
-          type: "soap",
-          sourceKey: soapSourceKey(soap),
-          template: {
-            id: template.id,
-            name: template.name,
-            body: template.body,
-            updatedAt: template.updatedAt,
+    guardSync(
+      () => {
+        const template = templates.templates.find(
+          (entry) => entry.id === templateId
+        );
+        if (!template) throw new Error("Choisissez un modèle disponible.");
+        const text = renderClinicalDocument(template, {
+          patient,
+          owner,
+          appointment,
+          soap,
+          vetName: currentUser?.displayName ?? "",
+        });
+        setDraft({
+          title: template.name + " · " + patient.name,
+          text,
+          source: {
+            type: "soap",
+            sourceKey: soapSourceKey(soap),
+            template: {
+              id: template.id,
+              name: template.name,
+              body: template.body,
+              updatedAt: template.updatedAt,
+            },
           },
-        },
-      });
-      resetReview();
-      setError("");
-    }, {
-      recover: (failure) => {
-        setError((failure as Error).message);
+        });
+        resetReview();
+        setError("");
       },
-    });
+      {
+        recover: (failure) => {
+          setError((failure as Error).message);
+        },
+      }
+    );
   };
   const readFile = async (file: File, sourceId?: string) => {
     if (controller.current || saving) return;
@@ -296,22 +315,25 @@ export default function ConsultationDocumentsAssistant({
     setDraft(null);
     resetReview();
     setCharacters(undefined);
-    await guard(async () => {
-      const source = await readLocalDocument(file, task.signal, (update) => {
-        if (controller.current === task) setProgress(update);
-      });
-      if (!task.signal.aborted) setReading({ ...source, sourceId });
-    }, {
-      recover: (failure) => {
-        if (!task.signal.aborted) setError((failure as Error).message);
+    await guard(
+      async () => {
+        const source = await readLocalDocument(file, task.signal, (update) => {
+          if (controller.current === task) setProgress(update);
+        });
+        if (!task.signal.aborted) setReading({ ...source, sourceId });
       },
-      cleanup: () => {
-        if (controller.current === task) {
-          controller.current = null;
-          setBusy(false);
-        }
-      },
-    });
+      {
+        recover: (failure) => {
+          if (!task.signal.aborted) setError((failure as Error).message);
+        },
+        cleanup: () => {
+          if (controller.current === task) {
+            controller.current = null;
+            setBusy(false);
+          }
+        },
+      }
+    );
   };
   const chooseExisting = (value: string) => {
     setError("");
@@ -319,19 +341,23 @@ export default function ConsultationDocumentsAssistant({
     setAskedQuestion("");
     setDraft(null);
     resetReview();
-    const managed = managedDocuments.documents.find(entry => entry.id === value && entry.patientId === patientId);
+    const managed = managedDocuments.documents.find(
+      (entry) => entry.id === value && entry.patientId === patientId
+    );
     setSelectedManagedId(managed?.id ?? "");
     if (managed) {
       setReading(null);
       void readPatientDocument(managed, { patientId })
         .then(setReading)
-        .catch(failure => setError((failure as Error).message));
+        .catch((failure) => setError((failure as Error).message));
       return;
     }
     const file = files.data.find(
       (entry) => entry.id === value && entry.patientId === patientId
     );
-    const note = notes.data.find((entry) => entry.id === value && offered(entry));
+    const note = notes.data.find(
+      (entry) => entry.id === value && offered(entry)
+    );
     if (file) {
       try {
         void readFile(fileFromAttachment(file), file.id);
@@ -353,34 +379,37 @@ export default function ConsultationDocumentsAssistant({
     resetReview();
     setCharacters(0);
     setProgress({ message: "Préparation de la lecture assistée…" });
-    await guard(async () => {
-      const result = await readDocumentAnswer(
-        reading,
-        question,
-        models,
-        task.signal,
-        (event) => {
-          if (controller.current === task) {
-            setProgress({ message: event.message });
-            setCharacters(event.characters);
+    await guard(
+      async () => {
+        const result = await readDocumentAnswer(
+          reading,
+          question,
+          models,
+          task.signal,
+          (event) => {
+            if (controller.current === task) {
+              setProgress({ message: event.message });
+              setCharacters(event.characters);
+            }
           }
+        );
+        if (!task.signal.aborted) {
+          setAnswer(result.answer);
+          setPartial(result.partial);
         }
-      );
-      if (!task.signal.aborted) {
-        setAnswer(result.answer);
-        setPartial(result.partial);
+      },
+      {
+        recover: (failure) => {
+          if (!task.signal.aborted) setError((failure as Error).message);
+        },
+        cleanup: () => {
+          if (controller.current === task) {
+            controller.current = null;
+            setBusy(false);
+          }
+        },
       }
-    }, {
-      recover: (failure) => {
-        if (!task.signal.aborted) setError((failure as Error).message);
-      },
-      cleanup: () => {
-        if (controller.current === task) {
-          controller.current = null;
-          setBusy(false);
-        }
-      },
-    });
+    );
   };
   const reviewReading = () => {
     if (!reading) return;
@@ -409,41 +438,47 @@ export default function ConsultationDocumentsAssistant({
     savingRef.current = true;
     setSaving(true);
     setError("");
-    await guard(async () => {
-      await saveReviewedDocument({
-        ...draft,
-        patientId,
-        appointmentId,
-        userId: currentUser?.uid ?? "",
-        reviewed,
-      });
-      setSaved(true);
-      toast.success("Document validé et enregistré dans le dossier patient.");
-    }, {
-      recover: (failure) => {
-        setError((failure as Error).message);
+    await guard(
+      async () => {
+        await saveReviewedDocument({
+          ...draft,
+          patientId,
+          appointmentId,
+          userId: currentUser?.uid ?? "",
+          reviewed,
+        });
+        setSaved(true);
+        toast.success("Document validé et enregistré dans le dossier patient.");
       },
-      cleanup: () => {
-        savingRef.current = false;
-        setSaving(false);
-      },
-    });
+      {
+        recover: (failure) => {
+          setError((failure as Error).message);
+        },
+        cleanup: () => {
+          savingRef.current = false;
+          setSaving(false);
+        },
+      }
+    );
   };
   const install = async () => {
     if (importing || busy) return;
     setImporting(true);
     setError("");
-    await guard(async () => {
-      const status = await importLocalModel("generator");
-      if (status) setModels(status);
-    }, {
-      recover: (failure) => {
-        setError((failure as Error).message);
+    await guard(
+      async () => {
+        const status = await importLocalModel("generator");
+        if (status) setModels(status);
       },
-      cleanup: () => {
-        setImporting(false);
-      },
-    });
+      {
+        recover: (failure) => {
+          setError((failure as Error).message);
+        },
+        cleanup: () => {
+          setImporting(false);
+        },
+      }
+    );
   };
   const availableFiles = files.data.filter(
     (entry) =>
@@ -453,8 +488,12 @@ export default function ConsultationDocumentsAssistant({
       )
   );
   const availableNotes = notes.data.filter(offered);
-  const availableManaged = managedDocuments.documents.filter(entry => entry.patientId === patientId && entry.status === "finalise");
-  const selectedManaged = availableManaged.find(entry => entry.id === selectedManagedId);
+  const availableManaged = managedDocuments.documents.filter(
+    (entry) => entry.patientId === patientId && entry.status === "finalise"
+  );
+  const selectedManaged = availableManaged.find(
+    (entry) => entry.id === selectedManagedId
+  );
   return (
     <section
       aria-label="Assistant documents de consultation"
@@ -559,9 +598,14 @@ export default function ConsultationDocumentsAssistant({
               <NativeSelectOption value="">
                 Choisir un document…
               </NativeSelectOption>
-              {availableManaged.map(document => (
+              {availableManaged.map((document) => (
                 <NativeSelectOption key={document.id} value={document.id}>
-                  {document.title}{document.attachment?.textState === "scan" ? " · PDF numérisé" : document.attachment?.textState === "image" ? " · Image" : ""}
+                  {document.title}
+                  {document.attachment?.textState === "scan"
+                    ? " · PDF numérisé"
+                    : document.attachment?.textState === "image"
+                      ? " · Image"
+                      : ""}
                 </NativeSelectOption>
               ))}
               {availableFiles.map((file) => (
@@ -576,10 +620,22 @@ export default function ConsultationDocumentsAssistant({
               ))}
             </NativeSelect>
             {selectedManaged?.attachment?.textState === "image" && !reading && (
-              <Button className="mt-2 w-fit" size="sm" variant="outline" disabled={busy || saving} onClick={() => {
-                try { void readFile(attachmentFile(selectedManaged.attachment!), selectedManaged.id); }
-                catch (failure) { setError((failure as Error).message); }
-              }}>
+              <Button
+                className="mt-2 w-fit"
+                size="sm"
+                variant="outline"
+                disabled={busy || saving}
+                onClick={() => {
+                  try {
+                    void readFile(
+                      attachmentFile(selectedManaged.attachment!),
+                      selectedManaged.id
+                    );
+                  } catch (failure) {
+                    setError((failure as Error).message);
+                  }
+                }}
+              >
                 Reconnaître le texte de l’image
               </Button>
             )}
@@ -822,7 +878,8 @@ export default function ConsultationDocumentsAssistant({
             </div>
             {!appointment && !saved && (
               <p className="text-xs text-muted-foreground">
-                Choisissez une consultation pour enregistrer ce document dans le dossier du patient.
+                Choisissez une consultation pour enregistrer ce document dans le
+                dossier du patient.
               </p>
             )}
             {!saved ? (

@@ -125,7 +125,7 @@ export function PatientsTable({
       last: lastVisit ?? "",
       next: upcomingAppointment?.startTime ?? "",
       open: "",
-    }),
+    })
   );
 
   const columns: DataColumn<PatientRow>[] = [
@@ -269,7 +269,7 @@ export function PatientsTable({
                 color:
                   FOLDER_TONES[
                     entries.findIndex(
-                      (entry) => entry.patient.id === patient.id,
+                      (entry) => entry.patient.id === patient.id
                     ) % FOLDER_TONES.length
                   ],
               }}

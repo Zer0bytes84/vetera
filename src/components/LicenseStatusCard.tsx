@@ -31,13 +31,16 @@ export function LicenseStatusCard() {
           disabled={busy}
           onClick={async () => {
             setBusy(true);
-            await guard(async () => {
-              setAccess(await checkLicenseAccess(true));
-            }, {
-              cleanup: () => {
-                setBusy(false);
+            await guard(
+              async () => {
+                setAccess(await checkLicenseAccess(true));
               },
-            });
+              {
+                cleanup: () => {
+                  setBusy(false);
+                },
+              }
+            );
           }}
         >
           {busy ? "Vérification…" : "Vérifier maintenant"}

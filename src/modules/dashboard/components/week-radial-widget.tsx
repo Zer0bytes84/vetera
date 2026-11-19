@@ -42,7 +42,7 @@ export function WeekRadialWidget({
   const [view, setView] = useState<RadialView>("weekday");
   const radial = useMemo(
     () => buildWeekRadial(appointments, now),
-    [appointments, now],
+    [appointments, now]
   );
   const sectors = radial[view === "hour" ? "hour" : "weekday"];
   const hourly = view === "hour";

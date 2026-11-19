@@ -56,7 +56,9 @@ export function Segmented<T extends string = string>({
   };
 
   const onKeyDown = (e: React.KeyboardEvent) => {
-    const step = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key];
+    const step = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[
+      e.key
+    ];
     if (!step) return;
     e.preventDefault();
     const enabled = options.filter((o) => !o.disabled);
@@ -79,7 +81,7 @@ export function Segmented<T extends string = string>({
         className={cn(
           "inline-flex items-center rounded-full bg-foreground/[0.05] p-0.5",
           size === "sm" ? "h-8" : "h-9",
-          className,
+          className
         )}
       >
         {options.map((option) => {
@@ -99,7 +101,7 @@ export function Segmented<T extends string = string>({
                 size === "sm" ? "px-3 text-[0.8125rem]" : "px-4 text-sm",
                 active
                   ? "text-foreground"
-                  : "text-muted-foreground hover:text-foreground",
+                  : "text-muted-foreground hover:text-foreground"
               )}
             >
               {active && (

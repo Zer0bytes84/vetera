@@ -71,14 +71,16 @@ export function checkLicenseAccess(
   if (!pending) {
     pendingOnline = forceOnline;
     pending = check(forceOnline, options)
-      .catch((error): LicenseAccess => ({
-        allowed: false,
-        transient: true,
-        message:
-          error instanceof Error
-            ? error.message
-            : "Impossible de lire l’activation locale.",
-      }))
+      .catch(
+        (error): LicenseAccess => ({
+          allowed: false,
+          transient: true,
+          message:
+            error instanceof Error
+              ? error.message
+              : "Impossible de lire l’activation locale.",
+        })
+      )
       .then((result) => record(result, forceOnline))
       .finally(() => {
         pending = null;
@@ -106,8 +108,16 @@ function record(result: LicenseAccess, online: boolean): LicenseAccess {
   // A local check cannot tell that the server is back: an offline access stays
   // offline (banner and reconnection retry) until the server answers again.
   const access =
-    !online && result.allowed && !result.offlineUntil && lastAccess?.allowed && lastAccess.offlineUntil
-      ? { ...result, offlineUntil: lastAccess.offlineUntil, message: lastAccess.message }
+    !online &&
+    result.allowed &&
+    !result.offlineUntil &&
+    lastAccess?.allowed &&
+    lastAccess.offlineUntil
+      ? {
+          ...result,
+          offlineUntil: lastAccess.offlineUntil,
+          message: lastAccess.message,
+        }
       : result;
   lastAccess = access;
   lastCheckAt = now;
@@ -118,7 +128,8 @@ function record(result: LicenseAccess, online: boolean): LicenseAccess {
 /** The last granted access, while its signed lease and licence term still hold. */
 export function getCachedLicenseAccess(now = Date.now()): LicenseAccess | null {
   if (!lastAccess?.allowed) return null;
-  if (lastAccess.leaseUntil === undefined || now >= lastAccess.leaseUntil) return null;
+  if (lastAccess.leaseUntil === undefined || now >= lastAccess.leaseUntil)
+    return null;
   if (lastAccess.expiresAt != null && now >= lastAccess.expiresAt) return null;
   return lastAccess;
 }
@@ -140,9 +151,9 @@ export function recheckLicenseInBackground(
     now - lastOnlineAt >= LICENSE_ONLINE_RECHECK_MS ||
     (reason === "online" && Boolean(lastAccess?.offlineUntil));
   if (!online && now - lastCheckAt < LICENSE_LOCAL_RECHECK_MS) return null;
-  return checkLicenseAccess(online, { timeoutMs: LICENSE_BACKGROUND_TIMEOUT_MS }).then(
-    (access) => (access.transient && getCachedLicenseAccess()) || access
-  );
+  return checkLicenseAccess(online, {
+    timeoutMs: LICENSE_BACKGROUND_TIMEOUT_MS,
+  }).then((access) => (access.transient && getCachedLicenseAccess()) || access);
 }
 
 /** Tests only: forget the in-memory access between cases. */
@@ -188,7 +199,11 @@ async function check(
       const result =
         !lease && stored.key
           ? await activateLicense(stored.email, stored.key, options.timeoutMs)
-          : await renewLicenseActivation(stored.activationToken, stored.email, options.timeoutMs);
+          : await renewLicenseActivation(
+              stored.activationToken,
+              stored.email,
+              options.timeoutMs
+            );
       lease = await verifyLicenseLease(
         result.activationToken,
         LICENSE_PUBLIC_KEY,

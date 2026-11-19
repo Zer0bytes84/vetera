@@ -6,14 +6,9 @@
     {
       "id": "acide-tolfenamique",
       "nom": "Acide tolfénamique",
-      "nomCommercial": [
-        "Tolfedine"
-      ],
+      "nomCommercial": ["Tolfedine"],
       "classe": "Anti-inflammatoire non stéroïdien (AINS)",
-      "formes": [
-        "Injectable",
-        "Comprimés"
-      ],
+      "formes": ["Injectable", "Comprimés"],
       "indications": [
         "Chien : états inflammatoires et douloureux ostéo-articulaires et musculo-squelettiques",
         "Chien : douleur post-chirurgicale (prémédication)",
@@ -76,13 +71,9 @@
     {
       "id": "ketoprofene",
       "nom": "Kétoprofène",
-      "nomCommercial": [
-        "Ketofen"
-      ],
+      "nomCommercial": ["Ketofen"],
       "classe": "Anti-inflammatoire non stéroïdien (AINS)",
-      "formes": [
-        "Injectable"
-      ],
+      "formes": ["Injectable"],
       "indications": [
         "Bovins : inflammation, douleur ou fièvre (affections respiratoires, œdème mammaire, boiteries, arthrites, traumatismes, dystocies)",
         "Porcins : réduction de la fièvre (affections respiratoires, syndrome MMA)",
@@ -113,9 +104,7 @@
           "voie": "IM"
         }
       },
-      "effetsSecondaires": [
-        "Non connus selon le RCP"
-      ],
+      "effetsSecondaires": ["Non connus selon le RCP"],
       "interactions": [
         "Autres AINS",
         "Corticostéroïdes",
@@ -138,15 +127,9 @@
     {
       "id": "butorphanol",
       "nom": "Butorphanol",
-      "nomCommercial": [
-        "Alvegesic",
-        "Butador",
-        "Torbugesic"
-      ],
+      "nomCommercial": ["Alvegesic", "Butador", "Torbugesic"],
       "classe": "Analgésique opioïde - Agoniste-antagoniste",
-      "formes": [
-        "Injectable"
-      ],
+      "formes": ["Injectable"],
       "indications": [
         "Chien : douleurs viscérales modérées ; sédation avec médétomidine ; pré-anesthésie ; anesthésie avec médétomidine et kétamine",
         "Chat : analgésie pré et postopératoire ; sédation avec médétomidine ; anesthésie avec médétomidine et kétamine",
@@ -209,14 +192,9 @@
     {
       "id": "atipamezole",
       "nom": "Atipamézole",
-      "nomCommercial": [
-        "Antisedan",
-        "Alzane"
-      ],
+      "nomCommercial": ["Antisedan", "Alzane"],
       "classe": "Antagoniste des récepteurs alpha-2",
-      "formes": [
-        "Injectable"
-      ],
+      "formes": ["Injectable"],
       "indications": [
         "Antagonisme des effets sédatifs, analgésiques, cardio-vasculaires et respiratoires de la médétomidine ou de la dexmédétomidine",
         "Surdosage de médétomidine ou de dexmédétomidine"
@@ -262,13 +240,9 @@
     {
       "id": "xylazine",
       "nom": "Xylazine",
-      "nomCommercial": [
-        "Rompun"
-      ],
+      "nomCommercial": ["Rompun"],
       "classe": "Sédatif/Analgésique - Alpha-2 agoniste",
-      "formes": [
-        "Injectable"
-      ],
+      "formes": ["Injectable"],
       "indications": [
         "Sédation, analgésie et myorelaxation",
         "Prémédication de l'anesthésie générale"
@@ -328,14 +302,9 @@
     {
       "id": "telmisartan",
       "nom": "Telmisartan",
-      "nomCommercial": [
-        "Telmitraxx",
-        "Semintra"
-      ],
+      "nomCommercial": ["Telmitraxx", "Semintra"],
       "classe": "Antagoniste des récepteurs de l'angiotensine II (ARA II)",
-      "formes": [
-        "Solution buvable"
-      ],
+      "formes": ["Solution buvable"],
       "indications": [
         "Chat : réduction de la protéinurie associée à l'insuffisance rénale chronique"
       ],
@@ -372,13 +341,9 @@
     {
       "id": "ramipril",
       "nom": "Ramipril",
-      "nomCommercial": [
-        "Vasotop"
-      ],
+      "nomCommercial": ["Vasotop"],
       "classe": "Inhibiteur de l'enzyme de conversion (IECA)",
-      "formes": [
-        "Comprimés"
-      ],
+      "formes": ["Comprimés"],
       "indications": [
         "Chien : insuffisance cardiaque congestive (NYHA II à IV), seul ou avec furosémide et/ou glycosides cardiotoniques"
       ],
@@ -393,9 +358,7 @@
           "attention": "Sans amélioration après 2 semaines : jusqu'à 0,25 mg/kg/jour."
         }
       },
-      "effetsSecondaires": [
-        "Aucun connu selon le RCP"
-      ],
+      "effetsSecondaires": ["Aucun connu selon le RCP"],
       "interactions": [
         "Diurétiques à haute dose et régime hyposodé : risque d'hypotension",
         "Diurétiques d'épargne potassique : surveiller la kaliémie (hyperkaliémie)"
@@ -412,13 +375,9 @@
     {
       "id": "imidapril",
       "nom": "Imidapril",
-      "nomCommercial": [
-        "Prilium"
-      ],
+      "nomCommercial": ["Prilium"],
       "classe": "Inhibiteur de l'enzyme de conversion (IECA)",
-      "formes": [
-        "Solution buvable"
-      ],
+      "formes": ["Solution buvable"],
       "indications": [
         "Chien de plus de 4 kg : insuffisance cardiaque modérée à sévère (régurgitation mitrale, cardiomyopathie dilatée)"
       ],
@@ -461,17 +420,10 @@
     {
       "id": "carbimazole",
       "nom": "Carbimazole",
-      "nomCommercial": [
-        "Vidalta",
-        "Felinta"
-      ],
+      "nomCommercial": ["Vidalta", "Felinta"],
       "classe": "Antithyroïdien",
-      "formes": [
-        "Comprimés à libération prolongée"
-      ],
-      "indications": [
-        "Chat : hyperthyroïdie et signes cliniques associés"
-      ],
+      "formes": ["Comprimés à libération prolongée"],
+      "indications": ["Chat : hyperthyroïdie et signes cliniques associés"],
       "contreIndications": [
         "Hépatite primaire grave",
         "Diabète sucré",
@@ -513,13 +465,9 @@
     {
       "id": "bromure-de-potassium",
       "nom": "Bromure de potassium",
-      "nomCommercial": [
-        "Libromide"
-      ],
+      "nomCommercial": ["Libromide"],
       "classe": "Antiépileptique",
-      "formes": [
-        "Comprimés"
-      ],
+      "formes": ["Comprimés"],
       "indications": [
         "Chien : épilepsie réfractaire, en complément du phénobarbital"
       ],
@@ -560,13 +508,9 @@
     {
       "id": "selegiline",
       "nom": "Sélégiline",
-      "nomCommercial": [
-        "Selgian"
-      ],
+      "nomCommercial": ["Selgian"],
       "classe": "Inhibiteur de la monoamine oxydase B (IMAO-B)",
-      "formes": [
-        "Comprimés"
-      ],
+      "formes": ["Comprimés"],
       "indications": [
         "Chien : troubles comportementaux d'origine émotionnelle (dépression, dysthymie, anxiété)",
         "Chien : avec thérapie comportementale, hypersensibilité/hyperactivité, anxiété de séparation, syndrome de privation, phobies"
@@ -583,10 +527,7 @@
           "attention": "Dose exprimée en chlorhydrate de sélégiline. Arrêt brusque, sans sevrage progressif."
         }
       },
-      "effetsSecondaires": [
-        "Tremblements",
-        "Vomissements"
-      ],
+      "effetsSecondaires": ["Tremblements", "Vomissements"],
       "interactions": [
         "Aucune connue selon le RCP (voir aussi phénylpropanolamine : IMAO contre-indiqués)"
       ],
@@ -602,15 +543,9 @@
     {
       "id": "phenylpropanolamine",
       "nom": "Phénylpropanolamine",
-      "nomCommercial": [
-        "Propalin",
-        "Proin"
-      ],
+      "nomCommercial": ["Propalin", "Proin"],
       "classe": "Sympathomimétique",
-      "formes": [
-        "Sirop",
-        "Comprimés à croquer"
-      ],
+      "formes": ["Sirop", "Comprimés à croquer"],
       "indications": [
         "Chienne : incontinence urinaire par insuffisance du sphincter urétral (efficacité démontrée chez la chienne ovariohystérectomisée)"
       ],
@@ -647,20 +582,13 @@
     {
       "id": "cabergoline",
       "nom": "Cabergoline",
-      "nomCommercial": [
-        "Galastop",
-        "Finilac"
-      ],
+      "nomCommercial": ["Galastop", "Finilac"],
       "classe": "Agoniste dopaminergique (antiprolactinique)",
-      "formes": [
-        "Solution buvable"
-      ],
+      "formes": ["Solution buvable"],
       "indications": [
         "Chienne : tarissement de la lactation de pseudo-gestation"
       ],
-      "contreIndications": [
-        "Femelle gestante (risque d'avortement)"
-      ],
+      "contreIndications": ["Femelle gestante (risque d'avortement)"],
       "posologies": {
         "chien": {
           "dose": "5 µg/kg",
@@ -676,9 +604,7 @@
         "Hypotension",
         "Réactions allergiques (très rare)"
       ],
-      "interactions": [
-        "Aucune connue selon le RCP"
-      ],
+      "interactions": ["Aucune connue selon le RCP"],
       "sources": [
         {
           "titre": "RCP GALASTOP (ANMV, Index des RCP)",
@@ -691,13 +617,9 @@
     {
       "id": "metamizole",
       "nom": "Métamizole",
-      "nomCommercial": [
-        "Calmagine"
-      ],
+      "nomCommercial": ["Calmagine"],
       "classe": "Analgésique antispasmodique (pyrazolone)",
-      "formes": [
-        "Injectable"
-      ],
+      "formes": ["Injectable"],
       "indications": [
         "Douleurs d'origine viscérale, en particulier associées à des spasmes"
       ],
@@ -757,13 +679,9 @@
     {
       "id": "oxfendazole",
       "nom": "Oxfendazole",
-      "nomCommercial": [
-        "Dolthene"
-      ],
+      "nomCommercial": ["Dolthene"],
       "classe": "Antiparasitaire - Benzimidazolé",
-      "formes": [
-        "Suspension buvable"
-      ],
+      "formes": ["Suspension buvable"],
       "indications": [
         "Chien : ascaridoses (Toxocara canis, Toxascaris leonina), ankylostomoses, trichuroses, taeniasis (Taenia hydatigena, Dipylidium caninum)"
       ],
@@ -780,13 +698,8 @@
           "attention": "Soit 0,5 mL/kg de Dolthene, mélangé à la nourriture."
         }
       },
-      "effetsSecondaires": [
-        "Anorexie",
-        "Vomissements"
-      ],
-      "interactions": [
-        "Aucune connue selon le RCP"
-      ],
+      "effetsSecondaires": ["Anorexie", "Vomissements"],
+      "interactions": ["Aucune connue selon le RCP"],
       "sources": [
         {
           "titre": "RCP DOLTHENE CHIEN M SUSPENSION BUVABLE (ANMV, Index des RCP)",
@@ -799,19 +712,13 @@
     {
       "id": "nitenpyrame",
       "nom": "Nitenpyrame",
-      "nomCommercial": [
-        "Capstar"
-      ],
+      "nomCommercial": ["Capstar"],
       "classe": "Antiparasitaire externe - Néonicotinoïde",
-      "formes": [
-        "Comprimés"
-      ],
+      "formes": ["Comprimés"],
       "indications": [
         "Chat et chien : infestation par les puces (Ctenocephalides felis)"
       ],
-      "contreIndications": [
-        "Aucune selon le RCP"
-      ],
+      "contreIndications": ["Aucune selon le RCP"],
       "posologies": {
         "chien": {
           "dose": "11.4 mg",
@@ -846,19 +753,13 @@
     {
       "id": "miltefosine",
       "nom": "Miltéfosine",
-      "nomCommercial": [
-        "Milteforan"
-      ],
+      "nomCommercial": ["Milteforan"],
       "classe": "Antiparasitaire - Antileishmanien",
-      "formes": [
-        "Solution buvable"
-      ],
+      "formes": ["Solution buvable"],
       "indications": [
         "Chien : signes cliniques de la leishmaniose (Leishmania infantum)"
       ],
-      "contreIndications": [
-        "Hypersensibilité à la miltéfosine"
-      ],
+      "contreIndications": ["Hypersensibilité à la miltéfosine"],
       "posologies": {
         "chien": {
           "dose": "2 mg/kg",
@@ -868,13 +769,8 @@
           "attention": "Respecter la durée complète. Porter des gants pour manipuler."
         }
       },
-      "effetsSecondaires": [
-        "Vomissements",
-        "Diarrhée"
-      ],
-      "interactions": [
-        "Aucune connue selon le RCP"
-      ],
+      "effetsSecondaires": ["Vomissements", "Diarrhée"],
+      "interactions": ["Aucune connue selon le RCP"],
       "sources": [
         {
           "titre": "RCP MILTEFORAN 20 MG/ML SOLUTION BUVABLE POUR CHIENS (ANMV, Index des RCP)",
@@ -887,16 +783,10 @@
     {
       "id": "antimoniate-de-meglumine",
       "nom": "Antimoniate de méglumine",
-      "nomCommercial": [
-        "Glucantime"
-      ],
+      "nomCommercial": ["Glucantime"],
       "classe": "Antiparasitaire - Antileishmanien (antimonié)",
-      "formes": [
-        "Injectable"
-      ],
-      "indications": [
-        "Chien : leishmaniose"
-      ],
+      "formes": ["Injectable"],
+      "indications": ["Chien : leishmaniose"],
       "contreIndications": [
         "Insuffisance hépatique, rénale ou cardiaque",
         "Hypersensibilité à l'antimoniate de méglumine"
@@ -931,21 +821,14 @@
     {
       "id": "imidocarbe",
       "nom": "Imidocarbe",
-      "nomCommercial": [
-        "Carbesia",
-        "Imidotyl"
-      ],
+      "nomCommercial": ["Carbesia", "Imidotyl"],
       "classe": "Antiparasitaire - Antibabésien",
-      "formes": [
-        "Injectable"
-      ],
+      "formes": ["Injectable"],
       "indications": [
         "Chien : traitement et prophylaxie de la babésiose",
         "Bovins : babésioses, anaplasmose et infections mixtes"
       ],
-      "contreIndications": [
-        "Aucune selon le RCP"
-      ],
+      "contreIndications": ["Aucune selon le RCP"],
       "posologies": {
         "chien": {
           "dose": "2.125 mg/kg",
@@ -965,9 +848,7 @@
         "Tremblements, convulsions (très rare)",
         "Hyperthermie, prostration"
       ],
-      "interactions": [
-        "Aucune connue selon le RCP"
-      ],
+      "interactions": ["Aucune connue selon le RCP"],
       "tempsAttente": {
         "viande": "213 jours (bovins)",
         "lait": "6 jours (bovins)"
@@ -984,13 +865,9 @@
     {
       "id": "propentofylline",
       "nom": "Propentofylline",
-      "nomCommercial": [
-        "Karsivan"
-      ],
+      "nomCommercial": ["Karsivan"],
       "classe": "Dérivé xanthique - Vasodilatateur",
-      "formes": [
-        "Comprimés"
-      ],
+      "formes": ["Comprimés"],
       "indications": [
         "Chien âgé : apathie, indolence, fatigabilité liées à des troubles de la microcirculation cérébrale et périphérique"
       ],
@@ -1026,21 +903,13 @@
     {
       "id": "phytomenadione",
       "nom": "Phytoménadione (vitamine K1)",
-      "nomCommercial": [
-        "Vitamivet K1",
-        "K1 Keyvit"
-      ],
+      "nomCommercial": ["Vitamivet K1", "K1 Keyvit"],
       "classe": "Antidote - Vitamine K",
-      "formes": [
-        "Injectable",
-        "Comprimés"
-      ],
+      "formes": ["Injectable", "Comprimés"],
       "indications": [
         "Chien : intoxication par les rodenticides anticoagulants (urgence IV, puis relais oral)"
       ],
-      "contreIndications": [
-        "Hypersensibilité à la phytoménadione"
-      ],
+      "contreIndications": ["Hypersensibilité à la phytoménadione"],
       "posologies": {
         "chien": {
           "dose": "5 mg/kg",
@@ -1075,19 +944,13 @@
     {
       "id": "cimetidine",
       "nom": "Cimétidine",
-      "nomCommercial": [
-        "Zitac"
-      ],
+      "nomCommercial": ["Zitac"],
       "classe": "Anti-H2 - Antisécrétoire gastrique",
-      "formes": [
-        "Comprimés"
-      ],
+      "formes": ["Comprimés"],
       "indications": [
         "Chien : réduction des vomissements associés à une gastrite chronique"
       ],
-      "contreIndications": [
-        "Aucune selon le RCP"
-      ],
+      "contreIndications": ["Aucune selon le RCP"],
       "posologies": {
         "chien": {
           "dose": "5 mg/kg",
@@ -1117,13 +980,9 @@
     {
       "id": "loperamide",
       "nom": "Lopéramide",
-      "nomCommercial": [
-        "Loperal"
-      ],
+      "nomCommercial": ["Loperal"],
       "classe": "Antidiarrhéique - Opioïde périphérique",
-      "formes": [
-        "Comprimés"
-      ],
+      "formes": ["Comprimés"],
       "indications": [
         "Chien : diarrhée aiguë, avec diète de 12 heures puis reprise progressive de l'alimentation"
       ],
@@ -1161,19 +1020,11 @@
     {
       "id": "butylscopolamine",
       "nom": "Butylbromure de scopolamine",
-      "nomCommercial": [
-        "Scopalgine"
-      ],
+      "nomCommercial": ["Scopalgine"],
       "classe": "Antispasmodique - Anticholinergique",
-      "formes": [
-        "Comprimés"
-      ],
-      "indications": [
-        "Chien et chat : affections spasmodiques urologiques"
-      ],
-      "contreIndications": [
-        "Aucune selon le RCP"
-      ],
+      "formes": ["Comprimés"],
+      "indications": ["Chien et chat : affections spasmodiques urologiques"],
+      "contreIndications": ["Aucune selon le RCP"],
       "posologies": {
         "chien": {
           "dose": "0.14-0.27 mg/kg",
@@ -1191,9 +1042,7 @@
       "effetsSecondaires": [
         "Sécheresse buccale, tachycardie, mydriase (très rare)"
       ],
-      "interactions": [
-        "Aucune connue selon le RCP"
-      ],
+      "interactions": ["Aucune connue selon le RCP"],
       "sources": [
         {
           "titre": "RCP SCOPALGINE 1,38 MG COMPRIMES POUR CHIENS ET CHATS (ANMV, Index des RCP)",

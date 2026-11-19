@@ -1,6 +1,8 @@
 import { ToolbarIcon } from "./toolbar-icon";
 
-const isMac = typeof navigator !== "undefined" && /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent);
+const isMac =
+  typeof navigator !== "undefined" &&
+  /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent);
 
 /**
  * The search field in the header, at the left beside the sidebar toggle
@@ -10,7 +12,13 @@ const isMac = typeof navigator !== "undefined" && /Mac|iPhone|iPad/.test(navigat
  * the user types in it. Below 560 px of header it gives way to the search
  * icon among the tools (shell-toolbar.css).
  */
-export function HeaderSearch({ onOpen, open }: { onOpen: () => void; open: boolean }) {
+export function HeaderSearch({
+  onOpen,
+  open,
+}: {
+  onOpen: () => void;
+  open: boolean;
+}) {
   return (
     <div className="shell-header-search-slot">
       <button
@@ -22,8 +30,14 @@ export function HeaderSearch({ onOpen, open }: { onOpen: () => void; open: boole
         onClick={onOpen}
         type="button"
       >
-        <ToolbarIcon className="shell-header-search-icon" name="search" size={16} />
-        <span className="shell-header-search-placeholder">Rechercher un patient, une page…</span>
+        <ToolbarIcon
+          className="shell-header-search-icon"
+          name="search"
+          size={16}
+        />
+        <span className="shell-header-search-placeholder">
+          Rechercher un patient, une page…
+        </span>
         <kbd className="shell-header-search-key">{isMac ? "⌘K" : "Ctrl K"}</kbd>
       </button>
     </div>

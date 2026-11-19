@@ -24,9 +24,7 @@ describe("temperature normalisation", () => {
     expect(
       normalizeTemperatureSymbols("Température 38.5 degrés Celsius. Normale.")
     ).toBe("Température 38.5 °C. Normale.");
-    expect(normalizeTemperatureSymbols("38,5 degrés celsius")).toBe(
-      "38,5 °C"
-    );
+    expect(normalizeTemperatureSymbols("38,5 degrés celsius")).toBe("38,5 °C");
     expect(normalizeTemperatureSymbols("38.5 Degrés Centigrades")).toBe(
       "38.5 °C"
     );
@@ -47,7 +45,9 @@ describe("temperature normalisation", () => {
       normalizeTemperatureSymbols(
         "5 gouttes dans l'oreille droite, 2 fois par jour pendant 10 jours."
       )
-    ).toBe("5 gouttes dans l'oreille droite, 2 fois par jour pendant 10 jours.");
+    ).toBe(
+      "5 gouttes dans l'oreille droite, 2 fois par jour pendant 10 jours."
+    );
   });
 
   it("handles a sentence starting with the unit", () => {

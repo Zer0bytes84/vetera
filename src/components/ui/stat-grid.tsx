@@ -2,11 +2,19 @@
 // Free to use. If it helps you, you can support it: https://ko-fi.com/yurigokoryan
 "use client";
 
-import { ArrowDownRightIcon, ArrowRightIcon, ArrowUpRightIcon, MinusIcon } from "@heroicons/react/16/solid";
+import {
+  ArrowDownRightIcon,
+  ArrowRightIcon,
+  ArrowUpRightIcon,
+  MinusIcon,
+} from "@heroicons/react/16/solid";
 import type { ComponentType } from "react";
 
 /** Widget icons: Heroicons solid (they take className; strokeWidth is ignored by a filled glyph). */
-export type StatIcon = ComponentType<{ className?: string; strokeWidth?: number | string }>;
+export type StatIcon = ComponentType<{
+  className?: string;
+  strokeWidth?: number | string;
+}>;
 import { MotionConfig, motion } from "motion/react";
 import { useId, type CSSProperties, type ReactNode } from "react";
 import { ProgressBar } from "@/components/ui/progress-bar";
@@ -102,7 +110,11 @@ export function StatGrid({
             aside={
               lead || toolbar ? (
                 <>
-                  {lead && <div className="min-w-0" data-slot="band-lead">{lead}</div>}
+                  {lead && (
+                    <div className="min-w-0" data-slot="band-lead">
+                      {lead}
+                    </div>
+                  )}
                   {toolbar}
                 </>
               ) : undefined
@@ -121,7 +133,7 @@ export function StatGrid({
               ? "grid-flow-col auto-cols-[minmax(11.5rem,1fr)] overflow-x-auto"
               : data.length > 2
                 ? "grid-cols-1 @xs:grid-cols-2"
-                : "grid-cols-1 @md:grid-cols-2",
+                : "grid-cols-1 @md:grid-cols-2"
           )}
         >
           {data.map((stat) => (
@@ -157,9 +169,16 @@ function StatCard({
   // Exactly 0, not « under 0.05 »: the dashboard has always shown +0,03 % as a rise.
   const flat = delta === undefined || delta === 0;
   const good = !flat && delta > 0 === higherIsBetter;
-  const DeltaIcon = flat ? MinusIcon : delta > 0 ? ArrowUpRightIcon : ArrowDownRightIcon;
+  const DeltaIcon = flat
+    ? MinusIcon
+    : delta > 0
+      ? ArrowUpRightIcon
+      : ArrowDownRightIcon;
   const Root = onSelect ? motion.button : motion.div;
-  const percent = delta === undefined ? "" : `${delta > 0 ? "+" : ""}${formatNumber(delta, { maximumFractionDigits: 1 })} %`;
+  const percent =
+    delta === undefined
+      ? ""
+      : `${delta > 0 ? "+" : ""}${formatNumber(delta, { maximumFractionDigits: 1 })} %`;
 
   return (
     <Root
@@ -170,7 +189,7 @@ function StatCard({
       className={cn(
         "group min-w-0 text-left",
         onSelect &&
-          "rounded-2xl outline-offset-2 transition-[scale] duration-150 ease-out active:scale-[0.98]",
+          "rounded-2xl outline-offset-2 transition-[scale] duration-150 ease-out active:scale-[0.98]"
       )}
     >
       {/*
@@ -183,19 +202,25 @@ function StatCard({
           "flex h-full flex-col gap-2 p-4",
           // A clickable card answers the pointer by its fill alone: no border, no shadow.
           onSelect &&
-            "transition-[background-color] duration-150 ease-out group-hover:bg-[color-mix(in_oklab,var(--card-inset),var(--foreground)_3%)] group-active:bg-[color-mix(in_oklab,var(--card-inset),var(--foreground)_5%)]",
+            "transition-[background-color] duration-150 ease-out group-hover:bg-[color-mix(in_oklab,var(--card-inset),var(--foreground)_3%)] group-active:bg-[color-mix(in_oklab,var(--card-inset),var(--foreground)_5%)]"
         )}
       >
-        <p className="flex h-6 items-center gap-2 text-[0.8125rem] text-muted-foreground" data-slot="stat-label">
+        <p
+          className="flex h-6 items-center gap-2 text-[0.8125rem] text-muted-foreground"
+          data-slot="stat-label"
+        >
           {stat.icon && (
             <span
               aria-hidden="true"
               className="grid size-6 shrink-0 place-items-center rounded-md"
               style={
                 {
-                  "--tone": stat.tone ? `var(--tone-${stat.tone})` : "currentColor",
+                  "--tone": stat.tone
+                    ? `var(--tone-${stat.tone})`
+                    : "currentColor",
                   color: "var(--tone)",
-                  background: "color-mix(in oklab, var(--tone) 16%, transparent)",
+                  background:
+                    "color-mix(in oklab, var(--tone) 16%, transparent)",
                 } as CSSProperties
               }
             >
@@ -214,7 +239,11 @@ function StatCard({
           <span
             className="shrink-0 whitespace-nowrap"
             data-slot="stat-value"
-            style={stat.emphasize && stat.tone ? { color: `var(--tone-${stat.tone})` } : undefined}
+            style={
+              stat.emphasize && stat.tone
+                ? { color: `var(--tone-${stat.tone})` }
+                : undefined
+            }
           >
             <RollingNumber
               value={stat.value}
@@ -228,22 +257,26 @@ function StatCard({
             />
           )}
         </div>
-        {showBadge && <div className="flex h-5 items-center">
-          {delta !== undefined && (
-            <StatusPill
-              size="sm"
-              tone={flat ? "neutral" : good ? "positive" : "negative"}
-              icon={DeltaIcon}
-              iconWeight="bold"
-            >
-              <RollingNumber value={stat.deltaText ?? percent} />
-              <span className="sr-only">
-                {flat ? "stable" : good ? ", favorable" : ", défavorable"}
-              </span>
-            </StatusPill>
-          )}
-        </div>}
-        <p className="h-4 truncate text-xs leading-4 text-muted-foreground">{stat.hint}</p>
+        {showBadge && (
+          <div className="flex h-5 items-center">
+            {delta !== undefined && (
+              <StatusPill
+                size="sm"
+                tone={flat ? "neutral" : good ? "positive" : "negative"}
+                icon={DeltaIcon}
+                iconWeight="bold"
+              >
+                <RollingNumber value={stat.deltaText ?? percent} />
+                <span className="sr-only">
+                  {flat ? "stable" : good ? ", favorable" : ", défavorable"}
+                </span>
+              </StatusPill>
+            )}
+          </div>
+        )}
+        <p className="h-4 truncate text-xs leading-4 text-muted-foreground">
+          {stat.hint}
+        </p>
         {showGoal && stat.goal && (
           <div className="mt-auto flex flex-col gap-1.5 pt-1">
             <ProgressBar
@@ -257,7 +290,9 @@ function StatCard({
             />
             <p className="flex h-4 items-center justify-between gap-2 text-xs leading-4 text-muted-foreground">
               <span className="min-w-0 truncate">{stat.goal.label}</span>
-              <span className="shrink-0 tabular-nums">{Math.round(stat.goal.ratio * 100)} %</span>
+              <span className="shrink-0 tabular-nums">
+                {Math.round(stat.goal.ratio * 100)} %
+              </span>
             </p>
           </div>
         )}
@@ -273,7 +308,13 @@ const toneColor = {
 };
 
 /** Tiny trend line; the last point is marked so "now" is easy to find. */
-function Sparkline({ values, tone }: { values: number[]; tone: keyof typeof toneColor }) {
+function Sparkline({
+  values,
+  tone,
+}: {
+  values: number[];
+  tone: keyof typeof toneColor;
+}) {
   const id = useId().replace(/:/g, "");
   const w = 72;
   const h = 28;
@@ -284,7 +325,7 @@ function Sparkline({ values, tone }: { values: number[]; tone: keyof typeof tone
       [
         (i / (values.length - 1)) * (w - 4) + 2,
         h - 3 - ((v - min) / span) * (h - 6),
-      ] as const,
+      ] as const
   );
   const d = pts
     .map(([x, y], i) => `${i ? "L" : "M"}${x.toFixed(1)},${y.toFixed(1)}`)
@@ -293,7 +334,12 @@ function Sparkline({ values, tone }: { values: number[]; tone: keyof typeof tone
   const color = toneColor[tone];
 
   return (
-    <svg width={w} height={h} aria-hidden="true" className="shrink-0 overflow-visible">
+    <svg
+      width={w}
+      height={h}
+      aria-hidden="true"
+      className="shrink-0 overflow-visible"
+    >
       <defs>
         <linearGradient id={id} x1="0" x2="0" y1="0" y2="1">
           <stop offset="0" stopColor={color} stopOpacity="0.22" />

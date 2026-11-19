@@ -40,7 +40,9 @@ function benchGenerator(): GeneratorFamily | null {
   return forced === "gemma3" || forced === "gemma4" ? forced : null;
 }
 /** The generator that writes the notes; a stored Gemma 4 choice gives way while it is suspended. */
-export function getGeneratorPreference(suspended = GEMMA4_SUSPENDED): GeneratorFamily {
+export function getGeneratorPreference(
+  suspended = GEMMA4_SUSPENDED
+): GeneratorFamily {
   const forced = benchGenerator();
   if (forced) return forced;
   const stored = storage()?.getItem(GENERATOR_PREFERENCE_KEY);
@@ -66,9 +68,16 @@ export function generatorCandidates(
   modelRoot: string,
   suspended = GEMMA4_SUSPENDED
 ): GeneratorCandidate[] {
-  const candidate = (family: GeneratorFamily) => ({ family, url: modelRoot + GENERATOR_FILES[family] });
+  const candidate = (family: GeneratorFamily) => ({
+    family,
+    url: modelRoot + GENERATOR_FILES[family],
+  });
   const fallback = status.generatorReady ? [candidate("gemma3")] : [];
-  if (status.generator4Ready && getGeneratorPreference(suspended) === "gemma4" && !generatorFellBack)
+  if (
+    status.generator4Ready &&
+    getGeneratorPreference(suspended) === "gemma4" &&
+    !generatorFellBack
+  )
     return [candidate("gemma4"), ...fallback];
   return fallback;
 }

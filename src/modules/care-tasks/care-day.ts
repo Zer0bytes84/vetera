@@ -15,11 +15,21 @@ const byTime = (left: DayTask, right: DayTask) => time(left) - time(right);
  * from earlier days (before `dayStart`) counts as late and still to finish,
  * never as planned for the day.
  */
-export function careDaySummary<T extends DayTask>(tasks: T[], now: Date, dayStart?: Date) {
-  const carried = dayStart ? tasks.filter((task) => time(task) < dayStart.getTime()) : [];
-  const day = dayStart ? tasks.filter((task) => time(task) >= dayStart.getTime()) : tasks;
+export function careDaySummary<T extends DayTask>(
+  tasks: T[],
+  now: Date,
+  dayStart?: Date
+) {
+  const carried = dayStart
+    ? tasks.filter((task) => time(task) < dayStart.getTime())
+    : [];
+  const day = dayStart
+    ? tasks.filter((task) => time(task) >= dayStart.getTime())
+    : tasks;
   const live = day.filter((task) => task.statut !== "annule");
-  const pending = [...carried, ...live].filter((task) => task.statut === "a_faire" || task.statut === "en_cours");
+  const pending = [...carried, ...live].filter(
+    (task) => task.statut === "a_faire" || task.statut === "en_cours"
+  );
   const overdue = pending
     .filter((task) => careDisplayStatus(task, now) === "en_retard")
     .sort(byTime);
@@ -38,7 +48,10 @@ export function careDaySummary<T extends DayTask>(tasks: T[], now: Date, dayStar
 /** Doses of the day for one animal: done out of planned, cancelled left out. */
 export function careDoses(tasks: DayTask[]) {
   const live = tasks.filter((task) => task.statut !== "annule");
-  return { done: live.filter((task) => task.statut === "fait").length, total: live.length };
+  return {
+    done: live.filter((task) => task.statut === "fait").length,
+    total: live.length,
+  };
 }
 
 export type CareMarkKind = "done" | "late" | "soon" | "later";
@@ -53,18 +66,23 @@ export function careTimeline<T extends DayTask>(tasks: T[], now: Date) {
   if (live.length === 0) return null;
   const day = new Date(time(live[0]));
   day.setHours(0, 0, 0, 0);
-  const sameDay = now.getTime() >= day.getTime() && now.getTime() < day.getTime() + 24 * HOUR_MS;
+  const sameDay =
+    now.getTime() >= day.getTime() &&
+    now.getTime() < day.getTime() + 24 * HOUR_MS;
   const hours = live.map((task) => new Date(time(task)).getHours());
   if (sameDay) hours.push(now.getHours());
   const startHour = Math.max(0, Math.min(...hours) - 1);
   const endHour = Math.min(24, Math.max(...hours) + 2);
   const start = day.getTime() + startHour * HOUR_MS;
   const span = (endHour - startHour) * HOUR_MS;
-  const at = (ms: number) => Math.min(100, Math.max(0, ((ms - start) / span) * 100));
+  const at = (ms: number) =>
+    Math.min(100, Math.max(0, ((ms - start) / span) * 100));
   const kind = (task: T): CareMarkKind => {
     if (task.statut === "fait") return "done";
     if (careDisplayStatus(task, now) === "en_retard") return "late";
-    return time(task) - now.getTime() <= SOON_HOURS * HOUR_MS ? "soon" : "later";
+    return time(task) - now.getTime() <= SOON_HOURS * HOUR_MS
+      ? "soon"
+      : "later";
   };
   return {
     startHour,

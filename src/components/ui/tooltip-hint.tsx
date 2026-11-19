@@ -8,7 +8,14 @@
  * `negative`, `warning` are our tones; never the TuffUI theme); text is French, never under 12 px; no demo data.
  */
 
-import { cloneElement, isValidElement, useEffect, useId, useRef, useState } from "react";
+import {
+  cloneElement,
+  isValidElement,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+} from "react";
 import { cn } from "@/lib/utils";
 
 // Shared across every tooltip on the page: once one has been open, the next
@@ -102,7 +109,7 @@ export function Tooltip({
           "scale-[0.97] opacity-0 transition-[opacity,scale] duration-[125ms] ease-[cubic-bezier(0.23,1,0.32,1)] data-open:scale-100 data-open:opacity-100 motion-reduce:scale-100",
           instant && "duration-0",
           placement[side][align],
-          className,
+          className
         )}
       >
         {content}

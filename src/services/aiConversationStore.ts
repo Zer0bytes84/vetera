@@ -49,12 +49,15 @@ const asString = (value: unknown, fallback = ""): string =>
 
 const asDateString = (value: unknown): string => {
   const date = new Date(asString(value));
-  return Number.isNaN(date.getTime()) ? new Date().toISOString() : date.toISOString();
+  return Number.isNaN(date.getTime())
+    ? new Date().toISOString()
+    : date.toISOString();
 };
 
 const parseMessage = (value: unknown): PersistedAIMessage | null => {
   if (!isRecord(value)) return null;
-  const role = value.role === "user" || value.role === "assistant" ? value.role : null;
+  const role =
+    value.role === "user" || value.role === "assistant" ? value.role : null;
   const content = asString(value.content);
   if (!role || !asString(value.id) || !content) return null;
 
@@ -64,14 +67,18 @@ const parseMessage = (value: unknown): PersistedAIMessage | null => {
     id: asString(value.id),
     isToolCall: value.isToolCall === true,
     thoughtTimeSeconds:
-      typeof value.thoughtTimeSeconds === "number" ? value.thoughtTimeSeconds : undefined,
+      typeof value.thoughtTimeSeconds === "number"
+        ? value.thoughtTimeSeconds
+        : undefined,
     timestamp: asDateString(value.timestamp),
     toolSteps: Array.isArray(value.toolSteps)
       ? value.toolSteps.filter(isRecord).map((step) => ({
           title: asString(step.title, "Étape clinique"),
           type: asString(step.type) || undefined,
           sources: Array.isArray(step.sources)
-            ? step.sources.filter((source): source is string => typeof source === "string")
+            ? step.sources.filter(
+                (source): source is string => typeof source === "string"
+              )
             : undefined,
         }))
       : undefined,
@@ -85,12 +92,15 @@ const parseConversation = (value: unknown): PersistedAIConversation | null => {
   if (!id) return null;
 
   const messages = Array.isArray(value.messages)
-    ? value.messages.map(parseMessage).filter((message): message is PersistedAIMessage => Boolean(message))
+    ? value.messages
+        .map(parseMessage)
+        .filter((message): message is PersistedAIMessage => Boolean(message))
     : [];
 
   return {
     createdAt: asDateString(value.createdAt),
-    patientId: typeof value.patientId === "string" ? value.patientId : undefined,
+    patientId:
+      typeof value.patientId === "string" ? value.patientId : undefined,
     id,
     messages: messages.slice(-MAX_MESSAGES_PER_CONVERSATION),
     title: asString(value.title, "Nouvelle conversation").slice(0, 120),
@@ -116,12 +126,16 @@ export function loadAIAgentState(): PersistedAIAgentState | null {
 
     const conversations = parsed.conversations
       .map(parseConversation)
-      .filter((conversation): conversation is PersistedAIConversation => Boolean(conversation))
+      .filter((conversation): conversation is PersistedAIConversation =>
+        Boolean(conversation)
+      )
       .slice(0, MAX_CONVERSATIONS);
     if (conversations.length === 0) return null;
 
     const requestedActiveId = asString(parsed.activeConversationId);
-    const activeConversationId = conversations.some(({ id }) => id === requestedActiveId)
+    const activeConversationId = conversations.some(
+      ({ id }) => id === requestedActiveId
+    )
       ? requestedActiveId
       : conversations[0].id;
 
@@ -147,10 +161,12 @@ export function saveAIAgentState(state: PersistedAIAgentState): void {
       .slice(0, MAX_CONVERSATIONS)
       .map((conversation) => ({
         ...conversation,
-        messages: conversation.messages.slice(-MAX_MESSAGES_PER_CONVERSATION).map((message) => ({
-          ...message,
-          content: message.content.slice(-MAX_MESSAGE_LENGTH),
-        })),
+        messages: conversation.messages
+          .slice(-MAX_MESSAGES_PER_CONVERSATION)
+          .map((message) => ({
+            ...message,
+            content: message.content.slice(-MAX_MESSAGE_LENGTH),
+          })),
       }));
 
     const createPayload = (conversations: PersistedAIConversation[]) => ({
@@ -170,9 +186,16 @@ export function saveAIAgentState(state: PersistedAIAgentState): void {
     let serialized = JSON.stringify(payload);
 
     // Keep local persistence small enough not to block a Tauri WebView on startup.
-    while (serialized.length > MAX_STATE_LENGTH && payload.conversations.length > 1) {
+    while (
+      serialized.length > MAX_STATE_LENGTH &&
+      payload.conversations.length > 1
+    ) {
       let removableIndex = -1;
-      for (let index = payload.conversations.length - 1; index >= 0; index -= 1) {
+      for (
+        let index = payload.conversations.length - 1;
+        index >= 0;
+        index -= 1
+      ) {
         if (payload.conversations[index].id !== state.activeConversationId) {
           removableIndex = index;
           break;

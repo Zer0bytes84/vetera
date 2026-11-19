@@ -126,7 +126,7 @@ export function selectRows<R extends DataRow>(
   data: R[],
   columns: DataColumn<R>[],
   query: string,
-  sort: Sort,
+  sort: Sort
 ): R[] {
   const q = query.trim().toLowerCase();
   const filtered = q
@@ -134,8 +134,8 @@ export function selectRows<R extends DataRow>(
         columns.some((c) =>
           String(row[c.key] ?? "")
             .toLowerCase()
-            .includes(q),
-        ),
+            .includes(q)
+        )
       )
     : data;
   if (!sort) return filtered;
@@ -190,7 +190,7 @@ export function DataTable<R extends DataRow>({
 
   const rows = useMemo(
     () => selectRows(data, columns, query, sort),
-    [data, columns, query, sort],
+    [data, columns, query, sort]
   );
 
   const pages = Math.max(Math.ceil(rows.length / pageSize), 1);
@@ -206,7 +206,7 @@ export function DataTable<R extends DataRow>({
         ? { key, dir: "desc" }
         : s.dir === "desc"
           ? { key, dir: "asc" }
-          : null,
+          : null
     );
     setPage(0);
   };
@@ -326,14 +326,14 @@ export function DataTable<R extends DataRow>({
                           setSelected(
                             allOnPage
                               ? selected.filter(
-                                  (id) => !visible.some((r) => r.id === id),
+                                  (id) => !visible.some((r) => r.id === id)
                                 )
                               : [
                                   ...new Set([
                                     ...selected,
                                     ...visible.map((r) => r.id),
                                   ]),
-                                ],
+                                ]
                           )
                         }
                       />
@@ -354,7 +354,7 @@ export function DataTable<R extends DataRow>({
                         className={cn(
                           "px-2 py-2 font-medium",
                           c.align === "right" ? "text-right" : "text-left",
-                          priorityOf(c, ci),
+                          priorityOf(c, ci)
                         )}
                         key={c.key}
                         scope="col"
@@ -365,7 +365,7 @@ export function DataTable<R extends DataRow>({
                             className={cn(
                               "-mx-1.5 inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 transition-[background-color,color,scale] duration-150 ease-out hover:bg-foreground/[0.06] hover:text-foreground active:scale-[0.97]",
                               dir && "text-foreground",
-                              c.align === "right" && "flex-row-reverse",
+                              c.align === "right" && "flex-row-reverse"
                             )}
                             onClick={() => toggleSort(c.key)}
                             type="button"
@@ -375,7 +375,7 @@ export function DataTable<R extends DataRow>({
                               aria-hidden="true"
                               className={cn(
                                 "size-3 transition-opacity",
-                                dir ? "opacity-100" : "opacity-30",
+                                dir ? "opacity-100" : "opacity-30"
                               )}
                               strokeWidth={3}
                             />
@@ -414,7 +414,7 @@ export function DataTable<R extends DataRow>({
                               setSelected(
                                 on
                                   ? [...selected, row.id]
-                                  : selected.filter((id) => id !== row.id),
+                                  : selected.filter((id) => id !== row.id)
                               )
                             }
                           />
@@ -426,7 +426,7 @@ export function DataTable<R extends DataRow>({
                             "px-2 py-2.5 whitespace-nowrap",
                             priorityOf(c, ci),
                             c.align === "right" &&
-                              "text-right font-mono text-xs tabular-nums",
+                              "text-right font-mono text-xs tabular-nums"
                           )}
                           key={c.key}
                         >

@@ -46,7 +46,11 @@ export function NowBoardView({
           />
         </Panel>
       ) : (
-        <VisitFlowBoard snapshot={snapshot} onFlux={onFlux} viewControl={viewControl} />
+        <VisitFlowBoard
+          snapshot={snapshot}
+          onFlux={onFlux}
+          viewControl={viewControl}
+        />
       )}
     </div>
   );

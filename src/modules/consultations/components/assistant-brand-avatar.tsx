@@ -1,5 +1,8 @@
 import Logo from "@/components/Logo";
-import { MascotAvatar, type MascotMood } from "@/components/mascot/mascot-avatar";
+import {
+  MascotAvatar,
+  type MascotMood,
+} from "@/components/mascot/mascot-avatar";
 import { useMascotPreferences } from "@/hooks/use-mascot-preferences";
 
 /** The same brand portrait and preferences as SidebarBrand. */

@@ -1,5 +1,11 @@
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { type MouseEvent, type RefObject, useCallback, useEffect, useRef } from "react";
+import {
+  type MouseEvent,
+  type RefObject,
+  useCallback,
+  useEffect,
+  useRef,
+} from "react";
 import { isTauriRuntime } from "@/services/browser-store";
 
 const DRAG_BLOCKING_SELECTOR =
@@ -8,7 +14,9 @@ const DRAG_BLOCKING_SELECTOR =
 const DOUBLE_CLICK_DELAY_MS = 500;
 const DOUBLE_CLICK_DISTANCE_PX = 6;
 
-export function useTauriDrag<T extends HTMLElement = HTMLElement>(waitForMovement = false) {
+export function useTauriDrag<T extends HTMLElement = HTMLElement>(
+  waitForMovement = false
+) {
   const ref = useRef<T>(null) as RefObject<T>;
   const cleanupRef = useRef<(() => void) | null>(null);
   useEffect(() => () => cleanupRef.current?.(), []);
@@ -52,7 +60,8 @@ export function useTauriDrag<T extends HTMLElement = HTMLElement>(waitForMovemen
             cleanup();
             return;
           }
-          if (Math.hypot(event.screenX - screenX, event.screenY - screenY) < 4) return;
+          if (Math.hypot(event.screenX - screenX, event.screenY - screenY) < 4)
+            return;
           cleanup();
           void appWindow.startDragging().catch(console.error);
         };

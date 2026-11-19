@@ -1,4 +1,25 @@
-import { Archive, Banknote, Building2, CalendarCheck, FileText, LayoutGrid, MessageCircle, MessageSquareText, Palette, PanelLeft, Pencil, Phone, Plus, RefreshCw, Search, Shapes, Stethoscope, Type, UserPen, type LucideIcon } from "lucide-react";
+import {
+  Archive,
+  Banknote,
+  Building2,
+  CalendarCheck,
+  FileText,
+  LayoutGrid,
+  MessageCircle,
+  MessageSquareText,
+  Palette,
+  PanelLeft,
+  Pencil,
+  Phone,
+  Plus,
+  RefreshCw,
+  Search,
+  Shapes,
+  Stethoscope,
+  Type,
+  UserPen,
+  type LucideIcon,
+} from "lucide-react";
 
 /**
  * Les notes de version : une entrée par version, à remplir à chaque publication.
@@ -34,7 +55,8 @@ export const RELEASE_NOTES: ReleaseNote[] = [
     highlights: [
       {
         icon: Stethoscope,
-        title: "Le dossier patient, Soins et Hospitalisation s'ouvrent de nouveau",
+        title:
+          "Le dossier patient, Soins et Hospitalisation s'ouvrent de nouveau",
         text: "Ces trois pages affichaient « Cette vue n'a pas pu être chargée » dans l'application installée. Elles s'ouvrent normalement, avec la relance WhatsApp et la correction des coordonnées de la version 5.1.0.",
       },
       {
@@ -221,11 +243,21 @@ export const RELEASE_NOTES: ReleaseNote[] = [
 ];
 
 /** Les versions sorties, les plus récentes en premier : ce que l'archive de Paramètres liste. */
-export function publishedReleaseNotes(notes: readonly ReleaseNote[] = RELEASE_NOTES): ReleaseNote[] {
-  return notes.filter((note) => note.status === "published" && note.highlights.length > 0);
+export function publishedReleaseNotes(
+  notes: readonly ReleaseNote[] = RELEASE_NOTES
+): ReleaseNote[] {
+  return notes.filter(
+    (note) => note.status === "published" && note.highlights.length > 0
+  );
 }
 
 /** La note publiée d'une version, s'il y en a une. */
-export function releaseNoteFor(version: string, notes: readonly ReleaseNote[] = RELEASE_NOTES): ReleaseNote | null {
-  return publishedReleaseNotes(notes).find((note) => note.version === version) ?? null;
+export function releaseNoteFor(
+  version: string,
+  notes: readonly ReleaseNote[] = RELEASE_NOTES
+): ReleaseNote | null {
+  return (
+    publishedReleaseNotes(notes).find((note) => note.version === version) ??
+    null
+  );
 }

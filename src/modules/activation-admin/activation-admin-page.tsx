@@ -97,7 +97,13 @@ type ServerStatus = "checking" | "online" | "offline";
 type StatusFilter = "all" | "active" | "expiring" | "expired" | "revoked";
 type ExpiryPreset = "1m" | "1y" | "2y" | "forever" | "custom";
 
-const ACTIVATION_SERVER_HOST = (() => { try { return new URL(ACTIVATION_SERVER_URL).host; } catch { return "Serveur non configuré"; } })();
+const ACTIVATION_SERVER_HOST = (() => {
+  try {
+    return new URL(ACTIVATION_SERVER_URL).host;
+  } catch {
+    return "Serveur non configuré";
+  }
+})();
 
 const PLAN_LABELS: Record<string, string> = {
   clinic: "Cabinet Pro",
@@ -143,7 +149,11 @@ function isLicenseActive(license: ActivationAdminLicense) {
 
 /** Échue : non révoquée, avec une date de fin passée. Comme `isLicenseActive`, elle lit l'heure au moment du calcul. */
 function isLicenseExpired(license: ActivationAdminLicense) {
-  return Boolean(!license.revokedAt && license.expiresAt && Date.parse(license.expiresAt) < Date.now());
+  return Boolean(
+    !license.revokedAt &&
+      license.expiresAt &&
+      Date.parse(license.expiresAt) < Date.now()
+  );
 }
 
 function isExpiringSoon(license: ActivationAdminLicense) {
@@ -354,7 +364,14 @@ function LicensesTableView({
         </div>
       )}
 
-      {!isLoading && syncMessage && <div role="status" className="p-8 text-center text-sm text-muted-foreground">{syncMessage}</div>}
+      {!isLoading && syncMessage && (
+        <div
+          role="status"
+          className="p-8 text-center text-sm text-muted-foreground"
+        >
+          {syncMessage}
+        </div>
+      )}
       {!isLoading && !syncMessage && licenses.length === 0 && (
         <div className="flex min-h-56 flex-col items-center justify-center gap-3 p-8 text-center">
           <div className="flex size-12 items-center justify-center rounded-2xl bg-muted/60 text-muted-foreground">
@@ -599,7 +616,10 @@ function GeneratorTabView({
         <CardContent className="p-5">
           <form className="space-y-4" onSubmit={handleFormSubmit}>
             <div className="space-y-1.5">
-              <Label htmlFor="gen-email">Adresse email du cabinet <span className="modal-required">requis</span></Label>
+              <Label htmlFor="gen-email">
+                Adresse email du cabinet{" "}
+                <span className="modal-required">requis</span>
+              </Label>
               <Input
                 autoFocus
                 className="h-9 text-xs"
@@ -634,7 +654,12 @@ function GeneratorTabView({
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-1.5">
                 <Label htmlFor="gen-plan">Formule</Label>
-                <Select onValueChange={(value) => { if (value) setPlan(value); }} value={plan}>
+                <Select
+                  onValueChange={(value) => {
+                    if (value) setPlan(value);
+                  }}
+                  value={plan}
+                >
                   <SelectTrigger className="h-9 w-full text-xs" id="gen-plan">
                     <SelectValue />
                   </SelectTrigger>
@@ -651,7 +676,12 @@ function GeneratorTabView({
 
               <div className="space-y-1.5">
                 <Label htmlFor="gen-devices">Postes autorisés</Label>
-                <Select onValueChange={(value) => { if (value) setMaxDevices(value); }} value={maxDevices}>
+                <Select
+                  onValueChange={(value) => {
+                    if (value) setMaxDevices(value);
+                  }}
+                  value={maxDevices}
+                >
                   <SelectTrigger
                     className="h-9 w-full text-xs"
                     id="gen-devices"
@@ -896,10 +926,8 @@ function GeneratorTabView({
 // ---------------------------------------------------------------------------
 export default function ActivationAdminPage() {
   const isTauri = isTauriRuntime();
-  const {
-    handleMouseDown: handleWindowMouseDown,
-    ref: windowDragRef,
-  } = useTauriDrag<HTMLElement>();
+  const { handleMouseDown: handleWindowMouseDown, ref: windowDragRef } =
+    useTauriDrag<HTMLElement>();
 
   // Server & auth state
   const [serverStatus, setServerStatus] = useState<ServerStatus>("checking");
@@ -912,8 +940,12 @@ export default function ActivationAdminPage() {
   // Licenses data state
   const [licenses, setLicenses] = useState<ActivationAdminLicense[]>([]);
   // Un jeton enregistré lance la synchronisation dès le montage : l'écran est déjà « en chargement ».
-  const [isLoadingLicenses, setIsLoadingLicenses] = useState(() => getStoredAdminToken().trim() !== "");
-  const [licenseSyncMessage, setLicenseSyncMessage] = useState<string | null>("Renseignez le jeton administrateur pour synchroniser les licences du serveur.");
+  const [isLoadingLicenses, setIsLoadingLicenses] = useState(
+    () => getStoredAdminToken().trim() !== ""
+  );
+  const [licenseSyncMessage, setLicenseSyncMessage] = useState<string | null>(
+    "Renseignez le jeton administrateur pour synchroniser les licences du serveur."
+  );
 
   // Filters & search
   const [searchQuery, setSearchQuery] = useState("");
@@ -956,17 +988,20 @@ export default function ActivationAdminPage() {
   // Heartbeat & Ping check
   const checkServer = useCallback(async () => {
     const start = performance.now();
-    await guard(async () => {
-      await checkActivationServer();
-      const elapsed = Math.round(performance.now() - start);
-      setServerStatus("online");
-      setServerPingMs(elapsed);
-    }, {
-      recover: () => {
-        setServerStatus("offline");
-        setServerPingMs(null);
+    await guard(
+      async () => {
+        await checkActivationServer();
+        const elapsed = Math.round(performance.now() - start);
+        setServerStatus("online");
+        setServerPingMs(elapsed);
       },
-    });
+      {
+        recover: () => {
+          setServerStatus("offline");
+          setServerPingMs(null);
+        },
+      }
+    );
   }, []);
   const pingServer = useCallback(async () => {
     setServerStatus("checking");
@@ -975,9 +1010,9 @@ export default function ActivationAdminPage() {
 
   // Load licenses list (simplified to reduce cognitive complexity)
   // Lecture des licences, sans poser l'état « en chargement » (déjà posé au montage ou par `loadLicenses`).
-  const fetchLicenses = useCallback(
-    async (token: string, silent: boolean) => {
-      await guard(async () => {
+  const fetchLicenses = useCallback(async (token: string, silent: boolean) => {
+    await guard(
+      async () => {
         const next = await listActivationLicenses(token);
         setLicenses(next);
         setLicenseSyncMessage(null);
@@ -985,9 +1020,14 @@ export default function ActivationAdminPage() {
         if (!silent) {
           toast.success(`${next.length} licence(s) synchronisée(s).`);
         }
-      }, {
+      },
+      {
         recover: (err) => {
-          setLicenseSyncMessage(err instanceof Error ? err.message : "La synchronisation a échoué. Réessayez.");
+          setLicenseSyncMessage(
+            err instanceof Error
+              ? err.message
+              : "La synchronisation a échoué. Réessayez."
+          );
           setServerStatus("offline");
           if (!silent) {
             const msg =
@@ -1000,16 +1040,17 @@ export default function ActivationAdminPage() {
         cleanup: () => {
           setIsLoadingLicenses(false);
         },
-      });
-    },
-    []
-  );
+      }
+    );
+  }, []);
 
   const loadLicenses = useCallback(
     async (tokenToUse?: string, silent = false) => {
       const token = (tokenToUse ?? adminToken).trim();
       if (!token) {
-        setLicenseSyncMessage("Renseignez le jeton administrateur pour synchroniser les licences du serveur.");
+        setLicenseSyncMessage(
+          "Renseignez le jeton administrateur pour synchroniser les licences du serveur."
+        );
         if (!silent) {
           toast.error("Veuillez renseigner le jeton administrateur.");
         }
@@ -1171,47 +1212,57 @@ export default function ActivationAdminPage() {
     }
 
     setIsCreating(true);
-    await guard(async () => {
-      const created = await createActivationLicense(adminToken.trim(), {
-        email: data.email.trim(),
-        plan: data.plan,
-        maxDevices: Number(data.maxDevices),
-        expiresAt: data.expiresAt,
-      });
-
-      const res = {
-        key: created.licenseKey,
-        license: created.license,
-        clinicName: data.clinicName.trim(),
-      };
-      setCreatedResult(res);
-      setLicenses((current) => [created.license, ...current.filter(license => license.id !== created.license.id)]);
-      setLicenseSyncMessage(null);
-      setSearchQuery(""); setStatusFilter("all"); setPlanFilter("all");
-      setServerStatus("online");
-      toast.success("Licence générée avec succès !");
-
-      if (data.autoEmail) {
-        openEmailModalFor({
-          clinicEmail: created.license.email,
-          recipientEmail: created.license.email,
-          clinicName: data.clinicName.trim(),
-          licenseKey: created.licenseKey,
-          plan: created.license.plan,
-          maxDevices: created.license.maxDevices,
-          expiresAt: created.license.expiresAt,
+    await guard(
+      async () => {
+        const created = await createActivationLicense(adminToken.trim(), {
+          email: data.email.trim(),
+          plan: data.plan,
+          maxDevices: Number(data.maxDevices),
+          expiresAt: data.expiresAt,
         });
+
+        const res = {
+          key: created.licenseKey,
+          license: created.license,
+          clinicName: data.clinicName.trim(),
+        };
+        setCreatedResult(res);
+        setLicenses((current) => [
+          created.license,
+          ...current.filter((license) => license.id !== created.license.id),
+        ]);
+        setLicenseSyncMessage(null);
+        setSearchQuery("");
+        setStatusFilter("all");
+        setPlanFilter("all");
+        setServerStatus("online");
+        toast.success("Licence générée avec succès !");
+
+        if (data.autoEmail) {
+          openEmailModalFor({
+            clinicEmail: created.license.email,
+            recipientEmail: created.license.email,
+            clinicName: data.clinicName.trim(),
+            licenseKey: created.licenseKey,
+            plan: created.license.plan,
+            maxDevices: created.license.maxDevices,
+            expiresAt: created.license.expiresAt,
+          });
+        }
+      },
+      {
+        recover: (error) => {
+          toast.error(
+            error instanceof Error
+              ? error.message
+              : "Erreur lors de la création."
+          );
+        },
+        cleanup: () => {
+          setIsCreating(false);
+        },
       }
-    }, {
-      recover: (error) => {
-        toast.error(
-          error instanceof Error ? error.message : "Erreur lors de la création."
-        );
-      },
-      cleanup: () => {
-        setIsCreating(false);
-      },
-    });
+    );
   };
 
   // Revoke license execution
@@ -1220,28 +1271,31 @@ export default function ActivationAdminPage() {
       return;
     }
     setIsRevoking(true);
-    await guard(async () => {
-      const revoked = await revokeActivationLicense(
-        adminToken.trim(),
-        licenseToRevoke.id
-      );
-      setLicenses((current) =>
-        current.map((item) => (item.id === revoked.id ? revoked : item))
-      );
-      toast.success(`Accès révoqué pour ${revoked.email}.`);
-      setLicenseToRevoke(null);
-    }, {
-      recover: (error) => {
-        toast.error(
-          error instanceof Error
-            ? error.message
-            : "Impossible de révoquer cette licence."
+    await guard(
+      async () => {
+        const revoked = await revokeActivationLicense(
+          adminToken.trim(),
+          licenseToRevoke.id
         );
+        setLicenses((current) =>
+          current.map((item) => (item.id === revoked.id ? revoked : item))
+        );
+        toast.success(`Accès révoqué pour ${revoked.email}.`);
+        setLicenseToRevoke(null);
       },
-      cleanup: () => {
-        setIsRevoking(false);
-      },
-    });
+      {
+        recover: (error) => {
+          toast.error(
+            error instanceof Error
+              ? error.message
+              : "Impossible de révoquer cette licence."
+          );
+        },
+        cleanup: () => {
+          setIsRevoking(false);
+        },
+      }
+    );
   };
 
   // Copy helpers
@@ -1314,10 +1368,7 @@ export default function ActivationAdminPage() {
             <span className="font-heading font-semibold text-sm tracking-tight">
               Baitari
             </span>
-            <Badge
-              className="h-5 px-1.5 font-normal t-12"
-              variant="outline"
-            >
+            <Badge className="h-5 px-1.5 font-normal t-12" variant="outline">
               Centre d'Activation
             </Badge>
           </div>
@@ -1572,7 +1623,8 @@ export default function ActivationAdminPage() {
                       État du serveur d’activation
                     </CardTitle>
                     <CardDescription className="text-xs">
-                      Source des licences affichées : le serveur configuré ci-dessous.
+                      Source des licences affichées : le serveur configuré
+                      ci-dessous.
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4 p-5 text-xs">
@@ -1614,7 +1666,9 @@ export default function ActivationAdminPage() {
                         Stockage des données
                       </span>
                       <span className="font-mono t-12">
-                        {ACTIVATION_SERVER_HOST === "127.0.0.1:8787" ? "activation-server/data/licenses.json" : "Stockage du serveur configuré"}
+                        {ACTIVATION_SERVER_HOST === "127.0.0.1:8787"
+                          ? "activation-server/data/licenses.json"
+                          : "Stockage du serveur configuré"}
                       </span>
                     </div>
 
@@ -1938,15 +1992,37 @@ export default function ActivationAdminPage() {
                         <span className="select-all font-medium text-foreground">
                           {dev}
                         </span>
-                        <Button size="sm" variant="ghost" type="button" onClick={async () => {
-                          if (!window.confirm("Libérer ce poste ? Son accès sera retiré au prochain contrôle en ligne, au plus tard à la fin de son autorisation hors connexion.")) return;
-                          try {
-                            const updated = await releaseActivationDevice(adminToken, detailLicense.id, dev);
-                            setDetailLicense(updated);
-                            await loadLicenses(adminToken, true);
-                            toast.success("Poste libéré.");
-                          } catch (error) { toast.error(error instanceof Error ? error.message : "Impossible de libérer ce poste."); }
-                        }}>Libérer</Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          type="button"
+                          onClick={async () => {
+                            if (
+                              !window.confirm(
+                                "Libérer ce poste ? Son accès sera retiré au prochain contrôle en ligne, au plus tard à la fin de son autorisation hors connexion."
+                              )
+                            )
+                              return;
+                            try {
+                              const updated = await releaseActivationDevice(
+                                adminToken,
+                                detailLicense.id,
+                                dev
+                              );
+                              setDetailLicense(updated);
+                              await loadLicenses(adminToken, true);
+                              toast.success("Poste libéré.");
+                            } catch (error) {
+                              toast.error(
+                                error instanceof Error
+                                  ? error.message
+                                  : "Impossible de libérer ce poste."
+                              );
+                            }
+                          }}
+                        >
+                          Libérer
+                        </Button>
                       </div>
                     ))}
                   </div>

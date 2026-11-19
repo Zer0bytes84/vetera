@@ -5,14 +5,29 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { COMPACT_CALENDAR_CLASS } from "@/components/ui/date-picker";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { APPOINTMENT_TYPE_META, APPOINTMENT_STATUS_META, getAppointmentTypeMeta } from "@/config/status-meta";
+import {
+  APPOINTMENT_TYPE_META,
+  APPOINTMENT_STATUS_META,
+  getAppointmentTypeMeta,
+} from "@/config/status-meta";
 import { useNowTick } from "@/hooks/useNowTick";
 import { cn } from "@/lib/utils";
 import type { Appointment } from "@/types/db";
 import { AgendaMonthCalendar } from "@/modules/agenda/components/agenda-month-calendar";
-import { clock, fitHourPx, layoutDayEvents, layoutTimeGrid, visibleHours, type GridBlock } from "@/modules/agenda/model/agenda-layout";
+import {
+  clock,
+  fitHourPx,
+  layoutDayEvents,
+  layoutTimeGrid,
+  visibleHours,
+  type GridBlock,
+} from "@/modules/agenda/model/agenda-layout";
 
 export type CalendarView = "day" | "week" | "month";
 
@@ -29,10 +44,19 @@ const CHROME_PX = 340;
 const MIN_BLOCK_PX = 24;
 const TYPES = Object.keys(APPOINTMENT_TYPE_META) as Appointment["type"][];
 
-const PREVIOUS = { day: "Jour précédent", week: "Semaine précédente", month: "Mois précédent" } as const;
-const NEXT = { day: "Jour suivant", week: "Semaine suivante", month: "Mois suivant" } as const;
+const PREVIOUS = {
+  day: "Jour précédent",
+  week: "Semaine précédente",
+  month: "Mois précédent",
+} as const;
+const NEXT = {
+  day: "Jour suivant",
+  week: "Semaine suivante",
+  month: "Mois suivant",
+} as const;
 
-const sameDay = (left: Date, right: Date) => left.toDateString() === right.toDateString();
+const sameDay = (left: Date, right: Date) =>
+  left.toDateString() === right.toDateString();
 
 function shift(view: CalendarView, date: Date, direction: -1 | 1) {
   const next = new Date(date);
@@ -46,22 +70,44 @@ function shift(view: CalendarView, date: Date, direction: -1 | 1) {
 }
 
 function title(view: CalendarView, date: Date, weekDays: Date[]) {
-  if (view === "day") return date.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
-  if (view === "month") return date.toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
+  if (view === "day")
+    return date.toLocaleDateString("fr-FR", {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+  if (view === "month")
+    return date.toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
   const first = weekDays[0];
   const last = weekDays[weekDays.length - 1];
   const sameMonth = first.getMonth() === last.getMonth();
-  const start = first.toLocaleDateString("fr-FR", sameMonth ? { day: "numeric" } : { day: "numeric", month: "short" });
+  const start = first.toLocaleDateString(
+    "fr-FR",
+    sameMonth ? { day: "numeric" } : { day: "numeric", month: "short" }
+  );
   return `${start} – ${last.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}`;
 }
 
 /** The colour key: one swatch per appointment type, so the grid reads without opening a block. */
 export function AgendaLegend({ className }: { className?: string }) {
   return (
-    <ul aria-label="Types de rendez-vous" className={cn("flex flex-wrap items-center gap-x-4 gap-y-1", className)}>
+    <ul
+      aria-label="Types de rendez-vous"
+      className={cn("flex flex-wrap items-center gap-x-4 gap-y-1", className)}
+    >
       {TYPES.map((type) => (
-        <li className="flex items-center gap-1.5 text-muted-foreground text-xs" key={type}>
-          <span aria-hidden="true" className={cn("size-2.5 rounded-[3px]", APPOINTMENT_TYPE_META[type].dotClassName)} />
+        <li
+          className="flex items-center gap-1.5 text-muted-foreground text-xs"
+          key={type}
+        >
+          <span
+            aria-hidden="true"
+            className={cn(
+              "size-2.5 rounded-[3px]",
+              APPOINTMENT_TYPE_META[type].dotClassName
+            )}
+          />
           {type}
         </li>
       ))}
@@ -89,7 +135,9 @@ function EventBlock({
   const cancelled = item.status === "cancelled" || item.status === "no_show";
   // A short block keeps its one full line; room for a second line starts at about 46 px.
   const roomy = height >= 44 && !compactWidth && !block.stacked;
-  const label = [`${range}`, patientName, item.type, item.title, status].filter(Boolean).join(", ");
+  const label = [`${range}`, patientName, item.type, item.title, status]
+    .filter(Boolean)
+    .join(", ");
   return (
     <button
       aria-label={label}
@@ -113,8 +161,16 @@ function EventBlock({
       }}
       type="button"
     >
-      <span aria-hidden="true" className={cn("absolute inset-y-0 left-0 w-1", meta.dotClassName)} />
-      <span className={cn("block truncate pl-1.5 font-medium text-[13px] leading-5", cancelled && "line-through")}>
+      <span
+        aria-hidden="true"
+        className={cn("absolute inset-y-0 left-0 w-1", meta.dotClassName)}
+      />
+      <span
+        className={cn(
+          "block truncate pl-1.5 font-medium text-[13px] leading-5",
+          cancelled && "line-through"
+        )}
+      >
         <span className="tabular-nums">{clock(start)}</span> {patientName}
       </span>
       {roomy ? (
@@ -161,9 +217,17 @@ function TimeGrid({
     return () => window.removeEventListener("resize", onResize);
   }, []);
   const maxHourPx = HOUR_PX[view];
-  const minutesFor = (hourPx: number) => Math.ceil((MIN_BLOCK_PX / hourPx) * 60);
+  const minutesFor = (hourPx: number) =>
+    Math.ceil((MIN_BLOCK_PX / hourPx) * 60);
   const place = (hourPx: number) =>
-    days.map((day) => ({ day, placed: layoutDayEvents(getAppointmentsForDate(day), day, minutesFor(hourPx)) }));
+    days.map((day) => ({
+      day,
+      placed: layoutDayEvents(
+        getAppointmentsForDate(day),
+        day,
+        minutesFor(hourPx)
+      ),
+    }));
   // Every appointment of the days shown sets the hours: the grid runs from the first to the last,
   // and the hour is drawn only as tall as needed for all of them to fit the screen without a scroll.
   const first = useMemo(
@@ -172,7 +236,12 @@ function TimeGrid({
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [days, getAppointmentsForDate, maxHourPx]
   );
-  const hourPx = fitHourPx(viewportH - CHROME_PX, first.to - first.from, MIN_HOUR_PX, maxHourPx);
+  const hourPx = fitHourPx(
+    viewportH - CHROME_PX,
+    first.to - first.from,
+    MIN_HOUR_PX,
+    maxHourPx
+  );
   const columns = useMemo(
     () => place(hourPx),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -183,7 +252,17 @@ function TimeGrid({
   const hours = Array.from({ length: to - from }, (_, i) => from + i);
   // The hours grow where appointments crowd them, so every one shows in full; the days share the axis.
   const grid = useMemo(
-    () => layoutTimeGrid(columns.map((column) => column.placed), { fromHour: from, toHour: to, hourPx, minBlockPx: MIN_BLOCK_PX, maxLanes: view === "day" ? 3 : 2 }),
+    () =>
+      layoutTimeGrid(
+        columns.map((column) => column.placed),
+        {
+          fromHour: from,
+          toHour: to,
+          hourPx,
+          minBlockPx: MIN_BLOCK_PX,
+          maxLanes: view === "day" ? 3 : 2,
+        }
+      ),
     [columns, from, to, hourPx, view]
   );
   const gridHeight = grid.total;
@@ -194,12 +273,18 @@ function TimeGrid({
   // .bg-card with !important, which left only the header band rounded.
   return (
     <div className="overflow-x-auto rounded-[var(--radius-panel)] border border-foreground/15">
-      <div className="min-w-[640px]" style={{ minWidth: view === "week" ? 760 : 420 }}>
+      <div
+        className="min-w-[640px]"
+        style={{ minWidth: view === "week" ? 760 : 420 }}
+      >
         {/* The column header: a band of its own in the system's selection grey (#F5F5F5, white at 5 % in dark),
             rounded at the top only, at the cards' radius (16 px, less the 1 px rule); square where it meets the grid. Its first cell
             is as wide as the hours column. */}
         <div className="flex min-h-11 rounded-t-[calc(var(--radius-panel)-1px)] border-foreground/15 border-b bg-[#F5F5F5] dark:bg-white/5">
-          <div aria-hidden="true" className="w-14 shrink-0 border-foreground/10 border-r" />
+          <div
+            aria-hidden="true"
+            className="w-14 shrink-0 border-foreground/10 border-r"
+          />
           {columns.map(({ day, placed }) => {
             const today = sameDay(day, new Date());
             const picked = sameDay(day, selectedDate);
@@ -215,7 +300,9 @@ function TimeGrid({
                 type="button"
               >
                 <span className="text-muted-foreground text-xs capitalize">
-                  {day.toLocaleDateString("fr-FR", { weekday: view === "day" ? "long" : "short" })}
+                  {day.toLocaleDateString("fr-FR", {
+                    weekday: view === "day" ? "long" : "short",
+                  })}
                 </span>
                 <span
                   className={cn(
@@ -225,15 +312,26 @@ function TimeGrid({
                 >
                   {day.getDate()}
                 </span>
-                <span className="text-muted-foreground text-xs tabular-nums">{placed.length > 0 ? `· ${placed.length}` : ""}</span>
+                <span className="text-muted-foreground text-xs tabular-nums">
+                  {placed.length > 0 ? `· ${placed.length}` : ""}
+                </span>
               </button>
             );
           })}
         </div>
 
-        <div className="flex" style={{ height: gridHeight + GRID_PAD_TOP + GRID_PAD_BOTTOM }}>
-          <div aria-hidden="true" className="relative w-14 shrink-0 border-foreground/10 border-r">
-            <div className="absolute inset-x-0" style={{ top: GRID_PAD_TOP, height: gridHeight }}>
+        <div
+          className="flex"
+          style={{ height: gridHeight + GRID_PAD_TOP + GRID_PAD_BOTTOM }}
+        >
+          <div
+            aria-hidden="true"
+            className="relative w-14 shrink-0 border-foreground/10 border-r"
+          >
+            <div
+              className="absolute inset-x-0"
+              style={{ top: GRID_PAD_TOP, height: gridHeight }}
+            >
               {hours.map((hour, i) => (
                 <span
                   className="absolute right-3 -translate-y-1/2 text-muted-foreground text-xs tabular-nums"
@@ -249,17 +347,29 @@ function TimeGrid({
             const today = sameDay(day, new Date());
             return (
               <div
-                className={cn("relative min-w-0 flex-1 border-foreground/10 border-r last:border-r-0", today && "bg-muted/25")}
+                className={cn(
+                  "relative min-w-0 flex-1 border-foreground/10 border-r last:border-r-0",
+                  today && "bg-muted/25"
+                )}
                 key={day.toISOString()}
                 onClick={(event) => {
                   const box = event.currentTarget.getBoundingClientRect();
                   // The slot under the click on the elastic axis, to the half hour below it.
-                  const raw = Math.floor(grid.minuteAt(event.clientY - box.top - GRID_PAD_TOP) / 30) * 30;
-                  onCreateAt(day, clock(Math.max(from * 60, Math.min(to * 60 - 30, raw))));
+                  const raw =
+                    Math.floor(
+                      grid.minuteAt(event.clientY - box.top - GRID_PAD_TOP) / 30
+                    ) * 30;
+                  onCreateAt(
+                    day,
+                    clock(Math.max(from * 60, Math.min(to * 60 - 30, raw)))
+                  );
                 }}
                 role="presentation"
               >
-                <div className="absolute inset-x-0" style={{ top: GRID_PAD_TOP, height: gridHeight }}>
+                <div
+                  className="absolute inset-x-0"
+                  style={{ top: GRID_PAD_TOP, height: gridHeight }}
+                >
                   {hours.map((hour, i) => (
                     <div
                       aria-hidden="true"
@@ -295,7 +405,9 @@ function TimeGrid({
       </div>
       {total === 0 ? (
         <p className="border-border border-t px-4 py-3 text-center text-muted-foreground text-sm">
-          {view === "day" ? "Aucun rendez-vous ce jour. Cliquez sur un créneau pour en ajouter un." : "Aucun rendez-vous cette semaine."}
+          {view === "day"
+            ? "Aucun rendez-vous ce jour. Cliquez sur un créneau pour en ajouter un."
+            : "Aucun rendez-vous cette semaine."}
         </p>
       ) : null}
     </div>
@@ -334,25 +446,57 @@ export function AgendaCalendar({
 }) {
   const isToday = sameDay(selectedDate, new Date());
   const [jumpOpen, setJumpOpen] = useState(false);
-  const days = useMemo(() => (view === "day" ? [selectedDate] : weekDays), [view, selectedDate, weekDays]);
+  const days = useMemo(
+    () => (view === "day" ? [selectedDate] : weekDays),
+    [view, selectedDate, weekDays]
+  );
   return (
-    <section aria-label="Calendrier des rendez-vous" className="surface-card flex min-w-0 flex-col gap-3 rounded-panel border border-border bg-card p-3 sm:p-4">
+    <section
+      aria-label="Calendrier des rendez-vous"
+      className="surface-card flex min-w-0 flex-col gap-3 rounded-panel border border-border bg-card p-3 sm:p-4"
+    >
       <header className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex min-w-0 flex-wrap items-center gap-2">
-          <div aria-label="Navigation" className="flex items-center gap-1" role="group">
-            <Button aria-label={PREVIOUS[view]} onClick={() => onSelectDate(shift(view, selectedDate, -1))} size="icon-sm" variant="ghost">
+          <div
+            aria-label="Navigation"
+            className="flex items-center gap-1"
+            role="group"
+          >
+            <Button
+              aria-label={PREVIOUS[view]}
+              onClick={() => onSelectDate(shift(view, selectedDate, -1))}
+              size="icon-sm"
+              variant="ghost"
+            >
               <HugeiconsIcon icon={ArrowLeft01Icon} strokeWidth={1.5} />
             </Button>
-            <Button disabled={isToday && view === "day"} onClick={() => onSelectDate(new Date())} size="sm" variant="outline">
+            <Button
+              disabled={isToday && view === "day"}
+              onClick={() => onSelectDate(new Date())}
+              size="sm"
+              variant="outline"
+            >
               Aujourd&apos;hui
             </Button>
-            <Button aria-label={NEXT[view]} onClick={() => onSelectDate(shift(view, selectedDate, 1))} size="icon-sm" variant="ghost">
+            <Button
+              aria-label={NEXT[view]}
+              onClick={() => onSelectDate(shift(view, selectedDate, 1))}
+              size="icon-sm"
+              variant="ghost"
+            >
               <HugeiconsIcon icon={ArrowRight01Icon} strokeWidth={1.5} />
             </Button>
             {/* An icon only: a jump to any date, instead of stepping week by week. */}
             <Popover onOpenChange={setJumpOpen} open={jumpOpen}>
-              <PopoverTrigger aria-label="Aller à une date" render={<Button size="icon-sm" type="button" variant="ghost" />}>
-                <CalendarDays aria-hidden="true" className="size-4" strokeWidth={1.5} />
+              <PopoverTrigger
+                aria-label="Aller à une date"
+                render={<Button size="icon-sm" type="button" variant="ghost" />}
+              >
+                <CalendarDays
+                  aria-hidden="true"
+                  className="size-4"
+                  strokeWidth={1.5}
+                />
               </PopoverTrigger>
               <PopoverContent align="start" className="w-auto p-2">
                 <Calendar
@@ -369,9 +513,14 @@ export function AgendaCalendar({
               </PopoverContent>
             </Popover>
           </div>
-          <h2 className="truncate font-medium text-[18px] first-letter:uppercase tracking-[-0.02em]">{title(view, selectedDate, weekDays)}</h2>
+          <h2 className="truncate font-medium text-[18px] first-letter:uppercase tracking-[-0.02em]">
+            {title(view, selectedDate, weekDays)}
+          </h2>
         </div>
-        <Tabs onValueChange={(value) => onViewChange(value as CalendarView)} value={view}>
+        <Tabs
+          onValueChange={(value) => onViewChange(value as CalendarView)}
+          value={view}
+        >
           <TabsList aria-label="Affichage du calendrier" tabsStyle="segmented">
             <TabsTrigger value="day">Jour</TabsTrigger>
             <TabsTrigger value="week">Semaine</TabsTrigger>

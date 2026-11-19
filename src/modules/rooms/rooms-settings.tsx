@@ -4,7 +4,16 @@ import { DoorOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SettingsSection } from "@/components/settings-section";
 import { Input } from "@/components/ui/input";
-import { Archive, ArrowDown, ArrowUp, Check, Loader2, Plus, RotateCcw, Trash2 } from "@/lib/icons";
+import {
+  Archive,
+  ArrowDown,
+  ArrowUp,
+  Check,
+  Loader2,
+  Plus,
+  RotateCcw,
+  Trash2,
+} from "@/lib/icons";
 import { isTauriRuntime } from "@/services/browser-store";
 import { roomsService } from "./service";
 import { ROOM_NAME_MAX_LENGTH, type Room } from "./store";
@@ -12,11 +21,17 @@ import { announceRoomsChanged, refreshRooms, useRooms } from "./use-rooms";
 import { guard } from "@/lib/guard";
 
 const message = (error: unknown) =>
-  error instanceof Error ? error.message : typeof error === "string" ? error : "La salle n'a pas pu être enregistrée.";
+  error instanceof Error
+    ? error.message
+    : typeof error === "string"
+      ? error
+      : "La salle n'a pas pu être enregistrée.";
 
 function bookings(count: number) {
   if (count === 0) return "Aucun rendez-vous";
-  return count === 1 ? "1 rendez-vous" : `${count.toLocaleString("fr-FR")} rendez-vous`;
+  return count === 1
+    ? "1 rendez-vous"
+    : `${count.toLocaleString("fr-FR")} rendez-vous`;
 }
 
 function RoomRow({
@@ -42,7 +57,8 @@ function RoomRow({
 
   const save = (event: FormEvent) => {
     event.preventDefault();
-    if (changed) void run(() => roomsService.rename(room.id, name), "Salle renommée.");
+    if (changed)
+      void run(() => roomsService.rename(room.id, name), "Salle renommée.");
   };
 
   return (
@@ -58,13 +74,20 @@ function RoomRow({
           }}
         />
         {changed && (
-          <Button type="submit" size="sm" variant="outline" disabled={busy || !name.trim()}>
+          <Button
+            type="submit"
+            size="sm"
+            variant="outline"
+            disabled={busy || !name.trim()}
+          >
             <Check className="size-4" />
             Renommer
           </Button>
         )}
       </form>
-      <span className="w-32 shrink-0 text-xs tabular-nums text-muted-foreground">{bookings(room.appointmentCount)}</span>
+      <span className="w-32 shrink-0 text-xs tabular-nums text-muted-foreground">
+        {bookings(room.appointmentCount)}
+      </span>
       <div className="flex shrink-0 items-center gap-1">
         <Button
           type="button"
@@ -91,15 +114,25 @@ function RoomRow({
           size="sm"
           variant="ghost"
           disabled={busy || onlyActive}
-          title={onlyActive ? "Le cabinet doit garder au moins une salle." : undefined}
+          title={
+            onlyActive
+              ? "Le cabinet doit garder au moins une salle."
+              : undefined
+          }
           onClick={() =>
             void run(
               () => roomsService.remove(room.id),
-              used ? `« ${room.name} » est archivée. Ses rendez-vous gardent leur salle.` : `« ${room.name} » est supprimée.`
+              used
+                ? `« ${room.name} » est archivée. Ses rendez-vous gardent leur salle.`
+                : `« ${room.name} » est supprimée.`
             )
           }
         >
-          {used ? <Archive className="size-4" /> : <Trash2 className="size-4" />}
+          {used ? (
+            <Archive className="size-4" />
+          ) : (
+            <Trash2 className="size-4" />
+          )}
           {used ? "Archiver" : "Supprimer"}
         </Button>
       </div>
@@ -118,19 +151,22 @@ export function RoomsSettings() {
   async function run(action: () => Promise<unknown>, done?: string) {
     setBusy(true);
     setProblem(null);
-    await guard(async () => {
-      await action();
-      await refreshRooms();
-      announceRoomsChanged();
-      if (done) toast.success(done);
-    }, {
-      recover: (e) => {
-        setProblem(message(e));
+    await guard(
+      async () => {
+        await action();
+        await refreshRooms();
+        announceRoomsChanged();
+        if (done) toast.success(done);
       },
-      cleanup: () => {
-        setBusy(false);
-      },
-    });
+      {
+        recover: (e) => {
+          setProblem(message(e));
+        },
+        cleanup: () => {
+          setBusy(false);
+        },
+      }
+    );
   }
 
   const add = (event: FormEvent) => {
@@ -157,8 +193,9 @@ export function RoomsSettings() {
       title="Salles du cabinet"
     >
       <p className="p-6 text-sm text-muted-foreground">
-        Avec une seule salle, l'agenda ne vous demande rien. Dès la deuxième, chaque rendez-vous choisit la
-        sienne et les conflits de salle sont signalés.
+        Avec une seule salle, l'agenda ne vous demande rien. Dès la deuxième,
+        chaque rendez-vous choisit la sienne et les conflits de salle sont
+        signalés.
       </p>
       {!desktop ? (
         <p className="p-6 text-sm text-muted-foreground">
@@ -204,7 +241,10 @@ export function RoomsSettings() {
           </form>
 
           {(problem || error) && (
-            <p role="alert" className="rounded-2xl border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive">
+            <p
+              role="alert"
+              className="rounded-2xl border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive"
+            >
               {problem ?? error}
             </p>
           )}
@@ -216,7 +256,10 @@ export function RoomsSettings() {
               </summary>
               <ul className="divide-y border-t">
                 {archived.map((room) => (
-                  <li key={room.id} className="flex flex-wrap items-center gap-3 px-4 py-3">
+                  <li
+                    key={room.id}
+                    className="flex flex-wrap items-center gap-3 px-4 py-3"
+                  >
                     <span className="min-w-48 flex-1 text-sm">{room.name}</span>
                     <span className="w-32 shrink-0 text-xs tabular-nums text-muted-foreground">
                       {bookings(room.appointmentCount)}
@@ -226,7 +269,12 @@ export function RoomsSettings() {
                       size="sm"
                       variant="ghost"
                       disabled={busy}
-                      onClick={() => void run(() => roomsService.restore(room.id), `« ${room.name} » est de nouveau active.`)}
+                      onClick={() =>
+                        void run(
+                          () => roomsService.restore(room.id),
+                          `« ${room.name} » est de nouveau active.`
+                        )
+                      }
                     >
                       <RotateCcw className="size-4" />
                       Réactiver

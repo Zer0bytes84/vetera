@@ -20,11 +20,10 @@ const TOOL_NAMES = [
   "save_patient_note",
   "add_note",
 ] as const;
-const RAW_TOOL_REFERENCE_PATTERN =
-  new RegExp(
-    `\\[(?:${TOOL_NAMES.join("|")})(?:\\s*\\([^\\]]*\\))?\\]`,
-    "gi"
-  );
+const RAW_TOOL_REFERENCE_PATTERN = new RegExp(
+  `\\[(?:${TOOL_NAMES.join("|")})(?:\\s*\\([^\\]]*\\))?\\]`,
+  "gi"
+);
 const RAW_TOOL_NAME_PATTERN = new RegExp(
   `\\b(?:${TOOL_NAMES.join("|")})\\b(?:\\s*\\([^\\n)]*\\))?`,
   "gi"
@@ -114,7 +113,10 @@ export const sanitizeAssistantOutput = (value: string): string => {
   text = text.replace(RAW_TOOL_REFERENCE_PATTERN, "");
   text = text.replace(RAW_TOOL_NAME_PATTERN, "");
   text = text.replace(/`(?:search_|get_|create_|save_|add_note)[^`]*`/gi, "");
-  text = text.replace(/^\s*(?:assistant|analysis|thought|chain of thought)\s*:\s*/gim, "");
+  text = text.replace(
+    /^\s*(?:assistant|analysis|thought|chain of thought)\s*:\s*/gim,
+    ""
+  );
 
   // Some local checkpoints omit the XML wrapper and emit their deliberation
   // as ordinary prose. Prefer an explicit final section when available;
@@ -135,8 +137,10 @@ export const sanitizeAssistantOutput = (value: string): string => {
 
 /** Convert local-model failures into a useful, non-technical recovery message. */
 export const getAssistantErrorMessage = (error: unknown): string => {
-  const detail = error instanceof Error ? error.message.trim() : String(error ?? "");
-  if (error instanceof Error && error.name === "LocalModelLoadError") return detail;
+  const detail =
+    error instanceof Error ? error.message.trim() : String(error ?? "");
+  if (error instanceof Error && error.name === "LocalModelLoadError")
+    return detail;
   const normalized = detail.toLocaleLowerCase("fr-FR");
 
   if (normalized.includes("webgpu") || normalized.includes("gpu")) {

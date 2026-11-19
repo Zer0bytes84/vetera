@@ -1,6 +1,21 @@
-import type { Appointment, Invoice, Owner, Patient, Product, Task, Transaction, Vaccination } from "@/types/db";
+import type {
+  Appointment,
+  Invoice,
+  Owner,
+  Patient,
+  Product,
+  Task,
+  Transaction,
+  Vaccination,
+} from "@/types/db";
 import { receivablesTrend } from "../v2/financial-model";
-import { addDays, endOfDay, parseDashboardDate, startOfDay, type ClinicalAlert } from "../v2/model";
+import {
+  addDays,
+  endOfDay,
+  parseDashboardDate,
+  startOfDay,
+  type ClinicalAlert,
+} from "../v2/model";
 import { buildVisitKinds } from "./dashboard-widgets";
 
 export const ANALYTICS_PERIODS = [
@@ -23,7 +38,11 @@ export const MAX_CUSTOM_DAYS = 731;
 function parseDay(value: string): Date | null {
   const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
   if (!match) return null;
-  const date = new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+  const date = new Date(
+    Number(match[1]),
+    Number(match[2]) - 1,
+    Number(match[3])
+  );
   // 2026-02-31 rolls over into March: not a day.
   return date.getMonth() === Number(match[2]) - 1 ? date : null;
 }
@@ -33,22 +52,35 @@ function parseDay(value: string): Date | null {
  * Reversed days are put in order and a span past the limit keeps its end.
  * Anything unreadable gives null, so a half-typed date never drives the figures.
  */
-export function customAnalyticsRange(custom: CustomRange | null | undefined): AnalyticsRange | null {
+export function customAnalyticsRange(
+  custom: CustomRange | null | undefined
+): AnalyticsRange | null {
   if (!custom) return null;
   const a = parseDay(custom.from);
   const b = parseDay(custom.to);
   if (!a || !b) return null;
   const [first, last] = a <= b ? [a, b] : [b, a];
   const days = Math.round((last.getTime() - first.getTime()) / 86_400_000) + 1;
-  const from = days > MAX_CUSTOM_DAYS ? addDays(last, 1 - MAX_CUSTOM_DAYS) : first;
+  const from =
+    days > MAX_CUSTOM_DAYS ? addDays(last, 1 - MAX_CUSTOM_DAYS) : first;
   return { from: startOfDay(from), to: endOfDay(last) };
 }
 
 function calendarDays(range: AnalyticsRange) {
-  return Math.max(1, Math.round((startOfDay(range.to).getTime() - startOfDay(range.from).getTime()) / 86_400_000) + 1);
+  return Math.max(
+    1,
+    Math.round(
+      (startOfDay(range.to).getTime() - startOfDay(range.from).getTime()) /
+        86_400_000
+    ) + 1
+  );
 }
 
-export function analyticsRanges(period: DashboardPeriod, now: Date, custom?: CustomRange | null) {
+export function analyticsRanges(
+  period: DashboardPeriod,
+  now: Date,
+  custom?: CustomRange | null
+) {
   if (period === "custom") {
     const range = customAnalyticsRange(custom);
     // Nothing valid picked yet: the thirty days the page opens on.
@@ -56,20 +88,29 @@ export function analyticsRanges(period: DashboardPeriod, now: Date, custom?: Cus
     const days = calendarDays(range);
     return {
       current: range,
-      previous: { from: startOfDay(addDays(range.from, -days)), to: new Date(range.from.getTime() - 1) },
+      previous: {
+        from: startOfDay(addDays(range.from, -days)),
+        to: new Date(range.from.getTime() - 1),
+      },
     };
   }
   const to = endOfDay(now);
-  const days = period === "today" ? 1 : period === "7d" ? 7 : period === "30d" ? 30 : 90;
-  const from = period === "12m"
-    ? new Date(now.getFullYear() - 1, now.getMonth(), now.getDate() + 1)
-    : startOfDay(addDays(now, 1 - days));
+  const days =
+    period === "today" ? 1 : period === "7d" ? 7 : period === "30d" ? 30 : 90;
+  const from =
+    period === "12m"
+      ? new Date(now.getFullYear() - 1, now.getMonth(), now.getDate() + 1)
+      : startOfDay(addDays(now, 1 - days));
   const previousTo = new Date(from.getTime() - 1);
   // Calendar arithmetic preserves local day boundaries across daylight saving.
-  const previousFrom = period === "12m"
-    ? new Date(from.getFullYear() - 1, from.getMonth(), from.getDate())
-    : startOfDay(addDays(from, -days));
-  return { current: { from, to }, previous: { from: previousFrom, to: previousTo } };
+  const previousFrom =
+    period === "12m"
+      ? new Date(from.getFullYear() - 1, from.getMonth(), from.getDate())
+      : startOfDay(addDays(from, -days));
+  return {
+    current: { from, to },
+    previous: { from: previousFrom, to: previousTo },
+  };
 }
 
 function within(value: string | undefined, range: AnalyticsRange) {
@@ -81,7 +122,10 @@ function within(value: string | undefined, range: AnalyticsRange) {
  * Buckets for the KPI micro-histograms: one bar per day up to 30 days, per
  * week over 90 days, per month over 12 months; none for a single day.
  */
-export function trendBuckets(period: DashboardPeriod, range: AnalyticsRange): AnalyticsRange[] {
+export function trendBuckets(
+  period: DashboardPeriod,
+  range: AnalyticsRange
+): AnalyticsRange[] {
   if (period === "today") return [];
   if (period === "custom") {
     const days = calendarDays(range);
@@ -89,22 +133,54 @@ export function trendBuckets(period: DashboardPeriod, range: AnalyticsRange): An
     // A bar a day up to a month, a week beyond.
     const step = days <= 31 ? 1 : 7;
     const buckets: AnalyticsRange[] = [];
-    for (let from = range.from; from <= range.to; from = startOfDay(addDays(from, step))) {
-      buckets.push({ from, to: new Date(Math.min(startOfDay(addDays(from, step)).getTime() - 1, range.to.getTime())) });
+    for (
+      let from = range.from;
+      from <= range.to;
+      from = startOfDay(addDays(from, step))
+    ) {
+      buckets.push({
+        from,
+        to: new Date(
+          Math.min(
+            startOfDay(addDays(from, step)).getTime() - 1,
+            range.to.getTime()
+          )
+        ),
+      });
     }
     return buckets;
   }
   if (period === "12m") {
     return Array.from({ length: 12 }, (_, i) => {
-      const from = new Date(range.from.getFullYear(), range.from.getMonth() + i, i === 0 ? range.from.getDate() : 1);
-      const next = new Date(range.from.getFullYear(), range.from.getMonth() + i + 1, 1);
-      return { from, to: new Date(Math.min(next.getTime() - 1, range.to.getTime())) };
+      const from = new Date(
+        range.from.getFullYear(),
+        range.from.getMonth() + i,
+        i === 0 ? range.from.getDate() : 1
+      );
+      const next = new Date(
+        range.from.getFullYear(),
+        range.from.getMonth() + i + 1,
+        1
+      );
+      return {
+        from,
+        to: new Date(Math.min(next.getTime() - 1, range.to.getTime())),
+      };
     });
   }
   const step = period === "90d" ? 7 : 1;
   const buckets: AnalyticsRange[] = [];
-  for (let from = range.from; from <= range.to; from = startOfDay(addDays(from, step))) {
-    const to = new Date(Math.min(startOfDay(addDays(from, step)).getTime() - 1, range.to.getTime()));
+  for (
+    let from = range.from;
+    from <= range.to;
+    from = startOfDay(addDays(from, step))
+  ) {
+    const to = new Date(
+      Math.min(
+        startOfDay(addDays(from, step)).getTime() - 1,
+        range.to.getTime()
+      )
+    );
     buckets.push({ from, to });
   }
   return buckets;
@@ -119,106 +195,219 @@ const isTestObject = (value?: string) => /\bTEST[\s_-]+ZO\b/i.test(value ?? "");
 
 /** A dashboard read projection only. Records and financial audit trails remain intact. */
 export function dashboardPresentationData(data: {
-  patients: Patient[]; owners: Owner[]; appointments: Appointment[];
-  tasks: Task[]; products: Product[]; transactions: Transaction[];
-  vaccinations: Vaccination[]; invoices: Invoice[];
+  patients: Patient[];
+  owners: Owner[];
+  appointments: Appointment[];
+  tasks: Task[];
+  products: Product[];
+  transactions: Transaction[];
+  vaccinations: Vaccination[];
+  invoices: Invoice[];
 }) {
-  const excludedOwners = new Set(data.owners.filter(o => isTestObject(`${o.firstName} ${o.lastName}`)).map(o => o.id));
-  const excludedPatients = new Set(data.patients.filter(p => isTestObject(p.name) || excludedOwners.has(p.ownerId)).map(p => p.id));
-  const excludedAppointments = new Set(data.appointments.filter(a => excludedPatients.has(a.patientId) || excludedOwners.has(a.ownerId) || isTestObject(a.title)).map(a => a.id));
-  const excludedInvoices = new Set(data.invoices.filter(i => excludedPatients.has(i.patientId ?? "") || excludedOwners.has(i.ownerId) || excludedAppointments.has(i.appointmentId ?? "")).map(i => i.id));
+  const excludedOwners = new Set(
+    data.owners
+      .filter((o) => isTestObject(`${o.firstName} ${o.lastName}`))
+      .map((o) => o.id)
+  );
+  const excludedPatients = new Set(
+    data.patients
+      .filter((p) => isTestObject(p.name) || excludedOwners.has(p.ownerId))
+      .map((p) => p.id)
+  );
+  const excludedAppointments = new Set(
+    data.appointments
+      .filter(
+        (a) =>
+          excludedPatients.has(a.patientId) ||
+          excludedOwners.has(a.ownerId) ||
+          isTestObject(a.title)
+      )
+      .map((a) => a.id)
+  );
+  const excludedInvoices = new Set(
+    data.invoices
+      .filter(
+        (i) =>
+          excludedPatients.has(i.patientId ?? "") ||
+          excludedOwners.has(i.ownerId) ||
+          excludedAppointments.has(i.appointmentId ?? "")
+      )
+      .map((i) => i.id)
+  );
   return {
-    patients: data.patients.filter(p => !excludedPatients.has(p.id)),
-    owners: data.owners.filter(o => !excludedOwners.has(o.id)),
-    appointments: data.appointments.filter(a => !excludedAppointments.has(a.id)),
-    tasks: data.tasks.filter(t => !excludedPatients.has(t.patientId ?? "") && !isTestObject(t.title)),
-    products: data.products.filter(p => !isTestObject(p.name)),
-    vaccinations: data.vaccinations.filter(v => !excludedPatients.has(v.patientId)),
-    invoices: data.invoices.filter(i => !excludedInvoices.has(i.id)),
-    transactions: data.transactions.filter(t =>
-      !isTestObject(t.description) && !isTestObject(t.category) &&
-      !excludedInvoices.has(t.referenceId ?? "") && !excludedInvoices.has(t.sourceId ?? "") &&
-      !excludedAppointments.has(t.referenceId ?? "") && !excludedAppointments.has(t.sourceId ?? "")
+    patients: data.patients.filter((p) => !excludedPatients.has(p.id)),
+    owners: data.owners.filter((o) => !excludedOwners.has(o.id)),
+    appointments: data.appointments.filter(
+      (a) => !excludedAppointments.has(a.id)
+    ),
+    tasks: data.tasks.filter(
+      (t) => !excludedPatients.has(t.patientId ?? "") && !isTestObject(t.title)
+    ),
+    products: data.products.filter((p) => !isTestObject(p.name)),
+    vaccinations: data.vaccinations.filter(
+      (v) => !excludedPatients.has(v.patientId)
+    ),
+    invoices: data.invoices.filter((i) => !excludedInvoices.has(i.id)),
+    transactions: data.transactions.filter(
+      (t) =>
+        !isTestObject(t.description) &&
+        !isTestObject(t.category) &&
+        !excludedInvoices.has(t.referenceId ?? "") &&
+        !excludedInvoices.has(t.sourceId ?? "") &&
+        !excludedAppointments.has(t.referenceId ?? "") &&
+        !excludedAppointments.has(t.sourceId ?? "")
     ),
   };
 }
 
-export function buildPremiumAnalytics(data: {
-  appointments: Appointment[]; patients: Patient[]; transactions: Transaction[];
-  tasks: Task[]; vaccinations: Vaccination[]; alerts: ClinicalAlert[];
-  /** Medical reminders: the due dates behind the vaccine alerts (the vaccination rows no longer carry them). */
-  reminders?: { echeance: string; id: string }[];
-  /** The issued invoices, for the curve of what is still to collect. */
-  invoices?: Invoice[];
-}, period: DashboardPeriod, now: Date, custom?: CustomRange | null) {
+export function buildPremiumAnalytics(
+  data: {
+    appointments: Appointment[];
+    patients: Patient[];
+    transactions: Transaction[];
+    tasks: Task[];
+    vaccinations: Vaccination[];
+    alerts: ClinicalAlert[];
+    /** Medical reminders: the due dates behind the vaccine alerts (the vaccination rows no longer carry them). */
+    reminders?: { echeance: string; id: string }[];
+    /** The issued invoices, for the curve of what is still to collect. */
+    invoices?: Invoice[];
+  },
+  period: DashboardPeriod,
+  now: Date,
+  custom?: CustomRange | null
+) {
   const ranges = analyticsRanges(period, now, custom);
-  const knownPatients = new Set(data.patients.map(p => p.id));
-  const visitsIn = (range: AnalyticsRange) => data.appointments.filter(a =>
-    knownPatients.has(a.patientId) && !["cancelled", "no_show"].includes(a.status) && within(a.startTime, range)
-  );
+  const knownPatients = new Set(data.patients.map((p) => p.id));
+  const visitsIn = (range: AnalyticsRange) =>
+    data.appointments.filter(
+      (a) =>
+        knownPatients.has(a.patientId) &&
+        !["cancelled", "no_show"].includes(a.status) &&
+        within(a.startTime, range)
+    );
   const currentVisits = visitsIn(ranges.current);
   const previousVisits = visitsIn(ranges.previous);
   // Every appointment of the agenda in the period, whatever became of it: held, cancelled, missed, still to come.
-  const appointmentsIn = (range: AnalyticsRange) => data.appointments.filter(a =>
-    knownPatients.has(a.patientId) && within(a.startTime, range)
-  );
+  const appointmentsIn = (range: AnalyticsRange) =>
+    data.appointments.filter(
+      (a) => knownPatients.has(a.patientId) && within(a.startTime, range)
+    );
   const currentAppointments = appointmentsIn(ranges.current);
   const previousAppointments = appointmentsIn(ranges.previous);
-  const followed = new Set(currentVisits.map(a => a.patientId)).size;
-  const previousFollowed = new Set(previousVisits.map(a => a.patientId)).size;
-  const cashIn = (range: AnalyticsRange, type: Transaction["type"]) => data.transactions
-    .filter(t => t.status === "paid" && t.type === type && within(t.date, range))
-    .reduce((sum, t) => sum + t.amount, 0);
+  const followed = new Set(currentVisits.map((a) => a.patientId)).size;
+  const previousFollowed = new Set(previousVisits.map((a) => a.patientId)).size;
+  const cashIn = (range: AnalyticsRange, type: Transaction["type"]) =>
+    data.transactions
+      .filter(
+        (t) => t.status === "paid" && t.type === type && within(t.date, range)
+      )
+      .reduce((sum, t) => sum + t.amount, 0);
   const income = cashIn(ranges.current, "income");
   const expense = cashIn(ranges.current, "expense");
   const previousIncome = cashIn(ranges.previous, "income");
   const dates = new Map<string, string | undefined>([
-    ...data.tasks.map(t => [`task:${t.id}`, t.dueDate] as const),
-    ...(data.reminders ?? []).map(r => [`vaccine:${r.id}`, r.echeance] as const),
-    ...data.appointments.map(a => [`appointment:${a.id}`, a.startTime] as const),
+    ...data.tasks.map((t) => [`task:${t.id}`, t.dueDate] as const),
+    ...(data.reminders ?? []).map(
+      (r) => [`vaccine:${r.id}`, r.echeance] as const
+    ),
+    ...data.appointments.map(
+      (a) => [`appointment:${a.id}`, a.startTime] as const
+    ),
   ]);
   // Current open actions grouped by their actual due date, never invented past status snapshots.
-  const actionsIn = (range: AnalyticsRange) => data.alerts.filter(a => within(dates.get(a.id), range));
+  const actionsIn = (range: AnalyticsRange) =>
+    data.alerts.filter((a) => within(dates.get(a.id), range));
   const actions = actionsIn(ranges.current);
   const previousActions = actionsIn(ranges.previous);
   const buckets = trendBuckets(period, ranges.current);
   const trend = {
-    income: buckets.map(range => cashIn(range, "income")),
-    visits: buckets.map(range => currentVisits.filter(a => within(a.startTime, range)).length),
-    patients: buckets.map(range => new Set(currentVisits.filter(a => within(a.startTime, range)).map(a => a.patientId)).size),
+    income: buckets.map((range) => cashIn(range, "income")),
+    visits: buckets.map(
+      (range) => currentVisits.filter((a) => within(a.startTime, range)).length
+    ),
+    patients: buckets.map(
+      (range) =>
+        new Set(
+          currentVisits
+            .filter((a) => within(a.startTime, range))
+            .map((a) => a.patientId)
+        ).size
+    ),
     // The agenda's appointments per bucket, whatever became of them: the Rendez-vous card's curve.
-    appointments: buckets.map(range => currentAppointments.filter(a => within(a.startTime, range)).length),
+    appointments: buckets.map(
+      (range) =>
+        currentAppointments.filter((a) => within(a.startTime, range)).length
+    ),
     // The open actions falling due per bucket: the Actions card's curve.
-    actions: buckets.map(range => actionsIn(range).length),
+    actions: buckets.map((range) => actionsIn(range).length),
     // What is still to collect at the end of each bucket (never later than now), in dinars.
-    receivables: receivablesTrend(data.invoices ?? [], data.transactions, buckets.map(range => new Date(Math.min(range.to.getTime(), now.getTime())))),
+    receivables: receivablesTrend(
+      data.invoices ?? [],
+      data.transactions,
+      buckets.map(
+        (range) => new Date(Math.min(range.to.getTime(), now.getTime()))
+      )
+    ),
   };
   return {
     ranges,
     // What was still to collect when the previous period ended, in dinars: the level the Créances card is compared with.
-    receivablesBefore: receivablesTrend(data.invoices ?? [], data.transactions, [new Date(ranges.current.from.getTime() - 1)])[0] ?? 0,
+    receivablesBefore:
+      receivablesTrend(data.invoices ?? [], data.transactions, [
+        new Date(ranges.current.from.getTime() - 1),
+      ])[0] ?? 0,
     trend,
     appointments: {
       count: currentAppointments.length,
       previous: previousAppointments.length,
-      change: metricChange(currentAppointments.length, previousAppointments.length),
-      honored: currentAppointments.filter(a => a.status === "completed").length,
-      cancelled: currentAppointments.filter(a => a.status === "cancelled").length,
-      missed: currentAppointments.filter(a => a.status === "no_show").length,
+      change: metricChange(
+        currentAppointments.length,
+        previousAppointments.length
+      ),
+      honored: currentAppointments.filter((a) => a.status === "completed")
+        .length,
+      cancelled: currentAppointments.filter((a) => a.status === "cancelled")
+        .length,
+      missed: currentAppointments.filter((a) => a.status === "no_show").length,
     },
-    cash: { income, expense, net: income - expense, previous: previousIncome, change: metricChange(income, previousIncome) },
-    patients: { count: followed, previous: previousFollowed, change: metricChange(followed, previousFollowed), visits: currentVisits.length,
-      previousVisits: previousVisits.length, visitsChange: metricChange(currentVisits.length, previousVisits.length),
-      completed: currentVisits.filter(a => a.status === "completed").length,
-      underway: currentVisits.filter(a => ["arrived", "waiting", "in_progress"].includes(a.status)).length,
-      planned: currentVisits.filter(a => ["scheduled", "confirmed"].includes(a.status)).length,
+    cash: {
+      income,
+      expense,
+      net: income - expense,
+      previous: previousIncome,
+      change: metricChange(income, previousIncome),
+    },
+    patients: {
+      count: followed,
+      previous: previousFollowed,
+      change: metricChange(followed, previousFollowed),
+      visits: currentVisits.length,
+      previousVisits: previousVisits.length,
+      visitsChange: metricChange(currentVisits.length, previousVisits.length),
+      completed: currentVisits.filter((a) => a.status === "completed").length,
+      underway: currentVisits.filter((a) =>
+        ["arrived", "waiting", "in_progress"].includes(a.status)
+      ).length,
+      planned: currentVisits.filter((a) =>
+        ["scheduled", "confirmed"].includes(a.status)
+      ).length,
       kinds: buildVisitKinds(currentVisits),
-      newRecords: data.patients.filter(p => within(p.createdAt, ranges.current)).length },
-    actions: { count: actions.length, previous: previousActions.length, change: metricChange(actions.length, previousActions.length),
+      newRecords: data.patients.filter((p) =>
+        within(p.createdAt, ranges.current)
+      ).length,
+    },
+    actions: {
+      count: actions.length,
+      previous: previousActions.length,
+      change: metricChange(actions.length, previousActions.length),
       // The tasks falling due in the period that are done: with the open actions, the Actions card's goal.
-      tasksDone: data.tasks.filter(t => t.status === "done" && within(t.dueDate, ranges.current)).length,
-      urgent: actions.filter(a => a.tone === "critical").length,
-      reminders: actions.filter(a => a.source === "vaccine").length,
-      tasks: actions.filter(a => a.source === "task").length },
+      tasksDone: data.tasks.filter(
+        (t) => t.status === "done" && within(t.dueDate, ranges.current)
+      ).length,
+      urgent: actions.filter((a) => a.tone === "critical").length,
+      reminders: actions.filter((a) => a.source === "vaccine").length,
+      tasks: actions.filter((a) => a.source === "task").length,
+    },
   };
 }

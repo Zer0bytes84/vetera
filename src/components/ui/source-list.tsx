@@ -43,8 +43,15 @@ export type SourceListProps = {
   className?: string;
 };
 
-export function SourceList({ sources, heading, subtitle, className }: SourceListProps) {
-  const groups = sources.reduce<{ name: string; icon?: LucideIcon; items: Source[] }[]>((acc, source) => {
+export function SourceList({
+  sources,
+  heading,
+  subtitle,
+  className,
+}: SourceListProps) {
+  const groups = sources.reduce<
+    { name: string; icon?: LucideIcon; items: Source[] }[]
+  >((acc, source) => {
     const group = acc.find((g) => g.name === source.group);
     if (group) group.items.push(source);
     else acc.push({ name: source.group, icon: source.icon, items: [source] });
@@ -60,27 +67,48 @@ export function SourceList({ sources, heading, subtitle, className }: SourceList
             <motion.section
               key={group.name}
               aria-label={group.name}
-              animate={{ opacity: 1, y: 0, transition: { ...enter, delay: g * 0.04 } }}
+              animate={{
+                opacity: 1,
+                y: 0,
+                transition: { ...enter, delay: g * 0.04 },
+              }}
               initial={{ opacity: 0, y: 6 }}
             >
               <h4 className="flex items-center gap-3 px-3 pt-1.5 pb-1 text-xs text-muted-foreground">
-                {group.icon ? <IconTile className="size-5 rounded-md" icon={group.icon} /> : null}
+                {group.icon ? (
+                  <IconTile className="size-5 rounded-md" icon={group.icon} />
+                ) : null}
                 {group.name}
                 <span className="tabular-nums">· {group.items.length}</span>
               </h4>
               <ul className="flex flex-col">
                 {group.items.map((source) => (
-                  <li className="flex flex-col gap-1.5 rounded-xl px-3 py-3" key={source.id}>
+                  <li
+                    className="flex flex-col gap-1.5 rounded-xl px-3 py-3"
+                    key={source.id}
+                  >
                     <div className="flex items-baseline gap-3">
-                      <span className="min-w-0 flex-1 truncate text-sm font-medium">{source.title}</span>
-                      {source.tag ? <Tag className="font-sans">{source.tag}</Tag> : null}
+                      <span className="min-w-0 flex-1 truncate text-sm font-medium">
+                        {source.title}
+                      </span>
+                      {source.tag ? (
+                        <Tag className="font-sans">{source.tag}</Tag>
+                      ) : null}
                       {source.date ? (
-                        <span className="shrink-0 text-xs text-muted-foreground">{source.date}</span>
+                        <span className="shrink-0 text-xs text-muted-foreground">
+                          {source.date}
+                        </span>
                       ) : null}
                     </div>
                     {/* The passage found, put forward. */}
-                    <div className="rounded-xl border-l-2 border-brand bg-brand/[0.06] px-3 py-2">{source.passage}</div>
-                    {source.actions ? <div className="flex items-center justify-end gap-1.5">{source.actions}</div> : null}
+                    <div className="rounded-xl border-l-2 border-brand bg-brand/[0.06] px-3 py-2">
+                      {source.passage}
+                    </div>
+                    {source.actions ? (
+                      <div className="flex items-center justify-end gap-1.5">
+                        {source.actions}
+                      </div>
+                    ) : null}
                   </li>
                 ))}
               </ul>

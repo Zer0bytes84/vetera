@@ -170,7 +170,8 @@ export async function verifyPassword(
   password: string,
   hash: unknown
 ): Promise<boolean> {
-  if (typeof password !== "string" || typeof hash !== "string" || !hash) return false;
+  if (typeof password !== "string" || typeof hash !== "string" || !hash)
+    return false;
   if (
     hash.startsWith("$2") ||
     hash.startsWith("$2a") ||
@@ -202,7 +203,9 @@ export async function login(credentials: LoginCredentials): Promise<AuthUser> {
 
     const storedHash = getBrowserPasswordHash(user);
     if (!storedHash) {
-      throw new Error("Ce profil ne possède pas de mot de passe enregistré dans ce navigateur. Les comptes de l’application Tauri ne sont pas partagés avec le navigateur.");
+      throw new Error(
+        "Ce profil ne possède pas de mot de passe enregistré dans ce navigateur. Les comptes de l’application Tauri ne sont pas partagés avec le navigateur."
+      );
     }
     const isValid = await verifyPassword(credentials.password, storedHash);
     if (!isValid) {

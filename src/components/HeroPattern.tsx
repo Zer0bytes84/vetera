@@ -8,7 +8,10 @@ export function HeroPattern() {
     >
       <div
         className="absolute -top-44 right-40 h-56 w-[33rem] rotate-[-10deg] transform-gpu rounded-full opacity-80 blur-3xl md:right-48 lg:right-56 dark:opacity-40"
-        style={{ backgroundImage: "linear-gradient(115deg, #fff1be 28%, #ee87cb 70%, #b060ff)" }}
+        style={{
+          backgroundImage:
+            "linear-gradient(115deg, #fff1be 28%, #ee87cb 70%, #b060ff)",
+        }}
       />
     </div>
   );

@@ -17,7 +17,13 @@ export const MICROPHONE_WARMUP = {
 
 export type WarmupResult =
   | { state: "warming" }
-  | { state: "stable"; reason: "montée" | "délai"; at: number; referenceDb: number | null; levelDb: number };
+  | {
+      state: "stable";
+      reason: "montée" | "délai";
+      at: number;
+      referenceDb: number | null;
+      levelDb: number;
+    };
 
 const decibels = (energy: number) => 10 * Math.log10(Math.max(energy, 1e-12));
 
@@ -49,8 +55,17 @@ export function createWarmupDetector(options = MICROPHONE_WARMUP) {
     // one click in the room must not hide the step.
     const earlier = levels.slice(1, count - 3).sort((a, b) => b - a);
     const reference = earlier.length >= 4 ? earlier[1] : earlier[0];
-    if (levels[count - 2] >= reference + options.riseDb && level >= reference + options.riseDb)
-      result = { state: "stable", reason: "montée", at, referenceDb: reference, levelDb: level };
+    if (
+      levels[count - 2] >= reference + options.riseDb &&
+      level >= reference + options.riseDb
+    )
+      result = {
+        state: "stable",
+        reason: "montée",
+        at,
+        referenceDb: reference,
+        levelDb: level,
+      };
   };
   return {
     push(rms: number, seconds: number): WarmupResult {

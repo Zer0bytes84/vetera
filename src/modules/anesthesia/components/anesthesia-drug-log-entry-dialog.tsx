@@ -107,7 +107,7 @@ export function AnesthesiaDrugLogEntryDialog({
     <Dialog onOpenChange={onOpenChange} open={open}>
       <FormDialogContent size="sm">
         <FormDialogHeader
-            artwork="medication"
+          artwork="medication"
           description={`${sheet.procedureName}`}
           icon={<Pill weight="duotone" />}
           title={t(

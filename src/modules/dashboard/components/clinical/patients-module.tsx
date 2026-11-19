@@ -35,7 +35,11 @@ export function PatientsModule({
       title="Suivi des patients"
       subtitle="Soins en cours, puis dossiers récemment suivis"
       // The empty state carries its own button to the same page.
-      actions={rows.length ? <ModuleLink onClick={onPatients}>Dossiers</ModuleLink> : undefined}
+      actions={
+        rows.length ? (
+          <ModuleLink onClick={onPatients}>Dossiers</ModuleLink>
+        ) : undefined
+      }
       pending={state.loading}
       showSkeleton={state.skeleton}
       error={state.error}

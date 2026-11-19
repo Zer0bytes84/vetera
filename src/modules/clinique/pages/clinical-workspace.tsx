@@ -9,7 +9,10 @@ import { MedicalRemindersModule } from "@/modules/patient-reminders/medical-remi
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useFocus, type FocusRequest } from "@/contexts/focus-provider";
 import type { View } from "@/types";
-import { resolveClinicTab, useHospitalizationEnabled } from "@/modules/clinique/clinic-services";
+import {
+  resolveClinicTab,
+  useHospitalizationEnabled,
+} from "@/modules/clinique/clinic-services";
 import {
   CLINIC_TAB_EVENT,
   CLINIC_TAB_OPEN_EVENT,
@@ -32,11 +35,12 @@ export default function ClinicalWorkspace({
       ? "hospitalisation"
       : focus?.kind === "care_patient" || focus?.kind === "care_task"
         ? "soins"
-        : (takePendingClinicTab() ?? initialTab),
+        : (takePendingClinicTab() ?? initialTab)
   );
   // The sidebar opens a section from outside, and marks the one shown.
   useEffect(() => {
-    const open = (event: Event) => setTab((event as CustomEvent<string>).detail);
+    const open = (event: Event) =>
+      setTab((event as CustomEvent<string>).detail);
     window.addEventListener(CLINIC_TAB_OPEN_EVENT, open);
     return () => window.removeEventListener(CLINIC_TAB_OPEN_EVENT, open);
   }, []);
@@ -44,25 +48,30 @@ export default function ClinicalWorkspace({
   // for from outside falls back to Soins. A stay opened by its own link (a patient's record) still shows.
   const hospitalizationEnabled = useHospitalizationEnabled();
   const [openedStay, setOpenedStay] = useState(focus?.kind === "stay");
-  const shownTab = openedStay && tab === "hospitalisation" ? "hospitalisation" : resolveClinicTab(tab, hospitalizationEnabled);
+  const shownTab =
+    openedStay && tab === "hospitalisation"
+      ? "hospitalisation"
+      : resolveClinicTab(tab, hospitalizationEnabled);
   useEffect(() => {
-    window.dispatchEvent(new CustomEvent(CLINIC_TAB_EVENT, { detail: shownTab }));
+    window.dispatchEvent(
+      new CustomEvent(CLINIC_TAB_EVENT, { detail: shownTab })
+    );
   }, [shownTab]);
   const [patientId, setPatientId] = useState<string | undefined>(() =>
-    focus?.kind === "care_patient" ? focus.id : undefined,
+    focus?.kind === "care_patient" ? focus.id : undefined
   );
   const { tasks, now } = useCareTasks();
   const overdueCount = tasks.filter(
     (task) =>
       (!patientId || task.patient_id === patientId) &&
-      careDisplayStatus(task, now) === "en_retard",
+      careDisplayStatus(task, now) === "en_retard"
   ).length;
   const overdueLabel = `${overdueCount} soin${overdueCount > 1 ? "s" : ""} en retard`;
   const [stayId, setStayId] = useState<string | undefined>(() =>
-    focus?.kind === "stay" ? focus.id : undefined,
+    focus?.kind === "stay" ? focus.id : undefined
   );
   const [taskId, setTaskId] = useState<string | undefined>(() =>
-    focus?.kind === "care_task" ? focus.id : undefined,
+    focus?.kind === "care_task" ? focus.id : undefined
   );
   useEffect(() => {
     const handleFocus = (request: FocusRequest) => {
@@ -92,7 +101,7 @@ export default function ClinicalWorkspace({
   const claim = useCallback(
     (claimed: boolean) =>
       setClaims((count) => Math.max(0, count + (claimed ? 1 : -1))),
-    [],
+    []
   );
   const tabsList = useMemo(
     () => (
@@ -121,19 +130,27 @@ export default function ClinicalWorkspace({
         <TabsTrigger value="hospitalisation">Hospitalisation</TabsTrigger>
       </TabsList>
     ),
-    [overdueCount, overdueLabel],
+    [overdueCount, overdueLabel]
   );
   // One section, no tabs: the page header keeps its place, without a switch that leads nowhere.
   const sectionTabs = hospitalizationEnabled ? tabsList : null;
-  const subnav = useMemo(() => ({ node: sectionTabs, claim }), [sectionTabs, claim]);
+  const subnav = useMemo(
+    () => ({ node: sectionTabs, claim }),
+    [sectionTabs, claim]
+  );
   return (
     <Tabs
       value={shownTab}
-      onValueChange={(next) => { setOpenedStay(false); setTab(next); }}
+      onValueChange={(next) => {
+        setOpenedStay(false);
+        setTab(next);
+      }}
       className="clinical-workspace clinical-workspace-navigation min-w-0 gap-0"
     >
       <PageSubnavContext.Provider value={subnav}>
-        {claims === 0 && sectionTabs && <div className="px-4 pt-4 lg:px-6">{sectionTabs}</div>}
+        {claims === 0 && sectionTabs && (
+          <div className="px-4 pt-4 lg:px-6">{sectionTabs}</div>
+        )}
         {shownTab === "hospitalisation" ? (
           <StaysPage key={stayId || "all"} initialStayId={stayId} />
         ) : (
@@ -146,7 +163,10 @@ export default function ClinicalWorkspace({
             reminders={
               <MedicalRemindersModule
                 onAll={() => {
-                  window.sessionStorage.setItem("baitari:reminders-source", "medical");
+                  window.sessionStorage.setItem(
+                    "baitari:reminders-source",
+                    "medical"
+                  );
                   onNavigate("taches");
                 }}
               />

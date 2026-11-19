@@ -67,10 +67,18 @@
   background: var(--muted-foreground);
   cursor: pointer;
 }
-.care-strip-mark[data-kind="done"] { background: var(--signal-positive); }
-.care-strip-mark[data-kind="late"] { background: var(--signal-critical); }
-.care-strip-mark[data-kind="soon"] { background: var(--signal-watch); }
-.care-strip-mark[data-kind="later"] { background: color-mix(in oklab, var(--muted-foreground) 55%, transparent); }
+.care-strip-mark[data-kind="done"] {
+  background: var(--signal-positive);
+}
+.care-strip-mark[data-kind="late"] {
+  background: var(--signal-critical);
+}
+.care-strip-mark[data-kind="soon"] {
+  background: var(--signal-watch);
+}
+.care-strip-mark[data-kind="later"] {
+  background: color-mix(in oklab, var(--muted-foreground) 55%, transparent);
+}
 .care-strip-mark:focus-visible {
   outline: 2px solid var(--ring);
   outline-offset: 1px;

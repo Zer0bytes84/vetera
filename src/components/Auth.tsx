@@ -42,25 +42,28 @@ const Auth: React.FC = () => {
     event.preventDefault();
     setFormError("");
     setLoading(true);
-    await guard(async () => {
-      if (view === "login") {
-        await login(email, password);
-      } else {
-        await register(email, password, name);
+    await guard(
+      async () => {
+        if (view === "login") {
+          await login(email, password);
+        } else {
+          await register(email, password, name);
+        }
+      },
+      {
+        recover: (error) => {
+          console.error(error);
+          setFormError(
+            error instanceof Error
+              ? error.message
+              : "Une erreur est survenue. Veuillez réessayer."
+          );
+        },
+        cleanup: () => {
+          setLoading(false);
+        },
       }
-    }, {
-      recover: (error) => {
-        console.error(error);
-        setFormError(
-          error instanceof Error
-            ? error.message
-            : "Une erreur est survenue. Veuillez réessayer."
-        );
-      },
-      cleanup: () => {
-        setLoading(false);
-      },
-    });
+    );
   };
 
   const changeView = (nextView: "login" | "register") => {
@@ -76,9 +79,10 @@ const Auth: React.FC = () => {
       onMouseDown={handleWindowMouseDown}
       ref={windowDragRef}
     >
-
       <div className="relative z-10 grid min-h-screen lg:grid-cols-[minmax(0,1.08fr)_minmax(460px,0.92fr)]">
-        <AuthBrandPanel rubrics={["Consultations", "Soins", "Rappels", "Équipe"]}>
+        <AuthBrandPanel
+          rubrics={["Consultations", "Soins", "Rappels", "Équipe"]}
+        >
           <p className="auth-clinic-eyebrow">
             Baitari <span>·</span> de l’arabe bayṭarī, vétérinaire
           </p>
@@ -237,7 +241,11 @@ const Auth: React.FC = () => {
                       id="password"
                       minLength={6}
                       onChange={(event) => setPassword(event.target.value)}
-                      placeholder={view === "login" ? "Votre mot de passe" : "6 caractères minimum"}
+                      placeholder={
+                        view === "login"
+                          ? "Votre mot de passe"
+                          : "6 caractères minimum"
+                      }
                       required
                       type={showPassword ? "text" : "password"}
                       value={password}

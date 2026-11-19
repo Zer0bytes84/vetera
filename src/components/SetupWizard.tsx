@@ -17,9 +17,7 @@ import { useState } from "react";
 import { Spinner } from "@/components/ui/spinner";
 import { APP_NAME } from "@/lib/brand";
 import { useTauriDrag } from "@/hooks/use-tauri-drag";
-import {
-  formatLicenseKey,
-} from "@/services/licenseService";
+import { formatLicenseKey } from "@/services/licenseService";
 import {
   activateLicense,
   createLicenseRequestMailto,
@@ -72,22 +70,25 @@ const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
     }
     setIsActivating(true);
     setError("");
-    await guard(async () => {
-      const result = await activateLicense(email, licenseKey);
-      setActivationToken(result.activationToken);
-      setStep(2);
-    }, {
-      recover: (err) => {
-        setError(
-          err instanceof Error
-            ? err.message
-            : "Impossible de vérifier cette licence."
-        );
+    await guard(
+      async () => {
+        const result = await activateLicense(email, licenseKey);
+        setActivationToken(result.activationToken);
+        setStep(2);
       },
-      cleanup: () => {
-        setIsActivating(false);
-      },
-    });
+      {
+        recover: (err) => {
+          setError(
+            err instanceof Error
+              ? err.message
+              : "Impossible de vérifier cette licence."
+          );
+        },
+        cleanup: () => {
+          setIsActivating(false);
+        },
+      }
+    );
   };
 
   const handleCreateAccount = async () => {
@@ -137,7 +138,9 @@ const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
       ref={windowDragRef}
     >
       <div className="relative z-10 grid min-h-screen lg:grid-cols-[minmax(0,1.08fr)_minmax(460px,0.92fr)]">
-        <AuthBrandPanel rubrics={["Données locales", "Prêt au quotidien", "Accès personnel"]}>
+        <AuthBrandPanel
+          rubrics={["Données locales", "Prêt au quotidien", "Accès personnel"]}
+        >
           <p className="auth-clinic-eyebrow">
             Configuration locale <span>·</span> deux étapes
           </p>
@@ -146,8 +149,9 @@ const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
             <span>un suivi précis.</span>
           </h1>
           <p className="auth-clinic-lead">
-            Activez votre <mark className="auth-clinic-mark--blue">licence</mark>, créez
-            votre <mark className="auth-clinic-mark--pink">accès</mark> et la clinique
+            Activez votre{" "}
+            <mark className="auth-clinic-mark--blue">licence</mark>, créez votre{" "}
+            <mark className="auth-clinic-mark--pink">accès</mark> et la clinique
             est prête à travailler.
           </p>
         </AuthBrandPanel>
@@ -168,7 +172,9 @@ const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <p className="auth-clinic-step-label">
-                    {step === 1 ? "Étape 1 · Activation" : "Étape 2 · Profil clinique"}
+                    {step === 1
+                      ? "Étape 1 · Activation"
+                      : "Étape 2 · Profil clinique"}
                   </p>
                   <h2 className="auth-clinic-welcome mt-2">
                     {step === 1 ? (
@@ -190,9 +196,17 @@ const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
                 <fieldset className="auth-steps">
                   <legend className="sr-only">Étape {step} sur 2</legend>
                   {[1, 2].map((item) => (
-                    <span className="auth-step" data-active={step >= item} key={item}>
+                    <span
+                      className="auth-step"
+                      data-active={step >= item}
+                      key={item}
+                    >
                       {step > item ? (
-                        <HugeiconsIcon className="size-3.5" icon={CheckmarkCircle02Icon} strokeWidth={1.8} />
+                        <HugeiconsIcon
+                          className="size-3.5"
+                          icon={CheckmarkCircle02Icon}
+                          strokeWidth={1.8}
+                        />
                       ) : (
                         item
                       )}
@@ -211,7 +225,11 @@ const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
                     key="setup-error"
                     role="alert"
                   >
-                    <HugeiconsIcon className="mt-0.5 size-4 shrink-0" icon={Alert02Icon} strokeWidth={1.5} />
+                    <HugeiconsIcon
+                      className="mt-0.5 size-4 shrink-0"
+                      icon={Alert02Icon}
+                      strokeWidth={1.5}
+                    />
                     <span className="font-medium">{error}</span>
                   </motion.div>
                 ) : null}
@@ -219,7 +237,11 @@ const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
 
               {step === 1 ? (
                 <div className="mt-7 space-y-4">
-                  <SetupField icon={MailIcon} id="setup-email" label="E-mail professionnel">
+                  <SetupField
+                    icon={MailIcon}
+                    id="setup-email"
+                    label="E-mail professionnel"
+                  >
                     <input
                       aria-invalid={Boolean(error)}
                       autoCapitalize="none"
@@ -238,7 +260,11 @@ const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
                     />
                   </SetupField>
 
-                  <SetupField icon={Key01Icon} id="setup-license" label="Clé de licence">
+                  <SetupField
+                    icon={Key01Icon}
+                    id="setup-license"
+                    label="Clé de licence"
+                  >
                     <input
                       aria-invalid={Boolean(error)}
                       autoComplete="off"
@@ -257,13 +283,24 @@ const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
               ) : (
                 <div className="mt-7 space-y-4">
                   <div className="flex items-center gap-2.5 rounded-xl border border-black/[0.055] bg-black/[0.018] px-3.5 py-3 text-xs text-zinc-500 dark:border-white/[0.07] dark:bg-white/[0.025] dark:text-zinc-400">
-                    <HugeiconsIcon className="size-4 shrink-0 text-primary" icon={CheckmarkCircle02Icon} strokeWidth={1.5} />
+                    <HugeiconsIcon
+                      className="size-4 shrink-0 text-primary"
+                      icon={CheckmarkCircle02Icon}
+                      strokeWidth={1.5}
+                    />
                     <span>
-                      Licence vérifiée pour <span className="font-medium text-foreground">{email}</span>
+                      Licence vérifiée pour{" "}
+                      <span className="font-medium text-foreground">
+                        {email}
+                      </span>
                     </span>
                   </div>
 
-                  <SetupField icon={UserCircle02Icon} id="setup-name" label="Nom complet">
+                  <SetupField
+                    icon={UserCircle02Icon}
+                    id="setup-name"
+                    label="Nom complet"
+                  >
                     <input
                       autoComplete="name"
                       className="auth-field__input"
@@ -279,7 +316,11 @@ const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
                     />
                   </SetupField>
 
-                  <SetupField icon={LockIcon} id="setup-password" label="Mot de passe">
+                  <SetupField
+                    icon={LockIcon}
+                    id="setup-password"
+                    label="Mot de passe"
+                  >
                     <input
                       autoComplete="new-password"
                       className="auth-field__input pe-20"
@@ -295,17 +336,29 @@ const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
                       value={password}
                     />
                     <button
-                      aria-label={showPasswords ? "Masquer les mots de passe" : "Afficher les mots de passe"}
+                      aria-label={
+                        showPasswords
+                          ? "Masquer les mots de passe"
+                          : "Afficher les mots de passe"
+                      }
                       className="absolute inset-y-1.5 end-1.5 flex items-center gap-1.5 rounded-lg px-2.5 font-medium t-12 text-zinc-500 transition-colors hover:bg-black/[0.04] hover:text-zinc-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35 dark:hover:bg-white/[0.06] dark:hover:text-white"
                       onClick={() => setShowPasswords((visible) => !visible)}
                       type="button"
                     >
-                      <HugeiconsIcon className="size-3.5" icon={ViewIcon} strokeWidth={1.5} />
+                      <HugeiconsIcon
+                        className="size-3.5"
+                        icon={ViewIcon}
+                        strokeWidth={1.5}
+                      />
                       {showPasswords ? "Masquer" : "Afficher"}
                     </button>
                   </SetupField>
 
-                  <SetupField icon={LockIcon} id="setup-confirm" label="Confirmation">
+                  <SetupField
+                    icon={LockIcon}
+                    id="setup-confirm"
+                    label="Confirmation"
+                  >
                     <input
                       autoComplete="new-password"
                       className="auth-field__input"
@@ -325,7 +378,11 @@ const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
               )}
 
               <div className="mt-7 flex items-center gap-2.5 rounded-xl border border-black/[0.055] bg-black/[0.018] px-3.5 py-3 text-xs text-zinc-500 dark:border-white/[0.07] dark:bg-white/[0.025] dark:text-zinc-400">
-                <HugeiconsIcon className="size-4 shrink-0 text-primary" icon={Shield01Icon} strokeWidth={1.5} />
+                <HugeiconsIcon
+                  className="size-4 shrink-0 text-primary"
+                  icon={Shield01Icon}
+                  strokeWidth={1.5}
+                />
                 Activation sécurisée. Vos données restent sur cet appareil.
               </div>
 
@@ -372,7 +429,11 @@ const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
                   }}
                   type="button"
                 >
-                  <HugeiconsIcon className="size-3.5" icon={ArrowLeft01Icon} strokeWidth={1.5} />
+                  <HugeiconsIcon
+                    className="size-3.5"
+                    icon={ArrowLeft01Icon}
+                    strokeWidth={1.5}
+                  />
                   Modifier la licence
                 </button>
               )}
@@ -398,7 +459,11 @@ function SetupField({ children, icon, id, label }: SetupFieldProps) {
         {label}
       </label>
       <div className="auth-field">
-        <HugeiconsIcon className="auth-field__icon" icon={icon} strokeWidth={1.5} />
+        <HugeiconsIcon
+          className="auth-field__icon"
+          icon={icon}
+          strokeWidth={1.5}
+        />
         {children}
       </div>
     </div>

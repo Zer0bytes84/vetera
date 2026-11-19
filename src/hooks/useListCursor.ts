@@ -80,28 +80,47 @@ export function useListCursor({
     const onPointerOver = (event: PointerEvent) => {
       if (event.pointerType !== "mouse") return;
       settled = true;
-      const row = (event.target as Element).closest<HTMLElement>("[data-list-row]");
+      const row = (event.target as Element).closest<HTMLElement>(
+        "[data-list-row]"
+      );
       if (row && container.contains(row)) setCurrent(row);
     };
     const onPointerLeave = () => setCurrent(null);
     const onClick = (event: MouseEvent) => {
-      remember((event.target as Element).closest<HTMLElement>("[data-list-row]"));
+      remember(
+        (event.target as Element).closest<HTMLElement>("[data-list-row]")
+      );
     };
     const onFocusIn = (event: FocusEvent) => {
-      const row = (event.target as Element).closest<HTMLElement>("[data-list-row]");
+      const row = (event.target as Element).closest<HTMLElement>(
+        "[data-list-row]"
+      );
       if (row && container.contains(row)) setCurrent(row);
     };
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.altKey) return;
+      if (
+        event.defaultPrevented ||
+        event.metaKey ||
+        event.ctrlKey ||
+        event.altKey
+      )
+        return;
       if (!container.isConnected || container.offsetParent === null) return;
       const target = event.target as HTMLElement | null;
       const peek = document.querySelector("[data-peek-follow]");
       const inPeek = !!(peek && target && peek.contains(target));
-      const blocking = "[role='dialog']:not([data-peek-follow]), [role='menu'], [role='listbox']";
-      if (target?.closest(`input, textarea, select, [contenteditable='true'], ${blocking}`)) return;
+      const blocking =
+        "[role='dialog']:not([data-peek-follow]), [role='menu'], [role='listbox']";
+      if (
+        target?.closest(
+          `input, textarea, select, [contenteditable='true'], ${blocking}`
+        )
+      )
+        return;
       if (document.querySelector(blocking)) return;
       // Inside the following peek, only the arrows reach the list.
-      if (inPeek && event.key !== "ArrowDown" && event.key !== "ArrowUp") return;
+      if (inPeek && event.key !== "ArrowDown" && event.key !== "ArrowUp")
+        return;
       const list = rows();
       if (!list.length) return;
       settled = true;
@@ -109,18 +128,28 @@ export function useListCursor({
       const index = row ? list.indexOf(row) : -1;
       const key = event.key;
       // Enter and Space act on the cursor unless another control has focus.
-      const free = !target || target === document.body || target.hasAttribute("data-list-row");
+      const free =
+        !target ||
+        target === document.body ||
+        target.hasAttribute("data-list-row");
       if (key === "ArrowDown" || key === "ArrowUp") {
         event.preventDefault();
         const next = list[nextCursorIndex(key, index, list.length)];
         setCurrent(next, true);
-        if (peek && onPeek && next.dataset.rowId) onPeek(next.dataset.rowId, "follow");
+        if (peek && onPeek && next.dataset.rowId)
+          onPeek(next.dataset.rowId, "follow");
       } else if (key === "Enter" && row && free) {
         event.preventDefault();
         remember(row);
         // With the peek showing, Enter goes one step further: the full record.
-        const openFull = peek?.querySelector<HTMLElement>("[data-peek-open-full]");
-        (openFull ?? row.querySelector<HTMLElement>("[data-row-open]") ?? row).click();
+        const openFull = peek?.querySelector<HTMLElement>(
+          "[data-peek-open-full]"
+        );
+        (
+          openFull ??
+          row.querySelector<HTMLElement>("[data-row-open]") ??
+          row
+        ).click();
       } else if ((key === " " || key === "a") && row && onPeek && free) {
         event.preventDefault();
         if (row.dataset.rowId) onPeek(row.dataset.rowId, "key");

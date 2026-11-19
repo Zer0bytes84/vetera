@@ -50,8 +50,16 @@ export function formatDisplayText(value: string) {
     );
 }
 
-const clockFormatter = new Intl.DateTimeFormat("fr-FR", { hour: "2-digit", minute: "2-digit", hour12: false });
-const longDayFormatter = new Intl.DateTimeFormat("fr-FR", { weekday: "long", day: "numeric", month: "long" });
+const clockFormatter = new Intl.DateTimeFormat("fr-FR", {
+  hour: "2-digit",
+  minute: "2-digit",
+  hour12: false,
+});
+const longDayFormatter = new Intl.DateTimeFormat("fr-FR", {
+  weekday: "long",
+  day: "numeric",
+  month: "long",
+});
 
 /** Clock time as "09:30", whatever the browser locale. */
 export function formatClockTime(date: Date) {

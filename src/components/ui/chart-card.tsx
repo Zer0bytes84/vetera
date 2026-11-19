@@ -2,9 +2,25 @@
 // Free to use. If it helps you, you can support it: https://ko-fi.com/yurigokoryan
 "use client";
 
-import { ArrowTrendingUpIcon, ChartBarIcon, ChartPieIcon, PresentationChartLineIcon } from "@heroicons/react/20/solid";
-import { AnimatePresence, MotionConfig, motion, useReducedMotion } from "motion/react";
-import { useId, useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import {
+  ArrowTrendingUpIcon,
+  ChartBarIcon,
+  ChartPieIcon,
+  PresentationChartLineIcon,
+} from "@heroicons/react/20/solid";
+import {
+  AnimatePresence,
+  MotionConfig,
+  motion,
+  useReducedMotion,
+} from "motion/react";
+import {
+  useId,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import { RollingNumber } from "@/components/ui/rolling-number";
 import { Panel, Shell, ShellHeader } from "@/components/ui/surface";
 import { EASE_IN_OUT, EASE_OUT, enter, exit } from "@/lib/motion-tokens";
@@ -76,7 +92,12 @@ const palette = [
   "var(--tone-amber)",
   "var(--tone-rose)",
 ];
-const icons = { bar: ChartBarIcon, line: ArrowTrendingUpIcon, area: PresentationChartLineIcon, donut: ChartPieIcon };
+const icons = {
+  bar: ChartBarIcon,
+  line: ArrowTrendingUpIcon,
+  area: PresentationChartLineIcon,
+  donut: ChartPieIcon,
+};
 const PAD = { top: 8, bottom: 24, left: 40 };
 const STEPS = 5;
 const MAX_MARKERS = 31;
@@ -95,8 +116,15 @@ const compact = (n: number) =>
 export function fiveSteps(value: number) {
   const raw = Math.max(value, STEPS) / STEPS;
   const mag = 10 ** Math.floor(Math.log10(raw));
-  const step = [1, 2, 2.5, 5, 10].map((m) => m * mag).find((s) => s >= raw) ?? raw;
-  return { top: step * STEPS, ticks: Array.from({ length: STEPS + 1 }, (_, i) => Math.round(step * i * 100) / 100) };
+  const step =
+    [1, 2, 2.5, 5, 10].map((m) => m * mag).find((s) => s >= raw) ?? raw;
+  return {
+    top: step * STEPS,
+    ticks: Array.from(
+      { length: STEPS + 1 },
+      (_, i) => Math.round(step * i * 100) / 100
+    ),
+  };
 }
 
 function useWidth() {
@@ -108,7 +136,9 @@ function useWidth() {
     const el = ref.current;
     if (!el) return;
     setWidth(el.getBoundingClientRect().width);
-    const observer = new ResizeObserver(([entry]) => setWidth(entry.contentRect.width));
+    const observer = new ResizeObserver(([entry]) =>
+      setWidth(entry.contentRect.width)
+    );
     observer.observe(el);
     return () => observer.disconnect();
   }, []);
@@ -183,7 +213,14 @@ export function ChartCard({
   const innerW = Math.max(width - PAD.left - padRight, 40);
   const innerH = H - PAD.top - PAD.bottom;
   const scaleOf = (axis: "left" | "right") =>
-    fiveSteps(Math.max(0, ...visible.filter((s) => (s.axis ?? "left") === axis).flatMap((s) => s.values)));
+    fiveSteps(
+      Math.max(
+        0,
+        ...visible
+          .filter((s) => (s.axis ?? "left") === axis)
+          .flatMap((s) => s.values)
+      )
+    );
   const scales = { left: scaleOf("left"), right: scaleOf("right") };
   const base = PAD.top + innerH;
   const yFor = (axis: "left" | "right", v: number) =>
@@ -195,10 +232,14 @@ export function ChartCard({
       ? band * (i + 0.5)
       : (innerW * i) / Math.max(data.labels.length - 1, 1));
   const grid = onLeft ? scales.left.ticks : scales.right.ticks;
-  const labelEvery = Math.ceil(data.labels.length / Math.max(Math.floor(innerW / 64), 1));
+  const labelEvery = Math.ceil(
+    data.labels.length / Math.max(Math.floor(innerW / 64), 1)
+  );
   const fmt = (s: { format?: (v: number) => string }) => s.format ?? format;
-  const valueFmt = (s: { format?: (v: number) => string; valueFormat?: (v: number) => string }) =>
-    s.valueFormat ?? s.format ?? format;
+  const valueFmt = (s: {
+    format?: (v: number) => string;
+    valueFormat?: (v: number) => string;
+  }) => s.valueFormat ?? s.format ?? format;
   const leftSeries = visible.find((s) => (s.axis ?? "left") === "left");
   const rightSeries = visible.find((s) => s.axis === "right");
 
@@ -215,7 +256,9 @@ export function ChartCard({
           {
             color: visible[activeIndex]?.color,
             label: "Total",
-            value: valueFmt(visible[activeIndex] ?? {})(sum(visible[activeIndex]?.values ?? [])),
+            value: valueFmt(visible[activeIndex] ?? {})(
+              sum(visible[activeIndex]?.values ?? [])
+            ),
           },
           {
             color: visible[activeIndex]?.color,
@@ -256,7 +299,11 @@ export function ChartCard({
           {(series.length > 1 || toolbar) && (
             <div className="mb-3 flex flex-wrap items-start justify-between gap-x-3 gap-y-2">
               {series.length > 1 ? (
-                <div role="group" aria-label="Séries" className="flex min-w-0 flex-wrap gap-1.5">
+                <div
+                  role="group"
+                  aria-label="Séries"
+                  className="flex min-w-0 flex-wrap gap-1.5"
+                >
                   {series.map((s) => {
                     const on = !hidden.includes(s.id);
                     return (
@@ -270,14 +317,14 @@ export function ChartCard({
                               ? visible.length > 1
                                 ? [...h, s.id]
                                 : h
-                              : h.filter((id) => id !== s.id),
+                              : h.filter((id) => id !== s.id)
                           )
                         }
                         className={cn(
                           "inline-flex min-h-7 items-center gap-1.5 rounded-full px-2.5 py-1 text-left text-xs transition-[background-color,color,opacity,scale] duration-150 ease-out active:scale-[0.97]",
                           on
                             ? "bg-foreground/[0.06] text-foreground"
-                            : "text-muted-foreground opacity-60 hover:opacity-100",
+                            : "text-muted-foreground opacity-60 hover:opacity-100"
                         )}
                       >
                         <span
@@ -285,11 +332,17 @@ export function ChartCard({
                           className="size-2.5 shrink-0 rounded-[3px]"
                           style={{
                             background: on ? s.color : "transparent",
-                            boxShadow: on ? undefined : `inset 0 0 0 1.5px ${s.color}`,
+                            boxShadow: on
+                              ? undefined
+                              : `inset 0 0 0 1.5px ${s.color}`,
                           }}
                         />
                         <span>{s.label}</span>
-                        {s.detail && <span className="text-muted-foreground">{s.detail}</span>}
+                        {s.detail && (
+                          <span className="text-muted-foreground">
+                            {s.detail}
+                          </span>
+                        )}
                       </button>
                     );
                   })}
@@ -297,7 +350,11 @@ export function ChartCard({
               ) : (
                 <span />
               )}
-              {toolbar && <div className="flex shrink-0 items-center gap-1">{toolbar}</div>}
+              {toolbar && (
+                <div className="flex shrink-0 items-center gap-1">
+                  {toolbar}
+                </div>
+              )}
             </div>
           )}
 
@@ -341,7 +398,11 @@ export function ChartCard({
                     y2="1"
                   >
                     <stop offset="0%" stopColor={s.color} stopOpacity={0.28} />
-                    <stop offset="100%" stopColor={s.color} stopOpacity={0.02} />
+                    <stop
+                      offset="100%"
+                      stopColor={s.color}
+                      stopOpacity={0.02}
+                    />
                   </linearGradient>
                 ))}
                 {series.map((s, i) => (
@@ -390,7 +451,11 @@ export function ChartCard({
                           textAnchor="end"
                           fontSize="12"
                           // The series colour mixed with the ink: still its colour, and text-legible on both grounds.
-                          fill={bothAxes ? `color-mix(in oklab, ${leftSeries.color} 60%, var(--foreground))` : "currentColor"}
+                          fill={
+                            bothAxes
+                              ? `color-mix(in oklab, ${leftSeries.color} 60%, var(--foreground))`
+                              : "currentColor"
+                          }
                         >
                           {fmt(leftSeries)(scales.left.ticks[i])}
                         </text>
@@ -421,7 +486,7 @@ export function ChartCard({
                       >
                         {label}
                       </text>
-                    ) : null,
+                    ) : null
                   )}
 
                   {type === "bar"
@@ -429,7 +494,7 @@ export function ChartCard({
                         const gap = 2;
                         const groupW = Math.min(
                           band * 0.72,
-                          18 * visible.length + gap * (visible.length - 1),
+                          18 * visible.length + gap * (visible.length - 1)
                         );
                         const barW =
                           (groupW - gap * (visible.length - 1)) /
@@ -445,7 +510,10 @@ export function ChartCard({
                               width={barW}
                               rx={3}
                               initial={{ y: base, height: 0 }}
-                              animate={{ y: yFor(axis, v), height: base - yFor(axis, v) }}
+                              animate={{
+                                y: yFor(axis, v),
+                                height: base - yFor(axis, v),
+                              }}
                               transition={{
                                 duration: 0.5,
                                 ease: EASE_OUT,
@@ -457,7 +525,9 @@ export function ChartCard({
                                   : s.color
                               }
                               opacity={
-                                activeIndex === null || activeIndex === i ? 1 : 0.4
+                                activeIndex === null || activeIndex === i
+                                  ? 1
+                                  : 0.4
                               }
                               style={{ transition: "opacity 150ms ease-out" }}
                             />
@@ -466,7 +536,9 @@ export function ChartCard({
                       })
                     : visible.map((s) => {
                         const axis = s.axis ?? "left";
-                        const points = s.values.map((v, i) => [x(i), yFor(axis, v)] as const);
+                        const points = s.values.map(
+                          (v, i) => [x(i), yFor(axis, v)] as const
+                        );
                         const line = points
                           .map(([px, py], i) => `${i ? "L" : "M"}${px},${py}`)
                           .join("");
@@ -480,7 +552,10 @@ export function ChartCard({
                                 <motion.path
                                   initial={{ d: area }}
                                   animate={{ d: area }}
-                                  transition={{ duration: 0.4, ease: EASE_IN_OUT }}
+                                  transition={{
+                                    duration: 0.4,
+                                    ease: EASE_IN_OUT,
+                                  }}
                                   fill={`url(#${uid}-fill-${series.findIndex((t) => t.id === s.id)})`}
                                 />
                               </g>
@@ -530,7 +605,10 @@ export function ChartCard({
                         <circle
                           key={s.id}
                           cx={x(activeIndex)}
-                          cy={yFor(s.axis ?? "left", s.values[activeIndex] ?? 0)}
+                          cy={yFor(
+                            s.axis ?? "left",
+                            s.values[activeIndex] ?? 0
+                          )}
                           r={4.5}
                           fill={s.color}
                           stroke="var(--card-inset)"
@@ -547,7 +625,8 @@ export function ChartCard({
                       x={
                         type === "bar"
                           ? x(i) - band / 2
-                          : x(i) - innerW / Math.max(data.labels.length - 1, 1) / 2
+                          : x(i) -
+                            innerW / Math.max(data.labels.length - 1, 1) / 2
                       }
                       y={PAD.top}
                       width={
@@ -577,7 +656,10 @@ export function ChartCard({
                     donut
                       ? { left: "50%", transform: "translateX(-50%)" }
                       : {
-                          left: Math.min(Math.max(x(activeIndex) - 72, 0), Math.max(width - 200, 0)),
+                          left: Math.min(
+                            Math.max(x(activeIndex) - 72, 0),
+                            Math.max(width - 200, 0)
+                          ),
                           transformOrigin: "top center",
                         }
                   }
@@ -653,14 +735,19 @@ function TooltipRows({
     <>
       <p className="mb-1 font-medium">{title}</p>
       {rows.map((row) => (
-        <p key={row.label} className="flex items-center gap-2 text-muted-foreground">
+        <p
+          key={row.label}
+          className="flex items-center gap-2 text-muted-foreground"
+        >
           <span
             aria-hidden="true"
             className="size-2 rounded-[2px]"
             style={{ background: row.color }}
           />
           <span className="flex-1">{row.label}</span>
-          <span className="font-mono text-foreground tabular-nums">{row.value}</span>
+          <span className="font-mono text-foreground tabular-nums">
+            {row.value}
+          </span>
         </p>
       ))}
       {note && <p className="mt-1 text-muted-foreground">{note}</p>}
@@ -690,7 +777,7 @@ function Donut({
   const c = 2 * Math.PI * r;
   const gap = series.length > 1 ? 2 : 0;
   const starts = series.map((_, i) =>
-    series.slice(0, i).reduce((n, s) => n + (sum(s.values) / total) * c, 0),
+    series.slice(0, i).reduce((n, s) => n + (sum(s.values) / total) * c, 0)
   );
 
   return (

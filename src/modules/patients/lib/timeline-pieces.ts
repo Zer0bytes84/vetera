@@ -1,7 +1,14 @@
 import type { ConsultationDocument, Invoice, Prescription } from "@/types/db";
-import { DOCUMENT_TYPES, type PatientDocument } from "@/modules/documents/document-domain";
+import {
+  DOCUMENT_TYPES,
+  type PatientDocument,
+} from "@/modules/documents/document-domain";
 
-export type TimelinePieceKind = "prescription" | "invoice" | "result" | "document";
+export type TimelinePieceKind =
+  | "prescription"
+  | "invoice"
+  | "result"
+  | "document";
 
 /** A paper the visit produced: prescription, invoice, analysis result, document. */
 export interface TimelinePiece {
@@ -65,7 +72,13 @@ export function collectTimelinePieces({
       id: `invoice-${invoice.id}`,
       kind: "invoice",
       label: "Facture",
-      detail: [invoice.number, invoice.documentStatus === "void" ? INVOICE_STATUS.void : ""].filter(Boolean).join(" · ") || undefined,
+      detail:
+        [
+          invoice.number,
+          invoice.documentStatus === "void" ? INVOICE_STATUS.void : "",
+        ]
+          .filter(Boolean)
+          .join(" · ") || undefined,
       appointmentId: invoice.appointmentId || null,
       sourceId: invoice.id,
     });
@@ -86,8 +99,16 @@ export function collectTimelinePieces({
     pieces.push({
       at: document.finalizedAt || document.createdAt,
       id: `document-${document.id}`,
-      kind: document.kind === "prescription" ? "prescription" : document.kind === "import" ? "result" : "document",
-      label: document.kind === "import" ? "Document importé" : DOCUMENT_TYPES[document.kind],
+      kind:
+        document.kind === "prescription"
+          ? "prescription"
+          : document.kind === "import"
+            ? "result"
+            : "document",
+      label:
+        document.kind === "import"
+          ? "Document importé"
+          : DOCUMENT_TYPES[document.kind],
       detail: document.title || undefined,
       appointmentId: document.consultationId,
       sourceId: document.id,
@@ -97,7 +118,10 @@ export function collectTimelinePieces({
 }
 
 /** Pieces of each visit, and the pieces no visit produced. */
-export function piecesByVisit(pieces: readonly TimelinePiece[], visitIds: ReadonlySet<string>) {
+export function piecesByVisit(
+  pieces: readonly TimelinePiece[],
+  visitIds: ReadonlySet<string>
+) {
   const attached = new Map<string, TimelinePiece[]>();
   const loose: TimelinePiece[] = [];
   for (const piece of pieces) {

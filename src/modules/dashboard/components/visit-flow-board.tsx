@@ -150,7 +150,9 @@ export function VisitFlowBoard({
                   )}
                   <p>
                     {next
-                      ? [next.species, next.ownerName].filter(Boolean).join(" · ")
+                      ? [next.species, next.ownerName]
+                          .filter(Boolean)
+                          .join(" · ")
                       : today.length
                         ? `${completed} consultation${completed > 1 ? "s" : ""} terminée${completed > 1 ? "s" : ""}${absent ? ` · ${absent} absence${absent > 1 ? "s" : ""}` : ""}. Retrouvez le parcours de chaque visite dans Flux.`
                         : "Les visites du jour apparaîtront ici et dans Flux."}
@@ -231,7 +233,9 @@ export function VisitFlowBoard({
                   {queue.slice(0, 3).map(({ entry, position, estimatedAt }) => (
                     <li key={entry.appointment.id}>
                       <span className="visit-flow-queue-row">
-                        <span className="visit-flow-queue-number">{position}</span>
+                        <span className="visit-flow-queue-number">
+                          {position}
+                        </span>
                         <span>{entry.patientName}</span>
                         <span className="visit-flow-queue-eta">
                           vers <time>{formatTime(estimatedAt)}</time>

@@ -8,8 +8,19 @@
  * `negative`, `warning` are our tones; never the TuffUI theme); text is French, never under 12 px; no demo data.
  */
 
-import { Undo2, MessageCircleMore, Check, type LucideIcon, PencilLine } from "lucide-react";
-import { AnimatePresence, LayoutGroup, MotionConfig, motion } from "motion/react";
+import {
+  Undo2,
+  MessageCircleMore,
+  Check,
+  type LucideIcon,
+  PencilLine,
+} from "lucide-react";
+import {
+  AnimatePresence,
+  LayoutGroup,
+  MotionConfig,
+  motion,
+} from "motion/react";
 import { useEffect, useId, useRef, useState, type KeyboardEvent } from "react";
 import { Button } from "@/components/ui/action-button";
 import { StatusPill } from "@/components/ui/status-pill";
@@ -107,7 +118,7 @@ export function AgentQuestion({
     setSelected(
       selected.includes(optionId)
         ? selected.filter((x) => x !== optionId)
-        : [...selected, optionId],
+        : [...selected, optionId]
     );
   };
   const undo = () => {
@@ -119,11 +130,20 @@ export function AgentQuestion({
 
   // Roving focus: arrows move between cards, following the grid's column count.
   const onGridKey = (e: KeyboardEvent<HTMLDivElement>) => {
-    const cards = [...(grid.current?.querySelectorAll<HTMLElement>("[data-card]") ?? [])];
+    const cards = [
+      ...(grid.current?.querySelectorAll<HTMLElement>("[data-card]") ?? []),
+    ];
     const i = cards.indexOf(document.activeElement as HTMLElement);
     if (i < 0) return;
-    const cols = getComputedStyle(grid.current!).gridTemplateColumns.split(" ").length;
-    const step = { ArrowRight: 1, ArrowLeft: -1, ArrowDown: cols, ArrowUp: -cols }[e.key];
+    const cols = getComputedStyle(grid.current!).gridTemplateColumns.split(
+      " "
+    ).length;
+    const step = {
+      ArrowRight: 1,
+      ArrowLeft: -1,
+      ArrowDown: cols,
+      ArrowUp: -cols,
+    }[e.key];
     if (!step) return;
     e.preventDefault();
     cards[Math.min(Math.max(i + step, 0), cards.length - 1)]?.focus();
@@ -138,7 +158,9 @@ export function AgentQuestion({
         <div className="flex items-center gap-3 pt-1.5 pr-2 pb-3 pl-1.5">
           <IconTile icon={MessageCircleMore} />
           <div className="min-w-0 flex-1">
-            <p className="text-xs text-muted-foreground">Question de l’{agent}</p>
+            <p className="text-xs text-muted-foreground">
+              Question de l’{agent}
+            </p>
             <h3
               id={`${id}-q`}
               className="mt-0.5 text-[1rem] font-medium text-pretty"
@@ -150,7 +172,8 @@ export function AgentQuestion({
         {status === "pending" && data.suggested && suggested && (
           <p className="-mt-1 flex items-start gap-1.5 px-3.5 pb-3 text-[0.8125rem] text-muted-foreground">
             <span>
-              Suggestion : <span className="text-foreground">{suggested.label}</span> —{" "}
+              Suggestion :{" "}
+              <span className="text-foreground">{suggested.label}</span> —{" "}
               {data.suggested.reason}
             </span>
           </p>
@@ -200,7 +223,11 @@ export function AgentQuestion({
                       className="h-9 min-w-0 flex-1 bg-transparent px-2 text-sm outline-none placeholder:text-muted-foreground"
                     />
                     {!data.multiple && (
-                      <Button type="submit" variant="primary" disabled={!other.trim()}>
+                      <Button
+                        type="submit"
+                        variant="primary"
+                        disabled={!other.trim()}
+                      >
                         Répondre
                       </Button>
                     )}
@@ -214,7 +241,6 @@ export function AgentQuestion({
                     className="flex min-h-16 items-center gap-3 rounded-2xl bg-[var(--card-inset)]/50 p-3.5 text-left text-sm text-muted-foreground transition-[color,background-color,scale] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] hover:bg-[var(--card-inset)] hover:text-foreground active:scale-[0.98]"
                   >
                     <PencilLine
-                     
                       className="size-4 shrink-0"
                       aria-hidden="true"
                     />
@@ -283,7 +309,10 @@ export function AgentQuestion({
                       variant="primary"
                       size="md"
                       onClick={() =>
-                        submit({ optionIds: selected, other: other.trim() || undefined })
+                        submit({
+                          optionIds: selected,
+                          other: other.trim() || undefined,
+                        })
                       }
                     >
                       Envoyer {count} {count === 1 ? "choix" : "choix"}
@@ -331,7 +360,7 @@ function Card({
             "flex size-8 shrink-0 items-center justify-center rounded-xl",
             checked
               ? "bg-brand text-white"
-              : "bg-foreground/[0.05] text-muted-foreground",
+              : "bg-foreground/[0.05] text-muted-foreground"
           )}
         >
           <Icon className="size-4" aria-hidden="true" />
@@ -363,7 +392,7 @@ function Card({
   );
   const base = cn(
     "flex min-h-16 items-start gap-3 rounded-2xl p-3.5 text-left",
-    checked ? "bg-brand/10" : "bg-[var(--card-inset)]",
+    checked ? "bg-brand/10" : "bg-[var(--card-inset)]"
   );
   return (
     <motion.div layoutId={`card-${option.id}`} transition={morph}>
@@ -378,7 +407,7 @@ function Card({
           className={cn(
             base,
             "w-full transition-[background-color,scale] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] hover:bg-surface-raised/60 active:scale-[0.98]",
-            checked && "hover:bg-brand/15",
+            checked && "hover:bg-brand/15"
           )}
           {...props}
         >
@@ -407,7 +436,11 @@ function Settled({
   return (
     <>
       <span className="flex items-center gap-1.5 px-1.5 text-muted-foreground">
-        <Check strokeWidth={2.5} className="size-3.5 text-positive" aria-hidden="true" />
+        <Check
+          strokeWidth={2.5}
+          className="size-3.5 text-positive"
+          aria-hidden="true"
+        />
         {status === "answered" ? "Réponse envoyée" : "L’assistant choisira"}
       </span>
       <AnimatePresence>

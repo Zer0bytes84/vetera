@@ -11,7 +11,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import {
   ChevronDown,
   CircleNotch,
@@ -22,7 +26,11 @@ import {
   X,
 } from "@/lib/icons";
 import { toast } from "sonner";
-import { Check as CheckIcon, Copy as CopyIcon, Plus as PlusIcon } from "lucide-react";
+import {
+  Check as CheckIcon,
+  Copy as CopyIcon,
+  Plus as PlusIcon,
+} from "lucide-react";
 import { Button as ActionButton } from "@/components/ui/action-button";
 import { PromptSuggestions } from "@/components/ui/prompt-suggestions";
 import { SourceList } from "@/components/ui/source-list";
@@ -115,7 +123,7 @@ function Passage({ text, query }: { text: string; query: string }) {
           </mark>
         ) : (
           <span key={index}>{segment.text}</span>
-        ),
+        )
       )}
     </p>
   );
@@ -126,7 +134,9 @@ export function PatientDocumentSearch({
   onInsertExcerpt,
 }: PatientDocumentSearchProps) {
   const dictation = useLocalConsultationAi();
-  const [audience, setAudience] = useState<"patient" | "all">(patientId ? "patient" : "all");
+  const [audience, setAudience] = useState<"patient" | "all">(
+    patientId ? "patient" : "all"
+  );
   const [ready, setReady] = useState(false);
   const [busy, setBusy] = useState(false);
   const [query, setQuery] = useState("");
@@ -139,10 +149,17 @@ export function PatientDocumentSearch({
   const [results, setResults] = useState<SearchResult[]>([]);
   const active = useRef<AbortController | null>(null);
   // The last operation the assistant ran, shown as one folded row: what it did, how long it took, what it found.
-  const [lastRun, setLastRun] = useState<{ id: number; name: string; startedAt: number; durationMs?: number } | null>(null);
+  const [lastRun, setLastRun] = useState<{
+    id: number;
+    name: string;
+    startedAt: number;
+    durationMs?: number;
+  } | null>(null);
 
   // Une nouvelle transcription remplace la requête, dès le rendu qui la reçoit (corrigé au rendu, sans effet).
-  const [seenTranscription, setSeenTranscription] = useState<string | null>(null);
+  const [seenTranscription, setSeenTranscription] = useState<string | null>(
+    null
+  );
   if (dictation.transcription !== seenTranscription) {
     setSeenTranscription(dictation.transcription);
     if (dictation.transcription) {
@@ -173,7 +190,7 @@ export function PatientDocumentSearch({
         setResults([]);
         setLastRun(null);
         setMessage(
-          "Dossier modifié. La recherche réactualisera les sources validées.",
+          "Dossier modifié. La recherche réactualisera les sources validées."
         );
       }
     };
@@ -193,153 +210,166 @@ export function PatientDocumentSearch({
     const startedAt = Date.now();
     setLastRun({
       id: startedAt,
-      name: indexOnly ? "Actualisation de l’index" : "Recherche dans les dossiers",
+      name: indexOnly
+        ? "Actualisation de l’index"
+        : "Recherche dans les dossiers",
       startedAt,
     });
 
-    return await guard(async () => {
-      if (indexOnly) {
-        const count =
-          audience === "all" || !patientId
-            ? await indexAllPatientsDocuments(controller.signal, (event) =>
-                setMessage(event.message),
-              )
-            : await indexPatientDocuments(
-                patientId,
-                controller.signal,
-                (event) => setMessage(event.message),
-              );
-        if (!controller.signal.aborted) {
-          setMessage(
-            count
-              ? `${count.toLocaleString("fr-FR")} extraits validés et indexés.`
-              : "L’index des sources validées est à jour.",
-          );
-        }
-      } else {
-        if (!searchQuery.trim()) {
-          setError("Veuillez saisir une recherche ou choisir une suggestion.");
-          setBusy(false);
-          return;
-        }
-
-        const isAllTypes = type === "all";
-        const targetSources: SourceType[] = isAllTypes
-          ? [
-              "soap",
-              "document",
-              "protocol",
-              "consultation",
-              "patient",
-              "product",
-            ]
-          : [type as SourceType];
-        const targetSections: SearchSection[] = isAllTypes
-          ? [
-              "subjective",
-              "objective",
-              "assessment",
-              "plan",
-              "document",
-              "protocol",
-              "consultation",
-              "patient",
-              "product",
-            ]
-          : type === "soap"
-            ? section === "all"
-              ? SOAP_ALL_SECTIONS
-              : [section as SearchSection]
-            : [type as SearchSection];
-
-        const filters = { sourceTypes: targetSources, sections: targetSections };
-        const found =
-          audience === "all" || !patientId
-            ? await searchAllPatientsClinical(
-                filters,
-                searchQuery,
-                controller.signal,
-                (event) => setMessage(event.message),
-              )
-            : await searchPatientDocuments(
-                {
+    return await guard(
+      async () => {
+        if (indexOnly) {
+          const count =
+            audience === "all" || !patientId
+              ? await indexAllPatientsDocuments(controller.signal, (event) =>
+                  setMessage(event.message)
+                )
+              : await indexPatientDocuments(
                   patientId,
-                  sourceTypes: targetSources.filter((t) =>
-                    ["soap", "document", "protocol"].includes(t),
-                  ) as SourceType[],
-                  sections: targetSections.filter((s) =>
-                    [
-                      "subjective",
-                      "objective",
-                      "assessment",
-                      "plan",
-                      "document",
-                      "protocol",
-                    ].includes(s),
-                  ) as SearchSection[],
-                },
-                searchQuery,
-                controller.signal,
-                (event) => setMessage(event.message),
-              );
+                  controller.signal,
+                  (event) => setMessage(event.message)
+                );
+          if (!controller.signal.aborted) {
+            setMessage(
+              count
+                ? `${count.toLocaleString("fr-FR")} extraits validés et indexés.`
+                : "L’index des sources validées est à jour."
+            );
+          }
+        } else {
+          if (!searchQuery.trim()) {
+            setError(
+              "Veuillez saisir une recherche ou choisir une suggestion."
+            );
+            setBusy(false);
+            return;
+          }
 
-        if (!controller.signal.aborted) {
-          setResults(found);
-          setSearchedQuery(searchQuery);
-          setMessage(
-            found.length
-              ? `${found.length} passage${found.length > 1 ? "s" : ""} trouvé${found.length > 1 ? "s" : ""}`
-              : "Aucun passage validé suffisamment proche pour cette recherche.",
-          );
+          const isAllTypes = type === "all";
+          const targetSources: SourceType[] = isAllTypes
+            ? [
+                "soap",
+                "document",
+                "protocol",
+                "consultation",
+                "patient",
+                "product",
+              ]
+            : [type as SourceType];
+          const targetSections: SearchSection[] = isAllTypes
+            ? [
+                "subjective",
+                "objective",
+                "assessment",
+                "plan",
+                "document",
+                "protocol",
+                "consultation",
+                "patient",
+                "product",
+              ]
+            : type === "soap"
+              ? section === "all"
+                ? SOAP_ALL_SECTIONS
+                : [section as SearchSection]
+              : [type as SearchSection];
+
+          const filters = {
+            sourceTypes: targetSources,
+            sections: targetSections,
+          };
+          const found =
+            audience === "all" || !patientId
+              ? await searchAllPatientsClinical(
+                  filters,
+                  searchQuery,
+                  controller.signal,
+                  (event) => setMessage(event.message)
+                )
+              : await searchPatientDocuments(
+                  {
+                    patientId,
+                    sourceTypes: targetSources.filter((t) =>
+                      ["soap", "document", "protocol"].includes(t)
+                    ) as SourceType[],
+                    sections: targetSections.filter((s) =>
+                      [
+                        "subjective",
+                        "objective",
+                        "assessment",
+                        "plan",
+                        "document",
+                        "protocol",
+                      ].includes(s)
+                    ) as SearchSection[],
+                  },
+                  searchQuery,
+                  controller.signal,
+                  (event) => setMessage(event.message)
+                );
+
+          if (!controller.signal.aborted) {
+            setResults(found);
+            setSearchedQuery(searchQuery);
+            setMessage(
+              found.length
+                ? `${found.length} passage${found.length > 1 ? "s" : ""} trouvé${found.length > 1 ? "s" : ""}`
+                : "Aucun passage validé suffisamment proche pour cette recherche."
+            );
+          }
         }
+      },
+      {
+        recover: (failure) => {
+          if (!controller.signal.aborted) {
+            setError(
+              failure instanceof Error
+                ? failure.message
+                : "La recherche n’a pas abouti."
+            );
+          }
+        },
+        cleanup: () => {
+          if (active.current === controller) {
+            active.current = null;
+            setBusy(false);
+            setLastRun((previous) =>
+              previous && previous.startedAt === startedAt
+                ? { ...previous, durationMs: Date.now() - startedAt }
+                : previous
+            );
+          }
+        },
       }
-    }, {
-      recover: (failure) => {
-        if (!controller.signal.aborted) {
-          setError(
-            failure instanceof Error
-              ? failure.message
-              : "La recherche n’a pas abouti.",
-          );
-        }
-      },
-      cleanup: () => {
-        if (active.current === controller) {
-          active.current = null;
-          setBusy(false);
-          setLastRun((previous) =>
-            previous && previous.startedAt === startedAt
-              ? { ...previous, durationMs: Date.now() - startedAt }
-              : previous,
-          );
-        }
-      },
-    });
+    );
   };
 
   const install = async () => {
     setBusy(true);
     setError("");
     setMessage("Installation de la recherche locale…");
-    await guard(async () => {
-      const models = await importLocalModel("embeddinggemma");
-      if (models) {
-        setReady(!!models.embeddingReady);
-        setMessage("La recherche locale est prête.");
-        toast.success("Recherche locale configurée.");
-      } else {
-        setMessage("");
+    await guard(
+      async () => {
+        const models = await importLocalModel("embeddinggemma");
+        if (models) {
+          setReady(!!models.embeddingReady);
+          setMessage("La recherche locale est prête.");
+          toast.success("Recherche locale configurée.");
+        } else {
+          setMessage("");
+        }
+      },
+      {
+        recover: () => {
+          setError(
+            "L’installation de la recherche locale a échoué. Vérifiez que les fichiers de la recherche locale sont bien présents sur cet ordinateur."
+          );
+        },
+        cleanup: () => {
+          setBusy(false);
+        },
       }
-    }, {
-      recover: () => {
-        setError(
-          "L’installation de la recherche locale a échoué. Vérifiez que les fichiers de la recherche locale sont bien présents sur cet ordinateur.",
-        );
-      },
-      cleanup: () => {
-        setBusy(false);
-      },
-    });
+    );
   };
 
   const dictate = async () => {
@@ -388,10 +418,16 @@ export function PatientDocumentSearch({
         <div className="space-y-1">
           <h4 className="t-14 font-medium">Recherche dans les dossiers</h4>
           <p className="max-w-[300px] t-12 text-muted-foreground">
-            Elle fonctionne entièrement sur cet ordinateur, sans connexion internet.
+            Elle fonctionne entièrement sur cet ordinateur, sans connexion
+            internet.
           </p>
         </div>
-        <Button size="sm" disabled={locked} onClick={() => void install()} className="gap-2">
+        <Button
+          size="sm"
+          disabled={locked}
+          onClick={() => void install()}
+          className="gap-2"
+        >
           {busy ? <CircleNotch className="size-3.5 animate-spin" /> : null}
           Installer la recherche locale
         </Button>
@@ -448,7 +484,9 @@ export function PatientDocumentSearch({
                 render={
                   <button
                     type="button"
-                    aria-label={listening ? "Arrêter la dictée" : "Dicter la recherche"}
+                    aria-label={
+                      listening ? "Arrêter la dictée" : "Dicter la recherche"
+                    }
                     disabled={busy || (dictation.busy && !listening)}
                     onClick={() => void dictate()}
                     className={
@@ -465,7 +503,9 @@ export function PatientDocumentSearch({
                   <Microphone className="size-3.5" />
                 )}
               </TooltipTrigger>
-              <TooltipContent>{listening ? "Arrêter la dictée" : "Dicter"}</TooltipContent>
+              <TooltipContent>
+                {listening ? "Arrêter la dictée" : "Dicter"}
+              </TooltipContent>
             </Tooltip>
           </div>
         </div>
@@ -504,7 +544,11 @@ export function PatientDocumentSearch({
                 resetResults();
               }}
             >
-              <DropdownMenuRadioItem value="patient" disabled={!patientId} className="t-12">
+              <DropdownMenuRadioItem
+                value="patient"
+                disabled={!patientId}
+                className="t-12"
+              >
                 Ce dossier patient
               </DropdownMenuRadioItem>
               <DropdownMenuRadioItem value="all" className="t-12">
@@ -518,12 +562,18 @@ export function PatientDocumentSearch({
               onValueChange={(value) => {
                 const source = (value ?? "all") as SourceType | "all";
                 setType(source);
-                setSection(source === "soap" || source === "all" ? "all" : source);
+                setSection(
+                  source === "soap" || source === "all" ? "all" : source
+                );
                 setResults([]);
               }}
             >
               {SOURCES.map((item) => (
-                <DropdownMenuRadioItem key={item.key} value={item.key} className="t-12">
+                <DropdownMenuRadioItem
+                  key={item.key}
+                  value={item.key}
+                  className="t-12"
+                >
                   {item.label}
                 </DropdownMenuRadioItem>
               ))}
@@ -540,7 +590,11 @@ export function PatientDocumentSearch({
                   }}
                 >
                   {SECTIONS.map((item) => (
-                    <DropdownMenuRadioItem key={item.key} value={item.key} className="t-12">
+                    <DropdownMenuRadioItem
+                      key={item.key}
+                      value={item.key}
+                      className="t-12"
+                    >
                       {item.label}
                     </DropdownMenuRadioItem>
                   ))}
@@ -548,7 +602,10 @@ export function PatientDocumentSearch({
               </>
             )}
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="gap-2 t-12" onClick={() => void run(true)}>
+            <DropdownMenuItem
+              className="gap-2 t-12"
+              onClick={() => void run(true)}
+            >
               <RefreshCw className="size-3.5" />
               Actualiser l’index
             </DropdownMenuItem>
@@ -556,14 +613,19 @@ export function PatientDocumentSearch({
         </DropdownMenu>
 
         {!lastRun && (busy || dictation.busy) ? (
-          <span role="status" className="flex min-w-0 items-center gap-1.5 t-12 text-muted-foreground">
+          <span
+            role="status"
+            className="flex min-w-0 items-center gap-1.5 t-12 text-muted-foreground"
+          >
             <CircleNotch className="size-3 shrink-0 animate-spin" />
             <span className="assistant-thinking-text truncate">
               {dictation.busy ? dictation.progress.message : message}
             </span>
           </span>
         ) : (
-          !lastRun && message && !error && (
+          !lastRun &&
+          message &&
+          !error && (
             <span role="status" className="truncate t-12 text-muted-foreground">
               {message}
             </span>
@@ -611,7 +673,10 @@ export function PatientDocumentSearch({
             {!query.trim() && (
               <PromptSuggestions
                 className="items-center"
-                data={SUGGESTED_QUERIES.map((suggested) => ({ id: suggested, title: suggested }))}
+                data={SUGGESTED_QUERIES.map((suggested) => ({
+                  id: suggested,
+                  title: suggested,
+                }))}
                 heading="Suggestions"
                 onSelect={(_, prompt) => {
                   setQuery(prompt);
@@ -631,7 +696,9 @@ export function PatientDocumentSearch({
               const passage = bestPassage(result.text, searchedQuery);
               return {
                 id: uniqueKey,
-                group: SOURCES.find((item) => item.key === result.sourceType)?.label ?? "Source",
+                group:
+                  SOURCES.find((item) => item.key === result.sourceType)
+                    ?.label ?? "Source",
                 title:
                   (audience === "all" || !patientId) && result.patientName
                     ? result.patientName

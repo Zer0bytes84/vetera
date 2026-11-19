@@ -233,10 +233,10 @@ export function AgendaView(props: AgendaViewProps) {
   };
   const dayRows = tableRowsByTab.selection;
   const dayCompleted = dayRows.filter(
-    (row) => row.appointment.status === "completed",
+    (row) => row.appointment.status === "completed"
   ).length;
   const dayUrgent = dayRows.filter(
-    (row) => row.appointment.type === "Urgence",
+    (row) => row.appointment.type === "Urgence"
   ).length;
   const daySummaryLabel =
     dayRows.length === 0
@@ -258,7 +258,7 @@ export function AgendaView(props: AgendaViewProps) {
   // Suite proposée par le panneau de charge quand la journée est libre.
   const nextAppointmentAfterDay = findNextAppointmentAfter(
     appointments,
-    selectedDate,
+    selectedDate
   );
   const selectedAppointmentDate = selectedAppointment
     ? normalizeDate(selectedAppointment.startTime)
@@ -301,7 +301,7 @@ export function AgendaView(props: AgendaViewProps) {
                 ? "auto"
                 : "smooth",
               block: "nearest",
-            }),
+            })
           );
         }}
         onSelectDate={(date) => {
@@ -417,7 +417,7 @@ export function AgendaView(props: AgendaViewProps) {
                           <NativeSelectOption key={status} value={status}>
                             {meta.label}
                           </NativeSelectOption>
-                        ),
+                        )
                       )}
                     </NativeSelect>
                     {hasActiveFilters ? (
@@ -580,7 +580,7 @@ export function AgendaView(props: AgendaViewProps) {
                           day: "numeric",
                           month: "long",
                           year: "numeric",
-                        },
+                        }
                       )}
                     </span>
                   </div>
@@ -965,7 +965,7 @@ export function AgendaView(props: AgendaViewProps) {
                             />
                             <span>
                               {t(
-                                `scheduling.recurrence.frequencies.${freq.value}`,
+                                `scheduling.recurrence.frequencies.${freq.value}`
                               )}
                             </span>
                           </label>
@@ -983,7 +983,7 @@ export function AgendaView(props: AgendaViewProps) {
                         <div className="flex flex-wrap gap-2">
                           {DAY_OF_WEEK_LABELS.map((day) => {
                             const checked = recurrenceDaysOfWeek.includes(
-                              day.value,
+                              day.value
                             );
                             return (
                               <Button
@@ -992,7 +992,7 @@ export function AgendaView(props: AgendaViewProps) {
                                   setRecurrenceDaysOfWeek((current) =>
                                     checked
                                       ? current.filter((d) => d !== day.value)
-                                      : [...current, day.value].sort(),
+                                      : [...current, day.value].sort()
                                   );
                                 }}
                                 size="sm"
@@ -1031,7 +1031,7 @@ export function AgendaView(props: AgendaViewProps) {
                           onChange={(event) => {
                             const raw = event.target.value.trim();
                             setRecurrenceMaxOccurrences(
-                              raw === "" ? null : Math.max(1, Number(raw)),
+                              raw === "" ? null : Math.max(1, Number(raw))
                             );
                           }}
                           type="number"
@@ -1043,7 +1043,7 @@ export function AgendaView(props: AgendaViewProps) {
                             {
                               defaultValue:
                                 "Laissez vide pour une récurrence sans limite (jusqu'à la date de fin).",
-                            },
+                            }
                           )}
                         </FieldDescription>
                       </Field>
@@ -1165,7 +1165,7 @@ export function AgendaView(props: AgendaViewProps) {
                   className="h-11 min-w-[120px] justify-center"
                   onClick={() => {
                     const current = appointments.find(
-                      (appointment) => appointment.id === editingAppointmentId,
+                      (appointment) => appointment.id === editingAppointmentId
                     );
                     if (current) {
                       void deleteAppointment(current);

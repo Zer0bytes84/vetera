@@ -12,8 +12,15 @@ export interface Box {
  * screen, favouring cards in line with the current one. Works the same in
  * the horizontal grid of planned visits and in the columns.
  */
-export function nearestInDirection<T extends { box: Box }>(from: Box, candidates: readonly T[], direction: Direction): T | null {
-  const center = { x: (from.left + from.right) / 2, y: (from.top + from.bottom) / 2 };
+export function nearestInDirection<T extends { box: Box }>(
+  from: Box,
+  candidates: readonly T[],
+  direction: Direction
+): T | null {
+  const center = {
+    x: (from.left + from.right) / 2,
+    y: (from.top + from.bottom) / 2,
+  };
   let best: T | null = null;
   let bestScore = Infinity;
   for (const candidate of candidates) {
@@ -22,12 +29,18 @@ export function nearestInDirection<T extends { box: Box }>(from: Box, candidates
     const cy = (box.top + box.bottom) / 2;
     // Edge distance along the arrow, so touching neighbours count as next.
     const along =
-      direction === "right" ? box.left - from.right
-      : direction === "left" ? from.left - box.right
-      : direction === "down" ? box.top - from.bottom
-      : from.top - box.bottom;
+      direction === "right"
+        ? box.left - from.right
+        : direction === "left"
+          ? from.left - box.right
+          : direction === "down"
+            ? box.top - from.bottom
+            : from.top - box.bottom;
     if (along < -4) continue;
-    const across = direction === "left" || direction === "right" ? Math.abs(cy - center.y) : Math.abs(cx - center.x);
+    const across =
+      direction === "left" || direction === "right"
+        ? Math.abs(cy - center.y)
+        : Math.abs(cx - center.x);
     // Overlapping rows or columns are "in line" and win over closer diagonals.
     const overlaps =
       direction === "left" || direction === "right"

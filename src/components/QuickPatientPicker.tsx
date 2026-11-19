@@ -4,14 +4,21 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Kbd } from "@/components/ui/kbd";
 import { usePatientsRepository } from "@/data/repositories";
 import { getSpeciesGlyph } from "@/lib/species-icons";
 import type { Owner, Patient } from "@/types/db";
 
-const ownerName = (owner?: Owner) => (owner ? `${owner.lastName} ${owner.firstName}`.trim() : "");
+const ownerName = (owner?: Owner) =>
+  owner ? `${owner.lastName} ${owner.firstName}`.trim() : "";
 
 interface QuickPatientPickerProps {
   description: string;
@@ -30,7 +37,10 @@ export function QuickPatientPicker({
 }: QuickPatientPickerProps) {
   const { t } = useTranslation();
   const { data: patients, owners } = usePatientsRepository();
-  const ownersById = useMemo(() => new Map(owners.map((owner) => [owner.id, owner])), [owners]);
+  const ownersById = useMemo(
+    () => new Map(owners.map((owner) => [owner.id, owner])),
+    [owners]
+  );
   const [query, setQuery] = useState("");
   const [prevOpen, setPrevOpen] = useState(open);
 
@@ -94,7 +104,9 @@ export function QuickPatientPicker({
             <ul className="divide-y divide-hairline">
               {filtered.map((patient) => {
                 const owner = ownersById.get(patient.ownerId);
-                const details = [patient.species, patient.breed].filter(Boolean).join(" · ");
+                const details = [patient.species, patient.breed]
+                  .filter(Boolean)
+                  .join(" · ");
                 return (
                   <li key={patient.id}>
                     <button
@@ -115,10 +127,18 @@ export function QuickPatientPicker({
                       </div>
                       <div className="flex min-w-0 flex-1 flex-col">
                         <span className="flex min-w-0 items-baseline gap-2">
-                          <span className="truncate font-medium text-sm">{patient.name}</span>
-                          {owner && <span className="truncate t-13 text-foreground">{ownerName(owner)}</span>}
+                          <span className="truncate font-medium text-sm">
+                            {patient.name}
+                          </span>
+                          {owner && (
+                            <span className="truncate t-13 text-foreground">
+                              {ownerName(owner)}
+                            </span>
+                          )}
                         </span>
-                        <span className="truncate t-12 text-muted-foreground">{details}</span>
+                        <span className="truncate t-12 text-muted-foreground">
+                          {details}
+                        </span>
                       </div>
                     </button>
                   </li>

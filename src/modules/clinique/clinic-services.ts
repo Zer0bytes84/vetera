@@ -13,18 +13,28 @@ const CHANGE_EVENT = "vetera:clinic-services-changed";
 export type ClinicTab = "soins" | "hospitalisation";
 
 /** On unless the stored value says "false": practices that never opened the setting keep everything. */
-export function parseHospitalizationEnabled(stored: string | null | undefined): boolean {
+export function parseHospitalizationEnabled(
+  stored: string | null | undefined
+): boolean {
   return stored !== "false";
 }
 
 /** The one masking rule, for any list of clinic entries (sub-pages or direct sidebar entries). */
-export function isClinicTabVisible(tab: ClinicTab, hospitalizationEnabled: boolean): boolean {
+export function isClinicTabVisible(
+  tab: ClinicTab,
+  hospitalizationEnabled: boolean
+): boolean {
   return tab !== "hospitalisation" || hospitalizationEnabled;
 }
 
 /** A section asked for from outside falls back to Soins when its own is switched off. */
-export function resolveClinicTab(tab: string | null | undefined, hospitalizationEnabled: boolean): ClinicTab {
-  return tab === "hospitalisation" && hospitalizationEnabled ? "hospitalisation" : "soins";
+export function resolveClinicTab(
+  tab: string | null | undefined,
+  hospitalizationEnabled: boolean
+): ClinicTab {
+  return tab === "hospitalisation" && hospitalizationEnabled
+    ? "hospitalisation"
+    : "soins";
 }
 
 let enabled = true;
@@ -61,7 +71,11 @@ function subscribe(listener: () => void) {
 
 /** Whether the practice offers hospitalization (true until the stored setting says otherwise). */
 export function useHospitalizationEnabled(): boolean {
-  return useSyncExternalStore(subscribe, () => enabled, () => true);
+  return useSyncExternalStore(
+    subscribe,
+    () => enabled,
+    () => true
+  );
 }
 
 /** Stores the choice, then tells every mounted reader. Throws when the write fails: the caller reports it. */

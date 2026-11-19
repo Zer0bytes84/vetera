@@ -7,7 +7,10 @@ import { CARE_TASKS_MIGRATION_SQL } from "@/modules/care-tasks/migration";
 import { CARE_COMPLETION_ROLLBACK_MIGRATION_SQL } from "@/modules/care-tasks/completion-rollback-migration";
 import { DOCUMENTS_MIGRATION_SQL } from "@/modules/documents/document-migration";
 import { ROOMS_MIGRATION_SQL } from "@/modules/rooms/migration";
-import { VISIT_FLOW_MIGRATION_SQL, VISIT_FLOW_NO_CHARGE_MIGRATION_SQL } from "@/modules/visit-flow/migration";
+import {
+  VISIT_FLOW_MIGRATION_SQL,
+  VISIT_FLOW_NO_CHARGE_MIGRATION_SQL,
+} from "@/modules/visit-flow/migration";
 import { PATIENT_REFERENCES_MIGRATION_SQL } from "@/modules/patients/reference/migration";
 import {
   MIGRATION_001_SQL,
@@ -124,27 +127,75 @@ export const SQLITE_MIGRATIONS: readonly SqliteMigration[] = [
   },
   { version: "024", name: "daily-care-tasks", sql: CARE_TASKS_MIGRATION_SQL },
   { version: "025", name: "hospitalisation-stays", sql: STAYS_MIGRATION_SQL },
-  { version: "026", name: "patient-reminders", sql: PATIENT_REMINDERS_MIGRATION_SQL },
-  { version: "027", name: "task-reminder-types", sql: TASK_REMINDER_TYPES_MIGRATION_SQL },
-  { version: "028", name: "clinical-stock-consumption", sql: CLINICAL_STOCK_MIGRATION_SQL },
-  { version: "029", name: "clinical-stock-dispensing", sql: DISPENSING_MIGRATION_SQL },
-  { version: "030", name: "stock-movement-identity-snapshots", sql: MOVEMENT_SNAPSHOT_MIGRATION_SQL },
-  { version: "031", name: "stock-lots-and-receipts", sql: STOCK_LOTS_MIGRATION_SQL },
+  {
+    version: "026",
+    name: "patient-reminders",
+    sql: PATIENT_REMINDERS_MIGRATION_SQL,
+  },
+  {
+    version: "027",
+    name: "task-reminder-types",
+    sql: TASK_REMINDER_TYPES_MIGRATION_SQL,
+  },
+  {
+    version: "028",
+    name: "clinical-stock-consumption",
+    sql: CLINICAL_STOCK_MIGRATION_SQL,
+  },
+  {
+    version: "029",
+    name: "clinical-stock-dispensing",
+    sql: DISPENSING_MIGRATION_SQL,
+  },
+  {
+    version: "030",
+    name: "stock-movement-identity-snapshots",
+    sql: MOVEMENT_SNAPSHOT_MIGRATION_SQL,
+  },
+  {
+    version: "031",
+    name: "stock-lots-and-receipts",
+    sql: STOCK_LOTS_MIGRATION_SQL,
+  },
   { version: "032", name: "stock-purchasing", sql: PURCHASING_MIGRATION_SQL },
-  { version: "033", name: "stock-barcodes-and-transfers", sql: STOCK_OPERATIONS_MIGRATION_SQL },
+  {
+    version: "033",
+    name: "stock-barcodes-and-transfers",
+    sql: STOCK_OPERATIONS_MIGRATION_SQL,
+  },
   {
     version: "034",
     name: "repair-product-archival-column",
     skipIfColumnExists: { table: "products", column: "archived_at" },
     sql: "ALTER TABLE products ADD COLUMN archived_at TEXT;",
   },
-  { version: "035", name: "care-completion-rollback", sql: CARE_COMPLETION_ROLLBACK_MIGRATION_SQL },
-  { version: "036", name: "medical-reminders", sql: MEDICAL_REMINDERS_MIGRATION_SQL },
-  { version: "037", name: "managed-patient-documents", sql: DOCUMENTS_MIGRATION_SQL },
+  {
+    version: "035",
+    name: "care-completion-rollback",
+    sql: CARE_COMPLETION_ROLLBACK_MIGRATION_SQL,
+  },
+  {
+    version: "036",
+    name: "medical-reminders",
+    sql: MEDICAL_REMINDERS_MIGRATION_SQL,
+  },
+  {
+    version: "037",
+    name: "managed-patient-documents",
+    sql: DOCUMENTS_MIGRATION_SQL,
+  },
   { version: "038", name: "configurable-rooms", sql: ROOMS_MIGRATION_SQL },
   { version: "039", name: "visit-flow", sql: VISIT_FLOW_MIGRATION_SQL },
-  { version: "040", name: "visit-flow-no-charge", sql: VISIT_FLOW_NO_CHARGE_MIGRATION_SQL },
-  { version: "041", name: "patient-references", sql: PATIENT_REFERENCES_MIGRATION_SQL },
+  {
+    version: "040",
+    name: "visit-flow-no-charge",
+    sql: VISIT_FLOW_NO_CHARGE_MIGRATION_SQL,
+  },
+  {
+    version: "041",
+    name: "patient-references",
+    sql: PATIENT_REFERENCES_MIGRATION_SQL,
+  },
   {
     // How to hold the animal safely (muzzle, two people, sedation first).
     version: "042",
@@ -170,7 +221,10 @@ export const SQLITE_MIGRATIONS: readonly SqliteMigration[] = [
     sql: NOTE_PIN_MIGRATION_SQL,
   },
 ] as const;
-import { LIBRARY_MIGRATION_SQL, NOTE_PIN_MIGRATION_SQL } from "@/modules/documents/library-migration";
+import {
+  LIBRARY_MIGRATION_SQL,
+  NOTE_PIN_MIGRATION_SQL,
+} from "@/modules/documents/library-migration";
 import { DISPENSING_MIGRATION_SQL } from "@/modules/stock/dispensing-migration";
 import { MOVEMENT_SNAPSHOT_MIGRATION_SQL } from "@/modules/stock/movement-snapshot-migration";
 import { STOCK_LOTS_MIGRATION_SQL } from "@/modules/stock/stock-lots-migration";

@@ -50,7 +50,10 @@ import type {
 import { toCentimes } from "@/utils/currency";
 import { useMemo } from "react";
 import { toast } from "sonner";
-import { inventoryService, announceInventoryChanged } from "@/modules/stock/services/inventory-service";
+import {
+  inventoryService,
+  announceInventoryChanged,
+} from "@/modules/stock/services/inventory-service";
 import { useStockInventory } from "@/modules/stock/hooks/use-stock-inventory";
 import { summarizeInventory } from "@/modules/stock/services/inventory-store";
 
@@ -121,10 +124,14 @@ export const appSettingsRepository = {
 };
 
 // Les comparateurs et la date du jour vivent hors des hooks : le compilateur React ne traduit pas `??` dans le test d'un ternaire.
-const byScheduledAtDescending = (a: { scheduledAt?: string | null }, b: { scheduledAt?: string | null }) =>
-  (a.scheduledAt ?? "") < (b.scheduledAt ?? "") ? 1 : -1;
-const byScheduledAtAscending = (a: { scheduledAt?: string | null }, b: { scheduledAt?: string | null }) =>
-  (a.scheduledAt ?? "") < (b.scheduledAt ?? "") ? -1 : 1;
+const byScheduledAtDescending = (
+  a: { scheduledAt?: string | null },
+  b: { scheduledAt?: string | null }
+) => ((a.scheduledAt ?? "") < (b.scheduledAt ?? "") ? 1 : -1);
+const byScheduledAtAscending = (
+  a: { scheduledAt?: string | null },
+  b: { scheduledAt?: string | null }
+) => ((a.scheduledAt ?? "") < (b.scheduledAt ?? "") ? -1 : 1);
 const currentDate = () => new Date();
 
 export function useUsersRepository() {
@@ -239,7 +246,8 @@ export function useAppointmentsRepository() {
       input.room ??
       (input.id
         ? undefined
-        : ((await roomsService.defaultRoomId().catch(() => null)) ?? undefined));
+        : ((await roomsService.defaultRoomId().catch(() => null)) ??
+          undefined));
     assertNoAppointmentConflict(
       {
         id: appointmentId,
@@ -324,7 +332,12 @@ export function useAppointmentsRepository() {
     const totalAmount = toCentimes(totalAmountDa);
     const receivedAmountDa = Math.min(
       totalAmountDa,
-      Math.max(0, Number.isFinite(Number(amountReceivedDa)) ? Number(amountReceivedDa) : totalAmountDa)
+      Math.max(
+        0,
+        Number.isFinite(Number(amountReceivedDa))
+          ? Number(amountReceivedDa)
+          : totalAmountDa
+      )
     );
     const receivedAmount = toCentimes(receivedAmountDa);
 
@@ -353,8 +366,13 @@ export function useAppointmentsRepository() {
         });
       }
 
-      if (invoice.documentStatus !== "draft" && invoice.grossAmount !== totalAmount) {
-        throw new Error("Cette consultation est déjà facturée avec un autre montant. Consultez la facture dans Finances.");
+      if (
+        invoice.documentStatus !== "draft" &&
+        invoice.grossAmount !== totalAmount
+      ) {
+        throw new Error(
+          "Cette consultation est déjà facturée avec un autre montant. Consultez la facture dans Finances."
+        );
       }
 
       if (invoice.documentStatus === "draft") {
@@ -371,7 +389,11 @@ export function useAppointmentsRepository() {
 
       invoiceNumber = invoice.number ?? invoiceNumber;
 
-      if (invoice.documentStatus === "issued" && invoice.balanceAmount > 0 && receivedAmount > 0) {
+      if (
+        invoice.documentStatus === "issued" &&
+        invoice.balanceAmount > 0 &&
+        receivedAmount > 0
+      ) {
         const invoiceDetail = await billingService.getInvoice(invoice.id);
         const paymentSequence = invoiceDetail?.payments.length ?? 0;
         await billingService.recordPayment({
@@ -404,10 +426,15 @@ export function useAppointmentsRepository() {
     if (receivedAmount > 0 && !isTauriRuntime()) {
       // Read persisted rows, not the render snapshot, when retrying an export.
       const existing = getBrowserTable<Transaction>("transactions").find(
-        (entry) => entry.referenceId === appointment.id && entry.type === "income" && entry.status === "paid"
+        (entry) =>
+          entry.referenceId === appointment.id &&
+          entry.type === "income" &&
+          entry.status === "paid"
       );
       if (existing && existing.amount !== receivedAmount) {
-        throw new Error("Un encaissement existe déjà avec un autre montant. Consultez Finances.");
+        throw new Error(
+          "Un encaissement existe déjà avec un autre montant. Consultez Finances."
+        );
       }
       if (!existing) {
         const payment = await transactionsStore.add({
@@ -424,7 +451,14 @@ export function useAppointmentsRepository() {
       }
     }
 
-    return { totalAmount, totalAmountDa, amountReceived: receivedAmount, amountReceivedDa: receivedAmountDa, balanceAmountDa: totalAmountDa - receivedAmountDa, invoiceNumber };
+    return {
+      totalAmount,
+      totalAmountDa,
+      amountReceived: receivedAmount,
+      amountReceivedDa: receivedAmountDa,
+      balanceAmountDa: totalAmountDa - receivedAmountDa,
+      invoiceNumber,
+    };
   };
 
   return {
@@ -680,16 +714,46 @@ export function useTransactionsRepository() {
 export function useProductsRepository() {
   const productsStore = useSQLite<Product>("products");
   const inventory = useStockInventory();
-  const summaries = useMemo(() => summarizeInventory(inventory.balances), [inventory.balances]);
-  const products = useMemo(() => productsStore.data.map(product => {
-    if (!isTauriRuntime()) return product;
-    const summary = summaries.get(product.id);
-    return {...product, ...(inventory.supported ? {availableQuantity: Math.max(0, Math.min(product.quantity, summary?.availableQuantity ?? 0)),
-      expiredQuantity: summary?.expiredQuantity ?? 0, expiringQuantity: summary?.expiringQuantity ?? 0,
-      lotsCount: summary?.lotsCount ?? 0, nearestExpiryDate: summary?.nearestExpiryDate ?? null, inventoryInvalid: summary?.invalid ?? false} : {}),
-      availabilityPending: !inventory.ready};
-  }), [productsStore.data, inventory.supported, inventory.ready, summaries]);
-  const saveProduct = (productId: string | undefined, draft: Partial<Product>, authorId?: string) => inventoryService.saveProduct({id: productId ?? generateId(), create: !productId, draft, authorId});
+  const summaries = useMemo(
+    () => summarizeInventory(inventory.balances),
+    [inventory.balances]
+  );
+  const products = useMemo(
+    () =>
+      productsStore.data.map((product) => {
+        if (!isTauriRuntime()) return product;
+        const summary = summaries.get(product.id);
+        return {
+          ...product,
+          ...(inventory.supported
+            ? {
+                availableQuantity: Math.max(
+                  0,
+                  Math.min(product.quantity, summary?.availableQuantity ?? 0)
+                ),
+                expiredQuantity: summary?.expiredQuantity ?? 0,
+                expiringQuantity: summary?.expiringQuantity ?? 0,
+                lotsCount: summary?.lotsCount ?? 0,
+                nearestExpiryDate: summary?.nearestExpiryDate ?? null,
+                inventoryInvalid: summary?.invalid ?? false,
+              }
+            : {}),
+          availabilityPending: !inventory.ready,
+        };
+      }),
+    [productsStore.data, inventory.supported, inventory.ready, summaries]
+  );
+  const saveProduct = (
+    productId: string | undefined,
+    draft: Partial<Product>,
+    authorId?: string
+  ) =>
+    inventoryService.saveProduct({
+      id: productId ?? generateId(),
+      create: !productId,
+      draft,
+      authorId,
+    });
   const movementsStore = useSQLite<StockMovement>("stock_movements");
   const transactionsStore = useSQLite<Transaction>("transactions");
 
@@ -722,7 +786,18 @@ export function useProductsRepository() {
     if (isTauriRuntime()) {
       const now = toSQLiteTimestamp(new Date());
       await runDbTransaction(async (db) => {
-        await changeStockInDatabase(db, {productId, quantity, mode: "restock", unitCostAmount, reason: "Réapprovisionnement", occurredAt: now}, generateId);
+        await changeStockInDatabase(
+          db,
+          {
+            productId,
+            quantity,
+            mode: "restock",
+            unitCostAmount,
+            reason: "Réapprovisionnement",
+            occurredAt: now,
+          },
+          generateId
+        );
         if (createExpense && unitCostAmount > 0) {
           await db.execute(
             `INSERT INTO transactions (
@@ -798,7 +873,11 @@ export function useProductsRepository() {
     if (isTauriRuntime()) {
       const now = toSQLiteTimestamp(new Date());
       await runDbTransaction(async (db) => {
-        await changeStockInDatabase(db, {productId, quantity, mode: "adjustment", reason, occurredAt: now}, generateId);
+        await changeStockInDatabase(
+          db,
+          { productId, quantity, mode: "adjustment", reason, occurredAt: now },
+          generateId
+        );
       });
       announceInventoryChanged();
       await Promise.all([productsStore.refresh(), movementsStore.refresh()]);
@@ -820,12 +899,24 @@ export function useProductsRepository() {
     ...productsStore,
     data: products,
     saveProduct,
-    add: async (draft: Omit<Product, "id" | "createdAt" | "updatedAt">) => isTauriRuntime() && await inventoryService.supported()
-      ? saveProduct(undefined, draft) : productsStore.add(draft),
+    add: async (draft: Omit<Product, "id" | "createdAt" | "updatedAt">) =>
+      isTauriRuntime() && (await inventoryService.supported())
+        ? saveProduct(undefined, draft)
+        : productsStore.add(draft),
     update: async (productId: string, draft: Partial<Product>) => {
-      if (!isTauriRuntime() || !await inventoryService.supported()) return productsStore.update(productId, draft);
-      try {await saveProduct(productId, draft); return true;}
-      catch (error) { toast.error(error instanceof Error ? error.message : "Le produit n’a pas pu être enregistré."); return false; }
+      if (!isTauriRuntime() || !(await inventoryService.supported()))
+        return productsStore.update(productId, draft);
+      try {
+        await saveProduct(productId, draft);
+        return true;
+      } catch (error) {
+        toast.error(
+          error instanceof Error
+            ? error.message
+            : "Le produit n’a pas pu être enregistré."
+        );
+        return false;
+      }
     },
     movements: movementsStore.data,
     movementsLoading: movementsStore.loading,

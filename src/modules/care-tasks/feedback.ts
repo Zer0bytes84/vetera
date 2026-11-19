@@ -11,9 +11,17 @@ const careBusinessMessages = new Set([
 ]);
 
 /** Only deliberate French guidance may be shown; driver details stay internal. */
-export function careErrorMessage(error: unknown, operation: "create" | "update") {
+export function careErrorMessage(
+  error: unknown,
+  operation: "create" | "update"
+) {
   if (error instanceof StockError) return error.message;
-  const message = error instanceof Error ? error.message : typeof error === "string" ? error : "";
+  const message =
+    error instanceof Error
+      ? error.message
+      : typeof error === "string"
+        ? error
+        : "";
   if (careBusinessMessages.has(message)) return message;
   return operation === "create"
     ? "Le soin n’a pas pu être enregistré. Réessayez."

@@ -18,7 +18,12 @@ export const LIBRARY_FILTERS: { value: LibraryFilter; label: string }[] = [
   { value: "link", label: "Liens" },
 ];
 
-export const KIND_LABELS: Record<LibraryKind, string> = { document: "Document", file: "Fichier", image: "Image", link: "Lien" };
+export const KIND_LABELS: Record<LibraryKind, string> = {
+  document: "Document",
+  file: "Fichier",
+  image: "Image",
+  link: "Lien",
+};
 
 /** The bytes of a file are kept in the clinic's base: a ceiling keeps it, and every list reading it, light. */
 export const MAX_FILE_BYTES = 5 * 1024 * 1024;
@@ -40,35 +45,48 @@ export interface LibraryEntry {
 
 /** The note's text without its HTML tags: the search field reads this value, so a word from the body finds the note. */
 export const notePlainText = (content: string) =>
-  content.replace(/<[^>]*>/g, " ").replace(/&nbsp;/g, " ").replace(/\s+/g, " ").trim();
+  content
+    .replace(/<[^>]*>/g, " ")
+    .replace(/&nbsp;/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
 
-export const noteTitle = (note: Pick<Note, "title">) => formatDisplayText(note.title || "Sans titre");
+export const noteTitle = (note: Pick<Note, "title">) =>
+  formatDisplayText(note.title || "Sans titre");
 
-export function entriesFrom(notes: Note[], items: LibraryItem[], patientName: (patientId?: string | null) => string): LibraryEntry[] {
-  const fromNotes = notes.map((note): LibraryEntry => ({
-    kind: "document",
-    id: note.id,
-    title: noteTitle(note),
-    patientId: note.patientId ?? null,
-    isFavorite: Boolean(note.isFavorite),
-    isPinned: Boolean(note.isPinned),
-    updatedAt: note.updatedAt,
-    createdAt: note.createdAt,
-    text: `${noteTitle(note)} ${patientName(note.patientId)} ${notePlainText(note.content)}`,
-    note,
-  }));
-  const fromItems = items.map((item): LibraryEntry => ({
-    kind: item.kind,
-    id: item.id,
-    title: item.title,
-    patientId: item.patientId ?? null,
-    isFavorite: Boolean(item.isFavorite),
-    isPinned: Boolean(item.isPinned),
-    updatedAt: item.updatedAt,
-    createdAt: item.createdAt,
-    text: `${item.title} ${patientName(item.patientId)} ${item.url ?? ""} ${item.mimeType ?? ""}`,
-    item,
-  }));
+export function entriesFrom(
+  notes: Note[],
+  items: LibraryItem[],
+  patientName: (patientId?: string | null) => string
+): LibraryEntry[] {
+  const fromNotes = notes.map(
+    (note): LibraryEntry => ({
+      kind: "document",
+      id: note.id,
+      title: noteTitle(note),
+      patientId: note.patientId ?? null,
+      isFavorite: Boolean(note.isFavorite),
+      isPinned: Boolean(note.isPinned),
+      updatedAt: note.updatedAt,
+      createdAt: note.createdAt,
+      text: `${noteTitle(note)} ${patientName(note.patientId)} ${notePlainText(note.content)}`,
+      note,
+    })
+  );
+  const fromItems = items.map(
+    (item): LibraryEntry => ({
+      kind: item.kind,
+      id: item.id,
+      title: item.title,
+      patientId: item.patientId ?? null,
+      isFavorite: Boolean(item.isFavorite),
+      isPinned: Boolean(item.isPinned),
+      updatedAt: item.updatedAt,
+      createdAt: item.createdAt,
+      text: `${item.title} ${patientName(item.patientId)} ${item.url ?? ""} ${item.mimeType ?? ""}`,
+      item,
+    })
+  );
   return [...fromNotes, ...fromItems];
 }
 
@@ -78,22 +96,39 @@ export function sortEntries(entries: LibraryEntry[]): LibraryEntry[] {
     const parsed = new Date(value).getTime();
     return Number.isFinite(parsed) ? parsed : 0;
   };
-  return [...entries].sort((a, b) => Number(b.isPinned) - Number(a.isPinned) || time(b.updatedAt) - time(a.updatedAt));
+  return [...entries].sort(
+    (a, b) =>
+      Number(b.isPinned) - Number(a.isPinned) ||
+      time(b.updatedAt) - time(a.updatedAt)
+  );
 }
 
-export const matchesFilter = (entry: LibraryEntry, filter: LibraryFilter) => filter === "all" || entry.kind === filter;
+export const matchesFilter = (entry: LibraryEntry, filter: LibraryFilter) =>
+  filter === "all" || entry.kind === filter;
 
 /** Whether an entry answers the search: every word typed is in its title, folder, body or address. */
 export function matchesQuery(entry: LibraryEntry, query: string) {
-  const words = query.trim().toLocaleLowerCase("fr").split(/\s+/).filter(Boolean);
+  const words = query
+    .trim()
+    .toLocaleLowerCase("fr")
+    .split(/\s+/)
+    .filter(Boolean);
   if (!words.length) return true;
   const haystack = entry.text.toLocaleLowerCase("fr");
   return words.every((word) => haystack.includes(word));
 }
 
 /** How many entries each filter would show, for the pills. */
-export function countByKind(entries: LibraryEntry[]): Record<LibraryFilter, number> {
-  const counts: Record<LibraryFilter, number> = { all: entries.length, document: 0, file: 0, image: 0, link: 0 };
+export function countByKind(
+  entries: LibraryEntry[]
+): Record<LibraryFilter, number> {
+  const counts: Record<LibraryFilter, number> = {
+    all: entries.length,
+    document: 0,
+    file: 0,
+    image: 0,
+    link: 0,
+  };
   for (const entry of entries) counts[entry.kind] += 1;
   return counts;
 }
@@ -115,7 +150,10 @@ export function normalizeLinkUrl(input: string): string | null {
   } catch {
     return null;
   }
-  if (url.protocol === "mailto:") return /^mailto:[^@\s]+@[^@\s]+\.[^@\s]+/i.test(candidate) ? url.href : null;
+  if (url.protocol === "mailto:")
+    return /^mailto:[^@\s]+@[^@\s]+\.[^@\s]+/i.test(candidate)
+      ? url.href
+      : null;
   if (url.protocol !== "http:" && url.protocol !== "https:") return null;
   if (!url.hostname.includes(".") && url.hostname !== "localhost") return null;
   return url.href;
@@ -132,18 +170,37 @@ export function linkTitle(url: string) {
   }
 }
 
-const IMAGE_TYPES = new Set(["image/png", "image/jpeg", "image/webp", "image/gif"]);
+const IMAGE_TYPES = new Set([
+  "image/png",
+  "image/jpeg",
+  "image/webp",
+  "image/gif",
+]);
 
-export type FileVerdict = { ok: true; kind: "file" | "image" } | { ok: false; reason: string };
+export type FileVerdict =
+  | { ok: true; kind: "file" | "image" }
+  | { ok: false; reason: string };
 
 /** Whether a file can be kept, and as what. An image is only an image of a kind a page can show safely (no SVG). */
-export function judgeFile(file: Pick<File, "name" | "size" | "type">, wanted: "file" | "image"): FileVerdict {
-  if (file.size === 0) return { ok: false, reason: `« ${file.name} » est vide.` };
+export function judgeFile(
+  file: Pick<File, "name" | "size" | "type">,
+  wanted: "file" | "image"
+): FileVerdict {
+  if (file.size === 0)
+    return { ok: false, reason: `« ${file.name} » est vide.` };
   if (file.size > MAX_FILE_BYTES) {
-    return { ok: false, reason: `« ${file.name} » dépasse ${Math.round(MAX_FILE_BYTES / 1024 / 1024)} Mo (${(file.size / 1024 / 1024).toFixed(1).replace(".", ",")} Mo).` };
+    return {
+      ok: false,
+      reason: `« ${file.name} » dépasse ${Math.round(MAX_FILE_BYTES / 1024 / 1024)} Mo (${(file.size / 1024 / 1024).toFixed(1).replace(".", ",")} Mo).`,
+    };
   }
   if (wanted === "image") {
-    return IMAGE_TYPES.has(file.type) ? { ok: true, kind: "image" } : { ok: false, reason: `« ${file.name} » n’est pas une image PNG, JPEG, WebP ou GIF.` };
+    return IMAGE_TYPES.has(file.type)
+      ? { ok: true, kind: "image" }
+      : {
+          ok: false,
+          reason: `« ${file.name} » n’est pas une image PNG, JPEG, WebP ou GIF.`,
+        };
   }
   // A picture added as a file is still a picture, shown as one.
   return { ok: true, kind: IMAGE_TYPES.has(file.type) ? "image" : "file" };
@@ -152,8 +209,12 @@ export function judgeFile(file: Pick<File, "name" | "size" | "type">, wanted: "f
 export const readFileAsDataUrl = (file: Blob) =>
   new Promise<string>((resolve, reject) => {
     const reader = new FileReader();
-    reader.onload = () => (typeof reader.result === "string" ? resolve(reader.result) : reject(new Error("Lecture impossible")));
-    reader.onerror = () => reject(reader.error ?? new Error("Lecture impossible"));
+    reader.onload = () =>
+      typeof reader.result === "string"
+        ? resolve(reader.result)
+        : reject(new Error("Lecture impossible"));
+    reader.onerror = () =>
+      reject(reader.error ?? new Error("Lecture impossible"));
     reader.readAsDataURL(file);
   });
 

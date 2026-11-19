@@ -65,7 +65,9 @@ const finalLabel: Record<Exclude<AgentStatusState, "working">, string> = {
 
 export const formatElapsed = (ms: number) => {
   const s = Math.max(0, Math.floor(ms / 1000));
-  return s < 60 ? `${s} s` : `${Math.floor(s / 60)} min ${String(s % 60).padStart(2, "0")} s`;
+  return s < 60
+    ? `${s} s`
+    : `${Math.floor(s / 60)} min ${String(s % 60).padStart(2, "0")} s`;
 };
 
 function useElapsed(startedAt: number, running: boolean) {
@@ -118,13 +120,12 @@ function Indicator({ status }: { status: AgentStatusState }) {
             className={cn(
               "flex size-5 items-center justify-center rounded-full",
               status === "done" && "bg-positive/15 text-positive",
-              status === "stopped" && "bg-foreground/[0.08] text-muted-foreground",
-              status === "error" && "bg-negative/15 text-negative",
+              status === "stopped" &&
+                "bg-foreground/[0.08] text-muted-foreground",
+              status === "error" && "bg-negative/15 text-negative"
             )}
           >
-            {status === "done" && (
-              <Check className="size-3" strokeWidth={3} />
-            )}
+            {status === "done" && <Check className="size-3" strokeWidth={3} />}
             {status === "stopped" && (
               <Square className="size-2.5" fill="currentColor" />
             )}
@@ -188,7 +189,11 @@ export function AgentStatus({
           </ol>
         )}
         <Panel className="flex items-center gap-3 py-2.5 pr-2.5 pl-3.5">
-          {working && meter ? <span className="flex shrink-0 items-center">{meter}</span> : <Indicator status={status} />}
+          {working && meter ? (
+            <span className="flex shrink-0 items-center">{meter}</span>
+          ) : (
+            <Indicator status={status} />
+          )}
           <div className="min-w-0 flex-1">
             <div className="relative h-5 overflow-hidden text-sm font-medium">
               <AnimatePresence initial={false} mode="popLayout">

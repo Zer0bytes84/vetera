@@ -49,7 +49,12 @@ export function MascotChoices({
               type="button"
             >
               {/* Still portraits: fifteen faces following the pointer would be a crowd. */}
-              <MascotAvatar animal={animal} animated={false} overflow size={compact ? 54 : 64} />
+              <MascotAvatar
+                animal={animal}
+                animated={false}
+                overflow
+                size={compact ? 54 : 64}
+              />
               <span>{MASCOT_ASSETS[animal].label}</span>
               <span className="mascot-choice-check" aria-hidden="true">
                 {selected ? "✓" : ""}

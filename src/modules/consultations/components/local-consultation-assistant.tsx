@@ -1,11 +1,5 @@
 import { analyzeTreatmentDictation } from "../local-ai/treatment-routing";
-import {
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import {
   Check,
   FileText,
@@ -15,9 +9,19 @@ import {
   X,
   XCircle,
 } from "@/lib/icons";
-import { ArrowRight as ArrowRightIcon, Database, FileText as FileTextIcon, Mic, Square, Trash2 } from "lucide-react";
+import {
+  ArrowRight as ArrowRightIcon,
+  Database,
+  FileText as FileTextIcon,
+  Mic,
+  Square,
+  Trash2,
+} from "lucide-react";
 import { toast } from "sonner";
-import { Button as ActionButton, IconButton } from "@/components/ui/action-button";
+import {
+  Button as ActionButton,
+  IconButton,
+} from "@/components/ui/action-button";
 import { AgentComposer } from "@/components/ui/agent-composer";
 import { AgentQuestion } from "@/components/ui/agent-question";
 import { AgentStatus } from "@/components/ui/agent-status";
@@ -27,7 +31,11 @@ import { ConfirmationCard } from "@/components/ui/confirmation-card";
 import { ContextWindowMeter } from "@/components/ui/context-window-meter";
 import { Segmented } from "@/components/ui/segmented-control";
 import { StreamingMessage } from "@/components/ui/streaming-message";
-import { ToolApprovalQueue, type ApprovalDecision, type ApprovalRequest } from "@/components/ui/tool-approval-queue";
+import {
+  ToolApprovalQueue,
+  type ApprovalDecision,
+  type ApprovalRequest,
+} from "@/components/ui/tool-approval-queue";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -74,7 +82,11 @@ import {
 import { PatientDocumentSearch } from "./patient-document-search";
 import { ClinicAnswers } from "@/modules/assistant-answers/clinic-answers";
 import { AssistantActivity } from "./assistant-activity";
-import { DictationLevelMeter, MicrophonePermissionWait, MicrophoneWarmup } from "./dictation-states";
+import {
+  DictationLevelMeter,
+  MicrophonePermissionWait,
+  MicrophoneWarmup,
+} from "./dictation-states";
 import {
   assembleGuidedNote,
   guidedDictationTranscript,
@@ -117,10 +129,15 @@ interface Props {
 export type SoapNoteOrigin = "assistant" | "dictee";
 
 const WELCOME_WORDS =
-  "Dictez ou écrivez vos observations, rubrique par rubrique, puis relisez la note. Rien n’est enregistré sans votre validation.".split(" ");
+  "Dictez ou écrivez vos observations, rubrique par rubrique, puis relisez la note. Rien n’est enregistré sans votre validation.".split(
+    " "
+  );
 
 // The first question, written out right after the welcome (the others appear whole, when their turn comes).
-const FIRST_QUESTION_WORDS = "**S · Motif et antécédents**\n\nQuel est le motif de consultation ? Quels antécédents ou observations du propriétaire souhaitez-vous noter ?".split(" ");
+const FIRST_QUESTION_WORDS =
+  "**S · Motif et antécédents**\n\nQuel est le motif de consultation ? Quels antécédents ou observations du propriétaire souhaitez-vous noter ?".split(
+    " "
+  );
 const OPENING_WORDS = WELCOME_WORDS.length + FIRST_QUESTION_WORDS.length;
 
 // Same text once line breaks and spacing are set aside: nothing was reworded.
@@ -130,7 +147,13 @@ const sameWords = (a: string, b: string) =>
 /** The patient's species, as the small fine-line icon of the patient list. */
 function PatientSpeciesGlyph({ species }: { species?: string }) {
   const { icon: Icon } = speciesIcon(species);
-  return <Icon aria-hidden="true" className="size-3.5 shrink-0 text-muted-foreground" strokeWidth={1.5} />;
+  return (
+    <Icon
+      aria-hidden="true"
+      className="size-3.5 shrink-0 text-muted-foreground"
+      strokeWidth={1.5}
+    />
+  );
 }
 
 export default function LocalConsultationAssistant({
@@ -141,7 +164,9 @@ export default function LocalConsultationAssistant({
   onValidate,
 }: Props) {
   const panelControls = useAssistantPanelControls();
-  const [selectedPatientId, setSelectedPatientId] = useState<string | undefined>(patientId);
+  const [selectedPatientId, setSelectedPatientId] = useState<
+    string | undefined
+  >(patientId);
 
   useEffect(() => {
     setSelectedPatientId(patientId);
@@ -164,20 +189,49 @@ export default function LocalConsultationAssistant({
   // Desktop: the companion's status decides, not the installed WASM model,
   // and the Dicter button does not wait for the models check: a dictation
   // start re-verifies the companion itself and reports why if unavailable.
-  const dictationReady = ai.native ? ai.nativeReady !== false : models.whisperReady;
+  const dictationReady = ai.native
+    ? ai.nativeReady !== false
+    : models.whisperReady;
   const [importing, setImporting] = useState(false);
   const [setupOpen, setSetupOpen] = useState(false);
 
   const [transcript, setTranscript] = useState("");
   const [sectionIndex, setSectionIndex] = useState(0);
-  const [sectionResponses, setSectionResponses] = useState<string[]>(["", "", "", ""]);
+  const [sectionResponses, setSectionResponses] = useState<string[]>([
+    "",
+    "",
+    "",
+    "",
+  ]);
   const sectionPrompts = [
-    { letter: "S", title: "Motif et antécédents", question: "Quel est le motif de consultation ? Quels antécédents ou observations du propriétaire souhaitez-vous noter ?" },
-    { letter: "O", title: "Examen clinique", question: "Qu’observez-vous à l’examen clinique ? Dictez les constantes, mesures et résultats disponibles." },
-    { letter: "A", title: "Évaluation", question: "Quelle est votre évaluation ? Précisez le diagnostic ou les hypothèses envisagées." },
-    { letter: "P", title: "Plan de soins", question: "Quel est le plan de soins ? Précisez les traitements, examens et consignes de suivi. Aucune posologie ne sera calculée." },
+    {
+      letter: "S",
+      title: "Motif et antécédents",
+      question:
+        "Quel est le motif de consultation ? Quels antécédents ou observations du propriétaire souhaitez-vous noter ?",
+    },
+    {
+      letter: "O",
+      title: "Examen clinique",
+      question:
+        "Qu’observez-vous à l’examen clinique ? Dictez les constantes, mesures et résultats disponibles.",
+    },
+    {
+      letter: "A",
+      title: "Évaluation",
+      question:
+        "Quelle est votre évaluation ? Précisez le diagnostic ou les hypothèses envisagées.",
+    },
+    {
+      letter: "P",
+      title: "Plan de soins",
+      question:
+        "Quel est le plan de soins ? Précisez les traitements, examens et consignes de suivi. Aucune posologie ne sera calculée.",
+    },
   ];
-  const responses = sectionResponses.map((value, index) => index === sectionIndex ? transcript : value);
+  const responses = sectionResponses.map((value, index) =>
+    index === sectionIndex ? transcript : value
+  );
   // The rubric the vet answered is the section: it is passed as such, never re-guessed.
   const guidedAnswers: LocalSoapNote = {
     subjective: responses[0],
@@ -187,16 +241,19 @@ export default function LocalConsultationAssistant({
   };
   const fullTranscript = guidedDictationTranscript(guidedAnswers);
   // When each rubric's question reached the conversation, for the times of the thread.
-  const [stepAt, setStepAt] = useState<string[]>(() => [new Date().toISOString()]);
+  const [stepAt, setStepAt] = useState<string[]>(() => [
+    new Date().toISOString(),
+  ]);
   const [noteAt] = useState(() => new Date().toISOString());
   const { currentUser } = useAuth();
   // When the panel opens, the welcome and then the first question are written out word by word (the words fade in as they
   // come, as in StreamingMessage). The generated answers and the note always appear whole, and so do the later questions.
   // With reduced motion everything is shown whole.
   const [openingWords, setOpeningWords] = useState(() =>
-    typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    typeof window !== "undefined" &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches
       ? OPENING_WORDS
-      : 1,
+      : 1
   );
   useEffect(() => {
     if (openingWords >= OPENING_WORDS) return;
@@ -231,7 +288,9 @@ export default function LocalConsultationAssistant({
   const [refusedFor, setRefusedFor] = useState<string | null>(null);
 
   // The vet's decision on each rubric the assistant reworded: nothing is saved while one is still to be examined.
-  const [decisions, setDecisions] = useState<Partial<Record<keyof LocalSoapNote, ApprovalDecision>>>({});
+  const [decisions, setDecisions] = useState<
+    Partial<Record<keyof LocalSoapNote, ApprovalDecision>>
+  >({});
   // When the microphone started listening, for the timer of the status card.
   const [listeningSince, setListeningSince] = useState(() => Date.now());
 
@@ -243,7 +302,9 @@ export default function LocalConsultationAssistant({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const dictationScrollRef = useRef<HTMLDivElement>(null);
 
-  const patient = patients.data.find((entry) => entry.id === effectivePatientId);
+  const patient = patients.data.find(
+    (entry) => entry.id === effectivePatientId
+  );
   const resolvedExistingNote = existingNote ?? EMPTY_SOAP;
   const hasExistingNote = SOAP_SECTIONS.some(({ key }) =>
     Boolean(resolvedExistingNote[key]?.trim())
@@ -261,26 +322,32 @@ export default function LocalConsultationAssistant({
   };
   const activeSoapDraft: LocalSoapNote = useMemo(() => {
     if (note) return note;
-    if (!fullTranscript.trim()) return hasExistingNote ? resolvedExistingNote : EMPTY_SOAP;
+    if (!fullTranscript.trim())
+      return hasExistingNote ? resolvedExistingNote : EMPTY_SOAP;
     return dictationNote();
     // dictationNote reads the same rubric answers as fullTranscript.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [note, fullTranscript, hasExistingNote, resolvedExistingNote]);
   const proposalRequests: ApprovalRequest[] = useMemo(() => {
     if (!reviewSource || !assistantProposal) return [];
-    return SOAP_SECTIONS.filter(({ key }) => !sameWords(reviewSource[key], assistantProposal[key])).map(
-      ({ key, title }) => ({
-        id: key,
-        title,
-        status: decisions[key] ?? "pending",
-        before: reviewSource[key],
-        after: assistantProposal[key],
-      }),
-    );
+    return SOAP_SECTIONS.filter(
+      ({ key }) => !sameWords(reviewSource[key], assistantProposal[key])
+    ).map(({ key, title }) => ({
+      id: key,
+      title,
+      status: decisions[key] ?? "pending",
+      before: reviewSource[key],
+      after: assistantProposal[key],
+    }));
   }, [assistantProposal, decisions, reviewSource]);
-  const pendingProposals = proposalRequests.filter((request) => request.status === "pending").length;
+  const pendingProposals = proposalRequests.filter(
+    (request) => request.status === "pending"
+  ).length;
   const refused =
-    refusedFor !== null && refusedFor === fullTranscript && !!ai.error && !ai.busy;
+    refusedFor !== null &&
+    refusedFor === fullTranscript &&
+    !!ai.error &&
+    !ai.busy;
   // Way out of a refusal: the dictation becomes the note, laid out, for the vet to
   // reread and validate. It is traced as the vet's own note, not as a generated one.
   const reviewDictation = () => {
@@ -346,7 +413,8 @@ export default function LocalConsultationAssistant({
         if (!alive) return;
         setModels(status);
         setCheckingModels(false);
-        if (!nativeDictationEnabled() && !status.whisperReady) setSetupOpen(true);
+        if (!nativeDictationEnabled() && !status.whisperReady)
+          setSetupOpen(true);
       })
       .catch(() => {
         if (alive) {
@@ -401,7 +469,8 @@ export default function LocalConsultationAssistant({
   };
 
   useEffect(() => {
-    if (ai.phase === "listening") setListeningSince(Date.now() - ai.seconds * 1000);
+    if (ai.phase === "listening")
+      setListeningSince(Date.now() - ai.seconds * 1000);
     // Only the moment it starts: the timer then counts on its own.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ai.phase]);
@@ -417,9 +486,14 @@ export default function LocalConsultationAssistant({
 
   const generate = async () => {
     if (dataUnavailable || mentionError) return;
-    if (sectionIndex < 3) { changeSection(sectionIndex + 1); return; }
+    if (sectionIndex < 3) {
+      changeSection(sectionIndex + 1);
+      return;
+    }
     if (!fullTranscript.trim() && !hasExistingNote) {
-      setMessage("Veuillez dicter ou saisir des observations avant de structurer la note.");
+      setMessage(
+        "Veuillez dicter ou saisir des observations avant de structurer la note."
+      );
       return;
     }
     setMessage(null);
@@ -663,7 +737,10 @@ export default function LocalConsultationAssistant({
     requestAnimationFrame(() => textareaRef.current?.focus());
   };
 
-  const handleInsertExcerpt = (excerpt: string, targetSection?: SearchSection) => {
+  const handleInsertExcerpt = (
+    excerpt: string,
+    targetSection?: SearchSection
+  ) => {
     const secKey: keyof LocalSoapNote =
       targetSection && targetSection in EMPTY_SOAP
         ? (targetSection as keyof LocalSoapNote)
@@ -677,14 +754,21 @@ export default function LocalConsultationAssistant({
       };
     });
 
-    setTranscript((previous) => (previous ? `${previous}\n\n${excerpt}` : excerpt));
+    setTranscript((previous) =>
+      previous ? `${previous}\n\n${excerpt}` : excerpt
+    );
     toast.success("Extrait inséré dans vos notes.");
   };
 
-  const hasNoteContent = Object.values(activeSoapDraft).some((val) => val.trim().length > 0);
+  const hasNoteContent = Object.values(activeSoapDraft).some(
+    (val) => val.trim().length > 0
+  );
 
   // Accepting keeps the assistant's wording; refusing puts the vet's own words back, laid out like the rest of the note.
-  const decideProposals = (requests: ApprovalRequest[], decision: ApprovalDecision) => {
+  const decideProposals = (
+    requests: ApprovalRequest[],
+    decision: ApprovalDecision
+  ) => {
     if (!reviewSource || !assistantProposal) return;
     setDecisions((previous) => ({
       ...previous,
@@ -694,7 +778,12 @@ export default function LocalConsultationAssistant({
       const own = layoutSoapNote(reviewSource);
       setNote((previous) => ({
         ...(previous ?? activeSoapDraft),
-        ...Object.fromEntries(requests.map((request) => [request.id, own[request.id as keyof LocalSoapNote]])),
+        ...Object.fromEntries(
+          requests.map((request) => [
+            request.id,
+            own[request.id as keyof LocalSoapNote],
+          ])
+        ),
       }));
     }
   };
@@ -743,67 +832,77 @@ export default function LocalConsultationAssistant({
         />
       ),
     },
-    ...sectionPrompts.slice(0, sectionIndex + 1).flatMap((step, index): ThreadMessage[] => {
-      const opening = index === 0 && questionWords < FIRST_QUESTION_WORDS.length && sectionIndex === 0;
-      // The first question waits for the end of the welcome, then writes itself out.
-      if (opening && questionWords === 0) return [];
-      const answered = index < sectionIndex;
-      const reply = responses[index].trim();
-      const edit = answered ? (
-        <ActionButton
-          disabled={ai.busy || importing}
-          onClick={() => changeSection(index)}
-          variant="quiet"
-        >
-          Modifier « {step.title} »
-        </ActionButton>
-      ) : null;
-      return [
-        {
-          id: `prompt-${step.letter}`,
-          role: "assistant",
-          at: stepAt[index] ?? stepAt[0],
-          content: (
-            <div className="flex flex-col items-start gap-1">
-              <StreamingMessage
-                className="assistant-section-prompt max-w-none"
-                data={{
-                  status: opening ? "streaming" : "done",
-                  content: opening
-                    ? FIRST_QUESTION_WORDS.slice(0, questionWords).join(" ")
-                    : `**${step.letter} · ${step.title}**\n\n${step.question}`,
-                }}
-                bubble
-                showActions={false}
-                showHeader={false}
-              />
-              {answered && !reply ? edit : null}
-            </div>
-          ),
-        },
-        ...(answered && reply
-          ? [
-              {
-                id: `answer-${step.letter}`,
-                role: "user" as const,
-                plain: true,
-                at: stepAt[index + 1] ?? stepAt[index] ?? stepAt[0],
-                content: (
-                  <div className="flex flex-col items-end gap-1">
-                    <UserMessage data={{ id: `answer-${step.letter}`, content: responses[index] }} />
-                    {edit}
-                  </div>
-                ),
-              },
-            ]
-          : []),
-      ];
-    }),
+    ...sectionPrompts
+      .slice(0, sectionIndex + 1)
+      .flatMap((step, index): ThreadMessage[] => {
+        const opening =
+          index === 0 &&
+          questionWords < FIRST_QUESTION_WORDS.length &&
+          sectionIndex === 0;
+        // The first question waits for the end of the welcome, then writes itself out.
+        if (opening && questionWords === 0) return [];
+        const answered = index < sectionIndex;
+        const reply = responses[index].trim();
+        const edit = answered ? (
+          <ActionButton
+            disabled={ai.busy || importing}
+            onClick={() => changeSection(index)}
+            variant="quiet"
+          >
+            Modifier « {step.title} »
+          </ActionButton>
+        ) : null;
+        return [
+          {
+            id: `prompt-${step.letter}`,
+            role: "assistant",
+            at: stepAt[index] ?? stepAt[0],
+            content: (
+              <div className="flex flex-col items-start gap-1">
+                <StreamingMessage
+                  className="assistant-section-prompt max-w-none"
+                  data={{
+                    status: opening ? "streaming" : "done",
+                    content: opening
+                      ? FIRST_QUESTION_WORDS.slice(0, questionWords).join(" ")
+                      : `**${step.letter} · ${step.title}**\n\n${step.question}`,
+                  }}
+                  bubble
+                  showActions={false}
+                  showHeader={false}
+                />
+                {answered && !reply ? edit : null}
+              </div>
+            ),
+          },
+          ...(answered && reply
+            ? [
+                {
+                  id: `answer-${step.letter}`,
+                  role: "user" as const,
+                  plain: true,
+                  at: stepAt[index + 1] ?? stepAt[index] ?? stepAt[0],
+                  content: (
+                    <div className="flex flex-col items-end gap-1">
+                      <UserMessage
+                        data={{
+                          id: `answer-${step.letter}`,
+                          content: responses[index],
+                        }}
+                      />
+                      {edit}
+                    </div>
+                  ),
+                },
+              ]
+            : []),
+        ];
+      }),
   ];
 
   const assistantMood: MascotMood = saved
     ? "happy"
-    : (ai.busy || saving)
+    : ai.busy || saving
       ? "thinking"
       : "idle";
 
@@ -835,12 +934,17 @@ export default function LocalConsultationAssistant({
             {!patientId && patients.data.length > 0 && (
               <Select
                 value={effectivePatientId || "none"}
-                onValueChange={(val) => setSelectedPatientId(val === "none" || !val ? undefined : val)}
+                onValueChange={(val) =>
+                  setSelectedPatientId(val === "none" || !val ? undefined : val)
+                }
               >
                 <SelectTrigger className="h-6 max-w-[140px] rounded-lg border-border/70 px-2 t-12">
                   <SelectValue placeholder="Patient…">
                     {(value: string | null) =>
-                      !value || value === "none" ? "Tous / Général" : (patients.data.find((p) => p.id === value)?.name ?? "Patient…")
+                      !value || value === "none"
+                        ? "Tous / Général"
+                        : (patients.data.find((p) => p.id === value)?.name ??
+                          "Patient…")
                     }
                   </SelectValue>
                 </SelectTrigger>
@@ -858,9 +962,13 @@ export default function LocalConsultationAssistant({
           {patient?.name ? (
             <p className="flex min-w-0 items-center gap-1.5 t-12 text-muted-foreground">
               <PatientSpeciesGlyph species={patient.species} />
-              <span className="truncate font-medium text-foreground">{patient.name}</span>
+              <span className="truncate font-medium text-foreground">
+                {patient.name}
+              </span>
               <span className="shrink-0">· {patient.species}</span>
-              <span className="shrink-0">· {getPatientStatusMeta(patient.status).label}</span>
+              <span className="shrink-0">
+                · {getPatientStatusMeta(patient.status).label}
+              </span>
             </p>
           ) : null}
         </div>
@@ -932,514 +1040,591 @@ export default function LocalConsultationAssistant({
 
       {/* The content: a white card under the grey band of the header. */}
       <div className="mx-3 mb-3 flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-border bg-[var(--card-inset)] p-3">
-      {/* 2. Tabs: few, and the validation tab appears once there is a note to read. */}
-      <div className="shrink-0">
-        <Segmented<AssistantTab>
-          className="flex w-full [&>button]:flex-1"
-          label="Sections de l’assistant"
-          onValueChange={setActiveTab}
-          options={[
-            {
-              value: "dictation",
-              label: (
-                <span className="inline-flex items-center gap-1.5">
-                  <Microphone className="size-3.5" />
-                  Dictée libre
-                </span>
-              ),
-            },
-            ...(hasNoteContent || activeTab === "soap"
-              ? [
-                  {
-                    value: "soap" as const,
-                    label: (
-                      <span className="inline-flex items-center gap-1.5">
-                        <FileText className="size-3.5" />
-                        Validation SOAP
-                        {pendingProposals > 0 ? <span className="size-1.5 rounded-full bg-brand" /> : null}
-                      </span>
-                    ),
-                  },
-                ]
-              : []),
-            {
-              value: "search",
-              label: (
-                <span className="inline-flex items-center gap-1.5">
-                  <Search className="size-3.5" />
-                  Cas similaires
-                </span>
-              ),
-            },
-            {
-              value: "data",
-              label: (
-                <span className="inline-flex items-center gap-1.5">
-                  <Database className="size-3.5" />
-                  Données
-                </span>
-              ),
-            },
-          ]}
-          value={activeTab}
-        />
-      </div>
-
-      {/* 3. Settings Overlay / Popover. The data tab reads tables and uses no model: the models card would only take its room. */}
-      {setupOpen && activeTab !== "data" && (
-        <div className="mt-3 shrink-0 rounded-xl border border-border/80 bg-card p-3 shadow-sm">
-          <div className="flex items-center justify-between pb-2">
-            <h4 className="t-13 font-semibold text-foreground">
-              Modèles IA sur cet ordinateur
-            </h4>
-            <Button
-              variant="ghost"
-              size="icon-xs"
-              onClick={() => setSetupOpen(false)}
-              className="size-6 text-muted-foreground hover:text-foreground"
-            >
-              <X className="size-3.5" />
-            </Button>
-          </div>
-          <p className="t-12 leading-relaxed text-muted-foreground">
-            Vos dictées et notes restent exclusivement sur votre appareil. Aucun flux n’est envoyé sur internet.
-          </p>
-
-          <div className="mt-3 flex flex-col gap-2">
-            <div className="flex items-center justify-between rounded-lg bg-muted/50 p-2 t-12">
-              <div>
-                <span className="font-medium text-foreground">Dictée vocale</span>
-                <p className="t-12 text-muted-foreground">
-                  {models.whisperReady ? "Modèle actif et disponible" : "Fichiers à initialiser"}
-                </p>
-              </div>
-              <Button
-                size="xs"
-                variant={models.whisperReady ? "secondary" : "outline"}
-                disabled={ai.busy || importing || saving}
-                onClick={() => void importModel("whisper")}
-                className="gap-1 t-12"
-              >
-                {models.whisperReady ? <Check className="size-3 text-emerald-500" /> : null}
-                {models.whisperReady ? "Prêt" : "Installer"}
-              </Button>
-            </div>
-
-            <div className="flex items-center justify-between rounded-lg bg-muted/50 p-2 t-12">
-              <div>
-                <span className="font-medium text-foreground">Assistant IA</span>
-                <p className="t-12 text-muted-foreground">
-                  {models.generatorReady ? "Modèle actif et disponible" : "Fichiers à initialiser"}
-                </p>
-              </div>
-              <Button
-                size="xs"
-                variant={models.generatorReady ? "secondary" : "outline"}
-                disabled={ai.busy || importing || saving}
-                onClick={() => void importModel("generator")}
-                className="gap-1 t-12"
-              >
-                {models.generatorReady ? <Check className="size-3 text-emerald-500" /> : null}
-                {models.generatorReady ? "Prêt" : "Installer"}
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* 4. Tab 1: Dictée Libre Flow */}
-      {activeTab === "dictation" && (
-        <div className="mt-3 flex min-h-0 flex-1 flex-col overflow-hidden">
-          <div ref={dictationScrollRef} className="assistant-dictation-scroll flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto pr-1">
-            {/* The conversation: the assistant's questions, the vet's answers. The mascot speaks once, in the header. */}
-            <ChatThread
-              messages={threadMessages}
-              renderAvatar={renderThreadAvatar}
-              showNames={false}
-              userName="Vous"
-            />
-
-            {/* Listening: the status card, with the real microphone level. */}
-            {ai.phase === "listening" && (
-              <AgentStatus
-                className="max-w-none"
-                data={{
-                  label: "Écoute en cours",
-                  detail: "Parlez naturellement, puis relisez votre transcription.",
-                  startedAt: listeningSince,
-                }}
-                meter={<DictationLevelMeter read={ai.readLevel} />}
-                onStop={() => void stopDictation()}
-              />
-            )}
-
-            {/* Waiting for the microphone permission: always a way out. */}
-            {ai.phase === "microphone" && <MicrophonePermissionWait onCancel={ai.cancel} />}
-
-            {/* New capture: the first seconds arrive attenuated, so speech waits for « Écoute en cours ». */}
-            {ai.phase === "warming" && <MicrophoneWarmup onCancel={ai.cancel} />}
-
-            {/* AI Activity progress */}
-            {ai.busy && ai.phase !== "listening" && ai.phase !== "microphone" && ai.phase !== "warming" && (
-              <AssistantActivity
-                phase={ai.phase}
-                progress={ai.progress}
-                hasTranscript={!!fullTranscript}
-                patientVerified={Boolean(patient)}
-                hasNote={!!note}
-                failed={!!visibleError}
-              />
-            )}
-
-            {/* Error banner */}
-            {visibleError && (
-              <div
-                role="alert"
-                className="flex items-center gap-2 rounded-xl border border-destructive/30 bg-destructive/10 p-3 t-12 text-destructive"
-              >
-                <XCircle className="size-4 shrink-0" />
-                <span>{visibleError}</span>
-              </div>
-            )}
-
-            {/* Refused: the way out is a question with its options, answered by one click. */}
-            {refused && (
-              <AgentQuestion
-                agent="assistant"
-                data={{
-                  question:
-                    "Relancer l’assistant sur la même dictée donnerait la même réponse. Que souhaitez-vous faire ?",
-                  options: [
-                    {
-                      id: "review",
-                      label: "Relire ma dictée comme note",
-                      description: "Votre dictée devient la note, mot pour mot, à relire et valider vous-même.",
-                      icon: FileTextIcon,
-                    },
-                    ...sectionPrompts.map((step, index) => ({
-                      id: `edit-${index}`,
-                      label: `Corriger « ${step.title} »`,
-                    })),
-                  ],
-                }}
-                onSubmit={(answer) => {
-                  const choice = answer.optionIds[0];
-                  if (choice === "review") reviewDictation();
-                  else if (choice?.startsWith("edit-")) {
-                    ai.clearError();
-                    changeSection(Number(choice.slice(5)));
-                  }
-                }}
-              />
-            )}
-
-            {/* Dictation workspace */}
-            <div className="assistant-dictation-workspace flex min-h-fit flex-1 flex-col gap-2">
-              {/* Progress of the four rubrics, and the patients mentioned */}
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <span className="flex items-center gap-3 t-12 font-medium text-foreground">
-                  <span aria-hidden="true" className="flex gap-1">
-                    {sectionPrompts.map((step, index) => (
-                      <span
-                        key={step.letter}
-                        className={cn("h-1 w-6 rounded-full", index <= sectionIndex ? "bg-brand" : "bg-foreground/[0.12]")}
-                      />
-                    ))}
+        {/* 2. Tabs: few, and the validation tab appears once there is a note to read. */}
+        <div className="shrink-0">
+          <Segmented<AssistantTab>
+            className="flex w-full [&>button]:flex-1"
+            label="Sections de l’assistant"
+            onValueChange={setActiveTab}
+            options={[
+              {
+                value: "dictation",
+                label: (
+                  <span className="inline-flex items-center gap-1.5">
+                    <Microphone className="size-3.5" />
+                    Dictée libre
                   </span>
-                  Rubrique {sectionIndex + 1} sur 4 · {sectionPrompts[sectionIndex].title}
-                </span>
-                {mentions.length > 0 && (
-                  <div className="flex flex-wrap items-center gap-1.5">
-                    {mentions.map((mention) => (
-                      <span
-                        key={mention.key}
-                        className={cn(
-                          "inline-flex items-center gap-1 rounded-md px-2 py-0.5 t-12",
-                          mention.patient
-                            ? "bg-primary/10 font-medium text-primary"
-                            : "bg-destructive/10 font-medium text-destructive"
-                        )}
-                      >
-                        @{mention.name}
-                        {mention.patient ? ` (${mention.patient.name})` : " (Introuvable)"}
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              <AgentComposer
-                className="flex-1"
-                fill
-                disabled={(ai.busy && ai.phase !== "listening") || importing}
-                label="Vos observations"
-                maxLength={MAX_TRANSCRIPT_LENGTH}
-                menu={
-                  suggestions.length > 0 && !ai.busy
-                    ? {
-                        label: "Suggestions de patients",
-                        items: suggestions.map((entry) => ({
-                          key: entry.id,
-                          label: entry.name,
-                          detail: patientLabel(entry),
-                        })),
-                        active: suggestionIndex,
-                        onActiveChange: setSuggestionIndex,
-                        onPick: (item) => {
-                          const entry = suggestions.find((candidate) => candidate.id === item.key);
-                          if (entry) choosePatient(entry);
-                        },
-                        onDismiss: () => setCaret(0),
-                      }
-                    : undefined
-                }
-                meter={
-                  <ContextWindowMeter
-                    data={{
-                      limit: MAX_TRANSCRIPT_LENGTH,
-                      segments: [{ id: "dictation", label: "Dictée", tokens: transcript.length }],
-                    }}
-                    variant="inline"
-                  />
-                }
-                onCaretChange={setCaret}
-                onSubmit={() => {
-                  if (refused && sectionIndex === 3) reviewDictation();
-                  else void generate();
-                }}
-                onValueChange={(value, nextCaret) => {
-                  setTranscript(value);
-                  setCaret(nextCaret);
-                  setSuggestionIndex(0);
-                }}
-                placeholder={`Vos observations · ${sectionPrompts[sectionIndex].title}…`}
-                textareaRef={textareaRef}
-                toolbar={
-                  <>
-                    <ActionButton
-                      disabled={
-                        (ai.busy && ai.phase !== "listening") ||
-                        importing ||
-                        (!ai.native && checkingModels) ||
-                        !dictationReady
-                      }
-                      icon={ai.phase === "listening" ? Square : Mic}
-                      onClick={() => {
-                        if (ai.phase === "listening") {
-                          void stopDictation();
-                        } else {
-                          void ai.start(models, dictationLanguage);
-                        }
-                      }}
-                      variant={ai.phase === "listening" ? "danger" : "primary"}
-                    >
-                      {ai.phase === "listening"
-                        ? `Stop · ${Math.floor(ai.seconds / 60)}:${String(ai.seconds % 60).padStart(2, "0")}`
-                        : transcript
-                          ? "Compléter"
-                          : "Dicter"}
-                    </ActionButton>
-                    <Segmented<DictationLanguage>
-                      label="Langue de la dictée"
-                      onValueChange={(next) => {
-                        setDictationLanguage(next);
-                        saveDictationLanguage(next);
-                      }}
-                      options={[
-                        { value: "fr", label: "Français", disabled: ai.busy || importing || saving },
-                        { value: "auto", label: "Auto", disabled: ai.busy || importing || saving },
-                      ]}
-                      value={dictationLanguage}
-                    />
-                    {transcript.trim() && !ai.busy && (
-                      <IconButton icon={Trash2} label="Effacer la dictée" onClick={() => setTranscript("")} />
-                    )}
-                  </>
-                }
-                value={transcript}
-              />
-            </div>
-          </div>
-
-          {/* The one action: continue to the next rubric, or read the note. */}
-          <div className="flex shrink-0 justify-center pt-3">
-            <ActionButton
-              disabled={
-                ai.busy ||
-                importing ||
-                (sectionIndex === 3 && !fullTranscript.trim() && !hasExistingNote) ||
-                !!mentionError
-              }
-              onClick={() => (refused && sectionIndex === 3 ? reviewDictation() : void generate())}
-              size="sm"
-              title="Structurer la consultation en note SOAP (⌘+Entrée)"
-              variant="primary"
-            >
-              {sectionIndex < 3 ? `Continuer vers ${sectionPrompts[sectionIndex + 1].title}` : refused ? "Relire ma dictée comme note" : "Relire la note SOAP"}
-              <ArrowRightIcon className="size-3.5" />
-            </ActionButton>
-          </div>
-        </div>
-      )}
-
-      {/* 5. Tab 2: the note to read, what the assistant proposed, and the card that confirms it */}
-      {activeTab === "soap" && (
-        <div className="mt-3 flex min-h-0 flex-1 flex-col overflow-hidden">
-          <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto pr-1">
-            {models.generatorReady && !assistantProposal && fullTranscript.trim() && refusedFor !== fullTranscript && (
-              <div className="flex items-center justify-between gap-2 rounded-2xl border border-border/80 bg-card px-3 py-3">
-                <span className="t-12 text-muted-foreground">
-                  Améliorer la formulation avec l’assistant ?
-                </span>
-                <ActionButton disabled={ai.busy} onClick={() => void generate()}>
-                  Structurer avec l’IA
-                </ActionButton>
-              </div>
-            )}
-
-            {/* The assistant's turn: what it prepared, and what it reworded for the vet to accept or refuse. */}
-            <ChatThread
-              messages={[
-                {
-                  id: "note",
-                  role: "assistant",
-                  at: noteAt,
-                  content: (
-                    <div className="flex flex-col gap-3">
-                      <StreamingMessage
-                        className="max-w-none"
-                        data={{
-                          status: "done",
-                          content:
-                            proposalRequests.length > 0
-                              ? `J’ai reformulé ${proposalRequests.length === 1 ? "une rubrique" : `${proposalRequests.length} rubriques`}. Pour chacune, gardez ma formulation ou votre dictée, puis validez la note : rien n’est enregistré avant.`
-                              : "Voici votre note. Relisez chaque rubrique, puis validez : rien n’est enregistré avant votre accord.",
-                        }}
-                        bubble
-                        showActions={false}
-                        showHeader={false}
-                      />
-                      {proposalRequests.length > 0 && (
-                        <ToolApprovalQueue
-                          data={proposalRequests}
-                          heading="Reformulations proposées"
-                          onDecide={decideProposals}
-                          onUndo={undoProposal}
-                        />
-                      )}
-                    </div>
-                  ),
-                },
-              ]}
-              renderAvatar={renderThreadAvatar}
-              showNames={false}
-              userName="Vous"
-            />
-
-            {visibleError && (
-              <div
-                role="alert"
-                className="rounded-xl border border-destructive/30 bg-destructive/10 p-3 t-12 text-destructive"
-              >
-                {visibleError}
-              </div>
-            )}
-
-            {/* 4 SOAP Section Cards */}
-            {SOAP_SECTIONS.map(({ key }) => {
-              const currentValue = activeSoapDraft[key] ?? "";
-
-              return (
-                <div
-                  key={key}
-                  className="flex flex-col gap-2"
-                >
-                  <div className="flex items-center justify-between gap-2">
-                    <label
-                      htmlFor={`soap-field-${key}`}
-                      className="t-13 font-semibold text-foreground"
-                    >
-                      {SOAP_FULL_HEADINGS[key]}
-                    </label>
-                  </div>
-
-                  <Textarea
-                    id={`soap-field-${key}`}
-                    rows={3}
-                    maxLength={6000}
-                    value={currentValue}
-                    disabled={saving || saved}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
-                        e.preventDefault();
-                        void save();
-                      }
-                    }}
-                    onChange={(event) => {
-                      const updatedValue = event.target.value;
-                      setNote((previous) => ({
-                        ...(previous ?? activeSoapDraft),
-                        [key]: updatedValue,
-                      }));
-                    }}
-                    placeholder="Aucune observation saisie pour cette rubrique."
-                    className="min-h-20 resize-y bg-background t-13 leading-relaxed"
-                  />
-                </div>
-              );
-            })}
-          </div>
-
-          {/* The confirmation: nothing is written before « Valider ». */}
-          <div className="shrink-0 pt-3">
-            <ConfirmationCard
-              blocked={
-                pendingProposals > 0
-                  ? `${pendingProposals} reformulation${pendingProposals > 1 ? "s" : ""} à examiner avant d’enregistrer.`
-                  : (mentionError ?? (dataUnavailable ? "Lecture du dossier en cours…" : undefined))
-              }
-              compact
-              confirmLabel="Valider et enregistrer la note"
-              data={{
-                title: "Enregistrer la note",
-                subtitle: patient ? `Dossier de ${patient.name}` : "Base locale du cabinet",
-                items: SOAP_SECTIONS.map(({ key, title }) => {
-                  const length = (activeSoapDraft[key] ?? "").trim().length;
-                  return {
-                    id: key,
-                    label: title,
-                    filled: length > 0,
-                  };
-                }),
-                warnings: noteWarnings,
-              }}
-              editLabel="Revoir la dictée"
-              onConfirm={() => void save()}
-              onEdit={editTranscript}
-              status={saving ? "confirming" : "review"}
-            />
-          </div>
-        </div>
-      )}
-
-      {/* 6. Tab 3: Dedicated Similar Cases Semantic Search */}
-      {activeTab === "search" && (
-        <div className="mt-3 flex min-h-0 flex-1 flex-col overflow-hidden">
-          <PatientDocumentSearch
-            key={patientId}
-            patientId={patientId}
-            onInsertExcerpt={handleInsertExcerpt}
+                ),
+              },
+              ...(hasNoteContent || activeTab === "soap"
+                ? [
+                    {
+                      value: "soap" as const,
+                      label: (
+                        <span className="inline-flex items-center gap-1.5">
+                          <FileText className="size-3.5" />
+                          Validation SOAP
+                          {pendingProposals > 0 ? (
+                            <span className="size-1.5 rounded-full bg-brand" />
+                          ) : null}
+                        </span>
+                      ),
+                    },
+                  ]
+                : []),
+              {
+                value: "search",
+                label: (
+                  <span className="inline-flex items-center gap-1.5">
+                    <Search className="size-3.5" />
+                    Cas similaires
+                  </span>
+                ),
+              },
+              {
+                value: "data",
+                label: (
+                  <span className="inline-flex items-center gap-1.5">
+                    <Database className="size-3.5" />
+                    Données
+                  </span>
+                ),
+              },
+            ]}
+            value={activeTab}
           />
         </div>
-      )}
 
-      {/* 7. Tab 4: answers about the practice's own data, computed from the tables of this machine. */}
-      {activeTab === "data" && (
-        <div className="mt-3 flex min-h-0 flex-1 flex-col overflow-hidden">
-          <ClinicAnswers patientId={effectivePatientId || undefined} renderAvatar={renderThreadAvatar} />
-        </div>
-      )}
+        {/* 3. Settings Overlay / Popover. The data tab reads tables and uses no model: the models card would only take its room. */}
+        {setupOpen && activeTab !== "data" && (
+          <div className="mt-3 shrink-0 rounded-xl border border-border/80 bg-card p-3 shadow-sm">
+            <div className="flex items-center justify-between pb-2">
+              <h4 className="t-13 font-semibold text-foreground">
+                Modèles IA sur cet ordinateur
+              </h4>
+              <Button
+                variant="ghost"
+                size="icon-xs"
+                onClick={() => setSetupOpen(false)}
+                className="size-6 text-muted-foreground hover:text-foreground"
+              >
+                <X className="size-3.5" />
+              </Button>
+            </div>
+            <p className="t-12 leading-relaxed text-muted-foreground">
+              Vos dictées et notes restent exclusivement sur votre appareil.
+              Aucun flux n’est envoyé sur internet.
+            </p>
 
+            <div className="mt-3 flex flex-col gap-2">
+              <div className="flex items-center justify-between rounded-lg bg-muted/50 p-2 t-12">
+                <div>
+                  <span className="font-medium text-foreground">
+                    Dictée vocale
+                  </span>
+                  <p className="t-12 text-muted-foreground">
+                    {models.whisperReady
+                      ? "Modèle actif et disponible"
+                      : "Fichiers à initialiser"}
+                  </p>
+                </div>
+                <Button
+                  size="xs"
+                  variant={models.whisperReady ? "secondary" : "outline"}
+                  disabled={ai.busy || importing || saving}
+                  onClick={() => void importModel("whisper")}
+                  className="gap-1 t-12"
+                >
+                  {models.whisperReady ? (
+                    <Check className="size-3 text-emerald-500" />
+                  ) : null}
+                  {models.whisperReady ? "Prêt" : "Installer"}
+                </Button>
+              </div>
+
+              <div className="flex items-center justify-between rounded-lg bg-muted/50 p-2 t-12">
+                <div>
+                  <span className="font-medium text-foreground">
+                    Assistant IA
+                  </span>
+                  <p className="t-12 text-muted-foreground">
+                    {models.generatorReady
+                      ? "Modèle actif et disponible"
+                      : "Fichiers à initialiser"}
+                  </p>
+                </div>
+                <Button
+                  size="xs"
+                  variant={models.generatorReady ? "secondary" : "outline"}
+                  disabled={ai.busy || importing || saving}
+                  onClick={() => void importModel("generator")}
+                  className="gap-1 t-12"
+                >
+                  {models.generatorReady ? (
+                    <Check className="size-3 text-emerald-500" />
+                  ) : null}
+                  {models.generatorReady ? "Prêt" : "Installer"}
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 4. Tab 1: Dictée Libre Flow */}
+        {activeTab === "dictation" && (
+          <div className="mt-3 flex min-h-0 flex-1 flex-col overflow-hidden">
+            <div
+              ref={dictationScrollRef}
+              className="assistant-dictation-scroll flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto pr-1"
+            >
+              {/* The conversation: the assistant's questions, the vet's answers. The mascot speaks once, in the header. */}
+              <ChatThread
+                messages={threadMessages}
+                renderAvatar={renderThreadAvatar}
+                showNames={false}
+                userName="Vous"
+              />
+
+              {/* Listening: the status card, with the real microphone level. */}
+              {ai.phase === "listening" && (
+                <AgentStatus
+                  className="max-w-none"
+                  data={{
+                    label: "Écoute en cours",
+                    detail:
+                      "Parlez naturellement, puis relisez votre transcription.",
+                    startedAt: listeningSince,
+                  }}
+                  meter={<DictationLevelMeter read={ai.readLevel} />}
+                  onStop={() => void stopDictation()}
+                />
+              )}
+
+              {/* Waiting for the microphone permission: always a way out. */}
+              {ai.phase === "microphone" && (
+                <MicrophonePermissionWait onCancel={ai.cancel} />
+              )}
+
+              {/* New capture: the first seconds arrive attenuated, so speech waits for « Écoute en cours ». */}
+              {ai.phase === "warming" && (
+                <MicrophoneWarmup onCancel={ai.cancel} />
+              )}
+
+              {/* AI Activity progress */}
+              {ai.busy &&
+                ai.phase !== "listening" &&
+                ai.phase !== "microphone" &&
+                ai.phase !== "warming" && (
+                  <AssistantActivity
+                    phase={ai.phase}
+                    progress={ai.progress}
+                    hasTranscript={!!fullTranscript}
+                    patientVerified={Boolean(patient)}
+                    hasNote={!!note}
+                    failed={!!visibleError}
+                  />
+                )}
+
+              {/* Error banner */}
+              {visibleError && (
+                <div
+                  role="alert"
+                  className="flex items-center gap-2 rounded-xl border border-destructive/30 bg-destructive/10 p-3 t-12 text-destructive"
+                >
+                  <XCircle className="size-4 shrink-0" />
+                  <span>{visibleError}</span>
+                </div>
+              )}
+
+              {/* Refused: the way out is a question with its options, answered by one click. */}
+              {refused && (
+                <AgentQuestion
+                  agent="assistant"
+                  data={{
+                    question:
+                      "Relancer l’assistant sur la même dictée donnerait la même réponse. Que souhaitez-vous faire ?",
+                    options: [
+                      {
+                        id: "review",
+                        label: "Relire ma dictée comme note",
+                        description:
+                          "Votre dictée devient la note, mot pour mot, à relire et valider vous-même.",
+                        icon: FileTextIcon,
+                      },
+                      ...sectionPrompts.map((step, index) => ({
+                        id: `edit-${index}`,
+                        label: `Corriger « ${step.title} »`,
+                      })),
+                    ],
+                  }}
+                  onSubmit={(answer) => {
+                    const choice = answer.optionIds[0];
+                    if (choice === "review") reviewDictation();
+                    else if (choice?.startsWith("edit-")) {
+                      ai.clearError();
+                      changeSection(Number(choice.slice(5)));
+                    }
+                  }}
+                />
+              )}
+
+              {/* Dictation workspace */}
+              <div className="assistant-dictation-workspace flex min-h-fit flex-1 flex-col gap-2">
+                {/* Progress of the four rubrics, and the patients mentioned */}
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <span className="flex items-center gap-3 t-12 font-medium text-foreground">
+                    <span aria-hidden="true" className="flex gap-1">
+                      {sectionPrompts.map((step, index) => (
+                        <span
+                          key={step.letter}
+                          className={cn(
+                            "h-1 w-6 rounded-full",
+                            index <= sectionIndex
+                              ? "bg-brand"
+                              : "bg-foreground/[0.12]"
+                          )}
+                        />
+                      ))}
+                    </span>
+                    Rubrique {sectionIndex + 1} sur 4 ·{" "}
+                    {sectionPrompts[sectionIndex].title}
+                  </span>
+                  {mentions.length > 0 && (
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      {mentions.map((mention) => (
+                        <span
+                          key={mention.key}
+                          className={cn(
+                            "inline-flex items-center gap-1 rounded-md px-2 py-0.5 t-12",
+                            mention.patient
+                              ? "bg-primary/10 font-medium text-primary"
+                              : "bg-destructive/10 font-medium text-destructive"
+                          )}
+                        >
+                          @{mention.name}
+                          {mention.patient
+                            ? ` (${mention.patient.name})`
+                            : " (Introuvable)"}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <AgentComposer
+                  className="flex-1"
+                  fill
+                  disabled={(ai.busy && ai.phase !== "listening") || importing}
+                  label="Vos observations"
+                  maxLength={MAX_TRANSCRIPT_LENGTH}
+                  menu={
+                    suggestions.length > 0 && !ai.busy
+                      ? {
+                          label: "Suggestions de patients",
+                          items: suggestions.map((entry) => ({
+                            key: entry.id,
+                            label: entry.name,
+                            detail: patientLabel(entry),
+                          })),
+                          active: suggestionIndex,
+                          onActiveChange: setSuggestionIndex,
+                          onPick: (item) => {
+                            const entry = suggestions.find(
+                              (candidate) => candidate.id === item.key
+                            );
+                            if (entry) choosePatient(entry);
+                          },
+                          onDismiss: () => setCaret(0),
+                        }
+                      : undefined
+                  }
+                  meter={
+                    <ContextWindowMeter
+                      data={{
+                        limit: MAX_TRANSCRIPT_LENGTH,
+                        segments: [
+                          {
+                            id: "dictation",
+                            label: "Dictée",
+                            tokens: transcript.length,
+                          },
+                        ],
+                      }}
+                      variant="inline"
+                    />
+                  }
+                  onCaretChange={setCaret}
+                  onSubmit={() => {
+                    if (refused && sectionIndex === 3) reviewDictation();
+                    else void generate();
+                  }}
+                  onValueChange={(value, nextCaret) => {
+                    setTranscript(value);
+                    setCaret(nextCaret);
+                    setSuggestionIndex(0);
+                  }}
+                  placeholder={`Vos observations · ${sectionPrompts[sectionIndex].title}…`}
+                  textareaRef={textareaRef}
+                  toolbar={
+                    <>
+                      <ActionButton
+                        disabled={
+                          (ai.busy && ai.phase !== "listening") ||
+                          importing ||
+                          (!ai.native && checkingModels) ||
+                          !dictationReady
+                        }
+                        icon={ai.phase === "listening" ? Square : Mic}
+                        onClick={() => {
+                          if (ai.phase === "listening") {
+                            void stopDictation();
+                          } else {
+                            void ai.start(models, dictationLanguage);
+                          }
+                        }}
+                        variant={
+                          ai.phase === "listening" ? "danger" : "primary"
+                        }
+                      >
+                        {ai.phase === "listening"
+                          ? `Stop · ${Math.floor(ai.seconds / 60)}:${String(ai.seconds % 60).padStart(2, "0")}`
+                          : transcript
+                            ? "Compléter"
+                            : "Dicter"}
+                      </ActionButton>
+                      <Segmented<DictationLanguage>
+                        label="Langue de la dictée"
+                        onValueChange={(next) => {
+                          setDictationLanguage(next);
+                          saveDictationLanguage(next);
+                        }}
+                        options={[
+                          {
+                            value: "fr",
+                            label: "Français",
+                            disabled: ai.busy || importing || saving,
+                          },
+                          {
+                            value: "auto",
+                            label: "Auto",
+                            disabled: ai.busy || importing || saving,
+                          },
+                        ]}
+                        value={dictationLanguage}
+                      />
+                      {transcript.trim() && !ai.busy && (
+                        <IconButton
+                          icon={Trash2}
+                          label="Effacer la dictée"
+                          onClick={() => setTranscript("")}
+                        />
+                      )}
+                    </>
+                  }
+                  value={transcript}
+                />
+              </div>
+            </div>
+
+            {/* The one action: continue to the next rubric, or read the note. */}
+            <div className="flex shrink-0 justify-center pt-3">
+              <ActionButton
+                disabled={
+                  ai.busy ||
+                  importing ||
+                  (sectionIndex === 3 &&
+                    !fullTranscript.trim() &&
+                    !hasExistingNote) ||
+                  !!mentionError
+                }
+                onClick={() =>
+                  refused && sectionIndex === 3
+                    ? reviewDictation()
+                    : void generate()
+                }
+                size="sm"
+                title="Structurer la consultation en note SOAP (⌘+Entrée)"
+                variant="primary"
+              >
+                {sectionIndex < 3
+                  ? `Continuer vers ${sectionPrompts[sectionIndex + 1].title}`
+                  : refused
+                    ? "Relire ma dictée comme note"
+                    : "Relire la note SOAP"}
+                <ArrowRightIcon className="size-3.5" />
+              </ActionButton>
+            </div>
+          </div>
+        )}
+
+        {/* 5. Tab 2: the note to read, what the assistant proposed, and the card that confirms it */}
+        {activeTab === "soap" && (
+          <div className="mt-3 flex min-h-0 flex-1 flex-col overflow-hidden">
+            <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto pr-1">
+              {models.generatorReady &&
+                !assistantProposal &&
+                fullTranscript.trim() &&
+                refusedFor !== fullTranscript && (
+                  <div className="flex items-center justify-between gap-2 rounded-2xl border border-border/80 bg-card px-3 py-3">
+                    <span className="t-12 text-muted-foreground">
+                      Améliorer la formulation avec l’assistant ?
+                    </span>
+                    <ActionButton
+                      disabled={ai.busy}
+                      onClick={() => void generate()}
+                    >
+                      Structurer avec l’IA
+                    </ActionButton>
+                  </div>
+                )}
+
+              {/* The assistant's turn: what it prepared, and what it reworded for the vet to accept or refuse. */}
+              <ChatThread
+                messages={[
+                  {
+                    id: "note",
+                    role: "assistant",
+                    at: noteAt,
+                    content: (
+                      <div className="flex flex-col gap-3">
+                        <StreamingMessage
+                          className="max-w-none"
+                          data={{
+                            status: "done",
+                            content:
+                              proposalRequests.length > 0
+                                ? `J’ai reformulé ${proposalRequests.length === 1 ? "une rubrique" : `${proposalRequests.length} rubriques`}. Pour chacune, gardez ma formulation ou votre dictée, puis validez la note : rien n’est enregistré avant.`
+                                : "Voici votre note. Relisez chaque rubrique, puis validez : rien n’est enregistré avant votre accord.",
+                          }}
+                          bubble
+                          showActions={false}
+                          showHeader={false}
+                        />
+                        {proposalRequests.length > 0 && (
+                          <ToolApprovalQueue
+                            data={proposalRequests}
+                            heading="Reformulations proposées"
+                            onDecide={decideProposals}
+                            onUndo={undoProposal}
+                          />
+                        )}
+                      </div>
+                    ),
+                  },
+                ]}
+                renderAvatar={renderThreadAvatar}
+                showNames={false}
+                userName="Vous"
+              />
+
+              {visibleError && (
+                <div
+                  role="alert"
+                  className="rounded-xl border border-destructive/30 bg-destructive/10 p-3 t-12 text-destructive"
+                >
+                  {visibleError}
+                </div>
+              )}
+
+              {/* 4 SOAP Section Cards */}
+              {SOAP_SECTIONS.map(({ key }) => {
+                const currentValue = activeSoapDraft[key] ?? "";
+
+                return (
+                  <div key={key} className="flex flex-col gap-2">
+                    <div className="flex items-center justify-between gap-2">
+                      <label
+                        htmlFor={`soap-field-${key}`}
+                        className="t-13 font-semibold text-foreground"
+                      >
+                        {SOAP_FULL_HEADINGS[key]}
+                      </label>
+                    </div>
+
+                    <Textarea
+                      id={`soap-field-${key}`}
+                      rows={3}
+                      maxLength={6000}
+                      value={currentValue}
+                      disabled={saving || saved}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
+                          e.preventDefault();
+                          void save();
+                        }
+                      }}
+                      onChange={(event) => {
+                        const updatedValue = event.target.value;
+                        setNote((previous) => ({
+                          ...(previous ?? activeSoapDraft),
+                          [key]: updatedValue,
+                        }));
+                      }}
+                      placeholder="Aucune observation saisie pour cette rubrique."
+                      className="min-h-20 resize-y bg-background t-13 leading-relaxed"
+                    />
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* The confirmation: nothing is written before « Valider ». */}
+            <div className="shrink-0 pt-3">
+              <ConfirmationCard
+                blocked={
+                  pendingProposals > 0
+                    ? `${pendingProposals} reformulation${pendingProposals > 1 ? "s" : ""} à examiner avant d’enregistrer.`
+                    : (mentionError ??
+                      (dataUnavailable
+                        ? "Lecture du dossier en cours…"
+                        : undefined))
+                }
+                compact
+                confirmLabel="Valider et enregistrer la note"
+                data={{
+                  title: "Enregistrer la note",
+                  subtitle: patient
+                    ? `Dossier de ${patient.name}`
+                    : "Base locale du cabinet",
+                  items: SOAP_SECTIONS.map(({ key, title }) => {
+                    const length = (activeSoapDraft[key] ?? "").trim().length;
+                    return {
+                      id: key,
+                      label: title,
+                      filled: length > 0,
+                    };
+                  }),
+                  warnings: noteWarnings,
+                }}
+                editLabel="Revoir la dictée"
+                onConfirm={() => void save()}
+                onEdit={editTranscript}
+                status={saving ? "confirming" : "review"}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* 6. Tab 3: Dedicated Similar Cases Semantic Search */}
+        {activeTab === "search" && (
+          <div className="mt-3 flex min-h-0 flex-1 flex-col overflow-hidden">
+            <PatientDocumentSearch
+              key={patientId}
+              patientId={patientId}
+              onInsertExcerpt={handleInsertExcerpt}
+            />
+          </div>
+        )}
+
+        {/* 7. Tab 4: answers about the practice's own data, computed from the tables of this machine. */}
+        {activeTab === "data" && (
+          <div className="mt-3 flex min-h-0 flex-1 flex-col overflow-hidden">
+            <ClinicAnswers
+              patientId={effectivePatientId || undefined}
+              renderAvatar={renderThreadAvatar}
+            />
+          </div>
+        )}
       </div>
 
       {/* Discard Dialog */}

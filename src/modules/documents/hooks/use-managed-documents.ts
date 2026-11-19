@@ -1,6 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { documentsService, MANAGED_DOCUMENTS_CHANGED } from "../document-service";
-import type { ManagedDocumentTemplate, PatientDocument } from "../document-domain";
+import {
+  documentsService,
+  MANAGED_DOCUMENTS_CHANGED,
+} from "../document-service";
+import type {
+  ManagedDocumentTemplate,
+  PatientDocument,
+} from "../document-domain";
 import { guard } from "@/lib/guard";
 
 function useDocumentRows<T>(load: () => Promise<T[]>) {
@@ -11,17 +17,30 @@ function useDocumentRows<T>(load: () => Promise<T[]>) {
   // Lire : `loading` est déjà vrai au montage et quand `load` change (voir plus bas) ; les rafraîchissements le repassent à vrai.
   const fetchRows = useCallback(async () => {
     const request = ++generation.current.value;
-    await guard(async () => {
-      const next = await load();
-      if (request === generation.current.value) { setRows(next); setError(null); }
-    }, {
-      recover: (failure) => {
-        if (request === generation.current.value) { setRows([]); setError(failure instanceof Error ? failure.message : "Les documents n’ont pas pu être chargés."); }
+    await guard(
+      async () => {
+        const next = await load();
+        if (request === generation.current.value) {
+          setRows(next);
+          setError(null);
+        }
       },
-      cleanup: () => {
-   if (request === generation.current.value) setLoading(false);
-      },
-    });
+      {
+        recover: (failure) => {
+          if (request === generation.current.value) {
+            setRows([]);
+            setError(
+              failure instanceof Error
+                ? failure.message
+                : "Les documents n’ont pas pu être chargés."
+            );
+          }
+        },
+        cleanup: () => {
+          if (request === generation.current.value) setLoading(false);
+        },
+      }
+    );
   }, [load]);
   const refresh = useCallback(async () => {
     setLoading(true);
@@ -36,9 +55,14 @@ function useDocumentRows<T>(load: () => Promise<T[]>) {
   useEffect(() => {
     const tracker = generation.current;
     void fetchRows();
-    const listener = () => { void refresh(); };
+    const listener = () => {
+      void refresh();
+    };
     window.addEventListener(MANAGED_DOCUMENTS_CHANGED, listener);
-    return () => { tracker.value++; window.removeEventListener(MANAGED_DOCUMENTS_CHANGED, listener); };
+    return () => {
+      tracker.value++;
+      window.removeEventListener(MANAGED_DOCUMENTS_CHANGED, listener);
+    };
   }, [fetchRows, refresh]);
   return { rows, loading, error, refresh };
 }

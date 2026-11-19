@@ -9,7 +9,7 @@ import {
 export function assembleGuidedNote(
   existing: LocalSoapNote,
   answers: LocalSoapNote,
-  humanAnswers: LocalSoapNote = answers,
+  humanAnswers: LocalSoapNote = answers
 ): LocalSoapNote {
   const routed = routeGuidedTreatments(answers);
   return localSoapSchema.parse(
@@ -19,8 +19,8 @@ export function assembleGuidedNote(
         humanAnswers[key].trim() || routed[key].trim()
           ? routed[key].trim()
           : existing[key].trim(),
-      ]),
-    ),
+      ])
+    )
   );
 }
 

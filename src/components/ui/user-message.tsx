@@ -8,7 +8,15 @@
  * `negative`, `warning` are our tones; never the TuffUI theme); text is French, never under 12 px; no demo data.
  */
 
-import { RotateCw, Check, Copy, FileText, Image as ImageIcon, Pencil, CircleAlert } from "lucide-react";
+import {
+  RotateCw,
+  Check,
+  Copy,
+  FileText,
+  Image as ImageIcon,
+  Pencil,
+  CircleAlert,
+} from "lucide-react";
 import { AnimatePresence, MotionConfig, motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import { Button, IconButton } from "@/components/ui/action-button";
@@ -97,7 +105,12 @@ export function UserMessage({
 
   return (
     <MotionConfig reducedMotion="user">
-      <div className={cn("group flex w-full flex-col items-end gap-1.5", className)}>
+      <div
+        className={cn(
+          "group flex w-full flex-col items-end gap-1.5",
+          className
+        )}
+      >
         {attachments.length > 0 && (
           <ul
             aria-label="Pièces jointes"
@@ -155,7 +168,9 @@ export function UserMessage({
                 autoFocus
                 value={draft}
                 onChange={(e) => setDraft(e.target.value)}
-                onFocus={(e) => e.target.setSelectionRange(draft.length, draft.length)}
+                onFocus={(e) =>
+                  e.target.setSelectionRange(draft.length, draft.length)
+                }
                 onKeyDown={(e) => {
                   if (e.key === "Escape") cancel();
                   if (e.key === "Enter" && !e.shiftKey) {
@@ -166,7 +181,12 @@ export function UserMessage({
                 rows={Math.min(6, Math.max(2, draft.split("\n").length))}
               />
               <div className="flex justify-end gap-1.5">
-                <Button type="button" variant="quiet" size="sm" onClick={cancel}>
+                <Button
+                  type="button"
+                  variant="quiet"
+                  size="sm"
+                  onClick={cancel}
+                >
                   Annuler
                 </Button>
                 <Button type="submit" size="sm" disabled={!draft.trim()}>
@@ -182,7 +202,7 @@ export function UserMessage({
               exit={{ opacity: 0, transition: exit }}
               className={cn(
                 "max-w-[85%] rounded-2xl rounded-br-md bg-brand/10 px-3.5 py-2 text-sm leading-relaxed whitespace-pre-wrap",
-                status === "sending" && "opacity-70",
+                status === "sending" && "opacity-70"
               )}
             >
               {content}
@@ -194,7 +214,7 @@ export function UserMessage({
           <div className="flex items-center gap-1 text-xs text-muted-foreground">
             <span
               className={cn(
-                "flex items-center gap-1 opacity-0 transition-opacity duration-150 group-focus-within:opacity-100 group-hover:opacity-100 [@media(hover:none)]:opacity-100",
+                "flex items-center gap-1 opacity-0 transition-opacity duration-150 group-focus-within:opacity-100 group-hover:opacity-100 [@media(hover:none)]:opacity-100"
               )}
             >
               {onEdit && status !== "sending" && (
@@ -216,7 +236,12 @@ export function UserMessage({
                 onClick={copy}
               />
             </span>
-            <Delivery status={status} sentAt={sentAt} edited={edited} onRetry={onRetry} />
+            <Delivery
+              status={status}
+              sentAt={sentAt}
+              edited={edited}
+              onRetry={onRetry}
+            />
           </div>
         )}
         <p role="status" aria-live="polite" className="sr-only">

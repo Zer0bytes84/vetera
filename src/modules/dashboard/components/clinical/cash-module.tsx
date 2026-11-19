@@ -90,9 +90,7 @@ export function CashModule({
       />
       <div className="mt-4 flex items-center justify-between gap-3 border-y border-hairline py-3">
         <div>
-          <p className="t-12 text-ink-muted">
-            À recouvrer · toutes dates
-          </p>
+          <p className="t-12 text-ink-muted">À recouvrer · toutes dates</p>
           <p className="mt-1 font-display t-18 font-medium tabular-nums">
             {formatCentimes(pending)}
           </p>
@@ -160,9 +158,27 @@ export function CashModule({
         />
       )}
       <dl className="premium-widget-metrics" aria-label="Bilan de trésorerie">
-        <div><dt><i className="finder-dot finder-dot-blue" aria-hidden="true" />Encaissé</dt><dd>{formatCentimes(cash.income)}</dd></div>
-        <div><dt><i className="finder-dot finder-dot-orange" aria-hidden="true" />Dépensé</dt><dd>{formatCentimes(cash.expense)}</dd></div>
-        <div><dt><i className="finder-dot finder-dot-green" aria-hidden="true" />À recouvrer</dt><dd>{formatCentimes(pending)}</dd></div>
+        <div>
+          <dt>
+            <i className="finder-dot finder-dot-blue" aria-hidden="true" />
+            Encaissé
+          </dt>
+          <dd>{formatCentimes(cash.income)}</dd>
+        </div>
+        <div>
+          <dt>
+            <i className="finder-dot finder-dot-orange" aria-hidden="true" />
+            Dépensé
+          </dt>
+          <dd>{formatCentimes(cash.expense)}</dd>
+        </div>
+        <div>
+          <dt>
+            <i className="finder-dot finder-dot-green" aria-hidden="true" />À
+            recouvrer
+          </dt>
+          <dd>{formatCentimes(pending)}</dd>
+        </div>
       </dl>
       <div className="mt-3 flex justify-end border-t border-hairline pt-3">
         <ModuleLink onClick={onFinances}>Voir les finances</ModuleLink>

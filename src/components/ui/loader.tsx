@@ -9,7 +9,12 @@
  */
 
 import { LoaderCircle } from "lucide-react";
-import { AnimatePresence, MotionConfig, motion, useReducedMotion } from "motion/react";
+import {
+  AnimatePresence,
+  MotionConfig,
+  motion,
+  useReducedMotion,
+} from "motion/react";
 import { useEffect, useState } from "react";
 import { EASE_OUT } from "@/lib/motion-tokens";
 import { cn } from "@/lib/utils";
@@ -34,14 +39,17 @@ export function Spinner({
   return (
     <span
       role="status"
-      className={cn("inline-flex items-center gap-2 text-muted-foreground", className)}
+      className={cn(
+        "inline-flex items-center gap-2 text-muted-foreground",
+        className
+      )}
     >
       <LoaderCircle
         strokeWidth={2.5}
         aria-hidden="true"
         className={cn(
           "shrink-0 animate-spin [animation-duration:700ms] motion-reduce:animate-none",
-          spinnerSizes[size],
+          spinnerSizes[size]
         )}
       />
       {showLabel ? (
@@ -93,7 +101,10 @@ export function Thinking({
     <MotionConfig reducedMotion="user">
       <span
         role="status"
-        className={cn("inline-flex items-center gap-2 text-muted-foreground", className)}
+        className={cn(
+          "inline-flex items-center gap-2 text-muted-foreground",
+          className
+        )}
       >
         <span aria-hidden="true" className={cn("flex items-center", s.gap)}>
           {[0, 1, 2].map((i) => (
@@ -101,18 +112,30 @@ export function Thinking({
               key={i}
               className={cn("rounded-full bg-current", s.dot)}
               animate={
-                reduce ? { opacity: 0.6 } : { opacity: [0.3, 1, 0.3], y: [0, -2, 0] }
+                reduce
+                  ? { opacity: 0.6 }
+                  : { opacity: [0.3, 1, 0.3], y: [0, -2, 0] }
               }
               transition={
                 reduce
                   ? { duration: 0 }
-                  : { duration: 1, repeat: Infinity, ease: "easeInOut", delay: i * 0.15 }
+                  : {
+                      duration: 1,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                      delay: i * 0.15,
+                    }
               }
             />
           ))}
         </span>
         {word ? (
-          <span className={cn("relative inline-flex h-[1lh] overflow-hidden", s.text)}>
+          <span
+            className={cn(
+              "relative inline-flex h-[1lh] overflow-hidden",
+              s.text
+            )}
+          >
             <AnimatePresence mode="popLayout" initial={false}>
               <motion.span
                 key={word}

@@ -156,9 +156,24 @@ const MotivationalHeader: React.FC<MotivationalHeaderProps> = ({
       <div className="space-y-1">
         <PageDate />
         <h1 className="flex flex-wrap items-center gap-2.5 font-display font-semibold text-2xl text-foreground tracking-tight leading-tight">
-          <span>{isDashboard && cleanTitle.includes(userName) ? <>{cleanTitle.slice(0, cleanTitle.indexOf(userName))}<span className="dashboard-greeting-name">{userName}</span>{cleanTitle.slice(cleanTitle.indexOf(userName) + userName.length)}</> : cleanTitle}</span>
-          {isDashboard && <span className="dashboard-greeting-wave" aria-hidden="true">👋</span>}
-
+          <span>
+            {isDashboard && cleanTitle.includes(userName) ? (
+              <>
+                {cleanTitle.slice(0, cleanTitle.indexOf(userName))}
+                <span className="dashboard-greeting-name">{userName}</span>
+                {cleanTitle.slice(
+                  cleanTitle.indexOf(userName) + userName.length
+                )}
+              </>
+            ) : (
+              cleanTitle
+            )}
+          </span>
+          {isDashboard && (
+            <span className="dashboard-greeting-wave" aria-hidden="true">
+              👋
+            </span>
+          )}
         </h1>
       </div>
     );

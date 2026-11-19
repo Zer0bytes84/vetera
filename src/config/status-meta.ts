@@ -36,7 +36,8 @@ export const APPOINTMENT_TYPE_META: Record<
       "bg-rose-100 text-rose-700 dark:bg-rose-500/10 dark:text-rose-300",
   },
   Urgence: {
-    badgeClassName: "premium-status-urgent bg-amber-500/12 text-amber-700 dark:text-amber-300",
+    badgeClassName:
+      "premium-status-urgent bg-amber-500/12 text-amber-700 dark:text-amber-300",
     surfaceClassName:
       "border-amber-200/70 bg-amber-500/10 dark:border-amber-900/70 dark:bg-amber-500/12",
     dotClassName: "bg-amber-500",
@@ -80,7 +81,8 @@ export const APPOINTMENT_STATUS_META: Record<
   },
   in_progress: {
     label: "En cours",
-    className: "premium-status-progress bg-blue-500/10 text-blue-700 dark:text-blue-300",
+    className:
+      "premium-status-progress bg-blue-500/10 text-blue-700 dark:text-blue-300",
   },
   completed: {
     label: "Terminé",
@@ -102,7 +104,8 @@ export const CLINIQUE_STATUS_META: Record<Appointment["status"], StatusColor> =
     ...APPOINTMENT_STATUS_META,
     scheduled: {
       label: "À lancer",
-      className: "premium-status-todo bg-amber-500/10 text-amber-700 dark:text-amber-300",
+      className:
+        "premium-status-todo bg-amber-500/10 text-amber-700 dark:text-amber-300",
     },
     confirmed: {
       label: "Confirmé",

@@ -42,7 +42,12 @@ export const getSlashCommandItems = (
     icon: "▦",
     keywords: ["tableau", "grille", "colonnes", "lignes"],
     group: "table",
-    command: (editor) => editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run(),
+    command: (editor) =>
+      editor
+        .chain()
+        .focus()
+        .insertTable({ rows: 3, cols: 3, withHeaderRow: true })
+        .run(),
   },
   {
     title: "Suivi des constantes",
@@ -184,7 +189,16 @@ export const createSlashCommandsSuggestion = (
     const items = getSlashCommandItems(onAiAction);
     const search = query.trim().toLocaleLowerCase("fr");
     if (!search) {
-      const frequent = new Set(["Titre 1", "Titre 2", "Liste à puces", "Liste numérotée", "Liste à cocher", "Citation", "Tableau vierge", "Séparateur"]);
+      const frequent = new Set([
+        "Titre 1",
+        "Titre 2",
+        "Liste à puces",
+        "Liste numérotée",
+        "Liste à cocher",
+        "Citation",
+        "Tableau vierge",
+        "Séparateur",
+      ]);
       return items.filter((item) => frequent.has(item.title));
     }
     return items

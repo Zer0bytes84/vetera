@@ -19,11 +19,17 @@ export interface ReminderQuiet<T extends QuietReminder = QuietReminder> {
   completed: number;
 }
 
-const dayKey = (date: Date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+const dayKey = (date: Date) =>
+  `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 
-export function buildReminderQuiet<T extends QuietReminder>(items: T[], now: Date): ReminderQuiet<T> {
+export function buildReminderQuiet<T extends QuietReminder>(
+  items: T[],
+  now: Date
+): ReminderQuiet<T> {
   const today = dayKey(now);
-  const horizon = dayKey(new Date(now.getFullYear(), now.getMonth(), now.getDate() + 7));
+  const horizon = dayKey(
+    new Date(now.getFullYear(), now.getMonth(), now.getDate() + 7)
+  );
   const open = items.filter((item) => !item.completed);
   const ahead = open
     .filter((item) => item.date && dayKey(item.date) > today)

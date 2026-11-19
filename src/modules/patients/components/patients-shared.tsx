@@ -12,11 +12,7 @@ import {
 } from "@/lib/hugeicons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Bird, Cat, Dog, PawPrint, Rabbit, UserRound } from "@/lib/icons";
-import React, {
-  useCallback,
-  useMemo,
-  useState,
-} from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import { computeAge, formatAgeFr } from "../lib";
@@ -275,7 +271,10 @@ export function getSpeciesComponent(species?: string) {
 }
 
 /** L'icône de l'espèce, choisie dans un composant stable : le résultat est celui de getSpeciesComponent, sans créer de composant au rendu. */
-export function SpeciesComponentIcon({ species, ...props }: { species?: string } & React.ComponentProps<typeof Dog>) {
+export function SpeciesComponentIcon({
+  species,
+  ...props
+}: { species?: string } & React.ComponentProps<typeof Dog>) {
   const normalized = species?.toLowerCase() ?? "";
   if (normalized.includes("chien")) return <Dog {...props} />;
   if (normalized.includes("chat")) return <Cat {...props} />;
@@ -285,13 +284,29 @@ export function SpeciesComponentIcon({ species, ...props }: { species?: string }
 }
 
 /** L'adresse du propriétaire sur une ligne, ou « Non renseignée ». */
-function ownerAddressLabel(owner: { address?: string | null; city?: string | null } | null | undefined): string {
-  return [owner?.address, owner?.city].filter(Boolean).join(", ") || "Non renseignée";
+function ownerAddressLabel(
+  owner: { address?: string | null; city?: string | null } | null | undefined
+): string {
+  return (
+    [owner?.address, owner?.city].filter(Boolean).join(", ") || "Non renseignée"
+  );
 }
 
 /** Le contact secondaire du propriétaire sur une ligne, ou « Non renseigné ». */
-function secondaryContactLabel(owner: { secondaryContactName?: string | null; secondaryContactPhone?: string | null } | null | undefined): string {
-  return [owner?.secondaryContactName, formatPhone(owner?.secondaryContactPhone)].filter(Boolean).join(" · ") || "Non renseigné";
+function secondaryContactLabel(
+  owner:
+    | {
+        secondaryContactName?: string | null;
+        secondaryContactPhone?: string | null;
+      }
+    | null
+    | undefined
+): string {
+  return (
+    [owner?.secondaryContactName, formatPhone(owner?.secondaryContactPhone)]
+      .filter(Boolean)
+      .join(" · ") || "Non renseigné"
+  );
 }
 
 export function getBreedSuggestions(species?: string) {
@@ -388,7 +403,7 @@ export function ClinicalNote({
         <span
           className={cn(
             "size-2 rounded-full",
-            tone === "alert" && value ? "bg-rose-500" : "bg-emerald-500",
+            tone === "alert" && value ? "bg-rose-500" : "bg-emerald-500"
           )}
         />
         <p className="font-semibold text-sm">{label}</p>
@@ -396,7 +411,7 @@ export function ClinicalNote({
       <p
         className={cn(
           "mt-2 pl-4 text-sm leading-6",
-          value ? "text-foreground" : "text-muted-foreground",
+          value ? "text-foreground" : "text-muted-foreground"
         )}
       >
         {value || emptyLabel}
@@ -448,7 +463,7 @@ export function PatientDetailsDialog({
 
   const [selectedOwnerId, setSelectedOwnerId] = useState(patient.ownerId);
   const [ownerData, setOwnerData] = useState<Partial<Owner>>(
-    owner ? { ...owner } : {},
+    owner ? { ...owner } : {}
   );
 
   // Onglet demandé : repris à l'ouverture et quand le dossier affiché change (corrigé au rendu, sans effet).
@@ -482,7 +497,9 @@ export function PatientDetailsDialog({
 
   // Charge les champs du propriétaire choisi une seule fois par propriétaire,
   // pas à chaque rechargement de la liste : sinon la saisie en cours est écrasée.
-  const [lastLinkedOwnerId, setLastLinkedOwnerId] = useState<string | null>(null);
+  const [lastLinkedOwnerId, setLastLinkedOwnerId] = useState<string | null>(
+    null
+  );
   if (lastLinkedOwnerId !== selectedOwnerId) {
     const linkedOwner = allOwners.find((entry) => entry.id === selectedOwnerId);
     if (linkedOwner) {
@@ -501,25 +518,25 @@ export function PatientDetailsDialog({
           const rightDate = normalizeDate(right.startTime)?.getTime() ?? 0;
           return rightDate - leftDate;
         }),
-    [appointments, patient.id],
+    [appointments, patient.id]
   );
 
   const currentOwner = useMemo(
     () => allOwners.find((entry) => entry.id === selectedOwnerId),
-    [allOwners, selectedOwnerId],
+    [allOwners, selectedOwnerId]
   );
 
   const ownerFinancialHistory = useMemo(() => {
     const appointmentIds = new Set(
       appointments
         .filter((appointment) => appointment.ownerId === selectedOwnerId)
-        .map((appointment) => appointment.id),
+        .map((appointment) => appointment.id)
     );
     const linkedIncome = transactions.filter(
       (transaction) =>
         transaction.type === "income" &&
         !!transaction.referenceId &&
-        appointmentIds.has(transaction.referenceId),
+        appointmentIds.has(transaction.referenceId)
     );
 
     return {
@@ -535,12 +552,12 @@ export function PatientDetailsDialog({
 
   const usersById = useMemo(
     () => new Map(users.map((entry) => [entry.id, entry])),
-    [users],
+    [users]
   );
 
   const breedSuggestions = useMemo(
     () => getBreedSuggestions(patientData.species),
-    [patientData.species],
+    [patientData.species]
   );
 
   const now = useNow();
@@ -561,7 +578,7 @@ export function PatientDetailsDialog({
           const rightDate = normalizeDate(right.startTime)?.getTime() ?? 0;
           return leftDate - rightDate;
         })[0],
-    [history, now],
+    [history, now]
   );
 
   const handleCancelEdit = () => {
@@ -601,56 +618,59 @@ export function PatientDetailsDialog({
 
     setIsSaving(true);
 
-    return await guard(async () => {
-      const patientUpdated = await onUpdatePatient(patient.id, {
-        ...patientData,
-        ownerId: selectedOwnerId,
-        breed: patientData.breed || undefined,
-        dateOfBirth: patientData.dateOfBirth || undefined,
-        allergies: patientData.allergies || undefined,
-        chronicConditions: patientData.chronicConditions || undefined,
-        generalNotes: patientData.generalNotes || undefined,
-      });
+    return await guard(
+      async () => {
+        const patientUpdated = await onUpdatePatient(patient.id, {
+          ...patientData,
+          ownerId: selectedOwnerId,
+          breed: patientData.breed || undefined,
+          dateOfBirth: patientData.dateOfBirth || undefined,
+          allergies: patientData.allergies || undefined,
+          chronicConditions: patientData.chronicConditions || undefined,
+          generalNotes: patientData.generalNotes || undefined,
+        });
 
-      if (!patientUpdated) {
-        throw new Error("PATIENT_UPDATE_FAILED");
-      }
+        if (!patientUpdated) {
+          throw new Error("PATIENT_UPDATE_FAILED");
+        }
 
-      const ownerUpdated = await onUpdateOwner(selectedOwnerId, {
-        firstName: ownerData.firstName || "",
-        lastName: ownerData.lastName || "",
-        phone: ownerData.phone || "",
-        email: ownerData.email || undefined,
-        address: ownerData.address || undefined,
-        city: ownerData.city || undefined,
-        preferredContact: ownerData.preferredContact,
-        secondaryContactName: ownerData.secondaryContactName || undefined,
-        secondaryContactPhone: ownerData.secondaryContactPhone || undefined,
-        communicationNotes: ownerData.communicationNotes || undefined,
-      });
+        const ownerUpdated = await onUpdateOwner(selectedOwnerId, {
+          firstName: ownerData.firstName || "",
+          lastName: ownerData.lastName || "",
+          phone: ownerData.phone || "",
+          email: ownerData.email || undefined,
+          address: ownerData.address || undefined,
+          city: ownerData.city || undefined,
+          preferredContact: ownerData.preferredContact,
+          secondaryContactName: ownerData.secondaryContactName || undefined,
+          secondaryContactPhone: ownerData.secondaryContactPhone || undefined,
+          communicationNotes: ownerData.communicationNotes || undefined,
+        });
 
-      if (!ownerUpdated) {
-        // Le patient est déjà enregistré : on le dit explicitement au lieu
-        // de laisser croire que rien n'a été sauvegardé. L'édition reste
-        // ouverte pour réessayer la partie propriétaire.
-        toast.error(
-          "Le patient a été enregistré, mais la mise à jour du propriétaire a échoué. Vérifiez puis réessayez.",
-        );
-        return;
-      }
+        if (!ownerUpdated) {
+          // Le patient est déjà enregistré : on le dit explicitement au lieu
+          // de laisser croire que rien n'a été sauvegardé. L'édition reste
+          // ouverte pour réessayer la partie propriétaire.
+          toast.error(
+            "Le patient a été enregistré, mais la mise à jour du propriétaire a échoué. Vérifiez puis réessayez."
+          );
+          return;
+        }
 
-      toast.success("Le dossier patient a été mis à jour.");
-      setIsEditing(false);
-      onSaved?.(patient.id);
-    }, {
-      recover: (error) => {
-        console.error(error);
-        toast.error("Impossible d'enregistrer les modifications.");
+        toast.success("Le dossier patient a été mis à jour.");
+        setIsEditing(false);
+        onSaved?.(patient.id);
       },
-      cleanup: () => {
-        setIsSaving(false);
-      },
-    });
+      {
+        recover: (error) => {
+          console.error(error);
+          toast.error("Impossible d'enregistrer les modifications.");
+        },
+        cleanup: () => {
+          setIsSaving(false);
+        },
+      }
+    );
   }, [
     patient.id,
     patientData,
@@ -787,7 +807,7 @@ export function PatientDetailsDialog({
 
               <div
                 data-clinical-alert={Boolean(
-                  patient.allergies || patient.chronicConditions,
+                  patient.allergies || patient.chronicConditions
                 )}
                 className="flex min-w-0 items-center gap-3 rounded-2xl bg-muted/30 px-3.5 py-3 text-foreground ring-1 ring-border/40 transition-colors dark:bg-muted/15 dark:ring-border/30"
               >
@@ -832,7 +852,7 @@ export function PatientDetailsDialog({
                     "flex h-10 shrink-0 items-center gap-2.5 rounded-xl px-3 font-medium text-sm transition-colors md:w-full",
                     activeTab === "info"
                       ? "bg-sky-500/10 font-semibold text-sky-700 dark:bg-sky-500/20 dark:text-sky-300"
-                      : "text-muted-foreground hover:bg-muted/60 hover:text-foreground",
+                      : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
                   )}
                   onClick={() => setActiveTab("info")}
                   type="button"
@@ -850,7 +870,7 @@ export function PatientDetailsDialog({
                     "flex h-10 shrink-0 items-center gap-2.5 rounded-xl px-3 font-medium text-sm transition-colors md:w-full",
                     activeTab === "medical"
                       ? "bg-emerald-500/10 font-semibold text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300"
-                      : "text-muted-foreground hover:bg-muted/60 hover:text-foreground",
+                      : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
                   )}
                   onClick={() => setActiveTab("medical")}
                   type="button"
@@ -868,7 +888,7 @@ export function PatientDetailsDialog({
                     "flex h-10 shrink-0 items-center gap-2.5 rounded-xl px-3 font-medium text-sm transition-colors md:w-full",
                     activeTab === "history"
                       ? "bg-amber-500/10 font-semibold text-amber-700 dark:bg-amber-500/20 dark:text-amber-300"
-                      : "text-muted-foreground hover:bg-muted/60 hover:text-foreground",
+                      : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
                   )}
                   onClick={() => setActiveTab("history")}
                   type="button"
@@ -1014,7 +1034,7 @@ export function PatientDetailsDialog({
                                       >
                                         {option.label}
                                       </NativeSelectOption>
-                                    ),
+                                    )
                                   )}
                                 </NativeSelect>
                               </Field>
@@ -1272,9 +1292,7 @@ export function PatientDetailsDialog({
                             />
                             <ReadOnlyDetail
                               label="Adresse"
-                              value={
-                                ownerAddressLabel(currentOwner)
-                              }
+                              value={ownerAddressLabel(currentOwner)}
                             />
                             <ReadOnlyDetail
                               label="Contact privilégié"
@@ -1288,9 +1306,7 @@ export function PatientDetailsDialog({
                             />
                             <ReadOnlyDetail
                               label="Contact secondaire"
-                              value={
-                                secondaryContactLabel(currentOwner)
-                              }
+                              value={secondaryContactLabel(currentOwner)}
                             />
                             {currentOwner?.communicationNotes ? (
                               <ReadOnlyDetail
@@ -1485,7 +1501,7 @@ export function PatientDetailsDialog({
                                 </p>
                                 <p className="truncate text-muted-foreground text-xs">
                                   {formatPersonName(
-                                    veterinarian?.displayName,
+                                    veterinarian?.displayName
                                   ) || "Non assigné"}
                                 </p>
                               </div>
@@ -1501,7 +1517,7 @@ export function PatientDetailsDialog({
                                 label="Créneau"
                                 value={formatVisitTimeRange(
                                   appointment.startTime,
-                                  appointment.endTime,
+                                  appointment.endTime
                                 )}
                               />
                               <ReadOnlyDetail
@@ -1624,7 +1640,9 @@ export function PatientCreateDialog({
 
   // Charge les champs du propriétaire choisi une seule fois par propriétaire,
   // pas à chaque rechargement de la liste : sinon la saisie en cours est écrasée.
-  const [lastLinkedOwnerId, setLastLinkedOwnerId] = useState<string | null>(null);
+  const [lastLinkedOwnerId, setLastLinkedOwnerId] = useState<string | null>(
+    null
+  );
   if (selectedOwnerId === "new") {
     if (lastLinkedOwnerId !== null) setLastLinkedOwnerId(null);
   } else if (lastLinkedOwnerId !== selectedOwnerId) {
@@ -1637,7 +1655,7 @@ export function PatientCreateDialog({
 
   const breedSuggestions = useMemo(
     () => getBreedSuggestions(newPatient.species),
-    [newPatient.species],
+    [newPatient.species]
   );
 
   const handleCreate = useCallback(async () => {
@@ -1669,25 +1687,28 @@ export function PatientCreateDialog({
 
     setIsSubmitting(true);
 
-    await guard(async () => {
-      await onCreate({
-        selectedOwnerId: selectedOwnerId === "new" ? null : selectedOwnerId,
-        owner: selectedOwnerId === "new" ? newOwner : {},
-        patient: newPatient,
-      });
-    }, {
-      recover: (error) => {
-        const message =
-          error instanceof Error
-            ? error.message
-            : "Impossible de créer le dossier patient.";
-        setFormError(message);
-        toast.error(message);
+    await guard(
+      async () => {
+        await onCreate({
+          selectedOwnerId: selectedOwnerId === "new" ? null : selectedOwnerId,
+          owner: selectedOwnerId === "new" ? newOwner : {},
+          patient: newPatient,
+        });
       },
-      cleanup: () => {
-        setIsSubmitting(false);
-      },
-    });
+      {
+        recover: (error) => {
+          const message =
+            error instanceof Error
+              ? error.message
+              : "Impossible de créer le dossier patient.";
+          setFormError(message);
+          toast.error(message);
+        },
+        cleanup: () => {
+          setIsSubmitting(false);
+        },
+      }
+    );
   }, [newPatient, selectedOwnerId, newOwner, onCreate]);
 
   const ownerOptions = useMemo(
@@ -1695,9 +1716,9 @@ export function PatientCreateDialog({
       owners
         .slice()
         .sort((left, right) =>
-          formatOwnerName(left).localeCompare(formatOwnerName(right), "fr"),
+          formatOwnerName(left).localeCompare(formatOwnerName(right), "fr")
         ),
-    [owners],
+    [owners]
   );
 
   const selectedOwner =
@@ -1721,7 +1742,12 @@ export function PatientCreateDialog({
         <FormDialogHeader
           artwork="patient"
           description="Identité de l’animal et coordonnées du propriétaire."
-          icon={<SpeciesComponentIcon species={newPatient.species} strokeWidth={1.5} />}
+          icon={
+            <SpeciesComponentIcon
+              species={newPatient.species}
+              strokeWidth={1.5}
+            />
+          }
           title="Nouveau patient"
         />
 
@@ -1822,8 +1848,8 @@ export function PatientCreateDialog({
                         <Input
                           aria-invalid={Boolean(
                             formError &&
-                            selectedOwnerId === "new" &&
-                            !newOwner.lastName?.trim(),
+                              selectedOwnerId === "new" &&
+                              !newOwner.lastName?.trim()
                           )}
                           onChange={(event) =>
                             setNewOwner((current) => ({
@@ -1858,8 +1884,8 @@ export function PatientCreateDialog({
                         <Input
                           aria-invalid={Boolean(
                             formError &&
-                            selectedOwnerId === "new" &&
-                            !newOwner.phone?.trim(),
+                              selectedOwnerId === "new" &&
+                              !newOwner.phone?.trim()
                           )}
                           onChange={(event) =>
                             setNewOwner((current) => ({
@@ -1927,7 +1953,11 @@ export function PatientCreateDialog({
                     aria-hidden="true"
                     className="modal-section-icon modal-section-icon-patient"
                   >
-                    <SpeciesComponentIcon species={newPatient.species} className="size-[18px]" strokeWidth={1.9} />
+                    <SpeciesComponentIcon
+                      species={newPatient.species}
+                      className="size-[18px]"
+                      strokeWidth={1.9}
+                    />
                   </span>
                   <div>
                     <h3 className="font-semibold t-16 text-foreground">
@@ -1939,7 +1969,11 @@ export function PatientCreateDialog({
                   </div>
                 </div>
                 <span className="modal-section-state modal-section-state-patient">
-                  <SpeciesComponentIcon species={newPatient.species} className="size-3.5" strokeWidth={1.5} />
+                  <SpeciesComponentIcon
+                    species={newPatient.species}
+                    className="size-3.5"
+                    strokeWidth={1.5}
+                  />
                   {newPatient.species?.trim() || "Animal à identifier"}
                 </span>
               </div>
@@ -1952,7 +1986,7 @@ export function PatientCreateDialog({
                   </FieldLabel>
                   <Input
                     aria-invalid={Boolean(
-                      formError && !newPatient.name?.trim(),
+                      formError && !newPatient.name?.trim()
                     )}
                     autoFocus
                     className="modal-patient-name-input"
@@ -1974,7 +2008,7 @@ export function PatientCreateDialog({
                     </FieldLabel>
                     <Input
                       aria-invalid={Boolean(
-                        formError && !newPatient.species?.trim(),
+                        formError && !newPatient.species?.trim()
                       )}
                       list="new-patient-species-options"
                       onChange={(event) =>
@@ -2047,7 +2081,7 @@ export function PatientCreateDialog({
                           <NativeSelectOption key={value} value={value}>
                             {option.label}
                           </NativeSelectOption>
-                        ),
+                        )
                       )}
                     </NativeSelect>
                   </Field>

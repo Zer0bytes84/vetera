@@ -17,7 +17,12 @@ const BASIS_POINTS = 10000n;
 
 function assertSafeInteger(
   value: number,
-  code: "AMOUNT_INVALID" | "QUANTITY_INVALID" | "UNIT_AMOUNT_INVALID" | "DISCOUNT_BPS_INVALID" | "TAX_BPS_INVALID",
+  code:
+    | "AMOUNT_INVALID"
+    | "QUANTITY_INVALID"
+    | "UNIT_AMOUNT_INVALID"
+    | "DISCOUNT_BPS_INVALID"
+    | "TAX_BPS_INVALID",
   message: string,
   minimum: number
 ): number {
@@ -146,11 +151,15 @@ export function sumBillingLines(
 ): BillingTotals {
   const totals = lines.reduce(
     (accumulator, line) => ({
-      baseAmount: accumulator.baseAmount + assertNonNegativeAmount(line.baseAmount),
+      baseAmount:
+        accumulator.baseAmount + assertNonNegativeAmount(line.baseAmount),
       discountAmount:
-        accumulator.discountAmount + assertNonNegativeAmount(line.discountAmount),
-      taxAmount: accumulator.taxAmount + assertNonNegativeAmount(line.taxAmount),
-      grossAmount: accumulator.grossAmount + assertNonNegativeAmount(line.grossAmount),
+        accumulator.discountAmount +
+        assertNonNegativeAmount(line.discountAmount),
+      taxAmount:
+        accumulator.taxAmount + assertNonNegativeAmount(line.taxAmount),
+      grossAmount:
+        accumulator.grossAmount + assertNonNegativeAmount(line.grossAmount),
     }),
     {
       baseAmount: 0,

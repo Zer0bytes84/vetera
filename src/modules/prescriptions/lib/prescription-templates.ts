@@ -72,7 +72,9 @@ export function findTemplateByName(
   exceptId?: string
 ): PrescriptionTemplate | undefined {
   const key = nameKey(name);
-  return templates.find((tpl) => tpl.id !== exceptId && nameKey(tpl.name) === key);
+  return templates.find(
+    (tpl) => tpl.id !== exceptId && nameKey(tpl.name) === key
+  );
 }
 
 function optionalText(value: unknown): string | undefined {
@@ -80,7 +82,9 @@ function optionalText(value: unknown): string | undefined {
 }
 
 function optionalNumber(value: unknown): number | undefined {
-  return typeof value === "number" && Number.isFinite(value) ? value : undefined;
+  return typeof value === "number" && Number.isFinite(value)
+    ? value
+    : undefined;
 }
 
 /** Ne garde d'une ligne que les champs propres au modèle. */
@@ -122,7 +126,8 @@ export function parseTemplates(raw: string | null): PrescriptionTemplate[] {
       return [];
     }
     const tpl = entry as Partial<PrescriptionTemplate>;
-    const name = typeof tpl.name === "string" ? cleanTemplateName(tpl.name) : "";
+    const name =
+      typeof tpl.name === "string" ? cleanTemplateName(tpl.name) : "";
     if (typeof tpl.id !== "string" || !name || !Array.isArray(tpl.items)) {
       return [];
     }
@@ -176,7 +181,11 @@ export function upsertTemplate(
   templates: readonly PrescriptionTemplate[],
   input: SaveTemplateInput,
   options: { id: () => string; now: string }
-): { saved: PrescriptionTemplate; templates: PrescriptionTemplate[]; replaced: boolean } {
+): {
+  saved: PrescriptionTemplate;
+  templates: PrescriptionTemplate[];
+  replaced: boolean;
+} {
   const name = cleanTemplateName(input.name);
   if (!name) {
     throw new Error("Donnez un nom au modèle.");
@@ -185,7 +194,9 @@ export function upsertTemplate(
     .filter((it) => it.medicationName.trim() !== "")
     .map(toTemplateItem);
   if (items.length === 0) {
-    throw new Error("Ajoutez au moins un médicament avant d'enregistrer un modèle.");
+    throw new Error(
+      "Ajoutez au moins un médicament avant d'enregistrer un modèle."
+    );
   }
   const existing = findTemplateByName(templates, name);
   const saved: PrescriptionTemplate = {
@@ -239,7 +250,9 @@ export function removeTemplate(
  * lignes existantes. Les doses calculées restent à faire par l'appelant,
  * avec le poids du patient courant.
  */
-export function instantiateTemplateItems<T extends { id: string; sortOrder: number }>(
+export function instantiateTemplateItems<
+  T extends { id: string; sortOrder: number },
+>(
   template: PrescriptionTemplate,
   startSortOrder: number,
   makeLine: (item: PrescriptionTemplateItem, sortOrder: number) => T
@@ -281,6 +294,7 @@ export function checkTemplateSafety(input: {
   }).filter(
     (alert) =>
       templateKeys.has(alert.medicationKey) ||
-      (alert.other?.origin === "ordonnance" && templateKeys.has(alert.other.key))
+      (alert.other?.origin === "ordonnance" &&
+        templateKeys.has(alert.other.key))
   );
 }

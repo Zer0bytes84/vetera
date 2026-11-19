@@ -1,4 +1,7 @@
-import { isSoapReviewed, soapMetadata } from "@/modules/consultations/local-ai/soap-review";
+import {
+  isSoapReviewed,
+  soapMetadata,
+} from "@/modules/consultations/local-ai/soap-review";
 import type { ConsultationSoap } from "@/types/db";
 import { TOUR_STEP_IDS, type TourState, type TourStepId } from "./tour-state";
 
@@ -7,11 +10,37 @@ import { TOUR_STEP_IDS, type TourState, type TourStepId } from "./tour-state";
  * créer son patient par la barre « + », par la liste, par la palette de commandes, l'étape sera reconnue de la même façon.
  */
 export interface TourSnapshot {
-  patients: readonly { id: string; ownerId: string; createdAt: string; archivedAt?: string | null }[];
-  appointments: readonly { id: string; patientId: string; createdAt: string; status: string }[];
-  soaps: readonly Pick<ConsultationSoap, "appointmentId" | "patientId" | "content" | "aiDraft" | "subjective" | "objective" | "assessment" | "plan">[];
+  patients: readonly {
+    id: string;
+    ownerId: string;
+    createdAt: string;
+    archivedAt?: string | null;
+  }[];
+  appointments: readonly {
+    id: string;
+    patientId: string;
+    createdAt: string;
+    status: string;
+  }[];
+  soaps: readonly Pick<
+    ConsultationSoap,
+    | "appointmentId"
+    | "patientId"
+    | "content"
+    | "aiDraft"
+    | "subjective"
+    | "objective"
+    | "assessment"
+    | "plan"
+  >[];
   /** Factures émises. Vide ET `invoicesKnown` faux hors de l'application de bureau (pas de facturation dans le navigateur). */
-  invoices: readonly { id: string; patientId?: string | null; ownerId: string; createdAt: string; completedPaymentAmount: number }[];
+  invoices: readonly {
+    id: string;
+    patientId?: string | null;
+    ownerId: string;
+    createdAt: string;
+    completedPaymentAmount: number;
+  }[];
   invoicesKnown: boolean;
 }
 
@@ -24,7 +53,9 @@ const NAIVE_SQLITE = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}(\.\d+)?$/;
  */
 export function storedInstantMs(value: unknown): number | null {
   if (typeof value !== "string") return null;
-  const ms = Date.parse(NAIVE_SQLITE.test(value) ? `${value.replace(" ", "T")}Z` : value);
+  const ms = Date.parse(
+    NAIVE_SQLITE.test(value) ? `${value.replace(" ", "T")}Z` : value
+  );
   return Number.isFinite(ms) ? ms : null;
 }
 
@@ -38,7 +69,10 @@ export interface StepOutcome {
 
 const NOT_DONE: StepOutcome = { done: false };
 
-function earliest<T extends { createdAt: string }>(rows: readonly T[], startMs: number): T | null {
+function earliest<T extends { createdAt: string }>(
+  rows: readonly T[],
+  startMs: number
+): T | null {
   let best: { row: T; ms: number } | null = null;
   for (const row of rows) {
     const ms = storedInstantMs(row.createdAt);
@@ -53,11 +87,18 @@ function earliest<T extends { createdAt: string }>(rows: readonly T[], startMs: 
  * « n'importe quel patient » plutôt que de bloquer le tour sur un repère disparu.
  */
 function tourPatient(state: TourState, snapshot: TourSnapshot) {
-  return state.patientId ? snapshot.patients.find((patient) => patient.id === state.patientId && !patient.archivedAt) ?? null : null;
+  return state.patientId
+    ? (snapshot.patients.find(
+        (patient) => patient.id === state.patientId && !patient.archivedAt
+      ) ?? null)
+    : null;
 }
 
 /** L'étape en cours est-elle réellement faite ? Ne regarde que cette étape. */
-export function evaluateStep(state: TourState, snapshot: TourSnapshot): StepOutcome {
+export function evaluateStep(
+  state: TourState,
+  snapshot: TourSnapshot
+): StepOutcome {
   if (state.status !== "running") return NOT_DONE;
   const startMs = storedInstantMs(state.startedAt);
   if (startMs === null) return NOT_DONE;
@@ -65,16 +106,29 @@ export function evaluateStep(state: TourState, snapshot: TourSnapshot): StepOutc
   const patient = tourPatient(state, snapshot);
 
   if (step === "patient") {
-    const created = earliest(snapshot.patients.filter((row) => !row.archivedAt), startMs);
+    const created = earliest(
+      snapshot.patients.filter((row) => !row.archivedAt),
+      startMs
+    );
     return created ? { done: true, patientId: created.id } : NOT_DONE;
   }
 
   if (step === "appointment") {
     const created = earliest(
-      snapshot.appointments.filter((row) => row.status !== "cancelled" && (!patient || row.patientId === patient.id)),
-      startMs,
+      snapshot.appointments.filter(
+        (row) =>
+          row.status !== "cancelled" &&
+          (!patient || row.patientId === patient.id)
+      ),
+      startMs
     );
-    return created ? { done: true, appointmentId: created.id, patientId: patient ? undefined : created.patientId } : NOT_DONE;
+    return created
+      ? {
+          done: true,
+          appointmentId: created.id,
+          patientId: patient ? undefined : created.patientId,
+        }
+      : NOT_DONE;
   }
 
   if (step === "consultation") {
@@ -82,26 +136,41 @@ export function evaluateStep(state: TourState, snapshot: TourSnapshot): StepOutc
     const validated = snapshot.soaps.find((soap) => {
       if (patient && soap.patientId !== patient.id) return false;
       if (!isSoapReviewed(soap)) return false;
-      const review = soapMetadata(soap.content).soapReview as { reviewedAt?: unknown } | undefined;
+      const review = soapMetadata(soap.content).soapReview as
+        | { reviewedAt?: unknown }
+        | undefined;
       const reviewedMs = storedInstantMs(review?.reviewedAt);
       return reviewedMs !== null && reviewedMs >= startMs;
     });
-    return validated ? { done: true, appointmentId: validated.appointmentId, patientId: patient ? undefined : validated.patientId } : NOT_DONE;
+    return validated
+      ? {
+          done: true,
+          appointmentId: validated.appointmentId,
+          patientId: patient ? undefined : validated.patientId,
+        }
+      : NOT_DONE;
   }
 
   if (step === "invoice") {
     if (!snapshot.invoicesKnown) return NOT_DONE;
     // Le client du patient du tour : une facture à son nom, qu'elle nomme l'animal ou seulement le propriétaire.
     const mine = earliest(
-      snapshot.invoices.filter((row) => !patient || row.patientId === patient.id || row.ownerId === patient.ownerId),
-      startMs,
+      snapshot.invoices.filter(
+        (row) =>
+          !patient ||
+          row.patientId === patient.id ||
+          row.ownerId === patient.ownerId
+      ),
+      startMs
     );
     if (!mine) return NOT_DONE;
     const paid = snapshot.invoices.some(
       (row) =>
         row.completedPaymentAmount > 0 &&
-        (!patient || row.patientId === patient.id || row.ownerId === patient.ownerId) &&
-        (storedInstantMs(row.createdAt) ?? -1) >= startMs,
+        (!patient ||
+          row.patientId === patient.id ||
+          row.ownerId === patient.ownerId) &&
+        (storedInstantMs(row.createdAt) ?? -1) >= startMs
     );
     return paid ? { done: true } : { done: false, partial: true };
   }

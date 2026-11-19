@@ -78,9 +78,16 @@ export interface WeekRadial {
 }
 
 /** The week's visits, per hour and per weekday (Monday first), by state; their sum is the week's figure. */
-export function buildWeekRadial(appointments: { startTime?: string | null; status: string }[], now: Date): WeekRadial {
+export function buildWeekRadial(
+  appointments: { startTime?: string | null; status: string }[],
+  now: Date
+): WeekRadial {
   const { startOfWeek, endOfToday } = weekWindow(now);
-  const empty = (n: number) => ({ done: Array<number>(n).fill(0), underway: Array<number>(n).fill(0), upcoming: Array<number>(n).fill(0) });
+  const empty = (n: number) => ({
+    done: Array<number>(n).fill(0),
+    underway: Array<number>(n).fill(0),
+    upcoming: Array<number>(n).fill(0),
+  });
   const hour = empty(24);
   const weekday = empty(7);
   let total = 0;
@@ -97,7 +104,14 @@ export function buildWeekRadial(appointments: { startTime?: string | null; statu
   return {
     total,
     hour: { labels: Array.from({ length: 24 }, (_, h) => hh(h)), values: hour },
-    weekday: { labels: ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"], values: weekday },
-    byState: { done: sum(hour.done), underway: sum(hour.underway), upcoming: sum(hour.upcoming) },
+    weekday: {
+      labels: ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"],
+      values: weekday,
+    },
+    byState: {
+      done: sum(hour.done),
+      underway: sum(hour.underway),
+      upcoming: sum(hour.upcoming),
+    },
   };
 }

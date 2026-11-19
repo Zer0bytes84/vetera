@@ -149,7 +149,7 @@ export function VitalsEntryDialog({
     <Dialog onOpenChange={onOpenChange} open={open}>
       <FormDialogContent size="md">
         <FormDialogHeader
-            artwork="vitals"
+          artwork="vitals"
           description={`${hospitalization.reason}`}
           icon={<Heartbeat weight="duotone" />}
           title={t(

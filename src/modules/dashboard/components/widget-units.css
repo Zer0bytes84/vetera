@@ -310,7 +310,9 @@
   transition: opacity 160ms var(--ease-out-quint);
 }
 
-[data-skin="clean"] .speciesDonut:has([data-active]) .speciesArc:not([data-active]) {
+[data-skin="clean"]
+  .speciesDonut:has([data-active])
+  .speciesArc:not([data-active]) {
   opacity: 0.35;
 }
 
@@ -318,10 +320,18 @@
 [data-skin="clean"] :is(.speciesArc, .speciesMark) {
   --tone: var(--series-1);
 }
-[data-skin="clean"] :is(.speciesArc, .speciesMark)[data-tone="1"] { --tone: color-mix(in srgb, var(--ink) 70%, transparent); }
-[data-skin="clean"] :is(.speciesArc, .speciesMark)[data-tone="2"] { --tone: color-mix(in srgb, var(--ink) 46%, transparent); }
-[data-skin="clean"] :is(.speciesArc, .speciesMark)[data-tone="3"] { --tone: color-mix(in srgb, var(--ink) 28%, transparent); }
-[data-skin="clean"] :is(.speciesArc, .speciesMark)[data-tone="4"] { --tone: color-mix(in srgb, var(--ink) 16%, transparent); }
+[data-skin="clean"] :is(.speciesArc, .speciesMark)[data-tone="1"] {
+  --tone: color-mix(in srgb, var(--ink) 70%, transparent);
+}
+[data-skin="clean"] :is(.speciesArc, .speciesMark)[data-tone="2"] {
+  --tone: color-mix(in srgb, var(--ink) 46%, transparent);
+}
+[data-skin="clean"] :is(.speciesArc, .speciesMark)[data-tone="3"] {
+  --tone: color-mix(in srgb, var(--ink) 28%, transparent);
+}
+[data-skin="clean"] :is(.speciesArc, .speciesMark)[data-tone="4"] {
+  --tone: color-mix(in srgb, var(--ink) 16%, transparent);
+}
 
 [data-skin="clean"] .speciesArc {
   stroke: var(--tone);

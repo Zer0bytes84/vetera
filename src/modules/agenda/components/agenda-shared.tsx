@@ -34,7 +34,11 @@ import type {
   RecurrenceFrequency,
 } from "@/types/db";
 import { formatClockTime, formatPersonName } from "@/utils/display-format";
-import { freeSlotStarts, isActiveBooking, personInitials } from "./agenda-slots";
+import {
+  freeSlotStarts,
+  isActiveBooking,
+  personInitials,
+} from "./agenda-slots";
 
 export const APPOINTMENT_TYPES: Appointment["type"][] = [
   "Consultation",
@@ -114,7 +118,10 @@ export interface TimePickerProps {
 }
 
 const PICKER_HOURS = Array.from({ length: 14 }, (_, index) => index + 7);
-const PICKER_MINUTES = Array.from({ length: 12 }, (_, index) => index * STEP_MINUTES);
+const PICKER_MINUTES = Array.from(
+  { length: 12 },
+  (_, index) => index * STEP_MINUTES
+);
 
 /**
  * Reads a time typed the way people say it: "9", "905", "0905", "9:05",
@@ -123,7 +130,9 @@ const PICKER_MINUTES = Array.from({ length: 12 }, (_, index) => index * STEP_MIN
 export function parseTypedTime(text: string): string | null {
   const clean = text.trim().toLowerCase().replace(/\s+/g, "");
   if (!clean) return null;
-  const match = /^(\d{1,2})(?:[:h.]?(\d{2})?)?$/.exec(clean) ?? /^(\d{1,2})(\d{2})$/.exec(clean);
+  const match =
+    /^(\d{1,2})(?:[:h.]?(\d{2})?)?$/.exec(clean) ??
+    /^(\d{1,2})(\d{2})$/.exec(clean);
   if (!match) return null;
   let hours = Number(match[1]);
   let minutes = Number(match[2] ?? 0);
@@ -142,7 +151,9 @@ export function overlappingSlot(
   busy: readonly BusySlot[]
 ): BusySlot | null {
   const end = startMinutes + Math.max(1, durationMinutes);
-  return busy.find((slot) => startMinutes < slot.end && end > slot.start) ?? null;
+  return (
+    busy.find((slot) => startMinutes < slot.end && end > slot.start) ?? null
+  );
 }
 
 /** First start at or after `from`, on the 5-minute grid, that overlaps nothing. */
@@ -154,7 +165,8 @@ export function nextFreeTime(
 ): string | null {
   const first = Math.ceil(from / STEP_MINUTES) * STEP_MINUTES;
   for (let start = first; start <= lastStart; start += STEP_MINUTES) {
-    if (!overlappingSlot(start, durationMinutes, busy)) return minutesToTime(start);
+    if (!overlappingSlot(start, durationMinutes, busy))
+      return minutesToTime(start);
   }
   return null;
 }
@@ -171,9 +183,13 @@ export function AppointmentTimePicker({
   const minute = valueMinutes % 60;
   const endLabel = minutesToTime(valueMinutes + durationMinutes);
   const conflict = overlappingSlot(valueMinutes, durationMinutes, busy);
-  const suggestion = conflict ? nextFreeTime(valueMinutes, durationMinutes, busy) : null;
+  const suggestion = conflict
+    ? nextFreeTime(valueMinutes, durationMinutes, busy)
+    : null;
   // A time typed outside the grid stays reachable.
-  const hours = PICKER_HOURS.includes(hour) ? PICKER_HOURS : [...PICKER_HOURS, hour].sort((a, b) => a - b);
+  const hours = PICKER_HOURS.includes(hour)
+    ? PICKER_HOURS
+    : [...PICKER_HOURS, hour].sort((a, b) => a - b);
 
   const commit = () => {
     if (draft === null) return;
@@ -205,7 +221,12 @@ export function AppointmentTimePicker({
             } else if (event.key === "ArrowUp" || event.key === "ArrowDown") {
               event.preventDefault();
               setDraft(null);
-              onChange(addMinutesToTime(value, event.key === "ArrowUp" ? STEP_MINUTES : -STEP_MINUTES));
+              onChange(
+                addMinutesToTime(
+                  value,
+                  event.key === "ArrowUp" ? STEP_MINUTES : -STEP_MINUTES
+                )
+              );
             }
           }}
           placeholder="09:00"
@@ -218,12 +239,17 @@ export function AppointmentTimePicker({
           aria-live="polite"
           className={cn(
             "flex items-center gap-1.5 text-xs",
-            conflict ? "text-amber-700 dark:text-amber-300" : "text-muted-foreground"
+            conflict
+              ? "text-amber-700 dark:text-amber-300"
+              : "text-muted-foreground"
           )}
         >
           <span
             aria-hidden
-            className={cn("size-1.5 rounded-full", conflict ? "bg-amber-500" : "bg-emerald-500")}
+            className={cn(
+              "size-1.5 rounded-full",
+              conflict ? "bg-amber-500" : "bg-emerald-500"
+            )}
           />
           {conflict
             ? `Chevauche ${conflict.label} (${minutesToTime(conflict.start)} – ${minutesToTime(conflict.end)})`
@@ -235,7 +261,9 @@ export function AppointmentTimePicker({
 
       <div aria-label="Heure" className="grid grid-cols-7 gap-1.5" role="group">
         {hours.map((h) => {
-          const busyHour = busy.some((slot) => slot.start < (h + 1) * 60 && slot.end > h * 60);
+          const busyHour = busy.some(
+            (slot) => slot.start < (h + 1) * 60 && slot.end > h * 60
+          );
           return (
             <Button
               aria-pressed={h === hour}
@@ -258,7 +286,11 @@ export function AppointmentTimePicker({
         })}
       </div>
 
-      <div aria-label="Minutes" className="grid grid-cols-6 gap-1.5" role="group">
+      <div
+        aria-label="Minutes"
+        className="grid grid-cols-6 gap-1.5"
+        role="group"
+      >
         {PICKER_MINUTES.map((m) => {
           const taken = overlappingSlot(hour * 60 + m, durationMinutes, busy);
           return (
@@ -267,7 +299,9 @@ export function AppointmentTimePicker({
               aria-pressed={m === minute}
               className={cn(
                 chip,
-                taken && m !== minute && "border-dashed text-muted-foreground/70 line-through decoration-amber-500/70"
+                taken &&
+                  m !== minute &&
+                  "border-dashed text-muted-foreground/70 line-through decoration-amber-500/70"
               )}
               key={m}
               onClick={() => onChange(minutesToTime(hour * 60 + m))}
@@ -1013,7 +1047,8 @@ export function AgendaDayView({
   /** A free half hour of a column was chosen: book it for that vet. */
   onCreateAt?: (vetId: string, time: string) => void;
 }) {
-  const showsNow = isSameDay(selectedDate, new Date()) && currentTimePosition !== null;
+  const showsNow =
+    isSameDay(selectedDate, new Date()) && currentTimePosition !== null;
   if (vets.length === 0) {
     return (
       <div className="flex flex-1 px-6 pb-6">
@@ -1050,7 +1085,10 @@ export function AgendaDayView({
                       "-translate-y-1/2 font-medium text-muted-foreground text-xs",
                       // The current time label takes the place of an hour it would touch.
                       showsNow &&
-                        Math.abs((hour - CALENDAR_START_HOUR) * DAY_HOUR_HEIGHT - (currentTimePosition ?? 0)) <
+                        Math.abs(
+                          (hour - CALENDAR_START_HOUR) * DAY_HOUR_HEIGHT -
+                            (currentTimePosition ?? 0)
+                        ) <
                           DAY_HOUR_HEIGHT / 3 &&
                         "invisible"
                     )}
@@ -1127,12 +1165,17 @@ export function AgendaDayView({
                         key={minutes}
                         onClick={() => onCreateAt?.(vet.id, time)}
                         style={{
-                          top: ((minutes - CALENDAR_START_HOUR * 60) / 60) * DAY_HOUR_HEIGHT,
+                          top:
+                            ((minutes - CALENDAR_START_HOUR * 60) / 60) *
+                            DAY_HOUR_HEIGHT,
                           height: DAY_HOUR_HEIGHT / 2,
                         }}
                         type="button"
                       >
-                        <span aria-hidden="true" className="agenda-free-slot-hint">
+                        <span
+                          aria-hidden="true"
+                          className="agenda-free-slot-hint"
+                        >
                           + {time}
                         </span>
                       </button>

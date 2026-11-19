@@ -3,7 +3,10 @@ import { LocalDataResetSettings } from "./local-data-reset-settings";
 import { AboutTeam } from "./about-team";
 import { MascotSettings } from "@/components/mascot/mascot-settings";
 import { DashboardVersionSetting } from "@/modules/dashboard/components/dashboard-version-setting";
-import { ClinicIdentityPanel, InvoiceSettingsPanel } from "@/modules/invoices/components/invoice-settings-panel";
+import {
+  ClinicIdentityPanel,
+  InvoiceSettingsPanel,
+} from "@/modules/invoices/components/invoice-settings-panel";
 import DocumentTemplateManager from "@/modules/documents/components/document-template-manager";
 import { PatientRemindersContent } from "@/modules/patient-reminders/patient-reminders-panel";
 import { usePatientReminders } from "@/modules/patient-reminders/use-patient-reminders";
@@ -114,7 +117,12 @@ import {
 import type { View } from "@/types";
 import Avatar, { PROFILE_AVATAR_EMOJIS } from "./Avatar";
 import Logo from "./Logo";
-import { getSidebarTone, saveSidebarTone, SIDEBAR_TONES, type SidebarTone } from "@/lib/sidebar-tone";
+import {
+  getSidebarTone,
+  saveSidebarTone,
+  SIDEBAR_TONES,
+  type SidebarTone,
+} from "@/lib/sidebar-tone";
 import { formatPersonName } from "@/utils/display-format";
 import { roleLabel as displayRole } from "@/lib/user-role";
 import { PageHeader } from "@/design-system/patterns/page-header";
@@ -142,14 +150,7 @@ const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
         label: "Profil",
         description: "Identité, avatar et coordonnées",
         icon: UserCircle02Icon,
-        keywords: [
-          "nom",
-          "email",
-          "téléphone",
-          "photo",
-          "avatar",
-          "bio",
-        ],
+        keywords: ["nom", "email", "téléphone", "photo", "avatar", "bio"],
       },
       {
         id: "securite",
@@ -168,7 +169,17 @@ const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
         label: "Mon cabinet",
         description: "Nom, adresse, coordonnées et logo du cabinet",
         icon: Building01Icon,
-        keywords: ["nom", "adresse", "téléphone", "email", "e-mail", "logo", "identité", "clinique", "nif"],
+        keywords: [
+          "nom",
+          "adresse",
+          "téléphone",
+          "email",
+          "e-mail",
+          "logo",
+          "identité",
+          "clinique",
+          "nif",
+        ],
       },
       {
         id: "cabinet",
@@ -182,7 +193,15 @@ const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
         label: "Salles",
         description: "Les espaces où vous recevez les animaux",
         icon: Door01Icon,
-        keywords: ["salle", "consultation", "chirurgie", "bloc", "box", "espace", "agenda"],
+        keywords: [
+          "salle",
+          "consultation",
+          "chirurgie",
+          "bloc",
+          "box",
+          "espace",
+          "agenda",
+        ],
       },
       {
         id: "apparence",
@@ -264,14 +283,29 @@ const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
         label: "Réseau local",
         description: "Partager la base entre les postes du cabinet",
         icon: Wifi01Icon,
-        keywords: ["réseau", "poste", "accueil", "secrétaire", "partage", "synchronisation", "lan"],
+        keywords: [
+          "réseau",
+          "poste",
+          "accueil",
+          "secrétaire",
+          "partage",
+          "synchronisation",
+          "lan",
+        ],
       },
       {
         id: "nouveautes",
         label: "Nouveautés",
         description: "Ce qui a changé à chaque version",
         icon: SparklesIcon,
-        keywords: ["nouveautés", "version", "mise à jour", "quoi de neuf", "notes de version", "changements"],
+        keywords: [
+          "nouveautés",
+          "version",
+          "mise à jour",
+          "quoi de neuf",
+          "notes de version",
+          "changements",
+        ],
       },
       {
         id: "apropos",
@@ -299,21 +333,24 @@ const BackupSettings: React.FC = () => {
 
   // Lecture seule : au montage, `loading` vaut déjà true ; les rechargements le repassent à true via `load`.
   const read = async () => {
-    await guard(async () => {
-      const [items, date] = await Promise.all([
-        listBackups(),
-        getLastBackupDate(),
-      ]);
-      setBackups(items);
-      setLastBackup(date);
-    }, {
-      recover: () => {
-        toast.error("Impossible de lire les sauvegardes.");
+    await guard(
+      async () => {
+        const [items, date] = await Promise.all([
+          listBackups(),
+          getLastBackupDate(),
+        ]);
+        setBackups(items);
+        setLastBackup(date);
       },
-      cleanup: () => {
-        setLoading(false);
-      },
-    });
+      {
+        recover: () => {
+          toast.error("Impossible de lire les sauvegardes.");
+        },
+        cleanup: () => {
+          setLoading(false);
+        },
+      }
+    );
   };
 
   const load = async () => {
@@ -333,38 +370,41 @@ const BackupSettings: React.FC = () => {
   const run = async (
     operation: () => Promise<boolean | BackupInfo | null>,
     success: string,
-    restart = false,
+    restart = false
   ) => {
     setBusy(true);
-    return await guard(async () => {
-      const result = await operation();
-      if (!result) {
-        if (success.startsWith("Sauvegarde"))
-          toast.error("L’opération a échoué. Réessayez.");
-        return;
-      }
-      toast.success(success);
-      if (restart) {
-        try {
-          await relaunch();
-        } catch {
-          window.location.reload();
+    return await guard(
+      async () => {
+        const result = await operation();
+        if (!result) {
+          if (success.startsWith("Sauvegarde"))
+            toast.error("L’opération a échoué. Réessayez.");
+          return;
         }
-      } else {
-        await load();
+        toast.success(success);
+        if (restart) {
+          try {
+            await relaunch();
+          } catch {
+            window.location.reload();
+          }
+        } else {
+          await load();
+        }
+      },
+      {
+        recover: (error) => {
+          toast.error(
+            error instanceof Error
+              ? error.message
+              : "L’opération a échoué. Réessayez."
+          );
+        },
+        cleanup: () => {
+          setBusy(false);
+        },
       }
-    }, {
-      recover: (error) => {
-        toast.error(
-          error instanceof Error
-            ? error.message
-            : "L’opération a échoué. Réessayez.",
-        );
-      },
-      cleanup: () => {
-        setBusy(false);
-      },
-    });
+    );
   };
 
   const confirmPending = () => {
@@ -377,7 +417,7 @@ const BackupSettings: React.FC = () => {
       void run(
         () => restoreBackup(action.filename!, password),
         "Sauvegarde restaurée. Redémarrage…",
-        true,
+        true
       );
     } else if (action.kind === "delete" && action.filename) {
       void run(() => deleteBackup(action.filename!), "Sauvegarde supprimée.");
@@ -385,7 +425,7 @@ const BackupSettings: React.FC = () => {
       void run(
         () => importDatabase(password),
         "Base importée. Redémarrage…",
-        true,
+        true
       );
     }
   };
@@ -394,7 +434,8 @@ const BackupSettings: React.FC = () => {
     <SettingsStack>
       {!desktop && (
         <SettingsNotice tone="info">
-          Les sauvegardes de la base sont disponibles dans l’application de bureau.
+          Les sauvegardes de la base sont disponibles dans l’application de
+          bureau.
         </SettingsNotice>
       )}
       <SettingsSection
@@ -403,7 +444,11 @@ const BackupSettings: React.FC = () => {
         title="Sauvegarde"
       >
         <SettingsRow
-          detail={lastBackup ? formatDate(lastBackup) : "Aucune sauvegarde enregistrée"}
+          detail={
+            lastBackup
+              ? formatDate(lastBackup)
+              : "Aucune sauvegarde enregistrée"
+          }
           title="Dernière sauvegarde"
         >
           <Button
@@ -614,7 +659,8 @@ const Parametres: React.FC<ParametresProps> = ({
       window.sessionStorage.removeItem(SETTINGS_SECTION_KEY);
       if (isSettingsTab(requested)) setActiveTab(requested);
     };
-    if (window.sessionStorage.getItem(SETTINGS_SECTION_KEY)) openRequestedSection();
+    if (window.sessionStorage.getItem(SETTINGS_SECTION_KEY))
+      openRequestedSection();
     else if (window.sessionStorage.getItem(AI_SETTINGS_PENDING_KEY) === "true")
       openAISettings();
     window.addEventListener(AI_ONBOARDING_OPEN_EVENT, openAISettings);
@@ -641,7 +687,7 @@ const Parametres: React.FC<ParametresProps> = ({
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const [themeConfig, setThemeConfig] = useState<ThemeConfig>(() =>
-    getThemeConfig(),
+    getThemeConfig()
   );
 
   useEffect(() => {
@@ -701,45 +747,48 @@ const Parametres: React.FC<ParametresProps> = ({
     setIsSaving(true);
     setMessage(null);
 
-    return await guard(async () => {
-      const dbUser = users.find(
-        (u) => u.id === currentUser.id || u.email === currentUser.email,
-      );
+    return await guard(
+      async () => {
+        const dbUser = users.find(
+          (u) => u.id === currentUser.id || u.email === currentUser.email
+        );
 
-      if (!dbUser) {
-        setMessage({
-          type: "error",
-          text: "Utilisateur non trouvé dans la base de données.",
+        if (!dbUser) {
+          setMessage({
+            type: "error",
+            text: "Utilisateur non trouvé dans la base de données.",
+          });
+          return;
+        }
+
+        await updateUserDoc(dbUser.id, {
+          displayName,
+          phone,
+          avatarUrl: sanitizeAvatarValue(avatarUrl),
         });
-        return;
+
+        writeCachedProfile(currentUser.email, {
+          displayName,
+          avatarUrl: sanitizeAvatarValue(avatarUrl),
+        });
+
+        await refreshCurrentUser();
+
+        setMessage({ type: "success", text: "Profil mis à jour avec succès." });
+      },
+      {
+        recover: (error) => {
+          console.error("[SETTINGS] Error updating profile:", error);
+          setMessage({
+            type: "error",
+            text: "Une erreur est survenue lors de la mise à jour.",
+          });
+        },
+        cleanup: () => {
+          setIsSaving(false);
+        },
       }
-
-      await updateUserDoc(dbUser.id, {
-        displayName,
-        phone,
-        avatarUrl: sanitizeAvatarValue(avatarUrl),
-      });
-
-      writeCachedProfile(currentUser.email, {
-        displayName,
-        avatarUrl: sanitizeAvatarValue(avatarUrl),
-      });
-
-      await refreshCurrentUser();
-
-      setMessage({ type: "success", text: "Profil mis à jour avec succès." });
-    }, {
-      recover: (error) => {
-        console.error("[SETTINGS] Error updating profile:", error);
-        setMessage({
-          type: "error",
-          text: "Une erreur est survenue lors de la mise à jour.",
-        });
-      },
-      cleanup: () => {
-        setIsSaving(false);
-      },
-    });
+    );
   };
 
   const handleChangePassword = async () => {
@@ -764,34 +813,37 @@ const Parametres: React.FC<ParametresProps> = ({
     setIsSaving(true);
     setMessage(null);
 
-    await guard(async () => {
-      await updatePassword(currentUser.uid, newPassword);
+    await guard(
+      async () => {
+        await updatePassword(currentUser.uid, newPassword);
 
-      setMessage({
-        type: "success",
-        text: "Mot de passe modifié avec succès.",
-      });
-      setNewPassword("");
-      setConfirmPassword("");
-    }, {
-      recover: (error: any) => {
-        console.error("Password change error:", error);
-        if (error.code === "auth/requires-recent-login") {
-          setMessage({
-            type: "error",
-            text: "Par sécurité, veuillez vous reconnecter avant de changer le mot de passe.",
-          });
-        } else {
-          setMessage({
-            type: "error",
-            text: `Erreur: ${error.message || String(error)}`,
-          });
-        }
+        setMessage({
+          type: "success",
+          text: "Mot de passe modifié avec succès.",
+        });
+        setNewPassword("");
+        setConfirmPassword("");
       },
-      cleanup: () => {
-        setIsSaving(false);
-      },
-    });
+      {
+        recover: (error: any) => {
+          console.error("Password change error:", error);
+          if (error.code === "auth/requires-recent-login") {
+            setMessage({
+              type: "error",
+              text: "Par sécurité, veuillez vous reconnecter avant de changer le mot de passe.",
+            });
+          } else {
+            setMessage({
+              type: "error",
+              text: `Erreur: ${error.message || String(error)}`,
+            });
+          }
+        },
+        cleanup: () => {
+          setIsSaving(false);
+        },
+      }
+    );
   };
 
   const roleLabel = displayRole(userDoc?.role, currentUser?.email);
@@ -809,7 +861,9 @@ const Parametres: React.FC<ParametresProps> = ({
         return (
           <SettingsStack>
             {message && (
-              <SettingsNotice tone={message.type}>{message.text}</SettingsNotice>
+              <SettingsNotice tone={message.type}>
+                {message.text}
+              </SettingsNotice>
             )}
             <SettingsSection
               icon={UserRound}
@@ -839,8 +893,7 @@ const Parametres: React.FC<ParametresProps> = ({
                         aria-pressed={avatarUrl === value}
                         className={cn(
                           "settings-avatar-choice",
-                          avatarUrl === value &&
-                            "settings-avatar-choice-active",
+                          avatarUrl === value && "settings-avatar-choice-active"
                         )}
                         key={emoji}
                         onClick={() => setAvatarUrl(value)}
@@ -864,7 +917,7 @@ const Parametres: React.FC<ParametresProps> = ({
                   <label
                     className={cn(
                       buttonVariants({ size: "sm", variant: "outline" }),
-                      "cursor-pointer rounded-full",
+                      "cursor-pointer rounded-full"
                     )}
                     htmlFor="profile-photo-upload"
                   >
@@ -926,7 +979,9 @@ const Parametres: React.FC<ParametresProps> = ({
         return <ClinicIdentityPanel />;
       case "cabinet":
         return (
-          <InvoiceSettingsPanel onOpenClinic={() => setActiveTab("mon-cabinet")} />
+          <InvoiceSettingsPanel
+            onOpenClinic={() => setActiveTab("mon-cabinet")}
+          />
         );
       case "apparence":
         return (
@@ -985,7 +1040,9 @@ const Parametres: React.FC<ParametresProps> = ({
                 <Button
                   className="rounded-full"
                   onClick={() => {
-                    tourStore.update((current) => startTour(current, new Date()));
+                    tourStore.update((current) =>
+                      startTour(current, new Date())
+                    );
                     onNavigate?.("dashboard");
                   }}
                   type="button"
@@ -1011,7 +1068,7 @@ const Parametres: React.FC<ParametresProps> = ({
                   onClick={() => {
                     window.sessionStorage.setItem(
                       "baitari:customize-dashboard",
-                      "true",
+                      "true"
                     );
                     onNavigate?.("dashboard");
                   }}
@@ -1028,7 +1085,9 @@ const Parametres: React.FC<ParametresProps> = ({
         return (
           <SettingsStack>
             {message && (
-              <SettingsNotice tone={message.type}>{message.text}</SettingsNotice>
+              <SettingsNotice tone={message.type}>
+                {message.text}
+              </SettingsNotice>
             )}
             <SettingsSection
               icon={KeyRound}
@@ -1144,7 +1203,7 @@ const Parametres: React.FC<ParametresProps> = ({
                         toast.error(
                           error instanceof Error
                             ? error.message
-                            : "Impossible d’ouvrir le centre d’activation.",
+                            : "Impossible d’ouvrir le centre d’activation."
                         );
                       });
                     }}
@@ -1176,19 +1235,19 @@ const Parametres: React.FC<ParametresProps> = ({
                   aria-current={activeTab === item.id ? "page" : undefined}
                   className={cn(
                     "settings-nav-item",
-                    activeTab === item.id && "settings-nav-item-active",
+                    activeTab === item.id && "settings-nav-item-active"
                   )}
                   key={item.id}
                   onClick={(event) => {
                     const scrollContainer = event.currentTarget.closest(
-                      '[data-slot="sidebar-inset"]',
+                      '[data-slot="sidebar-inset"]'
                     );
                     setActiveTab(item.id);
                     requestAnimationFrame(() =>
                       scrollContainer?.scrollTo({
                         top: 0,
                         behavior: "instant",
-                      }),
+                      })
                     );
                   }}
                   type="button"
@@ -1220,8 +1279,12 @@ const Parametres: React.FC<ParametresProps> = ({
 /** The sidebar's tone, per user: the theme's own, or always light or dark. */
 function SidebarToneSetting({ userId }: { userId: string | undefined }) {
   // The choice made here, for the user it was made for; another user reads their own.
-  const [chosen, setChosen] = useState<{ userId: string; tone: SidebarTone } | null>(null);
-  const tone = chosen && chosen.userId === userId ? chosen.tone : getSidebarTone(userId);
+  const [chosen, setChosen] = useState<{
+    userId: string;
+    tone: SidebarTone;
+  } | null>(null);
+  const tone =
+    chosen && chosen.userId === userId ? chosen.tone : getSidebarTone(userId);
   return (
     <SettingsRow
       detail="Automatique suit le thème. Claire ou Sombre reste votre choix, quel que soit le thème."

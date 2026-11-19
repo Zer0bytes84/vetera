@@ -83,7 +83,11 @@ function getDurationLabel(appointment: Appointment) {
 
 function SpeciesIcon({ species }: { species?: string }) {
   const normalized = species?.toLocaleLowerCase("fr") ?? "";
-  const props = { "aria-hidden": true as const, className: "size-5", strokeWidth: 1.6 };
+  const props = {
+    "aria-hidden": true as const,
+    className: "size-5",
+    strokeWidth: 1.6,
+  };
   if (normalized.includes("chien")) return <Dog {...props} />;
   if (normalized.includes("chat")) return <Cat {...props} />;
   if (normalized.includes("lapin")) return <Rabbit {...props} />;
@@ -236,12 +240,16 @@ function AppointmentListItem({
           return whatsAppLink(row.owner?.phone, message({ animal, start }));
         }
       : null;
-  const canRelanceRow = relanceLink !== null && whatsAppNumber(row.owner?.phone) !== null;
-  const dateLabel = new Date(appointment.startTime).toLocaleDateString("fr-FR", {
-    weekday: "short",
-    day: "numeric",
-    month: "short",
-  });
+  const canRelanceRow =
+    relanceLink !== null && whatsAppNumber(row.owner?.phone) !== null;
+  const dateLabel = new Date(appointment.startTime).toLocaleDateString(
+    "fr-FR",
+    {
+      weekday: "short",
+      day: "numeric",
+      month: "short",
+    }
+  );
 
   return (
     <li>
@@ -270,7 +278,9 @@ function AppointmentListItem({
 
         <div className="agenda-appt-time">
           {showDate ? <p className="agenda-appt-date">{dateLabel}</p> : null}
-          <p className="agenda-appt-start">{formatTime(appointment.startTime)}</p>
+          <p className="agenda-appt-start">
+            {formatTime(appointment.startTime)}
+          </p>
           <p className="agenda-appt-range">
             {formatTime(appointment.endTime)}
             {duration ? <span> · {duration}</span> : null}
@@ -295,7 +305,10 @@ function AppointmentListItem({
             </button>
             <span className="agenda-appt-badges">
               <AppointmentTypeBadge type={appointment.type} />
-              <AppointmentStatusBadge appointment={appointment} patient={patient} />
+              <AppointmentStatusBadge
+                appointment={appointment}
+                patient={patient}
+              />
             </span>
           </div>
           <p className="agenda-appt-reason">

@@ -1,11 +1,18 @@
-:root[data-skin="clean"] :is(h1, h2, h3, h4, [data-slot="card-title"], .font-heading, .font-display) {
+:root[data-skin="clean"]
+  :is(h1, h2, h3, h4, [data-slot="card-title"], .font-heading, .font-display) {
   font-family: var(--app-font-heading) !important;
   font-weight: 500;
   font-synthesis: none;
 }
 
 /* Floating workflows need opaque surfaces even though page cards are transparent. */
-:root[data-skin="clean"] :is([data-slot="dialog-content"], [data-slot="alert-dialog-content"], [data-slot="sheet-content"], [data-slot="drawer-content"]) {
+:root[data-skin="clean"]
+  :is(
+    [data-slot="dialog-content"],
+    [data-slot="alert-dialog-content"],
+    [data-slot="sheet-content"],
+    [data-slot="drawer-content"]
+  ) {
   --card: var(--surface) !important;
   --card-foreground: var(--ink) !important;
   --popover: var(--surface) !important;
@@ -16,7 +23,13 @@
   backdrop-filter: none !important;
 }
 
-:root[data-skin="clean"] :is([data-slot="dialog-footer"], [data-slot="alert-dialog-footer"], .modal-medical-body, .modal-medical-header) {
+:root[data-skin="clean"]
+  :is(
+    [data-slot="dialog-footer"],
+    [data-slot="alert-dialog-footer"],
+    .modal-medical-body,
+    .modal-medical-header
+  ) {
   background: var(--surface) !important;
   -webkit-backdrop-filter: none !important;
   backdrop-filter: none !important;
@@ -40,8 +53,12 @@
 }
 
 @media (min-width: 1024px) {
-  :root[data-skin="clean"] .shell-toolbar { padding-inline: 24px !important; }
-  :root[data-skin="clean"] .shell-toolbar[data-header-page="dashboard"] { padding-inline: 32px !important; }
+  :root[data-skin="clean"] .shell-toolbar {
+    padding-inline: 24px !important;
+  }
+  :root[data-skin="clean"] .shell-toolbar[data-header-page="dashboard"] {
+    padding-inline: 32px !important;
+  }
 }
 
 /* The slideout glyph is the control. Its frame appears only on hover. */
@@ -63,7 +80,10 @@
   }
 }
 
-:root[data-skin="clean"] .app-sidebar [data-sidebar="trigger"] .sidebar-toggle-icon {
+:root[data-skin="clean"]
+  .app-sidebar
+  [data-sidebar="trigger"]
+  .sidebar-toggle-icon {
   width: 22px !important;
   height: 22px !important;
   color: inherit;
@@ -73,7 +93,9 @@
 
 /* Agenda: heading, date controls and view controls share a stable vertical rhythm. */
 
-:root[data-skin="clean"] :is(.agenda-planner-heading, .clinical-activity-heading) [data-slot="card-title"] {
+:root[data-skin="clean"]
+  :is(.agenda-planner-heading, .clinical-activity-heading)
+  [data-slot="card-title"] {
   font-size: 18px;
   line-height: 24px;
   letter-spacing: -0.02em;
@@ -110,7 +132,11 @@
 }
 @media (hover: hover) and (pointer: fine) {
   :root:root:root .agenda-month-day:hover {
-    background: color-mix(in oklab, var(--foreground) 4%, var(--surface, var(--background))) !important;
+    background: color-mix(
+      in oklab,
+      var(--foreground) 4%,
+      var(--surface, var(--background))
+    ) !important;
   }
 }
 :root:root:root .agenda-month-day[data-selected] {
@@ -118,7 +144,11 @@
 }
 /* Today gets a filled circle and a tinted box. */
 :root:root:root .agenda-month-day[data-today] {
-  background: color-mix(in oklab, var(--premium-blue, var(--primary)) 8%, var(--surface, var(--background))) !important;
+  background: color-mix(
+    in oklab,
+    var(--premium-blue, var(--primary)) 8%,
+    var(--surface, var(--background))
+  ) !important;
 }
 :root:root:root .agenda-month-day[data-today] .agenda-month-day-number {
   background: var(--premium-blue, var(--primary)) !important;
@@ -172,7 +202,9 @@
   display: flex;
 }
 
-:root[data-skin="clean"] .quick-reminder-fields :is(input, [data-slot="input-group"]) {
+:root[data-skin="clean"]
+  .quick-reminder-fields
+  :is(input, [data-slot="input-group"]) {
   height: 36px !important;
   min-height: 36px;
   width: 100%;
@@ -188,14 +220,19 @@
   padding-inline: 0;
 }
 
-:root[data-skin="clean"] .quick-reminder-fields [data-slot="input-group"] input {
+:root[data-skin="clean"]
+  .quick-reminder-fields
+  [data-slot="input-group"]
+  input {
   min-width: 0;
   border: 0 !important;
   border-radius: inherit;
   background: transparent !important;
 }
 
-:root[data-skin="clean"] .quick-reminder-fields [data-slot="input-group-button"] {
+:root[data-skin="clean"]
+  .quick-reminder-fields
+  [data-slot="input-group-button"] {
   width: 28px !important;
   min-width: 28px;
   height: 28px !important;
@@ -217,8 +254,12 @@
     grid-template-columns: minmax(0, 1fr) 156px auto;
     align-items: end;
   }
-  :root[data-skin="clean"] .quick-reminder-title { grid-column: 1 / -1; }
-  :root[data-skin="clean"] .quick-reminder-details { grid-column: 2; }
+  :root[data-skin="clean"] .quick-reminder-title {
+    grid-column: 1 / -1;
+  }
+  :root[data-skin="clean"] .quick-reminder-details {
+    grid-column: 2;
+  }
 }
 
 @container reminder-form (max-width: 520px) {
@@ -226,14 +267,22 @@
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     padding-inline: 16px;
   }
-  :root[data-skin="clean"] .quick-reminder-details { grid-column: 1; }
+  :root[data-skin="clean"] .quick-reminder-details {
+    grid-column: 1;
+  }
 }
 
 /* The section tabs sit right under the common page header, one frame for all sections. */
-:root[data-skin="clean"] .clinical-workspace [data-slot="page-header"] + [data-slot="tabs-list"] {
+:root[data-skin="clean"]
+  .clinical-workspace
+  [data-slot="page-header"]
+  + [data-slot="tabs-list"] {
   margin-top: 4px;
 }
-:root[data-skin="clean"] .clinical-workspace :is(.care-page, .hospitalisation-view) > header {
+:root[data-skin="clean"]
+  .clinical-workspace
+  :is(.care-page, .hospitalisation-view)
+  > header {
   padding-block: 0 20px;
   border-bottom: 1px solid var(--line);
   box-shadow: var(--hair-b);
@@ -249,7 +298,10 @@
   padding-bottom: 20px;
   box-shadow: var(--hair-b);
 }
-:root[data-skin="clean"] .care-toolbar-controls { margin-left: auto; align-items: center; }
+:root[data-skin="clean"] .care-toolbar-controls {
+  margin-left: auto;
+  align-items: center;
+}
 :root[data-skin="clean"] .care-toolbar [role="group"] {
   display: inline-flex;
   gap: 0;
@@ -285,7 +337,9 @@
   border-radius: 0 !important;
   background: transparent !important;
 }
-:root[data-skin="clean"] .care-task-group > :is(h2, .care-group-head) { padding: 4px 0 8px; }
+:root[data-skin="clean"] .care-task-group > :is(h2, .care-group-head) {
+  padding: 4px 0 8px;
+}
 :root[data-skin="clean"] .care-task-row {
   background: var(--surface) !important;
   border-color: var(--line) !important;
@@ -318,8 +372,13 @@
   border-radius: 8px !important;
   background: var(--surface) !important;
 }
-:root[data-skin="clean"] .stay-detail > header { background: var(--band) !important; }
-:root[data-skin="clean"] .stay-detail > section > :is(h3, div:first-child:has(h3)) {
+:root[data-skin="clean"] .stay-detail > header {
+  background: var(--band) !important;
+}
+:root[data-skin="clean"]
+  .stay-detail
+  > section
+  > :is(h3, div:first-child:has(h3)) {
   margin: -20px -20px 20px;
   padding: 16px 20px;
   border-radius: 8px 8px 0 0;
@@ -327,8 +386,13 @@
   box-shadow: var(--hair-b);
 }
 @media (max-width: 639px) {
-  :root[data-skin="clean"] .care-toolbar-controls { margin-left: 0; width: 100%; }
-  :root[data-skin="clean"] .care-task-row { flex-wrap: wrap; }
+  :root[data-skin="clean"] .care-toolbar-controls {
+    margin-left: 0;
+    width: 100%;
+  }
+  :root[data-skin="clean"] .care-task-row {
+    flex-wrap: wrap;
+  }
 }
 
 :root[data-skin="clean"] .care-task-group > :is(h2, .care-group-head) {
@@ -347,19 +411,39 @@
 /* Selected consultation: keep the complete record in the same ruled frame. */
 
 /* Patient record: same typography, engraved rules and mesh headings as Clinique. */
-:root[data-skin="clean"] .patient-record-page :is(.patient-context-card, .medical-kpi, .medical-patient-header, .medical-register, .medical-rail, .medical-permanent) {
+:root[data-skin="clean"]
+  .patient-record-page
+  :is(
+    .patient-context-card,
+    .medical-kpi,
+    .medical-patient-header,
+    .medical-register,
+    .medical-rail,
+    .medical-permanent
+  ) {
   background: transparent;
   border: 0;
   border-radius: 0;
   box-shadow: var(--hair-t), var(--hair-b), var(--hair-l), var(--hair-r);
 }
-:root[data-skin="clean"] .patient-record-page :is(.patient-context-widgets, .medical-kpi-strip, .patient-record-indicators) {
+:root[data-skin="clean"]
+  .patient-record-page
+  :is(
+    .patient-context-widgets,
+    .medical-kpi-strip,
+    .patient-record-indicators
+  ) {
   gap: 0;
 }
 :root[data-skin="clean"] .patient-record-page .patient-context-card {
   padding: 20px 24px;
 }
-:root[data-skin="clean"] .patient-record-page :is(.patient-context-heading > span:first-child, .medical-kpi-heading > div > div) {
+:root[data-skin="clean"]
+  .patient-record-page
+  :is(
+    .patient-context-heading > span:first-child,
+    .medical-kpi-heading > div > div
+  ) {
   width: 24px;
   height: 24px;
   border: 0;
@@ -368,12 +452,16 @@
   background: transparent;
   color: var(--soft);
 }
-:root[data-skin="clean"] .patient-record-page :is(.patient-context-value, .medical-kpi-value) {
+:root[data-skin="clean"]
+  .patient-record-page
+  :is(.patient-context-value, .medical-kpi-value) {
   color: var(--ink);
   font-weight: 500;
   font-variant-numeric: tabular-nums;
 }
-:root[data-skin="clean"] .patient-record-page .medical-kpi { padding: 20px 24px; }
+:root[data-skin="clean"] .patient-record-page .medical-kpi {
+  padding: 20px 24px;
+}
 :root[data-skin="clean"] .patient-record-page .medical-kpi-heading h2 {
   text-transform: none;
   font-size: 13px;
@@ -397,13 +485,22 @@
   color: var(--soft) !important;
   box-shadow: var(--hair-r) !important;
 }
-:root[data-skin="clean"] .patient-record-page .medical-tabs [aria-selected="true"] {
+:root[data-skin="clean"]
+  .patient-record-page
+  .medical-tabs
+  [aria-selected="true"] {
   background: var(--frame) !important;
   color: var(--ink) !important;
-  box-shadow: var(--hair-r), inset 0 -2px 0 var(--ink) !important;
+  box-shadow:
+    var(--hair-r),
+    inset 0 -2px 0 var(--ink) !important;
 }
-:root[data-skin="clean"] .patient-record-page .medical-tabs [role="tab"] svg { color: inherit; }
-:root[data-skin="clean"] .patient-record-page .medical-tab-content { padding: 24px; }
+:root[data-skin="clean"] .patient-record-page .medical-tabs [role="tab"] svg {
+  color: inherit;
+}
+:root[data-skin="clean"] .patient-record-page .medical-tab-content {
+  padding: 24px;
+}
 
 /* All eight record sections stay reachable on one line: the row scrolls sideways,
    with edge fades and arrow buttons (medical-record.css) showing what is hidden. */
@@ -415,27 +512,43 @@
   white-space: nowrap;
   font-size: 13px !important;
 }
-:root[data-skin="clean"] .patient-record-page .medical-tabs-frame { background: transparent; }
-:root[data-skin="clean"] .patient-record-page .medical-tabs::after { display: none; }
-:root[data-skin="clean"] .patient-record-page .medical-tabs-frame::before { background: linear-gradient(to right, var(--surface) 55%, transparent); }
-:root[data-skin="clean"] .patient-record-page .medical-tabs-frame::after { background: linear-gradient(to left, var(--surface) 55%, transparent); }
-:root[data-skin="clean"] .patient-record-page .medical-tabs-scroll { background: var(--surface); }
+:root[data-skin="clean"] .patient-record-page .medical-tabs-frame {
+  background: transparent;
+}
+:root[data-skin="clean"] .patient-record-page .medical-tabs::after {
+  display: none;
+}
+:root[data-skin="clean"] .patient-record-page .medical-tabs-frame::before {
+  background: linear-gradient(to right, var(--surface) 55%, transparent);
+}
+:root[data-skin="clean"] .patient-record-page .medical-tabs-frame::after {
+  background: linear-gradient(to left, var(--surface) 55%, transparent);
+}
+:root[data-skin="clean"] .patient-record-page .medical-tabs-scroll {
+  background: var(--surface);
+}
 @media (max-width: 767px) {
-  :root[data-skin="clean"] .patient-record-page .medical-tab-content { padding: 12px; }
+  :root[data-skin="clean"] .patient-record-page .medical-tab-content {
+    padding: 12px;
+  }
 }
 @container patient-page (max-width: 639px) {
   :root[data-skin="clean"] .patient-record-page .medical-tabs {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
-:root[data-skin="clean"] :is(.patient-record-page, .patient-peek-panel) .medical-owner-card {
+:root[data-skin="clean"]
+  :is(.patient-record-page, .patient-peek-panel)
+  .medical-owner-card {
   padding: 0;
   background: transparent;
   border: 0;
   border-radius: 0;
   gap: 12px;
 }
-:root[data-skin="clean"] :is(.patient-record-page, .patient-peek-panel) .medical-owner-avatar {
+:root[data-skin="clean"]
+  :is(.patient-record-page, .patient-peek-panel)
+  .medical-owner-avatar {
   width: 36px;
   height: 36px;
   flex-basis: 36px;
@@ -445,12 +558,20 @@
   background: var(--lift) !important;
   color: var(--ink);
 }
-:root[data-skin="clean"] :is(.patient-record-page, .patient-peek-panel) .medical-owner-links {
+:root[data-skin="clean"]
+  :is(.patient-record-page, .patient-peek-panel)
+  .medical-owner-links {
   display: grid;
   gap: 8px;
 }
-:root[data-skin="clean"] :is(.patient-record-page, .patient-peek-panel) .medical-owner a,
-:root[data-skin="clean"] :is(.patient-record-page, .patient-peek-panel) .medical-owner .medical-whatsapp-link {
+:root[data-skin="clean"]
+  :is(.patient-record-page, .patient-peek-panel)
+  .medical-owner
+  a,
+:root[data-skin="clean"]
+  :is(.patient-record-page, .patient-peek-panel)
+  .medical-owner
+  .medical-whatsapp-link {
   min-height: 40px;
   padding: 8px 0;
   border: 0;
@@ -458,26 +579,34 @@
   background: transparent;
   box-shadow: var(--hair-b);
 }
-:root[data-skin="clean"] :is(.patient-record-page, .patient-peek-panel) .medical-note {
+:root[data-skin="clean"]
+  :is(.patient-record-page, .patient-peek-panel)
+  .medical-note {
   padding: 0;
   border: 0;
   border-radius: 0;
   background: transparent;
   box-shadow: none;
 }
-:root[data-skin="clean"] :is(.patient-record-page, .patient-peek-panel) .medical-health-action {
+:root[data-skin="clean"]
+  :is(.patient-record-page, .patient-peek-panel)
+  .medical-health-action {
   border-radius: 0;
   background: transparent;
   box-shadow: none;
 }
 
-:root[data-skin="clean"] .patient-peek-panel { font-family: var(--app-font-sans); }
+:root[data-skin="clean"] .patient-peek-panel {
+  font-family: var(--app-font-sans);
+}
 :root[data-skin="clean"] .patient-peek-panel > [data-slot="sheet-header"],
 :root[data-skin="clean"] .patient-peek-identity {
   background: var(--band);
   box-shadow: var(--hair-b);
 }
-:root[data-skin="clean"] .patient-peek-panel .medical-peek-content { padding: 20px; }
+:root[data-skin="clean"] .patient-peek-panel .medical-peek-content {
+  padding: 20px;
+}
 :root[data-skin="clean"] .patient-peek-panel .medical-peek-content > section {
   margin: 0 0 20px;
   padding: 20px;
@@ -489,17 +618,30 @@
   height: auto !important;
   flex-wrap: wrap !important;
 }
-:root[data-skin="clean"] .patient-peek-panel .medical-tabs::after { display: none; }
+:root[data-skin="clean"] .patient-peek-panel .medical-tabs::after {
+  display: none;
+}
 :root[data-skin="clean"] .patient-peek-footer {
   background: var(--surface);
   box-shadow: var(--hair-t);
 }
 
-:root[data-skin="clean"] :is(.patient-record-page, .patient-peek-panel) :is(.medical-identity, .medical-owner, .medical-peek-content, .medical-tabs) {
+:root[data-skin="clean"]
+  :is(.patient-record-page, .patient-peek-panel)
+  :is(.medical-identity, .medical-owner, .medical-peek-content, .medical-tabs) {
   font-family: var(--app-font-sans);
 }
-:root[data-skin="clean"] :is(.patient-record-page, .patient-peek-panel) :is(.medical-tabs, .medical-avatar, .medical-owner-links) svg,
-:root[data-skin="clean"] :is(.patient-record-page, .patient-peek-panel) :is(.medical-tabs, .medical-avatar, .medical-owner-links) svg [stroke-width] { stroke-width: 1; }
+:root[data-skin="clean"]
+  :is(.patient-record-page, .patient-peek-panel)
+  :is(.medical-tabs, .medical-avatar, .medical-owner-links)
+  svg,
+:root[data-skin="clean"]
+  :is(.patient-record-page, .patient-peek-panel)
+  :is(.medical-tabs, .medical-avatar, .medical-owner-links)
+  svg
+  [stroke-width] {
+  stroke-width: 1;
+}
 
 /* SOAP remains the same editor, with four readable writing surfaces. */
 :root[data-skin="clean"] #patient-consultation-note {
@@ -515,7 +657,9 @@
   background: var(--band);
   box-shadow: var(--hair-b);
 }
-:root[data-skin="clean"] #patient-consultation-note > .soap-panel { padding: 20px; }
+:root[data-skin="clean"] #patient-consultation-note > .soap-panel {
+  padding: 20px;
+}
 :root[data-skin="clean"] .soap-panel-header {
   flex-wrap: wrap;
   gap: 16px;
@@ -531,7 +675,9 @@
   height: 36px !important;
   min-height: 36px !important;
 }
-:root[data-skin="clean"] .soap-editor-grid { gap: 20px; }
+:root[data-skin="clean"] .soap-editor-grid {
+  gap: 20px;
+}
 /* The class is doubled: the card also carries .bg-card, which the dashboard
    stage strips of border and radius at the same weight, loaded later. */
 :root[data-skin="clean"] .soap-section-editor.soap-section-editor {
@@ -577,8 +723,15 @@
 
 /* Footer du compte : un bloc identité posé sur la barre, sans cadre ni filet. */
 /* 15px + 10px of card padding: the avatar lines up with the shortcut icons, the "⋯" with their dots. */
-:root[data-skin="clean"] .app-sidebar [data-slot="sidebar-footer"] { padding: 16px 15px 20px !important; }
-:root[data-skin="clean"] [data-collapsible="icon"] .app-sidebar [data-slot="sidebar-footer"] { padding-inline: 0 !important; }
+:root[data-skin="clean"] .app-sidebar [data-slot="sidebar-footer"] {
+  padding: 16px 15px 20px !important;
+}
+:root[data-skin="clean"]
+  [data-collapsible="icon"]
+  .app-sidebar
+  [data-slot="sidebar-footer"] {
+  padding-inline: 0 !important;
+}
 
 /* Calendars are tables: keep the premium data-table cell styling (padding,
    hairlines, row hover) out of their day grid so popovers stay compact. */
@@ -590,18 +743,27 @@
   vertical-align: middle !important;
 }
 @media (hover: hover) and (pointer: fine) {
-  :root[data-skin="clean"] [data-slot="calendar"] tr:hover > td:not([data-selected="true"]) {
+  :root[data-skin="clean"]
+    [data-slot="calendar"]
+    tr:hover
+    > td:not([data-selected="true"]) {
     background: transparent !important;
   }
 }
 
 /* Permanent information block: one band heading, flat columns, no nested cards. */
-:root[data-skin="clean"] .patient-record-page .medical-permanent-grid :is(.medical-section-title, .medical-owner h3, .medical-health-heading h3) {
+:root[data-skin="clean"]
+  .patient-record-page
+  .medical-permanent-grid
+  :is(.medical-section-title, .medical-owner h3, .medical-health-heading h3) {
   color: var(--ink-muted, var(--soft));
   background: none;
   box-shadow: none;
 }
-:root[data-skin="clean"] .patient-record-page .medical-permanent-grid .medical-record-health {
+:root[data-skin="clean"]
+  .patient-record-page
+  .medical-permanent-grid
+  .medical-record-health {
   padding: 20px 24px;
   border-top: 0;
   border-right: 0;

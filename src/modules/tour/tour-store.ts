@@ -33,7 +33,10 @@ export interface TourStore {
   reload(): void;
 }
 
-function readFrom(storage: Storage | null): { state: TourState; writable: boolean } {
+function readFrom(storage: Storage | null): {
+  state: TourState;
+  writable: boolean;
+} {
   if (!storage) return { state: UNREADABLE_TOUR_STATE, writable: false };
   let raw: string | null;
   try {
@@ -115,7 +118,11 @@ if (typeof window !== "undefined") {
 }
 
 export function useTourState(store: TourStore = tourStore): TourState {
-  return useSyncExternalStore(store.subscribe, store.get, () => FRESH_TOUR_STATE);
+  return useSyncExternalStore(
+    store.subscribe,
+    store.get,
+    () => FRESH_TOUR_STATE
+  );
 }
 
 /** Vrai tant que la carte de fin doit s'afficher. */

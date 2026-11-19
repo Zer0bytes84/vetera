@@ -17,7 +17,9 @@ let current: PageCrumb | null = null;
 const listeners = new Set<() => void>();
 
 function same(a: PageCrumb | null, b: PageCrumb | null) {
-  return a?.title === b?.title && a?.note === b?.note && a?.parent === b?.parent;
+  return (
+    a?.title === b?.title && a?.note === b?.note && a?.parent === b?.parent
+  );
 }
 
 function publish(next: PageCrumb | null) {
@@ -38,7 +40,7 @@ export function usePublishedCrumb(): PageCrumb | null {
   return useSyncExternalStore(
     subscribe,
     () => current,
-    () => null,
+    () => null
   );
 }
 

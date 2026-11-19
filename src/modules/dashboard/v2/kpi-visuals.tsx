@@ -89,7 +89,10 @@ export function KpiConsultationsCadence({
         onPointerMove={(e) => {
           const rect = e.currentTarget.getBoundingClientRect();
           const x = ((e.clientX - rect.left) / rect.width) * svgWidth;
-          const idx = Math.max(0, Math.min(count - 1, Math.floor(x / slotWidth)));
+          const idx = Math.max(
+            0,
+            Math.min(count - 1, Math.floor(x / slotWidth))
+          );
           setHovered(idx);
         }}
       >
@@ -108,7 +111,8 @@ export function KpiConsultationsCadence({
           const isSelected = active === i;
           const slotX = i * slotWidth;
           const x = slotX + (slotWidth - barWidth) / 2;
-          const barHeight = val > 0 ? Math.max(4, (val / max) * (svgHeight - 7)) : 2.5;
+          const barHeight =
+            val > 0 ? Math.max(4, (val / max) * (svgHeight - 7)) : 2.5;
           const y = svgHeight - 2 - barHeight;
 
           return (
@@ -273,7 +277,10 @@ export function KpiIncomeSplineWave({
         role="img"
         tabIndex={0}
         aria-label={`Courbe des encaissements sur 7 jours. ${values
-          .map((v, i) => `${labels[i]} : ${Math.round(v).toLocaleString("fr-FR")} DA`)
+          .map(
+            (v, i) =>
+              `${labels[i]} : ${Math.round(v).toLocaleString("fr-FR")} DA`
+          )
           .join(", ")}`}
         onFocus={() => setHovered(count - 1)}
         onBlur={() => setHovered(null)}
@@ -284,7 +291,10 @@ export function KpiIncomeSplineWave({
           const x = ((e.clientX - rect.left) / rect.width) * svgWidth;
           const idx = Math.max(
             0,
-            Math.min(count - 1, Math.round(((x - paddingX) / usableWidth) * (count - 1)))
+            Math.min(
+              count - 1,
+              Math.round(((x - paddingX) / usableWidth) * (count - 1))
+            )
           );
           setHovered(idx);
         }}
@@ -372,7 +382,9 @@ export function KpiIncomeSplineWave({
           }}
         >
           <span>{labels[active]}</span>
-          <strong>{Math.round(values[active]).toLocaleString("fr-FR")} DA</strong>
+          <strong>
+            {Math.round(values[active]).toLocaleString("fr-FR")} DA
+          </strong>
         </span>
       )}
 
@@ -411,11 +423,22 @@ export function KpiIncomeSplineWave({
 function resolveSpeciesGlyph(name: string) {
   const norm = name.toLowerCase();
   if (norm.includes("chien") || norm.includes("canin")) return Dog;
-  if (norm.includes("chat") || norm.includes("felin") || norm.includes("félin")) return Cat;
-  if (norm.includes("lapin") || norm.includes("rongeur") || norm.includes("nac")) return Rabbit;
+  if (norm.includes("chat") || norm.includes("felin") || norm.includes("félin"))
+    return Cat;
+  if (
+    norm.includes("lapin") ||
+    norm.includes("rongeur") ||
+    norm.includes("nac")
+  )
+    return Rabbit;
   if (norm.includes("oiseau") || norm.includes("perroquet")) return Bird;
   if (norm.includes("tortue") || norm.includes("reptile")) return Turtle;
-  if (norm.includes("cheval") || norm.includes("equin") || norm.includes("équin")) return Horse;
+  if (
+    norm.includes("cheval") ||
+    norm.includes("equin") ||
+    norm.includes("équin")
+  )
+    return Horse;
   return PawPrint;
 }
 
@@ -450,7 +473,9 @@ export function KpiSpeciesDistribution({
           {displayEntries.length > 0 ? (
             displayEntries.map(([name, count], index) => {
               const theme = getSpeciesTheme(name);
-              const isDog = name.toLowerCase().includes("chien") || name.toLowerCase().includes("canin");
+              const isDog =
+                name.toLowerCase().includes("chien") ||
+                name.toLowerCase().includes("canin");
               const speciesColor = isDog ? "var(--primary)" : theme.accentHex;
               const pct = (count / cleanTotal) * 100;
               const isSelected = hoveredIndex === index;
@@ -481,7 +506,9 @@ export function KpiSpeciesDistribution({
             topSpecies.map(([name, count], index) => {
               const Glyph = resolveSpeciesGlyph(name);
               const theme = getSpeciesTheme(name);
-              const isDog = name.toLowerCase().includes("chien") || name.toLowerCase().includes("canin");
+              const isDog =
+                name.toLowerCase().includes("chien") ||
+                name.toLowerCase().includes("canin");
               const speciesColor = isDog ? "var(--primary)" : theme.accentHex;
               const pct = Math.round((count / cleanTotal) * 100);
               const isSelected = hoveredIndex === index;
@@ -491,7 +518,9 @@ export function KpiSpeciesDistribution({
                   key={name}
                   className={cn(
                     "kpi-species-chip transition-opacity",
-                    hoveredIndex !== null && !isSelected ? "opacity-35" : "opacity-100"
+                    hoveredIndex !== null && !isSelected
+                      ? "opacity-35"
+                      : "opacity-100"
                   )}
                   style={{ color: isSelected ? speciesColor : undefined }}
                   onPointerEnter={() => setHoveredIndex(index)}
@@ -504,7 +533,8 @@ export function KpiSpeciesDistribution({
                   />
                   <span>
                     <strong>{formatNumber(count)}</strong>{" "}
-                    {name.toLocaleLowerCase("fr-FR")}{count > 1 ? "s" : ""}
+                    {name.toLocaleLowerCase("fr-FR")}
+                    {count > 1 ? "s" : ""}
                   </span>
                   <span className="t-12 opacity-65">({pct}%)</span>
                 </span>
@@ -521,10 +551,7 @@ export function KpiSpeciesDistribution({
 
       {/* Floating tooltip on hover */}
       {hoveredIndex !== null && displayEntries[hoveredIndex] && (
-        <span
-          className="kpi-interactive-tooltip"
-          style={{ left: "50%" }}
-        >
+        <span className="kpi-interactive-tooltip" style={{ left: "50%" }}>
           <span>{displayEntries[hoveredIndex][0]}</span>
           <strong>
             {displayEntries[hoveredIndex][1]} patient
@@ -551,12 +578,17 @@ export function KpiReceivablesGauge({
 }) {
   const isClean = waitingAmount === 0;
   const totalDue = periodPaid + waitingAmount;
-  const recoveryRate = totalDue > 0 ? Math.min(100, Math.round((periodPaid / totalDue) * 100)) : 100;
+  const recoveryRate =
+    totalDue > 0
+      ? Math.min(100, Math.round((periodPaid / totalDue) * 100))
+      : 100;
 
   // Circle radius 12.5, circumference ≈ 78.54
   const strokeRadius = 12.5;
   const circumference = 2 * Math.PI * strokeRadius;
-  const strokeOffset = isClean ? 0 : circumference - (recoveryRate / 100) * circumference;
+  const strokeOffset = isClean
+    ? 0
+    : circumference - (recoveryRate / 100) * circumference;
 
   return (
     <div className="kpi-visual-container">
@@ -619,7 +651,8 @@ export function KpiReceivablesGauge({
               <div className="kpi-gauge-title text-amber-600 dark:text-amber-400">
                 <span className="size-1.5 rounded-full bg-amber-500" />
                 <span>
-                  {formatNumber(waitingCount)} solde{waitingCount > 1 ? "s" : ""} à suivre
+                  {formatNumber(waitingCount)} solde
+                  {waitingCount > 1 ? "s" : ""} à suivre
                 </span>
               </div>
               <div className="kpi-gauge-sub">

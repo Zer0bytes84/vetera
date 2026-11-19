@@ -10,7 +10,8 @@
   border: 0 !important;
   background: transparent !important;
   box-shadow: none !important;
-  font-size: 0.875rem !important; line-height: 1.5rem !important;
+  font-size: 0.875rem !important;
+  line-height: 1.5rem !important;
   font-weight: 500 !important;
   letter-spacing: 0 !important;
   text-transform: none !important;
@@ -24,7 +25,8 @@
   border: 0 !important;
   background: transparent !important;
   box-shadow: none !important;
-  font-size: 0.875rem !important; line-height: 1.5rem !important;
+  font-size: 0.875rem !important;
+  line-height: 1.5rem !important;
   color: var(--foreground) !important;
 }
 :root:root:root .tuff-table tbody tr {
@@ -33,11 +35,19 @@
   transition: background-color 150ms ease-out;
 }
 :root:root:root .tuff-table tbody tr[data-zebra="odd"] {
-  background: color-mix(in oklab, var(--foreground) 2.5%, transparent) !important;
+  background: color-mix(
+    in oklab,
+    var(--foreground) 2.5%,
+    transparent
+  ) !important;
 }
 @media (hover: hover) and (pointer: fine) {
   :root:root:root .tuff-table tbody tr:hover {
-    background: color-mix(in oklab, var(--foreground) 5%, transparent) !important;
+    background: color-mix(
+      in oklab,
+      var(--foreground) 5%,
+      transparent
+    ) !important;
   }
 }
 :root:root:root .tuff-table tbody tr[data-selected] {

@@ -22,5 +22,9 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": ["vite.config.ts", "scripts/eval-local-ai/vite.eval.config.ts", "scripts/eval-local-ai/vite.capture.config.ts"]
+  "include": [
+    "vite.config.ts",
+    "scripts/eval-local-ai/vite.eval.config.ts",
+    "scripts/eval-local-ai/vite.capture.config.ts"
+  ]
 }

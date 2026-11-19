@@ -11,24 +11,51 @@
   container: medical-reminders / inline-size;
 }
 
-.patient-reminders-panel :is(button, input, select) { font-family: inherit; }
-.patient-reminders-panel .font-heading { font-family: var(--app-font-heading); }
-.patient-reminders-panel svg { stroke-width: 1; }
-.reminders-page .lucide { stroke-width: 1; }
-.medical-reminder-proposal-summary { display: flex; gap: 12px; align-items: flex-start; border: 1px solid var(--border); border-radius: 12px; padding: 16px; background: var(--muted); }
-.medical-reminder-dialog :is(input, button, textarea) { min-height: 44px; }
-.medical-reminder-dialog [data-slot="dialog-close"] { min-height: 32px; }
+.patient-reminders-panel :is(button, input, select) {
+  font-family: inherit;
+}
+.patient-reminders-panel .font-heading {
+  font-family: var(--app-font-heading);
+}
+.patient-reminders-panel svg {
+  stroke-width: 1;
+}
+.reminders-page .lucide {
+  stroke-width: 1;
+}
+.medical-reminder-proposal-summary {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  background: var(--muted);
+}
+.medical-reminder-dialog :is(input, button, textarea) {
+  min-height: 44px;
+}
+.medical-reminder-dialog [data-slot="dialog-close"] {
+  min-height: 32px;
+}
 
 /* Keep the medical controls consistent without resizing controls on other pages. */
 :root[data-skin="clean"] .patient-reminders-panel [data-slot="button"],
 :root[data-skin="clean"] .medical-reminder-dialog button,
-:root[data-skin="clean"] .reminders-page [data-slot="page-header-actions"] :is([data-slot="button"], [data-slot="native-select"]) {
+:root[data-skin="clean"]
+  .reminders-page
+  [data-slot="page-header-actions"]
+  :is([data-slot="button"], [data-slot="native-select"]) {
   height: var(--reminder-control-height) !important;
   min-height: var(--reminder-control-height) !important;
 }
-:root .medical-reminder-dialog button { min-width: 44px; }
+:root .medical-reminder-dialog button {
+  min-width: 44px;
+}
 
-:root .medical-reminder-dialog :is([data-slot="input"], [data-slot="textarea"], [data-slot="input-group"]) {
+:root
+  .medical-reminder-dialog
+  :is([data-slot="input"], [data-slot="textarea"], [data-slot="input-group"]) {
   border: 1px solid var(--input) !important;
   background: var(--surface) !important;
 }
@@ -140,7 +167,8 @@
 .reminder-segment:is([aria-selected="true"], [aria-pressed="true"]) {
   background: var(--card);
   color: var(--foreground);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--foreground) 10%, transparent);
+  box-shadow: inset 0 0 0 1px
+    color-mix(in srgb, var(--foreground) 10%, transparent);
 }
 
 .medical-reminder-row {
@@ -182,9 +210,23 @@
   font-variant-numeric: tabular-nums;
 }
 
-.medical-reminder-date svg { width: 17px; height: 17px; stroke-width: 1; }
-.patient-reminders-panel .medical-reminder-date.is-due { border-color: color-mix(in srgb, var(--premium-blue, var(--interactive-blue)) 32%, var(--border)); color: var(--premium-blue, var(--interactive-blue)); }
-.medical-reminder-date.is-overdue { border-color: color-mix(in srgb, var(--destructive) 38%, var(--border)); color: var(--destructive); }
+.medical-reminder-date svg {
+  width: 17px;
+  height: 17px;
+  stroke-width: 1;
+}
+.patient-reminders-panel .medical-reminder-date.is-due {
+  border-color: color-mix(
+    in srgb,
+    var(--premium-blue, var(--interactive-blue)) 32%,
+    var(--border)
+  );
+  color: var(--premium-blue, var(--interactive-blue));
+}
+.medical-reminder-date.is-overdue {
+  border-color: color-mix(in srgb, var(--destructive) 38%, var(--border));
+  color: var(--destructive);
+}
 
 .medical-phone-link {
   display: inline-flex;
@@ -212,34 +254,93 @@
   padding: 16px;
 }
 
-.medical-reminders-widget { container: medical-reminders-widget / inline-size; }
-.medical-reminders-widget-content { display: grid; grid-template-columns: minmax(240px, 0.9fr) minmax(0, 2fr); gap: 32px; align-items: start; }
-.medical-reminders-widget-zone { display: grid; min-width: 0; gap: 12px; }
-.medical-reminders-widget-zone + .medical-reminders-widget-zone { border-inline-start: 1px solid var(--border); padding-inline-start: 32px; }
-.medical-reminders-widget-label { margin: 0; font-size: 12px; font-weight: 500; color: var(--muted-foreground); }
-.medical-reminders-widget-totals { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin: 0; }
-.medical-reminders-widget-totals dd { margin: 0; }
-.medical-reminders-widget-upcoming { display: grid; margin: 0; padding: 0; list-style: none; }
-.medical-reminders-widget-upcoming > li { display: grid; grid-template-columns: 104px minmax(0, 1fr) minmax(0, 0.8fr); align-items: baseline; gap: 16px; min-height: 40px; padding-block: 9px; }
-.medical-reminders-widget-upcoming > li + li { border-top: 1px solid var(--border); }
+.medical-reminders-widget {
+  container: medical-reminders-widget / inline-size;
+}
+.medical-reminders-widget-content {
+  display: grid;
+  grid-template-columns: minmax(240px, 0.9fr) minmax(0, 2fr);
+  gap: 32px;
+  align-items: start;
+}
+.medical-reminders-widget-zone {
+  display: grid;
+  min-width: 0;
+  gap: 12px;
+}
+.medical-reminders-widget-zone + .medical-reminders-widget-zone {
+  border-inline-start: 1px solid var(--border);
+  padding-inline-start: 32px;
+}
+.medical-reminders-widget-label {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted-foreground);
+}
+.medical-reminders-widget-totals {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin: 0;
+}
+.medical-reminders-widget-totals dd {
+  margin: 0;
+}
+.medical-reminders-widget-upcoming {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.medical-reminders-widget-upcoming > li {
+  display: grid;
+  grid-template-columns: 104px minmax(0, 1fr) minmax(0, 0.8fr);
+  align-items: baseline;
+  gap: 16px;
+  min-height: 40px;
+  padding-block: 9px;
+}
+.medical-reminders-widget-upcoming > li + li {
+  border-top: 1px solid var(--border);
+}
 
 @media (max-width: 840px) {
-  .medical-reminder-row { grid-template-columns: 84px minmax(0, 1fr); }
+  .medical-reminder-row {
+    grid-template-columns: 84px minmax(0, 1fr);
+  }
 }
 
 @container medical-reminders-widget (max-width: 760px) {
-  .medical-reminders-widget-content { grid-template-columns: 1fr; gap: 20px; }
-  .medical-reminders-widget-zone + .medical-reminders-widget-zone { border-inline-start: 0; border-top: 1px solid var(--border); padding-inline-start: 0; padding-top: 20px; }
+  .medical-reminders-widget-content {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .medical-reminders-widget-zone + .medical-reminders-widget-zone {
+    border-inline-start: 0;
+    border-top: 1px solid var(--border);
+    padding-inline-start: 0;
+    padding-top: 20px;
+  }
 }
 
 @container medical-reminders-widget (max-width: 460px) {
-  .medical-reminders-widget-upcoming > li { grid-template-columns: 96px minmax(0, 1fr); gap: 4px 12px; }
-  .medical-reminders-widget-upcoming > li > span:last-child { grid-column: 2; }
+  .medical-reminders-widget-upcoming > li {
+    grid-template-columns: 96px minmax(0, 1fr);
+    gap: 4px 12px;
+  }
+  .medical-reminders-widget-upcoming > li > span:last-child {
+    grid-column: 2;
+  }
 }
 
 @container medical-reminders (max-width: 900px) {
-  .medical-reminder-row { grid-template-columns: 120px minmax(0, 1fr); }
-  .medical-reminder-row-actions { grid-column: 1 / -1; }
+  .medical-reminder-row {
+    grid-template-columns: 120px minmax(0, 1fr);
+  }
+  .medical-reminder-row-actions {
+    grid-column: 1 / -1;
+  }
 }
 
 @container medical-reminders (max-width: 520px) {
@@ -252,6 +353,12 @@
 }
 
 @media (max-width: 520px) {
-  .medical-reminder-row { grid-template-columns: 1fr; }
-  .medical-reminder-date { width: fit-content; min-height: 40px; padding: 0 12px; }
+  .medical-reminder-row {
+    grid-template-columns: 1fr;
+  }
+  .medical-reminder-date {
+    width: fit-content;
+    min-height: 40px;
+    padding: 0 12px;
+  }
 }

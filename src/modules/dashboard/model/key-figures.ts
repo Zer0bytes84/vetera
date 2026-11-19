@@ -40,10 +40,20 @@ export interface KeyFigure {
  * something before; nothing on either side is 0 %; from nothing to something has no percentage, so
  * the badge reads the rise itself ("+2", "+200 DA"). `absolute` words an amount for that case.
  */
-export function changeBadge(change: number | null, previous: number, current: number, absolute: (n: number) => string): { delta: number; deltaText?: string } {
+export function changeBadge(
+  change: number | null,
+  previous: number,
+  current: number,
+  absolute: (n: number) => string
+): { delta: number; deltaText?: string } {
   if (previous === 0 && current === 0) return { delta: 0 };
-  if (previous === 0) return { delta: current, deltaText: `+${absolute(current)}` };
-  return { delta: change ?? Math.round(((current - previous) / Math.abs(previous)) * 1000) / 10 };
+  if (previous === 0)
+    return { delta: current, deltaText: `+${absolute(current)}` };
+  return {
+    delta:
+      change ??
+      Math.round(((current - previous) / Math.abs(previous)) * 1000) / 10,
+  };
 }
 
 const dinars = (n: number) => formatCentimes(Math.round(n * 100));
@@ -51,20 +61,37 @@ const dinars = (n: number) => formatCentimes(Math.round(n * 100));
 const plural = (n: number, word: string) => `${n} ${word}${n > 1 ? "s" : ""}`;
 
 /** The rate of actions done: finished out of finished plus still to follow; 100 % when there is nothing to finish. */
-export function actionsGoal(done: number, open: number): { ratio: number; label: string } {
+export function actionsGoal(
+  done: number,
+  open: number
+): { ratio: number; label: string } {
   const total = done + open;
   if (total === 0) return { ratio: 1, label: "Aucune action à terminer" };
-  return { ratio: done / total, label: `${plural(done, "action")} terminée${done > 1 ? "s" : ""} sur ${total}` };
+  return {
+    ratio: done / total,
+    label: `${plural(done, "action")} terminée${done > 1 ? "s" : ""} sur ${total}`,
+  };
 }
 
 export function buildKeyFigures(
-  model: Pick<ReturnType<typeof buildPremiumAnalytics>, "cash" | "patients" | "actions" | "appointments" | "trend" | "receivablesBefore">,
+  model: Pick<
+    ReturnType<typeof buildPremiumAnalytics>,
+    | "cash"
+    | "patients"
+    | "actions"
+    | "appointments"
+    | "trend"
+    | "receivablesBefore"
+  >,
   receivables: ReturnType<typeof receivablesSummary>,
   /** Share of the invoiced amount already settled, in percent; null without any invoice. */
   settlement: number | null
 ): KeyFigure[] {
   const { cash, actions, appointments, trend } = model;
-  const running = trend.income.reduce<number[]>((sums, value) => [...sums, (sums.at(-1) ?? 0) + value], []);
+  const running = trend.income.reduce<number[]>(
+    (sums, value) => [...sums, (sums.at(-1) ?? 0) + value],
+    []
+  );
   const owed = Math.round(receivables.total * 100);
   const late = receivables.overdueInvoices;
   const entries = receivables.pendingEntries;
@@ -73,11 +100,22 @@ export function buildKeyFigures(
       id: "cash",
       label: "Trésorerie",
       value: formatCentimes(cash.income),
-      ...changeBadge(cash.change, cash.previous / 100, cash.income / 100, dinars),
+      ...changeBadge(
+        cash.change,
+        cash.previous / 100,
+        cash.income / 100,
+        dinars
+      ),
       higherIsBetter: true,
       line: `Solde net : ${formatCentimes(cash.net)}`,
       // The goal: match the previous period's receipts. Without a previous period, no goal.
-      goal: cash.previous > 0 ? { ratio: Math.min(1, cash.income / cash.previous), label: `Période précédente : ${formatCentimes(cash.previous)}` } : undefined,
+      goal:
+        cash.previous > 0
+          ? {
+              ratio: Math.min(1, cash.income / cash.previous),
+              label: `Période précédente : ${formatCentimes(cash.previous)}`,
+            }
+          : undefined,
       trend: running,
       tone: "green",
       emphasize: false,
@@ -87,11 +125,22 @@ export function buildKeyFigures(
       id: "appointments",
       label: "Rendez-vous",
       value: formatNumber(appointments.count),
-      ...changeBadge(appointments.change, appointments.previous, appointments.count, formatNumber),
+      ...changeBadge(
+        appointments.change,
+        appointments.previous,
+        appointments.count,
+        formatNumber
+      ),
       higherIsBetter: true,
       line: `${plural(appointments.honored, "honoré")} · ${plural(appointments.cancelled, "annulé")} · ${plural(appointments.missed, "absence")}`,
       // The goal: that the appointments are honoured. Without an appointment, no goal.
-      goal: appointments.count > 0 ? { ratio: appointments.honored / appointments.count, label: `Honorés : ${appointments.honored} sur ${appointments.count}` } : undefined,
+      goal:
+        appointments.count > 0
+          ? {
+              ratio: appointments.honored / appointments.count,
+              label: `Honorés : ${appointments.honored} sur ${appointments.count}`,
+            }
+          : undefined,
       // Per day (per week over a long period), not cumulative: the curve of the agenda's load.
       trend: trend.appointments,
       tone: "blue",
@@ -106,10 +155,15 @@ export function buildKeyFigures(
       ...changeBadge(null, model.receivablesBefore, receivables.total, dinars),
       higherIsBetter: false,
       line:
-        (receivables.unpaidInvoices === 0 ? "Aucune facture impayée" : `${plural(receivables.unpaidInvoices, "facture")} impayée${receivables.unpaidInvoices > 1 ? "s" : ""} · ${late} en retard`) +
+        (receivables.unpaidInvoices === 0
+          ? "Aucune facture impayée"
+          : `${plural(receivables.unpaidInvoices, "facture")} impayée${receivables.unpaidInvoices > 1 ? "s" : ""} · ${late} en retard`) +
         (entries > 0 ? ` · ${entries} en attente` : ""),
       // What is owed is settled over every invoice, the goal being that all of it is.
-      goal: settlement === null ? undefined : { ratio: settlement / 100, label: "Factures réglées" },
+      goal:
+        settlement === null
+          ? undefined
+          : { ratio: settlement / 100, label: "Factures réglées" },
       // How what is owed moved over the period, read back from today's figure.
       trend: trend.receivables,
       tone: late > 0 ? "rose" : owed > 0 ? "amber" : "green",
@@ -120,7 +174,12 @@ export function buildKeyFigures(
       id: "actions",
       label: "Actions à suivre",
       value: formatNumber(actions.count),
-      ...changeBadge(actions.change, actions.previous, actions.count, formatNumber),
+      ...changeBadge(
+        actions.change,
+        actions.previous,
+        actions.count,
+        formatNumber
+      ),
       higherIsBetter: false,
       line: `${actions.urgent} prioritaires · ${actions.reminders} vaccins · ${actions.tasks} tâches`,
       // The rate of actions done: those finished in the period out of those finished and those still to follow.

@@ -63,7 +63,7 @@ export function assertSearchScope(scope: SearchScope) {
           "patient",
           "consultation",
           "product",
-        ].includes(type),
+        ].includes(type)
     ) ||
     scope.sections.some(
       (section) =>
@@ -74,7 +74,7 @@ export function assertSearchScope(scope: SearchScope) {
           "patient",
           "consultation",
           "product",
-        ].includes(section),
+        ].includes(section)
     )
   )
     throw new Error("Choisissez un patient, une source et une rubrique.");
@@ -83,7 +83,7 @@ export function assertSearchScope(scope: SearchScope) {
 export function soapSearchChunks(note: ConsultationSoap): SearchChunk[] {
   if (!note.patientId || !isSoapReviewed(note))
     throw new Error(
-      "Seules les notes relues et validées peuvent être recherchées.",
+      "Seules les notes relues et validées peuvent être recherchées."
     );
   return SOAP_SECTIONS.filter(({ key }) => note[key].trim()).map(
     ({ key }, chunkIndex) => ({
@@ -95,13 +95,13 @@ export function soapSearchChunks(note: ConsultationSoap): SearchChunk[] {
       chunkIndex,
       text: note[key],
       sourceKey: soapSourceKey(note),
-    }),
+    })
   );
 }
 export function documentSearchChunks(
   note: Note,
   plainText: string,
-  documentType: Exclude<DocumentType, "consultation"> = "document",
+  documentType: Exclude<DocumentType, "consultation"> = "document"
 ): SearchChunk[] {
   let review: { reviewedAt?: string } | undefined;
   try {
@@ -117,7 +117,7 @@ export function documentSearchChunks(
     !Number.isFinite(Date.parse(review.reviewedAt))
   )
     throw new Error(
-      "Le document doit être lié au patient et validé avant son indexation.",
+      "Le document doit être lié au patient et validé avant son indexation."
     );
   const type = documentType === "protocol" ? "protocol" : "document";
   return plainText.trim()
@@ -138,22 +138,44 @@ export function documentSearchChunks(
 
 /** Managed documents are read directly, without copying them into legacy notes. */
 export function managedDocumentSearchChunks(
-  document: Pick<PatientDocument, "id" | "patientId" | "patientName" | "kind" | "title" | "content" | "status" | "attachment" | "updatedAt">,
+  document: Pick<
+    PatientDocument,
+    | "id"
+    | "patientId"
+    | "patientName"
+    | "kind"
+    | "title"
+    | "content"
+    | "status"
+    | "attachment"
+    | "updatedAt"
+  >
 ): SearchChunk[] {
   if (!document.patientId || document.status !== "finalise") return [];
-  if (document.attachment && document.attachment.textState !== "extractible") return [];
+  if (document.attachment && document.attachment.textState !== "extractible")
+    return [];
   const pages = document.attachment?.pages;
   const text = pages
-    ? pages.map(page => `Page ${page.page}\n${page.text}`).join("\n\n")
+    ? pages.map((page) => `Page ${page.page}\n${page.text}`).join("\n\n")
     : document.content;
   if (!text.trim()) return [];
-  return [{
-    patientId: document.patientId, patientName: document.patientName,
-    sourceId: "patient-document:" + document.id,
-    sourceType: "document", documentType: ["prescription", "certificate", "report"].includes(document.kind) ? document.kind as "prescription" | "certificate" | "report" : "document",
-    section: "document", chunkIndex: 0, text,
-    sourceKey: JSON.stringify([document.updatedAt, document.status, text]),
-  }];
+  return [
+    {
+      patientId: document.patientId,
+      patientName: document.patientName,
+      sourceId: "patient-document:" + document.id,
+      sourceType: "document",
+      documentType: ["prescription", "certificate", "report"].includes(
+        document.kind
+      )
+        ? (document.kind as "prescription" | "certificate" | "report")
+        : "document",
+      section: "document",
+      chunkIndex: 0,
+      text,
+      sourceKey: JSON.stringify([document.updatedAt, document.status, text]),
+    },
+  ];
 }
 
 export function patientSearchChunks(patient: {
@@ -171,14 +193,18 @@ export function patientSearchChunks(patient: {
 }): SearchChunk[] {
   if (!patient.id) return [];
   const parts: string[] = [];
-  const speciesBreed = [patient.species, patient.breed].filter(Boolean).join(" · ");
+  const speciesBreed = [patient.species, patient.breed]
+    .filter(Boolean)
+    .join(" · ");
   parts.push(`Patient : ${patient.name} (${speciesBreed})`);
   const chip = patient.chipNumber || patient.chip_number;
   if (chip) parts.push(`Identification / Puce : ${chip}`);
   const allergies = patient.allergies;
-  if (allergies && allergies.trim()) parts.push(`Allergies : ${allergies.trim()}`);
+  if (allergies && allergies.trim())
+    parts.push(`Allergies : ${allergies.trim()}`);
   const chronic = patient.chronicConditions || patient.chronic_conditions;
-  if (chronic && chronic.trim()) parts.push(`Affections chroniques : ${chronic.trim()}`);
+  if (chronic && chronic.trim())
+    parts.push(`Affections chroniques : ${chronic.trim()}`);
   const notes = patient.generalNotes || patient.general_notes;
   if (notes && notes.trim()) parts.push(`Notes médicales : ${notes.trim()}`);
 
@@ -193,7 +219,13 @@ export function patientSearchChunks(patient: {
       section: "patient",
       chunkIndex: 0,
       text,
-      sourceKey: JSON.stringify([patient.name, chip, allergies, chronic, notes]),
+      sourceKey: JSON.stringify([
+        patient.name,
+        chip,
+        allergies,
+        chronic,
+        notes,
+      ]),
     },
   ];
 }
@@ -210,14 +242,16 @@ export function consultationSearchChunks(
     treatment?: string | null;
     notes?: string | null;
   },
-  patientName?: string,
+  patientName?: string
 ): SearchChunk[] {
   const patientId = appointment.patientId || appointment.patient_id;
   if (!appointment.id || !patientId) return [];
 
   const parts: string[] = [];
   if (appointment.type || appointment.title) {
-    parts.push(`Consultation ${appointment.type || ""} : ${appointment.title || ""}`.trim());
+    parts.push(
+      `Consultation ${appointment.type || ""} : ${appointment.title || ""}`.trim()
+    );
   }
   if (appointment.reason && appointment.reason.trim()) {
     parts.push(`Motif : ${appointment.reason.trim()}`);
@@ -286,7 +320,12 @@ export function productSearchChunks(product: {
       section: "product",
       chunkIndex: 0,
       text: parts.join(" — "),
-      sourceKey: JSON.stringify([product.name, cat, product.unit, product.quantity]),
+      sourceKey: JSON.stringify([
+        product.name,
+        cat,
+        product.unit,
+        product.quantity,
+      ]),
     },
   ];
 }
@@ -301,25 +340,29 @@ export function embeddingToHex(vector: number[]) {
   const buffer = new ArrayBuffer(3072),
     view = new DataView(buffer);
   normalizedEmbedding(vector).forEach((value, index) =>
-    view.setFloat32(index * 4, value, true),
+    view.setFloat32(index * 4, value, true)
   );
   return Array.from(new Uint8Array(buffer), (value) =>
-    value.toString(16).padStart(2, "0"),
+    value.toString(16).padStart(2, "0")
   ).join("");
 }
 export function embeddingFromHex(hex: string) {
   if (!/^[a-fA-F0-9]{6144}$/.test(hex))
     throw new Error("Un extrait de recherche est invalide.");
   const bytes = Uint8Array.from(hex.match(/../g)!, (value) =>
-      Number.parseInt(value, 16),
+      Number.parseInt(value, 16)
     ),
     view = new DataView(bytes.buffer);
   return normalizedEmbedding(
-    Array.from({ length: 768 }, (_, index) => view.getFloat32(index * 4, true)),
+    Array.from({ length: 768 }, (_, index) => view.getFloat32(index * 4, true))
   );
 }
 export { matchesSearchTerms } from "./veterinary-lexicon";
-import { matchesSearchTerms, matchesNumericConstraints, matchesExactSearchTerms } from "./veterinary-lexicon";
+import {
+  matchesSearchTerms,
+  matchesNumericConstraints,
+  matchesExactSearchTerms,
+} from "./veterinary-lexicon";
 
 export function rankPatientChunks<T extends SearchChunk & { vector: number[] }>(
   rows: T[],
@@ -327,7 +370,7 @@ export function rankPatientChunks<T extends SearchChunk & { vector: number[] }>(
   scope: SearchScope,
   limit = 5,
   minimum = MIN_SEARCH_SCORE,
-  queryText = "",
+  queryText = ""
 ) {
   assertSearchScope(scope);
   if (!Number.isFinite(minimum) || minimum < MIN_SEARCH_SCORE || minimum > 1)
@@ -340,13 +383,13 @@ export function rankPatientChunks<T extends SearchChunk & { vector: number[] }>(
           row.patientId === scope.patientId &&
           scope.sourceTypes.includes(row.sourceType) &&
           scope.sections.includes(row.section) &&
-          matchesNumericConstraints(queryText, row.text),
+          matchesNumericConstraints(queryText, row.text)
       )
       .map((row) => ({
         ...row,
         score: normalizedEmbedding(row.vector).reduce(
           (sum, value, i) => sum + value * unit[i],
-          0,
+          0
         ),
         match: matchesSearchTerms(queryText, row.text)
           ? ("text" as const)
@@ -357,15 +400,18 @@ export function rankPatientChunks<T extends SearchChunk & { vector: number[] }>(
       .filter(
         (row) =>
           row.score >= minimum ||
-          (row.match === "text" && (matchesExactSearchTerms(queryText, row.text) || row.score >= MIN_LEXICAL_FLOOR_SCORE)),
+          (row.match === "text" &&
+            (matchesExactSearchTerms(queryText, row.text) ||
+              row.score >= MIN_LEXICAL_FLOOR_SCORE))
       )
       .sort(
         (a, b) =>
-          Number(matchesExactSearchTerms(queryText, b.text)) - Number(matchesExactSearchTerms(queryText, a.text)) ||
+          Number(matchesExactSearchTerms(queryText, b.text)) -
+            Number(matchesExactSearchTerms(queryText, a.text)) ||
           Number(b.match === "text") - Number(a.match === "text") ||
           b.score - a.score ||
           a.sourceId.localeCompare(b.sourceId) ||
-          a.chunkIndex - b.chunkIndex,
+          a.chunkIndex - b.chunkIndex
       )
       .slice(0, Math.max(1, Math.min(20, limit)))
   );

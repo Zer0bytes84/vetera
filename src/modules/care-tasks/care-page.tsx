@@ -160,7 +160,7 @@ export default function CarePage({
       Number(match[1]),
       Number(match[2]) - 1,
       Number(match[3]),
-      12,
+      12
     );
     const today = new Date();
     return date.toDateString() === today.toDateString() ? null : date;
@@ -216,7 +216,7 @@ export default function CarePage({
           product.name,
           available,
           requested,
-          product.unit,
+          product.unit
         )
       : null;
   };
@@ -285,7 +285,10 @@ export default function CarePage({
   const detail = tasks.find((t) => t.id === selected);
   // Un autre soin sélectionné, ou une liste rechargée : l'historique repart de zéro dès ce rendu (corrigé au rendu, sans effet).
   const [historyFor, setHistoryFor] = useState({ selected, tasks });
-  if (selected && (historyFor.selected !== selected || historyFor.tasks !== tasks)) {
+  if (
+    selected &&
+    (historyFor.selected !== selected || historyFor.tasks !== tasks)
+  ) {
     setHistoryFor({ selected, tasks });
     setHistory([]);
     setHistoryError(false);
@@ -310,7 +313,7 @@ export default function CarePage({
     if (busy) return;
     if (status === "fait" && hasUnsavedProductUsage(task)) {
       setActionError(
-        "Enregistrez la modification du produit ou de la quantité avant de valider le soin.",
+        "Enregistrez la modification du produit ou de la quantité avant de valider le soin."
       );
       return;
     }
@@ -321,62 +324,68 @@ export default function CarePage({
     }
     setBusy(task.id);
     setActionError(null);
-    await guard(async () => {
-      await careTasksService.transition(
-        task.id,
-        status,
-        currentUser?.id ?? "",
-        reason,
-      );
-      announceCareTasksChanged();
-      await refresh();
-      setReason("");
-    }, {
-      recover: (e) => {
-        setActionError(careErrorMessage(e, "update"));
+    await guard(
+      async () => {
+        await careTasksService.transition(
+          task.id,
+          status,
+          currentUser?.id ?? "",
+          reason
+        );
+        announceCareTasksChanged();
+        await refresh();
+        setReason("");
       },
-      cleanup: () => {
-        setBusy(null);
-      },
-    });
+      {
+        recover: (e) => {
+          setActionError(careErrorMessage(e, "update"));
+        },
+        cleanup: () => {
+          setBusy(null);
+        },
+      }
+    );
   }
   async function undoCompletion(task: CareTask, correctionReason: string) {
     if (busy) return;
     setBusy(task.id);
     setUndoError(null);
-    await guard(async () => {
-      await careTasksService.undoCompletion(
-        task.id,
-        currentUser?.id ?? "",
-        correctionReason,
-        task.completion_revision ?? 0,
-      );
-      announceCareTasksChanged();
-      await refresh();
-      setUsageDrafts((rows) => {
-        const copy = { ...rows };
-        delete copy[task.id];
-        return copy;
-      });
-      setFilter("tous");
-      setUndoing(null);
-      setSavedMessage(
-        "Validation annulée. Le soin est de nouveau à faire et le stock consommé a été restitué.",
-      );
-    }, {
-      recover: (error) => {
-        setUndoError(careErrorMessage(error, "update"));
+    await guard(
+      async () => {
+        await careTasksService.undoCompletion(
+          task.id,
+          currentUser?.id ?? "",
+          correctionReason,
+          task.completion_revision ?? 0
+        );
+        announceCareTasksChanged();
+        await refresh();
+        setUsageDrafts((rows) => {
+          const copy = { ...rows };
+          delete copy[task.id];
+          return copy;
+        });
+        setFilter("tous");
+        setUndoing(null);
+        setSavedMessage(
+          "Validation annulée. Le soin est de nouveau à faire et le stock consommé a été restitué."
+        );
       },
-      cleanup: () => {
-        setBusy(null);
-      },
-    });
+      {
+        recover: (error) => {
+          setUndoError(careErrorMessage(error, "update"));
+        },
+        cleanup: () => {
+          setBusy(null);
+        },
+      }
+    );
   }
   const visible = tasks
     .filter((t) =>
       patientName(t.patient_id)
         .toLocaleLowerCase("fr")
-        .includes(search.toLocaleLowerCase("fr")),
+        .includes(search.toLocaleLowerCase("fr"))
     )
     .filter((t) => {
       const s = careDisplayStatus(t, now);
@@ -392,7 +401,7 @@ export default function CarePage({
       (a, b) =>
         Number(careDisplayStatus(b, now) === "en_retard") -
           Number(careDisplayStatus(a, now) === "en_retard") ||
-        a.heure_prevue.localeCompare(b.heure_prevue),
+        a.heure_prevue.localeCompare(b.heure_prevue)
     );
   const groupKey = (t: CareTask) =>
     isCarried(t)
@@ -531,18 +540,21 @@ export default function CarePage({
           <SectionCards
             actions={
               <>
-              {patientId && onShowAll && (
+                {patientId && onShowAll && (
+                  <Button
+                    className="h-9 rounded-full px-4"
+                    onClick={onShowAll}
+                    variant="outline"
+                  >
+                    Afficher tous les patients
+                  </Button>
+                )}
                 <Button
                   className="h-9 rounded-full px-4"
-                  onClick={onShowAll}
-                  variant="outline"
+                  onClick={() => setCreating(true)}
                 >
-                  Afficher tous les patients
+                  Planifier un soin
                 </Button>
-              )}
-              <Button className="h-9 rounded-full px-4" onClick={() => setCreating(true)}>
-                Planifier un soin
-              </Button>
               </>
             }
             icon={Syringe}
@@ -729,8 +741,8 @@ export default function CarePage({
                       (() => {
                         const doses = careDoses(
                           tasks.filter(
-                            (t) => t.patient_id === group && !isCarried(t),
-                          ),
+                            (t) => t.patient_id === group && !isCarried(t)
+                          )
                         );
                         return doses.total ? (
                           <span
@@ -754,7 +766,7 @@ export default function CarePage({
                         setReason("");
                       }}
                       tasks={tasks.filter(
-                        (t) => t.patient_id === group && !isCarried(t),
+                        (t) => t.patient_id === group && !isCarried(t)
                       )}
                     />
                   )}
@@ -763,7 +775,7 @@ export default function CarePage({
                   .filter((t) =>
                     mode === "patient"
                       ? t.patient_id === group
-                      : groupKey(t) === group,
+                      : groupKey(t) === group
                   )
                   .map(row)}
               </article>
@@ -794,7 +806,7 @@ export default function CarePage({
                 const date = new Date(scheduledAt);
                 setCareDate(date);
                 setSavedMessage(
-                  `Soin enregistré pour le ${date.toLocaleDateString("fr-FR")} à ${time(scheduledAt)}. La liste affiche la date du soin enregistré.`,
+                  `Soin enregistré pour le ${date.toLocaleDateString("fr-FR")} à ${time(scheduledAt)}. La liste affiche la date du soin enregistré.`
                 );
               }
             }}
@@ -925,33 +937,36 @@ export default function CarePage({
                         if (!draft || busy) return;
                         setBusy(detail.id);
                         setActionError(null);
-                        await guard(async () => {
-                          const product = products.data.find(
-                            (p) => p.id === draft.productId,
-                          );
-                          await careTasksService.updateProductUsage(
-                            detail.id,
-                            draft.productId || null,
-                            product?.stockTracked === false
-                              ? 1
-                              : parseStockQuantityInput(draft.quantity),
-                            currentUser?.id ?? "",
-                          );
-                          announceCareTasksChanged();
-                          await refresh();
-                          setUsageDrafts((rows) => {
-                            const copy = { ...rows };
-                            delete copy[detail.id];
-                            return copy;
-                          });
-                        }, {
-                          recover: (error) => {
-                            setActionError(careErrorMessage(error, "update"));
+                        await guard(
+                          async () => {
+                            const product = products.data.find(
+                              (p) => p.id === draft.productId
+                            );
+                            await careTasksService.updateProductUsage(
+                              detail.id,
+                              draft.productId || null,
+                              product?.stockTracked === false
+                                ? 1
+                                : parseStockQuantityInput(draft.quantity),
+                              currentUser?.id ?? ""
+                            );
+                            announceCareTasksChanged();
+                            await refresh();
+                            setUsageDrafts((rows) => {
+                              const copy = { ...rows };
+                              delete copy[detail.id];
+                              return copy;
+                            });
                           },
-                          cleanup: () => {
-                            setBusy(null);
-                          },
-                        });
+                          {
+                            recover: (error) => {
+                              setActionError(careErrorMessage(error, "update"));
+                            },
+                            cleanup: () => {
+                              setBusy(null);
+                            },
+                          }
+                        );
                       }}
                     >
                       Mettre à jour le produit

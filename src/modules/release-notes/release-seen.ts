@@ -13,7 +13,9 @@ function browserStorage(): KeyValueStorage | null {
   }
 }
 
-export function readLastSeenVersion(storage: KeyValueStorage | null = browserStorage()): string | null {
+export function readLastSeenVersion(
+  storage: KeyValueStorage | null = browserStorage()
+): string | null {
   try {
     return storage?.getItem(LAST_SEEN_VERSION_KEY) ?? null;
   } catch {
@@ -22,7 +24,10 @@ export function readLastSeenVersion(storage: KeyValueStorage | null = browserSto
 }
 
 /** Retient la version ; `false` si le stockage refuse (alors on n'affiche rien : on ne saurait pas s'en souvenir). */
-export function markVersionSeen(version: string, storage: KeyValueStorage | null = browserStorage()): boolean {
+export function markVersionSeen(
+  version: string,
+  storage: KeyValueStorage | null = browserStorage()
+): boolean {
   try {
     if (!storage) return false;
     storage.setItem(LAST_SEEN_VERSION_KEY, version);
@@ -43,7 +48,7 @@ export function markVersionSeen(version: string, storage: KeyValueStorage | null
 export function releaseNoteToShow(
   currentVersion: string,
   lastSeenVersion: string | null,
-  notes?: readonly ReleaseNote[],
+  notes?: readonly ReleaseNote[]
 ): ReleaseNote | null {
   if (lastSeenVersion === currentVersion) return null;
   return releaseNoteFor(currentVersion, notes);

@@ -24,7 +24,14 @@ export interface MascotAvatarProps {
  * `animated`, its mood set by the caller when the app has one to show
  * (the assistant thinking, a welcome), its own otherwise.
  */
-export function MascotAvatar({ animal, animated = true, size = 48, className, mood = "idle", overflow = false }: MascotAvatarProps) {
+export function MascotAvatar({
+  animal,
+  animated = true,
+  size = 48,
+  className,
+  mood = "idle",
+  overflow = false,
+}: MascotAvatarProps) {
   return (
     <LineMascot
       animal={lineAnimalOf(animal)}

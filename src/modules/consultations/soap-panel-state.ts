@@ -21,12 +21,24 @@ export const hasNote = (payload: Payload) =>
   SOAP_SECTIONS.some(({ key }) => payload[key].trim());
 
 /** La note a-t-elle des modifications non enregistrées ? Une note vide jamais enregistrée n'en a pas. */
-export function isSoapUnsaved(initialised: boolean, saved: Payload | null, payload: Payload): boolean {
-  return initialised && !samePayload(saved, payload) && (hasNote(payload) || !!saved);
+export function isSoapUnsaved(
+  initialised: boolean,
+  saved: Payload | null,
+  payload: Payload
+): boolean {
+  return (
+    initialised && !samePayload(saved, payload) && (hasNote(payload) || !!saved)
+  );
 }
 
 /** La sauvegarde automatique doit-elle partir ? Pas avant l'initialisation, pas pendant l'assistant, pas pendant un enregistrement ni après une erreur, et seulement s'il y a quelque chose de nouveau à écrire. */
-export function isSoapAutosaveDue(a: { initialised: boolean; assistantOpen: boolean; saveStatus: SaveStatus; saved: Payload | null; payload: Payload }): boolean {
+export function isSoapAutosaveDue(a: {
+  initialised: boolean;
+  assistantOpen: boolean;
+  saveStatus: SaveStatus;
+  saved: Payload | null;
+  payload: Payload;
+}): boolean {
   return !(
     !a.initialised ||
     a.assistantOpen ||
@@ -36,4 +48,3 @@ export function isSoapAutosaveDue(a: { initialised: boolean; assistantOpen: bool
     samePayload(a.saved, a.payload)
   );
 }
-

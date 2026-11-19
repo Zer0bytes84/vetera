@@ -300,7 +300,9 @@ const DAY_MS = 24 * 60 * 60 * 1000;
  * Convertit une durée libre (« 5-7 jours », « 2 semaines », « à vie ») en
  * jours. `Infinity` pour un traitement au long cours, `null` si illisible.
  */
-export function durationToDays(duration: string | null | undefined): number | null {
+export function durationToDays(
+  duration: string | null | undefined
+): number | null {
   // Normalisation légère : on garde tirets et décimales (« 5-7 j », « 1,5 mois »).
   const text = (duration ?? "")
     .normalize("NFD")
@@ -323,7 +325,10 @@ export function durationToDays(duration: string | null | undefined): number | nu
   );
   if (match) {
     const toNumber = (raw: string) => Number.parseFloat(raw);
-    const amount = Math.max(toNumber(match[1]), match[2] ? toNumber(match[2]) : 0);
+    const amount = Math.max(
+      toNumber(match[1]),
+      match[2] ? toNumber(match[2]) : 0
+    );
     const unit = match[3];
     if (unit.startsWith("sem")) return amount * 7;
     if (unit === "mois") return amount * 30;
@@ -352,7 +357,10 @@ export function isTreatmentActive(
   if (days === Number.POSITIVE_INFINITY) {
     return start.getTime() <= now.getTime();
   }
-  return now.getTime() >= start.getTime() && now.getTime() < start.getTime() + days * DAY_MS;
+  return (
+    now.getTime() >= start.getTime() &&
+    now.getTime() < start.getTime() + days * DAY_MS
+  );
 }
 
 /**
@@ -396,7 +404,9 @@ export function collectActiveTreatments({
       key: item.id,
       name: item.medicationName,
       className: item.medicationClass,
-      aliases: item.medicationId ? (resolveAliases?.(item.medicationId) ?? []) : [],
+      aliases: item.medicationId
+        ? (resolveAliases?.(item.medicationId) ?? [])
+        : [],
       prescribedOn: byId.get(item.prescriptionId)?.prescriptionDate,
     }));
 }

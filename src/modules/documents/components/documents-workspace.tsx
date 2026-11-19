@@ -18,7 +18,9 @@ export default function DocumentsWorkspace({
   const patients = useSQLite<Patient>("patients");
   const appointments = useSQLite<Appointment>("appointments");
   const notes = useSQLite<Note>("notes");
-  const sourceNote = initialNoteId ? notes.data.find((entry) => entry.id === initialNoteId) : undefined;
+  const sourceNote = initialNoteId
+    ? notes.data.find((entry) => entry.id === initialNoteId)
+    : undefined;
   const [chosenPatientId, setPatientId] = useState(initialPatientId);
   // Until the user picks one, a note linked to a patient preselects that patient.
   const patientId = chosenPatientId || sourceNote?.patientId || "";
@@ -67,7 +69,11 @@ export default function DocumentsWorkspace({
         <p className="flex items-start gap-2 rounded-xl border border-border bg-muted/40 p-3 text-xs text-muted-foreground">
           <FileText aria-hidden="true" className="mt-0.5 size-3.5 shrink-0" />
           <span>
-            Note source : <span className="font-medium text-foreground">{sourceNote.title || "Note sans titre"}</span>.{" "}
+            Note source :{" "}
+            <span className="font-medium text-foreground">
+              {sourceNote.title || "Note sans titre"}
+            </span>
+            .{" "}
             {patientId
               ? "Son texte est chargé dans « Lire un document »."
               : "Choisissez un patient pour l'utiliser."}
@@ -80,9 +86,18 @@ export default function DocumentsWorkspace({
         </p>
       )}
       {appointmentId && patientId && (
-        <Button onClick={() => setComposerOpen(true)}>Générer un document</Button>
+        <Button onClick={() => setComposerOpen(true)}>
+          Générer un document
+        </Button>
       )}
-      {composerOpen && <DocumentComposer open={composerOpen} patientId={patientId} consultationId={appointmentId} onClose={() => setComposerOpen(false)} />}
+      {composerOpen && (
+        <DocumentComposer
+          open={composerOpen}
+          patientId={patientId}
+          consultationId={appointmentId}
+          onClose={() => setComposerOpen(false)}
+        />
+      )}
       {patientId && (
         <ConsultationDocumentsAssistant
           key={patientId}

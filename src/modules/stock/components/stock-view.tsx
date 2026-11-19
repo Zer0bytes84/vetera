@@ -157,7 +157,10 @@ export function StockView(props: StockViewProps) {
 
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <Field>
-                  <FieldLabel>Nom du produit <span className="modal-required">requis</span></FieldLabel>
+                  <FieldLabel>
+                    Nom du produit{" "}
+                    <span className="modal-required">requis</span>
+                  </FieldLabel>
                   <Input
                     onChange={(e) =>
                       setFormData({ ...formData, name: e.target.value })
@@ -209,11 +212,24 @@ export function StockView(props: StockViewProps) {
 
               <div className="flex items-center justify-between gap-4 py-2">
                 <div>
-                  <label htmlFor="product-stock-tracked" className="text-sm font-medium">Suivre le stock</label>
-                  <p className="text-xs text-muted-foreground">Désactivez pour une prestation ou un acte sans produit physique.</p>
+                  <label
+                    htmlFor="product-stock-tracked"
+                    className="text-sm font-medium"
+                  >
+                    Suivre le stock
+                  </label>
+                  <p className="text-xs text-muted-foreground">
+                    Désactivez pour une prestation ou un acte sans produit
+                    physique.
+                  </p>
                 </div>
-                <Switch id="product-stock-tracked" checked={formData.stockTracked !== false}
-                  onCheckedChange={checked => setFormData({...formData, stockTracked: checked})} />
+                <Switch
+                  id="product-stock-tracked"
+                  checked={formData.stockTracked !== false}
+                  onCheckedChange={(checked) =>
+                    setFormData({ ...formData, stockTracked: checked })
+                  }
+                />
               </div>
               <div className="grid grid-cols-3 gap-4">
                 <Field>

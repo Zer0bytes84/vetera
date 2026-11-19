@@ -38,7 +38,9 @@ export async function openActivationAdminWindow() {
     return;
   }
 
-  const existing = await WebviewWindow.getByLabel(ACTIVATION_ADMIN_WINDOW_LABEL);
+  const existing = await WebviewWindow.getByLabel(
+    ACTIVATION_ADMIN_WINDOW_LABEL
+  );
   if (existing) {
     await existing.show();
     await existing.setFocus();
@@ -64,7 +66,9 @@ export async function openActivationAdminWindow() {
   await new Promise<void>((resolve, reject) => {
     child.once("tauri://created", () => resolve());
     child.once("tauri://error", (event) => {
-      reject(new Error(String(event.payload ?? "Impossible de créer la fenêtre.")));
+      reject(
+        new Error(String(event.payload ?? "Impossible de créer la fenêtre."))
+      );
     });
   });
 }

@@ -27,7 +27,9 @@
 }
 
 @keyframes lm-breathe {
-  50% { transform: translateY(-0.6px) scaleY(1.018); }
+  50% {
+    transform: translateY(-0.6px) scaleY(1.018);
+  }
 }
 
 /* The head tilts round its neck (set by the frame loop). */
@@ -54,8 +56,12 @@
   transition: transform 180ms ease-out;
 }
 
-.lm-root[data-twitch="l"] .lm-ear[data-side="l"] { transform: rotate(-9deg); }
-.lm-root[data-twitch="r"] .lm-ear[data-side="r"] { transform: rotate(9deg); }
+.lm-root[data-twitch="l"] .lm-ear[data-side="l"] {
+  transform: rotate(-9deg);
+}
+.lm-root[data-twitch="r"] .lm-ear[data-side="r"] {
+  transform: rotate(9deg);
+}
 
 /* Moods: what changes is the eyes, the brows and the mouth. */
 .lm-eye-happy,
@@ -95,6 +101,13 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .lm-figure { animation: none; }
-  .lm-eye-open, .lm-gaze, .lm-ear, .lm-cheeks { transition: none; }
+  .lm-figure {
+    animation: none;
+  }
+  .lm-eye-open,
+  .lm-gaze,
+  .lm-ear,
+  .lm-cheeks {
+    transition: none;
+  }
 }

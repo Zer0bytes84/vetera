@@ -66,14 +66,14 @@ export function ProgressBar({
       className={cn(
         "relative w-full overflow-hidden rounded-full bg-foreground/[0.07]",
         heights[size],
-        className,
+        className
       )}
       {...props}
     >
       <div
         className={cn(
           "absolute inset-0 rounded-full transition-[clip-path,background-color] duration-500 motion-reduce:transition-none",
-          !color && fills[tone],
+          !color && fills[tone]
         )}
         style={{
           backgroundColor: color,
@@ -124,7 +124,9 @@ export function SegmentedBar({
       aria-valuenow={total}
       aria-valuetext={
         valueText ??
-        segments.map((s) => `${s.label} ${s.value.toLocaleString("fr-FR")}`).join(", ")
+        segments
+          .map((s) => `${s.label} ${s.value.toLocaleString("fr-FR")}`)
+          .join(", ")
       }
       className={cn("flex w-full gap-1", heights[size], className)}
       {...props}

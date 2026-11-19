@@ -29,7 +29,11 @@ export const MAX_HISTORY_ROWS = 6;
 export const MAX_TREATMENT_ROWS = 4;
 export const MAX_WEIGHT_POINTS = 24;
 
-export type VaccineStatus = "overdue" | "due_soon" | "up_to_date" | "no_reminder";
+export type VaccineStatus =
+  | "overdue"
+  | "due_soon"
+  | "up_to_date"
+  | "no_reminder";
 
 export interface HealthCardAlert {
   detail?: string;
@@ -57,7 +61,12 @@ export interface HealthCardTreatment {
 export interface HealthCardEvent {
   date: string;
   detail?: string;
-  kind: "Consultation" | "Chirurgie" | "Urgence" | "Contrôle" | "Hospitalisation";
+  kind:
+    | "Consultation"
+    | "Chirurgie"
+    | "Urgence"
+    | "Contrôle"
+    | "Hospitalisation";
   title: string;
 }
 
@@ -110,7 +119,9 @@ export interface HealthCardInput {
 }
 
 /** Une date seule (« 2026-10-18 ») est un jour local, pas minuit UTC. */
-export function parseClinicalDate(value: string | null | undefined): Date | null {
+export function parseClinicalDate(
+  value: string | null | undefined
+): Date | null {
   if (!value) return null;
   const parsed = /^\d{4}-\d{2}-\d{2}$/.test(value)
     ? new Date(`${value}T00:00:00`)
@@ -134,19 +145,35 @@ function clean(value: string | null | undefined): string | undefined {
 }
 
 /** « 4 ans 2 mois », « 8 mois », « 3 semaines ». */
-export function ageLabel(dateOfBirth: string | undefined, now: Date): string | undefined {
-  const birth = dateOfBirth ? new Date(`${dateOfBirth.slice(0, 10)}T00:00:00`) : null;
-  if (!birth || Number.isNaN(birth.getTime()) || birth.getTime() > now.getTime()) {
+export function ageLabel(
+  dateOfBirth: string | undefined,
+  now: Date
+): string | undefined {
+  const birth = dateOfBirth
+    ? new Date(`${dateOfBirth.slice(0, 10)}T00:00:00`)
+    : null;
+  if (
+    !birth ||
+    Number.isNaN(birth.getTime()) ||
+    birth.getTime() > now.getTime()
+  ) {
     return undefined;
   }
   let months =
-    (now.getFullYear() - birth.getFullYear()) * 12 + (now.getMonth() - birth.getMonth());
+    (now.getFullYear() - birth.getFullYear()) * 12 +
+    (now.getMonth() - birth.getMonth());
   if (now.getDate() < birth.getDate()) {
     months -= 1;
   }
   if (months < 1) {
-    const weeks = Math.floor((startOfDay(now) - birth.getTime()) / (7 * DAY_MS));
-    return weeks > 1 ? `${weeks} semaines` : weeks === 1 ? "1 semaine" : "Moins d'une semaine";
+    const weeks = Math.floor(
+      (startOfDay(now) - birth.getTime()) / (7 * DAY_MS)
+    );
+    return weeks > 1
+      ? `${weeks} semaines`
+      : weeks === 1
+        ? "1 semaine"
+        : "Moins d'une semaine";
   }
   const years = Math.floor(months / 12);
   const rest = months % 12;
@@ -172,13 +199,20 @@ function photo(value: string | undefined): string | undefined {
 }
 
 function vaccineKey(vaccination: Vaccination): string {
-  return (clean(vaccination.vaccineType) ?? clean(vaccination.vaccineName) ?? "")
+  return (
+    clean(vaccination.vaccineType) ??
+    clean(vaccination.vaccineName) ??
+    ""
+  )
     .normalize("NFD")
     .replace(/\p{Diacritic}/gu, "")
     .toLowerCase();
 }
 
-export function vaccineStatus(nextDueAt: string | undefined, now: Date): VaccineStatus {
+export function vaccineStatus(
+  nextDueAt: string | undefined,
+  now: Date
+): VaccineStatus {
   const due = time(nextDueAt);
   if (Number.isNaN(due)) return "no_reminder";
   const today = startOfDay(now);
@@ -212,10 +246,17 @@ export function currentVaccineReminders(
 export function daysOverdue(nextDueAt: string | undefined, now: Date): number {
   const due = time(nextDueAt);
   if (Number.isNaN(due)) return 0;
-  return Math.max(0, Math.round((startOfDay(now) - startOfDay(new Date(due))) / DAY_MS));
+  return Math.max(
+    0,
+    Math.round((startOfDay(now) - startOfDay(new Date(due))) / DAY_MS)
+  );
 }
 
-function buildVaccinations(patientId: string, all: readonly Vaccination[], now: Date) {
+function buildVaccinations(
+  patientId: string,
+  all: readonly Vaccination[],
+  now: Date
+) {
   const own = all.filter(
     (v) => v.patientId === patientId && !Number.isNaN(time(v.administeredAt))
   );
@@ -224,7 +265,10 @@ function buildVaccinations(patientId: string, all: readonly Vaccination[], now: 
   for (const vaccination of own) {
     const key = vaccineKey(vaccination);
     const known = latest.get(key);
-    if (!known || time(vaccination.administeredAt) > time(known.administeredAt)) {
+    if (
+      !known ||
+      time(vaccination.administeredAt) > time(known.administeredAt)
+    ) {
       latest.set(key, vaccination);
     }
   }
@@ -254,9 +298,17 @@ function buildVaccinations(patientId: string, all: readonly Vaccination[], now: 
 
 function doseLabel(item: PrescriptionItem): string | undefined {
   const format = (value: number) =>
-    Number.isInteger(value) ? String(value) : value.toFixed(2).replace(/\.?0+$/, "").replace(".", ",");
+    Number.isInteger(value)
+      ? String(value)
+      : value
+          .toFixed(2)
+          .replace(/\.?0+$/, "")
+          .replace(".", ",");
   if (item.computedDoseMg != null && item.computedDoseMg > 0) {
-    const ml = item.computedVolumeMl != null && item.computedVolumeMl > 0 ? ` (${format(item.computedVolumeMl)} mL)` : "";
+    const ml =
+      item.computedVolumeMl != null && item.computedVolumeMl > 0
+        ? ` (${format(item.computedVolumeMl)} mL)`
+        : "";
     return `${format(item.computedDoseMg)} mg${ml}`;
   }
   if (item.dosagePerKg > 0) {
@@ -281,11 +333,20 @@ export function buildTreatments(
   const active = input.items
     .flatMap((item): HealthCardTreatment[] => {
       const prescription = byId.get(item.prescriptionId);
-      if (!prescription || !isTreatmentActive(prescription.prescriptionDate, item.duration, input.now)) {
+      if (
+        !prescription ||
+        !isTreatmentActive(
+          prescription.prescriptionDate,
+          item.duration,
+          input.now
+        )
+      ) {
         return [];
       }
       const days = durationToDays(item.duration);
-      const start = parseClinicalDate(prescription.prescriptionDate) ?? new Date(Number.NaN);
+      const start =
+        parseClinicalDate(prescription.prescriptionDate) ??
+        new Date(Number.NaN);
       start.setHours(0, 0, 0, 0);
       let until: HealthCardTreatment["until"];
       if (days === Number.POSITIVE_INFINITY) {
@@ -312,7 +373,10 @@ export function buildTreatments(
   };
 }
 
-const CLOSED_STATUSES = new Set<Appointment["status"]>(["cancelled", "no_show"]);
+const CLOSED_STATUSES = new Set<Appointment["status"]>([
+  "cancelled",
+  "no_show",
+]);
 
 function buildHistory(input: HealthCardInput) {
   const nowTime = input.now.getTime();
@@ -323,18 +387,27 @@ function buildHistory(input: HealthCardInput) {
         a.type !== "Vaccin" &&
         !CLOSED_STATUSES.has(a.status) &&
         time(a.startTime) <= nowTime &&
-        (a.status === "completed" || a.type === "Chirurgie" || a.type === "Urgence" || Boolean(clean(a.diagnosis)))
+        (a.status === "completed" ||
+          a.type === "Chirurgie" ||
+          a.type === "Urgence" ||
+          Boolean(clean(a.diagnosis)))
     )
     .map(
       (a): HealthCardEvent => ({
         date: a.startTime,
         kind: a.type as HealthCardEvent["kind"], // Les vaccins sont exclus ci-dessus.
-        title: clean(a.diagnosis) ?? clean(a.reason) ?? clean(a.title) ?? a.type,
-        detail: clean(a.diagnosis) ? clean(a.reason) ?? clean(a.title) : undefined,
+        title:
+          clean(a.diagnosis) ?? clean(a.reason) ?? clean(a.title) ?? a.type,
+        detail: clean(a.diagnosis)
+          ? (clean(a.reason) ?? clean(a.title))
+          : undefined,
       })
     );
   const stays = input.hospitalizations
-    .filter((h) => h.patientId === input.patient.id && time(h.admissionDate) <= nowTime)
+    .filter(
+      (h) =>
+        h.patientId === input.patient.id && time(h.admissionDate) <= nowTime
+    )
     .map(
       (h): HealthCardEvent => ({
         date: h.admissionDate,
@@ -345,7 +418,9 @@ function buildHistory(input: HealthCardInput) {
     );
   // Chirurgies, urgences et hospitalisations d'abord : ce sont les antécédents majeurs.
   const major = (event: HealthCardEvent) =>
-    event.kind === "Chirurgie" || event.kind === "Urgence" || event.kind === "Hospitalisation";
+    event.kind === "Chirurgie" ||
+    event.kind === "Urgence" ||
+    event.kind === "Hospitalisation";
   const all = [...visits, ...stays].sort((a, b) => time(b.date) - time(a.date));
   const kept = [...all.filter(major), ...all.filter((event) => !major(event))]
     .slice(0, MAX_HISTORY_ROWS)
@@ -372,7 +447,10 @@ function buildWeight(patientId: string, weights: readonly WeightEntry[]) {
     current,
     previous,
     total: all.length,
-    deltaKg: current && previous ? Math.round((current.kg - previous.kg) * 100) / 100 : undefined,
+    deltaKg:
+      current && previous
+        ? Math.round((current.kg - previous.kg) * 100) / 100
+        : undefined,
   };
 }
 
@@ -404,7 +482,11 @@ export function buildHealthCard(input: HealthCardInput): HealthCard {
       species: patient.species,
       breed: clean(patient.breed),
       sexLabel: `${patient.sex === "F" ? "Femelle" : "Mâle"}${
-        patient.sterilized ? (patient.sex === "F" ? " stérilisée" : " castré") : ""
+        patient.sterilized
+          ? patient.sex === "F"
+            ? " stérilisée"
+            : " castré"
+          : ""
       }`,
       dateOfBirth: clean(patient.dateOfBirth),
       ageLabel: ageLabel(patient.dateOfBirth, now),

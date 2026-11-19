@@ -32,7 +32,12 @@ interface SoapDraftOptions {
   /** Receives the session as soon as it exists, so the caller can cancel it. */
   onSession?: (session: LocalInferenceSession) => void;
   /** Each raw model output and the model that produced it (evaluation bench). */
-  onAttempt?: (attempt: { number: 1 | 2; text: string; generator?: string; fellBack?: boolean }) => void;
+  onAttempt?: (attempt: {
+    number: 1 | 2;
+    text: string;
+    generator?: string;
+    fellBack?: boolean;
+  }) => void;
 }
 
 /** The sections the model receives and the fidelity check compares against. */
@@ -42,7 +47,10 @@ export function modelScaffold(
 ): LocalSoapNote {
   if (!guidedSource)
     return buildDictationScaffold(prepareModelDictation(transcript).text);
-  const sections = prepareGuidedSections(routeGuidedTreatments(guidedSource), guidedSource);
+  const sections = prepareGuidedSections(
+    routeGuidedTreatments(guidedSource),
+    guidedSource
+  );
   return Object.fromEntries(
     SOAP_SECTIONS.map(({ key }) => [key, sections[key].model])
   ) as LocalSoapNote;
@@ -66,27 +74,37 @@ export async function prepareSoapDraft({
   const scaffold = modelScaffold(transcript, guidedSource);
   // Guided: the rubric answers are the sections; kept sentences return to their own rubric.
   const routed = guidedSource ? routeGuidedTreatments(guidedSource) : null;
-  const sections = routed && guidedSource ? prepareGuidedSections(routed, guidedSource) : null;
+  const sections =
+    routed && guidedSource ? prepareGuidedSections(routed, guidedSource) : null;
   const restore = (note: LocalSoapNote) =>
     sections
       ? (Object.fromEntries(
-          SOAP_SECTIONS.map(({ key }) => [key, sections[key].restore(note[key])])
+          SOAP_SECTIONS.map(({ key }) => [
+            key,
+            sections[key].restore(note[key]),
+          ])
         ) as LocalSoapNote)
       : mergeProtectedDictation(note, protectedInput);
   // A rubric the code emptied is never sent: the model would fill it.
   const omitted = sections
-    ? SOAP_SECTIONS.filter(({ key }) => sections[key].mode === "exclue").map(({ key }) => key)
+    ? SOAP_SECTIONS.filter(({ key }) => sections[key].mode === "exclue").map(
+        ({ key }) => key
+      )
     : [];
   // Clause filtering: the model reads the same filtered rubrics as the frame.
   const promptOptions = {
     omitted,
     dictation:
-      sections && SOAP_SECTIONS.some(({ key }) => sections[key].mode === "proposition")
+      sections &&
+      SOAP_SECTIONS.some(({ key }) => sections[key].mode === "proposition")
         ? guidedDictationTranscript(scaffold)
         : undefined,
   };
   const template = Object.fromEntries(
-    SOAP_SECTIONS.filter(({ key }) => !omitted.includes(key)).map(({ key }) => [key, scaffold[key]])
+    SOAP_SECTIONS.filter(({ key }) => !omitted.includes(key)).map(({ key }) => [
+      key,
+      scaffold[key],
+    ])
   );
   const nothingForModel = routed
     ? SOAP_SECTIONS.every(({ key }) => !scaffold[key].trim())
@@ -108,7 +126,9 @@ export async function prepareSoapDraft({
               {
                 key,
                 prompt: createSoapPrompt(transcript, context, true, scaffold, {
-                  omitted: SOAP_SECTIONS.map((section) => section.key).filter((other) => other !== key),
+                  omitted: SOAP_SECTIONS.map((section) => section.key).filter(
+                    (other) => other !== key
+                  ),
                   dictation: `${GUIDED_RUBRIC_TITLES[index]} : ${scaffold[key]}`,
                 }),
                 template: JSON.stringify({ [key]: scaffold[key] }),
@@ -116,8 +136,20 @@ export async function prepareSoapDraft({
             ]
       )
     : undefined;
-  const prompt = createSoapPrompt(transcript, context, false, scaffold, promptOptions);
-  const retryPrompt = createSoapPrompt(transcript, context, true, scaffold, promptOptions);
+  const prompt = createSoapPrompt(
+    transcript,
+    context,
+    false,
+    scaffold,
+    promptOptions
+  );
+  const retryPrompt = createSoapPrompt(
+    transcript,
+    context,
+    true,
+    scaffold,
+    promptOptions
+  );
   const urls = getLocalModelUrls(models);
   if (!models.generatorReady)
     throw new Error(
@@ -155,7 +187,12 @@ export async function prepareSoapDraft({
         );
         if (result.type !== "generated")
           throw new Error("La préparation locale de la note a échoué.");
-        onAttempt?.({ number, text: result.text, generator: result.generator, fellBack: result.fellBack });
+        onAttempt?.({
+          number,
+          text: result.text,
+          generator: result.generator,
+          fellBack: result.fellBack,
+        });
         onProgress({
           message: "Vérification des quatre sections…",
           stage: "validating",

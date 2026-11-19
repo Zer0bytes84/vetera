@@ -79,7 +79,9 @@ export function PatientsView(props: PatientsViewProps) {
   } = props;
   // The owner whose details are being corrected from the list's pencil, read fresh from the owners on every render.
   const [editingOwnerId, setEditingOwnerId] = useState<string | null>(null);
-  const editingOwner = editingOwnerId ? ownersMap.get(editingOwnerId) : undefined;
+  const editingOwner = editingOwnerId
+    ? ownersMap.get(editingOwnerId)
+    : undefined;
   const listRef = useListCursor({ storageKey: "patients" });
   return (
     <div className="dashboard-stage flex w-full min-w-0 flex-col gap-6 px-4 pb-8 lg:px-6">
@@ -87,17 +89,17 @@ export function PatientsView(props: PatientsViewProps) {
 
       <SectionCards
         actions={
-            <Button
-              className="h-9 rounded-full px-4"
-              onClick={() => setIsCreateOpen(true)}
-            >
-              <HugeiconsIcon
-                data-icon="inline-start"
-                icon={Add01Icon}
-                strokeWidth={1.5}
-              />
-              Nouveau patient
-            </Button>
+          <Button
+            className="h-9 rounded-full px-4"
+            onClick={() => setIsCreateOpen(true)}
+          >
+            <HugeiconsIcon
+              data-icon="inline-start"
+              icon={Add01Icon}
+              strokeWidth={1.5}
+            />
+            Nouveau patient
+          </Button>
         }
         icon={UsersIcon}
         items={sectionCards}
@@ -146,7 +148,7 @@ export function PatientsView(props: PatientsViewProps) {
                 options={[
                   { value: "all", label: "Tous" },
                   ...Object.entries(PATIENT_STATUS_META).map(
-                    ([value, option]) => ({ value, label: option.label }),
+                    ([value, option]) => ({ value, label: option.label })
                   ),
                 ]}
               />

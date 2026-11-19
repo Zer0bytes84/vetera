@@ -60,7 +60,7 @@ export function PatientRecordHealth({
     <section
       className={cn(
         "medical-record-health p-5 rounded-2xl border border-border/80 bg-card shadow-xs",
-        className,
+        className
       )}
       aria-label="Complétude du dossier"
     >

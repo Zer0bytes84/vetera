@@ -116,10 +116,13 @@ export function SectionGarden({
     <SectionCards
       subtitle="Vue d’ensemble de la rubrique"
       className="mx-4 mb-5 lg:mx-6"
-      items={cards.map(card => ({
+      items={cards.map((card) => ({
         title: card.title,
         value: loading ? "…" : String(card.value),
-        footerTitle: card.title === "Rendez-vous aujourd’hui" ? "aujourd’hui" : "Repère du cabinet",
+        footerTitle:
+          card.title === "Rendez-vous aujourd’hui"
+            ? "aujourd’hui"
+            : "Repère du cabinet",
         footerDescription: card.detail,
         badge: loading ? "Chargement" : "Données du cabinet",
         tone: "quiet",

@@ -124,7 +124,7 @@ export function AnesthesiaSheetDialog({
     <Dialog onOpenChange={onOpenChange} open={open}>
       <FormDialogContent size="md">
         <FormDialogHeader
-            artwork="anesthesia"
+          artwork="anesthesia"
           description={`${patient.name} · ${patient.species}`}
           icon={<Syringe weight="duotone" />}
           title={t(

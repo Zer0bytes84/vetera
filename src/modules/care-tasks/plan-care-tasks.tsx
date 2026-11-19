@@ -23,7 +23,11 @@ interface CreatedCareTask {
 function scheduleLabel(scheduledAt: string): string {
   const [day, time] = scheduledAt.split("T");
   const [year, month, date] = day.split("-").map(Number);
-  const when = new Date(year, month - 1, date, 12).toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" });
+  const when = new Date(year, month - 1, date, 12).toLocaleDateString("fr-FR", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+  });
   return `${when} à ${time}`;
 }
 
@@ -38,9 +42,12 @@ export function PlanCareTasks({
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<number | null>(null);
   const [created, setCreated] = useState<CreatedCareTask[]>([]);
-  const [confirmation, setConfirmation] = useState<CreatedCareTask | null>(null);
+  const [confirmation, setConfirmation] = useState<CreatedCareTask | null>(
+    null
+  );
   const suggestions = suggestCareTasksFromPlan(plan);
-  const createdAt = (index: number) => created.find((entry) => entry.index === index);
+  const createdAt = (index: number) =>
+    created.find((entry) => entry.index === index);
   const remaining = suggestions.filter((_, index) => !createdAt(index)).length;
   const openCareList = () => {
     setOpen(false);
@@ -68,9 +75,7 @@ export function PlanCareTasks({
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-h-[85dvh] overflow-y-auto sm:max-w-[640px] sm:p-7">
           <DialogHeader>
-            <DialogTitle>
-              Tâches de suivi
-            </DialogTitle>
+            <DialogTitle>Tâches de suivi</DialogTitle>
             <DialogDescription>
               Propositions issues du Plan validé. Ajustez chaque soin et
               choisissez son horaire avant de confirmer.
@@ -79,11 +84,17 @@ export function PlanCareTasks({
           {confirmation ? (
             <div className="space-y-5" role="status">
               <div className="flex items-start gap-3 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-emerald-900 dark:border-emerald-900 dark:bg-emerald-950/30 dark:text-emerald-100">
-                <CheckCircle2 aria-hidden="true" className="mt-0.5 size-5 shrink-0" strokeWidth={1.5} />
+                <CheckCircle2
+                  aria-hidden="true"
+                  className="mt-0.5 size-5 shrink-0"
+                  strokeWidth={1.5}
+                />
                 <div className="min-w-0 space-y-1">
                   <p className="font-medium t-14">Soin planifié</p>
                   <p className="break-words t-13">
-                    « {confirmation.label} » est prévu le {scheduleLabel(confirmation.scheduledAt)}. Il figure maintenant dans la liste des soins du patient.
+                    « {confirmation.label} » est prévu le{" "}
+                    {scheduleLabel(confirmation.scheduledAt)}. Il figure
+                    maintenant dans la liste des soins du patient.
                   </p>
                 </div>
               </div>
@@ -94,11 +105,19 @@ export function PlanCareTasks({
               </p>
               <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
                 {remaining ? (
-                  <Button className="h-11 rounded-xl t-13" onClick={() => setConfirmation(null)} variant="outline">
+                  <Button
+                    className="h-11 rounded-xl t-13"
+                    onClick={() => setConfirmation(null)}
+                    variant="outline"
+                  >
                     Planifier un autre soin
                   </Button>
                 ) : (
-                  <Button className="h-11 rounded-xl t-13" onClick={() => setOpen(false)} variant="outline">
+                  <Button
+                    className="h-11 rounded-xl t-13"
+                    onClick={() => setOpen(false)}
+                    variant="outline"
+                  >
                     Fermer
                   </Button>
                 )}
@@ -121,13 +140,20 @@ export function PlanCareTasks({
                         <p className="break-words t-13">{s.label}</p>
                         {done && (
                           <p className="mt-1 flex items-center gap-1.5 t-12 text-emerald-700 dark:text-emerald-300">
-                            <CheckCircle2 aria-hidden="true" className="size-3.5" strokeWidth={1.5} />
+                            <CheckCircle2
+                              aria-hidden="true"
+                              className="size-3.5"
+                              strokeWidth={1.5}
+                            />
                             Planifié le {scheduleLabel(done.scheduledAt)}
                           </p>
                         )}
                       </div>
                       {!done && (
-                        <Button variant="outline" onClick={() => setSelected(i)}>
+                        <Button
+                          variant="outline"
+                          onClick={() => setSelected(i)}
+                        >
                           Ajuster
                         </Button>
                       )}
@@ -139,7 +165,11 @@ export function PlanCareTasks({
               )}
               {created.length > 0 && (
                 <div className="flex justify-end pt-1">
-                  <Button className="h-11 rounded-xl t-13" onClick={openCareList} variant="outline">
+                  <Button
+                    className="h-11 rounded-xl t-13"
+                    onClick={openCareList}
+                    variant="outline"
+                  >
                     Voir les soins du patient
                   </Button>
                 </div>
@@ -152,12 +182,18 @@ export function PlanCareTasks({
               suggestion={suggestions[selected]}
               onCancel={() => setSelected(null)}
               onSaved={(scheduledAt) => {
-                const entry = { index: selected, label: suggestions[selected]?.label ?? "Soin", scheduledAt: scheduledAt ?? "" };
+                const entry = {
+                  index: selected,
+                  label: suggestions[selected]?.label ?? "Soin",
+                  scheduledAt: scheduledAt ?? "",
+                };
                 setCreated((prev) => [...prev, entry]);
                 setSelected(null);
                 if (entry.scheduledAt) {
                   setConfirmation(entry);
-                  toast.success("Soin planifié", { description: `${entry.label}, ${scheduleLabel(entry.scheduledAt)}.` });
+                  toast.success("Soin planifié", {
+                    description: `${entry.label}, ${scheduleLabel(entry.scheduledAt)}.`,
+                  });
                 }
               }}
             />

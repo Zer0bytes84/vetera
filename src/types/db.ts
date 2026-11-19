@@ -109,7 +109,13 @@ export interface StockMovement {
   unitCostAmount?: number;
   reason?: string;
   referenceId?: string;
-  sourceType?: "manual" | "care" | "consultation" | "prescription" | "receipt" | "transfer";
+  sourceType?:
+    | "manual"
+    | "care"
+    | "consultation"
+    | "prescription"
+    | "receipt"
+    | "transfer";
   sourceId?: string;
   sourceLineId?: string;
   sourceLabel?: string;

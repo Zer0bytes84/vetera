@@ -607,7 +607,11 @@ function buildDemoNotes(baseDate: Date, currentUser: CurrentUser): Note[] {
 }
 
 export async function seedDemoDataIfNeeded(currentUser: CurrentUser | null) {
-  if (!currentUser || isTauriRuntime() || getBrowserSetting("demo_data_disabled") === "true") {
+  if (
+    !currentUser ||
+    isTauriRuntime() ||
+    getBrowserSetting("demo_data_disabled") === "true"
+  ) {
     return;
   }
 

@@ -18,7 +18,6 @@ export const EMPTY_SOAP_DRAFT: SoapDraft = {
   groundingScore: null,
 };
 
-
 /**
  * Extrait le premier objet JSON valide d'une chaîne. Le LLM peut parfois
  * ajouter du texte autour (surtout les modèles < 2B paramètres), donc on
@@ -197,10 +196,7 @@ export function normalizeSoapDraft(
     draft.groundingScore = populatedRatios.length
       ? Math.min(...populatedRatios)
       : 0;
-    if (
-      draft.confidence != null &&
-      draft.groundingScore < draft.confidence
-    ) {
+    if (draft.confidence != null && draft.groundingScore < draft.confidence) {
       draft.confidence = draft.groundingScore;
     }
   }

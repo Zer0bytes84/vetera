@@ -4,14 +4,23 @@ import { type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { ArrowUpRight, ArrowDownRight } from "@/lib/icons";
 
-export type SettleTone = "neutral" | "emerald" | "amber" | "blue" | "rose" | "ink";
+export type SettleTone =
+  | "neutral"
+  | "emerald"
+  | "amber"
+  | "blue"
+  | "rose"
+  | "ink";
 
 const TONE_BADGE: Record<SettleTone, string> = {
-  emerald: "bg-emerald-50 text-emerald-700 dark:bg-emerald-500/[0.12] dark:text-emerald-300",
-  amber: "bg-amber-50 text-amber-800 dark:bg-amber-500/[0.12] dark:text-amber-300",
+  emerald:
+    "bg-emerald-50 text-emerald-700 dark:bg-emerald-500/[0.12] dark:text-emerald-300",
+  amber:
+    "bg-amber-50 text-amber-800 dark:bg-amber-500/[0.12] dark:text-amber-300",
   blue: "bg-blue-50 text-blue-700 dark:bg-blue-500/[0.12] dark:text-blue-300",
   rose: "bg-rose-50 text-rose-700 dark:bg-rose-500/[0.12] dark:text-rose-300",
-  neutral: "bg-neutral-100 text-neutral-700 dark:bg-white/[0.08] dark:text-neutral-300",
+  neutral:
+    "bg-neutral-100 text-neutral-700 dark:bg-white/[0.08] dark:text-neutral-300",
   ink: "bg-neutral-900 text-white dark:bg-white dark:text-neutral-900",
 };
 
@@ -43,9 +52,12 @@ const TONE_DOT: Record<SettleTone, string> = {
 };
 
 const TONE_ICON_BG: Record<SettleTone, string> = {
-  neutral: "bg-neutral-100 text-neutral-600 dark:bg-white/[0.08] dark:text-neutral-300",
-  emerald: "bg-emerald-50 text-emerald-600 dark:bg-emerald-500/[0.14] dark:text-emerald-300",
-  amber: "bg-amber-50 text-amber-600 dark:bg-amber-500/[0.14] dark:text-amber-300",
+  neutral:
+    "bg-neutral-100 text-neutral-600 dark:bg-white/[0.08] dark:text-neutral-300",
+  emerald:
+    "bg-emerald-50 text-emerald-600 dark:bg-emerald-500/[0.14] dark:text-emerald-300",
+  amber:
+    "bg-amber-50 text-amber-600 dark:bg-amber-500/[0.14] dark:text-amber-300",
   blue: "bg-blue-50 text-blue-600 dark:bg-blue-500/[0.14] dark:text-blue-300",
   rose: "bg-rose-50 text-rose-600 dark:bg-rose-500/[0.14] dark:text-rose-300",
   ink: "bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900",
@@ -139,7 +151,8 @@ export function SettleStatTile({
       }}
       className={cn(
         "settle-stat-tile rounded-[14px] p-4 bg-white dark:bg-neutral-900 border border-black/[0.07] dark:border-white/[0.08] shadow-[0_1px_2px_rgb(0_0_0/0.05)] flex flex-col justify-between transition",
-        onClick && "cursor-pointer hover:border-black/[0.15] dark:hover:border-white/[0.18] hover:shadow-[0_2px_4px_rgb(0_0_0/0.06)]"
+        onClick &&
+          "cursor-pointer hover:border-black/[0.15] dark:hover:border-white/[0.18] hover:shadow-[0_2px_4px_rgb(0_0_0/0.06)]"
       )}
     >
       <div>
@@ -171,7 +184,11 @@ export function SettleStatTile({
             {delta.direction === "up" ? (
               <ArrowUpRight size={12} className="h-3 w-3" aria-hidden="true" />
             ) : (
-              <ArrowDownRight size={12} className="h-3 w-3" aria-hidden="true" />
+              <ArrowDownRight
+                size={12}
+                className="h-3 w-3"
+                aria-hidden="true"
+              />
             )}
             {delta.value}
           </span>
@@ -207,12 +224,23 @@ export function SettleProgressBar({
   max?: number;
   height?: string;
 }) {
-  const visible = segments.filter(segment => Number.isFinite(segment.value) && segment.value > 0);
+  const visible = segments.filter(
+    (segment) => Number.isFinite(segment.value) && segment.value > 0
+  );
   const total = max ?? visible.reduce((sum, segment) => sum + segment.value, 0);
   return (
     <div
       role="img"
-      aria-label={visible.length ? visible.map(segment => `${segment.label ?? segment.tone} : ${segment.value.toLocaleString("fr-FR")}`).join(", ") : "Aucun montant à répartir"}
+      aria-label={
+        visible.length
+          ? visible
+              .map(
+                (segment) =>
+                  `${segment.label ?? segment.tone} : ${segment.value.toLocaleString("fr-FR")}`
+              )
+              .join(", ")
+          : "Aucun montant à répartir"
+      }
       className={cn(
         "settle-progress-bar flex w-full overflow-hidden rounded-full bg-black/[0.05] dark:bg-white/[0.07]",
         height
@@ -224,9 +252,16 @@ export function SettleProgressBar({
           data-tone={segment.tone}
           data-value={segment.value}
           title={`${segment.label ?? segment.tone} : ${segment.value.toLocaleString("fr-FR")}`}
-          className={cn("settle-progress-segment h-full transition-[width] duration-300 motion-reduce:transition-none", TONE_DOT[segment.tone])}
+          className={cn(
+            "settle-progress-segment h-full transition-[width] duration-300 motion-reduce:transition-none",
+            TONE_DOT[segment.tone]
+          )}
           // Keep small outstanding balances visible; flex shrinks the larger segments to fit.
-          style={{ width: `${(segment.value / (total || 1)) * 100}%`, minWidth: 6, flexShrink: 1 }}
+          style={{
+            width: `${(segment.value / (total || 1)) * 100}%`,
+            minWidth: 6,
+            flexShrink: 1,
+          }}
         />
       ))}
     </div>
@@ -300,7 +335,11 @@ export function SettleMetricFooter({
       <div className="h-px bg-black/[0.06] dark:bg-white/[0.08]" />
       <div className="settle-metric-footer grid grid-cols-2 divide-x divide-black/[0.06] sm:grid-cols-4 dark:divide-white/[0.08]">
         {metrics.map((m, idx) => (
-          <div key={idx} className="settle-metric-cell px-4 py-3.5" title={m.tip}>
+          <div
+            key={idx}
+            className="settle-metric-cell px-4 py-3.5"
+            title={m.tip}
+          >
             <p className="m-0 t-12 font-medium uppercase tracking-[0.04em] text-neutral-500 dark:text-neutral-400">
               {m.label}
             </p>
@@ -375,7 +414,7 @@ export function SettleQueueItem({
           </p>
         ) : null}
       </div>
-      {(amount || meta) ? (
+      {amount || meta ? (
         <div className="shrink-0 text-right">
           {amount ? (
             <p className="m-0 t-13 font-medium tabular-nums text-neutral-900 dark:text-neutral-100">

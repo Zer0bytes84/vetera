@@ -40,8 +40,8 @@
   .agenda-appt-card:hover {
     border-color: color-mix(in oklab, var(--foreground) 18%, transparent);
     box-shadow:
-    0 1px 2px rgb(0 0 0 / 0.04),
-    0 8px 24px -16px rgb(0 0 0 / 0.18);
+      0 1px 2px rgb(0 0 0 / 0.04),
+      0 8px 24px -16px rgb(0 0 0 / 0.18);
   }
 }
 
@@ -51,7 +51,11 @@
 
 .agenda-appt-card[data-selected] {
   border-color: color-mix(in oklab, var(--primary) 50%, var(--border));
-  background: color-mix(in oklab, var(--primary) 4%, var(--surface, var(--card)));
+  background: color-mix(
+    in oklab,
+    var(--primary) 4%,
+    var(--surface, var(--card))
+  );
   box-shadow: 0 0 0 3px color-mix(in oklab, var(--primary) 12%, transparent);
 }
 

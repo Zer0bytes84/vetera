@@ -67,7 +67,10 @@ const FIXED = {
   // The fallback under clean.css, which sets the type tokens of the chosen set.
   font: "'Inter Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
   // The former "blue" accent: only its muted ink still reaches the charts.
-  mutedForeground: { light: "oklch(0.551 0.023 264.364)", dark: "oklch(0.708 0.013 264.364)" },
+  mutedForeground: {
+    light: "oklch(0.551 0.023 264.364)",
+    dark: "oklch(0.708 0.013 264.364)",
+  },
 } as const;
 
 export function applyTheme(config: ThemeConfig, isDark: boolean) {
@@ -75,27 +78,49 @@ export function applyTheme(config: ThemeConfig, isDark: boolean) {
   root.dataset.skin = FIXED.skin;
   root.dataset.chromeStyle = FIXED.chromeStyle;
   const primary = isDark ? "#3b1fe5" : "#191919";
-  const mutedForeground = isDark ? FIXED.mutedForeground.dark : FIXED.mutedForeground.light;
+  const mutedForeground = isDark
+    ? FIXED.mutedForeground.dark
+    : FIXED.mutedForeground.light;
 
   root.style.setProperty("--primary", primary, "important");
   root.style.setProperty("--primary-foreground", "#ffffff", "important");
   root.style.setProperty("--on-primary", "#ffffff", "important");
   root.style.setProperty("--btn-primary-bg", primary, "important");
-  root.style.setProperty("--btn-primary-hover", isDark ? "#4b33f0" : "#000000", "important");
+  root.style.setProperty(
+    "--btn-primary-hover",
+    isDark ? "#4b33f0" : "#000000",
+    "important"
+  );
   root.style.setProperty("--btn-primary-fg", "#ffffff", "important");
   root.style.setProperty("--ring", primary, "important");
   // Navigation stays neutral like the CRM; primary color belongs to actions.
   root.style.setProperty("--sidebar-primary", "var(--frame)", "important");
-  root.style.setProperty("--sidebar-primary-foreground", "var(--ink)", "important");
+  root.style.setProperty(
+    "--sidebar-primary-foreground",
+    "var(--ink)",
+    "important"
+  );
   root.style.setProperty("--sidebar-ring", "var(--ink-muted)", "important");
-  root.style.setProperty("--sidebar-accent", isDark ? "#2a2a2a" : "#eeeeef", "important");
-  root.style.setProperty("--sidebar-accent-foreground", "var(--ink)", "important");
+  root.style.setProperty(
+    "--sidebar-accent",
+    isDark ? "#2a2a2a" : "#eeeeef",
+    "important"
+  );
+  root.style.setProperty(
+    "--sidebar-accent-foreground",
+    "var(--ink)",
+    "important"
+  );
 
   // Keep dark surfaces globally coherent with dashboard visuals.
   // Accent is an interactive surface (menus, selections), not primary ink.
   root.style.setProperty("--muted", "var(--frame)", "important");
   root.style.setProperty("--muted-foreground", "var(--ink-muted)", "important");
-  root.style.setProperty("--accent", isDark ? "var(--surface-raised)" : "var(--frame)", "important");
+  root.style.setProperty(
+    "--accent",
+    isDark ? "var(--surface-raised)" : "var(--frame)",
+    "important"
+  );
   root.style.setProperty("--radius", FIXED.radius, "important");
 
   root.style.setProperty("--chart-1", primary);
@@ -112,7 +137,10 @@ export function applyTheme(config: ThemeConfig, isDark: boolean) {
       ? `color-mix(in oklch, ${primary} 80%, white 20%)`
       : `color-mix(in oklch, ${primary} 20%, black 80%)`
   );
-  root.style.setProperty("--chart-5", `color-mix(in oklch, ${primary} 30%, ${mutedForeground})`);
+  root.style.setProperty(
+    "--chart-5",
+    `color-mix(in oklch, ${primary} 30%, ${mutedForeground})`
+  );
 
   root.style.setProperty("--app-font-sans", FIXED.font);
   root.style.setProperty("--app-font-heading", FIXED.font);
@@ -148,8 +176,11 @@ const LEGACY_MIGRATION_KEYS = [
 export function migrateToCleanOnly() {
   if (localStorage.getItem(CLEAN_ONLY_MIGRATION_KEY) === "true") return;
   if (localStorage.getItem("baitari-clean-default-v1") !== "true") {
-    const installed = localStorage.getItem("theme-config") !== null || localStorage.getItem("baitari-premium-default-v1") === "true";
-    if (installed && localStorage.getItem("theme") === null) localStorage.setItem("theme", "dark");
+    const installed =
+      localStorage.getItem("theme-config") !== null ||
+      localStorage.getItem("baitari-premium-default-v1") === "true";
+    if (installed && localStorage.getItem("theme") === null)
+      localStorage.setItem("theme", "dark");
   }
   for (const key of LEGACY_MIGRATION_KEYS) localStorage.removeItem(key);
   localStorage.setItem(CLEAN_ONLY_MIGRATION_KEY, "true");
@@ -182,11 +213,16 @@ export function cleanUpRemovedDisplaySettings(): ThemeConfig {
   const config: ThemeConfig = {};
   if (parsed && typeof parsed === "object") {
     const { cleanFont } = parsed as Record<string, unknown>;
-    if (typeof cleanFont === "string" && Object.hasOwn(CLEAN_FONT_SETS, cleanFont)) config.cleanFont = cleanFont as CleanFontSet;
+    if (
+      typeof cleanFont === "string" &&
+      Object.hasOwn(CLEAN_FONT_SETS, cleanFont)
+    )
+      config.cleanFont = cleanFont as CleanFontSet;
   }
   try {
     const next = JSON.stringify(config);
-    if (parsed !== null && localStorage.getItem("theme-config") !== next) localStorage.setItem("theme-config", next);
+    if (parsed !== null && localStorage.getItem("theme-config") !== next)
+      localStorage.setItem("theme-config", next);
     for (const key of REMOVED_DISPLAY_KEYS) localStorage.removeItem(key);
   } catch {
     // Storage unavailable: the fixed appearance still applies.

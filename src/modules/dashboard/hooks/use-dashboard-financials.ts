@@ -24,17 +24,20 @@ export function useDashboardFinancials() {
   const [error, setError] = useState<string | null>(null);
   const refresh = useCallback(async () => {
     if (!isTauriRuntime()) return;
-    await guard(async () => {
-      setInvoices(await readInvoices());
-      setError(null);
-    }, {
-      recover: () => {
-        setError("Les factures n’ont pas pu être chargées.");
+    await guard(
+      async () => {
+        setInvoices(await readInvoices());
+        setError(null);
       },
-      cleanup: () => {
-        setLoading(false);
-      },
-    });
+      {
+        recover: () => {
+          setError("Les factures n’ont pas pu être chargées.");
+        },
+        cleanup: () => {
+          setLoading(false);
+        },
+      }
+    );
   }, []);
   useEffect(() => {
     let active = true;

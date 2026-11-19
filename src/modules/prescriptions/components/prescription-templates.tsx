@@ -104,7 +104,9 @@ export function usePrescriptionTemplates() {
 
   const rename = useCallback(
     (id: string, name: string) =>
-      commit(renameTemplate(latest.current, id, name, new Date().toISOString())),
+      commit(
+        renameTemplate(latest.current, id, name, new Date().toISOString())
+      ),
     [commit]
   );
 
@@ -257,54 +259,67 @@ export function PrescriptionTemplatesDialog({
 
   const handleSave = async () => {
     setBusy(true);
-    await guard(async () => {
-      const result = await state.save({ ...getCurrent(), name });
-      toast.success(
-        result.replaced
-          ? `Modèle « ${result.saved.name} » mis à jour.`
-          : `Modèle « ${result.saved.name} » enregistré.`
-      );
-      setName("");
-    }, {
-      recover: (error) => {
-        toast.error(errorMessage(error, "Impossible d'enregistrer le modèle."));
+    await guard(
+      async () => {
+        const result = await state.save({ ...getCurrent(), name });
+        toast.success(
+          result.replaced
+            ? `Modèle « ${result.saved.name} » mis à jour.`
+            : `Modèle « ${result.saved.name} » enregistré.`
+        );
+        setName("");
       },
-      cleanup: () => {
-        setBusy(false);
-      },
-    });
+      {
+        recover: (error) => {
+          toast.error(
+            errorMessage(error, "Impossible d'enregistrer le modèle.")
+          );
+        },
+        cleanup: () => {
+          setBusy(false);
+        },
+      }
+    );
   };
 
   const handleRename = async (id: string) => {
     setBusy(true);
-    await guard(async () => {
-      await state.rename(id, editingName);
-      setEditingId(null);
-      toast.success("Modèle renommé.");
-    }, {
-      recover: (error) => {
-        toast.error(errorMessage(error, "Impossible de renommer le modèle."));
+    await guard(
+      async () => {
+        await state.rename(id, editingName);
+        setEditingId(null);
+        toast.success("Modèle renommé.");
       },
-      cleanup: () => {
-        setBusy(false);
-      },
-    });
+      {
+        recover: (error) => {
+          toast.error(errorMessage(error, "Impossible de renommer le modèle."));
+        },
+        cleanup: () => {
+          setBusy(false);
+        },
+      }
+    );
   };
 
   const handleRemove = async (template: PrescriptionTemplate) => {
     setBusy(true);
-    await guard(async () => {
-      await state.remove(template.id);
-      setConfirmDeleteId(null);
-      toast.success(`Modèle « ${template.name} » supprimé.`);
-    }, {
-      recover: (error) => {
-        toast.error(errorMessage(error, "Impossible de supprimer le modèle."));
+    await guard(
+      async () => {
+        await state.remove(template.id);
+        setConfirmDeleteId(null);
+        toast.success(`Modèle « ${template.name} » supprimé.`);
       },
-      cleanup: () => {
-        setBusy(false);
-      },
-    });
+      {
+        recover: (error) => {
+          toast.error(
+            errorMessage(error, "Impossible de supprimer le modèle.")
+          );
+        },
+        cleanup: () => {
+          setBusy(false);
+        },
+      }
+    );
   };
 
   return (
@@ -450,9 +465,7 @@ export function PrescriptionTemplatesDialog({
                               .map((it) => it.medicationName)
                               .join(" · ")}
                           </p>
-                          <TemplateAlertBadge
-                            count={alertCountFor(template)}
-                          />
+                          <TemplateAlertBadge count={alertCountFor(template)} />
                         </div>
                         {confirming ? (
                           <div className="flex shrink-0 items-center gap-1.5">

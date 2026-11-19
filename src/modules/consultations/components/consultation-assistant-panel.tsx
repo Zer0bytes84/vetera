@@ -101,7 +101,10 @@ export function ConsultationAssistantPanel({
     onCollapsedChange?.(false);
     // Unmounts when the exit has played (see onTransitionEnd); the timer only covers the cases where
     // no transition runs: reduced motion, or a panel closed while collapsed and already off screen.
-    const timer = setTimeout(() => { setRendered(false); onExited?.(); }, EXIT_MS + 150);
+    const timer = setTimeout(() => {
+      setRendered(false);
+      onExited?.();
+    }, EXIT_MS + 150);
     return () => clearTimeout(timer);
   }, [open, onCollapsedChange, onExited]);
   /* eslint-enable react-hooks/set-state-in-effect */
@@ -132,7 +135,14 @@ export function ConsultationAssistantPanel({
             : "translate-x-full duration-200 ease-[cubic-bezier(0.23,1,0.32,1)]"
         )}
         onTransitionEnd={(event) => {
-          if (!open && event.target === event.currentTarget && event.propertyName === "transform") { setRendered(false); onExited?.(); }
+          if (
+            !open &&
+            event.target === event.currentTarget &&
+            event.propertyName === "transform"
+          ) {
+            setRendered(false);
+            onExited?.();
+          }
         }}
       >
         <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden">

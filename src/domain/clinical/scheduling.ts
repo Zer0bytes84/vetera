@@ -116,7 +116,10 @@ export function normalizeAppointmentInterval(
 }
 
 export function findAppointmentConflicts(
-  candidate: Pick<Appointment, "id" | "vetId" | "room" | "startTime" | "endTime">,
+  candidate: Pick<
+    Appointment,
+    "id" | "vetId" | "room" | "startTime" | "endTime"
+  >,
   appointments: readonly Appointment[]
 ): AppointmentConflict[] {
   const candidateStart = new Date(candidate.startTime).getTime();
@@ -152,7 +155,10 @@ export function findAppointmentConflicts(
 }
 
 export function assertNoAppointmentConflict(
-  candidate: Pick<Appointment, "id" | "vetId" | "room" | "startTime" | "endTime">,
+  candidate: Pick<
+    Appointment,
+    "id" | "vetId" | "room" | "startTime" | "endTime"
+  >,
   appointments: readonly Appointment[]
 ): void {
   const conflict = findAppointmentConflicts(candidate, appointments)[0];

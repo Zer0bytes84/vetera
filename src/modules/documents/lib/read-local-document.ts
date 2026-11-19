@@ -108,9 +108,17 @@ export async function readLocalDocument(
           )
           .join("")
           .trim();
-        const operations = text.length < 200 ? await page.getOperatorList() : null;
-        const imageOperators = new Set([pdfjs.OPS.paintImageXObject, pdfjs.OPS.paintInlineImageXObject, pdfjs.OPS.paintImageMaskXObject]);
-        const containsImage = operations?.fnArray.some(operator => imageOperators.has(operator)) ?? false;
+        const operations =
+          text.length < 200 ? await page.getOperatorList() : null;
+        const imageOperators = new Set([
+          pdfjs.OPS.paintImageXObject,
+          pdfjs.OPS.paintInlineImageXObject,
+          pdfjs.OPS.paintImageMaskXObject,
+        ]);
+        const containsImage =
+          operations?.fnArray.some((operator) =>
+            imageOperators.has(operator)
+          ) ?? false;
         if (!needsPageOcr(text, containsImage))
           result.pages.push({ number: index, text, method: "text" });
         else {
@@ -126,7 +134,8 @@ export async function readLocalDocument(
             await page.render({ canvas, viewport }).promise;
             const recognized = await recognize(canvas, index);
             // Keep the existing digital header if recognition did not reproduce it.
-            if (text && !recognized.text.includes(text)) recognized.text = `${text}\n${recognized.text}`;
+            if (text && !recognized.text.includes(text))
+              recognized.text = `${text}\n${recognized.text}`;
             result.pages.push(recognized);
           } finally {
             canvas.width = 0;

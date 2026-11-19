@@ -124,7 +124,8 @@ export async function prepareMicrophone(
   } catch (error) {
     closeAudio();
     if (signal.aborted) throw abortError();
-    if (error instanceof Error && error.message === MICROPHONE_NO_ANSWER) throw error;
+    if (error instanceof Error && error.message === MICROPHONE_NO_ANSWER)
+      throw error;
     const name = error instanceof DOMException ? error.name : "";
     throw new Error(
       name === "NotAllowedError" || name === "SecurityError"
@@ -164,8 +165,12 @@ export function levelFromRms(rms: number) {
  * Reads the live microphone level from its own analyser, beside the
  * recording (a second source on the same stream; nothing is recorded here).
  */
-export function createLevelMeter(audio: AudioContext | null, stream: MediaStream) {
-  if (!audio || typeof audio.createAnalyser !== "function") return { read: () => 0, close: () => {} };
+export function createLevelMeter(
+  audio: AudioContext | null,
+  stream: MediaStream
+) {
+  if (!audio || typeof audio.createAnalyser !== "function")
+    return { read: () => 0, close: () => {} };
   const source = audio.createMediaStreamSource(stream);
   const analyser = audio.createAnalyser();
   analyser.fftSize = 1024;

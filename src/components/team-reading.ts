@@ -20,10 +20,12 @@ export interface TeamReading {
   lines: { active: string; vets: string; support: string; access: string };
 }
 
-const n = (count: number, one: string, many = `${one}s`) => `${count} ${count > 1 ? many : one}`;
+const n = (count: number, one: string, many = `${one}s`) =>
+  `${count} ${count > 1 ? many : one}`;
 
 export function readTeam(users: Pick<User, "role" | "status">[]): TeamReading {
-  const count = (test: (user: Pick<User, "role" | "status">) => boolean) => users.filter(test).length;
+  const count = (test: (user: Pick<User, "role" | "status">) => boolean) =>
+    users.filter(test).length;
   const total = users.length;
   const active = count((user) => user.status === "active");
   const principals = count((user) => user.role === "vet_principal");
@@ -35,9 +37,17 @@ export function readTeam(users: Pick<User, "role" | "status">[]): TeamReading {
   const pending = total - active;
   const others = total - vets - support;
 
-  const staffing = total === 0 ? "aucun membre" : pending === 0 ? "effectif complet" : `${active} sur ${total} en poste`;
+  const staffing =
+    total === 0
+      ? "aucun membre"
+      : pending === 0
+        ? "effectif complet"
+        : `${active} sur ${total} en poste`;
   const roles = `${n(vets, "praticien")}, ${n(support, "soignant")}`;
-  const access = pending === 0 ? "accès à jour" : n(pending, "accès en attente", "accès en attente");
+  const access =
+    pending === 0
+      ? "accès à jour"
+      : n(pending, "accès en attente", "accès en attente");
 
   return {
     total,
@@ -55,9 +65,18 @@ export function readTeam(users: Pick<User, "role" | "status">[]): TeamReading {
         total === 0
           ? "Aucun membre enregistré"
           : `${n(vets, "praticien")} · ${n(support, "soignant")}${others ? ` · ${n(others, "autre rôle", "autres rôles")}` : ""}`,
-      vets: vets === 0 ? "Aucun vétérinaire" : `${principals} principal · ${n(adjoints, "adjoint")}`,
-      support: support === 0 ? "Aucun assistant ni stagiaire" : `${n(assistants, "assistant")} · ${n(trainees, "stagiaire")}`,
-      access: pending === 0 ? "Tous les comptes sont actifs" : n(pending, "compte inactif", "comptes inactifs"),
+      vets:
+        vets === 0
+          ? "Aucun vétérinaire"
+          : `${principals} principal · ${n(adjoints, "adjoint")}`,
+      support:
+        support === 0
+          ? "Aucun assistant ni stagiaire"
+          : `${n(assistants, "assistant")} · ${n(trainees, "stagiaire")}`,
+      access:
+        pending === 0
+          ? "Tous les comptes sont actifs"
+          : n(pending, "compte inactif", "comptes inactifs"),
     },
   };
 }

@@ -270,7 +270,10 @@ export function NotificationCenter({
 
   const [localOpen, setLocalOpen] = useState(false);
   const open = controlledOpen ?? localOpen;
-  const setOpen = (next: boolean) => { setLocalOpen(next); onOpenChange?.(next); };
+  const setOpen = (next: boolean) => {
+    setLocalOpen(next);
+    onOpenChange?.(next);
+  };
   const [filter, setFilter] = useState<NotificationFilter>("all");
 
   const filteredItems = useMemo(() => {
@@ -324,31 +327,33 @@ export function NotificationCenter({
 
   return (
     <Popover onOpenChange={setOpen} open={open}>
-      {!hideTrigger && <PopoverTrigger
-        render={
-          <Button
-            aria-label={t("notifications.open", {
-              defaultValue: "Notifications",
-            })}
-            className="shell-toolbar-control relative size-9 rounded-full"
-            size="icon"
-            variant="outline"
-          />
-        }
-      >
-        <ToolbarIcon name="notifications" />
-        {unreadCount > 0 ? (
-          <span
-            aria-label={`${unreadCount} non lues`}
-            className={cn(
-              "absolute -top-1 -right-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full px-1 font-semibold t-12 text-white ring-2 ring-background",
-              criticalCount > 0 ? "bg-rose-500" : "bg-amber-500"
-            )}
-          >
-            {unreadCount > 99 ? "99+" : unreadCount}
-          </span>
-        ) : null}
-      </PopoverTrigger>}
+      {!hideTrigger && (
+        <PopoverTrigger
+          render={
+            <Button
+              aria-label={t("notifications.open", {
+                defaultValue: "Notifications",
+              })}
+              className="shell-toolbar-control relative size-9 rounded-full"
+              size="icon"
+              variant="outline"
+            />
+          }
+        >
+          <ToolbarIcon name="notifications" />
+          {unreadCount > 0 ? (
+            <span
+              aria-label={`${unreadCount} non lues`}
+              className={cn(
+                "absolute -top-1 -right-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full px-1 font-semibold t-12 text-white ring-2 ring-background",
+                criticalCount > 0 ? "bg-rose-500" : "bg-amber-500"
+              )}
+            >
+              {unreadCount > 99 ? "99+" : unreadCount}
+            </span>
+          ) : null}
+        </PopoverTrigger>
+      )}
       <PopoverContent
         anchor={anchor}
         align="end"
@@ -447,32 +452,36 @@ export function NotificationCenter({
         ) : null}
 
         <div className="flex items-center border-foreground/10 border-b px-3 py-1.5">
-          <div aria-label="Filtrer les notifications" data-tabs-style="segmented" role="group">
-          {NOTIFICATION_FILTERS.map((option) => {
-            const active = filter === option;
-            const label =
-              option === "all"
-                ? "Toutes"
-                : option === "unread"
-                  ? `Non lues${unreadCount > 0 ? ` (${unreadCount})` : ""}`
-                  : `Critiques${criticalCount > 0 ? ` (${criticalCount})` : ""}`;
-            return (
-              <button
-                aria-pressed={active}
-                className={cn(
-                  "cursor-pointer rounded-full px-2.5 py-1 font-medium t-12 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/30",
-                  active
-                    ? "bg-foreground text-background"
-                    : "text-muted-foreground hover:bg-foreground/5 hover:text-foreground"
-                )}
-                key={option}
-                onClick={() => setFilter(option)}
-                type="button"
-              >
-                {label}
-              </button>
-            );
-          })}
+          <div
+            aria-label="Filtrer les notifications"
+            data-tabs-style="segmented"
+            role="group"
+          >
+            {NOTIFICATION_FILTERS.map((option) => {
+              const active = filter === option;
+              const label =
+                option === "all"
+                  ? "Toutes"
+                  : option === "unread"
+                    ? `Non lues${unreadCount > 0 ? ` (${unreadCount})` : ""}`
+                    : `Critiques${criticalCount > 0 ? ` (${criticalCount})` : ""}`;
+              return (
+                <button
+                  aria-pressed={active}
+                  className={cn(
+                    "cursor-pointer rounded-full px-2.5 py-1 font-medium t-12 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/30",
+                    active
+                      ? "bg-foreground text-background"
+                      : "text-muted-foreground hover:bg-foreground/5 hover:text-foreground"
+                  )}
+                  key={option}
+                  onClick={() => setFilter(option)}
+                  type="button"
+                >
+                  {label}
+                </button>
+              );
+            })}
           </div>
         </div>
 

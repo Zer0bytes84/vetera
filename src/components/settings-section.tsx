@@ -35,7 +35,11 @@ export function SettingsSection({
 }) {
   const titleId = useId();
   return (
-    <Shell aria-labelledby={titleId} className={cn("settings-section rounded-[20px]", className)} {...props}>
+    <Shell
+      aria-labelledby={titleId}
+      className={cn("settings-section rounded-[20px]", className)}
+      {...props}
+    >
       <ShellHeader
         aside={aside}
         icon={icon}
@@ -45,7 +49,7 @@ export function SettingsSection({
       <div
         className={cn(
           "settings-section-panel overflow-hidden rounded-2xl border border-border bg-[var(--card-inset)] divide-y divide-border",
-          panelClassName,
+          panelClassName
         )}
       >
         {children}
@@ -73,10 +77,18 @@ export function SettingsRow({
 }) {
   const Title = htmlFor ? "label" : "p";
   return (
-    <div className={cn("settings-row flex flex-wrap items-center justify-between gap-x-6 gap-y-3 px-6 py-3", className)}>
+    <div
+      className={cn(
+        "settings-row flex flex-wrap items-center justify-between gap-x-6 gap-y-3 px-6 py-3",
+        className
+      )}
+    >
       <div className="min-w-0 flex-1 basis-64">
         <Title
-          className={cn("block text-sm font-medium", htmlFor && "cursor-pointer")}
+          className={cn(
+            "block text-sm font-medium",
+            htmlFor && "cursor-pointer"
+          )}
           {...(htmlFor ? { htmlFor } : {})}
         >
           {title}
@@ -87,19 +99,33 @@ export function SettingsRow({
           </p>
         ) : null}
       </div>
-      {children ? <div className="flex shrink-0 flex-wrap items-center gap-3">{children}</div> : null}
+      {children ? (
+        <div className="flex shrink-0 flex-wrap items-center gap-3">
+          {children}
+        </div>
+      ) : null}
     </div>
   );
 }
 
 /** Free content of a panel (a form, a list): 24 px all round, its blocks 24 px apart. */
 export function SettingsBody({ className, ...props }: ComponentProps<"div">) {
-  return <div className={cn("flex flex-col gap-6 p-6", className)} {...props} />;
+  return (
+    <div className={cn("flex flex-col gap-6 p-6", className)} {...props} />
+  );
 }
 
 /** The foot of a panel: the status on the left, the actions on the right. */
 export function SettingsFooter({ className, ...props }: ComponentProps<"div">) {
-  return <div className={cn("flex flex-wrap items-center justify-between gap-3 px-6 py-3", className)} {...props} />;
+  return (
+    <div
+      className={cn(
+        "flex flex-wrap items-center justify-between gap-3 px-6 py-3",
+        className
+      )}
+      {...props}
+    />
+  );
 }
 
 /** A message above the sections, in the same white sharp panel. */
@@ -115,7 +141,7 @@ export function SettingsNotice({
         tone === "success" && "border-positive/30 text-positive",
         tone === "error" && "border-negative/30 text-negative",
         tone === "info" && "border-border text-muted-foreground",
-        className,
+        className
       )}
       role={tone === "error" ? "alert" : "status"}
       {...props}

@@ -30,10 +30,13 @@ import { callsCsv, callsPrintHtml, type CallRow } from "./export";
 import { patientRemindersService } from "./service";
 import { announceMedicalReminderProposal } from "./medical-act-events";
 import { Dialog } from "@/components/ui/dialog";
-import { FormDialogBody, FormDialogContent, FormDialogFooter, FormDialogHeader } from "@/components/ui/form-dialog";
-import type {
-  PatientReminder,
-} from "./store";
+import {
+  FormDialogBody,
+  FormDialogContent,
+  FormDialogFooter,
+  FormDialogHeader,
+} from "@/components/ui/form-dialog";
+import type { PatientReminder } from "./store";
 import {
   announcePatientRemindersChanged,
   usePatientReminders,
@@ -43,7 +46,8 @@ import { guard } from "@/lib/guard";
 import { WhatsAppLink } from "@/components/whatsapp-link";
 import { reminderMessage } from "@/lib/whatsapp";
 
-const field = "min-h-11 rounded-xl border border-border bg-background px-3 t-13";
+const field =
+  "min-h-11 rounded-xl border border-border bg-background px-3 t-13";
 
 type PanelView = "active" | "completed" | "calls" | "types";
 type ActionKind = "Annuler" | "Reporter" | "Traiter";
@@ -65,7 +69,9 @@ export function PatientRemindersContent({
   view?: PanelView;
 }) {
   const { error, loading, refresh, reminders } = model;
-  const types = includeManualTypes ? model.types : model.types.filter(isMedicalReminderType);
+  const types = includeManualTypes
+    ? model.types
+    : model.types.filter(isMedicalReminderType);
   const patients = usePatientsRepository();
   const owners = useOwnersRepository();
   const users = useUsersRepository();
@@ -105,7 +111,9 @@ export function PatientRemindersContent({
   });
 
   // Each row also keeps the stored number and, when the animal is known, its name, for the WhatsApp message.
-  const callRows = useMemo<(CallRow & { animal: string | null; storedPhone: string | null })[]>(
+  const callRows = useMemo<
+    (CallRow & { animal: string | null; storedPhone: string | null })[]
+  >(
     () =>
       rows.map((reminder) => {
         const patient = patients.data.find(
@@ -137,24 +145,27 @@ export function PatientRemindersContent({
     }
     setBusy(true);
     setNotice(null);
-    await guard(async () => {
-      await operation();
-      announcePatientRemindersChanged();
-      await refresh();
-      setAction(null);
-      setEditingType(null);
-    }, {
-      recover: (caught) => {
-        setNotice(
-          caught instanceof Error
-            ? caught.message
-            : "L’action n’a pas pu être enregistrée."
-        );
+    await guard(
+      async () => {
+        await operation();
+        announcePatientRemindersChanged();
+        await refresh();
+        setAction(null);
+        setEditingType(null);
       },
-      cleanup: () => {
-        setBusy(false);
-      },
-    });
+      {
+        recover: (caught) => {
+          setNotice(
+            caught instanceof Error
+              ? caught.message
+              : "L’action n’a pas pu être enregistrée."
+          );
+        },
+        cleanup: () => {
+          setBusy(false);
+        },
+      }
+    );
   }
 
   function download() {
@@ -184,8 +195,7 @@ export function PatientRemindersContent({
     isReminderOverdue(reminder.statut, reminder.echeance, today)
   ).length;
   const todayCount = reminders.filter(
-    (reminder) =>
-      reminder.statut === "en_cours" && reminder.echeance === today
+    (reminder) => reminder.statut === "en_cours" && reminder.echeance === today
   ).length;
 
   return (
@@ -254,9 +264,7 @@ export function PatientRemindersContent({
         </>
       )}
 
-      {error && (
-        <ErrorState message={error} onRetry={() => void refresh()} />
-      )}
+      {error && <ErrorState message={error} onRetry={() => void refresh()} />}
       {notice && !action && (
         <p className="t-13 text-destructive" role="alert">
           {notice}
@@ -282,10 +290,20 @@ export function PatientRemindersContent({
               </select>
               {tab === "calls" && (
                 <div className="ml-auto flex gap-2">
-                  <Button className="min-h-11" disabled={!rows.length} onClick={print} variant="outline">
+                  <Button
+                    className="min-h-11"
+                    disabled={!rows.length}
+                    onClick={print}
+                    variant="outline"
+                  >
                     <Printer className="size-4" /> Imprimer
                   </Button>
-                  <Button className="min-h-11" disabled={!rows.length} onClick={download} variant="outline">
+                  <Button
+                    className="min-h-11"
+                    disabled={!rows.length}
+                    onClick={download}
+                    variant="outline"
+                  >
                     <ArrowDown className="size-4" /> Exporter CSV
                   </Button>
                 </div>
@@ -295,7 +313,9 @@ export function PatientRemindersContent({
 
           {!rows.length && (
             <p className="py-8 text-center t-13 text-muted-foreground">
-              {loading ? "Chargement des rappels…" : "Aucun rappel médical dans cette vue."}
+              {loading
+                ? "Chargement des rappels…"
+                : "Aucun rappel médical dans cette vue."}
             </p>
           )}
 
@@ -310,12 +330,30 @@ export function PatientRemindersContent({
                 reminder.statut === "en_cours" && reminder.echeance === today;
               const contact = callRows[index];
               return (
-                <article className="medical-reminder-row" data-medical-reminder-id={reminder.id} key={reminder.id}>
+                <article
+                  className="medical-reminder-row"
+                  data-medical-reminder-id={reminder.id}
+                  key={reminder.id}
+                >
                   <div
                     className={`medical-reminder-date ${overdue ? "is-overdue" : dueToday ? "is-due" : ""}`}
                   >
-                    {overdue ? <ShieldAlert /> : dueToday ? <Clock3 /> : <CalendarDays />}
-                    <time dateTime={reminder.echeance}>{new Date(`${reminder.echeance}T12:00:00`).toLocaleDateString("fr-FR", { day: "2-digit", month: "short", year: "numeric" })}</time>
+                    {overdue ? (
+                      <ShieldAlert />
+                    ) : dueToday ? (
+                      <Clock3 />
+                    ) : (
+                      <CalendarDays />
+                    )}
+                    <time dateTime={reminder.echeance}>
+                      {new Date(
+                        `${reminder.echeance}T12:00:00`
+                      ).toLocaleDateString("fr-FR", {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                      })}
+                    </time>
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
@@ -336,15 +374,20 @@ export function PatientRemindersContent({
                               ? "Annulé"
                               : `Échéance le ${new Date(`${reminder.echeance}T12:00:00`).toLocaleDateString("fr-FR")}`}
                     </p>
-                    {(
+                    {
                       <p className="mt-2 flex flex-wrap items-center gap-2 t-13">
                         <span>{contact.owner}</span>
                         {contact.phone !== "Non renseigné" ? (
-                          <a className="medical-phone-link" href={`tel:${contact.phone.replace(/\s/g, "")}`}>
+                          <a
+                            className="medical-phone-link"
+                            href={`tel:${contact.phone.replace(/\s/g, "")}`}
+                          >
                             <Phone className="size-4" /> {contact.phone}
                           </a>
                         ) : (
-                          <span className="text-muted-foreground">Téléphone non renseigné</span>
+                          <span className="text-muted-foreground">
+                            Téléphone non renseigné
+                          </span>
                         )}
                         {reminder.statut === "en_cours" && contact.animal ? (
                           <WhatsAppLink
@@ -360,39 +403,62 @@ export function PatientRemindersContent({
                           />
                         ) : null}
                       </p>
-                    )}
+                    }
                   </div>
                   <div className="medical-reminder-row-actions">
                     {reminder.statut === "en_cours" && (
                       <>
-                        <Button className="min-h-11" disabled={busy} onClick={() => {
-                          setAction({ kind: "Traiter", reminder });
-                          setDate(reminder.echeance);
-                          setReason("");
-                        }}>
+                        <Button
+                          className="min-h-11"
+                          disabled={busy}
+                          onClick={() => {
+                            setAction({ kind: "Traiter", reminder });
+                            setDate(reminder.echeance);
+                            setReason("");
+                          }}
+                        >
                           <CheckCircle2 className="size-4" /> Traiter
                         </Button>
-                        <Button className="min-h-11" disabled={busy} onClick={() => {
-                          setAction({ kind: "Reporter", reminder });
-                          setDate(reminder.echeance);
-                          setReason("");
-                        }} variant="outline">
+                        <Button
+                          className="min-h-11"
+                          disabled={busy}
+                          onClick={() => {
+                            setAction({ kind: "Reporter", reminder });
+                            setDate(reminder.echeance);
+                            setReason("");
+                          }}
+                          variant="outline"
+                        >
                           <RotateCcw className="size-4" /> Reporter
                         </Button>
-                        <Button className="min-h-11" disabled={busy} onClick={() => {
-                          setAction({ kind: "Annuler", reminder });
-                          setDate(reminder.echeance);
-                          setReason("");
-                        }} variant="ghost">
+                        <Button
+                          className="min-h-11"
+                          disabled={busy}
+                          onClick={() => {
+                            setAction({ kind: "Annuler", reminder });
+                            setDate(reminder.echeance);
+                            setReason("");
+                          }}
+                          variant="ghost"
+                        >
                           <XCircle className="size-4" /> Annuler
                         </Button>
                       </>
                     )}
-                    <Button className="min-h-11" onClick={() => {
-                      void patientRemindersService.history(reminder.id)
-                        .then((records) => setHistory({ id: reminder.id, rows: records }))
-                        .catch(() => setNotice("L’historique n’a pas pu être chargé."));
-                    }} variant="ghost">
+                    <Button
+                      className="min-h-11"
+                      onClick={() => {
+                        void patientRemindersService
+                          .history(reminder.id)
+                          .then((records) =>
+                            setHistory({ id: reminder.id, rows: records })
+                          )
+                          .catch(() =>
+                            setNotice("L’historique n’a pas pu être chargé.")
+                          );
+                      }}
+                      variant="ghost"
+                    >
                       <History className="size-4" /> Historique
                     </Button>
                   </div>
@@ -400,7 +466,27 @@ export function PatientRemindersContent({
                     <ol className="col-span-full mt-1 space-y-2 border-border/70 border-t pt-3 t-12 text-muted-foreground">
                       {history.rows.map((entry) => (
                         <li key={String(entry.id)}>
-                          {new Date(String(entry.created_at)).toLocaleString("fr-FR")} · {formatPersonName(users.data.find((user) => user.id === entry.author_id)?.displayName) || "Auteur enregistré"} · {({ creation: "Création", migration: "Import du carnet vaccinal", traitement_acte: "Acte enregistré", traitement_manuel: "Rappel traité", annulation: "Annulation", report: "Report" } as Record<string, string>)[String(entry.action)] ?? "Mise à jour"}{entry.reason ? ` · ${String(entry.reason)}` : ""}
+                          {new Date(String(entry.created_at)).toLocaleString(
+                            "fr-FR"
+                          )}{" "}
+                          ·{" "}
+                          {formatPersonName(
+                            users.data.find(
+                              (user) => user.id === entry.author_id
+                            )?.displayName
+                          ) || "Auteur enregistré"}{" "}
+                          ·{" "}
+                          {(
+                            {
+                              creation: "Création",
+                              migration: "Import du carnet vaccinal",
+                              traitement_acte: "Acte enregistré",
+                              traitement_manuel: "Rappel traité",
+                              annulation: "Annulation",
+                              report: "Report",
+                            } as Record<string, string>
+                          )[String(entry.action)] ?? "Mise à jour"}
+                          {entry.reason ? ` · ${String(entry.reason)}` : ""}
                         </li>
                       ))}
                     </ol>
@@ -413,53 +499,118 @@ export function PatientRemindersContent({
       )}
 
       {action && (
-        <Dialog open onOpenChange={(open) => { if (!open && !busy) setAction(null); }}>
-          <FormDialogContent size="sm">
-            <FormDialogHeader title={`${action.kind} ce rappel`} description="Mettez à jour le suivi de ce patient." icon={<CalendarDays strokeWidth={1} />} tone="sky" />
-        <form
-          aria-label={`${action.kind} le rappel`}
-          className="contents"
-          onSubmit={(event) => {
-            event.preventDefault();
-            if (action.kind === "Reporter") {
-              void perform(() => patientRemindersService.postpone(action.reminder.id, date, currentUser?.id || "", reason));
-              return;
-            }
-            if (action.kind === "Annuler") {
-              void perform(() => patientRemindersService.transition(action.reminder.id, "annule", currentUser?.id || "", reason));
-              return;
-            }
-            void perform(async () => {
-              await patientRemindersService.transition(action.reminder.id, "termine", currentUser?.id || "");
-              announceMedicalReminderProposal(await patientRemindersService.nextProposal(action.reminder.id));
-            });
+        <Dialog
+          open
+          onOpenChange={(open) => {
+            if (!open && !busy) setAction(null);
           }}
         >
-          <FormDialogBody className="space-y-4">
-          {notice && <p className="t-13 text-destructive" role="alert">{notice}</p>}
-          {action.kind === "Traiter" && (
-            <p className="t-13 text-muted-foreground">
-              Le rappel sera terminé. Vous pourrez ensuite planifier le suivant.
-            </p>
-          )}
-          {action.kind === "Reporter" && (
-            <label className="block t-13">
-              Nouvelle échéance
-              <DatePicker className="mt-1 min-h-11" onChange={(value) => setDate(value)} required value={date} />
-            </label>
-          )}
-          {action.kind !== "Traiter" && (
-            <label className="block t-13">
-              Motif
-              <Input className="mt-1 min-h-11" onChange={(event) => setReason(event.target.value)} required value={reason} />
-            </label>
-          )}
-          </FormDialogBody>
-          <FormDialogFooter>
-            <Button className="min-h-11" disabled={busy} onClick={() => setAction(null)} type="button" variant="outline">Fermer</Button>
-            <Button className="min-h-11" disabled={busy || !currentUser || (action.kind !== "Traiter" && !reason.trim())} type="submit">Confirmer</Button>
-          </FormDialogFooter>
-        </form>
+          <FormDialogContent size="sm">
+            <FormDialogHeader
+              title={`${action.kind} ce rappel`}
+              description="Mettez à jour le suivi de ce patient."
+              icon={<CalendarDays strokeWidth={1} />}
+              tone="sky"
+            />
+            <form
+              aria-label={`${action.kind} le rappel`}
+              className="contents"
+              onSubmit={(event) => {
+                event.preventDefault();
+                if (action.kind === "Reporter") {
+                  void perform(() =>
+                    patientRemindersService.postpone(
+                      action.reminder.id,
+                      date,
+                      currentUser?.id || "",
+                      reason
+                    )
+                  );
+                  return;
+                }
+                if (action.kind === "Annuler") {
+                  void perform(() =>
+                    patientRemindersService.transition(
+                      action.reminder.id,
+                      "annule",
+                      currentUser?.id || "",
+                      reason
+                    )
+                  );
+                  return;
+                }
+                void perform(async () => {
+                  await patientRemindersService.transition(
+                    action.reminder.id,
+                    "termine",
+                    currentUser?.id || ""
+                  );
+                  announceMedicalReminderProposal(
+                    await patientRemindersService.nextProposal(
+                      action.reminder.id
+                    )
+                  );
+                });
+              }}
+            >
+              <FormDialogBody className="space-y-4">
+                {notice && (
+                  <p className="t-13 text-destructive" role="alert">
+                    {notice}
+                  </p>
+                )}
+                {action.kind === "Traiter" && (
+                  <p className="t-13 text-muted-foreground">
+                    Le rappel sera terminé. Vous pourrez ensuite planifier le
+                    suivant.
+                  </p>
+                )}
+                {action.kind === "Reporter" && (
+                  <label className="block t-13">
+                    Nouvelle échéance
+                    <DatePicker
+                      className="mt-1 min-h-11"
+                      onChange={(value) => setDate(value)}
+                      required
+                      value={date}
+                    />
+                  </label>
+                )}
+                {action.kind !== "Traiter" && (
+                  <label className="block t-13">
+                    Motif
+                    <Input
+                      className="mt-1 min-h-11"
+                      onChange={(event) => setReason(event.target.value)}
+                      required
+                      value={reason}
+                    />
+                  </label>
+                )}
+              </FormDialogBody>
+              <FormDialogFooter>
+                <Button
+                  className="min-h-11"
+                  disabled={busy}
+                  onClick={() => setAction(null)}
+                  type="button"
+                  variant="outline"
+                >
+                  Fermer
+                </Button>
+                <Button
+                  className="min-h-11"
+                  disabled={
+                    busy ||
+                    !currentUser ||
+                    (action.kind !== "Traiter" && !reason.trim())
+                  }
+                  type="submit"
+                >
+                  Confirmer
+                </Button>
+              </FormDialogFooter>
+            </form>
           </FormDialogContent>
         </Dialog>
       )}
@@ -468,35 +619,97 @@ export function PatientRemindersContent({
         <>
           <div className="divide-y divide-border/70">
             {types.map((entry) => (
-              <div className="flex min-h-16 flex-wrap items-center justify-between gap-3 py-3" key={entry.id}>
+              <div
+                className="flex min-h-16 flex-wrap items-center justify-between gap-3 py-3"
+                key={entry.id}
+              >
                 <div>
                   <p className="font-medium t-14">{entry.name}</p>
-                  <p className="t-13 text-muted-foreground">{entry.interval_months} mois · {entry.active ? "Actif" : "Inactif"}</p>
+                  <p className="t-13 text-muted-foreground">
+                    {entry.interval_months} mois ·{" "}
+                    {entry.active ? "Actif" : "Inactif"}
+                  </p>
                 </div>
-                <Button className="min-h-11" onClick={() => {
-                  setEditingType(entry.id);
-                  setName(entry.name);
-                  setMonths(String(entry.interval_months));
-                  setActive(Boolean(entry.active));
-                }} variant="outline">Modifier</Button>
+                <Button
+                  className="min-h-11"
+                  onClick={() => {
+                    setEditingType(entry.id);
+                    setName(entry.name);
+                    setMonths(String(entry.interval_months));
+                    setActive(Boolean(entry.active));
+                  }}
+                  variant="outline"
+                >
+                  Modifier
+                </Button>
               </div>
             ))}
           </div>
-          <Button className="min-h-11" onClick={() => {
-            setEditingType("");
-            setName("");
-            setMonths("12");
-            setActive(true);
-          }} variant="outline">Ajouter un type</Button>
+          <Button
+            className="min-h-11"
+            onClick={() => {
+              setEditingType("");
+              setName("");
+              setMonths("12");
+              setActive(true);
+            }}
+            variant="outline"
+          >
+            Ajouter un type
+          </Button>
           {editingType !== null && (
-            <form className="medical-reminder-action" onSubmit={(event) => {
-              event.preventDefault();
-              void perform(() => patientRemindersService.saveType({ active, id: editingType || undefined, intervalMonths: Number(months), name }, currentUser?.id || ""));
-            }}>
-              <label className="block t-13">Nom<Input className="mt-1 min-h-11" onChange={(event) => setName(event.target.value)} required value={name} /></label>
-              <label className="block t-13">Intervalle en mois<Input className="mt-1 min-h-11" max="120" min="1" onChange={(event) => setMonths(event.target.value)} required step="1" type="number" value={months} /></label>
-              <Switch checked={active} className="min-h-11 items-center t-13" label="Actif" onCheckedChange={setActive} />
-              <Button className="min-h-11" disabled={busy || !currentUser} type="submit">Enregistrer le type</Button>
+            <form
+              className="medical-reminder-action"
+              onSubmit={(event) => {
+                event.preventDefault();
+                void perform(() =>
+                  patientRemindersService.saveType(
+                    {
+                      active,
+                      id: editingType || undefined,
+                      intervalMonths: Number(months),
+                      name,
+                    },
+                    currentUser?.id || ""
+                  )
+                );
+              }}
+            >
+              <label className="block t-13">
+                Nom
+                <Input
+                  className="mt-1 min-h-11"
+                  onChange={(event) => setName(event.target.value)}
+                  required
+                  value={name}
+                />
+              </label>
+              <label className="block t-13">
+                Intervalle en mois
+                <Input
+                  className="mt-1 min-h-11"
+                  max="120"
+                  min="1"
+                  onChange={(event) => setMonths(event.target.value)}
+                  required
+                  step="1"
+                  type="number"
+                  value={months}
+                />
+              </label>
+              <Switch
+                checked={active}
+                className="min-h-11 items-center t-13"
+                label="Actif"
+                onCheckedChange={setActive}
+              />
+              <Button
+                className="min-h-11"
+                disabled={busy || !currentUser}
+                type="submit"
+              >
+                Enregistrer le type
+              </Button>
             </form>
           )}
         </>

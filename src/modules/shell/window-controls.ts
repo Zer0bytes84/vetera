@@ -32,7 +32,10 @@ function isWindowsDesktop() {
 /** In development only, `localStorage["baitari:window-controls-preview"] = "1"` draws the bar in a browser, with inert buttons. */
 function previewRequested() {
   try {
-    return import.meta.env.DEV && localStorage.getItem("baitari:window-controls-preview") === "1";
+    return (
+      import.meta.env.DEV &&
+      localStorage.getItem("baitari:window-controls-preview") === "1"
+    );
   } catch {
     return false;
   }
@@ -40,10 +43,18 @@ function previewRequested() {
 
 function nameButtons(host: HTMLElement) {
   const maximized = ROOT.dataset.windowMaximized === "true";
-  for (const button of host.querySelectorAll<HTMLButtonElement>("button.decorum-tb-btn, button[id^='decorum-tb-']")) {
-    const label = button.id === "decorum-tb-maximize" ? (maximized ? "Restaurer" : "Agrandir") : LABELS[button.id];
+  for (const button of host.querySelectorAll<HTMLButtonElement>(
+    "button.decorum-tb-btn, button[id^='decorum-tb-']"
+  )) {
+    const label =
+      button.id === "decorum-tb-maximize"
+        ? maximized
+          ? "Restaurer"
+          : "Agrandir"
+        : LABELS[button.id];
     if (!label) continue;
-    if (button.getAttribute("aria-label") !== label) button.setAttribute("aria-label", label);
+    if (button.getAttribute("aria-label") !== label)
+      button.setAttribute("aria-label", label);
     if (button.title !== label) button.title = label;
     if (button.type !== "button") button.type = "button";
     // Like Windows' own caption buttons, out of the Tab order: the first Tab of a screen goes to the screen, not to « Réduire ».
@@ -58,7 +69,8 @@ function addPreviewButtons(host: HTMLElement) {
     button.id = `decorum-tb-${id}`;
     button.className = "decorum-tb-btn";
     // The Segoe glyph decorum writes in each button, so the preview lays out exactly like the real thing.
-    button.textContent = { minimize: "\uE921", maximize: "\uE922", close: "\uE8BB" }[id] ?? "";
+    button.textContent =
+      { minimize: "\uE921", maximize: "\uE922", close: "\uE8BB" }[id] ?? "";
     host.appendChild(button);
   }
 }
@@ -76,7 +88,11 @@ export function initWindowControls() {
   if (preview) addPreviewButtons(host);
 
   // decorum adds its buttons a moment after the page loads, and swaps the maximize glyph on every resize.
-  new MutationObserver(() => nameButtons(host)).observe(host, { childList: true, subtree: true, characterData: true });
+  new MutationObserver(() => nameButtons(host)).observe(host, {
+    childList: true,
+    subtree: true,
+    characterData: true,
+  });
   nameButtons(host);
 
   if (preview) return;
@@ -93,7 +109,10 @@ export function initWindowControls() {
 
   const sync = async () => {
     try {
-      const [maximized, fullscreen] = await Promise.all([appWindow.isMaximized(), appWindow.isFullscreen()]);
+      const [maximized, fullscreen] = await Promise.all([
+        appWindow.isMaximized(),
+        appWindow.isFullscreen(),
+      ]);
       ROOT.dataset.windowMaximized = String(maximized);
       ROOT.dataset.windowFullscreen = String(fullscreen);
       nameButtons(host);

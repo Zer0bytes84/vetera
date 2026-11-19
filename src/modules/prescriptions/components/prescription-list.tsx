@@ -207,7 +207,11 @@ function PrescriptionRow({
           ) : null}
         </ul>
       </div>
-      <PrescriptionDispensing prescriptionId={prescriptionId} status={status} items={items} />
+      <PrescriptionDispensing
+        prescriptionId={prescriptionId}
+        status={status}
+        items={items}
+      />
     </div>
   );
 }
