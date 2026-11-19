@@ -17,7 +17,7 @@ async function requireActiveSession() {
   if (isTauriRuntime()) {
     const { runDbRead } = await import("./sqlite/database");
     const rows = await runDbRead((db) =>
-      db.select<Array<NonNullable<typeof user>>>(
+      db.select<NonNullable<typeof user>[]>(
         "SELECT u.id, u.email, u.role, u.status FROM users u JOIN sessions s ON s.user_id = u.id WHERE s.token = ? AND s.expires_at > ? LIMIT 1",
         [token, new Date().toISOString()]
       )

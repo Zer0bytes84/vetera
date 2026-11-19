@@ -280,7 +280,7 @@ const normalizeDbPayloadToExistingColumns = (
   payload: Record<string, unknown>,
   availableColumns: Set<string>
 ) => {
-  const mappedEntries: Array<[string, unknown]> = [];
+  const mappedEntries: [string, unknown][] = [];
   for (const [key, value] of Object.entries(payload)) {
     // A patient's reference is read from its own table and is never written back.
     if (key === "reference" && !availableColumns.has(key)) {
