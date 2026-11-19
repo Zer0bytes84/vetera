@@ -202,13 +202,12 @@ export const createSlashCommandsSuggestion = (
       return items.filter((item) => frequent.has(item.title));
     }
     return items
-      .filter((item) => {
-        return (
+      .filter(
+        (item) =>
           item.title.toLocaleLowerCase("fr").includes(search) ||
           item.description.toLocaleLowerCase("fr").includes(search) ||
           item.keywords?.some((k) => k.includes(search))
-        );
-      })
+      )
       .slice(0, 20);
   },
 

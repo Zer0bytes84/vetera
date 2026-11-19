@@ -121,9 +121,8 @@ const formatDate = (value?: string) => {
   }).format(new Date(`${value.slice(0, 10)}T12:00:00`));
 };
 
-const productStatus = (product: Product): Exclude<StockFilter, "all"> => {
-  return stockAlert(product);
-};
+const productStatus = (product: Product): Exclude<StockFilter, "all"> =>
+  stockAlert(product);
 
 const statusCopy: Record<
   Exclude<StockFilter, "all">,

@@ -325,24 +325,26 @@ export function useFinancesPageModel({
     setIsInvoiceDialogOpen(true);
   });
 
-  const invoiceStats = useMemo(() => {
-    return invoices.reduce(
-      (stats, invoice) => {
-        if (invoice.documentStatus !== "issued") {
+  const invoiceStats = useMemo(
+    () =>
+      invoices.reduce(
+        (stats, invoice) => {
+          if (invoice.documentStatus !== "issued") {
+            return stats;
+          }
+          stats.gross += invoice.grossAmount;
+          stats.collected +=
+            invoice.completedPaymentAmount - invoice.completedRefundAmount;
+          stats.balance += invoice.balanceAmount;
+          if (invoice.settlementStatus === "overdue") {
+            stats.overdue += invoice.balanceAmount;
+          }
           return stats;
-        }
-        stats.gross += invoice.grossAmount;
-        stats.collected +=
-          invoice.completedPaymentAmount - invoice.completedRefundAmount;
-        stats.balance += invoice.balanceAmount;
-        if (invoice.settlementStatus === "overdue") {
-          stats.overdue += invoice.balanceAmount;
-        }
-        return stats;
-      },
-      { balance: 0, collected: 0, gross: 0, overdue: 0 }
-    );
-  }, [invoices]);
+        },
+        { balance: 0, collected: 0, gross: 0, overdue: 0 }
+      ),
+    [invoices]
+  );
 
   const financeSectionCards = useMemo<SectionCardItem[]>(() => {
     // Without the invoices, no amount is known: never claim "soldé" or "aucun retard".

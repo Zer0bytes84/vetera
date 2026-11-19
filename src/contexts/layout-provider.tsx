@@ -21,8 +21,8 @@ interface LayoutContextType {
 const LayoutContext = createContext<LayoutContextType | null>(null);
 
 export function LayoutProvider({ children }: { children: React.ReactNode }) {
-  const [collapsible, _setCollapsible] = useState<Collapsible>(() => {
-    return guardSync(
+  const [collapsible, _setCollapsible] = useState<Collapsible>(() =>
+    guardSync(
       () => {
         const saved = localStorage.getItem(
           LAYOUT_COLLAPSIBLE_KEY
@@ -32,12 +32,10 @@ export function LayoutProvider({ children }: { children: React.ReactNode }) {
           : DEFAULT_COLLAPSIBLE;
       },
       {
-        recover: () => {
-          return DEFAULT_COLLAPSIBLE;
-        },
+        recover: () => DEFAULT_COLLAPSIBLE,
       }
-    );
-  });
+    )
+  );
 
   const setCollapsible = (value: Collapsible) => {
     _setCollapsible(value);

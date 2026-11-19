@@ -35,25 +35,20 @@ export function StockLotSelect({
         receivedAt: string;
       }
     >();
-    for (const row of inventory.balances.filter((row) => {
-      return guardSync(
-        () => {
-          return (
-            row.productId === productId &&
-            row.quantity > 0 &&
-            row.locationActive &&
-            (!locationId || row.locationId === locationId) &&
-            (!row.expiryDate || row.expiryDate >= today) &&
-            stockDay(new Date(stockTimestamp(row.receivedAt))) <= today
-          );
-        },
+    for (const row of inventory.balances.filter((row) =>
+      guardSync(
+        () =>
+          row.productId === productId &&
+          row.quantity > 0 &&
+          row.locationActive &&
+          (!locationId || row.locationId === locationId) &&
+          (!row.expiryDate || row.expiryDate >= today) &&
+          stockDay(new Date(stockTimestamp(row.receivedAt))) <= today,
         {
-          recover: () => {
-            return false;
-          },
+          recover: () => false,
         }
-      );
-    })) {
+      )
+    )) {
       const key = row.lotId ?? "unassigned";
       const group = groups.get(key) ?? {
         quantity: 0,

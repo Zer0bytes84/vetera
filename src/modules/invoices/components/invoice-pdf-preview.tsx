@@ -69,8 +69,8 @@ export function InvoicePdfPreview({
     let cancelled = false;
     let dispose: (() => void) | undefined;
     let cancelRender: (() => void) | undefined;
-    void (async () => {
-      return await guard(
+    void (async () =>
+      await guard(
         async () => {
           const pdfjs = await loadPdfjsDist();
           const worker = await loadPdfjsDistBuildPdfWorkerMinMjs();
@@ -116,8 +116,7 @@ export function InvoicePdfPreview({
             }
           },
         }
-      );
-    })();
+      ))();
     return () => {
       cancelled = true;
       cancelRender?.();

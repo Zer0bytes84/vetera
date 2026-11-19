@@ -161,28 +161,22 @@ function Scanner({ onOpenMovements }: { onOpenMovements?: () => void }) {
   const qty = parseStockQuantityInput(quantity);
   const available = stockBalance(
     inventory.balances
-      .filter((row) => {
-        return guardSync(
-          () => {
-            return (
-              row.productId === matched?.id &&
-              row.locationId === location &&
-              row.locationActive &&
-              row.quantity > 0 &&
-              (!row.expiryDate || row.expiryDate >= stockDay()) &&
-              stockDay(new Date(stockTimestamp(row.receivedAt))) <=
-                stockDay() &&
-              (lot === "fifo" ||
-                row.lotId === (lot === "unassigned" ? null : lot))
-            );
-          },
+      .filter((row) =>
+        guardSync(
+          () =>
+            row.productId === matched?.id &&
+            row.locationId === location &&
+            row.locationActive &&
+            row.quantity > 0 &&
+            (!row.expiryDate || row.expiryDate >= stockDay()) &&
+            stockDay(new Date(stockTimestamp(row.receivedAt))) <= stockDay() &&
+            (lot === "fifo" ||
+              row.lotId === (lot === "unassigned" ? null : lot)),
           {
-            recover: () => {
-              return false;
-            },
+            recover: () => false,
           }
-        );
-      })
+        )
+      )
       .reduce((sum, row) => sum + row.quantity, 0)
   );
   const valid =
