@@ -1,0 +1,376 @@
+/* The command palette (⌘K, and the header's search field), at the standard of the upgraded views since 19 November
+   2026: a grey band holding two white panels, the field and the results, set apart by the contrast of fills alone. No
+   line, no shadow; radii concentric with the band's 6 px frame (band 22, panels 16, rows and tiles 10). Icons are
+   Heroicons 20 solid, the sidebar's for pages. The row's hint shows on the current row only; with nothing typed, the
+   quick actions lead as tiles.
+   `:root:root` outranks the dialog defaults (`premium-workspace.css` gives every Clean dialog an opaque surface with
+   !important); the radius answers CommandDialog's layered `rounded-[24px]!` in the same layer. */
+
+:root:root .command-palette[data-slot="dialog-content"] {
+  display: block;
+  padding: var(--card-frame) !important;
+  border: 0 !important;
+  background: var(--card-band) !important;
+  box-shadow: none !important;
+  color: var(--foreground);
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  overflow: hidden;
+}
+@layer utilities {
+  :root:root .command-palette[data-slot="dialog-content"] {
+    border-radius: calc(var(--radius-panel) + var(--card-frame)) !important;
+  }
+}
+
+.command-palette-root {
+  display: flex;
+  max-height: min(720px, calc(100dvh - 4rem));
+  flex-direction: column;
+  gap: var(--card-frame);
+  container-type: inline-size;
+}
+
+/* ---------- The field ---------- */
+.command-palette-field {
+  display: flex;
+  min-height: 56px;
+  flex: none;
+  align-items: center;
+  gap: 12px;
+  padding-block: 8px;
+  padding-inline: 18px 10px;
+  border-radius: var(--radius-panel);
+  background: var(--card-inset);
+  cursor: text;
+}
+.command-palette-field-icon {
+  width: 20px;
+  height: 20px;
+  flex: none;
+  color: var(--muted-foreground);
+}
+.command-palette-input {
+  min-width: 0;
+  flex: 1;
+  height: 40px;
+  border: 0;
+  background: transparent;
+  color: var(--foreground);
+  font-size: 16px;
+  font-weight: 450;
+  outline: none;
+}
+.command-palette-input::placeholder { color: color-mix(in oklab, var(--muted-foreground), transparent 15%); }
+
+/* The three filters: words on the field, the chosen one on the band's grey. */
+.command-palette-filters { flex: none; cursor: default; }
+:root:root .command-palette .command-palette-filters [data-tabs-style="segmented"] {
+  display: flex;
+  height: 32px !important;
+  min-height: 32px !important;
+  gap: 2px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+:root:root .command-palette .command-palette-filters [data-tabs-style="segmented"] > [data-slot="tabs-trigger"] {
+  height: 32px !important;
+  min-height: 32px !important;
+  padding-inline: 10px !important;
+  border: 0 !important;
+  border-radius: 10px !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: var(--muted-foreground) !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+}
+:root:root .command-palette .command-palette-filters [data-tabs-style="segmented"] > [data-slot="tabs-trigger"]::after { display: none !important; }
+:root:root .command-palette .command-palette-filters [data-tabs-style="segmented"] > [data-slot="tabs-trigger"]:is([data-state="active"], [aria-selected="true"], [data-active]:not([data-active="false"])) {
+  background: var(--card-band) !important;
+  color: var(--foreground) !important;
+}
+.command-palette-count {
+  margin-inline-start: 6px;
+  color: var(--muted-foreground);
+  font-variant-numeric: tabular-nums;
+}
+.command-palette-clear {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  flex: none;
+  place-items: center;
+  border-radius: 10px;
+  color: var(--muted-foreground);
+  transition: background-color 120ms ease, color 120ms ease;
+}
+.command-palette-clear svg { width: 18px; height: 18px; }
+@media (hover: hover) and (pointer: fine) {
+  .command-palette-clear:hover { background: var(--card-band); color: var(--foreground); }
+}
+.command-palette-clear:focus-visible { outline: 2px solid var(--ring); outline-offset: 1px; }
+
+/* ---------- Keys: a fill, no ring ---------- */
+:root:root .command-palette [data-slot="kbd"] {
+  height: 22px;
+  min-width: 22px;
+  padding-inline: 6px;
+  border: 0 !important;
+  border-radius: 6px;
+  background: color-mix(in oklab, var(--foreground) 6%, transparent) !important;
+  box-shadow: none !important;
+  color: var(--muted-foreground);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+}
+.command-palette-esc { flex: none; margin-inline-end: 6px; }
+
+/* ---------- The results ---------- */
+.command-palette-list {
+  min-height: 0;
+  max-height: min(520px, calc(100dvh - 15rem));
+  flex: 0 1 auto;
+  padding: var(--card-frame);
+  border-radius: var(--radius-panel);
+  background: var(--card-inset);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scroll-padding-block: var(--card-frame);
+  scrollbar-width: none;
+}
+.command-palette-list::-webkit-scrollbar { display: none; }
+/* cmdk's list measures its height on an inner sizer: no transition, the panel follows the results at once. */
+.command-palette-list > [cmdk-list-sizer] { display: flex; flex-direction: column; gap: 4px; }
+
+.command-palette [cmdk-group-heading] {
+  padding: 10px 10px 6px;
+  color: var(--muted-foreground);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 16px;
+  letter-spacing: 0.01em;
+}
+.command-palette [cmdk-group-items] { display: flex; flex-direction: column; }
+
+/* A row: the icon on a quiet fill, title over a second line, the hint at the end. */
+.command-palette-item {
+  display: flex;
+  min-height: 48px;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  color: var(--foreground);
+  font-size: 14px;
+  cursor: pointer;
+  outline: none;
+  user-select: none;
+}
+.command-palette-item[data-selected="true"] { background: var(--card-band); }
+.command-palette-item[data-disabled="true"] { cursor: default; }
+
+.command-palette-glyph {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  flex: none;
+  place-items: center;
+  border-radius: 8px;
+  background: color-mix(in oklab, var(--foreground) 5%, transparent);
+  color: var(--muted-foreground);
+}
+.command-palette-glyph svg { width: 18px; height: 18px; }
+.command-palette-item[data-selected="true"] .command-palette-glyph {
+  background: color-mix(in oklab, var(--foreground) 7%, transparent);
+  color: var(--foreground);
+}
+
+.command-palette-text {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+}
+.command-palette-title {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 8px;
+  font-weight: 550;
+  line-height: 20px;
+}
+.command-palette-title-text { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.command-palette-sub {
+  overflow: hidden;
+  color: var(--muted-foreground);
+  font-size: 12px;
+  line-height: 16px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.command-palette-reference { font-variant-numeric: tabular-nums; }
+:root:root .command-palette .command-palette-status {
+  height: 18px;
+  flex: none;
+  padding-inline: 6px;
+  border: 0 !important;
+  font-size: 12px;
+  font-weight: 450;
+}
+.command-palette-tag {
+  flex: none;
+  padding: 1px 6px;
+  border-radius: 6px;
+  background: color-mix(in oklab, var(--foreground) 6%, transparent);
+  color: var(--muted-foreground);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+}
+
+.command-palette-hint,
+.command-palette-item > .command-palette-shortcut {
+  flex: none;
+  color: var(--muted-foreground);
+  font-size: 12px;
+  opacity: 0;
+}
+.command-palette-item[data-selected="true"] > :is(.command-palette-hint, .command-palette-shortcut) { opacity: 1; }
+
+/* The passage found leads: the excerpt in ink on two lines, the words found marked by a fill, the record and its
+   section quiet below. */
+.command-palette-passage { align-items: flex-start; }
+.command-palette-passage .command-palette-glyph { margin-top: 2px; }
+.command-palette-excerpt {
+  display: -webkit-box;
+  overflow: hidden;
+  color: color-mix(in oklab, var(--foreground), transparent 18%);
+  font-size: 14px;
+  line-height: 20px;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+}
+.command-palette-excerpt mark {
+  padding-inline: 2px;
+  border-radius: 4px;
+  background: color-mix(in oklab, var(--primary) 12%, transparent);
+  color: var(--foreground);
+  font-weight: 600;
+}
+.dark .command-palette-excerpt mark { background: color-mix(in oklab, var(--primary) 30%, transparent); }
+.command-palette-source { color: var(--foreground); font-weight: 500; }
+
+.command-palette-loading { color: var(--muted-foreground); font-size: 13px; }
+.command-palette-spinner { width: 16px; height: 16px; animation: command-palette-spin 900ms linear infinite; }
+@keyframes command-palette-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .command-palette-spinner { animation: none; } }
+
+/* ---------- Quick actions as tiles (nothing typed) ---------- */
+.command-palette-actions[data-layout="tiles"] [cmdk-group-items] {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--card-frame);
+}
+@container (max-width: 560px) {
+  .command-palette-actions[data-layout="tiles"] [cmdk-group-items] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+.command-palette-actions[data-layout="tiles"] .command-palette-item {
+  position: relative;
+  min-height: 72px;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 12px;
+  background: color-mix(in oklab, var(--card-band) 70%, var(--card-inset));
+}
+.command-palette-actions[data-layout="tiles"] .command-palette-item[data-selected="true"] {
+  background: color-mix(in oklab, var(--card-band), var(--foreground) 4%);
+}
+.command-palette-actions[data-layout="tiles"] .command-palette-glyph {
+  width: 20px;
+  height: 20px;
+  border-radius: 0;
+  background: transparent !important;
+  color: var(--foreground);
+}
+.command-palette-actions[data-layout="tiles"] .command-palette-glyph svg { width: 20px; height: 20px; }
+.command-palette-actions[data-layout="tiles"] .command-palette-text { flex: none; width: 100%; }
+.command-palette-actions[data-layout="tiles"] .command-palette-title { font-size: 13px; font-weight: 550; line-height: 17px; }
+.command-palette-actions[data-layout="tiles"] .command-palette-title-text { white-space: normal; overflow-wrap: anywhere; }
+.command-palette-actions[data-layout="tiles"] .command-palette-sub { display: none; }
+.command-palette-actions[data-layout="tiles"] .command-palette-item > :is(.command-palette-shortcut, .command-palette-hint) {
+  position: absolute;
+  inset-block-start: 10px;
+  inset-inline-end: 10px;
+}
+.command-palette-actions[data-layout="tiles"] .command-palette-item > .command-palette-shortcut { opacity: 1; }
+
+/* ---------- Nothing found ---------- */
+.command-palette-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 36px 24px 32px;
+  text-align: center;
+}
+.command-palette-empty-glyph {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  margin-bottom: 6px;
+  place-items: center;
+  border-radius: 12px;
+  background: var(--card-band);
+  color: var(--muted-foreground);
+}
+.command-palette-empty-glyph svg { width: 20px; height: 20px; }
+.command-palette-empty-title { color: var(--foreground); font-size: 14px; font-weight: 550; }
+.command-palette-empty-hint { max-width: 40ch; color: var(--muted-foreground); font-size: 13px; line-height: 18px; }
+.command-palette-empty-action {
+  display: inline-flex;
+  height: 36px;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  padding-inline: 14px;
+  border-radius: 999px;
+  background: var(--card-band);
+  color: var(--foreground);
+  font-size: 13px;
+  font-weight: 500;
+  transition: background-color 120ms ease;
+}
+.command-palette-empty-action svg { width: 16px; height: 16px; }
+@media (hover: hover) and (pointer: fine) {
+  .command-palette-empty-action:hover { background: color-mix(in oklab, var(--card-band), var(--foreground) 5%); }
+}
+.command-palette-empty-action:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+
+/* ---------- Footer, on the band ---------- */
+.command-palette-footer {
+  display: flex;
+  flex: none;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 16px;
+  padding: 2px 12px 4px;
+  color: var(--muted-foreground);
+  font-size: 12px;
+}
+.command-palette-footer > span { display: inline-flex; align-items: center; gap: 6px; }
+:root:root .command-palette .command-palette-footer [data-slot="kbd"] { height: 20px; min-width: 20px; padding-inline: 4px; }
+@media (max-width: 639px) { .command-palette-footer-close { display: none !important; } }
+
+/* Narrow sheet: the filters go under the field. */
+@container (max-width: 520px) {
+  .command-palette-field { flex-wrap: wrap; row-gap: 4px; }
+  .command-palette-filters { order: 3; flex-basis: 100%; }
+}

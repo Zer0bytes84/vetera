@@ -1,0 +1,2280 @@
+{
+ "light": {
+  "ouverture": {
+   "inventaire": {
+    "tabs": [
+     {
+      "texte": "Tout",
+      "actif": true
+     },
+     {
+      "texte": "Dossiers",
+      "actif": false
+     },
+     {
+      "texte": "Commandes",
+      "actif": false
+     }
+    ],
+    "groups": [
+     {
+      "titre": "Récents",
+      "items": [
+       {
+        "value": "recent:patient:zz-p3 Rex Chien · Berger",
+        "texte": "Rex Chien · Berger Récemment ouvert",
+        "actif": true
+       },
+       {
+        "value": "recent:view:agenda Agenda Planning et rendez-vous",
+        "texte": "Agenda Planning et rendez-vous Récemment ouvert",
+        "actif": false
+       }
+      ]
+     },
+     {
+      "titre": "À retrouver rapidement",
+      "items": [
+       {
+        "value": "suggestion:mp1xm8tp7k7vpc3vs6d Réglisse",
+        "texte": "Réglisse En bonne santé Chien · Berger Allemand · ZZ-TEST Hana Ghali Ouvrir ↵",
+        "actif": false
+       },
+       {
+        "value": "suggestion:mvobg2xrmzwfaj3psci Praline",
+        "texte": "Praline En bonne santé Cheval · Arabe · ZZ-TEST Nour Lounes Ouvrir ↵",
+        "actif": false
+       },
+       {
+        "value": "suggestion:mnma3iqx51fr51th3ta Biscotte",
+        "texte": "Biscotte En bonne santé Chien · Yorkshire · ZZ-TEST Amel Arbi Ouvrir ↵",
+        "actif": false
+       }
+      ]
+     },
+     {
+      "titre": "Pages & Navigation",
+      "items": [
+       {
+        "value": "navigation:dashboard Tableau de bord Vue d'ensemble",
+        "texte": "Tableau de bord Vue d'ensemble Naviguer ↵",
+        "actif": false
+       },
+       {
+        "value": "navigation:patients Patients Dossiers médicaux",
+        "texte": "Patients Dossiers médicaux Naviguer ↵",
+        "actif": false
+       },
+       {
+        "value": "navigation:agenda Agenda Rendez-vous et planning",
+        "texte": "Agenda Rendez-vous et planning Naviguer ↵",
+        "actif": false
+       },
+       {
+        "value": "navigation:notes Documents Mémos et documents",
+        "texte": "Documents Mémos et documents Naviguer ↵",
+        "actif": false
+       },
+       {
+        "value": "navigation:clinique Soins & hospitalisation Soins du jour et hospitalisations",
+        "texte": "Soins & hospitalisation Soins du jour et hospitalisations Naviguer ↵",
+        "actif": false
+       },
+       {
+        "value": "navigation:taches Tâches To-do list et rappels",
+        "texte": "Tâches To-do list et rappels Naviguer ↵",
+        "actif": false
+       },
+       {
+        "value": "navigation:stock Stock & Pharma Inventaire produits",
+        "texte": "Stock & Pharma Inventaire produits Naviguer ↵",
+        "actif": false
+       },
+       {
+        "value": "navigation:finances Finances Facturation et recettes",
+        "texte": "Finances Facturation et recettes Naviguer ↵",
+        "actif": false
+       },
+       {
+        "value": "navigation:equipe Équipe Gestion du personnel",
+        "texte": "Équipe Gestion du personnel Naviguer ↵",
+        "actif": false
+       },
+       {
+        "value": "navigation:parametres Paramètres Configuration",
+        "texte": "Paramètres Configuration Naviguer ↵",
+        "actif": false
+       }
+      ]
+     },
+     {
+      "titre": "Actions rapides",
+      "items": [
+       {
+        "value": "action:open-assistant Ouvrir l'Assistant IA Dictée SOAP et cas similaires",
+        "texte": "Ouvrir l'Assistant IA Dictée guidée SOAP & recherche clinique ⌘J",
+        "actif": false
+       },
+       {
+        "value": "action:new-patient Nouveau patient Créer un dossier animal",
+        "texte": "Nouveau patient ⌘N",
+        "actif": false
+       },
+       {
+        "value": "action:new-appointment Nouveau rendez-vous Programmer une visite",
+        "texte": "Nouveau rendez-vous ⌘R",
+        "actif": false
+       },
+       {
+        "value": "action:open-consultation Nouvelle consultation Ouvrir une consultation",
+        "texte": "Ouvrir une consultation ↵",
+        "actif": false
+       },
+       {
+        "value": "action:new-prescription Nouvelle ordonnance Prescription médicaments",
+        "texte": "Nouvelle ordonnance",
+        "actif": false
+       },
+       {
+        "value": "action:new-invoice Nouvelle facture Établir une facture",
+        "texte": "Nouvelle facture",
+        "actif": false
+       },
+       {
+        "value": "action:new-hospitalization Nouvelle hospitalisation Admission box",
+        "texte": "Nouvelle hospitalisation",
+        "actif": false
+       },
+       {
+        "value": "action:new-anesthesia Nouvelle anesthésie Protocole anesthésique",
+        "texte": "Nouvelle anesthésie",
+        "actif": false
+       }
+      ]
+     }
+    ],
+    "vide": null,
+    "pied": "↑ ↓ Naviguer ↵ Sélectionner esc Fermer",
+    "premierEcran": [
+     "Rex",
+     "Agenda",
+     "Réglisse",
+     "Praline",
+     "Biscotte",
+     "Tableau de bord",
+     "Patients"
+    ]
+   },
+   "finition": {
+    "traits": [
+     "1× div border-bottom 1px oklab(0.925504 0.000797033 -0.00255537 / 0.6)",
+     "1× div border-top 1px rgb(239, 239, 240)"
+    ],
+    "ombres": [
+     "1× div[dialog-content] rgba(0, 0, 0, 0.08) 0px 0px 0px 0.5px, rgba(0, 0, 0, 0.06) 0px 4px 12px 0px, rgba(0, 0, 0,",
+     "1× kbd[kbd] rgb(230, 230, 232) 0px 0px 0px 1px inset",
+     "4× div[heading] rgb(239, 239, 240) 0px -1px 0px 0px inset",
+     "23× div[item][command-item] rgb(239, 239, 240) 0px -1px 0px 0px inset"
+    ],
+    "rayons": {
+     "feuille": "17.6px"
+    },
+    "feuilleOmbre": "rgba(0, 0, 0, 0.08) 0px 0px 0px 0.5px, rgba(0, 0, 0, 0.06) 0px 4px 12px 0px, rgba(0, 0, 0, 0.1) 0px 16px 32px -8px",
+    "feuilleFond": "rgb(255, 255, 255)"
+   },
+   "erreurs": []
+  },
+  "dossiers": {
+   "inventaire": {
+    "tabs": [
+     {
+      "texte": "Tout",
+      "actif": false
+     },
+     {
+      "texte": "Dossiers",
+      "actif": true
+     },
+     {
+      "texte": "Commandes",
+      "actif": false
+     }
+    ],
+    "groups": [
+     {
+      "titre": "À retrouver rapidement",
+      "items": [
+       {
+        "value": "suggestion:mp1xm8tp7k7vpc3vs6d Réglisse",
+        "texte": "Réglisse En bonne santé Chien · Berger Allemand · ZZ-TEST Hana Ghali Ouvrir ↵",
+        "actif": false
+       },
+       {
+        "value": "suggestion:mvobg2xrmzwfaj3psci Praline",
+        "texte": "Praline En bonne santé Cheval · Arabe · ZZ-TEST Nour Lounes Ouvrir ↵",
+        "actif": false
+       },
+       {
+        "value": "suggestion:mnma3iqx51fr51th3ta Biscotte",
+        "texte": "Biscotte En bonne santé Chien · Yorkshire · ZZ-TEST Amel Arbi Ouvrir ↵",
+        "actif": false
+       }
+      ]
+     },
+     {
+      "titre": "Suggestions cliniques · Recherches fréquentes",
+      "items": [
+       {
+        "value": "semantic:sug:sug-vaccin Vaccination & Rappels vaccin",
+        "texte": "Vaccination & Rappels Protocole Rechercher les protocoles, échéances et vaccins Rechercher ↵",
+        "actif": false
+       },
+       {
+        "value": "semantic:sug:sug-bacterie Infections bactériennes & Germes bactérie",
+        "texte": "Infections bactériennes & Germes Diagnostic Rechercher les causes bactériennes et cultures Rechercher ↵",
+        "actif": false
+       },
+       {
+        "value": "semantic:sug:sug-antibio Traitements antibiotiques antibiotique",
+        "texte": "Traitements antibiotiques Thérapeutique Rechercher amoxicilline, céfovécine, Synulox, Convenia Rechercher ↵",
+        "actif": false
+       },
+       {
+        "value": "semantic:sug:sug-metacam AINS & Méloxicam (Metacam) Metacam",
+        "texte": "AINS & Méloxicam (Metacam) Molécule Anti-inflammatoires, gestion de la douleur et arthrose Rechercher ↵",
+        "actif": false
+       },
+       {
+        "value": "semantic:sug:sug-irc Insuffisance rénale chronique (IRC) IRC",
+        "texte": "Insuffisance rénale chronique (IRC) Pathologie MRC, néphropathies, créatinine et suivi rénal Rechercher ↵",
+        "actif": false
+       }
+      ]
+     }
+    ],
+    "vide": null,
+    "pied": "↑ ↓ Naviguer ↵ Sélectionner esc Fermer",
+    "premierEcran": [
+     "Réglisse",
+     "Praline",
+     "Biscotte",
+     "Vaccination & Rappels",
+     "Infections bactériennes & Germes",
+     "Traitements antibiotiques",
+     "AINS & Méloxicam (Metacam)"
+    ]
+   },
+   "finition": {
+    "traits": [
+     "1× div border-bottom 1px oklab(0.925504 0.000797033 -0.00255537 / 0.6)",
+     "1× div border-top 1px rgb(239, 239, 240)"
+    ],
+    "ombres": [
+     "1× div[dialog-content] rgba(0, 0, 0, 0.08) 0px 0px 0px 0.5px, rgba(0, 0, 0, 0.06) 0px 4px 12px 0px, rgba(0, 0, 0,",
+     "1× kbd[kbd] rgb(230, 230, 232) 0px 0px 0px 1px inset",
+     "2× div[heading] rgb(239, 239, 240) 0px -1px 0px 0px inset",
+     "8× div[item][command-item] rgb(239, 239, 240) 0px -1px 0px 0px inset"
+    ],
+    "rayons": {
+     "feuille": "17.6px"
+    },
+    "feuilleOmbre": "rgba(0, 0, 0, 0.08) 0px 0px 0px 0.5px, rgba(0, 0, 0, 0.06) 0px 4px 12px 0px, rgba(0, 0, 0, 0.1) 0px 16px 32px -8px",
+    "feuilleFond": "rgb(255, 255, 255)"
+   },
+   "erreurs": []
+  },
+  "commandes": {
+   "inventaire": {
+    "tabs": [
+     {
+      "texte": "Tout",
+      "actif": false
+     },
+     {
+      "texte": "Dossiers",
+      "actif": false
+     },
+     {
+      "texte": "Commandes",
+      "actif": true
+     }
+    ],
+    "groups": [
+     {
+      "titre": "Pages & Navigation",
+      "items": [
+       {
+        "value": "navigation:dashboard Tableau de bord Vue d'ensemble",
+        "texte": "Tableau de bord Vue d'ensemble Naviguer ↵",
+        "actif": false
+       },
+       {
+        "value": "navigation:patients Patients Dossiers médicaux",
+        "texte": "Patients Dossiers médicaux Naviguer ↵",
+        "actif": false
+       },
+       {
+        "value": "navigation:agenda Agenda Rendez-vous et planning",
+        "texte": "Agenda Rendez-vous et planning Naviguer ↵",
+        "actif": false
+       },
+       {
+        "value": "navigation:notes Documents Mémos et documents",
+        "texte": "Documents Mémos et documents Naviguer ↵",
+        "actif": false
+       },
+       {
+        "value": "navigation:clinique Soins & hospitalisation Soins du jour et hospitalisations",
+        "texte": "Soins & hospitalisation Soins du jour et hospitalisations Naviguer ↵",
+        "actif": false
+       },
+       {
+        "value": "navigation:taches Tâches To-do list et rappels",
+        "texte": "Tâches To-do list et rappels Naviguer ↵",
+        "actif": false
+       },
+       {
+        "value": "navigation:stock Stock & Pharma Inventaire produits",
+        "texte": "Stock & Pharma Inventaire produits Naviguer ↵",
+        "actif": false
+       },
+       {
+        "value": "navigation:finances Finances Facturation et recettes",
+        "texte": "Finances Facturation et recettes Naviguer ↵",
+        "actif": false
+       },
+       {
+        "value": "navigation:equipe Équipe Gestion du personnel",
+        "texte": "Équipe Gestion du personnel Naviguer ↵",
+        "actif": false
+       },
+       {
+        "value": "navigation:parametres Paramètres Configuration",
+        "texte": "Paramètres Configuration Naviguer ↵",
+        "actif": false
+       }
+      ]
+     },
+     {
+      "titre": "Actions rapides",
+      "items": [
+       {
+        "value": "action:open-assistant Ouvrir l'Assistant IA Dictée SOAP et cas similaires",
+        "texte": "Ouvrir l'Assistant IA Dictée guidée SOAP & recherche clinique ⌘J",
+        "actif": false
+       },
+       {
+        "value": "action:new-patient Nouveau patient Créer un dossier animal",
+        "texte": "Nouveau patient ⌘N",
+        "actif": false
+       },
+       {
+        "value": "action:new-appointment Nouveau rendez-vous Programmer une visite",
+        "texte": "Nouveau rendez-vous ⌘R",
+        "actif": false
+       },
+       {
+        "value": "action:open-consultation Nouvelle consultation Ouvrir une consultation",
+        "texte": "Ouvrir une consultation ↵",
+        "actif": false
+       },
+       {
+        "value": "action:new-prescription Nouvelle ordonnance Prescription médicaments",
+        "texte": "Nouvelle ordonnance",
+        "actif": false
+       },
+       {
+        "value": "action:new-invoice Nouvelle facture Établir une facture",
+        "texte": "Nouvelle facture",
+        "actif": false
+       },
+       {
+        "value": "action:new-hospitalization Nouvelle hospitalisation Admission box",
+        "texte": "Nouvelle hospitalisation",
+        "actif": false
+       },
+       {
+        "value": "action:new-anesthesia Nouvelle anesthésie Protocole anesthésique",
+        "texte": "Nouvelle anesthésie",
+        "actif": false
+       }
+      ]
+     }
+    ],
+    "vide": null,
+    "pied": "↑ ↓ Naviguer ↵ Sélectionner esc Fermer",
+    "premierEcran": [
+     "Tableau de bord",
+     "Patients",
+     "Agenda",
+     "Documents",
+     "Soins & hospitalisation",
+     "Tâches",
+     "Stock & Pharma",
+     "Finances",
+     "Équipe"
+    ]
+   },
+   "finition": {
+    "traits": [
+     "1× div border-bottom 1px oklab(0.925504 0.000797033 -0.00255537 / 0.6)",
+     "1× div border-top 1px rgb(239, 239, 240)"
+    ],
+    "ombres": [
+     "1× div[dialog-content] rgba(0, 0, 0, 0.08) 0px 0px 0px 0.5px, rgba(0, 0, 0, 0.06) 0px 4px 12px 0px, rgba(0, 0, 0,",
+     "1× kbd[kbd] rgb(230, 230, 232) 0px 0px 0px 1px inset",
+     "2× div[heading] rgb(239, 239, 240) 0px -1px 0px 0px inset",
+     "18× div[item][command-item] rgb(239, 239, 240) 0px -1px 0px 0px inset"
+    ],
+    "rayons": {
+     "feuille": "17.6px"
+    },
+    "feuilleOmbre": "rgba(0, 0, 0, 0.08) 0px 0px 0px 0.5px, rgba(0, 0, 0, 0.06) 0px 4px 12px 0px, rgba(0, 0, 0, 0.1) 0px 16px 32px -8px",
+    "feuilleFond": "rgb(255, 255, 255)"
+   },
+   "erreurs": []
+  },
+  "patient-rex": {
+   "inventaire": {
+    "tabs": [
+     {
+      "texte": "Tout",
+      "actif": true
+     },
+     {
+      "texte": "Dossiers\n2",
+      "actif": false
+     },
+     {
+      "texte": "Commandes",
+      "actif": false
+     }
+    ],
+    "groups": [
+     {
+      "titre": "Patients",
+      "items": [
+       {
+        "value": "patient:zz-p3 Rex Chien",
+        "texte": "Rex En bonne santé ID-0014 · Chien · Propriétaire : ZZ-TEST Yasmine Ouali ↵ Ouvrir",
+        "actif": true
+       }
+      ]
+     },
+     {
+      "titre": "Cas similaires · Recherche clinique",
+      "items": [
+       {
+        "value": "semantic:patient:zz-p3:zz-p3:patient:0 Rex Patient : Rex (Chien)",
+        "texte": "Rex · Fiche Patient Patient : Rex (Chien) ↵ Ouvrir",
+        "actif": false
+       }
+      ]
+     }
+    ],
+    "vide": null,
+    "pied": "↑ ↓ Naviguer ↵ Sélectionner esc Fermer",
+    "premierEcran": [
+     "Rex",
+     "Rex · Fiche Patient"
+    ]
+   },
+   "finition": {
+    "traits": [
+     "1× div border-bottom 1px oklab(0.925504 0.000797033 -0.00255537 / 0.6)",
+     "1× div border-top 1px rgb(239, 239, 240)"
+    ],
+    "ombres": [
+     "1× div[dialog-content] rgba(0, 0, 0, 0.08) 0px 0px 0px 0.5px, rgba(0, 0, 0, 0.06) 0px 4px 12px 0px, rgba(0, 0, 0,",
+     "2× div[heading] rgb(239, 239, 240) 0px -1px 0px 0px inset",
+     "2× div[item][command-item] rgb(239, 239, 240) 0px -1px 0px 0px inset"
+    ],
+    "rayons": {
+     "feuille": "17.6px"
+    },
+    "feuilleOmbre": "rgba(0, 0, 0, 0.08) 0px 0px 0px 0.5px, rgba(0, 0, 0, 0.06) 0px 4px 12px 0px, rgba(0, 0, 0, 0.1) 0px 16px 32px -8px",
+    "feuilleFond": "rgb(255, 255, 255)"
+   },
+   "erreurs": []
+  },
+  "clinique-vaccin": {
+   "inventaire": {
+    "tabs": [
+     {
+      "texte": "Tout",
+      "actif": true
+     },
+     {
+      "texte": "Dossiers\n6",
+      "actif": false
+     },
+     {
+      "texte": "Commandes",
+      "actif": false
+     }
+    ],
+    "groups": [
+     {
+      "titre": "Actions contextuelles",
+      "items": [
+       {
+        "value": "vaccin Biscotte",
+        "texte": "Ajouter un vaccin · Biscotte Chien · Yorkshire · Dossier existant ↵ Exécuter",
+        "actif": true
+       },
+       {
+        "value": "vaccin Caramel",
+        "texte": "Ajouter un vaccin · Caramel Lapin · Sauvage · Dossier existant ↵ Exécuter",
+        "actif": false
+       },
+       {
+        "value": "vaccin Filou",
+        "texte": "Ajouter un vaccin · Filou Chien · Malinois · Dossier existant ↵ Exécuter",
+        "actif": false
+       },
+       {
+        "value": "vaccin Gribouille",
+        "texte": "Ajouter un vaccin · Gribouille Chat · Siamois · Dossier existant ↵ Exécuter",
+        "actif": false
+       },
+       {
+        "value": "vaccin Noisette",
+        "texte": "Ajouter un vaccin · Noisette Chien · Berger Allemand · Dossier existant ↵ Exécuter",
+        "actif": false
+       }
+      ]
+     },
+     {
+      "titre": "Cas similaires · Recherche clinique",
+      "items": [
+       {
+        "value": "semantic:soap:zz-p3:zz-s1:subjective:0 Rex Rappel annuel du vaccin CHPPiL, propriétaire signale une toux légère depuis trois jours.",
+        "texte": "Rex · Motif & antécédents Rappel annuel du vaccin CHPPiL, propriétaire signale une toux légère depuis trois jours. ↵ Ouvrir",
+        "actif": false
+       },
+       {
+        "value": "semantic:consultation:mnq12fbpln5nf125pk:mupuxsyuidfw63dclsm:consultation:0 Caramel Consultation Vaccin : Caramel - Vaccin — Motif : Vaccination",
+        "texte": "Caramel · Consultation Consultation Vaccin : Caramel - Vaccin — Motif : Vaccination ↵ Ouvrir",
+        "actif": false
+       },
+       {
+        "value": "semantic:consultation:mqh9hyyisrbmj76o52q:ms6vlzdom461tewqiij:consultation:0 Zéphyr Consultation Vaccin : Zéphyr - Vaccin",
+        "texte": "Zéphyr · Consultation Consultation Vaccin : Zéphyr - Vaccin ↵ Ouvrir",
+        "actif": false
+       },
+       {
+        "value": "semantic:consultation:mqh9hyyisrbmj76o52q:ms0die2vinhnq930f:consultation:0 Zéphyr Consultation Vaccin : Zéphyr - Vaccin — Traitement : vaccin",
+        "texte": "Zéphyr · Consultation Consultation Vaccin : Zéphyr - Vaccin — Traitement : vaccin ↵ Ouvrir",
+        "actif": false
+       },
+       {
+        "value": "semantic:consultation:mp5h0nr1gbg6rc68yel:mp5hkd83f75kbdajzkq:consultation:0 Vanille Consultation Consultation : Vanille - Consultation — Motif : Vaccin",
+        "texte": "Vanille · Consultation Consultation Consultation : Vanille - Consultation — Motif : Vaccin ↵ Ouvrir",
+        "actif": false
+       },
+       {
+        "value": "semantic:consultation:mnq12fbpln5nf125pk:mpbx2sqmpt30t1wkgl:consultation:0 Caramel Consultation Vaccin : Caramel - Vaccin",
+        "texte": "Caramel · Consultation Consultation Vaccin : Caramel - Vaccin ↵ Ouvrir",
+        "actif": false
+       }
+      ]
+     },
+     {
+      "titre": "Rendez-vous",
+      "items": [
+       {
+        "value": "appointment:mupuxsyuidfw63dclsm Caramel - Vaccin Vaccin Caramel",
+        "texte": "Caramel - Vaccin Caramel · 1 octobre 2026 20:30 Agenda ↵",
+        "actif": false
+       },
+       {
+        "value": "appointment:ms6vlzdom461tewqiij Zéphyr - Vaccin Vaccin Zéphyr",
+        "texte": "Zéphyr - Vaccin Zéphyr · 30 juillet 2026 15:30 Agenda ↵",
+        "actif": false
+       },
+       {
+        "value": "appointment:ms0die2vinhnq930f Zéphyr - Vaccin Vaccin Zéphyr",
+        "texte": "Zéphyr - Vaccin Zéphyr · 25 juillet 2026 15:30 Agenda ↵",
+        "actif": false
+       },
+       {
+        "value": "appointment:mpbx2sqmpt30t1wkgl Caramel - Vaccin Vaccin Caramel",
+        "texte": "Caramel - Vaccin Caramel · 14 mai 2026 15:00 Agenda ↵",
+        "actif": false
+       }
+      ]
+     }
+    ],
+    "vide": null,
+    "pied": "↑ ↓ Naviguer ↵ Sélectionner esc Fermer",
+    "premierEcran": [
+     "Ajouter un vaccin · Biscotte",
+     "Ajouter un vaccin · Caramel",
+     "Ajouter un vaccin · Filou",
+     "Ajouter un vaccin · Gribouille",
+     "Ajouter un vaccin · Noisette",
+     "Rex · Motif & antécédents",
+     "Caramel · Consultation"
+    ]
+   },
+   "finition": {
+    "traits": [
+     "1× div border-bottom 1px oklab(0.925504 0.000797033 -0.00255537 / 0.6)",
+     "1× div border-top 1px rgb(239, 239, 240)"
+    ],
+    "ombres": [
+     "1× div[dialog-content] rgba(0, 0, 0, 0.08) 0px 0px 0px 0.5px, rgba(0, 0, 0, 0.06) 0px 4px 12px 0px, rgba(0, 0, 0,",
+     "3× div[heading] rgb(239, 239, 240) 0px -1px 0px 0px inset",
+     "15× div[item][command-item] rgb(239, 239, 240) 0px -1px 0px 0px inset"
+    ],
+    "rayons": {
+     "feuille": "17.6px"
+    },
+    "feuilleOmbre": "rgba(0, 0, 0, 0.08) 0px 0px 0px 0.5px, rgba(0, 0, 0, 0.06) 0px 4px 12px 0px, rgba(0, 0, 0, 0.1) 0px 16px 32px -8px",
+    "feuilleFond": "rgb(255, 255, 255)"
+   },
+   "erreurs": []
+  },
+  "clinique-irc": {
+   "inventaire": {
+    "tabs": [
+     {
+      "texte": "Tout",
+      "actif": true
+     },
+     {
+      "texte": "Dossiers\n1",
+      "actif": false
+     },
+     {
+      "texte": "Commandes",
+      "actif": false
+     }
+    ],
+    "groups": [
+     {
+      "titre": "Cas similaires · Recherche clinique",
+      "items": [
+       {
+        "value": "semantic:soap:zz-p4:zz-s2:assessment:0 Minou Insuffisance rénale chronique (IRC) stade 3 IRIS.",
+        "texte": "Minou · Évaluation Insuffisance rénale chronique (IRC) stade 3 IRIS. ↵ Ouvrir",
+        "actif": true
+       }
+      ]
+     }
+    ],
+    "vide": null,
+    "pied": "↑ ↓ Naviguer ↵ Sélectionner esc Fermer",
+    "premierEcran": [
+     "Minou · Évaluation"
+    ]
+   },
+   "finition": {
+    "traits": [
+     "1× div border-bottom 1px oklab(0.925504 0.000797033 -0.00255537 / 0.6)",
+     "1× div border-top 1px rgb(239, 239, 240)"
+    ],
+    "ombres": [
+     "1× div[dialog-content] rgba(0, 0, 0, 0.08) 0px 0px 0px 0.5px, rgba(0, 0, 0, 0.06) 0px 4px 12px 0px, rgba(0, 0, 0,",
+     "1× div[heading] rgb(239, 239, 240) 0px -1px 0px 0px inset",
+     "1× div[item][command-item] rgb(239, 239, 240) 0px -1px 0px 0px inset"
+    ],
+    "rayons": {
+     "feuille": "17.6px"
+    },
+    "feuilleOmbre": "rgba(0, 0, 0, 0.08) 0px 0px 0px 0.5px, rgba(0, 0, 0, 0.06) 0px 4px 12px 0px, rgba(0, 0, 0, 0.1) 0px 16px 32px -8px",
+    "feuilleFond": "rgb(255, 255, 255)"
+   },
+   "erreurs": []
+  },
+  "clinique-metacam": {
+   "inventaire": {
+    "tabs": [
+     {
+      "texte": "Tout",
+      "actif": true
+     },
+     {
+      "texte": "Dossiers\n1",
+      "actif": false
+     },
+     {
+      "texte": "Commandes",
+      "actif": false
+     }
+    ],
+    "groups": [
+     {
+      "titre": "Cas similaires · Recherche clinique",
+      "items": [
+       {
+        "value": "semantic:soap:zz-p2:zz-s3:plan:0 Médor Méloxicam (Metacam) 0,1 mg/kg pendant cinq jours, repos strict.",
+        "texte": "Médor · Plan de soins Méloxicam (Metacam) 0,1 mg/kg pendant cinq jours, repos strict. ↵ Ouvrir",
+        "actif": true
+       }
+      ]
+     }
+    ],
+    "vide": null,
+    "pied": "↑ ↓ Naviguer ↵ Sélectionner esc Fermer",
+    "premierEcran": [
+     "Médor · Plan de soins"
+    ]
+   },
+   "finition": {
+    "traits": [
+     "1× div border-bottom 1px oklab(0.925504 0.000797033 -0.00255537 / 0.6)",
+     "1× div border-top 1px rgb(239, 239, 240)"
+    ],
+    "ombres": [
+     "1× div[dialog-content] rgba(0, 0, 0, 0.08) 0px 0px 0px 0.5px, rgba(0, 0, 0, 0.06) 0px 4px 12px 0px, rgba(0, 0, 0,",
+     "1× div[heading] rgb(239, 239, 240) 0px -1px 0px 0px inset",
+     "1× div[item][command-item] rgb(239, 239, 240) 0px -1px 0px 0px inset"
+    ],
+    "rayons": {
+     "feuille": "17.6px"
+    },
+    "feuilleOmbre": "rgba(0, 0, 0, 0.08) 0px 0px 0px 0.5px, rgba(0, 0, 0, 0.06) 0px 4px 12px 0px, rgba(0, 0, 0, 0.1) 0px 16px 32px -8px",
+    "feuilleFond": "rgb(255, 255, 255)"
+   },
+   "erreurs": []
+  },
+  "intention-rdv": {
+   "inventaire": {
+    "tabs": [
+     {
+      "texte": "Tout",
+      "actif": true
+     },
+     {
+      "texte": "Dossiers",
+      "actif": false
+     },
+     {
+      "texte": "Commandes",
+      "actif": false
+     }
+    ],
+    "groups": [
+     {
+      "titre": "Actions contextuelles",
+      "items": [
+       {
+        "value": "rdv minou Minou",
+        "texte": "Nouvelle consultation · Minou Chat · Dossier existant ↵ Exécuter",
+        "actif": true
+       }
+      ]
+     }
+    ],
+    "vide": null,
+    "pied": "↑ ↓ Naviguer ↵ Sélectionner esc Fermer",
+    "premierEcran": [
+     "Nouvelle consultation · Minou"
+    ]
+   },
+   "finition": {
+    "traits": [
+     "1× div border-bottom 1px oklab(0.925504 0.000797033 -0.00255537 / 0.6)",
+     "1× div border-top 1px rgb(239, 239, 240)"
+    ],
+    "ombres": [
+     "1× div[dialog-content] rgba(0, 0, 0, 0.08) 0px 0px 0px 0.5px, rgba(0, 0, 0, 0.06) 0px 4px 12px 0px, rgba(0, 0, 0,",
+     "1× div[heading] rgb(239, 239, 240) 0px -1px 0px 0px inset",
+     "1× div[item][command-item] rgb(239, 239, 240) 0px -1px 0px 0px inset"
+    ],
+    "rayons": {
+     "feuille": "17.6px"
+    },
+    "feuilleOmbre": "rgba(0, 0, 0, 0.08) 0px 0px 0px 0.5px, rgba(0, 0, 0, 0.06) 0px 4px 12px 0px, rgba(0, 0, 0, 0.1) 0px 16px 32px -8px",
+    "feuilleFond": "rgb(255, 255, 255)"
+   },
+   "erreurs": []
+  },
+  "intention-facture": {
+   "inventaire": {
+    "tabs": [
+     {
+      "texte": "Tout",
+      "actif": true
+     },
+     {
+      "texte": "Dossiers",
+      "actif": false
+     },
+     {
+      "texte": "Commandes",
+      "actif": false
+     }
+    ],
+    "groups": [
+     {
+      "titre": "Actions contextuelles",
+      "items": [
+       {
+        "value": "facture arbi ZZ-TEST Amel Arbi",
+        "texte": "Nouvelle facture · ZZ-TEST Amel Arbi Propriétaire existant · Établir un devis ou une facture ↵ Facturer",
+        "actif": true
+       }
+      ]
+     }
+    ],
+    "vide": null,
+    "pied": "↑ ↓ Naviguer ↵ Sélectionner esc Fermer",
+    "premierEcran": [
+     "Nouvelle facture · ZZ-TEST Amel Arbi"
+    ]
+   },
+   "finition": {
+    "traits": [
+     "1× div border-bottom 1px oklab(0.925504 0.000797033 -0.00255537 / 0.6)",
+     "1× div border-top 1px rgb(239, 239, 240)"
+    ],
+    "ombres": [
+     "1× div[dialog-content] rgba(0, 0, 0, 0.08) 0px 0px 0px 0.5px, rgba(0, 0, 0, 0.06) 0px 4px 12px 0px, rgba(0, 0, 0,",
+     "1× div[heading] rgb(239, 239, 240) 0px -1px 0px 0px inset",
+     "1× div[item][command-item] rgb(239, 239, 240) 0px -1px 0px 0px inset"
+    ],
+    "rayons": {
+     "feuille": "17.6px"
+    },
+    "feuilleOmbre": "rgba(0, 0, 0, 0.08) 0px 0px 0px 0.5px, rgba(0, 0, 0, 0.06) 0px 4px 12px 0px, rgba(0, 0, 0, 0.1) 0px 16px 32px -8px",
+    "feuilleFond": "rgb(255, 255, 255)"
+   },
+   "erreurs": []
+  },
+  "page-agenda": {
+   "inventaire": {
+    "tabs": [
+     {
+      "texte": "Tout",
+      "actif": true
+     },
+     {
+      "texte": "Dossiers",
+      "actif": false
+     },
+     {
+      "texte": "Commandes",
+      "actif": false
+     }
+    ],
+    "groups": [
+     {
+      "titre": "Pages & Navigation",
+      "items": [
+       {
+        "value": "navigation:agenda Agenda Rendez-vous et planning",
+        "texte": "Agenda Rendez-vous et planning Naviguer ↵",
+        "actif": true
+       }
+      ]
+     },
+     {
+      "titre": "Actions rapides",
+      "items": [
+       {
+        "value": "action:new-appointment Nouveau rendez-vous Programmer une visite",
+        "texte": "Nouveau rendez-vous ⌘R",
+        "actif": false
+       }
+      ]
+     }
+    ],
+    "vide": null,
+    "pied": "↑ ↓ Naviguer ↵ Sélectionner esc Fermer",
+    "premierEcran": [
+     "Agenda",
+     "Nouveau rendez-vous"
+    ]
+   },
+   "finition": {
+    "traits": [
+     "1× div border-bottom 1px oklab(0.925504 0.000797033 -0.00255537 / 0.6)",
+     "1× div border-top 1px rgb(239, 239, 240)"
+    ],
+    "ombres": [
+     "1× div[dialog-content] rgba(0, 0, 0, 0.08) 0px 0px 0px 0.5px, rgba(0, 0, 0, 0.06) 0px 4px 12px 0px, rgba(0, 0, 0,",
+     "2× div[heading] rgb(239, 239, 240) 0px -1px 0px 0px inset",
+     "2× div[item][command-item] rgb(239, 239, 240) 0px -1px 0px 0px inset"
+    ],
+    "rayons": {
+     "feuille": "17.6px"
+    },
+    "feuilleOmbre": "rgba(0, 0, 0, 0.08) 0px 0px 0px 0.5px, rgba(0, 0, 0, 0.06) 0px 4px 12px 0px, rgba(0, 0, 0, 0.1) 0px 16px 32px -8px",
+    "feuilleFond": "rgb(255, 255, 255)"
+   },
+   "erreurs": []
+  },
+  "aucun-resultat": {
+   "inventaire": {
+    "tabs": [
+     {
+      "texte": "Tout",
+      "actif": true
+     },
+     {
+      "texte": "Dossiers",
+      "actif": false
+     },
+     {
+      "texte": "Commandes",
+      "actif": false
+     }
+    ],
+    "groups": [],
+    "vide": "Aucun résultat pour « xyzqw » Vérifiez l’orthographe ou cherchez un nom de patient, une page ou une action. Créer un patient nommé « xyzqw »",
+    "pied": "↑ ↓ Naviguer ↵ Sélectionner esc Fermer",
+    "premierEcran": []
+   },
+   "finition": {
+    "traits": [
+     "1× div border-bottom 1px oklab(0.925504 0.000797033 -0.00255537 / 0.6)",
+     "1× span border-top 1px oklab(0.925504 0.000797033 -0.00255537 / 0.7)",
+     "1× span border-right 1px oklab(0.925504 0.000797033 -0.00255537 / 0.7)",
+     "1× span border-bottom 1px oklab(0.925504 0.000797033 -0.00255537 / 0.7)",
+     "1× span border-left 1px oklab(0.925504 0.000797033 -0.00255537 / 0.7)",
+     "1× button border-top 1px rgb(230, 230, 232)",
+     "1× button border-right 1px rgb(230, 230, 232)",
+     "1× button border-bottom 1px rgb(230, 230, 232)",
+     "1× button border-left 1px rgb(230, 230, 232)",
+     "1× div border-top 1px rgb(239, 239, 240)"
+    ],
+    "ombres": [
+     "1× div[dialog-content] rgba(0, 0, 0, 0.08) 0px 0px 0px 0.5px, rgba(0, 0, 0, 0.06) 0px 4px 12px 0px, rgba(0, 0, 0,",
+     "1× span rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0",
+     "1× button rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0"
+    ],
+    "rayons": {
+     "feuille": "17.6px"
+    },
+    "feuilleOmbre": "rgba(0, 0, 0, 0.08) 0px 0px 0px 0.5px, rgba(0, 0, 0, 0.06) 0px 4px 12px 0px, rgba(0, 0, 0, 0.1) 0px 16px 32px -8px",
+    "feuilleFond": "rgb(255, 255, 255)"
+   },
+   "erreurs": []
+  },
+  "fleche-bas": {
+   "inventaire": {
+    "tabs": [
+     {
+      "texte": "Tout",
+      "actif": true
+     },
+     {
+      "texte": "Dossiers",
+      "actif": false
+     },
+     {
+      "texte": "Commandes",
+      "actif": false
+     }
+    ],
+    "groups": [
+     {
+      "titre": "Récents",
+      "items": [
+       {
+        "value": "recent:patient:zz-p3 Rex Chien · Berger",
+        "texte": "Rex Chien · Berger Récemment ouvert",
+        "actif": false
+       },
+       {
+        "value": "recent:view:agenda Agenda Planning et rendez-vous",
+        "texte": "Agenda Planning et rendez-vous Récemment ouvert",
+        "actif": false
+       }
+      ]
+     },
+     {
+      "titre": "À retrouver rapidement",
+      "items": [
+       {
+        "value": "suggestion:mp1xm8tp7k7vpc3vs6d Réglisse",
+        "texte": "Réglisse En bonne santé Chien · Berger Allemand · ZZ-TEST Hana Ghali Ouvrir ↵",
+        "actif": true
+       },
+       {
+        "value": "suggestion:mvobg2xrmzwfaj3psci Praline",
+        "texte": "Praline En bonne santé Cheval · Arabe · ZZ-TEST Nour Lounes Ouvrir ↵",
+        "actif": false
+       },
+       {
+        "value": "suggestion:mnma3iqx51fr51th3ta Biscotte",
+        "texte": "Biscotte En bonne santé Chien · Yorkshire · ZZ-TEST Amel Arbi Ouvrir ↵",
+        "actif": false
+       }
+      ]
+     },
+     {
+      "titre": "Pages & Navigation",
+      "items": [
+       {
+        "value": "navigation:dashboard Tableau de bord Vue d'ensemble",
+        "texte": "Tableau de bord Vue d'ensemble Naviguer ↵",
+        "actif": false
+       },
+       {
+        "value": "navigation:patients Patients Dossiers médicaux",
+        "texte": "Patients Dossiers médicaux Naviguer ↵",
+        "actif": false
+       },
+       {
+        "value": "navigation:agenda Agenda Rendez-vous et planning",
+        "texte": "Agenda Rendez-vous et planning Naviguer ↵",
+        "actif": false
+       },
+       {
+        "value": "navigation:notes Documents Mémos et documents",
+        "texte": "Documents Mémos et documents Naviguer ↵",
+        "actif": false
+       },
+       {
+        "value": "navigation:clinique Soins & hospitalisation Soins du jour et hospitalisations",
+        "texte": "Soins & hospitalisation Soins du jour et hospitalisations Naviguer ↵",
+        "actif": false
+       },
+       {
+        "value": "navigation:taches Tâches To-do list et rappels",
+        "texte": "Tâches To-do list et rappels Naviguer ↵",
+        "actif": false
+       },
+       {
+        "value": "navigation:stock Stock & Pharma Inventaire produits",
+        "texte": "Stock & Pharma Inventaire produits Naviguer ↵",
+        "actif": false
+       },
+       {
+        "value": "navigation:finances Finances Facturation et recettes",
+        "texte": "Finances Facturation et recettes Naviguer ↵",
+        "actif": false
+       },
+       {
+        "value": "navigation:equipe Équipe Gestion du personnel",
+        "texte": "Équipe Gestion du personnel Naviguer ↵",
+        "actif": false
+       },
+       {
+        "value": "navigation:parametres Paramètres Configuration",
+        "texte": "Paramètres Configuration Naviguer ↵",
+        "actif": false
+       }
+      ]
+     },
+     {
+      "titre": "Actions rapides",
+      "items": [
+       {
+        "value": "action:open-assistant Ouvrir l'Assistant IA Dictée SOAP et cas similaires",
+        "texte": "Ouvrir l'Assistant IA Dictée guidée SOAP & recherche clinique ⌘J",
+        "actif": false
+       },
+       {
+        "value": "action:new-patient Nouveau patient Créer un dossier animal",
+        "texte": "Nouveau patient ⌘N",
+        "actif": false
+       },
+       {
+        "value": "action:new-appointment Nouveau rendez-vous Programmer une visite",
+        "texte": "Nouveau rendez-vous ⌘R",
+        "actif": false
+       },
+       {
+        "value": "action:open-consultation Nouvelle consultation Ouvrir une consultation",
+        "texte": "Ouvrir une consultation ↵",
+        "actif": false
+       },
+       {
+        "value": "action:new-prescription Nouvelle ordonnance Prescription médicaments",
+        "texte": "Nouvelle ordonnance",
+        "actif": false
+       },
+       {
+        "value": "action:new-invoice Nouvelle facture Établir une facture",
+        "texte": "Nouvelle facture",
+        "actif": false
+       },
+       {
+        "value": "action:new-hospitalization Nouvelle hospitalisation Admission box",
+        "texte": "Nouvelle hospitalisation",
+        "actif": false
+       },
+       {
+        "value": "action:new-anesthesia Nouvelle anesthésie Protocole anesthésique",
+        "texte": "Nouvelle anesthésie",
+        "actif": false
+       }
+      ]
+     }
+    ],
+    "vide": null,
+    "pied": "↑ ↓ Naviguer ↵ Sélectionner esc Fermer",
+    "premierEcran": [
+     "Rex",
+     "Agenda",
+     "Réglisse",
+     "Praline",
+     "Biscotte",
+     "Tableau de bord",
+     "Patients"
+    ]
+   },
+   "finition": {
+    "traits": [
+     "1× div border-bottom 1px oklab(0.925504 0.000797033 -0.00255537 / 0.6)",
+     "1× div border-top 1px rgb(239, 239, 240)"
+    ],
+    "ombres": [
+     "1× div[dialog-content] rgba(0, 0, 0, 0.08) 0px 0px 0px 0.5px, rgba(0, 0, 0, 0.06) 0px 4px 12px 0px, rgba(0, 0, 0,",
+     "1× kbd[kbd] rgb(230, 230, 232) 0px 0px 0px 1px inset",
+     "4× div[heading] rgb(239, 239, 240) 0px -1px 0px 0px inset",
+     "23× div[item][command-item] rgb(239, 239, 240) 0px -1px 0px 0px inset"
+    ],
+    "rayons": {
+     "feuille": "17.6px"
+    },
+    "feuilleOmbre": "rgba(0, 0, 0, 0.08) 0px 0px 0px 0.5px, rgba(0, 0, 0, 0.06) 0px 4px 12px 0px, rgba(0, 0, 0, 0.1) 0px 16px 32px -8px",
+    "feuilleFond": "rgb(255, 255, 255)"
+   },
+   "erreurs": []
+  }
+ },
+ "dark": {
+  "ouverture": {
+   "inventaire": {
+    "tabs": [
+     {
+      "texte": "Tout",
+      "actif": true
+     },
+     {
+      "texte": "Dossiers",
+      "actif": false
+     },
+     {
+      "texte": "Commandes",
+      "actif": false
+     }
+    ],
+    "groups": [
+     {
+      "titre": "Récents",
+      "items": [
+       {
+        "value": "recent:patient:zz-p3 Rex Chien · Berger",
+        "texte": "Rex Chien · Berger Récemment ouvert",
+        "actif": true
+       },
+       {
+        "value": "recent:view:agenda Agenda Planning et rendez-vous",
+        "texte": "Agenda Planning et rendez-vous Récemment ouvert",
+        "actif": false
+       }
+      ]
+     },
+     {
+      "titre": "À retrouver rapidement",
+      "items": [
+       {
+        "value": "suggestion:mp1xm8tp7k7vpc3vs6d Réglisse",
+        "texte": "Réglisse En bonne santé Chien · Berger Allemand · ZZ-TEST Hana Ghali Ouvrir ↵",
+        "actif": false
+       },
+       {
+        "value": "suggestion:mvobg2xrmzwfaj3psci Praline",
+        "texte": "Praline En bonne santé Cheval · Arabe · ZZ-TEST Nour Lounes Ouvrir ↵",
+        "actif": false
+       },
+       {
+        "value": "suggestion:mnma3iqx51fr51th3ta Biscotte",
+        "texte": "Biscotte En bonne santé Chien · Yorkshire · ZZ-TEST Amel Arbi Ouvrir ↵",
+        "actif": false
+       }
+      ]
+     },
+     {
+      "titre": "Pages & Navigation",
+      "items": [
+       {
+        "value": "navigation:dashboard Tableau de bord Vue d'ensemble",
+        "texte": "Tableau de bord Vue d'ensemble Naviguer ↵",
+        "actif": false
+       },
+       {
+        "value": "navigation:patients Patients Dossiers médicaux",
+        "texte": "Patients Dossiers médicaux Naviguer ↵",
+        "actif": false
+       },
+       {
+        "value": "navigation:agenda Agenda Rendez-vous et planning",
+        "texte": "Agenda Rendez-vous et planning Naviguer ↵",
+        "actif": false
+       },
+       {
+        "value": "navigation:notes Documents Mémos et documents",
+        "texte": "Documents Mémos et documents Naviguer ↵",
+        "actif": false
+       },
+       {
+        "value": "navigation:clinique Soins & hospitalisation Soins du jour et hospitalisations",
+        "texte": "Soins & hospitalisation Soins du jour et hospitalisations Naviguer ↵",
+        "actif": false
+       },
+       {
+        "value": "navigation:taches Tâches To-do list et rappels",
+        "texte": "Tâches To-do list et rappels Naviguer ↵",
+        "actif": false
+       },
+       {
+        "value": "navigation:stock Stock & Pharma Inventaire produits",
+        "texte": "Stock & Pharma Inventaire produits Naviguer ↵",
+        "actif": false
+       },
+       {
+        "value": "navigation:finances Finances Facturation et recettes",
+        "texte": "Finances Facturation et recettes Naviguer ↵",
+        "actif": false
+       },
+       {
+        "value": "navigation:equipe Équipe Gestion du personnel",
+        "texte": "Équipe Gestion du personnel Naviguer ↵",
+        "actif": false
+       },
+       {
+        "value": "navigation:parametres Paramètres Configuration",
+        "texte": "Paramètres Configuration Naviguer ↵",
+        "actif": false
+       }
+      ]
+     },
+     {
+      "titre": "Actions rapides",
+      "items": [
+       {
+        "value": "action:open-assistant Ouvrir l'Assistant IA Dictée SOAP et cas similaires",
+        "texte": "Ouvrir l'Assistant IA Dictée guidée SOAP & recherche clinique ⌘J",
+        "actif": false
+       },
+       {
+        "value": "action:new-patient Nouveau patient Créer un dossier animal",
+        "texte": "Nouveau patient ⌘N",
+        "actif": false
+       },
+       {
+        "value": "action:new-appointment Nouveau rendez-vous Programmer une visite",
+        "texte": "Nouveau rendez-vous ⌘R",
+        "actif": false
+       },
+       {
+        "value": "action:open-consultation Nouvelle consultation Ouvrir une consultation",
+        "texte": "Ouvrir une consultation ↵",
+        "actif": false
+       },
+       {
+        "value": "action:new-prescription Nouvelle ordonnance Prescription médicaments",
+        "texte": "Nouvelle ordonnance",
+        "actif": false
+       },
+       {
+        "value": "action:new-invoice Nouvelle facture Établir une facture",
+        "texte": "Nouvelle facture",
+        "actif": false
+       },
+       {
+        "value": "action:new-hospitalization Nouvelle hospitalisation Admission box",
+        "texte": "Nouvelle hospitalisation",
+        "actif": false
+       },
+       {
+        "value": "action:new-anesthesia Nouvelle anesthésie Protocole anesthésique",
+        "texte": "Nouvelle anesthésie",
+        "actif": false
+       }
+      ]
+     }
+    ],
+    "vide": null,
+    "pied": "↑ ↓ Naviguer ↵ Sélectionner esc Fermer",
+    "premierEcran": [
+     "Rex",
+     "Agenda",
+     "Réglisse",
+     "Praline",
+     "Biscotte",
+     "Tableau de bord",
+     "Patients"
+    ]
+   },
+   "finition": {
+    "traits": [
+     "1× div border-bottom 1px oklab(0.260077 -0.000372097 -0.00398037 / 0.6)",
+     "1× div border-top 1px rgb(28, 28, 30)"
+    ],
+    "ombres": [
+     "1× div[dialog-content] rgba(255, 255, 255, 0.1) 0px 0px 0px 0.5px",
+     "1× kbd[kbd] rgb(35, 36, 38) 0px 0px 0px 1px inset",
+     "4× div[heading] rgb(28, 28, 30) 0px -1px 0px 0px inset",
+     "23× div[item][command-item] rgb(28, 28, 30) 0px -1px 0px 0px inset"
+    ],
+    "rayons": {
+     "feuille": "17.6px"
+    },
+    "feuilleOmbre": "rgba(255, 255, 255, 0.1) 0px 0px 0px 0.5px",
+    "feuilleFond": "rgb(23, 23, 25)"
+   },
+   "erreurs": []
+  },
+  "dossiers": {
+   "inventaire": {
+    "tabs": [
+     {
+      "texte": "Tout",
+      "actif": false
+     },
+     {
+      "texte": "Dossiers",
+      "actif": true
+     },
+     {
+      "texte": "Commandes",
+      "actif": false
+     }
+    ],
+    "groups": [
+     {
+      "titre": "À retrouver rapidement",
+      "items": [
+       {
+        "value": "suggestion:mp1xm8tp7k7vpc3vs6d Réglisse",
+        "texte": "Réglisse En bonne santé Chien · Berger Allemand · ZZ-TEST Hana Ghali Ouvrir ↵",
+        "actif": false
+       },
+       {
+        "value": "suggestion:mvobg2xrmzwfaj3psci Praline",
+        "texte": "Praline En bonne santé Cheval · Arabe · ZZ-TEST Nour Lounes Ouvrir ↵",
+        "actif": false
+       },
+       {
+        "value": "suggestion:mnma3iqx51fr51th3ta Biscotte",
+        "texte": "Biscotte En bonne santé Chien · Yorkshire · ZZ-TEST Amel Arbi Ouvrir ↵",
+        "actif": false
+       }
+      ]
+     },
+     {
+      "titre": "Suggestions cliniques · Recherches fréquentes",
+      "items": [
+       {
+        "value": "semantic:sug:sug-vaccin Vaccination & Rappels vaccin",
+        "texte": "Vaccination & Rappels Protocole Rechercher les protocoles, échéances et vaccins Rechercher ↵",
+        "actif": false
+       },
+       {
+        "value": "semantic:sug:sug-bacterie Infections bactériennes & Germes bactérie",
+        "texte": "Infections bactériennes & Germes Diagnostic Rechercher les causes bactériennes et cultures Rechercher ↵",
+        "actif": false
+       },
+       {
+        "value": "semantic:sug:sug-antibio Traitements antibiotiques antibiotique",
+        "texte": "Traitements antibiotiques Thérapeutique Rechercher amoxicilline, céfovécine, Synulox, Convenia Rechercher ↵",
+        "actif": false
+       },
+       {
+        "value": "semantic:sug:sug-metacam AINS & Méloxicam (Metacam) Metacam",
+        "texte": "AINS & Méloxicam (Metacam) Molécule Anti-inflammatoires, gestion de la douleur et arthrose Rechercher ↵",
+        "actif": false
+       },
+       {
+        "value": "semantic:sug:sug-irc Insuffisance rénale chronique (IRC) IRC",
+        "texte": "Insuffisance rénale chronique (IRC) Pathologie MRC, néphropathies, créatinine et suivi rénal Rechercher ↵",
+        "actif": false
+       }
+      ]
+     }
+    ],
+    "vide": null,
+    "pied": "↑ ↓ Naviguer ↵ Sélectionner esc Fermer",
+    "premierEcran": [
+     "Réglisse",
+     "Praline",
+     "Biscotte",
+     "Vaccination & Rappels",
+     "Infections bactériennes & Germes",
+     "Traitements antibiotiques",
+     "AINS & Méloxicam (Metacam)"
+    ]
+   },
+   "finition": {
+    "traits": [
+     "1× div border-bottom 1px oklab(0.260077 -0.000372097 -0.00398037 / 0.6)",
+     "1× div border-top 1px rgb(28, 28, 30)"
+    ],
+    "ombres": [
+     "1× div[dialog-content] rgba(255, 255, 255, 0.1) 0px 0px 0px 0.5px",
+     "1× kbd[kbd] rgb(35, 36, 38) 0px 0px 0px 1px inset",
+     "2× div[heading] rgb(28, 28, 30) 0px -1px 0px 0px inset",
+     "8× div[item][command-item] rgb(28, 28, 30) 0px -1px 0px 0px inset"
+    ],
+    "rayons": {
+     "feuille": "17.6px"
+    },
+    "feuilleOmbre": "rgba(255, 255, 255, 0.1) 0px 0px 0px 0.5px",
+    "feuilleFond": "rgb(23, 23, 25)"
+   },
+   "erreurs": []
+  },
+  "commandes": {
+   "inventaire": {
+    "tabs": [
+     {
+      "texte": "Tout",
+      "actif": false
+     },
+     {
+      "texte": "Dossiers",
+      "actif": false
+     },
+     {
+      "texte": "Commandes",
+      "actif": true
+     }
+    ],
+    "groups": [
+     {
+      "titre": "Pages & Navigation",
+      "items": [
+       {
+        "value": "navigation:dashboard Tableau de bord Vue d'ensemble",
+        "texte": "Tableau de bord Vue d'ensemble Naviguer ↵",
+        "actif": false
+       },
+       {
+        "value": "navigation:patients Patients Dossiers médicaux",
+        "texte": "Patients Dossiers médicaux Naviguer ↵",
+        "actif": false
+       },
+       {
+        "value": "navigation:agenda Agenda Rendez-vous et planning",
+        "texte": "Agenda Rendez-vous et planning Naviguer ↵",
+        "actif": false
+       },
+       {
+        "value": "navigation:notes Documents Mémos et documents",
+        "texte": "Documents Mémos et documents Naviguer ↵",
+        "actif": false
+       },
+       {
+        "value": "navigation:clinique Soins & hospitalisation Soins du jour et hospitalisations",
+        "texte": "Soins & hospitalisation Soins du jour et hospitalisations Naviguer ↵",
+        "actif": false
+       },
+       {
+        "value": "navigation:taches Tâches To-do list et rappels",
+        "texte": "Tâches To-do list et rappels Naviguer ↵",
+        "actif": false
+       },
+       {
+        "value": "navigation:stock Stock & Pharma Inventaire produits",
+        "texte": "Stock & Pharma Inventaire produits Naviguer ↵",
+        "actif": false
+       },
+       {
+        "value": "navigation:finances Finances Facturation et recettes",
+        "texte": "Finances Facturation et recettes Naviguer ↵",
+        "actif": false
+       },
+       {
+        "value": "navigation:equipe Équipe Gestion du personnel",
+        "texte": "Équipe Gestion du personnel Naviguer ↵",
+        "actif": false
+       },
+       {
+        "value": "navigation:parametres Paramètres Configuration",
+        "texte": "Paramètres Configuration Naviguer ↵",
+        "actif": false
+       }
+      ]
+     },
+     {
+      "titre": "Actions rapides",
+      "items": [
+       {
+        "value": "action:open-assistant Ouvrir l'Assistant IA Dictée SOAP et cas similaires",
+        "texte": "Ouvrir l'Assistant IA Dictée guidée SOAP & recherche clinique ⌘J",
+        "actif": false
+       },
+       {
+        "value": "action:new-patient Nouveau patient Créer un dossier animal",
+        "texte": "Nouveau patient ⌘N",
+        "actif": false
+       },
+       {
+        "value": "action:new-appointment Nouveau rendez-vous Programmer une visite",
+        "texte": "Nouveau rendez-vous ⌘R",
+        "actif": false
+       },
+       {
+        "value": "action:open-consultation Nouvelle consultation Ouvrir une consultation",
+        "texte": "Ouvrir une consultation ↵",
+        "actif": false
+       },
+       {
+        "value": "action:new-prescription Nouvelle ordonnance Prescription médicaments",
+        "texte": "Nouvelle ordonnance",
+        "actif": false
+       },
+       {
+        "value": "action:new-invoice Nouvelle facture Établir une facture",
+        "texte": "Nouvelle facture",
+        "actif": false
+       },
+       {
+        "value": "action:new-hospitalization Nouvelle hospitalisation Admission box",
+        "texte": "Nouvelle hospitalisation",
+        "actif": false
+       },
+       {
+        "value": "action:new-anesthesia Nouvelle anesthésie Protocole anesthésique",
+        "texte": "Nouvelle anesthésie",
+        "actif": false
+       }
+      ]
+     }
+    ],
+    "vide": null,
+    "pied": "↑ ↓ Naviguer ↵ Sélectionner esc Fermer",
+    "premierEcran": [
+     "Tableau de bord",
+     "Patients",
+     "Agenda",
+     "Documents",
+     "Soins & hospitalisation",
+     "Tâches",
+     "Stock & Pharma",
+     "Finances",
+     "Équipe"
+    ]
+   },
+   "finition": {
+    "traits": [
+     "1× div border-bottom 1px oklab(0.260077 -0.000372097 -0.00398037 / 0.6)",
+     "1× div border-top 1px rgb(28, 28, 30)"
+    ],
+    "ombres": [
+     "1× div[dialog-content] rgba(255, 255, 255, 0.1) 0px 0px 0px 0.5px",
+     "1× kbd[kbd] rgb(35, 36, 38) 0px 0px 0px 1px inset",
+     "2× div[heading] rgb(28, 28, 30) 0px -1px 0px 0px inset",
+     "18× div[item][command-item] rgb(28, 28, 30) 0px -1px 0px 0px inset"
+    ],
+    "rayons": {
+     "feuille": "17.6px"
+    },
+    "feuilleOmbre": "rgba(255, 255, 255, 0.1) 0px 0px 0px 0.5px",
+    "feuilleFond": "rgb(23, 23, 25)"
+   },
+   "erreurs": []
+  },
+  "patient-rex": {
+   "inventaire": {
+    "tabs": [
+     {
+      "texte": "Tout",
+      "actif": true
+     },
+     {
+      "texte": "Dossiers\n2",
+      "actif": false
+     },
+     {
+      "texte": "Commandes",
+      "actif": false
+     }
+    ],
+    "groups": [
+     {
+      "titre": "Patients",
+      "items": [
+       {
+        "value": "patient:zz-p3 Rex Chien",
+        "texte": "Rex En bonne santé ID-0014 · Chien · Propriétaire : ZZ-TEST Yasmine Ouali ↵ Ouvrir",
+        "actif": true
+       }
+      ]
+     },
+     {
+      "titre": "Cas similaires · Recherche clinique",
+      "items": [
+       {
+        "value": "semantic:patient:zz-p3:zz-p3:patient:0 Rex Patient : Rex (Chien)",
+        "texte": "Rex · Fiche Patient Patient : Rex (Chien) ↵ Ouvrir",
+        "actif": false
+       }
+      ]
+     }
+    ],
+    "vide": null,
+    "pied": "↑ ↓ Naviguer ↵ Sélectionner esc Fermer",
+    "premierEcran": [
+     "Rex",
+     "Rex · Fiche Patient"
+    ]
+   },
+   "finition": {
+    "traits": [
+     "1× div border-bottom 1px oklab(0.260077 -0.000372097 -0.00398037 / 0.6)",
+     "1× div border-top 1px rgb(28, 28, 30)"
+    ],
+    "ombres": [
+     "1× div[dialog-content] rgba(255, 255, 255, 0.1) 0px 0px 0px 0.5px",
+     "2× div[heading] rgb(28, 28, 30) 0px -1px 0px 0px inset",
+     "2× div[item][command-item] rgb(28, 28, 30) 0px -1px 0px 0px inset"
+    ],
+    "rayons": {
+     "feuille": "17.6px"
+    },
+    "feuilleOmbre": "rgba(255, 255, 255, 0.1) 0px 0px 0px 0.5px",
+    "feuilleFond": "rgb(23, 23, 25)"
+   },
+   "erreurs": []
+  },
+  "clinique-vaccin": {
+   "inventaire": {
+    "tabs": [
+     {
+      "texte": "Tout",
+      "actif": true
+     },
+     {
+      "texte": "Dossiers\n6",
+      "actif": false
+     },
+     {
+      "texte": "Commandes",
+      "actif": false
+     }
+    ],
+    "groups": [
+     {
+      "titre": "Actions contextuelles",
+      "items": [
+       {
+        "value": "vaccin Biscotte",
+        "texte": "Ajouter un vaccin · Biscotte Chien · Yorkshire · Dossier existant ↵ Exécuter",
+        "actif": true
+       },
+       {
+        "value": "vaccin Caramel",
+        "texte": "Ajouter un vaccin · Caramel Lapin · Sauvage · Dossier existant ↵ Exécuter",
+        "actif": false
+       },
+       {
+        "value": "vaccin Filou",
+        "texte": "Ajouter un vaccin · Filou Chien · Malinois · Dossier existant ↵ Exécuter",
+        "actif": false
+       },
+       {
+        "value": "vaccin Gribouille",
+        "texte": "Ajouter un vaccin · Gribouille Chat · Siamois · Dossier existant ↵ Exécuter",
+        "actif": false
+       },
+       {
+        "value": "vaccin Noisette",
+        "texte": "Ajouter un vaccin · Noisette Chien · Berger Allemand · Dossier existant ↵ Exécuter",
+        "actif": false
+       }
+      ]
+     },
+     {
+      "titre": "Cas similaires · Recherche clinique",
+      "items": [
+       {
+        "value": "semantic:soap:zz-p3:zz-s1:subjective:0 Rex Rappel annuel du vaccin CHPPiL, propriétaire signale une toux légère depuis trois jours.",
+        "texte": "Rex · Motif & antécédents Rappel annuel du vaccin CHPPiL, propriétaire signale une toux légère depuis trois jours. ↵ Ouvrir",
+        "actif": false
+       },
+       {
+        "value": "semantic:consultation:mnq12fbpln5nf125pk:mupuxsyuidfw63dclsm:consultation:0 Caramel Consultation Vaccin : Caramel - Vaccin — Motif : Vaccination",
+        "texte": "Caramel · Consultation Consultation Vaccin : Caramel - Vaccin — Motif : Vaccination ↵ Ouvrir",
+        "actif": false
+       },
+       {
+        "value": "semantic:consultation:mqh9hyyisrbmj76o52q:ms6vlzdom461tewqiij:consultation:0 Zéphyr Consultation Vaccin : Zéphyr - Vaccin",
+        "texte": "Zéphyr · Consultation Consultation Vaccin : Zéphyr - Vaccin ↵ Ouvrir",
+        "actif": false
+       },
+       {
+        "value": "semantic:consultation:mqh9hyyisrbmj76o52q:ms0die2vinhnq930f:consultation:0 Zéphyr Consultation Vaccin : Zéphyr - Vaccin — Traitement : vaccin",
+        "texte": "Zéphyr · Consultation Consultation Vaccin : Zéphyr - Vaccin — Traitement : vaccin ↵ Ouvrir",
+        "actif": false
+       },
+       {
+        "value": "semantic:consultation:mp5h0nr1gbg6rc68yel:mp5hkd83f75kbdajzkq:consultation:0 Vanille Consultation Consultation : Vanille - Consultation — Motif : Vaccin",
+        "texte": "Vanille · Consultation Consultation Consultation : Vanille - Consultation — Motif : Vaccin ↵ Ouvrir",
+        "actif": false
+       },
+       {
+        "value": "semantic:consultation:mnq12fbpln5nf125pk:mpbx2sqmpt30t1wkgl:consultation:0 Caramel Consultation Vaccin : Caramel - Vaccin",
+        "texte": "Caramel · Consultation Consultation Vaccin : Caramel - Vaccin ↵ Ouvrir",
+        "actif": false
+       }
+      ]
+     },
+     {
+      "titre": "Rendez-vous",
+      "items": [
+       {
+        "value": "appointment:mupuxsyuidfw63dclsm Caramel - Vaccin Vaccin Caramel",
+        "texte": "Caramel - Vaccin Caramel · 1 octobre 2026 20:30 Agenda ↵",
+        "actif": false
+       },
+       {
+        "value": "appointment:ms6vlzdom461tewqiij Zéphyr - Vaccin Vaccin Zéphyr",
+        "texte": "Zéphyr - Vaccin Zéphyr · 30 juillet 2026 15:30 Agenda ↵",
+        "actif": false
+       },
+       {
+        "value": "appointment:ms0die2vinhnq930f Zéphyr - Vaccin Vaccin Zéphyr",
+        "texte": "Zéphyr - Vaccin Zéphyr · 25 juillet 2026 15:30 Agenda ↵",
+        "actif": false
+       },
+       {
+        "value": "appointment:mpbx2sqmpt30t1wkgl Caramel - Vaccin Vaccin Caramel",
+        "texte": "Caramel - Vaccin Caramel · 14 mai 2026 15:00 Agenda ↵",
+        "actif": false
+       }
+      ]
+     }
+    ],
+    "vide": null,
+    "pied": "↑ ↓ Naviguer ↵ Sélectionner esc Fermer",
+    "premierEcran": [
+     "Ajouter un vaccin · Biscotte",
+     "Ajouter un vaccin · Caramel",
+     "Ajouter un vaccin · Filou",
+     "Ajouter un vaccin · Gribouille",
+     "Ajouter un vaccin · Noisette",
+     "Rex · Motif & antécédents",
+     "Caramel · Consultation"
+    ]
+   },
+   "finition": {
+    "traits": [
+     "1× div border-bottom 1px oklab(0.260077 -0.000372097 -0.00398037 / 0.6)",
+     "1× div border-top 1px rgb(28, 28, 30)"
+    ],
+    "ombres": [
+     "1× div[dialog-content] rgba(255, 255, 255, 0.1) 0px 0px 0px 0.5px",
+     "3× div[heading] rgb(28, 28, 30) 0px -1px 0px 0px inset",
+     "15× div[item][command-item] rgb(28, 28, 30) 0px -1px 0px 0px inset"
+    ],
+    "rayons": {
+     "feuille": "17.6px"
+    },
+    "feuilleOmbre": "rgba(255, 255, 255, 0.1) 0px 0px 0px 0.5px",
+    "feuilleFond": "rgb(23, 23, 25)"
+   },
+   "erreurs": []
+  },
+  "clinique-irc": {
+   "inventaire": {
+    "tabs": [
+     {
+      "texte": "Tout",
+      "actif": true
+     },
+     {
+      "texte": "Dossiers\n1",
+      "actif": false
+     },
+     {
+      "texte": "Commandes",
+      "actif": false
+     }
+    ],
+    "groups": [
+     {
+      "titre": "Cas similaires · Recherche clinique",
+      "items": [
+       {
+        "value": "semantic:soap:zz-p4:zz-s2:assessment:0 Minou Insuffisance rénale chronique (IRC) stade 3 IRIS.",
+        "texte": "Minou · Évaluation Insuffisance rénale chronique (IRC) stade 3 IRIS. ↵ Ouvrir",
+        "actif": true
+       }
+      ]
+     }
+    ],
+    "vide": null,
+    "pied": "↑ ↓ Naviguer ↵ Sélectionner esc Fermer",
+    "premierEcran": [
+     "Minou · Évaluation"
+    ]
+   },
+   "finition": {
+    "traits": [
+     "1× div border-bottom 1px oklab(0.260077 -0.000372097 -0.00398037 / 0.6)",
+     "1× div border-top 1px rgb(28, 28, 30)"
+    ],
+    "ombres": [
+     "1× div[dialog-content] rgba(255, 255, 255, 0.1) 0px 0px 0px 0.5px",
+     "1× div[heading] rgb(28, 28, 30) 0px -1px 0px 0px inset",
+     "1× div[item][command-item] rgb(28, 28, 30) 0px -1px 0px 0px inset"
+    ],
+    "rayons": {
+     "feuille": "17.6px"
+    },
+    "feuilleOmbre": "rgba(255, 255, 255, 0.1) 0px 0px 0px 0.5px",
+    "feuilleFond": "rgb(23, 23, 25)"
+   },
+   "erreurs": []
+  },
+  "clinique-metacam": {
+   "inventaire": {
+    "tabs": [
+     {
+      "texte": "Tout",
+      "actif": true
+     },
+     {
+      "texte": "Dossiers\n1",
+      "actif": false
+     },
+     {
+      "texte": "Commandes",
+      "actif": false
+     }
+    ],
+    "groups": [
+     {
+      "titre": "Cas similaires · Recherche clinique",
+      "items": [
+       {
+        "value": "semantic:soap:zz-p2:zz-s3:plan:0 Médor Méloxicam (Metacam) 0,1 mg/kg pendant cinq jours, repos strict.",
+        "texte": "Médor · Plan de soins Méloxicam (Metacam) 0,1 mg/kg pendant cinq jours, repos strict. ↵ Ouvrir",
+        "actif": true
+       }
+      ]
+     }
+    ],
+    "vide": null,
+    "pied": "↑ ↓ Naviguer ↵ Sélectionner esc Fermer",
+    "premierEcran": [
+     "Médor · Plan de soins"
+    ]
+   },
+   "finition": {
+    "traits": [
+     "1× div border-bottom 1px oklab(0.260077 -0.000372097 -0.00398037 / 0.6)",
+     "1× div border-top 1px rgb(28, 28, 30)"
+    ],
+    "ombres": [
+     "1× div[dialog-content] rgba(255, 255, 255, 0.1) 0px 0px 0px 0.5px",
+     "1× div[heading] rgb(28, 28, 30) 0px -1px 0px 0px inset",
+     "1× div[item][command-item] rgb(28, 28, 30) 0px -1px 0px 0px inset"
+    ],
+    "rayons": {
+     "feuille": "17.6px"
+    },
+    "feuilleOmbre": "rgba(255, 255, 255, 0.1) 0px 0px 0px 0.5px",
+    "feuilleFond": "rgb(23, 23, 25)"
+   },
+   "erreurs": []
+  },
+  "intention-rdv": {
+   "inventaire": {
+    "tabs": [
+     {
+      "texte": "Tout",
+      "actif": true
+     },
+     {
+      "texte": "Dossiers",
+      "actif": false
+     },
+     {
+      "texte": "Commandes",
+      "actif": false
+     }
+    ],
+    "groups": [
+     {
+      "titre": "Actions contextuelles",
+      "items": [
+       {
+        "value": "rdv minou Minou",
+        "texte": "Nouvelle consultation · Minou Chat · Dossier existant ↵ Exécuter",
+        "actif": true
+       }
+      ]
+     }
+    ],
+    "vide": null,
+    "pied": "↑ ↓ Naviguer ↵ Sélectionner esc Fermer",
+    "premierEcran": [
+     "Nouvelle consultation · Minou"
+    ]
+   },
+   "finition": {
+    "traits": [
+     "1× div border-bottom 1px oklab(0.260077 -0.000372097 -0.00398037 / 0.6)",
+     "1× div border-top 1px rgb(28, 28, 30)"
+    ],
+    "ombres": [
+     "1× div[dialog-content] rgba(255, 255, 255, 0.1) 0px 0px 0px 0.5px",
+     "1× div[heading] rgb(28, 28, 30) 0px -1px 0px 0px inset",
+     "1× div[item][command-item] rgb(28, 28, 30) 0px -1px 0px 0px inset"
+    ],
+    "rayons": {
+     "feuille": "17.6px"
+    },
+    "feuilleOmbre": "rgba(255, 255, 255, 0.1) 0px 0px 0px 0.5px",
+    "feuilleFond": "rgb(23, 23, 25)"
+   },
+   "erreurs": []
+  },
+  "intention-facture": {
+   "inventaire": {
+    "tabs": [
+     {
+      "texte": "Tout",
+      "actif": true
+     },
+     {
+      "texte": "Dossiers",
+      "actif": false
+     },
+     {
+      "texte": "Commandes",
+      "actif": false
+     }
+    ],
+    "groups": [
+     {
+      "titre": "Actions contextuelles",
+      "items": [
+       {
+        "value": "facture arbi ZZ-TEST Amel Arbi",
+        "texte": "Nouvelle facture · ZZ-TEST Amel Arbi Propriétaire existant · Établir un devis ou une facture ↵ Facturer",
+        "actif": true
+       }
+      ]
+     }
+    ],
+    "vide": null,
+    "pied": "↑ ↓ Naviguer ↵ Sélectionner esc Fermer",
+    "premierEcran": [
+     "Nouvelle facture · ZZ-TEST Amel Arbi"
+    ]
+   },
+   "finition": {
+    "traits": [
+     "1× div border-bottom 1px oklab(0.260077 -0.000372097 -0.00398037 / 0.6)",
+     "1× div border-top 1px rgb(28, 28, 30)"
+    ],
+    "ombres": [
+     "1× div[dialog-content] rgba(255, 255, 255, 0.1) 0px 0px 0px 0.5px",
+     "1× div[heading] rgb(28, 28, 30) 0px -1px 0px 0px inset",
+     "1× div[item][command-item] rgb(28, 28, 30) 0px -1px 0px 0px inset"
+    ],
+    "rayons": {
+     "feuille": "17.6px"
+    },
+    "feuilleOmbre": "rgba(255, 255, 255, 0.1) 0px 0px 0px 0.5px",
+    "feuilleFond": "rgb(23, 23, 25)"
+   },
+   "erreurs": []
+  },
+  "page-agenda": {
+   "inventaire": {
+    "tabs": [
+     {
+      "texte": "Tout",
+      "actif": true
+     },
+     {
+      "texte": "Dossiers",
+      "actif": false
+     },
+     {
+      "texte": "Commandes",
+      "actif": false
+     }
+    ],
+    "groups": [
+     {
+      "titre": "Pages & Navigation",
+      "items": [
+       {
+        "value": "navigation:agenda Agenda Rendez-vous et planning",
+        "texte": "Agenda Rendez-vous et planning Naviguer ↵",
+        "actif": true
+       }
+      ]
+     },
+     {
+      "titre": "Actions rapides",
+      "items": [
+       {
+        "value": "action:new-appointment Nouveau rendez-vous Programmer une visite",
+        "texte": "Nouveau rendez-vous ⌘R",
+        "actif": false
+       }
+      ]
+     }
+    ],
+    "vide": null,
+    "pied": "↑ ↓ Naviguer ↵ Sélectionner esc Fermer",
+    "premierEcran": [
+     "Agenda",
+     "Nouveau rendez-vous"
+    ]
+   },
+   "finition": {
+    "traits": [
+     "1× div border-bottom 1px oklab(0.260077 -0.000372097 -0.00398037 / 0.6)",
+     "1× div border-top 1px rgb(28, 28, 30)"
+    ],
+    "ombres": [
+     "1× div[dialog-content] rgba(255, 255, 255, 0.1) 0px 0px 0px 0.5px",
+     "2× div[heading] rgb(28, 28, 30) 0px -1px 0px 0px inset",
+     "2× div[item][command-item] rgb(28, 28, 30) 0px -1px 0px 0px inset"
+    ],
+    "rayons": {
+     "feuille": "17.6px"
+    },
+    "feuilleOmbre": "rgba(255, 255, 255, 0.1) 0px 0px 0px 0.5px",
+    "feuilleFond": "rgb(23, 23, 25)"
+   },
+   "erreurs": []
+  },
+  "aucun-resultat": {
+   "inventaire": {
+    "tabs": [
+     {
+      "texte": "Tout",
+      "actif": true
+     },
+     {
+      "texte": "Dossiers",
+      "actif": false
+     },
+     {
+      "texte": "Commandes",
+      "actif": false
+     }
+    ],
+    "groups": [],
+    "vide": "Aucun résultat pour « xyzqw » Vérifiez l’orthographe ou cherchez un nom de patient, une page ou une action. Créer un patient nommé « xyzqw »",
+    "pied": "↑ ↓ Naviguer ↵ Sélectionner esc Fermer",
+    "premierEcran": []
+   },
+   "finition": {
+    "traits": [
+     "1× div border-bottom 1px oklab(0.260077 -0.000372097 -0.00398037 / 0.6)",
+     "1× span border-top 1px oklab(0.260077 -0.000372097 -0.00398037 / 0.7)",
+     "1× span border-right 1px oklab(0.260077 -0.000372097 -0.00398037 / 0.7)",
+     "1× span border-bottom 1px oklab(0.260077 -0.000372097 -0.00398037 / 0.7)",
+     "1× span border-left 1px oklab(0.260077 -0.000372097 -0.00398037 / 0.7)",
+     "1× button border-top 1px rgb(35, 36, 38)",
+     "1× button border-right 1px rgb(35, 36, 38)",
+     "1× button border-bottom 1px rgb(35, 36, 38)",
+     "1× button border-left 1px rgb(35, 36, 38)",
+     "1× div border-top 1px rgb(28, 28, 30)"
+    ],
+    "ombres": [
+     "1× div[dialog-content] rgba(255, 255, 255, 0.1) 0px 0px 0px 0.5px",
+     "1× span rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0",
+     "1× button rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0"
+    ],
+    "rayons": {
+     "feuille": "17.6px"
+    },
+    "feuilleOmbre": "rgba(255, 255, 255, 0.1) 0px 0px 0px 0.5px",
+    "feuilleFond": "rgb(23, 23, 25)"
+   },
+   "erreurs": []
+  },
+  "fleche-bas": {
+   "inventaire": {
+    "tabs": [
+     {
+      "texte": "Tout",
+      "actif": true
+     },
+     {
+      "texte": "Dossiers",
+      "actif": false
+     },
+     {
+      "texte": "Commandes",
+      "actif": false
+     }
+    ],
+    "groups": [
+     {
+      "titre": "Récents",
+      "items": [
+       {
+        "value": "recent:patient:zz-p3 Rex Chien · Berger",
+        "texte": "Rex Chien · Berger Récemment ouvert",
+        "actif": false
+       },
+       {
+        "value": "recent:view:agenda Agenda Planning et rendez-vous",
+        "texte": "Agenda Planning et rendez-vous Récemment ouvert",
+        "actif": false
+       }
+      ]
+     },
+     {
+      "titre": "À retrouver rapidement",
+      "items": [
+       {
+        "value": "suggestion:mp1xm8tp7k7vpc3vs6d Réglisse",
+        "texte": "Réglisse En bonne santé Chien · Berger Allemand · ZZ-TEST Hana Ghali Ouvrir ↵",
+        "actif": true
+       },
+       {
+        "value": "suggestion:mvobg2xrmzwfaj3psci Praline",
+        "texte": "Praline En bonne santé Cheval · Arabe · ZZ-TEST Nour Lounes Ouvrir ↵",
+        "actif": false
+       },
+       {
+        "value": "suggestion:mnma3iqx51fr51th3ta Biscotte",
+        "texte": "Biscotte En bonne santé Chien · Yorkshire · ZZ-TEST Amel Arbi Ouvrir ↵",
+        "actif": false
+       }
+      ]
+     },
+     {
+      "titre": "Pages & Navigation",
+      "items": [
+       {
+        "value": "navigation:dashboard Tableau de bord Vue d'ensemble",
+        "texte": "Tableau de bord Vue d'ensemble Naviguer ↵",
+        "actif": false
+       },
+       {
+        "value": "navigation:patients Patients Dossiers médicaux",
+        "texte": "Patients Dossiers médicaux Naviguer ↵",
+        "actif": false
+       },
+       {
+        "value": "navigation:agenda Agenda Rendez-vous et planning",
+        "texte": "Agenda Rendez-vous et planning Naviguer ↵",
+        "actif": false
+       },
+       {
+        "value": "navigation:notes Documents Mémos et documents",
+        "texte": "Documents Mémos et documents Naviguer ↵",
+        "actif": false
+       },
+       {
+        "value": "navigation:clinique Soins & hospitalisation Soins du jour et hospitalisations",
+        "texte": "Soins & hospitalisation Soins du jour et hospitalisations Naviguer ↵",
+        "actif": false
+       },
+       {
+        "value": "navigation:taches Tâches To-do list et rappels",
+        "texte": "Tâches To-do list et rappels Naviguer ↵",
+        "actif": false
+       },
+       {
+        "value": "navigation:stock Stock & Pharma Inventaire produits",
+        "texte": "Stock & Pharma Inventaire produits Naviguer ↵",
+        "actif": false
+       },
+       {
+        "value": "navigation:finances Finances Facturation et recettes",
+        "texte": "Finances Facturation et recettes Naviguer ↵",
+        "actif": false
+       },
+       {
+        "value": "navigation:equipe Équipe Gestion du personnel",
+        "texte": "Équipe Gestion du personnel Naviguer ↵",
+        "actif": false
+       },
+       {
+        "value": "navigation:parametres Paramètres Configuration",
+        "texte": "Paramètres Configuration Naviguer ↵",
+        "actif": false
+       }
+      ]
+     },
+     {
+      "titre": "Actions rapides",
+      "items": [
+       {
+        "value": "action:open-assistant Ouvrir l'Assistant IA Dictée SOAP et cas similaires",
+        "texte": "Ouvrir l'Assistant IA Dictée guidée SOAP & recherche clinique ⌘J",
+        "actif": false
+       },
+       {
+        "value": "action:new-patient Nouveau patient Créer un dossier animal",
+        "texte": "Nouveau patient ⌘N",
+        "actif": false
+       },
+       {
+        "value": "action:new-appointment Nouveau rendez-vous Programmer une visite",
+        "texte": "Nouveau rendez-vous ⌘R",
+        "actif": false
+       },
+       {
+        "value": "action:open-consultation Nouvelle consultation Ouvrir une consultation",
+        "texte": "Ouvrir une consultation ↵",
+        "actif": false
+       },
+       {
+        "value": "action:new-prescription Nouvelle ordonnance Prescription médicaments",
+        "texte": "Nouvelle ordonnance",
+        "actif": false
+       },
+       {
+        "value": "action:new-invoice Nouvelle facture Établir une facture",
+        "texte": "Nouvelle facture",
+        "actif": false
+       },
+       {
+        "value": "action:new-hospitalization Nouvelle hospitalisation Admission box",
+        "texte": "Nouvelle hospitalisation",
+        "actif": false
+       },
+       {
+        "value": "action:new-anesthesia Nouvelle anesthésie Protocole anesthésique",
+        "texte": "Nouvelle anesthésie",
+        "actif": false
+       }
+      ]
+     }
+    ],
+    "vide": null,
+    "pied": "↑ ↓ Naviguer ↵ Sélectionner esc Fermer",
+    "premierEcran": [
+     "Rex",
+     "Agenda",
+     "Réglisse",
+     "Praline",
+     "Biscotte",
+     "Tableau de bord",
+     "Patients"
+    ]
+   },
+   "finition": {
+    "traits": [
+     "1× div border-bottom 1px oklab(0.260077 -0.000372097 -0.00398037 / 0.6)",
+     "1× div border-top 1px rgb(28, 28, 30)"
+    ],
+    "ombres": [
+     "1× div[dialog-content] rgba(255, 255, 255, 0.1) 0px 0px 0px 0.5px",
+     "1× kbd[kbd] rgb(35, 36, 38) 0px 0px 0px 1px inset",
+     "4× div[heading] rgb(28, 28, 30) 0px -1px 0px 0px inset",
+     "23× div[item][command-item] rgb(28, 28, 30) 0px -1px 0px 0px inset"
+    ],
+    "rayons": {
+     "feuille": "17.6px"
+    },
+    "feuilleOmbre": "rgba(255, 255, 255, 0.1) 0px 0px 0px 0.5px",
+    "feuilleFond": "rgb(23, 23, 25)"
+   },
+   "erreurs": []
+  }
+ }
+}

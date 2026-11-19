@@ -62,6 +62,6 @@ describe("réglage « Mon cabinet propose l’hospitalisation »", () => {
     expect(workspace).toContain("resolveClinicTab(tab, hospitalizationEnabled)");
     expect(workspace).toContain("const sectionTabs = hospitalizationEnabled ? tabsList : null;");
     const palette = readFileSync("src/components/CommandPalette.tsx", "utf8");
-    expect(palette).toMatch(/\{hospitalizationEnabled && \(<CommandItem[\s\S]{0,400}newHospitalization/);
+    expect(palette).toMatch(/\{hospitalizationEnabled && \(\s*<CommandPrimitive\.Item[\s\S]{0,400}newHospitalization/);
   });
 });
