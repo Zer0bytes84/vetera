@@ -14,6 +14,7 @@
 | 4 | `49ad478` | tranche 1 du Data Answer et squelette Cards du tableau de bord | `stat-grid.tsx` | **2 211 / 2 211** (2e passage) |
 | 5 | `9764272` | doses validées dans l'ordonnance | aucun | **2 225 / 2 225** |
 | + | `874039a` | brouillon de la note « Quoi de neuf » de la 5.2.0 (§ 5) | | **2 225 / 2 225** (2e passage) |
+| + | `1b51c05` | Agenda : plus de trait entre la colonne des heures et la grille, Jour et Semaine (`../agenda-separateur/BILAN.md`) | | **2 225 / 2 225** |
 
 **Après chaque fusion :** typecheck 0, lint `--max-warnings=0` 0, suite entière au vert.
 
