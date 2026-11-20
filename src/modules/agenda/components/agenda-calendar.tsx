@@ -199,7 +199,9 @@ function TimeGrid({
             rounded at the top only, at the cards' radius (16 px, less the 1 px rule); square where it meets the grid. Its first cell
             is as wide as the hours column. */}
         <div className="flex min-h-11 rounded-t-[calc(var(--radius-panel)-1px)] border-foreground/15 border-b bg-[#F5F5F5] dark:bg-white/5">
-          <div aria-hidden="true" className="w-14 shrink-0 border-foreground/10 border-r" />
+          {/* No rule between the hours and the grid (charter: no line, the contrast of fills alone). The 1 px border stays,
+              transparent, so the hours column keeps its width and its labels their place. */}
+          <div aria-hidden="true" className="w-14 shrink-0 border-r border-transparent" />
           {columns.map(({ day, placed }) => {
             const today = sameDay(day, new Date());
             const picked = sameDay(day, selectedDate);
@@ -232,7 +234,7 @@ function TimeGrid({
         </div>
 
         <div className="flex" style={{ height: gridHeight + GRID_PAD_TOP + GRID_PAD_BOTTOM }}>
-          <div aria-hidden="true" className="relative w-14 shrink-0 border-foreground/10 border-r">
+          <div aria-hidden="true" className="relative w-14 shrink-0 border-r border-transparent">
             <div className="absolute inset-x-0" style={{ top: GRID_PAD_TOP, height: gridHeight }}>
               {hours.map((hour, i) => (
                 <span

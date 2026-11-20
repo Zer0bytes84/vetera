@@ -1,0 +1,1892 @@
+{
+ "Jour-light": [
+  [
+   "border-left",
+   "button[tooltip-trigger].topIcon.shell-sidebar-toggle",
+   271,
+   20,
+   36,
+   "color(srgb 0.160784 0.160784 0.160784 / 0.08)"
+  ],
+  [
+   "border-right",
+   "button[tooltip-trigger].topIcon.shell-sidebar-toggle",
+   307,
+   20,
+   36,
+   "color(srgb 0.160784 0.160784 0.160784 / 0.08)"
+  ],
+  [
+   "border-left",
+   "button[dropdown-menu-trigger].header-quick-actions.topIcon",
+   1260,
+   20,
+   36,
+   "color(srgb 0.160784 0.160784 0.160784 / 0.08)"
+  ],
+  [
+   "border-right",
+   "button[dropdown-menu-trigger].header-quick-actions.topIcon",
+   1296,
+   20,
+   36,
+   "color(srgb 0.160784 0.160784 0.160784 / 0.08)"
+  ],
+  [
+   "border-left",
+   "button[tooltip-trigger].shell-toolbar-control.relative.grid.size-9.shrink-0.place-items-center",
+   1300,
+   20,
+   36,
+   "color(srgb 0.160784 0.160784 0.160784 / 0.08)"
+  ],
+  [
+   "border-right",
+   "button[tooltip-trigger].shell-toolbar-control.relative.grid.size-9.shrink-0.place-items-center",
+   1336,
+   20,
+   36,
+   "color(srgb 0.160784 0.160784 0.160784 / 0.08)"
+  ],
+  [
+   "border-left",
+   "button[tooltip-trigger].topIcon",
+   1340,
+   20,
+   36,
+   "color(srgb 0.160784 0.160784 0.160784 / 0.08)"
+  ],
+  [
+   "border-right",
+   "button[tooltip-trigger].topIcon",
+   1376,
+   20,
+   36,
+   "color(srgb 0.160784 0.160784 0.160784 / 0.08)"
+  ],
+  [
+   "border-left",
+   "button[tooltip-trigger].topIcon.relative",
+   1380,
+   20,
+   36,
+   "color(srgb 0.160784 0.160784 0.160784 / 0.08)"
+  ],
+  [
+   "border-right",
+   "button[tooltip-trigger].topIcon.relative",
+   1416,
+   20,
+   36,
+   "color(srgb 0.160784 0.160784 0.160784 / 0.08)"
+  ],
+  [
+   "border-left",
+   "button[button].group/button.inline-flex.shrink-0.cursor-pointer.select-none.items-center",
+   1202,
+   110,
+   32,
+   "rgb(25, 25, 25)"
+  ],
+  [
+   "border-right",
+   "button[button].group/button.inline-flex.shrink-0.cursor-pointer.select-none.items-center",
+   1388,
+   110,
+   32,
+   "rgb(25, 25, 25)"
+  ],
+  [
+   "border-left",
+   "button[button].group/button.rounded-lg.inline-flex.shrink-0.cursor-pointer.select-none",
+   324,
+   354,
+   32,
+   "rgb(230, 230, 232)"
+  ],
+  [
+   "border-right",
+   "button[button].group/button.rounded-lg.inline-flex.shrink-0.cursor-pointer.select-none",
+   422,
+   354,
+   32,
+   "rgb(230, 230, 232)"
+  ],
+  [
+   "border-left",
+   "button[popover-trigger].group/button.rounded-lg.inline-flex.shrink-0.cursor-pointer.select-none",
+   462,
+   354,
+   32,
+   "rgb(230, 230, 232)"
+  ],
+  [
+   "border-right",
+   "button[popover-trigger].group/button.rounded-lg.inline-flex.shrink-0.cursor-pointer.select-none",
+   494,
+   354,
+   32,
+   "rgb(230, 230, 232)"
+  ],
+  [
+   "border-left",
+   "div.overflow-x-auto.rounded-[var(--radius-panel)].border.border-foreground/15",
+   288,
+   426,
+   675,
+   "oklab(0.280938 0.000012815 0.00000563264 / 0.15)"
+  ],
+  [
+   "border-right",
+   "div.overflow-x-auto.rounded-[var(--radius-panel)].border.border-foreground/15",
+   1392,
+   426,
+   675,
+   "oklab(0.280938 0.000012815 0.00000563264 / 0.15)"
+  ],
+  [
+   "inset-shadow",
+   "div[card-header].group/card-header.@container/card-header.grid.auto-rows-min.items-start.rounded-t-xl",
+   272,
+   1141,
+   96,
+   "rgb(230, 230, 232) 0px -1px 0px 0px inset"
+  ],
+  [
+   "inset-shadow",
+   "div.agenda-day-toolbar.flex.flex-col.gap-3.border-border.border-b",
+   272,
+   1237,
+   148,
+   "rgb(230, 230, 232) 0px -1px 0px 0px inset"
+  ],
+  [
+   "border-left",
+   "input[input].h-8.w-full.min-w-0.rounded-lg.border.border-input",
+   296,
+   1337,
+   32,
+   "rgb(230, 230, 232)"
+  ],
+  [
+   "border-right",
+   "input[input].h-8.w-full.min-w-0.rounded-lg.border.border-input",
+   640,
+   1337,
+   32,
+   "rgb(230, 230, 232)"
+  ],
+  [
+   "border-left",
+   "select[native-select].h-9.w-full.min-w-0.select-none.appearance-none.rounded-xl",
+   648,
+   1337,
+   32,
+   "rgb(230, 230, 232)"
+  ],
+  [
+   "border-right",
+   "select[native-select].h-9.w-full.min-w-0.select-none.appearance-none.rounded-xl",
+   840,
+   1337,
+   32,
+   "rgb(230, 230, 232)"
+  ],
+  [
+   "border-left",
+   "select[native-select].h-9.w-full.min-w-0.select-none.appearance-none.rounded-xl",
+   848,
+   1337,
+   32,
+   "rgb(230, 230, 232)"
+  ],
+  [
+   "border-right",
+   "select[native-select].h-9.w-full.min-w-0.select-none.appearance-none.rounded-xl",
+   1024,
+   1337,
+   32,
+   "rgb(230, 230, 232)"
+  ],
+  [
+   "border-left",
+   "button.min-h-11.rounded-xl.border.border-teal-200.bg-teal-50.px-4",
+   296,
+   1434,
+   66,
+   "oklch(0.91 0.096 180.426)"
+  ],
+  [
+   "border-right",
+   "button.min-h-11.rounded-xl.border.border-teal-200.bg-teal-50.px-4",
+   444,
+   1434,
+   66,
+   "oklch(0.91 0.096 180.426)"
+  ],
+  [
+   "border-left",
+   "button.min-h-11.rounded-xl.border.border-teal-200.bg-teal-50.px-4",
+   456,
+   1434,
+   66,
+   "oklch(0.91 0.096 180.426)"
+  ],
+  [
+   "border-right",
+   "button.min-h-11.rounded-xl.border.border-teal-200.bg-teal-50.px-4",
+   625,
+   1434,
+   66,
+   "oklch(0.91 0.096 180.426)"
+  ],
+  [
+   "border-left",
+   "div[empty].flex.w-full.min-w-0.flex-1.flex-col.items-center",
+   296,
+   1540,
+   220,
+   "oklab(0.925503 0.000797033 -0.00255537 / 0.8)"
+  ],
+  [
+   "border-right",
+   "div[empty].flex.w-full.min-w-0.flex-1.flex-col.items-center",
+   1072,
+   1540,
+   220,
+   "oklab(0.925503 0.000797033 -0.00255537 / 0.8)"
+  ],
+  [
+   "border-left",
+   "button[button].group/button.rounded-lg.inline-flex.shrink-0.cursor-pointer.select-none",
+   492,
+   1702,
+   32,
+   "rgb(230, 230, 232)"
+  ],
+  [
+   "border-right",
+   "button[button].group/button.rounded-lg.inline-flex.shrink-0.cursor-pointer.select-none",
+   678,
+   1702,
+   32,
+   "rgb(230, 230, 232)"
+  ],
+  [
+   "inset-shadow",
+   "div[card-header].group/card-header.@container/card-header.grid.auto-rows-min.items-start.gap-1",
+   1072,
+   1341,
+   82,
+   "rgb(230, 230, 232) 0px -1px 0px 0px inset"
+  ]
+ ],
+ "Jour-light-erreurs": [],
+ "Semaine-light": [
+  [
+   "border-left",
+   "button[tooltip-trigger].topIcon.shell-sidebar-toggle",
+   271,
+   20,
+   36,
+   "color(srgb 0.160784 0.160784 0.160784 / 0.08)"
+  ],
+  [
+   "border-right",
+   "button[tooltip-trigger].topIcon.shell-sidebar-toggle",
+   307,
+   20,
+   36,
+   "color(srgb 0.160784 0.160784 0.160784 / 0.08)"
+  ],
+  [
+   "border-left",
+   "button[dropdown-menu-trigger].header-quick-actions.topIcon",
+   1260,
+   20,
+   36,
+   "color(srgb 0.160784 0.160784 0.160784 / 0.08)"
+  ],
+  [
+   "border-right",
+   "button[dropdown-menu-trigger].header-quick-actions.topIcon",
+   1296,
+   20,
+   36,
+   "color(srgb 0.160784 0.160784 0.160784 / 0.08)"
+  ],
+  [
+   "border-left",
+   "button[tooltip-trigger].shell-toolbar-control.relative.grid.size-9.shrink-0.place-items-center",
+   1300,
+   20,
+   36,
+   "color(srgb 0.160784 0.160784 0.160784 / 0.08)"
+  ],
+  [
+   "border-right",
+   "button[tooltip-trigger].shell-toolbar-control.relative.grid.size-9.shrink-0.place-items-center",
+   1336,
+   20,
+   36,
+   "color(srgb 0.160784 0.160784 0.160784 / 0.08)"
+  ],
+  [
+   "border-left",
+   "button[tooltip-trigger].topIcon",
+   1340,
+   20,
+   36,
+   "color(srgb 0.160784 0.160784 0.160784 / 0.08)"
+  ],
+  [
+   "border-right",
+   "button[tooltip-trigger].topIcon",
+   1376,
+   20,
+   36,
+   "color(srgb 0.160784 0.160784 0.160784 / 0.08)"
+  ],
+  [
+   "border-left",
+   "button[tooltip-trigger].topIcon.relative",
+   1380,
+   20,
+   36,
+   "color(srgb 0.160784 0.160784 0.160784 / 0.08)"
+  ],
+  [
+   "border-right",
+   "button[tooltip-trigger].topIcon.relative",
+   1416,
+   20,
+   36,
+   "color(srgb 0.160784 0.160784 0.160784 / 0.08)"
+  ],
+  [
+   "border-left",
+   "button[button].group/button.inline-flex.shrink-0.cursor-pointer.select-none.items-center",
+   1202,
+   110,
+   32,
+   "rgb(25, 25, 25)"
+  ],
+  [
+   "border-right",
+   "button[button].group/button.inline-flex.shrink-0.cursor-pointer.select-none.items-center",
+   1388,
+   110,
+   32,
+   "rgb(25, 25, 25)"
+  ],
+  [
+   "border-left",
+   "button[button].group/button.rounded-lg.inline-flex.shrink-0.cursor-pointer.select-none",
+   324,
+   354,
+   32,
+   "rgb(230, 230, 232)"
+  ],
+  [
+   "border-right",
+   "button[button].group/button.rounded-lg.inline-flex.shrink-0.cursor-pointer.select-none",
+   422,
+   354,
+   32,
+   "rgb(230, 230, 232)"
+  ],
+  [
+   "border-left",
+   "button[popover-trigger].group/button.rounded-lg.inline-flex.shrink-0.cursor-pointer.select-none",
+   462,
+   354,
+   32,
+   "rgb(230, 230, 232)"
+  ],
+  [
+   "border-right",
+   "button[popover-trigger].group/button.rounded-lg.inline-flex.shrink-0.cursor-pointer.select-none",
+   494,
+   354,
+   32,
+   "rgb(230, 230, 232)"
+  ],
+  [
+   "border-left",
+   "div.overflow-x-auto.rounded-[var(--radius-panel)].border.border-foreground/15",
+   288,
+   426,
+   675,
+   "oklab(0.280938 0.000012815 0.00000563264 / 0.15)"
+  ],
+  [
+   "border-right",
+   "div.overflow-x-auto.rounded-[var(--radius-panel)].border.border-foreground/15",
+   1392,
+   426,
+   675,
+   "oklab(0.280938 0.000012815 0.00000563264 / 0.15)"
+  ],
+  [
+   "border-right",
+   "button.flex.min-w-0.flex-1.items-center.justify-center.gap-2",
+   495,
+   427,
+   44,
+   "oklab(0.280938 0.000012815 0.00000563264 / 0.1)"
+  ],
+  [
+   "border-right",
+   "button.flex.min-w-0.flex-1.items-center.justify-center.gap-2",
+   644,
+   427,
+   44,
+   "oklab(0.280938 0.000012815 0.00000563264 / 0.1)"
+  ],
+  [
+   "border-right",
+   "button.flex.min-w-0.flex-1.items-center.justify-center.gap-2",
+   794,
+   427,
+   44,
+   "oklab(0.280938 0.000012815 0.00000563264 / 0.1)"
+  ],
+  [
+   "border-right",
+   "button.flex.min-w-0.flex-1.items-center.justify-center.gap-2",
+   943,
+   427,
+   44,
+   "oklab(0.280938 0.000012815 0.00000563264 / 0.1)"
+  ],
+  [
+   "border-right",
+   "button.flex.min-w-0.flex-1.items-center.justify-center.gap-2",
+   1093,
+   427,
+   44,
+   "oklab(0.280938 0.000012815 0.00000563264 / 0.1)"
+  ],
+  [
+   "border-right",
+   "button.flex.min-w-0.flex-1.items-center.justify-center.gap-2",
+   1242,
+   427,
+   44,
+   "oklab(0.280938 0.000012815 0.00000563264 / 0.1)"
+  ],
+  [
+   "border-right",
+   "div.relative.min-w-0.flex-1.border-foreground/10.border-r.last:border-r-0",
+   495,
+   472,
+   583,
+   "oklab(0.280938 0.000012815 0.00000563264 / 0.1)"
+  ],
+  [
+   "border-right",
+   "div.relative.min-w-0.flex-1.border-foreground/10.border-r.last:border-r-0",
+   644,
+   472,
+   583,
+   "oklab(0.280938 0.000012815 0.00000563264 / 0.1)"
+  ],
+  [
+   "border-right",
+   "div.relative.min-w-0.flex-1.border-foreground/10.border-r.last:border-r-0",
+   794,
+   472,
+   583,
+   "oklab(0.280938 0.000012815 0.00000563264 / 0.1)"
+  ],
+  [
+   "border-right",
+   "div.relative.min-w-0.flex-1.border-foreground/10.border-r.last:border-r-0",
+   943,
+   472,
+   583,
+   "oklab(0.280938 0.000012815 0.00000563264 / 0.1)"
+  ],
+  [
+   "border-right",
+   "div.relative.min-w-0.flex-1.border-foreground/10.border-r.last:border-r-0",
+   1093,
+   472,
+   583,
+   "oklab(0.280938 0.000012815 0.00000563264 / 0.1)"
+  ],
+  [
+   "border-right",
+   "div.relative.min-w-0.flex-1.border-foreground/10.border-r.last:border-r-0",
+   1242,
+   472,
+   583,
+   "oklab(0.280938 0.000012815 0.00000563264 / 0.1)"
+  ],
+  [
+   "inset-shadow",
+   "div[card-header].group/card-header.@container/card-header.grid.auto-rows-min.items-start.rounded-t-xl",
+   272,
+   1141,
+   96,
+   "rgb(230, 230, 232) 0px -1px 0px 0px inset"
+  ],
+  [
+   "inset-shadow",
+   "div.agenda-day-toolbar.flex.flex-col.gap-3.border-border.border-b",
+   272,
+   1237,
+   148,
+   "rgb(230, 230, 232) 0px -1px 0px 0px inset"
+  ],
+  [
+   "border-left",
+   "input[input].h-8.w-full.min-w-0.rounded-lg.border.border-input",
+   296,
+   1337,
+   32,
+   "rgb(230, 230, 232)"
+  ],
+  [
+   "border-right",
+   "input[input].h-8.w-full.min-w-0.rounded-lg.border.border-input",
+   640,
+   1337,
+   32,
+   "rgb(230, 230, 232)"
+  ],
+  [
+   "border-left",
+   "select[native-select].h-9.w-full.min-w-0.select-none.appearance-none.rounded-xl",
+   648,
+   1337,
+   32,
+   "rgb(230, 230, 232)"
+  ],
+  [
+   "border-right",
+   "select[native-select].h-9.w-full.min-w-0.select-none.appearance-none.rounded-xl",
+   840,
+   1337,
+   32,
+   "rgb(230, 230, 232)"
+  ],
+  [
+   "border-left",
+   "select[native-select].h-9.w-full.min-w-0.select-none.appearance-none.rounded-xl",
+   848,
+   1337,
+   32,
+   "rgb(230, 230, 232)"
+  ],
+  [
+   "border-right",
+   "select[native-select].h-9.w-full.min-w-0.select-none.appearance-none.rounded-xl",
+   1024,
+   1337,
+   32,
+   "rgb(230, 230, 232)"
+  ],
+  [
+   "border-left",
+   "button.min-h-11.rounded-xl.border.border-teal-200.bg-teal-50.px-4",
+   296,
+   1434,
+   66,
+   "oklch(0.91 0.096 180.426)"
+  ],
+  [
+   "border-right",
+   "button.min-h-11.rounded-xl.border.border-teal-200.bg-teal-50.px-4",
+   444,
+   1434,
+   66,
+   "oklch(0.91 0.096 180.426)"
+  ],
+  [
+   "border-left",
+   "button.min-h-11.rounded-xl.border.border-teal-200.bg-teal-50.px-4",
+   456,
+   1434,
+   66,
+   "oklch(0.91 0.096 180.426)"
+  ],
+  [
+   "border-right",
+   "button.min-h-11.rounded-xl.border.border-teal-200.bg-teal-50.px-4",
+   625,
+   1434,
+   66,
+   "oklch(0.91 0.096 180.426)"
+  ],
+  [
+   "border-left",
+   "div[empty].flex.w-full.min-w-0.flex-1.flex-col.items-center",
+   296,
+   1540,
+   220,
+   "oklab(0.925503 0.000797033 -0.00255537 / 0.8)"
+  ],
+  [
+   "border-right",
+   "div[empty].flex.w-full.min-w-0.flex-1.flex-col.items-center",
+   1072,
+   1540,
+   220,
+   "oklab(0.925503 0.000797033 -0.00255537 / 0.8)"
+  ],
+  [
+   "border-left",
+   "button[button].group/button.rounded-lg.inline-flex.shrink-0.cursor-pointer.select-none",
+   492,
+   1702,
+   32,
+   "rgb(230, 230, 232)"
+  ],
+  [
+   "border-right",
+   "button[button].group/button.rounded-lg.inline-flex.shrink-0.cursor-pointer.select-none",
+   678,
+   1702,
+   32,
+   "rgb(230, 230, 232)"
+  ],
+  [
+   "inset-shadow",
+   "div[card-header].group/card-header.@container/card-header.grid.auto-rows-min.items-start.gap-1",
+   1072,
+   1341,
+   82,
+   "rgb(230, 230, 232) 0px -1px 0px 0px inset"
+  ]
+ ],
+ "Semaine-light-erreurs": [],
+ "Mois-light": [
+  [
+   "border-left",
+   "button[tooltip-trigger].topIcon.shell-sidebar-toggle",
+   271,
+   20,
+   36,
+   "color(srgb 0.160784 0.160784 0.160784 / 0.08)"
+  ],
+  [
+   "border-right",
+   "button[tooltip-trigger].topIcon.shell-sidebar-toggle",
+   307,
+   20,
+   36,
+   "color(srgb 0.160784 0.160784 0.160784 / 0.08)"
+  ],
+  [
+   "border-left",
+   "button[dropdown-menu-trigger].header-quick-actions.topIcon",
+   1260,
+   20,
+   36,
+   "color(srgb 0.160784 0.160784 0.160784 / 0.08)"
+  ],
+  [
+   "border-right",
+   "button[dropdown-menu-trigger].header-quick-actions.topIcon",
+   1296,
+   20,
+   36,
+   "color(srgb 0.160784 0.160784 0.160784 / 0.08)"
+  ],
+  [
+   "border-left",
+   "button[tooltip-trigger].shell-toolbar-control.relative.grid.size-9.shrink-0.place-items-center",
+   1300,
+   20,
+   36,
+   "color(srgb 0.160784 0.160784 0.160784 / 0.08)"
+  ],
+  [
+   "border-right",
+   "button[tooltip-trigger].shell-toolbar-control.relative.grid.size-9.shrink-0.place-items-center",
+   1336,
+   20,
+   36,
+   "color(srgb 0.160784 0.160784 0.160784 / 0.08)"
+  ],
+  [
+   "border-left",
+   "button[tooltip-trigger].topIcon",
+   1340,
+   20,
+   36,
+   "color(srgb 0.160784 0.160784 0.160784 / 0.08)"
+  ],
+  [
+   "border-right",
+   "button[tooltip-trigger].topIcon",
+   1376,
+   20,
+   36,
+   "color(srgb 0.160784 0.160784 0.160784 / 0.08)"
+  ],
+  [
+   "border-left",
+   "button[tooltip-trigger].topIcon.relative",
+   1380,
+   20,
+   36,
+   "color(srgb 0.160784 0.160784 0.160784 / 0.08)"
+  ],
+  [
+   "border-right",
+   "button[tooltip-trigger].topIcon.relative",
+   1416,
+   20,
+   36,
+   "color(srgb 0.160784 0.160784 0.160784 / 0.08)"
+  ],
+  [
+   "border-left",
+   "button[button].group/button.inline-flex.shrink-0.cursor-pointer.select-none.items-center",
+   1202,
+   110,
+   32,
+   "rgb(25, 25, 25)"
+  ],
+  [
+   "border-right",
+   "button[button].group/button.inline-flex.shrink-0.cursor-pointer.select-none.items-center",
+   1388,
+   110,
+   32,
+   "rgb(25, 25, 25)"
+  ],
+  [
+   "border-left",
+   "button[button].group/button.rounded-lg.inline-flex.shrink-0.cursor-pointer.select-none",
+   324,
+   354,
+   32,
+   "rgb(230, 230, 232)"
+  ],
+  [
+   "border-right",
+   "button[button].group/button.rounded-lg.inline-flex.shrink-0.cursor-pointer.select-none",
+   422,
+   354,
+   32,
+   "rgb(230, 230, 232)"
+  ],
+  [
+   "border-left",
+   "button[popover-trigger].group/button.rounded-lg.inline-flex.shrink-0.cursor-pointer.select-none",
+   462,
+   354,
+   32,
+   "rgb(230, 230, 232)"
+  ],
+  [
+   "border-right",
+   "button[popover-trigger].group/button.rounded-lg.inline-flex.shrink-0.cursor-pointer.select-none",
+   494,
+   354,
+   32,
+   "rgb(230, 230, 232)"
+  ],
+  [
+   "border-left",
+   "div.agenda-month-grid.grid.grid-cols-7.gap-px.overflow-hidden.rounded-[var(--radius-panel)]",
+   304,
+   442,
+   544,
+   "rgb(230, 230, 232)"
+  ],
+  [
+   "border-right",
+   "div.agenda-month-grid.grid.grid-cols-7.gap-px.overflow-hidden.rounded-[var(--radius-panel)]",
+   1376,
+   442,
+   544,
+   "rgb(230, 230, 232)"
+  ],
+  [
+   "inset-shadow",
+   "div[card-header].group/card-header.@container/card-header.grid.auto-rows-min.items-start.rounded-t-xl",
+   272,
+   1042,
+   96,
+   "rgb(230, 230, 232) 0px -1px 0px 0px inset"
+  ],
+  [
+   "inset-shadow",
+   "div.agenda-day-toolbar.flex.flex-col.gap-3.border-border.border-b",
+   272,
+   1137,
+   148,
+   "rgb(230, 230, 232) 0px -1px 0px 0px inset"
+  ],
+  [
+   "border-left",
+   "input[input].h-8.w-full.min-w-0.rounded-lg.border.border-input",
+   296,
+   1237,
+   32,
+   "rgb(230, 230, 232)"
+  ],
+  [
+   "border-right",
+   "input[input].h-8.w-full.min-w-0.rounded-lg.border.border-input",
+   640,
+   1237,
+   32,
+   "rgb(230, 230, 232)"
+  ],
+  [
+   "border-left",
+   "select[native-select].h-9.w-full.min-w-0.select-none.appearance-none.rounded-xl",
+   648,
+   1237,
+   32,
+   "rgb(230, 230, 232)"
+  ],
+  [
+   "border-right",
+   "select[native-select].h-9.w-full.min-w-0.select-none.appearance-none.rounded-xl",
+   840,
+   1237,
+   32,
+   "rgb(230, 230, 232)"
+  ],
+  [
+   "border-left",
+   "select[native-select].h-9.w-full.min-w-0.select-none.appearance-none.rounded-xl",
+   848,
+   1237,
+   32,
+   "rgb(230, 230, 232)"
+  ],
+  [
+   "border-right",
+   "select[native-select].h-9.w-full.min-w-0.select-none.appearance-none.rounded-xl",
+   1024,
+   1237,
+   32,
+   "rgb(230, 230, 232)"
+  ],
+  [
+   "border-left",
+   "button.min-h-11.rounded-xl.border.border-teal-200.bg-teal-50.px-4",
+   296,
+   1334,
+   66,
+   "oklch(0.91 0.096 180.426)"
+  ],
+  [
+   "border-right",
+   "button.min-h-11.rounded-xl.border.border-teal-200.bg-teal-50.px-4",
+   444,
+   1334,
+   66,
+   "oklch(0.91 0.096 180.426)"
+  ],
+  [
+   "border-left",
+   "button.min-h-11.rounded-xl.border.border-teal-200.bg-teal-50.px-4",
+   456,
+   1334,
+   66,
+   "oklch(0.91 0.096 180.426)"
+  ],
+  [
+   "border-right",
+   "button.min-h-11.rounded-xl.border.border-teal-200.bg-teal-50.px-4",
+   625,
+   1334,
+   66,
+   "oklch(0.91 0.096 180.426)"
+  ],
+  [
+   "border-left",
+   "div[empty].flex.w-full.min-w-0.flex-1.flex-col.items-center",
+   296,
+   1440,
+   220,
+   "oklab(0.925503 0.000797033 -0.00255537 / 0.8)"
+  ],
+  [
+   "border-right",
+   "div[empty].flex.w-full.min-w-0.flex-1.flex-col.items-center",
+   1072,
+   1440,
+   220,
+   "oklab(0.925503 0.000797033 -0.00255537 / 0.8)"
+  ],
+  [
+   "border-left",
+   "button[button].group/button.rounded-lg.inline-flex.shrink-0.cursor-pointer.select-none",
+   492,
+   1603,
+   32,
+   "rgb(230, 230, 232)"
+  ],
+  [
+   "border-right",
+   "button[button].group/button.rounded-lg.inline-flex.shrink-0.cursor-pointer.select-none",
+   678,
+   1603,
+   32,
+   "rgb(230, 230, 232)"
+  ],
+  [
+   "inset-shadow",
+   "div[card-header].group/card-header.@container/card-header.grid.auto-rows-min.items-start.gap-1",
+   1072,
+   1242,
+   82,
+   "rgb(230, 230, 232) 0px -1px 0px 0px inset"
+  ]
+ ],
+ "Mois-light-erreurs": [],
+ "Jour-dark": [
+  [
+   "border-left",
+   "button[tooltip-trigger].topIcon.shell-sidebar-toggle",
+   271,
+   20,
+   36,
+   "color(srgb 0.952941 0.952941 0.960784 / 0.08)"
+  ],
+  [
+   "border-right",
+   "button[tooltip-trigger].topIcon.shell-sidebar-toggle",
+   307,
+   20,
+   36,
+   "color(srgb 0.952941 0.952941 0.960784 / 0.08)"
+  ],
+  [
+   "border-left",
+   "button[dropdown-menu-trigger].header-quick-actions.topIcon",
+   1260,
+   20,
+   36,
+   "color(srgb 0.952941 0.952941 0.960784 / 0.08)"
+  ],
+  [
+   "border-right",
+   "button[dropdown-menu-trigger].header-quick-actions.topIcon",
+   1296,
+   20,
+   36,
+   "color(srgb 0.952941 0.952941 0.960784 / 0.08)"
+  ],
+  [
+   "border-left",
+   "button[tooltip-trigger].shell-toolbar-control.relative.grid.size-9.shrink-0.place-items-center",
+   1300,
+   20,
+   36,
+   "color(srgb 0.952941 0.952941 0.960784 / 0.08)"
+  ],
+  [
+   "border-right",
+   "button[tooltip-trigger].shell-toolbar-control.relative.grid.size-9.shrink-0.place-items-center",
+   1336,
+   20,
+   36,
+   "color(srgb 0.952941 0.952941 0.960784 / 0.08)"
+  ],
+  [
+   "border-left",
+   "button[tooltip-trigger].topIcon",
+   1340,
+   20,
+   36,
+   "color(srgb 0.952941 0.952941 0.960784 / 0.08)"
+  ],
+  [
+   "border-right",
+   "button[tooltip-trigger].topIcon",
+   1376,
+   20,
+   36,
+   "color(srgb 0.952941 0.952941 0.960784 / 0.08)"
+  ],
+  [
+   "border-left",
+   "button[tooltip-trigger].topIcon.relative",
+   1380,
+   20,
+   36,
+   "color(srgb 0.952941 0.952941 0.960784 / 0.08)"
+  ],
+  [
+   "border-right",
+   "button[tooltip-trigger].topIcon.relative",
+   1416,
+   20,
+   36,
+   "color(srgb 0.952941 0.952941 0.960784 / 0.08)"
+  ],
+  [
+   "border-left",
+   "button[button].group/button.inline-flex.shrink-0.cursor-pointer.select-none.items-center",
+   1202,
+   110,
+   32,
+   "rgb(59, 31, 229)"
+  ],
+  [
+   "border-right",
+   "button[button].group/button.inline-flex.shrink-0.cursor-pointer.select-none.items-center",
+   1388,
+   110,
+   32,
+   "rgb(59, 31, 229)"
+  ],
+  [
+   "border-left",
+   "button[button].group/button.rounded-lg.inline-flex.shrink-0.cursor-pointer.select-none",
+   324,
+   354,
+   32,
+   "rgb(35, 36, 38)"
+  ],
+  [
+   "border-right",
+   "button[button].group/button.rounded-lg.inline-flex.shrink-0.cursor-pointer.select-none",
+   422,
+   354,
+   32,
+   "rgb(35, 36, 38)"
+  ],
+  [
+   "border-left",
+   "button[popover-trigger].group/button.rounded-lg.inline-flex.shrink-0.cursor-pointer.select-none",
+   462,
+   354,
+   32,
+   "rgb(35, 36, 38)"
+  ],
+  [
+   "border-right",
+   "button[popover-trigger].group/button.rounded-lg.inline-flex.shrink-0.cursor-pointer.select-none",
+   494,
+   354,
+   32,
+   "rgb(35, 36, 38)"
+  ],
+  [
+   "border-left",
+   "div.overflow-x-auto.rounded-[var(--radius-panel)].border.border-foreground/15",
+   288,
+   426,
+   675,
+   "oklab(0.964711 0.000791132 -0.00252795 / 0.15)"
+  ],
+  [
+   "border-right",
+   "div.overflow-x-auto.rounded-[var(--radius-panel)].border.border-foreground/15",
+   1392,
+   426,
+   675,
+   "oklab(0.964711 0.000791132 -0.00252795 / 0.15)"
+  ],
+  [
+   "inset-shadow",
+   "div[card-header].group/card-header.@container/card-header.grid.auto-rows-min.items-start.rounded-t-xl",
+   272,
+   1141,
+   96,
+   "rgb(35, 36, 38) 0px -1px 0px 0px inset"
+  ],
+  [
+   "inset-shadow",
+   "div.agenda-day-toolbar.flex.flex-col.gap-3.border-border.border-b",
+   272,
+   1237,
+   148,
+   "rgb(35, 36, 38) 0px -1px 0px 0px inset"
+  ],
+  [
+   "border-left",
+   "input[input].h-8.w-full.min-w-0.rounded-lg.border.border-input",
+   296,
+   1337,
+   32,
+   "rgba(255, 255, 255, 0.1)"
+  ],
+  [
+   "border-right",
+   "input[input].h-8.w-full.min-w-0.rounded-lg.border.border-input",
+   640,
+   1337,
+   32,
+   "rgba(255, 255, 255, 0.1)"
+  ],
+  [
+   "border-left",
+   "select[native-select].h-9.w-full.min-w-0.select-none.appearance-none.rounded-xl",
+   648,
+   1337,
+   32,
+   "rgba(255, 255, 255, 0.1)"
+  ],
+  [
+   "border-right",
+   "select[native-select].h-9.w-full.min-w-0.select-none.appearance-none.rounded-xl",
+   840,
+   1337,
+   32,
+   "rgba(255, 255, 255, 0.1)"
+  ],
+  [
+   "border-left",
+   "select[native-select].h-9.w-full.min-w-0.select-none.appearance-none.rounded-xl",
+   848,
+   1337,
+   32,
+   "rgba(255, 255, 255, 0.1)"
+  ],
+  [
+   "border-right",
+   "select[native-select].h-9.w-full.min-w-0.select-none.appearance-none.rounded-xl",
+   1024,
+   1337,
+   32,
+   "rgba(255, 255, 255, 0.1)"
+  ],
+  [
+   "border-left",
+   "button.min-h-11.rounded-xl.border.border-teal-200.bg-teal-50.px-4",
+   296,
+   1434,
+   66,
+   "oklch(0.386 0.063 188.416)"
+  ],
+  [
+   "border-right",
+   "button.min-h-11.rounded-xl.border.border-teal-200.bg-teal-50.px-4",
+   444,
+   1434,
+   66,
+   "oklch(0.386 0.063 188.416)"
+  ],
+  [
+   "border-left",
+   "button.min-h-11.rounded-xl.border.border-teal-200.bg-teal-50.px-4",
+   456,
+   1434,
+   66,
+   "oklch(0.386 0.063 188.416)"
+  ],
+  [
+   "border-right",
+   "button.min-h-11.rounded-xl.border.border-teal-200.bg-teal-50.px-4",
+   625,
+   1434,
+   66,
+   "oklch(0.386 0.063 188.416)"
+  ],
+  [
+   "border-left",
+   "div[empty].flex.w-full.min-w-0.flex-1.flex-col.items-center",
+   296,
+   1540,
+   220,
+   "oklab(0.260077 -0.000372097 -0.00398037 / 0.8)"
+  ],
+  [
+   "border-right",
+   "div[empty].flex.w-full.min-w-0.flex-1.flex-col.items-center",
+   1072,
+   1540,
+   220,
+   "oklab(0.260077 -0.000372097 -0.00398037 / 0.8)"
+  ],
+  [
+   "border-left",
+   "button[button].group/button.rounded-lg.inline-flex.shrink-0.cursor-pointer.select-none",
+   492,
+   1702,
+   32,
+   "rgba(255, 255, 255, 0.08)"
+  ],
+  [
+   "border-right",
+   "button[button].group/button.rounded-lg.inline-flex.shrink-0.cursor-pointer.select-none",
+   678,
+   1702,
+   32,
+   "rgba(255, 255, 255, 0.08)"
+  ],
+  [
+   "inset-shadow",
+   "div[card-header].group/card-header.@container/card-header.grid.auto-rows-min.items-start.gap-1",
+   1072,
+   1341,
+   82,
+   "rgb(35, 36, 38) 0px -1px 0px 0px inset"
+  ]
+ ],
+ "Jour-dark-erreurs": [],
+ "Semaine-dark": [
+  [
+   "border-left",
+   "button[tooltip-trigger].topIcon.shell-sidebar-toggle",
+   271,
+   20,
+   36,
+   "color(srgb 0.952941 0.952941 0.960784 / 0.08)"
+  ],
+  [
+   "border-right",
+   "button[tooltip-trigger].topIcon.shell-sidebar-toggle",
+   307,
+   20,
+   36,
+   "color(srgb 0.952941 0.952941 0.960784 / 0.08)"
+  ],
+  [
+   "border-left",
+   "button[dropdown-menu-trigger].header-quick-actions.topIcon",
+   1260,
+   20,
+   36,
+   "color(srgb 0.952941 0.952941 0.960784 / 0.08)"
+  ],
+  [
+   "border-right",
+   "button[dropdown-menu-trigger].header-quick-actions.topIcon",
+   1296,
+   20,
+   36,
+   "color(srgb 0.952941 0.952941 0.960784 / 0.08)"
+  ],
+  [
+   "border-left",
+   "button[tooltip-trigger].shell-toolbar-control.relative.grid.size-9.shrink-0.place-items-center",
+   1300,
+   20,
+   36,
+   "color(srgb 0.952941 0.952941 0.960784 / 0.08)"
+  ],
+  [
+   "border-right",
+   "button[tooltip-trigger].shell-toolbar-control.relative.grid.size-9.shrink-0.place-items-center",
+   1336,
+   20,
+   36,
+   "color(srgb 0.952941 0.952941 0.960784 / 0.08)"
+  ],
+  [
+   "border-left",
+   "button[tooltip-trigger].topIcon",
+   1340,
+   20,
+   36,
+   "color(srgb 0.952941 0.952941 0.960784 / 0.08)"
+  ],
+  [
+   "border-right",
+   "button[tooltip-trigger].topIcon",
+   1376,
+   20,
+   36,
+   "color(srgb 0.952941 0.952941 0.960784 / 0.08)"
+  ],
+  [
+   "border-left",
+   "button[tooltip-trigger].topIcon.relative",
+   1380,
+   20,
+   36,
+   "color(srgb 0.952941 0.952941 0.960784 / 0.08)"
+  ],
+  [
+   "border-right",
+   "button[tooltip-trigger].topIcon.relative",
+   1416,
+   20,
+   36,
+   "color(srgb 0.952941 0.952941 0.960784 / 0.08)"
+  ],
+  [
+   "border-left",
+   "button[button].group/button.inline-flex.shrink-0.cursor-pointer.select-none.items-center",
+   1202,
+   110,
+   32,
+   "rgb(59, 31, 229)"
+  ],
+  [
+   "border-right",
+   "button[button].group/button.inline-flex.shrink-0.cursor-pointer.select-none.items-center",
+   1388,
+   110,
+   32,
+   "rgb(59, 31, 229)"
+  ],
+  [
+   "border-left",
+   "button[button].group/button.rounded-lg.inline-flex.shrink-0.cursor-pointer.select-none",
+   324,
+   354,
+   32,
+   "rgb(35, 36, 38)"
+  ],
+  [
+   "border-right",
+   "button[button].group/button.rounded-lg.inline-flex.shrink-0.cursor-pointer.select-none",
+   422,
+   354,
+   32,
+   "rgb(35, 36, 38)"
+  ],
+  [
+   "border-left",
+   "button[popover-trigger].group/button.rounded-lg.inline-flex.shrink-0.cursor-pointer.select-none",
+   462,
+   354,
+   32,
+   "rgb(35, 36, 38)"
+  ],
+  [
+   "border-right",
+   "button[popover-trigger].group/button.rounded-lg.inline-flex.shrink-0.cursor-pointer.select-none",
+   494,
+   354,
+   32,
+   "rgb(35, 36, 38)"
+  ],
+  [
+   "border-left",
+   "div.overflow-x-auto.rounded-[var(--radius-panel)].border.border-foreground/15",
+   288,
+   426,
+   675,
+   "oklab(0.964711 0.000791132 -0.00252795 / 0.15)"
+  ],
+  [
+   "border-right",
+   "div.overflow-x-auto.rounded-[var(--radius-panel)].border.border-foreground/15",
+   1392,
+   426,
+   675,
+   "oklab(0.964711 0.000791132 -0.00252795 / 0.15)"
+  ],
+  [
+   "border-right",
+   "button.flex.min-w-0.flex-1.items-center.justify-center.gap-2",
+   495,
+   427,
+   44,
+   "oklab(0.964711 0.000791132 -0.00252795 / 0.1)"
+  ],
+  [
+   "border-right",
+   "button.flex.min-w-0.flex-1.items-center.justify-center.gap-2",
+   644,
+   427,
+   44,
+   "oklab(0.964711 0.000791132 -0.00252795 / 0.1)"
+  ],
+  [
+   "border-right",
+   "button.flex.min-w-0.flex-1.items-center.justify-center.gap-2",
+   794,
+   427,
+   44,
+   "oklab(0.964711 0.000791132 -0.00252795 / 0.1)"
+  ],
+  [
+   "border-right",
+   "button.flex.min-w-0.flex-1.items-center.justify-center.gap-2",
+   943,
+   427,
+   44,
+   "oklab(0.964711 0.000791132 -0.00252795 / 0.1)"
+  ],
+  [
+   "border-right",
+   "button.flex.min-w-0.flex-1.items-center.justify-center.gap-2",
+   1093,
+   427,
+   44,
+   "oklab(0.964711 0.000791132 -0.00252795 / 0.1)"
+  ],
+  [
+   "border-right",
+   "button.flex.min-w-0.flex-1.items-center.justify-center.gap-2",
+   1242,
+   427,
+   44,
+   "oklab(0.964711 0.000791132 -0.00252795 / 0.1)"
+  ],
+  [
+   "border-right",
+   "div.relative.min-w-0.flex-1.border-foreground/10.border-r.last:border-r-0",
+   495,
+   472,
+   583,
+   "oklab(0.964711 0.000791132 -0.00252795 / 0.1)"
+  ],
+  [
+   "border-right",
+   "div.relative.min-w-0.flex-1.border-foreground/10.border-r.last:border-r-0",
+   644,
+   472,
+   583,
+   "oklab(0.964711 0.000791132 -0.00252795 / 0.1)"
+  ],
+  [
+   "border-right",
+   "div.relative.min-w-0.flex-1.border-foreground/10.border-r.last:border-r-0",
+   794,
+   472,
+   583,
+   "oklab(0.964711 0.000791132 -0.00252795 / 0.1)"
+  ],
+  [
+   "border-right",
+   "div.relative.min-w-0.flex-1.border-foreground/10.border-r.last:border-r-0",
+   943,
+   472,
+   583,
+   "oklab(0.964711 0.000791132 -0.00252795 / 0.1)"
+  ],
+  [
+   "border-right",
+   "div.relative.min-w-0.flex-1.border-foreground/10.border-r.last:border-r-0",
+   1093,
+   472,
+   583,
+   "oklab(0.964711 0.000791132 -0.00252795 / 0.1)"
+  ],
+  [
+   "border-right",
+   "div.relative.min-w-0.flex-1.border-foreground/10.border-r.last:border-r-0",
+   1242,
+   472,
+   583,
+   "oklab(0.964711 0.000791132 -0.00252795 / 0.1)"
+  ],
+  [
+   "inset-shadow",
+   "div[card-header].group/card-header.@container/card-header.grid.auto-rows-min.items-start.rounded-t-xl",
+   272,
+   1141,
+   96,
+   "rgb(35, 36, 38) 0px -1px 0px 0px inset"
+  ],
+  [
+   "inset-shadow",
+   "div.agenda-day-toolbar.flex.flex-col.gap-3.border-border.border-b",
+   272,
+   1237,
+   148,
+   "rgb(35, 36, 38) 0px -1px 0px 0px inset"
+  ],
+  [
+   "border-left",
+   "input[input].h-8.w-full.min-w-0.rounded-lg.border.border-input",
+   296,
+   1337,
+   32,
+   "rgba(255, 255, 255, 0.1)"
+  ],
+  [
+   "border-right",
+   "input[input].h-8.w-full.min-w-0.rounded-lg.border.border-input",
+   640,
+   1337,
+   32,
+   "rgba(255, 255, 255, 0.1)"
+  ],
+  [
+   "border-left",
+   "select[native-select].h-9.w-full.min-w-0.select-none.appearance-none.rounded-xl",
+   648,
+   1337,
+   32,
+   "rgba(255, 255, 255, 0.1)"
+  ],
+  [
+   "border-right",
+   "select[native-select].h-9.w-full.min-w-0.select-none.appearance-none.rounded-xl",
+   840,
+   1337,
+   32,
+   "rgba(255, 255, 255, 0.1)"
+  ],
+  [
+   "border-left",
+   "select[native-select].h-9.w-full.min-w-0.select-none.appearance-none.rounded-xl",
+   848,
+   1337,
+   32,
+   "rgba(255, 255, 255, 0.1)"
+  ],
+  [
+   "border-right",
+   "select[native-select].h-9.w-full.min-w-0.select-none.appearance-none.rounded-xl",
+   1024,
+   1337,
+   32,
+   "rgba(255, 255, 255, 0.1)"
+  ],
+  [
+   "border-left",
+   "button.min-h-11.rounded-xl.border.border-teal-200.bg-teal-50.px-4",
+   296,
+   1434,
+   66,
+   "oklch(0.386 0.063 188.416)"
+  ],
+  [
+   "border-right",
+   "button.min-h-11.rounded-xl.border.border-teal-200.bg-teal-50.px-4",
+   444,
+   1434,
+   66,
+   "oklch(0.386 0.063 188.416)"
+  ],
+  [
+   "border-left",
+   "button.min-h-11.rounded-xl.border.border-teal-200.bg-teal-50.px-4",
+   456,
+   1434,
+   66,
+   "oklch(0.386 0.063 188.416)"
+  ],
+  [
+   "border-right",
+   "button.min-h-11.rounded-xl.border.border-teal-200.bg-teal-50.px-4",
+   625,
+   1434,
+   66,
+   "oklch(0.386 0.063 188.416)"
+  ],
+  [
+   "border-left",
+   "div[empty].flex.w-full.min-w-0.flex-1.flex-col.items-center",
+   296,
+   1540,
+   220,
+   "oklab(0.260077 -0.000372097 -0.00398037 / 0.8)"
+  ],
+  [
+   "border-right",
+   "div[empty].flex.w-full.min-w-0.flex-1.flex-col.items-center",
+   1072,
+   1540,
+   220,
+   "oklab(0.260077 -0.000372097 -0.00398037 / 0.8)"
+  ],
+  [
+   "border-left",
+   "button[button].group/button.rounded-lg.inline-flex.shrink-0.cursor-pointer.select-none",
+   492,
+   1702,
+   32,
+   "rgba(255, 255, 255, 0.08)"
+  ],
+  [
+   "border-right",
+   "button[button].group/button.rounded-lg.inline-flex.shrink-0.cursor-pointer.select-none",
+   678,
+   1702,
+   32,
+   "rgba(255, 255, 255, 0.08)"
+  ],
+  [
+   "inset-shadow",
+   "div[card-header].group/card-header.@container/card-header.grid.auto-rows-min.items-start.gap-1",
+   1072,
+   1341,
+   82,
+   "rgb(35, 36, 38) 0px -1px 0px 0px inset"
+  ]
+ ],
+ "Semaine-dark-erreurs": [],
+ "Mois-dark": [
+  [
+   "border-left",
+   "button[tooltip-trigger].topIcon.shell-sidebar-toggle",
+   271,
+   20,
+   36,
+   "color(srgb 0.952941 0.952941 0.960784 / 0.08)"
+  ],
+  [
+   "border-right",
+   "button[tooltip-trigger].topIcon.shell-sidebar-toggle",
+   307,
+   20,
+   36,
+   "color(srgb 0.952941 0.952941 0.960784 / 0.08)"
+  ],
+  [
+   "border-left",
+   "button[dropdown-menu-trigger].header-quick-actions.topIcon",
+   1260,
+   20,
+   36,
+   "color(srgb 0.952941 0.952941 0.960784 / 0.08)"
+  ],
+  [
+   "border-right",
+   "button[dropdown-menu-trigger].header-quick-actions.topIcon",
+   1296,
+   20,
+   36,
+   "color(srgb 0.952941 0.952941 0.960784 / 0.08)"
+  ],
+  [
+   "border-left",
+   "button[tooltip-trigger].shell-toolbar-control.relative.grid.size-9.shrink-0.place-items-center",
+   1300,
+   20,
+   36,
+   "color(srgb 0.952941 0.952941 0.960784 / 0.08)"
+  ],
+  [
+   "border-right",
+   "button[tooltip-trigger].shell-toolbar-control.relative.grid.size-9.shrink-0.place-items-center",
+   1336,
+   20,
+   36,
+   "color(srgb 0.952941 0.952941 0.960784 / 0.08)"
+  ],
+  [
+   "border-left",
+   "button[tooltip-trigger].topIcon",
+   1340,
+   20,
+   36,
+   "color(srgb 0.952941 0.952941 0.960784 / 0.08)"
+  ],
+  [
+   "border-right",
+   "button[tooltip-trigger].topIcon",
+   1376,
+   20,
+   36,
+   "color(srgb 0.952941 0.952941 0.960784 / 0.08)"
+  ],
+  [
+   "border-left",
+   "button[tooltip-trigger].topIcon.relative",
+   1380,
+   20,
+   36,
+   "color(srgb 0.952941 0.952941 0.960784 / 0.08)"
+  ],
+  [
+   "border-right",
+   "button[tooltip-trigger].topIcon.relative",
+   1416,
+   20,
+   36,
+   "color(srgb 0.952941 0.952941 0.960784 / 0.08)"
+  ],
+  [
+   "border-left",
+   "button[button].group/button.inline-flex.shrink-0.cursor-pointer.select-none.items-center",
+   1202,
+   110,
+   32,
+   "rgb(59, 31, 229)"
+  ],
+  [
+   "border-right",
+   "button[button].group/button.inline-flex.shrink-0.cursor-pointer.select-none.items-center",
+   1388,
+   110,
+   32,
+   "rgb(59, 31, 229)"
+  ],
+  [
+   "border-left",
+   "button[button].group/button.rounded-lg.inline-flex.shrink-0.cursor-pointer.select-none",
+   324,
+   354,
+   32,
+   "rgb(35, 36, 38)"
+  ],
+  [
+   "border-right",
+   "button[button].group/button.rounded-lg.inline-flex.shrink-0.cursor-pointer.select-none",
+   422,
+   354,
+   32,
+   "rgb(35, 36, 38)"
+  ],
+  [
+   "border-left",
+   "button[popover-trigger].group/button.rounded-lg.inline-flex.shrink-0.cursor-pointer.select-none",
+   462,
+   354,
+   32,
+   "rgb(35, 36, 38)"
+  ],
+  [
+   "border-right",
+   "button[popover-trigger].group/button.rounded-lg.inline-flex.shrink-0.cursor-pointer.select-none",
+   494,
+   354,
+   32,
+   "rgb(35, 36, 38)"
+  ],
+  [
+   "border-left",
+   "div.agenda-month-grid.grid.grid-cols-7.gap-px.overflow-hidden.rounded-[var(--radius-panel)]",
+   304,
+   442,
+   544,
+   "rgb(35, 36, 38)"
+  ],
+  [
+   "border-right",
+   "div.agenda-month-grid.grid.grid-cols-7.gap-px.overflow-hidden.rounded-[var(--radius-panel)]",
+   1376,
+   442,
+   544,
+   "rgb(35, 36, 38)"
+  ],
+  [
+   "inset-shadow",
+   "div[card-header].group/card-header.@container/card-header.grid.auto-rows-min.items-start.rounded-t-xl",
+   272,
+   1042,
+   96,
+   "rgb(35, 36, 38) 0px -1px 0px 0px inset"
+  ],
+  [
+   "inset-shadow",
+   "div.agenda-day-toolbar.flex.flex-col.gap-3.border-border.border-b",
+   272,
+   1137,
+   148,
+   "rgb(35, 36, 38) 0px -1px 0px 0px inset"
+  ],
+  [
+   "border-left",
+   "input[input].h-8.w-full.min-w-0.rounded-lg.border.border-input",
+   296,
+   1237,
+   32,
+   "rgba(255, 255, 255, 0.1)"
+  ],
+  [
+   "border-right",
+   "input[input].h-8.w-full.min-w-0.rounded-lg.border.border-input",
+   640,
+   1237,
+   32,
+   "rgba(255, 255, 255, 0.1)"
+  ],
+  [
+   "border-left",
+   "select[native-select].h-9.w-full.min-w-0.select-none.appearance-none.rounded-xl",
+   648,
+   1237,
+   32,
+   "rgba(255, 255, 255, 0.1)"
+  ],
+  [
+   "border-right",
+   "select[native-select].h-9.w-full.min-w-0.select-none.appearance-none.rounded-xl",
+   840,
+   1237,
+   32,
+   "rgba(255, 255, 255, 0.1)"
+  ],
+  [
+   "border-left",
+   "select[native-select].h-9.w-full.min-w-0.select-none.appearance-none.rounded-xl",
+   848,
+   1237,
+   32,
+   "rgba(255, 255, 255, 0.1)"
+  ],
+  [
+   "border-right",
+   "select[native-select].h-9.w-full.min-w-0.select-none.appearance-none.rounded-xl",
+   1024,
+   1237,
+   32,
+   "rgba(255, 255, 255, 0.1)"
+  ],
+  [
+   "border-left",
+   "button.min-h-11.rounded-xl.border.border-teal-200.bg-teal-50.px-4",
+   296,
+   1334,
+   66,
+   "oklch(0.386 0.063 188.416)"
+  ],
+  [
+   "border-right",
+   "button.min-h-11.rounded-xl.border.border-teal-200.bg-teal-50.px-4",
+   444,
+   1334,
+   66,
+   "oklch(0.386 0.063 188.416)"
+  ],
+  [
+   "border-left",
+   "button.min-h-11.rounded-xl.border.border-teal-200.bg-teal-50.px-4",
+   456,
+   1334,
+   66,
+   "oklch(0.386 0.063 188.416)"
+  ],
+  [
+   "border-right",
+   "button.min-h-11.rounded-xl.border.border-teal-200.bg-teal-50.px-4",
+   625,
+   1334,
+   66,
+   "oklch(0.386 0.063 188.416)"
+  ],
+  [
+   "border-left",
+   "div[empty].flex.w-full.min-w-0.flex-1.flex-col.items-center",
+   296,
+   1440,
+   220,
+   "oklab(0.260077 -0.000372097 -0.00398037 / 0.8)"
+  ],
+  [
+   "border-right",
+   "div[empty].flex.w-full.min-w-0.flex-1.flex-col.items-center",
+   1072,
+   1440,
+   220,
+   "oklab(0.260077 -0.000372097 -0.00398037 / 0.8)"
+  ],
+  [
+   "border-left",
+   "button[button].group/button.rounded-lg.inline-flex.shrink-0.cursor-pointer.select-none",
+   492,
+   1603,
+   32,
+   "rgba(255, 255, 255, 0.08)"
+  ],
+  [
+   "border-right",
+   "button[button].group/button.rounded-lg.inline-flex.shrink-0.cursor-pointer.select-none",
+   678,
+   1603,
+   32,
+   "rgba(255, 255, 255, 0.08)"
+  ],
+  [
+   "inset-shadow",
+   "div[card-header].group/card-header.@container/card-header.grid.auto-rows-min.items-start.gap-1",
+   1072,
+   1242,
+   82,
+   "rgb(35, 36, 38) 0px -1px 0px 0px inset"
+  ]
+ ],
+ "Mois-dark-erreurs": []
+}
