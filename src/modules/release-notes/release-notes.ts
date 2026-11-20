@@ -1,4 +1,4 @@
-import { Archive, Banknote, Building2, CalendarCheck, FileText, LayoutGrid, MessageCircle, MessageSquareText, Palette, PanelLeft, Pencil, Phone, Plus, RefreshCw, Search, Shapes, Stethoscope, Type, UserPen, type LucideIcon } from "lucide-react";
+import { Archive, Banknote, Building2, CalendarCheck, ChartColumn, FileText, LayoutDashboard, LayoutGrid, MessageCircle, MessageSquareText, Palette, PanelLeft, Pencil, Phone, Pill, Plus, RefreshCw, Search, Shapes, Stethoscope, Type, UserPen, type LucideIcon } from "lucide-react";
 
 /**
  * Les notes de version : une entrée par version, à remplir à chaque publication.
@@ -27,6 +27,32 @@ export type ReleaseNote = {
 
 /** Les plus récentes en premier. */
 export const RELEASE_NOTES: ReleaseNote[] = [
+  {
+    version: "5.2.0",
+    status: "draft",
+    highlights: [
+      {
+        icon: Pill,
+        title: "Les doses relues par une vétérinaire, sur l'ordonnance",
+        text: "Pour 24 médicaments, la ligne de l'ordonnance montre la dose de référence pour le poids de l'animal, avec son calcul, la voie, la fréquence, la durée et la mise en garde du RCP mot pour mot. Quand la référence ne permet pas de donner une dose (poids hors de la tranche, dose non chiffrée), elle le dit et dit pourquoi. La ligne reste la vôtre : rien n'est écrit à votre place.",
+      },
+      {
+        icon: ChartColumn,
+        title: "Vos données du cabinet en chiffres et en graphiques",
+        text: "Dans l'Assistant, onglet Données, posez une question sur la caisse, les rendez-vous, les dossiers ou les tâches : la réponse vient avec ses chiffres clés, un graphique et un tableau que vous triez d'un clic. L'Assistant ne répond que s'il a compris toute la question, et ne lit que les données de cet ordinateur.",
+      },
+      {
+        icon: LayoutDashboard,
+        title: "Plus de chiffres faux pendant le chargement",
+        text: "Pendant que le Tableau de bord lit vos données, les Chiffres clés montrent leur emplacement au lieu d'afficher « 0 DA ». La page Hospitalisation et les premières rangées de toutes les pages suivent maintenant le même dessin que le Tableau de bord.",
+      },
+      {
+        icon: Search,
+        title: "Une recherche plus directe",
+        text: "La recherche, en haut de chaque page, met les actions rapides en tête et montre le passage trouvé dans chaque résultat : le bon dossier se reconnaît d'un coup d'œil.",
+      },
+    ],
+  },
   {
     version: "5.1.1",
     status: "published",
