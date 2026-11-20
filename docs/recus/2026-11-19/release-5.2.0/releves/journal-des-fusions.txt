@@ -1,0 +1,6 @@
+1/5 lot 7cdc8aa : typecheck 0, lint 0, 1er passage 2119/2120 (dashboard-widgets durée, vert seul), 2e passage 2120/2120
+2/5 recherche f0caa39 : clean.css fusionné automatiquement ; typecheck 0, lint 0, 2120/2120
+3/5 gardes+panneau f41cfe4 : conflit clean.css résolu (garder les deux : règle sans ombre stat-grid du lot + retrait du dégradé assistant) ; typecheck 0, lint 0, 2189/2189
+4/5 tranche 1+squelette 49ad478 : conflit stat-grid.tsx résolu (data-slot=stat-grid du lot + région de chargement) ; typecheck 0, lint 0, 1er passage 2210/2211 (patient-record-pdf durée, vert seul), 2e passage 2211/2211
+5/5 doses 9764272 : sans conflit ; typecheck 0, lint 0, 2225/2225 du premier coup
++ 874039a brouillon note 5.2.0

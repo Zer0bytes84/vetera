@@ -1,0 +1,47 @@
+{
+ "dernier": {
+  "t": 9006,
+  "squelette": false,
+  "values": [
+   "31 500 DA0012345678900123456789 001234567890012345678900123456789 DA",
+   "500123456789",
+   "0 DA00123456789 DA",
+   "100123456789"
+  ],
+  "hauteur": 262
+ },
+ "light": {
+  "decalageCumule": 0.009,
+  "rangeeVisibleDes": 1139,
+  "valeursFinales": [
+   "31 500 DA0012345678900123456789 001234567890012345678900123456789 DA",
+   "500123456789",
+   "0 DA00123456789 DA",
+   "100123456789"
+  ],
+  "valeursFaussesAffichees": "jamais",
+  "exempleDeValeursFausses": null,
+  "squeletteAffiche": "1139–2462 ms (60 images)",
+  "hauteurs": [
+   264
+  ],
+  "erreurs": []
+ },
+ "dark": {
+  "decalageCumule": 0.01,
+  "rangeeVisibleDes": 921,
+  "valeursFinales": [
+   "31 500 DA0012345678900123456789 001234567890012345678900123456789 DA",
+   "500123456789",
+   "0 DA00123456789 DA",
+   "100123456789"
+  ],
+  "valeursFaussesAffichees": "jamais",
+  "exempleDeValeursFausses": null,
+  "squeletteAffiche": "921–2206 ms (61 images)",
+  "hauteurs": [
+   262
+  ],
+  "erreurs": []
+ }
+}

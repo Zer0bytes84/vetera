@@ -1,0 +1,106 @@
+{
+ "caisse-light": {
+  "cards": [
+   "Encaissé: 51 500DA (positive)",
+   "Dépensé: 0DA (negative)",
+   "Solde net: 51 500DA (neutral)",
+   "Lignes: 14 (neutral)"
+  ],
+  "chart": "Journal de caisse par jour : Encaissé 51 500 DA.",
+  "triables": 5,
+  "triApresClic": {
+   "avant": "27 oct. 2026 Paiement INV-2026-000017 8 000 DA",
+   "apres": "27 oct. 2026 Paiement INV-2026-000017 8 000 DA",
+   "ariaSort": "descending"
+  },
+  "erreurs": []
+ },
+ "rendez-vous-light": {
+  "cards": [
+   "Rendez-vous: 13 (neutral)",
+   "Terminé: 13 (positive)",
+   "Annulé: 0 (neutral)",
+   "Absent: 0 (negative)"
+  ],
+  "chart": "Rendez-vous par jour : Rendez-vous 13.",
+  "triables": 5,
+  "triApresClic": {
+   "avant": "1 oct., 20:30 Caramel Vaccin Terminé",
+   "apres": "1 oct., 20:30 Caramel Vaccin Terminé",
+   "ariaSort": "descending"
+  },
+  "erreurs": []
+ },
+ "patients-light": {
+  "cards": [
+   "Dossiers actifs: 16 (neutral)",
+   "Dossiers au total: 16 (neutral)"
+  ],
+  "chart": "Dossiers actifs par espèce : Dossiers actifs 16.",
+  "triables": 2,
+  "triApresClic": {
+   "avant": "Chien 10",
+   "apres": "Chien 10",
+   "ariaSort": "descending"
+  },
+  "erreurs": []
+ },
+ "taches-light": {
+  "cards": [],
+  "chart": null,
+  "triables": 0,
+  "erreurs": []
+ },
+ "caisse-dark": {
+  "cards": [
+   "Encaissé: 51 500DA (positive)",
+   "Dépensé: 0DA (negative)",
+   "Solde net: 51 500DA (neutral)",
+   "Lignes: 14 (neutral)"
+  ],
+  "chart": "Journal de caisse par jour : Encaissé 51 500 DA.",
+  "triables": 5,
+  "triApresClic": {
+   "avant": "27 oct. 2026 Paiement INV-2026-000017 8 000 DA",
+   "apres": "27 oct. 2026 Paiement INV-2026-000017 8 000 DA",
+   "ariaSort": "descending"
+  },
+  "erreurs": []
+ },
+ "rendez-vous-dark": {
+  "cards": [
+   "Rendez-vous: 13 (neutral)",
+   "Terminé: 13 (positive)",
+   "Annulé: 0 (neutral)",
+   "Absent: 0 (negative)"
+  ],
+  "chart": "Rendez-vous par jour : Rendez-vous 13.",
+  "triables": 5,
+  "triApresClic": {
+   "avant": "1 oct., 20:30 Caramel Vaccin Terminé",
+   "apres": "1 oct., 20:30 Caramel Vaccin Terminé",
+   "ariaSort": "descending"
+  },
+  "erreurs": []
+ },
+ "patients-dark": {
+  "cards": [
+   "Dossiers actifs: 16 (neutral)",
+   "Dossiers au total: 16 (neutral)"
+  ],
+  "chart": "Dossiers actifs par espèce : Dossiers actifs 16.",
+  "triables": 2,
+  "triApresClic": {
+   "avant": "Chien 10",
+   "apres": "Chien 10",
+   "ariaSort": "descending"
+  },
+  "erreurs": []
+ },
+ "taches-dark": {
+  "cards": [],
+  "chart": null,
+  "triables": 0,
+  "erreurs": []
+ }
+}

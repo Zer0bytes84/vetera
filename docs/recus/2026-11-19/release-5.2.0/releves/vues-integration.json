@@ -1,0 +1,194 @@
+{
+ "Tableau de bord (light)": {
+  "messages": [],
+  "vueEnPanne": false,
+  "erreurs": [],
+  "titre": "bAItari"
+ },
+ "Patients (light)": {
+  "messages": [],
+  "vueEnPanne": false,
+  "erreurs": [],
+  "titre": "bAItari"
+ },
+ "Agenda (light)": {
+  "messages": [
+   "Les séjours n’ont pas pu être chargés. Réessayez.",
+   "Réessayer"
+  ],
+  "vueEnPanne": false,
+  "erreurs": [],
+  "titre": "bAItari"
+ },
+ "Flux (light)": {
+  "messages": [],
+  "vueEnPanne": false,
+  "erreurs": [],
+  "titre": "bAItari"
+ },
+ "Rappels (light)": {
+  "messages": [
+   "Les rappels patients n’ont pas pu être chargés.",
+   "Réessayer"
+  ],
+  "vueEnPanne": false,
+  "erreurs": [],
+  "titre": "bAItari"
+ },
+ "Soins (light)": {
+  "messages": [
+   "Les rappels patients n’ont pas pu être chargés.",
+   "Réessayer",
+   "Les soins du jour n’ont pas pu être chargés. Réessayez."
+  ],
+  "vueEnPanne": false,
+  "erreurs": [],
+  "titre": "bAItari"
+ },
+ "Hospitalisation (light)": {
+  "messages": [
+   "Les séjours n’ont pas pu être chargés. Réessayez.",
+   "Réessayer"
+  ],
+  "vueEnPanne": false,
+  "erreurs": [],
+  "titre": "bAItari"
+ },
+ "Documents (light)": {
+  "messages": [],
+  "vueEnPanne": false,
+  "erreurs": [],
+  "titre": "bAItari"
+ },
+ "Produits (light)": {
+  "messages": [],
+  "vueEnPanne": false,
+  "erreurs": [],
+  "titre": "bAItari"
+ },
+ "Finances (light)": {
+  "messages": [
+   "Indisponible",
+   "Facturation indisponible"
+  ],
+  "vueEnPanne": false,
+  "erreurs": [],
+  "titre": "bAItari"
+ },
+ "Équipe (light)": {
+  "messages": [],
+  "vueEnPanne": false,
+  "erreurs": [],
+  "titre": "bAItari"
+ },
+ "Dossier patient (light)": {
+  "messages": [
+   "Les rappels médicaux n’ont pas pu être lus."
+  ],
+  "vueEnPanne": false,
+  "erreurs": [],
+  "titre": "bAItari"
+ },
+ "Recherche ⌘K (light)": {
+  "messages": [],
+  "vueEnPanne": false,
+  "erreurs": [],
+  "titre": "bAItari"
+ },
+ "Tableau de bord (dark)": {
+  "messages": [],
+  "vueEnPanne": false,
+  "erreurs": [],
+  "titre": "bAItari"
+ },
+ "Patients (dark)": {
+  "messages": [],
+  "vueEnPanne": false,
+  "erreurs": [],
+  "titre": "bAItari"
+ },
+ "Agenda (dark)": {
+  "messages": [
+   "Les séjours n’ont pas pu être chargés. Réessayez.",
+   "Réessayer"
+  ],
+  "vueEnPanne": false,
+  "erreurs": [],
+  "titre": "bAItari"
+ },
+ "Flux (dark)": {
+  "messages": [],
+  "vueEnPanne": false,
+  "erreurs": [],
+  "titre": "bAItari"
+ },
+ "Rappels (dark)": {
+  "messages": [
+   "Les rappels patients n’ont pas pu être chargés.",
+   "Réessayer"
+  ],
+  "vueEnPanne": false,
+  "erreurs": [],
+  "titre": "bAItari"
+ },
+ "Soins (dark)": {
+  "messages": [
+   "Les rappels patients n’ont pas pu être chargés.",
+   "Réessayer",
+   "Les soins du jour n’ont pas pu être chargés. Réessayez."
+  ],
+  "vueEnPanne": false,
+  "erreurs": [],
+  "titre": "bAItari"
+ },
+ "Hospitalisation (dark)": {
+  "messages": [
+   "Les séjours n’ont pas pu être chargés. Réessayez.",
+   "Réessayer"
+  ],
+  "vueEnPanne": false,
+  "erreurs": [],
+  "titre": "bAItari"
+ },
+ "Documents (dark)": {
+  "messages": [],
+  "vueEnPanne": false,
+  "erreurs": [],
+  "titre": "bAItari"
+ },
+ "Produits (dark)": {
+  "messages": [],
+  "vueEnPanne": false,
+  "erreurs": [],
+  "titre": "bAItari"
+ },
+ "Finances (dark)": {
+  "messages": [
+   "Indisponible",
+   "Facturation indisponible"
+  ],
+  "vueEnPanne": false,
+  "erreurs": [],
+  "titre": "bAItari"
+ },
+ "Équipe (dark)": {
+  "messages": [],
+  "vueEnPanne": false,
+  "erreurs": [],
+  "titre": "bAItari"
+ },
+ "Dossier patient (dark)": {
+  "messages": [
+   "Les rappels médicaux n’ont pas pu être lus."
+  ],
+  "vueEnPanne": false,
+  "erreurs": [],
+  "titre": "bAItari"
+ },
+ "Recherche ⌘K (dark)": {
+  "messages": [],
+  "vueEnPanne": false,
+  "erreurs": [],
+  "titre": "bAItari"
+ }
+}

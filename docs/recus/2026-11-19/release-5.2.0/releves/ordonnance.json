@@ -1,0 +1,230 @@
+{
+ "tolfedine-4kg-light": "Dose de référence validée Relue par Aïssa · 18 nov. 2026 16 mg 4 mg/kg × 4 kg Voie SC/PO Fréquence 1x/jour (PO) ; injection SC renouvelable 48 h après Durée 3 jours (PO) Mise en garde de la référence Ne pas utiliser la voie intramusculaire chez le chat. Sources : RCP TOLFEDINE 40 MG/ML SOLUTION INJECTABLE POUR CHIENS ET CHATS (ANMV, Index des RCP) · RCP TOLFEDINE 60 MG COMPRIMES CHIENS (ANMV, Inde",
+ "tolfedine-4kg-light-boites": {
+  ".validated-dose-by": [
+   883.734375,
+   461.765625,
+   170.265625,
+   17.140625
+  ],
+  ".validated-dose-icon": [
+   467,
+   461.34375,
+   18,
+   18
+  ],
+  ".validated-dose-title": [
+   493,
+   461.0625,
+   163.8125,
+   18.5625
+  ],
+  ".validated-dose-facts dt": [
+   467,
+   525.328125,
+   24.78125,
+   17.140625
+  ],
+  ".validated-dose-source": [
+   467,
+   615.609375,
+   587,
+   51.421875
+  ]
+ },
+ "tolfedine-4kg-light-fondXY": [
+  457,
+  675
+ ],
+ "tolfedine-4kg-light-erreurs": [],
+ "capstar-12kg-light": "Pas de dose de référence pour ce cas Relue par Aïssa · 18 nov. 2026 La référence couvre ce produit « par chat de 1 à 11 kg » : aucune dose n’est donnée pour 12 kg. La dose saisie sur la ligne ne vient pas de cette référence : la vérifier avant de signer. Texte de la référence : « 11.4 mg » Voie PO Fréquence Selon l'infestation, au plus une fois par jour Mise en garde de la référence 1 comprimé de ",
+ "capstar-12kg-light-boites": {
+  ".validated-dose-by": [
+   883.734375,
+   461.765625,
+   170.265625,
+   17.140625
+  ],
+  ".validated-dose-icon": [
+   467,
+   461.34375,
+   18,
+   18
+  ],
+  ".validated-dose-title": [
+   493,
+   461.0625,
+   235.75,
+   18.5625
+  ],
+  ".validated-dose-facts dt": [
+   467,
+   573.890625,
+   24.78125,
+   17.140625
+  ],
+  ".validated-dose-source": [
+   467,
+   664.171875,
+   587,
+   17.140625
+  ]
+ },
+ "capstar-12kg-light-fondXY": [
+  457,
+  689
+ ],
+ "capstar-12kg-light-erreurs": [],
+ "antisedan-light": "Pas de dose de référence pour ce cas Relue par Aïssa · 18 nov. 2026 La référence ne donne pas cette dose sous forme de nombre : lire le texte de la référence et le RCP. La dose saisie sur la ligne ne vient pas de cette référence : la vérifier avant de signer. Texte de la référence : « 2,5 fois la dose de médétomidine (5 fois celle de dexmédétomidine), en µg/kg » Voie IM Fréquence Injection unique,",
+ "antisedan-light-boites": {
+  ".validated-dose-by": [
+   883.734375,
+   461.765625,
+   170.265625,
+   17.140625
+  ],
+  ".validated-dose-icon": [
+   467,
+   461.34375,
+   18,
+   18
+  ],
+  ".validated-dose-title": [
+   493,
+   461.0625,
+   235.75,
+   18.5625
+  ],
+  ".validated-dose-facts dt": [
+   467,
+   609.59375,
+   24.78125,
+   17.140625
+  ],
+  ".validated-dose-source": [
+   467,
+   699.875,
+   587,
+   17.140625
+  ]
+ },
+ "antisedan-light-fondXY": [
+  457,
+  725
+ ],
+ "antisedan-light-erreurs": [],
+ "tolfedine-4kg-dark": "Dose de référence validée Relue par Aïssa · 18 nov. 2026 16 mg 4 mg/kg × 4 kg Voie SC/PO Fréquence 1x/jour (PO) ; injection SC renouvelable 48 h après Durée 3 jours (PO) Mise en garde de la référence Ne pas utiliser la voie intramusculaire chez le chat. Sources : RCP TOLFEDINE 40 MG/ML SOLUTION INJECTABLE POUR CHIENS ET CHATS (ANMV, Index des RCP) · RCP TOLFEDINE 60 MG COMPRIMES CHIENS (ANMV, Inde",
+ "tolfedine-4kg-dark-boites": {
+  ".validated-dose-by": [
+   883.734375,
+   461.765625,
+   170.265625,
+   17.140625
+  ],
+  ".validated-dose-icon": [
+   467,
+   461.34375,
+   18,
+   18
+  ],
+  ".validated-dose-title": [
+   493,
+   461.0625,
+   163.8125,
+   18.5625
+  ],
+  ".validated-dose-facts dt": [
+   467,
+   525.328125,
+   24.78125,
+   17.140625
+  ],
+  ".validated-dose-source": [
+   467,
+   615.609375,
+   587,
+   51.421875
+  ]
+ },
+ "tolfedine-4kg-dark-fondXY": [
+  457,
+  675
+ ],
+ "tolfedine-4kg-dark-erreurs": [],
+ "capstar-12kg-dark": "Pas de dose de référence pour ce cas Relue par Aïssa · 18 nov. 2026 La référence couvre ce produit « par chat de 1 à 11 kg » : aucune dose n’est donnée pour 12 kg. La dose saisie sur la ligne ne vient pas de cette référence : la vérifier avant de signer. Texte de la référence : « 11.4 mg » Voie PO Fréquence Selon l'infestation, au plus une fois par jour Mise en garde de la référence 1 comprimé de ",
+ "capstar-12kg-dark-boites": {
+  ".validated-dose-by": [
+   883.734375,
+   461.765625,
+   170.265625,
+   17.140625
+  ],
+  ".validated-dose-icon": [
+   467,
+   461.34375,
+   18,
+   18
+  ],
+  ".validated-dose-title": [
+   493,
+   461.0625,
+   235.75,
+   18.5625
+  ],
+  ".validated-dose-facts dt": [
+   467,
+   573.890625,
+   24.78125,
+   17.140625
+  ],
+  ".validated-dose-source": [
+   467,
+   664.171875,
+   587,
+   17.140625
+  ]
+ },
+ "capstar-12kg-dark-fondXY": [
+  457,
+  689
+ ],
+ "capstar-12kg-dark-erreurs": [],
+ "antisedan-dark": "Pas de dose de référence pour ce cas Relue par Aïssa · 18 nov. 2026 La référence ne donne pas cette dose sous forme de nombre : lire le texte de la référence et le RCP. La dose saisie sur la ligne ne vient pas de cette référence : la vérifier avant de signer. Texte de la référence : « 2,5 fois la dose de médétomidine (5 fois celle de dexmédétomidine), en µg/kg » Voie IM Fréquence Injection unique,",
+ "antisedan-dark-boites": {
+  ".validated-dose-by": [
+   883.734375,
+   461.765625,
+   170.265625,
+   17.140625
+  ],
+  ".validated-dose-icon": [
+   467,
+   461.34375,
+   18,
+   18
+  ],
+  ".validated-dose-title": [
+   493,
+   461.0625,
+   235.75,
+   18.5625
+  ],
+  ".validated-dose-facts dt": [
+   467,
+   609.59375,
+   24.78125,
+   17.140625
+  ],
+  ".validated-dose-source": [
+   467,
+   699.875,
+   587,
+   17.140625
+  ]
+ },
+ "antisedan-dark-fondXY": [
+  457,
+  725
+ ],
+ "antisedan-dark-erreurs": []
+}

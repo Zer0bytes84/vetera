@@ -1,0 +1,582 @@
+{
+ "light": {
+  "Tableau de bord": {
+   "titre": "Chiffres clés",
+   "bande": {
+    "border": "0px solid rgb(230, 230, 232)",
+    "outline": "3px none",
+    "shadow": "none",
+    "radius": "22px",
+    "bg": "oklch(0.948 0.002 286)",
+    "padding": "6px 6px 6px 6px"
+   },
+   "cartes": 4,
+   "carte": {
+    "border": "0px solid rgb(230, 230, 232)",
+    "outline": "3px none",
+    "shadow": "none",
+    "radius": "16px",
+    "bg": "oklch(1 0 0)",
+    "padding": "16px 16px 16px 16px"
+   },
+   "cartesDifferentes": 0,
+   "marges": {
+    "gauche": 6,
+    "droite": 6,
+    "bas": 6
+   },
+   "ecarts": [
+    6,
+    6,
+    6
+   ],
+   "ascendants": []
+  },
+  "Patients": {
+   "titre": "Chiffres clés",
+   "bande": {
+    "border": "0px solid rgb(230, 230, 232)",
+    "outline": "3px none",
+    "shadow": "none",
+    "radius": "22px",
+    "bg": "oklch(0.948 0.002 286)",
+    "padding": "6px 6px 6px 6px"
+   },
+   "cartes": 4,
+   "carte": {
+    "border": "0px solid rgb(230, 230, 232)",
+    "outline": "3px none",
+    "shadow": "none",
+    "radius": "16px",
+    "bg": "oklch(1 0 0)",
+    "padding": "16px 16px 16px 16px"
+   },
+   "cartesDifferentes": 0,
+   "marges": {
+    "gauche": 6,
+    "droite": 6,
+    "bas": 6
+   },
+   "ecarts": [
+    6,
+    6,
+    6
+   ],
+   "ascendants": []
+  },
+  "Agenda": {
+   "titre": "Chiffres clés",
+   "bande": {
+    "border": "0px solid rgb(230, 230, 232)",
+    "outline": "3px none",
+    "shadow": "none",
+    "radius": "22px",
+    "bg": "oklch(0.948 0.002 286)",
+    "padding": "6px 6px 6px 6px"
+   },
+   "cartes": 4,
+   "carte": {
+    "border": "0px solid rgb(230, 230, 232)",
+    "outline": "3px none",
+    "shadow": "none",
+    "radius": "16px",
+    "bg": "oklch(1 0 0)",
+    "padding": "16px 16px 16px 16px"
+   },
+   "cartesDifferentes": 0,
+   "marges": {
+    "gauche": 6,
+    "droite": 6,
+    "bas": 6
+   },
+   "ecarts": [
+    6,
+    6,
+    6
+   ],
+   "ascendants": []
+  },
+  "Flux": null,
+  "Rappels": {
+   "titre": "Chiffres clés",
+   "bande": {
+    "border": "0px solid rgb(230, 230, 232)",
+    "outline": "3px none",
+    "shadow": "none",
+    "radius": "22px",
+    "bg": "oklch(0.948 0.002 286)",
+    "padding": "6px 6px 6px 6px"
+   },
+   "cartes": 4,
+   "carte": {
+    "border": "0px solid rgb(230, 230, 232)",
+    "outline": "3px none",
+    "shadow": "none",
+    "radius": "16px",
+    "bg": "oklch(1 0 0)",
+    "padding": "16px 16px 16px 16px"
+   },
+   "cartesDifferentes": 0,
+   "marges": {
+    "gauche": 6,
+    "droite": 6,
+    "bas": 6
+   },
+   "ecarts": [
+    6,
+    6,
+    6
+   ],
+   "ascendants": []
+  },
+  "Soins": {
+   "titre": "Chiffres clés",
+   "bande": {
+    "border": "0px solid rgb(242, 242, 242)",
+    "outline": "3px none",
+    "shadow": "none",
+    "radius": "22px",
+    "bg": "oklch(0.948 0.002 286)",
+    "padding": "6px 6px 6px 6px"
+   },
+   "cartes": 3,
+   "carte": {
+    "border": "0px solid rgb(242, 242, 242)",
+    "outline": "3px none",
+    "shadow": "none",
+    "radius": "16px",
+    "bg": "oklch(1 0 0)",
+    "padding": "16px 16px 16px 16px"
+   },
+   "cartesDifferentes": 0,
+   "marges": {
+    "gauche": 6,
+    "droite": 6,
+    "bas": 6
+   },
+   "ecarts": [
+    6,
+    6
+   ],
+   "ascendants": []
+  },
+  "Hospitalisation": {
+   "titre": "Chiffres clés",
+   "bande": {
+    "border": "0px solid rgb(242, 242, 242)",
+    "outline": "3px none",
+    "shadow": "none",
+    "radius": "22px",
+    "bg": "oklch(0.948 0.002 286)",
+    "padding": "6px 6px 6px 6px"
+   },
+   "cartes": 3,
+   "carte": {
+    "border": "0px solid rgb(242, 242, 242)",
+    "outline": "3px none",
+    "shadow": "none",
+    "radius": "16px",
+    "bg": "oklch(1 0 0)",
+    "padding": "16px 16px 16px 16px"
+   },
+   "cartesDifferentes": 0,
+   "marges": {
+    "gauche": 6,
+    "droite": 6,
+    "bas": 6
+   },
+   "ecarts": [
+    6,
+    6
+   ],
+   "ascendants": []
+  },
+  "Documents": null,
+  "Produits": {
+   "titre": "Chiffres clés",
+   "bande": {
+    "border": "0px solid rgb(230, 230, 232)",
+    "outline": "3px none",
+    "shadow": "none",
+    "radius": "22px",
+    "bg": "oklch(0.948 0.002 286)",
+    "padding": "6px 6px 6px 6px"
+   },
+   "cartes": 4,
+   "carte": {
+    "border": "0px solid rgb(230, 230, 232)",
+    "outline": "3px none",
+    "shadow": "none",
+    "radius": "16px",
+    "bg": "oklch(1 0 0)",
+    "padding": "16px 16px 16px 16px"
+   },
+   "cartesDifferentes": 0,
+   "marges": {
+    "gauche": 6,
+    "droite": 6,
+    "bas": 6
+   },
+   "ecarts": [
+    6,
+    6,
+    6
+   ],
+   "ascendants": []
+  },
+  "Finances": {
+   "titre": "Chiffres clés",
+   "bande": {
+    "border": "0px solid rgb(230, 230, 232)",
+    "outline": "3px none",
+    "shadow": "none",
+    "radius": "22px",
+    "bg": "oklch(0.948 0.002 286)",
+    "padding": "6px 6px 6px 6px"
+   },
+   "cartes": 4,
+   "carte": {
+    "border": "0px solid rgb(230, 230, 232)",
+    "outline": "3px none",
+    "shadow": "none",
+    "radius": "16px",
+    "bg": "oklch(1 0 0)",
+    "padding": "16px 16px 16px 16px"
+   },
+   "cartesDifferentes": 0,
+   "marges": {
+    "gauche": 6,
+    "droite": 6,
+    "bas": 6
+   },
+   "ecarts": [
+    6,
+    6,
+    6
+   ],
+   "ascendants": []
+  },
+  "Équipe": {
+   "titre": "Chiffres clés",
+   "bande": {
+    "border": "0px solid rgb(230, 230, 232)",
+    "outline": "3px none",
+    "shadow": "none",
+    "radius": "22px",
+    "bg": "oklch(0.948 0.002 286)",
+    "padding": "6px 6px 6px 6px"
+   },
+   "cartes": 4,
+   "carte": {
+    "border": "0px solid rgb(230, 230, 232)",
+    "outline": "3px none",
+    "shadow": "none",
+    "radius": "16px",
+    "bg": "oklch(1 0 0)",
+    "padding": "16px 16px 16px 16px"
+   },
+   "cartesDifferentes": 0,
+   "marges": {
+    "gauche": 6,
+    "droite": 6,
+    "bas": 6
+   },
+   "ecarts": [
+    6,
+    6,
+    6
+   ],
+   "ascendants": []
+  }
+ },
+ "dark": {
+  "Tableau de bord": {
+   "titre": "Chiffres clés",
+   "bande": {
+    "border": "0px solid rgb(35, 36, 38)",
+    "outline": "3px none",
+    "shadow": "none",
+    "radius": "22px",
+    "bg": "oklch(0.212 0 0)",
+    "padding": "6px 6px 6px 6px"
+   },
+   "cartes": 4,
+   "carte": {
+    "border": "0px solid rgb(35, 36, 38)",
+    "outline": "3px none",
+    "shadow": "none",
+    "radius": "16px",
+    "bg": "oklch(0.172 0 0)",
+    "padding": "16px 16px 16px 16px"
+   },
+   "cartesDifferentes": 0,
+   "marges": {
+    "gauche": 6,
+    "droite": 6,
+    "bas": 6
+   },
+   "ecarts": [
+    6,
+    6,
+    6
+   ],
+   "ascendants": []
+  },
+  "Patients": {
+   "titre": "Chiffres clés",
+   "bande": {
+    "border": "0px solid rgb(35, 36, 38)",
+    "outline": "3px none",
+    "shadow": "none",
+    "radius": "22px",
+    "bg": "oklch(0.212 0 0)",
+    "padding": "6px 6px 6px 6px"
+   },
+   "cartes": 4,
+   "carte": {
+    "border": "0px solid rgb(35, 36, 38)",
+    "outline": "3px none",
+    "shadow": "none",
+    "radius": "16px",
+    "bg": "oklch(0.172 0 0)",
+    "padding": "16px 16px 16px 16px"
+   },
+   "cartesDifferentes": 0,
+   "marges": {
+    "gauche": 6,
+    "droite": 6,
+    "bas": 6
+   },
+   "ecarts": [
+    6,
+    6,
+    6
+   ],
+   "ascendants": []
+  },
+  "Agenda": {
+   "titre": "Chiffres clés",
+   "bande": {
+    "border": "0px solid rgb(35, 36, 38)",
+    "outline": "3px none",
+    "shadow": "none",
+    "radius": "22px",
+    "bg": "oklch(0.212 0 0)",
+    "padding": "6px 6px 6px 6px"
+   },
+   "cartes": 4,
+   "carte": {
+    "border": "0px solid rgb(35, 36, 38)",
+    "outline": "3px none",
+    "shadow": "none",
+    "radius": "16px",
+    "bg": "oklch(0.172 0 0)",
+    "padding": "16px 16px 16px 16px"
+   },
+   "cartesDifferentes": 0,
+   "marges": {
+    "gauche": 6,
+    "droite": 6,
+    "bas": 6
+   },
+   "ecarts": [
+    6,
+    6,
+    6
+   ],
+   "ascendants": []
+  },
+  "Flux": null,
+  "Rappels": {
+   "titre": "Chiffres clés",
+   "bande": {
+    "border": "0px solid rgb(35, 36, 38)",
+    "outline": "3px none",
+    "shadow": "none",
+    "radius": "22px",
+    "bg": "oklch(0.212 0 0)",
+    "padding": "6px 6px 6px 6px"
+   },
+   "cartes": 4,
+   "carte": {
+    "border": "0px solid rgb(35, 36, 38)",
+    "outline": "3px none",
+    "shadow": "none",
+    "radius": "16px",
+    "bg": "oklch(0.172 0 0)",
+    "padding": "16px 16px 16px 16px"
+   },
+   "cartesDifferentes": 0,
+   "marges": {
+    "gauche": 6,
+    "droite": 6,
+    "bas": 6
+   },
+   "ecarts": [
+    6,
+    6,
+    6
+   ],
+   "ascendants": []
+  },
+  "Soins": {
+   "titre": "Chiffres clés",
+   "bande": {
+    "border": "0px solid rgb(35, 36, 38)",
+    "outline": "3px none",
+    "shadow": "none",
+    "radius": "22px",
+    "bg": "oklch(0.212 0 0)",
+    "padding": "6px 6px 6px 6px"
+   },
+   "cartes": 3,
+   "carte": {
+    "border": "0px solid rgb(35, 36, 38)",
+    "outline": "3px none",
+    "shadow": "none",
+    "radius": "16px",
+    "bg": "oklch(0.172 0 0)",
+    "padding": "16px 16px 16px 16px"
+   },
+   "cartesDifferentes": 0,
+   "marges": {
+    "gauche": 6,
+    "droite": 6,
+    "bas": 6
+   },
+   "ecarts": [
+    6,
+    6
+   ],
+   "ascendants": []
+  },
+  "Hospitalisation": {
+   "titre": "Chiffres clés",
+   "bande": {
+    "border": "0px solid rgb(35, 36, 38)",
+    "outline": "3px none",
+    "shadow": "none",
+    "radius": "22px",
+    "bg": "oklch(0.212 0 0)",
+    "padding": "6px 6px 6px 6px"
+   },
+   "cartes": 3,
+   "carte": {
+    "border": "0px solid rgb(35, 36, 38)",
+    "outline": "3px none",
+    "shadow": "none",
+    "radius": "16px",
+    "bg": "oklch(0.172 0 0)",
+    "padding": "16px 16px 16px 16px"
+   },
+   "cartesDifferentes": 0,
+   "marges": {
+    "gauche": 6,
+    "droite": 6,
+    "bas": 6
+   },
+   "ecarts": [
+    6,
+    6
+   ],
+   "ascendants": []
+  },
+  "Documents": null,
+  "Produits": {
+   "titre": "Chiffres clés",
+   "bande": {
+    "border": "0px solid rgb(35, 36, 38)",
+    "outline": "3px none",
+    "shadow": "none",
+    "radius": "22px",
+    "bg": "oklch(0.212 0 0)",
+    "padding": "6px 6px 6px 6px"
+   },
+   "cartes": 4,
+   "carte": {
+    "border": "0px solid rgb(35, 36, 38)",
+    "outline": "3px none",
+    "shadow": "none",
+    "radius": "16px",
+    "bg": "oklch(0.172 0 0)",
+    "padding": "16px 16px 16px 16px"
+   },
+   "cartesDifferentes": 0,
+   "marges": {
+    "gauche": 6,
+    "droite": 6,
+    "bas": 6
+   },
+   "ecarts": [
+    6,
+    6,
+    6
+   ],
+   "ascendants": []
+  },
+  "Finances": {
+   "titre": "Chiffres clés",
+   "bande": {
+    "border": "0px solid rgb(35, 36, 38)",
+    "outline": "3px none",
+    "shadow": "none",
+    "radius": "22px",
+    "bg": "oklch(0.212 0 0)",
+    "padding": "6px 6px 6px 6px"
+   },
+   "cartes": 4,
+   "carte": {
+    "border": "0px solid rgb(35, 36, 38)",
+    "outline": "3px none",
+    "shadow": "none",
+    "radius": "16px",
+    "bg": "oklch(0.172 0 0)",
+    "padding": "16px 16px 16px 16px"
+   },
+   "cartesDifferentes": 0,
+   "marges": {
+    "gauche": 6,
+    "droite": 6,
+    "bas": 6
+   },
+   "ecarts": [
+    6,
+    6,
+    6
+   ],
+   "ascendants": []
+  },
+  "Équipe": {
+   "titre": "Chiffres clés",
+   "bande": {
+    "border": "0px solid rgb(35, 36, 38)",
+    "outline": "3px none",
+    "shadow": "none",
+    "radius": "22px",
+    "bg": "oklch(0.212 0 0)",
+    "padding": "6px 6px 6px 6px"
+   },
+   "cartes": 4,
+   "carte": {
+    "border": "0px solid rgb(35, 36, 38)",
+    "outline": "3px none",
+    "shadow": "none",
+    "radius": "16px",
+    "bg": "oklch(0.172 0 0)",
+    "padding": "16px 16px 16px 16px"
+   },
+   "cartesDifferentes": 0,
+   "marges": {
+    "gauche": 6,
+    "droite": 6,
+    "bas": 6
+   },
+   "ecarts": [
+    6,
+    6,
+    6
+   ],
+   "ascendants": []
+  }
+ }
+}
