@@ -29,7 +29,8 @@ export type ReleaseNote = {
 export const RELEASE_NOTES: ReleaseNote[] = [
   {
     version: "5.2.0",
-    status: "draft",
+    status: "published",
+    date: "2026-11-19",
     highlights: [
       {
         icon: Pill,
@@ -43,8 +44,8 @@ export const RELEASE_NOTES: ReleaseNote[] = [
       },
       {
         icon: LayoutDashboard,
-        title: "Plus de chiffres faux pendant le chargement",
-        text: "Pendant que le Tableau de bord lit vos données, les Chiffres clés montrent leur emplacement au lieu d'afficher « 0 DA ». La page Hospitalisation et les premières rangées de toutes les pages suivent maintenant le même dessin que le Tableau de bord.",
+        title: "Plus de chiffres faux pendant le chargement, un dessin plus net",
+        text: "Pendant que le Tableau de bord lit vos données, les Chiffres clés montrent leur emplacement au lieu d'afficher « 0 DA ». La page Hospitalisation et les premières rangées de toutes les pages suivent le même dessin que le Tableau de bord, et dans l'Agenda le trait entre les heures et la journée a disparu.",
       },
       {
         icon: Search,
