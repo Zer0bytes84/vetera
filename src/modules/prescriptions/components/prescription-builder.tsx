@@ -66,6 +66,7 @@ import {
   instantiateTemplateItems,
   type PrescriptionTemplate,
 } from "../lib/prescription-templates";
+import { followReferenceDose, referenceLineFields } from "../lib/reference-line";
 import { DoseCalculatorCard } from "./dose-calculator-card";
 import { ValidatedDosePanel } from "./validated-dose-panel";
 import { MedicationPicker } from "./medication-picker";
@@ -107,6 +108,11 @@ interface DraftItem {
   medicationId?: string;
   medicationName: string;
   quantity?: string;
+  /**
+   * La dose de la ligne vient de la référence validée et le vétérinaire ne l'a pas retouchée : elle suit le poids
+   * (tranche du Capstar, du Prilium). Jamais enregistré.
+   */
+  referenceDose?: boolean;
   route?: string;
   sortOrder: number;
   warnings?: string;
@@ -152,9 +158,29 @@ function makeId(): string {
 function medToDraft(
   med: MedicationSearchResult,
   sortOrder: number,
-  speciesKey: SpeciesKey | null
+  speciesKey: SpeciesKey | null,
+  weightKg: number | undefined
 ): DraftItem {
   const poso = speciesKey ? med.posologies?.[speciesKey] : undefined;
+  const reference = referenceLineFields(med.id, speciesKey, weightKg);
+  if (reference) {
+    // La voie, la fréquence et la durée du catalogue sont celles de la référence, champ pour champ (sinon la molécule
+    // n'est pas dite validée). Aucun schéma tiré de l'ancien analyseur.
+    return {
+      id: makeId(),
+      medicationId: med.id,
+      medicationName: med.nomCommercial?.[0] ?? med.nom,
+      medicationClass: med.classe,
+      form: "comprime",
+      ...reference,
+      referenceDose: true,
+      frequency: poso?.frequence ?? "",
+      duration: poso?.duree ?? "",
+      route: poso?.voie,
+      warnings: med.effetsSecondaires?.join(" · "),
+      sortOrder,
+    };
+  }
   const catalog = poso ? parseCatalogPosology(poso.dose) : null;
   // La dose n'est reprise qu'avec son unité exacte (mL/kg, UI/kg, mg total…).
   const unit = catalog ? prescriptionUnitFor(catalog.posology.unit) : null;
@@ -287,11 +313,11 @@ export function PrescriptionBuilder({
   const handleAddMedication = useCallback(
     (med: MedicationSearchResult) => {
       setItems((prev) => {
-        const next = [...prev, medToDraft(med, prev.length, speciesKey)];
+        const next = [...prev, medToDraft(med, prev.length, speciesKey, weightKg)];
         return next;
       });
     },
-    [speciesKey]
+    [speciesKey, weightKg]
   );
 
   const updateItem = useCallback(
@@ -302,6 +328,10 @@ export function PrescriptionBuilder({
             return it;
           }
           const merged = { ...it, ...patch };
+          // Une dose retouchée par le vétérinaire est la sienne : le poids ne la change plus.
+          if ("dosagePerKg" in patch || "dosageUnit" in patch) {
+            merged.referenceDose = false;
+          }
           // Recompute the dose
           const computation = computeItemDose(merged, weightKg);
           return {
@@ -345,7 +375,9 @@ export function PrescriptionBuilder({
   // Recompute doses whenever weight changes
   useEffect(() => {
     setItems((prev) =>
-      prev.map((it) => {
+      prev.map((current) => {
+        // Une dose de la référence non retouchée suit le poids (tranche du Capstar, du Prilium).
+        const it = followReferenceDose(current, speciesKey, weightKg);
         const computation = computeItemDose(it, weightKg);
         return {
           ...it,
@@ -354,7 +386,7 @@ export function PrescriptionBuilder({
         };
       })
     );
-  }, [weightKg]);
+  }, [speciesKey, weightKg]);
 
   // Contrôle de sécurité : recalculé à chaque ajout ou modification de ligne.
   const activeTreatments = useMemo(

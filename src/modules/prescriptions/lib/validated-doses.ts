@@ -102,3 +102,31 @@ export function validatedDose(medicationId: string | undefined, species: string 
     molecule: name,
   };
 }
+
+/** The dose a prescription line is prefilled with, in the line's own units (mg/kg or mg per animal). */
+export type ReferenceLineDose = { min: number; max: number; unit: "mg/kg" | "mg/tot" };
+
+/**
+ * What a new prescription line of a validated molecule is prefilled with, so that the line never says another thing
+ * than the reference panel above it (19 November bilan, § 4: Glucantime, Capstar, Prilium, Galastop…).
+ *
+ * - `null`: the molecule is not one of the validated reference (or no longer matches it). The older catalogue parser
+ *   keeps prefilling the line.
+ * - `{ dose: null }`: the reference gives no dose for this case (dose not written as a number, weight outside the
+ *   reference's band, weight missing or not plausible, species without a line). The line is left empty for the vet.
+ * - `{ dose }`: the reference's dose, a µg/kg dose written in mg/kg (the line has no µg unit), a fixed dose per animal
+ *   as « mg/tot ».
+ *
+ * It follows `validatedDose` exactly: the line is filled when, and only when, the panel shows a dose.
+ */
+export function referencePrefill(medicationId: string | undefined, species: string | null, weightKg: number | undefined): { dose: ReferenceLineDose | null } | null {
+  const result = validatedDose(medicationId, species, weightKg);
+  if (!result) return null;
+  if (result.kind === "refus" || result.line.attendu === "REFUS") return { dose: null };
+  const expected = result.line.attendu;
+  if (expected.unite === "mg") return { dose: { min: expected.min, max: expected.max, unit: "mg/tot" } };
+  // 5 µg/kg is 0.005 mg/kg: the precision is kept, the floating point noise is not.
+  const scale = expected.unite === "µg/kg" ? 1 / 1000 : 1;
+  const exact = (value: number) => Number((value * scale).toPrecision(12));
+  return { dose: { min: exact(expected.min), max: exact(expected.max), unit: "mg/kg" } };
+}

@@ -75,7 +75,9 @@ export function DoseCalculatorCard({
           <span className="font-bold t-24 text-foreground/90 tabular-nums tracking-tighter">
             {hasWeight && computation.computedMg != null
               ? `${formatNumber(computation.computedMg)} mg`
-              : `${computation.min}${computation.range ? `–${computation.max}` : ""}`}
+              : computation.min > 0
+                ? `${computation.min}${computation.range ? `–${computation.max}` : ""}`
+                : "—"}
           </span>
           {computation.unit ? (
             <span className="font-semibold text-muted-foreground/70 text-sm">
