@@ -608,6 +608,9 @@ export function PremiumAnalytics({
           </>
         }
         kinds={chartKinds}
+        // Receipts come from the journal, visits from the known patients: no figure before both are read.
+        loading={states.cash.loading || states.patients.loading}
+        loadingRevealed={states.cash.skeleton || states.patients.skeleton}
         periodControl={chartPeriodControl}
         points={chartPoints}
         rangeLabel={chartRangeLabel}

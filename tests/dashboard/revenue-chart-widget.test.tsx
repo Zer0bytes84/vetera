@@ -41,3 +41,26 @@ it("le conteneur garde le nom accessible de l'ancien widget", () => {
 it("sans consultation dans la période, le widget s'affiche sans erreur", () => {
   expect(() => render([])).not.toThrow();
 });
+it("pendant la lecture du journal : un squelette, jamais « 0 DA », et la barre d'outils reste", () => {
+  const empty: FocusPoint[] = [
+    { label: "Début", long: "Début de période", receipts: 0, visits: 0 },
+    { label: "Fin", long: "Fin de période", receipts: 0, visits: 0 },
+  ];
+  const html = renderToStaticMarkup(
+    <RevenueChartWidget footer={<p>pied</p>} kinds={[]} loading periodControl={<button>période</button>} points={empty} rangeLabel="Du 1 au 2 oct. 2026" />
+  );
+  expect(html).not.toContain("DA");
+  expect(html).toContain('aria-label="Chargement des recettes et de l’activité"');
+  expect(html).toContain('aria-busy="true"');
+  expect(html).toContain("loading-skeleton-shape");
+  expect(html).toContain("Recettes &amp; activité");
+  expect(html).toContain('aria-label="Courbe"');
+  expect(html).toContain("période");
+});
+it("squelette pas encore révélé (lecture rapide) : les formes restent invisibles", () => {
+  const html = renderToStaticMarkup(
+    <RevenueChartWidget footer={null} kinds={[]} loading loadingRevealed={false} periodControl={null} points={points} rangeLabel="x" />
+  );
+  expect(html).toContain("invisible");
+  expect(html).not.toContain("DA<");
+});
