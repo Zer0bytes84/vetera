@@ -1,37 +1,24 @@
 "use client";
 
 import {
-  closestCenter,
-  DndContext,
-  type DragCancelEvent,
-  type DragEndEvent,
-  DragOverlay,
-  type DragStartEvent,
-  PointerSensor,
-  useSensor,
-  useSensors,
-} from "@dnd-kit/core";
-import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
-import {
-  arrayMove,
-  SortableContext,
-  useSortable,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
-import {
   CheckmarkCircle02Icon,
   DashboardSquareEditIcon,
-  DragDropVerticalIcon,
   ResetPasswordIcon,
 } from "@/lib/hugeicons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import type { ReactNode } from "react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  lazy,
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
-import { cn } from "@/lib/utils";
 import { getSetting, setSetting } from "@/services/appSettingsService";
 import {
   migrateClassicDashboardOrder,
@@ -59,97 +46,26 @@ type SaveStatus = "idle" | "saving" | "saved";
 
 const STORAGE_KEY_PREFIX = "dashboard_layout_v1";
 
-function SortableDashboardBlock({
-  block,
-  index,
-  isEditing,
-  onMoveByKeyboard,
-}: {
-  block: DashboardLayoutBlock;
-  index: number;
-  isEditing: boolean;
-  onMoveByKeyboard: (id: string, direction: -1 | 1) => void;
-}) {
-  const {
-    attributes,
-    isDragging,
-    listeners,
-    setActivatorNodeRef,
-    setNodeRef,
-    transform,
-    transition,
-  } = useSortable({
-    id: block.id,
-    disabled: !isEditing,
-  });
+// The drag-and-drop library (@dnd-kit) is only needed to rearrange the blocks.
+// It is loaded the first time the user opens « Disposition du tableau », so the
+// first screen does not download it. Until then the blocks render as a plain list.
+const DashboardSortableList = lazy(() => import("./dashboard-sortable-list"));
 
-  return (
-    <div
-      className={cn(
-        "relative min-w-0",
-        isEditing &&
-          "rounded-[26px] pt-8 outline outline-dashed outline-primary/20 transition-[outline-color,background-color] duration-200 hover:bg-primary/[0.025] hover:outline-primary/40",
-        isDragging && "z-20 opacity-30"
-      )}
-      ref={setNodeRef}
-      style={{
-        transform: CSS.Transform.toString(transform),
-        transition,
-      }}
-    >
-      {isEditing ? (
-        <div className="absolute inset-x-2 top-1 flex h-6 items-center justify-between">
-          <span className="pl-1 font-medium t-12 text-muted-foreground">
-            {index + 1}. {block.label}
-          </span>
-          <button
-            ref={setActivatorNodeRef}
-            type="button"
-            {...attributes}
-            {...listeners}
-            aria-keyshortcuts="ArrowUp ArrowDown"
-            aria-label={`Déplacer ${block.label}`}
-            className="flex h-6 cursor-grab touch-none items-center gap-1.5 rounded-full border border-border/70 bg-background/95 px-2.5 font-medium t-12 text-muted-foreground shadow-sm backdrop-blur-md transition-[color,background-color,border-color,box-shadow] hover:border-primary/30 hover:bg-primary/10 hover:text-primary hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 active:cursor-grabbing"
-            data-no-drag
-            onKeyDown={(event) => {
-              if (event.key === "ArrowUp" || event.key === "ArrowDown") {
-                event.preventDefault();
-                onMoveByKeyboard(block.id, event.key === "ArrowDown" ? 1 : -1);
-              }
-            }}
-          >
-            <HugeiconsIcon
-              className="size-3.5"
-              icon={DragDropVerticalIcon}
-              strokeWidth={1.5}
-            />
-            Déplacer
-          </button>
-        </div>
-      ) : null}
-      {block.content}
-    </div>
-  );
+function moveItem<T>(items: T[], from: number, to: number): T[] {
+  const next = items.slice();
+  const [item] = next.splice(from, 1);
+  next.splice(to, 0, item);
+  return next;
 }
 
-function DragPreview({ block }: { block: DashboardLayoutBlock }) {
+function StaticDashboardList({ blocks }: { blocks: DashboardLayoutBlock[] }) {
   return (
-    <div className="w-[min(420px,calc(100vw-32px))] rounded-2xl border border-primary/25 bg-background/95 p-3 shadow-2xl shadow-primary/15 backdrop-blur-xl">
-      <div className="flex items-center gap-3">
-        <span className="grid size-9 place-items-center rounded-xl bg-primary/10 text-primary">
-          <HugeiconsIcon
-            className="size-4"
-            icon={DragDropVerticalIcon}
-            strokeWidth={1.5}
-          />
-        </span>
-        <div className="min-w-0">
-          <p className="truncate font-semibold text-sm">{block.label}</p>
-          <p className="truncate text-muted-foreground text-xs">
-            {block.description}
-          </p>
+    <div className="flex flex-col gap-6">
+      {blocks.map((block) => (
+        <div className="relative min-w-0" key={block.id}>
+          {block.content}
         </div>
-      </div>
+      ))}
     </div>
   );
 }
@@ -174,16 +90,16 @@ export function DashboardLayoutManager({
   );
   const storageKey = `${storageKeyPrefix}:${currentUser?.id ?? "local"}`;
   const [order, setOrder] = useState<string[]>(availableIds);
-  const [activeId, setActiveId] = useState<string | null>(null);
+  // Once opened, the arrangement mode stays mounted, so the blocks are not
+  // remounted each time the user switches it on or off.
+  const [isSortableLoaded, setIsSortableLoaded] = useState(isEditing);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
   const saveQueueRef = useRef<Promise<void>>(Promise.resolve());
   const saveVersionRef = useRef(0);
 
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: { distance: 8 },
-    })
-  );
+  if (isEditing && !isSortableLoaded) {
+    setIsSortableLoaded(true);
+  }
 
   useEffect(() => {
     let isCurrent = true;
@@ -260,31 +176,15 @@ export function DashboardLayoutManager({
     [storageKey]
   );
 
-  const handleDragStart = useCallback((event: DragStartEvent) => {
-    setActiveId(String(event.active.id));
-  }, []);
-
-  const handleDragCancel = useCallback((_event: DragCancelEvent) => {
-    setActiveId(null);
-  }, []);
-
-  const handleDragEnd = useCallback(
-    (event: DragEndEvent) => {
-      setActiveId(null);
-      const overId = event.over ? String(event.over.id) : null;
-      const draggedId = String(event.active.id);
-
-      if (!overId || draggedId === overId) {
-        return;
-      }
-
+  const handleReorder = useCallback(
+    (draggedId: string, overId: string) => {
       const oldIndex = order.indexOf(draggedId);
       const newIndex = order.indexOf(overId);
       if (oldIndex < 0 || newIndex < 0) {
         return;
       }
 
-      const nextOrder = arrayMove(order, oldIndex, newIndex);
+      const nextOrder = moveItem(order, oldIndex, newIndex);
       setOrder(nextOrder);
       persistOrder(nextOrder);
     },
@@ -304,7 +204,7 @@ export function DashboardLayoutManager({
         return;
       }
 
-      const nextOrder = arrayMove(order, currentIndex, targetIndex);
+      const nextOrder = moveItem(order, currentIndex, targetIndex);
       setOrder(nextOrder);
       persistOrder(nextOrder);
     },
@@ -320,7 +220,6 @@ export function DashboardLayoutManager({
   const orderedBlocks = orderedIds
     .map((id) => blocksById.get(id))
     .filter((block): block is DashboardLayoutBlock => Boolean(block));
-  const activeBlock = activeId ? blocksById.get(activeId) : undefined;
 
   return (
     <>
@@ -371,52 +270,21 @@ export function DashboardLayoutManager({
         </div>
       ) : null}
 
-      <DndContext
-        accessibility={{
-          announcements: {
-            onDragCancel: ({ active }) =>
-              `Déplacement de ${blocksById.get(String(active.id))?.label ?? "ce bloc"} annulé.`,
-            onDragEnd: ({ active, over }) =>
-              over
-                ? `${blocksById.get(String(active.id))?.label ?? "Le bloc"} a été déplacé.`
-                : "Le bloc n’a pas été déplacé.",
-            onDragOver: ({ active, over }) =>
-              over
-                ? `${blocksById.get(String(active.id))?.label ?? "Le bloc"} est au-dessus de ${blocksById.get(String(over.id))?.label ?? "la zone cible"}.`
-                : undefined,
-            onDragStart: ({ active }) =>
-              `${blocksById.get(String(active.id))?.label ?? "Bloc"} sélectionné. Utilisez les flèches verticales pour le déplacer.`,
-          },
-          screenReaderInstructions: {
-            draggable:
-              "Utilisez directement les flèches verticales sur la poignée pour déplacer ce bloc d’une position.",
-          },
-        }}
-        collisionDetection={closestCenter}
-        modifiers={[restrictToVerticalAxis]}
-        onDragCancel={handleDragCancel}
-        onDragEnd={handleDragEnd}
-        onDragStart={handleDragStart}
-        sensors={sensors}
-      >
-        <SortableContext items={order} strategy={verticalListSortingStrategy}>
-          <div className={cn("flex flex-col", isEditing ? "gap-7" : "gap-6")}>
-            {orderedBlocks.map((block, index) => (
-              <SortableDashboardBlock
-                block={block}
-                index={index}
-                isEditing={isEditing && !firstBlockIds.includes(block.id)}
-                key={block.id}
-                onMoveByKeyboard={handleKeyboardMove}
-              />
-            ))}
-          </div>
-        </SortableContext>
-
-        <DragOverlay>
-          {activeBlock ? <DragPreview block={activeBlock} /> : null}
-        </DragOverlay>
-      </DndContext>
+      {isSortableLoaded ? (
+        <Suspense fallback={<StaticDashboardList blocks={orderedBlocks} />}>
+          <DashboardSortableList
+            blocks={orderedBlocks}
+            blocksById={blocksById}
+            firstBlockIds={firstBlockIds}
+            isEditing={isEditing}
+            onMoveByKeyboard={handleKeyboardMove}
+            onReorder={handleReorder}
+            order={order}
+          />
+        </Suspense>
+      ) : (
+        <StaticDashboardList blocks={orderedBlocks} />
+      )}
     </>
   );
 }

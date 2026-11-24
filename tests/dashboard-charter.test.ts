@@ -17,6 +17,7 @@ const TSX_FILES = [
   "src/modules/dashboard/components/focus-trend-chart.tsx",
   "src/modules/dashboard/components/dashboard-mode-toggle.tsx",
   "src/modules/dashboard/components/dashboard-layout-manager.tsx",
+  "src/modules/dashboard/components/dashboard-sortable-list.tsx",
   "src/modules/dashboard/components/clinical/actions-module.tsx",
   "src/modules/dashboard/components/clinical/shared.tsx",
   "src/modules/dashboard/components/clinical/cash-module.tsx",
