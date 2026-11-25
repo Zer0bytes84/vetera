@@ -131,10 +131,10 @@ export function StatGrid({
           className={cn(
             "grid gap-1.5",
             layout === "row"
-              ? "grid-flow-col auto-cols-[minmax(11.5rem,1fr)] overflow-x-auto"
+              ? "auto-cols-[minmax(11.5rem,1fr)] grid-flow-col overflow-x-auto"
               : data.length > 2
-                ? "grid-cols-1 @xs:grid-cols-2"
-                : "grid-cols-1 @md:grid-cols-2"
+                ? "@xs:grid-cols-2 grid-cols-1"
+                : "@md:grid-cols-2 grid-cols-1"
           )}
         >
           {data.map((stat) => (
@@ -247,7 +247,7 @@ function StatCard({
             }
           >
             <RollingNumber
-              className="text-[1.5rem] leading-none font-medium tracking-tight"
+              className="font-medium text-[1.5rem] leading-none tracking-tight"
               value={stat.value}
             />
           </span>
@@ -275,7 +275,7 @@ function StatCard({
             )}
           </div>
         )}
-        <p className="h-4 truncate text-xs leading-4 text-muted-foreground">
+        <p className="h-4 truncate text-muted-foreground text-xs leading-4">
           {stat.hint}
         </p>
         {showGoal && stat.goal && (
@@ -289,7 +289,7 @@ function StatCard({
               value={stat.goal.ratio}
               valueText={`${Math.round(stat.goal.ratio * 100)} % : ${stat.goal.label}`}
             />
-            <p className="flex h-4 items-center justify-between gap-2 text-xs leading-4 text-muted-foreground">
+            <p className="flex h-4 items-center justify-between gap-2 text-muted-foreground text-xs leading-4">
               <span className="min-w-0 truncate">{stat.goal.label}</span>
               <span className="shrink-0 tabular-nums">
                 {Math.round(stat.goal.ratio * 100)} %

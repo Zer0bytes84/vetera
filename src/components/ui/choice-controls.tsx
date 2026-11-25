@@ -102,15 +102,7 @@ export function Switch({
 
   const control = (
     <button
-      type="button"
-      role="switch"
       aria-checked={checked}
-      disabled={disabled}
-      data-instant={instant || undefined}
-      onClick={(e) => {
-        setInstant(e.detail === 0);
-        setChecked(!checked);
-      }}
       className={cn(
         "group relative h-7 w-12 shrink-0 rounded-full transition-colors duration-200 disabled:opacity-40 data-instant:transition-none",
         ease,
@@ -119,6 +111,14 @@ export function Switch({
         checked ? "bg-[#34c759] dark:bg-[#30d158]" : "bg-foreground/[0.12]",
         !label && className
       )}
+      data-instant={instant || undefined}
+      disabled={disabled}
+      onClick={(e) => {
+        setInstant(e.detail === 0);
+        setChecked(!checked);
+      }}
+      role="switch"
+      type="button"
       {...props}
     >
       <span
@@ -130,17 +130,17 @@ export function Switch({
       />
       <svg
         aria-hidden="true"
-        viewBox="0 0 10 10"
         className={cn(
           "absolute top-1/2 right-[8px] size-2.5 -translate-y-1/2 text-foreground/40 transition-opacity duration-150",
           checked && "opacity-0"
         )}
+        viewBox="0 0 10 10"
       >
         <circle
           cx="5"
           cy="5"
-          r="3.75"
           fill="none"
+          r="3.75"
           stroke="currentColor"
           strokeWidth="1.5"
         />
@@ -159,7 +159,7 @@ export function Switch({
   );
 
   return (
-    <Field label={label} description={description} className={className}>
+    <Field className={className} description={description} label={label}>
       {control}
     </Field>
   );
@@ -194,13 +194,9 @@ export function Checkbox({
   const on = checked !== false;
 
   return (
-    <Field label={label} description={description} className={className}>
+    <Field className={className} description={description} label={label}>
       <button
-        type="button"
-        role="checkbox"
         aria-checked={checked}
-        disabled={disabled}
-        onClick={() => setChecked(checked !== true)}
         className={cn(
           "flex size-5 shrink-0 items-center justify-center rounded-[6px] transition-[background-color,scale] duration-150 active:scale-[0.92] disabled:opacity-40",
           ease,
@@ -210,13 +206,17 @@ export function Checkbox({
             : "bg-foreground/[0.12] hover:bg-foreground/[0.18]",
           !label && className
         )}
+        disabled={disabled}
+        onClick={() => setChecked(checked !== true)}
+        role="checkbox"
+        type="button"
         {...props}
       >
         {checked === "mixed" ? (
-          <Minus strokeWidth={2.5} className="size-3" aria-hidden="true" />
+          <Minus aria-hidden="true" className="size-3" strokeWidth={2.5} />
         ) : (
           checked && (
-            <Check strokeWidth={2.5} className="size-3" aria-hidden="true" />
+            <Check aria-hidden="true" className="size-3" strokeWidth={2.5} />
           )
         )}
       </button>
@@ -281,11 +281,11 @@ export function RadioGroup({
   return (
     <RadioCtx.Provider value={{ value, select: setValue, name: label }}>
       <div
+        aria-label={label}
+        className={cn("flex flex-col gap-2.5", className)}
+        onKeyDown={onKeyDown}
         ref={ref}
         role="radiogroup"
-        aria-label={label}
-        onKeyDown={onKeyDown}
-        className={cn("flex flex-col gap-2.5", className)}
         {...props}
       >
         {children}
@@ -314,14 +314,9 @@ export function Radio({
   const tabStop = checked || group.value === undefined;
 
   return (
-    <Field label={label} description={description} className={className}>
+    <Field className={className} description={description} label={label}>
       <button
-        type="button"
-        role="radio"
         aria-checked={checked}
-        tabIndex={tabStop ? 0 : -1}
-        disabled={disabled}
-        onClick={() => group.select(value)}
         className={cn(
           "flex size-5 shrink-0 items-center justify-center rounded-full transition-[background-color,scale] duration-150 active:scale-[0.92] disabled:opacity-40",
           ease,
@@ -331,6 +326,11 @@ export function Radio({
             : "bg-foreground/[0.12] hover:bg-foreground/[0.18]",
           !label && className
         )}
+        disabled={disabled}
+        onClick={() => group.select(value)}
+        role="radio"
+        tabIndex={tabStop ? 0 : -1}
+        type="button"
         {...props}
       >
         <span
