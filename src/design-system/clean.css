@@ -312,9 +312,9 @@
 }
 :root[data-skin="clean"][data-skin][data-skin]
   [data-slot="shell-scroll-panel"] {
+  background: var(--clean-sheet) !important;
   border: 0 !important;
   border-radius: var(--clean-sheet-radius) var(--clean-sheet-radius) 0 0 !important;
-  background: var(--clean-sheet) !important;
   box-shadow: var(--clean-sheet-shadow) !important;
 }
 /* Header: liquid glass over the sheet. Content scrolls beneath it, blurred and
@@ -332,15 +332,15 @@
   max-height: var(--clean-header) !important;
 }
 :root[data-skin="clean"][data-skin][data-skin] [data-slot="app-header"] {
-  border-radius: var(--clean-sheet-radius) var(--clean-sheet-radius) 0 0 !important;
   background: linear-gradient(
     180deg,
     var(--clean-glass-top) 0%,
     var(--clean-glass-bottom) 100%
   ) !important;
+  border-radius: var(--clean-sheet-radius) var(--clean-sheet-radius) 0 0 !important;
+  box-shadow: none !important;
   -webkit-backdrop-filter: blur(var(--clean-glass-blur)) saturate(1.8) !important;
   backdrop-filter: blur(var(--clean-glass-blur)) saturate(1.8) !important;
-  box-shadow: none !important;
 }
 :root[data-skin="clean"][data-skin][data-skin] [data-slot="app-header"]::after {
   height: 1px !important;
@@ -356,13 +356,13 @@
 }
 :root[data-skin="clean"][data-skin][data-skin]
   :is(th, thead)[class*="backdrop-blur"] {
-  -webkit-backdrop-filter: blur(12px) saturate(1.6) !important;
-  backdrop-filter: blur(12px) saturate(1.6) !important;
   background: color-mix(
     in srgb,
     var(--clean-surface) 82%,
     transparent
   ) !important;
+  -webkit-backdrop-filter: blur(12px) saturate(1.6) !important;
+  backdrop-filter: blur(12px) saturate(1.6) !important;
 }
 :root[data-skin="clean"][data-skin][data-skin] .apple-sidebar-glow {
   display: none;
@@ -380,16 +380,16 @@
   min-width: var(--clean-header-control) !important;
   height: var(--clean-header-control) !important;
   min-height: var(--clean-header-control) !important;
-  border: 1px solid color-mix(in srgb, var(--clean-ink-strong) 8%, transparent) !important;
-  border-radius: 999px !important;
+  color: var(--clean-ink-strong) !important;
   background: color-mix(
     in srgb,
     var(--clean-ink-strong) 5%,
     transparent
   ) !important;
+  border: 1px solid color-mix(in srgb, var(--clean-ink-strong) 8%, transparent) !important;
+  border-radius: 999px !important;
   box-shadow: 0 1px 2px
     color-mix(in srgb, var(--clean-ink-strong) 6%, transparent) !important;
-  color: var(--clean-ink-strong) !important;
   transition:
     background-color var(--speed-highlight-out) ease,
     color var(--speed-highlight-out) ease,
@@ -400,14 +400,14 @@
   :root[data-skin="clean"][data-skin][data-skin]
     .shell-toolbar-actions
     .shell-toolbar-control {
-    border: 1px solid
-      color-mix(in srgb, var(--clean-ink-strong) 8%, transparent) !important;
-    border-radius: 999px !important;
     background: color-mix(
       in srgb,
       var(--clean-ink-strong) 5%,
       transparent
     ) !important;
+    border: 1px solid
+      color-mix(in srgb, var(--clean-ink-strong) 8%, transparent) !important;
+    border-radius: 999px !important;
     box-shadow: 0 1px 2px
       color-mix(in srgb, var(--clean-ink-strong) 6%, transparent) !important;
   }
@@ -430,12 +430,12 @@
       .shell-toolbar-actions button,
       .shell-toolbar-actions .shell-toolbar-control
     ):hover {
+    color: var(--clean-accent) !important;
     background: color-mix(
       in srgb,
       var(--clean-accent) 12%,
       transparent
     ) !important;
-    color: var(--clean-accent) !important;
     transform: translateY(-1px);
     transition-duration: var(--speed-highlight-in);
   }
@@ -459,8 +459,8 @@
   svg {
   width: var(--clean-header-icon) !important;
   height: var(--clean-header-icon) !important;
-  stroke-width: var(--clean-header-icon-stroke) !important;
   color: inherit !important;
+  stroke-width: var(--clean-header-icon-stroke) !important;
 }
 :root[data-skin="clean"][data-skin][data-skin]
   [data-slot="app-header"]
@@ -480,14 +480,14 @@
   min-width: 16px;
   height: 16px;
   padding: 0 4px !important;
-  border-radius: 999px;
-  background: var(--clean-accent) !important;
-  color: #fff !important;
   font-size: 12px !important;
   font-weight: 600;
-  line-height: 16px !important;
-  text-align: center;
   font-variant-numeric: tabular-nums;
+  line-height: 16px !important;
+  color: #fff !important;
+  text-align: center;
+  background: var(--clean-accent) !important;
+  border-radius: 999px;
   box-shadow: 0 0 0 2px var(--clean-sheet);
 }
 
@@ -497,31 +497,31 @@
 :root[data-skin="clean"][data-skin][data-skin]
   [data-slot="app-header"]
   .shell-header-search-field {
-  border-color: color-mix(in srgb, var(--clean-ink-strong) 8%, transparent);
-  background: color-mix(in srgb, var(--clean-ink-strong) 5%, transparent);
   color: var(--clean-ink-quiet);
+  background: color-mix(in srgb, var(--clean-ink-strong) 5%, transparent);
+  border-color: color-mix(in srgb, var(--clean-ink-strong) 8%, transparent);
 }
 :root[data-skin="clean"][data-skin][data-skin]
   [data-slot="app-header"]
   .shell-header-search-field[aria-expanded="true"] {
-  border-color: color-mix(in srgb, var(--clean-ink-strong) 16%, transparent);
-  background: color-mix(in srgb, var(--clean-ink-strong) 8%, transparent);
   color: var(--clean-ink);
+  background: color-mix(in srgb, var(--clean-ink-strong) 8%, transparent);
+  border-color: color-mix(in srgb, var(--clean-ink-strong) 16%, transparent);
 }
 :root[data-skin="clean"][data-skin][data-skin]
   [data-slot="app-header"]
   .shell-header-search-key {
+  color: var(--clean-ink);
   background: var(--clean-segment-active);
   box-shadow: var(--clean-segment-active-shadow);
-  color: var(--clean-ink);
 }
 @media (hover: hover) and (pointer: fine) {
   :root[data-skin="clean"][data-skin][data-skin]
     [data-slot="app-header"]
     .shell-header-search-field:hover {
-    border-color: color-mix(in srgb, var(--clean-ink-strong) 14%, transparent);
-    background: color-mix(in srgb, var(--clean-ink-strong) 8%, transparent);
     color: var(--clean-ink);
+    background: color-mix(in srgb, var(--clean-ink-strong) 8%, transparent);
+    border-color: color-mix(in srgb, var(--clean-ink-strong) 14%, transparent);
   }
   :root[data-skin="clean"][data-skin][data-skin]
     [data-slot="app-header"]
@@ -577,16 +577,16 @@
 :root[data-skin="clean"][data-skin][data-skin]
   [data-slot="app-header"]
   .shell-account-trigger::after {
-  content: "";
   position: absolute;
   right: 0;
   bottom: 0;
   width: 11px;
   height: 11px;
-  border-radius: 999px;
-  background: var(--clean-online);
-  box-shadow: 0 0 0 2px var(--clean-sheet);
   pointer-events: none;
+  content: "";
+  background: var(--clean-online);
+  border-radius: 999px;
+  box-shadow: 0 0 0 2px var(--clean-sheet);
 }
 
 /* ---------- Sidebar: on the frame, compact and silent ---------- */
@@ -599,12 +599,12 @@
 :root[data-skin="clean"]:where(:not([data-sidebar-tone="light"]))
   :is([data-slot="sidebar"], [data-sidebar="sidebar"][data-mobile="true"])
   [class*="rgba(236,253,245,0.98)"] {
-  border-color: rgb(255 255 255 / 0.12) !important;
   background-image: linear-gradient(
     145deg,
     rgb(16 185 129 / 0.16),
     rgb(14 165 233 / 0.1)
   ) !important;
+  border-color: rgb(255 255 255 / 0.12) !important;
   box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.08) !important;
 }
 :root[data-skin="clean"][data-skin][data-skin]
@@ -628,15 +628,15 @@
 :root[data-skin="clean"][data-skin][data-skin]
   .app-sidebar
   [data-slot="sidebar-menu-button"] {
+  gap: 10px;
   height: 30px !important;
   min-height: 30px !important;
   padding: 0 10px !important;
-  gap: 10px;
-  border-radius: var(--clean-control-radius);
-  color: var(--clean-ink);
   font-size: var(--clean-nav-text);
   font-weight: 500;
+  color: var(--clean-ink);
   letter-spacing: -0.006em;
+  border-radius: var(--clean-control-radius);
   box-shadow: none !important;
   transition:
     background-color var(--speed-highlight-out) ease,
@@ -651,18 +651,18 @@
 :root[data-skin="clean"][data-skin][data-skin]
   .app-sidebar
   [data-slot="sidebar-menu-button"][data-active]:not([data-active="false"]) {
+  color: var(--clean-ink-strong) !important;
+  outline: 0 !important;
   background: var(--clean-nav-active) !important;
   border-color: transparent !important;
-  outline: 0 !important;
   box-shadow: none !important;
-  color: var(--clean-ink-strong) !important;
 }
 @media (hover: hover) and (pointer: fine) {
   :root[data-skin="clean"][data-skin][data-skin]
     .app-sidebar
     [data-slot="sidebar-menu-button"]:hover {
-    background: var(--clean-nav-hover);
     color: var(--clean-ink-strong);
+    background: var(--clean-nav-hover);
     transition-duration: var(--speed-highlight-in);
   }
   :root[data-skin="clean"][data-skin][data-skin]
@@ -679,8 +679,8 @@
   }
 }
 :root[data-skin="clean"][data-skin][data-skin] .premium-shortcuts button {
-  color: var(--clean-ink);
   font-size: var(--clean-nav-text);
+  color: var(--clean-ink);
 }
 /* Quick-access dots keep their hue, desaturated towards the theme's greys. */
 :root[data-skin="clean"][data-skin][data-skin]
@@ -703,8 +703,8 @@
 :root[data-skin="clean"][data-skin][data-skin]
   .sidebar-account-frame
   .sidebar-user-card {
-  border-radius: var(--clean-control-radius) !important;
   background: transparent !important;
+  border-radius: var(--clean-control-radius) !important;
   box-shadow: none !important;
 }
 @media (hover: hover) and (pointer: fine) {
@@ -763,11 +763,11 @@
   .app-sidebar
   .sidebar-subpage-link {
   height: var(--clean-nav-item);
-  border-radius: var(--clean-control-radius);
-  color: var(--clean-ink);
   font-size: var(--clean-nav-text);
   font-weight: 500;
+  color: var(--clean-ink);
   letter-spacing: -0.006em;
+  border-radius: var(--clean-control-radius);
   transition:
     background-color var(--speed-highlight-out) ease,
     color var(--speed-highlight-out) ease;
@@ -775,8 +775,8 @@
 :root[data-skin="clean"][data-skin][data-skin]
   .app-sidebar
   .sidebar-subpage-link[data-active] {
-  background: var(--clean-nav-active);
   color: var(--clean-ink-strong);
+  background: var(--clean-nav-active);
 }
 :root[data-skin="clean"][data-skin][data-skin]
   .app-sidebar
@@ -791,8 +791,8 @@
 :root[data-skin="clean"][data-skin][data-skin]
   .app-sidebar
   .sidebar-settings-button[data-active] {
-  background: var(--clean-nav-active);
   color: var(--clean-ink-strong);
+  background: var(--clean-nav-active);
 }
 @media (hover: hover) and (pointer: fine) {
   :root[data-skin="clean"][data-skin][data-skin]
@@ -802,8 +802,8 @@
       .sidebar-subpage-link,
       .sidebar-settings-button
     ):hover {
-    background: var(--clean-nav-hover);
     color: var(--clean-ink-strong);
+    background: var(--clean-nav-hover);
     transition-duration: var(--speed-highlight-in);
   }
 }
@@ -821,9 +821,9 @@
     svg,
   :root[data-skin="clean"] .app-sidebar [data-slot="sidebar-menu-button"] > svg,
   :root[data-skin="clean"] .premium-shortcut-icon {
+    flex-basis: 20px !important;
     width: 20px !important;
     height: 20px !important;
-    flex-basis: 20px !important;
   }
 }
 :root[data-skin="clean"]
@@ -885,15 +885,15 @@
 
 /* ---------- Typography: Inter throughout (Linear's face), Linear's hierarchy ---------- */
 :root[data-skin="clean"] body {
-  color: var(--clean-ink-strong);
   font-family: var(--clean-font-ui);
   font-optical-sizing: auto;
+  color: var(--clean-ink-strong);
   letter-spacing: -0.006em;
 }
 :root[data-skin="clean"] :is(h1, h2, h3) {
-  color: var(--clean-ink-strong);
   font-family: var(--clean-font-heading);
   font-weight: 600;
+  color: var(--clean-ink-strong);
   letter-spacing: var(--clean-tracking-heading);
 }
 /* Page and welcome titles take Linear's tighter tracking. */
@@ -918,11 +918,11 @@
     .premium-shortcuts-heading,
     .app-sidebar [data-slot="sidebar-group-label"]
   ) {
-  color: var(--clean-ink-quiet) !important;
   font-size: 12px !important;
   font-weight: 500 !important;
-  letter-spacing: 0 !important;
+  color: var(--clean-ink-quiet) !important;
   text-transform: none !important;
+  letter-spacing: 0 !important;
 }
 /* Tabular figures for amounts and tables, so columns of numbers align. */
 :root[data-skin="clean"]
@@ -968,9 +968,9 @@
   height: var(--clean-control) !important;
   min-height: var(--clean-control) !important;
   padding-inline: 12px !important;
-  border-radius: var(--clean-control-radius) !important;
   font-size: 13px !important;
   font-weight: 500 !important;
+  border-radius: var(--clean-control-radius) !important;
   box-shadow: none !important;
 }
 :root[data-skin="clean"]
@@ -992,23 +992,23 @@
 }
 /* Ghost buttons stay ghosts: no box at rest, one hover step (row actions, toolbars). */
 :root[data-skin="clean"] [data-slot="button"][class*="bg-muted/50"] {
-  border-color: transparent !important;
-  background: transparent !important;
   color: var(--clean-ink) !important;
+  background: transparent !important;
+  border-color: transparent !important;
 }
 @media (hover: hover) and (pointer: fine) {
   :root[data-skin="clean"] [data-slot="button"][class*="bg-muted/50"]:hover {
-    background: var(--clean-hover) !important;
     color: var(--clean-ink-strong) !important;
+    background: var(--clean-hover) !important;
   }
 }
 
 /* Status pills: tinted, borderless, full radius. */
 :root[data-skin="clean"]
   :is([data-slot="badge"], .section-atlas-status, [data-premium-status]) {
+  font-weight: 500 !important;
   border-color: transparent !important;
   border-radius: 999px !important;
-  font-weight: 500 !important;
 }
 
 /* List filter bars: the search gives way first (down to 120 px, never past its
@@ -1048,13 +1048,13 @@
     .flow-density,
     .stock-view-toggle
   ) {
+  gap: 2px !important;
   height: var(--clean-control) !important;
   min-height: var(--clean-control) !important;
-  gap: 2px !important;
   padding: 2px !important;
+  background: var(--clean-segment-track) !important;
   border: 0 !important;
   border-radius: var(--clean-control-radius) !important;
-  background: var(--clean-segment-track) !important;
   box-shadow: none !important;
 }
 :root[data-skin="clean"]
@@ -1074,13 +1074,13 @@
   height: var(--clean-segment-item) !important;
   min-height: var(--clean-segment-item) !important;
   padding-block: 0 !important;
-  border: 0 !important;
-  border-radius: var(--clean-segment-radius) !important;
-  background: transparent !important;
-  box-shadow: none !important;
-  color: var(--clean-ink) !important;
   font-size: 13px !important;
   font-weight: 500 !important;
+  color: var(--clean-ink) !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: var(--clean-segment-radius) !important;
+  box-shadow: none !important;
   transition:
     background-color 120ms ease-out,
     color 120ms ease-out,
@@ -1150,8 +1150,8 @@
     [aria-checked="true"],
     [aria-current="page"]
   ) {
-  background: var(--clean-segment-active) !important;
   color: var(--clean-ink-strong) !important;
+  background: var(--clean-segment-active) !important;
   box-shadow: var(--clean-segment-active-shadow) !important;
 }
 :root[data-skin="clean"]
@@ -1242,17 +1242,17 @@
   .medical-data-table
   td
   :is([data-slot="button"], button.group\/button) {
-  border-color: transparent !important;
-  background: transparent !important;
   color: var(--clean-ink-quiet) !important;
+  background: transparent !important;
+  border-color: transparent !important;
 }
 @media (hover: hover) and (pointer: fine) {
   :root[data-skin="clean"]
     .medical-data-table
     td
     :is([data-slot="button"], button.group\/button):hover {
-    background: var(--clean-hover) !important;
     color: var(--clean-ink-strong) !important;
+    background: var(--clean-hover) !important;
   }
 }
 /* Rows are flat: the hover step fills the whole row, without a floating pill. */
@@ -1266,14 +1266,14 @@
    today in the accent colour (an accent disc when it is also selected). No
    2 px frame, no tinted box. */
 :root[data-skin="clean"] .agenda-month-calendar .agenda-month-grid {
+  background: var(--clean-line) !important;
   border-color: var(--clean-line) !important;
   border-radius: var(--clean-card-radius) !important;
-  background: var(--clean-line) !important;
 }
 :root[data-skin="clean"] .agenda-month-calendar .agenda-month-grid > span {
-  background: var(--clean-sheet) !important;
-  color: var(--clean-ink-quiet) !important;
   font-weight: 500;
+  color: var(--clean-ink-quiet) !important;
+  background: var(--clean-sheet) !important;
 }
 :root[data-skin="clean"]
   .agenda-month-calendar
@@ -1295,24 +1295,24 @@
   .agenda-month-grid
   .agenda-month-day[data-today]
   .agenda-month-day-number {
-  background: transparent !important;
   color: var(--premium-blue, var(--primary)) !important;
+  background: transparent !important;
 }
 :root[data-skin="clean"]
   .agenda-month-calendar
   .agenda-month-grid
   .agenda-month-day[data-selected]
   .agenda-month-day-number {
-  background: var(--clean-ink-strong) !important;
   color: var(--clean-surface) !important;
+  background: var(--clean-ink-strong) !important;
 }
 :root[data-skin="clean"]
   .agenda-month-calendar
   .agenda-month-grid
   .agenda-month-day[data-selected][data-today]
   .agenda-month-day-number {
-  background: var(--premium-blue, var(--primary)) !important;
   color: var(--clean-surface) !important;
+  background: var(--premium-blue, var(--primary)) !important;
 }
 
 /* Agenda week and day grids, after Tailwind Plus "week view": an appointment
@@ -1321,10 +1321,10 @@
    both the patient and the time. The neutral type (Contrôle) gets the hover
    grey instead of disappearing into the sheet. */
 :root[data-skin="clean"] button[class*="group/event"] {
+  padding-block: 1px !important;
   border-color: transparent !important;
   border-radius: var(--clean-control-radius) !important;
   box-shadow: none !important;
-  padding-block: 1px !important;
 }
 :root[data-skin="clean"] button[class*="group/event"][class*="bg-frame"] {
   background: var(--clean-hover) !important;
@@ -1339,16 +1339,16 @@
   background: var(--clean-sheet) !important;
 }
 :root[data-skin="clean"] div.sticky[class*="bg-primary/6"] > :last-child {
-  color: var(--premium-blue, var(--primary)) !important;
   font-weight: 600 !important;
+  color: var(--premium-blue, var(--primary)) !important;
 }
 /* Spaced capitals become quiet sentence-case labels across the theme (the
    text itself is unchanged), as for table heads and section labels. */
 :root[data-skin="clean"]
   :is(.uppercase[class*="tracking-"], .agenda-load-label) {
+  font-weight: 500;
   text-transform: none !important;
   letter-spacing: 0 !important;
-  font-weight: 500;
 }
 
 /* ---------- Patient record and patient preview: the record, cleaned ----------
@@ -1371,11 +1371,11 @@
 :root[data-skin="clean"][data-skin][data-skin]
   .patient-record-page
   .patient-record-indicators {
+  overflow: hidden;
+  background: var(--clean-surface) !important;
   border: 0 !important;
   border-radius: var(--clean-card-radius) !important;
-  background: var(--clean-surface) !important;
   box-shadow: 0 0 0 1px var(--clean-line) !important;
-  overflow: hidden;
 }
 :root[data-skin="clean"][data-skin][data-skin]
   .patient-record-page
@@ -1396,9 +1396,9 @@
 :root[data-skin="clean"][data-skin][data-skin]
   :is(.patient-record-page, .patient-peek-panel)
   .medical-avatar {
+  background: var(--clean-sheet) !important;
   border-color: var(--clean-line) !important;
   border-radius: var(--clean-card-radius) !important;
-  background: var(--clean-sheet) !important;
   box-shadow: none !important;
 }
 /* Header actions: one primary, the others alike (Modifier no longer the odd one). */
@@ -1415,16 +1415,16 @@
   :is(.patient-context-card, .medical-kpi) {
   display: flex !important;
   flex-direction: column !important;
-  justify-content: flex-start !important;
-  align-items: stretch !important;
   gap: 8px;
+  align-items: stretch !important;
+  justify-content: flex-start !important;
   min-height: 0 !important;
   padding: 16px 20px !important;
+  text-align: left;
+  background: transparent !important;
   border: 0 !important;
   border-radius: 0 !important;
-  background: transparent !important;
   box-shadow: inset -1px 0 0 var(--clean-line-subtle) !important;
-  text-align: left;
 }
 :root[data-skin="clean"][data-skin][data-skin]
   .patient-record-page
@@ -1445,24 +1445,24 @@
   .patient-record-indicators
   :is(.patient-context-value, .medical-kpi-value) {
   font-weight: 600 !important;
-  letter-spacing: var(--clean-tracking-title) !important;
   color: var(--clean-ink-strong) !important;
+  letter-spacing: var(--clean-tracking-title) !important;
 }
 /* Nothing today, nothing to follow: the zero stays, in the quiet grey. */
 :root[data-skin="clean"][data-skin][data-skin]
   .patient-record-page
   .patient-record-indicators
   .patient-context-value.is-zero {
-  color: var(--clean-ink-quiet) !important;
   font-weight: 500 !important;
+  color: var(--clean-ink-quiet) !important;
 }
 :root[data-skin="clean"][data-skin][data-skin]
   .patient-record-page
   .patient-record-indicators
   :is(.patient-context-heading, .medical-kpi-heading h2) {
-  color: var(--clean-ink-quiet) !important;
   font-size: 13px !important;
   font-weight: 500 !important;
+  color: var(--clean-ink-quiet) !important;
 }
 
 /* History and allergy notice: on the sheet, no gradient band behind it. */
@@ -1486,13 +1486,13 @@
     height: 40px !important;
     min-height: 40px !important;
     padding: 0 10px !important;
-    border: 0 !important;
-    border-radius: 0 !important;
-    background: transparent !important;
-    box-shadow: none !important;
-    color: var(--clean-ink) !important;
     font-size: 13px !important;
     font-weight: 500 !important;
+    color: var(--clean-ink) !important;
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
   }
   :root[data-skin="clean"][data-skin][data-skin]
     :is(.patient-record-page, .patient-peek-panel)
@@ -1502,8 +1502,8 @@
       [data-state="active"],
       [data-active]
     ) {
-    background: transparent !important;
     color: var(--clean-ink-strong) !important;
+    background: transparent !important;
     box-shadow: inset 0 -2px 0 var(--clean-ink-strong) !important;
   }
 }
@@ -1532,8 +1532,8 @@
 :root[data-skin="clean"][data-skin][data-skin]
   .patient-record-page
   .medical-tabs-scroll {
-  border: 0 !important;
   background: var(--clean-surface) !important;
+  border: 0 !important;
   box-shadow: none !important;
 }
 :root[data-skin="clean"][data-skin][data-skin]
@@ -1588,25 +1588,25 @@
 :root[data-skin="clean"][data-skin][data-skin]
   :is(.patient-record-page, .patient-peek-panel)
   :is(.medical-section-title, .medical-owner h3, .medical-record-health h3) {
-  color: var(--clean-ink-quiet) !important;
   font-size: 12px !important;
   font-weight: 500 !important;
-  letter-spacing: 0 !important;
+  color: var(--clean-ink-quiet) !important;
   text-transform: none !important;
+  letter-spacing: 0 !important;
 }
 /* The record's block headings keep their one signature (medical-record.css). */
 :root[data-skin="clean"][data-skin][data-skin]
   :is(.patient-record-page, .patient-peek-panel)
   :is(h2, h3).record-block-heading {
-  color: var(--clean-ink) !important;
   font-size: 13px !important;
+  color: var(--clean-ink) !important;
 }
 :root[data-skin="clean"][data-skin][data-skin]
   :is(.patient-record-page, .patient-peek-panel)
   :is(.medical-record-health, .medical-owner-card) {
+  background: transparent !important;
   border: 0 !important;
   border-radius: 0 !important;
-  background: transparent !important;
   box-shadow: none !important;
 }
 :root[data-skin="clean"][data-skin][data-skin]
@@ -1618,9 +1618,9 @@
 :root[data-skin="clean"][data-skin][data-skin]
   :is(.patient-record-page, .patient-peek-panel)
   .medical-health-action {
+  background: transparent !important;
   border: 0 !important;
   border-radius: var(--clean-control-radius) !important;
-  background: transparent !important;
   box-shadow: inset 0 -1px 0 var(--clean-line-subtle) !important;
 }
 @media (hover: hover) and (pointer: fine) {
@@ -1634,9 +1634,9 @@
   .patient-peek-panel
   .medical-peek-content
   > section {
+  background: transparent !important;
   border: 0 !important;
   border-radius: 0 !important;
-  background: transparent !important;
   box-shadow: none !important;
 }
 :root[data-skin="clean"][data-skin][data-skin]
@@ -1664,24 +1664,24 @@
 :root[data-skin="clean"] .kpiSub .delta {
   display: flex !important;
   flex-wrap: wrap;
-  align-items: center;
   gap: 4px 8px;
+  align-items: center;
   line-height: 20px;
 }
 :root[data-skin="clean"] .kpiSub .delta > svg {
   display: none !important;
 }
 :root[data-skin="clean"] .kpiSub .delta > span:not(.delta-label, .sr-only) {
-  margin: 0 !important;
   padding: 0 6px;
-  border-radius: 999px;
-  background: color-mix(in oklab, currentColor 12%, transparent);
+  margin: 0 !important;
   font-weight: 600;
   line-height: 20px;
+  background: color-mix(in oklab, currentColor 12%, transparent);
+  border-radius: 999px;
 }
 :root[data-skin="clean"] .kpiSub .delta-label {
-  color: var(--clean-ink-quiet) !important;
   font-weight: 450 !important;
+  color: var(--clean-ink-quiet) !important;
 }
 
 /* First row micro visualisations, one per card and never the same twice (drawn
@@ -1691,9 +1691,9 @@
 /* Every card's figure sits on one baseline, with or without a chart beside it
    (the row was 26 to 31 px depending on its chart, and absent in Actions). */
 :root[data-skin="clean"] .kpis .kpiValueRow {
+  align-items: flex-end;
   height: 32px;
   min-height: 32px;
-  align-items: flex-end;
 }
 :root[data-skin="clean"] .kpis .kpi > .kpiValue {
   display: flex;
@@ -1707,10 +1707,10 @@
 :root[data-skin="clean"] .watchCard .watchEmpty {
   flex: 0 0 auto;
   padding: 12px 22px 16px;
-  background: none !important;
-  color: var(--clean-ink-quiet);
   font-size: 13px;
+  color: var(--clean-ink-quiet);
   text-align: left;
+  background: none !important;
 }
 
 /* "Cette semaine" keeps the figures the KPI cards do not carry: they sit at
@@ -1721,8 +1721,8 @@
   box-shadow: inset 0 -1px 0 var(--clean-line-subtle);
 }
 :root[data-skin="clean"] .facts:has(> [data-clean-hidden]) > div {
-  justify-content: flex-start !important;
   gap: 6px !important;
+  justify-content: flex-start !important;
 }
 
 /* The chart's previous period (grey dash) is styled for every skin in
@@ -1735,8 +1735,8 @@
   display: grid;
   gap: 12px;
   padding: 20px 24px;
-  border-radius: var(--clean-card-radius);
   background: var(--clean-surface);
+  border-radius: var(--clean-card-radius);
   box-shadow: 0 0 0 1px var(--clean-line);
 }
 /* The same grid inside the dashboard's Hospitalisés card: no card of its own,
@@ -1744,8 +1744,8 @@
 :root[data-skin="clean"] .stay-occupancy.stay-occupancy-compact {
   gap: 8px;
   padding: 14px 22px;
-  border-radius: 0;
   background: transparent;
+  border-radius: 0;
   box-shadow: inset 0 -1px 0 var(--clean-line-subtle);
 }
 :root[data-skin="clean"] .stay-occupancy-compact .stay-occupancy-head strong {
@@ -1757,18 +1757,18 @@
 }
 :root[data-skin="clean"] .stay-occupancy-head {
   display: flex;
-  align-items: baseline;
   gap: 8px;
+  align-items: baseline;
   margin: 0;
-  color: var(--clean-ink-quiet);
   font-size: 13px;
+  color: var(--clean-ink-quiet);
 }
 :root[data-skin="clean"] .stay-occupancy-head strong {
-  color: var(--clean-ink-strong);
   font-size: 24px;
   font-weight: 600;
-  letter-spacing: var(--clean-tracking-title);
   font-variant-numeric: tabular-nums;
+  color: var(--clean-ink-strong);
+  letter-spacing: var(--clean-tracking-title);
 }
 :root[data-skin="clean"] .stay-occupancy-units {
   display: flex;
@@ -1779,8 +1779,8 @@
 :root[data-skin="clean"] .stay-occupancy-legend i {
   width: 24px;
   height: 24px;
-  border-radius: 4px;
   background: var(--clean-segment-track);
+  border-radius: 4px;
   box-shadow: inset 0 0 0 1px var(--clean-line);
 }
 :root[data-skin="clean"] .stay-occupancy-units > span[data-state="occupied"],
@@ -1802,16 +1802,16 @@
   display: flex;
   flex-wrap: wrap;
   gap: 4px 16px;
-  margin: 0;
   padding: 0;
-  list-style: none;
-  color: var(--clean-ink-quiet);
+  margin: 0;
   font-size: 12px;
+  color: var(--clean-ink-quiet);
+  list-style: none;
 }
 :root[data-skin="clean"] .stay-occupancy-legend li {
   display: inline-flex;
-  align-items: center;
   gap: 6px;
+  align-items: center;
 }
 :root[data-skin="clean"] .stay-occupancy-legend i {
   width: 10px;
@@ -1820,8 +1820,8 @@
 }
 :root[data-skin="clean"] .stay-occupancy-forecast {
   margin: 0;
-  color: var(--clean-ink);
   font-size: 13px;
+  color: var(--clean-ink);
 }
 
 /* ---------- Paper cards: white, one line, 10 px corners, no lattice ---------- */
@@ -1839,10 +1839,10 @@
     .surface-card:has(table),
     [data-slot="card"]:has(table)
   ) {
+  overflow: hidden;
   background: var(--clean-surface) !important;
   border-radius: var(--clean-card-radius) !important;
   box-shadow: 0 0 0 1px var(--clean-line) !important;
-  overflow: hidden;
 }
 :root[data-skin="clean"] :is(.kpis, .section-atlas-grid) > * {
   box-shadow: inset -1px 0 0 var(--clean-line-subtle) !important;
@@ -1864,8 +1864,8 @@
   font-family: var(--clean-font-heading);
   font-size: 14px !important;
   font-weight: 600 !important;
-  letter-spacing: var(--clean-tracking-heading) !important;
   color: var(--clean-ink-strong) !important;
+  letter-spacing: var(--clean-tracking-heading) !important;
 }
 :root[data-skin="clean"] .cardNote {
   font-size: 12px !important;
@@ -1876,10 +1876,10 @@
 :root[data-skin="clean"] .premium-clinical-overview .visit-flow-symbol {
   width: 44px !important;
   height: 44px !important;
+  color: var(--clean-ink-strong) !important;
+  background: var(--clean-segment-track) !important;
   border: 0 !important;
   border-radius: var(--clean-control-radius) !important;
-  background: var(--clean-segment-track) !important;
-  color: var(--clean-ink-strong) !important;
 }
 :root[data-skin="clean"] .premium-clinical-overview .visit-flow-name {
   font-family: var(--clean-font-heading) !important;
@@ -1894,36 +1894,36 @@
 :root[data-skin="clean"]
   .premium-clinical-overview
   :is(.clinical-filter-tabs, .clinical-trends-module [role="group"]) {
+  gap: 2px !important;
   width: max-content;
   max-width: 100%;
   height: var(--clean-control) !important;
-  gap: 2px !important;
   padding: 2px !important;
-  border-radius: var(--clean-control-radius) !important;
   background: var(--clean-segment-track) !important;
+  border-radius: var(--clean-control-radius) !important;
   box-shadow: none !important;
 }
 :root[data-skin="clean"]
   .premium-clinical-overview
   :is(.clinical-filter-tabs, .clinical-trends-module [role="group"])
   button {
-  min-height: 0 !important;
   height: var(--clean-segment-item) !important;
+  min-height: 0 !important;
   padding: 0 10px !important;
-  border-radius: var(--clean-segment-radius) !important;
-  background: transparent !important;
-  box-shadow: none !important;
-  color: var(--clean-ink) !important;
   font-size: 13px !important;
   font-weight: 500 !important;
+  color: var(--clean-ink) !important;
+  background: transparent !important;
+  border-radius: var(--clean-segment-radius) !important;
+  box-shadow: none !important;
 }
 :root[data-skin="clean"]
   .premium-clinical-overview
   :is(.clinical-filter-tabs, .clinical-trends-module [role="group"])
   button[aria-pressed="true"] {
+  color: var(--clean-ink-strong) !important;
   background: var(--clean-segment-active) !important;
   box-shadow: var(--clean-segment-active-shadow) !important;
-  color: var(--clean-ink-strong) !important;
 }
 
 /* ---------- Command palette, after Tailwind's documentation search ----------
@@ -1933,13 +1933,13 @@
    show on the current row only. */
 :root[data-skin="clean"] .command-palette[data-slot="dialog-content"] {
   padding: 0 !important;
+  overflow: hidden;
+  background: var(--clean-surface) !important;
   border: 0 !important;
   border-radius: var(--clean-sheet-radius) !important;
-  background: var(--clean-surface) !important;
   box-shadow: var(--clean-float-shadow) !important;
   -webkit-backdrop-filter: none !important;
   backdrop-filter: none !important;
-  overflow: hidden;
 }
 :root[data-skin="clean"] .command-palette [cmdk-root] {
   padding: 0 !important;
@@ -1962,9 +1962,9 @@
   [data-slot="command-input-wrapper"]
   [data-slot="input-group"]:focus-within {
   height: 52px !important;
+  background: transparent !important;
   border: 0 !important;
   border-radius: 0 !important;
-  background: transparent !important;
   box-shadow: none !important;
 }
 :root[data-skin="clean"] .command-palette [data-slot="command-input"] {
@@ -1987,11 +1987,11 @@
 }
 :root[data-skin="clean"] .command-palette .command-palette-esc {
   height: 22px !important;
-  border-radius: var(--clean-segment-radius) !important;
-  background: transparent !important;
-  box-shadow: inset 0 0 0 1px var(--clean-line) !important;
-  color: var(--clean-ink-quiet) !important;
   font-weight: 500 !important;
+  color: var(--clean-ink-quiet) !important;
+  background: transparent !important;
+  border-radius: var(--clean-segment-radius) !important;
+  box-shadow: inset 0 0 0 1px var(--clean-line) !important;
 }
 /* Filters: three words on the same edge, the chosen one on a light step. */
 :root[data-skin="clean"]
@@ -2004,9 +2004,9 @@
 :root[data-skin="clean"][data-skin]
   .command-palette
   [data-tabs-style="segmented"] {
+  gap: 2px !important;
   height: 28px !important;
   min-height: 28px !important;
-  gap: 2px !important;
   padding: 0 !important;
   background: transparent !important;
 }
@@ -2017,11 +2017,11 @@
   height: 28px !important;
   min-height: 28px !important;
   padding-inline: 10px !important;
-  border-radius: var(--clean-segment-radius) !important;
-  background: transparent !important;
-  box-shadow: none !important;
-  color: var(--clean-ink-quiet) !important;
   font-size: 13px !important;
+  color: var(--clean-ink-quiet) !important;
+  background: transparent !important;
+  border-radius: var(--clean-segment-radius) !important;
+  box-shadow: none !important;
 }
 :root[data-skin="clean"][data-skin]
   .command-palette
@@ -2031,8 +2031,8 @@
     [aria-selected="true"],
     [data-active]:not([data-active="false"])
   ) {
-  background: var(--clean-hover) !important;
   color: var(--clean-ink-strong) !important;
+  background: var(--clean-hover) !important;
 }
 /* The list: full width, no inset. */
 :root[data-skin="clean"] .command-palette [cmdk-list] {
@@ -2049,14 +2049,14 @@
   padding: 16px 24px 8px !important;
   font-size: 14px !important;
   font-weight: 600 !important;
-  letter-spacing: var(--clean-tracking-heading) !important;
-  text-transform: none !important;
   color: var(--clean-ink-strong) !important;
+  text-transform: none !important;
+  letter-spacing: var(--clean-tracking-heading) !important;
   box-shadow: inset 0 -1px 0 var(--clean-line-subtle);
 }
 :root[data-skin="clean"] .command-palette [cmdk-item] {
-  min-height: 52px;
   gap: 12px !important;
+  min-height: 52px;
   padding: 10px 24px !important;
   border-radius: 0 !important;
   box-shadow: inset 0 -1px 0 var(--clean-line-subtle);
@@ -2071,10 +2071,10 @@
   width: 16px !important;
   height: 16px !important;
   margin: 0 !important;
+  color: var(--clean-ink-quiet) !important;
+  background: transparent !important;
   border: 0 !important;
   border-radius: 0 !important;
-  background: transparent !important;
-  color: var(--clean-ink-quiet) !important;
 }
 :root[data-skin="clean"]
   .command-palette
@@ -2127,8 +2127,8 @@
 /* Footer: the keys, quiet, on the 24 px edge. */
 :root[data-skin="clean"] .command-palette [cmdk-root] > div:last-child {
   padding: 12px 24px !important;
-  border-color: var(--clean-line-subtle) !important;
   color: var(--clean-ink-quiet) !important;
+  border-color: var(--clean-line-subtle) !important;
 }
 
 /* ---------- Assistant panel, guided dictation ----------
@@ -2161,11 +2161,11 @@
    is repeated to outweigh fields.css, whose :is() lists weigh (0,7,1). */
 :root[data-skin="clean"][data-skin][data-skin][data-skin][data-skin]
   .assistant-dictation-field[data-slot="textarea"] {
+  resize: none !important;
+  outline: none !important;
   border: 1px solid var(--clean-line) !important;
   border-radius: var(--clean-card-radius) !important;
   box-shadow: none !important;
-  outline: none !important;
-  resize: none !important;
 }
 :root[data-skin="clean"][data-skin][data-skin][data-skin][data-skin]
   .assistant-dictation-field[data-slot="textarea"]:focus-visible {
@@ -2184,10 +2184,10 @@
   width: 28px !important;
   height: 28px !important;
   margin-top: 0.5px;
-  border: 0 !important;
-  background: transparent !important;
-  box-shadow: none !important;
   color: var(--clean-ink-strong);
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
 }
 :root[data-skin="clean"] [data-slot="page-header"] .premium-page-icon svg {
   width: 24px !important;
@@ -2409,19 +2409,19 @@
    a 6 px step between title and buttons), 8 px apart (measured 10). Buttons
    take the 12 px inset of every control (measured 14) and a 6 px icon gap. */
 :root[data-skin="clean"][data-skin] .heroBand {
-  padding-inline: 24px !important;
   column-gap: 16px !important;
+  padding-inline: 24px !important;
 }
 :root[data-skin="clean"][data-skin] .heroActions {
   gap: 8px !important;
 }
 :root[data-skin="clean"][data-skin] .heroActions .btn {
-  padding-inline: 12px !important;
   gap: 6px !important;
+  padding-inline: 12px !important;
 }
 :root[data-skin="clean"][data-skin] .heroMain .next {
-  padding-inline-start: 24px !important;
   gap: 4px !important;
+  padding-inline-start: 24px !important;
 }
 
 /* Flux lanes: card radius and a 12 px inset (measured 16 and 10); an empty
@@ -2580,13 +2580,13 @@
   [data-slot="sidebar-group-label"] {
   height: 20px !important;
   min-height: 20px !important;
-  margin: 0 0 4px !important;
   padding: 0 10px !important;
+  margin: 0 0 4px !important;
   font-size: 12px !important;
-  line-height: 16px !important;
   font-weight: 500 !important;
-  letter-spacing: 0.06em !important;
+  line-height: 16px !important;
   text-transform: uppercase !important;
+  letter-spacing: 0.06em !important;
 }
 :root[data-skin="clean"][data-skin][data-skin]
   .app-sidebar
@@ -2716,9 +2716,9 @@
    Le meme composant avait deux reglages : 14/500 sur le tableau de bord, 13/450 gris ailleurs. */
 /* Portee courte a dessein : l essai du tableau de bord en clair (#09090b) reste le plus fort. */
 :root[data-skin="clean"] [data-slot="stat-label"] {
-  color: var(--clean-ink-strong) !important;
   font-size: 14px;
   font-weight: 500;
+  color: var(--clean-ink-strong) !important;
 }
 :root[data-skin="clean"] [data-slot="stat-value"] > * {
   font-weight: 600;
@@ -2728,8 +2728,8 @@
    en clair, violet plein en sombre). Le texte selectionne passe a l encre forte : sous le voile,
    le gris discret tombait a 3,5:1 ; l encre forte tient 10,7:1 en clair et 10,2:1 en sombre. */
 :root[data-skin="clean"] ::selection {
-  background: color-mix(in srgb, var(--clean-ink-strong) 16%, transparent);
   color: var(--clean-ink-strong);
+  background: color-mix(in srgb, var(--clean-ink-strong) 16%, transparent);
 }
 
 /* ---------- Round 2 : mouvement, profondeur, matiere ---------- */
@@ -2781,7 +2781,8 @@
   position: absolute;
   inset: 0 0 auto 0;
   height: 220px;
-  border-top-left-radius: inherit;
+  pointer-events: none;
+  content: "";
   background:
     radial-gradient(
       58% 90% at 10% 0%,
@@ -2798,10 +2799,9 @@
       color-mix(in oklab, var(--chart-teal) 18%, transparent),
       transparent 72%
     );
-  content: "";
+  border-top-left-radius: inherit;
   -webkit-mask-image: linear-gradient(to bottom, #000 0%, transparent 100%);
   mask-image: linear-gradient(to bottom, #000 0%, transparent 100%);
-  pointer-events: none;
 }
 @media (prefers-contrast: more), (prefers-reduced-transparency: reduce) {
   :root[data-skin="clean"] [data-slot="assistant-panel"]::before {
