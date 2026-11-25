@@ -61,12 +61,14 @@ export function useMascotLife(
     let hovered = false;
 
     const aim = () => {
-      if (!(pointer && eyes.length)) {
+      const first = eyes[0];
+      const last = eyes.at(-1);
+      if (!(pointer && first && last)) {
         return;
       }
       // The gaze aims from between the eyes; the drawing's scale turns pixels into units.
-      const a = eyes[0].getBoundingClientRect();
-      const b = eyes[eyes.length - 1].getBoundingClientRect();
+      const a = first.getBoundingClientRect();
+      const b = last.getBoundingClientRect();
       const cx = (a.left + b.right) / 2;
       const cy = (a.top + b.bottom) / 2;
       const dx = pointer.x - cx;

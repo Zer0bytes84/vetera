@@ -33,7 +33,7 @@ function bucketOf(ageDays: number) {
   return (
     AGING_BUCKETS.find(
       (bucket) => ageDays >= bucket.from && ageDays < bucket.to
-    ) ?? AGING_BUCKETS[AGING_BUCKETS.length - 1]
+    ) ?? AGING_BUCKETS[3] // The oldest band, « Plus de 90 jours »: the last of the four.
   );
 }
 

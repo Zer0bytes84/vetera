@@ -233,20 +233,19 @@ interface Piece {
 function modelText(pieces: Piece[]) {
   const groups: string[][] = [];
   for (const piece of pieces) {
-    if (piece.opens) {
+    if (piece.opens || groups.length === 0) {
       groups.push([]);
     }
     if (!piece.kept) {
-      groups[groups.length - 1].push(piece.text);
+      groups.at(-1)?.push(piece.text);
     }
   }
   return groups
     .filter((parts) => parts.length)
     .map((parts) =>
-      [
-        ...parts.slice(0, -1),
-        parts[parts.length - 1].replace(/[,;]$/u, "."),
-      ].join(" ")
+      [...parts.slice(0, -1), (parts.at(-1) ?? "").replace(/[,;]$/u, ".")].join(
+        " "
+      )
     )
     .join(" ");
 }
@@ -262,7 +261,7 @@ function restoreClauses(output: string, pieces: Piece[]) {
       seen += evidenceCount(piece.text);
       continue;
     }
-    const last = groups[groups.length - 1];
+    const last = groups.at(-1);
     if (last && last.at === seen) {
       last.parts.push(piece.text);
     } else {

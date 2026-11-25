@@ -19,7 +19,8 @@ export function VitalsChart({
     [vitals]
   );
 
-  if (sorted.length < 2) {
+  const latest = sorted.at(-1);
+  if (sorted.length < 2 || !latest) {
     return null;
   }
 
@@ -29,7 +30,7 @@ export function VitalsChart({
   const padY = 16;
 
   const firstT = new Date(sorted[0].recordedAt).getTime();
-  const lastT = new Date(sorted[sorted.length - 1].recordedAt).getTime();
+  const lastT = new Date(latest.recordedAt).getTime();
   const span = Math.max(lastT - firstT, 60_000);
 
   const xOf = (t: string) => {
