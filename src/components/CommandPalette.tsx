@@ -61,7 +61,10 @@ import {
   searchAllPatientsClinical,
   searchAllPatientsFastLexical,
 } from "@/modules/consultations/local-ai/embedding-store";
-import { bestPassage, focusExcerpt } from "@/modules/consultations/local-ai/passage-search";
+import {
+  bestPassage,
+  focusExcerpt,
+} from "@/modules/consultations/local-ai/passage-search";
 import { highlightPassage } from "@/modules/consultations/local-ai/search-highlight";
 import {
   matchesPatientReference,
@@ -163,7 +166,7 @@ const loadRecents = (): RecentEntry[] => {
         typeof e.id === "string" &&
         typeof e.label === "string" &&
         typeof e.at === "number" &&
-        (e.kind === "patient" || e.kind === "view"),
+        (e.kind === "patient" || e.kind === "view")
     );
   } catch {
     return [];
@@ -211,7 +214,7 @@ export const normalizeSearch = (value: string): string =>
 export const scoreCommandMatch = (
   value: string,
   search: string,
-  keywords?: string[],
+  keywords?: string[]
 ): number => {
   const normalizedSearch = normalizeSearch(search);
   if (!normalizedSearch) {
@@ -228,7 +231,7 @@ export const scoreCommandMatch = (
   const cleanedValue = value.replace(/^[a-z]+:[^\s]+\s*/i, "").trim();
   const normalizedLabel = normalizeSearch(cleanedValue);
   const haystack = normalizeSearch(
-    `${cleanedValue} ${(keywords ?? []).join(" ")}`,
+    `${cleanedValue} ${(keywords ?? []).join(" ")}`
   );
 
   // Exact match on the clean item label
@@ -250,7 +253,7 @@ export const scoreCommandMatch = (
   // Any keyword starts with the query
   if (
     (keywords ?? []).some((kw) =>
-      normalizeSearch(kw).startsWith(normalizedSearch),
+      normalizeSearch(kw).startsWith(normalizedSearch)
     )
   ) {
     return 0.85;
@@ -343,12 +346,17 @@ export default function CommandPalette({
     void (async () => {
       try {
         const instantMatches = await searchAllPatientsFastLexical(
-          { sourceTypes: CLINICAL_ALL_SOURCES, sections: CLINICAL_ALL_SECTIONS },
+          {
+            sourceTypes: CLINICAL_ALL_SOURCES,
+            sections: CLINICAL_ALL_SECTIONS,
+          },
           trimmed,
-          controller.signal,
+          controller.signal
         );
         if (!controller.signal.aborted && instantMatches.length > 0) {
-          setSemanticResults((prev) => (prev.length === 0 ? instantMatches : prev));
+          setSemanticResults((prev) =>
+            prev.length === 0 ? instantMatches : prev
+          );
         }
       } catch {
         // fast lexical lookup error ignored
@@ -361,9 +369,12 @@ export default function CommandPalette({
       void (async () => {
         try {
           const found = await searchAllPatientsClinical(
-            { sourceTypes: CLINICAL_ALL_SOURCES, sections: CLINICAL_ALL_SECTIONS },
+            {
+              sourceTypes: CLINICAL_ALL_SOURCES,
+              sections: CLINICAL_ALL_SECTIONS,
+            },
             trimmed,
-            controller.signal,
+            controller.signal
           );
           if (!controller.signal.aborted) {
             setSemanticResults(found);
@@ -387,10 +398,16 @@ export default function CommandPalette({
     () => [
       {
         id: "dashboard",
-        label: t("commandPalette.nav.dashboard", { defaultValue: "Tableau de bord" }),
-        sub: t("commandPalette.nav.dashboardSub", { defaultValue: "Vue d'ensemble et pilotage" }),
+        label: t("commandPalette.nav.dashboard", {
+          defaultValue: "Tableau de bord",
+        }),
+        sub: t("commandPalette.nav.dashboardSub", {
+          defaultValue: "Vue d'ensemble et pilotage",
+        }),
         icon: DashboardSquare01Icon,
-        category: t("commandPalette.category.pilotage", { defaultValue: "Pilotage" }),
+        category: t("commandPalette.category.pilotage", {
+          defaultValue: "Pilotage",
+        }),
         keywords: [
           "dashboard",
           "tableau de bord",
@@ -405,9 +422,13 @@ export default function CommandPalette({
       {
         id: "patients",
         label: t("commandPalette.nav.patients", { defaultValue: "Patients" }),
-        sub: t("commandPalette.nav.patientsSub", { defaultValue: "Dossiers médicaux et antécédents" }),
+        sub: t("commandPalette.nav.patientsSub", {
+          defaultValue: "Dossiers médicaux et antécédents",
+        }),
         icon: StethoscopeIcon,
-        category: t("commandPalette.category.parcours", { defaultValue: "Parcours patient" }),
+        category: t("commandPalette.category.parcours", {
+          defaultValue: "Parcours patient",
+        }),
         keywords: [
           "patients",
           "patient",
@@ -422,9 +443,13 @@ export default function CommandPalette({
       {
         id: "agenda",
         label: t("commandPalette.nav.agenda", { defaultValue: "Agenda" }),
-        sub: t("commandPalette.nav.agendaSub", { defaultValue: "Planning et rendez-vous" }),
+        sub: t("commandPalette.nav.agendaSub", {
+          defaultValue: "Planning et rendez-vous",
+        }),
         icon: Calendar01Icon,
-        category: t("commandPalette.category.parcours", { defaultValue: "Parcours patient" }),
+        category: t("commandPalette.category.parcours", {
+          defaultValue: "Parcours patient",
+        }),
         keywords: [
           "agenda",
           "planning",
@@ -437,9 +462,13 @@ export default function CommandPalette({
       {
         id: "notes",
         label: "Documents",
-        sub: t("commandPalette.nav.notesSub", { defaultValue: "Notes, ordonnances et comptes-rendus" }),
+        sub: t("commandPalette.nav.notesSub", {
+          defaultValue: "Notes, ordonnances et comptes-rendus",
+        }),
         icon: BookOpenTextIcon,
-        category: t("commandPalette.category.parcours", { defaultValue: "Parcours patient" }),
+        category: t("commandPalette.category.parcours", {
+          defaultValue: "Parcours patient",
+        }),
         keywords: [
           "documents",
           "document",
@@ -454,10 +483,16 @@ export default function CommandPalette({
       },
       {
         id: "clinique",
-        label: t("commandPalette.nav.clinique", { defaultValue: "Soins & hospitalisation" }),
-        sub: t("commandPalette.nav.cliniqueSub", { defaultValue: "Soins du jour et hospitalisations" }),
+        label: t("commandPalette.nav.clinique", {
+          defaultValue: "Soins & hospitalisation",
+        }),
+        sub: t("commandPalette.nav.cliniqueSub", {
+          defaultValue: "Soins du jour et hospitalisations",
+        }),
         icon: ClinicIcon,
-        category: t("commandPalette.category.parcours", { defaultValue: "Parcours patient" }),
+        category: t("commandPalette.category.parcours", {
+          defaultValue: "Parcours patient",
+        }),
         keywords: [
           "clinique",
           "consultations",
@@ -472,9 +507,13 @@ export default function CommandPalette({
       {
         id: "taches",
         label: t("commandPalette.nav.tasks", { defaultValue: "Tâches" }),
-        sub: t("commandPalette.nav.tasksSub", { defaultValue: "To-do list et rappels" }),
+        sub: t("commandPalette.nav.tasksSub", {
+          defaultValue: "To-do list et rappels",
+        }),
         icon: Task01Icon,
-        category: t("commandPalette.category.pilotage", { defaultValue: "Pilotage" }),
+        category: t("commandPalette.category.pilotage", {
+          defaultValue: "Pilotage",
+        }),
         keywords: [
           "taches",
           "tache",
@@ -487,10 +526,16 @@ export default function CommandPalette({
       },
       {
         id: "stock",
-        label: t("commandPalette.nav.stock", { defaultValue: "Stock & Pharma" }),
-        sub: t("commandPalette.nav.stockSub", { defaultValue: "Inventaire et délivrance médicaments" }),
+        label: t("commandPalette.nav.stock", {
+          defaultValue: "Stock & Pharma",
+        }),
+        sub: t("commandPalette.nav.stockSub", {
+          defaultValue: "Inventaire et délivrance médicaments",
+        }),
         icon: Package02Icon,
-        category: t("commandPalette.category.exploitation", { defaultValue: "Exploitation" }),
+        category: t("commandPalette.category.exploitation", {
+          defaultValue: "Exploitation",
+        }),
         keywords: [
           "stock",
           "pharmacie",
@@ -504,9 +549,13 @@ export default function CommandPalette({
       {
         id: "finances",
         label: t("commandPalette.nav.finances", { defaultValue: "Finances" }),
-        sub: t("commandPalette.nav.financesSub", { defaultValue: "Facturation, devis et recettes" }),
+        sub: t("commandPalette.nav.financesSub", {
+          defaultValue: "Facturation, devis et recettes",
+        }),
         icon: WalletIcon,
-        category: t("commandPalette.category.exploitation", { defaultValue: "Exploitation" }),
+        category: t("commandPalette.category.exploitation", {
+          defaultValue: "Exploitation",
+        }),
         keywords: [
           "finances",
           "factures",
@@ -521,9 +570,13 @@ export default function CommandPalette({
       {
         id: "equipe",
         label: t("commandPalette.nav.team", { defaultValue: "Équipe" }),
-        sub: t("commandPalette.nav.teamSub", { defaultValue: "Collaborateurs et plannings" }),
+        sub: t("commandPalette.nav.teamSub", {
+          defaultValue: "Collaborateurs et plannings",
+        }),
         icon: UserGroupIcon,
-        category: t("commandPalette.category.exploitation", { defaultValue: "Exploitation" }),
+        category: t("commandPalette.category.exploitation", {
+          defaultValue: "Exploitation",
+        }),
         keywords: [
           "equipe",
           "personnel",
@@ -536,9 +589,13 @@ export default function CommandPalette({
       {
         id: "parametres",
         label: t("commandPalette.nav.settings", { defaultValue: "Paramètres" }),
-        sub: t("commandPalette.nav.settingsSub", { defaultValue: "Configuration et préférences" }),
+        sub: t("commandPalette.nav.settingsSub", {
+          defaultValue: "Configuration et préférences",
+        }),
         icon: Settings02Icon,
-        category: t("commandPalette.category.configuration", { defaultValue: "Configuration" }),
+        category: t("commandPalette.category.configuration", {
+          defaultValue: "Configuration",
+        }),
         keywords: [
           "parametres",
           "settings",
@@ -550,7 +607,7 @@ export default function CommandPalette({
         ],
       },
     ],
-    [t],
+    [t]
   );
 
   const q = normalizeSearch(query);
@@ -576,7 +633,7 @@ export default function CommandPalette({
     if (!intent || intent.kind === "invoice") return [];
     return patients
       .filter((patient) =>
-        matchesSearch(`${patient.name} ${patient.species}`, intent.entity),
+        matchesSearch(`${patient.name} ${patient.species}`, intent.entity)
       )
       .slice(0, 5);
   }, [intent, patients]);
@@ -585,11 +642,11 @@ export default function CommandPalette({
     if (intent?.kind !== "invoice") return [];
     const entityClean = intent.entity.replace(
       /^(mme|m|mr|madame|monsieur)\.?\s+/i,
-      "",
+      ""
     );
     return owners
       .filter((owner) =>
-        matchesSearch(`${owner.firstName} ${owner.lastName}`, entityClean),
+        matchesSearch(`${owner.firstName} ${owner.lastName}`, entityClean)
       )
       .slice(0, 5);
   }, [intent, owners]);
@@ -599,8 +656,8 @@ export default function CommandPalette({
       (patient) =>
         group !== "all" ||
         !recents.some(
-          (entry) => entry.kind === "patient" && entry.id === patient.id,
-        ),
+          (entry) => entry.kind === "patient" && entry.id === patient.id
+        )
     );
   }, [patients, appointments, group, recents]);
 
@@ -622,7 +679,7 @@ export default function CommandPalette({
         const tattoo = p.tattooNumber ?? "";
         return matchesSearch(
           `${p.name} ${p.species} ${p.breed ?? ""} ${ownerName} ${chip} ${tattoo} ${patientReferenceSearchText(p.reference)}`,
-          q,
+          q
         );
       })
       .sort((a, b) => {
@@ -656,13 +713,13 @@ export default function CommandPalette({
         const patient = patientsById.get(a.patientId);
         return matchesSearch(
           `${a.title} ${a.type} ${a.notes ?? ""} ${patient?.name ?? ""}`,
-          q,
+          q
         );
       })
       .sort(
         (a, b) =>
           Math.abs(new Date(a.startTime).getTime() - Date.now()) -
-          Math.abs(new Date(b.startTime).getTime() - Date.now()),
+          Math.abs(new Date(b.startTime).getTime() - Date.now())
       )
       .slice(0, 5);
   }, [appointments, patientsById, q]);
@@ -679,7 +736,7 @@ export default function CommandPalette({
       onNavigate(action.id);
       onClose();
     },
-    [onNavigate, onClose],
+    [onNavigate, onClose]
   );
 
   const handleSelectPatient = useCallback(
@@ -694,7 +751,7 @@ export default function CommandPalette({
       onNavigateToPatient(patient.id);
       onClose();
     },
-    [onNavigateToPatient, onClose],
+    [onNavigateToPatient, onClose]
   );
 
   const handleSelectAppointment = useCallback(
@@ -713,7 +770,7 @@ export default function CommandPalette({
       onNavigate("agenda");
       onClose();
     },
-    [patientsById, requestFocus, onNavigate, onClose],
+    [patientsById, requestFocus, onNavigate, onClose]
   );
 
   const handleSelectRecent = useCallback(
@@ -726,7 +783,7 @@ export default function CommandPalette({
       }
       onClose();
     },
-    [onNavigateToPatient, onNavigate, onClose],
+    [onNavigateToPatient, onNavigate, onClose]
   );
 
   const fireAction = useCallback(
@@ -737,7 +794,7 @@ export default function CommandPalette({
         window.dispatchEvent(new CustomEvent(event, { detail }));
       }, 120);
     },
-    [onNavigate, onClose],
+    [onNavigate, onClose]
   );
 
   const commandItemClassName =
@@ -856,7 +913,8 @@ export default function CommandPalette({
                   {q
                     ? "Vérifiez l’orthographe ou cherchez un nom de patient, une page ou une action."
                     : t("commandPalette.empty.hint", {
-                        defaultValue: "Tapez une commande ou cherchez un patient.",
+                        defaultValue:
+                          "Tapez une commande ou cherchez un patient.",
                       })}
                 </span>
               </div>
@@ -914,7 +972,8 @@ export default function CommandPalette({
                     </p>
                     <p className="mt-0.5 truncate t-12 text-muted-foreground">
                       {patient.species}
-                      {patient.breed ? ` · ${patient.breed}` : ""} · Dossier existant
+                      {patient.breed ? ` · ${patient.breed}` : ""} · Dossier
+                      existant
                     </p>
                   </div>
                   <Kbd className="ml-auto t-12">↵ Exécuter</Kbd>
@@ -954,18 +1013,22 @@ export default function CommandPalette({
 
           {/* Récents (quand aucune requête n'est saisie) */}
           {group === "all" && !q && recents.length > 0 && (
-            <CommandGroup heading={t("commandPalette.group.recents", { defaultValue: "Récents" })}>
+            <CommandGroup
+              heading={t("commandPalette.group.recents", {
+                defaultValue: "Récents",
+              })}
+            >
               {recents
                 .filter(
                   (entry) =>
-                    entry.kind !== "patient" || patientsById.has(entry.id),
+                    entry.kind !== "patient" || patientsById.has(entry.id)
                 )
                 .map((entry) => {
                   const Icon =
                     entry.kind === "patient"
                       ? MedicalFileIcon
                       : (navigationActions.find(
-                          (action) => action.id === entry.id,
+                          (action) => action.id === entry.id
                         )?.icon ?? DashboardSquare01Icon);
                   return (
                     <CommandItem
@@ -1050,7 +1113,11 @@ export default function CommandPalette({
 
           {/* Résultats de recherche Patients */}
           {showPatients && matchedPatients.length > 0 && (
-            <CommandGroup heading={t("commandPalette.group.patients", { defaultValue: "Dossiers Patients" })}>
+            <CommandGroup
+              heading={t("commandPalette.group.patients", {
+                defaultValue: "Dossiers Patients",
+              })}
+            >
               {matchedPatients.map((patient) => {
                 const glyph = getSpeciesGlyph(patient.species);
                 const statusMeta = getPatientStatusMeta(patient.status);
@@ -1094,12 +1161,16 @@ export default function CommandPalette({
                       </div>
                       <div className="flex items-center gap-1.5 truncate t-12 text-muted-foreground">
                         {patient.reference && (
-                          <span className="font-mono tabular-nums">{patient.reference} ·</span>
+                          <span className="font-mono tabular-nums">
+                            {patient.reference} ·
+                          </span>
                         )}
                         <span>{patient.species}</span>
                         {patient.breed && <span>· {patient.breed}</span>}
                         {ownerName && (
-                          <span className="truncate">· Propriétaire : {ownerName}</span>
+                          <span className="truncate">
+                            · Propriétaire : {ownerName}
+                          </span>
                         )}
                       </div>
                     </div>
@@ -1198,7 +1269,9 @@ export default function CommandPalette({
                     className="flex items-center gap-2.5 px-3 py-3 text-xs text-muted-foreground pointer-events-none cursor-default"
                   >
                     <div className="size-3.5 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-                    <span>Recherche clinique dans l’ensemble des dossiers…</span>
+                    <span>
+                      Recherche clinique dans l’ensemble des dossiers…
+                    </span>
                   </CommandItem>
                 ) : (
                   semanticResults.map((result) => {
@@ -1235,7 +1308,10 @@ export default function CommandPalette({
                         });
                         // A note kept without a visit opens itself in the record.
                         if (result.sourceType === "document")
-                          sessionStorage.setItem("patient:open-note", result.sourceId);
+                          sessionStorage.setItem(
+                            "patient:open-note",
+                            result.sourceId
+                          );
                         window.location.hash = `#/patient/${encodeURIComponent(result.patientId)}`;
                         onNavigateToPatient(result.patientId);
                       }
@@ -1254,13 +1330,21 @@ export default function CommandPalette({
                           ? MedicalFileIcon
                           : StethoscopeIcon;
 
-                    const passage = focusExcerpt(bestPassage(result.text, query), query);
+                    const passage = focusExcerpt(
+                      bestPassage(result.text, query),
+                      query
+                    );
 
                     return (
                       <CommandItem
                         key={`semantic:${result.sourceType}:${result.patientId}:${result.sourceId}:${result.section}:${result.chunkIndex}`}
                         className={`${commandItemClassName} items-start`}
-                        keywords={[query, result.section, sectionLabel, result.text]}
+                        keywords={[
+                          query,
+                          result.section,
+                          sectionLabel,
+                          result.text,
+                        ]}
                         onSelect={handleSelectCase}
                         onClick={handleSelectCase}
                         value={`semantic:${result.sourceType}:${result.patientId}:${result.sourceId}:${result.section}:${result.chunkIndex} ${patientName} ${result.text}`}
@@ -1274,22 +1358,25 @@ export default function CommandPalette({
                         </div>
                         <div className="ml-1 min-w-0 flex-1 flex flex-col gap-1">
                           <p className="truncate t-12 text-muted-foreground">
-                            <span className="font-medium text-foreground">{patientName}</span>
+                            <span className="font-medium text-foreground">
+                              {patientName}
+                            </span>
                             {" · "}
                             {sectionLabel}
                           </p>
                           <p className="line-clamp-2 text-[13px] leading-relaxed text-foreground/90">
-                            {highlightPassage(passage, query).map((segment, index) =>
-                              segment.hit ? (
-                                <mark
-                                  key={index}
-                                  className="rounded-[3px] bg-primary/12 px-0.5 text-foreground dark:bg-primary/25"
-                                >
-                                  {segment.text}
-                                </mark>
-                              ) : (
-                                <span key={index}>{segment.text}</span>
-                              ),
+                            {highlightPassage(passage, query).map(
+                              (segment, index) =>
+                                segment.hit ? (
+                                  <mark
+                                    key={index}
+                                    className="rounded-[3px] bg-primary/12 px-0.5 text-foreground dark:bg-primary/25"
+                                  >
+                                    {segment.text}
+                                  </mark>
+                                ) : (
+                                  <span key={index}>{segment.text}</span>
+                                )
                             )}
                           </p>
                         </div>
@@ -1305,7 +1392,11 @@ export default function CommandPalette({
 
           {/* Résultats Rendez-vous */}
           {showAppointments && matchedAppointments.length > 0 && (
-            <CommandGroup heading={t("commandPalette.group.appointments", { defaultValue: "Rendez-vous" })}>
+            <CommandGroup
+              heading={t("commandPalette.group.appointments", {
+                defaultValue: "Rendez-vous",
+              })}
+            >
               {matchedAppointments.map((appt) => {
                 const patient = patientsById.get(appt.patientId);
                 return (
@@ -1332,7 +1423,10 @@ export default function CommandPalette({
                         {appt.title}
                       </span>
                       <span className="font-normal t-12 text-muted-foreground leading-none">
-                        {patient?.name ?? t("commandPalette.unlinkedPatient", { defaultValue: "Patient" })}
+                        {patient?.name ??
+                          t("commandPalette.unlinkedPatient", {
+                            defaultValue: "Patient",
+                          })}
                         {" · "}
                         {format(new Date(appt.startTime), "PPP HH:mm", {
                           locale: dateLocale,
@@ -1386,7 +1480,11 @@ export default function CommandPalette({
           {showActions && (
             <>
               <CommandSeparator className="my-2" />
-              <CommandGroup heading={t("commandPalette.group.actions", { defaultValue: "Actions rapides" })}>
+              <CommandGroup
+                heading={t("commandPalette.group.actions", {
+                  defaultValue: "Actions rapides",
+                })}
+              >
                 <CommandItem
                   className={commandItemClassName}
                   keywords={[
@@ -1425,7 +1523,9 @@ export default function CommandPalette({
                 <CommandItem
                   className={commandItemClassName}
                   keywords={[
-                    t("commandPalette.action.newPatient", { defaultValue: "Nouveau patient" }),
+                    t("commandPalette.action.newPatient", {
+                      defaultValue: "Nouveau patient",
+                    }),
                     "patient",
                     "ajouter",
                     "creer",
@@ -1442,7 +1542,9 @@ export default function CommandPalette({
                     />
                   </div>
                   <span className="ml-1 font-medium text-foreground text-sm">
-                    {t("commandPalette.action.newPatient", { defaultValue: "Nouveau patient" })}
+                    {t("commandPalette.action.newPatient", {
+                      defaultValue: "Nouveau patient",
+                    })}
                   </span>
                   <Kbd className="ml-auto">⌘N</Kbd>
                 </CommandItem>
@@ -1450,7 +1552,9 @@ export default function CommandPalette({
                 <CommandItem
                   className={commandItemClassName}
                   keywords={[
-                    t("commandPalette.action.newAppointment", { defaultValue: "Nouveau rendez-vous" }),
+                    t("commandPalette.action.newAppointment", {
+                      defaultValue: "Nouveau rendez-vous",
+                    }),
                     "agenda",
                     "rdv",
                     "programmer",
@@ -1468,7 +1572,9 @@ export default function CommandPalette({
                     />
                   </div>
                   <span className="ml-1 font-medium text-foreground text-sm">
-                    {t("commandPalette.action.newAppointment", { defaultValue: "Nouveau rendez-vous" })}
+                    {t("commandPalette.action.newAppointment", {
+                      defaultValue: "Nouveau rendez-vous",
+                    })}
                   </span>
                   <Kbd className="ml-auto">⌘R</Kbd>
                 </CommandItem>
@@ -1476,14 +1582,18 @@ export default function CommandPalette({
                 <CommandItem
                   className={commandItemClassName}
                   keywords={[
-                    t("commandPalette.action.openConsultation", { defaultValue: "Ouvrir une consultation" }),
+                    t("commandPalette.action.openConsultation", {
+                      defaultValue: "Ouvrir une consultation",
+                    }),
                     "clinique",
                     "soins",
                     "soap",
                   ]}
                   onSelect={() => {
                     onClose();
-                    window.dispatchEvent(new Event("vetera:quick-consultation"));
+                    window.dispatchEvent(
+                      new Event("vetera:quick-consultation")
+                    );
                   }}
                   value="action:open-consultation Nouvelle consultation Ouvrir une consultation"
                 >
@@ -1495,7 +1605,9 @@ export default function CommandPalette({
                     />
                   </div>
                   <span className="ml-1 font-medium text-foreground text-sm">
-                    {t("commandPalette.action.openConsultation", { defaultValue: "Ouvrir une consultation" })}
+                    {t("commandPalette.action.openConsultation", {
+                      defaultValue: "Ouvrir une consultation",
+                    })}
                   </span>
                   <Kbd className="ml-auto">↵</Kbd>
                 </CommandItem>
@@ -1503,7 +1615,9 @@ export default function CommandPalette({
                 <CommandItem
                   className={commandItemClassName}
                   keywords={[
-                    t("commandPalette.action.newPrescription", { defaultValue: "Nouvelle ordonnance" }),
+                    t("commandPalette.action.newPrescription", {
+                      defaultValue: "Nouvelle ordonnance",
+                    }),
                     "ordonnance",
                     "prescription",
                     "medicaments",
@@ -1521,7 +1635,9 @@ export default function CommandPalette({
                     />
                   </div>
                   <span className="ml-1 font-medium text-foreground text-sm">
-                    {t("commandPalette.action.newPrescription", { defaultValue: "Nouvelle ordonnance" })}
+                    {t("commandPalette.action.newPrescription", {
+                      defaultValue: "Nouvelle ordonnance",
+                    })}
                   </span>
                 </CommandItem>
 
@@ -1534,9 +1650,7 @@ export default function CommandPalette({
                     "devis",
                     "encaisser",
                   ]}
-                  onSelect={() =>
-                    fireAction("finances", "vetera:new-invoice")
-                  }
+                  onSelect={() => fireAction("finances", "vetera:new-invoice")}
                   value="action:new-invoice Nouvelle facture Établir une facture"
                 >
                   <div className="flex size-8 shrink-0 items-center justify-center rounded-xl border border-amber-500/20 bg-amber-500/10 text-amber-600 dark:text-amber-400">
@@ -1551,35 +1665,43 @@ export default function CommandPalette({
                   </span>
                 </CommandItem>
 
-                {hospitalizationEnabled && (<CommandItem
-                  className={commandItemClassName}
-                  keywords={[
-                    t("commandPalette.action.newHospitalization", { defaultValue: "Nouvelle hospitalisation" }),
-                    "hospitalisation",
-                    "clinique",
-                    "box",
-                  ]}
-                  onSelect={() =>
-                    fireAction("clinique", "vetera:open-hospitalization")
-                  }
-                  value="action:new-hospitalization Nouvelle hospitalisation Admission box"
-                >
-                  <div className="flex size-8 shrink-0 items-center justify-center rounded-xl border border-border bg-muted text-muted-foreground">
-                    <HugeiconsIcon
-                      className="size-4"
-                      icon={HospitalBed01Icon}
-                      strokeWidth={1.5}
-                    />
-                  </div>
-                  <span className="ml-1 font-medium text-foreground text-sm">
-                    {t("commandPalette.action.newHospitalization", { defaultValue: "Nouvelle hospitalisation" })}
-                  </span>
-                </CommandItem>)}
+                {hospitalizationEnabled && (
+                  <CommandItem
+                    className={commandItemClassName}
+                    keywords={[
+                      t("commandPalette.action.newHospitalization", {
+                        defaultValue: "Nouvelle hospitalisation",
+                      }),
+                      "hospitalisation",
+                      "clinique",
+                      "box",
+                    ]}
+                    onSelect={() =>
+                      fireAction("clinique", "vetera:open-hospitalization")
+                    }
+                    value="action:new-hospitalization Nouvelle hospitalisation Admission box"
+                  >
+                    <div className="flex size-8 shrink-0 items-center justify-center rounded-xl border border-border bg-muted text-muted-foreground">
+                      <HugeiconsIcon
+                        className="size-4"
+                        icon={HospitalBed01Icon}
+                        strokeWidth={1.5}
+                      />
+                    </div>
+                    <span className="ml-1 font-medium text-foreground text-sm">
+                      {t("commandPalette.action.newHospitalization", {
+                        defaultValue: "Nouvelle hospitalisation",
+                      })}
+                    </span>
+                  </CommandItem>
+                )}
 
                 <CommandItem
                   className={commandItemClassName}
                   keywords={[
-                    t("commandPalette.action.newAnesthesia", { defaultValue: "Nouvelle anesthésie" }),
+                    t("commandPalette.action.newAnesthesia", {
+                      defaultValue: "Nouvelle anesthésie",
+                    }),
                     "anesthesie",
                     "chirurgie",
                   ]}
@@ -1596,7 +1718,9 @@ export default function CommandPalette({
                     />
                   </div>
                   <span className="ml-1 font-medium text-foreground text-sm">
-                    {t("commandPalette.action.newAnesthesia", { defaultValue: "Nouvelle anesthésie" })}
+                    {t("commandPalette.action.newAnesthesia", {
+                      defaultValue: "Nouvelle anesthésie",
+                    })}
                   </span>
                 </CommandItem>
               </CommandGroup>
@@ -1610,11 +1734,15 @@ export default function CommandPalette({
             <span className="flex items-center gap-1.5">
               <Kbd className="h-4 px-1 t-12">↑</Kbd>
               <Kbd className="h-4 px-1 t-12">↓</Kbd>
-              {t("commandPalette.footer.navigate", { defaultValue: "Naviguer" })}
+              {t("commandPalette.footer.navigate", {
+                defaultValue: "Naviguer",
+              })}
             </span>
             <span className="flex items-center gap-1.5">
               <Kbd className="h-4 px-1 t-12">↵</Kbd>
-              {t("commandPalette.footer.select", { defaultValue: "Sélectionner" })}
+              {t("commandPalette.footer.select", {
+                defaultValue: "Sélectionner",
+              })}
             </span>
             <span className="hidden items-center gap-1.5 sm:flex">
               <Kbd className="h-4 px-1 t-12">esc</Kbd>

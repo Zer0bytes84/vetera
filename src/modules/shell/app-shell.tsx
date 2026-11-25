@@ -27,7 +27,15 @@ import { requestCreation } from "./model/creation-request";
 import { WhatsNewGate } from "@/modules/release-notes/whats-new-dialog";
 import { TourGuide } from "@/modules/tour/tour-guide";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  lazy,
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useTranslation } from "react-i18next";
 import {
   ASSISTANT_TOGGLE_EVENT,
@@ -35,15 +43,17 @@ import {
 } from "@/modules/consultations/assistant-events";
 import { ConsultationAssistantPanel } from "@/modules/consultations/components/consultation-assistant-panel";
 
-const QuickConsultation = lazy(() => import("@/modules/clinique/components/quick-consultation"));
+const QuickConsultation = lazy(
+  () => import("@/modules/clinique/components/quick-consultation")
+);
 
 // Fetched once: when the panel opens, or as soon as the pointer or the keyboard reaches its button,
 // so the panel arrives with its content instead of a waiting line.
-const loadConsultationAssistant = () => import("@/modules/consultations/components/local-consultation-assistant");
-const prefetchConsultationAssistant = () => void loadConsultationAssistant().catch(() => undefined);
-const LocalConsultationAssistant = lazy(
-  loadConsultationAssistant
-);
+const loadConsultationAssistant = () =>
+  import("@/modules/consultations/components/local-consultation-assistant");
+const prefetchConsultationAssistant = () =>
+  void loadConsultationAssistant().catch(() => undefined);
+const LocalConsultationAssistant = lazy(loadConsultationAssistant);
 
 import { renderView } from "@/app/config/view-registry";
 import { useThemeMode } from "@/app/hooks/use-theme-mode";
@@ -143,8 +153,12 @@ function AppShellInner() {
   // The panel's content outlives `aiAssistantOpen` by the time of the exit: the panel leaves with
   // what it showed, not as an empty slab, and lets go of it once gone (onExited).
   const [assistantContentMounted, setAssistantContentMounted] = useState(false);
-  if (aiAssistantOpen && !assistantContentMounted) setAssistantContentMounted(true);
-  const releaseAssistantContent = useCallback(() => setAssistantContentMounted(false), []);
+  if (aiAssistantOpen && !assistantContentMounted)
+    setAssistantContentMounted(true);
+  const releaseAssistantContent = useCallback(
+    () => setAssistantContentMounted(false),
+    []
+  );
   // The panel belongs to the page it was opened on: changing page (or record) closes it. Corrected during render,
   // keyed on the route it last saw, so a close and a navigation in the same event cannot disagree.
   const routeKey = `${currentView}|${currentPatientId ?? ""}`;
@@ -163,9 +177,11 @@ function AppShellInner() {
   useRowSaveFlash();
   useEffect(() => {
     const open = (event: Event) => {
-      const { id, follow = false, toggle = false } = (
-        event as CustomEvent<PatientPeekDetail>
-      ).detail;
+      const {
+        id,
+        follow = false,
+        toggle = false,
+      } = (event as CustomEvent<PatientPeekDetail>).detail;
       setPeekFollows(follow);
       setPeekPatientId((current) => (toggle && current === id ? null : id));
     };
@@ -173,8 +189,12 @@ function AppShellInner() {
     return () => window.removeEventListener(PATIENT_PEEK_EVENT, open);
   }, []);
 
-  const [assistantPatientId, setAssistantPatientId] = useState<string | undefined>(undefined);
-  const [assistantAppointmentId, setAssistantAppointmentId] = useState<string | undefined>(undefined);
+  const [assistantPatientId, setAssistantPatientId] = useState<
+    string | undefined
+  >(undefined);
+  const [assistantAppointmentId, setAssistantAppointmentId] = useState<
+    string | undefined
+  >(undefined);
 
   useEffect(() => {
     const handleAssistantToggle = (event: Event) => {
@@ -196,7 +216,8 @@ function AppShellInner() {
       }
     };
     window.addEventListener(ASSISTANT_TOGGLE_EVENT, handleAssistantToggle);
-    return () => window.removeEventListener(ASSISTANT_TOGGLE_EVENT, handleAssistantToggle);
+    return () =>
+      window.removeEventListener(ASSISTANT_TOGGLE_EVENT, handleAssistantToggle);
   }, []);
 
   useEffect(() => {
@@ -227,14 +248,18 @@ function AppShellInner() {
       pinned = false;
     };
     const keep = () => {
-      if (pinned && panel.scrollTop !== 0) panel.scrollTo({ top: 0, behavior: "instant" });
+      if (pinned && panel.scrollTop !== 0)
+        panel.scrollTo({ top: 0, behavior: "instant" });
     };
-    const content = panel.querySelector<HTMLElement>("[data-slot='shell-view-content']") ?? panel;
+    const content =
+      panel.querySelector<HTMLElement>("[data-slot='shell-view-content']") ??
+      panel;
     const resize = new ResizeObserver(keep);
     resize.observe(content);
     panel.addEventListener("scroll", keep, { passive: true });
     const inputs = ["wheel", "touchstart", "pointerdown", "keydown"] as const;
-    for (const type of inputs) panel.addEventListener(type, release, { passive: true });
+    for (const type of inputs)
+      panel.addEventListener(type, release, { passive: true });
     const stop = window.setTimeout(release, 2500);
     return () => {
       window.clearTimeout(stop);
@@ -250,13 +275,25 @@ function AppShellInner() {
     const content = panel.querySelector<HTMLElement>(".app-view-enter");
     const updateScrollGeometry = () => {
       const style = getComputedStyle(panel);
-      const borders = parseFloat(style.borderLeftWidth) + parseFloat(style.borderRightWidth);
-      const scrollbarWidth = Math.max(0, panel.offsetWidth - panel.clientWidth - borders);
+      const borders =
+        parseFloat(style.borderLeftWidth) + parseFloat(style.borderRightWidth);
+      const scrollbarWidth = Math.max(
+        0,
+        panel.offsetWidth - panel.clientWidth - borders
+      );
       panel.style.setProperty("--shell-scrollbar-width", `${scrollbarWidth}px`);
-      const action = panel.querySelector<HTMLElement>('[aria-keyshortcuts="N"], [data-slot="page-header-actions"]');
+      const action = panel.querySelector<HTMLElement>(
+        '[aria-keyshortcuts="N"], [data-slot="page-header-actions"]'
+      );
       if (action) {
-        const top = action.getBoundingClientRect().top - panel.getBoundingClientRect().top + panel.scrollTop;
-        panel.style.setProperty("--shell-scroll-start", `${Math.max(0, top)}px`);
+        const top =
+          action.getBoundingClientRect().top -
+          panel.getBoundingClientRect().top +
+          panel.scrollTop;
+        panel.style.setProperty(
+          "--shell-scroll-start",
+          `${Math.max(0, top)}px`
+        );
       }
     };
     const observer = new ResizeObserver(updateScrollGeometry);
@@ -319,23 +356,42 @@ function AppShellInner() {
     // The palette's Nouvelle consultation opens the same patient picker.
     const openPicker = () => setConsultationPickerOpen(true);
     window.addEventListener("vetera:quick-consultation", openPicker);
-    return () => window.removeEventListener("vetera:quick-consultation", openPicker);
+    return () =>
+      window.removeEventListener("vetera:quick-consultation", openPicker);
   }, []);
 
-  const handleQuickAction = useCallback((action: QuickAction) => {
-    if (action === "consultation") { setConsultationPickerOpen(true); return; }
-    if (action === "patient" || action === "document" || action === "product" || action === "invoice") {
-      const page: Record<typeof action, View> = { patient: "patients", document: "notes", product: "stock", invoice: "finances" };
-      handleNavigate(page[action]);
-      requestCreation(action);
-      return;
-    }
-    if (action === "care") sessionStorage.setItem("vetera:pending-care-form", "true");
-    else prepareAppointment();
-    handleNavigate(action === "care" ? "soins" : "agenda");
-    const event = action === "care" ? "vetera:plan-care" : "vetera:new-appointment";
-    window.setTimeout(() => window.dispatchEvent(new Event(event)), 150);
-  }, [handleNavigate]);
+  const handleQuickAction = useCallback(
+    (action: QuickAction) => {
+      if (action === "consultation") {
+        setConsultationPickerOpen(true);
+        return;
+      }
+      if (
+        action === "patient" ||
+        action === "document" ||
+        action === "product" ||
+        action === "invoice"
+      ) {
+        const page: Record<typeof action, View> = {
+          patient: "patients",
+          document: "notes",
+          product: "stock",
+          invoice: "finances",
+        };
+        handleNavigate(page[action]);
+        requestCreation(action);
+        return;
+      }
+      if (action === "care")
+        sessionStorage.setItem("vetera:pending-care-form", "true");
+      else prepareAppointment();
+      handleNavigate(action === "care" ? "soins" : "agenda");
+      const event =
+        action === "care" ? "vetera:plan-care" : "vetera:new-appointment";
+      window.setTimeout(() => window.dispatchEvent(new Event(event)), 150);
+    },
+    [handleNavigate]
+  );
   const [cachedAvatarUrl, setCachedAvatarUrl] = useState(
     () => readCachedProfile(currentUser?.email)?.avatarUrl ?? ""
   );
@@ -509,8 +565,6 @@ function AppShellInner() {
     currentUser?.displayName || currentUser?.email || "Utilisateur";
   const userEmail = currentUser?.email || "local@baitari.app";
 
-
-
   return (
     <SidebarProvider
       onMouseDownCapture={(event) => {
@@ -541,7 +595,15 @@ function AppShellInner() {
     >
       <WhatsNewGate />
       <TourGuide />
-      {consultationPickerOpen && <Suspense fallback={null}><QuickConsultation open onOpenChange={setConsultationPickerOpen} onNavigate={handleNavigate}/></Suspense>}
+      {consultationPickerOpen && (
+        <Suspense fallback={null}>
+          <QuickConsultation
+            open
+            onOpenChange={setConsultationPickerOpen}
+            onNavigate={handleNavigate}
+          />
+        </Suspense>
+      )}
       <AppSidebar
         account={{
           avatarUrl: resolvedAvatarUrl,
@@ -555,7 +617,8 @@ function AppShellInner() {
             handleNavigate("parametres");
           },
           onFinances: () => handleNavigate("finances"),
-          onNotifications: () => window.setTimeout(() => setNotificationsOpen(true), 0),
+          onNotifications: () =>
+            window.setTimeout(() => setNotificationsOpen(true), 0),
           onSettings: () => handleNavigate("parametres"),
           onLogout: logout,
         }}
@@ -576,7 +639,9 @@ function AppShellInner() {
           "!border-none backdrop-blur-xl",
           "!m-0 !rounded-none !bg-white/40 dark:!bg-zinc-950/40 p-0 shadow-none ring-0",
           "transition-[margin,background-color,border-color,border-radius,box-shadow,opacity] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]",
-          aiAssistantOpen && !isAssistantCollapsed && "sm:mr-[var(--assistant-width)]",
+          aiAssistantOpen &&
+            !isAssistantCollapsed &&
+            "sm:mr-[var(--assistant-width)]",
           "max-h-dvh"
         )}
       >
@@ -621,19 +686,40 @@ function AppShellInner() {
               <div className="shell-toolbar-leading flex min-w-0 flex-1 items-center gap-2.5">
                 <HeaderSidebarToggle />
                 <span aria-hidden="true" className="shell-header-divider" />
-                <HeaderBreadcrumb fallbackTitle={pageTitle} greetingName={currentView === "dashboard" ? firstNameOf(currentUser?.displayName, "Docteur") : undefined} onNavigate={handleNavigate} />
+                <HeaderBreadcrumb
+                  fallbackTitle={pageTitle}
+                  greetingName={
+                    currentView === "dashboard"
+                      ? firstNameOf(currentUser?.displayName, "Docteur")
+                      : undefined
+                  }
+                  onNavigate={handleNavigate}
+                />
               </div>
 
-              {saveState !== "idle" && <div className="premium-header-save-indicator" data-slot="premium-header-save-indicator"><SaveIndicator state={saveState} /></div>}
+              {saveState !== "idle" && (
+                <div
+                  className="premium-header-save-indicator"
+                  data-slot="premium-header-save-indicator"
+                >
+                  <SaveIndicator state={saveState} />
+                </div>
+              )}
 
               {/* 2. Search, then a thin rule, then the tools */}
-              <HeaderSearch onOpen={() => setPaletteOpen(true)} open={paletteOpen} />
+              <HeaderSearch
+                onOpen={() => setPaletteOpen(true)}
+                open={paletteOpen}
+              />
               <span aria-hidden="true" className="shell-header-divider" />
 
               {/* 3. DROITE : Actions */}
               <div className="shell-toolbar-actions flex shrink-0 items-center justify-end gap-2">
                 {/* 0. Quick actions: the same place on every page */}
-                <HeaderQuickActions className="topIcon" onAction={handleQuickAction} />
+                <HeaderQuickActions
+                  className="topIcon"
+                  onAction={handleQuickAction}
+                />
 
                 {/* 1. Theme toggle */}
                 <ThemeControl dark={isDarkMode} onToggle={toggleTheme} />
@@ -664,9 +750,20 @@ function AppShellInner() {
                 </ShortcutTooltip>
 
                 <ShortcutTooltip label="Notifications">
-                  <button ref={notificationsButtonRef} type="button" aria-label="Notifications" aria-expanded={notificationsOpen} onClick={() => setNotificationsOpen(current => !current)} className="topIcon relative">
+                  <button
+                    ref={notificationsButtonRef}
+                    type="button"
+                    aria-label="Notifications"
+                    aria-expanded={notificationsOpen}
+                    onClick={() => setNotificationsOpen((current) => !current)}
+                    className="topIcon relative"
+                  >
                     <ToolbarIcon name="notifications" />
-                    {unreadCount > 0 && <span className="absolute -right-1 -top-1 rounded-full bg-primary px-1 t-12 text-primary-foreground">{unreadCount > 9 ? "9+" : unreadCount}</span>}
+                    {unreadCount > 0 && (
+                      <span className="absolute -right-1 -top-1 rounded-full bg-primary px-1 t-12 text-primary-foreground">
+                        {unreadCount > 9 ? "9+" : unreadCount}
+                      </span>
+                    )}
                   </button>
                 </ShortcutTooltip>
 
@@ -680,14 +777,19 @@ function AppShellInner() {
                 />
               </div>
 
-
               {/* Windows: the same thin rule between the avatar and the window controls (shown by window-controls.css). */}
-              <span aria-hidden="true" className="shell-header-divider window-controls-divider" />
+              <span
+                aria-hidden="true"
+                className="shell-header-divider window-controls-divider"
+              />
             </div>
           </motion.header>
 
           {/* View content */}
-          <div data-slot="shell-view-content" className="flex min-h-0 flex-1 flex-col gap-4 py-4">
+          <div
+            data-slot="shell-view-content"
+            className="flex min-h-0 flex-1 flex-col gap-4 py-4"
+          >
             <div
               className="app-view-enter min-h-0 min-w-0 flex-1"
               key={`${currentView}:${currentPatientId ?? ""}`}

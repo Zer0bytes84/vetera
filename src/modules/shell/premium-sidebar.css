@@ -53,7 +53,11 @@
   right: 0 !important;
   bottom: 0 !important;
   width: 2px !important;
-  background: linear-gradient(to right, var(--rule-highlight) 0 1px, var(--rule-shadow) 1px 2px) !important;
+  background: linear-gradient(
+    to right,
+    var(--rule-highlight) 0 1px,
+    var(--rule-shadow) 1px 2px
+  ) !important;
   box-shadow: none !important;
   pointer-events: none !important;
   z-index: 50 !important;
@@ -91,7 +95,8 @@
 /* Header square button controls matching reference .topIcon */
 [data-skin="clean"] .shell-toolbar-actions,
 :root[data-skin="clean"] .shell-toolbar-actions,
-:root[data-skin="clean"][data-chrome-style="liquid-glass"] .shell-toolbar-actions {
+:root[data-skin="clean"][data-chrome-style="liquid-glass"]
+  .shell-toolbar-actions {
   display: flex !important;
   align-items: center !important;
   gap: 8px !important;
@@ -112,7 +117,9 @@
 
 [data-skin="clean"] .shell-toolbar-actions .shell-toolbar-control,
 :root[data-skin="clean"] .shell-toolbar-actions .shell-toolbar-control,
-:root[data-skin="clean"][data-chrome-style="liquid-glass"] .shell-toolbar-actions .shell-toolbar-control {
+:root[data-skin="clean"][data-chrome-style="liquid-glass"]
+  .shell-toolbar-actions
+  .shell-toolbar-control {
   display: grid !important;
   place-items: center !important;
   width: 36px !important;
@@ -126,13 +133,17 @@
   color: var(--ink) !important;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
   cursor: pointer !important;
-  transition: background-color 160ms var(--ease-out-quint), border-color 160ms var(--ease-out-quint) !important;
+  transition:
+    background-color 160ms var(--ease-out-quint),
+    border-color 160ms var(--ease-out-quint) !important;
 }
 
 @media (hover: hover) and (pointer: fine) {
   [data-skin="clean"] .shell-toolbar-actions .shell-toolbar-control:hover,
-:root[data-skin="clean"] .shell-toolbar-actions .shell-toolbar-control:hover,
-:root[data-skin="clean"][data-chrome-style="liquid-glass"] .shell-toolbar-actions .shell-toolbar-control:hover {
+  :root[data-skin="clean"] .shell-toolbar-actions .shell-toolbar-control:hover,
+  :root[data-skin="clean"][data-chrome-style="liquid-glass"]
+    .shell-toolbar-actions
+    .shell-toolbar-control:hover {
     border-color: var(--border-hover) !important;
     background: var(--surface-hover) !important;
   }
@@ -140,7 +151,10 @@
 
 [data-skin="clean"] .shell-toolbar-actions .shell-toolbar-control svg,
 :root[data-skin="clean"] .shell-toolbar-actions .shell-toolbar-control svg,
-:root[data-skin="clean"][data-chrome-style="liquid-glass"] .shell-toolbar-actions .shell-toolbar-control svg {
+:root[data-skin="clean"][data-chrome-style="liquid-glass"]
+  .shell-toolbar-actions
+  .shell-toolbar-control
+  svg {
   width: 18px !important;
   height: 18px !important;
   stroke-width: 1.5 !important;
@@ -245,7 +259,10 @@
   background: transparent;
   border: 1px solid transparent;
   box-shadow: none !important;
-  transition: background-color 0.16s ease, color 0.16s ease, border-color 0.16s ease;
+  transition:
+    background-color 0.16s ease,
+    color 0.16s ease,
+    border-color 0.16s ease;
 }
 
 [data-skin="clean"] .app-sidebar [data-slot="sidebar-menu-button"] > span,
@@ -265,13 +282,19 @@
 }
 
 @media (hover: hover) and (pointer: fine) {
-  [data-skin="clean"] .app-sidebar [data-slot="sidebar-menu-button"]:hover .sidebar-nav-icon svg {
+  [data-skin="clean"]
+    .app-sidebar
+    [data-slot="sidebar-menu-button"]:hover
+    .sidebar-nav-icon
+    svg {
     color: var(--nav-ink) !important;
   }
 }
 
 [data-skin="clean"] .app-sidebar [data-slot="sidebar-menu-button"][data-active],
-[data-skin="clean"] .app-sidebar [data-slot="sidebar-menu-button"][data-active="true"],
+[data-skin="clean"]
+  .app-sidebar
+  [data-slot="sidebar-menu-button"][data-active="true"],
 [data-skin="clean"] .app-sidebar .sidebar-nav-link[data-active],
 [data-skin="clean"] .app-sidebar .sidebar-nav-link[data-active="true"] {
   color: var(--nav-ink) !important;
@@ -281,14 +304,31 @@
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06) !important;
 }
 
-:root.dark[data-skin="clean"]:where(:not([data-sidebar-tone="light"])) .app-sidebar [data-slot="sidebar-menu-button"][data-active],
-:root.dark[data-skin="clean"]:where(:not([data-sidebar-tone="light"])) .app-sidebar [data-slot="sidebar-menu-button"][data-active="true"],
-:root.dark[data-skin="clean"]:where(:not([data-sidebar-tone="light"])) .app-sidebar .sidebar-nav-link[data-active],
-:root.dark[data-skin="clean"]:where(:not([data-sidebar-tone="light"])) .app-sidebar .sidebar-nav-link[data-active="true"],
-:root[data-skin="clean"] .dark .app-sidebar [data-slot="sidebar-menu-button"][data-active],
-:root[data-skin="clean"] .dark .app-sidebar [data-slot="sidebar-menu-button"][data-active="true"],
+:root.dark[data-skin="clean"]:where(:not([data-sidebar-tone="light"]))
+  .app-sidebar
+  [data-slot="sidebar-menu-button"][data-active],
+:root.dark[data-skin="clean"]:where(:not([data-sidebar-tone="light"]))
+  .app-sidebar
+  [data-slot="sidebar-menu-button"][data-active="true"],
+:root.dark[data-skin="clean"]:where(:not([data-sidebar-tone="light"]))
+  .app-sidebar
+  .sidebar-nav-link[data-active],
+:root.dark[data-skin="clean"]:where(:not([data-sidebar-tone="light"]))
+  .app-sidebar
+  .sidebar-nav-link[data-active="true"],
+:root[data-skin="clean"]
+  .dark
+  .app-sidebar
+  [data-slot="sidebar-menu-button"][data-active],
+:root[data-skin="clean"]
+  .dark
+  .app-sidebar
+  [data-slot="sidebar-menu-button"][data-active="true"],
 :root[data-skin="clean"] .dark .app-sidebar .sidebar-nav-link[data-active],
-:root[data-skin="clean"] .dark .app-sidebar .sidebar-nav-link[data-active="true"] {
+:root[data-skin="clean"]
+  .dark
+  .app-sidebar
+  .sidebar-nav-link[data-active="true"] {
   color: #f3f3f3 !important;
   font-weight: 500 !important;
   background: #262626 !important;
@@ -296,16 +336,36 @@
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4) !important;
 }
 
-[data-skin="clean"] .app-sidebar [data-slot="sidebar-menu-button"][data-active] > span,
-[data-skin="clean"] .app-sidebar [data-slot="sidebar-menu-button"][data-active="true"] > span {
+[data-skin="clean"]
+  .app-sidebar
+  [data-slot="sidebar-menu-button"][data-active]
+  > span,
+[data-skin="clean"]
+  .app-sidebar
+  [data-slot="sidebar-menu-button"][data-active="true"]
+  > span {
   font-weight: 500 !important;
   color: var(--nav-ink) !important;
 }
 
-[data-skin="clean"] .app-sidebar [data-slot="sidebar-menu-button"][data-active] svg,
-[data-skin="clean"] .app-sidebar [data-slot="sidebar-menu-button"][data-active="true"] svg,
-[data-skin="clean"] .app-sidebar [data-slot="sidebar-menu-button"][data-active] .sidebar-nav-icon svg,
-[data-skin="clean"] .app-sidebar [data-slot="sidebar-menu-button"][data-active="true"] .sidebar-nav-icon svg {
+[data-skin="clean"]
+  .app-sidebar
+  [data-slot="sidebar-menu-button"][data-active]
+  svg,
+[data-skin="clean"]
+  .app-sidebar
+  [data-slot="sidebar-menu-button"][data-active="true"]
+  svg,
+[data-skin="clean"]
+  .app-sidebar
+  [data-slot="sidebar-menu-button"][data-active]
+  .sidebar-nav-icon
+  svg,
+[data-skin="clean"]
+  .app-sidebar
+  [data-slot="sidebar-menu-button"][data-active="true"]
+  .sidebar-nav-icon
+  svg {
   color: var(--nav-ink) !important;
 }
 
@@ -349,13 +409,19 @@
 }
 
 @media (hover: hover) and (pointer: fine) {
-  [data-skin="clean"] .app-sidebar [data-slot="sidebar-footer"] :is(button, a):hover {
+  [data-skin="clean"]
+    .app-sidebar
+    [data-slot="sidebar-footer"]
+    :is(button, a):hover {
     background: var(--nav-hover);
   }
 }
 
 [data-skin="clean"] .app-sidebar [data-slot="sidebar-footer"] span.font-medium,
-[data-skin="clean"] .app-sidebar [data-slot="sidebar-footer"] span.font-semibold {
+[data-skin="clean"]
+  .app-sidebar
+  [data-slot="sidebar-footer"]
+  span.font-semibold {
   font-size: 13px !important;
   font-weight: 500 !important;
   color: var(--nav-ink) !important;
@@ -381,11 +447,18 @@
 }
 
 /* Collapsible icon mode */
-[data-skin="clean"] [data-collapsible="icon"] .app-sidebar [data-slot="sidebar-content"] {
+[data-skin="clean"]
+  [data-collapsible="icon"]
+  .app-sidebar
+  [data-slot="sidebar-content"] {
   padding-inline: 0;
 }
 
-[data-skin="clean"] [data-collapsible="icon"] .app-sidebar .sidebar-nav-icon svg {
+[data-skin="clean"]
+  [data-collapsible="icon"]
+  .app-sidebar
+  .sidebar-nav-icon
+  svg {
   width: 20px !important;
   height: 20px !important;
 }
@@ -415,7 +488,11 @@
 
 @layer utilities {
   /* En-tête : logo puis bouton de dépliage, centrés. */
-  [data-skin="clean"] [data-collapsible="icon"] .app-sidebar [data-slot="sidebar-header"] > div {
+  [data-skin="clean"]
+    [data-collapsible="icon"]
+    .app-sidebar
+    [data-slot="sidebar-header"]
+    > div {
     flex-direction: column !important;
     align-items: center !important;
     justify-content: center !important;
@@ -426,28 +503,48 @@
   }
 
   /* Navigation : une colonne centrée, cases de 40 px. */
-  [data-skin="clean"] [data-collapsible="icon"] .app-sidebar [data-slot="sidebar-content"] {
+  [data-skin="clean"]
+    [data-collapsible="icon"]
+    .app-sidebar
+    [data-slot="sidebar-content"] {
     padding-block: 8px !important;
     /* Fenêtre basse : la colonne défile au lieu de passer sous le pied. */
     overflow-y: auto !important;
     scrollbar-width: none !important;
   }
-  [data-skin="clean"] [data-collapsible="icon"] .app-sidebar [data-slot="sidebar-content"]::-webkit-scrollbar {
+  [data-skin="clean"]
+    [data-collapsible="icon"]
+    .app-sidebar
+    [data-slot="sidebar-content"]::-webkit-scrollbar {
     display: none !important;
   }
-  [data-skin="clean"] [data-collapsible="icon"] .app-sidebar [data-slot="sidebar-content"] > div {
+  [data-skin="clean"]
+    [data-collapsible="icon"]
+    .app-sidebar
+    [data-slot="sidebar-content"]
+    > div {
     gap: 0 !important;
   }
-  [data-skin="clean"] [data-collapsible="icon"] .app-sidebar [data-slot="sidebar-menu"] {
+  [data-skin="clean"]
+    [data-collapsible="icon"]
+    .app-sidebar
+    [data-slot="sidebar-menu"] {
     align-items: center !important;
     gap: 4px !important;
   }
-  [data-skin="clean"] [data-collapsible="icon"] .app-sidebar [data-slot="sidebar-menu-item"] {
+  [data-skin="clean"]
+    [data-collapsible="icon"]
+    .app-sidebar
+    [data-slot="sidebar-menu-item"] {
     display: flex !important;
     justify-content: center !important;
     width: 100% !important;
   }
-  [data-skin="clean"] [data-collapsible="icon"] .app-sidebar [data-slot="sidebar-menu"] [data-slot="sidebar-menu-button"] {
+  [data-skin="clean"]
+    [data-collapsible="icon"]
+    .app-sidebar
+    [data-slot="sidebar-menu"]
+    [data-slot="sidebar-menu-button"] {
     width: 40px !important;
     height: 40px !important;
     min-height: 40px !important;
@@ -457,32 +554,61 @@
     color: var(--ink-muted) !important;
     background: transparent !important;
     box-shadow: none !important;
-    transition: background-color 160ms ease, color 160ms ease, box-shadow 160ms ease !important;
+    transition:
+      background-color 160ms ease,
+      color 160ms ease,
+      box-shadow 160ms ease !important;
   }
   @media (hover: hover) and (pointer: fine) {
-  [data-skin="clean"] [data-collapsible="icon"] .app-sidebar [data-slot="sidebar-menu"] [data-slot="sidebar-menu-button"]:hover {
-    color: var(--ink) !important;
-    background: var(--nav-hover) !important;
+    [data-skin="clean"]
+      [data-collapsible="icon"]
+      .app-sidebar
+      [data-slot="sidebar-menu"]
+      [data-slot="sidebar-menu-button"]:hover {
+      color: var(--ink) !important;
+      background: var(--nav-hover) !important;
+    }
   }
-}
-  [data-skin="clean"] [data-collapsible="icon"] .app-sidebar [data-slot="sidebar-menu"] [data-slot="sidebar-menu-button"][data-active="true"] {
+  [data-skin="clean"]
+    [data-collapsible="icon"]
+    .app-sidebar
+    [data-slot="sidebar-menu"]
+    [data-slot="sidebar-menu-button"][data-active="true"] {
     color: var(--ink) !important;
     background: var(--surface) !important;
-    box-shadow: 0 0 0 1px var(--line), 0 1px 2px color-mix(in srgb, var(--ink) 8%, transparent) !important;
+    box-shadow:
+      0 0 0 1px var(--line),
+      0 1px 2px color-mix(in srgb, var(--ink) 8%, transparent) !important;
   }
-  [data-skin="clean"] [data-collapsible="icon"] .app-sidebar [data-slot="sidebar-menu"] [data-slot="sidebar-menu-button"] .sidebar-nav-icon {
+  [data-skin="clean"]
+    [data-collapsible="icon"]
+    .app-sidebar
+    [data-slot="sidebar-menu"]
+    [data-slot="sidebar-menu-button"]
+    .sidebar-nav-icon {
     display: grid !important;
     place-items: center !important;
     width: 20px !important;
     height: 20px !important;
     margin: 0 !important;
   }
-  [data-skin="clean"] [data-collapsible="icon"] .app-sidebar [data-slot="sidebar-menu"] [data-slot="sidebar-menu-button"] .sidebar-nav-icon svg [stroke-width] {
+  [data-skin="clean"]
+    [data-collapsible="icon"]
+    .app-sidebar
+    [data-slot="sidebar-menu"]
+    [data-slot="sidebar-menu-button"]
+    .sidebar-nav-icon
+    svg
+    [stroke-width] {
     stroke-width: 1.5;
   }
 
   /* Groupes : un court filet centré au lieu d'un vide irrégulier. */
-  [data-skin="clean"] [data-collapsible="icon"] .app-sidebar [data-slot="sidebar-group"] + [data-slot="sidebar-group"]::before {
+  [data-skin="clean"]
+    [data-collapsible="icon"]
+    .app-sidebar
+    [data-slot="sidebar-group"]
+    + [data-slot="sidebar-group"]::before {
     content: "";
     display: block;
     width: 20px;
@@ -492,12 +618,19 @@
   }
 
   /* Pied : avatar et réglages sur le même axe, mêmes cases. */
-  [data-skin="clean"] [data-collapsible="icon"] .app-sidebar [data-slot="sidebar-footer"] {
+  [data-skin="clean"]
+    [data-collapsible="icon"]
+    .app-sidebar
+    [data-slot="sidebar-footer"] {
     align-items: center !important;
     gap: 4px !important;
     padding-block: 12px !important;
   }
-  [data-skin="clean"] [data-collapsible="icon"] .app-sidebar [data-slot="sidebar-footer"] > button {
+  [data-skin="clean"]
+    [data-collapsible="icon"]
+    .app-sidebar
+    [data-slot="sidebar-footer"]
+    > button {
     width: 40px !important;
     height: 40px !important;
     margin-inline: auto !important;
@@ -505,11 +638,15 @@
     color: var(--ink-muted) !important;
   }
   @media (hover: hover) and (pointer: fine) {
-  [data-skin="clean"] [data-collapsible="icon"] .app-sidebar [data-slot="sidebar-footer"] > button:hover {
-    color: var(--ink) !important;
-    background: var(--nav-hover) !important;
+    [data-skin="clean"]
+      [data-collapsible="icon"]
+      .app-sidebar
+      [data-slot="sidebar-footer"]
+      > button:hover {
+      color: var(--ink) !important;
+      background: var(--nav-hover) !important;
+    }
   }
-}
 }
 
 /* ---------- Folding: the sub-pages ----------
@@ -521,9 +658,13 @@
   flex: none;
   transition: transform 150ms cubic-bezier(0.23, 1, 0.32, 1);
 }
-.app-sidebar .sidebar-disclosure[data-open="true"] { transform: rotate(90deg); }
+.app-sidebar .sidebar-disclosure[data-open="true"] {
+  transform: rotate(90deg);
+}
 .app-sidebar .sidebar-subpages-toggle,
-[data-skin="clean"] .app-sidebar .sidebar-subpages-toggle[data-slot="sidebar-menu-action"] {
+[data-skin="clean"]
+  .app-sidebar
+  .sidebar-subpages-toggle[data-slot="sidebar-menu-action"] {
   top: calc(var(--premium-nav-row, 32px) / 2 - 10px);
   transform: none;
   color: var(--nav-muted, currentColor);
@@ -543,9 +684,13 @@
   font-size: 13px;
   color: var(--nav-text, currentColor);
 }
-.app-sidebar .sidebar-subpage-link[data-active] { color: var(--nav-ink, currentColor); }
+.app-sidebar .sidebar-subpage-link[data-active] {
+  color: var(--nav-ink, currentColor);
+}
 @media (prefers-reduced-motion: reduce) {
-  .app-sidebar .sidebar-disclosure { transition: none; }
+  .app-sidebar .sidebar-disclosure {
+    transition: none;
+  }
 }
 
 /* -- Essai Catalyst (2026-11-11) : etat actif epure --------------------
@@ -574,10 +719,18 @@
 
 /* Dark mode with a light sidebar: the active item keeps its light pill
    (the dark pill rule above reaches it through its unguarded selector). */
-:root.dark[data-skin="clean"][data-sidebar-tone="light"] .app-sidebar [data-slot="sidebar-menu-button"][data-active],
-:root.dark[data-skin="clean"][data-sidebar-tone="light"] .app-sidebar [data-slot="sidebar-menu-button"][data-active="true"],
-:root.dark[data-skin="clean"][data-sidebar-tone="light"] .app-sidebar .sidebar-nav-link[data-active],
-:root.dark[data-skin="clean"][data-sidebar-tone="light"] .app-sidebar .sidebar-nav-link[data-active="true"] {
+:root.dark[data-skin="clean"][data-sidebar-tone="light"]
+  .app-sidebar
+  [data-slot="sidebar-menu-button"][data-active],
+:root.dark[data-skin="clean"][data-sidebar-tone="light"]
+  .app-sidebar
+  [data-slot="sidebar-menu-button"][data-active="true"],
+:root.dark[data-skin="clean"][data-sidebar-tone="light"]
+  .app-sidebar
+  .sidebar-nav-link[data-active],
+:root.dark[data-skin="clean"][data-sidebar-tone="light"]
+  .app-sidebar
+  .sidebar-nav-link[data-active="true"] {
   background: #ffffff !important;
   border: 1px solid rgba(0, 0, 0, 0.07) !important;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06) !important;
@@ -585,10 +738,18 @@
 
 /* Forced dark sidebar (any mode): the active item takes the dark pill,
    its label follows the sidebar's own tokens. */
-:root[data-skin="clean"][data-sidebar-tone="dark"] .app-sidebar [data-slot="sidebar-menu-button"][data-active],
-:root[data-skin="clean"][data-sidebar-tone="dark"] .app-sidebar [data-slot="sidebar-menu-button"][data-active="true"],
-:root[data-skin="clean"][data-sidebar-tone="dark"] .app-sidebar .sidebar-nav-link[data-active],
-:root[data-skin="clean"][data-sidebar-tone="dark"] .app-sidebar .sidebar-nav-link[data-active="true"] {
+:root[data-skin="clean"][data-sidebar-tone="dark"]
+  .app-sidebar
+  [data-slot="sidebar-menu-button"][data-active],
+:root[data-skin="clean"][data-sidebar-tone="dark"]
+  .app-sidebar
+  [data-slot="sidebar-menu-button"][data-active="true"],
+:root[data-skin="clean"][data-sidebar-tone="dark"]
+  .app-sidebar
+  .sidebar-nav-link[data-active],
+:root[data-skin="clean"][data-sidebar-tone="dark"]
+  .app-sidebar
+  .sidebar-nav-link[data-active="true"] {
   background: #262626 !important;
   border: 1px solid rgba(255, 255, 255, 0.07) !important;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4) !important;

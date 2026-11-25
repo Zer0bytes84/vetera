@@ -18,7 +18,15 @@
 @import "./design-system/interaction.css";
 @import "./design-system/clean.css";
 
-@custom-variant dark (&:is(.dark *):where(:not([data-sidebar-tone="light"] :is([data-slot="sidebar"], [data-sidebar="sidebar"][data-mobile="true"]), [data-sidebar-tone="light"] :is([data-slot="sidebar"], [data-sidebar="sidebar"][data-mobile="true"]) *)));
+@custom-variant dark (&:is(.dark *):where(
+  :not(
+    [data-sidebar-tone="light"]
+      :is([data-slot="sidebar"], [data-sidebar="sidebar"][data-mobile="true"]),
+    [data-sidebar-tone="light"]
+      :is([data-slot="sidebar"], [data-sidebar="sidebar"][data-mobile="true"])
+      *
+  )
+));
 
 @theme inline {
   --font-heading: var(--app-font-heading);
@@ -173,7 +181,9 @@
   --dashboard-ink: var(--ink);
   --dashboard-surface: var(--surface);
   --dashboard-panel: var(--surface);
-  --dashboard-border-soft: var(--hairline); /* translucent 8% white card/panel border */
+  --dashboard-border-soft: var(
+    --hairline
+  ); /* translucent 8% white card/panel border */
   --surface-subtle: var(--frame);
   --shadow-panel: var(--elev-card);
   --shadow-feature: var(--elev-float);
@@ -327,7 +337,8 @@
    control radii at 8px with an !important rule whose selector outweighs a
    lone class, so the exception mirrors that selector and adds the class. */
 .documents-pill,
-[data-skin="clean"] :is([data-slot="button"], button.group\/button).documents-pill {
+[data-skin="clean"]
+  :is([data-slot="button"], button.group\/button).documents-pill {
   border-radius: 999px !important;
 }
 
@@ -412,11 +423,17 @@
 }
 
 .tiptap-editor .ProseMirror tr > :last-child,
-.document-rich-content tr > :last-child { border-right: 0; }
+.document-rich-content tr > :last-child {
+  border-right: 0;
+}
 .tiptap-editor .ProseMirror tr:last-child > *,
-.document-rich-content tr:last-child > * { border-bottom: 0; }
+.document-rich-content tr:last-child > * {
+  border-bottom: 0;
+}
 .tiptap-editor .ProseMirror table p,
-.document-rich-content table p { margin: 0; }
+.document-rich-content table p {
+  margin: 0;
+}
 
 .tiptap-editor .ProseMirror .selectedCell::after {
   position: absolute;
@@ -438,13 +455,21 @@
 }
 
 .dark .tiptap-editor .ProseMirror table,
-.dark .document-rich-content table { border-color: var(--border); background: var(--card); }
+.dark .document-rich-content table {
+  border-color: var(--border);
+  background: var(--card);
+}
 .dark .tiptap-editor .ProseMirror th,
-.dark .document-rich-content th { background: var(--muted); color: var(--foreground); }
+.dark .document-rich-content th {
+  background: var(--muted);
+  color: var(--foreground);
+}
 .dark .tiptap-editor .ProseMirror th,
 .dark .tiptap-editor .ProseMirror td,
 .dark .document-rich-content th,
-.dark .document-rich-content td { border-color: var(--border); }
+.dark .document-rich-content td {
+  border-color: var(--border);
+}
 
 .tiptap-editor .ProseMirror ul[data-type="taskList"],
 .document-rich-content ul[data-type="taskList"] {
@@ -479,8 +504,15 @@
 }
 
 .tiptap-editor .ProseMirror ul[data-type="taskList"] li > div,
-.document-rich-content ul[data-type="taskList"] li > div { flex: 1; min-width: 0; }
-.tiptap-editor .ProseMirror ul[data-type="taskList"] li[data-checked="true"] > div,
+.document-rich-content ul[data-type="taskList"] li > div {
+  flex: 1;
+  min-width: 0;
+}
+.tiptap-editor
+  .ProseMirror
+  ul[data-type="taskList"]
+  li[data-checked="true"]
+  > div,
 .document-rich-content ul[data-type="taskList"] li[data-checked="true"] > div {
   color: #788b7b;
   text-decoration: line-through;
@@ -534,8 +566,12 @@
   animation: view-loading-reveal 0s linear 150ms both;
 }
 @keyframes view-loading-reveal {
-  from { visibility: hidden; }
-  to { visibility: visible; }
+  from {
+    visibility: hidden;
+  }
+  to {
+    visibility: visible;
+  }
 }
 
 /* ─── View container ─── */
@@ -584,7 +620,6 @@
   [data-slot="switch"]:active {
     transform: none !important;
   }
-
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -634,7 +669,7 @@
   border-radius: 9999px;
   transition: background-color 0.2s;
 }
-@media (hover: hover) and (pointer: fine){
+@media (hover: hover) and (pointer: fine) {
   ::-webkit-scrollbar-thumb:hover {
     background-color: rgba(0, 0, 0, 0.3);
   }
@@ -642,7 +677,7 @@
 .dark ::-webkit-scrollbar-thumb {
   background-color: rgba(255, 255, 255, 0.15);
 }
-@media (hover: hover) and (pointer: fine){
+@media (hover: hover) and (pointer: fine) {
   .dark ::-webkit-scrollbar-thumb:hover {
     background-color: rgba(255, 255, 255, 0.3);
   }
@@ -651,7 +686,19 @@
   scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
   scrollbar-width: thin;
 }
-.dark *:where(:not([data-sidebar-tone="light"] :is([data-slot="sidebar"], [data-sidebar="sidebar"][data-mobile="true"]), [data-sidebar-tone="light"] :is([data-slot="sidebar"], [data-sidebar="sidebar"][data-mobile="true"]) *)),
+.dark
+  *:where(
+    :not(
+      [data-sidebar-tone="light"]
+        :is(
+          [data-slot="sidebar"],
+          [data-sidebar="sidebar"][data-mobile="true"]
+        ),
+      [data-sidebar-tone="light"]
+        :is([data-slot="sidebar"], [data-sidebar="sidebar"][data-mobile="true"])
+        *
+    )
+  ),
 :where([data-sidebar-tone="dark"]) .dark {
   scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
 }
@@ -687,14 +734,30 @@ html[dir="rtl"] .rtl-shell [data-side="right"] [data-slot="sidebar-gap"] {
 }
 
 @keyframes greeting-wave {
-  0% { transform: rotate(0deg); }
-  10% { transform: rotate(14deg); }
-  20% { transform: rotate(-8deg); }
-  30% { transform: rotate(14deg); }
-  40% { transform: rotate(-4deg); }
-  50% { transform: rotate(10deg); }
-  60% { transform: rotate(0deg); }
-  100% { transform: rotate(0deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  10% {
+    transform: rotate(14deg);
+  }
+  20% {
+    transform: rotate(-8deg);
+  }
+  30% {
+    transform: rotate(14deg);
+  }
+  40% {
+    transform: rotate(-4deg);
+  }
+  50% {
+    transform: rotate(10deg);
+  }
+  60% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
 }
 
 .greeting-wave {
@@ -729,11 +792,11 @@ button:focus-visible,
     transform var(--speed-highlight-out) var(--ease-out),
     box-shadow var(--speed-highlight-out) var(--ease-out);
 }
-@media (hover: hover) and (pointer: fine){
+@media (hover: hover) and (pointer: fine) {
   .card-hover-lift:hover {
     box-shadow:
-    0 4px 20px -8px rgba(0, 0, 0, 0.1),
-    0 8px 40px -16px rgba(0, 0, 0, 0.06);
+      0 4px 20px -8px rgba(0, 0, 0, 0.1),
+      0 8px 40px -16px rgba(0, 0, 0, 0.06);
     transform: translateY(-2px);
   }
 }
@@ -851,7 +914,6 @@ button:focus-visible,
   border-top-color: rgba(255, 255, 255, 0.07);
 }
 
-
 .modal-section-icon {
   display: inline-flex;
   flex-shrink: 0;
@@ -882,7 +944,6 @@ button:focus-visible,
   background: linear-gradient(135deg, #fff0d8 0%, #ffe4e8 52%, #eee5ff 100%);
   border-color: color-mix(in oklch, #fb923c 30%, var(--border));
 }
-
 
 .dark .modal-section-icon {
   color: #99f6e4;
@@ -1228,7 +1289,9 @@ button:focus-visible,
 }
 .modal-banner-illustrated .modal-banner-glass {
   background: rgb(255 255 255 / 0.5);
-  box-shadow: inset 0 1px 1px rgb(255 255 255 / 0.9), 0 3px 12px rgb(0 0 0 / 0.04);
+  box-shadow:
+    inset 0 1px 1px rgb(255 255 255 / 0.9),
+    0 3px 12px rgb(0 0 0 / 0.04);
 }
 .dark .modal-banner-illustrated {
   background: var(--card);
@@ -1371,14 +1434,14 @@ button:focus-visible,
     box-shadow 200ms ease;
 }
 
-@media (hover: hover) and (pointer: fine){
+@media (hover: hover) and (pointer: fine) {
   .modal-banner-glass:hover {
     transform: translateY(-1px) scale(1.02);
     box-shadow:
-    0 16px 34px -8px var(--tone-glow),
-    0 6px 16px -2px rgba(0, 0, 0, 0.08),
-    inset 0 1.5px 1px rgb(255 255 255 / 0.95),
-    inset 0 -1px 2px rgba(0, 0, 0, 0.04);
+      0 16px 34px -8px var(--tone-glow),
+      0 6px 16px -2px rgba(0, 0, 0, 0.08),
+      inset 0 1.5px 1px rgb(255 255 255 / 0.95),
+      inset 0 -1px 2px rgba(0, 0, 0, 0.04);
   }
 }
 
@@ -1459,11 +1522,12 @@ button:focus-visible,
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
   box-shadow: 0 2px 8px -2px rgba(0, 0, 0, 0.08);
-  transition-property: color, background-color, border-color, box-shadow, opacity, transform;
+  transition-property:
+    color, background-color, border-color, box-shadow, opacity, transform;
   transition-duration: 180ms;
   transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
 }
-@media (hover: hover) and (pointer: fine){
+@media (hover: hover) and (pointer: fine) {
   .modal-banner-close:hover {
     background: rgb(255 255 255 / 0.9);
     transform: scale(1.06);
@@ -1485,7 +1549,7 @@ button:focus-visible,
   color: rgb(255 255 255 / 0.9);
   box-shadow: 0 2px 8px -2px rgba(0, 0, 0, 0.4);
 }
-@media (hover: hover) and (pointer: fine){
+@media (hover: hover) and (pointer: fine) {
   .dark .modal-banner-close:hover {
     background: rgb(255 255 255 / 0.16);
     border-color: rgb(255 255 255 / 0.24);
@@ -1684,7 +1748,9 @@ button:focus-visible,
   box-shadow: 1px 0 0 color-mix(in oklab, white 52%, transparent);
 }
 
-.dark:where(:not([data-sidebar-tone="light"])) [data-variant="sidebar"] [data-slot="sidebar-container"] {
+.dark:where(:not([data-sidebar-tone="light"]))
+  [data-variant="sidebar"]
+  [data-slot="sidebar-container"] {
   border-inline-end-color: color-mix(in oklab, white 15%, transparent);
   box-shadow: 1px 0 0 color-mix(in oklab, black 42%, transparent);
 }
@@ -1732,7 +1798,9 @@ button:focus-visible,
 
 /* Minimal inset keeps the spatial rhythm while removing visible framing. */
 
-.restored-sidebar [data-slot="sidebar-inner"] { border-radius: 18px; }
+.restored-sidebar [data-slot="sidebar-inner"] {
+  border-radius: 18px;
+}
 .sidebar-nav-link {
   height: auto;
   min-height: 44px;
@@ -1745,7 +1813,9 @@ button:focus-visible,
   font-weight: 450;
   letter-spacing: -0.01em;
   line-height: 20px;
-  transition: background-color 150ms cubic-bezier(.2,0,0,1), color 150ms cubic-bezier(.2,0,0,1);
+  transition:
+    background-color 150ms cubic-bezier(0.2, 0, 0, 1),
+    color 150ms cubic-bezier(0.2, 0, 0, 1);
 }
 .sidebar-nav-icon {
   display: grid;
@@ -1762,7 +1832,7 @@ button:focus-visible,
   width: 20px !important;
   height: 20px !important;
 }
-@media (hover: hover) and (pointer: fine){
+@media (hover: hover) and (pointer: fine) {
   .sidebar-nav-link:hover {
     background: var(--sidebar-accent);
     color: var(--sidebar-foreground);
@@ -1777,7 +1847,10 @@ button:focus-visible,
 .sidebar-nav-link[data-active] .sidebar-nav-icon {
   background: transparent;
 }
-[data-collapsible="icon"] .restored-sidebar .sidebar-nav-link[data-active] .sidebar-nav-icon {
+[data-collapsible="icon"]
+  .restored-sidebar
+  .sidebar-nav-link[data-active]
+  .sidebar-nav-icon {
   background: transparent;
 }
 .dark:where(:not([data-sidebar-tone="light"])) .sidebar-nav-link[data-active] {
@@ -1785,11 +1858,17 @@ button:focus-visible,
   color: var(--sidebar-accent-foreground);
   box-shadow: inset 0 0 0 1px var(--sidebar-border);
 }
-.dark:where(:not([data-sidebar-tone="light"])) .sidebar-nav-link[data-active] .sidebar-nav-icon {
+.dark:where(:not([data-sidebar-tone="light"]))
+  .sidebar-nav-link[data-active]
+  .sidebar-nav-icon {
   color: inherit;
   background: transparent;
 }
-.dark:where(:not([data-sidebar-tone="light"])) [data-collapsible="icon"] .restored-sidebar .sidebar-nav-link[data-active] .sidebar-nav-icon {
+.dark:where(:not([data-sidebar-tone="light"]))
+  [data-collapsible="icon"]
+  .restored-sidebar
+  .sidebar-nav-link[data-active]
+  .sidebar-nav-icon {
   background: transparent;
 }
 .sidebar-nav-link:focus-visible {
@@ -1797,7 +1876,9 @@ button:focus-visible,
   outline-offset: 2px;
 }
 @media (prefers-reduced-motion: reduce) {
-  .sidebar-nav-link { transition: none; }
+  .sidebar-nav-link {
+    transition: none;
+  }
 }
 /* Match the main panel's Tauri top offset; minimal's p-2 added 8px twice. */
 .restored-sidebar[data-desktop-runtime="true"] [data-slot="sidebar-inner"] {
@@ -1816,11 +1897,14 @@ button:focus-visible,
   background: rgb(24 24 27 / 0.075);
   opacity: 1;
 }
-.dark:where(:not([data-sidebar-tone="light"])) .restored-sidebar [data-slot="sidebar-header-separator"] {
+.dark:where(:not([data-sidebar-tone="light"]))
+  .restored-sidebar
+  [data-slot="sidebar-header-separator"] {
   background: rgb(255 255 255 / 0.075);
 }
-.restored-sidebar [data-slot="sidebar-footer"] { border-top: 0; }
-
+.restored-sidebar [data-slot="sidebar-footer"] {
+  border-top: 0;
+}
 
 .apple-sidebar-glow {
   position: absolute;
@@ -2014,21 +2098,21 @@ button:focus-visible,
     box-shadow var(--speed-highlight-out) var(--ease-out) !important;
 }
 
-@media (hover: hover) and (pointer: fine){
+@media (hover: hover) and (pointer: fine) {
   .card-hover-lift:hover {
     box-shadow:
-    0 8px 24px -4px rgba(9, 9, 11, 0.06),
-    0 4px 12px -2px rgba(9, 9, 11, 0.04) !important;
+      0 8px 24px -4px rgba(9, 9, 11, 0.06),
+      0 4px 12px -2px rgba(9, 9, 11, 0.04) !important;
     transform: translateY(-2px) !important;
   }
 }
 
-@media (hover: hover) and (pointer: fine){
+@media (hover: hover) and (pointer: fine) {
   .dark .card-hover-lift:hover {
     box-shadow:
-    0 8px 24px -4px rgba(0, 0, 0, 0.3),
-    0 4px 12px -2px rgba(0, 0, 0, 0.2),
-    0 1px 0 rgba(255, 255, 255, 0.04) inset !important;
+      0 8px 24px -4px rgba(0, 0, 0, 0.3),
+      0 4px 12px -2px rgba(0, 0, 0, 0.2),
+      0 1px 0 rgba(255, 255, 255, 0.04) inset !important;
   }
 }
 
@@ -2120,7 +2204,10 @@ button:focus-visible,
   background: var(--card);
   border-color: color-mix(in srgb, var(--foreground) 9%, var(--card));
   border-radius: 14px;
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.6), 0 2px 3px rgb(20 24 35 / 0.025), 0 8px 20px -14px rgb(20 24 35 / 0.2);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.6),
+    0 2px 3px rgb(20 24 35 / 0.025),
+    0 8px 20px -14px rgb(20 24 35 / 0.2);
 }
 [data-widget-accent="mint"] {
   --widget-ink: #219e7b;
@@ -2195,7 +2282,7 @@ button:focus-visible,
 .clinical-signal .signal-footer {
   background: var(--card);
 }
-@media (hover: hover) and (pointer: fine){
+@media (hover: hover) and (pointer: fine) {
   .clinical-signal:hover {
     background: color-mix(in oklab, var(--foreground) 5%, var(--card));
     border-color: color-mix(in oklab, var(--signal-ink) 25%, var(--border));
@@ -2231,7 +2318,7 @@ button:focus-visible,
 .medical-data-table tbody tr:focus-within {
   background: color-mix(in oklab, #5485f5 5%, var(--card));
 }
-@media (hover: hover) and (pointer: fine){
+@media (hover: hover) and (pointer: fine) {
   .medical-data-table tbody tr:hover {
     background: color-mix(in oklab, #5485f5 5%, var(--card));
   }
@@ -2475,7 +2562,10 @@ button:focus-visible,
   box-shadow: none;
   background: var(--card);
 }
-.patient-record-dialog .modal-banner-record > .flex { position: relative; z-index: 1; }
+.patient-record-dialog .modal-banner-record > .flex {
+  position: relative;
+  z-index: 1;
+}
 .patient-record-dialog .record-summary > div {
   border-radius: 10px;
   box-shadow: none;
@@ -2530,23 +2620,48 @@ button:focus-visible,
 .patient-record-dialog .record-workspace [data-slot="card-content"] {
   padding: 12px 16px;
 }
-.patient-record-dialog .record-detail { margin: 0; }
+.patient-record-dialog .record-detail {
+  margin: 0;
+}
 @media (max-width: 639px) {
-  .patient-record-dialog .modal-banner-record { padding: 20px 58px 20px 20px; gap: 12px; }
-  .patient-record-dialog .modal-banner-marks { display: none; }
-  .patient-record-dialog .record-summary { grid-template-columns: 1fr; }
+  .patient-record-dialog .modal-banner-record {
+    padding: 20px 58px 20px 20px;
+    gap: 12px;
+  }
+  .patient-record-dialog .modal-banner-marks {
+    display: none;
+  }
+  .patient-record-dialog .record-summary {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* Compact data panels: raised controls and measured, color-coded progress. */
-.dashboard-v2-widget .widget-heading { padding: 14px 18px; }
-.dashboard-v2-widget .widget-heading [data-slot="card-description"] { font-size: 12px; }
-.dashboard-v2-widget .widget-metrics { padding-top: 18px; padding-bottom: 16px; }
-.dashboard-v2-widget .widget-metrics > div + div { border-inline-start: 1px solid var(--border); padding-inline-start: 14px; }
-.dark .dashboard-v2-widget { box-shadow: inset 0 1px 0 rgb(255 255 255 / .045), 0 8px 20px -16px rgb(0 0 0 / .5); }
+.dashboard-v2-widget .widget-heading {
+  padding: 14px 18px;
+}
+.dashboard-v2-widget .widget-heading [data-slot="card-description"] {
+  font-size: 12px;
+}
+.dashboard-v2-widget .widget-metrics {
+  padding-top: 18px;
+  padding-bottom: 16px;
+}
+.dashboard-v2-widget .widget-metrics > div + div {
+  border-inline-start: 1px solid var(--border);
+  padding-inline-start: 14px;
+}
+.dark .dashboard-v2-widget {
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.045),
+    0 8px 20px -16px rgb(0 0 0 / 0.5);
+}
 /* Paramètres: the page of the patient record's language. A one-line header, the section list on the left, and on the
    right the sections (see `components/settings-section.tsx`): a grey band with its header, one white panel inside.
    Spacing on the 12 / 24 / 48 scale; the app shell provides the scroll area. */
-.settings-page { color: var(--foreground); }
+.settings-page {
+  color: var(--foreground);
+}
 .settings-page-layout {
   display: grid;
   grid-template-columns: 200px minmax(0, 1fr);
@@ -2560,7 +2675,10 @@ button:focus-visible,
   display: grid;
   gap: 24px;
 }
-.settings-nav-group { display: grid; gap: 4px; }
+.settings-nav-group {
+  display: grid;
+  gap: 4px;
+}
 .settings-nav-group > p {
   padding: 0 12px 4px;
   color: var(--muted-foreground);
@@ -2579,47 +2697,112 @@ button:focus-visible,
   font-size: 13px;
   font-weight: 500;
   text-align: left;
-  transition: background-color .16s ease, color .16s ease;
+  transition:
+    background-color 0.16s ease,
+    color 0.16s ease;
 }
-.settings-nav-item svg { width: 16px; height: 16px; flex: none; }
-@media (hover: hover) and (pointer: fine){
+.settings-nav-item svg {
+  width: 16px;
+  height: 16px;
+  flex: none;
+}
+@media (hover: hover) and (pointer: fine) {
   .settings-nav-item:hover {
     background: color-mix(in srgb, var(--foreground) 6%, transparent);
     color: var(--foreground);
   }
 }
-.settings-nav-item-active { background: color-mix(in srgb, var(--foreground) 6%, transparent); color: var(--foreground); }
-.settings-nav-item:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
-.settings-page-main { min-width: 0; }
-.settings-content { max-width: 880px; }
+.settings-nav-item-active {
+  background: color-mix(in srgb, var(--foreground) 6%, transparent);
+  color: var(--foreground);
+}
+.settings-nav-item:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+.settings-page-main {
+  min-width: 0;
+}
+.settings-content {
+  max-width: 880px;
+}
 /* The page's buttons are pills, whatever the section that draws them. */
-.settings-page [data-slot="button"]:not([data-size^="icon"]) { border-radius: 9999px; }
+.settings-page [data-slot="button"]:not([data-size^="icon"]) {
+  border-radius: 9999px;
+}
 /* Profile: the avatar picker opens inside the profile panel, on the panel's 24 px inset. */
-.settings-avatar-picker { padding: 12px 24px; }
-.settings-avatar-picker summary { width: fit-content; cursor: pointer; color: var(--foreground); font-size: 13px; font-weight: 500; }
-@media (hover: hover) and (pointer: fine){
+.settings-avatar-picker {
+  padding: 12px 24px;
+}
+.settings-avatar-picker summary {
+  width: fit-content;
+  cursor: pointer;
+  color: var(--foreground);
+  font-size: 13px;
+  font-weight: 500;
+}
+@media (hover: hover) and (pointer: fine) {
   .settings-avatar-picker summary:hover {
     text-decoration: underline;
     text-underline-offset: 3px;
   }
 }
-.settings-avatar-choice { display: grid; width: 40px; height: 40px; place-items: center; border: 1px solid var(--border); border-radius: 12px; background: var(--background); font-size: 20px; }
-.settings-avatar-choice-active { border-color: var(--foreground); }
+.settings-avatar-choice {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--background);
+  font-size: 20px;
+}
+.settings-avatar-choice-active {
+  border-color: var(--foreground);
+}
 
 @media (max-width: 780px) {
-  .settings-page-layout { display: block; }
-  .settings-page-nav { position: static; display: flex; gap: 24px; margin-bottom: 24px; overflow-x: auto; scrollbar-width: thin; }
-  .settings-nav-group { display: flex; align-items: center; gap: 4px; flex: none; }
-  .settings-nav-group > p { display: none; }
-  .settings-nav-item { width: auto; white-space: nowrap; }
+  .settings-page-layout {
+    display: block;
+  }
+  .settings-page-nav {
+    position: static;
+    display: flex;
+    gap: 24px;
+    margin-bottom: 24px;
+    overflow-x: auto;
+    scrollbar-width: thin;
+  }
+  .settings-nav-group {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex: none;
+  }
+  .settings-nav-group > p {
+    display: none;
+  }
+  .settings-nav-item {
+    width: auto;
+    white-space: nowrap;
+  }
 }
 
 /* Quiet dialog surfaces keep the application's semantic palette. */
-.modal-banner-illustrated, .dark .modal-banner-illustrated {
+.modal-banner-illustrated,
+.dark .modal-banner-illustrated {
   background: var(--card);
 }
-.modal-banner-illustrated::before, .modal-banner-illustrated::after, .modal-banner-marks { display: none; }
-.auth-panel, .dark .auth-panel { background: var(--card); backdrop-filter: none; }
+.modal-banner-illustrated::before,
+.modal-banner-illustrated::after,
+.modal-banner-marks {
+  display: none;
+}
+.auth-panel,
+.dark .auth-panel {
+  background: var(--card);
+  backdrop-filter: none;
+}
 
 /* Command search owns one rounded focus frame, never a second input rectangle. */
 [data-slot="command-input"]:focus-visible {
@@ -2631,7 +2814,10 @@ button:focus-visible,
    and a tinted ground), the picked day the strong ground, a picked range a tint of the accent.
    Clean resets every button whose class holds « bg-muted/50 » to transparent with !important,
    which hid the picked day in every calendar: these rules outrank that reset. */
-:root:root [data-slot="calendar"] td[data-today="true"]:not([data-selected="true"]) > button {
+:root:root
+  [data-slot="calendar"]
+  td[data-today="true"]:not([data-selected="true"])
+  > button {
   background: color-mix(in oklab, var(--tone-blue) 14%, transparent) !important;
   color: var(--tone-blue) !important;
   font-weight: 600;
@@ -2649,18 +2835,33 @@ button:focus-visible,
 
 /* The assistant panel: 20 % wider than before (460 / 520 px became 552 / 624 px), and capped by the window so that on a
    13-inch screen the patient record stays visible beside it. The shell pushes its content by the same width. */
-:root { --assistant-width: clamp(420px, 55vw, 552px); }
-@media (min-width: 1024px) { :root { --assistant-width: clamp(460px, 46vw, 624px); } }
+:root {
+  --assistant-width: clamp(420px, 55vw, 552px);
+}
+@media (min-width: 1024px) {
+  :root {
+    --assistant-width: clamp(460px, 46vw, 624px);
+  }
+}
 
 /* The assistant panel's header ends on the line of the app's header, so the two rules meet: 60 px from the top of the
    window, 68 in the Clean theme, whose header sits 8 px inside its frame (the 1 px border is part of that height). */
-.assistant-panel-header { box-sizing: border-box; height: 60px; }
+.assistant-panel-header {
+  box-sizing: border-box;
+  height: 60px;
+}
 
 /* Forced dark sidebar, both themes: the active item follows the sidebar tone. */
-:root[data-sidebar-tone="dark"] .app-sidebar [data-slot="sidebar-menu-button"][data-active],
-:root[data-sidebar-tone="dark"] .app-sidebar [data-slot="sidebar-menu-button"][data-active="true"],
+:root[data-sidebar-tone="dark"]
+  .app-sidebar
+  [data-slot="sidebar-menu-button"][data-active],
+:root[data-sidebar-tone="dark"]
+  .app-sidebar
+  [data-slot="sidebar-menu-button"][data-active="true"],
 :root[data-sidebar-tone="dark"] .app-sidebar .sidebar-nav-link[data-active],
-:root[data-sidebar-tone="dark"] .app-sidebar .sidebar-nav-link[data-active="true"] {
+:root[data-sidebar-tone="dark"]
+  .app-sidebar
+  .sidebar-nav-link[data-active="true"] {
   background: #262626 !important;
   border: 1px solid rgba(255, 255, 255, 0.07) !important;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4) !important;

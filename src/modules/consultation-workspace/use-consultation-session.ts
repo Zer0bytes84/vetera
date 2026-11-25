@@ -18,7 +18,10 @@ import {
   readFileAsDataUrl,
   type SaveDraftOptions,
 } from "@/modules/clinique/components/clinique-shared";
-import { localToday, medicalReminderTypeForAct } from "@/modules/patient-reminders/domain";
+import {
+  localToday,
+  medicalReminderTypeForAct,
+} from "@/modules/patient-reminders/domain";
 import { announceMedicalActRecorded } from "@/modules/patient-reminders/medical-act-events";
 import { useFlowUndo } from "@/modules/visit-flow/use-flow-undo";
 import { useAudit } from "@/services/use-audit";
@@ -111,8 +114,12 @@ export function useConsultationSession({
     const patient = getPatient(appointment.patientId);
     return ownersById.get(appointment.ownerId || patient?.ownerId || "");
   };
-  const { billingAppointment, billingInvoice, handleBillingConfirm, setBillingAppointment } =
-    useAppointmentBilling({ completeWithBilling, getOwner, getPatient });
+  const {
+    billingAppointment,
+    billingInvoice,
+    handleBillingConfirm,
+    setBillingAppointment,
+  } = useAppointmentBilling({ completeWithBilling, getOwner, getPatient });
 
   const handleConsultationSaveDraft = async (
     payload: ConsultationDraftPayload,
@@ -122,32 +129,38 @@ export function useConsultationSession({
       return;
     }
 
-    await guard(async () => {
-      await updateAppointment(activeConsultation.id, payload.appointmentPatch);
-      await updatePatient(activeConsultation.patientId, payload.patientPatch);
-      onMove?.("in_progress", activeConsultation.id);
+    await guard(
+      async () => {
+        await updateAppointment(
+          activeConsultation.id,
+          payload.appointmentPatch
+        );
+        await updatePatient(activeConsultation.patientId, payload.patientPatch);
+        onMove?.("in_progress", activeConsultation.id);
 
-      setActiveConsultation((current) =>
-        current
-          ? {
-              ...current,
-              ...payload.appointmentPatch,
-            }
-          : current
-      );
+        setActiveConsultation((current) =>
+          current
+            ? {
+                ...current,
+                ...payload.appointmentPatch,
+              }
+            : current
+        );
 
-      if (!options?.silent) {
-        toast.success("Consultation mise à jour.");
-      }
-    }, {
-      recover: (error) => {
-        console.error(error);
         if (!options?.silent) {
-          toast.error("Impossible d’enregistrer la consultation.");
+          toast.success("Consultation mise à jour.");
         }
-        throw error;
       },
-    });
+      {
+        recover: (error) => {
+          console.error(error);
+          if (!options?.silent) {
+            toast.error("Impossible d’enregistrer la consultation.");
+          }
+          throw error;
+        },
+      }
+    );
   };
 
   const handleConsultationComplete = async (
@@ -160,69 +173,76 @@ export function useConsultationSession({
     // B1 : une consultation ne peut être clôturée que si la note SOAP a
     // été relue et validée (risque médico-légal sinon). Même règle que le
     // bouton, pour qu'aucun chemin ne la contourne.
-    const blocker = closureBlocker(soapsRepo.forAppointment(activeConsultation.id));
+    const blocker = closureBlocker(
+      soapsRepo.forAppointment(activeConsultation.id)
+    );
     if (blocker) {
       toast.error(blocker);
       return;
     }
 
-    await guard(async () => {
-      const finalAppointmentPatch: Partial<Appointment> = {
-        ...payload.appointmentPatch,
-      };
-      const patientPatch: Partial<Patient> = {
-        ...payload.patientPatch,
-        lastVisit: new Date().toISOString(),
-      };
+    await guard(
+      async () => {
+        const finalAppointmentPatch: Partial<Appointment> = {
+          ...payload.appointmentPatch,
+        };
+        const patientPatch: Partial<Patient> = {
+          ...payload.patientPatch,
+          lastVisit: new Date().toISOString(),
+        };
 
-      await updateAppointment(activeConsultation.id, finalAppointmentPatch);
-      await transitionAppointmentStatus(activeConsultation.id, "completed");
-      void flowUndo.record(activeConsultation.id);
-      await updatePatient(activeConsultation.patientId, patientPatch);
+        await updateAppointment(activeConsultation.id, finalAppointmentPatch);
+        await transitionAppointmentStatus(activeConsultation.id, "completed");
+        void flowUndo.record(activeConsultation.id);
+        await updatePatient(activeConsultation.patientId, patientPatch);
 
-      await audit.log({
-        action: "update",
-        entity: "consultation",
-        entityId: activeConsultation.id,
-        payload: {
-          patientId: activeConsultation.patientId,
-          status: "completed",
-          lastVisit: patientPatch.lastVisit,
-        },
-      });
-
-      if (typeof window !== "undefined") {
-        window.sessionStorage.removeItem(
-          `vetera:consultation-start:${activeConsultation.id}`
-        );
-      }
-
-      const updatedAppointment: Appointment = {
-        ...activeConsultation,
-        ...finalAppointmentPatch,
-        status: "completed",
-      };
-
-      onMove?.("completed", activeConsultation.id);
-      setActiveConsultation(null);
-      setBillingAppointment(updatedAppointment);
-      toast.success("Consultation clôturée et déplacée dans Terminées.");
-      const reminderType = medicalReminderTypeForAct(`${updatedAppointment.type} ${updatedAppointment.title ?? ""} ${updatedAppointment.reason ?? ""}`);
-      if (reminderType) {
-        announceMedicalActRecorded({
-          id: `consultation:${updatedAppointment.id}`,
-          patientId: updatedAppointment.patientId,
-          type: reminderType,
-          date: localToday(),
-          note: updatedAppointment.reason || updatedAppointment.title,
+        await audit.log({
+          action: "update",
+          entity: "consultation",
+          entityId: activeConsultation.id,
+          payload: {
+            patientId: activeConsultation.patientId,
+            status: "completed",
+            lastVisit: patientPatch.lastVisit,
+          },
         });
-      }
-    }, {
-      recover: (error) => {
-        console.error(error);
-        toast.error("Impossible de clôturer la consultation.");
+
+        if (typeof window !== "undefined") {
+          window.sessionStorage.removeItem(
+            `vetera:consultation-start:${activeConsultation.id}`
+          );
+        }
+
+        const updatedAppointment: Appointment = {
+          ...activeConsultation,
+          ...finalAppointmentPatch,
+          status: "completed",
+        };
+
+        onMove?.("completed", activeConsultation.id);
+        setActiveConsultation(null);
+        setBillingAppointment(updatedAppointment);
+        toast.success("Consultation clôturée et déplacée dans Terminées.");
+        const reminderType = medicalReminderTypeForAct(
+          `${updatedAppointment.type} ${updatedAppointment.title ?? ""} ${updatedAppointment.reason ?? ""}`
+        );
+        if (reminderType) {
+          announceMedicalActRecorded({
+            id: `consultation:${updatedAppointment.id}`,
+            patientId: updatedAppointment.patientId,
+            type: reminderType,
+            date: localToday(),
+            note: updatedAppointment.reason || updatedAppointment.title,
+          });
+        }
       },
-    });
+      {
+        recover: (error) => {
+          console.error(error);
+          toast.error("Impossible de clôturer la consultation.");
+        },
+      }
+    );
   };
 
   const handleConsultationDocumentUpload = async (
