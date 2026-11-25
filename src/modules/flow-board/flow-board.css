@@ -95,6 +95,14 @@
   color: color-mix(in oklch, var(--signal-watch) 75%, var(--ink));
 }
 
+/* While the day is read, the count keeps its pill and holds a bar of the sheen. */
+.flow-count-reading {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 20px;
+}
+
 /* An empty lane says so in one quiet line under its title: five dashed boxes in a row were noise. */
 .flow-lane-empty {
   padding: 0 4px;

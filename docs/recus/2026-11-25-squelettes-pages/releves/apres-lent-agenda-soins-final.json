@@ -1,0 +1,101 @@
+{
+ "agenda (light)": {
+  "contenuStableA": 4204,
+  "roue": "660–934 ms (15 images)",
+  "squelette": "1125–4122 ms (81 images)",
+  "etatsFauxPendant": [
+   "Chargement de Baitari",
+   "Chargement du module...",
+   "Chargement des rendez-vous",
+   "Chargement de la liste des rendez-vous",
+   "Chargement de la charge de la journée"
+  ],
+  "etatsFinaux": [
+   "Aucun rendez-vous sélectionné"
+  ],
+  "hauteurs": [
+   0,
+   900,
+   892,
+   1985
+  ],
+  "bandesPendant": [
+   "222"
+  ],
+  "bandesApres": "222",
+  "regionsPendant": {
+   "agenda-calendar:day": [
+    630
+   ],
+   "agenda-list:list:day:selection": [
+    459.4
+   ],
+   "agenda-day-load": [
+    664.9
+   ]
+  },
+  "regionsApres": {
+   "agenda-calendar:day": 630,
+   "agenda-list:list:day:selection": 459.4,
+   "agenda-day-load": 664.9
+  },
+  "hauteurPendantSquelette": [
+   1985
+  ],
+  "hauteurPendant": 0,
+  "hauteurApres": 1985,
+  "decalageCumule": 0,
+  "decalages": [],
+  "erreurs": []
+ },
+ "soins (light)": {
+  "contenuStableA": 6734,
+  "roue": "769–966 ms (12 images)",
+  "squelette": "1018–6682 ms (260 images)",
+  "etatsFauxPendant": [
+   "Chargement de Baitari",
+   "Chargement du module...",
+   "Chargement des soins"
+  ],
+  "etatsFinaux": [
+   "Aucun soin planifié pour cette date",
+   "Aucun retard",
+   "Aucune échéance préventive à venir.",
+   "Aucun soin pour cette date"
+  ],
+  "hauteurs": [
+   0,
+   900,
+   892,
+   909
+  ],
+  "bandesPendant": [
+   "222,232"
+  ],
+  "bandesApres": "222,232",
+  "regionsPendant": {
+   "care-list:day": [
+    150.9
+   ]
+  },
+  "regionsApres": {
+   "care-list:day": 150.9
+  },
+  "hauteurPendantSquelette": [
+   909
+  ],
+  "hauteurPendant": 900,
+  "hauteurApres": 909,
+  "decalageCumule": 0,
+  "decalages": [
+   {
+    "t": 3780,
+    "v": 0,
+    "n": [
+     "flex shrink-0 items-center gap-2"
+    ]
+   }
+  ],
+  "erreurs": []
+ }
+}

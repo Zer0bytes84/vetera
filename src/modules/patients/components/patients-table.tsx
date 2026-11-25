@@ -105,8 +105,13 @@ export function PatientsTable({
   onEditOwner,
   onOpen,
   listRef,
+  loading = false,
+  loadingRevealed = true,
 }: {
   entries: PatientRecord[];
+  /** The records are still being read (first read only): the table holds their place in the skeleton's sheen. */
+  loading?: boolean;
+  loadingRevealed?: boolean;
   filters: ReactNode;
   filtersActive: boolean;
   onResetFilters: () => void;
@@ -304,9 +309,14 @@ export function PatientsTable({
         </>
       }
       icon={Users}
+      loading={loading}
+      loadingLabel="Chargement des dossiers"
+      loadingRevealed={loadingRevealed}
       noun={["dossier", "dossiers"]}
       onRowClick={(row) => onOpen(byId.get(row.id)!.patient)}
       pageSize={10}
+      skeletonFallback={{ rows: 5, rowHeight: 64 }}
+      skeletonKey="patients"
       rowProps={(row) => ({
         "aria-label": `Ouvrir le dossier de ${row.patient}`,
         tabIndex: 0,

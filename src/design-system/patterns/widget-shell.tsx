@@ -16,6 +16,7 @@ export function WidgetShell({
   pending = false,
   showSkeleton = false,
   skeleton,
+  skeletonClassName = "min-h-[120px]",
   error,
   onRetry,
 }: {
@@ -30,6 +31,8 @@ export function WidgetShell({
   pending?: boolean;
   showSkeleton?: boolean;
   skeleton?: ReactNode;
+  /** The skeleton's box: by default at least 120 px; a widget whose skeleton holds an exact height clears it. */
+  skeletonClassName?: string;
   error?: string | null;
   onRetry?: () => void;
 }) {
@@ -45,7 +48,7 @@ export function WidgetShell({
       <Panel className={cn("flex-1 p-5", bodyClassName)}>
         {busy ? (
           <div
-            className={cn("min-h-[120px]", !showSkeleton && "opacity-0")}
+            className={cn(skeletonClassName, !showSkeleton && "opacity-0")}
             aria-hidden="true"
           >
             {skeleton ?? (

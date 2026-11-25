@@ -1,0 +1,548 @@
+{
+ "patients (light)": {
+  "contenuStableA": 4329,
+  "roue": "791–1011 ms (14 images)",
+  "squelette": "1059–3986 ms (86 images)",
+  "etatsFauxPendant": [
+   "Chargement de Baitari",
+   "Chargement du module...",
+   "Chargement des dossiers"
+  ],
+  "etatsFinaux": [
+   "Aucun"
+  ],
+  "hauteurs": [
+   0,
+   900,
+   892,
+   916
+  ],
+  "bandesPendant": [
+   "222,554"
+  ],
+  "bandesApres": "222,554",
+  "regionsPendant": {
+   "patients": [
+    554.1
+   ]
+  },
+  "regionsApres": {
+   "patients": 554.1
+  },
+  "hauteurPendantSquelette": [
+   916
+  ],
+  "hauteurPendant": 0,
+  "hauteurApres": 916,
+  "decalageCumule": 0,
+  "decalages": [],
+  "erreurs": []
+ },
+ "fiche-patient (light)": {
+  "contenuStableA": 3810,
+  "roue": "737–951 ms (13 images)",
+  "squelette": "974–3674 ms (86 images)",
+  "etatsFauxPendant": [
+   "Chargement de Baitari",
+   "Chargement du module...",
+   "Chargement des chiffres clés du dossier"
+  ],
+  "etatsFinaux": [
+   "Aucun rendez-vous prévu aujourd’hui",
+   "Aucune pesée",
+   "Aucun traitement en cours.",
+   "Aucun rappel prévu.",
+   "Aucune pesée : onglet Poids",
+   "Aucun vaccin : onglet Vaccinations"
+  ],
+  "hauteurs": [
+   0,
+   900,
+   892,
+   2009,
+   1717
+  ],
+  "bandesPendant": [
+   ""
+  ],
+  "bandesApres": "278,694,508",
+  "regionsPendant": {
+   "patient-record": [
+    1596.5
+   ]
+  },
+  "regionsApres": {
+   "patient-record": 1596.6
+  },
+  "hauteurPendantSquelette": [
+   2009
+  ],
+  "hauteurPendant": 0,
+  "hauteurApres": 1717,
+  "decalageCumule": 0,
+  "decalages": [],
+  "erreurs": []
+ },
+ "agenda (light)": {
+  "contenuStableA": 4175,
+  "roue": "721–978 ms (12 images)",
+  "squelette": "1184–4027 ms (81 images)",
+  "etatsFauxPendant": [
+   "Chargement de Baitari",
+   "Chargement du module...",
+   "Aucun rendez-vous",
+   "Chargement des rendez-vous",
+   "Chargement de la liste des rendez-vous",
+   "Chargement de la charge de la journée"
+  ],
+  "etatsFinaux": [
+   "Aucun rendez-vous sélectionné"
+  ],
+  "hauteurs": [
+   0,
+   900,
+   892,
+   1985
+  ],
+  "bandesPendant": [
+   "222"
+  ],
+  "bandesApres": "222",
+  "regionsPendant": {
+   "agenda-calendar:day": [
+    630
+   ],
+   "agenda-list:list:day:selection": [
+    459.4
+   ],
+   "agenda-day-load": [
+    664.9
+   ]
+  },
+  "regionsApres": {
+   "agenda-calendar:day": 630,
+   "agenda-list:list:day:selection": 459.4,
+   "agenda-day-load": 664.9
+  },
+  "hauteurPendantSquelette": [
+   1985
+  ],
+  "hauteurPendant": 0,
+  "hauteurApres": 1985,
+  "decalageCumule": 0,
+  "decalages": [],
+  "erreurs": []
+ },
+ "flux (light)": {
+  "contenuStableA": 4522,
+  "roue": "720–992 ms (14 images)",
+  "squelette": "1020–4402 ms (93 images)",
+  "etatsFauxPendant": [
+   "Chargement de Baitari",
+   "Chargement du module...",
+   "chargement des visites du jour",
+   "Chargement des visites du jour"
+  ],
+  "etatsFinaux": [
+   "Aucune consultation en cours",
+   "Aucun soin en cours",
+   "Rien à facturer",
+   "Aucune visite terminée"
+  ],
+  "hauteurs": [
+   0,
+   900,
+   892
+  ],
+  "bandesPendant": [
+   ""
+  ],
+  "bandesApres": "",
+  "regionsPendant": {
+   "flow-top": [
+    232.2
+   ]
+  },
+  "regionsApres": {
+   "flow-top": 232.2
+  },
+  "hauteurPendantSquelette": [
+   892
+  ],
+  "hauteurPendant": 0,
+  "hauteurApres": 892,
+  "decalageCumule": 0,
+  "decalages": [],
+  "erreurs": []
+ },
+ "soins (light)": {
+  "contenuStableA": 6831,
+  "roue": "807–1022 ms (13 images)",
+  "squelette": "1059–6789 ms (262 images)",
+  "etatsFauxPendant": [
+   "Chargement de Baitari",
+   "Chargement du module...",
+   "Chargement des soins"
+  ],
+  "etatsFinaux": [
+   "Aucun soin planifié pour cette date",
+   "Aucun retard",
+   "Aucune échéance préventive à venir.",
+   "Aucun soin pour cette date"
+  ],
+  "hauteurs": [
+   0,
+   900,
+   892,
+   911,
+   909
+  ],
+  "bandesPendant": [
+   "222,234",
+   "222,232"
+  ],
+  "bandesApres": "222,232",
+  "regionsPendant": {
+   "care-list:day": [
+    150.9
+   ]
+  },
+  "regionsApres": {
+   "care-list:day": 150.9
+  },
+  "hauteurPendantSquelette": [
+   911,
+   909
+  ],
+  "hauteurPendant": 0,
+  "hauteurApres": 909,
+  "decalageCumule": 0,
+  "decalages": [
+   {
+    "t": 3836,
+    "v": 0,
+    "n": [
+     "flex shrink-0 items-center gap-2"
+    ]
+   }
+  ],
+  "erreurs": []
+ },
+ "hospitalisation (light)": {
+  "contenuStableA": 3401,
+  "roue": "636–912 ms (15 images)",
+  "squelette": "1081–3382 ms (77 images)",
+  "etatsFauxPendant": [
+   "Chargement de Baitari",
+   "Chargement du module...",
+   "lecture des séjours…",
+   "Chargement des séjours"
+  ],
+  "etatsFinaux": [
+   "Aucun patient hospitalisé",
+   "Aucun emplacement en service",
+   "Aucune sortie préparée",
+   "Aucun séjour enregistré."
+  ],
+  "hauteurs": [
+   0,
+   900,
+   892
+  ],
+  "bandesPendant": [
+   "222"
+  ],
+  "bandesApres": "222,160",
+  "regionsPendant": {
+   "stays:sejours": [
+    159.8
+   ]
+  },
+  "regionsApres": {
+   "stays:sejours": 159.8
+  },
+  "hauteurPendantSquelette": [
+   892
+  ],
+  "hauteurPendant": 900,
+  "hauteurApres": 892,
+  "decalageCumule": 0,
+  "decalages": [],
+  "erreurs": []
+ },
+ "produits (light)": {
+  "contenuStableA": 3776,
+  "roue": "654–917 ms (14 images)",
+  "squelette": "998–3636 ms (84 images)",
+  "etatsFauxPendant": [
+   "Chargement de Baitari",
+   "Chargement du module...",
+   "lecture du catalogue…",
+   "Chargement du catalogue"
+  ],
+  "etatsFinaux": [],
+  "hauteurs": [
+   0,
+   900,
+   892,
+   1027
+  ],
+  "bandesPendant": [
+   "222,548"
+  ],
+  "bandesApres": "222,548",
+  "regionsPendant": {
+   "stock-expiries": [
+    97
+   ],
+   "stock-catalogue": [
+    547.5
+   ]
+  },
+  "regionsApres": {
+   "stock-expiries": 97,
+   "stock-catalogue": 547.6
+  },
+  "hauteurPendantSquelette": [
+   1027
+  ],
+  "hauteurPendant": 900,
+  "hauteurApres": 1027,
+  "decalageCumule": 0,
+  "decalages": [],
+  "erreurs": []
+ },
+ "finances (light)": {
+  "contenuStableA": 4027,
+  "roue": "818–1033 ms (13 images)",
+  "squelette": "1091–3989 ms (86 images)",
+  "etatsFauxPendant": [
+   "Chargement de Baitari",
+   "Chargement du module...",
+   "Chargement des factures"
+  ],
+  "etatsFinaux": [
+   "Aucun règlement",
+   "Aucune facture émise",
+   "Aucune facture"
+  ],
+  "hauteurs": [
+   0,
+   900,
+   892
+  ],
+  "bandesPendant": [
+   "222,289"
+  ],
+  "bandesApres": "222,289",
+  "regionsPendant": {
+   "invoices": [
+    289.1
+   ]
+  },
+  "regionsApres": {
+   "invoices": 289.1
+  },
+  "hauteurPendantSquelette": [
+   892
+  ],
+  "hauteurPendant": 0,
+  "hauteurApres": 892,
+  "decalageCumule": 0,
+  "decalages": [],
+  "erreurs": []
+ },
+ "analyse (light)": {
+  "contenuStableA": 6566,
+  "roue": "806–1058 ms (13 images)",
+  "squelette": "1233–4922 ms (88 images)",
+  "etatsFauxPendant": [
+   "Chargement de Baitari",
+   "Chargement du module...",
+   "Chargement de l’analyse financière",
+   "Chargement des factures…"
+  ],
+  "etatsFinaux": [
+   "Aucune créance à recouvrer."
+  ],
+  "hauteurs": [
+   0,
+   900,
+   892,
+   1666,
+   1560
+  ],
+  "bandesPendant": [
+   ""
+  ],
+  "bandesApres": "254,466,790,702,448",
+  "regionsPendant": {
+   "finance-analysis": [
+    1558.4
+   ]
+  },
+  "regionsApres": {
+   "finance-analysis": 1558.5
+  },
+  "hauteurPendantSquelette": [
+   1666
+  ],
+  "hauteurPendant": 0,
+  "hauteurApres": 1666,
+  "decalageCumule": 0,
+  "decalages": [],
+  "erreurs": []
+ },
+ "equipe (light)": {
+  "contenuStableA": 3562,
+  "roue": "650–911 ms (14 images)",
+  "squelette": "1097–3529 ms (76 images)",
+  "etatsFauxPendant": [
+   "Chargement de Baitari",
+   "Chargement du module...",
+   "Lecture de l’équipe…"
+  ],
+  "etatsFinaux": [
+   "Aucun assistant ni stagiaire"
+  ],
+  "hauteurs": [
+   0,
+   900,
+   892
+  ],
+  "bandesPendant": [
+   "194"
+  ],
+  "bandesApres": "194",
+  "regionsPendant": {
+   "team-cards": [
+    211
+   ]
+  },
+  "regionsApres": {
+   "team-cards": 211
+  },
+  "hauteurPendantSquelette": [
+   892
+  ],
+  "hauteurPendant": 900,
+  "hauteurApres": 892,
+  "decalageCumule": 0,
+  "decalages": [],
+  "erreurs": []
+ },
+ "documents (light)": {
+  "contenuStableA": 3633,
+  "roue": "794–992 ms (12 images)",
+  "squelette": "1160–3612 ms (77 images)",
+  "etatsFauxPendant": [
+   "Chargement de Baitari",
+   "Chargement du module..."
+  ],
+  "etatsFinaux": [],
+  "hauteurs": [
+   0,
+   900,
+   892
+  ],
+  "bandesPendant": [
+   ""
+  ],
+  "bandesApres": "",
+  "regionsPendant": {
+   "documents-library": [
+    121.3
+   ]
+  },
+  "regionsApres": {
+   "documents-library": 121.3
+  },
+  "hauteurPendantSquelette": [
+   892
+  ],
+  "hauteurPendant": 0,
+  "hauteurApres": 892,
+  "decalageCumule": 0,
+  "decalages": [],
+  "erreurs": []
+ },
+ "rappels (light)": {
+  "contenuStableA": 4112,
+  "roue": "726–988 ms (14 images)",
+  "squelette": "1174–4079 ms (81 images)",
+  "etatsFauxPendant": [
+   "Chargement de Baitari",
+   "Chargement du module...",
+   "Lecture des rappels…",
+   "Chargement des rappels"
+  ],
+  "etatsFinaux": [
+   "rien à traiter",
+   "Aucune échéance dépassée",
+   "Aucune échéance aujourd’hui",
+   "Aucun rappel après aujourd’hui",
+   "Rien à traiter",
+   "Aucun rappel à venir"
+  ],
+  "hauteurs": [
+   0,
+   900,
+   892
+  ],
+  "bandesPendant": [
+   "194"
+  ],
+  "bandesApres": "194,198",
+  "regionsPendant": {
+   "reminders:today:all": [
+    198.1
+   ]
+  },
+  "regionsApres": {
+   "reminders:today:all": 198.1
+  },
+  "hauteurPendantSquelette": [
+   892
+  ],
+  "hauteurPendant": 0,
+  "hauteurApres": 892,
+  "decalageCumule": 0,
+  "decalages": [
+   {
+    "t": 4142,
+    "v": 0,
+    "n": [
+     "group/button rounded-lg inline-flex shrink-0 cursor-pointer ",
+     "relative inline-flex h-[calc(100%-1px)] flex-1 items-center ",
+     "relative inline-flex h-[calc(100%-1px)] flex-1 items-center "
+    ]
+   }
+  ],
+  "erreurs": []
+ },
+ "parametres (light)": {
+  "contenuStableA": 3655,
+  "roue": "795–1003 ms (12 images)",
+  "squelette": "jamais",
+  "etatsFauxPendant": [
+   "Chargement de Baitari",
+   "Chargement du module..."
+  ],
+  "etatsFinaux": [],
+  "hauteurs": [
+   0,
+   900,
+   892
+  ],
+  "bandesPendant": [],
+  "bandesApres": "249,324",
+  "regionsPendant": {},
+  "regionsApres": {},
+  "hauteurPendantSquelette": [],
+  "hauteurPendant": 0,
+  "hauteurApres": 892,
+  "decalageCumule": 0,
+  "decalages": [],
+  "erreurs": []
+ }
+}

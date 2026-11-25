@@ -1,0 +1,601 @@
+{
+ "patients (light)": {
+  "contenuStableA": 4324,
+  "roue": "713–980 ms (13 images)",
+  "squelette": "1023–4099 ms (90 images)",
+  "refletVisible": "1161–4241 ms (82 images)",
+  "etatsFauxPendant": [
+   "Chargement de Baitari",
+   "Chargement du module...",
+   "Chargement des dossiers"
+  ],
+  "etatsFinaux": [
+   "Aucun"
+  ],
+  "hauteurs": [
+   0,
+   900,
+   892,
+   908,
+   916
+  ],
+  "bandesPendant": [
+   "222,546"
+  ],
+  "bandesApres": "222,554",
+  "regionsPendant": {
+   "patients": [
+    546.1
+   ]
+  },
+  "regionsApres": {
+   "patients": 554.1
+  },
+  "hauteurPendantSquelette": [
+   908
+  ],
+  "hauteurPendant": 0,
+  "hauteurApres": 916,
+  "decalageCumule": 0.01,
+  "decalages": [
+   {
+    "t": 4273,
+    "v": 0.01,
+    "n": [
+     "flex items-center justify-between gap-3 py-1.5 pr-1.5 pl-3.5",
+     "px-2 py-2 font-medium text-left",
+     "px-2 py-2 font-medium text-left hidden @md:table-cell",
+     "px-2 py-2 font-medium text-left hidden @xl:table-cell",
+     "px-2 py-2 font-medium text-left hidden @md:table-cell"
+    ]
+   }
+  ],
+  "erreurs": []
+ },
+ "fiche-patient (light)": {
+  "contenuStableA": 3871,
+  "roue": "778–1058 ms (16 images)",
+  "squelette": "1070–3692 ms (83 images)",
+  "refletVisible": "1228–3692 ms (73 images)",
+  "etatsFauxPendant": [
+   "Chargement de Baitari",
+   "Chargement du module...",
+   "Chargement des chiffres clés du dossier"
+  ],
+  "etatsFinaux": [
+   "Aucun rendez-vous prévu aujourd’hui",
+   "Aucune pesée",
+   "Aucun traitement en cours.",
+   "Aucun rappel prévu.",
+   "Aucune pesée : onglet Poids",
+   "Aucun vaccin : onglet Vaccinations"
+  ],
+  "hauteurs": [
+   0,
+   900,
+   892,
+   1272,
+   1717
+  ],
+  "bandesPendant": [
+   ""
+  ],
+  "bandesApres": "278,694,508",
+  "regionsPendant": {
+   "patient-record": [
+    860
+   ]
+  },
+  "regionsApres": {
+   "patient-record": 1596.6
+  },
+  "hauteurPendantSquelette": [
+   1272
+  ],
+  "hauteurPendant": 0,
+  "hauteurApres": 1717,
+  "decalageCumule": 0,
+  "decalages": [],
+  "erreurs": []
+ },
+ "agenda (light)": {
+  "contenuStableA": 4499,
+  "roue": "690–962 ms (14 images)",
+  "squelette": "1158–4408 ms (84 images)",
+  "refletVisible": "1158–4408 ms (84 images)",
+  "etatsFauxPendant": [
+   "Chargement de Baitari",
+   "Chargement du module...",
+   "Chargement des rendez-vous",
+   "Chargement de la liste des rendez-vous",
+   "Chargement de la charge de la journée"
+  ],
+  "etatsFinaux": [
+   "Aucun rendez-vous sélectionné"
+  ],
+  "hauteurs": [
+   0,
+   900,
+   892,
+   1730,
+   1985
+  ],
+  "bandesPendant": [
+   "222"
+  ],
+  "bandesApres": "222",
+  "regionsPendant": {
+   "agenda-calendar:day": [
+    620
+   ],
+   "agenda-list:list:day:selection": [
+    240
+   ],
+   "agenda-day-load": [
+    420
+   ]
+  },
+  "regionsApres": {
+   "agenda-calendar:day": 630,
+   "agenda-list:list:day:selection": 459.4,
+   "agenda-day-load": 664.9
+  },
+  "hauteurPendantSquelette": [
+   1730
+  ],
+  "hauteurPendant": 900,
+  "hauteurApres": 1985,
+  "decalageCumule": 0,
+  "decalages": [],
+  "erreurs": []
+ },
+ "flux (light)": {
+  "contenuStableA": 4503,
+  "roue": "667–939 ms (14 images)",
+  "squelette": "967–4376 ms (93 images)",
+  "refletVisible": "967–4376 ms (93 images)",
+  "etatsFauxPendant": [
+   "Chargement de Baitari",
+   "Chargement du module...",
+   "chargement des visites du jour",
+   "Chargement des visites du jour"
+  ],
+  "etatsFinaux": [
+   "Aucune consultation en cours",
+   "Aucun soin en cours",
+   "Rien à facturer",
+   "Aucune visite terminée"
+  ],
+  "hauteurs": [
+   0,
+   900,
+   892
+  ],
+  "bandesPendant": [
+   ""
+  ],
+  "bandesApres": "",
+  "regionsPendant": {
+   "flow-top": [
+    120
+   ]
+  },
+  "regionsApres": {
+   "flow-top": 232.2
+  },
+  "hauteurPendantSquelette": [
+   892
+  ],
+  "hauteurPendant": 900,
+  "hauteurApres": 892,
+  "decalageCumule": 0.037,
+  "decalages": [
+   {
+    "t": 4535,
+    "v": 0.037,
+    "n": [
+     "flow-lanes"
+    ]
+   }
+  ],
+  "erreurs": []
+ },
+ "soins (light)": {
+  "contenuStableA": 6934,
+  "roue": "741–1016 ms (13 images)",
+  "squelette": "1063–6880 ms (263 images)",
+  "refletVisible": "1199–6880 ms (254 images)",
+  "etatsFauxPendant": [
+   "Chargement de Baitari",
+   "Chargement du module...",
+   "Chargement des soins"
+  ],
+  "etatsFinaux": [
+   "Aucun soin planifié pour cette date",
+   "Aucun retard",
+   "Aucune échéance préventive à venir.",
+   "Aucun soin pour cette date"
+  ],
+  "hauteurs": [
+   0,
+   900,
+   892,
+   918,
+   909
+  ],
+  "bandesPendant": [
+   "222,170",
+   "222,232"
+  ],
+  "bandesApres": "222,232",
+  "regionsPendant": {
+   "care-list:day": [
+    160
+   ]
+  },
+  "regionsApres": {
+   "care-list:day": 150.9
+  },
+  "hauteurPendantSquelette": [
+   892,
+   918
+  ],
+  "hauteurPendant": 0,
+  "hauteurApres": 909,
+  "decalageCumule": 0.011,
+  "decalages": [
+   {
+    "t": 3981,
+    "v": 0.011,
+    "n": [
+     "loading-skeleton loading-skeleton-region space-y-6",
+     "care-toolbar flex flex-wrap items-center justify-between gap",
+     "flex shrink-0 items-center gap-2"
+    ]
+   }
+  ],
+  "erreurs": []
+ },
+ "hospitalisation (light)": {
+  "contenuStableA": 3747,
+  "roue": "830–1089 ms (12 images)",
+  "squelette": "1276–3731 ms (78 images)",
+  "refletVisible": "1276–3731 ms (78 images)",
+  "etatsFauxPendant": [
+   "Chargement de Baitari",
+   "Chargement du module...",
+   "lecture des séjours…",
+   "Chargement des séjours"
+  ],
+  "etatsFinaux": [
+   "Aucun patient hospitalisé",
+   "Aucun emplacement en service",
+   "Aucune sortie préparée",
+   "Aucun séjour enregistré."
+  ],
+  "hauteurs": [
+   0,
+   900,
+   892
+  ],
+  "bandesPendant": [
+   "222"
+  ],
+  "bandesApres": "222,160",
+  "regionsPendant": {
+   "stays:sejours": [
+    160
+   ]
+  },
+  "regionsApres": {
+   "stays:sejours": 159.8
+  },
+  "hauteurPendantSquelette": [
+   892
+  ],
+  "hauteurPendant": 0,
+  "hauteurApres": 892,
+  "decalageCumule": 0,
+  "decalages": [],
+  "erreurs": []
+ },
+ "produits (light)": {
+  "contenuStableA": 3997,
+  "roue": "760–1020 ms (13 images)",
+  "squelette": "1128–3865 ms (84 images)",
+  "refletVisible": "1237–3865 ms (78 images)",
+  "etatsFauxPendant": [
+   "Chargement de Baitari",
+   "Chargement du module...",
+   "lecture du catalogue…",
+   "Chargement du catalogue"
+  ],
+  "etatsFinaux": [],
+  "hauteurs": [
+   0,
+   900,
+   892,
+   915,
+   1027
+  ],
+  "bandesPendant": [
+   "222,545"
+  ],
+  "bandesApres": "222,548",
+  "regionsPendant": {
+   "stock-catalogue": [
+    544.6
+   ],
+   "stock-expiries": []
+  },
+  "regionsApres": {
+   "stock-expiries": 97,
+   "stock-catalogue": 547.6
+  },
+  "hauteurPendantSquelette": [
+   915
+  ],
+  "hauteurPendant": 0,
+  "hauteurApres": 1027,
+  "decalageCumule": 0.059,
+  "decalages": [
+   {
+    "t": 4024,
+    "v": 0.059,
+    "n": [
+     "p-1",
+     "flex items-center justify-between gap-3 py-1.5 pr-1.5 pl-3.5"
+    ]
+   }
+  ],
+  "erreurs": []
+ },
+ "finances (light)": {
+  "contenuStableA": 3939,
+  "roue": "744–954 ms (12 images)",
+  "squelette": "1031–3899 ms (85 images)",
+  "refletVisible": "1157–3899 ms (77 images)",
+  "etatsFauxPendant": [
+   "Chargement de Baitari",
+   "Chargement du module...",
+   "Chargement des factures"
+  ],
+  "etatsFinaux": [
+   "Aucun règlement",
+   "Aucune facture émise",
+   "Aucune facture"
+  ],
+  "hauteurs": [
+   0,
+   900,
+   892
+  ],
+  "bandesPendant": [
+   "222,445"
+  ],
+  "bandesApres": "222,289",
+  "regionsPendant": {
+   "invoices": [
+    444.6
+   ]
+  },
+  "regionsApres": {
+   "invoices": 289.1
+  },
+  "hauteurPendantSquelette": [
+   892
+  ],
+  "hauteurPendant": 900,
+  "hauteurApres": 892,
+  "decalageCumule": 0.008,
+  "decalages": [
+   {
+    "t": 3966,
+    "v": 0.008,
+    "n": [
+     "flex items-center justify-between gap-3 py-1.5 pr-1.5 pl-3.5"
+    ]
+   }
+  ],
+  "erreurs": []
+ },
+ "analyse (light)": {
+  "contenuStableA": 6585,
+  "roue": "731–970 ms (12 images)",
+  "squelette": "1158–4981 ms (89 images)",
+  "refletVisible": "1158–4981 ms (89 images)",
+  "etatsFauxPendant": [
+   "Chargement de Baitari",
+   "Chargement du module...",
+   "Chargement de l’analyse financière",
+   "Chargement des factures…"
+  ],
+  "etatsFinaux": [
+   "Aucune créance à recouvrer."
+  ],
+  "hauteurs": [
+   0,
+   900,
+   892,
+   1308,
+   1560,
+   1666
+  ],
+  "bandesPendant": [
+   ""
+  ],
+  "bandesApres": "254,466,790,702,448",
+  "regionsPendant": {
+   "finance-analysis": [
+    1200
+   ]
+  },
+  "regionsApres": {
+   "finance-analysis": 1558.5
+  },
+  "hauteurPendantSquelette": [
+   1308
+  ],
+  "hauteurPendant": 0,
+  "hauteurApres": 1666,
+  "decalageCumule": 0,
+  "decalages": [],
+  "erreurs": []
+ },
+ "equipe (light)": {
+  "contenuStableA": 3629,
+  "roue": "806–1013 ms (13 images)",
+  "squelette": "1183–3593 ms (76 images)",
+  "refletVisible": "1183–3593 ms (76 images)",
+  "etatsFauxPendant": [
+   "Chargement de Baitari",
+   "Chargement du module...",
+   "Lecture de l’équipe…"
+  ],
+  "etatsFinaux": [
+   "Aucun assistant ni stagiaire"
+  ],
+  "hauteurs": [
+   0,
+   900,
+   892
+  ],
+  "bandesPendant": [
+   "194"
+  ],
+  "bandesApres": "194",
+  "regionsPendant": {
+   "team-cards": [
+    168
+   ]
+  },
+  "regionsApres": {
+   "team-cards": 211
+  },
+  "hauteurPendantSquelette": [
+   892
+  ],
+  "hauteurPendant": 0,
+  "hauteurApres": 892,
+  "decalageCumule": 0,
+  "decalages": [],
+  "erreurs": []
+ },
+ "documents (light)": {
+  "contenuStableA": 3768,
+  "roue": "757–959 ms (12 images)",
+  "squelette": "1132–3750 ms (79 images)",
+  "refletVisible": "1132–3750 ms (79 images)",
+  "etatsFauxPendant": [
+   "Chargement de Baitari",
+   "Chargement du module..."
+  ],
+  "etatsFinaux": [],
+  "hauteurs": [
+   0,
+   900,
+   892
+  ],
+  "bandesPendant": [
+   ""
+  ],
+  "bandesApres": "",
+  "regionsPendant": {
+   "documents-library": [
+    259
+   ]
+  },
+  "regionsApres": {
+   "documents-library": 121.3
+  },
+  "hauteurPendantSquelette": [
+   892
+  ],
+  "hauteurPendant": 900,
+  "hauteurApres": 892,
+  "decalageCumule": 0,
+  "decalages": [],
+  "erreurs": []
+ },
+ "rappels (light)": {
+  "contenuStableA": 4331,
+  "roue": "799–988 ms (10 images)",
+  "squelette": "1173–4275 ms (82 images)",
+  "refletVisible": "1173–4275 ms (82 images)",
+  "etatsFauxPendant": [
+   "Chargement de Baitari",
+   "Chargement du module...",
+   "Lecture des rappels…",
+   "Chargement des rappels"
+  ],
+  "etatsFinaux": [
+   "rien à traiter",
+   "Aucune échéance dépassée",
+   "Aucune échéance aujourd’hui",
+   "Aucun rappel après aujourd’hui",
+   "Rien à traiter",
+   "Aucun rappel à venir"
+  ],
+  "hauteurs": [
+   0,
+   900,
+   892
+  ],
+  "bandesPendant": [
+   "194"
+  ],
+  "bandesApres": "194,198",
+  "regionsPendant": {
+   "reminders:today:all": [
+    140
+   ]
+  },
+  "regionsApres": {
+   "reminders:today:all": 198.1
+  },
+  "hauteurPendantSquelette": [
+   892
+  ],
+  "hauteurPendant": 900,
+  "hauteurApres": 892,
+  "decalageCumule": 0,
+  "decalages": [
+   {
+    "t": 4362,
+    "v": 0,
+    "n": [
+     "group/button rounded-lg inline-flex shrink-0 cursor-pointer ",
+     "relative inline-flex h-[calc(100%-1px)] flex-1 items-center ",
+     "relative inline-flex h-[calc(100%-1px)] flex-1 items-center "
+    ]
+   }
+  ],
+  "erreurs": []
+ },
+ "parametres (light)": {
+  "contenuStableA": 3643,
+  "roue": "766–1036 ms (14 images)",
+  "squelette": "jamais",
+  "refletVisible": "1203–3639 ms (79 images)",
+  "etatsFauxPendant": [
+   "Chargement de Baitari",
+   "Chargement du module..."
+  ],
+  "etatsFinaux": [],
+  "hauteurs": [
+   0,
+   900,
+   892
+  ],
+  "bandesPendant": [],
+  "bandesApres": "249,324",
+  "regionsPendant": {},
+  "regionsApres": {},
+  "hauteurPendantSquelette": [],
+  "hauteurPendant": 0,
+  "hauteurApres": 892,
+  "decalageCumule": 0,
+  "decalages": [],
+  "erreurs": []
+ }
+}

@@ -59,6 +59,8 @@ import {
   type CareMarkKind,
 } from "./care-day";
 import { guard } from "@/lib/guard";
+import { SkeletonRegion } from "@/components/ui/loading-skeleton";
+import { useDelayedSkeleton } from "@/hooks/useDelayedSkeleton";
 const labels: Record<CareDisplayStatus, string> = {
   a_faire: "À faire",
   en_cours: "En cours",
@@ -197,6 +199,9 @@ export default function CarePage({
   const summary = careDaySummary(tasks, now, dayStart);
   const overdueCount = summary.overdue.length;
   const patients = usePatientsRepository();
+  // The list waits for the care and the patients' names (first read only), in its place, as the band above.
+  const listSkeleton = useDelayedSkeleton(loading || patients.loading);
+  const listReading = loading || patients.loading || listSkeleton;
   const products = useProductsRepository();
   const stockWarning = (task: CareTask) => {
     if (!task.produit_id || ["fait", "annule"].includes(task.statut))
@@ -667,9 +672,16 @@ export default function CarePage({
 
       {error ? (
         <ErrorState message={error} onRetry={() => void refresh()} />
-      ) : loading ? (
-        <p role="status">Chargement des soins…</p>
-      ) : !visible.length ? (
+      ) : (
+        <SkeletonRegion
+          busy={listReading}
+          className={patientId ? "space-y-4" : "space-y-6"}
+          fallbackHeight={160}
+          label="Chargement des soins"
+          memoryKey={patientId ? "care-list:patient" : "care-list:day"}
+          revealed={listSkeleton}
+        >
+      {!visible.length ? (
         <div className="rounded-2xl border border-dashed border-border p-12 text-center">
           <p className="t-16 font-medium">Aucun soin pour cette date</p>
           <p className="mt-2 text-muted-foreground">
@@ -772,6 +784,8 @@ export default function CarePage({
             ))}
           </div>
         </>
+      )}
+        </SkeletonRegion>
       )}
       {actionError && (
         <p role="alert" className="text-destructive">

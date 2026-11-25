@@ -1,0 +1,1037 @@
+{
+ "patients (light)": {
+  "contenuStableA": 4124,
+  "roue": "793–3669 ms (98 images)",
+  "squelette": "jamais",
+  "refletVisible": "1170–4014 ms (80 images)",
+  "etatsFauxPendant": [
+   "Chargement de Baitari",
+   "Chargement du module..."
+  ],
+  "etatsFinaux": [
+   "Aucun"
+  ],
+  "hauteurs": [
+   0,
+   900,
+   892,
+   916
+  ],
+  "bandesPendant": [],
+  "bandesApres": "222,554",
+  "regionsPendant": {},
+  "regionsApres": {},
+  "hauteurPendantSquelette": [],
+  "hauteurPendant": 0,
+  "hauteurApres": 916,
+  "decalageCumule": 0,
+  "decalages": [],
+  "erreurs": [
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ]
+ },
+ "fiche-patient (light)": {
+  "contenuStableA": 4030,
+  "roue": "788–3785 ms (101 images)",
+  "squelette": "3785–3902 ms (2 images)",
+  "refletVisible": "jamais",
+  "etatsFauxPendant": [
+   "Chargement de Baitari",
+   "Chargement du module...",
+   "Chargement des rendez-vous",
+   "Chargement des actions"
+  ],
+  "etatsFinaux": [
+   "Aucun rendez-vous prévu aujourd’hui",
+   "Aucune pesée",
+   "Aucun traitement en cours.",
+   "Aucun rappel prévu.",
+   "Aucune pesée : onglet Poids",
+   "Aucun vaccin : onglet Vaccinations"
+  ],
+  "hauteurs": [
+   0,
+   900,
+   892,
+   1574,
+   1671,
+   1717
+  ],
+  "bandesPendant": [
+   "336,598,404",
+   "336,694,404"
+  ],
+  "bandesApres": "278,694,508",
+  "regionsPendant": {},
+  "regionsApres": {},
+  "hauteurPendantSquelette": [
+   1574,
+   1671
+  ],
+  "hauteurPendant": 0,
+  "hauteurApres": 1717,
+  "decalageCumule": 0.018,
+  "decalages": [
+   {
+    "t": 3937,
+    "v": 0.003,
+    "n": [
+     "medical-tabs",
+     "patient-chronologie",
+     "group cursor-pointer transition",
+     "[object SVGAnimatedString]"
+    ]
+   },
+   {
+    "t": 4065,
+    "v": 0.015,
+    "n": [
+     "medical-workspace"
+    ]
+   }
+  ],
+  "erreurs": [
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ]
+ },
+ "agenda (light)": {
+  "contenuStableA": 4633,
+  "roue": "766–3876 ms (98 images)",
+  "squelette": "jamais",
+  "refletVisible": "1161–4527 ms (82 images)",
+  "etatsFauxPendant": [
+   "Chargement de Baitari",
+   "Chargement du module...",
+   "Aucun rendez-vous ce jour. Cliquez sur un créneau pour e",
+   "Aucun rendez-vous",
+   "Aucun rendez-vous planifié ce jour-là.",
+   "Aucun rendez-vous planifié après cette date."
+  ],
+  "etatsFinaux": [
+   "Aucun rendez-vous sélectionné"
+  ],
+  "hauteurs": [
+   0,
+   900,
+   892,
+   1750,
+   1841,
+   1985
+  ],
+  "bandesPendant": [],
+  "bandesApres": "222",
+  "regionsPendant": {},
+  "regionsApres": {},
+  "hauteurPendantSquelette": [],
+  "hauteurPendant": 0,
+  "hauteurApres": 1985,
+  "decalageCumule": 0,
+  "decalages": [
+   {
+    "t": 2518,
+    "v": 0,
+    "n": [
+     "flex size-7 items-center justify-center rounded-full font-me",
+     "text-muted-foreground text-xs capitalize"
+    ]
+   }
+  ],
+  "erreurs": [
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ]
+ },
+ "flux (light)": {
+  "contenuStableA": 4292,
+  "roue": "716–990 ms (15 images)",
+  "squelette": "jamais",
+  "refletVisible": "jamais",
+  "etatsFauxPendant": [
+   "Chargement de Baitari",
+   "Chargement du module...",
+   "chargement des visites du jour"
+  ],
+  "etatsFinaux": [
+   "Aucune consultation en cours",
+   "Aucun soin en cours",
+   "Rien à facturer",
+   "Aucune visite terminée"
+  ],
+  "hauteurs": [
+   0,
+   900,
+   892
+  ],
+  "bandesPendant": [],
+  "bandesApres": "",
+  "regionsPendant": {},
+  "regionsApres": {},
+  "hauteurPendantSquelette": [],
+  "hauteurPendant": 900,
+  "hauteurApres": 892,
+  "decalageCumule": 0.098,
+  "decalages": [
+   {
+    "t": 2500,
+    "v": 0.092,
+    "n": [
+     "flow-lanes"
+    ]
+   },
+   {
+    "t": 2617,
+    "v": 0.006,
+    "n": [
+     "flow-lanes",
+     "flow-card-actions",
+     "flow-card-alerts"
+    ]
+   }
+  ],
+  "erreurs": [
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ]
+ },
+ "soins (light)": {
+  "contenuStableA": 6839,
+  "roue": "824–1032 ms (13 images)",
+  "squelette": "1072–3689 ms (84 images)",
+  "refletVisible": "1201–6812 ms (253 images)",
+  "etatsFauxPendant": [
+   "Chargement de Baitari",
+   "Chargement du module...",
+   "Chargement des soins…"
+  ],
+  "etatsFinaux": [
+   "Aucun soin planifié pour cette date",
+   "Aucun retard",
+   "Aucune échéance préventive à venir.",
+   "Aucun soin pour cette date"
+  ],
+  "hauteurs": [
+   0,
+   900,
+   892,
+   909
+  ],
+  "bandesPendant": [
+   "222,234"
+  ],
+  "bandesApres": "222,232",
+  "regionsPendant": {},
+  "regionsApres": {},
+  "hauteurPendantSquelette": [
+   892
+  ],
+  "hauteurPendant": 900,
+  "hauteurApres": 909,
+  "decalageCumule": 0,
+  "decalages": [
+   {
+    "t": 3820,
+    "v": 0,
+    "n": [
+     "flex shrink-0 items-center gap-2"
+    ]
+   }
+  ],
+  "erreurs": [
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ]
+ },
+ "hospitalisation (light)": {
+  "contenuStableA": 3595,
+  "roue": "763–959 ms (12 images)",
+  "squelette": "jamais",
+  "refletVisible": "1140–3579 ms (78 images)",
+  "etatsFauxPendant": [
+   "Chargement de Baitari",
+   "Chargement du module...",
+   "Chargement des séjours…"
+  ],
+  "etatsFinaux": [
+   "Aucun patient hospitalisé",
+   "Aucun emplacement en service",
+   "Aucune sortie préparée",
+   "Aucun séjour enregistré."
+  ],
+  "hauteurs": [
+   0,
+   900,
+   892
+  ],
+  "bandesPendant": [],
+  "bandesApres": "222,160",
+  "regionsPendant": {},
+  "regionsApres": {},
+  "hauteurPendantSquelette": [],
+  "hauteurPendant": 900,
+  "hauteurApres": 892,
+  "decalageCumule": 0,
+  "decalages": [],
+  "erreurs": [
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ]
+ },
+ "produits (light)": {
+  "contenuStableA": 3753,
+  "roue": "759–963 ms (12 images)",
+  "squelette": "jamais",
+  "refletVisible": "1132–3689 ms (77 images)",
+  "etatsFauxPendant": [
+   "Chargement de Baitari",
+   "Chargement du module...",
+   "Chargement du catalogue…"
+  ],
+  "etatsFinaux": [],
+  "hauteurs": [
+   0,
+   900,
+   892,
+   1027
+  ],
+  "bandesPendant": [],
+  "bandesApres": "222,548",
+  "regionsPendant": {},
+  "regionsApres": {},
+  "hauteurPendantSquelette": [],
+  "hauteurPendant": 900,
+  "hauteurApres": 1027,
+  "decalageCumule": 0,
+  "decalages": [],
+  "erreurs": [
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ]
+ },
+ "finances (light)": {
+  "contenuStableA": 4063,
+  "roue": "802–3782 ms (98 images)",
+  "squelette": "jamais",
+  "refletVisible": "1150–4034 ms (81 images)",
+  "etatsFauxPendant": [
+   "Chargement de Baitari",
+   "Chargement du module..."
+  ],
+  "etatsFinaux": [
+   "Aucun règlement",
+   "Aucune facture émise",
+   "Aucune facture"
+  ],
+  "hauteurs": [
+   0,
+   900,
+   892
+  ],
+  "bandesPendant": [],
+  "bandesApres": "222,289",
+  "regionsPendant": {},
+  "regionsApres": {},
+  "hauteurPendantSquelette": [],
+  "hauteurPendant": 900,
+  "hauteurApres": 892,
+  "decalageCumule": 0,
+  "decalages": [],
+  "erreurs": [
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ]
+ },
+ "analyse (light)": {
+  "contenuStableA": 5950,
+  "roue": "719–991 ms (15 images)",
+  "squelette": "jamais",
+  "refletVisible": "jamais",
+  "etatsFauxPendant": [
+   "Chargement de Baitari",
+   "Chargement du module...",
+   "Chargement des factures…",
+   "Aucun encaissement sur cette période."
+  ],
+  "etatsFinaux": [
+   "Aucune créance à recouvrer."
+  ],
+  "hauteurs": [
+   0,
+   900,
+   892,
+   1364,
+   1384,
+   1560,
+   1666
+  ],
+  "bandesPendant": [],
+  "bandesApres": "254,466,790,702,448",
+  "regionsPendant": {},
+  "regionsApres": {},
+  "hauteurPendantSquelette": [],
+  "hauteurPendant": 900,
+  "hauteurApres": 1666,
+  "decalageCumule": 0.202,
+  "decalages": [
+   {
+    "t": 2573,
+    "v": 0.007,
+    "n": [
+     "grid items-start gap-6 xl:grid-cols-[minmax(0,1.8fr)_minmax("
+    ]
+   },
+   {
+    "t": 2691,
+    "v": 0.195,
+    "n": [
+     "grid items-start gap-6 xl:grid-cols-[minmax(0,1.8fr)_minmax(",
+     "min-w-0"
+    ]
+   }
+  ],
+  "erreurs": [
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ]
+ },
+ "equipe (light)": {
+  "contenuStableA": 3925,
+  "roue": "826–3757 ms (99 images)",
+  "squelette": "jamais",
+  "refletVisible": "1205–3891 ms (79 images)",
+  "etatsFauxPendant": [
+   "Chargement de Baitari",
+   "Chargement du module...",
+   "Lecture de l’équipe…"
+  ],
+  "etatsFinaux": [
+   "Aucun assistant ni stagiaire"
+  ],
+  "hauteurs": [
+   0,
+   900,
+   892
+  ],
+  "bandesPendant": [],
+  "bandesApres": "194",
+  "regionsPendant": {},
+  "regionsApres": {},
+  "hauteurPendantSquelette": [],
+  "hauteurPendant": 0,
+  "hauteurApres": 892,
+  "decalageCumule": 0,
+  "decalages": [],
+  "erreurs": [
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ]
+ },
+ "documents (light)": {
+  "contenuStableA": 3796,
+  "roue": "744–978 ms (11 images)",
+  "squelette": "jamais",
+  "refletVisible": "jamais",
+  "etatsFauxPendant": [
+   "Chargement de Baitari",
+   "Chargement du module..."
+  ],
+  "etatsFinaux": [],
+  "hauteurs": [
+   0,
+   900,
+   892
+  ],
+  "bandesPendant": [],
+  "bandesApres": "",
+  "regionsPendant": {},
+  "regionsApres": {},
+  "hauteurPendantSquelette": [],
+  "hauteurPendant": 900,
+  "hauteurApres": 892,
+  "decalageCumule": 0,
+  "decalages": [],
+  "erreurs": [
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ]
+ },
+ "rappels (light)": {
+  "contenuStableA": 4305,
+  "roue": "773–1011 ms (11 images)",
+  "squelette": "jamais",
+  "refletVisible": "1197–4234 ms (83 images)",
+  "etatsFauxPendant": [
+   "Chargement de Baitari",
+   "Chargement du module...",
+   "Lecture des rappels…"
+  ],
+  "etatsFinaux": [
+   "rien à traiter",
+   "Aucune échéance dépassée",
+   "Aucune échéance aujourd’hui",
+   "Aucun rappel après aujourd’hui",
+   "Rien à traiter",
+   "Aucun rappel à venir"
+  ],
+  "hauteurs": [
+   0,
+   900,
+   892
+  ],
+  "bandesPendant": [],
+  "bandesApres": "194,198",
+  "regionsPendant": {},
+  "regionsApres": {},
+  "hauteurPendantSquelette": [],
+  "hauteurPendant": 0,
+  "hauteurApres": 892,
+  "decalageCumule": 0,
+  "decalages": [],
+  "erreurs": [
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ]
+ },
+ "parametres (light)": {
+  "contenuStableA": 2412,
+  "roue": "758–967 ms (13 images)",
+  "squelette": "jamais",
+  "refletVisible": "jamais",
+  "etatsFauxPendant": [
+   "Chargement de Baitari",
+   "Chargement du module..."
+  ],
+  "etatsFinaux": [],
+  "hauteurs": [
+   0,
+   900,
+   892
+  ],
+  "bandesPendant": [],
+  "bandesApres": "249,324",
+  "regionsPendant": {},
+  "regionsApres": {},
+  "hauteurPendantSquelette": [],
+  "hauteurPendant": 900,
+  "hauteurApres": 892,
+  "decalageCumule": 0,
+  "decalages": [],
+  "erreurs": [
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ]
+ },
+ "patients (dark)": {
+  "contenuStableA": 4062,
+  "roue": "753–3559 ms (98 images)",
+  "squelette": "jamais",
+  "refletVisible": "1187–3941 ms (79 images)",
+  "etatsFauxPendant": [
+   "Chargement de Baitari",
+   "Chargement du module..."
+  ],
+  "etatsFinaux": [
+   "Aucun"
+  ],
+  "hauteurs": [
+   0,
+   900,
+   892,
+   916
+  ],
+  "bandesPendant": [],
+  "bandesApres": "222,554",
+  "regionsPendant": {},
+  "regionsApres": {},
+  "hauteurPendantSquelette": [],
+  "hauteurPendant": 0,
+  "hauteurApres": 916,
+  "decalageCumule": 0,
+  "decalages": [],
+  "erreurs": [
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ]
+ },
+ "fiche-patient (dark)": {
+  "contenuStableA": 3858,
+  "roue": "735–3473 ms (97 images)",
+  "squelette": "3610–3739 ms (2 images)",
+  "refletVisible": "jamais",
+  "etatsFauxPendant": [
+   "Chargement de Baitari",
+   "Chargement du module...",
+   "Chargement des actions"
+  ],
+  "etatsFinaux": [
+   "Aucun rendez-vous prévu aujourd’hui",
+   "Aucune pesée",
+   "Aucun traitement en cours.",
+   "Aucun rappel prévu.",
+   "Aucune pesée : onglet Poids",
+   "Aucun vaccin : onglet Vaccinations"
+  ],
+  "hauteurs": [
+   0,
+   900,
+   892,
+   1671,
+   1613,
+   1717
+  ],
+  "bandesPendant": [
+   "336,694,404",
+   "278,694,404"
+  ],
+  "bandesApres": "278,694,508",
+  "regionsPendant": {},
+  "regionsApres": {},
+  "hauteurPendantSquelette": [
+   1671,
+   1613
+  ],
+  "hauteurPendant": 0,
+  "hauteurApres": 1717,
+  "decalageCumule": 0.015,
+  "decalages": [
+   {
+    "t": 3775,
+    "v": 0.015,
+    "n": [
+     "medical-workspace"
+    ]
+   }
+  ],
+  "erreurs": [
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ]
+ },
+ "agenda (dark)": {
+  "contenuStableA": 4999,
+  "roue": "748–4138 ms (101 images)",
+  "squelette": "jamais",
+  "refletVisible": "1187–4887 ms (86 images)",
+  "etatsFauxPendant": [
+   "Chargement de Baitari",
+   "Chargement du module...",
+   "Aucun rendez-vous ce jour. Cliquez sur un créneau pour e",
+   "Aucun rendez-vous",
+   "Aucun rendez-vous planifié ce jour-là.",
+   "Aucun rendez-vous planifié après cette date."
+  ],
+  "etatsFinaux": [
+   "Aucun rendez-vous sélectionné"
+  ],
+  "hauteurs": [
+   0,
+   900,
+   892,
+   1750,
+   1841,
+   1985
+  ],
+  "bandesPendant": [],
+  "bandesApres": "222",
+  "regionsPendant": {},
+  "regionsApres": {},
+  "hauteurPendantSquelette": [],
+  "hauteurPendant": 0,
+  "hauteurApres": 1985,
+  "decalageCumule": 0,
+  "decalages": [
+   {
+    "t": 2583,
+    "v": 0,
+    "n": [
+     "flex size-7 items-center justify-center rounded-full font-me",
+     "text-muted-foreground text-xs capitalize"
+    ]
+   }
+  ],
+  "erreurs": [
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ]
+ },
+ "flux (dark)": {
+  "contenuStableA": 4554,
+  "roue": "696–954 ms (14 images)",
+  "squelette": "jamais",
+  "refletVisible": "jamais",
+  "etatsFauxPendant": [
+   "Chargement de Baitari",
+   "Chargement du module...",
+   "chargement des visites du jour"
+  ],
+  "etatsFinaux": [
+   "Aucune consultation en cours",
+   "Aucun soin en cours",
+   "Rien à facturer",
+   "Aucune visite terminée"
+  ],
+  "hauteurs": [
+   0,
+   900,
+   892
+  ],
+  "bandesPendant": [],
+  "bandesApres": "",
+  "regionsPendant": {},
+  "regionsApres": {},
+  "hauteurPendantSquelette": [],
+  "hauteurPendant": 900,
+  "hauteurApres": 892,
+  "decalageCumule": 0.098,
+  "decalages": [
+   {
+    "t": 2453,
+    "v": 0.092,
+    "n": [
+     "flow-lanes"
+    ]
+   },
+   {
+    "t": 2580,
+    "v": 0.006,
+    "n": [
+     "flow-lanes",
+     "flow-card-actions",
+     "flow-card-alerts"
+    ]
+   }
+  ],
+  "erreurs": [
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ]
+ },
+ "soins (dark)": {
+  "contenuStableA": 6956,
+  "roue": "785–1041 ms (12 images)",
+  "squelette": "1094–3743 ms (86 images)",
+  "refletVisible": "1212–6908 ms (257 images)",
+  "etatsFauxPendant": [
+   "Chargement de Baitari",
+   "Chargement du module...",
+   "Chargement des soins…"
+  ],
+  "etatsFinaux": [
+   "Aucun soin planifié pour cette date",
+   "Aucun retard",
+   "Aucune échéance préventive à venir.",
+   "Aucun soin pour cette date"
+  ],
+  "hauteurs": [
+   0,
+   900,
+   892,
+   909
+  ],
+  "bandesPendant": [
+   "222,234"
+  ],
+  "bandesApres": "222,232",
+  "regionsPendant": {},
+  "regionsApres": {},
+  "hauteurPendantSquelette": [
+   892
+  ],
+  "hauteurPendant": 0,
+  "hauteurApres": 909,
+  "decalageCumule": 0,
+  "decalages": [
+   {
+    "t": 3897,
+    "v": 0,
+    "n": [
+     "flex shrink-0 items-center gap-2"
+    ]
+   }
+  ],
+  "erreurs": [
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ]
+ },
+ "hospitalisation (dark)": {
+  "contenuStableA": 3701,
+  "roue": "836–1036 ms (11 images)",
+  "squelette": "jamais",
+  "refletVisible": "1206–3687 ms (78 images)",
+  "etatsFauxPendant": [
+   "Chargement de Baitari",
+   "Chargement du module...",
+   "Chargement des séjours…"
+  ],
+  "etatsFinaux": [
+   "Aucun patient hospitalisé",
+   "Aucun emplacement en service",
+   "Aucune sortie préparée",
+   "Aucun séjour enregistré."
+  ],
+  "hauteurs": [
+   0,
+   900,
+   892
+  ],
+  "bandesPendant": [],
+  "bandesApres": "222,160",
+  "regionsPendant": {},
+  "regionsApres": {},
+  "hauteurPendantSquelette": [],
+  "hauteurPendant": 0,
+  "hauteurApres": 892,
+  "decalageCumule": 0,
+  "decalages": [],
+  "erreurs": [
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ]
+ },
+ "produits (dark)": {
+  "contenuStableA": 4102,
+  "roue": "847–1057 ms (13 images)",
+  "squelette": "jamais",
+  "refletVisible": "1227–3992 ms (78 images)",
+  "etatsFauxPendant": [
+   "Chargement de Baitari",
+   "Chargement du module...",
+   "Chargement du catalogue…"
+  ],
+  "etatsFinaux": [],
+  "hauteurs": [
+   0,
+   900,
+   892,
+   1027
+  ],
+  "bandesPendant": [],
+  "bandesApres": "222,548",
+  "regionsPendant": {},
+  "regionsApres": {},
+  "hauteurPendantSquelette": [],
+  "hauteurPendant": 0,
+  "hauteurApres": 1027,
+  "decalageCumule": 0,
+  "decalages": [],
+  "erreurs": [
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ]
+ },
+ "finances (dark)": {
+  "contenuStableA": 3926,
+  "roue": "739–3653 ms (98 images)",
+  "squelette": "jamais",
+  "refletVisible": "1123–3893 ms (78 images)",
+  "etatsFauxPendant": [
+   "Chargement de Baitari",
+   "Chargement du module..."
+  ],
+  "etatsFinaux": [
+   "Aucun règlement",
+   "Aucune facture émise",
+   "Aucune facture"
+  ],
+  "hauteurs": [
+   0,
+   900,
+   892
+  ],
+  "bandesPendant": [],
+  "bandesApres": "222,289",
+  "regionsPendant": {},
+  "regionsApres": {},
+  "hauteurPendantSquelette": [],
+  "hauteurPendant": 0,
+  "hauteurApres": 892,
+  "decalageCumule": 0,
+  "decalages": [],
+  "erreurs": [
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ]
+ },
+ "analyse (dark)": {
+  "contenuStableA": 5897,
+  "roue": "712–971 ms (14 images)",
+  "squelette": "jamais",
+  "refletVisible": "jamais",
+  "etatsFauxPendant": [
+   "Chargement de Baitari",
+   "Chargement du module...",
+   "Chargement des factures…",
+   "Aucun encaissement sur cette période."
+  ],
+  "etatsFinaux": [
+   "Aucune créance à recouvrer."
+  ],
+  "hauteurs": [
+   0,
+   900,
+   892,
+   1364,
+   1384,
+   1560,
+   1666
+  ],
+  "bandesPendant": [],
+  "bandesApres": "254,466,790,702,448",
+  "regionsPendant": {},
+  "regionsApres": {},
+  "hauteurPendantSquelette": [],
+  "hauteurPendant": 0,
+  "hauteurApres": 1666,
+  "decalageCumule": 0.2,
+  "decalages": [
+   {
+    "t": 2562,
+    "v": 0.007,
+    "n": [
+     "grid items-start gap-6 xl:grid-cols-[minmax(0,1.8fr)_minmax("
+    ]
+   },
+   {
+    "t": 2680,
+    "v": 0.193,
+    "n": [
+     "grid items-start gap-6 xl:grid-cols-[minmax(0,1.8fr)_minmax(",
+     "min-w-0"
+    ]
+   }
+  ],
+  "erreurs": [
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ]
+ },
+ "equipe (dark)": {
+  "contenuStableA": 3629,
+  "roue": "641–3480 ms (100 images)",
+  "squelette": "jamais",
+  "refletVisible": "1086–3602 ms (78 images)",
+  "etatsFauxPendant": [
+   "Chargement de Baitari",
+   "Chargement du module...",
+   "Lecture de l’équipe…"
+  ],
+  "etatsFinaux": [
+   "Aucun assistant ni stagiaire"
+  ],
+  "hauteurs": [
+   0,
+   900,
+   892
+  ],
+  "bandesPendant": [],
+  "bandesApres": "194",
+  "regionsPendant": {},
+  "regionsApres": {},
+  "hauteurPendantSquelette": [],
+  "hauteurPendant": 900,
+  "hauteurApres": 892,
+  "decalageCumule": 0,
+  "decalages": [],
+  "erreurs": [
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ]
+ },
+ "documents (dark)": {
+  "contenuStableA": 3520,
+  "roue": "758–955 ms (12 images)",
+  "squelette": "jamais",
+  "refletVisible": "jamais",
+  "etatsFauxPendant": [
+   "Chargement de Baitari",
+   "Chargement du module..."
+  ],
+  "etatsFinaux": [],
+  "hauteurs": [
+   0,
+   900,
+   892
+  ],
+  "bandesPendant": [],
+  "bandesApres": "",
+  "regionsPendant": {},
+  "regionsApres": {},
+  "hauteurPendantSquelette": [],
+  "hauteurPendant": 900,
+  "hauteurApres": 892,
+  "decalageCumule": 0,
+  "decalages": [],
+  "erreurs": [
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ]
+ },
+ "rappels (dark)": {
+  "contenuStableA": 4277,
+  "roue": "749–961 ms (13 images)",
+  "squelette": "jamais",
+  "refletVisible": "1130–4243 ms (82 images)",
+  "etatsFauxPendant": [
+   "Chargement de Baitari",
+   "Chargement du module...",
+   "Lecture des rappels…"
+  ],
+  "etatsFinaux": [
+   "rien à traiter",
+   "Aucune échéance dépassée",
+   "Aucune échéance aujourd’hui",
+   "Aucun rappel après aujourd’hui",
+   "Rien à traiter",
+   "Aucun rappel à venir"
+  ],
+  "hauteurs": [
+   0,
+   900,
+   892
+  ],
+  "bandesPendant": [],
+  "bandesApres": "194,198",
+  "regionsPendant": {},
+  "regionsApres": {},
+  "hauteurPendantSquelette": [],
+  "hauteurPendant": 900,
+  "hauteurApres": 892,
+  "decalageCumule": 0,
+  "decalages": [],
+  "erreurs": [
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ]
+ },
+ "parametres (dark)": {
+  "contenuStableA": 2513,
+  "roue": "743–1013 ms (13 images)",
+  "squelette": "jamais",
+  "refletVisible": "jamais",
+  "etatsFauxPendant": [
+   "Chargement de Baitari",
+   "Chargement du module..."
+  ],
+  "etatsFinaux": [],
+  "hauteurs": [
+   0,
+   900,
+   892
+  ],
+  "bandesPendant": [],
+  "bandesApres": "249,324",
+  "regionsPendant": {},
+  "regionsApres": {},
+  "hauteurPendantSquelette": [],
+  "hauteurPendant": 900,
+  "hauteurApres": 892,
+  "decalageCumule": 0,
+  "decalages": [],
+  "erreurs": [
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ]
+ }
+}

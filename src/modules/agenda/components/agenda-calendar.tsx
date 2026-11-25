@@ -10,6 +10,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { APPOINTMENT_TYPE_META, APPOINTMENT_STATUS_META, getAppointmentTypeMeta } from "@/config/status-meta";
 import { useNowTick } from "@/hooks/useNowTick";
 import { cn } from "@/lib/utils";
+import { SkeletonRegion } from "@/components/ui/loading-skeleton";
 import type { Appointment } from "@/types/db";
 import { AgendaMonthCalendar } from "@/modules/agenda/components/agenda-month-calendar";
 import { clock, fitHourPx, layoutDayEvents, layoutTimeGrid, visibleHours, type GridBlock } from "@/modules/agenda/model/agenda-layout";
@@ -321,7 +322,12 @@ export function AgendaCalendar({
   selectedAppointmentId,
   onSelectAppointment,
   onCreateAt,
+  loading = false,
+  loadingRevealed = true,
 }: {
+  /** The appointments are still being read (first read only): the grid holds the place it took last time, in the sheen. */
+  loading?: boolean;
+  loadingRevealed?: boolean;
   view: CalendarView;
   onViewChange: (view: CalendarView) => void;
   selectedDate: Date;
@@ -384,6 +390,14 @@ export function AgendaCalendar({
 
       <AgendaLegend />
 
+      <SkeletonRegion
+        busy={loading}
+        className="min-w-0"
+        fallbackHeight={view === "month" ? 560 : 620}
+        label="Chargement des rendez-vous"
+        memoryKey={`agenda-calendar:${view}`}
+        revealed={loadingRevealed}
+      >
       {view === "month" ? (
         <AgendaMonthCalendar
           getAppointmentsForDate={getAppointmentsForDate}
@@ -409,6 +423,7 @@ export function AgendaCalendar({
           view={view}
         />
       )}
+      </SkeletonRegion>
     </section>
   );
 }

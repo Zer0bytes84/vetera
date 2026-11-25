@@ -44,6 +44,8 @@ import {
   useTasksRepository,
 } from "@/data/repositories";
 import { cn } from "@/lib/utils";
+import { SkeletonRegion, SkeletonShape } from "@/components/ui/loading-skeleton";
+import { useDelayedSkeleton } from "@/hooks/useDelayedSkeleton";
 import type { Appointment, Patient, Reminder, Task } from "@/types/db";
 import "./tasks.css";
 import { buildReminderQuiet, type ReminderQuiet } from "./reminder-quiet";
@@ -241,6 +243,9 @@ const Tasks: React.FC = () => {
     patientRemindersModel.loading ||
     appointmentsLoading ||
     patientsLoading;
+  // The list, its tab counts and the quiet panel wait for the same sources as the band (first read only), in place.
+  const listSkeleton = useDelayedSkeleton(bandLoading);
+  const listReading = bandLoading || listSkeleton;
   const [activeView, setActiveView] = useState<ReminderView>("today");
   const [sourceFilter, setSourceFilter] = useState<ReminderSource>(() => {
     if (
@@ -1062,7 +1067,13 @@ const Tasks: React.FC = () => {
               {tabs.map((tab) => (
                 <TabsTrigger key={tab.id} value={tab.id}>
                   {tab.label}
-                  <span className="tabular-nums">{tab.count}</span>
+                  {listReading ? (
+                    <span className={cn("loading-skeleton", !listSkeleton && "invisible")}>
+                      <SkeletonShape className="loading-skeleton-inline loading-skeleton-inline-dot" />
+                    </span>
+                  ) : (
+                    <span className="tabular-nums">{tab.count}</span>
+                  )}
                 </TabsTrigger>
               ))}
               <TabsTrigger value="calls">Rappels du jour</TabsTrigger>
@@ -1098,6 +1109,14 @@ const Tasks: React.FC = () => {
           </div>
         </div>
 
+        <SkeletonRegion
+          busy={listReading && !auxiliaryView}
+          className="space-y-4"
+          fallbackHeight={140}
+          label="Chargement des rappels"
+          memoryKey={`reminders:${auxiliaryView ?? activeView}:${sourceFilter}`}
+          revealed={listSkeleton}
+        >
         {!auxiliaryView && activeView === "today" && sourceFilter === "all" ? (
           <AppointmentRelances
             appointments={appointments}
@@ -1219,6 +1238,7 @@ const Tasks: React.FC = () => {
             )}
           </div>
         )}
+        </SkeletonRegion>
       </section>
       {selectedTasks.length > 0 && !auxiliaryView && (
         <div

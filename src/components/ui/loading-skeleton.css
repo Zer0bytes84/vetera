@@ -36,3 +36,15 @@
 .loading-skeleton-card-row { display: flex; min-height: 38px; align-items: center; }
 .loading-skeleton-card-value { width: 52%; height: 26px; border-radius: 8px; }
 .loading-skeleton-card-chip { width: 64px; height: 22px; }
+
+/* Lists and tables (25 November 2026): a line of text becomes a bar of its x-height, a count beside a title an inline bar. */
+.loading-skeleton-inline { display: inline-block; width: 72px; height: 8px; vertical-align: middle; }
+.loading-skeleton-inline-short { width: 32px; }
+.loading-skeleton-cell { width: 58%; max-width: 160px; height: 8px; }
+.loading-skeleton-cell-lead { width: 72%; max-width: 200px; }
+.loading-skeleton-cell-short { width: 40%; max-width: 64px; margin-left: auto; }
+.loading-skeleton-avatar-lg { width: 40px; height: 40px; flex: none; }
+/* A region being read: the place it took last time, a panel of rows of the sheen, cut where the region ends. */
+.loading-skeleton-region { display: flex; flex-direction: column; gap: 0; overflow: hidden; border-radius: var(--radius-panel); background: var(--card-inset); padding: 8px 16px; }
+.loading-skeleton-region-row { display: flex; min-height: 64px; flex: none; align-items: center; gap: 12px; }
+.loading-skeleton-inline-dot { width: 10px; }

@@ -1,0 +1,92 @@
+{
+ "fiche-patient (light)": {
+  "contenuStableA": 3939,
+  "roue": "843–1075 ms (13 images)",
+  "squelette": "1090–3789 ms (86 images)",
+  "refletVisible": "1254–3789 ms (76 images)",
+  "etatsFauxPendant": [
+   "Chargement de Baitari",
+   "Chargement du module...",
+   "Chargement des chiffres clés du dossier"
+  ],
+  "etatsFinaux": [
+   "Aucun rendez-vous prévu aujourd’hui",
+   "Aucune pesée",
+   "Aucun traitement en cours.",
+   "Aucun rappel prévu.",
+   "Aucune pesée : onglet Poids",
+   "Aucun vaccin : onglet Vaccinations"
+  ],
+  "hauteurs": [
+   0,
+   900,
+   892,
+   1717
+  ],
+  "bandesPendant": [
+   ""
+  ],
+  "bandesApres": "278,694,508",
+  "regionsPendant": {
+   "patient-record": [
+    1596.5
+   ]
+  },
+  "regionsApres": {
+   "patient-record": 1596.6
+  },
+  "hauteurPendantSquelette": [
+   1717
+  ],
+  "hauteurPendant": 0,
+  "hauteurApres": 1717,
+  "decalageCumule": 0,
+  "decalages": [],
+  "erreurs": []
+ },
+ "fiche-patient (dark)": {
+  "contenuStableA": 4084,
+  "roue": "741–1013 ms (14 images)",
+  "squelette": "1031–3950 ms (89 images)",
+  "refletVisible": "1187–3950 ms (80 images)",
+  "etatsFauxPendant": [
+   "Chargement de Baitari",
+   "Chargement du module...",
+   "Chargement des chiffres clés du dossier"
+  ],
+  "etatsFinaux": [
+   "Aucun rendez-vous prévu aujourd’hui",
+   "Aucune pesée",
+   "Aucun traitement en cours.",
+   "Aucun rappel prévu.",
+   "Aucune pesée : onglet Poids",
+   "Aucun vaccin : onglet Vaccinations"
+  ],
+  "hauteurs": [
+   0,
+   900,
+   892,
+   1717
+  ],
+  "bandesPendant": [
+   ""
+  ],
+  "bandesApres": "278,694,508",
+  "regionsPendant": {
+   "patient-record": [
+    1596.5
+   ]
+  },
+  "regionsApres": {
+   "patient-record": 1596.6
+  },
+  "hauteurPendantSquelette": [
+   1717
+  ],
+  "hauteurPendant": 0,
+  "hauteurApres": 1717,
+  "decalageCumule": 0,
+  "decalages": [],
+  "erreurs": []
+ }
+}

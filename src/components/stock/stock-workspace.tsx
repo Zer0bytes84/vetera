@@ -16,7 +16,7 @@ import {
   MoreHorizontal,
   RefreshCw,
 } from "@/lib/icons";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { usePage } from "@/hooks/use-page";
 import {
   DataTable,
@@ -76,6 +76,9 @@ import {
   unitCount,
 } from "@/domain/stock-alerts";
 import { useListCursor } from "@/hooks/useListCursor";
+import { useDelayedSkeleton } from "@/hooks/useDelayedSkeleton";
+import { rememberRows, useRememberedRows } from "@/hooks/useRememberedRows";
+import { SkeletonShape } from "@/components/ui/loading-skeleton";
 import { EmptyMascot } from "@/components/mascot/empty-mascot";
 import {
   Empty,
@@ -192,8 +195,12 @@ function CatalogueTable({
   onEdit,
   onDelete,
   listRef,
+  loading = false,
+  loadingRevealed = true,
 }: {
   products: Product[];
+  loading?: boolean;
+  loadingRevealed?: boolean;
   filters: React.ReactNode;
   toolbar?: React.ReactNode;
   onOpen: (product: Product) => void;
@@ -367,6 +374,9 @@ function CatalogueTable({
       filters={filters}
       toolbar={toolbar}
       icon={CubeIcon}
+      loading={loading}
+      loadingLabel="Chargement du catalogue"
+      loadingRevealed={loadingRevealed}
       noun={["référence", "références"]}
       onRowClick={(row) => onOpen(byId.get(row.id)!)}
       pageSize={PAGE_SIZE}
@@ -375,6 +385,8 @@ function CatalogueTable({
         ...({ "data-list-row": "", "data-row-id": row.id } as object),
       })}
       searchPlaceholder="Nom, catégorie, usage"
+      skeletonFallback={{ rows: 5, rowHeight: 64 }}
+      skeletonKey="stock-catalogue"
       title="Catalogue"
     />
   );
@@ -698,7 +710,17 @@ export function StockWorkspace({
       <TabsTrigger value="operations">Opérations</TabsTrigger>
     </TabsList>
   );
-  const catalogueInShell = loading || view === "cards";
+  const catalogueInShell = view === "cards";
+  // First read: the catalogue and its expiry lines hold their place (revealed after 150 ms, kept 300 ms).
+  const listSkeleton = useDelayedSkeleton(loading);
+  const reading = loading || listSkeleton;
+  const showExpiries =
+    expiries.length > 0 && status !== "expiring" && status !== "expired";
+  const { reserved: expirySlots, measure: measureExpiries } = useRememberedRows<HTMLUListElement>("stock-expiries", { rows: 0, rowHeight: 41 });
+  const { reserved: cardSlots, measure: measureCards } = useRememberedRows<HTMLDivElement>("stock-cards", { rows: 6, rowHeight: 130 }, "grid");
+  useEffect(() => {
+    if (!reading && !showExpiries && status === "all") rememberRows("stock-expiries", { rows: 0, rowHeight: 41 });
+  }, [reading, showExpiries, status]);
 
   return (
     <div className="space-y-4">
@@ -805,12 +827,24 @@ export function StockWorkspace({
             )}
 
             <CardContent className="p-0">
-              {!loading &&
-                expiries.length > 0 &&
-                status !== "expiring" &&
-                status !== "expired" && (
+              {reading && expirySlots.rows > 0 && (
+                <div
+                  aria-hidden="true"
+                  className={cn("loading-skeleton mb-3 overflow-hidden rounded-2xl bg-amber-50/60 dark:bg-amber-500/[0.06]", !listSkeleton && "invisible")}
+                  data-skeleton-region="stock-expiries"
+                >
+                  {Array.from({ length: expirySlots.rows }, (_, i) => (
+                    <div className="flex items-center px-5" key={i} style={{ height: expirySlots.rowHeight }}>
+                      <SkeletonShape className="loading-skeleton-cell loading-skeleton-cell-lead" />
+                    </div>
+                  ))}
+                </div>
+              )}
+              {!reading && showExpiries && (
                   <ul
                     aria-label="Péremptions proches"
+                    data-skeleton-region="stock-expiries"
+                    ref={measureExpiries}
                     className="mb-3 divide-y overflow-hidden rounded-2xl bg-amber-50/60 text-sm dark:bg-amber-500/[0.06] [&>li]:flex [&>li]:items-center [&>li]:gap-3 [&>li]:px-5 [&>li]:py-2 [&>li]:text-amber-900 dark:[&>li]:text-amber-200 [&>li[data-expired]]:bg-rose-50/70 [&>li[data-expired]]:text-rose-800 dark:[&>li[data-expired]]:bg-rose-500/[0.08] dark:[&>li[data-expired]]:text-rose-200"
                   >
                     {expiries.slice(0, 3).map((product) => (
@@ -868,9 +902,19 @@ export function StockWorkspace({
                     )}
                   </ul>
                 )}
-              {loading ? (
-                <div className="p-12 text-center text-muted-foreground">
-                  Chargement du catalogue…
+              {reading && view === "cards" ? (
+                <div
+                  aria-busy="true"
+                  aria-label="Chargement du catalogue"
+                  className={cn("loading-skeleton grid gap-3 p-4 sm:grid-cols-2 xl:grid-cols-3", !listSkeleton && "invisible")}
+                  role="status"
+                >
+                  {Array.from({ length: Math.max(1, cardSlots.rows) }, (_, i) => (
+                    <div className="flex flex-col justify-between rounded-2xl border p-4" key={i} style={{ height: cardSlots.rowHeight }}>
+                      <SkeletonShape className="loading-skeleton-cell loading-skeleton-cell-lead" />
+                      <SkeletonShape className="loading-skeleton-cell" />
+                    </div>
+                  ))}
                 </div>
               ) : view === "cards" && visibleProducts.length === 0 ? (
                 <Empty className="min-h-56 border-0 bg-transparent py-10">
@@ -885,6 +929,8 @@ export function StockWorkspace({
               ) : view === "table" ? (
                 <div className="p-1">
                   <CatalogueTable
+                    loading={reading}
+                    loadingRevealed={listSkeleton}
                     filters={filterControls}
                     toolbar={tabButtons}
                     listRef={listRef}
@@ -897,7 +943,7 @@ export function StockWorkspace({
                   />
                 </div>
               ) : (
-                <div className="grid gap-3 p-4 sm:grid-cols-2 xl:grid-cols-3">
+                <div className="grid gap-3 p-4 sm:grid-cols-2 xl:grid-cols-3" ref={measureCards}>
                   {visibleProducts.map((product) => (
                     <button
                       className="rounded-2xl border bg-card p-4 text-left transition hover:-translate-y-0.5 hover:shadow-md"

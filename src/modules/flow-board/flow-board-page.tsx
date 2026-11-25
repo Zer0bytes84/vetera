@@ -43,6 +43,8 @@ import { useFlowBoard } from "./use-flow-board";
 import { WalkInDialog } from "./walk-in-dialog";
 import { QuietDayPanel } from "./quiet-day-panel";
 import { prepareAppointment } from "@/modules/shell/model/clinical-actions";
+import { SkeletonRegion, SkeletonShape } from "@/components/ui/loading-skeleton";
+import { useDelayedSkeleton } from "@/hooks/useDelayedSkeleton";
 import "./flow-board.css";
 
 const PREFS_KEY = "baitari.flow-board.v1";
@@ -307,11 +309,14 @@ function Lane({
   cards,
   children,
   lane,
+  reading = false,
   warning,
 }: {
   cards: FlowCard[];
   children: ReactNode;
   lane: Exclude<BoardLane, typeof PLANNED>;
+  /** The day's visits are still being read: no count, no « empty » line yet, the sheen in their place. */
+  reading?: boolean;
   warning?: string | null;
 }) {
   const { setNodeRef, isOver } = useDroppable({ id: lane });
@@ -319,12 +324,20 @@ function Lane({
     <section aria-label={`${VISIT_FLOW_STAGE_LABELS[lane]}, ${cards.length}`} className={cn("flow-lane", isOver && "is-over")} ref={setNodeRef}>
       <header className="flow-lane-head">
         <h2>{VISIT_FLOW_STAGE_LABELS[lane]}</h2>
-        <span className="flow-count" aria-hidden>
-          {cards.length}
+        <span className={cn("flow-count", reading && "flow-count-reading")} aria-hidden>
+          {reading ? <SkeletonShape className="loading-skeleton-inline loading-skeleton-inline-dot" /> : cards.length}
         </span>
       </header>
       {warning && <p className="flow-lane-warning">{warning}</p>}
-      {cards.length === 0 ? <p className="flow-lane-empty">{EMPTY_LABEL[lane]}</p> : <ul className="flow-lane-list">{children}</ul>}
+      {reading ? (
+        <p className="flow-lane-empty">
+          <SkeletonShape className="loading-skeleton-inline" />
+        </p>
+      ) : cards.length === 0 ? (
+        <p className="flow-lane-empty">{EMPTY_LABEL[lane]}</p>
+      ) : (
+        <ul className="flow-lane-list">{children}</ul>
+      )}
     </section>
   );
 }
@@ -554,6 +567,10 @@ export function FlowBoardPage({
   const inCare = board.lanes.consultation.length + board.lanes.care.length;
   // A day with no visit at all, nothing left open and no search: the strip above the lanes says what is next instead.
   const quietDay = !loading && !error && !query && total === 0 && board.leftOpen.length === 0;
+  // First read of the day's visits: the lanes keep their place with the sheen for count and line, the strip above holds
+  // the height it had last time (revealed after 150 ms, kept 300 ms: no flash on a fast read).
+  const boardSkeleton = useDelayedSkeleton(loading);
+  const boardReading = loading || boardSkeleton;
   const todayLabel = now.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" });
 
   const renderCards = (cards: FlowCard[], leftOpen = false) =>
@@ -655,6 +672,14 @@ export function FlowBoardPage({
 
         <DndContext onDragCancel={() => setDragging(null)} onDragEnd={onDragEnd} onDragStart={onDragStart} sensors={sensors}>
           <div className="flow-board" onKeyDown={onKeyDown}>
+            <SkeletonRegion
+              busy={boardReading}
+              className="flex flex-col gap-3 empty:hidden"
+              fallbackHeight={120}
+              label="Chargement des visites du jour"
+              memoryKey="flow-top"
+              revealed={boardSkeleton}
+            >
             {quietDay && (
               <QuietDayPanel
                 appointments={appointments}
@@ -674,12 +699,14 @@ export function FlowBoardPage({
             )}
             <PlannedStrip cards={board.lanes[PLANNED]}>{renderCards(board.lanes[PLANNED])}</PlannedStrip>
             <LeftOpen cards={board.leftOpen}>{renderCards(board.leftOpen, true)}</LeftOpen>
-            <div className="flow-lanes">
+            </SkeletonRegion>
+            <div className={cn("flow-lanes", boardReading && "loading-skeleton")} aria-busy={boardReading || undefined}>
               {VISIT_FLOW_STAGES.map((stage) => (
                 <Lane
                   cards={board.lanes[stage]}
                   key={stage}
                   lane={stage}
+                  reading={boardReading}
                 >
                   {renderCards(board.lanes[stage])}
                 </Lane>
