@@ -3,17 +3,13 @@ import { lazy, Suspense, useEffect, useState } from "react";
 
 import { requireActivationOwner } from "@/services/adminAccess";
 import { useAuth } from "@/contexts/AuthContext";
-import { appSettingsRepository } from "@/data/repositories";
+import * as AppSettingsService from "@/services/appSettingsService";
 import i18n, { isRtlLanguage } from "@/i18n/config";
 import { acceptLicenseActivation } from "@/services/licenseRuntime";
 import { LicenseGate } from "@/components/LicenseGate";
 import { StartupSplash } from "@/components/startup-splash";
-import { checkAutoBackup, getAppVersion } from "@/services/backupService";
+import { version as APPLICATION_VERSION } from "../package.json";
 import { isTauriRuntime } from "@/services/browser-store";
-import {
-  purgeDemoDataInTauriIfNeeded,
-  seedDemoDataIfNeeded,
-} from "@/services/demo-data";
 import { markVersionSeen } from "@/modules/release-notes/release-seen";
 import { createInitialAdmin } from "@/services/sqlite/auth";
 import { startAppUpdateCheck } from "@/services/updateService";
@@ -21,6 +17,10 @@ import { isActivationAdminRoute } from "@/services/activationAdminWindowService"
 
 import { AIModelInstallPrompt } from "@/modules/consultations/components/ai-model-install-prompt";
 import { guard } from "@/lib/guard";
+
+// Loaded only when used, so they stay out of the startup bundle (check:startup).
+const loadDemoData = () => import("@/services/demo-data");
+const loadBackupService = () => import("@/services/backupService");
 
 const AppShell = lazy(async () => {
   const module = await import("@/modules/shell/app-shell");
@@ -89,7 +89,7 @@ function MainApp() {
     const checkSetup = async () => {
       await guard(async () => {
         const setupDone = await withTimeout(
-          appSettingsRepository.isSetupComplete(),
+          AppSettingsService.isSetupComplete(),
           SETUP_CHECK_TIMEOUT_MS,
           "La base locale met trop de temps à répondre."
         );
@@ -119,7 +119,11 @@ function MainApp() {
 
     const purgeTimer = isTauriRuntime()
       ? window.setTimeout(() => {
-          purgeDemoDataInTauriIfNeeded().catch((error) => {
+          loadDemoData()
+            .then(({ purgeDemoDataInTauriIfNeeded }) =>
+              purgeDemoDataInTauriIfNeeded()
+            )
+            .catch((error) => {
             if (!isDatabaseLockedError(error)) {
               console.error("[App] Demo data purge failed:", error);
             }
@@ -129,7 +133,9 @@ function MainApp() {
 
     const maintenanceDelay = isTauriRuntime() ? 10_000 : 3000;
     const maintenanceTimer = window.setTimeout(() => {
-      checkAutoBackup().catch((error) => {
+      loadBackupService()
+        .then(({ checkAutoBackup }) => checkAutoBackup())
+        .catch((error) => {
         console.error("[App] Auto-backup check failed:", error);
       });
 
@@ -153,7 +159,11 @@ function MainApp() {
       return;
     }
 
-    seedDemoDataIfNeeded(currentUser ?? null).catch((error) => {
+    loadDemoData()
+      .then(({ seedDemoDataIfNeeded }) =>
+        seedDemoDataIfNeeded(currentUser ?? null)
+      )
+      .catch((error) => {
       console.error("[App] Demo seed failed:", error);
     });
   }, [currentUser]);
@@ -182,9 +192,9 @@ function MainApp() {
       password: userData.password,
       displayName: userData.name,
     });
-    await appSettingsRepository.markSetupComplete();
+    await AppSettingsService.markSetupComplete();
     // Une installation neuve n'a rien « de neuf » à lire : on retient la version tout de suite.
-    markVersionSeen(getAppVersion());
+    markVersionSeen(APPLICATION_VERSION);
     await login(userData.email, userData.password);
     setNeedsSetup(false);
   };
