@@ -5,15 +5,15 @@ import {
   runDbTransaction,
 } from "@/services/sqlite/database";
 import type { Product } from "@/types/db";
-import { hasStockLots } from "./lot-consumption-store";
 import {
   inventorySnapshotInDatabase,
   saveCatalogueProductInDatabase,
 } from "./inventory-store";
+import { hasStockLots } from "./lot-consumption-store";
 import {
   countStockBucketInDatabase,
-  registerLotInDatabase,
   type LotRegistrationInput,
+  registerLotInDatabase,
 } from "./lot-store";
 
 export function announceInventoryChanged() {

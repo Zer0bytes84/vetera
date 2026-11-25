@@ -1,4 +1,3 @@
-import { PlanCareTasks } from "@/modules/care-tasks/plan-care-tasks";
 import {
   lazy,
   Suspense,
@@ -10,17 +9,6 @@ import {
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import {
-  CheckCircle,
-  CircleNotch,
-  FloppyDisk,
-  FileText,
-  Notebook,
-  Trash,
-  XCircle,
-} from "@/lib/icons";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -30,32 +18,44 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Shell, ShellHeader } from "@/components/ui/surface";
 import { useAuth } from "@/contexts/AuthContext";
 import { useConsultationSoapsRepository } from "@/data/repositories";
+import {
+  CheckCircle,
+  CircleNotch,
+  FileText,
+  FloppyDisk,
+  Notebook,
+  Trash,
+  XCircle,
+} from "@/lib/icons";
 import { cn } from "@/lib/utils";
+import { PlanCareTasks } from "@/modules/care-tasks/plan-care-tasks";
+import { meaningful } from "@/modules/patients/lib/meaningful";
 import {
   EMPTY_SOAP,
-  SOAP_SECTIONS,
   type LocalSoapNote,
+  SOAP_SECTIONS,
 } from "../local-ai/soap-schema";
-import { SoapSectionEditor } from "./soap-section-editor";
 import {
   hasNote,
   isSoapAutosaveDue,
   isSoapUnsaved,
-  samePayload,
   type Payload,
   type SaveStatus,
+  samePayload,
 } from "../soap-panel-state";
 import { AssistantBrandAvatar } from "./assistant-brand-avatar";
-import { meaningful } from "@/modules/patients/lib/meaningful";
-import { Shell, ShellHeader } from "@/components/ui/surface";
+import { SoapSectionEditor } from "./soap-section-editor";
 import "./soap-surface.css";
-import { ConsultationAssistantPanel } from "./consultation-assistant-panel";
-import { isSoapReviewed, reviewedSoapContent } from "../local-ai/soap-review";
-import { OPEN_SOAP_ASSISTANT_EVENT } from "@/modules/consultation-workspace/consultation-closure";
-import type { SoapNoteOrigin } from "./local-consultation-assistant";
 import { guard } from "@/lib/guard";
+import { OPEN_SOAP_ASSISTANT_EVENT } from "@/modules/consultation-workspace/consultation-closure";
+import { isSoapReviewed, reviewedSoapContent } from "../local-ai/soap-review";
+import { ConsultationAssistantPanel } from "./consultation-assistant-panel";
+import type { SoapNoteOrigin } from "./local-consultation-assistant";
 
 const ConsultationDocumentsAssistant = lazy(
   () =>

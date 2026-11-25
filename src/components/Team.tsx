@@ -1,17 +1,3 @@
-import { ListSearch } from "@/components/ui/list-controls";
-import { MagnifyingGlassIcon, UsersIcon } from "@heroicons/react/20/solid";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { InitialsAvatar } from "@/design-system/patterns/initials-avatar";
-import {
-  formatNumber,
-  formatPersonName,
-  formatPhone,
-} from "@/utils/display-format";
 import {
   AcademicCapIcon,
   BriefcaseIcon,
@@ -27,6 +13,7 @@ import {
   TrashIcon,
   XMarkIcon,
 } from "@heroicons/react/16/solid";
+import { MagnifyingGlassIcon, UsersIcon } from "@heroicons/react/20/solid";
 import type React from "react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -45,7 +32,12 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
-import { Shell, ShellHeader } from "@/components/ui/surface";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import {
   FormDialogBody,
@@ -54,20 +46,28 @@ import {
   FormDialogHeader,
 } from "@/components/ui/form-dialog";
 import { Input } from "@/components/ui/input";
+import { ListSearch } from "@/components/ui/list-controls";
 import {
   NativeSelect,
   NativeSelectOption,
 } from "@/components/ui/native-select";
 import { Spinner } from "@/components/ui/spinner";
+import { Shell, ShellHeader } from "@/components/ui/surface";
 import { TEAM_STATUS_META } from "@/config/status-meta";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUsersRepository } from "@/data/repositories";
+import { InitialsAvatar } from "@/design-system/patterns/initials-avatar";
+import { guard } from "@/lib/guard";
 import { cn } from "@/lib/utils";
 import { hashPassword, updatePassword } from "@/services/sqlite/auth";
 import type { User, UserRole } from "@/types/db";
+import {
+  formatNumber,
+  formatPersonName,
+  formatPhone,
+} from "@/utils/display-format";
 import Avatar from "./Avatar";
 import { readTeam } from "./team-reading";
-import { guard } from "@/lib/guard";
 
 const ROLE_CONFIG: Record<
   UserRole | string,

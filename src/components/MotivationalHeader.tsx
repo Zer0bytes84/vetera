@@ -1,15 +1,15 @@
-import { DashboardSquareEditIcon } from "@/lib/hugeicons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Stethoscope } from "lucide-react";
 import React from "react";
+import { DashboardSquareEditIcon } from "@/lib/hugeicons";
 import "./dashboard-greeting.css";
-import { ShortcutTooltip } from "@/design-system/patterns/shortcut-tooltip";
-import { prepareAppointment } from "@/modules/shell/model/clinical-actions";
 import { useTranslation } from "react-i18next";
+import { PageDate } from "@/components/PageDate";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
-import { PageDate } from "@/components/PageDate";
 import { PageHeader } from "@/design-system/patterns/page-header";
+import { ShortcutTooltip } from "@/design-system/patterns/shortcut-tooltip";
+import { prepareAppointment } from "@/modules/shell/model/clinical-actions";
 
 interface MotivationalHeaderProps {
   dashboardViewControl?: React.ReactNode;

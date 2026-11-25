@@ -1,18 +1,6 @@
 import { BedDouble, Building2, FileText } from "lucide-react";
-import { ErrorState } from "@/design-system/patterns/error-state";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { Field, FieldLabel } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import { Segmented } from "@/components/ui/segmented-control";
-import { Textarea } from "@/components/ui/textarea";
-import { Spinner } from "@/components/ui/spinner";
-import { Switch } from "@/components/ui/switch";
-import {
-  saveHospitalizationEnabled,
-  useHospitalizationEnabled,
-} from "@/modules/clinique/clinic-services";
 import {
   SettingsBody,
   SettingsFooter,
@@ -20,18 +8,30 @@ import {
   SettingsSection,
   SettingsStack,
 } from "@/components/settings-section";
+import { Button } from "@/components/ui/button";
+import { Field, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { Segmented } from "@/components/ui/segmented-control";
+import { Spinner } from "@/components/ui/spinner";
+import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
+import { ErrorState } from "@/design-system/patterns/error-state";
+import { guard } from "@/lib/guard";
+import type { InvoicePdfData } from "@/lib/invoice-pdf";
+import { WHATSAPP_COUNTRY_CODE } from "@/lib/whatsapp";
+import {
+  saveHospitalizationEnabled,
+  useHospitalizationEnabled,
+} from "@/modules/clinique/clinic-services";
 import {
   DEFAULT_INVOICE_SETTINGS,
   getInvoiceSettings,
   INVOICE_ACCENTS,
+  type InvoiceSettings,
   prepareInvoiceLogo,
   saveInvoiceSettings,
-  type InvoiceSettings,
 } from "@/services/invoiceSettingsService";
 import { InvoicePdfPreview } from "./invoice-pdf-preview";
-import type { InvoicePdfData } from "@/lib/invoice-pdf";
-import { guard } from "@/lib/guard";
-import { WHATSAPP_COUNTRY_CODE } from "@/lib/whatsapp";
 
 const SAMPLE: InvoicePdfData = {
   number: "EXEMPLE-001",

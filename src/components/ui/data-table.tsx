@@ -3,18 +3,20 @@
 "use client";
 
 import {
+  Check,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
   ChevronUp,
-  Check,
   Copy,
   Download,
   SearchX,
   Table2,
 } from "lucide-react";
 import { AnimatePresence, MotionConfig, motion } from "motion/react";
-import { useMemo, useState, type ReactNode } from "react";
+import { type ReactNode, useMemo, useState } from "react";
+import { RollingNumber } from "@/components/ui/rolling-number";
+import { Panel, Shell, ShellHeader } from "@/components/ui/surface";
 import {
   EmptyState,
   IconButton,
@@ -22,8 +24,6 @@ import {
   SearchField,
   TuffCheckbox,
 } from "@/components/ui/tuff-controls";
-import { RollingNumber } from "@/components/ui/rolling-number";
-import { Panel, Shell, ShellHeader } from "@/components/ui/surface";
 import { enter, exit } from "@/lib/motion-tokens";
 import { cn } from "@/lib/utils";
 import "./data-table.css";

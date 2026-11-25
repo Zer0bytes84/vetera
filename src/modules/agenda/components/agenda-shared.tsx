@@ -1,13 +1,8 @@
-import { useRoomLabel } from "@/modules/rooms/use-rooms";
-import { StethoscopeIcon } from "@/lib/hugeicons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { ar, de, enUS, es, fr, pt } from "date-fns/locale";
-
 import { useState } from "react";
-
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-
 import {
   Empty,
   EmptyDescription,
@@ -15,16 +10,15 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
-
 import { Input } from "@/components/ui/input";
-
 import {
   APPOINTMENT_STATUS_META,
   getAppointmentTypeMeta,
 } from "@/config/status-meta";
-
 import i18n from "@/i18n/config";
+import { StethoscopeIcon } from "@/lib/hugeicons";
 import { cn } from "@/lib/utils";
+import { useRoomLabel } from "@/modules/rooms/use-rooms";
 
 import type {
   Appointment,

@@ -1,14 +1,9 @@
-import { ErrorState } from "@/design-system/patterns/error-state";
-import { useImperativeHandle, useRef, useState, type Ref } from "react";
-import { FileText, Search, Upload, BookOpen, Eye, X } from "lucide-react";
+import { BookOpen, Eye, FileText, Search, Upload, X } from "lucide-react";
+import { type Ref, useImperativeHandle, useRef, useState } from "react";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import {
-  NativeSelect,
-  NativeSelectOption,
-} from "@/components/ui/native-select";
+import { Button } from "@/components/ui/button";
+import { DatePicker } from "@/components/ui/date-picker";
 import {
   Dialog,
   DialogContent,
@@ -16,7 +11,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import {
+  NativeSelect,
+  NativeSelectOption,
+} from "@/components/ui/native-select";
 import { useAuth } from "@/contexts/AuthContext";
+import { ErrorState } from "@/design-system/patterns/error-state";
+import { guard } from "@/lib/guard";
 import {
   DOCUMENT_STATUS_LABELS,
   DOCUMENT_TYPES,
@@ -24,15 +26,13 @@ import {
 } from "../document-domain";
 import { documentsService } from "../document-service";
 import { usePatientDocuments } from "../hooks/use-managed-documents";
-import { preparePatientAttachment } from "../lib/patient-document-reading";
 import {
-  filterPatientDocuments,
   type DocumentFilters,
+  filterPatientDocuments,
 } from "../lib/filter-patient-documents";
+import { preparePatientAttachment } from "../lib/patient-document-reading";
 import ConsultationDocumentsAssistant from "./consultation-documents-assistant";
 import { DocumentPreviewDialog } from "./document-preview-dialog";
-import { DatePicker } from "@/components/ui/date-picker";
-import { guard } from "@/lib/guard";
 
 function dateLabel(value: string) {
   const date = new Date(value);

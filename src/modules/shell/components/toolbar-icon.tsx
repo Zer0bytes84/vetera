@@ -1,9 +1,9 @@
-import type { SVGProps } from "react";
-import { HugeiconsIcon } from "@hugeicons/react";
 import AiMagicIcon from "@hugeicons/core-free-icons/AiMagicIcon";
-import Notification03Icon from "@hugeicons/core-free-icons/Notification03Icon";
 import FilterHorizontalIcon from "@hugeicons/core-free-icons/FilterHorizontalIcon";
-import { Search01Icon, Sun03Icon, Moon02Icon } from "@/lib/hugeicons";
+import Notification03Icon from "@hugeicons/core-free-icons/Notification03Icon";
+import { HugeiconsIcon } from "@hugeicons/react";
+import type { SVGProps } from "react";
+import { Moon02Icon, Search01Icon, Sun03Icon } from "@/lib/hugeicons";
 
 type ToolbarIconName =
   | "search"

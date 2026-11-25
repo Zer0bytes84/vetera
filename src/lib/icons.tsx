@@ -1,153 +1,154 @@
 // One 1.5px Hugeicons family. These semantic component aliases let feature
 // views keep their public prop contracts while removing the old icon runtimes.
-import {
-  forwardRef,
-  type ForwardRefExoticComponent,
-  type RefAttributes,
-} from "react";
-import {
-  HugeiconsIcon,
-  type HugeiconsProps,
-  type IconSvgElement,
-} from "@hugeicons/react";
-import {
-  CatGlyph,
-  DogGlyph,
-  RabbitGlyph,
-  TurtleGlyph,
-  PawPrintGlyph,
-} from "./species-icons";
+
 import Activity01IconGlyph from "@hugeicons/core-free-icons/Activity01Icon";
+import Add01IconGlyph from "@hugeicons/core-free-icons/Add01Icon";
 import AlarmClockIconGlyph from "@hugeicons/core-free-icons/AlarmClockIcon";
-import InformationCircleIconGlyph from "@hugeicons/core-free-icons/InformationCircleIcon";
 import Alert02IconGlyph from "@hugeicons/core-free-icons/Alert02Icon";
+import AlertDiamondIconGlyph from "@hugeicons/core-free-icons/AlertDiamondIcon";
 import Archive02IconGlyph from "@hugeicons/core-free-icons/Archive02Icon";
+import ArrowDown01IconGlyph from "@hugeicons/core-free-icons/ArrowDown01Icon";
 import ArrowDown02IconGlyph from "@hugeicons/core-free-icons/ArrowDown02Icon";
-import ArrowLeft02IconGlyph from "@hugeicons/core-free-icons/ArrowLeft02Icon";
-import ArrowRight02IconGlyph from "@hugeicons/core-free-icons/ArrowRight02Icon";
-import ArrowUp02IconGlyph from "@hugeicons/core-free-icons/ArrowUp02Icon";
 import ArrowDownRight01IconGlyph from "@hugeicons/core-free-icons/ArrowDownRight01Icon";
-import ArrowUpRight01IconGlyph from "@hugeicons/core-free-icons/ArrowUpRight01Icon";
-import Refresh01IconGlyph from "@hugeicons/core-free-icons/Refresh01Icon";
+import ArrowLeft01IconGlyph from "@hugeicons/core-free-icons/ArrowLeft01Icon";
+import ArrowLeft02IconGlyph from "@hugeicons/core-free-icons/ArrowLeft02Icon";
+import ArrowLeftDoubleIconGlyph from "@hugeicons/core-free-icons/ArrowLeftDoubleIcon";
+import ArrowRight01IconGlyph from "@hugeicons/core-free-icons/ArrowRight01Icon";
+import ArrowRight02IconGlyph from "@hugeicons/core-free-icons/ArrowRight02Icon";
+import ArrowRightDoubleIconGlyph from "@hugeicons/core-free-icons/ArrowRightDoubleIcon";
+import ArrowUp01IconGlyph from "@hugeicons/core-free-icons/ArrowUp01Icon";
+import ArrowUp02IconGlyph from "@hugeicons/core-free-icons/ArrowUp02Icon";
 import ArrowUpDownIconGlyph from "@hugeicons/core-free-icons/ArrowUpDownIcon";
-import UnavailableIconGlyph from "@hugeicons/core-free-icons/UnavailableIcon";
+import ArrowUpRight01IconGlyph from "@hugeicons/core-free-icons/ArrowUpRight01Icon";
+import Award01IconGlyph from "@hugeicons/core-free-icons/Award01Icon";
+import BalanceScaleIconGlyph from "@hugeicons/core-free-icons/BalanceScaleIcon";
 import BandageIconGlyph from "@hugeicons/core-free-icons/BandageIcon";
-import Notification01IconGlyph from "@hugeicons/core-free-icons/Notification01Icon";
+import BankIconGlyph from "@hugeicons/core-free-icons/BankIcon";
 import BirdIconGlyph from "@hugeicons/core-free-icons/BirdIcon";
 import BookOpen01IconGlyph from "@hugeicons/core-free-icons/BookOpen01Icon";
-import Package02IconGlyph from "@hugeicons/core-free-icons/Package02Icon";
 import Brain02IconGlyph from "@hugeicons/core-free-icons/Brain02Icon";
+import BubbleChatAddIconGlyph from "@hugeicons/core-free-icons/BubbleChatAddIcon";
+import BubbleChatIconGlyph from "@hugeicons/core-free-icons/BubbleChatIcon";
 import Calendar01IconGlyph from "@hugeicons/core-free-icons/Calendar01Icon";
-import CalendarCheckIn01IconGlyph from "@hugeicons/core-free-icons/CalendarCheckIn01Icon";
 import Calendar03IconGlyph from "@hugeicons/core-free-icons/Calendar03Icon";
 import CalendarAdd01IconGlyph from "@hugeicons/core-free-icons/CalendarAdd01Icon";
+import CalendarCheckIn01IconGlyph from "@hugeicons/core-free-icons/CalendarCheckIn01Icon";
 import CalendarRemove01IconGlyph from "@hugeicons/core-free-icons/CalendarRemove01Icon";
-import ChartUpIconGlyph from "@hugeicons/core-free-icons/ChartUpIcon";
+import Cancel01IconGlyph from "@hugeicons/core-free-icons/Cancel01Icon";
+import CancelCircleIconGlyph from "@hugeicons/core-free-icons/CancelCircleIcon";
+import ChartDownIconGlyph from "@hugeicons/core-free-icons/ChartDownIcon";
 import ChartNoAxesColumnIncreasingIconGlyph from "@hugeicons/core-free-icons/ChartNoAxesColumnIncreasingIcon";
-import BubbleChatIconGlyph from "@hugeicons/core-free-icons/BubbleChatIcon";
-import Tick01IconGlyph from "@hugeicons/core-free-icons/Tick01Icon";
-import CheckmarkCircle02IconGlyph from "@hugeicons/core-free-icons/CheckmarkCircle02Icon";
-import ArrowDown01IconGlyph from "@hugeicons/core-free-icons/ArrowDown01Icon";
-import ArrowLeft01IconGlyph from "@hugeicons/core-free-icons/ArrowLeft01Icon";
-import ArrowRight01IconGlyph from "@hugeicons/core-free-icons/ArrowRight01Icon";
-import ArrowUp01IconGlyph from "@hugeicons/core-free-icons/ArrowUp01Icon";
-import ArrowLeftDoubleIconGlyph from "@hugeicons/core-free-icons/ArrowLeftDoubleIcon";
-import ArrowRightDoubleIconGlyph from "@hugeicons/core-free-icons/ArrowRightDoubleIcon";
-import CircleIconGlyph from "@hugeicons/core-free-icons/CircleIcon";
-import DashedLineCircleIconGlyph from "@hugeicons/core-free-icons/DashedLineCircleIcon";
-import Loading03IconGlyph from "@hugeicons/core-free-icons/Loading03Icon";
-import ClipboardIconGlyph from "@hugeicons/core-free-icons/ClipboardIcon";
+import ChartUpIconGlyph from "@hugeicons/core-free-icons/ChartUpIcon";
 import CheckListIconGlyph from "@hugeicons/core-free-icons/CheckListIcon";
+import CheckmarkCircle02IconGlyph from "@hugeicons/core-free-icons/CheckmarkCircle02Icon";
+import CircleIconGlyph from "@hugeicons/core-free-icons/CircleIcon";
+import ClipboardIconGlyph from "@hugeicons/core-free-icons/ClipboardIcon";
 import Clock01IconGlyph from "@hugeicons/core-free-icons/Clock01Icon";
 import Coins01IconGlyph from "@hugeicons/core-free-icons/Coins01Icon";
-import LayoutTwoColumnIconGlyph from "@hugeicons/core-free-icons/LayoutTwoColumnIcon";
-import LayoutThreeColumnIconGlyph from "@hugeicons/core-free-icons/LayoutThreeColumnIcon";
-import IdentityCardIconGlyph from "@hugeicons/core-free-icons/IdentityCardIcon";
 import Copy01IconGlyph from "@hugeicons/core-free-icons/Copy01Icon";
+import DashboardSquare01IconGlyph from "@hugeicons/core-free-icons/DashboardSquare01Icon";
+import DashedLineCircleIconGlyph from "@hugeicons/core-free-icons/DashedLineCircleIcon";
 import DatabaseIconGlyph from "@hugeicons/core-free-icons/DatabaseIcon";
+import Delete02IconGlyph from "@hugeicons/core-free-icons/Delete02Icon";
 import DoorOpenIconGlyph from "@hugeicons/core-free-icons/DoorOpenIcon";
-import PencilEdit01IconGlyph from "@hugeicons/core-free-icons/PencilEdit01Icon";
-import MoreVerticalIconGlyph from "@hugeicons/core-free-icons/MoreVerticalIcon";
-import ViewIconGlyph from "@hugeicons/core-free-icons/ViewIcon";
-import ViewOffIconGlyph from "@hugeicons/core-free-icons/ViewOffIcon";
-import FileAddIconGlyph from "@hugeicons/core-free-icons/FileAddIcon";
+import DragDropVerticalIconGlyph from "@hugeicons/core-free-icons/DragDropVerticalIcon";
+import FastWindIconGlyph from "@hugeicons/core-free-icons/FastWindIcon";
 import File01IconGlyph from "@hugeicons/core-free-icons/File01Icon";
+import FileAddIconGlyph from "@hugeicons/core-free-icons/FileAddIcon";
+import FireIconGlyph from "@hugeicons/core-free-icons/FireIcon";
 import FirstAidKitIconGlyph from "@hugeicons/core-free-icons/FirstAidKitIcon";
 import FishSymbolIconGlyph from "@hugeicons/core-free-icons/FishSymbolIcon";
 import Flag01IconGlyph from "@hugeicons/core-free-icons/Flag01Icon";
-import FireIconGlyph from "@hugeicons/core-free-icons/FireIcon";
-import SaveIconGlyph from "@hugeicons/core-free-icons/SaveIcon";
 import Folder01IconGlyph from "@hugeicons/core-free-icons/Folder01Icon";
 import FolderOpenIconGlyph from "@hugeicons/core-free-icons/FolderOpenIcon";
-import DashboardSquare01IconGlyph from "@hugeicons/core-free-icons/DashboardSquare01Icon";
-import DragDropVerticalIconGlyph from "@hugeicons/core-free-icons/DragDropVerticalIcon";
 import HardDriveIconGlyph from "@hugeicons/core-free-icons/HardDriveIcon";
 import HashtagIconGlyph from "@hugeicons/core-free-icons/HashtagIcon";
 import Heading02IconGlyph from "@hugeicons/core-free-icons/Heading02Icon";
-import WorkHistoryIconGlyph from "@hugeicons/core-free-icons/WorkHistoryIcon";
 import HorseIconGlyph from "@hugeicons/core-free-icons/HorseIcon";
 import Hospital01IconGlyph from "@hugeicons/core-free-icons/Hospital01Icon";
-import Image01IconGlyph from "@hugeicons/core-free-icons/Image01Icon";
-import Key01IconGlyph from "@hugeicons/core-free-icons/Key01Icon";
-import BankIconGlyph from "@hugeicons/core-free-icons/BankIcon";
-import LaptopIconGlyph from "@hugeicons/core-free-icons/LaptopIcon";
 import Idea01IconGlyph from "@hugeicons/core-free-icons/Idea01Icon";
-import Menu01IconGlyph from "@hugeicons/core-free-icons/Menu01Icon";
+import IdentityCardIconGlyph from "@hugeicons/core-free-icons/IdentityCardIcon";
+import Image01IconGlyph from "@hugeicons/core-free-icons/Image01Icon";
+import InformationCircleIconGlyph from "@hugeicons/core-free-icons/InformationCircleIcon";
+import InjectionIconGlyph from "@hugeicons/core-free-icons/InjectionIcon";
+import Key01IconGlyph from "@hugeicons/core-free-icons/Key01Icon";
+import LaptopIconGlyph from "@hugeicons/core-free-icons/LaptopIcon";
+import LaptopPhoneSyncIconGlyph from "@hugeicons/core-free-icons/LaptopPhoneSyncIcon";
+import LayoutThreeColumnIconGlyph from "@hugeicons/core-free-icons/LayoutThreeColumnIcon";
+import LayoutThreeRowIconGlyph from "@hugeicons/core-free-icons/LayoutThreeRowIcon";
+import LayoutTwoColumnIconGlyph from "@hugeicons/core-free-icons/LayoutTwoColumnIcon";
+import Loading03IconGlyph from "@hugeicons/core-free-icons/Loading03Icon";
+import Location01IconGlyph from "@hugeicons/core-free-icons/Location01Icon";
 import Mail01IconGlyph from "@hugeicons/core-free-icons/Mail01Icon";
 import MailValidation01IconGlyph from "@hugeicons/core-free-icons/MailValidation01Icon";
-import Location01IconGlyph from "@hugeicons/core-free-icons/Location01Icon";
-import BubbleChatAddIconGlyph from "@hugeicons/core-free-icons/BubbleChatAddIcon";
+import Menu01IconGlyph from "@hugeicons/core-free-icons/Menu01Icon";
 import Mic01IconGlyph from "@hugeicons/core-free-icons/Mic01Icon";
 import MinusSignIconGlyph from "@hugeicons/core-free-icons/MinusSignIcon";
-import LaptopPhoneSyncIconGlyph from "@hugeicons/core-free-icons/LaptopPhoneSyncIcon";
 import MoreHorizontalIconGlyph from "@hugeicons/core-free-icons/MoreHorizontalIcon";
+import MoreVerticalIconGlyph from "@hugeicons/core-free-icons/MoreVerticalIcon";
 import NotebookIconGlyph from "@hugeicons/core-free-icons/NotebookIcon";
-import AlertDiamondIconGlyph from "@hugeicons/core-free-icons/AlertDiamondIcon";
+import Notification01IconGlyph from "@hugeicons/core-free-icons/Notification01Icon";
+import Package02IconGlyph from "@hugeicons/core-free-icons/Package02Icon";
 import PackageDeliveredIconGlyph from "@hugeicons/core-free-icons/PackageDeliveredIcon";
 import PackageOpenIconGlyph from "@hugeicons/core-free-icons/PackageOpenIcon";
-import TelephoneIconGlyph from "@hugeicons/core-free-icons/TelephoneIcon";
+import PencilEdit01IconGlyph from "@hugeicons/core-free-icons/PencilEdit01Icon";
 import PieChartIconGlyph from "@hugeicons/core-free-icons/PieChartIcon";
 import PillIconGlyph from "@hugeicons/core-free-icons/PillIcon";
 import PinIconGlyph from "@hugeicons/core-free-icons/PinIcon";
-import PlayIconGlyph from "@hugeicons/core-free-icons/PlayIcon";
 import PlayCircle02IconGlyph from "@hugeicons/core-free-icons/PlayCircle02Icon";
-import Add01IconGlyph from "@hugeicons/core-free-icons/Add01Icon";
+import PlayIconGlyph from "@hugeicons/core-free-icons/PlayIcon";
 import PrinterIconGlyph from "@hugeicons/core-free-icons/PrinterIcon";
 import ReceiptTextIconGlyph from "@hugeicons/core-free-icons/ReceiptTextIcon";
-import Undo02IconGlyph from "@hugeicons/core-free-icons/Undo02Icon";
-import LayoutThreeRowIconGlyph from "@hugeicons/core-free-icons/LayoutThreeRowIcon";
-import BalanceScaleIconGlyph from "@hugeicons/core-free-icons/BalanceScaleIcon";
+import Refresh01IconGlyph from "@hugeicons/core-free-icons/Refresh01Icon";
+import SaveIconGlyph from "@hugeicons/core-free-icons/SaveIcon";
 import Scissor01IconGlyph from "@hugeicons/core-free-icons/Scissor01Icon";
 import Search01IconGlyph from "@hugeicons/core-free-icons/Search01Icon";
+import SecurityCheckIconGlyph from "@hugeicons/core-free-icons/SecurityCheckIcon";
 import SentIconGlyph from "@hugeicons/core-free-icons/SentIcon";
 import ServerStack01IconGlyph from "@hugeicons/core-free-icons/ServerStack01Icon";
 import Settings02IconGlyph from "@hugeicons/core-free-icons/Settings02Icon";
 import Shield01IconGlyph from "@hugeicons/core-free-icons/Shield01Icon";
-import SecurityCheckIconGlyph from "@hugeicons/core-free-icons/SecurityCheckIcon";
 import Shield02IconGlyph from "@hugeicons/core-free-icons/Shield02Icon";
 import ShoppingCart01IconGlyph from "@hugeicons/core-free-icons/ShoppingCart01Icon";
 import SparklesIconGlyph from "@hugeicons/core-free-icons/SparklesIcon";
 import StarIconGlyph from "@hugeicons/core-free-icons/StarIcon";
 import StethoscopeIconGlyph from "@hugeicons/core-free-icons/StethoscopeIcon";
 import StopIconGlyph from "@hugeicons/core-free-icons/StopIcon";
-import InjectionIconGlyph from "@hugeicons/core-free-icons/InjectionIcon";
 import Table01IconGlyph from "@hugeicons/core-free-icons/Table01Icon";
+import TelephoneIconGlyph from "@hugeicons/core-free-icons/TelephoneIcon";
 import ThermometerIconGlyph from "@hugeicons/core-free-icons/ThermometerIcon";
+import Tick01IconGlyph from "@hugeicons/core-free-icons/Tick01Icon";
 import Timer01IconGlyph from "@hugeicons/core-free-icons/Timer01Icon";
-import Delete02IconGlyph from "@hugeicons/core-free-icons/Delete02Icon";
-import ChartDownIconGlyph from "@hugeicons/core-free-icons/ChartDownIcon";
-import Award01IconGlyph from "@hugeicons/core-free-icons/Award01Icon";
+import UnavailableIconGlyph from "@hugeicons/core-free-icons/UnavailableIcon";
+import Undo02IconGlyph from "@hugeicons/core-free-icons/Undo02Icon";
 import Upload01IconGlyph from "@hugeicons/core-free-icons/Upload01Icon";
 import User02IconGlyph from "@hugeicons/core-free-icons/User02Icon";
 import UserCircleIconGlyph from "@hugeicons/core-free-icons/UserCircleIcon";
-import UserSettings01IconGlyph from "@hugeicons/core-free-icons/UserSettings01Icon";
 import UserGroupIconGlyph from "@hugeicons/core-free-icons/UserGroupIcon";
+import UserSettings01IconGlyph from "@hugeicons/core-free-icons/UserSettings01Icon";
+import ViewIconGlyph from "@hugeicons/core-free-icons/ViewIcon";
+import ViewOffIconGlyph from "@hugeicons/core-free-icons/ViewOffIcon";
 import Wallet01IconGlyph from "@hugeicons/core-free-icons/Wallet01Icon";
-import FastWindIconGlyph from "@hugeicons/core-free-icons/FastWindIcon";
 import WorkflowSquare01IconGlyph from "@hugeicons/core-free-icons/WorkflowSquare01Icon";
-import Cancel01IconGlyph from "@hugeicons/core-free-icons/Cancel01Icon";
-import CancelCircleIconGlyph from "@hugeicons/core-free-icons/CancelCircleIcon";
+import WorkHistoryIconGlyph from "@hugeicons/core-free-icons/WorkHistoryIcon";
 import ZapIconGlyph from "@hugeicons/core-free-icons/ZapIcon";
+import {
+  HugeiconsIcon,
+  type HugeiconsProps,
+  type IconSvgElement,
+} from "@hugeicons/react";
+import {
+  type ForwardRefExoticComponent,
+  forwardRef,
+  type RefAttributes,
+} from "react";
+import {
+  CatGlyph,
+  DogGlyph,
+  PawPrintGlyph,
+  RabbitGlyph,
+  TurtleGlyph,
+} from "./species-icons";
 
 export type AppIconProps = Omit<
   HugeiconsProps,

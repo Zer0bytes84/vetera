@@ -1,33 +1,33 @@
-import { careErrorMessage } from "./feedback";
-import { CareTimePicker } from "./care-time-picker";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import {
   Command,
-  CommandInput,
-  CommandList,
   CommandEmpty,
+  CommandInput,
   CommandItem,
+  CommandList,
 } from "@/components/ui/command";
-import { ChevronDown } from "./care-icons";
 import { DatePicker } from "@/components/ui/date-picker";
+import { Input } from "@/components/ui/input";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   usePatientsRepository,
   useProductsRepository,
 } from "@/data/repositories";
-import { CARE_TYPES, type CareSuggestion, type CareType } from "./domain";
-import { careTasksService } from "./service";
-import { announceCareTasksChanged } from "./use-care-tasks";
-import { ProductStockFields } from "@/modules/stock/components/product-stock-fields";
 import { parseStockQuantityInput } from "@/domain/stock";
 import { guard } from "@/lib/guard";
+import { ProductStockFields } from "@/modules/stock/components/product-stock-fields";
+import { ChevronDown } from "./care-icons";
+import { CareTimePicker } from "./care-time-picker";
+import { CARE_TYPES, type CareSuggestion, type CareType } from "./domain";
+import { careErrorMessage } from "./feedback";
+import { careTasksService } from "./service";
+import { announceCareTasksChanged } from "./use-care-tasks";
 export const careTypeLabels: Record<CareType, string> = {
   medicament: "Médicament",
   perfusion: "Perfusion",

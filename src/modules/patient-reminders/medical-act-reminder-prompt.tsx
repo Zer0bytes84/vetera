@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
+import { guard } from "@/lib/guard";
 import type { CareCompletedEvent } from "@/modules/care-tasks/hooks";
 import { isTauriRuntime } from "@/services/browser-store";
 import { localToday, medicalReminderTypeForAct } from "./domain";
@@ -13,7 +14,6 @@ import { onMedicalActRecorded } from "./on-medical-act-recorded";
 import { patientRemindersService } from "./service";
 import type { MedicalAct, MedicalReminderProposal } from "./store";
 import { announcePatientRemindersChanged } from "./use-patient-reminders";
-import { guard } from "@/lib/guard";
 
 /** One local proposal queue shared by care and consultation entry points. */
 export function MedicalActReminderPrompt() {

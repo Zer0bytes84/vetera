@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { guard } from "@/lib/guard";
 import { staysService } from "./service";
 import type { Stay, StayLocation } from "./store";
-import { guard } from "@/lib/guard";
 export const STAYS_CHANGED = "baitari:stays-changed";
 export function announceStaysChanged() {
   window.dispatchEvent(new Event(STAYS_CHANGED));

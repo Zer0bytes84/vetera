@@ -1,13 +1,13 @@
 import { motion } from "framer-motion";
 import type React from "react";
 import { Fragment } from "react";
-import Logo from "./Logo";
 import {
   CatSilhouette,
   DogSilhouette,
   PeekingCat,
   PeekingDog,
 } from "./auth-peeking-pets";
+import Logo from "./Logo";
 import "./auth-clinic.css";
 
 /** Left half of the first-run screens (login, activation): brand canvas,

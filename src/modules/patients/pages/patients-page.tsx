@@ -1,8 +1,8 @@
 import React from "react";
 
 import type { PatientsProps } from "@/modules/patients/components/patients-shared";
-import { usePatientsPageModel } from "../hooks/use-patients-page-model";
 import { PatientsView } from "../components/patients-view";
+import { usePatientsPageModel } from "../hooks/use-patients-page-model";
 
 const Patients: React.FC<PatientsProps> = (props) => (
   <PatientsView {...usePatientsPageModel(props)} />

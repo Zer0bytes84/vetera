@@ -1,3 +1,10 @@
+import { HugeiconsIcon } from "@hugeicons/react";
+import { AnimatePresence, motion } from "framer-motion";
+import type React from "react";
+import { useState } from "react";
+import { Spinner } from "@/components/ui/spinner";
+import { useAuth } from "@/contexts/AuthContext";
+import { useTauriDrag } from "@/hooks/use-tauri-drag";
 import {
   Alert02Icon,
   ArrowLeft01Icon,
@@ -10,15 +17,8 @@ import {
   User02Icon,
   ViewIcon,
 } from "@/lib/hugeicons";
-import { HugeiconsIcon } from "@hugeicons/react";
-import { AnimatePresence, motion } from "framer-motion";
-import type React from "react";
-import { useState } from "react";
-import { Spinner } from "@/components/ui/spinner";
-import { useAuth } from "@/contexts/AuthContext";
-import { useTauriDrag } from "@/hooks/use-tauri-drag";
-import Logo from "./Logo";
 import { AuthBrandPanel, AuthGlassBackdrop } from "./auth-brand-panel";
+import Logo from "./Logo";
 import "./auth-clinic.css";
 import { guard } from "@/lib/guard";
 

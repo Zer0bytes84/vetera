@@ -2,33 +2,22 @@ import { Switch } from "@/components/ui/choice-controls";
 import { ErrorState } from "@/design-system/patterns/error-state";
 import "./patient-reminders.css";
 
-import { useMemo, useState } from "react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { useAuth } from "@/contexts/AuthContext";
 import {
-  useOwnersRepository,
-  usePatientsRepository,
-  useUsersRepository,
-} from "@/data/repositories";
-import {
-  ArchiveBoxIcon as History,
   ArrowDownIcon as ArrowDown,
-  ArrowUturnLeftIcon as RotateCcw,
   CalendarDaysIcon as CalendarDays,
   CheckCircleIcon as CheckCircle2,
   ClockIcon as Clock3,
+  ArchiveBoxIcon as History,
   PhoneIcon as Phone,
   PrinterIcon as Printer,
+  ArrowUturnLeftIcon as RotateCcw,
   ShieldExclamationIcon as ShieldAlert,
   XCircleIcon as XCircle,
 } from "@heroicons/react/16/solid";
-import { formatPhone, formatPersonName } from "@/utils/display-format";
-import { isMedicalReminderType, isReminderOverdue, localToday } from "./domain";
-import { callsCsv, callsPrintHtml, type CallRow } from "./export";
-import { patientRemindersService } from "./service";
-import { announceMedicalReminderProposal } from "./medical-act-events";
+import { useMemo, useState } from "react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { DatePicker } from "@/components/ui/date-picker";
 import { Dialog } from "@/components/ui/dialog";
 import {
   FormDialogBody,
@@ -36,15 +25,26 @@ import {
   FormDialogFooter,
   FormDialogHeader,
 } from "@/components/ui/form-dialog";
+import { Input } from "@/components/ui/input";
+import { WhatsAppLink } from "@/components/whatsapp-link";
+import { useAuth } from "@/contexts/AuthContext";
+import {
+  useOwnersRepository,
+  usePatientsRepository,
+  useUsersRepository,
+} from "@/data/repositories";
+import { guard } from "@/lib/guard";
+import { reminderMessage } from "@/lib/whatsapp";
+import { formatPersonName, formatPhone } from "@/utils/display-format";
+import { isMedicalReminderType, isReminderOverdue, localToday } from "./domain";
+import { type CallRow, callsCsv, callsPrintHtml } from "./export";
+import { announceMedicalReminderProposal } from "./medical-act-events";
+import { patientRemindersService } from "./service";
 import type { PatientReminder } from "./store";
 import {
   announcePatientRemindersChanged,
   usePatientReminders,
 } from "./use-patient-reminders";
-import { DatePicker } from "@/components/ui/date-picker";
-import { guard } from "@/lib/guard";
-import { WhatsAppLink } from "@/components/whatsapp-link";
-import { reminderMessage } from "@/lib/whatsapp";
 
 const field =
   "min-h-11 rounded-xl border border-border bg-background px-3 t-13";

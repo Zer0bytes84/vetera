@@ -1,17 +1,17 @@
 "use client";
 
-import { SidebarIcon } from "@/modules/shell/components/sidebar-icon";
 import {
-  AccountSidebarFooter,
   type AccountMenuProps,
+  AccountSidebarFooter,
 } from "@/modules/shell/components/account-menu";
+import { SidebarIcon } from "@/modules/shell/components/sidebar-icon";
 import "@/modules/shell/premium-sidebar.css";
 import * as React from "react";
 import { useTranslation } from "react-i18next";
 import { navigationSections } from "@/app/config/navigation";
 import { prefetchView } from "@/app/config/view-registry";
 import { SidebarBrand } from "@/components/mascot/sidebar-brand";
-import { NavMain, type NavItem } from "@/components/nav-main";
+import { type NavItem, NavMain } from "@/components/nav-main";
 import {
   Sidebar,
   SidebarContent,
@@ -21,15 +21,15 @@ import {
 } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
 import {
-  CLINIC_TAB_EVENT,
-  CLINIC_TAB_OPEN_EVENT,
-  CLINIC_TAB_PENDING_KEY,
-} from "@/modules/clinique/clinic-tab-events";
-import {
   type ClinicTab,
   isClinicTabVisible,
   useHospitalizationEnabled,
 } from "@/modules/clinique/clinic-services";
+import {
+  CLINIC_TAB_EVENT,
+  CLINIC_TAB_OPEN_EVENT,
+  CLINIC_TAB_PENDING_KEY,
+} from "@/modules/clinique/clinic-tab-events";
 import { isTauriRuntime } from "@/services/browser-store";
 import type { View } from "@/types";
 

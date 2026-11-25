@@ -1,27 +1,27 @@
-import { useState, type ReactNode } from "react";
 import {
-  ArrowLeft,
   ArrowDownRight,
+  ArrowLeft,
   ArrowUpRight,
   ChartPie,
   Landmark,
 } from "lucide-react";
+import { type ReactNode, useState } from "react";
 import { Button as ActionButton } from "@/components/ui/action-button";
 import { ChartCard } from "@/components/ui/chart-card";
 import { ProgressBar } from "@/components/ui/progress-bar";
 import { Segmented } from "@/components/ui/segmented-control";
 import { Panel, Shell, ShellHeader } from "@/components/ui/surface";
-import { percentageDelta, type DashboardMetrics } from "@/lib/metrics";
-import { cn } from "@/lib/utils";
-import type { View } from "@/types";
-import { formatDinars } from "@/utils/display-format";
-import { categoryFinding, otherIncome } from "../category-finding";
 import { PageHeader } from "@/design-system/patterns/page-header";
-import type { Invoice, Transaction } from "@/types/db";
+import { type DashboardMetrics, percentageDelta } from "@/lib/metrics";
+import { cn } from "@/lib/utils";
 import {
   buildFinancialOverview,
   receivablesSummary,
 } from "@/modules/dashboard/v2/financial-model";
+import type { View } from "@/types";
+import type { Invoice, Transaction } from "@/types/db";
+import { formatDinars } from "@/utils/display-format";
+import { categoryFinding, otherIncome } from "../category-finding";
 import { receivablesAging } from "../receivables-aging";
 import { FinanceOverview } from "./finance-overview";
 

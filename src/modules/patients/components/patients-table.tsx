@@ -1,15 +1,15 @@
 import { FolderOpen, Users } from "lucide-react";
 import type { ReactNode, Ref } from "react";
+import { Button } from "@/components/ui/button";
 import {
-  DataTable,
   type DataColumn,
   type DataRow,
+  DataTable,
 } from "@/components/ui/data-table";
-import { IconButton, QuietButton } from "@/components/ui/tuff-controls";
-import { Button } from "@/components/ui/button";
-import { Pencil } from "@/lib/icons";
 import { StatusPill, type StatusTone } from "@/components/ui/status-pill";
+import { IconButton, QuietButton } from "@/components/ui/tuff-controls";
 import { PATIENT_STATUS_META } from "@/config/status-meta";
+import { Pencil } from "@/lib/icons";
 import { speciesIcon } from "@/lib/species-icon";
 import {
   formatOwnerName,
@@ -17,9 +17,9 @@ import {
   formatVisitTimeRange,
   getAgeLabel,
 } from "@/modules/patients/components/patients-shared";
-import { clinicalFlags } from "../lib/patient-list";
-import type { PatientsViewProps } from "../hooks/use-patients-page-model";
 import type { Owner, Patient } from "@/types/db";
+import type { PatientsViewProps } from "../hooks/use-patients-page-model";
+import { clinicalFlags } from "../lib/patient-list";
 
 type PatientRecord = PatientsViewProps["visiblePatients"][number];
 

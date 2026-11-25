@@ -1,9 +1,4 @@
-import { ErrorState } from "@/design-system/patterns/error-state";
 import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -13,8 +8,10 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { SearchableSelect } from "@/components/ui/searchable-select";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Table,
   TableBody,
@@ -23,33 +20,36 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Plus, ArrowLeft } from "@/lib/icons";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProductsRepository } from "@/data/repositories";
+import { ErrorState } from "@/design-system/patterns/error-state";
 import {
-  StockError,
   parseStockQuantityInput,
+  StockError,
   stockBalance,
   stockQuantityLabel,
 } from "@/domain/stock";
-import { stockDay } from "@/domain/stock-date";
 import { restockNeed } from "@/domain/stock-alerts";
+import { stockDay } from "@/domain/stock-date";
+import { guard } from "@/lib/guard";
+import { ArrowLeft, Plus } from "@/lib/icons";
+import { CareTimePicker } from "@/modules/care-tasks/care-time-picker";
 import { isTauriRuntime } from "@/services/browser-store";
 import { generateId } from "@/services/sqlite/database";
 import { formatDZD, toCentimes } from "@/utils/currency";
 import { formatPhone } from "@/utils/display-format";
-import { CareTimePicker } from "@/modules/care-tasks/care-time-picker";
-import { StockDatePicker } from "./stock-date-picker";
-import { useStockInventory } from "../hooks/use-stock-inventory";
 import { usePurchasing } from "../hooks/use-purchasing";
-import { purchasingService } from "../services/purchasing-service";
+import { useStockInventory } from "../hooks/use-stock-inventory";
 import { exportPurchaseOrder } from "../services/purchase-order-pdf";
+import { purchasingService } from "../services/purchasing-service";
 import type {
   PurchaseOrder,
   PurchaseOrderLine,
   StockSupplier,
 } from "../services/purchasing-store";
-import { guard } from "@/lib/guard";
+import { StockDatePicker } from "./stock-date-picker";
 
 const labels: Record<PurchaseOrder["status"], string> = {
   draft: "Brouillon",

@@ -1,4 +1,3 @@
-import { useId, useRef, useState } from "react";
 import {
   Copy,
   FileText,
@@ -9,23 +8,9 @@ import {
   Settings2,
   Trash2,
 } from "lucide-react";
+import { useId, useRef, useState } from "react";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Field,
-  FieldDescription,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field";
-import { Dialog } from "@/components/ui/dialog";
-import {
-  FormDialogBody,
-  FormDialogContent,
-  FormDialogFooter,
-  FormDialogHeader,
-} from "@/components/ui/form-dialog";
+import { SettingsSection } from "@/components/settings-section";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -36,22 +21,37 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/choice-controls";
+import { Dialog } from "@/components/ui/dialog";
+import {
+  Field,
+  FieldDescription,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
+import {
+  FormDialogBody,
+  FormDialogContent,
+  FormDialogFooter,
+  FormDialogHeader,
+} from "@/components/ui/form-dialog";
+import { Input } from "@/components/ui/input";
 import {
   NativeSelect,
   NativeSelectOption,
 } from "@/components/ui/native-select";
 import { Spinner } from "@/components/ui/spinner";
-import { Switch } from "@/components/ui/choice-controls";
-import { SettingsSection } from "@/components/settings-section";
+import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   DOCUMENT_TYPES,
   type DocumentKind,
   type ManagedDocumentTemplate,
 } from "../document-domain";
+import { MANAGED_DOCUMENT_DEFAULTS } from "../document-migration";
 import { documentsService } from "../document-service";
 import { DOCUMENT_VARIABLES } from "../document-variables";
-import { MANAGED_DOCUMENT_DEFAULTS } from "../document-migration";
 import { useManagedTemplates } from "../hooks/use-managed-documents";
 import "../document-module.css";
 import { guard } from "@/lib/guard";

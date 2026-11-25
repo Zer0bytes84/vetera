@@ -1,3 +1,57 @@
+import type React from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
+import Logo from "@/components/Logo";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { DatePicker } from "@/components/ui/date-picker";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
+import { Spinner } from "@/components/ui/spinner";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useTauriDrag } from "@/hooks/use-tauri-drag";
+import { guard } from "@/lib/guard";
 import {
   Ban,
   CalendarDays,
@@ -21,59 +75,6 @@ import {
   Sparkles,
   X,
 } from "@/lib/icons";
-import type React from "react";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { toast } from "sonner";
-
-import Logo from "@/components/Logo";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
-import { Spinner } from "@/components/ui/spinner";
-import { useTauriDrag } from "@/hooks/use-tauri-drag";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { closeActivationAdminWindow } from "@/services/activationAdminWindowService";
 import { isTauriRuntime } from "@/services/browser-store";
@@ -84,14 +85,12 @@ import {
   createActivationLicense,
   createLicenseEmailTemplate,
   getStoredAdminToken,
-  releaseActivationDevice,
   listActivationLicenses,
+  releaseActivationDevice,
   revokeActivationLicense,
   setStoredAdminToken,
   verifyAdminToken,
 } from "@/services/licenseActivationService";
-import { DatePicker } from "@/components/ui/date-picker";
-import { guard } from "@/lib/guard";
 
 type ServerStatus = "checking" | "online" | "offline";
 type StatusFilter = "all" | "active" | "expiring" | "expired" | "revoked";

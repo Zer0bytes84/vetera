@@ -1,21 +1,21 @@
+import { HugeiconsIcon } from "@hugeicons/react";
+import { AnimatePresence, motion } from "framer-motion";
 import { CalendarDays } from "lucide-react";
 import { useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
-import { HugeiconsIcon } from "@hugeicons/react";
+import { MOTION } from "@/design-system/motion";
+import { StatusStepper } from "@/design-system/patterns/status-stepper";
+import { WidgetShell } from "@/design-system/patterns/widget-shell";
+import {
+  ActionButton,
+  EmptyState,
+  focusRing,
+  IconButton,
+} from "@/design-system/primitives";
 import {
   ArrowLeft01Icon,
   ArrowRight01Icon,
   CalendarAdd01Icon,
 } from "@/lib/hugeicons";
-import {
-  ActionButton,
-  EmptyState,
-  IconButton,
-  focusRing,
-} from "@/design-system/primitives";
-import { WidgetShell } from "@/design-system/patterns/widget-shell";
-import { StatusStepper } from "@/design-system/patterns/status-stepper";
-import { MOTION } from "@/design-system/motion";
 import { formatTime, type ScheduleEntry } from "../../v2/model";
 import {
   ModuleLink,

@@ -1,22 +1,16 @@
-import { useMemo, useState } from "react";
 import { fr } from "date-fns/locale";
-import { Plus, CalendarDays } from "@/lib/icons";
-import { useAuth } from "@/contexts/AuthContext";
-import { useProductsRepository } from "@/data/repositories";
-import { isTauriRuntime } from "@/services/browser-store";
-import { generateId } from "@/services/sqlite/database";
-import { Button } from "@/components/ui/button";
+import { useMemo, useState } from "react";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { SearchableSelect } from "@/components/ui/searchable-select";
+import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { COMPACT_CALENDAR_CLASS } from "@/components/ui/date-picker";
+import { Input } from "@/components/ui/input";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { SearchableSelect } from "@/components/ui/searchable-select";
 import {
   Table,
   TableBody,
@@ -25,17 +19,23 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { CareTimePicker } from "@/modules/care-tasks/care-time-picker";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useAuth } from "@/contexts/AuthContext";
+import { useProductsRepository } from "@/data/repositories";
 import {
-  StockError,
   parseStockQuantityInput,
+  StockError,
   stockQuantityLabel,
 } from "@/domain/stock";
 import { stockDay } from "@/domain/stock-date";
-import { inventoryService } from "../services/inventory-service";
-import { useStockInventory } from "../hooks/use-stock-inventory";
-import type { StockInventoryBalance } from "../services/inventory-store";
 import { guard } from "@/lib/guard";
+import { CalendarDays, Plus } from "@/lib/icons";
+import { CareTimePicker } from "@/modules/care-tasks/care-time-picker";
+import { isTauriRuntime } from "@/services/browser-store";
+import { generateId } from "@/services/sqlite/database";
+import { useStockInventory } from "../hooks/use-stock-inventory";
+import { inventoryService } from "../services/inventory-service";
+import type { StockInventoryBalance } from "../services/inventory-store";
 
 const dateLabel = (value: string | null) =>
   value && Number.isFinite(Date.parse(value))

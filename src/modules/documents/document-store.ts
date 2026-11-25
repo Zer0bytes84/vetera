@@ -3,12 +3,13 @@ import {
   isSoapReviewed,
   soapSourceKey,
 } from "@/modules/consultations/local-ai/soap-review";
+import { PATIENTS_WITH_REFERENCE_SQL } from "@/modules/patients/reference/reference";
+import type { BrowserRow, BrowserTableName } from "@/services/browser-store";
 import {
   DEFAULT_INVOICE_SETTINGS,
-  normalizeInvoiceSettings,
   type InvoiceSettings,
+  normalizeInvoiceSettings,
 } from "@/services/invoiceSettingsService";
-import type { BrowserRow, BrowserTableName } from "@/services/browser-store";
 import {
   CERTIFICATE_TYPES,
   DOCUMENT_TYPES,
@@ -25,7 +26,6 @@ import {
   renderDocumentVariables,
   validateDocumentTemplate,
 } from "./document-variables";
-import { PATIENTS_WITH_REFERENCE_SQL } from "@/modules/patients/reference/reference";
 
 export type DocumentRow = Record<string, unknown>;
 const TABLES = [

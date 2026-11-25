@@ -1,29 +1,11 @@
-import { useNow } from "@/hooks/use-now";
-import { formatPhone, formatPersonName } from "@/utils/display-format";
-import {
-  Add01Icon,
-  BirdIcon,
-  Calendar01Icon,
-  CheckmarkCircle02Icon,
-  Edit01Icon,
-  SaveIcon,
-  StethoscopeIcon,
-  WorkHistoryIcon,
-} from "@/lib/hugeicons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Bird, Cat, Dog, PawPrint, Rabbit, UserRound } from "@/lib/icons";
 import type React from "react";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
-
-import { computeAge, formatAgeFr } from "../lib";
-
-import { FormDialogHeader } from "@/components/ui/form-dialog";
-import { ModalBanner } from "@/components/ui/modal-banner";
-
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { DatePicker } from "@/components/ui/date-picker";
 import {
   Dialog,
   DialogContent,
@@ -45,7 +27,9 @@ import {
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
+import { FormDialogHeader } from "@/components/ui/form-dialog";
 import { Input } from "@/components/ui/input";
+import { ModalBanner } from "@/components/ui/modal-banner";
 import {
   NativeSelect,
   NativeSelectOption,
@@ -56,6 +40,19 @@ import {
   APPOINTMENT_STATUS_META,
   PATIENT_STATUS_META,
 } from "@/config/status-meta";
+import { useNow } from "@/hooks/use-now";
+import { guard } from "@/lib/guard";
+import {
+  Add01Icon,
+  BirdIcon,
+  Calendar01Icon,
+  CheckmarkCircle02Icon,
+  Edit01Icon,
+  SaveIcon,
+  StethoscopeIcon,
+  WorkHistoryIcon,
+} from "@/lib/hugeicons";
+import { Bird, Cat, Dog, PawPrint, Rabbit, UserRound } from "@/lib/icons";
 
 import { cn } from "@/lib/utils";
 
@@ -63,12 +60,12 @@ import type {
   Appointment,
   Owner,
   Patient,
-  User,
   Transaction,
+  User,
 } from "@/types/db";
 import { formatDZD } from "@/utils/currency";
-import { DatePicker } from "@/components/ui/date-picker";
-import { guard } from "@/lib/guard";
+import { formatPersonName, formatPhone } from "@/utils/display-format";
+import { computeAge, formatAgeFr } from "../lib";
 
 export const COMMON_SPECIES = [
   "Chien",

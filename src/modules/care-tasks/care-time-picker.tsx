@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Clock } from "./care-icons";
 import { Button } from "@/components/ui/button";
 import {
   Popover,
@@ -7,10 +6,11 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import {
+  addMinutesToTime,
   QUICK_TIMES,
   TIME_PERIODS,
-  addMinutesToTime,
 } from "@/modules/agenda/components/agenda-shared";
+import { Clock } from "./care-icons";
 
 export function CareTimePicker({
   value,

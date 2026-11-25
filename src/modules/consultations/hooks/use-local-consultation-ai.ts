@@ -1,34 +1,34 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { guard } from "@/lib/guard";
 import {
   captureAudio,
   createLevelMeter,
   prepareMicrophone,
 } from "../local-ai/audio-capture";
-import { createWarmupDetector } from "../local-ai/microphone-warmup";
-import {
-  type LocalInferenceSession,
-  abortError,
-} from "../local-ai/inference-client";
-import { getLocalModelUrls, type LocalModelStatus } from "../local-ai/models";
-import { prepareSoapDraft } from "../local-ai/soap-pipeline";
-import { normalizeSpokenMentions } from "../local-ai/patient-mentions";
-import type { LocalSoapNote } from "../local-ai/soap-schema";
-import type { LocalPatientContext } from "../local-ai/patient-context";
-import type { LocalAiProgress } from "../local-ai/worker-protocol";
-import type { DictationLanguage } from "../local-ai/whisper-language";
-import { whisperThreads } from "../local-ai/whisper-threads";
 import { normalizeTemperatureSymbols } from "../local-ai/dictation-text";
+import {
+  abortError,
+  type LocalInferenceSession,
+} from "../local-ai/inference-client";
+import { createWarmupDetector } from "../local-ai/microphone-warmup";
+import { getLocalModelUrls, type LocalModelStatus } from "../local-ai/models";
 import {
   nativeDictationEnabled,
   nativeDictationStatus,
   transcribeNatively,
 } from "../local-ai/native-dictation";
+import type { LocalPatientContext } from "../local-ai/patient-context";
+import { normalizeSpokenMentions } from "../local-ai/patient-mentions";
+import { prepareSoapDraft } from "../local-ai/soap-pipeline";
+import type { LocalSoapNote } from "../local-ai/soap-schema";
+import type { DictationLanguage } from "../local-ai/whisper-language";
 import {
   parkWhisperSession,
   releaseWhisperSession,
   takeWhisperSession,
 } from "../local-ai/whisper-session";
-import { guard } from "@/lib/guard";
+import { whisperThreads } from "../local-ai/whisper-threads";
+import type { LocalAiProgress } from "../local-ai/worker-protocol";
 
 export type LocalAiPhase =
   | "idle"

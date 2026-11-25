@@ -1,74 +1,74 @@
 import {
   DndContext,
+  type DragEndEvent,
   DragOverlay,
+  type DragStartEvent,
   PointerSensor,
   useDraggable,
   useDroppable,
   useSensor,
   useSensors,
-  type DragEndEvent,
-  type DragStartEvent,
 } from "@dnd-kit/core";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
+  type KeyboardEvent,
+  type ReactNode,
   useCallback,
   useEffect,
   useMemo,
   useRef,
   useState,
-  type KeyboardEvent,
-  type ReactNode,
 } from "react";
-import { KeyHint } from "@/design-system/primitives";
-import { PageHeader } from "@/design-system/patterns/page-header";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
   NativeSelect,
   NativeSelectOption,
 } from "@/components/ui/native-select";
-import { KanbanIcon, MedicalFileIcon, UserAdd01Icon } from "@/lib/hugeicons";
-import {
-  AlertTriangle,
-  ArrowRight,
-  Rows3,
-  LayoutGrid,
-  Search,
-  Stethoscope,
-  Syringe,
-} from "@/lib/icons";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { toast } from "sonner";
-import { ConsultationWorkspace } from "@/modules/consultation-workspace/consultation-workspace";
-import { useConsultationSession } from "@/modules/consultation-workspace/use-consultation-session";
-import { useFluxRequests } from "./open-in-flux";
-import { openPatientPeek } from "@/modules/patients/pages/patient-peek";
+import { PageHeader } from "@/design-system/patterns/page-header";
+import { KeyHint } from "@/design-system/primitives";
+import { KanbanIcon, MedicalFileIcon, UserAdd01Icon } from "@/lib/hugeicons";
+import {
+  AlertTriangle,
+  ArrowRight,
+  LayoutGrid,
+  Rows3,
+  Search,
+  Stethoscope,
+  Syringe,
+} from "@/lib/icons";
 import { getSpeciesGlyph } from "@/lib/species-icons";
 import { cn } from "@/lib/utils";
+import { ConsultationWorkspace } from "@/modules/consultation-workspace/consultation-workspace";
+import { useConsultationSession } from "@/modules/consultation-workspace/use-consultation-session";
+import { openPatientPeek } from "@/modules/patients/pages/patient-peek";
+import { prepareAppointment } from "@/modules/shell/model/clinical-actions";
 import {
-  VISIT_FLOW_STAGES,
   VISIT_FLOW_STAGE_LABELS,
+  VISIT_FLOW_STAGES,
 } from "@/modules/visit-flow/domain";
 import type { View } from "@/types";
 import {
   BOARD_LANES,
+  type BoardLane,
   durationLabel,
+  type FlowAlert,
+  type FlowCard,
   minutesSince,
   PLANNED,
   PRIMARY_ACTION,
   WAIT_WARNING_MINUTES,
-  type BoardLane,
-  type FlowAlert,
-  type FlowCard,
 } from "./model";
+import { useFluxRequests } from "./open-in-flux";
+import { QuietDayPanel } from "./quiet-day-panel";
 import { ARROW_DIRECTIONS, nearestInDirection } from "./spatial-nav";
 import { useFlowBoard } from "./use-flow-board";
 import { WalkInDialog } from "./walk-in-dialog";
-import { QuietDayPanel } from "./quiet-day-panel";
-import { prepareAppointment } from "@/modules/shell/model/clinical-actions";
 import "./flow-board.css";
 
 const PREFS_KEY = "baitari.flow-board.v1";

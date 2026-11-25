@@ -3,6 +3,7 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
 } from "@heroicons/react/16/solid";
+import { fr } from "date-fns/locale";
 import * as React from "react";
 import {
   type DayButton,
@@ -10,7 +11,6 @@ import {
   getDefaultClassNames,
   type Locale,
 } from "react-day-picker";
-import { fr } from "date-fns/locale";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 

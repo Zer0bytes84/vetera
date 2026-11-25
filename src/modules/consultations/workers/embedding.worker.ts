@@ -3,8 +3,8 @@ import type {
   PreTrainedModel,
   PreTrainedTokenizer,
 } from "@huggingface/transformers";
-import { enforceOfflineWorker } from "../local-ai/offline-policy";
 import { normalizedEmbedding } from "../local-ai/embedding-index";
+import { enforceOfflineWorker } from "../local-ai/offline-policy";
 import { exposeSharedMemory } from "../local-ai/shared-memory";
 import type {
   SearchModel,

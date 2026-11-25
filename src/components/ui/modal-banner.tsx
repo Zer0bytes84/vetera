@@ -1,7 +1,7 @@
-import { XIcon } from "@/lib/icons";
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { DialogClose } from "@/components/ui/dialog";
+import { XIcon } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 
 type ModalBannerTone = "teal" | "sky" | "amber" | "violet" | "rose";
@@ -122,4 +122,4 @@ function ModalBanner({
   );
 }
 
-export { ModalBanner, type ModalArtwork, type ModalBannerTone };
+export { type ModalArtwork, ModalBanner, type ModalBannerTone };

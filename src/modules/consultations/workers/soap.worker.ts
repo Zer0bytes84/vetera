@@ -1,11 +1,11 @@
 /// <reference lib="webworker" />
 import type { LlmInference } from "@mediapipe/tasks-genai";
+import {
+  type GeneratorFamily,
+  wrapUserTurn,
+} from "../local-ai/generator-choice";
 import { enforceOfflineWorker } from "../local-ai/offline-policy";
 import { estimateTokenCapacity } from "../local-ai/token-capacity";
-import {
-  wrapUserTurn,
-  type GeneratorFamily,
-} from "../local-ai/generator-choice";
 import type {
   WorkerRequest,
   WorkerResponse,

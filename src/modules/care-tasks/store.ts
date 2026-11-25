@@ -1,21 +1,21 @@
+import { BillingDomainError } from "@/domain/billing";
+import { StockError, stockQuantity } from "@/domain/stock";
+import { returnCareStockInDatabase } from "@/modules/stock/services/care-stock-rollback";
+import {
+  consumeStockInDatabase,
+  stockProductInDatabase,
+} from "@/modules/stock/services/stock-store";
 import {
   assertCareTransition,
-  careCompletionKey,
-  careInvoiceId,
   CARE_TYPES,
   type CareHistory,
   type CareStatus,
   type CareTask,
   type CareType,
+  careCompletionKey,
+  careInvoiceId,
 } from "./domain";
 import { notifyCareTaskCompleted } from "./hooks";
-import { StockError, stockQuantity } from "@/domain/stock";
-import { BillingDomainError } from "@/domain/billing";
-import {
-  consumeStockInDatabase,
-  stockProductInDatabase,
-} from "@/modules/stock/services/stock-store";
-import { returnCareStockInDatabase } from "@/modules/stock/services/care-stock-rollback";
 export interface CareDatabase {
   execute(sql: string, values?: unknown[]): Promise<{ rowsAffected: number }>;
   select<T>(sql: string, values?: unknown[]): Promise<T>;

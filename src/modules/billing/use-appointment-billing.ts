@@ -1,25 +1,25 @@
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
-import { formatDinars } from "@/utils/display-format";
-import { getInvoiceSettings } from "@/services/invoiceSettingsService";
-import { exportInvoicePdf } from "@/lib/invoice-pdf";
-import { invoiceDocument } from "@/lib/invoice-document";
-import { billingService } from "@/services/billingService";
-import { isTauriRuntime } from "@/services/browser-store";
-import { toCentimes } from "@/utils/currency";
-import { useAudit } from "@/services/use-audit";
 import { useAuth } from "@/contexts/AuthContext";
+import type { useAppointmentsRepository } from "@/data/repositories";
+import { guard } from "@/lib/guard";
+import { invoiceDocument } from "@/lib/invoice-document";
+import { exportInvoicePdf } from "@/lib/invoice-pdf";
+import {
+  type BillingItem,
+  formatOwnerName,
+} from "@/modules/clinique/components/clinique-shared";
+import { patientDocumentName } from "@/modules/patients/reference/reference";
 import { VISIT_FLOW_CHANGED } from "@/modules/visit-flow/domain";
 import { visitFlowService } from "@/modules/visit-flow/service";
+import { billingService } from "@/services/billingService";
+import { isTauriRuntime } from "@/services/browser-store";
+import { getInvoiceSettings } from "@/services/invoiceSettingsService";
+import { useAudit } from "@/services/use-audit";
 import type { Appointment, Owner, Patient } from "@/types/db";
-import {
-  formatOwnerName,
-  type BillingItem,
-} from "@/modules/clinique/components/clinique-shared";
-import type { useAppointmentsRepository } from "@/data/repositories";
+import { toCentimes } from "@/utils/currency";
+import { formatDinars } from "@/utils/display-format";
 import type { ExistingInvoice } from "./billing-draft";
-import { patientDocumentName } from "@/modules/patients/reference/reference";
-import { guard } from "@/lib/guard";
 
 /**
  * Billing of a visit, shared by Clinique and Flux so both bill the same way:

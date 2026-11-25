@@ -1,26 +1,24 @@
-import { ActivationOwnerUnlock } from "@/components/activation-owner-unlock";
 import { lazy, Suspense, useEffect, useState } from "react";
-
-import { requireActivationOwner } from "@/services/adminAccess";
+import { ActivationOwnerUnlock } from "@/components/activation-owner-unlock";
+import { LicenseGate } from "@/components/LicenseGate";
+import { StartupSplash } from "@/components/startup-splash";
 import { useAuth } from "@/contexts/AuthContext";
 import { appSettingsRepository } from "@/data/repositories";
 import i18n, { isRtlLanguage } from "@/i18n/config";
-import { acceptLicenseActivation } from "@/services/licenseRuntime";
-import { LicenseGate } from "@/components/LicenseGate";
-import { StartupSplash } from "@/components/startup-splash";
+import { guard } from "@/lib/guard";
+import { AIModelInstallPrompt } from "@/modules/consultations/components/ai-model-install-prompt";
+import { markVersionSeen } from "@/modules/release-notes/release-seen";
+import { isActivationAdminRoute } from "@/services/activationAdminWindowService";
+import { requireActivationOwner } from "@/services/adminAccess";
 import { checkAutoBackup, getAppVersion } from "@/services/backupService";
 import { isTauriRuntime } from "@/services/browser-store";
 import {
   purgeDemoDataInTauriIfNeeded,
   seedDemoDataIfNeeded,
 } from "@/services/demo-data";
-import { markVersionSeen } from "@/modules/release-notes/release-seen";
+import { acceptLicenseActivation } from "@/services/licenseRuntime";
 import { createInitialAdmin } from "@/services/sqlite/auth";
 import { startAppUpdateCheck } from "@/services/updateService";
-import { isActivationAdminRoute } from "@/services/activationAdminWindowService";
-
-import { AIModelInstallPrompt } from "@/modules/consultations/components/ai-model-install-prompt";
-import { guard } from "@/lib/guard";
 
 const AppShell = lazy(async () => {
   const module = await import("@/modules/shell/app-shell");

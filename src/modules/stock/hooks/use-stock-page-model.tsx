@@ -1,19 +1,17 @@
 import { useState } from "react";
 import { toast } from "sonner";
-
+import { useAuth } from "@/contexts/AuthContext";
 import {
   useProductsRepository,
   useTransactionsRepository,
 } from "@/data/repositories";
-
+import { StockError } from "@/domain/stock";
+import { guard } from "@/lib/guard";
+import { useCreationRequest } from "@/modules/shell/model/creation-request";
 import type { COMMON_VET_PRODUCTS } from "@/modules/stock/components/stock-shared";
+import { isTauriRuntime } from "@/services/browser-store";
 import type { Product, Transaction } from "@/types/db";
 import { toCentimes } from "@/utils/currency";
-import { StockError } from "@/domain/stock";
-import { isTauriRuntime } from "@/services/browser-store";
-import { useAuth } from "@/contexts/AuthContext";
-import { useCreationRequest } from "@/modules/shell/model/creation-request";
-import { guard } from "@/lib/guard";
 
 export function useStockPageModel() {
   const { currentUser } = useAuth();

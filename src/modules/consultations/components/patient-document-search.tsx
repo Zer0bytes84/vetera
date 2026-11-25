@@ -1,6 +1,12 @@
+import {
+  Check as CheckIcon,
+  Copy as CopyIcon,
+  Plus as PlusIcon,
+} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
+import { Button as ActionButton } from "@/components/ui/action-button";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,6 +17,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import { PromptSuggestions } from "@/components/ui/prompt-suggestions";
+import { SourceList } from "@/components/ui/source-list";
+import { ToolCallBlock } from "@/components/ui/tool-call-block";
 import {
   Tooltip,
   TooltipContent,
@@ -25,29 +35,19 @@ import {
   Stop,
   X,
 } from "@/lib/icons";
-import { toast } from "sonner";
-import {
-  Check as CheckIcon,
-  Copy as CopyIcon,
-  Plus as PlusIcon,
-} from "lucide-react";
-import { Button as ActionButton } from "@/components/ui/action-button";
-import { PromptSuggestions } from "@/components/ui/prompt-suggestions";
-import { SourceList } from "@/components/ui/source-list";
-import { ToolCallBlock } from "@/components/ui/tool-call-block";
 import { useLocalConsultationAi } from "../hooks/use-local-consultation-ai";
-import { getLocalModels, importLocalModel } from "../local-ai/models";
-import {
-  indexPatientDocuments,
-  indexAllPatientsDocuments,
-  searchPatientDocuments,
-  searchAllPatientsClinical,
-} from "../local-ai/embedding-store";
 import type {
   SearchChunk,
   SearchSection,
   SourceType,
 } from "../local-ai/embedding-index";
+import {
+  indexAllPatientsDocuments,
+  indexPatientDocuments,
+  searchAllPatientsClinical,
+  searchPatientDocuments,
+} from "../local-ai/embedding-store";
+import { getLocalModels, importLocalModel } from "../local-ai/models";
 import { bestPassage } from "../local-ai/passage-search";
 import { highlightPassage } from "../local-ai/search-highlight";
 import "./assistant-thinking.css";

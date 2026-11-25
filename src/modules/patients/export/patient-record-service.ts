@@ -1,14 +1,14 @@
-import { PATIENTS_WITH_REFERENCE_SQL } from "@/modules/patients/reference/reference";
 import { authRepository } from "@/data/repositories";
 import type { PatientDocument } from "@/modules/documents/document-domain";
+import { PATIENTS_WITH_REFERENCE_SQL } from "@/modules/patients/reference/reference";
 import {
+  type BrowserTableName,
   getBrowserTable,
   isTauriRuntime,
-  type BrowserTableName,
 } from "@/services/browser-store";
 import {
-  normalizeInvoiceSettings,
   type InvoiceSettings,
+  normalizeInvoiceSettings,
 } from "@/services/invoiceSettingsService";
 import { runDbRead } from "@/services/sqlite/database";
 import type {
@@ -24,9 +24,9 @@ import type {
 } from "@/types/db";
 import {
   assemblePatientRecordSnapshot,
-  validatePatientRecordOptions,
   type PatientRecordMedicalReminder,
   type PatientRecordRawData,
+  validatePatientRecordOptions,
 } from "./patient-record-data";
 import type {
   PatientRecordOptions,

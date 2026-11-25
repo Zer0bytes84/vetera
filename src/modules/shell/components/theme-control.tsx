@@ -1,6 +1,6 @@
-import { ToolbarIcon } from "./toolbar-icon";
 import { ShortcutTooltip } from "@/design-system/patterns/shortcut-tooltip";
 import { useCircularTransition } from "@/hooks/use-circular-transition";
+import { ToolbarIcon } from "./toolbar-icon";
 
 export function ThemeControl({
   dark,

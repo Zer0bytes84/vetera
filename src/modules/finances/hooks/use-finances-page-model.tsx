@@ -1,14 +1,6 @@
-import { createUuid } from "@/lib/uuid";
-import { useCreationRequest } from "@/modules/shell/model/creation-request";
-import { draftPriceLines, priceInput } from "../lib/draft-prices";
-import { usePage } from "@/hooks/use-page";
-import { getInvoiceSettings } from "@/services/invoiceSettingsService";
-
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-
 import type { SectionCardItem } from "@/components/section-cards";
-
 import { useAuth } from "@/contexts/AuthContext";
 import { useFocus } from "@/contexts/focus-provider";
 import {
@@ -16,9 +8,30 @@ import {
   usePatientsRepository,
   useTransactionsRepository,
 } from "@/data/repositories";
+import { usePage } from "@/hooks/use-page";
+import { guard, guardSync } from "@/lib/guard";
+import { createUuid } from "@/lib/uuid";
+import {
+  createInvoiceDraft,
+  createTransactionDraft,
+  type FinanceTab,
+  type InvoiceDocumentFilter,
+  type InvoiceDraft,
+  type InvoiceSettlementFilter,
+  isDateInRange,
+  PAYMENT_METHOD_LABELS,
+  type PaymentDraft,
+  type TransactionDraft,
+  type TransactionFilter,
+  type TransactionSort,
+  type TransactionSourceFilter,
+  type TransactionStatusFilter,
+} from "@/modules/finances/components/finances-shared";
+import { useCreationRequest } from "@/modules/shell/model/creation-request";
 
 import { type BillingActor, billingService } from "@/services/billingService";
 import { isTauriRuntime } from "@/services/browser-store";
+import { getInvoiceSettings } from "@/services/invoiceSettingsService";
 import type { View } from "@/types";
 import type {
   BillingLineInput,
@@ -28,23 +41,7 @@ import type {
   TransactionPaymentMethod,
 } from "@/types/db";
 import { formatDZD, toCentimes } from "@/utils/currency";
-import {
-  type FinanceTab,
-  type TransactionFilter,
-  type InvoiceDocumentFilter,
-  type InvoiceSettlementFilter,
-  type TransactionStatusFilter,
-  type TransactionSourceFilter,
-  type TransactionSort,
-  type InvoiceDraft,
-  type PaymentDraft,
-  type TransactionDraft,
-  PAYMENT_METHOD_LABELS,
-  createInvoiceDraft,
-  createTransactionDraft,
-  isDateInRange,
-} from "@/modules/finances/components/finances-shared";
-import { guard, guardSync } from "@/lib/guard";
+import { draftPriceLines, priceInput } from "../lib/draft-prices";
 
 const DESKTOP_ONLY_INVOICES =
   "La facturation officielle est disponible dans l’application de bureau.";

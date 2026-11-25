@@ -1,9 +1,9 @@
-import { getBrowserPasswordHash } from "./browserCredentials";
 import {
+  type BrowserRow,
   findBrowserRow,
   isTauriRuntime,
-  type BrowserRow,
 } from "./browser-store";
+import { getBrowserPasswordHash } from "./browserCredentials";
 
 /** Privileged actions require an existing, unexpired session. Never auto-login. */
 async function requireActiveSession() {

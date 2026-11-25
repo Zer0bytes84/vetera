@@ -1,5 +1,3 @@
-import { formatNumber } from "@/utils/display-format";
-import { useCreationRequest } from "@/modules/shell/model/creation-request";
 import {
   useCallback,
   useDeferredValue,
@@ -8,9 +6,7 @@ import {
   useState,
 } from "react";
 import { toast } from "sonner";
-
 import type { SectionCardItem } from "@/components/section-cards";
-
 import {
   useAppointmentsRepository,
   useOwnersRepository,
@@ -18,18 +14,14 @@ import {
   useTransactionsRepository,
   useUsersRepository,
 } from "@/data/repositories";
-
-import { useAudit } from "@/services/use-audit";
-import type { Appointment, Owner, Patient } from "@/types/db";
 import { usePage } from "@/hooks/use-page";
-import { patientReferenceSearchText } from "@/modules/patients/reference/reference";
-
+import { guard } from "@/lib/guard";
 import {
   type DetailsTab,
-  type PatientRecord,
-  PATIENTS_PAGE_SIZE,
   formatPatientDateTime,
   normalizeDate,
+  PATIENTS_PAGE_SIZE,
+  type PatientRecord,
   type PatientsProps,
 } from "@/modules/patients/components/patients-shared";
 import {
@@ -38,7 +30,11 @@ import {
   type PatientSort,
   sortPatientRecords,
 } from "@/modules/patients/lib/patient-list";
-import { guard } from "@/lib/guard";
+import { patientReferenceSearchText } from "@/modules/patients/reference/reference";
+import { useCreationRequest } from "@/modules/shell/model/creation-request";
+import { useAudit } from "@/services/use-audit";
+import type { Appointment, Owner, Patient } from "@/types/db";
+import { formatNumber } from "@/utils/display-format";
 
 export function usePatientsPageModel({ onNavigateToPatient }: PatientsProps) {
   const { data: users } = useUsersRepository();

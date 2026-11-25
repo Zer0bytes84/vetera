@@ -1,6 +1,5 @@
-import { useSQLite } from "@/hooks/useSQLite";
-import { roomsService } from "@/modules/rooms/service";
-import { PATIENTS_WITH_REFERENCE_SQL } from "@/modules/patients/reference/reference";
+import { useMemo } from "react";
+import { toast } from "sonner";
 import {
   normalizeOwnerDraft,
   normalizePatientDraft,
@@ -10,10 +9,19 @@ import {
   assertNoAppointmentConflict,
   normalizeAppointmentInterval,
 } from "@/domain/clinical/scheduling";
+import { useSQLite } from "@/hooks/useSQLite";
+import { PATIENTS_WITH_REFERENCE_SQL } from "@/modules/patients/reference/reference";
+import { roomsService } from "@/modules/rooms/service";
+import { useStockInventory } from "@/modules/stock/hooks/use-stock-inventory";
+import {
+  announceInventoryChanged,
+  inventoryService,
+} from "@/modules/stock/services/inventory-service";
+import { summarizeInventory } from "@/modules/stock/services/inventory-store";
 import * as AppSettingsService from "@/services/appSettingsService";
-import { getInvoiceSettings } from "@/services/invoiceSettingsService";
 import { billingService } from "@/services/billingService";
 import { getBrowserTable, isTauriRuntime } from "@/services/browser-store";
+import { getInvoiceSettings } from "@/services/invoiceSettingsService";
 import * as AuthService from "@/services/sqlite/auth";
 import {
   generateId,
@@ -29,18 +37,18 @@ import type {
   AppointmentRecurrence,
   AuditLogEntry,
   ConsultationDocument,
-  LibraryItem,
   ConsultationSoap,
   Hospitalization,
   HospitalizationVital,
+  LibraryItem,
   Note,
   Owner,
   Patient,
   Prescription,
   PrescriptionItem,
   Product,
-  StockMovement,
   Reminder,
+  StockMovement,
   Task,
   Transaction,
   User,
@@ -48,14 +56,6 @@ import type {
   WeightEntry,
 } from "@/types/db";
 import { toCentimes } from "@/utils/currency";
-import { useMemo } from "react";
-import { toast } from "sonner";
-import {
-  inventoryService,
-  announceInventoryChanged,
-} from "@/modules/stock/services/inventory-service";
-import { useStockInventory } from "@/modules/stock/hooks/use-stock-inventory";
-import { summarizeInventory } from "@/modules/stock/services/inventory-store";
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -1437,4 +1437,5 @@ export function useNotificationStateRepository() {
     },
   };
 }
+
 import { changeStockInDatabase } from "@/modules/stock/services/stock-store";

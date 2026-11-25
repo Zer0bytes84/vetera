@@ -1,9 +1,9 @@
 import { useMemo } from "react";
-import { useManagedTemplates } from "./use-managed-documents";
 import {
-  validateTemplate,
   type ClinicalDocumentTemplate,
+  validateTemplate,
 } from "../lib/document-templates";
+import { useManagedTemplates } from "./use-managed-documents";
 export function useDocumentTemplates() {
   const store = useManagedTemplates();
   const templates = useMemo(() => {

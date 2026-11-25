@@ -1,18 +1,18 @@
 import { emitSQLiteDataChanged } from "@/hooks/useSQLite";
 import {
+  isTauriRuntime,
+  runBrowserTablesTransaction,
+} from "@/services/browser-store";
+import {
   generateId,
   runDbRead,
   runDbTransaction,
 } from "@/services/sqlite/database";
 import {
-  isTauriRuntime,
-  runBrowserTablesTransaction,
-} from "@/services/browser-store";
-import {
   browserDocumentDatabase,
   createDocumentStore,
-  sqliteDocumentPersistence,
   type DocumentPersistence,
+  sqliteDocumentPersistence,
 } from "./document-store";
 
 const browserOperation: DocumentPersistence["transaction"] = (operation) =>

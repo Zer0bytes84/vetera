@@ -1,20 +1,20 @@
+import { RotateCcw } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { useAuth } from "@/contexts/AuthContext";
-import { RotateCcw } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { SettingsRow, SettingsSection } from "@/components/settings-section";
-import { Input } from "@/components/ui/input";
-import { Field, FieldLabel } from "@/components/ui/field";
 import {
   AlertDialog,
+  AlertDialogCancel,
   AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogTitle,
   AlertDialogDescription,
   AlertDialogFooter,
-  AlertDialogCancel,
+  AlertDialogHeader,
+  AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import { Field, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { useAuth } from "@/contexts/AuthContext";
 import { RESET_CONFIRMATION, resetLocalData } from "@/services/localDataReset";
 
 export function LocalDataResetSettings() {

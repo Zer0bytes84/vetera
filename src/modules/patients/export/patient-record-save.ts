@@ -1,5 +1,5 @@
-import { isTauriRuntime } from "@/services/browser-store";
 import { getSetting, setSetting } from "@/services/appSettingsService";
+import { isTauriRuntime } from "@/services/browser-store";
 import type { PatientRecordPdf } from "./patient-record-types";
 
 const DIRECTORY_KEY = "patient_record_pdf_directory";

@@ -2,22 +2,6 @@ import { IdCard, LayoutGrid, Stethoscope } from "lucide-react";
 import { Shell, ShellHeader } from "@/components/ui/surface";
 import { usePageCrumb } from "@/modules/shell/page-crumb";
 import "./patient-record-blocks.css";
-import { PatientStays } from "@/modules/hospitalizations/stays/patient-stays";
-import {
-  ArrowLeft,
-  Check,
-  FileText,
-  FirstAid,
-  History,
-  Hospital,
-  IdentificationBadge,
-  Notebook,
-  Pill,
-  Scales,
-  Syringe,
-  User,
-  X,
-} from "@/lib/icons";
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -32,14 +16,13 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { DatePicker } from "@/components/ui/date-picker";
 import { Input } from "@/components/ui/input";
 import {
   NativeSelect,
   NativeSelectOption,
 } from "@/components/ui/native-select";
 import { Spinner } from "@/components/ui/spinner";
-import { SkeletonBlock } from "@/design-system/primitives";
 import { Textarea } from "@/components/ui/textarea";
 import { PATIENT_STATUS_META } from "@/config/status-meta";
 import { useAuth } from "@/contexts/AuthContext";
@@ -59,14 +42,35 @@ import {
   useVaccinationsRepository,
   useWeightEntriesRepository,
 } from "@/data/repositories";
+import { SkeletonBlock } from "@/design-system/primitives";
+import { guard } from "@/lib/guard";
+import {
+  ArrowLeft,
+  Check,
+  FileText,
+  FirstAid,
+  History,
+  Hospital,
+  IdentificationBadge,
+  Notebook,
+  Pill,
+  Scales,
+  Syringe,
+  User,
+  X,
+} from "@/lib/icons";
+import { cn } from "@/lib/utils";
 import { AnesthesiaDetail, AnesthesiaList } from "@/modules/anesthesia";
 import { SoapPanel } from "@/modules/consultations/components/soap-panel";
-import { ConsultationProducts } from "@/modules/stock/components/consultation-products";
+import { readOffVisitNote } from "@/modules/consultations/off-visit-note";
 import {
   HospitalizationDetail,
   HospitalizationList,
 } from "@/modules/hospitalizations";
+import { PatientStays } from "@/modules/hospitalizations/stays/patient-stays";
 import { PrescriptionList, PrescriptionSheet } from "@/modules/prescriptions";
+import { prepareAppointment } from "@/modules/shell/model/clinical-actions";
+import { ConsultationProducts } from "@/modules/stock/components/consultation-products";
 import type { View } from "@/types";
 import type {
   AnesthesiaSheet,
@@ -75,35 +79,31 @@ import type {
   Vaccination,
   WeightEntry,
 } from "@/types/db";
+import { OwnerContact, recordDate } from "./components/medical-record-summary";
+import { MedicalRecordTabs } from "./components/medical-record-tabs";
+import { OffVisitNotePanel } from "./components/off-visit-note-panel";
+import { OwnerContactDialog } from "./components/owner-contact-dialog";
+import { PatientContextWidgets } from "./components/patient-context-widgets";
 import { PatientDocumentsList } from "./components/patient-documents-list";
 import {
   PatientRecordActions,
   PatientRecordHeader,
 } from "./components/patient-header";
-import { PatientContextWidgets } from "./components/patient-context-widgets";
-import { OwnerContact, recordDate } from "./components/medical-record-summary";
-import { OwnerContactDialog } from "./components/owner-contact-dialog";
-import { PatientPrevention } from "./components/patient-prevention";
-import { buildTreatments } from "./health-card/health-card-data";
-import type { TimelinePiece } from "./lib/timeline-pieces";
-import { MedicalRecordTabs } from "./components/medical-record-tabs";
-import { prepareAppointment } from "@/modules/shell/model/clinical-actions";
 import { PatientKpiStrip } from "./components/patient-kpi-strip";
 import {
   PatientClinicalSummary,
   PatientOverview,
 } from "./components/patient-overview";
+import { PatientPrevention } from "./components/patient-prevention";
 import { PatientRecordHealth } from "./components/patient-record-health";
-import { RecordBlockHeading } from "./components/record-block-heading";
 import { PatientTimeline } from "./components/patient-timeline";
-import { OffVisitNotePanel } from "./components/off-visit-note-panel";
-import { readOffVisitNote } from "@/modules/consultations/off-visit-note";
+import { RecordBlockHeading } from "./components/record-block-heading";
 import { VaccinationDialog } from "./components/vaccination-dialog";
 import { VaccinationList } from "./components/vaccination-list";
 import { WeightEntryDialog } from "./components/weight-entry-dialog";
 import { WeightEvolutionChart } from "./components/weight-evolution-chart";
-import { DatePicker } from "@/components/ui/date-picker";
-import { guard } from "@/lib/guard";
+import { buildTreatments } from "./health-card/health-card-data";
+import type { TimelinePiece } from "./lib/timeline-pieces";
 
 const HealthCardDialog = lazy(() =>
   import("./health-card/health-card-dialog").then((module) => ({

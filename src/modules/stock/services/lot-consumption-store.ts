@@ -1,12 +1,12 @@
 import { StockError, stockBalance, stockQuantity } from "@/domain/stock";
 import type { StockSelection } from "@/domain/stock-fifo";
-import type { StockConsumption } from "./stock-store";
-import { stockProductInDatabase, type StockDatabase } from "./stock-database";
 import {
   applyStockAllocations,
   prepareStockAllocations,
   stockSelectionKey,
 } from "./lot-store";
+import { type StockDatabase, stockProductInDatabase } from "./stock-database";
+import type { StockConsumption } from "./stock-store";
 
 /** Compatible with databases restored from a version preceding lot management. */
 export async function hasStockLots(db: StockDatabase): Promise<boolean> {

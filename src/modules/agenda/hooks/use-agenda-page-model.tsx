@@ -1,11 +1,3 @@
-import { formatNumber, formatPersonName } from "@/utils/display-format";
-import { TERMINAL_APPOINTMENT_STATUSES } from "@/domain/clinical/scheduling";
-import type { BusySlot } from "../components/agenda-shared";
-import { useFlowUndo } from "@/modules/visit-flow/use-flow-undo";
-import { startInFlux } from "@/modules/flow-board/open-in-flux";
-import type { View } from "@/types";
-import { agendaDayStats, isActiveBooking } from "../components/agenda-slots";
-import { findDossiers, selectedDossierSearchLabel } from "../quick-search";
 import {
   useDeferredValue,
   useEffect,
@@ -15,9 +7,7 @@ import {
 } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-
 import type { SectionCardItem } from "@/components/section-cards";
-
 import { APPOINTMENT_STATUS_META } from "@/config/status-meta";
 import { useFocus } from "@/contexts/focus-provider";
 import {
@@ -27,41 +17,49 @@ import {
   usePatientsRepository,
   useUsersRepository,
 } from "@/data/repositories";
+import { TERMINAL_APPOINTMENT_STATUSES } from "@/domain/clinical/scheduling";
+import { guard, guardSync } from "@/lib/guard";
+import {
+  type AgendaTableRow,
+  APPOINTMENT_TYPES,
+  CALENDAR_END_HOUR,
+  CALENDAR_START_HOUR,
+  DAY_HOUR_HEIGHT,
+  formatDateInput,
+  formatDateLabel,
+  formatDateTimeLabel,
+  formatDuration,
+  formatOwnerName,
+  formatTime,
+  formatTimeCompact,
+  getAppointmentPresentation,
+  getMonthDays,
+  getTimePosition,
+  getWeekDays,
+  isSameDay,
+  normalizeDate,
+  normalizeEntityId,
+  TABLE_TABS,
+  type TableTab,
+  type ViewMode,
+} from "@/modules/agenda/components/agenda-shared";
+import { startInFlux } from "@/modules/flow-board/open-in-flux";
+import { roomLabel } from "@/modules/rooms/store";
+import { useRooms } from "@/modules/rooms/use-rooms";
+import { useFlowUndo } from "@/modules/visit-flow/use-flow-undo";
+import { generateId } from "@/services/sqlite/database";
 
 import { useAudit } from "@/services/use-audit";
-import { generateId } from "@/services/sqlite/database";
-import { useRooms } from "@/modules/rooms/use-rooms";
-import { roomLabel } from "@/modules/rooms/store";
+import type { View } from "@/types";
 import type {
   Appointment,
   AppointmentRecurrence,
   RecurrenceFrequency,
 } from "@/types/db";
-import {
-  APPOINTMENT_TYPES,
-  CALENDAR_START_HOUR,
-  CALENDAR_END_HOUR,
-  DAY_HOUR_HEIGHT,
-  TABLE_TABS,
-  type ViewMode,
-  type TableTab,
-  type AgendaTableRow,
-  normalizeDate,
-  formatDateInput,
-  isSameDay,
-  formatTime,
-  formatTimeCompact,
-  formatDateLabel,
-  formatDateTimeLabel,
-  formatDuration,
-  getTimePosition,
-  getWeekDays,
-  getMonthDays,
-  formatOwnerName,
-  normalizeEntityId,
-  getAppointmentPresentation,
-} from "@/modules/agenda/components/agenda-shared";
-import { guard, guardSync } from "@/lib/guard";
+import { formatNumber, formatPersonName } from "@/utils/display-format";
+import type { BusySlot } from "../components/agenda-shared";
+import { agendaDayStats, isActiveBooking } from "../components/agenda-slots";
+import { findDossiers, selectedDossierSearchLabel } from "../quick-search";
 
 export function useAgendaPageModel(onNavigate?: (view: View) => void) {
   const { t } = useTranslation();

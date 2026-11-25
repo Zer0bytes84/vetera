@@ -1,6 +1,7 @@
+import { DocumentTextIcon } from "@heroicons/react/20/solid";
 import {
-  BookOpen,
   Bookmark,
+  BookOpen,
   Copy,
   Download,
   ExternalLink,
@@ -18,13 +19,12 @@ import {
   Trash2,
   X,
 } from "lucide-react";
-import { DocumentTextIcon } from "@heroicons/react/20/solid";
 import {
-  useRef,
-  useState,
   type ComponentType,
   type FormEvent,
   type ReactNode,
+  useRef,
+  useState,
 } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -48,20 +48,20 @@ import {
   IconButton,
   SearchField,
 } from "@/components/ui/tuff-controls";
+import { cn } from "@/lib/utils";
 import {
+  formatSize,
   KIND_LABELS,
   LIBRARY_FILTERS,
-  formatSize,
+  type LibraryEntry,
+  type LibraryFilter,
+  type LibraryKind,
   linkTitle,
   matchesFilter,
   matchesQuery,
   normalizeLinkUrl,
   sortEntries,
-  type LibraryEntry,
-  type LibraryFilter,
-  type LibraryKind,
 } from "@/modules/documents/lib/library";
-import { cn } from "@/lib/utils";
 import type { Note } from "@/types/db";
 
 /**

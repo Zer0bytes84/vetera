@@ -1,11 +1,11 @@
-import { useState } from "react";
 import { FileText } from "lucide-react";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import { SearchableSelect } from "@/components/ui/searchable-select";
 import { useSQLite } from "@/hooks/useSQLite";
-import type { Patient, Appointment, Note } from "@/types/db";
+import type { Appointment, Note, Patient } from "@/types/db";
 import ConsultationDocumentsAssistant from "./consultation-documents-assistant";
 import { DocumentComposer } from "./document-composer";
-import { Button } from "@/components/ui/button";
 
 export default function DocumentsWorkspace({
   initialPatientId = "",

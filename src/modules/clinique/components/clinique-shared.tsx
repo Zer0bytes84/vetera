@@ -1,10 +1,41 @@
-import { formatDinars, formatPhone } from "@/utils/display-format";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { jsPDF } from "jspdf";
+import type React from "react";
+import { useEffect, useEffectEvent, useRef, useState } from "react";
+import { toast } from "sonner";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import {
-  billingDraft,
-  parseDinars,
-  type DraftLine,
-  type ExistingInvoice,
-} from "@/modules/billing/billing-draft";
+  Field,
+  FieldDescription,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
+
+import { FormDialogHeader } from "@/components/ui/form-dialog";
+import { Input } from "@/components/ui/input";
+import {
+  NativeSelect,
+  NativeSelectOption,
+} from "@/components/ui/native-select";
+import { Spinner } from "@/components/ui/spinner";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  CLINIQUE_STATUS_META,
+  getAppointmentTypeMeta,
+  PATIENT_STATUS_META,
+} from "@/config/status-meta";
+import { APP_NAME } from "@/lib/brand";
+import { guard } from "@/lib/guard";
 import {
   Add01Icon,
   AttachmentIcon,
@@ -20,56 +51,18 @@ import {
   type StethoscopeIcon,
   TimerIcon,
 } from "@/lib/hugeicons";
-import { HugeiconsIcon } from "@hugeicons/react";
 import { Hospital, Pill, Syringe } from "@/lib/icons";
-import { jsPDF } from "jspdf";
-import type React from "react";
-import { useEffect, useEffectEvent, useRef, useState } from "react";
-
-import { toast } from "sonner";
-
-import { FormDialogHeader } from "@/components/ui/form-dialog";
-
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-
-import {
-  Field,
-  FieldDescription,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import {
-  NativeSelect,
-  NativeSelectOption,
-} from "@/components/ui/native-select";
-
-import { Spinner } from "@/components/ui/spinner";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-
-import { Textarea } from "@/components/ui/textarea";
-import { PatientRecordHeader } from "@/modules/patients/components/patient-header";
-import { SoapPanel } from "@/modules/consultations/components/soap-panel";
-import { OPEN_SOAP_ASSISTANT_EVENT } from "@/modules/consultation-workspace/consultation-closure";
-import { ConsultationProducts } from "@/modules/stock/components/consultation-products";
-import {
-  CLINIQUE_STATUS_META,
-  PATIENT_STATUS_META,
-  getAppointmentTypeMeta,
-} from "@/config/status-meta";
-
-import { APP_NAME } from "@/lib/brand";
 import { cn } from "@/lib/utils";
+import {
+  billingDraft,
+  type DraftLine,
+  type ExistingInvoice,
+  parseDinars,
+} from "@/modules/billing/billing-draft";
+import { OPEN_SOAP_ASSISTANT_EVENT } from "@/modules/consultation-workspace/consultation-closure";
+import { SoapPanel } from "@/modules/consultations/components/soap-panel";
+import { PatientRecordHeader } from "@/modules/patients/components/patient-header";
+import { ConsultationProducts } from "@/modules/stock/components/consultation-products";
 
 import type { View } from "@/types";
 import type {
@@ -78,7 +71,7 @@ import type {
   Owner,
   Patient,
 } from "@/types/db";
-import { guard } from "@/lib/guard";
+import { formatDinars, formatPhone } from "@/utils/display-format";
 
 export interface CliniqueProps {
   onNavigate?: (view: View) => void;

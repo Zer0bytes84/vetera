@@ -1,17 +1,52 @@
-import { isActivationOwner } from "@/services/adminAccess";
-import { LocalDataResetSettings } from "./local-data-reset-settings";
-import { AboutTeam } from "./about-team";
-import { MascotSettings } from "@/components/mascot/mascot-settings";
-import { DashboardVersionSetting } from "@/modules/dashboard/components/dashboard-version-setting";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { relaunch } from "@tauri-apps/plugin-process";
 import {
-  ClinicIdentityPanel,
-  InvoiceSettingsPanel,
-} from "@/modules/invoices/components/invoice-settings-panel";
-import DocumentTemplateManager from "@/modules/documents/components/document-template-manager";
-import { PatientRemindersContent } from "@/modules/patient-reminders/patient-reminders-panel";
-import { usePatientReminders } from "@/modules/patient-reminders/use-patient-reminders";
+  Bell,
+  Database,
+  History,
+  IdCard,
+  Info,
+  KeyRound,
+  KeySquare,
+  LayoutDashboard,
+  Palette,
+  PanelLeft,
+  UserRound,
+} from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { LicenseStatusCard } from "@/components/LicenseStatusCard";
+import { MascotSettings } from "@/components/mascot/mascot-settings";
+import {
+  SettingsBody,
+  SettingsFooter,
+  SettingsNotice,
+  SettingsRow,
+  SettingsSection,
+  SettingsStack,
+} from "@/components/settings-section";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { Field, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { Segmented } from "@/components/ui/segmented-control";
+import { Spinner } from "@/components/ui/spinner";
 import { UpdateCheckRow } from "@/components/update-check-row";
+import { useAuth } from "@/contexts/AuthContext";
+import { useLayout } from "@/contexts/layout-provider";
+import { useUsersRepository } from "@/data/repositories";
+import { PageHeader } from "@/design-system/patterns/page-header";
+import { APP_NAME } from "@/lib/brand";
+import { guard } from "@/lib/guard";
 import {
   Building01Icon,
   DatabaseIcon,
@@ -21,51 +56,27 @@ import {
   InformationCircleIcon,
   LaptopIcon,
   Notification01Icon,
+  PencilEdit01Icon,
   ReceiptTextIcon,
   Refresh01Icon,
   Shield01Icon,
   SparklesIcon,
-  PencilEdit01Icon,
   UserCircle02Icon,
   Wifi01Icon,
 } from "@/lib/hugeicons";
-import { HugeiconsIcon } from "@hugeicons/react";
-import {
-  Bell,
-  History,
-  IdCard,
-  Info,
-  KeyRound,
-  LayoutDashboard,
-  Palette,
-  PanelLeft,
-  UserRound,
-  Database,
-  KeySquare,
-} from "lucide-react";
-import { relaunch } from "@tauri-apps/plugin-process";
-import React, { useEffect, useState } from "react";
-import { toast } from "sonner";
-import { Button, buttonVariants } from "@/components/ui/button";
-import { Field, FieldLabel } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import { Segmented } from "@/components/ui/segmented-control";
-import { Spinner } from "@/components/ui/spinner";
-import {
-  SettingsBody,
-  SettingsFooter,
-  SettingsNotice,
-  SettingsRow,
-  SettingsSection,
-  SettingsStack,
-} from "@/components/settings-section";
-import { useAuth } from "@/contexts/AuthContext";
-import { useLayout } from "@/contexts/layout-provider";
-import { startTour } from "@/modules/tour/tour-state";
-import { tourStore } from "@/modules/tour/tour-store";
-import { useUsersRepository } from "@/data/repositories";
-import { APP_NAME } from "@/lib/brand";
 import { writeCachedProfile } from "@/lib/profile-cache";
+import {
+  isSettingsTab,
+  SETTINGS_SECTION_EVENT,
+  SETTINGS_SECTION_KEY,
+  type SettingsTab,
+} from "@/lib/settings-navigation";
+import {
+  getSidebarTone,
+  SIDEBAR_TONES,
+  type SidebarTone,
+  saveSidebarTone,
+} from "@/lib/sidebar-tone";
 import {
   applyTheme,
   CLEAN_FONT_SETS,
@@ -75,8 +86,28 @@ import {
   saveThemeConfig,
   type ThemeConfig,
 } from "@/lib/theme-store";
+import { roleLabel as displayRole } from "@/lib/user-role";
 import { cn } from "@/lib/utils";
+import { ClinicNetworkSettings } from "@/modules/clinic-network/clinic-network-settings";
+import { AIModelSettings } from "@/modules/consultations/components/ai-model-settings";
+import {
+  AI_ONBOARDING_OPEN_EVENT,
+  AI_SETTINGS_PENDING_KEY,
+} from "@/modules/consultations/services/ai-model-provisioning";
+import { DashboardVersionSetting } from "@/modules/dashboard/components/dashboard-version-setting";
+import DocumentTemplateManager from "@/modules/documents/components/document-template-manager";
+import {
+  ClinicIdentityPanel,
+  InvoiceSettingsPanel,
+} from "@/modules/invoices/components/invoice-settings-panel";
+import { PatientRemindersContent } from "@/modules/patient-reminders/patient-reminders-panel";
+import { usePatientReminders } from "@/modules/patient-reminders/use-patient-reminders";
+import { ReleaseNotesArchive } from "@/modules/release-notes/release-notes-archive";
+import { RoomsSettings } from "@/modules/rooms/rooms-settings";
+import { startTour } from "@/modules/tour/tour-state";
+import { tourStore } from "@/modules/tour/tour-store";
 import { openActivationAdminWindow } from "@/services/activationAdminWindowService";
+import { isActivationOwner } from "@/services/adminAccess";
 import {
   type BackupInfo,
   createBackup,
@@ -89,44 +120,13 @@ import {
   restoreBackup,
 } from "@/services/backupService";
 import { isTauriRuntime } from "@/services/browser-store";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import { updatePassword } from "@/services/sqlite/auth";
-import { AIModelSettings } from "@/modules/consultations/components/ai-model-settings";
-import { ClinicNetworkSettings } from "@/modules/clinic-network/clinic-network-settings";
-import { RoomsSettings } from "@/modules/rooms/rooms-settings";
-import { ReleaseNotesArchive } from "@/modules/release-notes/release-notes-archive";
-import {
-  AI_ONBOARDING_OPEN_EVENT,
-  AI_SETTINGS_PENDING_KEY,
-} from "@/modules/consultations/services/ai-model-provisioning";
-import {
-  isSettingsTab,
-  SETTINGS_SECTION_EVENT,
-  SETTINGS_SECTION_KEY,
-  type SettingsTab,
-} from "@/lib/settings-navigation";
 import type { View } from "@/types";
-import Avatar, { PROFILE_AVATAR_EMOJIS } from "./Avatar";
-import Logo from "./Logo";
-import {
-  getSidebarTone,
-  saveSidebarTone,
-  SIDEBAR_TONES,
-  type SidebarTone,
-} from "@/lib/sidebar-tone";
 import { formatPersonName } from "@/utils/display-format";
-import { roleLabel as displayRole } from "@/lib/user-role";
-import { PageHeader } from "@/design-system/patterns/page-header";
-import { guard } from "@/lib/guard";
+import Avatar, { PROFILE_AVATAR_EMOJIS } from "./Avatar";
+import { AboutTeam } from "./about-team";
+import Logo from "./Logo";
+import { LocalDataResetSettings } from "./local-data-reset-settings";
 
 interface SettingsNavItem {
   description: string;

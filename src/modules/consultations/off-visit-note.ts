@@ -6,17 +6,18 @@
  * and review travel in `tags.offVisitNote`; the content is the readable text
  * that search and the record export already know how to read.
  */
+
+import { documentToHtml } from "@/modules/documents/lib/document-templates";
 import {
   getBrowserTable,
   insertBrowserRow,
   isTauriRuntime,
 } from "@/services/browser-store";
 import { generateId, runDbTransaction } from "@/services/sqlite/database";
-import { documentToHtml } from "@/modules/documents/lib/document-templates";
 import type { Note, Patient } from "@/types/db";
-import { localSoapSchema, type LocalSoapNote } from "./local-ai/soap-schema";
-import { soapNoteText } from "./local-ai/soap-layout";
 import type { SoapNoteOrigin } from "./components/local-consultation-assistant";
+import { soapNoteText } from "./local-ai/soap-layout";
+import { type LocalSoapNote, localSoapSchema } from "./local-ai/soap-schema";
 
 export const OFF_VISIT_KINDS = {
   call: "Appel du propriétaire",

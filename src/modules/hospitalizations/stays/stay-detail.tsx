@@ -1,32 +1,32 @@
-import { StayTransfer } from "./stay-location-controls";
-import { StayRecords } from "./stay-records";
-import { StayBilling } from "./stay-billing";
-import { StayFollowUp } from "./stay-follow-up";
-import { announceCareTasksChanged } from "@/modules/care-tasks/use-care-tasks";
-import { vitalAlerts } from "./vital-alerts";
-import { CarePlanForm } from "./care-plan-form";
-import { StayDateTimeField } from "./stay-date-time-field";
-import { VitalsForm } from "./vitals-form";
-import { VitalsCurves } from "./vitals-curves";
-import { VitalsByDay, VitalsLatest } from "./vitals-summary-view";
+import { useCallback, useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
 } from "@/components/ui/dialog";
-import { useCallback, useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
-import { staysService } from "./service";
-import { announceStaysChanged } from "./use-stays";
-import type { Stay, VitalSign } from "./store";
+import { useNow } from "@/hooks/use-now";
+import { guard } from "@/lib/guard";
+import { announceCareTasksChanged } from "@/modules/care-tasks/use-care-tasks";
+import { CarePlanForm } from "./care-plan-form";
 import type { StayStatus } from "./domain";
 import { ACTIVE_STAY_STATUSES, stayDays } from "./domain";
-import { guard } from "@/lib/guard";
-import { useNow } from "@/hooks/use-now";
+import { staysService } from "./service";
+import { StayBilling } from "./stay-billing";
+import { StayDateTimeField } from "./stay-date-time-field";
+import { StayFollowUp } from "./stay-follow-up";
+import { StayTransfer } from "./stay-location-controls";
+import { StayRecords } from "./stay-records";
+import type { Stay, VitalSign } from "./store";
+import { announceStaysChanged } from "./use-stays";
+import { vitalAlerts } from "./vital-alerts";
+import { VitalsCurves } from "./vitals-curves";
+import { VitalsForm } from "./vitals-form";
+import { VitalsByDay, VitalsLatest } from "./vitals-summary-view";
 export function StayDetail({
   stay,
   patientName,

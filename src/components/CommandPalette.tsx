@@ -1,29 +1,7 @@
 "use client";
+
 /* eslint-disable react-hooks/purity */
 
-import { useHospitalizationEnabled } from "@/modules/clinique/clinic-services";
-import {
-  BookOpenTextIcon,
-  Calendar01Icon,
-  CalendarAdd01Icon,
-  ClinicIcon,
-  DashboardSquare01Icon,
-  FileSearchIcon,
-  HospitalBed01Icon,
-  MedicalFileIcon,
-  Package02Icon,
-  PillIcon,
-  Settings02Icon,
-  StethoscopeIcon,
-  Task01Icon,
-  UserAdd01Icon,
-  UserGroupIcon,
-  VaccineIcon,
-  WalletIcon,
-  Cancel01Icon,
-  SparklesIcon,
-} from "@/lib/hugeicons";
-import { openAssistant } from "@/modules/consultations/assistant-events";
 import type { IconSvgElement } from "@hugeicons/react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import type { Locale } from "date-fns";
@@ -31,7 +9,7 @@ import { format } from "date-fns";
 import { ar, de, enUS, es, fr, pt } from "date-fns/locale";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-
+import { Badge } from "@/components/ui/badge";
 import {
   Command,
   CommandDialog,
@@ -42,40 +20,62 @@ import {
   CommandList,
   CommandSeparator,
 } from "@/components/ui/command";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { suggestedPatients } from "@/modules/shell/model/palette-suggestions";
 import { Kbd } from "@/components/ui/kbd";
-import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { getPatientStatusMeta } from "@/config/status-meta";
+import { useFocus } from "@/contexts/focus-provider";
 import {
   useAppointmentsRepository,
-  usePatientsRepository,
   useOwnersRepository,
+  usePatientsRepository,
 } from "@/data/repositories";
-import type { View } from "@/types";
-import type { Appointment, Patient } from "@/types/db";
+import {
+  BookOpenTextIcon,
+  Calendar01Icon,
+  CalendarAdd01Icon,
+  Cancel01Icon,
+  ClinicIcon,
+  DashboardSquare01Icon,
+  FileSearchIcon,
+  HospitalBed01Icon,
+  MedicalFileIcon,
+  Package02Icon,
+  PillIcon,
+  Settings02Icon,
+  SparklesIcon,
+  StethoscopeIcon,
+  Task01Icon,
+  UserAdd01Icon,
+  UserGroupIcon,
+  VaccineIcon,
+  WalletIcon,
+} from "@/lib/hugeicons";
+import { getSpeciesGlyph } from "@/lib/species-icons";
+import { useHospitalizationEnabled } from "@/modules/clinique/clinic-services";
+import { openAssistant } from "@/modules/consultations/assistant-events";
+import type {
+  SearchSection,
+  SourceType,
+} from "@/modules/consultations/local-ai/embedding-index";
+import {
+  searchAllPatientsClinical,
+  searchAllPatientsFastLexical,
+} from "@/modules/consultations/local-ai/embedding-store";
+import { bestPassage, focusExcerpt } from "@/modules/consultations/local-ai/passage-search";
+import { highlightPassage } from "@/modules/consultations/local-ai/search-highlight";
+import {
+  matchesPatientReference,
+  patientReferenceSearchText,
+} from "@/modules/patients/reference/reference";
 import { parseActionQuery } from "@/modules/shell/model/action-query";
 import {
   prepareAppointment,
   prepareInvoice,
   prepareVaccination,
 } from "@/modules/shell/model/clinical-actions";
-import { useFocus } from "@/contexts/focus-provider";
-import { getSpeciesGlyph } from "@/lib/species-icons";
-import { getPatientStatusMeta } from "@/config/status-meta";
-import {
-  matchesPatientReference,
-  patientReferenceSearchText,
-} from "@/modules/patients/reference/reference";
-import { bestPassage, focusExcerpt } from "@/modules/consultations/local-ai/passage-search";
-import { highlightPassage } from "@/modules/consultations/local-ai/search-highlight";
-import {
-  searchAllPatientsFastLexical,
-  searchAllPatientsClinical,
-} from "@/modules/consultations/local-ai/embedding-store";
-import type {
-  SearchSection,
-  SourceType,
-} from "@/modules/consultations/local-ai/embedding-index";
+import { suggestedPatients } from "@/modules/shell/model/palette-suggestions";
+import type { View } from "@/types";
+import type { Appointment, Patient } from "@/types/db";
 
 const CLINICAL_ALL_SECTIONS: SearchSection[] = [
   "subjective",

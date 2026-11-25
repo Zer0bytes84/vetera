@@ -1,3 +1,11 @@
+import { HugeiconsIcon } from "@hugeicons/react";
+import { AnimatePresence, motion } from "framer-motion";
+import type React from "react";
+import { useState } from "react";
+import { Spinner } from "@/components/ui/spinner";
+import { useTauriDrag } from "@/hooks/use-tauri-drag";
+import { APP_NAME } from "@/lib/brand";
+import { guard } from "@/lib/guard";
 import {
   Alert02Icon,
   ArrowLeft01Icon,
@@ -10,21 +18,13 @@ import {
   UserCircle02Icon,
   ViewIcon,
 } from "@/lib/hugeicons";
-import { HugeiconsIcon } from "@hugeicons/react";
-import { AnimatePresence, motion } from "framer-motion";
-import type React from "react";
-import { useState } from "react";
-import { Spinner } from "@/components/ui/spinner";
-import { APP_NAME } from "@/lib/brand";
-import { useTauriDrag } from "@/hooks/use-tauri-drag";
-import { formatLicenseKey } from "@/services/licenseService";
 import {
   activateLicense,
   createLicenseRequestMailto,
 } from "@/services/licenseActivationService";
-import Logo from "./Logo";
+import { formatLicenseKey } from "@/services/licenseService";
 import { AuthBrandPanel, AuthGlassBackdrop } from "./auth-brand-panel";
-import { guard } from "@/lib/guard";
+import Logo from "./Logo";
 
 interface SetupWizardProps {
   onComplete: (userData: {

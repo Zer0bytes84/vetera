@@ -9,9 +9,9 @@ import {
   useTransactionsRepository,
 } from "@/data/repositories";
 import { buildDashboardMetrics, getCurrentLocale } from "@/lib/metrics";
+import { useDashboardFinancials } from "@/modules/dashboard/hooks/use-dashboard-financials";
 import type { View } from "@/types";
 import { PremiumFinancialAnalysis } from "./components/premium-financial-analysis";
-import { useDashboardFinancials } from "@/modules/dashboard/hooks/use-dashboard-financials";
 
 export function FinancialAnalyticsV2Page({
   onNavigate,

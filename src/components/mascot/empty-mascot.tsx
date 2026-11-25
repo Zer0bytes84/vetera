@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { EmptyMedia } from "@/components/ui/empty";
-import { Mascot } from "./mascot";
 import { useMascotPreferences } from "@/hooks/use-mascot-preferences";
+import { Mascot } from "./mascot";
 
 /**
  * The media of an empty state: the clinic's mascot, still, in place of an

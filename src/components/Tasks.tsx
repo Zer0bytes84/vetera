@@ -1,4 +1,13 @@
-import { ErrorState } from "@/design-system/patterns/error-state";
+import {
+  ArrowRightIcon,
+  ArrowUturnLeftIcon,
+  CheckIcon,
+  ChevronDownIcon,
+  PencilIcon,
+  PlusIcon,
+  TrashIcon,
+  UserIcon,
+} from "@heroicons/react/16/solid";
 import {
   BellIcon,
   CalendarDaysIcon,
@@ -9,35 +18,6 @@ import {
   MagnifyingGlassIcon,
   ShieldExclamationIcon,
 } from "@heroicons/react/20/solid";
-import { ArrowRightIcon, PlusIcon } from "@heroicons/react/16/solid";
-import { SearchableSelect } from "@/components/ui/searchable-select";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { usePatientReminders } from "@/modules/patient-reminders/use-patient-reminders";
-import type {
-  MedicalReminderProposal,
-  PatientReminder,
-  ReminderType,
-} from "@/modules/patient-reminders/store";
-import {
-  addCalendarMonths,
-  isMedicalReminderType,
-  localToday,
-  reminderTypesForSelect,
-} from "@/modules/patient-reminders/domain";
-import { MedicalReminderDialog } from "@/modules/patient-reminders/medical-reminder-dialog";
-import { patientRemindersService } from "@/modules/patient-reminders/service";
-import { announcePatientRemindersChanged } from "@/modules/patient-reminders/use-patient-reminders";
-import { PatientRemindersContent } from "@/modules/patient-reminders/patient-reminders-panel";
-import { ListSearch } from "@/components/ui/list-controls";
-import { formatDisplayText, formatNumber } from "@/utils/display-format";
-import {
-  ArrowUturnLeftIcon,
-  CheckIcon,
-  ChevronDownIcon,
-  PencilIcon,
-  TrashIcon,
-  UserIcon,
-} from "@heroicons/react/16/solid";
 import type React from "react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -46,10 +26,13 @@ import { SectionCards } from "@/components/section-cards";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { ListSearch } from "@/components/ui/list-controls";
 import {
   NativeSelect,
   NativeSelectOption,
 } from "@/components/ui/native-select";
+import { SearchableSelect } from "@/components/ui/searchable-select";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/contexts/AuthContext";
 import { useFocus } from "@/contexts/focus-provider";
@@ -59,21 +42,41 @@ import {
   useRemindersRepository,
   useTasksRepository,
 } from "@/data/repositories";
+import { ErrorState } from "@/design-system/patterns/error-state";
 import { cn } from "@/lib/utils";
+import {
+  addCalendarMonths,
+  isMedicalReminderType,
+  localToday,
+  reminderTypesForSelect,
+} from "@/modules/patient-reminders/domain";
+import { MedicalReminderDialog } from "@/modules/patient-reminders/medical-reminder-dialog";
+import { PatientRemindersContent } from "@/modules/patient-reminders/patient-reminders-panel";
+import { patientRemindersService } from "@/modules/patient-reminders/service";
+import type {
+  MedicalReminderProposal,
+  PatientReminder,
+  ReminderType,
+} from "@/modules/patient-reminders/store";
+import {
+  announcePatientRemindersChanged,
+  usePatientReminders,
+} from "@/modules/patient-reminders/use-patient-reminders";
 import type { Appointment, Patient, Reminder, Task } from "@/types/db";
+import { formatDisplayText, formatNumber } from "@/utils/display-format";
 import "./tasks.css";
-import { buildReminderQuiet, type ReminderQuiet } from "./reminder-quiet";
+import { DatePicker } from "@/components/ui/date-picker";
+import { Kbd } from "@/components/ui/kbd";
 import { Panel, Shell, ShellHeader } from "@/components/ui/surface";
+import { useListCursor } from "@/hooks/useListCursor";
+import { guard } from "@/lib/guard";
+import { AppointmentRelances } from "@/modules/agenda/components/appointment-relances";
 import {
   groupReminders,
   reminderBucket,
   sourceBreakdown,
 } from "./reminder-buckets";
-import { useListCursor } from "@/hooks/useListCursor";
-import { Kbd } from "@/components/ui/kbd";
-import { DatePicker } from "@/components/ui/date-picker";
-import { guard } from "@/lib/guard";
-import { AppointmentRelances } from "@/modules/agenda/components/appointment-relances";
+import { buildReminderQuiet, type ReminderQuiet } from "./reminder-quiet";
 
 type ReminderView = "today" | "upcoming" | "completed";
 type Scope = "mine" | "team";

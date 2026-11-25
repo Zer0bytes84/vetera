@@ -1,17 +1,9 @@
-import { isTauriRuntime } from "@/services/browser-store";
-import { generateId } from "@/services/sqlite/database";
-import { emitSQLiteDataChanged } from "@/hooks/useSQLite";
-import { MedicalReminderDialog } from "@/modules/patient-reminders/medical-reminder-dialog";
-import { onMedicalActRecorded } from "@/modules/patient-reminders/on-medical-act-recorded";
-import { patientRemindersService } from "@/modules/patient-reminders/service";
-import type { MedicalReminderProposal } from "@/modules/patient-reminders/store";
-import { announcePatientRemindersChanged } from "@/modules/patient-reminders/use-patient-reminders";
 import { Plus, Syringe } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-
 import { Button } from "@/components/ui/button";
+import { DatePicker } from "@/components/ui/date-picker";
 import { Dialog } from "@/components/ui/dialog";
 import { Field, FieldGroup } from "@/components/ui/field";
 import {
@@ -30,10 +22,17 @@ import { Textarea } from "@/components/ui/textarea";
 import { COMMON_VACCINES } from "@/config/status-meta";
 import { useAuth } from "@/contexts/AuthContext";
 import { useVaccinationsRepository } from "@/data/repositories";
+import { emitSQLiteDataChanged } from "@/hooks/useSQLite";
+import { guard } from "@/lib/guard";
+import { MedicalReminderDialog } from "@/modules/patient-reminders/medical-reminder-dialog";
+import { onMedicalActRecorded } from "@/modules/patient-reminders/on-medical-act-recorded";
+import { patientRemindersService } from "@/modules/patient-reminders/service";
+import type { MedicalReminderProposal } from "@/modules/patient-reminders/store";
+import { announcePatientRemindersChanged } from "@/modules/patient-reminders/use-patient-reminders";
+import { isTauriRuntime } from "@/services/browser-store";
+import { generateId } from "@/services/sqlite/database";
 import type { Vaccination } from "@/types/db";
 import { toDateInputValue } from "./patients-shared";
-import { DatePicker } from "@/components/ui/date-picker";
-import { guard } from "@/lib/guard";
 
 interface VaccinationDialogProps {
   onOpenChange: (open: boolean) => void;

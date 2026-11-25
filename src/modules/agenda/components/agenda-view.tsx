@@ -1,31 +1,10 @@
-import { useState } from "react";
-import { CalendarDays } from "lucide-react";
-import { AgendaStays } from "@/modules/hospitalizations/stays/agenda-stays";
-import { PatientDossierSearch } from "./patient-dossier-search";
-import { formatPersonName } from "@/utils/display-format";
-import {
-  Add01Icon,
-  Alert02Icon,
-  ArrowDown01Icon,
-  Calendar01Icon,
-  CheckmarkCircle02Icon,
-  SearchIcon,
-  StethoscopeIcon,
-  UserCircle02Icon,
-} from "@/lib/hugeicons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { fr } from "date-fns/locale";
-
+import { CalendarDays } from "lucide-react";
+import { useState } from "react";
 import { AgendaListView } from "@/components/AgendaListView";
-import {
-  AgendaCalendar,
-  type CalendarView,
-} from "@/modules/agenda/components/agenda-calendar";
-import { AgendaDayLoadCard } from "@/modules/agenda/components/agenda-day-load";
-import { findNextAppointmentAfter } from "@/modules/agenda/components/agenda-day-load-model";
 import MotivationalHeader from "@/components/MotivationalHeader";
 import { SectionCards } from "@/components/section-cards";
-import { isActiveBooking } from "./agenda-slots";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -48,6 +27,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import { DatePicker } from "@/components/ui/date-picker";
 import { Dialog } from "@/components/ui/dialog";
 import {
   Empty,
@@ -81,45 +66,58 @@ import {
 } from "@/components/ui/popover";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Spinner } from "@/components/ui/spinner";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { APPOINTMENT_STATUS_META } from "@/config/status-meta";
-
-import type { RecurrenceFrequency } from "@/types/db";
 import {
+  Add01Icon,
+  Alert02Icon,
+  ArrowDown01Icon,
+  Calendar01Icon,
+  CheckmarkCircle02Icon,
+  SearchIcon,
+  StethoscopeIcon,
+  UserCircle02Icon,
+} from "@/lib/hugeicons";
+import {
+  AgendaCalendar,
+  type CalendarView,
+} from "@/modules/agenda/components/agenda-calendar";
+import { AgendaDayLoadCard } from "@/modules/agenda/components/agenda-day-load";
+import { findNextAppointmentAfter } from "@/modules/agenda/components/agenda-day-load-model";
+import {
+  AgendaDayView,
+  AgendaWeekView,
   APPOINTMENT_TYPES,
+  AppointmentStatusBadge,
   AppointmentTimePicker,
-  DURATION_OPTIONS,
-  RECURRENCE_FREQUENCIES,
+  AppointmentTypeBadge,
   DAY_OF_WEEK_LABELS,
-  TABLE_SCOPES,
-  TABLE_TABS,
-  type ViewMode,
-  type TableTab,
-  normalizeDate,
+  DURATION_OPTIONS,
   formatDateInput,
-  parseDateInput,
-  isSameDay,
-  formatTime,
-  formatTimeCompact,
   formatDateLabel,
   formatDuration,
   formatOwnerName,
-  getPatientProfile,
-  normalizeEntityId,
+  formatTime,
+  formatTimeCompact,
   getAgeLabel,
-  AppointmentTypeBadge,
-  AppointmentStatusBadge,
-  AgendaDayView,
-  AgendaWeekView,
+  getPatientProfile,
+  isSameDay,
+  normalizeDate,
+  normalizeEntityId,
+  parseDateInput,
+  RECURRENCE_FREQUENCIES,
+  TABLE_SCOPES,
+  TABLE_TABS,
+  type TableTab,
+  type ViewMode,
 } from "@/modules/agenda/components/agenda-shared";
+import { AgendaStays } from "@/modules/hospitalizations/stays/agenda-stays";
+import type { RecurrenceFrequency } from "@/types/db";
+import { formatPersonName } from "@/utils/display-format";
 import type { AgendaViewProps } from "../hooks/use-agenda-page-model";
-import { DatePicker } from "@/components/ui/date-picker";
+import { isActiveBooking } from "./agenda-slots";
+import { PatientDossierSearch } from "./patient-dossier-search";
 
 export function AgendaView(props: AgendaViewProps) {
   const {

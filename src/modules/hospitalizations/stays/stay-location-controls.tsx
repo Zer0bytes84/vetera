@@ -2,11 +2,11 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
+import { guard } from "@/lib/guard";
 import { ACTIVE_STAY_STATUSES } from "./domain";
 import { staysService } from "./service";
 import type { Stay, StayLocation } from "./store";
 import { announceStaysChanged, useStays } from "./use-stays";
-import { guard } from "@/lib/guard";
 export function LocationAvailability({
   location,
   occupied,

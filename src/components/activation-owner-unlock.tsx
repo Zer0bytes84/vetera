@@ -1,10 +1,10 @@
-import { useState, type ReactNode } from "react";
+import { type ReactNode, useState } from "react";
+import { guard } from "@/lib/guard";
 import { requireActivationOwner } from "@/services/adminAccess";
 import {
   setStoredAdminToken,
   verifyAdminToken,
 } from "@/services/licenseActivationService";
-import { guard } from "@/lib/guard";
 
 /** The server secret is entered explicitly and never persisted on disk. */
 export function ActivationOwnerUnlock({ children }: { children: ReactNode }) {

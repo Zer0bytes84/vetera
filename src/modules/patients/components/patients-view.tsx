@@ -1,18 +1,8 @@
 import { UsersIcon } from "@heroicons/react/20/solid";
-import {
-  Add01Icon,
-  Calendar01Icon,
-  CheckmarkCircle02Icon,
-  StethoscopeIcon,
-} from "@/lib/hugeicons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useState } from "react";
-
 import MotivationalHeader from "@/components/MotivationalHeader";
-import { FormDialogHeader } from "@/components/ui/form-dialog";
-
 import { SectionCards } from "@/components/section-cards";
-
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import {
@@ -22,20 +12,24 @@ import {
   EmptyHeader,
   EmptyTitle,
 } from "@/components/ui/empty";
-
+import { FormDialogHeader } from "@/components/ui/form-dialog";
 import { ListFilter } from "@/components/ui/list-controls";
 import { Spinner } from "@/components/ui/spinner";
-
 import { PATIENT_STATUS_META } from "@/config/status-meta";
-
-import {
-  PatientDetailsDialog,
-  PatientCreateDialog,
-} from "@/modules/patients/components/patients-shared";
 import { useListCursor } from "@/hooks/useListCursor";
+import {
+  Add01Icon,
+  Calendar01Icon,
+  CheckmarkCircle02Icon,
+  StethoscopeIcon,
+} from "@/lib/hugeicons";
+import {
+  PatientCreateDialog,
+  PatientDetailsDialog,
+} from "@/modules/patients/components/patients-shared";
 import type { PatientsViewProps } from "../hooks/use-patients-page-model";
-import { PatientsTable } from "./patients-table";
 import { OwnerContactDialog } from "./owner-contact-dialog";
+import { PatientsTable } from "./patients-table";
 import "../patients-list.css";
 
 export function PatientsView(props: PatientsViewProps) {

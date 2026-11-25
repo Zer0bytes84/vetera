@@ -1,14 +1,19 @@
-import Placeholder from "@tiptap/extension-placeholder";
 import { TaskItem, TaskList } from "@tiptap/extension-list";
+import Placeholder from "@tiptap/extension-placeholder";
 import { TableKit } from "@tiptap/extension-table";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import { Columns3, PenLine, Plus, Rows3, Table2, Trash2 } from "@/lib/icons";
 import type React from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   FormDialogBody,
   FormDialogContent,
@@ -16,13 +21,9 @@ import {
   FormDialogHeader,
 } from "@/components/ui/form-dialog";
 import { Input } from "@/components/ui/input";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Spinner } from "@/components/ui/spinner";
+import { guard } from "@/lib/guard";
+import { Columns3, PenLine, Plus, Rows3, Table2, Trash2 } from "@/lib/icons";
 import { assistWithNote } from "@/services/geminiService";
 import {
   isLocalTextLoading,
@@ -31,11 +32,10 @@ import {
 } from "@/services/localTextService";
 import SelectionBubbleMenu from "./SelectionBubbleMenu";
 import SlashCommands, {
+  createSlashCommandsSuggestion,
   getSlashCommandItems,
   type SlashCommandItem,
-  createSlashCommandsSuggestion,
 } from "./SlashCommandsExtension";
-import { guard } from "@/lib/guard";
 
 interface EditorProps {
   content: string;

@@ -1,7 +1,7 @@
 import "./patient-reminders.css";
-import { useState } from "react";
-import { CalendarDays, CheckCircle2 } from "lucide-react";
 import { fr } from "date-fns/locale";
+import { CalendarDays, CheckCircle2 } from "lucide-react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Dialog } from "@/components/ui/dialog";
@@ -27,6 +27,7 @@ import { SearchableSelect } from "@/components/ui/searchable-select";
 import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
 import { usePatientsRepository } from "@/data/repositories";
+import { guard, guardSync } from "@/lib/guard";
 import {
   addCalendarMonths,
   assertDateOnly,
@@ -34,7 +35,6 @@ import {
   localToday,
 } from "./domain";
 import type { MedicalReminderProposal, ReminderType } from "./store";
-import { guard, guardSync } from "@/lib/guard";
 
 export function MedicalReminderDialog({
   editable = false,

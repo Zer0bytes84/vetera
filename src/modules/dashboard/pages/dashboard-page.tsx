@@ -1,31 +1,34 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { showInFlux } from "@/modules/flow-board/open-in-flux";
 import { useReducedMotion } from "framer-motion";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import {
   useAppointmentsRepository,
+  useHospitalizationsRepository,
   useOwnersRepository,
   usePatientsRepository,
   useProductsRepository,
   useTasksRepository,
   useTransactionsRepository,
-  useVaccinationsRepository,
-  useHospitalizationsRepository,
   useUsersRepository,
+  useVaccinationsRepository,
 } from "@/data/repositories";
-import { useNowTick } from "@/hooks/useNowTick";
-import { useAlertCare } from "../use-alert-care";
-import type { FreeSlot } from "../model/free-slots";
 import { useDelayedSkeleton } from "@/hooks/useDelayedSkeleton";
+import { useNowTick } from "@/hooks/useNowTick";
 import { usePatientIntentPrefetch } from "@/hooks/usePatientIntentPrefetch";
+import { showInFlux } from "@/modules/flow-board/open-in-flux";
 import { openPatientPeek } from "@/modules/patients/pages/patient-peek";
+import { prepareAppointment } from "@/modules/shell/model/clinical-actions";
+import { TourInvitation } from "@/modules/tour/tour-invitation";
 import type { View } from "@/types";
+import type { ActionFilter } from "../components/clinical/actions-module";
 import {
   ClinicalDashboardView,
   type WidgetState,
 } from "../components/clinical-dashboard-view";
-import { buildClinicalAlerts, buildTodaySchedule } from "../v2/model";
-import { buildFinancialOverview } from "../v2/financial-model";
+import { DashboardModeToggle } from "../components/dashboard-mode-toggle";
+import { PremiumAnalytics } from "../components/premium-analytics";
+import { useDashboardFinancials } from "../hooks/use-dashboard-financials";
+import { useDashboardVersion } from "../hooks/use-dashboard-version";
 import {
   buildClinicalCash,
   buildClinicalFollowUp,
@@ -35,40 +38,36 @@ import {
   buildPatientFollowUpRows,
   type ClinicalCashPeriod,
 } from "../model/clinical-dashboard";
-import { addDays } from "../v2/model";
-import { prepareAppointment } from "@/modules/shell/model/clinical-actions";
-import type { ActionFilter } from "../components/clinical/actions-module";
-import { useDashboardVersion } from "../hooks/use-dashboard-version";
-import { DashboardModeToggle } from "../components/dashboard-mode-toggle";
-import { useDashboardFinancials } from "../hooks/use-dashboard-financials";
-import { TourInvitation } from "@/modules/tour/tour-invitation";
-import { PremiumAnalytics } from "../components/premium-analytics";
+import type { FreeSlot } from "../model/free-slots";
 import {
-  buildPremiumAnalytics,
-  dashboardPresentationData,
   type AnalyticsPeriod,
+  buildPremiumAnalytics,
   type CustomRange,
   type DashboardPeriod,
+  dashboardPresentationData,
 } from "../model/premium-analytics";
+import { useAlertCare } from "../use-alert-care";
+import { buildFinancialOverview } from "../v2/financial-model";
+import { addDays, buildClinicalAlerts, buildTodaySchedule } from "../v2/model";
 import "../components/premium-analytics.css";
-import { DashboardWatch } from "../components/dashboard-watch";
+import { guard } from "@/lib/guard";
+import { useHospitalizationEnabled } from "@/modules/clinique/clinic-services";
 import { OccupancyUnits } from "@/modules/hospitalizations/stays/occupancy-units";
 import { useStays } from "@/modules/hospitalizations/stays/use-stays";
+import { usePatientReminders } from "@/modules/patient-reminders/use-patient-reminders";
+import { DashboardWatch } from "../components/dashboard-watch";
+import { MorningWatch } from "../components/morning-watch";
 import {
   buildHospitalizedWatch,
   buildStockWatch,
   buildUpcomingReminders,
 } from "../model/dashboard-watch";
 import { buildSpeciesSplit } from "../model/dashboard-widgets";
-import { usePatientReminders } from "@/modules/patient-reminders/use-patient-reminders";
-import { useHospitalizationEnabled } from "@/modules/clinique/clinic-services";
-import { MorningWatch } from "../components/morning-watch";
 import {
   buildMorningWatch,
   type MorningItem,
   type MorningStatus,
 } from "../model/morning-watch";
-import { guard } from "@/lib/guard";
 
 export interface DashboardPageProps {
   onNavigate?: (view: View) => void;

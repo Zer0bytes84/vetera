@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import {
-  documentsService,
-  MANAGED_DOCUMENTS_CHANGED,
-} from "../document-service";
+import { guard } from "@/lib/guard";
 import type {
   ManagedDocumentTemplate,
   PatientDocument,
 } from "../document-domain";
-import { guard } from "@/lib/guard";
+import {
+  documentsService,
+  MANAGED_DOCUMENTS_CHANGED,
+} from "../document-service";
 
 function useDocumentRows<T>(load: () => Promise<T[]>) {
   const [rows, setRows] = useState<T[]>([]);

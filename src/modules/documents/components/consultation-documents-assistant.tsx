@@ -1,5 +1,26 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { toast } from "sonner";
+import { Bubble, BubbleContent } from "@/components/ui/bubble";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { Marker, MarkerContent, MarkerIcon } from "@/components/ui/marker";
+import { Message, MessageContent } from "@/components/ui/message";
+import {
+  NativeSelect,
+  NativeSelectOption,
+} from "@/components/ui/native-select";
+import { Segmented } from "@/components/ui/segmented-control";
+import { Textarea } from "@/components/ui/textarea";
+import { useAuth } from "@/contexts/AuthContext";
+import { useSQLite } from "@/hooks/useSQLite";
+import { guard, guardSync } from "@/lib/guard";
 import {
   Check,
   ChevronDown,
@@ -8,25 +29,16 @@ import {
   UploadSimple,
   X,
 } from "@/lib/icons";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import {
-  NativeSelect,
-  NativeSelectOption,
-} from "@/components/ui/native-select";
-import { Message, MessageContent } from "@/components/ui/message";
-import { Bubble, BubbleContent } from "@/components/ui/bubble";
-import { Marker, MarkerContent, MarkerIcon } from "@/components/ui/marker";
+  EMPTY_MODEL_STATUS,
+  getLocalModels,
+  importLocalModel,
+  type LocalModelStatus,
+} from "@/modules/consultations/local-ai/models";
 import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
-import { useAuth } from "@/contexts/AuthContext";
-import { useSQLite } from "@/hooks/useSQLite";
+  isSoapReviewed,
+  soapSourceKey,
+} from "@/modules/consultations/local-ai/soap-review";
 import type {
   Appointment,
   ConsultationDocument,
@@ -35,42 +47,30 @@ import type {
   Owner,
   Patient,
 } from "@/types/db";
-import {
-  isSoapReviewed,
-  soapSourceKey,
-} from "@/modules/consultations/local-ai/soap-review";
-import {
-  EMPTY_MODEL_STATUS,
-  getLocalModels,
-  importLocalModel,
-  type LocalModelStatus,
-} from "@/modules/consultations/local-ai/models";
-import { Segmented } from "@/components/ui/segmented-control";
+import type { PatientDocument } from "../document-domain";
 import { useDocumentTemplates } from "../hooks/use-document-templates";
 import { usePatientDocuments } from "../hooks/use-managed-documents";
-import type { PatientDocument } from "../document-domain";
+import { exportClinicalDocument } from "../lib/document-pdf";
+import {
+  assertReadableFile,
+  type DocumentAnswer,
+  MAX_DOCUMENT_CHARACTERS,
+  type ReadDocument,
+} from "../lib/document-reading";
+import { renderClinicalDocument } from "../lib/document-templates";
 import {
   attachmentFile,
   readPatientDocument,
 } from "../lib/patient-document-reading";
-import { renderClinicalDocument } from "../lib/document-templates";
-import {
-  readLocalDocument,
-  type ReadingProgress,
-} from "../lib/read-local-document";
 import { readDocumentAnswer } from "../lib/read-document-answer";
 import {
-  saveReviewedDocument,
-  type ReviewedDocumentInput,
-} from "../lib/save-reviewed-document";
-import { exportClinicalDocument } from "../lib/document-pdf";
+  type ReadingProgress,
+  readLocalDocument,
+} from "../lib/read-local-document";
 import {
-  type DocumentAnswer,
-  type ReadDocument,
-  MAX_DOCUMENT_CHARACTERS,
-  assertReadableFile,
-} from "../lib/document-reading";
-import { guard, guardSync } from "@/lib/guard";
+  type ReviewedDocumentInput,
+  saveReviewedDocument,
+} from "../lib/save-reviewed-document";
 
 type Draft = Pick<ReviewedDocumentInput, "title" | "text" | "source">;
 function fileFromAttachment(document: ConsultationDocument): File {

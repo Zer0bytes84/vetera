@@ -1,17 +1,17 @@
-import { CLINICAL_STOCK_MIGRATION_SQL } from "@/modules/stock/clinical-stock-migration";
-import { TASK_REMINDER_TYPES_MIGRATION_SQL } from "@/modules/patient-reminders/task-types-migration";
-import { PATIENT_REMINDERS_MIGRATION_SQL } from "@/modules/patient-reminders/migration";
-import { MEDICAL_REMINDERS_MIGRATION_SQL } from "@/modules/patient-reminders/medical-reminders-migration";
-import { STAYS_MIGRATION_SQL } from "@/modules/hospitalizations/stays/migration";
-import { CARE_TASKS_MIGRATION_SQL } from "@/modules/care-tasks/migration";
 import { CARE_COMPLETION_ROLLBACK_MIGRATION_SQL } from "@/modules/care-tasks/completion-rollback-migration";
+import { CARE_TASKS_MIGRATION_SQL } from "@/modules/care-tasks/migration";
 import { DOCUMENTS_MIGRATION_SQL } from "@/modules/documents/document-migration";
+import { STAYS_MIGRATION_SQL } from "@/modules/hospitalizations/stays/migration";
+import { MEDICAL_REMINDERS_MIGRATION_SQL } from "@/modules/patient-reminders/medical-reminders-migration";
+import { PATIENT_REMINDERS_MIGRATION_SQL } from "@/modules/patient-reminders/migration";
+import { TASK_REMINDER_TYPES_MIGRATION_SQL } from "@/modules/patient-reminders/task-types-migration";
+import { PATIENT_REFERENCES_MIGRATION_SQL } from "@/modules/patients/reference/migration";
 import { ROOMS_MIGRATION_SQL } from "@/modules/rooms/migration";
+import { CLINICAL_STOCK_MIGRATION_SQL } from "@/modules/stock/clinical-stock-migration";
 import {
   VISIT_FLOW_MIGRATION_SQL,
   VISIT_FLOW_NO_CHARGE_MIGRATION_SQL,
 } from "@/modules/visit-flow/migration";
-import { PATIENT_REFERENCES_MIGRATION_SQL } from "@/modules/patients/reference/migration";
 import {
   MIGRATION_001_SQL,
   MIGRATION_002_SQL,
@@ -221,12 +221,13 @@ export const SQLITE_MIGRATIONS: readonly SqliteMigration[] = [
     sql: NOTE_PIN_MIGRATION_SQL,
   },
 ] as const;
+
 import {
   LIBRARY_MIGRATION_SQL,
   NOTE_PIN_MIGRATION_SQL,
 } from "@/modules/documents/library-migration";
 import { DISPENSING_MIGRATION_SQL } from "@/modules/stock/dispensing-migration";
 import { MOVEMENT_SNAPSHOT_MIGRATION_SQL } from "@/modules/stock/movement-snapshot-migration";
-import { STOCK_LOTS_MIGRATION_SQL } from "@/modules/stock/stock-lots-migration";
 import { PURCHASING_MIGRATION_SQL } from "@/modules/stock/purchasing-migration";
+import { STOCK_LOTS_MIGRATION_SQL } from "@/modules/stock/stock-lots-migration";
 import { STOCK_OPERATIONS_MIGRATION_SQL } from "@/modules/stock/stock-operations-migration";

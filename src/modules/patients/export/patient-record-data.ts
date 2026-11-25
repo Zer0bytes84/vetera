@@ -1,4 +1,3 @@
-import { patientDocumentName } from "@/modules/patients/reference/reference";
 import { isSoapReviewed } from "@/modules/consultations/local-ai/soap-review";
 import {
   DOCUMENT_TYPES,
@@ -6,6 +5,7 @@ import {
   type PatientDocument,
 } from "@/modules/documents/document-domain";
 import { assertDateOnly } from "@/modules/patient-reminders/domain";
+import { patientDocumentName } from "@/modules/patients/reference/reference";
 import type { InvoiceSettings } from "@/services/invoiceSettingsService";
 import type {
   Appointment,

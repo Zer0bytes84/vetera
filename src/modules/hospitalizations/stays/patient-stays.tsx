@@ -1,6 +1,6 @@
-import { ErrorState } from "@/design-system/patterns/error-state";
 import { Button } from "@/components/ui/button";
 import { useFocus } from "@/contexts/focus-provider";
+import { ErrorState } from "@/design-system/patterns/error-state";
 import { useStays } from "./use-stays";
 export function PatientStays({
   patientId,

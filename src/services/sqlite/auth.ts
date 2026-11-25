@@ -1,4 +1,3 @@
-import { getBrowserPasswordHash } from "../browserCredentials";
 import bcrypt from "bcryptjs";
 import {
   clearBrowserRows,
@@ -8,6 +7,7 @@ import {
   isTauriRuntime,
   updateBrowserRow,
 } from "../browser-store";
+import { getBrowserPasswordHash } from "../browserCredentials";
 import { generateId, runDbOperation, runDbRead } from "./database";
 
 export interface LoginCredentials {

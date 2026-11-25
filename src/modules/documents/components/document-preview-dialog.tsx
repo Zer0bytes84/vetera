@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import {
   Check,
   Download,
@@ -8,10 +7,9 @@ import {
   Save,
   X,
 } from "lucide-react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
@@ -19,6 +17,8 @@ import {
   DialogDescription,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/contexts/AuthContext";
 import { isTauriRuntime } from "@/services/browser-store";
 import {

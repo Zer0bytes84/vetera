@@ -1,4 +1,17 @@
-import { useState, useId, useEffect } from "react";
+import { useEffect, useId, useState } from "react";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
+import {
+  ActionButton,
+  EmptyState,
+  SkeletonBlock,
+} from "@/design-system/primitives";
+import { Activity, CalendarBlank, Notebook, Syringe } from "@/lib/icons";
 import type {
   Appointment,
   Owner,
@@ -7,29 +20,16 @@ import type {
   WeightEntry,
 } from "@/types/db";
 import {
-  ActionButton,
-  EmptyState,
-  SkeletonBlock,
-} from "@/design-system/primitives";
+  getNextDueVaccination,
+  getVaccinationStatus,
+} from "../lib/vaccination-status";
 import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
-import { Activity, CalendarBlank, Notebook, Syringe } from "@/lib/icons";
-import {
+  handleRecordTabKeys,
   isClinicalSignal,
   OwnerContact,
   PatientIdentity,
   recordDate,
-  handleRecordTabKeys,
 } from "./medical-record-summary";
-import {
-  getNextDueVaccination,
-  getVaccinationStatus,
-} from "../lib/vaccination-status";
 import { PatientSafetyZone } from "./patient-safety-zone";
 import { RecordBlockHeading } from "./record-block-heading";
 

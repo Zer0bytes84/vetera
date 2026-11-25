@@ -1,26 +1,27 @@
 import { ErrorState } from "@/design-system/patterns/error-state";
 import "./hospitalisation.css";
-import { LocationAvailability } from "./stay-location-controls";
-import { OccupancyUnits } from "./occupancy-units";
-import { StayRounds } from "./stay-rounds";
-import { StayDetail } from "./stay-detail";
-import { AdmissionForm, LocationForm } from "./stay-forms";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
 } from "@/components/ui/dialog";
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { usePatientsRepository } from "@/data/repositories";
-import { ACTIVE_STAY_STATUSES, stayDays, type StayStatus } from "./domain";
-import { useStays } from "./use-stays";
 import { PageHeader } from "@/design-system/patterns/page-header";
-import { HugeiconsIcon } from "@hugeicons/react";
 import { Hospital01Icon } from "@/lib/hugeicons";
+import { ACTIVE_STAY_STATUSES, type StayStatus, stayDays } from "./domain";
+import { OccupancyUnits } from "./occupancy-units";
+import { StayDetail } from "./stay-detail";
+import { AdmissionForm, LocationForm } from "./stay-forms";
+import { LocationAvailability } from "./stay-location-controls";
+import { StayRounds } from "./stay-rounds";
+import { useStays } from "./use-stays";
+
 const labels: Record<StayStatus, string> = {
   admis: "Admis",
   en_cours: "En cours",
