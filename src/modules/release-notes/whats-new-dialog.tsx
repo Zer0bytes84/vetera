@@ -49,7 +49,8 @@ export function WhatsNewGate() {
             <DialogDescription className="text-[0.8125rem] leading-5">Ce qui change pour vous au cabinet.</DialogDescription>
           </div>
         </div>
-        <Panel className="whats-new-panel">
+        {/* La seule partie qui défile quand l'écran est trop bas : atteignable au clavier, nommée pour un lecteur d'écran. */}
+        <Panel aria-label={`Nouveautés de la version ${note.version}`} className="whats-new-panel" role="region" tabIndex={0}>
           <ReleaseHighlights note={note} />
         </Panel>
         <div className="whats-new-foot">

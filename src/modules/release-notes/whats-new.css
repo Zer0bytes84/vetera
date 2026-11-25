@@ -5,6 +5,10 @@
 :root .whats-new-dialog.whats-new-dialog[data-slot="dialog-content"] {
   width: min(480px, calc(100vw - 32px));
   max-width: none;
+  /* Jamais plus haute que l'écran (16 px de marge en haut et en bas) : l'en-tête et « Compris » restent visibles, seule
+     la liste des nouveautés défile (24 novembre 2026 : la note de la 5.2.0 faisait sortir les deux de l'écran). */
+  max-height: calc(100dvh - 32px);
+  grid-template-rows: auto minmax(0, 1fr) auto;
   gap: 0;
   padding: 6px;
   border: 0;
@@ -22,10 +26,17 @@
   padding: 18px 18px 18px;
 }
 .whats-new-dialog .whats-new-panel {
+  min-height: 0;
   padding: 24px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 .whats-new-dialog .whats-new-foot {
   display: flex;
   justify-content: flex-end;
   padding: 12px 6px 6px;
+}
+.whats-new-dialog .whats-new-panel:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: -2px;
 }
