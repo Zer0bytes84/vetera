@@ -567,6 +567,9 @@ function AppShellInner() {
 
   return (
     <SidebarProvider
+      className={cn("relative isolate !bg-sidebar", isRtl && "rtl-shell")}
+      defaultOpen={true}
+      dir={isRtl ? "rtl" : "ltr"}
       onMouseDownCapture={(event) => {
         const target = event.target as HTMLElement;
         // Portalled dialogs/menus must never become window drag surfaces.
@@ -583,9 +586,6 @@ function AppShellInner() {
           handleWindowMouseDown(event);
         }
       }}
-      defaultOpen={true}
-      className={cn("relative isolate !bg-sidebar", isRtl && "rtl-shell")}
-      dir={isRtl ? "rtl" : "ltr"}
       style={
         {
           "--header-height": "60px",
@@ -598,9 +598,9 @@ function AppShellInner() {
       {consultationPickerOpen && (
         <Suspense fallback={null}>
           <QuickConsultation
-            open
-            onOpenChange={setConsultationPickerOpen}
             onNavigate={handleNavigate}
+            onOpenChange={setConsultationPickerOpen}
+            open
           />
         </Suspense>
       )}
@@ -630,11 +630,6 @@ function AppShellInner() {
       />
 
       <SidebarInset
-        style={
-          {
-            "--header-content-clearance": "var(--titlebar-clearance)",
-          } as React.CSSProperties
-        }
         className={cn(
           "!border-none backdrop-blur-xl",
           "!m-0 !rounded-none !bg-white/40 dark:!bg-zinc-950/40 p-0 shadow-none ring-0",
@@ -644,6 +639,11 @@ function AppShellInner() {
             "sm:mr-[var(--assistant-width)]",
           "max-h-dvh"
         )}
+        style={
+          {
+            "--header-content-clearance": "var(--titlebar-clearance)",
+          } as React.CSSProperties
+        }
       >
         <div
           className={cn(
@@ -727,12 +727,13 @@ function AppShellInner() {
                 {/* 3. Assistant IA */}
                 <ShortcutTooltip label="Assistant IA" shortcut="⌘ J">
                   <button
-                    type="button"
-                    aria-label="Ouvrir l'Assistant IA (⌘J)"
                     aria-haspopup="dialog"
                     aria-keyshortcuts="Meta+J Control+J"
-                    onFocus={prefetchConsultationAssistant}
-                    onPointerEnter={prefetchConsultationAssistant}
+                    aria-label="Ouvrir l'Assistant IA (⌘J)"
+                    className={cn(
+                      "topIcon",
+                      aiAssistantOpen && "!bg-primary !text-primary-foreground"
+                    )}
                     onClick={() =>
                       setAiAssistantOpen((prev) => {
                         const next = !prev;
@@ -740,10 +741,9 @@ function AppShellInner() {
                         return next;
                       })
                     }
-                    className={cn(
-                      "topIcon",
-                      aiAssistantOpen && "!bg-primary !text-primary-foreground"
-                    )}
+                    onFocus={prefetchConsultationAssistant}
+                    onPointerEnter={prefetchConsultationAssistant}
+                    type="button"
                   >
                     <ToolbarIcon name="assistant" />
                   </button>
@@ -751,12 +751,12 @@ function AppShellInner() {
 
                 <ShortcutTooltip label="Notifications">
                   <button
+                    aria-expanded={notificationsOpen}
+                    aria-label="Notifications"
+                    className="topIcon relative"
+                    onClick={() => setNotificationsOpen((current) => !current)}
                     ref={notificationsButtonRef}
                     type="button"
-                    aria-label="Notifications"
-                    aria-expanded={notificationsOpen}
-                    onClick={() => setNotificationsOpen((current) => !current)}
-                    className="topIcon relative"
                   >
                     <ToolbarIcon name="notifications" />
                     {unreadCount > 0 && (
@@ -768,12 +768,12 @@ function AppShellInner() {
                 </ShortcutTooltip>
 
                 <NotificationCenter
-                  hideTrigger
-                  open={notificationsOpen}
-                  onOpenChange={setNotificationsOpen}
                   anchor={notificationsButtonRef}
+                  hideTrigger
                   onNavigate={handleNavigate}
                   onNavigateToPatient={handleNavigateToPatient}
+                  onOpenChange={setNotificationsOpen}
+                  open={notificationsOpen}
                 />
               </div>
 
@@ -787,8 +787,8 @@ function AppShellInner() {
 
           {/* View content */}
           <div
-            data-slot="shell-view-content"
             className="flex min-h-0 flex-1 flex-col gap-4 py-4"
+            data-slot="shell-view-content"
           >
             <div
               className="app-view-enter min-h-0 min-w-0 flex-1"
@@ -811,7 +811,7 @@ function AppShellInner() {
                   "parametres",
                 ] as View[]
               ).includes(currentView) && (
-                <SectionGarden view={currentView} onNavigate={handleNavigate} />
+                <SectionGarden onNavigate={handleNavigate} view={currentView} />
               )}
               {content}
             </div>
@@ -824,13 +824,13 @@ function AppShellInner() {
       {peekPatientId && (
         <PatientPeek
           follow={peekFollows}
-          patientId={peekPatientId}
           onClose={() => setPeekPatientId(null)}
           onOpenFull={() => {
             const id = peekPatientId;
             setPeekPatientId(null);
             handleNavigateToPatient(id);
           }}
+          patientId={peekPatientId}
         />
       )}
       <CommandPalette
@@ -840,10 +840,10 @@ function AppShellInner() {
         onNavigateToPatient={handleNavigateToPatient}
       />
       <ConsultationAssistantPanel
-        open={aiAssistantOpen}
-        topInset={isDesktopRuntime ? 20 : 0}
         onCollapsedChange={setIsAssistantCollapsed}
         onExited={releaseAssistantContent}
+        open={aiAssistantOpen}
+        topInset={isDesktopRuntime ? 20 : 0}
       >
         {(aiAssistantOpen || assistantContentMounted) && (
           <Suspense
@@ -854,9 +854,9 @@ function AppShellInner() {
             }
           >
             <LocalConsultationAssistant
-              patientId={assistantPatientId ?? currentPatientId ?? undefined}
               appointmentId={assistantAppointmentId}
               onClose={handleCloseAIAgent}
+              patientId={assistantPatientId ?? currentPatientId ?? undefined}
             />
           </Suspense>
         )}

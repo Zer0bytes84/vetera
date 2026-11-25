@@ -802,12 +802,12 @@ export default function CommandPalette({
 
   return (
     <CommandDialog
-      title="Palette de commandes"
-      description="Recherche rapide, navigation et dossiers patients."
       className="command-palette sm:!top-[15%] sm:!-translate-y-0 !max-w-[680px] rounded-3xl! border-border/80 bg-popover/95 p-0 shadow-[0_24px_70px_-20px_rgba(0,0,0,0.22)] backdrop-blur-2xl dark:bg-zinc-900/95 dark:border-white/10 dark:shadow-[0_28px_80px_-24px_rgba(0,0,0,0.8)]"
+      description="Recherche rapide, navigation et dossiers patients."
       onOpenChange={(open) => !open && onClose()}
       open={isOpen}
       overlayClassName="data-closed:!animate-none data-open:!animate-none bg-black/40 backdrop-blur-sm dark:bg-black/60"
+      title="Palette de commandes"
     >
       <Command
         className="max-h-[min(720px,calc(100dvh-4rem))] rounded-3xl! bg-transparent text-popover-foreground [&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:font-semibold [&_[cmdk-group-heading]]:t-12 [&_[cmdk-group-heading]]:text-muted-foreground/70 [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-wider [&_[cmdk-group]]:px-2 [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-1 [&_[cmdk-item]]:px-3 [&_[cmdk-item]]:py-2.5"
@@ -825,39 +825,39 @@ export default function CommandPalette({
             })}
             autoFocus={isOpen}
             data-command-palette-input="true"
-            onValueChange={setQuery}
-            placeholder="Rechercher un patient, une page…"
-            value={query}
             endAddon={
               query ? (
                 <button
-                  type="button"
-                  onClick={() => setQuery("")}
-                  className="rounded-md p-1 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
                   aria-label="Effacer la recherche"
+                  className="rounded-md p-1 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                  onClick={() => setQuery("")}
+                  type="button"
                 >
-                  <HugeiconsIcon icon={Cancel01Icon} className="size-3.5" />
+                  <HugeiconsIcon className="size-3.5" icon={Cancel01Icon} />
                 </button>
               ) : (
                 <Kbd className="command-palette-esc h-5 px-1.5 t-12">esc</Kbd>
               )
             }
+            onValueChange={setQuery}
+            placeholder="Rechercher un patient, une page…"
+            value={query}
           />
 
           {/* Onglets de filtrage */}
           <div className="px-3 pt-1">
             <Tabs
-              value={group}
+              className="w-full"
               onValueChange={(value) =>
                 setGroup(value as "all" | "records" | "commands")
               }
-              className="w-full"
+              value={group}
             >
               <TabsList
-                tabsStyle="segmented"
-                variant="line"
                 aria-label="Catégorie de résultats"
                 className="h-8 gap-1 border-none bg-transparent p-0"
+                tabsStyle="segmented"
+                variant="line"
               >
                 {(
                   [
@@ -867,9 +867,9 @@ export default function CommandPalette({
                   ] as const
                 ).map(([value, label]) => (
                   <TabsTrigger
+                    className="h-7 rounded-lg px-2.5 text-xs font-medium text-muted-foreground transition-colors data-[state=active]:bg-muted data-[state=active]:text-foreground"
                     key={value}
                     value={value}
-                    className="h-7 rounded-lg px-2.5 text-xs font-medium text-muted-foreground transition-colors data-[state=active]:bg-muted data-[state=active]:text-foreground"
                   >
                     {label}
                     {value === "records" &&
@@ -920,11 +920,11 @@ export default function CommandPalette({
               </div>
               {q && (
                 <button
-                  type="button"
-                  onClick={() => fireAction("patients", "vetera:new-patient")}
                   className="mt-2 inline-flex items-center gap-2 rounded-xl border border-border bg-background px-3 py-1.5 text-xs font-medium text-foreground shadow-xs hover:bg-muted transition-colors"
+                  onClick={() => fireAction("patients", "vetera:new-patient")}
+                  type="button"
                 >
-                  <HugeiconsIcon icon={UserAdd01Icon} className="size-3.5" />
+                  <HugeiconsIcon className="size-3.5" icon={UserAdd01Icon} />
                   Créer un patient nommé « {query} »
                 </button>
               )}
@@ -936,9 +936,8 @@ export default function CommandPalette({
             <CommandGroup heading="Actions contextuelles">
               {actionPatients.map((patient) => (
                 <CommandItem
-                  key={`action:${patient.id}`}
                   className={commandItemClassName}
-                  value={`${query} ${patient.name}`}
+                  key={`action:${patient.id}`}
                   onSelect={() => {
                     if (intent.kind === "vaccination") {
                       prepareVaccination(patient.id);
@@ -951,6 +950,7 @@ export default function CommandPalette({
                     }
                     onClose();
                   }}
+                  value={`${query} ${patient.name}`}
                 >
                   <div className="flex size-8 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
                     <HugeiconsIcon
@@ -959,8 +959,8 @@ export default function CommandPalette({
                           ? VaccineIcon
                           : StethoscopeIcon
                       }
-                      strokeWidth={1.5}
                       size={18}
+                      strokeWidth={1.5}
                     />
                   </div>
                   <div className="ml-1 min-w-0 flex-1">
@@ -982,19 +982,19 @@ export default function CommandPalette({
 
               {actionOwners.map((owner) => (
                 <CommandItem
-                  key={`invoice:${owner.id}`}
                   className={commandItemClassName}
-                  value={`${query} ${owner.firstName} ${owner.lastName}`}
+                  key={`invoice:${owner.id}`}
                   onSelect={() => {
                     prepareInvoice(owner.id);
                     fireAction("finances", "vetera:new-invoice");
                   }}
+                  value={`${query} ${owner.firstName} ${owner.lastName}`}
                 >
                   <div className="flex size-8 shrink-0 items-center justify-center rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400">
                     <HugeiconsIcon
                       icon={WalletIcon}
-                      strokeWidth={1.5}
                       size={18}
+                      strokeWidth={1.5}
                     />
                   </div>
                   <div className="ml-1 min-w-0 flex-1">
@@ -1032,8 +1032,8 @@ export default function CommandPalette({
                         )?.icon ?? DashboardSquare01Icon);
                   return (
                     <CommandItem
-                      key={`${entry.kind}-${entry.id}`}
                       className={commandItemClassName}
+                      key={`${entry.kind}-${entry.id}`}
                       keywords={[entry.sub ?? ""]}
                       onSelect={() => handleSelectRecent(entry)}
                       value={`recent:${entry.kind}:${entry.id} ${entry.label} ${entry.sub ?? ""}`}
@@ -1074,10 +1074,10 @@ export default function CommandPalette({
 
                 return (
                   <CommandItem
-                    key={`suggestion:${patient.id}`}
-                    value={`suggestion:${patient.id} ${patient.name}`}
                     className={commandItemClassName}
+                    key={`suggestion:${patient.id}`}
                     onSelect={() => handleSelectPatient(patient)}
+                    value={`suggestion:${patient.id} ${patient.name}`}
                   >
                     <div className="flex size-8 shrink-0 items-center justify-center rounded-xl bg-muted/80 text-foreground">
                       <HugeiconsIcon icon={glyph} size={18} strokeWidth={1.5} />
@@ -1089,8 +1089,8 @@ export default function CommandPalette({
                         </span>
                         {patient.status && (
                           <Badge
-                            variant="outline"
                             className={`h-4 px-1 t-12 font-normal ${statusMeta.className}`}
+                            variant="outline"
                           >
                             {statusMeta.label}
                           </Badge>
@@ -1125,8 +1125,8 @@ export default function CommandPalette({
 
                 return (
                   <CommandItem
-                    key={patient.id}
                     className={commandItemClassName}
+                    key={patient.id}
                     keywords={[
                       patient.species,
                       patient.breed ?? "",
@@ -1152,8 +1152,8 @@ export default function CommandPalette({
                         </span>
                         {patient.status && (
                           <Badge
-                            variant="outline"
                             className={`h-4 px-1.5 t-12 font-normal ${statusMeta.className}`}
+                            variant="outline"
                           >
                             {statusMeta.label}
                           </Badge>
@@ -1222,16 +1222,16 @@ export default function CommandPalette({
                 },
               ].map((sug) => (
                 <CommandItem
-                  key={sug.id}
                   className={commandItemClassName}
-                  onSelect={() => setQuery(sug.query)}
+                  key={sug.id}
                   onClick={() => setQuery(sug.query)}
+                  onSelect={() => setQuery(sug.query)}
                   value={`semantic:sug:${sug.id} ${sug.label} ${sug.query}`}
                 >
                   <div className="flex size-8 shrink-0 items-center justify-center rounded-xl border border-amber-500/20 bg-amber-500/10 text-amber-700 dark:border-amber-400/20 dark:bg-amber-400/15 dark:text-amber-300">
                     <HugeiconsIcon
-                      icon={StethoscopeIcon}
                       className="size-4"
+                      icon={StethoscopeIcon}
                       strokeWidth={1.5}
                     />
                   </div>
@@ -1241,8 +1241,8 @@ export default function CommandPalette({
                         {sug.label}
                       </span>
                       <Badge
-                        variant="outline"
                         className="h-4 px-1.5 t-12 font-medium border-amber-500/30 text-amber-800 dark:text-amber-300 bg-amber-500/5"
+                        variant="outline"
                       >
                         {sug.badge}
                       </Badge>
@@ -1264,9 +1264,9 @@ export default function CommandPalette({
               <CommandGroup heading="Cas similaires · Recherche clinique">
                 {semanticLoading && semanticResults.length === 0 ? (
                   <CommandItem
+                    className="flex items-center gap-2.5 px-3 py-3 text-xs text-muted-foreground pointer-events-none cursor-default"
                     disabled
                     value="semantic:loading-indicator"
-                    className="flex items-center gap-2.5 px-3 py-3 text-xs text-muted-foreground pointer-events-none cursor-default"
                   >
                     <div className="size-3.5 animate-spin rounded-full border-2 border-primary border-t-transparent" />
                     <span>
@@ -1337,22 +1337,22 @@ export default function CommandPalette({
 
                     return (
                       <CommandItem
-                        key={`semantic:${result.sourceType}:${result.patientId}:${result.sourceId}:${result.section}:${result.chunkIndex}`}
                         className={`${commandItemClassName} items-start`}
+                        key={`semantic:${result.sourceType}:${result.patientId}:${result.sourceId}:${result.section}:${result.chunkIndex}`}
                         keywords={[
                           query,
                           result.section,
                           sectionLabel,
                           result.text,
                         ]}
-                        onSelect={handleSelectCase}
                         onClick={handleSelectCase}
+                        onSelect={handleSelectCase}
                         value={`semantic:${result.sourceType}:${result.patientId}:${result.sourceId}:${result.section}:${result.chunkIndex} ${patientName} ${result.text}`}
                       >
                         <div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-xl border border-border/70 bg-muted/60 text-muted-foreground">
                           <HugeiconsIcon
-                            icon={itemIcon}
                             className="size-4"
+                            icon={itemIcon}
                             strokeWidth={1.5}
                           />
                         </div>
@@ -1369,8 +1369,8 @@ export default function CommandPalette({
                               (segment, index) =>
                                 segment.hit ? (
                                   <mark
-                                    key={index}
                                     className="rounded-[3px] bg-primary/12 px-0.5 text-foreground dark:bg-primary/25"
+                                    key={index}
                                   >
                                     {segment.text}
                                   </mark>
@@ -1401,8 +1401,8 @@ export default function CommandPalette({
                 const patient = patientsById.get(appt.patientId);
                 return (
                   <CommandItem
-                    key={appt.id}
                     className={commandItemClassName}
+                    key={appt.id}
                     keywords={[
                       appt.type,
                       appt.notes ?? "",
@@ -1447,8 +1447,8 @@ export default function CommandPalette({
             <CommandGroup heading="Pages & Navigation">
               {navigationActions.map((action) => (
                 <CommandItem
-                  key={action.id}
                   className={commandItemClassName}
+                  key={action.id}
                   keywords={action.keywords}
                   onSelect={() => handleSelectNav(action)}
                   value={`navigation:${action.id} ${action.label} ${action.sub}`}
