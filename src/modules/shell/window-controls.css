@@ -23,16 +23,14 @@
 :root[data-window-controls="decorum"]
   div#window-controls[data-tauri-decorum-tb] {
   position: fixed !important;
-  top: 0 !important;
-  right: auto !important;
-  left: auto !important;
   inset-inline-end: 0 !important;
+  top: 0 !important;
   z-index: 45 !important;
   display: flex !important;
-  width: var(--window-controls-width) !important;
-  height: var(--window-controls-height) !important;
   align-items: stretch !important;
   justify-content: flex-end !important;
+  width: var(--window-controls-width) !important;
+  height: var(--window-controls-height) !important;
   background: transparent !important;
 }
 :root[data-window-controls="decorum"][data-window-fullscreen="true"]
@@ -45,22 +43,22 @@
   /* Flex, not grid: decorum writes a Segoe glyph as text in each button; in a grid that text became a second row and pushed
      the icon up. Here it is a zero-size item beside it. */
   display: flex !important;
-  width: var(--window-control-width) !important;
-  height: 100% !important;
   flex: none !important;
   align-items: center !important;
   justify-content: center !important;
-  margin: 0 !important;
+  width: var(--window-control-width) !important;
+  height: 100% !important;
   padding: 0 !important;
-  border: 0 !important;
-  border-radius: 0 !important;
-  outline: none !important;
-  background: transparent !important;
-  box-shadow: none !important;
-  color: var(--foreground) !important;
+  margin: 0 !important;
   font-size: 0 !important;
   line-height: 0 !important;
+  color: var(--foreground) !important;
   cursor: default !important;
+  outline: none !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
   transition: background-color var(--speed-highlight-out, 120ms) ease !important;
 }
 :root[data-window-controls="decorum"]
@@ -74,8 +72,8 @@
   button.decorum-tb-btn::before {
   width: 16px;
   height: 16px;
-  background-color: currentColor;
   content: "";
+  background-color: currentColor;
   -webkit-mask: var(--window-control-icon) center / 16px 16px no-repeat;
   mask: var(--window-control-icon) center / 16px 16px no-repeat;
 }
@@ -125,8 +123,8 @@
   :root[data-window-controls="decorum"]
     #window-controls
     button#decorum-tb-close:hover {
-    background-color: #e81123 !important;
     color: #ffffff !important;
+    background-color: #e81123 !important;
   }
 }
 :root[data-window-controls="decorum"]
@@ -141,8 +139,8 @@
 :root[data-window-controls="decorum"]
   #window-controls
   button#decorum-tb-close:active {
-  background-color: #f1707a !important;
   color: #ffffff !important;
+  background-color: #f1707a !important;
 }
 
 /* The header keeps exactly the controls' width free at its end, and draws the same thin rule as after the sidebar button,
@@ -170,8 +168,8 @@
 @layer base {
   :root[data-window-controls="decorum"]:not([data-window-fullscreen="true"])
     [data-slot="sidebar-inset"] {
-    padding-top: 0 !important;
     padding-inline-end: 0 !important;
+    padding-top: 0 !important;
   }
   /* #root is rounded for the Mac window; Windows rounds (or squares, when maximized) its own window. */
   :root[data-window-controls="decorum"] #root {
