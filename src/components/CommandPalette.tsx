@@ -630,7 +630,9 @@ export default function CommandPalette({
   }, [owners]);
 
   const actionPatients = useMemo(() => {
-    if (!intent || intent.kind === "invoice") return [];
+    if (!intent || intent.kind === "invoice") {
+      return [];
+    }
     return patients
       .filter((patient) =>
         matchesSearch(`${patient.name} ${patient.species}`, intent.entity)
@@ -639,7 +641,9 @@ export default function CommandPalette({
   }, [intent, patients]);
 
   const actionOwners = useMemo(() => {
-    if (intent?.kind !== "invoice") return [];
+    if (intent?.kind !== "invoice") {
+      return [];
+    }
     const entityClean = intent.entity.replace(
       /^(mme|m|mr|madame|monsieur)\.?\s+/i,
       ""
@@ -651,15 +655,17 @@ export default function CommandPalette({
       .slice(0, 5);
   }, [intent, owners]);
 
-  const suggestions = useMemo(() => {
-    return suggestedPatients(patients, appointments, Date.now()).filter(
-      (patient) =>
-        group !== "all" ||
-        !recents.some(
-          (entry) => entry.kind === "patient" && entry.id === patient.id
-        )
-    );
-  }, [patients, appointments, group, recents]);
+  const suggestions = useMemo(
+    () =>
+      suggestedPatients(patients, appointments, Date.now()).filter(
+        (patient) =>
+          group !== "all" ||
+          !recents.some(
+            (entry) => entry.kind === "patient" && entry.id === patient.id
+          )
+      ),
+    [patients, appointments, group, recents]
+  );
 
   const showPatients = group === "all" || group === "records";
   const showSemantic = group === "all" || group === "records";
@@ -686,15 +692,21 @@ export default function CommandPalette({
         // The exact reference typed opens that patient first
         const aReference = matchesPatientReference(a.reference, query);
         const bReference = matchesPatientReference(b.reference, query);
-        if (aReference !== bReference) return aReference ? -1 : 1;
+        if (aReference !== bReference) {
+          return aReference ? -1 : 1;
+        }
 
         // Prioritize startsWith on name
         const aName = normalizeSearch(a.name);
         const bName = normalizeSearch(b.name);
         const aStarts = aName.startsWith(q);
         const bStarts = bName.startsWith(q);
-        if (aStarts && !bStarts) return -1;
-        if (!aStarts && bStarts) return 1;
+        if (aStarts && !bStarts) {
+          return -1;
+        }
+        if (!aStarts && bStarts) {
+          return 1;
+        }
 
         // Secondary: recency of last visit
         const aVisit = a.lastVisit ? Date.parse(a.lastVisit) : 0;
@@ -1307,11 +1319,12 @@ export default function CommandPalette({
                           at: Date.now(),
                         });
                         // A note kept without a visit opens itself in the record.
-                        if (result.sourceType === "document")
+                        if (result.sourceType === "document") {
                           sessionStorage.setItem(
                             "patient:open-note",
                             result.sourceId
                           );
+                        }
                         window.location.hash = `#/patient/${encodeURIComponent(result.patientId)}`;
                         onNavigateToPatient(result.patientId);
                       }

@@ -81,10 +81,13 @@ export function useFluxRequests({
       for (const key of [START_KEY, SHOW_KEY]) {
         const id = window.sessionStorage.getItem(key);
         const target = id ? appointmentById(id) : null;
-        if (!target) continue;
+        if (!target) {
+          continue;
+        }
         window.sessionStorage.removeItem(key);
-        if (target.status === "in_progress") open(target);
-        else if (
+        if (target.status === "in_progress") {
+          open(target);
+        } else if (
           key === START_KEY &&
           PRE_CONSULTATION_STATUSES.includes(target.status)
         ) {
@@ -99,7 +102,9 @@ export function useFluxRequests({
                 error
               )
             );
-        } else focus(target.id);
+        } else {
+          focus(target.id);
+        }
       }
     };
     serve();
