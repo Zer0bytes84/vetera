@@ -171,6 +171,7 @@ export function AgendaView(props: AgendaViewProps) {
     resetForm,
     searchTerm,
     sectionCards,
+    sectionCardsLoading,
     selectAppointment,
     selectedAppointment,
     selectedAppointmentId,
@@ -283,6 +284,7 @@ export function AgendaView(props: AgendaViewProps) {
         }
         icon={CalendarDays}
         items={sectionCards}
+        loading={sectionCardsLoading}
         subtitle="Rendez-vous du jour"
       />
 

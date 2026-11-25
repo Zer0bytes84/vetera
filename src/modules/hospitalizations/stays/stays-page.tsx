@@ -315,6 +315,8 @@ export default function StaysPage({
               : "Aucune sortie préparée",
           },
         ]}
+        // Stays, places and the names of the patients leaving: no figure until all of them are read.
+        loading={loading || patients.loading}
         subtitle="Séjours et emplacements"
       />
       <Tabs onValueChange={setView} value={view}>

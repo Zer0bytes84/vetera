@@ -232,8 +232,15 @@ const Tasks: React.FC = () => {
     null,
   );
   const remindersRepository = useRemindersRepository();
-  const { data: appointments } = useAppointmentsRepository();
-  const { data: patients } = usePatientsRepository();
+  const { data: appointments, loading: appointmentsLoading } = useAppointmentsRepository();
+  const { data: patients, loading: patientsLoading } = usePatientsRepository();
+  // The band counts manual, automatic and medical reminders, and names their patients: no figure until all are read.
+  const bandLoading =
+    tasksRepository.loading ||
+    remindersRepository.loading ||
+    patientRemindersModel.loading ||
+    appointmentsLoading ||
+    patientsLoading;
   const [activeView, setActiveView] = useState<ReminderView>("today");
   const [sourceFilter, setSourceFilter] = useState<ReminderSource>(() => {
     if (
@@ -732,7 +739,8 @@ const Tasks: React.FC = () => {
   );
   const readAt = new Date();
   const readDay = readAt.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" });
-  const bandSubtitle = `${readDay[0].toLocaleUpperCase("fr-FR")}${readDay.slice(1)} · état à ${readAt.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })} · ${
+  // While the reminders are read, the line says so instead of « rien à traiter » (as the Équipe band does).
+  const bandSubtitle = bandLoading ? "Lecture des rappels…" : `${readDay[0].toLocaleUpperCase("fr-FR")}${readDay.slice(1)} · état à ${readAt.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })} · ${
     counts.overdue.length
       ? `${formatNumber(counts.overdue.length)} en retard`
       : counts.today
@@ -765,6 +773,7 @@ const Tasks: React.FC = () => {
         }
         badges={false}
         icon={ClipboardDocumentCheckIcon}
+        loading={bandLoading}
         subtitle={bandSubtitle}
         items={[
           {

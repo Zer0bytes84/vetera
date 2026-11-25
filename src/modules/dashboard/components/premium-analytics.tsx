@@ -514,7 +514,8 @@ export function PremiumAnalytics({
           icon={Squares2X2Icon}
           layout="row"
           goals={keyView === "kpi"}
-          loading={states.cash.loading || states.patients.loading || states.actions.loading}
+          // A revealed skeleton is kept its 300 ms: no one-frame flash when the read ends just after the reveal.
+          loading={states.cash.loading || states.patients.loading || states.actions.loading || states.cash.skeleton || states.patients.skeleton || states.actions.skeleton}
           loadingLabel="Chargement des chiffres clés"
           loadingRevealed={states.cash.skeleton || states.patients.skeleton || states.actions.skeleton}
           sparklines={keyView === "sparklines"}

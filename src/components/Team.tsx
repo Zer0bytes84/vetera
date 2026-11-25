@@ -391,6 +391,7 @@ const Team: React.FC = () => {
         badges={false}
         icon={UsersIcon}
         items={sectionCards}
+        loading={loading}
         subtitle={bandSubtitle}
       />
 

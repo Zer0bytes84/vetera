@@ -597,6 +597,8 @@ export default function CarePage({
                   : "Heure prévue dépassée, soin non validé",
               },
             ]}
+            // The day's care and the names of the patients concerned: no figure until both are read.
+            loading={loading || patients.loading}
           />
           {reminders}
           <div className="care-toolbar flex flex-wrap items-center justify-between gap-3">

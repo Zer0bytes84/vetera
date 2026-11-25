@@ -15,6 +15,7 @@ import {
   UsersIcon,
   WalletIcon,
 } from "@heroicons/react/20/solid";
+import { useDelayedSkeleton } from "@/hooks/useDelayedSkeleton";
 import { formatNumber } from "@/utils/display-format";
 import { cn } from "@/lib/utils";
 
@@ -117,9 +118,15 @@ export function SectionCards({
   icon = Squares2X2Icon,
   actions,
   badges = true,
+  loading = false,
   className,
 }: {
   items: SectionCardItem[];
+  /**
+   * The figures are still being read: the band draws each card as its skeleton (the sheen, the same rows), so no
+   * figure is shown before it is known and nothing moves when it arrives. Pass the first read only, never a refresh.
+   */
+  loading?: boolean;
   /** `false`: no badge row, for a band of counts whose state is carried by the tone (Rappels). */
   badges?: boolean;
   compact?: boolean;
@@ -152,6 +159,10 @@ export function SectionCards({
     };
   });
   const byId = new Map(items.map((item) => [item.title, item]));
+  // Reserved at once, revealed after 150 ms, then kept at least 300 ms: a read that ends just after the reveal does
+  // not flash the sheen for a frame or two (measured on Soins, 24 November 2026).
+  const skeletonRevealed = useDelayedSkeleton(loading);
+  const showSkeleton = loading || skeletonRevealed;
   return (
     <section
       aria-label="Indicateurs de la rubrique"
@@ -168,6 +179,9 @@ export function SectionCards({
         goals={false}
         icon={icon}
         layout="row"
+        loading={showSkeleton}
+        loadingLabel={`Chargement : ${title}`}
+        loadingRevealed={skeletonRevealed}
         onSelect={
           items.some((item) => item.onClick)
             ? (stat) => byId.get(stat.id)?.onClick?.()

@@ -118,6 +118,7 @@ export function FinancesView(props: FinancesViewProps) {
     filteredInvoices,
     filteredTransactions,
     financeSectionCards,
+    financeSectionCardsLoading,
     invoiceDocumentFilter,
     invoiceDraft,
     invoiceError,
@@ -272,6 +273,7 @@ export function FinancesView(props: FinancesViewProps) {
         }
         icon={ReceiptPercentIcon}
         items={financeSectionCards}
+        loading={financeSectionCardsLoading}
         subtitle="Facturation et règlements"
       />
 

@@ -705,6 +705,7 @@ export function StockWorkspace({
       <SectionCards
         actions={actions}
         icon={CubeIcon}
+        loading={loading}
         subtitle="Stock, seuils et péremptions"
         items={[
           {

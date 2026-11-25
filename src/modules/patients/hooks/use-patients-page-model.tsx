@@ -76,8 +76,10 @@ export function usePatientsPageModel({ onNavigateToPatient }: PatientsProps) {
     createWithOwner,
   } = usePatientsRepository();
   const { data: owners, update: updateOwner } = useOwnersRepository();
-  const { data: appointments } = useAppointmentsRepository();
+  const { data: appointments, loading: loadingAppointments } = useAppointmentsRepository();
   const audit = useAudit();
+  // The band counts patients and their visits: no figure until both are read.
+  const sectionCardsLoading = loadingPatients || loadingAppointments;
 
   const hydratedOwners = useMemo(() => {
     // A just-created owner is kept until the store has it; once it does, the store's row wins, so a correction made
@@ -546,6 +548,7 @@ export function usePatientsPageModel({ onNavigateToPatient }: PatientsProps) {
     resetFilters,
     searchTerm,
     sectionCards,
+    sectionCardsLoading,
     selectedPatient,
     setCreatedPatientPrompt,
     setCurrentPage,

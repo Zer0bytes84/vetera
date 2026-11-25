@@ -59,6 +59,7 @@ export function PatientsView(props: PatientsViewProps) {
     refreshPatients,
     resetFilters,
     sectionCards,
+    sectionCardsLoading,
     selectedPatient,
     setCreatedPatientPrompt,
     setDetailsInitialTab,
@@ -101,6 +102,7 @@ export function PatientsView(props: PatientsViewProps) {
         }
         icon={UsersIcon}
         items={sectionCards}
+        loading={sectionCardsLoading}
         subtitle="Dossiers et suivi clinique"
       />
 
