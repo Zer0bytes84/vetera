@@ -802,7 +802,7 @@ export default function CommandPalette({
 
   return (
     <CommandDialog
-      className="command-palette sm:!top-[15%] sm:!-translate-y-0 !max-w-[680px] rounded-3xl! border-border/80 bg-popover/95 p-0 shadow-[0_24px_70px_-20px_rgba(0,0,0,0.22)] backdrop-blur-2xl dark:bg-zinc-900/95 dark:border-white/10 dark:shadow-[0_28px_80px_-24px_rgba(0,0,0,0.8)]"
+      className="command-palette sm:!top-[15%] sm:!-translate-y-0 !max-w-[680px] rounded-3xl! border-border/80 bg-popover/95 p-0 shadow-[0_24px_70px_-20px_rgba(0,0,0,0.22)] backdrop-blur-2xl dark:border-white/10 dark:bg-zinc-900/95 dark:shadow-[0_28px_80px_-24px_rgba(0,0,0,0.8)]"
       description="Recherche rapide, navigation et dossiers patients."
       onOpenChange={(open) => !open && onClose()}
       open={isOpen}
@@ -810,7 +810,7 @@ export default function CommandPalette({
       title="Palette de commandes"
     >
       <Command
-        className="max-h-[min(720px,calc(100dvh-4rem))] rounded-3xl! bg-transparent text-popover-foreground [&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:font-semibold [&_[cmdk-group-heading]]:t-12 [&_[cmdk-group-heading]]:text-muted-foreground/70 [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-wider [&_[cmdk-group]]:px-2 [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-1 [&_[cmdk-item]]:px-3 [&_[cmdk-item]]:py-2.5"
+        className="[&_[cmdk-group-heading]]:t-12 max-h-[min(720px,calc(100dvh-4rem))] rounded-3xl! bg-transparent text-popover-foreground [&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:font-semibold [&_[cmdk-group-heading]]:text-muted-foreground/70 [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-wider [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-1 [&_[cmdk-group]]:px-2 [&_[cmdk-item]]:px-3 [&_[cmdk-item]]:py-2.5"
         filter={scoreCommandMatch}
         label={t("commandPalette.title", {
           defaultValue: "Recherche globale",
@@ -818,7 +818,7 @@ export default function CommandPalette({
         loop
       >
         {/* Barre de recherche intégrée */}
-        <div className="border-b border-border/60 pb-2">
+        <div className="border-border/60 border-b pb-2">
           <CommandInput
             aria-label={t("commandPalette.placeholder", {
               defaultValue: "Rechercher ou exécuter une commande…",
@@ -829,14 +829,14 @@ export default function CommandPalette({
               query ? (
                 <button
                   aria-label="Effacer la recherche"
-                  className="rounded-md p-1 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                  className="rounded-md p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                   onClick={() => setQuery("")}
                   type="button"
                 >
                   <HugeiconsIcon className="size-3.5" icon={Cancel01Icon} />
                 </button>
               ) : (
-                <Kbd className="command-palette-esc h-5 px-1.5 t-12">esc</Kbd>
+                <Kbd className="command-palette-esc t-12 h-5 px-1.5">esc</Kbd>
               )
             }
             onValueChange={setQuery}
@@ -867,7 +867,7 @@ export default function CommandPalette({
                   ] as const
                 ).map(([value, label]) => (
                   <TabsTrigger
-                    className="h-7 rounded-lg px-2.5 text-xs font-medium text-muted-foreground transition-colors data-[state=active]:bg-muted data-[state=active]:text-foreground"
+                    className="h-7 rounded-lg px-2.5 font-medium text-muted-foreground text-xs transition-colors data-[state=active]:bg-muted data-[state=active]:text-foreground"
                     key={value}
                     value={value}
                   >
@@ -875,7 +875,7 @@ export default function CommandPalette({
                     {value === "records" &&
                       q &&
                       matchedPatients.length + semanticResults.length > 0 && (
-                        <span className="ml-1.5 tabular-nums text-muted-foreground">
+                        <span className="ml-1.5 text-muted-foreground tabular-nums">
                           {matchedPatients.length + semanticResults.length}
                         </span>
                       )}
@@ -920,7 +920,7 @@ export default function CommandPalette({
               </div>
               {q && (
                 <button
-                  className="mt-2 inline-flex items-center gap-2 rounded-xl border border-border bg-background px-3 py-1.5 text-xs font-medium text-foreground shadow-xs hover:bg-muted transition-colors"
+                  className="mt-2 inline-flex items-center gap-2 rounded-xl border border-border bg-background px-3 py-1.5 font-medium text-foreground text-xs shadow-xs transition-colors hover:bg-muted"
                   onClick={() => fireAction("patients", "vetera:new-patient")}
                   type="button"
                 >
@@ -970,13 +970,13 @@ export default function CommandPalette({
                         : "Nouvelle consultation"}{" "}
                       · {patient.name}
                     </p>
-                    <p className="mt-0.5 truncate t-12 text-muted-foreground">
+                    <p className="t-12 mt-0.5 truncate text-muted-foreground">
                       {patient.species}
                       {patient.breed ? ` · ${patient.breed}` : ""} · Dossier
                       existant
                     </p>
                   </div>
-                  <Kbd className="ml-auto t-12">↵ Exécuter</Kbd>
+                  <Kbd className="t-12 ml-auto">↵ Exécuter</Kbd>
                 </CommandItem>
               ))}
 
@@ -1001,11 +1001,11 @@ export default function CommandPalette({
                     <p className="t-13 font-semibold text-foreground">
                       Nouvelle facture · {owner.firstName} {owner.lastName}
                     </p>
-                    <p className="mt-0.5 truncate t-12 text-muted-foreground">
+                    <p className="t-12 mt-0.5 truncate text-muted-foreground">
                       Propriétaire existant · Établir un devis ou une facture
                     </p>
                   </div>
-                  <Kbd className="ml-auto t-12">↵ Facturer</Kbd>
+                  <Kbd className="t-12 ml-auto">↵ Facturer</Kbd>
                 </CommandItem>
               ))}
             </CommandGroup>
@@ -1045,12 +1045,12 @@ export default function CommandPalette({
                           strokeWidth={1.5}
                         />
                       </div>
-                      <div className="ml-1 min-w-0 flex-1 flex flex-col justify-center gap-0.5">
+                      <div className="ml-1 flex min-w-0 flex-1 flex-col justify-center gap-0.5">
                         <span className="font-medium text-foreground text-sm leading-none">
                           {entry.label}
                         </span>
                         {entry.sub && (
-                          <span className="font-normal t-12 text-muted-foreground leading-none">
+                          <span className="t-12 font-normal text-muted-foreground leading-none">
                             {entry.sub}
                           </span>
                         )}
@@ -1082,21 +1082,21 @@ export default function CommandPalette({
                     <div className="flex size-8 shrink-0 items-center justify-center rounded-xl bg-muted/80 text-foreground">
                       <HugeiconsIcon icon={glyph} size={18} strokeWidth={1.5} />
                     </div>
-                    <div className="ml-1 min-w-0 flex-1 flex flex-col justify-center gap-0.5">
+                    <div className="ml-1 flex min-w-0 flex-1 flex-col justify-center gap-0.5">
                       <div className="flex items-center gap-2">
                         <span className="font-semibold text-foreground text-sm">
                           {patient.name}
                         </span>
                         {patient.status && (
                           <Badge
-                            className={`h-4 px-1 t-12 font-normal ${statusMeta.className}`}
+                            className={`t-12 h-4 px-1 font-normal ${statusMeta.className}`}
                             variant="outline"
                           >
                             {statusMeta.label}
                           </Badge>
                         )}
                       </div>
-                      <span className="truncate text-xs text-muted-foreground">
+                      <span className="truncate text-muted-foreground text-xs">
                         {patient.species}
                         {patient.breed ? ` · ${patient.breed}` : ""}
                         {ownerName ? ` · ${ownerName}` : ""}
@@ -1145,21 +1145,21 @@ export default function CommandPalette({
                         strokeWidth={1.5}
                       />
                     </div>
-                    <div className="ml-1 min-w-0 flex-1 flex flex-col justify-center gap-0.5">
+                    <div className="ml-1 flex min-w-0 flex-1 flex-col justify-center gap-0.5">
                       <div className="flex items-center gap-2">
                         <span className="font-semibold text-foreground text-sm leading-tight">
                           {patient.name}
                         </span>
                         {patient.status && (
                           <Badge
-                            className={`h-4 px-1.5 t-12 font-normal ${statusMeta.className}`}
+                            className={`t-12 h-4 px-1.5 font-normal ${statusMeta.className}`}
                             variant="outline"
                           >
                             {statusMeta.label}
                           </Badge>
                         )}
                       </div>
-                      <div className="flex items-center gap-1.5 truncate t-12 text-muted-foreground">
+                      <div className="t-12 flex items-center gap-1.5 truncate text-muted-foreground">
                         {patient.reference && (
                           <span className="font-mono tabular-nums">
                             {patient.reference} ·
@@ -1174,7 +1174,7 @@ export default function CommandPalette({
                         )}
                       </div>
                     </div>
-                    <Kbd className="ml-auto t-12">↵ Ouvrir</Kbd>
+                    <Kbd className="t-12 ml-auto">↵ Ouvrir</Kbd>
                   </CommandItem>
                 );
               })}
@@ -1235,19 +1235,19 @@ export default function CommandPalette({
                       strokeWidth={1.5}
                     />
                   </div>
-                  <div className="ml-1 min-w-0 flex-1 flex flex-col justify-center gap-0.5">
+                  <div className="ml-1 flex min-w-0 flex-1 flex-col justify-center gap-0.5">
                     <div className="flex items-center gap-2">
                       <span className="font-semibold text-foreground text-sm">
                         {sug.label}
                       </span>
                       <Badge
-                        className="h-4 px-1.5 t-12 font-medium border-amber-500/30 text-amber-800 dark:text-amber-300 bg-amber-500/5"
+                        className="t-12 h-4 border-amber-500/30 bg-amber-500/5 px-1.5 font-medium text-amber-800 dark:text-amber-300"
                         variant="outline"
                       >
                         {sug.badge}
                       </Badge>
                     </div>
-                    <span className="truncate text-xs text-muted-foreground">
+                    <span className="truncate text-muted-foreground text-xs">
                       {sug.sub}
                     </span>
                   </div>
@@ -1264,7 +1264,7 @@ export default function CommandPalette({
               <CommandGroup heading="Cas similaires · Recherche clinique">
                 {semanticLoading && semanticResults.length === 0 ? (
                   <CommandItem
-                    className="flex items-center gap-2.5 px-3 py-3 text-xs text-muted-foreground pointer-events-none cursor-default"
+                    className="pointer-events-none flex cursor-default items-center gap-2.5 px-3 py-3 text-muted-foreground text-xs"
                     disabled
                     value="semantic:loading-indicator"
                   >
@@ -1356,15 +1356,15 @@ export default function CommandPalette({
                             strokeWidth={1.5}
                           />
                         </div>
-                        <div className="ml-1 min-w-0 flex-1 flex flex-col gap-1">
-                          <p className="truncate t-12 text-muted-foreground">
+                        <div className="ml-1 flex min-w-0 flex-1 flex-col gap-1">
+                          <p className="t-12 truncate text-muted-foreground">
                             <span className="font-medium text-foreground">
                               {patientName}
                             </span>
                             {" · "}
                             {sectionLabel}
                           </p>
-                          <p className="line-clamp-2 text-[13px] leading-relaxed text-foreground/90">
+                          <p className="line-clamp-2 text-[13px] text-foreground/90 leading-relaxed">
                             {highlightPassage(passage, query).map(
                               (segment, index) =>
                                 segment.hit ? (
@@ -1380,7 +1380,7 @@ export default function CommandPalette({
                             )}
                           </p>
                         </div>
-                        <Kbd className="ml-2 mt-0.5 shrink-0 t-12 opacity-0 transition-opacity group-data-[selected=true]:opacity-100">
+                        <Kbd className="t-12 mt-0.5 ml-2 shrink-0 opacity-0 transition-opacity group-data-[selected=true]:opacity-100">
                           {isProduct ? "↵ Voir en stock" : "↵ Ouvrir"}
                         </Kbd>
                       </CommandItem>
@@ -1418,11 +1418,11 @@ export default function CommandPalette({
                         strokeWidth={1.5}
                       />
                     </div>
-                    <div className="ml-1 min-w-0 flex-1 flex flex-col justify-center gap-0.5">
+                    <div className="ml-1 flex min-w-0 flex-1 flex-col justify-center gap-0.5">
                       <span className="font-semibold text-foreground text-sm leading-none">
                         {appt.title}
                       </span>
-                      <span className="font-normal t-12 text-muted-foreground leading-none">
+                      <span className="t-12 font-normal text-muted-foreground leading-none">
                         {patient?.name ??
                           t("commandPalette.unlinkedPatient", {
                             defaultValue: "Patient",
@@ -1460,11 +1460,11 @@ export default function CommandPalette({
                       strokeWidth={1.5}
                     />
                   </div>
-                  <div className="ml-1 min-w-0 flex-1 flex flex-col justify-center gap-0.5">
+                  <div className="ml-1 flex min-w-0 flex-1 flex-col justify-center gap-0.5">
                     <span className="font-medium text-foreground text-sm leading-none">
                       {action.label}
                     </span>
-                    <span className="font-normal t-12 text-muted-foreground leading-none">
+                    <span className="t-12 font-normal text-muted-foreground leading-none">
                       {action.sub}
                     </span>
                   </div>
@@ -1729,23 +1729,23 @@ export default function CommandPalette({
         </CommandList>
 
         {/* Pied de page avec raccourcis clavier */}
-        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-t border-border/60 px-4 py-2.5 t-12 text-muted-foreground">
+        <div className="t-12 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-border/60 border-t px-4 py-2.5 text-muted-foreground">
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
             <span className="flex items-center gap-1.5">
-              <Kbd className="h-4 px-1 t-12">↑</Kbd>
-              <Kbd className="h-4 px-1 t-12">↓</Kbd>
+              <Kbd className="t-12 h-4 px-1">↑</Kbd>
+              <Kbd className="t-12 h-4 px-1">↓</Kbd>
               {t("commandPalette.footer.navigate", {
                 defaultValue: "Naviguer",
               })}
             </span>
             <span className="flex items-center gap-1.5">
-              <Kbd className="h-4 px-1 t-12">↵</Kbd>
+              <Kbd className="t-12 h-4 px-1">↵</Kbd>
               {t("commandPalette.footer.select", {
                 defaultValue: "Sélectionner",
               })}
             </span>
             <span className="hidden items-center gap-1.5 sm:flex">
-              <Kbd className="h-4 px-1 t-12">esc</Kbd>
+              <Kbd className="t-12 h-4 px-1">esc</Kbd>
               {t("commandPalette.footer.close", { defaultValue: "Fermer" })}
             </span>
           </div>

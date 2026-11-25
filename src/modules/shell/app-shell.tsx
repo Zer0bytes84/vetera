@@ -567,7 +567,7 @@ function AppShellInner() {
 
   return (
     <SidebarProvider
-      className={cn("relative isolate !bg-sidebar", isRtl && "rtl-shell")}
+      className={cn("!bg-sidebar relative isolate", isRtl && "rtl-shell")}
       defaultOpen={true}
       dir={isRtl ? "rtl" : "ltr"}
       onMouseDownCapture={(event) => {
@@ -672,7 +672,7 @@ function AppShellInner() {
             }
           >
             <div
-              className="shell-toolbar relative flex min-w-0 w-full items-center justify-between gap-3 px-4 lg:px-6"
+              className="shell-toolbar relative flex w-full min-w-0 items-center justify-between gap-3 px-4 lg:px-6"
               data-header-page={currentView}
               style={{
                 alignSelf: "stretch",
@@ -760,7 +760,7 @@ function AppShellInner() {
                   >
                     <ToolbarIcon name="notifications" />
                     {unreadCount > 0 && (
-                      <span className="absolute -right-1 -top-1 rounded-full bg-primary px-1 t-12 text-primary-foreground">
+                      <span className="t-12 absolute -top-1 -right-1 rounded-full bg-primary px-1 text-primary-foreground">
                         {unreadCount > 9 ? "9+" : unreadCount}
                       </span>
                     )}
@@ -848,7 +848,7 @@ function AppShellInner() {
         {(aiAssistantOpen || assistantContentMounted) && (
           <Suspense
             fallback={
-              <div className="flex h-full items-center justify-center p-6 text-xs text-muted-foreground">
+              <div className="flex h-full items-center justify-center p-6 text-muted-foreground text-xs">
                 Ouverture de l’assistant…
               </div>
             }
