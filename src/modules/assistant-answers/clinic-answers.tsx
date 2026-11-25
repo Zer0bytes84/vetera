@@ -8,14 +8,19 @@
  * question reads every table it may answer from in one snapshot, SELECT statements only, counted, with SQLite's own
  * count of changes taken before and after (it must not move). The receipt is shown under the answer.
  * The one write goes through `saveProposal`, from the card's « Valider », and nowhere else.
+ *
+ * The card comes last in a long answer, often a thousand pixels under the question the thread scrolls to (measured on
+ * 24 November 2026: 1519 px of answer in a 450 px thread). While it waits and is out of sight, a short version of it is
+ * pinned at the foot of the panel, above the composer: its title, « Voir la carte » and the same « Valider ». The whole
+ * card stays in the answer, unchanged.
  */
 
-import { ArrowUp, Database, RotateCcw } from "lucide-react";
+import { ArrowDown, ArrowUp, BadgeCheck, Database, RotateCcw } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Button, IconButton } from "@/components/ui/action-button";
 import { AgentComposer } from "@/components/ui/agent-composer";
 import { ChatThread, type ThreadMessage } from "@/components/ui/chat-thread";
-import { ConfirmationCard, type ConfirmationStatus } from "@/components/ui/confirmation-card";
+import { ConfirmationCard } from "@/components/ui/confirmation-card";
 import { DataTable, type DataColumn, type DataRow } from "@/components/ui/data-table";
 import { PromptSuggestions } from "@/components/ui/prompt-suggestions";
 import { SourceList } from "@/components/ui/source-list";
@@ -36,11 +41,14 @@ import { AnswerChart } from "./answer-chart";
 import { readClinicData, type ReadReceipt } from "./clinic-reads";
 import { announce } from "@/lib/announce";
 import { MAX_QUESTION_LENGTH } from "./language";
+import { pendingProposal, type CardState } from "./pending-proposal";
 import { saveProposal } from "./save-proposal";
 import type { Answer, AnswerColumn, CellKind, Proposal } from "./types";
 
 export type Turn = { id: string; question: string; at: string; durationMs: number; answer: Answer; receipt?: ReadReceipt; tasksRead?: Task[] };
-type CardState = { status: ConfirmationStatus | "dismissed"; error?: string; reference?: string; doneAt?: string };
+
+const confirmLabelOf = (proposal: Proposal) =>
+  proposal.tasks.length > 1 ? `Valider et créer ${proposal.tasks.length} tâches` : "Valider et créer la tâche";
 
 /**
  * The thread's assistant turns shrink to their content, so a short answer would squeeze its « Ce que j'ai lu » block into a
@@ -221,6 +229,29 @@ export function ClinicAnswers({ patientId, renderAvatar }: Props) {
     },
   ]);
 
+  const waiting = pendingProposal(turns, cards);
+  const waitingId = waiting?.turnId ?? null;
+  // Whether the whole card is in sight in the thread: the short version shows only while it is not.
+  // Kept per card: a new card is out of sight until the observer says otherwise.
+  const [sighted, setSighted] = useState<string | null>(null);
+  const cardInSight = waitingId !== null && sighted === waitingId;
+  useEffect(() => {
+    const list = scroller.current;
+    const target = waitingId ? list?.querySelector<HTMLElement>(`[data-proposal-card="${CSS.escape(waitingId)}"]`) : null;
+    if (!list || !target || typeof IntersectionObserver === "undefined") return;
+    // Most of the card in the thread's visible part counts as seen: its buttons are then on screen.
+    const observer = new IntersectionObserver(([entry]) => setSighted(entry.intersectionRatio >= 0.6 ? waitingId : null), { root: list, threshold: [0, 0.6, 1] });
+    observer.observe(target);
+    return () => observer.disconnect();
+  }, [waitingId]);
+  const showCard = () => {
+    const list = scroller.current;
+    const target = waitingId ? list?.querySelector<HTMLElement>(`[data-proposal-card="${CSS.escape(waitingId)}"]`) : null;
+    // Only the thread scrolls (see the effect above): `scrollIntoView` would also move the panel's own containers.
+    if (list && target) list.scrollTo({ top: list.scrollTop + target.getBoundingClientRect().bottom - list.getBoundingClientRect().bottom, behavior: "smooth" });
+  };
+  const turnOf = (id: string) => turns.find((turn) => turn.id === id);
+
   const last = turns.at(-1);
   const followUps = last?.answer.followUps ?? [];
   return (
@@ -257,6 +288,16 @@ export function ClinicAnswers({ patientId, renderAvatar }: Props) {
         )}
         {loading && slow ? <MessageSkeleton className="answer-pending" label="Lecture des données du cabinet…" /> : null}
       </div>
+
+      {waiting && !cardInSight ? (
+        <ProposalDock
+          card={waiting.card}
+          // The outcome (tasks added, or what failed) is written on the whole card: the thread goes to it once saved.
+          onConfirm={() => void confirm(waiting.turnId, waiting.proposal, turnOf(waiting.turnId)?.tasksRead).then(showCard)}
+          onShow={showCard}
+          proposal={waiting.proposal}
+        />
+      ) : null}
 
       {readError ? (
         <div role="alert" className="shrink-0 rounded-[var(--radius-panel)] bg-negative/10 p-3 t-13 text-foreground">
@@ -405,8 +446,43 @@ export function AnswerView({
             : []),
         ]}
       />
-      {proposal && card?.status !== "dismissed" ? <ProposalCard card={card} onCancel={onCancel} onConfirm={() => onConfirm(proposal)} proposal={proposal} /> : null}
+      {proposal && card?.status !== "dismissed" ? (
+        <div data-proposal-card={turn.id} className="scroll-mt-1">
+          <ProposalCard card={card} onCancel={onCancel} onConfirm={() => onConfirm(proposal)} proposal={proposal} />
+        </div>
+      ) : null}
     </div>
+  );
+}
+
+/**
+ * The short version of a waiting card, pinned at the foot of the panel while the whole card is out of sight. Same title,
+ * same « Valider » (it calls the same `confirm`, which checks again against the tasks already open): nothing is written
+ * from here that the card would not write.
+ */
+export function ProposalDock({ proposal, card, onShow, onConfirm }: { proposal: Proposal; card?: CardState; onShow: () => void; onConfirm: () => void }) {
+  const confirming = card?.status === "confirming";
+  return (
+    <Shell aria-label={`${proposal.title} (version courte)`} className="answer-proposal-dock shrink-0" data-proposal-dock>
+      {/* The panel is narrow (about 440 px): the title gets its own line, the buttons the next one. */}
+      <Panel className="flex flex-col gap-1.5 border border-border px-3 py-2">
+        <div className="flex min-w-0 items-start gap-2">
+          <BadgeCheck aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
+          <div className="min-w-0 flex-1">
+            <p className="t-13 font-medium text-foreground">{proposal.title}</p>
+            <p className="t-12 text-muted-foreground">{card?.error ?? "Rien n’est enregistré sans votre validation."}</p>
+          </div>
+        </div>
+        <div className="flex flex-wrap items-center justify-end gap-1.5">
+          <Button icon={ArrowDown} onClick={onShow} size="sm" variant="quiet">
+            Voir la carte
+          </Button>
+          <Button loading={confirming} onClick={onConfirm} size="sm" variant="primary">
+            {confirming ? "Enregistrement…" : confirmLabelOf(proposal)}
+          </Button>
+        </div>
+      </Panel>
+    </Shell>
   );
 }
 
@@ -420,7 +496,7 @@ function ProposalCard({ proposal, card, onConfirm, onCancel }: { proposal: Propo
   return (
     <ConfirmationCard
       cancelLabel="Ne rien créer"
-      confirmLabel={proposal.tasks.length > 1 ? `Valider et créer ${proposal.tasks.length} tâches` : "Valider et créer la tâche"}
+      confirmLabel={confirmLabelOf(proposal)}
       data={{
         title: proposal.title,
         subtitle: proposal.subtitle,

@@ -1,7 +1,8 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { answerQuestion } from "@/modules/assistant-answers/answer";
-import { AnswerView, type Turn } from "@/modules/assistant-answers/clinic-answers";
+import { AnswerView, ProposalDock, type Turn } from "@/modules/assistant-answers/clinic-answers";
+import { pendingProposal } from "@/modules/assistant-answers/pending-proposal";
 import { clinic, NOW } from "./fixtures";
 
 const turn = (question: string): Turn => {
@@ -49,5 +50,48 @@ describe("l'écran de l'onglet Données", () => {
     for (const question of ["Recettes", "Absences", "Tâches", "Combien de patients ?", "dose de Rex"]) {
       expect(view(question)).not.toMatch(/gemma|whisper|mediapipe|llama|modèle|gpt/i);
     }
+  });
+
+  it("la carte entière reste dans la réponse, marquée pour que le panneau sache si elle est en vue", () => {
+    const html = view("Absences des 30 derniers jours");
+    expect(html).toContain('data-proposal-card="t"');
+    expect(html.indexOf("Ce que j’ai lu")).toBeLessThan(html.indexOf('data-proposal-card="t"'));
+    expect(html).toContain("Ne rien créer");
+  });
+});
+
+describe("la version courte de la carte, au pied du panneau", () => {
+  const withId = (question: string, id: string): Turn => ({ ...turn(question), id });
+
+  it("suit la dernière carte en attente, et lâche une carte validée ou écartée", () => {
+    const first = withId("Absences des 30 derniers jours", "a");
+    const second = withId("Absences des 30 derniers jours", "b");
+    const answerOnly = withId("Recettes des 30 derniers jours", "c");
+    expect(pendingProposal([], {})).toBeNull();
+    expect(pendingProposal([answerOnly], {})).toBeNull();
+    expect(pendingProposal([first, second, answerOnly], {})?.turnId).toBe("b");
+    expect(pendingProposal([first, second], { b: { status: "dismissed" } })?.turnId).toBe("a");
+    expect(pendingProposal([first, second], { a: { status: "done" }, b: { status: "done" } })).toBeNull();
+    expect(pendingProposal([first], { a: { status: "confirming" } })?.card?.status).toBe("confirming");
+  });
+
+  it("montre le titre de la carte, « Voir la carte » et le même bouton de validation, sans rien de plus", () => {
+    const waiting = pendingProposal([withId("Absences des 30 derniers jours", "a")], {})!;
+    const html = renderToStaticMarkup(<ProposalDock onConfirm={() => {}} onShow={() => {}} proposal={waiting.proposal} />);
+    expect(html).toContain(waiting.proposal.title);
+    expect(html).toContain("Voir la carte");
+    expect(html).toContain("Valider et créer la tâche");
+    expect(html).toContain("Rien n’est enregistré sans votre validation");
+    expect(html).toContain("data-proposal-dock");
+    expect(html).not.toContain("Ne rien créer");
+  });
+
+  it("pendant l'enregistrement, le bouton attend ; après un échec, la version courte dit l'erreur de la carte", () => {
+    const { proposal } = pendingProposal([withId("Absences des 30 derniers jours", "a")], {})!;
+    const saving = renderToStaticMarkup(<ProposalDock card={{ status: "confirming" }} onConfirm={() => {}} onShow={() => {}} proposal={proposal} />);
+    expect(saving).toContain("Enregistrement…");
+    expect(saving).toContain('aria-busy="true"');
+    const failed = renderToStaticMarkup(<ProposalDock card={{ status: "review", error: "L’enregistrement a échoué." }} onConfirm={() => {}} onShow={() => {}} proposal={proposal} />);
+    expect(failed).toContain("L’enregistrement a échoué.");
   });
 });
