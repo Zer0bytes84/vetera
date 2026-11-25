@@ -8,12 +8,13 @@ import {
   saveSidebarTone,
   SIDEBAR_TONES,
 } from "../src/lib/sidebar-tone";
+import { selectorText } from "./helpers/code-text";
 
 const GUARD = ':where(:not([data-sidebar-tone="light"]))';
 const css = (path: string) => postcss.parse(readFileSync(path, "utf8"));
 const selectors = (path: string) => {
   const found: string[] = [];
-  css(path).walkRules((rule) => { found.push(...rule.selectors); });
+  css(path).walkRules((rule) => { found.push(...rule.selectors.map(selectorText)); });
   return found;
 };
 
@@ -66,8 +67,11 @@ describe("barre latérale : réglage par utilisateur", () => {
 
 describe("barre latérale : charte", () => {
   it("la variante Tailwind dark s'arrête à une barre forcée claire, sans changer de spécificité", () => {
-    const index = readFileSync("src/index.css", "utf8");
-    expect(index).toMatch(/@custom-variant dark \(&:is\(\.dark \*\):where\(:not\(\[data-sidebar-tone="light"\]/);
+    let variant = "";
+    css("src/index.css").walkAtRules("custom-variant", (rule) => {
+      if (rule.params.startsWith("dark")) variant = selectorText(rule.params);
+    });
+    expect(variant.startsWith('dark (&:is(.dark *):where(:not([data-sidebar-tone="light"]')).toBe(true);
   });
 
   it("chaque règle .dark de la barre latérale porte la garde", () => {
@@ -102,7 +106,7 @@ describe("barre latérale : charte", () => {
     for (const selector of sidebar) expect(selector.startsWith(`:root[data-skin="clean"]${GUARD}`)).toBe(true);
     let chrome = "";
     css("src/design-system/clean.css").walkRules((rule) => {
-      if (rule.selector === ':root[data-skin="clean"][data-sidebar-tone="light"][data-sidebar-tone]') {
+      if (selectorText(rule.selector) === ':root[data-skin="clean"][data-sidebar-tone="light"][data-sidebar-tone]') {
         rule.walkDecls("--clean-chrome", (decl) => { chrome = decl.value; });
       }
     });

@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { codeText } from "../../helpers/code-text";
 import { closureBlocker, CLOSURE_NEEDS_NOTE } from "@/modules/consultation-workspace/consultation-closure";
 import { reviewedSoapContent } from "@/modules/consultations/local-ai/soap-review";
 import {
@@ -48,9 +49,9 @@ describe("B1 · clôturer et facturer exige une note validée", () => {
     expect(dialog).toContain("Écrire la note");
     expect(dialog).toContain("Dicter la note");
     expect(dialog).toContain("OPEN_SOAP_ASSISTANT_EVENT");
-    const session = read("src/modules/consultation-workspace/use-consultation-session.ts");
-    expect(session).toMatch(/const blocker = closureBlocker\(soapsRepo\.forAppointment\(activeConsultation\.id\)\);\s+if \(blocker\) \{\s+toast\.error\(blocker\);\s+return;/);
-    expect(session).toContain("closingBlocker,");
+    const session = codeText(read("src/modules/consultation-workspace/use-consultation-session.ts"));
+    expect(session).toContain(codeText("const blocker = closureBlocker(soapsRepo.forAppointment(activeConsultation.id)); if (blocker) { toast.error(blocker); return;"));
+    expect(session).toMatch(/[{,] closingBlocker[,}]/);
     expect(read("src/modules/consultation-workspace/consultation-workspace.tsx")).toContain("closingBlocker={closingBlocker}");
     expect(read("src/modules/consultations/components/soap-panel.tsx")).toContain("window.addEventListener(OPEN_SOAP_ASSISTANT_EVENT, open)");
   });

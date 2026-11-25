@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { codeText } from "../../helpers/code-text";
 
 const stored = new Map<string, string>();
 vi.mock("@/services/appSettingsService", () => ({
@@ -61,7 +62,7 @@ describe("réglage « Mon cabinet propose l’hospitalisation »", () => {
     const workspace = readFileSync("src/modules/clinique/pages/clinical-workspace.tsx", "utf8");
     expect(workspace).toContain("resolveClinicTab(tab, hospitalizationEnabled)");
     expect(workspace).toContain("const sectionTabs = hospitalizationEnabled ? tabsList : null;");
-    const palette = readFileSync("src/components/CommandPalette.tsx", "utf8");
+    const palette = codeText(readFileSync("src/components/CommandPalette.tsx", "utf8"));
     expect(palette).toMatch(/\{hospitalizationEnabled && \(<CommandItem[\s\S]{0,400}newHospitalization/);
   });
 });

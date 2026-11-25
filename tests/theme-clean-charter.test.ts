@@ -3,6 +3,7 @@ import { join } from "node:path";
 import postcss from "postcss";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { applyTheme, DEFAULT_THEME, getThemeConfig } from "../src/lib/theme-store";
+import { classNames, hasClassName, selectorText } from "./helpers/code-text";
 
 const CLEAN = readFileSync("src/design-system/clean.css", "utf8");
 const SCOPE = ':root[data-skin="clean"]';
@@ -10,6 +11,10 @@ const DARK = ':root[data-skin="clean"].dark';
 // The sidebar takes the dark set unless Appearance forces it light (data-sidebar-tone).
 const SIDEBAR = ':root[data-skin="clean"]:where(:not([data-sidebar-tone="light"])) :is([data-slot="sidebar"], [data-sidebar="sidebar"][data-mobile="true"])';
 const root = postcss.parse(CLEAN);
+// Selectors are read without their layout: a formatter may split them over several lines.
+root.walkRules((rule) => {
+  rule.selector = selectorText(rule.selector);
+});
 const tokensOf = (selector: string) => {
   const found = new Map<string, string>();
   root.walkRules((rule) => {
@@ -67,7 +72,11 @@ describe("thème Clean : jetons", () => {
     expect(declarations.get("--clean-nav-icon")).toBe("16px");
     expect(CLEAN).toMatch(/stroke-width: var\(--clean-icon-stroke\)/);
     // premium-sidebar.css pins the sidebar strokes at 1 !important; Clean must answer in kind.
-    expect(CLEAN).toMatch(/\.app-sidebar \.sidebar-nav-icon svg, \.app-sidebar \.premium-shortcut-icon\) \{ stroke-width: var\(--clean-icon-stroke\) !important; \}/);
+    const pinned = rulesFor(/\.app-sidebar \.sidebar-nav-icon svg, \.app-sidebar \.premium-shortcut-icon\)$/).flatMap((rule) => rule.nodes);
+    // The declaration that wins: the last stroke-width of the rule.
+    const strokes = pinned.filter((n): n is postcss.Declaration => n.type === "decl" && n.prop === "stroke-width");
+    expect(strokes.at(-1)?.value).toBe("var(--clean-icon-stroke)");
+    expect(strokes.at(-1)?.important).toBe(true);
     expect(CLEAN).toMatch(/sidebar-nav-icon svg[\s\S]*?width: var\(--clean-nav-icon\) !important/);
   });
 
@@ -362,10 +371,11 @@ describe("thème Clean : widgets", () => {
     // One template on rows of fixed height, so label, figure with its curve, badge, line and goal bar fall on
     // the same lines from one card to the next, whatever the text.
     const card = readFileSync("src/components/ui/stat-grid.tsx", "utf8");
-    expect(card).toContain('className="flex h-6 items-center gap-2');
-    expect(card).toContain('className="flex h-8 items-center justify-between gap-3"');
-    expect(card).toContain('className="flex h-5 items-center"');
-    expect(card).toContain('className="h-4 truncate text-xs leading-4 text-muted-foreground"');
+    // The figure's row: these classes and possibly more.
+    expect(classNames(card).some((found) => ["flex", "h-6", "items-center", "gap-2"].every((name) => found.has(name)))).toBe(true);
+    expect(hasClassName(card, "flex h-8 items-center justify-between gap-3"), "flex h-8 items-center justify-between gap-3").toBe(true);
+    expect(hasClassName(card, "flex h-5 items-center"), "flex h-5 items-center").toBe(true);
+    expect(hasClassName(card, "h-4 truncate text-xs leading-4 text-muted-foreground"), "h-4 truncate text-xs leading-4 text-muted-foreground").toBe(true);
     expect(card).toContain("mt-auto");
   });
 
