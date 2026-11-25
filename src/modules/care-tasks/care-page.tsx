@@ -1,23 +1,26 @@
-import { ErrorState } from "@/design-system/patterns/error-state";
 import { Syringe } from "lucide-react";
+import { ErrorState } from "@/design-system/patterns/error-state";
 import { careErrorMessage } from "./feedback";
 import "./care-page.css";
-import { useEffect, useState, type ReactNode } from "react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { type ReactNode, useEffect, useState } from "react";
+import { SectionCards } from "@/components/section-cards";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { DatePicker } from "@/components/ui/date-picker";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
 } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 import {
   Sheet,
   SheetContent,
+  SheetDescription,
   SheetHeader,
   SheetTitle,
-  SheetDescription,
 } from "@/components/ui/sheet";
 import { useAuth } from "@/contexts/AuthContext";
 import {
@@ -25,40 +28,38 @@ import {
   useProductsRepository,
   useUsersRepository,
 } from "@/data/repositories";
+import { PageHeader } from "@/design-system/patterns/page-header";
 import {
-  careDisplayStatus,
+  insufficientStockMessage,
+  parseStockQuantityInput,
+  stockQuantityLabel,
+} from "@/domain/stock";
+import { guard } from "@/lib/guard";
+import { InjectionIcon } from "@/lib/hugeicons";
+import { ProductStockFields } from "@/modules/stock/components/product-stock-fields";
+import { formatLongDay } from "@/utils/display-format";
+import { CareCompletionRollbackDialog } from "./care-completion-rollback-dialog";
+import {
+  type CareMarkKind,
+  careDaySummary,
+  careDoses,
+  careTimeline,
+} from "./care-day";
+import { CareTaskForm, careTypeLabels } from "./care-task-form";
+import {
   type CareDisplayStatus,
   type CareHistory,
   type CareStatus,
   type CareTask,
+  careDisplayStatus,
 } from "./domain";
-import { CareTaskForm, careTypeLabels } from "./care-task-form";
-import { CareCompletionRollbackDialog } from "./care-completion-rollback-dialog";
 import { careTasksService } from "./service";
 import {
   announceCareTasksChanged,
   CARE_LIST_DAY_KEY,
   useCareTasks,
 } from "./use-care-tasks";
-import {
-  insufficientStockMessage,
-  stockQuantityLabel,
-  parseStockQuantityInput,
-} from "@/domain/stock";
-import { ProductStockFields } from "@/modules/stock/components/product-stock-fields";
-import { DatePicker } from "@/components/ui/date-picker";
-import { PageHeader } from "@/design-system/patterns/page-header";
-import { HugeiconsIcon } from "@hugeicons/react";
-import { InjectionIcon } from "@/lib/hugeicons";
-import { formatLongDay } from "@/utils/display-format";
-import { SectionCards } from "@/components/section-cards";
-import {
-  careDaySummary,
-  careDoses,
-  careTimeline,
-  type CareMarkKind,
-} from "./care-day";
-import { guard } from "@/lib/guard";
+
 const labels: Record<CareDisplayStatus, string> = {
   a_faire: "À faire",
   en_cours: "En cours",

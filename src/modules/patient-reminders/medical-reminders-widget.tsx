@@ -1,12 +1,12 @@
 import "./patient-reminders.css";
 import { ArrowRight } from "lucide-react";
+import { usePatientsRepository } from "@/data/repositories";
 import { WidgetShell } from "@/design-system/patterns/widget-shell";
 import { EmptyState, SignalBadge } from "@/design-system/primitives";
-import { usePatientsRepository } from "@/data/repositories";
-import { isReminderOverdue, localToday } from "./domain";
-import { usePatientReminders } from "./use-patient-reminders";
 import { RowSkeleton } from "@/modules/dashboard/components/clinical/shared";
 import type { Patient } from "@/types/db";
+import { isReminderOverdue, localToday } from "./domain";
+import { usePatientReminders } from "./use-patient-reminders";
 
 export function MedicalRemindersModule({ onAll }: { onAll: () => void }) {
   const model = usePatientReminders();

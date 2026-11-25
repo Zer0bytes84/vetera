@@ -1,4 +1,4 @@
-import { releaseNoteFor, type ReleaseNote } from "./release-notes";
+import { type ReleaseNote, releaseNoteFor } from "./release-notes";
 
 /** Le marqueur local : la dernière version de l'application que cette personne a ouverte. */
 export const LAST_SEEN_VERSION_KEY = "baitari:last-seen-version";

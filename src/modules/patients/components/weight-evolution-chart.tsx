@@ -1,4 +1,3 @@
-import { Plus, Scales } from "@/lib/icons";
 import { useTranslation } from "react-i18next";
 import {
   CartesianGrid,
@@ -8,13 +7,13 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-
 import { Button } from "@/components/ui/button";
 import {
   type ChartConfig,
   ChartContainer,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { Plus, Scales } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 import type { WeightEntry } from "@/types/db";
 

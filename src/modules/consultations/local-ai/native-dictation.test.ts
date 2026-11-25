@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { encodePcmBase64 } from "./native-dictation";
 import { normalizeTemperatureSymbols } from "./dictation-text";
+import { encodePcmBase64 } from "./native-dictation";
 
 describe("native dictation PCM", () => {
   it("encodes little-endian float32 without losing bytes", () => {

@@ -1,9 +1,9 @@
-import { useEffect, useRef, useState } from "react";
 import type { PDFDocumentProxy } from "pdfjs-dist";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import type { PatientRecordPdf } from "./patient-record-types";
 import { guard } from "@/lib/guard";
+import type { PatientRecordPdf } from "./patient-record-types";
 
 const loadPdfjsDist = () => import("pdfjs-dist");
 const loadPdfjsDistBuildPdfWorkerMinMjs = () =>

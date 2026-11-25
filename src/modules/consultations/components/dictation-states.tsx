@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { type CSSProperties, useEffect, useRef, useState } from "react";
 import { AgentStatus } from "@/components/ui/agent-status";
 import "./dictation-states.css";
 

@@ -1,17 +1,18 @@
-import type { CarePlan } from "./store";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProductsRepository } from "@/data/repositories";
-import { CARE_TYPES, type CareType } from "@/modules/care-tasks/domain";
+import { guard, guardSync } from "@/lib/guard";
 import { careTypeLabels } from "@/modules/care-tasks/care-task-form";
+import { CARE_TYPES, type CareType } from "@/modules/care-tasks/domain";
 import { announceCareTasksChanged } from "@/modules/care-tasks/use-care-tasks";
 import { carePlanOccurrences } from "./domain";
 import { staysService } from "./service";
-import { announceStaysChanged } from "./use-stays";
 import { StayDateTimeField } from "./stay-date-time-field";
-import { guard, guardSync } from "@/lib/guard";
+import type { CarePlan } from "./store";
+import { announceStaysChanged } from "./use-stays";
+
 function localDate(value?: string) {
   if (!value) {
     return "";

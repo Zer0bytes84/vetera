@@ -1,11 +1,11 @@
+import { SoapFidelityError } from "./dictation-scaffold";
+import type { LocalSoapNote } from "./soap-schema";
 import {
   EMPTY_SOAP,
+  parseGeneratedSoap,
   SOAP_SECTIONS,
   SoapFormatError,
-  parseGeneratedSoap,
 } from "./soap-schema";
-import type { LocalSoapNote } from "./soap-schema";
-import { SoapFidelityError } from "./dictation-scaffold";
 
 /** One rubric asked on its own on the second attempt. */
 export interface SoapRetryPart {

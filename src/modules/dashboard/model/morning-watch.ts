@@ -1,11 +1,11 @@
-import { careDisplayStatus, type CareTask } from "@/modules/care-tasks/domain";
+import { type CareTask, careDisplayStatus } from "@/modules/care-tasks/domain";
+import type { View } from "@/types";
 import type {
   Appointment,
   Hospitalization,
   Invoice,
   Patient,
 } from "@/types/db";
-import type { View } from "@/types";
 import { formatNumber } from "@/utils/display-format";
 import { isOpenInvoice } from "../v2/financial-model";
 import { formatCentimes, parseDashboardDate, startOfDay } from "../v2/model";

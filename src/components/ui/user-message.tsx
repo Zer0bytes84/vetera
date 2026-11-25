@@ -9,21 +9,21 @@
  */
 
 import {
-  RotateCw,
   Check,
+  CircleAlert,
   Copy,
   FileText,
   Image as ImageIcon,
   Pencil,
-  CircleAlert,
+  RotateCw,
 } from "lucide-react";
 import { AnimatePresence, MotionConfig, motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import { Button, IconButton } from "@/components/ui/action-button";
+import { Spinner } from "@/components/ui/loader";
 import { Textarea as TextArea } from "@/components/ui/textarea";
 import { enter, exit } from "@/lib/motion-tokens";
 import { cn } from "@/lib/utils";
-import { Spinner } from "@/components/ui/loader";
 
 export interface UserMessageAttachment {
   id: string;

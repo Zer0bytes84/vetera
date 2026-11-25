@@ -1,17 +1,17 @@
+import type { IconSvgElement } from "@hugeicons/react";
+import type { TFunction } from "i18next";
 import {
   Calendar01Icon,
   DashboardSquare01Icon,
+  File01Icon,
   Hospital01Icon,
   KanbanIcon,
-  File01Icon,
   PackageIcon,
   StethoscopeIcon,
   Task01Icon,
   UserGroupIcon,
   Wallet01Icon,
 } from "@/lib/hugeicons";
-import type { IconSvgElement } from "@hugeicons/react";
-import type { TFunction } from "i18next";
 
 import type { View } from "@/types";
 

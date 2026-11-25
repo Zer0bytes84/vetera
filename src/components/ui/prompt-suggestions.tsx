@@ -8,7 +8,7 @@
  * `negative`, `warning` are our tones; never the TuffUI theme); text is French, never under 12 px; no demo data.
  */
 
-import { RotateCw, ArrowUpRight, type LucideIcon } from "lucide-react";
+import { ArrowUpRight, type LucideIcon, RotateCw } from "lucide-react";
 import { AnimatePresence, MotionConfig, motion } from "motion/react";
 import { IconButton } from "@/components/ui/action-button";
 import { IconTile } from "@/components/ui/surface";

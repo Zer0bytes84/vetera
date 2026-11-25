@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
+import { guard } from "@/lib/guard";
 import { billingService } from "@/services/billingService";
 import { isTauriRuntime } from "@/services/browser-store";
 import type { Invoice } from "@/types/db";
-import { guard } from "@/lib/guard";
+
 let cached: Invoice[] | undefined;
 let pending: Promise<Invoice[]> | undefined;
 function readInvoices() {

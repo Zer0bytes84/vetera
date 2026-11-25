@@ -1,8 +1,8 @@
 import { PawPrint } from "lucide-react";
-import { KpiSegments } from "../../v2/kpi-mini-chart";
-import { EmptyState, SignalBadge, focusRing } from "@/design-system/primitives";
 import { WidgetShell } from "@/design-system/patterns/widget-shell";
+import { EmptyState, focusRing, SignalBadge } from "@/design-system/primitives";
 import type { buildPatientFollowUpRows } from "../../model/clinical-dashboard";
+import { KpiSegments } from "../../v2/kpi-mini-chart";
 import {
   ModuleLink,
   ModuleTotals,

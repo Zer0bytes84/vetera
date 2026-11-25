@@ -1,15 +1,15 @@
-import type { Product } from "@/types/db";
 import { StockError, stockBalance, stockQuantity } from "@/domain/stock";
 import { stockDate, stockDay, stockTimestamp } from "@/domain/stock-date";
+import type { Product } from "@/types/db";
 import { hasStockLots } from "./lot-consumption-store";
 import {
   countUnassignedStockInDatabase,
-  receiveStockInDatabase,
-  stockBucketsInDatabase,
   type InventoryBucket,
   type InventoryLocation,
+  receiveStockInDatabase,
+  stockBucketsInDatabase,
 } from "./lot-store";
-import { stockProductInDatabase, type StockDatabase } from "./stock-database";
+import { type StockDatabase, stockProductInDatabase } from "./stock-database";
 
 export interface StockInventoryBalance extends InventoryBucket {
   productArchived: boolean;

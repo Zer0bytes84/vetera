@@ -5,6 +5,7 @@ import {
   CalendarCheck,
   FileText,
   LayoutGrid,
+  type LucideIcon,
   MessageCircle,
   MessageSquareText,
   Palette,
@@ -18,7 +19,6 @@ import {
   Stethoscope,
   Type,
   UserPen,
-  type LucideIcon,
 } from "lucide-react";
 
 /**

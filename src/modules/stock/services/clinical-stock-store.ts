@@ -1,19 +1,19 @@
 import { StockError, stockQuantity, stockQuantityLabel } from "@/domain/stock";
+import type { StockSelection } from "@/domain/stock-fifo";
 import {
   appendInvoiceDraftLinesInDatabase,
   createInvoiceDraftInDatabase,
 } from "@/services/billingService";
 import type { BillingLineInput, InvoiceDetail } from "@/types/db";
+import { hasStockLots } from "./lot-consumption-store";
+import { stockSelectionKey } from "./lot-store";
 import {
   assertStockAvailable,
   consumeStockInDatabase,
-  stockProductInDatabase,
   type StockDatabase,
   type StockProduct,
+  stockProductInDatabase,
 } from "./stock-store";
-import type { StockSelection } from "@/domain/stock-fifo";
-import { hasStockLots } from "./lot-consumption-store";
-import { stockSelectionKey } from "./lot-store";
 
 export interface ClinicalUseInput {
   appointmentId: string;

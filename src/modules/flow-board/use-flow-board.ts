@@ -1,13 +1,14 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   useAppointmentsRepository,
   usePatientsRepository,
   useUsersRepository,
   useVaccinationsRepository,
 } from "@/data/repositories";
-import { useAuth } from "@/contexts/AuthContext";
-import { isTauriRuntime } from "@/services/browser-store";
+import { guard } from "@/lib/guard";
+import { roomsService } from "@/modules/rooms/service";
 import {
   VISIT_FLOW_CHANGED,
   VISIT_FLOW_STAGE_LABELS,
@@ -15,17 +16,16 @@ import {
 import { visitFlowService } from "@/modules/visit-flow/service";
 import type { VisitFlowBoardState } from "@/modules/visit-flow/store";
 import { useFlowUndo } from "@/modules/visit-flow/use-flow-undo";
-import { roomsService } from "@/modules/rooms/service";
+import { isTauriRuntime } from "@/services/browser-store";
 import type { Appointment, Patient } from "@/types/db";
 import {
+  type BoardLane,
   boardMove,
   buildFlowBoard,
+  type FlowCard,
   isSameLocalDay,
   walkInFor,
-  type BoardLane,
-  type FlowCard,
 } from "./model";
-import { guard } from "@/lib/guard";
 
 const REFRESH_MS = 30_000;
 const OPEN_STATUSES = new Set(["arrived", "waiting", "in_progress"]);

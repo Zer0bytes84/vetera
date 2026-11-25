@@ -10,8 +10,8 @@ import {
   buildTodaySchedule,
   endOfDay,
   parseDashboardDate,
-  startOfDay,
   type ScheduleEntry,
+  startOfDay,
 } from "../v2/model";
 
 export interface NowSnapshot {

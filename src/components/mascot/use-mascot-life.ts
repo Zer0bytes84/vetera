@@ -1,4 +1,4 @@
-import { useEffect, useState, type RefObject } from "react";
+import { type RefObject, useEffect, useState } from "react";
 import type { LineMood } from "./line-mascots";
 
 /** Farthest a pupil travels from the eye's centre, in drawing units (the sclera is 5.6 × 6.2). */

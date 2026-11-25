@@ -1,7 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
-import { ArrowLeft01Icon, ArrowRight01Icon } from "@/lib/hugeicons";
-import { CalendarDays } from "@/lib/icons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { COMPACT_CALENDAR_CLASS } from "@/components/ui/date-picker";
@@ -12,22 +10,24 @@ import {
 } from "@/components/ui/popover";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  APPOINTMENT_TYPE_META,
   APPOINTMENT_STATUS_META,
+  APPOINTMENT_TYPE_META,
   getAppointmentTypeMeta,
 } from "@/config/status-meta";
 import { useNowTick } from "@/hooks/useNowTick";
+import { ArrowLeft01Icon, ArrowRight01Icon } from "@/lib/hugeicons";
+import { CalendarDays } from "@/lib/icons";
 import { cn } from "@/lib/utils";
-import type { Appointment } from "@/types/db";
 import { AgendaMonthCalendar } from "@/modules/agenda/components/agenda-month-calendar";
 import {
   clock,
   fitHourPx,
+  type GridBlock,
   layoutDayEvents,
   layoutTimeGrid,
   visibleHours,
-  type GridBlock,
 } from "@/modules/agenda/model/agenda-layout";
+import type { Appointment } from "@/types/db";
 
 export type CalendarView = "day" | "week" | "month";
 

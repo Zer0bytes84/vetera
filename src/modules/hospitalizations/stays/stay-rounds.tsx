@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import CarePage from "@/modules/care-tasks/care-page";
-import { VitalsForm } from "./vitals-form";
 import type { Stay, StayLocation } from "./store";
+import { VitalsForm } from "./vitals-form";
 export function StayRounds({
   stays,
   locations,

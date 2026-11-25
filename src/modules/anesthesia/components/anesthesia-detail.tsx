@@ -1,15 +1,5 @@
-import {
-  ArrowLeft,
-  Heartbeat,
-  Pill,
-  Play,
-  Printer,
-  Stop,
-  Syringe,
-} from "@/lib/icons";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -31,6 +21,15 @@ import {
   useAnesthesiaMonitoringRepository,
   useAnesthesiaSheetsRepository,
 } from "@/data/repositories";
+import {
+  ArrowLeft,
+  Heartbeat,
+  Pill,
+  Play,
+  Printer,
+  Stop,
+  Syringe,
+} from "@/lib/icons";
 import { cn } from "@/lib/utils";
 import { formatDuration } from "@/modules/hospitalizations/lib/format";
 import type { AnesthesiaSheet, AnesthesiaStatus, Patient } from "@/types/db";

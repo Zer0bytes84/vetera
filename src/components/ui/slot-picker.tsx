@@ -4,7 +4,7 @@
 
 import { CalendarDaysIcon } from "@heroicons/react/20/solid";
 import { AnimatePresence, MotionConfig, motion } from "motion/react";
-import { useRef, useState, type ReactNode } from "react";
+import { type ReactNode, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Panel, Shell, ShellHeader } from "@/components/ui/surface";
 import { EASE_OUT, exit } from "@/lib/motion-tokens";

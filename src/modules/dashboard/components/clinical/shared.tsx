@@ -1,7 +1,7 @@
-import type { ReactNode } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { ArrowRight01Icon } from "@/lib/hugeicons";
+import type { ReactNode } from "react";
 import { focusRing, SkeletonBlock } from "@/design-system/primitives";
+import { ArrowRight01Icon } from "@/lib/hugeicons";
 import type { Patient } from "@/types/db";
 
 export interface WidgetState {

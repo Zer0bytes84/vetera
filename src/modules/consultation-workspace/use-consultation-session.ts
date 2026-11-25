@@ -10,20 +10,20 @@ import {
   usePatientsRepository,
   useUsersRepository,
 } from "@/data/repositories";
+import { guard } from "@/lib/guard";
 import { useAppointmentBilling } from "@/modules/billing/use-appointment-billing";
 import {
   type ConsultationDraftPayload,
-  type SaveDraftOptions,
   getDocumentCategory,
   readFileAsDataUrl,
+  type SaveDraftOptions,
 } from "@/modules/clinique/components/clinique-shared";
-import { closureBlocker } from "./consultation-closure";
 import { localToday, medicalReminderTypeForAct } from "@/modules/patient-reminders/domain";
 import { announceMedicalActRecorded } from "@/modules/patient-reminders/medical-act-events";
 import { useFlowUndo } from "@/modules/visit-flow/use-flow-undo";
 import { useAudit } from "@/services/use-audit";
 import type { Appointment, ConsultationDocument, Patient } from "@/types/db";
-import { guard } from "@/lib/guard";
+import { closureBlocker } from "./consultation-closure";
 
 /**
  * The consultation workspace: the open consultation, its documents and

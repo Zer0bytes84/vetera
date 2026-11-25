@@ -12,18 +12,18 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useTauriDrag } from "@/hooks/use-tauri-drag";
+import { guard } from "@/lib/guard";
 import { isTauriRuntime } from "@/services/browser-store";
 import { activateLicense } from "@/services/licenseActivationService";
 import {
   acceptLicenseActivation,
   checkLicenseAccess,
   getCachedLicenseAccess,
-  type LicenseAccess,
   LICENSE_LOCAL_RECHECK_MS,
+  type LicenseAccess,
   recheckLicenseInBackground,
 } from "@/services/licenseRuntime";
 import { formatLicenseKey } from "@/services/licenseService";
-import { guard } from "@/lib/guard";
 
 export function LicenseGate({ children }: { children: ReactNode }) {
   // Browser-only development demos have no desktop installation to license.

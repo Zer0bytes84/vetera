@@ -4,8 +4,8 @@ import {
   evaluateVitals,
   type Species,
 } from "@/lib/clinical-alerts";
-import { runDbRead } from "@/services/sqlite/database";
 import { guard } from "@/lib/guard";
+import { runDbRead } from "@/services/sqlite/database";
 
 export interface PostOpPatient {
   alerts: ClinicalAlert[];

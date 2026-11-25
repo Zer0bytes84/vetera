@@ -4,10 +4,10 @@ import { Segmented } from "@/components/ui/segmented-control";
 import { cn } from "@/lib/utils";
 import {
   ANALYTICS_PERIODS,
-  analyticsRanges,
-  trendBuckets,
   type AnalyticsPeriod,
   type AnalyticsRange,
+  analyticsRanges,
+  trendBuckets,
 } from "@/modules/dashboard/model/premium-analytics";
 import type { Transaction } from "@/types/db";
 import { formatDinars } from "@/utils/display-format";

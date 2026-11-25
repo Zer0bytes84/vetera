@@ -12,9 +12,9 @@
 
 import {
   BadgeCheck,
+  Check,
   CircleCheck,
   Minus,
-  Check,
   TriangleAlert,
 } from "lucide-react";
 import { AnimatePresence, MotionConfig, motion } from "motion/react";

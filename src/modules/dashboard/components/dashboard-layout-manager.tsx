@@ -19,18 +19,18 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import {
-  CheckmarkCircle02Icon,
-  DashboardSquareEditIcon,
-  DragDropVerticalIcon,
-  ResetPasswordIcon,
-} from "@/lib/hugeicons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import type { ReactNode } from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
+import {
+  CheckmarkCircle02Icon,
+  DashboardSquareEditIcon,
+  DragDropVerticalIcon,
+  ResetPasswordIcon,
+} from "@/lib/hugeicons";
 import { cn } from "@/lib/utils";
 import { getSetting, setSetting } from "@/services/appSettingsService";
 import {

@@ -1,5 +1,5 @@
-import { Segmented } from "@/components/ui/segmented-control";
 import { SettingsRow } from "@/components/settings-section";
+import { Segmented } from "@/components/ui/segmented-control";
 import { useDashboardVersion } from "../hooks/use-dashboard-version";
 
 /** One row of the « Tableau de bord » section of Paramètres: which dashboard opens by default. */

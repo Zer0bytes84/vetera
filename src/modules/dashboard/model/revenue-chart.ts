@@ -1,6 +1,6 @@
 import type { ChartSeries } from "@/components/ui/chart-card";
 import { formatNumber } from "@/utils/display-format";
-import { seriesChange, type FocusPoint } from "../components/focus-trend-chart";
+import { type FocusPoint, seriesChange } from "../components/focus-trend-chart";
 import type { VisitKindRow } from "./dashboard-widgets";
 
 /** The chart's figures, from the same points as before: nothing is recomputed from another source. */

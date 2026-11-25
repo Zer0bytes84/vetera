@@ -1,8 +1,8 @@
-import type { ConsultationDocument, Invoice, Prescription } from "@/types/db";
 import {
   DOCUMENT_TYPES,
   type PatientDocument,
 } from "@/modules/documents/document-domain";
+import type { ConsultationDocument, Invoice, Prescription } from "@/types/db";
 
 export type TimelinePieceKind =
   | "prescription"

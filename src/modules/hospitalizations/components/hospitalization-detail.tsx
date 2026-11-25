@@ -1,16 +1,5 @@
-import {
-  ArrowLeft,
-  Heartbeat,
-  Hospital,
-  IdentificationBadge,
-  Notebook,
-  Pill,
-  Printer,
-  Thermometer,
-} from "@/lib/icons";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -31,6 +20,16 @@ import {
   useHospitalizationsRepository,
   useHospitalizationVitalsRepository,
 } from "@/data/repositories";
+import {
+  ArrowLeft,
+  Heartbeat,
+  Hospital,
+  IdentificationBadge,
+  Notebook,
+  Pill,
+  Printer,
+  Thermometer,
+} from "@/lib/icons";
 import { cn } from "@/lib/utils";
 import type {
   Hospitalization,

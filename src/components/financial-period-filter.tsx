@@ -1,25 +1,25 @@
-import { useState } from "react";
 import {
-  startOfDay,
   endOfDay,
-  startOfWeek,
-  endOfWeek,
-  startOfMonth,
   endOfMonth,
-  startOfYear,
+  endOfWeek,
   endOfYear,
   format,
+  startOfDay,
+  startOfMonth,
+  startOfWeek,
+  startOfYear,
 } from "date-fns";
-import { CalendarDays, ChevronDown } from "@/lib/icons";
 import { fr } from "date-fns/locale";
+import { useState } from "react";
 import type { DateRange } from "react-day-picker";
-import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { CalendarDays, ChevronDown } from "@/lib/icons";
 
 export type FinancialPeriod = "day" | "week" | "month" | "year";
 export function financialPeriodRange(period: FinancialPeriod, anchor: Date) {

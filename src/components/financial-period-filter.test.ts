@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { financialPeriodRange } from "./financial-period-filter";
+
 describe("financial calendar periods", () => {
   it("starts weeks on Monday and includes Sunday across years", () => {
     expect(financialPeriodRange("week", new Date(2023, 0, 1))).toEqual({

@@ -1,7 +1,7 @@
 import {
   Component,
-  lazy,
   type ErrorInfo,
+  lazy,
   type ReactNode,
   Suspense,
 } from "react";

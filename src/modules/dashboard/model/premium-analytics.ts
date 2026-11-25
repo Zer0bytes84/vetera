@@ -11,10 +11,10 @@ import type {
 import { receivablesTrend } from "../v2/financial-model";
 import {
   addDays,
+  type ClinicalAlert,
   endOfDay,
   parseDashboardDate,
   startOfDay,
-  type ClinicalAlert,
 } from "../v2/model";
 import { buildVisitKinds } from "./dashboard-widgets";
 

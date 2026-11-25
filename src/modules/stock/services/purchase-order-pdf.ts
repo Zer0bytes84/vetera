@@ -1,7 +1,7 @@
 import { jsPDF } from "jspdf";
+import { stockQuantityLabel } from "@/domain/stock";
 import { savePdf } from "@/lib/save-pdf";
 import { formatDZD } from "@/utils/currency";
-import { stockQuantityLabel } from "@/domain/stock";
 import type {
   PurchaseOrder,
   PurchaseOrderLine,

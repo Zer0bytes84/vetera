@@ -1,11 +1,11 @@
-import { ClipboardList } from "lucide-react";
-import { Loader2 } from "@/lib/icons";
-import { AnimatePresence, motion } from "framer-motion";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { CheckmarkCircle02Icon } from "@/lib/hugeicons";
-import { EmptyState, SignalBadge, focusRing } from "@/design-system/primitives";
-import { WidgetShell } from "@/design-system/patterns/widget-shell";
+import { AnimatePresence, motion } from "framer-motion";
+import { ClipboardList } from "lucide-react";
 import { MOTION } from "@/design-system/motion";
+import { WidgetShell } from "@/design-system/patterns/widget-shell";
+import { EmptyState, focusRing, SignalBadge } from "@/design-system/primitives";
+import { CheckmarkCircle02Icon } from "@/lib/hugeicons";
+import { Loader2 } from "@/lib/icons";
 import type { ClinicalAlert } from "../../v2/model";
 import { ModuleLink, RowSkeleton, type WidgetState } from "./shared";
 

@@ -12,9 +12,9 @@
  * The assistant's avatar is the mascot, never a generic « AI » glyph. Colours are our tokens, text is French and never under 12 px; no demo data.
  */
 
-import { Mascot } from "@/components/mascot";
 import { AnimatePresence, MotionConfig, motion } from "motion/react";
 import { Fragment, type ReactNode } from "react";
+import { Mascot } from "@/components/mascot";
 import { enter, exit } from "@/lib/motion-tokens";
 import { cn } from "@/lib/utils";
 

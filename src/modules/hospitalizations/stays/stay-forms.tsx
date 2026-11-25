@@ -1,24 +1,24 @@
-import { useState } from "react";
 import { fr } from "date-fns/locale";
+import { useState } from "react";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { COMPACT_CALENDAR_CLASS } from "@/components/ui/date-picker";
-import { CalendarDays } from "@/lib/icons";
-import { admissionDateTime } from "./admission-date";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useAuth } from "@/contexts/AuthContext";
-import { usePatientsRepository } from "@/data/repositories";
-import { staysService } from "./service";
-import { announceStaysChanged } from "./use-stays";
-import type { StayLocation } from "./store";
-import { SearchableSelect } from "@/components/ui/searchable-select";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { SearchableSelect } from "@/components/ui/searchable-select";
+import { useAuth } from "@/contexts/AuthContext";
+import { usePatientsRepository } from "@/data/repositories";
 import { guard } from "@/lib/guard";
+import { CalendarDays } from "@/lib/icons";
+import { admissionDateTime } from "./admission-date";
+import { staysService } from "./service";
+import type { StayLocation } from "./store";
+import { announceStaysChanged } from "./use-stays";
 export function AdmissionForm({
   locations,
   onSaved,

@@ -4,7 +4,7 @@
 
 import { ChartPieIcon } from "@heroicons/react/20/solid";
 import { MotionConfig, motion, useReducedMotion } from "motion/react";
-import { useState, type ReactNode } from "react";
+import { type ReactNode, useState } from "react";
 import { Panel, Shell, ShellHeader } from "@/components/ui/surface";
 import { EASE_OUT } from "@/lib/motion-tokens";
 import { cn } from "@/lib/utils";

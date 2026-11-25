@@ -1,7 +1,5 @@
-import { Syringe } from "@/lib/icons";
 import { useState as useReactState } from "react";
 import { useTranslation } from "react-i18next";
-
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,6 +9,7 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 import { useAnesthesiaSheetsRepository } from "@/data/repositories";
+import { Syringe } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 import { formatDuration } from "@/modules/hospitalizations/lib/format";
 import type { AnesthesiaSheet, Patient } from "@/types/db";

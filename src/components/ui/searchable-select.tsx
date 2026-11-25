@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import {
   Combobox,
   ComboboxContent,
@@ -6,7 +7,6 @@ import {
   ComboboxItem,
   ComboboxList,
 } from "@/components/ui/combobox";
-import { useMemo } from "react";
 
 export interface SearchableOption {
   keywords?: string;

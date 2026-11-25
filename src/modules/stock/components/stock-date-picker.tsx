@@ -1,6 +1,5 @@
-import { useState } from "react";
 import { fr } from "date-fns/locale";
-import { CalendarDays } from "@/lib/icons";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { COMPACT_CALENDAR_CLASS } from "@/components/ui/date-picker";
@@ -9,6 +8,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { CalendarDays } from "@/lib/icons";
 
 export function StockDatePicker({
   value,

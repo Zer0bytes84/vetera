@@ -31,4 +31,5 @@ export function careErrorMessage(
     ? "Le soin n’a pas pu être enregistré. Réessayez."
     : "Le soin n’a pas pu être modifié. Réessayez.";
 }
+
 import { StockError } from "@/domain/stock";

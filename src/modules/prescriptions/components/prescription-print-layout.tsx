@@ -1,12 +1,10 @@
-import { formatPhone, formatPersonName } from "@/utils/display-format";
-import { Pill, Stethoscope } from "@/lib/icons";
 import { useTranslation } from "react-i18next";
-
 import { Badge } from "@/components/ui/badge";
+import { Pill, Stethoscope } from "@/lib/icons";
 import type { Patient } from "@/types/db";
-import type { PrescriptionVet, PreviewItem } from "../types";
-
+import { formatPersonName, formatPhone } from "@/utils/display-format";
 import { formatNumber } from "../lib/dose-calculator";
+import type { PrescriptionVet, PreviewItem } from "../types";
 
 export interface PrescriptionPrintLayoutProps {
   className?: string;

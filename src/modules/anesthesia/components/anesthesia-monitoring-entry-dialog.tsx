@@ -1,8 +1,6 @@
-import { Heartbeat } from "@/lib/icons";
 import { useState } from "react";
 import { flushSync } from "react-dom";
 import { useTranslation } from "react-i18next";
-
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
 import {
@@ -19,6 +17,7 @@ import {
 } from "@/components/ui/native-select";
 import { Textarea } from "@/components/ui/textarea";
 import { useAnesthesiaMonitoringRepository } from "@/data/repositories";
+import { Heartbeat } from "@/lib/icons";
 import type { AnesthesiaPhase, AnesthesiaSheet } from "@/types/db";
 
 import { ANESTHESIA_PHASE_LABELS } from "../lib/format";

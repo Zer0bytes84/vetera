@@ -1,19 +1,16 @@
-import { createUuid } from "@/lib/uuid";
-import { Calendar01Icon } from "@/lib/hugeicons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { fr } from "date-fns/locale";
-
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-
+import { Calendar01Icon } from "@/lib/hugeicons";
 import { cn } from "@/lib/utils";
+import { createUuid } from "@/lib/uuid";
 
 import type {
   BillingDocumentStatus,

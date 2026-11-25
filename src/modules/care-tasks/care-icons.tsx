@@ -1,5 +1,6 @@
 /*! Lucide Icons, ISC. Feather-derived icons, MIT. See /licenses/lucide-care-icons.txt. */
 import type { ReactNode, SVGProps } from "react";
+
 type CareIconProps = Omit<SVGProps<SVGSVGElement>, "children" | "strokeWidth">;
 function CareIcon({
   children,

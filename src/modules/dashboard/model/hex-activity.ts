@@ -2,9 +2,9 @@ import { formatNumber } from "@/utils/display-format";
 import {
   buildActivityHeatmap,
   buildHourlyActivity,
+  type HeatDay,
   heatLegend,
   heatLevel,
-  type HeatDay,
 } from "./dashboard-widgets";
 
 /**

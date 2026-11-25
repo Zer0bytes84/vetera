@@ -1,5 +1,5 @@
-import { formatDisplayText } from "@/utils/display-format";
 import type { LibraryItem, Note } from "@/types/db";
+import { formatDisplayText } from "@/utils/display-format";
 
 /**
  * The Documents page lists three kinds of things side by side: the notes (« Document »), and the files, images and links

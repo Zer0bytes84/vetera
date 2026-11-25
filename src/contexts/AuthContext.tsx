@@ -7,10 +7,10 @@ import {
   useRef,
   useState,
 } from "react";
+import { guard } from "@/lib/guard";
 import { writeCachedProfile } from "@/lib/profile-cache";
 import { bootstrapScheduler, stopScheduler } from "@/services/backupScheduler";
 import * as AuthService from "@/services/sqlite/auth";
-import { guard } from "@/lib/guard";
 
 const loadServicesAuditService = () => import("@/services/auditService");
 

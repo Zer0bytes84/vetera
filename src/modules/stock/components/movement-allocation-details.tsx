@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { isTauriRuntime } from "@/services/browser-store";
 import { stockQuantityLabel } from "@/domain/stock";
-import { inventoryService } from "../services/inventory-service";
 import { guard } from "@/lib/guard";
+import { isTauriRuntime } from "@/services/browser-store";
+import { inventoryService } from "../services/inventory-service";
 
 export function MovementAllocationDetails({
   movementId,

@@ -1,6 +1,6 @@
-import type { IconSvgElement } from "@hugeicons/react";
 import BirdIcon from "@hugeicons/core-free-icons/BirdIcon";
 import FishSymbolIcon from "@hugeicons/core-free-icons/FishSymbolIcon";
+import type { IconSvgElement } from "@hugeicons/react";
 
 // Veterinary subjects absent from the free catalog. Authored on the same
 // 24px grid and rendered by Hugeicons at the shared 1.5px stroke width.

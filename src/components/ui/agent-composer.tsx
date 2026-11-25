@@ -11,15 +11,15 @@
  * text is French and never under 12 px.
  */
 
+import { MotionConfig } from "motion/react";
 import {
+  type ReactNode,
+  type Ref,
   useId,
   useImperativeHandle,
   useLayoutEffect,
   useRef,
-  type ReactNode,
-  type Ref,
 } from "react";
-import { MotionConfig } from "motion/react";
 import { Panel, Shell } from "@/components/ui/surface";
 import { cn } from "@/lib/utils";
 

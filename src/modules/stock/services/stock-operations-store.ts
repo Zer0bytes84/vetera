@@ -1,12 +1,11 @@
 import {
+  insufficientStockMessage,
   StockError,
   stockBalance,
   stockQuantity,
-  insufficientStockMessage,
 } from "@/domain/stock";
 import { stockTimestamp } from "@/domain/stock-date";
 import type { StockSelection } from "@/domain/stock-fifo";
-import { stockProductInDatabase, type StockDatabase } from "./stock-database";
 import {
   activeLocation,
   applyStockAllocations,
@@ -21,6 +20,7 @@ import {
   registerLotInDatabase,
   updateProductBalance,
 } from "./lot-store";
+import { type StockDatabase, stockProductInDatabase } from "./stock-database";
 
 export interface ProductBarcode {
   archived_at: string | null;

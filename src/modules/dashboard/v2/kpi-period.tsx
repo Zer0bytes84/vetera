@@ -1,19 +1,17 @@
-import { parseDashboardDate } from "./model";
-import { useState } from "react";
 import {
-  format,
-  startOfDay,
-  endOfDay,
-  startOfWeek,
-  endOfWeek,
-  startOfMonth,
-  endOfMonth,
-  startOfYear,
-  endOfYear,
   addDays,
   addMonths,
+  endOfDay,
+  endOfMonth,
+  endOfWeek,
+  endOfYear,
+  format,
+  startOfDay,
+  startOfMonth,
+  startOfWeek,
+  startOfYear,
 } from "date-fns";
-import { ChevronDown } from "@/lib/icons";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -22,6 +20,8 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { ChevronDown } from "@/lib/icons";
+import { parseDashboardDate } from "./model";
 
 export type KpiPeriod = "day" | "week" | "month" | "year" | "all";
 export const KPI_PERIOD_LABELS: Record<KpiPeriod, string> = {

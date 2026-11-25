@@ -1,11 +1,11 @@
-import { isTauriRuntime } from "./browser-store";
 import {
   requireAdministrator,
   verifyAdministratorPassword,
 } from "./adminAccess";
+import { isTauriRuntime } from "./browser-store";
 import {
-  runSqliteMigrations,
   type MigrationDatabase,
+  runSqliteMigrations,
 } from "./sqlite/migration-runner";
 import { SQLITE_MIGRATIONS } from "./sqlite/migrations";
 

@@ -1,5 +1,3 @@
-import { formatDisplayText, formatNumber } from "@/utils/display-format";
-import { ArrowUpRight, CalendarBlank, ClipboardList } from "@/lib/icons";
 import {
   Popover,
   PopoverContent,
@@ -7,8 +5,10 @@ import {
   PopoverTitle,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import type { Appointment, Task } from "@/types/db";
+import { ArrowUpRight, CalendarBlank, ClipboardList } from "@/lib/icons";
 import { cn } from "@/lib/utils";
+import type { Appointment, Task } from "@/types/db";
+import { formatDisplayText, formatNumber } from "@/utils/display-format";
 import { normalizeDate } from "./patients-shared";
 
 interface PatientContextWidgetsProps {

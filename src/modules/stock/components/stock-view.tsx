@@ -1,13 +1,5 @@
-import {
-  Add01Icon,
-  Calendar01Icon,
-  Cancel01Icon,
-  CheckmarkCircle02Icon,
-  Package02Icon,
-  Refresh01Icon,
-  SparklesIcon,
-} from "@/lib/hugeicons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import { toast } from "sonner";
 
 import MotivationalHeader from "@/components/MotivationalHeader";
 import { StockWorkspace } from "@/components/stock/stock-workspace";
@@ -27,7 +19,15 @@ import {
   NativeSelectOption,
 } from "@/components/ui/native-select";
 import { Spinner } from "@/components/ui/spinner";
-import { toast } from "sonner";
+import {
+  Add01Icon,
+  Calendar01Icon,
+  Cancel01Icon,
+  CheckmarkCircle02Icon,
+  Package02Icon,
+  Refresh01Icon,
+  SparklesIcon,
+} from "@/lib/hugeicons";
 
 import {
   CATEGORIES,
@@ -603,4 +603,5 @@ export function StockView(props: StockViewProps) {
     </div>
   );
 }
+
 import { Switch } from "@/components/ui/switch";

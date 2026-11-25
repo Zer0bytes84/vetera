@@ -1,9 +1,9 @@
 "use client";
 
 import { Dialog as SheetPrimitive } from "@base-ui/react/dialog";
-import { XIcon } from "@/lib/icons";
 import type * as React from "react";
 import { Button } from "@/components/ui/button";
+import { XIcon } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 
 function Sheet({ ...props }: SheetPrimitive.Root.Props) {

@@ -1,12 +1,11 @@
-import { useState, type ComponentProps } from "react";
 import {
   ChevronDownIcon as ChevronDown,
   MagnifyingGlassIcon as Search,
   XMarkIcon as X,
 } from "@heroicons/react/16/solid";
+import { type ComponentProps, useState } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "./button";
-import { Input } from "./input";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,6 +14,7 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "./dropdown-menu";
+import { Input } from "./input";
 
 export interface ListFilterOption {
   label: string;

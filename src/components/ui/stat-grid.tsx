@@ -15,8 +15,9 @@ export type StatIcon = ComponentType<{
   className?: string;
   strokeWidth?: number | string;
 }>;
+
 import { MotionConfig, motion } from "motion/react";
-import { useId, type CSSProperties, type ReactNode } from "react";
+import { type CSSProperties, type ReactNode, useId } from "react";
 import { ProgressBar } from "@/components/ui/progress-bar";
 import { RollingNumber } from "@/components/ui/rolling-number";
 import { StatusPill } from "@/components/ui/status-pill";

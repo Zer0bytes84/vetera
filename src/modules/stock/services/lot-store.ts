@@ -1,20 +1,20 @@
 import {
+  insufficientStockMessage,
   StockError,
   stockBalance,
   stockQuantity,
-  insufficientStockMessage,
 } from "@/domain/stock";
 import { stockDate, stockDay, stockTimestamp } from "@/domain/stock-date";
 import {
-  selectFifoAllocations,
   type StockAllocation,
   type StockBucket,
   type StockSelection,
+  selectFifoAllocations,
 } from "@/domain/stock-fifo";
 import {
-  stockProductInDatabase,
   type StockDatabase,
   type StockProduct,
+  stockProductInDatabase,
 } from "./stock-database";
 
 export interface InventoryBucket extends StockBucket {

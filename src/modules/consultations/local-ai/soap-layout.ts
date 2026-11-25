@@ -1,4 +1,4 @@
-import { SOAP_SECTIONS, type LocalSoapNote } from "./soap-schema";
+import { type LocalSoapNote, SOAP_SECTIONS } from "./soap-schema";
 
 /**
  * Layout of a SOAP note: full section headings, one bullet per observation and

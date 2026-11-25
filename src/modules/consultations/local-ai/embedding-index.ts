@@ -1,7 +1,7 @@
+import type { PatientDocument } from "@/modules/documents/document-domain";
 import type { ConsultationSoap, Note } from "@/types/db";
 import { isSoapReviewed, soapSourceKey } from "./soap-review";
 import { SOAP_SECTIONS } from "./soap-schema";
-import type { PatientDocument } from "@/modules/documents/document-domain";
 export const EMBEDDING_MODEL_KEY =
   "embeddinggemma-300m-onnx-fp32-wasm-768-sections-v2";
 export const MIN_SEARCH_SCORE = 0.3;
@@ -393,10 +393,11 @@ export function embeddingFromHex(hex: string) {
   );
 }
 export { matchesSearchTerms } from "./veterinary-lexicon";
+
 import {
-  matchesSearchTerms,
-  matchesNumericConstraints,
   matchesExactSearchTerms,
+  matchesNumericConstraints,
+  matchesSearchTerms,
 } from "./veterinary-lexicon";
 
 export function rankPatientChunks<T extends SearchChunk & { vector: number[] }>(

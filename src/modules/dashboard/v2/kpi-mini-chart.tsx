@@ -1,5 +1,5 @@
 import "./kpi-mini-chart.css";
-import { useId, useState, type KeyboardEvent } from "react";
+import { type KeyboardEvent, useId, useState } from "react";
 
 const number = (value: number) =>
   value.toLocaleString("fr-FR", { maximumFractionDigits: 2 });

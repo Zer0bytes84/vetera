@@ -6,17 +6,17 @@ import "./consultation-products.css";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProductsRepository } from "@/data/repositories";
 import {
-  StockError,
   parseStockQuantityInput,
+  StockError,
   stockQuantityLabel,
 } from "@/domain/stock";
-import { generateId } from "@/services/sqlite/database";
+import { guard } from "@/lib/guard";
 import { isTauriRuntime } from "@/services/browser-store";
+import { generateId } from "@/services/sqlite/database";
 import { clinicalStockService } from "../services/clinical-stock-service";
 import type { ClinicalStockUse } from "../services/clinical-stock-store";
 import { ProductStockFields } from "./product-stock-fields";
 import { StockInvoiceLink } from "./stock-invoice-link";
-import { guard } from "@/lib/guard";
 
 export function ConsultationProducts({
   appointmentId,

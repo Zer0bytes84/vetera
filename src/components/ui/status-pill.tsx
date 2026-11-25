@@ -6,8 +6,8 @@ import {
   CircleX,
   Clock,
   Info,
-  TriangleAlert,
   type LucideIcon,
+  TriangleAlert,
 } from "lucide-react";
 import { useId } from "react";
 import { cn } from "@/lib/utils";

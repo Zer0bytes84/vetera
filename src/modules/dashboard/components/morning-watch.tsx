@@ -7,7 +7,7 @@ import {
   ReceiptPercentIcon,
 } from "@heroicons/react/20/solid";
 import { useMemo } from "react";
-import { StatGrid, type Stat, type StatTone } from "@/components/ui/stat-grid";
+import { type Stat, StatGrid, type StatTone } from "@/components/ui/stat-grid";
 import { formatNumber } from "@/utils/display-format";
 import type {
   MorningId,

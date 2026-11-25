@@ -1,9 +1,9 @@
 import type { VitalSign } from "./store";
 import {
   latestReadings,
+  type Verdict,
   VITAL_METRICS,
   vitalsByDay,
-  type Verdict,
 } from "./vitals-summary";
 
 const number = (value: number, digits: number) =>

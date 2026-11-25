@@ -4,16 +4,16 @@ import {
   ChartPieIcon,
   PresentationChartLineIcon,
 } from "@heroicons/react/16/solid";
-import { useMemo, useState, type ReactNode } from "react";
+import { type ReactNode, useMemo, useState } from "react";
 import { ChartCard, type ChartType } from "@/components/ui/chart-card";
 import { cn } from "@/lib/utils";
 import { formatNumber } from "@/utils/display-format";
+import type { VisitKindRow } from "../model/dashboard-widgets";
 import {
   buildKindsDonut,
   buildRevenueChart,
   money,
 } from "../model/revenue-chart";
-import type { VisitKindRow } from "../model/dashboard-widgets";
 import type { FocusPoint } from "./focus-trend-chart";
 
 const VIEWS: { value: ChartType; label: string; icon: typeof ChartBarIcon }[] =

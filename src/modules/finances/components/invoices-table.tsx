@@ -2,9 +2,9 @@ import { ArrowRight, FileText, MoreHorizontal } from "lucide-react";
 import type { ReactNode, Ref } from "react";
 import { Button } from "@/components/ui/button";
 import {
-  DataTable,
   type DataColumn,
   type DataRow,
+  DataTable,
 } from "@/components/ui/data-table";
 import {
   DropdownMenu,
@@ -14,7 +14,15 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { StatusPill, type StatusTone } from "@/components/ui/status-pill";
 import { IconButton, QuietButton } from "@/components/ui/tuff-controls";
-import { formatDZD } from "@/utils/currency";
+import {
+  DOCUMENT_STATUS_META,
+  formatDate,
+  getInvoiceDisplayName,
+  getInvoiceDueLabel,
+  getInvoiceOwnerName,
+  getInvoicePatientName,
+  SETTLEMENT_STATUS_META,
+} from "@/modules/finances/components/finances-shared";
 import type {
   BillingDocumentStatus,
   Invoice,
@@ -22,15 +30,7 @@ import type {
   Owner,
   Patient,
 } from "@/types/db";
-import {
-  DOCUMENT_STATUS_META,
-  SETTLEMENT_STATUS_META,
-  formatDate,
-  getInvoiceDisplayName,
-  getInvoiceDueLabel,
-  getInvoiceOwnerName,
-  getInvoicePatientName,
-} from "@/modules/finances/components/finances-shared";
+import { formatDZD } from "@/utils/currency";
 
 /**
  * The invoice register as TuffUI's Data Table: sortable columns, the filter field, pages, a selection, a CSV export, the

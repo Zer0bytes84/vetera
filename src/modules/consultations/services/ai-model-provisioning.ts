@@ -1,14 +1,14 @@
 import { isTauriRuntime } from "@/services/browser-store";
 import manifest from "../../../../resources/local-ai/download-manifest.json";
-import { nativeDictationEnabled } from "../local-ai/native-dictation";
 import { GEMMA4_SUSPENDED } from "../local-ai/generator-choice";
 import {
-  type LocalModelStatus,
+  cancelLocalModelDownload,
+  downloadLocalModels,
   EMPTY_MODEL_STATUS,
   getLocalModels,
-  downloadLocalModels,
-  cancelLocalModelDownload,
+  type LocalModelStatus,
 } from "../local-ai/models";
+import { nativeDictationEnabled } from "../local-ai/native-dictation";
 
 export type AIModelId = "whisper" | "generator" | "embeddinggemma";
 export type AIModelProgressState =

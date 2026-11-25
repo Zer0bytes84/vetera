@@ -3,11 +3,11 @@ import {
   Cat,
   Dog,
   Fish,
+  type LucideIcon,
   PawPrint,
   Rabbit,
   Rat,
   Turtle,
-  type LucideIcon,
 } from "lucide-react";
 
 export type SpeciesTone = "dog" | "cat" | "nac" | "wild" | "other";

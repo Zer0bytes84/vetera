@@ -1,8 +1,8 @@
 import type { StatTone } from "@/components/ui/stat-grid";
 import { formatNumber } from "@/utils/display-format";
+import type { receivablesSummary } from "../v2/financial-model";
 import { formatCentimes } from "../v2/model";
 import type { buildPremiumAnalytics } from "./premium-analytics";
-import type { receivablesSummary } from "../v2/financial-model";
 
 /**
  * The dashboard's row of key figures, as plain data, kept minimal like TuffUI's Stat Grid: a label, the

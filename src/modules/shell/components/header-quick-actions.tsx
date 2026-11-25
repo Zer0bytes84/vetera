@@ -14,8 +14,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { cn } from "@/lib/utils";
 import { QUICK_ACTIONS, type QuickAction } from "@/lib/quick-actions";
+import { cn } from "@/lib/utils";
 import "@/modules/shell/quick-actions.css";
 
 const ICONS = {

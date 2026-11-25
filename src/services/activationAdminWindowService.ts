@@ -1,7 +1,7 @@
-import { requireActivationOwner } from "./adminAccess";
 import { LogicalPosition } from "@tauri-apps/api/dpi";
 import { WebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { getCurrentWindow } from "@tauri-apps/api/window";
+import { requireActivationOwner } from "./adminAccess";
 
 import { isTauriRuntime } from "./browser-store";
 

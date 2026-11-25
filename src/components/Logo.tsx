@@ -1,5 +1,6 @@
-import { useId, type FC } from "react";
+import { type FC, useId } from "react";
 import { cn } from "@/lib/utils";
+
 interface LogoProps {
   className?: string;
   collapsed?: boolean;

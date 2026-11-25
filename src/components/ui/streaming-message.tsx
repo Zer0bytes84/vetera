@@ -9,16 +9,16 @@
  */
 
 import {
-  RotateCcw,
   Brain,
-  ChevronRight,
   Check,
-  Copy,
+  ChevronRight,
   CircleAlert,
+  Copy,
+  RotateCcw,
 } from "lucide-react";
-import { Mascot } from "@/components/mascot";
 import { AnimatePresence, MotionConfig, motion } from "motion/react";
 import { Fragment, useEffect, useState } from "react";
+import { Mascot } from "@/components/mascot";
 import { Button, IconButton } from "@/components/ui/action-button";
 import { EASE_OUT } from "@/lib/motion-tokens";
 import { cn } from "@/lib/utils";

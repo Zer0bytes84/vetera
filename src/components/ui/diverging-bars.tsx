@@ -9,7 +9,7 @@ import {
   motion,
   useReducedMotion,
 } from "motion/react";
-import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import { type ReactNode, useLayoutEffect, useRef, useState } from "react";
 import { RollingNumber } from "@/components/ui/rolling-number";
 import { Panel, Shell, ShellHeader } from "@/components/ui/surface";
 import { EASE_OUT, enter, exit } from "@/lib/motion-tokens";

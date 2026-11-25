@@ -5,8 +5,8 @@ import { SettingsRow, SettingsSection } from "@/components/settings-section";
 import { Switch } from "@/components/ui/choice-controls";
 import { useMascotPreferences } from "@/hooks/use-mascot-preferences";
 import {
-  saveMascotPreferences,
   type MascotPreferences,
+  saveMascotPreferences,
 } from "@/lib/mascot-preferences";
 import { MascotAvatar } from "./mascot-avatar";
 import { MascotChoices } from "./mascot-choices";

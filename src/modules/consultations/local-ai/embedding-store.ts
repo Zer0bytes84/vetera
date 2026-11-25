@@ -1,3 +1,7 @@
+import type {
+  DocumentAttachment,
+  PatientDocument,
+} from "@/modules/documents/document-domain";
 import {
   generateId,
   runDbRead,
@@ -5,49 +9,46 @@ import {
 } from "@/services/sqlite/database";
 import type { ConsultationSoap, Note } from "@/types/db";
 import {
+  assertSearchScope,
+  consultationSearchChunks,
+  type DocumentType,
+  documentSearchChunks,
+  embeddingFromHex,
+  embeddingToHex,
+  MIN_SEARCH_SCORE,
+  managedDocumentSearchChunks,
+  matchesSearchTerms,
+  normalizedEmbedding,
+  patientSearchChunks,
+  productSearchChunks,
+  rankPatientChunks,
+  type SearchChunk,
+  type SearchScope,
+  type SearchSection,
+  type SourceType,
+  soapSearchChunks,
+} from "./embedding-index";
+import { LocalInferenceSession } from "./inference-client";
+import {
   getLocalModels,
   getLocalModelUrls,
   type LocalModelStatus,
 } from "./models";
-import { LocalInferenceSession } from "./inference-client";
-import { isSoapReviewed } from "./soap-review";
-import type { LocalAiProgress, SearchModel } from "./worker-protocol";
 import {
-  MIN_SEARCH_SCORE,
-  assertSearchScope,
-  documentSearchChunks,
-  managedDocumentSearchChunks,
-  embeddingFromHex,
-  embeddingToHex,
-  matchesSearchTerms,
-  normalizedEmbedding,
-  rankPatientChunks,
-  soapSearchChunks,
-  consultationSearchChunks,
-  patientSearchChunks,
-  productSearchChunks,
-  type SearchChunk,
-  type DocumentType,
-  type SearchScope,
-  type SourceType,
-  type SearchSection,
-} from "./embedding-index";
-import type {
-  DocumentAttachment,
-  PatientDocument,
-} from "@/modules/documents/document-domain";
-import {
-  GENERATION_MODEL,
-  MODEL_CALIBRATION,
-  indexedGenerations,
-  SEARCH_INDEX_KEYS,
   bestPassage,
+  GENERATION_MODEL,
+  indexedGenerations,
+  MODEL_CALIBRATION,
   mergeLexicalFirst,
   passageChunks,
   rankPassages,
+  SEARCH_INDEX_KEYS,
   type SearchGeneration,
 } from "./passage-search";
 import { getActiveSearchGeneration } from "./search-generation";
+import { isSoapReviewed } from "./soap-review";
+import type { LocalAiProgress, SearchModel } from "./worker-protocol";
+
 /** Rows of the given index generation for one source. */
 const forGeneration = (chunks: SearchChunk[], generation: SearchGeneration) =>
   generation === "sections" ? chunks : passageChunks(chunks);

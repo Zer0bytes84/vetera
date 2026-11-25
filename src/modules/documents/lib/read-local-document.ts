@@ -1,16 +1,17 @@
-import { PackagedOcr } from "./packaged-ocr";
 import { abortError } from "@/modules/consultations/local-ai/inference-client";
 import { reserveClinicalModel } from "@/modules/consultations/local-ai/model-lease";
 import {
   assertReadableFile,
-  needsPageOcr,
   MAX_DOCUMENT_CHARACTERS,
   MAX_DOCUMENT_PAGES,
+  needsPageOcr,
   type ReadDocument,
   type ReadingProgress,
 } from "./document-reading";
+import { PackagedOcr } from "./packaged-ocr";
 
 export type { ReadingProgress };
+
 const checkAbort = (signal: AbortSignal) => {
   if (signal.aborted) {
     throw abortError();

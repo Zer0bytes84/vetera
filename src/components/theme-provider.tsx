@@ -1,5 +1,5 @@
-import * as React from "react";
 import { isTauri } from "@tauri-apps/api/core";
+import * as React from "react";
 import {
   applyTheme as applyAppearance,
   getThemeConfig,

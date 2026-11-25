@@ -14,8 +14,8 @@ import { billingService } from "@/services/billingService";
 import { isTauriRuntime } from "@/services/browser-store";
 import type { Invoice } from "@/types/db";
 import { evaluateStep, type TourSnapshot } from "./tour-progress";
-import { TOUR_STEPS } from "./tour-steps";
 import { advanceTour, quitTour, type TourState } from "./tour-state";
+import { TOUR_STEPS } from "./tour-steps";
 import { tourStore, useTourFinished, useTourState } from "./tour-store";
 import {
   clickedMenuEntry,

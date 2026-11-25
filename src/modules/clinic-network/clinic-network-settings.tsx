@@ -1,13 +1,14 @@
 import { relaunch } from "@tauri-apps/plugin-process";
+import { Network } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Network } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { SettingsSection } from "@/components/settings-section";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { guard } from "@/lib/guard";
 import {
   Check,
   Copy,
@@ -21,13 +22,12 @@ import { cn } from "@/lib/utils";
 import { isTauriRuntime } from "@/services/browser-store";
 import {
   clinicNetwork,
-  networkErrorMessage,
   type DiscoveredHost,
   type NetworkMode,
   type NetworkStatus,
+  networkErrorMessage,
   type RemoteHostInfo,
 } from "./clinic-network";
-import { guard } from "@/lib/guard";
 
 const MODES: { id: NetworkMode; title: string; description: string }[] = [
   {

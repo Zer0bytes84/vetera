@@ -1,13 +1,13 @@
 import {
+  ClipboardDocumentListIcon,
+  Squares2X2Icon,
+} from "@heroicons/react/16/solid";
+import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
-import {
-  ClipboardDocumentListIcon,
-  Squares2X2Icon,
-} from "@heroicons/react/16/solid";
 import type { DashboardVersion } from "../hooks/use-dashboard-version";
 
 const modes = [

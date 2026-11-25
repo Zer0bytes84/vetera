@@ -7,8 +7,8 @@ import {
   PDFName,
   type PDFPage,
 } from "pdf-lib";
-import regularFontUrl from "pdfjs-dist/standard_fonts/LiberationSans-Regular.ttf?url";
 import boldFontUrl from "pdfjs-dist/standard_fonts/LiberationSans-Bold.ttf?url";
+import regularFontUrl from "pdfjs-dist/standard_fonts/LiberationSans-Regular.ttf?url";
 import { openPatientRecordRasterSource } from "./patient-record-pdf-source";
 import type {
   PatientRecordBlock,

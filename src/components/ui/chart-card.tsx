@@ -15,11 +15,11 @@ import {
   useReducedMotion,
 } from "motion/react";
 import {
+  type ReactNode,
   useId,
   useLayoutEffect,
   useRef,
   useState,
-  type ReactNode,
 } from "react";
 import { RollingNumber } from "@/components/ui/rolling-number";
 import { Panel, Shell, ShellHeader } from "@/components/ui/surface";

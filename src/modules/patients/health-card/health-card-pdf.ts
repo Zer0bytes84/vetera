@@ -1,6 +1,6 @@
 import { jsPDF } from "jspdf";
-import regularFontUrl from "pdfjs-dist/standard_fonts/LiberationSans-Regular.ttf?url";
 import boldFontUrl from "pdfjs-dist/standard_fonts/LiberationSans-Bold.ttf?url";
+import regularFontUrl from "pdfjs-dist/standard_fonts/LiberationSans-Regular.ttf?url";
 
 import type { InvoiceSettings } from "@/services/invoiceSettingsService";
 import type { PatientRecordPdf } from "../export/patient-record-types";

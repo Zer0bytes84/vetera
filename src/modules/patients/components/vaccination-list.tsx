@@ -1,8 +1,6 @@
-import { PencilSimple, Plus, Syringe, Trash } from "@/lib/icons";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-
 import {
   AlertDialog,
   AlertDialogAction,
@@ -27,6 +25,7 @@ import {
   type VaccinationStatus,
 } from "@/config/status-meta";
 import { useVaccinationsRepository } from "@/data/repositories";
+import { PencilSimple, Plus, Syringe, Trash } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 import type { Vaccination } from "@/types/db";
 import { getVaccinationStatus } from "../lib";

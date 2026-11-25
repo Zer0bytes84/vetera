@@ -2,6 +2,10 @@ import { useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { isTauriRuntime } from "@/services/browser-store";
 import {
+  GEMMA4_SUSPENDED,
+  setGeneratorPreference,
+} from "../local-ai/generator-choice";
+import {
   aiModelInstallation,
   useAIModelInstallation,
 } from "../services/ai-model-installation";
@@ -10,16 +14,12 @@ import {
   checkAIModelsStatus,
   dismissNewAssistantOffer,
   NEW_ASSISTANT,
+  setAIOnboardingDismissed,
   shouldOfferNewAssistant,
   shouldShowAIOnboarding,
-  setAIOnboardingDismissed,
-  triggerOpenAIOnboarding,
   TOTAL_AI_MODELS_SIZE_LABEL,
+  triggerOpenAIOnboarding,
 } from "../services/ai-model-provisioning";
-import {
-  GEMMA4_SUSPENDED,
-  setGeneratorPreference,
-} from "../local-ai/generator-choice";
 
 const TOAST_ID = "baitari-local-tools-installation";
 

@@ -10,8 +10,8 @@ import {
   parseDashboardDate,
   startOfDay,
 } from "@/modules/dashboard/v2/model";
-import type { Period } from "./types";
 import { has } from "./language";
+import type { Period } from "./types";
 
 const MONTHS = [
   "janvier",
