@@ -107,14 +107,12 @@ export function AnesthesiaDrugLogEntryDialog({
     <Dialog onOpenChange={onOpenChange} open={open}>
       <FormDialogContent size="sm">
         <FormDialogHeader
-            artwork="medication"
           description={`${sheet.procedureName}`}
           icon={<Pill weight="duotone" />}
           title={t(
             "modules.anesthesia.drugLog.addEntry",
             "Ajouter un médicament"
           )}
-          tone="violet"
         />
 
         <FormDialogBody className="grid gap-3">

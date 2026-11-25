@@ -1,4 +1,4 @@
-import { Check, FloppyDisk, Pencil, Trash, Warning, X } from "@/lib/icons";
+import { Check, Copy, FloppyDisk, Pencil, Trash, Warning, X } from "@/lib/icons";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ModalBandActions } from "@/components/ui/modal-chrome";
 import { cn } from "@/lib/utils";
 
 import {
@@ -313,10 +314,10 @@ export function PrescriptionTemplatesDialog({
         className="rx-template-dialog sm:max-w-lg"
         data-testid="prescription-templates-dialog"
         forceBackdrop
-        initialFocus={initialMode === "save" ? nameInputRef : undefined}
-        showCloseButton
+        focusClose
+        initialFocus={initialMode === "save" && canSaveCurrent && state.ready ? nameInputRef : undefined}
       >
-        <DialogHeader>
+        <DialogHeader icon={<Copy />}>
           <DialogTitle>Modèles d'ordonnance</DialogTitle>
           <DialogDescription>
             Les doses sont recalculées avec le poids du patient au moment de
@@ -356,14 +357,16 @@ export function PrescriptionTemplatesDialog({
               ref={nameInputRef}
               value={name}
             />
-            <Button
-              className="h-9 shrink-0 gap-1.5"
-              disabled={!canSaveCurrent || !state.ready || !name.trim() || busy}
-              type="submit"
-            >
-              <FloppyDisk className="size-4" weight="duotone" />
-              {duplicate ? "Remplacer" : "Enregistrer"}
-            </Button>
+            <ModalBandActions>
+              <Button
+                className="h-9 shrink-0 gap-1.5"
+                disabled={!canSaveCurrent || !state.ready || !name.trim() || busy}
+                type="submit"
+              >
+                <FloppyDisk className="size-4" weight="duotone" />
+                {duplicate ? "Remplacer" : "Enregistrer"}
+              </Button>
+            </ModalBandActions>
           </form>
           <p className="t-12 text-muted-foreground">
             {canSaveCurrent

@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/data-table";
 import { StatusPill, type StatusTone } from "@/components/ui/status-pill";
 import { QuietButton } from "@/components/ui/tuff-controls";
-import { CheckCircleIcon, ClockIcon, CubeIcon, WalletIcon } from "@heroicons/react/20/solid";
+import { CheckCircleIcon, ClipboardDocumentCheckIcon, ClockIcon, CubeIcon, WalletIcon } from "@heroicons/react/20/solid";
 import { Panel, Shell, ShellHeader } from "@/components/ui/surface";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -397,27 +397,21 @@ function ProductDetail({
 
   return (
     <Dialog onOpenChange={onOpenChange} open={Boolean(product)}>
-      <DialogContent
-        className="max-w-[calc(100%-2rem)] gap-0 overflow-hidden p-0 sm:max-w-xl"
-        showCloseButton
-      >
-        <div className="relative overflow-hidden border-b bg-[#f6f3e9] px-6 pb-6 pt-7 dark:bg-[#1f251f]">
-          <div className="absolute inset-0 bg-gradient-to-r from-[#f6f3e9] via-[#f6f3e9]/95 to-transparent dark:from-[#1f251f] dark:via-[#1f251f]/95" />
-          <DialogHeader className="relative max-w-[75%]">
-            <div className="mb-2 flex items-center gap-2">
-              <StatusBadge product={product} />
-              <span className="text-muted-foreground text-xs">
-                {product.category}
-              </span>
-            </div>
-            <DialogTitle>{formatDisplayText(product.name)}</DialogTitle>
-            <DialogDescription>
-              {product.subCategory || "Référence du catalogue"}
-            </DialogDescription>
-          </DialogHeader>
-        </div>
+      <DialogContent className="sm:max-w-xl">
+        <DialogHeader icon={<CubeIcon />}>
+          <DialogTitle>{formatDisplayText(product.name)}</DialogTitle>
+          <DialogDescription>
+            {product.subCategory || "Référence du catalogue"}
+          </DialogDescription>
+          <div className="mt-1 flex items-center gap-2">
+            <StatusBadge product={product} />
+            <span className="text-muted-foreground text-xs">
+              {product.category}
+            </span>
+          </div>
+        </DialogHeader>
 
-        <div className="grid gap-5 p-6">
+        <div className="grid gap-5">
           <div className="grid grid-cols-3 gap-3">
             <div className="rounded-xl border bg-muted/20 p-3">
               <p className="text-muted-foreground text-xs">Disponible</p>
@@ -483,8 +477,8 @@ function ProductDetail({
               </p>
             </div>
           </div>
-
-          <div className="flex justify-end gap-2">
+        </div>
+        <DialogFooter>
             <Button
               onClick={() => {
                 onOpenChange(false);
@@ -502,8 +496,7 @@ function ProductDetail({
             >
               <RefreshCw /> Réceptionner
             </Button>
-          </div>
-        </div>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
@@ -1203,8 +1196,8 @@ export function StockWorkspace({
       />
 
       <Dialog onOpenChange={setInventoryOpen} open={inventoryOpen}>
-        <DialogContent className="sm:max-w-md" showCloseButton>
-          <DialogHeader>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader icon={<ClipboardDocumentCheckIcon />}>
             <DialogTitle>Contrôle d’inventaire</DialogTitle>
             <DialogDescription>
               La correction sera datée et ajoutée au journal des mouvements.

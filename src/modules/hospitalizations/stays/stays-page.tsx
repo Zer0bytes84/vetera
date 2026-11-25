@@ -335,7 +335,7 @@ export default function StaysPage({
         open={form !== null}
       >
         <DialogContent className="sm:max-w-lg">
-          <DialogHeader>
+          <DialogHeader icon={form === "location" ? <MapPinIcon /> : <BuildingOffice2Icon />}>
             <DialogTitle>
               {form === "location"
                 ? "Nouvel emplacement"

@@ -671,11 +671,9 @@ const Team: React.FC = () => {
       >
         <FormDialogContent size="sm">
           <FormDialogHeader
-            artwork="credentials"
             description="Copiez-le maintenant et transmettez-le par un canal sécurisé. Il disparaîtra à la fermeture."
             icon={<KeyIcon aria-hidden="true" />}
             title="Mot de passe temporaire"
-            tone="violet"
           />
           <FormDialogBody>
             <div className="rounded-xl border bg-muted/40 p-4 font-mono text-lg tracking-[0.12em]">
@@ -711,7 +709,6 @@ const Team: React.FC = () => {
       <Dialog onOpenChange={setIsModalOpen} open={isModalOpen}>
         <FormDialogContent size="sm">
           <FormDialogHeader
-            artwork="team"
             description={
               editingId
                 ? "Identité, rôle et accès."
@@ -719,7 +716,6 @@ const Team: React.FC = () => {
             }
             icon={<BriefcaseIcon aria-hidden="true" />}
             title={editingId ? "Modifier le membre" : "Ajouter un membre"}
-            tone="rose"
           />
 
           <FormDialogBody>

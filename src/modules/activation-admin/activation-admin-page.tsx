@@ -34,6 +34,7 @@ import {
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
+  AlertDialogMedia,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
@@ -1717,11 +1718,8 @@ export default function ActivationAdminPage() {
       {/* ========================================================================= */}
       <Dialog onOpenChange={setEmailModalOpen} open={emailModalOpen}>
         <DialogContent className="sm:max-w-xl">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <div className="flex size-7 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
-                <Mail className="size-4" />
-              </div>
+          <DialogHeader icon={<Mail />}>
+            <DialogTitle>
               Transmettre la clé par courriel
             </DialogTitle>
             <DialogDescription className="text-xs">
@@ -1837,8 +1835,10 @@ export default function ActivationAdminPage() {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle className="flex items-center gap-2 text-destructive">
-              <Ban className="size-5" />
+            <AlertDialogMedia>
+              <Ban />
+            </AlertDialogMedia>
+            <AlertDialogTitle>
               Révoquer cette licence ?
             </AlertDialogTitle>
             <AlertDialogDescription className="text-xs">
@@ -1875,9 +1875,8 @@ export default function ActivationAdminPage() {
         open={Boolean(detailLicense)}
       >
         <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Info className="size-4 text-primary" />
+          <DialogHeader icon={<Info />}>
+            <DialogTitle>
               Détails de la licence
             </DialogTitle>
             <DialogDescription className="text-xs">
@@ -1987,9 +1986,8 @@ export default function ActivationAdminPage() {
       {/* ========================================================================= */}
       <Dialog onOpenChange={setIsSettingsOpen} open={isSettingsOpen}>
         <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Settings2 className="size-4 text-primary" />
+          <DialogHeader icon={<Settings2 />}>
+            <DialogTitle>
               Configuration du serveur d'activation
             </DialogTitle>
             <DialogDescription className="text-xs">

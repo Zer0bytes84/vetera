@@ -14,7 +14,7 @@ import { FormDialogHeader } from "@/components/ui/form-dialog";
 import { SectionCards } from "@/components/section-cards";
 
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogFooter } from "@/components/ui/dialog";
 import {
   Empty,
   EmptyContent,
@@ -223,19 +223,16 @@ export function PatientsView(props: PatientsViewProps) {
         }}
         open={!!createdPatientPrompt}
       >
-        <DialogContent className="modal-medical-shell gap-0 w-full max-w-[min(560px,calc(100%-2rem))] overflow-hidden p-0 sm:max-w-[560px]">
+        <DialogContent className="max-w-[min(560px,calc(100%-2rem))] sm:max-w-[560px]">
           <FormDialogHeader
-            compact
-            artwork="patient-created"
             title={createdPatientPrompt?.patient.name}
             description="Dossier créé"
             icon={
               <HugeiconsIcon icon={CheckmarkCircle02Icon} strokeWidth={1.5} />
             }
           />
-          <div className="modal-medical-footer flex flex-col gap-2 px-6 py-4 sm:flex-row sm:items-center sm:justify-end">
+          <DialogFooter>
             <Button
-              className="sm:mr-auto"
               onClick={() => setCreatedPatientPrompt(null)}
               type="button"
               variant="ghost"
@@ -275,7 +272,7 @@ export function PatientsView(props: PatientsViewProps) {
               />
               Créer un RDV
             </Button>
-          </div>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

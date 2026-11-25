@@ -6,6 +6,7 @@ import { COMPACT_CALENDAR_CLASS } from "@/components/ui/date-picker";
 import { CalendarDays } from "@/lib/icons";
 import { admissionDateTime } from "./admission-date";
 import { Button } from "@/components/ui/button";
+import { ModalBandActions } from "@/components/ui/modal-chrome";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
 import { usePatientsRepository } from "@/data/repositories";
@@ -55,7 +56,7 @@ export function AdmissionForm({locations,onSaved}: {locations: StayLocation[];on
  </div>
  <label className="block space-y-2 t-13"><span className="flex items-center justify-between">Motif <span className="modal-required">requis</span></span><Input className="h-11" placeholder="Ex. surveillance post-opératoire" value={reason} onChange={event => setReason(event.target.value)} required/></label>
  {error && <p role="alert" className="t-13 text-destructive">{error}</p>}
- <Button type="submit" className="h-11 w-full" disabled={busy || !currentUser || !patient || !reason.trim() || !admittedAt}>{busy ? "Enregistrement…" : "Confirmer l’admission"}</Button>
+ <ModalBandActions><Button type="submit" className="h-11 w-full" disabled={busy || !currentUser || !patient || !reason.trim() || !admittedAt}>{busy ? "Enregistrement…" : "Confirmer l’admission"}</Button></ModalBandActions>
  </form>;
 }
 export function LocationForm({onSaved}: {onSaved: () => void}) {
@@ -73,6 +74,6 @@ await staysService.createLocation(name,type,currentUser.id);announceStaysChanged
  <label className="block space-y-2 t-13"><span className="flex items-center justify-between">Nom <span className="modal-required">requis</span></span><Input className="h-11" placeholder="Ex. Cage 3, Box chirurgie" value={name} onChange={event => setName(event.target.value)} required/></label>
  <label className="block space-y-2 t-13">Type<select className="h-11 w-full rounded-xl border bg-background px-3" value={type} onChange={event => setType(event.target.value as StayLocation["type"])}><option value="cage">Cage</option><option value="box">Box</option><option value="chenil">Chenil</option></select></label>
  {error && <p role="alert" className="t-13 text-destructive">{error}</p>}
- <Button type="submit" className="h-11 w-full" disabled={busy || !name.trim() || !currentUser}>{busy ? "Enregistrement…" : "Créer l’emplacement"}</Button>
+ <ModalBandActions><Button type="submit" className="h-11 w-full" disabled={busy || !name.trim() || !currentUser}>{busy ? "Enregistrement…" : "Créer l’emplacement"}</Button></ModalBandActions>
  </form>;
 }

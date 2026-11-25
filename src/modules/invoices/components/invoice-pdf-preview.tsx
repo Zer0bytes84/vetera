@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { FileText } from "lucide-react";
 import { buildInvoicePdf, invoicePdfFileName, type InvoicePdfData, type InvoiceSettings } from "@/lib/invoice-pdf";
 import { isTestDataFolder } from "@/lib/test-data-folder";
 import { savePdf } from "@/lib/save-pdf";
@@ -78,8 +79,8 @@ export function InvoicePdfPreview({ data, settings, onClose, sample = false }: {
   };
   return (
     <Dialog open onOpenChange={(open) => { if (!open) onClose(); }}>
-      <DialogContent className="flex h-[min(90dvh,900px)] max-w-[calc(100%-2rem)] flex-col sm:max-w-4xl" showCloseButton>
-        <DialogHeader className="pr-8">
+      <DialogContent className="h-[min(90dvh,900px)] sm:max-w-4xl">
+        <DialogHeader icon={<FileText />}>
           <DialogTitle>{sample ? "Aperçu de votre modèle" : `Facture ${data.number}`}</DialogTitle>
           <DialogDescription>{sample ? "Données fictives. Cet aperçu ne crée aucune facture et utilise les réglages en cours." : "Le document affiché est celui qui sera enregistré en PDF."}</DialogDescription>
         </DialogHeader>
@@ -91,13 +92,11 @@ export function InvoicePdfPreview({ data, settings, onClose, sample = false }: {
         {result.doc && result.doc.getNumberOfPages() > 1 && <div className="flex items-center justify-center gap-3">
           <Button variant="outline" size="sm" disabled={page === 1} onClick={() => setPage(page - 1)}>Précédente</Button><span className="text-sm tabular-nums">{page} / {result.doc.getNumberOfPages()}</span><Button variant="outline" size="sm" disabled={page === result.doc.getNumberOfPages()} onClick={() => setPage(page + 1)}>Suivante</Button>
         </div>}
-        <div className="flex flex-wrap items-center justify-between gap-3">
+        <DialogFooter>
           <p className="text-xs text-muted-foreground">A4 · Texte sélectionnable · Génération locale</p>
-          <div className="flex gap-2">
-            <Button onClick={onClose} variant="outline">Fermer</Button>
-            <Button disabled={!result.doc || saving} onClick={() => void download()}>{saving ? "Enregistrement…" : sample ? "Exporter l’exemple" : "Enregistrer le PDF"}</Button>
-          </div>
-        </div>
+          <Button onClick={onClose} variant="outline">Fermer</Button>
+          <Button disabled={!result.doc || saving} onClick={() => void download()}>{saving ? "Enregistrement…" : sample ? "Exporter l’exemple" : "Enregistrer le PDF"}</Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

@@ -1,10 +1,6 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import type { ComponentProps, ReactNode } from "react";
-import {
-  ModalBanner,
-  type ModalArtwork,
-  type ModalBannerTone,
-} from "@/components/ui/modal-banner";
+import { markFocusesClose, markModalSlot } from "@/components/ui/modal-chrome";
 import { cn } from "@/lib/utils";
 import {
   DialogContent,
@@ -53,56 +49,38 @@ type FormDialogHeaderProps = Omit<
 > & {
   title: ReactNode;
   description?: ReactNode;
-  artwork?: ModalArtwork;
   icon: ReactNode;
-  companionIcon?: ReactNode;
-  compact?: boolean;
   aside?: ReactNode;
-  tone?: ModalBannerTone | null;
 };
 
+/** L'en-tête homogène des fenêtres : tuile d'icône, titre, sous-titre, dans la première bande. */
 function FormDialogHeader({
-  artwork,
   aside,
   className,
-  companionIcon,
-  compact = false,
   description,
   icon,
   title,
-  tone,
   ...props
 }: FormDialogHeaderProps) {
   return (
     <DialogHeader
-      className={cn("modal-medical-header shrink-0 gap-0", className)}
+      className={cn("modal-medical-header", className)}
+      icon={icon}
       {...props}
     >
-      <ModalBanner
-        artwork={artwork}
-        className={cn(
-          "modal-workflow-banner",
-          compact && "modal-banner-compact"
-        )}
-        companionIcon={companionIcon}
-        icon={icon}
-        tone={tone}
+      <DialogTitle>{title}</DialogTitle>
+      <DialogDescription
+        className={cn("text-pretty", !description && "sr-only")}
       >
-        <div className="modal-form-heading">
-          <DialogTitle>{title}</DialogTitle>
-          <DialogDescription
-            className={cn("text-pretty", !description && "sr-only")}
-          >
-            {description}
-          </DialogDescription>
-          {aside ? (
-            <div className="modal-form-heading-aside">{aside}</div>
-          ) : null}
-        </div>
-      </ModalBanner>
+        {description}
+      </DialogDescription>
+      {aside ? <div className="modal-form-heading-aside">{aside}</div> : null}
     </DialogHeader>
   );
 }
+markModalSlot(FormDialogHeader, "header");
+// Sa bannière portait la croix avant le contenu : la croix recevait le focus à l'ouverture.
+markFocusesClose(FormDialogHeader);
 
 function FormDialogBody({ className, ...props }: ComponentProps<"div">) {
   return (
@@ -130,6 +108,7 @@ function FormDialogFooter({
     />
   );
 }
+markModalSlot(FormDialogFooter, "footer");
 
 export {
   FormDialogBody,

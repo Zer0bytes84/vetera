@@ -231,7 +231,7 @@ export default function DocumentTemplateManager({ onConfigureClinic, embedded = 
 
       <Dialog onOpenChange={(open) => { if (!open) requestClose(); }} open={Boolean(draft)}>
         {draft && <FormDialogContent className="document-template-editor" size="xl">
-          <FormDialogHeader description="Insérez les champs utiles dans vos formulations. Les informations manquantes seront signalées avant validation." icon={<FileText strokeWidth={1} />} title={draft.source ? (canEdit ? "Modifier le modèle" : "Consulter le modèle") : "Nouveau modèle"} tone={null} />
+          <FormDialogHeader description="Insérez les champs utiles dans vos formulations. Les informations manquantes seront signalées avant validation." icon={<FileText strokeWidth={1} />} title={draft.source ? (canEdit ? "Modifier le modèle" : "Consulter le modèle") : "Nouveau modèle"} />
           <form className="contents" onSubmit={(event) => { event.preventDefault(); void save(); }}>
             <FormDialogBody>
               <div className="document-template-editor-layout">

@@ -233,7 +233,6 @@ export function VaccinationDialog({
     <Dialog onOpenChange={onOpenChange} open={open}>
       <FormDialogContent size="sm">
         <FormDialogHeader
-          artwork="vaccination"
           description="Vaccin, lot et date d’administration."
           icon={<Syringe strokeWidth={1} />}
           title={
@@ -241,7 +240,6 @@ export function VaccinationDialog({
               ? t("patientDetail.vaccinations.editTitle")
               : t("patientDetail.vaccinations.dialogTitle")
           }
-          tone="sky"
         />
 
         <FormDialogBody>

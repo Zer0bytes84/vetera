@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { ModalBandActions } from "@/components/ui/modal-chrome";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
 import { staysService } from "./service";
@@ -28,6 +29,6 @@ export function VitalsForm({stayId,onSaved}: {stayId: string;onSaved: () => void
  <div className="grid gap-4 sm:grid-cols-2"><label className="space-y-2 t-13">État général<select className="h-11 w-full rounded-xl border bg-background px-3" value={values.generalState || ""} onChange={event => setValues({...values,generalState:event.target.value})}><option value="">Non renseigné</option>{["Alerte","Abattu","Agité","Non réactif"].map(state => <option key={state}>{state}</option>)}</select></label><label className="space-y-2 t-13">Appétit<select className="h-11 w-full rounded-xl border bg-background px-3" value={values.appetite || ""} onChange={event => setValues({...values,appetite:event.target.value})}><option value="">Non renseigné</option>{["Conservé","Diminué","Absent"].map(state => <option key={state}>{state}</option>)}</select></label></div>
  <label className="block space-y-2 t-13">Observations<Input className="h-11" value={values.note || ""} onChange={event => setValues({...values,note:event.target.value})}/></label>
  {error && <p role="alert" className="t-13 text-destructive">{error}</p>}
- <Button type="submit" className="h-11 w-full" disabled={busy || !currentUser}>{busy ? "Enregistrement…" : "Enregistrer le relevé"}</Button>
+ <ModalBandActions><Button type="submit" className="h-11 w-full" disabled={busy || !currentUser}>{busy ? "Enregistrement…" : "Enregistrer le relevé"}</Button></ModalBandActions>
  </form>;
 }

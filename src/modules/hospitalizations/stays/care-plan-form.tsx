@@ -1,6 +1,7 @@
 import type { CarePlan } from "./store";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { ModalBandActions } from "@/components/ui/modal-chrome";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProductsRepository } from "@/data/repositories";
@@ -44,6 +45,6 @@ const draft={label,type,productId:product || undefined,startsAt:starts,endsAt:en
  <label className="block space-y-2 t-13">Consignes<Input className="h-11" value={note} onChange={event => setNote(event.target.value)}/></label>
  <p role="status" className="t-13 text-muted-foreground">{validation || `${count} soin(s) à planifier. ${plan ? "Les soins réalisés ou en cours sont conservés." : "Vérifiez les horaires avant confirmation."}`}</p>
  {error && <p role="alert" className="t-13 text-destructive">{error}</p>}
- <Button type="submit" className="h-11 w-full" disabled={busy || !currentUser || !label.trim() || !count || Boolean(validation)}>{busy ? "Enregistrement…" : "Confirmer le plan de soins"}</Button>
+ <ModalBandActions><Button type="submit" className="h-11 w-full" disabled={busy || !currentUser || !label.trim() || !count || Boolean(validation)}>{busy ? "Enregistrement…" : "Confirmer le plan de soins"}</Button></ModalBandActions>
  </form>;
 }

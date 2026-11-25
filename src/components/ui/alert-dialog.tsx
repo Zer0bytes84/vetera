@@ -1,7 +1,20 @@
 "use client";
 
 import { AlertDialog as AlertDialogPrimitive } from "@base-ui/react/alert-dialog";
+import { CircleHelp } from "lucide-react";
 import type * as React from "react";
+import { cloneElement, isValidElement, useRef } from "react";
+import {
+  firstPanelField,
+  flattenChildren,
+  markModalSlot,
+  ModalBandActions,
+  ModalChrome,
+  ModalCloseIcon,
+  modalSlotOf,
+  splitFooter,
+  useInModalChrome,
+} from "@/components/ui/modal-chrome";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -39,7 +52,9 @@ function AlertDialogOverlay({
 
 function AlertDialogContent({
   className,
+  children,
   forceBackdrop = false,
+  initialFocus,
   size = "default",
   ...props
 }: AlertDialogPrimitive.Popup.Props & {
@@ -47,18 +62,67 @@ function AlertDialogContent({
   forceBackdrop?: boolean;
   size?: "default" | "sm";
 }) {
+  const panel = useRef<HTMLDivElement>(null);
+  // L'en-tête (icône, titre) va dans la bande, l'explication dans le panneau, les boutons en pilules dans la bande.
+  const parts = flattenChildren(children);
+  const headers = parts.filter((child) => modalSlotOf(child) === "header");
+  const chrome = headers.length > 0;
+  const band: React.ReactNode[] = [];
+  const explanation: React.ReactNode[] = [];
+  for (const header of headers) {
+    if (!isValidElement<React.ComponentProps<"div">>(header)) continue;
+    const inner = flattenChildren(header.props.children);
+    explanation.push(...inner.filter((child) => isValidElement(child) && child.type === AlertDialogDescription));
+    const heading = inner.filter((child) => !(isValidElement(child) && child.type === AlertDialogDescription));
+    // Sans illustration fournie, la question porte la même tuile que les autres en-têtes.
+    const hasMedia = heading.some((child) => isValidElement(child) && child.type === AlertDialogMedia);
+    band.push(
+      cloneElement(
+        header,
+        undefined,
+        ...(hasMedia
+          ? heading
+          : [
+              <span aria-hidden="true" data-slot="modal-icon" key="modal-icon">
+                <CircleHelp />
+              </span>,
+              ...heading,
+            ])
+      )
+    );
+  }
   return (
     <AlertDialogPortal>
       <AlertDialogOverlay forceRender={forceBackdrop} />
       <AlertDialogPrimitive.Popup
         className={cn(
           "group/alert-dialog-content data-open:fade-in-0 data-open:zoom-in-95 data-closed:fade-out-0 data-closed:zoom-out-95 fixed start-1/2 top-1/2 z-50 grid w-full -translate-x-1/2 -translate-y-1/2 gap-4 rounded-xl bg-popover p-4 text-popover-foreground outline-none ring-1 ring-foreground/10 duration-[220ms] ease-[var(--ease-out)] data-[size=default]:max-w-xs data-[size=sm]:max-w-xs data-closed:animate-out data-open:animate-in data-[size=default]:sm:max-w-sm rtl:translate-x-1/2",
+          chrome && "data-[size=default]:max-w-[calc(100%-2rem)] data-[size=default]:sm:max-w-[440px]",
           className
         )}
+        data-chrome={chrome ? "" : undefined}
         data-size={size}
         data-slot="alert-dialog-content"
+        initialFocus={initialFocus ?? (chrome ? () => firstPanelField(panel.current) ?? true : undefined)}
         {...props}
-      />
+      >
+        {chrome ? (
+          <ModalChrome
+            close={
+              <AlertDialogPrimitive.Close aria-label="Fermer" data-slot="modal-close">
+                <ModalCloseIcon />
+              </AlertDialogPrimitive.Close>
+            }
+            header={band}
+            panelRef={panel}
+          >
+            {explanation}
+            {parts.filter((child) => modalSlotOf(child) !== "header")}
+          </ModalChrome>
+        ) : (
+          children
+        )}
+      </AlertDialogPrimitive.Popup>
     </AlertDialogPortal>
   );
 }
@@ -78,11 +142,27 @@ function AlertDialogHeader({
     />
   );
 }
+markModalSlot(AlertDialogHeader, "header");
 
 function AlertDialogFooter({
   className,
+  children,
   ...props
 }: React.ComponentProps<"div">) {
+  const inChrome = useInModalChrome();
+  if (inChrome) {
+    const { actions, meta } = splitFooter(children);
+    return (
+      <>
+        {meta.length ? (
+          <div data-slot="modal-footer-meta" {...props}>
+            {meta}
+          </div>
+        ) : null}
+        <ModalBandActions>{actions}</ModalBandActions>
+      </>
+    );
+  }
   return (
     <div
       className={cn(
@@ -91,9 +171,12 @@ function AlertDialogFooter({
       )}
       data-slot="alert-dialog-footer"
       {...props}
-    />
+    >
+      {children}
+    </div>
   );
 }
+markModalSlot(AlertDialogFooter, "footer");
 
 function AlertDialogMedia({
   className,

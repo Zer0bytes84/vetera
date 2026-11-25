@@ -105,7 +105,6 @@ export function StockView(props: StockViewProps) {
       <Dialog onOpenChange={setIsProductModalOpen} open={isProductModalOpen}>
         <FormDialogContent size="md">
           <FormDialogHeader
-            artwork="product"
             description={
               selectedProduct
                 ? "Référence, tarifs et disponibilité."
@@ -113,7 +112,6 @@ export function StockView(props: StockViewProps) {
             }
             icon={<HugeiconsIcon icon={Package02Icon} strokeWidth={1.5} />}
             title={selectedProduct ? "Modifier le produit" : "Nouveau produit"}
-            tone="amber"
           />
 
           <FormDialogBody>
@@ -489,11 +487,9 @@ export function StockView(props: StockViewProps) {
       >
         <FormDialogContent size="sm">
           <FormDialogHeader
-            artwork="restock"
             description={selectedProduct?.name || "Produit sélectionné"}
             icon={<HugeiconsIcon icon={Refresh01Icon} strokeWidth={1.5} />}
             title="Réapprovisionner"
-            tone="teal"
           />
 
           <FormDialogBody>

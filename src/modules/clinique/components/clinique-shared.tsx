@@ -22,7 +22,7 @@ import React, { useEffect, useEffectEvent, useRef, useState } from "react";
 
 import { toast } from "sonner";
 
-import { FormDialogHeader } from "@/components/ui/form-dialog";
+import { FormDialogFooter, FormDialogHeader } from "@/components/ui/form-dialog";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -1296,13 +1296,11 @@ export function BillingDialog({
 
   return (
     <Dialog onOpenChange={(open) => !open && onClose()} open>
-      <DialogContent className="modal-medical-shell max-h-[calc(100dvh-2rem)] max-w-[min(940px,calc(100%-2rem))] grid-rows-[auto_minmax(0,1fr)_auto] gap-0 overflow-hidden p-0 sm:max-h-[calc(100dvh-2.5rem)] sm:max-w-[min(940px,calc(100%-2rem))]">
+      <DialogContent className="max-w-[min(940px,calc(100%-2rem))] sm:max-w-[min(940px,calc(100%-2rem))]">
         <FormDialogHeader
-          artwork="billing"
           description="Actes, produits et règlement."
           icon={<HugeiconsIcon icon={Dollar01Icon} strokeWidth={1.5} />}
           title="Facturation et encaissement"
-          tone="amber"
         />
 
         <div className="modal-medical-body min-h-0 overflow-y-auto p-6">
@@ -1526,7 +1524,7 @@ export function BillingDialog({
           </div>
         </div>
 
-        <div className="modal-medical-footer flex flex-col gap-2 border-t px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
+        <FormDialogFooter>
           <Button
             className="min-w-[110px]"
             onClick={handleSendEmail}
@@ -1577,7 +1575,7 @@ export function BillingDialog({
                     : "Facturer sans encaisser"}
             </Button>
           </div>
-        </div>
+        </FormDialogFooter>
       </DialogContent>
     </Dialog>
   );

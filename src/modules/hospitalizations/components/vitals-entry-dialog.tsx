@@ -149,14 +149,12 @@ export function VitalsEntryDialog({
     <Dialog onOpenChange={onOpenChange} open={open}>
       <FormDialogContent size="md">
         <FormDialogHeader
-            artwork="vitals"
           description={`${hospitalization.reason}`}
           icon={<Heartbeat weight="duotone" />}
           title={t(
             "modules.hospitalizations.vitals.addEntry",
             "Ajouter des constantes"
           )}
-          tone="rose"
         />
 
         <FormDialogBody className="grid gap-3">

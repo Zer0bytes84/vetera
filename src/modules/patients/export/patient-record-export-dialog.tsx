@@ -126,7 +126,7 @@ export function PatientRecordExportDialog({ patientId, patientName, onClose }: {
   return (
     <Dialog open onOpenChange={open => { if (!open) close(); }}>
       <FormDialogContent size={phase === "preview" ? "xl" : "md"} className={`patient-export-dialog${phase === "preview" ? " patient-export-dialog-preview" : ""}`}>
-        <FormDialogHeader compact icon={<FileText aria-hidden="true" className="size-5" strokeWidth={1} />}
+        <FormDialogHeader icon={<FileText aria-hidden="true" className="size-5" strokeWidth={1} />}
           title={phase === "preview" ? "Aperçu du dossier patient" : "Exporter le dossier en PDF"}
           description={phase === "preview" ? `${artifact?.patientName ?? patientName} · Relisez le document avant de l’enregistrer ou de l’imprimer.` : `${patientName} · Choisissez la période et le contenu du dossier.`} />
         {phase === "options" ? <form className="contents" onSubmit={event => void generate(event)}>
@@ -167,7 +167,7 @@ export function PatientRecordExportDialog({ patientId, patientName, onClose }: {
         </> : artifact && <>
           <FormDialogBody className="patient-export-preview-body"><PatientRecordPreview artifact={artifact} page={page} />{error && <p role="alert" className="patient-export-error">{error}</p>}</FormDialogBody>
           <FormDialogFooter className="patient-export-preview-footer">
-            <div className="patient-export-pagination" aria-label="Pages du dossier">
+            <div className="patient-export-pagination" aria-label="Pages du dossier" data-footer="meta">
               <Button variant="outline" size="icon" aria-label="Page précédente" disabled={page === 1} onClick={() => setPage(value => value - 1)}><ChevronLeft className="size-4" strokeWidth={1} /></Button>
               <span className="tabular-nums" aria-live="polite">{page} / {artifact.pageCount}</span>
               <Button variant="outline" size="icon" aria-label="Page suivante" disabled={page === artifact.pageCount} onClick={() => setPage(value => value + 1)}><ChevronRight className="size-4" strokeWidth={1} /></Button>

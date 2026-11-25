@@ -1,0 +1,285 @@
+/*
+ * Charte des fenêtres (dialogues, confirmations, panneaux latéraux), celle des cartes de l'application :
+ * - la fenêtre est le cadre gris `--card-band`, de `--card-frame` (6 px) autour d'un panneau `--card-inset` ;
+ * - aucun trait de bordure, aucune ombre : le bord n'est que le contraste des deux fonds ;
+ * - rayons concentriques : panneau 16 px, cadre 16 + 6 = 22 px ;
+ * - la première bande porte l'en-tête (tuile, titre, sous-titre), les actions en pilules à droite et la croix ;
+ * - la hauteur est plafonnée à l'écran, seul le panneau défile.
+ * Les fenêtres à la charte portent `data-chrome` (dialog.tsx, alert-dialog.tsx, sheet.tsx). ":root:root:root" et
+ * `!important` passent au-dessus des anciennes règles (.modal-medical-*, premium-workspace.css) et des classes des appelants.
+ */
+
+:root:root:root [data-chrome][data-chrome] {
+  --modal-radius: calc(var(--radius-panel) + var(--card-frame));
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0 !important;
+  padding: var(--card-frame) !important;
+  border: 0 !important;
+  border-radius: var(--modal-radius) !important;
+  outline: none !important;
+  background: var(--card-band) !important;
+  box-shadow: none !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  max-height: calc(100dvh - 32px) !important;
+  overflow: hidden !important;
+  container-type: inline-size;
+  color: var(--foreground);
+}
+
+/* Panneau latéral : il flotte à 8 px des bords, comme les fenêtres, au lieu de coller au bord de l'écran. */
+:root:root:root [data-chrome][data-chrome][data-slot="sheet-content"] {
+  max-height: none !important;
+}
+:root:root:root [data-chrome][data-chrome][data-slot="sheet-content"]:is([data-side="right"], [data-side="left"]) {
+  top: 8px !important;
+  bottom: 8px !important;
+  height: auto !important;
+}
+:root:root:root [data-chrome][data-chrome][data-slot="sheet-content"][data-side="right"] {
+  right: 8px !important;
+}
+:root:root:root [data-chrome][data-chrome][data-slot="sheet-content"][data-side="left"] {
+  left: 8px !important;
+}
+
+/* ---------- La première bande ---------- */
+[data-chrome] > [data-slot="modal-band"] {
+  display: grid;
+  flex: none;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  column-gap: 10px;
+  row-gap: 10px;
+  padding: 6px 6px 12px 6px;
+}
+
+/* L'en-tête : tuile d'icône à 12 px du bord, titre et sous-titre, comme l'en-tête des cartes. */
+:root:root:root [data-chrome] [data-slot="modal-heading"] > * {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 12px !important;
+  min-width: 0;
+  margin: 0 !important;
+  padding: 0 0 0 6px !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  text-align: start !important;
+  place-items: initial !important;
+}
+:root:root:root [data-chrome] [data-slot="modal-heading"] > :not(:has([data-slot="modal-icon"], [data-slot="alert-dialog-media"])) {
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  gap: 4px !important;
+  padding-left: 8px !important;
+}
+[data-chrome] [data-slot="modal-heading-text"] {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 4px;
+}
+:root:root:root [data-chrome] :is([data-slot="modal-icon"], [data-slot="alert-dialog-media"]) {
+  display: flex !important;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 36px !important;
+  height: 36px !important;
+  margin: 0 !important;
+  border: 0 !important;
+  border-radius: 12px !important;
+  background: color-mix(in oklch, var(--foreground) 6%, transparent) !important;
+  color: var(--muted-foreground);
+  box-shadow: none !important;
+}
+:root:root:root [data-chrome] :is([data-slot="modal-icon"], [data-slot="alert-dialog-media"]) svg {
+  width: 16px !important;
+  height: 16px !important;
+}
+[data-chrome] [data-slot="modal-heading"] :is([data-slot$="-title"]) {
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+}
+[data-chrome] [data-slot="modal-heading"] .modal-form-heading-aside {
+  margin-top: 4px;
+}
+
+/* Les actions, en pilules, à droite de l'en-tête. */
+[data-chrome] [data-slot="modal-actions"] {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+[data-chrome] [data-slot="modal-actions"]:not(:has(button, a, input)) {
+  display: none;
+}
+[data-chrome] [data-slot="modal-actions-group"],
+[data-chrome] [data-slot="modal-actions-group"] div:not([data-slot]):has(button) {
+  display: contents !important;
+}
+:root:root:root [data-chrome] [data-slot="modal-actions"] :is(button, a[href]):not([data-slot="modal-close"], [role="switch"], [role="checkbox"]) {
+  width: auto !important;
+  min-width: 0 !important;
+  height: 36px !important;
+  min-height: 36px !important;
+  padding-inline: 16px !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  box-shadow: none !important;
+  font-size: 13px !important;
+}
+:root:root:root [data-chrome] [data-slot="modal-actions"] :is(button, a[href]):is([data-variant="outline"], [data-variant="secondary"], [data-variant="ghost"], [data-slot="alert-dialog-cancel"], [class*="bg-frame"]):not([class*="bg-destructive"], [class*="bg-red"], [class*="bg-emerald"]) {
+  background: var(--card-inset) !important;
+  color: var(--foreground) !important;
+}
+@media (hover: hover) and (pointer: fine) {
+  :root:root:root [data-chrome] [data-slot="modal-actions"] :is(button, a[href]):is([data-variant="outline"], [data-variant="secondary"], [data-variant="ghost"], [data-slot="alert-dialog-cancel"], [class*="bg-frame"]):not([class*="bg-destructive"], [class*="bg-red"], [class*="bg-emerald"]):hover:not(:disabled) {
+    background: color-mix(in oklch, var(--card-inset) 80%, var(--foreground) 6%) !important;
+  }
+}
+:root:root:root [data-chrome] [data-slot="modal-actions"] :is(button, a)[data-size^="icon"] {
+  width: 36px !important;
+  padding-inline: 0 !important;
+}
+
+/* La croix, toujours visible au bout de la bande. */
+[data-chrome] [data-slot="modal-close"] {
+  display: inline-flex;
+  flex: none;
+  align-self: start;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted-foreground);
+  cursor: pointer;
+  transition: background-color 120ms var(--ease-out), color 120ms var(--ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  [data-chrome] [data-slot="modal-close"]:hover {
+    background: color-mix(in oklch, var(--foreground) 6%, transparent);
+    color: var(--foreground);
+  }
+}
+[data-chrome] [data-slot="modal-close"]:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 1px;
+}
+
+/* Fenêtre étroite (confirmation, petit formulaire) : les actions passent sous le titre, toujours dans la bande, à droite. */
+@container (max-width: 560px) {
+  [data-chrome] > [data-slot="modal-band"] {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  [data-chrome] [data-slot="modal-actions"] {
+    grid-row: 2;
+    grid-column: 1 / -1;
+  }
+  [data-chrome] [data-slot="modal-close"] {
+    grid-row: 1;
+    grid-column: 2;
+  }
+}
+
+/* ---------- Le panneau ---------- */
+:root:root:root [data-chrome] > [data-slot="modal-panel"] {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 0;
+  padding: 20px;
+  border-radius: var(--radius-panel);
+  background: var(--card-inset) !important;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+/* Un corps de formulaire garde ses marges ; le panneau seul défile. */
+:root:root:root [data-chrome] > [data-slot="modal-panel"]:has(.modal-medical-body) {
+  gap: 0;
+  padding: 0;
+}
+:root:root:root [data-chrome] [data-slot="modal-panel"] .modal-medical-body {
+  min-height: auto;
+  overflow: visible !important;
+  background: transparent !important;
+}
+
+/* Les mentions du pied (aide, erreur) restent sous le contenu, sans trait ni fond. */
+:root:root:root [data-chrome] [data-slot="modal-footer-meta"] {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  padding: 0;
+  color: var(--muted-foreground);
+  font-size: 13px;
+}
+:root:root:root [data-chrome] [data-slot="modal-panel"]:has(.modal-medical-body) [data-slot="modal-footer-meta"] {
+  padding: 0 32px 24px;
+}
+
+/* Plus de trait ni d'ombre hérités des anciennes coques de fenêtre. */
+:root:root:root [data-chrome] :is(.modal-medical-header, .modal-medical-body, .modal-medical-footer) {
+  border: 0 !important;
+  box-shadow: none !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+
+/* Aucune ombre dans la fenêtre : les ombres portées des utilitaires (`shadow-*`) tombent, les anneaux de focus
+   et de sélection (`ring-*`, autres variables) restent. */
+:root:root:root [data-chrome] * {
+  --tw-shadow: 0 0 #0000 !important;
+  --tw-inset-shadow: 0 0 #0000 !important;
+}
+:root:root:root [data-chrome] :is(.modal-section-icon, .modal-footer-status-icon) {
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Aperçu de document : le panneau porte les deux volets (outils, page), chacun défile seul. */
+:root:root:root [data-chrome] > [data-slot="modal-panel"]:has(> .document-preview-body) {
+  gap: 0;
+  padding: 0;
+  overflow: hidden;
+}
+[data-chrome] .document-preview-body {
+  flex: 1 1 auto;
+}
+:root:root:root [data-chrome] .document-paper-preview {
+  background: var(--card-band);
+}
+:root:root:root [data-chrome] .document-paper-preview img {
+  box-shadow: none;
+}
+
+/* Une fenêtre sans contenu (une question, ses actions) n'a pas de panneau vide. */
+:root:root:root [data-chrome] > [data-slot="modal-panel"]:not(:has(> :not([hidden]))) {
+  display: none;
+}
+:root:root:root [data-chrome]:not(:has(> [data-slot="modal-panel"]:has(> :not([hidden])))) > [data-slot="modal-band"] {
+  padding-bottom: 6px;
+}
+
+/* Les boutons pleins et les curseurs d'interrupteur perdent l'ombre de 1 px que leur donne le thème : le
+   contraste du fond suffit. L'anneau de focus (`:focus-visible`) reste. */
+:root:root:root:root:root [data-chrome][data-chrome] :is(.crm-primary-control, [data-variant="default"], [data-slot="switch-thumb"]):not(:focus-visible) {
+  box-shadow: none !important;
+}
+
+/* L'action principale (bouton plein) se range toujours à droite des actions secondaires. */
+[data-chrome] [data-slot="modal-actions"] :is(button, a[href]):is([data-variant="default"], [data-variant="destructive"], [data-slot="alert-dialog-action"]) {
+  order: 2;
+}
