@@ -262,13 +262,16 @@
 :root[data-skin="clean"][data-skin][data-skin] [data-slot="sidebar-wrapper"] {
   background: var(--clean-chrome) !important;
 }
-/* Raised above the Liquid Glass rule that removes the frame: in Clean, the
-   sheet sits on the frame in both header modes. */
+/* Flush by default (Windows, Linux, browser): the sheet fills the window
+   edge-to-edge with square corners. Only macOS opens the rounded inset frame. */
 :root[data-skin="clean"][data-skin][data-skin] [data-slot="sidebar-wrapper"] [data-slot="sidebar-inset"] {
+  padding: 0 !important;
+  background: var(--clean-chrome) !important;
+}
+:root[data-skin="clean"][data-skin][data-skin][data-window-platform="macos"] [data-slot="sidebar-wrapper"] [data-slot="sidebar-inset"] {
   /* Open at the bottom: the sheet runs into the window's edge, so the work
      reads as continuing below rather than ending on a closed corner. */
   padding: var(--clean-sheet-inset) var(--clean-sheet-inset) 0 0 !important;
-  background: var(--clean-chrome) !important;
 }
 /* The inset carries a layered "!bg-white/40" utility, which beats unlayered
    !important: the frame colour goes in the same layer, so the strip above the
@@ -280,14 +283,17 @@
 }
 :root[data-skin="clean"][data-skin][data-skin] [data-slot="shell-scroll-panel"] {
   border: 0 !important;
-  border-radius: var(--clean-sheet-radius) var(--clean-sheet-radius) 0 0 !important;
+  border-radius: 0 !important;
   background: var(--clean-sheet) !important;
   box-shadow: var(--clean-sheet-shadow) !important;
 }
+:root[data-skin="clean"][data-skin][data-skin][data-window-platform="macos"] [data-slot="shell-scroll-panel"] {
+  border-radius: var(--clean-sheet-radius) var(--clean-sheet-radius) 0 0 !important;
+}
 /* Header: liquid glass over the sheet. Content scrolls beneath it, blurred and
-   saturated. One quiet hairline closes it; the top corners follow the sheet's,
-   since WebKit does not clip a backdrop-filter layer to its scroller's radius.
-   48px holds the 32px controls with 8px above and below. */
+   saturated. One quiet hairline closes it; on macOS, the top corners follow the
+   sheet's, since WebKit does not clip a backdrop-filter layer to its scroller's
+   radius. 48px holds the 32px controls with 8px above and below. */
 :root[data-skin="clean"][data-skin][data-skin] [data-slot="shell-scroll-panel"] { --header-height: var(--clean-header); }
 :root[data-skin="clean"][data-skin][data-skin] :is([data-slot="app-header"], [data-slot="app-header"] .shell-toolbar) {
   height: var(--clean-header) !important;
@@ -295,12 +301,15 @@
   max-height: var(--clean-header) !important;
 }
 :root[data-skin="clean"][data-skin][data-skin] [data-slot="app-header"] {
-  border-radius: var(--clean-sheet-radius) var(--clean-sheet-radius) 0 0 !important;
+  border-radius: 0 !important;
   background:
     linear-gradient(180deg, var(--clean-glass-top) 0%, var(--clean-glass-bottom) 100%) !important;
   -webkit-backdrop-filter: blur(var(--clean-glass-blur)) saturate(1.8) !important;
   backdrop-filter: blur(var(--clean-glass-blur)) saturate(1.8) !important;
   box-shadow: none !important;
+}
+:root[data-skin="clean"][data-skin][data-skin][data-window-platform="macos"] [data-slot="app-header"] {
+  border-radius: var(--clean-sheet-radius) var(--clean-sheet-radius) 0 0 !important;
 }
 :root[data-skin="clean"][data-skin][data-skin] [data-slot="app-header"]::after {
   height: 1px !important;
@@ -1747,13 +1756,13 @@
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4) !important;
 }
 
-/* The sheet's curve follows the frame like the blocks do: the radius equals
-   the frame's thickness (8px), so the band stays even all around the corner
-   instead of swelling on the diagonal. */
-:root[data-skin="clean"][data-skin][data-skin] [data-slot="shell-scroll-panel"] {
+/* On macOS, the sheet's curve follows the frame like the blocks do: the radius
+   equals the frame's thickness (8px), so the band stays even all around the
+   corner instead of swelling on the diagonal. */
+:root[data-skin="clean"][data-skin][data-skin][data-window-platform="macos"] [data-slot="shell-scroll-panel"] {
   border-radius: var(--clean-sheet-inset) var(--clean-sheet-inset) 0 0 !important;
 }
-:root[data-skin="clean"][data-skin][data-skin] [data-slot="app-header"] {
+:root[data-skin="clean"][data-skin][data-skin][data-window-platform="macos"] [data-slot="app-header"] {
   border-radius: var(--clean-sheet-inset) var(--clean-sheet-inset) 0 0 !important;
 }
 

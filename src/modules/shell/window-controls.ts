@@ -25,8 +25,42 @@ export function windowControlsActive() {
   return ROOT.dataset.windowControls === "decorum";
 }
 
+export type WindowPlatform = "macos" | "windows" | "linux";
+
+const MAC_UA = /Macintosh|Mac OS X/i;
+const WINDOWS_UA = /Windows/i;
+const LINUX_UA = /Linux/i;
+const ANDROID_UA = /Android/i;
+
+function detectWindowPlatform(): WindowPlatform | null {
+  if (!isTauriRuntime()) {
+    return null;
+  }
+  const userAgent = navigator.userAgent;
+  if (MAC_UA.test(userAgent)) {
+    return "macos";
+  }
+  if (WINDOWS_UA.test(userAgent)) {
+    return "windows";
+  }
+  if (LINUX_UA.test(userAgent) && !ANDROID_UA.test(userAgent)) {
+    return "linux";
+  }
+  return null;
+}
+
 function isWindowsDesktop() {
-  return isTauriRuntime() && /Windows/i.test(navigator.userAgent);
+  return detectWindowPlatform() === "windows";
+}
+
+export function initWindowPlatform(): WindowPlatform | null {
+  const platform = detectWindowPlatform();
+  if (platform) {
+    ROOT.dataset.windowPlatform = platform;
+  } else {
+    delete ROOT.dataset.windowPlatform;
+  }
+  return platform;
 }
 
 /** In development only, `localStorage["baitari:window-controls-preview"] = "1"` draws the bar in a browser, with inert buttons. */
@@ -87,6 +121,7 @@ function addPreviewButtons(host: HTMLElement) {
 }
 
 export function initWindowControls() {
+  initWindowPlatform();
   const host = document.getElementById("window-controls");
   if (!host) {
     return;

@@ -13,10 +13,14 @@ import { DirectionProvider } from "@/components/ui/direction";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import i18n, { isRtlLanguage } from "@/i18n/config";
+import {
+  initWindowControls,
+  initWindowPlatform,
+} from "@/modules/shell/window-controls";
 import { isActivationAdminRoute } from "@/services/activationAdminWindowService";
-import { initWindowControls } from "@/modules/shell/window-controls";
 import "@/modules/shell/window-controls.css";
 
+initWindowPlatform();
 // Windows: our header is the title bar (minimize, maximize, close from tauri-plugin-decorum). Nothing happens elsewhere.
 if (!isActivationAdminRoute()) {
   initWindowControls();
