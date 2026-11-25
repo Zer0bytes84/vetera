@@ -331,7 +331,11 @@ function Sparkline({
   const d = pts
     .map(([x, y], i) => `${i ? "L" : "M"}${x.toFixed(1)},${y.toFixed(1)}`)
     .join("");
-  const [lx, ly] = pts[pts.length - 1];
+  const end = pts.at(-1);
+  if (!end) {
+    return null;
+  }
+  const [lx, ly] = end;
   const color = toneColor[tone];
 
   return (

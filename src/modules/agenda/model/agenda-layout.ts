@@ -252,7 +252,7 @@ export function layoutTimeGrid<T extends TimedItem>(
   const offsetsOf = () => {
     const out = [0];
     for (const h of heights) {
-      out.push(out[out.length - 1] + h);
+      out.push((out.at(-1) ?? 0) + h);
     }
     return out;
   };

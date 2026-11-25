@@ -634,7 +634,7 @@ export function useAgendaPageModel(onNavigate?: (view: View) => void) {
 
     if (viewMode === "week") {
       const start = weekDays[0];
-      const end = weekDays[weekDays.length - 1];
+      const end = weekDays.at(-1) ?? start;
       return `${formatDateLabel(start, { day: "numeric", month: "long" })} - ${formatDateLabel(
         end,
         {

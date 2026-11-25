@@ -92,7 +92,10 @@ export function SettleSparkLine({
     const p3 = points[i + 2] ?? p2;
     d += ` C${(p1[0] + (p2[0] - p0[0]) / 6).toFixed(2)} ${(p1[1] + (p2[1] - p0[1]) / 6).toFixed(2)}, ${(p2[0] - (p3[0] - p1[0]) / 6).toFixed(2)} ${(p2[1] - (p3[1] - p1[1]) / 6).toFixed(2)}, ${p2[0]} ${p2[1]}`;
   }
-  const lastPoint = points[points.length - 1];
+  const lastPoint = points.at(-1);
+  if (!lastPoint) {
+    return null;
+  }
 
   return (
     <svg

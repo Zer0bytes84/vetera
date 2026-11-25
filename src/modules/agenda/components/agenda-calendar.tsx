@@ -84,7 +84,7 @@ function title(view: CalendarView, date: Date, weekDays: Date[]) {
     return date.toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
   }
   const first = weekDays[0];
-  const last = weekDays[weekDays.length - 1];
+  const last = weekDays.at(-1) ?? first;
   const sameMonth = first.getMonth() === last.getMonth();
   const start = first.toLocaleDateString(
     "fr-FR",

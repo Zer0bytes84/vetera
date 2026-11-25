@@ -266,13 +266,13 @@ export function KpiIncomeSplineWave({
   ]);
 
   const spline = buildSplinePath(points);
+  const lastPoint = points.at(-1);
   const areaPath =
-    points.length >= 2
-      ? `${spline} L ${points[points.length - 1][0].toFixed(1)},${svgHeight - 2} L ${points[0][0].toFixed(1)},${svgHeight - 2} Z`
+    points.length >= 2 && lastPoint
+      ? `${spline} L ${lastPoint[0].toFixed(1)},${svgHeight - 2} L ${points[0][0].toFixed(1)},${svgHeight - 2} Z`
       : "";
 
   const activeX = active === null ? 0 : points[active][0];
-  const lastPoint = points[points.length - 1];
 
   return (
     <div className="kpi-visual-container">

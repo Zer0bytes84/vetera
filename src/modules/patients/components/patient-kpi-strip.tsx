@@ -37,7 +37,7 @@ export function PatientKpiStrip({
   weightEntries,
 }: PatientKpiStripProps) {
   const sortedWeights = sortWeightEntries(weightEntries);
-  const lastWeight = sortedWeights[sortedWeights.length - 1];
+  const lastWeight = sortedWeights.at(-1);
   const weightChange = describeWeightChange(weightEntries);
   const formatKg = (value: number) =>
     value.toLocaleString("fr-FR", {
