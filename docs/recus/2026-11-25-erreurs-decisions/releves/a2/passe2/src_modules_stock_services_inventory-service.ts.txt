@@ -1,0 +1,4 @@
+CSS_IDENTIQUE : css 0, ordre css 0, morceaux 0, ordre 1, imports 0 (texte JS changé dans 4 morceaux)
+  [déplacés] assets/index.js src/modules/stock/services/stock-database.ts
+  [texte] assets/index.js|index.html ; assets/health-card-data.js|/home/user/vetera/node_modules/lucide-react/dist/esm/icons/archive-restore.js ; assets/stock-lot-select.js|src/modules/stock/components/stock-invoice-link.tsx ; assets/stock-page.js|src/modules/stock/pages/stock-page.tsx
+  [ordre] assets/index.js|index.html: mêmes modules, ordre changé (dès src/modules/stock/services/stock-database.ts -> src/domain/stock-date.ts)

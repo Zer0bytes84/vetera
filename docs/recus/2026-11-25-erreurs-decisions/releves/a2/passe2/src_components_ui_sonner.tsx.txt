@@ -1,0 +1,4 @@
+CSS_IDENTIQUE : css 0, ordre css 0, morceaux 0, ordre 1, imports 0 (texte JS changé dans 1 morceaux)
+  [déplacés] assets/index.js /home/user/vetera/node_modules/next-themes/dist/index.mjs
+  [texte] assets/index.js|index.html
+  [ordre] assets/index.js|index.html: mêmes modules, ordre changé (dès /home/user/vetera/node_modules/@hugeicons/react/dist/esm/HugeiconsIcon.js -> /home/user/vetera/node_modules/next-themes/dist/index.mjs)

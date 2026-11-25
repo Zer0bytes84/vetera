@@ -1,0 +1,4 @@
+CSS_IDENTIQUE : css 0, ordre css 0, morceaux 0, ordre 1, imports 0 (texte JS changé dans 1 morceaux)
+  [déplacés] assets/stock-page.js src/modules/stock/hooks/create-stock-snapshot.ts
+  [texte] assets/stock-page.js|src/modules/stock/pages/stock-page.tsx
+  [ordre] assets/stock-page.js|src/modules/stock/pages/stock-page.tsx: mêmes modules, ordre changé (dès src/modules/stock/hooks/create-stock-snapshot.ts -> src/modules/stock/services/purchasing-store.ts)

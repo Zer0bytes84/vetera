@@ -1,0 +1,4 @@
+CSS_IDENTIQUE : css 0, ordre css 0, morceaux 0, ordre 1, imports 0 (texte JS changé dans 2 morceaux)
+  [déplacés] assets/health-card-data.js src/modules/consultations/components/soap-section-editor.tsx ; assets/health-card-data.js src/modules/consultations/soap-panel-state.ts
+  [texte] assets/health-card-data.js|/home/user/vetera/node_modules/lucide-react/dist/esm/icons/archive-restore.js ; assets/patient-detail-page.js|src/modules/patients/patient-detail-page.tsx
+  [ordre] assets/health-card-data.js|/home/user/vetera/node_modules/lucide-react/dist/esm/icons/archive-restore.js: mêmes modules, ordre changé (dès src/modules/consultations/components/soap-section-editor.tsx -> src/modules/patients/lib/meaningful.ts)

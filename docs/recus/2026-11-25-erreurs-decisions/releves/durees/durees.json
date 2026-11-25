@@ -1,0 +1,124 @@
+{
+ "charge-sans": {
+  "echecs": 0,
+  "reussis": 2116,
+  "durees": {
+   "dashboard-widgets.test.ts :: s'écrit avec les chiffres calculés, jamais en dur": 736,
+   "patient-record-pdf.test.ts :: produit un vrai dossier A4 Unicode avec identité, période et mentions répétées sur chaque page": 738,
+   "patient-record-pdf.test.ts :: scinde une ligne de tableau extrême, répète ses colonnes et conserve les cellules sans empiéter sur les marges": 841,
+   "patient-record-pdf.test.ts :: conserve le texte original des PDF portrait, paysage et tournés puis place les annexes après les notes": 855,
+   "patient-record-pdf.test.ts :: décrit chaque page d’une annexe de plus de vingt pages et restitue réellement la boucle d’événements": 1684,
+   "patient-record-pdf.test.ts :: intègre une image entière avec son rapport de proportions et les annotations visibles d’un formulaire": 1861
+  }
+ },
+ "charge-tel": {
+  "echecs": 0,
+  "reussis": 2117,
+  "durees": {
+   "chunk-cycles.test.ts :: aucun morceau n’importe, même indirectement, un morceau qui l’importe ; les graphiques restent hors du point d’entrée": 13891,
+   "dashboard-widgets.test.ts :: s'écrit avec les chiffres calculés, jamais en dur": 499,
+   "patient-record-pdf.test.ts :: produit un vrai dossier A4 Unicode avec identité, période et mentions répétées sur chaque page": 1114,
+   "patient-record-pdf.test.ts :: scinde une ligne de tableau extrême, répète ses colonnes et conserve les cellules sans empiéter sur les marges": 794,
+   "patient-record-pdf.test.ts :: conserve le texte original des PDF portrait, paysage et tournés puis place les annexes après les notes": 926,
+   "patient-record-pdf.test.ts :: décrit chaque page d’une annexe de plus de vingt pages et restitue réellement la boucle d’événements": 2102,
+   "patient-record-pdf.test.ts :: conserve les titres et dates des blocs sans corps, y compris deux préfaces documentaires": 313,
+   "patient-record-pdf.test.ts :: intègre une image entière avec son rapport de proportions et les annotations visibles d’un formulaire": 1946
+  }
+ },
+ "sans-1": {
+  "echecs": 0,
+  "reussis": 2116,
+  "durees": {
+   "dashboard-widgets.test.ts :: s'écrit avec les chiffres calculés, jamais en dur": 324,
+   "patient-record-pdf.test.ts :: produit un vrai dossier A4 Unicode avec identité, période et mentions répétées sur chaque page": 303,
+   "patient-record-pdf.test.ts :: scinde une ligne de tableau extrême, répète ses colonnes et conserve les cellules sans empiéter sur les marges": 315,
+   "patient-record-pdf.test.ts :: conserve le texte original des PDF portrait, paysage et tournés puis place les annexes après les notes": 288,
+   "patient-record-pdf.test.ts :: décrit chaque page d’une annexe de plus de vingt pages et restitue réellement la boucle d’événements": 787,
+   "patient-record-pdf.test.ts :: intègre une image entière avec son rapport de proportions et les annotations visibles d’un formulaire": 780
+  }
+ },
+ "sans-2": {
+  "echecs": 0,
+  "reussis": 2116,
+  "durees": {
+   "dashboard-widgets.test.ts :: s'écrit avec les chiffres calculés, jamais en dur": 334,
+   "patient-record-pdf.test.ts :: produit un vrai dossier A4 Unicode avec identité, période et mentions répétées sur chaque page": 350,
+   "patient-record-pdf.test.ts :: scinde une ligne de tableau extrême, répète ses colonnes et conserve les cellules sans empiéter sur les marges": 403,
+   "patient-record-pdf.test.ts :: conserve le texte original des PDF portrait, paysage et tournés puis place les annexes après les notes": 277,
+   "patient-record-pdf.test.ts :: décrit chaque page d’une annexe de plus de vingt pages et restitue réellement la boucle d’événements": 752,
+   "patient-record-pdf.test.ts :: intègre une image entière avec son rapport de proportions et les annotations visibles d’un formulaire": 842
+  }
+ },
+ "sans-3": {
+  "echecs": 0,
+  "reussis": 2116,
+  "durees": {
+   "dashboard-widgets.test.ts :: s'écrit avec les chiffres calculés, jamais en dur": 311,
+   "patient-record-pdf.test.ts :: produit un vrai dossier A4 Unicode avec identité, période et mentions répétées sur chaque page": 354,
+   "patient-record-pdf.test.ts :: scinde une ligne de tableau extrême, répète ses colonnes et conserve les cellules sans empiéter sur les marges": 365,
+   "patient-record-pdf.test.ts :: conserve le texte original des PDF portrait, paysage et tournés puis place les annexes après les notes": 291,
+   "patient-record-pdf.test.ts :: décrit chaque page d’une annexe de plus de vingt pages et restitue réellement la boucle d’événements": 840,
+   "patient-record-pdf.test.ts :: intègre une image entière avec son rapport de proportions et les annotations visibles d’un formulaire": 717
+  }
+ },
+ "seul-1": {
+  "echecs": 0,
+  "reussis": 1,
+  "durees": {
+   "chunk-cycles.test.ts :: aucun morceau n’importe, même indirectement, un morceau qui l’importe ; les graphiques restent hors du point d’entrée": 5155
+  }
+ },
+ "seul-2": {
+  "echecs": 0,
+  "reussis": 1,
+  "durees": {
+   "chunk-cycles.test.ts :: aucun morceau n’importe, même indirectement, un morceau qui l’importe ; les graphiques restent hors du point d’entrée": 5831
+  }
+ },
+ "seul-3": {
+  "echecs": 0,
+  "reussis": 1,
+  "durees": {
+   "chunk-cycles.test.ts :: aucun morceau n’importe, même indirectement, un morceau qui l’importe ; les graphiques restent hors du point d’entrée": 4895
+  }
+ },
+ "tel-1": {
+  "echecs": 0,
+  "reussis": 2117,
+  "durees": {
+   "chunk-cycles.test.ts :: aucun morceau n’importe, même indirectement, un morceau qui l’importe ; les graphiques restent hors du point d’entrée": 5895,
+   "dashboard-widgets.test.ts :: s'écrit avec les chiffres calculés, jamais en dur": 347,
+   "patient-record-pdf.test.ts :: produit un vrai dossier A4 Unicode avec identité, période et mentions répétées sur chaque page": 321,
+   "patient-record-pdf.test.ts :: scinde une ligne de tableau extrême, répète ses colonnes et conserve les cellules sans empiéter sur les marges": 313,
+   "patient-record-pdf.test.ts :: conserve le texte original des PDF portrait, paysage et tournés puis place les annexes après les notes": 306,
+   "patient-record-pdf.test.ts :: décrit chaque page d’une annexe de plus de vingt pages et restitue réellement la boucle d’événements": 850,
+   "patient-record-pdf.test.ts :: intègre une image entière avec son rapport de proportions et les annotations visibles d’un formulaire": 902
+  }
+ },
+ "tel-2": {
+  "echecs": 0,
+  "reussis": 2117,
+  "durees": {
+   "chunk-cycles.test.ts :: aucun morceau n’importe, même indirectement, un morceau qui l’importe ; les graphiques restent hors du point d’entrée": 5899,
+   "dashboard-widgets.test.ts :: s'écrit avec les chiffres calculés, jamais en dur": 361,
+   "patient-record-pdf.test.ts :: produit un vrai dossier A4 Unicode avec identité, période et mentions répétées sur chaque page": 333,
+   "patient-record-pdf.test.ts :: scinde une ligne de tableau extrême, répète ses colonnes et conserve les cellules sans empiéter sur les marges": 403,
+   "patient-record-pdf.test.ts :: conserve le texte original des PDF portrait, paysage et tournés puis place les annexes après les notes": 374,
+   "patient-record-pdf.test.ts :: décrit chaque page d’une annexe de plus de vingt pages et restitue réellement la boucle d’événements": 904,
+   "patient-record-pdf.test.ts :: intègre une image entière avec son rapport de proportions et les annotations visibles d’un formulaire": 875
+  }
+ },
+ "tel-3": {
+  "echecs": 0,
+  "reussis": 2117,
+  "durees": {
+   "chunk-cycles.test.ts :: aucun morceau n’importe, même indirectement, un morceau qui l’importe ; les graphiques restent hors du point d’entrée": 5724,
+   "dashboard-widgets.test.ts :: s'écrit avec les chiffres calculés, jamais en dur": 363,
+   "patient-record-pdf.test.ts :: produit un vrai dossier A4 Unicode avec identité, période et mentions répétées sur chaque page": 357,
+   "patient-record-pdf.test.ts :: scinde une ligne de tableau extrême, répète ses colonnes et conserve les cellules sans empiéter sur les marges": 382,
+   "patient-record-pdf.test.ts :: conserve le texte original des PDF portrait, paysage et tournés puis place les annexes après les notes": 306,
+   "patient-record-pdf.test.ts :: décrit chaque page d’une annexe de plus de vingt pages et restitue réellement la boucle d’événements": 966,
+   "patient-record-pdf.test.ts :: intègre une image entière avec son rapport de proportions et les annotations visibles d’un formulaire": 854
+  }
+ }
+}

@@ -1,0 +1,3 @@
+CSS_IDENTIQUE : css 0, ordre css 0, morceaux 0, ordre 0, imports 1 (texte JS changé dans 1 morceaux)
+  [texte] assets/invoice-pdf-preview.js|src/modules/invoices/components/invoice-pdf-preview.tsx
+  [imports] assets/invoice-pdf-preview.js|src/modules/invoices/components/invoice-pdf-preview.tsx.imports: assets/rolldown-runtime.js,assets/react.js,assets/dist.js,assets/visuallyHidden.js,assets/card.js,assets/invoice-pdf.js,assets/save-pdf.js,assets/utils.js,assets/preload-helper.js -> assets/rolldown-runtime.js,assets/react.js,assets/dist.js,assets/visuallyHidden.js,assets/card.js,assets/utils.js,assets/invoice-pdf.js,assets/save-pdf.js,assets/preload-helper.js

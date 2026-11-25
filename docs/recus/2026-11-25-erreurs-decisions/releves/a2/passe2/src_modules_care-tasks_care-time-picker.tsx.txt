@@ -1,0 +1,3 @@
+CSS_IDENTIQUE : css 0, ordre css 0, morceaux 0, ordre 0, imports 1 (texte JS changé dans 1 morceaux)
+  [texte] assets/care-time-picker.js|src/modules/care-tasks/care-icons.tsx
+  [imports] assets/care-time-picker.js|src/modules/care-tasks/care-icons.tsx.imports: assets/rolldown-runtime.js,assets/react.js,assets/utils.js,assets/visuallyHidden.js,assets/card.js,assets/agenda-shared.js -> assets/rolldown-runtime.js,assets/react.js,assets/visuallyHidden.js,assets/card.js,assets/agenda-shared.js,assets/utils.js

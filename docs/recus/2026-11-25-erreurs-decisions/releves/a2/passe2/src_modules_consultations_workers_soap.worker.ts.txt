@@ -1,0 +1,4 @@
+CSS_IDENTIQUE : css 0, ordre css 0, morceaux 0, ordre 1, imports 0 (texte JS changé dans 1 morceaux)
+  [déplacés] worker(assets/soap.worker.js):assets/soap.worker.js src/modules/consultations/local-ai/generator-choice.ts
+  [texte] worker(assets/soap.worker.js):assets/soap.worker.js|src/modules/consultations/workers/soap.worker.ts
+  [ordre] worker(assets/soap.worker.js):assets/soap.worker.js|src/modules/consultations/workers/soap.worker.ts: mêmes modules, ordre changé (dès src/modules/consultations/local-ai/offline-policy.ts -> src/modules/consultations/local-ai/generator-choice.ts)

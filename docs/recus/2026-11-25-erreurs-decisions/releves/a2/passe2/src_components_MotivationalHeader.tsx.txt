@@ -1,0 +1,5 @@
+CSS_IDENTIQUE : css 0, ordre css 0, morceaux 0, ordre 1, imports 1 (texte JS changé dans 5 morceaux)
+  [déplacés] assets/app-shell.js src/modules/shell/page-crumb.ts
+  [texte] assets/MotivationalHeader.js|src/components/dashboard-greeting.css ; assets/app-shell.js|src/modules/shell/app-shell.tsx ; assets/flow-board-page.js|src/modules/flow-board/flow-board-page.tsx ; assets/page-header.js|src/design-system/patterns/page-header.tsx ; assets/patient-detail-page.js|src/modules/patients/patient-detail-page.tsx
+  [ordre] assets/app-shell.js|src/modules/shell/app-shell.tsx: mêmes modules, ordre changé (dès src/design-system/patterns/shortcut-tooltip.tsx -> src/modules/shell/page-crumb.ts)
+  [imports] assets/MotivationalHeader.js|src/components/dashboard-greeting.css.imports: assets/rolldown-runtime.js,assets/app-shell.js,assets/index.js,assets/stethoscope.js,assets/react.js,assets/useTranslation.js,assets/visuallyHidden.js,assets/utils.js,assets/page-header.js -> assets/rolldown-runtime.js,assets/index.js,assets/stethoscope.js,assets/react.js,assets/app-shell.js,assets/useTranslation.js,assets/utils.js,assets/visuallyHidden.js,assets/page-header.js

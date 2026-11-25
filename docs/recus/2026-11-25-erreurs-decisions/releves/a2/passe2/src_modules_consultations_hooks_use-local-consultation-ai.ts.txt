@@ -1,0 +1,4 @@
+CSS_IDENTIQUE : css 0, ordre css 0, morceaux 0, ordre 1, imports 0 (texte JS changé dans 1 morceaux)
+  [déplacés] assets/local-consultation-assistant.js src/modules/consultations/local-ai/whisper-threads.ts ; assets/local-consultation-assistant.js src/modules/consultations/local-ai/dictation-text.ts
+  [texte] assets/local-consultation-assistant.js|src/modules/consultations/components/local-consultation-assistant.tsx
+  [ordre] assets/local-consultation-assistant.js|src/modules/consultations/components/local-consultation-assistant.tsx: mêmes modules, ordre changé (dès src/modules/consultations/local-ai/microphone-warmup.ts -> src/modules/consultations/local-ai/dictation-text.ts)

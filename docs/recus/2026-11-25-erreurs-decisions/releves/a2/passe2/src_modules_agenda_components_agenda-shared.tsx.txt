@@ -1,0 +1,3 @@
+CSS_IDENTIQUE : css 0, ordre css 0, morceaux 0, ordre 0, imports 1 (texte JS changé dans 1 morceaux)
+  [texte] assets/agenda-shared.js|src/modules/agenda/components/agenda-shared.tsx
+  [imports] assets/agenda-shared.js|src/modules/agenda/components/agenda-shared.tsx.imports: assets/rolldown-runtime.js,assets/app-shell.js,assets/index.js,assets/react.js,assets/card.js,assets/visuallyHidden.js,assets/empty.js,assets/status-meta.js,assets/utils.js -> assets/rolldown-runtime.js,assets/index.js,assets/react.js,assets/card.js,assets/visuallyHidden.js,assets/empty.js,assets/status-meta.js,assets/utils.js,assets/app-shell.js

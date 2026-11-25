@@ -1,0 +1,1768 @@
+[
+ {
+  "règle": "useAwait",
+  "chemin": "src/components/Parametres.tsx",
+  "ligne": 706,
+  "classe": "d",
+  "remplacement": "Corps synchrone (setters), résultat ignoré par l'unique appelant. Retirer async."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/data/repositories/index.ts",
+  "ligne": 144,
+  "classe": "c",
+  "remplacement": "Lève avant de créer la promesse (throw ou validateur). Sans async, l'erreur devient synchrone ; aucun test ni tsc ne le signale, les appelants vus attendent dans un try. Garder async, ignorer localement."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/data/repositories/index.ts",
+  "ligne": 650,
+  "classe": "c",
+  "remplacement": "Lève avant de créer la promesse (throw ou validateur). Sans async, l'erreur devient synchrone ; aucun test ni tsc ne le signale, les appelants vus attendent dans un try. Garder async, ignorer localement."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/hooks/useSQLite.ts",
+  "ligne": 137,
+  "classe": "d",
+  "remplacement": "Renvoie le cache tel quel ou la promesse en cours ; l'unique appelant fait await. Retirer async (le type devient Row[] | Promise<Row[]>)."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/modules/care-tasks/store.ts",
+  "ligne": 148,
+  "classe": "c",
+  "remplacement": "Lève avant de créer la promesse (throw ou validateur). Sans async, l'erreur devient synchrone ; aucun test ni tsc ne le signale, les appelants vus attendent dans un try. Garder async, ignorer localement."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/modules/care-tasks/store.ts",
+  "ligne": 207,
+  "classe": "b",
+  "remplacement": "Valide l'auteur et le motif avant la transaction ; le test completion-rollback attend un rejet (.rejects) et échoue sans async. Garder async."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/modules/clinique/components/clinique-shared.tsx",
+  "ligne": 164,
+  "classe": "d",
+  "remplacement": "Renvoie directement une promesse (invoke, runDbRead, runDbTransaction, persistence.*, savePdf) sans rien qui lève avant. Retirer async."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/modules/consultations/local-ai/embedding-store.ts",
+  "ligne": 328,
+  "classe": "c",
+  "remplacement": "Lève avant de créer la promesse (throw ou validateur). Sans async, l'erreur devient synchrone ; aucun test ni tsc ne le signale, les appelants vus attendent dans un try. Garder async, ignorer localement."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/modules/consultations/local-ai/embedding-store.ts",
+  "ligne": 399,
+  "classe": "c",
+  "remplacement": "Lève avant de créer la promesse (throw ou validateur). Sans async, l'erreur devient synchrone ; aucun test ni tsc ne le signale, les appelants vus attendent dans un try. Garder async, ignorer localement."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/modules/consultations/local-ai/embedding-store.ts",
+  "ligne": 908,
+  "classe": "c",
+  "remplacement": "Lève avant de créer la promesse (throw ou validateur). Sans async, l'erreur devient synchrone ; aucun test ni tsc ne le signale, les appelants vus attendent dans un try. Garder async, ignorer localement."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/modules/consultations/local-ai/inference-client.ts",
+  "ligne": 106,
+  "classe": "c",
+  "remplacement": "Lève avant de créer la promesse (throw ou validateur). Sans async, l'erreur devient synchrone ; aucun test ni tsc ne le signale, les appelants vus attendent dans un try. Garder async, ignorer localement."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/modules/consultations/local-ai/models.ts",
+  "ligne": 26,
+  "classe": "a",
+  "remplacement": "tsc TS2739 : renvoie EMPTY_MODEL_STATUS hors Tauri. Garder async, ou `return Promise.resolve(EMPTY_MODEL_STATUS)`."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/modules/consultations/local-ai/models.ts",
+  "ligne": 31,
+  "classe": "c",
+  "remplacement": "Lève avant de créer la promesse (throw ou validateur). Sans async, l'erreur devient synchrone ; aucun test ni tsc ne le signale, les appelants vus attendent dans un try. Garder async, ignorer localement."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/modules/consultations/local-ai/native-dictation.ts",
+  "ligne": 36,
+  "classe": "d",
+  "remplacement": "Renvoie directement une promesse (invoke, runDbRead, runDbTransaction, persistence.*, savePdf) sans rien qui lève avant. Retirer async."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/modules/consultations/local-ai/native-dictation.ts",
+  "ligne": 56,
+  "classe": "d",
+  "remplacement": "Renvoie directement une promesse (invoke, runDbRead, runDbTransaction, persistence.*, savePdf) sans rien qui lève avant. Retirer async."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/modules/documents/document-store.ts",
+  "ligne": 75,
+  "classe": "c",
+  "remplacement": "Lève avant de créer la promesse (throw ou validateur). Sans async, l'erreur devient synchrone ; aucun test ni tsc ne le signale, les appelants vus attendent dans un try. Garder async, ignorer localement."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/modules/documents/document-store.ts",
+  "ligne": 136,
+  "classe": "a",
+  "remplacement": "Faux magasin navigateur : l'interface exige Promise (tsc TS2322). Rien ne lève : `return Promise.resolve(tables[table]…)`, ou ignorer localement."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/modules/documents/document-store.ts",
+  "ligne": 143,
+  "classe": "a",
+  "remplacement": "Faux magasin navigateur : l'interface exige Promise<void> (tsc TS2322). Le throw deviendrait synchrone avec Promise.resolve : garder async et ignorer la règle localement."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/modules/documents/document-store.ts",
+  "ligne": 149,
+  "classe": "a",
+  "remplacement": "Idem 143 : interface Promise<void>, throw interne. Garder async, ignorer localement."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/modules/documents/document-store.ts",
+  "ligne": 156,
+  "classe": "a",
+  "remplacement": "Interface Promise<void> (tsc TS2322). `tables[table] = ...; return Promise.resolve();` ou ignorer localement."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/modules/documents/document-store.ts",
+  "ligne": 609,
+  "classe": "d",
+  "remplacement": "Renvoie directement une promesse (invoke, runDbRead, runDbTransaction, persistence.*, savePdf) sans rien qui lève avant. Retirer async."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/modules/documents/document-store.ts",
+  "ligne": 618,
+  "classe": "c",
+  "remplacement": "Lève avant de créer la promesse (throw ou validateur). Sans async, l'erreur devient synchrone ; aucun test ni tsc ne le signale, les appelants vus attendent dans un try. Garder async, ignorer localement."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/modules/documents/document-store.ts",
+  "ligne": 690,
+  "classe": "b",
+  "remplacement": "Valide les longueurs avant la transaction ; managed-documents.test.ts échoue sans async. Garder async."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/modules/documents/document-store.ts",
+  "ligne": 801,
+  "classe": "b",
+  "remplacement": "Throw si non relu ; managed-documents.test.ts échoue sans async. Garder async."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/modules/documents/document-store.ts",
+  "ligne": 880,
+  "classe": "d",
+  "remplacement": "Renvoie directement une promesse (invoke, runDbRead, runDbTransaction, persistence.*, savePdf) sans rien qui lève avant. Retirer async."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/modules/documents/document-store.ts",
+  "ligne": 893,
+  "classe": "d",
+  "remplacement": "Renvoie directement une promesse (invoke, runDbRead, runDbTransaction, persistence.*, savePdf) sans rien qui lève avant. Retirer async."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/modules/documents/document-store.ts",
+  "ligne": 899,
+  "classe": "c",
+  "remplacement": "Lève avant de créer la promesse (throw ou validateur). Sans async, l'erreur devient synchrone ; aucun test ni tsc ne le signale, les appelants vus attendent dans un try. Garder async, ignorer localement."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/modules/documents/document-store.ts",
+  "ligne": 930,
+  "classe": "b",
+  "remplacement": "Throw si non relu ou PDF invalide ; managed-documents.test.ts échoue sans async. Garder async."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/modules/documents/document-store.ts",
+  "ligne": 1020,
+  "classe": "d",
+  "remplacement": "Renvoie directement une promesse (invoke, runDbRead, runDbTransaction, persistence.*, savePdf) sans rien qui lève avant. Retirer async."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/modules/documents/document-store.ts",
+  "ligne": 1057,
+  "classe": "b",
+  "remplacement": "Throw si pièce invalide ; managed-documents.test.ts échoue sans async. Garder async."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/modules/documents/document-store.ts",
+  "ligne": 1137,
+  "classe": "d",
+  "remplacement": "Renvoie directement une promesse (invoke, runDbRead, runDbTransaction, persistence.*, savePdf) sans rien qui lève avant. Retirer async."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/modules/documents/lib/document-pdf.ts",
+  "ligne": 4,
+  "classe": "b",
+  "remplacement": "Appelant `exportClinicalDocument(...).catch(toast)` ; une erreur jsPDF synchrone échapperait au .catch. Garder async."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/modules/hospitalizations/stays/store.ts",
+  "ligne": 183,
+  "classe": "c",
+  "remplacement": "Lève avant de créer la promesse (throw ou validateur). Sans async, l'erreur devient synchrone ; aucun test ni tsc ne le signale, les appelants vus attendent dans un try. Garder async, ignorer localement."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/modules/hospitalizations/stays/store.ts",
+  "ligne": 214,
+  "classe": "c",
+  "remplacement": "Lève avant de créer la promesse (throw ou validateur). Sans async, l'erreur devient synchrone ; aucun test ni tsc ne le signale, les appelants vus attendent dans un try. Garder async, ignorer localement."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/modules/hospitalizations/stays/store.ts",
+  "ligne": 257,
+  "classe": "d",
+  "remplacement": "Renvoie directement une promesse (invoke, runDbRead, runDbTransaction, persistence.*, savePdf) sans rien qui lève avant. Retirer async."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/modules/hospitalizations/stays/store.ts",
+  "ligne": 353,
+  "classe": "b",
+  "remplacement": "Throw si date invalide ; hospitalizations/store.test.ts échoue sans async. Garder async."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/modules/hospitalizations/stays/store.ts",
+  "ligne": 485,
+  "classe": "c",
+  "remplacement": "Lève avant de créer la promesse (throw ou validateur). Sans async, l'erreur devient synchrone ; aucun test ni tsc ne le signale, les appelants vus attendent dans un try. Garder async, ignorer localement."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/modules/hospitalizations/stays/store.ts",
+  "ligne": 574,
+  "classe": "c",
+  "remplacement": "Lève avant de créer la promesse (throw ou validateur). Sans async, l'erreur devient synchrone ; aucun test ni tsc ne le signale, les appelants vus attendent dans un try. Garder async, ignorer localement."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/modules/hospitalizations/stays/store.ts",
+  "ligne": 689,
+  "classe": "c",
+  "remplacement": "Lève avant de créer la promesse (throw ou validateur). Sans async, l'erreur devient synchrone ; aucun test ni tsc ne le signale, les appelants vus attendent dans un try. Garder async, ignorer localement."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/modules/hospitalizations/stays/store.ts",
+  "ligne": 768,
+  "classe": "c",
+  "remplacement": "Lève avant de créer la promesse (throw ou validateur). Sans async, l'erreur devient synchrone ; aucun test ni tsc ne le signale, les appelants vus attendent dans un try. Garder async, ignorer localement."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/modules/patient-reminders/store.ts",
+  "ligne": 132,
+  "classe": "d",
+  "remplacement": "Renvoie directement une promesse (invoke, runDbRead, runDbTransaction, persistence.*, savePdf) sans rien qui lève avant. Retirer async."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/modules/patient-reminders/store.ts",
+  "ligne": 144,
+  "classe": "c",
+  "remplacement": "Lève avant de créer la promesse (throw ou validateur). Sans async, l'erreur devient synchrone ; aucun test ni tsc ne le signale, les appelants vus attendent dans un try. Garder async, ignorer localement."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/modules/patient-reminders/store.ts",
+  "ligne": 233,
+  "classe": "c",
+  "remplacement": "Lève avant de créer la promesse (throw ou validateur). Sans async, l'erreur devient synchrone ; aucun test ni tsc ne le signale, les appelants vus attendent dans un try. Garder async, ignorer localement."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/modules/patient-reminders/store.ts",
+  "ligne": 271,
+  "classe": "b",
+  "remplacement": "assertDateOnly lève ; patient-reminders/store.test.ts échoue sans async. Garder async."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/modules/patient-reminders/store.ts",
+  "ligne": 389,
+  "classe": "c",
+  "remplacement": "Lève avant de créer la promesse (throw ou validateur). Sans async, l'erreur devient synchrone ; aucun test ni tsc ne le signale, les appelants vus attendent dans un try. Garder async, ignorer localement."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/modules/patient-reminders/store.ts",
+  "ligne": 427,
+  "classe": "b",
+  "remplacement": "Throw si motif vide ; patient-reminders/store.test.ts échoue sans async. Garder async."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/modules/patient-reminders/store.ts",
+  "ligne": 464,
+  "classe": "d",
+  "remplacement": "Renvoie directement une promesse (invoke, runDbRead, runDbTransaction, persistence.*, savePdf) sans rien qui lève avant. Retirer async."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/modules/patient-reminders/store.ts",
+  "ligne": 488,
+  "classe": "c",
+  "remplacement": "Lève avant de créer la promesse (throw ou validateur). Sans async, l'erreur devient synchrone ; aucun test ni tsc ne le signale, les appelants vus attendent dans un try. Garder async, ignorer localement."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/modules/patients/export/patient-record-service.ts",
+  "ligne": 328,
+  "classe": "c",
+  "remplacement": "Lève avant de créer la promesse (throw ou validateur). Sans async, l'erreur devient synchrone ; aucun test ni tsc ne le signale, les appelants vus attendent dans un try. Garder async, ignorer localement."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/modules/patients/export/patient-record-service.ts",
+  "ligne": 365,
+  "classe": "c",
+  "remplacement": "Lève avant de créer la promesse (throw ou validateur). Sans async, l'erreur devient synchrone ; aucun test ni tsc ne le signale, les appelants vus attendent dans un try. Garder async, ignorer localement."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/modules/patients/export/patient-record-service.ts",
+  "ligne": 415,
+  "classe": "a",
+  "remplacement": "Lecteur navigateur : l'interface exige Promise<Row[]> (tsc TS2322) et le corps lève. Garder async, ignorer localement."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/modules/rooms/store.ts",
+  "ligne": 119,
+  "classe": "b",
+  "remplacement": "cleanRoomName lève ; rooms.test.ts échoue sans async. Garder async."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/modules/rooms/store.ts",
+  "ligne": 136,
+  "classe": "c",
+  "remplacement": "Lève avant de créer la promesse (throw ou validateur). Sans async, l'erreur devient synchrone ; aucun test ni tsc ne le signale, les appelants vus attendent dans un try. Garder async, ignorer localement."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/modules/stock/hooks/create-stock-snapshot.ts",
+  "ligne": 19,
+  "classe": "d",
+  "remplacement": "Tous les appelants font `void refresh()` ; rien ne lève. Retirer async."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/modules/stock/hooks/use-stock-inventory.ts",
+  "ligne": 23,
+  "classe": "d",
+  "remplacement": "Tous les appelants font `void refresh()` ; rien ne lève. Retirer async."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/modules/stock/services/clinical-stock-service.ts",
+  "ligne": 67,
+  "classe": "d",
+  "remplacement": "Renvoie directement une promesse (invoke, runDbRead, runDbTransaction, persistence.*, savePdf) sans rien qui lève avant. Retirer async."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/modules/stock/services/purchase-order-pdf.ts",
+  "ligne": 11,
+  "classe": "c",
+  "remplacement": "Lève avant de créer la promesse (throw ou validateur). Sans async, l'erreur devient synchrone ; aucun test ni tsc ne le signale, les appelants vus attendent dans un try. Garder async, ignorer localement."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/services/backupService.ts",
+  "ligne": 662,
+  "classe": "a",
+  "remplacement": "tsc TS2739 (renvoie des octets en clair) et parseContainer peut lever. Garder async, ignorer localement."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/services/billingService.ts",
+  "ligne": 1261,
+  "classe": "d",
+  "remplacement": "Renvoie directement une promesse (invoke, runDbRead, runDbTransaction, persistence.*, savePdf) sans rien qui lève avant. Retirer async."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/services/billingService.ts",
+  "ligne": 1303,
+  "classe": "d",
+  "remplacement": "Renvoie directement une promesse (invoke, runDbRead, runDbTransaction, persistence.*, savePdf) sans rien qui lève avant. Retirer async."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/services/billingService.ts",
+  "ligne": 1338,
+  "classe": "d",
+  "remplacement": "Renvoie directement une promesse (invoke, runDbRead, runDbTransaction, persistence.*, savePdf) sans rien qui lève avant. Retirer async."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/services/billingService.ts",
+  "ligne": 1355,
+  "classe": "d",
+  "remplacement": "Renvoie directement une promesse (invoke, runDbRead, runDbTransaction, persistence.*, savePdf) sans rien qui lève avant. Retirer async."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/services/billingService.ts",
+  "ligne": 1433,
+  "classe": "d",
+  "remplacement": "Renvoie directement une promesse (invoke, runDbRead, runDbTransaction, persistence.*, savePdf) sans rien qui lève avant. Retirer async."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/services/billingService.ts",
+  "ligne": 1491,
+  "classe": "d",
+  "remplacement": "Renvoie directement une promesse (invoke, runDbRead, runDbTransaction, persistence.*, savePdf) sans rien qui lève avant. Retirer async."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/services/billingService.ts",
+  "ligne": 1565,
+  "classe": "d",
+  "remplacement": "Renvoie directement une promesse (invoke, runDbRead, runDbTransaction, persistence.*, savePdf) sans rien qui lève avant. Retirer async."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/services/billingService.ts",
+  "ligne": 1661,
+  "classe": "d",
+  "remplacement": "Renvoie directement une promesse (invoke, runDbRead, runDbTransaction, persistence.*, savePdf) sans rien qui lève avant. Retirer async."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/services/billingService.ts",
+  "ligne": 1694,
+  "classe": "d",
+  "remplacement": "Renvoie directement une promesse (invoke, runDbRead, runDbTransaction, persistence.*, savePdf) sans rien qui lève avant. Retirer async."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/services/billingService.ts",
+  "ligne": 1805,
+  "classe": "d",
+  "remplacement": "Renvoie directement une promesse (invoke, runDbRead, runDbTransaction, persistence.*, savePdf) sans rien qui lève avant. Retirer async."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/services/billingService.ts",
+  "ligne": 1898,
+  "classe": "d",
+  "remplacement": "Renvoie directement une promesse (invoke, runDbRead, runDbTransaction, persistence.*, savePdf) sans rien qui lève avant. Retirer async."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/services/billingService.ts",
+  "ligne": 2027,
+  "classe": "d",
+  "remplacement": "Renvoie directement une promesse (invoke, runDbRead, runDbTransaction, persistence.*, savePdf) sans rien qui lève avant. Retirer async."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/services/billingService.ts",
+  "ligne": 2150,
+  "classe": "d",
+  "remplacement": "Renvoie directement une promesse (invoke, runDbRead, runDbTransaction, persistence.*, savePdf) sans rien qui lève avant. Retirer async."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/services/billingService.ts",
+  "ligne": 2216,
+  "classe": "d",
+  "remplacement": "Renvoie directement une promesse (invoke, runDbRead, runDbTransaction, persistence.*, savePdf) sans rien qui lève avant. Retirer async."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/services/billingService.ts",
+  "ligne": 2277,
+  "classe": "d",
+  "remplacement": "Renvoie directement une promesse (invoke, runDbRead, runDbTransaction, persistence.*, savePdf) sans rien qui lève avant. Retirer async."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/services/billingService.ts",
+  "ligne": 2346,
+  "classe": "d",
+  "remplacement": "Renvoie directement une promesse (invoke, runDbRead, runDbTransaction, persistence.*, savePdf) sans rien qui lève avant. Retirer async."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/services/demo-data.ts",
+  "ligne": 609,
+  "classe": "b",
+  "remplacement": "App.tsx fait `.catch` sur le résultat (tsc TS2339 sur void). Garder async."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/services/demo-data.ts",
+  "ligne": 681,
+  "classe": "b",
+  "remplacement": "App.tsx fait `.catch` sur le résultat (tsc TS2532, undefined possible). Garder async."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/services/licenseActivationService.ts",
+  "ligne": 165,
+  "classe": "d",
+  "remplacement": "Renvoie directement une promesse (invoke, runDbRead, runDbTransaction, persistence.*, savePdf) sans rien qui lève avant. Retirer async."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/services/sqlite/auth.ts",
+  "ligne": 169,
+  "classe": "a",
+  "remplacement": "tsc TS2322 (renvoie false). Rien ne lève avant : `return Promise.resolve(false)` aux deux sorties synchrones, ou garder async et ignorer localement."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/services/sqlite/database.ts",
+  "ligne": 165,
+  "classe": "a",
+  "remplacement": "tsc TS2739 (renvoie la connexion en cache). Rien ne lève avant : `return Promise.resolve(db)`, ou garder async et ignorer localement."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/services/sqlite/remote-database.ts",
+  "ligne": 16,
+  "classe": "d",
+  "remplacement": "Renvoie directement une promesse (invoke, runDbRead, runDbTransaction, persistence.*, savePdf) sans rien qui lève avant. Retirer async."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/services/sqlite/remote-database.ts",
+  "ligne": 26,
+  "classe": "d",
+  "remplacement": "Renvoie directement une promesse (invoke, runDbRead, runDbTransaction, persistence.*, savePdf) sans rien qui lève avant. Retirer async."
+ },
+ {
+  "règle": "useAwait",
+  "chemin": "src/services/sqlite/remote-database.ts",
+  "ligne": 33,
+  "classe": "d",
+  "remplacement": "Renvoie directement une promesse (invoke, runDbRead, runDbTransaction, persistence.*, savePdf) sans rien qui lève avant. Retirer async."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/components/LicenseGate.tsx",
+  "ligne": 41,
+  "colonne": 5,
+  "classe": "a",
+  "remplacement": "Remplacer `Boolean(a) &&` par `a !== null &&` puis écrire `a.` : TypeScript rétrécit. Si a est null : false, comme aujourd'hui."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/components/LicenseGate.tsx",
+  "ligne": 42,
+  "colonne": 5,
+  "classe": "a",
+  "remplacement": "Remplacer `Boolean(a) &&` par `a !== null &&` puis écrire `a.` : TypeScript rétrécit. Si a est null : false, comme aujourd'hui."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/components/LicenseGate.tsx",
+  "ligne": 43,
+  "colonne": 5,
+  "classe": "a",
+  "remplacement": "Remplacer `Boolean(a) &&` par `a !== null &&` puis écrire `a.` : TypeScript rétrécit. Si a est null : false, comme aujourd'hui."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/components/LicenseGate.tsx",
+  "ligne": 44,
+  "colonne": 5,
+  "classe": "a",
+  "remplacement": "Remplacer `Boolean(a) &&` par `a !== null &&` puis écrire `a.` : TypeScript rétrécit. Si a est null : false, comme aujourd'hui."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/components/LicenseGate.tsx",
+  "ligne": 45,
+  "colonne": 5,
+  "classe": "a",
+  "remplacement": "Remplacer `Boolean(a) &&` par `a !== null &&` puis écrire `a.` : TypeScript rétrécit. Si a est null : false, comme aujourd'hui."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/components/Parametres.tsx",
+  "ligne": 421,
+  "colonne": 29,
+  "classe": "a",
+  "remplacement": "Capturer `const { filename } = action` avant la garde, puis passer `filename` : TypeScript garde le rétrécissement dans la fonction fléchée. Valeur absente : branche non prise, comme aujourd'hui."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/components/Parametres.tsx",
+  "ligne": 426,
+  "colonne": 35,
+  "classe": "a",
+  "remplacement": "Capturer `const { filename } = action` avant la garde, puis passer `filename` : TypeScript garde le rétrécissement dans la fonction fléchée. Valeur absente : branche non prise, comme aujourd'hui."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/components/documents-library.tsx",
+  "ligne": 465,
+  "colonne": 53,
+  "classe": "a",
+  "remplacement": "Capturer `const url = entry.item?.url` et tester `url` dans le JSX, puis `onOpenLink(url)`. Absent : menu non rendu, comme aujourd'hui."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/components/documents-library.tsx",
+  "ligne": 465,
+  "colonne": 53,
+  "classe": "a",
+  "remplacement": "Capturer `const url = entry.item?.url` et tester `url` dans le JSX, puis `onOpenLink(url)`. Absent : menu non rendu, comme aujourd'hui."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/components/documents-library.tsx",
+  "ligne": 474,
+  "colonne": 53,
+  "classe": "a",
+  "remplacement": "Capturer `const url = entry.item?.url` et tester `url` dans le JSX, puis `onOpenLink(url)`. Absent : menu non rendu, comme aujourd'hui."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/components/documents-library.tsx",
+  "ligne": 474,
+  "colonne": 53,
+  "classe": "a",
+  "remplacement": "Capturer `const url = entry.item?.url` et tester `url` dans le JSX, puis `onOpenLink(url)`. Absent : menu non rendu, comme aujourd'hui."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/components/documents-library.tsx",
+  "ligne": 496,
+  "colonne": 54,
+  "classe": "a",
+  "remplacement": "Capturer `const note = entry.note` et tester `note`. Absent : menu non rendu, comme aujourd'hui."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/components/documents-library.tsx",
+  "ligne": 502,
+  "colonne": 58,
+  "classe": "a",
+  "remplacement": "Capturer `const note = entry.note` et tester `note`. Absent : menu non rendu, comme aujourd'hui."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/components/documents-library.tsx",
+  "ligne": 507,
+  "colonne": 67,
+  "classe": "a",
+  "remplacement": "Capturer `const note = entry.note` et tester `note`. Absent : menu non rendu, comme aujourd'hui."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/components/financial-period-filter.tsx",
+  "ligne": 57,
+  "colonne": 12,
+  "classe": "a",
+  "remplacement": "`const date = parse(value); return date ? format(date, …) : \"\";`. Aujourd'hui, une valeur vide ferait lever format (date invalide) ; après, libellé vide. Les appelants ne passent que des valeurs non vides."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/components/stock/stock-workspace.tsx",
+  "ligne": 230,
+  "colonne": 25,
+  "classe": "b",
+  "remplacement": "Map construite depuis la même liste que les lignes. Mettre le produit dans la ligne (`rows = products.map(p => ({ …, product: p }))`) et lire `row.product`. Absent : impossible par construction ; aujourd'hui TypeError au rendu."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/components/stock/stock-workspace.tsx",
+  "ligne": 249,
+  "colonne": 25,
+  "classe": "b",
+  "remplacement": "Map construite depuis la même liste que les lignes. Mettre le produit dans la ligne (`rows = products.map(p => ({ …, product: p }))`) et lire `row.product`. Absent : impossible par construction ; aujourd'hui TypeError au rendu."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/components/stock/stock-workspace.tsx",
+  "ligne": 273,
+  "colonne": 14,
+  "classe": "b",
+  "remplacement": "Map construite depuis la même liste que les lignes. Mettre le produit dans la ligne (`rows = products.map(p => ({ …, product: p }))`) et lire `row.product`. Absent : impossible par construction ; aujourd'hui TypeError au rendu."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/components/stock/stock-workspace.tsx",
+  "ligne": 321,
+  "colonne": 25,
+  "classe": "b",
+  "remplacement": "Map construite depuis la même liste que les lignes. Mettre le produit dans la ligne (`rows = products.map(p => ({ …, product: p }))`) et lire `row.product`. Absent : impossible par construction ; aujourd'hui TypeError au rendu."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/components/stock/stock-workspace.tsx",
+  "ligne": 376,
+  "colonne": 35,
+  "classe": "b",
+  "remplacement": "Map construite depuis la même liste que les lignes. Mettre le produit dans la ligne (`rows = products.map(p => ({ …, product: p }))`) et lire `row.product`. Absent : impossible par construction ; aujourd'hui TypeError au rendu."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/components/ui/agent-question.tsx",
+  "ligne": 142,
+  "colonne": 35,
+  "classe": "a",
+  "remplacement": "`const el = grid.current; if (!el) return;` en tête du gestionnaire (cards vient de grid.current, donc i ≥ 0 implique el non nul). Même comportement."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/components/ui/hex-density.tsx",
+  "ligne": 237,
+  "colonne": 14,
+  "classe": "a",
+  "remplacement": "`next = placed[placed.length - 1].id` (liste non vide, retour anticipé ligne 220). Même valeur."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/components/ui/stat-grid.tsx",
+  "ligne": 350,
+  "colonne": 31,
+  "classe": "a",
+  "remplacement": "Réutiliser `lx` déjà calculé ligne 333 : `${d}L${lx},${h}…`. Même valeur (mesuré : tsc et stat-grid.test passent)."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/components/ui/status-pill.tsx",
+  "ligne": 149,
+  "colonne": 18,
+  "classe": "a",
+  "remplacement": "`const glyph = … ? glyphs.get(IconComponent) : undefined;` puis `glyph ? <Glyph glyph={glyph} /> : …`. Même rendu."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/hooks/useSQLite.ts",
+  "ligne": 788,
+  "colonne": 61,
+  "classe": "a",
+  "remplacement": "`() => safeTableName ? !tableSnapshotCache.has(safeTableName) : false`. Même booléen (mesuré tsc)."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/lib/invoice-pdf.ts",
+  "ligne": 37,
+  "colonne": 13,
+  "classe": "b",
+  "remplacement": "`char.codePointAt(0) ?? 0` : un caractère issu de for…of a toujours un point de code, la branche ?? ne sert jamais."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/main.tsx",
+  "ligne": 107,
+  "colonne": 12,
+  "classe": "b",
+  "remplacement": "`const root = document.getElementById(\"root\"); if (!root) throw new Error(\"#root absent de index.html\");`. Aujourd'hui createRoot(null) lève aussi au démarrage ; seul le message change."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/assistant-answers/answer.ts",
+  "ligne": 580,
+  "colonne": 23,
+  "classe": "a",
+  "remplacement": "`kept` est filtré par `patients.has` : passer par `flatMap` avec `const patient = patients.get(…); if (!patient) return [];`. Même résultat."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/care-tasks/hooks.ts",
+  "ligne": 44,
+  "colonne": 18,
+  "classe": "a",
+  "remplacement": "Appelé seulement après la transition « fait » qui pose completed_at et execute_par. Garde `if (!task.completed_at || !task.execute_par) return;` : si absent, l'événement n'est plus émis (aujourd'hui il partirait avec null). Changement seulement dans un cas impossible."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/care-tasks/hooks.ts",
+  "ligne": 45,
+  "colonne": 17,
+  "classe": "a",
+  "remplacement": "Appelé seulement après la transition « fait » qui pose completed_at et execute_par. Garde `if (!task.completed_at || !task.execute_par) return;` : si absent, l'événement n'est plus émis (aujourd'hui il partirait avec null). Changement seulement dans un cas impossible."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/care-tasks/store.ts",
+  "ligne": 333,
+  "colonne": 47,
+  "classe": "a",
+  "remplacement": "assertCareTransition exige un motif pour « annule ». `reason?.trim() ?? null`. Absent : null au lieu d'une TypeError, cas impossible."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/clinic-network/clinic-network-settings.tsx",
+  "ligne": 320,
+  "colonne": 53,
+  "classe": "a",
+  "remplacement": "Capturer `const key = host.key` et tester `key`. Même rendu."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/consultations/components/local-consultation-assistant.tsx",
+  "ligne": 496,
+  "colonne": 57,
+  "classe": "a",
+  "remplacement": "`const text = ai.transcription; if (text) setTranscript(prev => prev ? `${prev}\\n${text}` : text)`. Même valeur (tsc refuse sans `!`, mesuré)."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/consultations/local-ai/embedding-index.ts",
+  "ligne": 387,
+  "colonne": 33,
+  "classe": "a",
+  "remplacement": "La regex de la ligne 384 garantit 6144 caractères hexadécimaux. `Uint8Array.from({ length: hex.length / 2 }, (_, i) => Number.parseInt(hex.slice(2 * i, 2 * i + 2), 16))`. Même octets."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/consultations/local-ai/generate-soap.ts",
+  "ligne": 56,
+  "colonne": 24,
+  "classe": "a",
+  "remplacement": "byRubric n'est appelé que si `retryParts?.length`. Passer `retryParts` en paramètre depuis l'appel gardé. `?? []` est à éviter : il rendrait une note vide en silence."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/consultations/local-ai/passage-search.ts",
+  "ligne": 97,
+  "colonne": 23,
+  "classe": "a",
+  "remplacement": "`current[current.length - 1]` (current.length testé juste avant). Même valeur."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/consultations/local-ai/patient-mentions.ts",
+  "ligne": 20,
+  "colonne": 12,
+  "classe": "r",
+  "remplacement": "Retirer le `!` : tsc compile sans lui (mesuré). Aucun effet à l'exécution, le `!` est effacé à la compilation."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/consultations/local-ai/patient-mentions.ts",
+  "ligne": 21,
+  "colonne": 10,
+  "classe": "r",
+  "remplacement": "Retirer le `!` : tsc compile sans lui (mesuré). Aucun effet à l'exécution, le `!` est effacé à la compilation."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/consultations/local-ai/soap-layout.ts",
+  "ligne": 60,
+  "colonne": 17,
+  "classe": "b",
+  "remplacement": "SOAP_SECTIONS est une constante qui couvre les quatre clés. Table `Record<keyof LocalSoapNote, string>` des titres, ou garde qui lève. Absent : impossible."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/consultations/local-ai/treatment-routing.ts",
+  "ligne": 283,
+  "colonne": 20,
+  "classe": "b",
+  "remplacement": "`/^[.!?]*/` correspond toujours (chaîne vide au pire). `/^[.!?]*/u.exec(after)?.[0] ?? \"\"`. Même valeur."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/consultations/services/ai-model-provisioning.ts",
+  "ligne": 41,
+  "colonne": 3,
+  "classe": "b",
+  "remplacement": "Le manifeste JSON livré contient les cinq identifiants. Garde qui lève avec l'identifiant manquant. Aujourd'hui : TypeError au chargement du module ; après : erreur nommée au même moment."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/consultations/workers/soap.worker.ts",
+  "ligne": 141,
+  "colonne": 60,
+  "classe": "a",
+  "remplacement": "loadedUrl est posé avec model. `if (!loadedUrl) throw new Error(\"Aucun modèle chargé.\")`. Aujourd'hui openWeights(null) échouerait plus loin."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/dashboard/model/clinical-dashboard.ts",
+  "ligne": 120,
+  "colonne": 22,
+  "classe": "a",
+  "remplacement": "`completed` est filtré sur une date valide. `const date = parseDashboardDate(row.startTime); return date !== null && date >= from && date <= to;`. Même résultat."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/documents/components/consultation-documents-assistant.tsx",
+  "ligne": 667,
+  "colonne": 38,
+  "classe": "a",
+  "remplacement": "Rendu sous `selectedManaged?.attachment?.textState === \"image\"`. Capturer `const attachment = selectedManaged?.attachment` et `if (!attachment) return;`. Même comportement."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/documents/components/document-preview-dialog.tsx",
+  "ligne": 334,
+  "colonne": 33,
+  "classe": "a",
+  "remplacement": "Bouton désactivé si `!pdf`. `if (!pdf) return;` en tête du clic. Même comportement."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/documents/components/document-preview-dialog.tsx",
+  "ligne": 474,
+  "colonne": 33,
+  "classe": "r",
+  "remplacement": "Retirer le `!` : tsc compile sans lui (mesuré). Aucun effet à l'exécution, le `!` est effacé à la compilation."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/documents/document-store.ts",
+  "ligne": 595,
+  "colonne": 7,
+  "classe": "c",
+  "remplacement": "consultation_id vient de la base. `if (!document.consultationId) throw new Error(\"La source de ce document est introuvable.\")`. Aujourd'hui clinicalSource reçoit null ; l'erreur obtenue n'est pas mesurée."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/documents/document-store.ts",
+  "ligne": 812,
+  "colonne": 22,
+  "classe": "a",
+  "remplacement": "Avec un authorId, actor lève au lieu de rendre null. Ajouter `requireActor(db, authorId): Promise<DocumentRow>` (ou une surcharge) et l'appeler ici. Même comportement."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/documents/document-store.ts",
+  "ligne": 907,
+  "colonne": 22,
+  "classe": "a",
+  "remplacement": "Avec un authorId, actor lève au lieu de rendre null. Ajouter `requireActor(db, authorId): Promise<DocumentRow>` (ou une surcharge) et l'appeler ici. Même comportement."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/documents/document-store.ts",
+  "ligne": 949,
+  "colonne": 22,
+  "classe": "a",
+  "remplacement": "Avec un authorId, actor lève au lieu de rendre null. Ajouter `requireActor(db, authorId): Promise<DocumentRow>` (ou une surcharge) et l'appeler ici. Même comportement."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/documents/document-store.ts",
+  "ligne": 1000,
+  "colonne": 22,
+  "classe": "a",
+  "remplacement": "Avec un authorId, actor lève au lieu de rendre null. Ajouter `requireActor(db, authorId): Promise<DocumentRow>` (ou une surcharge) et l'appeler ici. Même comportement."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/documents/document-store.ts",
+  "ligne": 1025,
+  "colonne": 22,
+  "classe": "a",
+  "remplacement": "Avec un authorId, actor lève au lieu de rendre null. Ajouter `requireActor(db, authorId): Promise<DocumentRow>` (ou une surcharge) et l'appeler ici. Même comportement."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/documents/document-store.ts",
+  "ligne": 1095,
+  "colonne": 22,
+  "classe": "a",
+  "remplacement": "Avec un authorId, actor lève au lieu de rendre null. Ajouter `requireActor(db, authorId): Promise<DocumentRow>` (ou une surcharge) et l'appeler ici. Même comportement."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/finances/components/invoices-table.tsx",
+  "ligne": 120,
+  "colonne": 25,
+  "classe": "b",
+  "remplacement": "Map construite depuis la même liste que les lignes. Mettre la facture dans la ligne et lire `row.invoice`. Absent : impossible par construction."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/finances/components/invoices-table.tsx",
+  "ligne": 138,
+  "colonne": 51,
+  "classe": "b",
+  "remplacement": "Map construite depuis la même liste que les lignes. Mettre la facture dans la ligne et lire `row.invoice`. Absent : impossible par construction."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/finances/components/invoices-table.tsx",
+  "ligne": 157,
+  "colonne": 25,
+  "classe": "b",
+  "remplacement": "Map construite depuis la même liste que les lignes. Mettre la facture dans la ligne et lire `row.invoice`. Absent : impossible par construction."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/finances/components/invoices-table.tsx",
+  "ligne": 182,
+  "colonne": 13,
+  "classe": "b",
+  "remplacement": "Map construite depuis la même liste que les lignes. Mettre la facture dans la ligne et lire `row.invoice`. Absent : impossible par construction."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/finances/components/invoices-table.tsx",
+  "ligne": 210,
+  "colonne": 25,
+  "classe": "b",
+  "remplacement": "Map construite depuis la même liste que les lignes. Mettre la facture dans la ligne et lire `row.invoice`. Absent : impossible par construction."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/finances/components/invoices-table.tsx",
+  "ligne": 227,
+  "colonne": 25,
+  "classe": "b",
+  "remplacement": "Map construite depuis la même liste que les lignes. Mettre la facture dans la ligne et lire `row.invoice`. Absent : impossible par construction."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/finances/components/invoices-table.tsx",
+  "ligne": 316,
+  "colonne": 35,
+  "classe": "b",
+  "remplacement": "Map construite depuis la même liste que les lignes. Mettre la facture dans la ligne et lire `row.invoice`. Absent : impossible par construction."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/finances/receivables-aging.ts",
+  "ligne": 59,
+  "colonne": 17,
+  "classe": "b",
+  "remplacement": "bucketOf rend un seau de AGING_BUCKETS, et rows est construit depuis AGING_BUCKETS. Garde qui lève. Absent : impossible."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/finances/receivables-aging.ts",
+  "ligne": 69,
+  "colonne": 7,
+  "classe": "r",
+  "remplacement": "Retirer le `!` : tsc compile sans lui (mesuré). Aucun effet à l'exécution, le `!` est effacé à la compilation."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/flow-board/flow-board-page.tsx",
+  "ligne": 208,
+  "colonne": 40,
+  "classe": "a",
+  "remplacement": "minutesSince(null) rend null et la fonction sort avant. Capturer `const since = card.since` et tester `since` avec minutes. Même rendu."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/flow-board/flow-board-page.tsx",
+  "ligne": 209,
+  "colonne": 46,
+  "classe": "a",
+  "remplacement": "minutesSince(null) rend null et la fonction sort avant. Capturer `const since = card.since` et tester `since` avec minutes. Même rendu."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/hospitalizations/stays/agenda-stays.tsx",
+  "ligne": 35,
+  "colonne": 21,
+  "classe": "a",
+  "remplacement": "Calculer `const exit = stay.discharged_at || stay.planned_discharge_at` une fois et tester `exit`. Même tableau."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/hospitalizations/stays/stay-billing.tsx",
+  "ligne": 57,
+  "colonne": 14,
+  "classe": "c",
+  "remplacement": "Le parent rend ce composant si status = « sorti » ; discharged_at vient de la base. `if (!stay.discharged_at) return null;`. Aujourd'hui `new Date(null)` donne le 1er janvier 1970 et un nombre de jours faux, sans erreur ; après, rien n'est rendu."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/hospitalizations/stays/store.ts",
+  "ligne": 301,
+  "colonne": 43,
+  "classe": "a",
+  "remplacement": "`discharge` est une date quand to = « sorti ». `discharge ?? clock().toISOString()`. Même valeur dans le cas réel."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/hospitalizations/stays/store.ts",
+  "ligne": 307,
+  "colonne": 52,
+  "classe": "a",
+  "remplacement": "assertStayTransition exige le motif pour « annule ». `options.reason?.trim() ?? \"\"`. Cas absent impossible."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/invoices/components/invoice-pdf-preview.tsx",
+  "ligne": 82,
+  "colonne": 34,
+  "classe": "r",
+  "remplacement": "Retirer le `!` : tsc compile sans lui (mesuré). Aucun effet à l'exécution, le `!` est effacé à la compilation."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/patients/components/patient-header.tsx",
+  "ligne": 125,
+  "colonne": 51,
+  "classe": "r",
+  "remplacement": "Retirer le `!` : tsc compile sans lui (mesuré). Aucun effet à l'exécution, le `!` est effacé à la compilation."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/patients/components/patient-timeline.tsx",
+  "ligne": 700,
+  "colonne": 59,
+  "classe": "a",
+  "remplacement": "Capturer `const weight = entry.weightEntry` (et `piece`) avant le JSX conditionnel. Même rendu."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/patients/components/patient-timeline.tsx",
+  "ligne": 709,
+  "colonne": 58,
+  "classe": "a",
+  "remplacement": "Capturer `const weight = entry.weightEntry` (et `piece`) avant le JSX conditionnel. Même rendu."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/patients/components/patients-table.tsx",
+  "ligne": 139,
+  "colonne": 29,
+  "classe": "b",
+  "remplacement": "Map construite depuis la même liste que les lignes. Mettre l'entrée dans la ligne. Absent : impossible par construction."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/patients/components/patients-table.tsx",
+  "ligne": 171,
+  "colonne": 27,
+  "classe": "b",
+  "remplacement": "Map construite depuis la même liste que les lignes. Mettre l'entrée dans la ligne. Absent : impossible par construction."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/patients/components/patients-table.tsx",
+  "ligne": 212,
+  "colonne": 29,
+  "classe": "b",
+  "remplacement": "Map construite depuis la même liste que les lignes. Mettre l'entrée dans la ligne. Absent : impossible par construction."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/patients/components/patients-table.tsx",
+  "ligne": 260,
+  "colonne": 29,
+  "classe": "b",
+  "remplacement": "Map construite depuis la même liste que les lignes. Mettre l'entrée dans la ligne. Absent : impossible par construction."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/patients/components/patients-table.tsx",
+  "ligne": 310,
+  "colonne": 35,
+  "classe": "b",
+  "remplacement": "Map construite depuis la même liste que les lignes. Mettre l'entrée dans la ligne. Absent : impossible par construction."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/patients/components/patients-table.tsx",
+  "ligne": 321,
+  "colonne": 20,
+  "classe": "b",
+  "remplacement": "Map construite depuis la même liste que les lignes. Mettre l'entrée dans la ligne. Absent : impossible par construction."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/patients/export/patient-record-data.ts",
+  "ligne": 654,
+  "colonne": 24,
+  "classe": "a",
+  "remplacement": "Le filtre juste au-dessus teste `clinicalDocument(note)`. Passer par `flatMap` qui garde la paire { note, metadata }. Même résultat, un seul appel."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/patients/export/patient-record-export-dialog.tsx",
+  "ligne": 440,
+  "colonne": 22,
+  "classe": "a",
+  "remplacement": "`progress?.pages ? <p>{progress.pages}…</p> : null` : TypeScript rétrécit. Même rendu."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/patients/export/patient-record-export-dialog.tsx",
+  "ligne": 441,
+  "colonne": 22,
+  "classe": "a",
+  "remplacement": "`progress?.pages ? <p>{progress.pages}…</p> : null` : TypeScript rétrécit. Même rendu."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/patients/export/patient-record-pdf.ts",
+  "ligne": 487,
+  "colonne": 15,
+  "classe": "a",
+  "remplacement": "layout.page() appelle current() qui crée doc. Rendre current() public ou faire rendre doc par page(). Même comportement."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/patients/export/patient-record-pdf.ts",
+  "ligne": 787,
+  "colonne": 28,
+  "classe": "a",
+  "remplacement": "Cette branche ne voit que les pages vectorielles, celles mises dans vectors. Garde qui lève. Même comportement."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/patients/health-card/health-card-pdf.ts",
+  "ligne": 266,
+  "colonne": 9,
+  "classe": "a",
+  "remplacement": "Calculer `const format = identity.photoDataUrl ? imageFormat(identity.photoDataUrl) : null` et tester `format`. Même rendu."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/patients/health-card/health-card-pdf.ts",
+  "ligne": 627,
+  "colonne": 35,
+  "classe": "b",
+  "remplacement": "buildWeight (health-card-data.ts) ne garde que des dates valides. Garde qui lève, ou faire porter le temps par le point. `?? NaN` est à éviter : il fausserait la courbe en silence."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/patients/health-card/health-card-pdf.ts",
+  "ligne": 629,
+  "colonne": 10,
+  "classe": "a",
+  "remplacement": "points.length ≥ 2 testé juste avant. `times[times.length - 1]`, `points[points.length - 1]`. Même valeur."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/patients/health-card/health-card-pdf.ts",
+  "ligne": 666,
+  "colonne": 22,
+  "classe": "a",
+  "remplacement": "points.length ≥ 2 testé juste avant. `times[times.length - 1]`, `points[points.length - 1]`. Même valeur."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/patients/lib/vaccination-status.ts",
+  "ligne": 78,
+  "colonne": 18,
+  "classe": "a",
+  "remplacement": "Le filtre juste avant exclut nextDueAt vide. Écrire le filtre en garde de type `(v): v is … & { nextDueAt: string }`. Même tri."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/patients/lib/vaccination-status.ts",
+  "ligne": 78,
+  "colonne": 53,
+  "classe": "a",
+  "remplacement": "Le filtre juste avant exclut nextDueAt vide. Écrire le filtre en garde de type `(v): v is … & { nextDueAt: string }`. Même tri."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/patients/lib/vaccination-status.ts",
+  "ligne": 88,
+  "colonne": 18,
+  "classe": "a",
+  "remplacement": "Le filtre juste avant exclut nextDueAt vide. Écrire le filtre en garde de type `(v): v is … & { nextDueAt: string }`. Même tri."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/patients/lib/vaccination-status.ts",
+  "ligne": 88,
+  "colonne": 53,
+  "classe": "a",
+  "remplacement": "Le filtre juste avant exclut nextDueAt vide. Écrire le filtre en garde de type `(v): v is … & { nextDueAt: string }`. Même tri."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/patients/patient-detail-page.tsx",
+  "ligne": 1225,
+  "colonne": 81,
+  "classe": "a",
+  "remplacement": "Capturer `const count = sectionCounts[section.value]` et tester `count`. Même rendu."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/shell/model/palette-suggestions.ts",
+  "ligne": 23,
+  "colonne": 23,
+  "classe": "a",
+  "remplacement": "`Date.parse(b.lastVisit ?? \"\") || 0` : Date.parse(\"\") vaut NaN, donc 0, comme aujourd'hui (mesuré : palette-suggestions.test passe)."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/shell/model/palette-suggestions.ts",
+  "ligne": 23,
+  "colonne": 57,
+  "classe": "a",
+  "remplacement": "`Date.parse(b.lastVisit ?? \"\") || 0` : Date.parse(\"\") vaut NaN, donc 0, comme aujourd'hui (mesuré : palette-suggestions.test passe)."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/stock/components/purchasing-panel.tsx",
+  "ligne": 1035,
+  "colonne": 31,
+  "classe": "a",
+  "remplacement": "Bouton désactivé si la valeur manque. `if (!currentUser) return;` (ou `!supplier`, `!cancelling`) en tête du clic. Même comportement."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/stock/components/purchasing-panel.tsx",
+  "ligne": 1064,
+  "colonne": 52,
+  "classe": "a",
+  "remplacement": "Bouton désactivé si la valeur manque. `if (!currentUser) return;` (ou `!supplier`, `!cancelling`) en tête du clic. Même comportement."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/stock/components/purchasing-panel.tsx",
+  "ligne": 1299,
+  "colonne": 21,
+  "classe": "a",
+  "remplacement": "Bouton désactivé si la valeur manque. `if (!currentUser) return;` (ou `!supplier`, `!cancelling`) en tête du clic. Même comportement."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/stock/components/purchasing-panel.tsx",
+  "ligne": 1301,
+  "colonne": 21,
+  "classe": "a",
+  "remplacement": "Bouton désactivé si la valeur manque. `if (!currentUser) return;` (ou `!supplier`, `!cancelling`) en tête du clic. Même comportement."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/stock/services/clinical-stock-store.ts",
+  "ligne": 179,
+  "colonne": 23,
+  "classe": "b",
+  "remplacement": "La facture est créée avec une ligne. Garde qui lève une StockError. Aujourd'hui TypeError plus loin."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/stock/services/clinical-stock-store.ts",
+  "ligne": 331,
+  "colonne": 18,
+  "classe": "a",
+  "remplacement": "La garde des lignes 300 à 307 lève si un article n'a pas de ligne. Construire une Map par prescriptionItemId et lever si absent. Même comportement."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/stock/services/clinical-stock-store.ts",
+  "ligne": 358,
+  "colonne": 38,
+  "classe": "a",
+  "remplacement": "row.line vient d'un article de items. Garder l'article dans `prepared` et lire `row.item.medication_name`. Même valeur."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/stock/services/inventory-store.ts",
+  "ligne": 316,
+  "colonne": 9,
+  "classe": "a",
+  "remplacement": "La garde de la ligne 195 assure old quand create est faux. Dans la branche else, `if (!existing) throw …`. Même comportement."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/stock/services/lot-store.ts",
+  "ligne": 228,
+  "colonne": 20,
+  "classe": "b",
+  "remplacement": "Les allocations sont calculées depuis ces mêmes buckets. Garde qui lève une StockError. Absent : impossible."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/stock/services/lot-store.ts",
+  "ligne": 599,
+  "colonne": 47,
+  "classe": "a",
+  "remplacement": "La garde des lignes 591 à 596 exige receivedAt en réception. `input.mode === \"receive\" && input.receivedAt ? stockTimestamp(input.receivedAt) : null`, puis garde avant l'appel. Même valeur."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/stock/services/lot-store.ts",
+  "ligne": 660,
+  "colonne": 21,
+  "classe": "a",
+  "remplacement": "La garde des lignes 591 à 596 exige receivedAt en réception. `input.mode === \"receive\" && input.receivedAt ? stockTimestamp(input.receivedAt) : null`, puis garde avant l'appel. Même valeur."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/modules/stock/services/lot-store.ts",
+  "ligne": 799,
+  "colonne": 18,
+  "classe": "c",
+  "remplacement": "balanceId vient de l'entrée, bucket de la base. `if (!bucket) throw new StockError(\"PRODUCT_MISSING\", \"Ce stock n’existe plus.\")`. Aujourd'hui : TypeError (lecture de quantity sur undefined) au lieu du message métier."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/services/licenseRuntime.ts",
+  "ligne": 204,
+  "colonne": 55,
+  "classe": "a",
+  "remplacement": "`typeof stored.lastSeen === \"number\" && Number.isFinite(stored.lastSeen) ? stored.lastSeen : 0`. Même valeur."
+ },
+ {
+  "règle": "noNonNullAssertion",
+  "chemin": "src/services/licenseService.ts",
+  "ligne": 8,
+  "colonne": 10,
+  "classe": "a",
+  "remplacement": "La longueur 16 ou 20 est testée juste avant. `(clean.match(/.{1,4}/g) ?? [clean]).join(\"-\")`. Même valeur."
+ },
+ {
+  "règle": "useExhaustiveDependencies",
+  "chemin": "src/components/NotesPro.tsx",
+  "ligne": 382,
+  "classe": "déclencheur",
+  "dépendance": "en trop selectedNoteId",
+  "remplacement": "Le nettoyage écrit l'édition en attente quand on change de note (commentaire au-dessus). Le retirer casserait cet enregistrement. Retirer la dépendance supprime ce déclenchement. Garder, avec `// biome-ignore lint/correctness/useExhaustiveDependencies: <raison>`."
+ },
+ {
+  "règle": "useExhaustiveDependencies",
+  "chemin": "src/components/Parametres.tsx",
+  "ligne": 361,
+  "classe": "manque",
+  "dépendance": "manque read",
+  "remplacement": "read pose des états (liste, chargement) et est recréée à chaque rendu : l'ajouter relancerait la lecture à chaque rendu, boucle probable. Proposer `useEffectEvent(read)` comme pour usePostOpFollowUp."
+ },
+ {
+  "règle": "useExhaustiveDependencies",
+  "chemin": "src/components/Parametres.tsx",
+  "ligne": 705,
+  "classe": "sûr",
+  "dépendance": "manque sanitizeAvatarValue",
+  "remplacement": "Fonction pure recréée à chaque rendu. La sortir du composant (niveau module) : Biome ne la demande plus, l'effet garde ses déclencheurs. Mesuré."
+ },
+ {
+  "règle": "useExhaustiveDependencies",
+  "chemin": "src/components/Parametres.tsx",
+  "ligne": 721,
+  "classe": "déclencheur",
+  "dépendance": "en trop currentTheme",
+  "remplacement": "Réapplique le thème quand le thème clair/sombre change (l'effet lit la classe du DOM). Retirer la dépendance supprime ce déclenchement. Garder, avec `// biome-ignore lint/correctness/useExhaustiveDependencies: <raison>`."
+ },
+ {
+  "règle": "useExhaustiveDependencies",
+  "chemin": "src/components/QuickPatientPicker.tsx",
+  "ligne": 60,
+  "classe": "sûr",
+  "dépendance": "manque normalize",
+  "remplacement": "Fonction pure. La sortir du composant. Le useMemo garde ses déclencheurs. Mesuré."
+ },
+ {
+  "règle": "useExhaustiveDependencies",
+  "chemin": "src/components/Tasks.tsx",
+  "ligne": 616,
+  "classe": "manque",
+  "dépendance": "manque toggleSelected",
+  "remplacement": "Recréée à chaque rendu : l'ajouter réabonnerait l'écouteur clavier à chaque rendu (pas de boucle, travail inutile). toggleSelected ne lit que setSelectedIds : la sortir en useCallback([]) ou en useEffectEvent."
+ },
+ {
+  "règle": "useExhaustiveDependencies",
+  "chemin": "src/components/app-sidebar.tsx",
+  "ligne": 70,
+  "classe": "déclencheur",
+  "dépendance": "en trop currentView, isCollapsed",
+  "remplacement": "Ramène l'élément actif en vue quand la vue ou la largeur change. Retirer la dépendance supprime ce déclenchement. Garder, avec `// biome-ignore lint/correctness/useExhaustiveDependencies: <raison>`."
+ },
+ {
+  "règle": "useExhaustiveDependencies",
+  "chemin": "src/components/ui/agent-composer.tsx",
+  "ligne": 94,
+  "classe": "déclencheur",
+  "dépendance": "en trop value",
+  "remplacement": "Recalcule la hauteur du champ quand le texte change. Retirer la dépendance supprime ce déclenchement. Garder, avec `// biome-ignore lint/correctness/useExhaustiveDependencies: <raison>`."
+ },
+ {
+  "règle": "useExhaustiveDependencies",
+  "chemin": "src/components/ui/agent-status.tsx",
+  "ligne": 75,
+  "classe": "déclencheur",
+  "dépendance": "en trop startedAt",
+  "remplacement": "Relance le minuteur à chaque nouvelle exécution. Retirer la dépendance supprime ce déclenchement. Garder, avec `// biome-ignore lint/correctness/useExhaustiveDependencies: <raison>`."
+ },
+ {
+  "règle": "useExhaustiveDependencies",
+  "chemin": "src/components/ui/sidebar.tsx",
+  "ligne": 120,
+  "classe": "sûr",
+  "dépendance": "en trop setOpenMobile",
+  "remplacement": "Setter de useState, stable. Le retirer ne change rien. Mesuré."
+ },
+ {
+  "règle": "useExhaustiveDependencies",
+  "chemin": "src/components/ui/sidebar.tsx",
+  "ligne": 163,
+  "classe": "sûr",
+  "dépendance": "en trop setOpenMobile",
+  "remplacement": "Setter de useState, stable. Le retirer ne change rien. Mesuré."
+ },
+ {
+  "règle": "useExhaustiveDependencies",
+  "chemin": "src/modules/agenda/components/agenda-calendar.tsx",
+  "ligne": 237,
+  "classe": "eslint-disable",
+  "dépendance": "manque place",
+  "remplacement": "place est recréée à chaque rendu : l'ajouter recalculerait à chaque rendu. Option : `place` en useCallback sur [days, getAppointmentsForDate] (équivalence non mesurée). Sinon biome-ignore à côté du eslint-disable."
+ },
+ {
+  "règle": "useExhaustiveDependencies",
+  "chemin": "src/modules/agenda/components/agenda-calendar.tsx",
+  "ligne": 237,
+  "classe": "eslint-disable",
+  "dépendance": "en trop days, getAppointmentsForDate",
+  "remplacement": "Ce sont les vraies entrées de place (commentaire). Les retirer figerait le placement. Même traitement que la ligne ci-dessus."
+ },
+ {
+  "règle": "useExhaustiveDependencies",
+  "chemin": "src/modules/agenda/components/agenda-calendar.tsx",
+  "ligne": 249,
+  "classe": "eslint-disable",
+  "dépendance": "manque place",
+  "remplacement": "Idem 237."
+ },
+ {
+  "règle": "useExhaustiveDependencies",
+  "chemin": "src/modules/agenda/components/agenda-calendar.tsx",
+  "ligne": 249,
+  "classe": "eslint-disable",
+  "dépendance": "en trop days, getAppointmentsForDate",
+  "remplacement": "Idem 237."
+ },
+ {
+  "règle": "useExhaustiveDependencies",
+  "chemin": "src/modules/agenda/hooks/use-agenda-page-model.tsx",
+  "ligne": 817,
+  "classe": "déclencheur",
+  "dépendance": "en trop patientsById, ownersById, selectedDate",
+  "remplacement": "Les gestionnaires sont des useEffectEvent ; ces valeurs relancent la lecture du rendez-vous en attente quand les données arrivent. Retirer la dépendance supprime ce déclenchement. Garder, avec `// biome-ignore lint/correctness/useExhaustiveDependencies: <raison>`."
+ },
+ {
+  "règle": "useExhaustiveDependencies",
+  "chemin": "src/modules/assistant-answers/clinic-answers.tsx",
+  "ligne": 145,
+  "classe": "déclencheur",
+  "dépendance": "en trop turns.length",
+  "remplacement": "Fait défiler vers la nouvelle question. Retirer la dépendance supprime ce déclenchement. Garder, avec `// biome-ignore lint/correctness/useExhaustiveDependencies: <raison>`."
+ },
+ {
+  "règle": "useExhaustiveDependencies",
+  "chemin": "src/modules/care-tasks/care-page.tsx",
+  "ligne": 316,
+  "classe": "déclencheur",
+  "dépendance": "en trop tasks",
+  "remplacement": "Relit l'historique du soin sélectionné quand les soins changent. Retirer la dépendance supprime ce déclenchement. Garder, avec `// biome-ignore lint/correctness/useExhaustiveDependencies: <raison>`."
+ },
+ {
+  "règle": "useExhaustiveDependencies",
+  "chemin": "src/modules/clinique/components/clinique-shared.tsx",
+  "ligne": 543,
+  "classe": "déclencheur",
+  "dépendance": "en trop appointment.id, patient.id",
+  "remplacement": "Recharge le formulaire depuis sourceRef quand on change de rendez-vous ou de patient. Retirer la dépendance supprime ce déclenchement. Garder, avec `// biome-ignore lint/correctness/useExhaustiveDependencies: <raison>`."
+ },
+ {
+  "règle": "useExhaustiveDependencies",
+  "chemin": "src/modules/clinique/components/clinique-shared.tsx",
+  "ligne": 617,
+  "classe": "déclencheur",
+  "dépendance": "en trop autosaveKey",
+  "remplacement": "Programme l'enregistrement automatique quand le contenu change. Retirer la dépendance supprime ce déclenchement. Garder, avec `// biome-ignore lint/correctness/useExhaustiveDependencies: <raison>`."
+ },
+ {
+  "règle": "useExhaustiveDependencies",
+  "chemin": "src/modules/consultations/components/local-consultation-assistant.tsx",
+  "ligne": 327,
+  "classe": "eslint-disable",
+  "dépendance": "manque dictationNote",
+  "remplacement": "Fonction recréée à chaque rendu ; le commentaire dit que fullTranscript porte les mêmes réponses. L'ajouter recalculerait la note à chaque rendu. biome-ignore."
+ },
+ {
+  "règle": "useExhaustiveDependencies",
+  "chemin": "src/modules/consultations/components/local-consultation-assistant.tsx",
+  "ligne": 485,
+  "classe": "eslint-disable",
+  "dépendance": "manque ai.seconds",
+  "remplacement": "Volontaire : seul le début de l'écoute compte. L'ajouter remettrait l'heure de départ à chaque seconde. Option sûre : `useEffectEvent` pour lire ai.seconds."
+ },
+ {
+  "règle": "useExhaustiveDependencies",
+  "chemin": "src/modules/consultations/components/local-consultation-assistant.tsx",
+  "ligne": 844,
+  "classe": "déclencheur",
+  "dépendance": "en trop activeTab, sectionIndex, setupOpen, ai.phase, visibleError",
+  "remplacement": "Garde la dictée défilée en bas quand l'écran change. Retirer la dépendance supprime ce déclenchement. Garder, avec `// biome-ignore lint/correctness/useExhaustiveDependencies: <raison>`."
+ },
+ {
+  "règle": "useExhaustiveDependencies",
+  "chemin": "src/modules/consultations/components/soap-panel.tsx",
+  "ligne": 255,
+  "classe": "déclencheur",
+  "dépendance": "en trop saveStatus",
+  "remplacement": "Réarme l'enregistrement quand l'état de sauvegarde change. Retirer la dépendance supprime ce déclenchement. Garder, avec `// biome-ignore lint/correctness/useExhaustiveDependencies: <raison>`."
+ },
+ {
+  "règle": "useExhaustiveDependencies",
+  "chemin": "src/modules/dashboard/components/premium-analytics.tsx",
+  "ligne": 571,
+  "classe": "eslint-disable",
+  "dépendance": "manque updatedAt",
+  "remplacement": "Volontaire : updatedAt est une date neuve à chaque rendu sans prop. L'ajouter recalculerait à chaque rendu. biome-ignore."
+ },
+ {
+  "règle": "useExhaustiveDependencies",
+  "chemin": "src/modules/dashboard/components/premium-analytics.tsx",
+  "ligne": 571,
+  "classe": "eslint-disable",
+  "dépendance": "en trop now",
+  "remplacement": "now est l'horloge qui doit faire bouger les chiffres (même commentaire). biome-ignore."
+ },
+ {
+  "règle": "useExhaustiveDependencies",
+  "chemin": "src/modules/dashboard/hooks/usePostOpFollowUp.ts",
+  "ligne": 113,
+  "classe": "sûr",
+  "dépendance": "manque loadPatients",
+  "remplacement": "Ajouter la fonction la relancerait à chaque rendu et chaque chargement pose un état : boucle probable. Passer par `useEffectEvent(loadPatients)` : même comportement, Biome accepte. Mesuré."
+ },
+ {
+  "règle": "useExhaustiveDependencies",
+  "chemin": "src/modules/dashboard/use-alert-care.ts",
+  "ligne": 54,
+  "classe": "déclencheur",
+  "dépendance": "en trop dayKey",
+  "remplacement": "Relance la lecture des soins au changement de jour. Retirer la dépendance supprime ce déclenchement. Garder, avec `// biome-ignore lint/correctness/useExhaustiveDependencies: <raison>`."
+ },
+ {
+  "règle": "useExhaustiveDependencies",
+  "chemin": "src/modules/finances/hooks/use-finances-page-model.tsx",
+  "ligne": 266,
+  "classe": "manque",
+  "dépendance": "manque openInvoiceDetail",
+  "remplacement": "Recréée à chaque rendu : l'ajouter relancerait consume() à chaque rendu. Proposer `useEffectEvent(openInvoiceDetail)`."
+ },
+ {
+  "règle": "useExhaustiveDependencies",
+  "chemin": "src/modules/flow-board/open-in-flux.ts",
+  "ligne": 55,
+  "classe": "déclencheur",
+  "dépendance": "en trop appointmentById",
+  "remplacement": "latest est une ref ; la dépendance relance la lecture de la demande quand les rendez-vous changent. Retirer la dépendance supprime ce déclenchement. Garder, avec `// biome-ignore lint/correctness/useExhaustiveDependencies: <raison>`."
+ },
+ {
+  "règle": "useExhaustiveDependencies",
+  "chemin": "src/modules/flow-board/use-flow-board.ts",
+  "ligne": 90,
+  "classe": "déclencheur",
+  "dépendance": "en trop appointments.data",
+  "remplacement": "Relit le tableau de flux quand les rendez-vous changent. Retirer la dépendance supprime ce déclenchement. Garder, avec `// biome-ignore lint/correctness/useExhaustiveDependencies: <raison>`."
+ },
+ {
+  "règle": "useExhaustiveDependencies",
+  "chemin": "src/modules/hospitalizations/components/hospitalization-print-layout.tsx",
+  "ligne": 37,
+  "classe": "sûr",
+  "dépendance": "en trop hospitalization.id",
+  "remplacement": "L'effet ne fait rien (il sort dans tous les cas). Mettre `[]`, ou supprimer l'effet. Mesuré avec `[]`."
+ },
+ {
+  "règle": "useExhaustiveDependencies",
+  "chemin": "src/modules/invoices/components/invoice-settings-panel.tsx",
+  "ligne": 86,
+  "classe": "sûr",
+  "dépendance": "manque keys",
+  "remplacement": "Les deux appels passent une constante de module (IDENTITY_KEYS, INVOICE_KEYS) : ajouter `keys` ne relance rien. Retirer le eslint-disable. Mesuré ; fait apparaître 2 avertissements react-hooks/todo (try/finally), coupés en CI."
+ },
+ {
+  "règle": "useExhaustiveDependencies",
+  "chemin": "src/modules/patients/export/patient-record-preview.tsx",
+  "ligne": 26,
+  "classe": "déclencheur",
+  "dépendance": "en trop retry",
+  "remplacement": "Le bouton Réessayer incrémente retry pour relancer le rendu PDF. Retirer la dépendance supprime ce déclenchement. Garder, avec `// biome-ignore lint/correctness/useExhaustiveDependencies: <raison>`."
+ },
+ {
+  "règle": "useExhaustiveDependencies",
+  "chemin": "src/modules/patients/health-card/health-card-dialog.tsx",
+  "ligne": 131,
+  "classe": "déclencheur",
+  "dépendance": "en trop attempt",
+  "remplacement": "Le bouton Réessayer incrémente attempt pour relancer la préparation du carnet. Retirer la dépendance supprime ce déclenchement. Garder, avec `// biome-ignore lint/correctness/useExhaustiveDependencies: <raison>`."
+ },
+ {
+  "règle": "useExhaustiveDependencies",
+  "chemin": "src/modules/prescriptions/components/prescription-builder.tsx",
+  "ligne": 239,
+  "classe": "eslint-disable",
+  "dépendance": "manque itemsRepo.forPrescription",
+  "remplacement": "Volontaire (eslint-disable). Si la méthode change d'identité à chaque rendu, l'effet remettrait le formulaire à zéro à chaque rendu et effacerait la saisie. biome-ignore."
+ },
+ {
+  "règle": "useExhaustiveDependencies",
+  "chemin": "src/modules/prescriptions/components/prescription-builder.tsx",
+  "ligne": 239,
+  "classe": "eslint-disable",
+  "dépendance": "manque prescriptionsRepo.forAppointment",
+  "remplacement": "Idem."
+ },
+ {
+  "règle": "useExhaustiveDependencies",
+  "chemin": "src/modules/prescriptions/components/prescription-builder.tsx",
+  "ligne": 239,
+  "classe": "eslint-disable",
+  "dépendance": "en trop prescriptionsRepo.data.length, itemsRepo.data.length",
+  "remplacement": "Ce sont les déclencheurs réels (arrivée des données). Les retirer empêcherait de charger l'ordonnance existante. biome-ignore."
+ },
+ {
+  "règle": "useExhaustiveDependencies",
+  "chemin": "src/modules/shell/app-shell.tsx",
+  "ligne": 220,
+  "classe": "déclencheur",
+  "dépendance": "en trop currentView, currentPatientId, navigationTick",
+  "remplacement": "Remet le panneau en haut à chaque navigation. Retirer la dépendance supprime ce déclenchement. Garder, avec `// biome-ignore lint/correctness/useExhaustiveDependencies: <raison>`."
+ },
+ {
+  "règle": "useExhaustiveDependencies",
+  "chemin": "src/modules/shell/app-shell.tsx",
+  "ligne": 246,
+  "classe": "déclencheur",
+  "dépendance": "en trop currentView, currentPatientId",
+  "remplacement": "Recalcule la géométrie de défilement à chaque navigation. Retirer la dépendance supprime ce déclenchement. Garder, avec `// biome-ignore lint/correctness/useExhaustiveDependencies: <raison>`."
+ },
+ {
+  "règle": "useExhaustiveDependencies",
+  "chemin": "src/modules/stock/components/consultation-products.tsx",
+  "ligne": 39,
+  "classe": "déclencheur",
+  "dépendance": "en trop revision",
+  "remplacement": "Relit les produits utilisés quand revision change. Retirer la dépendance supprime ce déclenchement. Garder, avec `// biome-ignore lint/correctness/useExhaustiveDependencies: <raison>`."
+ }
+]

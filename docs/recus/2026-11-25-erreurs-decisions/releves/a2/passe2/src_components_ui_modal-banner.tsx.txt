@@ -1,0 +1,3 @@
+CSS_IDENTIQUE : css 0, ordre css 0, morceaux 0, ordre 0, imports 1 (texte JS changé dans 1 morceaux)
+  [texte] assets/form-dialog.js|src/components/ui/modal-banner.tsx
+  [imports] assets/form-dialog.js|src/components/ui/modal-banner.tsx.imports: assets/visuallyHidden.js,assets/index.js,assets/useTranslation.js,assets/card.js,assets/utils.js -> assets/visuallyHidden.js,assets/useTranslation.js,assets/card.js,assets/index.js,assets/utils.js

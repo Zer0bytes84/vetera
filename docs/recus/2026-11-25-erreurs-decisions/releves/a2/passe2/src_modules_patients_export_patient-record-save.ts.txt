@@ -1,0 +1,3 @@
+CSS_IDENTIQUE : css 0, ordre css 0, morceaux 0, ordre 0, imports 1 (texte JS changé dans 1 morceaux)
+  [texte] assets/patient-record-save.js|src/modules/patients/export/patient-record-save.ts
+  [imports] assets/patient-record-save.js|src/modules/patients/export/patient-record-save.ts.imports: assets/browser-store.js,assets/appSettingsService.js,assets/preload-helper.js -> assets/appSettingsService.js,assets/browser-store.js,assets/preload-helper.js

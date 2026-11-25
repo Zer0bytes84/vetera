@@ -1,0 +1,3 @@
+CSS_IDENTIQUE : css 0, ordre css 0, morceaux 0, ordre 0, imports 1 (texte JS changé dans 1 morceaux)
+  [texte] assets/care-task-form.js|src/modules/care-tasks/feedback.ts
+  [imports] assets/care-task-form.js|src/modules/care-tasks/feedback.ts.imports: assets/rolldown-runtime.js,assets/index.js,assets/care-time-picker.js,assets/app-shell.js,assets/card.js,assets/react.js,assets/visuallyHidden.js,assets/searchable-select.js,assets/utils.js -> assets/rolldown-runtime.js,assets/react.js,assets/visuallyHidden.js,assets/app-shell.js,assets/card.js,assets/index.js,assets/utils.js,assets/searchable-select.js,assets/care-time-picker.js

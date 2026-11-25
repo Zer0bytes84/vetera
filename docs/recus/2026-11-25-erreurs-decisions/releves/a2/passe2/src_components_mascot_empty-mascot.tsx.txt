@@ -1,0 +1,3 @@
+CSS_IDENTIQUE : css 0, ordre css 0, morceaux 0, ordre 0, imports 1 (texte JS changé dans 1 morceaux)
+  [texte] assets/empty-mascot.js|src/components/mascot/empty-mascot.tsx
+  [imports] assets/empty-mascot.js|src/components/mascot/empty-mascot.tsx.imports: assets/empty.js,assets/mascot.js,assets/use-mascot-preferences.js,assets/utils.js -> assets/empty.js,assets/use-mascot-preferences.js,assets/mascot.js,assets/utils.js

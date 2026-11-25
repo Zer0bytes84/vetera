@@ -1,0 +1,4 @@
+CSS_IDENTIQUE : css 0, ordre css 0, morceaux 0, ordre 1, imports 0 (texte JS changé dans 1 morceaux)
+  [déplacés] worker(assets/embedding.worker.js):assets/embedding.worker.js src/modules/consultations/local-ai/offline-policy.ts
+  [texte] worker(assets/embedding.worker.js):assets/embedding.worker.js|src/modules/consultations/workers/embedding.worker.ts
+  [ordre] worker(assets/embedding.worker.js):assets/embedding.worker.js|src/modules/consultations/workers/embedding.worker.ts: mêmes modules, ordre changé (dès src/modules/consultations/local-ai/offline-policy.ts -> /home/user/vetera/node_modules/zod/v4/core/core.js)

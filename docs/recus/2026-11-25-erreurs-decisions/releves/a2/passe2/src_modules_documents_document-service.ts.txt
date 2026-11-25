@@ -1,0 +1,3 @@
+CSS_IDENTIQUE : css 0, ordre css 0, morceaux 0, ordre 0, imports 1 (texte JS changé dans 1 morceaux)
+  [texte] assets/use-managed-documents.js|src/modules/documents/document-domain.ts
+  [imports] assets/use-managed-documents.js|src/modules/documents/document-domain.ts.imports: assets/rolldown-runtime.js,assets/react.js,assets/useSQLite.js,assets/database.js,assets/browser-store.js,assets/soap-review.js,assets/index.js,assets/reference.js,assets/utils.js -> assets/rolldown-runtime.js,assets/react.js,assets/useSQLite.js,assets/browser-store.js,assets/database.js,assets/soap-review.js,assets/index.js,assets/reference.js,assets/utils.js

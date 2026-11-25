@@ -1,0 +1,1255 @@
+{
+ "src/services/licenseRuntime.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/components/Logo.tsx": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/components/startup-splash.css": {
+  "genre": "autre",
+  "effets": "feuille CSS"
+ },
+ "src/components/startup-splash.tsx": {
+  "genre": "src",
+  "effets": [
+   "import \"./startup-splash.css\""
+  ]
+ },
+ "/home/user/vetera/node_modules/@base-ui/react/esm/internals/labelable-provider/useLabelableId.js": {
+  "genre": "bibliothèque",
+  "paquet": "@base-ui/react",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/@base-ui/react/esm/field/control/FieldControl.js": {
+  "genre": "bibliothèque",
+  "paquet": "@base-ui/react",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/@base-ui/react/esm/input/Input.js": {
+  "genre": "bibliothèque",
+  "paquet": "@base-ui/react",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "src/components/ui/input.tsx": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/components/ui/label.tsx": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/hooks/use-tauri-drag.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/services/licenseService.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/components/LicenseGate.tsx": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/services/demo-data.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/release-notes/release-seen.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "/home/user/vetera/node_modules/@tauri-apps/plugin-process/dist-js/index.js": {
+  "genre": "bibliothèque",
+  "paquet": "@tauri-apps/plugin-process",
+  "effets": "non déclaré"
+ },
+ "/home/user/vetera/node_modules/@tauri-apps/plugin-updater/dist-js/index.js": {
+  "genre": "bibliothèque",
+  "paquet": "@tauri-apps/plugin-updater",
+  "effets": "non déclaré"
+ },
+ "src/services/updateService.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "/home/user/vetera/node_modules/@tauri-apps/api/webview.js": {
+  "genre": "bibliothèque",
+  "paquet": "@tauri-apps/api",
+  "effets": "non déclaré"
+ },
+ "/home/user/vetera/node_modules/@tauri-apps/api/webviewWindow.js": {
+  "genre": "bibliothèque",
+  "paquet": "@tauri-apps/api",
+  "effets": "non déclaré"
+ },
+ "src/services/activationAdminWindowService.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "/home/user/vetera/node_modules/@hugeicons/core-free-icons/dist/esm/BookOpenTextIcon.js": {
+  "genre": "bibliothèque",
+  "paquet": "@hugeicons/core-free-icons",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/@hugeicons/core-free-icons/dist/esm/Building01Icon.js": {
+  "genre": "bibliothèque",
+  "paquet": "@hugeicons/core-free-icons",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/@hugeicons/core-free-icons/dist/esm/ClinicIcon.js": {
+  "genre": "bibliothèque",
+  "paquet": "@hugeicons/core-free-icons",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/@hugeicons/core-free-icons/dist/esm/DashboardSquareEditIcon.js": {
+  "genre": "bibliothèque",
+  "paquet": "@hugeicons/core-free-icons",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/@hugeicons/core-free-icons/dist/esm/FileSearchIcon.js": {
+  "genre": "bibliothèque",
+  "paquet": "@hugeicons/core-free-icons",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/@hugeicons/core-free-icons/dist/esm/KanbanIcon.js": {
+  "genre": "bibliothèque",
+  "paquet": "@hugeicons/core-free-icons",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/@hugeicons/core-free-icons/dist/esm/HospitalBed01Icon.js": {
+  "genre": "bibliothèque",
+  "paquet": "@hugeicons/core-free-icons",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/@hugeicons/core-free-icons/dist/esm/Logout01Icon.js": {
+  "genre": "bibliothèque",
+  "paquet": "@hugeicons/core-free-icons",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/@hugeicons/core-free-icons/dist/esm/MedicalFileIcon.js": {
+  "genre": "bibliothèque",
+  "paquet": "@hugeicons/core-free-icons",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/@hugeicons/core-free-icons/dist/esm/Moon02Icon.js": {
+  "genre": "bibliothèque",
+  "paquet": "@hugeicons/core-free-icons",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/@hugeicons/core-free-icons/dist/esm/PackageIcon.js": {
+  "genre": "bibliothèque",
+  "paquet": "@hugeicons/core-free-icons",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/@hugeicons/core-free-icons/dist/esm/ResetPasswordIcon.js": {
+  "genre": "bibliothèque",
+  "paquet": "@hugeicons/core-free-icons",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/@hugeicons/core-free-icons/dist/esm/Settings01Icon.js": {
+  "genre": "bibliothèque",
+  "paquet": "@hugeicons/core-free-icons",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/@hugeicons/core-free-icons/dist/esm/Sun03Icon.js": {
+  "genre": "bibliothèque",
+  "paquet": "@hugeicons/core-free-icons",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/@hugeicons/core-free-icons/dist/esm/Task01Icon.js": {
+  "genre": "bibliothèque",
+  "paquet": "@hugeicons/core-free-icons",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/@hugeicons/core-free-icons/dist/esm/UserAdd01Icon.js": {
+  "genre": "bibliothèque",
+  "paquet": "@hugeicons/core-free-icons",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/@hugeicons/core-free-icons/dist/esm/VaccineIcon.js": {
+  "genre": "bibliothèque",
+  "paquet": "@hugeicons/core-free-icons",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "src/modules/shell/model/palette-suggestions.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "/home/user/vetera/node_modules/@tiptap/extension-list/dist/index.js": {
+  "genre": "bibliothèque",
+  "paquet": "@tiptap/extension-list",
+  "effets": "non déclaré"
+ },
+ "src/modules/shell/page-crumb.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/components/documents-library.tsx": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/shell/model/creation-request.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/services/localDataReset.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/components/local-data-reset-settings.tsx": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/components/about-team.tsx": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/dashboard/components/dashboard-version-setting.tsx": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/invoices/components/invoice-settings-panel.tsx": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/documents/document-module.css": {
+  "genre": "autre",
+  "effets": "feuille CSS"
+ },
+ "src/modules/documents/components/document-template-manager.tsx": {
+  "genre": "src",
+  "effets": [
+   "import \"../document-module.css\""
+  ]
+ },
+ "src/modules/consultations/components/ai-model-settings.tsx": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/rooms/rooms-settings.tsx": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "/home/user/vetera/node_modules/@base-ui/react/esm/avatar/root/AvatarRootContext.js": {
+  "genre": "bibliothèque",
+  "paquet": "@base-ui/react",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/@base-ui/react/esm/avatar/root/stateAttributesMapping.js": {
+  "genre": "bibliothèque",
+  "paquet": "@base-ui/react",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/@base-ui/react/esm/avatar/root/AvatarRoot.js": {
+  "genre": "bibliothèque",
+  "paquet": "@base-ui/react",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/@base-ui/react/esm/avatar/image/useImageLoadingStatus.js": {
+  "genre": "bibliothèque",
+  "paquet": "@base-ui/react",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/@base-ui/react/esm/avatar/image/AvatarImage.js": {
+  "genre": "bibliothèque",
+  "paquet": "@base-ui/react",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/@base-ui/react/esm/avatar/fallback/AvatarFallback.js": {
+  "genre": "bibliothèque",
+  "paquet": "@base-ui/react",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "src/components/ui/avatar.tsx": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/components/Avatar.tsx": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/clinique/clinic-services.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/contexts/layout-provider.tsx": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/rooms/use-rooms.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/release-notes/release-highlights.tsx": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/lib/settings-navigation.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/lib/sidebar-tone.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/lib/user-role.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "/home/user/vetera/node_modules/@base-ui/react/esm/use-render/useRender.js": {
+  "genre": "bibliothèque",
+  "paquet": "@base-ui/react",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "src/components/ui/badge.tsx": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "/home/user/vetera/node_modules/@base-ui/react/esm/internals/composite/constants.js": {
+  "genre": "bibliothèque",
+  "paquet": "@base-ui/react",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/@base-ui/react/esm/internals/serializeValue.js": {
+  "genre": "bibliothèque",
+  "paquet": "@base-ui/react",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/@base-ui/react/esm/internals/composite/root/useCompositeRoot.js": {
+  "genre": "bibliothèque",
+  "paquet": "@base-ui/react",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/@base-ui/react/esm/internals/composite/root/CompositeRoot.js": {
+  "genre": "bibliothèque",
+  "paquet": "@base-ui/react",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "src/components/reminder-quiet.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/components/reminder-buckets.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/patient-reminders/medical-reminder-dialog.tsx": {
+  "genre": "src",
+  "effets": [
+   "import \"./patient-reminders.css\""
+  ]
+ },
+ "src/components/ui/list-controls.tsx": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/shell/components/sidebar-icon.tsx": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/stock/components/stock-lots-panel.tsx": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/stock/components/movement-allocation-details.tsx": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "/home/user/vetera/node_modules/date-fns/constants.js": {
+  "genre": "bibliothèque",
+  "paquet": "date-fns",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/date-fns/constructFrom.js": {
+  "genre": "bibliothèque",
+  "paquet": "date-fns",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/date-fns/toDate.js": {
+  "genre": "bibliothèque",
+  "paquet": "date-fns",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/date-fns/_lib/defaultOptions.js": {
+  "genre": "bibliothèque",
+  "paquet": "date-fns",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/date-fns/startOfWeek.js": {
+  "genre": "bibliothèque",
+  "paquet": "date-fns",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/date-fns/_lib/normalizeDates.js": {
+  "genre": "bibliothèque",
+  "paquet": "date-fns",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/date-fns/locale/en-US/_lib/formatDistance.js": {
+  "genre": "bibliothèque",
+  "paquet": "date-fns",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/date-fns/locale/_lib/buildFormatLongFn.js": {
+  "genre": "bibliothèque",
+  "paquet": "date-fns",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/date-fns/locale/en-US/_lib/formatLong.js": {
+  "genre": "bibliothèque",
+  "paquet": "date-fns",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/date-fns/locale/en-US/_lib/formatRelative.js": {
+  "genre": "bibliothèque",
+  "paquet": "date-fns",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/date-fns/locale/_lib/buildLocalizeFn.js": {
+  "genre": "bibliothèque",
+  "paquet": "date-fns",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/date-fns/locale/en-US/_lib/localize.js": {
+  "genre": "bibliothèque",
+  "paquet": "date-fns",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/date-fns/locale/_lib/buildMatchFn.js": {
+  "genre": "bibliothèque",
+  "paquet": "date-fns",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/date-fns/locale/_lib/buildMatchPatternFn.js": {
+  "genre": "bibliothèque",
+  "paquet": "date-fns",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/date-fns/locale/en-US/_lib/match.js": {
+  "genre": "bibliothèque",
+  "paquet": "date-fns",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/date-fns/locale/en-US.js": {
+  "genre": "bibliothèque",
+  "paquet": "date-fns",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/date-fns/locale/fr/_lib/formatDistance.js": {
+  "genre": "bibliothèque",
+  "paquet": "date-fns",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/date-fns/locale/fr/_lib/formatLong.js": {
+  "genre": "bibliothèque",
+  "paquet": "date-fns",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/date-fns/locale/fr/_lib/formatRelative.js": {
+  "genre": "bibliothèque",
+  "paquet": "date-fns",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/date-fns/locale/fr/_lib/localize.js": {
+  "genre": "bibliothèque",
+  "paquet": "date-fns",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/date-fns/locale/fr/_lib/match.js": {
+  "genre": "bibliothèque",
+  "paquet": "date-fns",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/date-fns/locale/fr.js": {
+  "genre": "bibliothèque",
+  "paquet": "date-fns",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/next-themes/dist/index.mjs": {
+  "genre": "bibliothèque",
+  "paquet": "next-themes",
+  "effets": "non déclaré"
+ },
+ "src/modules/rooms/store.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/rooms/service.ts": {
+  "genre": "src",
+  "effets": [
+   "roomsService = createRoomStore(\n  { read: runDbRead, transaction: runDbTran"
+  ]
+ },
+ "src/services/invoiceSettingsService.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/domain/billing/errors.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/domain/billing/money.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/domain/billing/settlement.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/care-tasks/domain.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/services/billingService.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/utils/display-format.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/utils/currency.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "/home/user/vetera/node_modules/@hugeicons/react/dist/esm/HugeiconsIcon.js": {
+  "genre": "bibliothèque",
+  "paquet": "@hugeicons/react",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/@hugeicons/core-free-icons/dist/esm/BirdIcon.js": {
+  "genre": "bibliothèque",
+  "paquet": "@hugeicons/core-free-icons",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/@hugeicons/core-free-icons/dist/esm/FishSymbolIcon.js": {
+  "genre": "bibliothèque",
+  "paquet": "@hugeicons/core-free-icons",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "src/lib/species-icons.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "/home/user/vetera/node_modules/@hugeicons/core-free-icons/dist/esm/InformationCircleIcon.js": {
+  "genre": "bibliothèque",
+  "paquet": "@hugeicons/core-free-icons",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/@hugeicons/core-free-icons/dist/esm/ArrowDownRight01Icon.js": {
+  "genre": "bibliothèque",
+  "paquet": "@hugeicons/core-free-icons",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/@hugeicons/core-free-icons/dist/esm/ArrowUpRight01Icon.js": {
+  "genre": "bibliothèque",
+  "paquet": "@hugeicons/core-free-icons",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/@hugeicons/core-free-icons/dist/esm/Refresh01Icon.js": {
+  "genre": "bibliothèque",
+  "paquet": "@hugeicons/core-free-icons",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/@hugeicons/core-free-icons/dist/esm/UnavailableIcon.js": {
+  "genre": "bibliothèque",
+  "paquet": "@hugeicons/core-free-icons",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/@hugeicons/core-free-icons/dist/esm/Notification01Icon.js": {
+  "genre": "bibliothèque",
+  "paquet": "@hugeicons/core-free-icons",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/@hugeicons/core-free-icons/dist/esm/Package02Icon.js": {
+  "genre": "bibliothèque",
+  "paquet": "@hugeicons/core-free-icons",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/@hugeicons/core-free-icons/dist/esm/CalendarCheckIn01Icon.js": {
+  "genre": "bibliothèque",
+  "paquet": "@hugeicons/core-free-icons",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/@hugeicons/core-free-icons/dist/esm/BubbleChatIcon.js": {
+  "genre": "bibliothèque",
+  "paquet": "@hugeicons/core-free-icons",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/@hugeicons/core-free-icons/dist/esm/Tick01Icon.js": {
+  "genre": "bibliothèque",
+  "paquet": "@hugeicons/core-free-icons",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/@hugeicons/core-free-icons/dist/esm/ArrowDown01Icon.js": {
+  "genre": "bibliothèque",
+  "paquet": "@hugeicons/core-free-icons",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/@hugeicons/core-free-icons/dist/esm/ArrowLeft01Icon.js": {
+  "genre": "bibliothèque",
+  "paquet": "@hugeicons/core-free-icons",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/@hugeicons/core-free-icons/dist/esm/ArrowRight01Icon.js": {
+  "genre": "bibliothèque",
+  "paquet": "@hugeicons/core-free-icons",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/@hugeicons/core-free-icons/dist/esm/ArrowUp01Icon.js": {
+  "genre": "bibliothèque",
+  "paquet": "@hugeicons/core-free-icons",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/@hugeicons/core-free-icons/dist/esm/Loading03Icon.js": {
+  "genre": "bibliothèque",
+  "paquet": "@hugeicons/core-free-icons",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/@hugeicons/core-free-icons/dist/esm/CheckListIcon.js": {
+  "genre": "bibliothèque",
+  "paquet": "@hugeicons/core-free-icons",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/@hugeicons/core-free-icons/dist/esm/LayoutThreeColumnIcon.js": {
+  "genre": "bibliothèque",
+  "paquet": "@hugeicons/core-free-icons",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/@hugeicons/core-free-icons/dist/esm/IdentityCardIcon.js": {
+  "genre": "bibliothèque",
+  "paquet": "@hugeicons/core-free-icons",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/@hugeicons/core-free-icons/dist/esm/PencilEdit01Icon.js": {
+  "genre": "bibliothèque",
+  "paquet": "@hugeicons/core-free-icons",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/@hugeicons/core-free-icons/dist/esm/ViewIcon.js": {
+  "genre": "bibliothèque",
+  "paquet": "@hugeicons/core-free-icons",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/@hugeicons/core-free-icons/dist/esm/ViewOffIcon.js": {
+  "genre": "bibliothèque",
+  "paquet": "@hugeicons/core-free-icons",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/@hugeicons/core-free-icons/dist/esm/SaveIcon.js": {
+  "genre": "bibliothèque",
+  "paquet": "@hugeicons/core-free-icons",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/@hugeicons/core-free-icons/dist/esm/DashboardSquare01Icon.js": {
+  "genre": "bibliothèque",
+  "paquet": "@hugeicons/core-free-icons",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/@hugeicons/core-free-icons/dist/esm/WorkHistoryIcon.js": {
+  "genre": "bibliothèque",
+  "paquet": "@hugeicons/core-free-icons",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/@hugeicons/core-free-icons/dist/esm/Menu01Icon.js": {
+  "genre": "bibliothèque",
+  "paquet": "@hugeicons/core-free-icons",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/@hugeicons/core-free-icons/dist/esm/Mail01Icon.js": {
+  "genre": "bibliothèque",
+  "paquet": "@hugeicons/core-free-icons",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/@hugeicons/core-free-icons/dist/esm/BubbleChatAddIcon.js": {
+  "genre": "bibliothèque",
+  "paquet": "@hugeicons/core-free-icons",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/@hugeicons/core-free-icons/dist/esm/AlertDiamondIcon.js": {
+  "genre": "bibliothèque",
+  "paquet": "@hugeicons/core-free-icons",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/@hugeicons/core-free-icons/dist/esm/TelephoneIcon.js": {
+  "genre": "bibliothèque",
+  "paquet": "@hugeicons/core-free-icons",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/@hugeicons/core-free-icons/dist/esm/Add01Icon.js": {
+  "genre": "bibliothèque",
+  "paquet": "@hugeicons/core-free-icons",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/@hugeicons/core-free-icons/dist/esm/Undo02Icon.js": {
+  "genre": "bibliothèque",
+  "paquet": "@hugeicons/core-free-icons",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/@hugeicons/core-free-icons/dist/esm/LayoutThreeRowIcon.js": {
+  "genre": "bibliothèque",
+  "paquet": "@hugeicons/core-free-icons",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/@hugeicons/core-free-icons/dist/esm/BalanceScaleIcon.js": {
+  "genre": "bibliothèque",
+  "paquet": "@hugeicons/core-free-icons",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/@hugeicons/core-free-icons/dist/esm/SecurityCheckIcon.js": {
+  "genre": "bibliothèque",
+  "paquet": "@hugeicons/core-free-icons",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/@hugeicons/core-free-icons/dist/esm/InjectionIcon.js": {
+  "genre": "bibliothèque",
+  "paquet": "@hugeicons/core-free-icons",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/@hugeicons/core-free-icons/dist/esm/Delete02Icon.js": {
+  "genre": "bibliothèque",
+  "paquet": "@hugeicons/core-free-icons",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/@hugeicons/core-free-icons/dist/esm/Cancel01Icon.js": {
+  "genre": "bibliothèque",
+  "paquet": "@hugeicons/core-free-icons",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/@hugeicons/core-free-icons/dist/esm/CancelCircleIcon.js": {
+  "genre": "bibliothèque",
+  "paquet": "@hugeicons/core-free-icons",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "/home/user/vetera/node_modules/@hugeicons/core-free-icons/dist/esm/MoreVerticalIcon.js": {
+  "genre": "bibliothèque",
+  "paquet": "@hugeicons/core-free-icons",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "src/modules/hospitalizations/stays/clipboard-icon.tsx": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/hospitalizations/stays/agenda-stays.tsx": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/agenda/components/agenda-slots.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/agenda/hooks/use-agenda-page-model.tsx": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/visit-flow/domain.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/visit-flow/store.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/visit-flow/service.ts": {
+  "genre": "src",
+  "effets": [
+   "visitFlowService = createVisitFlowStore({\n  read: runDbRead,\n  transaction: run"
+  ]
+ },
+ "src/modules/visit-flow/use-flow-undo.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/flow-board/open-in-flux.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/care-tasks/hooks.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/design-system/page-header-line.css": {
+  "genre": "autre",
+  "effets": "feuille CSS"
+ },
+ "src/modules/patients/components/patient-header.tsx": {
+  "genre": "src",
+  "effets": [
+   "import \"@/design-system/page-header-line.css\""
+  ]
+ },
+ "src/modules/consultation-workspace/consultation-closure.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/hospitalizations/stays/occupancy.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/hospitalizations/stays/occupancy-units.tsx": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/clinique/clinic-tab-events.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/hospitalizations/stays/hospitalisation.css": {
+  "genre": "autre",
+  "effets": "feuille CSS"
+ },
+ "src/modules/hospitalizations/stays/stay-location-controls.tsx": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/consultations/local-ai/veterinary-lexicon.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/consultations/local-ai/embedding-index.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/consultations/local-ai/passage-search.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/consultations/local-ai/search-generation.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/consultations/local-ai/embedding-store.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/consultations/local-ai/search-highlight.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/components/mascot/index.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/components/ui/loader.tsx": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/components/ui/user-message.tsx": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/consultations/local-ai/whisper-language.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/components/ui/prompt-suggestions.tsx": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/components/ui/source-list.tsx": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/components/ui/tool-call-block.tsx": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/consultations/components/assistant-thinking.css": {
+  "genre": "autre",
+  "effets": "feuille CSS"
+ },
+ "src/modules/consultations/components/patient-document-search.tsx": {
+  "genre": "src",
+  "effets": [
+   "import \"./assistant-thinking.css\""
+  ]
+ },
+ "src/modules/assistant-answers/language.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/assistant-answers/period.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/assistant-answers/answer.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/assistant-answers/save-proposal.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/assistant-answers/clinic-answers.tsx": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/consultations/components/soap-section-editor.tsx": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/consultations/soap-panel-state.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/consultations/local-ai/whisper-threads.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/consultations/local-ai/dictation-text.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/consultations/local-ai/offline-policy.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/consultations/local-ai/generator-choice.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/dashboard/components/clinical/clinical-workspace.css": {
+  "genre": "autre",
+  "effets": "feuille CSS"
+ },
+ "src/modules/dashboard/components/visit-flow-board.tsx": {
+  "genre": "src",
+  "effets": [
+   "import \"./clinical/clinical-workspace.css\""
+  ]
+ },
+ "src/modules/dashboard/components/now-board-view.tsx": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "/home/user/vetera/node_modules/@dnd-kit/modifiers/dist/modifiers.esm.js": {
+  "genre": "bibliothèque",
+  "paquet": "@dnd-kit/modifiers",
+  "effets": "non déclaré"
+ },
+ "/home/user/vetera/node_modules/@dnd-kit/sortable/dist/sortable.esm.js": {
+  "genre": "bibliothèque",
+  "paquet": "@dnd-kit/sortable",
+  "effets": "non déclaré"
+ },
+ "src/modules/dashboard/model/dashboard-layout.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/dashboard/components/dashboard-layout-manager.tsx": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/design-system/patterns/status-stepper.tsx": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/dashboard/components/clinical/day-module.tsx": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/dashboard/components/clinical/patients-module.tsx": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/dashboard/components/widget-units.css": {
+  "genre": "autre",
+  "effets": "feuille CSS"
+ },
+ "src/modules/dashboard/components/widget-units.tsx": {
+  "genre": "src",
+  "effets": [
+   "import \"./widget-units.css\""
+  ]
+ },
+ "src/modules/dashboard/components/focus-trend-chart.css": {
+  "genre": "autre",
+  "effets": "feuille CSS"
+ },
+ "src/modules/dashboard/components/focus-trend-chart.tsx": {
+  "genre": "src",
+  "effets": [
+   "import \"./focus-trend-chart.css\""
+  ]
+ },
+ "src/modules/dashboard/model/revenue-chart.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/dashboard/components/revenue-chart-widget.tsx": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/dashboard/model/alert-bars.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/dashboard/use-alert-care.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/dashboard/model/clinical-dashboard.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/tour/tour-invitation.tsx": {
+  "genre": "src",
+  "effets": [
+   "import \"./tour.css\""
+  ]
+ },
+ "src/modules/dashboard/model/dashboard-watch.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/components/ui/message.tsx": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/documents/lib/document-pdf.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/finances/lib/draft-prices.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/finances/components/finances-shared.tsx": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/finances/hooks/use-finances-page-model.tsx": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/flow-board/quiet-day.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/flow-board/quiet-day-panel.tsx": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/hospitalizations/stays/stay-records.tsx": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/stock/services/care-stock-rollback.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/care-tasks/store.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/care-tasks/service.ts": {
+  "genre": "src",
+  "effets": [
+   "store = createCareStore(\n  { read: runDbRead, transaction: runDbTran",
+   "subscribeCareTaskCompleted(async ({ taskId }) => {\n  try {\n    const {"
+  ]
+ },
+ "src/modules/care-tasks/use-care-tasks.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/care-tasks/care-page.css": {
+  "genre": "autre",
+  "effets": "feuille CSS"
+ },
+ "src/modules/care-tasks/care-completion-rollback-dialog.tsx": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/care-tasks/care-day.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/care-tasks/care-page.tsx": {
+  "genre": "src",
+  "effets": [
+   "import \"./care-page.css\""
+  ]
+ },
+ "src/modules/hospitalizations/stays/vitals-form.tsx": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/hospitalizations/stays/stay-rounds.tsx": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/patient-reminders/medical-act-events.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/hooks/useDelayedSkeleton.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/patients/hooks/use-patients-page-model.tsx": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/hospitalizations/stays/patient-stays.tsx": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/patients/components/patient-context-widgets.tsx": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/patients/lib/prevention.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/patients/components/patient-prevention.tsx": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/patients/components/medical-record-tabs.tsx": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/patients/components/off-visit-note-panel.tsx": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/hooks/use-circular-transition.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/shell/components/theme-control.tsx": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/shell/components/header-breadcrumb.tsx": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/lib/quick-actions.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/shell/quick-actions.css": {
+  "genre": "autre",
+  "effets": "feuille CSS"
+ },
+ "src/modules/shell/components/header-quick-actions.tsx": {
+  "genre": "src",
+  "effets": [
+   "import \"@/modules/shell/quick-actions.css\""
+  ]
+ },
+ "src/components/HeroPattern.tsx": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/design-system/patterns/save-indicator.tsx": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/hooks/useSaveIndicator.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/release-notes/whats-new.css": {
+  "genre": "autre",
+  "effets": "feuille CSS"
+ },
+ "src/modules/release-notes/whats-new-dialog.tsx": {
+  "genre": "src",
+  "effets": [
+   "import \"./whats-new.css\""
+  ]
+ },
+ "src/modules/tour/tour-progress.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/tour/tour-steps.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/tour/tour-target.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/tour/tour.css": {
+  "genre": "autre",
+  "effets": "feuille CSS"
+ },
+ "src/modules/tour/tour-guide.tsx": {
+  "genre": "src",
+  "effets": [
+   "import \"./tour.css\""
+  ]
+ },
+ "src/modules/consultations/assistant-events.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/app/config/navigation.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/services/notifications/types.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "/home/user/vetera/node_modules/@hugeicons/core-free-icons/dist/esm/Notification03Icon.js": {
+  "genre": "bibliothèque",
+  "paquet": "@hugeicons/core-free-icons",
+  "effets": "aucun (sideEffects: false)"
+ },
+ "src/modules/stock/components/stock-date-picker.tsx": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/stock/hooks/create-stock-snapshot.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/stock/hooks/use-stock-page-model.tsx": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/stock/services/stock-database.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/stock/clinical-stock-migration.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/patient-reminders/task-types-migration.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/patient-reminders/migration.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/patient-reminders/medical-reminders-migration.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/hospitalizations/stays/migration.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/care-tasks/migration.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/patients/reference/migration.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ },
+ "src/modules/stock/stock-lots-migration.ts": {
+  "genre": "src",
+  "effets": "aucun"
+ }
+}

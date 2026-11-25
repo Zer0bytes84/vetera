@@ -1,0 +1,4 @@
+CSS_IDENTIQUE : css 0, ordre css 0, morceaux 0, ordre 1, imports 0 (texte JS changé dans 1 morceaux)
+  [déplacés] assets/app-shell.js src/design-system/patterns/status-stepper.tsx
+  [texte] assets/app-shell.js|src/modules/shell/app-shell.tsx
+  [ordre] assets/app-shell.js|src/modules/shell/app-shell.tsx: mêmes modules, ordre changé (dès src/design-system/patterns/status-stepper.tsx -> src/design-system/motion.ts)

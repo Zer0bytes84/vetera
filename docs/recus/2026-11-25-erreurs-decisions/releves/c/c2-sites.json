@@ -1,0 +1,4055 @@
+[
+ {
+  "règle": "noArrayIndexKey",
+  "chemin": "src/components/CommandPalette.tsx",
+  "ligne": 1291,
+  "classe": "a",
+  "motif": "idem, segment non surligné",
+  "remplacement": "garder key={index} ; commentaire « // biome-ignore lint/suspicious/noArrayIndexKey: segments du texte surligné, jamais réordonnés » juste avant l'attribut key"
+ },
+ {
+  "règle": "noArrayIndexKey",
+  "chemin": "src/components/CommandPalette.tsx",
+  "ligne": 1285,
+  "classe": "a",
+  "motif": "segments surlignés d'un passage, recalculés en entier à chaque requête",
+  "remplacement": "garder key={index} ; commentaire « // biome-ignore lint/suspicious/noArrayIndexKey: segments du texte surligné, jamais réordonnés » juste avant l'attribut key"
+ },
+ {
+  "règle": "noArrayIndexKey",
+  "chemin": "src/components/ui/chart-card.tsx",
+  "ligne": 444,
+  "classe": "a",
+  "motif": "graduations de l'axe (grid), position fixe",
+  "remplacement": "garder key={index} ; commentaire « // biome-ignore lint/suspicious/noArrayIndexKey: une graduation par position de l'axe » juste avant l'attribut key"
+ },
+ {
+  "règle": "noArrayIndexKey",
+  "chemin": "src/components/ui/chart-card.tsx",
+  "ligne": 490,
+  "classe": "a",
+  "motif": "étiquettes de l'axe x, une par position",
+  "remplacement": "garder key={index} ; commentaire « // biome-ignore lint/suspicious/noArrayIndexKey: une étiquette par position de l'axe » juste avant l'attribut key"
+ },
+ {
+  "règle": "noArrayIndexKey",
+  "chemin": "src/components/ui/chart-card.tsx",
+  "ligne": 526,
+  "classe": "a",
+  "motif": "barre animée (motion) par série et position ; la clé par position fait glisser la barre d'une valeur à l'autre au changement de période",
+  "remplacement": "garder key={index} ; commentaire « // biome-ignore lint/suspicious/noArrayIndexKey: une barre par série et par position ; la clé par position garde l'animation de transition » juste avant l'attribut key"
+ },
+ {
+  "règle": "noArrayIndexKey",
+  "chemin": "src/components/ui/chart-card.tsx",
+  "ligne": 591,
+  "classe": "a",
+  "motif": "marqueurs d'une courbe, un par position",
+  "remplacement": "garder key={index} ; commentaire « // biome-ignore lint/suspicious/noArrayIndexKey: un marqueur par position de l'axe » juste avant l'attribut key"
+ },
+ {
+  "règle": "noArrayIndexKey",
+  "chemin": "src/components/ui/chart-card.tsx",
+  "ligne": 634,
+  "classe": "a",
+  "motif": "zones de survol, une par position",
+  "remplacement": "garder key={index} ; commentaire « // biome-ignore lint/suspicious/noArrayIndexKey: une zone par position de l'axe » juste avant l'attribut key"
+ },
+ {
+  "règle": "noArrayIndexKey",
+  "chemin": "src/components/ui/chart-card.tsx",
+  "ligne": 709,
+  "classe": "a",
+  "motif": "ligne du tableau accessible, une par position",
+  "remplacement": "garder key={index} ; commentaire « // biome-ignore lint/suspicious/noArrayIndexKey: une ligne par position de l'axe » juste avant l'attribut key"
+ },
+ {
+  "règle": "noArrayIndexKey",
+  "chemin": "src/components/ui/chart.tsx",
+  "ligne": 308,
+  "classe": "b",
+  "motif": "légende recharts : item.value existe ; éléments sans état",
+  "remplacement": "key={String(item.value ?? item.dataKey ?? index)}"
+ },
+ {
+  "règle": "noArrayIndexKey",
+  "chemin": "src/components/ui/chart.tsx",
+  "ligne": 211,
+  "classe": "b",
+  "motif": "infobulle recharts : item.dataKey existe ; lignes sans état",
+  "remplacement": "key={String(item.dataKey ?? item.name ?? index)}"
+ },
+ {
+  "règle": "noArrayIndexKey",
+  "chemin": "src/components/ui/context-window-meter.tsx",
+  "ligne": 119,
+  "classe": "a",
+  "motif": "cases d'une jauge, nombre fixe (20 ou 100)",
+  "remplacement": "garder key={index} ; commentaire « // biome-ignore lint/suspicious/noArrayIndexKey: cases d'une jauge de taille fixe » juste avant l'attribut key"
+ },
+ {
+  "règle": "noArrayIndexKey",
+  "chemin": "src/components/ui/diverging-bars.tsx",
+  "ligne": 397,
+  "classe": "a",
+  "motif": "groupe par position, clé déjà `${label}-${i}`",
+  "remplacement": "garder key={index} ; commentaire « // biome-ignore lint/suspicious/noArrayIndexKey: un groupe par position de l'axe » juste avant l'attribut key"
+ },
+ {
+  "règle": "noArrayIndexKey",
+  "chemin": "src/components/ui/diverging-bars.tsx",
+  "ligne": 448,
+  "classe": "a",
+  "motif": "étiquette par position, clé déjà `${label}-${i}`",
+  "remplacement": "garder key={index} ; commentaire « // biome-ignore lint/suspicious/noArrayIndexKey: une étiquette par position de l'axe » juste avant l'attribut key"
+ },
+ {
+  "règle": "noArrayIndexKey",
+  "chemin": "src/components/ui/diverging-bars.tsx",
+  "ligne": 463,
+  "classe": "a",
+  "motif": "zone de survol par position",
+  "remplacement": "garder key={index} ; commentaire « // biome-ignore lint/suspicious/noArrayIndexKey: une zone par position de l'axe » juste avant l'attribut key"
+ },
+ {
+  "règle": "noArrayIndexKey",
+  "chemin": "src/components/ui/diverging-bars.tsx",
+  "ligne": 540,
+  "classe": "a",
+  "motif": "ligne du tableau accessible par position",
+  "remplacement": "garder key={index} ; commentaire « // biome-ignore lint/suspicious/noArrayIndexKey: une ligne par position de l'axe » juste avant l'attribut key"
+ },
+ {
+  "règle": "noArrayIndexKey",
+  "chemin": "src/components/ui/field.tsx",
+  "ligne": 202,
+  "classe": "b",
+  "motif": "erreurs dédoublonnées par message juste au-dessus : le message est unique ; <li> sans état",
+  "remplacement": "key={error.message} (et retirer le paramètre index)"
+ },
+ {
+  "règle": "noArrayIndexKey",
+  "chemin": "src/components/ui/radial-dots.tsx",
+  "ligne": 285,
+  "classe": "a",
+  "motif": "point vide par emplacement k",
+  "remplacement": "garder key={index} ; commentaire « // biome-ignore lint/suspicious/noArrayIndexKey: un point par emplacement fixe de la tranche » juste avant l'attribut key"
+ },
+ {
+  "règle": "noArrayIndexKey",
+  "chemin": "src/components/ui/radial-dots.tsx",
+  "ligne": 299,
+  "classe": "a",
+  "motif": "zone de survol par tranche",
+  "remplacement": "garder key={index} ; commentaire « // biome-ignore lint/suspicious/noArrayIndexKey: une zone par tranche du cadran » juste avant l'attribut key"
+ },
+ {
+  "règle": "noArrayIndexKey",
+  "chemin": "src/components/ui/radial-dots.tsx",
+  "ligne": 276,
+  "classe": "a",
+  "motif": "point coloré par emplacement k d'une tranche",
+  "remplacement": "garder key={index} ; commentaire « // biome-ignore lint/suspicious/noArrayIndexKey: un point par emplacement fixe de la tranche » juste avant l'attribut key"
+ },
+ {
+  "règle": "noArrayIndexKey",
+  "chemin": "src/components/ui/radial-dots.tsx",
+  "ligne": 199,
+  "classe": "a",
+  "motif": "graduation par tranche du cadran",
+  "remplacement": "garder key={index} ; commentaire « // biome-ignore lint/suspicious/noArrayIndexKey: une graduation par tranche du cadran » juste avant l'attribut key"
+ },
+ {
+  "règle": "noArrayIndexKey",
+  "chemin": "src/components/ui/radial-dots.tsx",
+  "ligne": 250,
+  "classe": "a",
+  "motif": "tranche animée (motion) par position",
+  "remplacement": "garder key={index} ; commentaire « // biome-ignore lint/suspicious/noArrayIndexKey: une tranche par position du cadran » juste avant l'attribut key"
+ },
+ {
+  "règle": "noArrayIndexKey",
+  "chemin": "src/components/ui/streaming-message.tsx",
+  "ligne": 277,
+  "classe": "a",
+  "motif": "paragraphes d'un texte qui ne fait que grandir à la fin ; une clé par contenu remonterait le paragraphe en cours à chaque mot (mesuré)",
+  "remplacement": "garder key={index} ; commentaire « // biome-ignore lint/suspicious/noArrayIndexKey: le texte ne fait que s'allonger ; la clé par contenu remonterait le paragraphe en cours » juste avant l'attribut key"
+ },
+ {
+  "règle": "noArrayIndexKey",
+  "chemin": "src/components/ui/streaming-message.tsx",
+  "ligne": 299,
+  "classe": "a",
+  "motif": "segment de code dans un paragraphe qui grandit",
+  "remplacement": "garder key={index} ; commentaire « // biome-ignore lint/suspicious/noArrayIndexKey: segments d'un paragraphe qui ne fait que s'allonger » juste avant l'attribut key"
+ },
+ {
+  "règle": "noArrayIndexKey",
+  "chemin": "src/components/ui/streaming-message.tsx",
+  "ligne": 307,
+  "classe": "a",
+  "motif": "segment gras dans un paragraphe qui grandit",
+  "remplacement": "garder key={index} ; commentaire « // biome-ignore lint/suspicious/noArrayIndexKey: segments d'un paragraphe qui ne fait que s'allonger » juste avant l'attribut key"
+ },
+ {
+  "règle": "noArrayIndexKey",
+  "chemin": "src/components/ui/streaming-message.tsx",
+  "ligne": 312,
+  "classe": "a",
+  "motif": "segment simple dans un paragraphe qui grandit",
+  "remplacement": "garder key={index} ; commentaire « // biome-ignore lint/suspicious/noArrayIndexKey: segments d'un paragraphe qui ne fait que s'allonger » juste avant l'attribut key"
+ },
+ {
+  "règle": "noArrayIndexKey",
+  "chemin": "src/modules/agenda/components/agenda-month-calendar.tsx",
+  "ligne": 126,
+  "classe": "a",
+  "motif": "cases vides du début de mois, identiques entre elles",
+  "remplacement": "garder key={index} ; commentaire « // biome-ignore lint/suspicious/noArrayIndexKey: cases vides de remplissage, identiques » juste avant l'attribut key"
+ },
+ {
+  "règle": "noArrayIndexKey",
+  "chemin": "src/modules/agenda/components/agenda-shared.tsx",
+  "ligne": 1397,
+  "classe": "a",
+  "motif": "cases vides du début de mois, identiques entre elles",
+  "remplacement": "garder key={index} ; commentaire « // biome-ignore lint/suspicious/noArrayIndexKey: cases vides de remplissage, identiques » juste avant l'attribut key"
+ },
+ {
+  "règle": "noArrayIndexKey",
+  "chemin": "src/modules/care-tasks/plan-care-tasks.tsx",
+  "ligne": 139,
+  "classe": "a",
+  "motif": "suggestions dérivées du plan, ordre stable ; l'état createdAt(i) est lui-même indexé par position",
+  "remplacement": "garder key={index} ; commentaire « // biome-ignore lint/suspicious/noArrayIndexKey: suggestions dérivées du plan dans un ordre stable, l'état est indexé par position » juste avant l'attribut key"
+ },
+ {
+  "règle": "noArrayIndexKey",
+  "chemin": "src/modules/clinique/components/clinique-shared.tsx",
+  "ligne": 1454,
+  "classe": "c",
+  "motif": "lignes de facture modifiables et supprimables, sans identifiant ; key={line.desc} casserait la saisie (mesuré)",
+  "remplacement": "ajouter un id à DraftLine (compteur ou crypto.randomUUID() à la création de la ligne) puis key={line.id}"
+ },
+ {
+  "règle": "noArrayIndexKey",
+  "chemin": "src/modules/clinique/components/clinique-shared.tsx",
+  "ligne": 1441,
+  "classe": "a",
+  "motif": "lignes d'une facture déjà émise, en lecture seule",
+  "remplacement": "garder key={index} ; commentaire « // biome-ignore lint/suspicious/noArrayIndexKey: lignes d'une facture émise, en lecture seule » juste avant l'attribut key"
+ },
+ {
+  "règle": "noArrayIndexKey",
+  "chemin": "src/modules/consultations/components/dictation-states.tsx",
+  "ligne": 59,
+  "classe": "a",
+  "motif": "barres d'un vumètre, nombre fixe (BARS)",
+  "remplacement": "garder key={index} ; commentaire « // biome-ignore lint/suspicious/noArrayIndexKey: barres d'un vumètre de taille fixe » juste avant l'attribut key"
+ },
+ {
+  "règle": "noArrayIndexKey",
+  "chemin": "src/modules/consultations/components/patient-document-search.tsx",
+  "ligne": 120,
+  "classe": "a",
+  "motif": "segments surlignés d'un passage",
+  "remplacement": "garder key={index} ; commentaire « // biome-ignore lint/suspicious/noArrayIndexKey: segments du texte surligné, jamais réordonnés » juste avant l'attribut key"
+ },
+ {
+  "règle": "noArrayIndexKey",
+  "chemin": "src/modules/consultations/components/patient-document-search.tsx",
+  "ligne": 125,
+  "classe": "a",
+  "motif": "segments surlignés d'un passage",
+  "remplacement": "garder key={index} ; commentaire « // biome-ignore lint/suspicious/noArrayIndexKey: segments du texte surligné, jamais réordonnés » juste avant l'attribut key"
+ },
+ {
+  "règle": "noArrayIndexKey",
+  "chemin": "src/modules/dashboard/components/clinical/shared.tsx",
+  "ligne": 17,
+  "classe": "a",
+  "motif": "squelette de chargement, cases identiques",
+  "remplacement": "garder key={index} ; commentaire « // biome-ignore lint/suspicious/noArrayIndexKey: cases identiques d'un squelette » juste avant l'attribut key"
+ },
+ {
+  "règle": "noArrayIndexKey",
+  "chemin": "src/modules/dashboard/components/focus-trend-chart.tsx",
+  "ligne": 314,
+  "classe": "a",
+  "motif": "marqueurs de courbe, un par position",
+  "remplacement": "garder key={index} ; commentaire « // biome-ignore lint/suspicious/noArrayIndexKey: un marqueur par position de l'axe » juste avant l'attribut key"
+ },
+ {
+  "règle": "noArrayIndexKey",
+  "chemin": "src/modules/dashboard/v2/kpi-mini-chart.tsx",
+  "ligne": 116,
+  "classe": "a",
+  "motif": "barres d'un mini graphique, une par position",
+  "remplacement": "garder key={index} ; commentaire « // biome-ignore lint/suspicious/noArrayIndexKey: une barre par position de l'axe » juste avant l'attribut key"
+ },
+ {
+  "règle": "noArrayIndexKey",
+  "chemin": "src/modules/dashboard/v2/kpi-mini-chart.tsx",
+  "ligne": 146,
+  "classe": "a",
+  "motif": "points d'une mini courbe, un par position",
+  "remplacement": "garder key={index} ; commentaire « // biome-ignore lint/suspicious/noArrayIndexKey: un point par position de l'axe » juste avant l'attribut key"
+ },
+ {
+  "règle": "noArrayIndexKey",
+  "chemin": "src/modules/dashboard/v2/kpi-visuals.tsx",
+  "ligne": 123,
+  "classe": "a",
+  "motif": "emplacement de barre par position",
+  "remplacement": "garder key={index} ; commentaire « // biome-ignore lint/suspicious/noArrayIndexKey: un emplacement par position de l'axe » juste avant l'attribut key"
+ },
+ {
+  "règle": "noArrayIndexKey",
+  "chemin": "src/modules/dashboard/v2/settle-widgets.tsx",
+  "ligne": 259,
+  "classe": "b",
+  "motif": "segments filtrés (valeur > 0) avec transition de largeur ; tone et label disponibles ; composant SettleProgressBar sans aucun appelant",
+  "remplacement": "key={segment.label ?? segment.tone} (et retirer le paramètre index)"
+ },
+ {
+  "règle": "noArrayIndexKey",
+  "chemin": "src/modules/dashboard/v2/settle-widgets.tsx",
+  "ligne": 342,
+  "classe": "b",
+  "motif": "métriques fixes passées en props, label unique ; cellules sans état",
+  "remplacement": "key={m.label} (et retirer le paramètre idx)"
+ },
+ {
+  "règle": "noArrayIndexKey",
+  "chemin": "src/modules/documents/components/consultation-documents-assistant.tsx",
+  "ligne": 811,
+  "classe": "a",
+  "motif": "extraits d'une réponse remplacée en entier, clé déjà `${quote.page}:${index}`",
+  "remplacement": "garder key={index} ; commentaire « // biome-ignore lint/suspicious/noArrayIndexKey: extraits d'une réponse remplacée en bloc » juste avant l'attribut key"
+ },
+ {
+  "règle": "noArrayIndexKey",
+  "chemin": "src/modules/documents/components/document-paper-preview.tsx",
+  "ligne": 47,
+  "classe": "a",
+  "motif": "pages d'un aperçu recalculé en entier ; l'index est le numéro de page",
+  "remplacement": "garder key={index} ; commentaire « // biome-ignore lint/suspicious/noArrayIndexKey: l'index est le numéro de page de l'aperçu » juste avant l'attribut key"
+ },
+ {
+  "règle": "noArrayIndexKey",
+  "chemin": "src/modules/hospitalizations/components/vitals-chart.tsx",
+  "ligne": 117,
+  "classe": "a",
+  "motif": "5 lignes de grille fixes",
+  "remplacement": "garder key={index} ; commentaire « // biome-ignore lint/suspicious/noArrayIndexKey: lignes de grille fixes » juste avant l'attribut key"
+ },
+ {
+  "règle": "noArrayIndexKey",
+  "chemin": "src/modules/hospitalizations/components/vitals-chart.tsx",
+  "ligne": 181,
+  "classe": "b",
+  "motif": "points de constantes triés par date ; sorted[i].id existe ; <circle> sans état ni transition",
+  "remplacement": "key={sorted[i].id}"
+ },
+ {
+  "règle": "noArrayIndexKey",
+  "chemin": "src/modules/patients/components/medical-record-summary.tsx",
+  "ligne": 133,
+  "classe": "b",
+  "motif": "morceaux filtrés d'une ligne d'identité ; chaque morceau correspond à un champ ; <span> sans état",
+  "remplacement": "nommer chaque morceau ([\"espece\", patient.species], [\"race\", patient.breed], …), filtrer sur la valeur, key={nom}"
+ },
+ {
+  "règle": "noForEach",
+  "chemin": "src/hooks/useRowSaveFlash.ts",
+  "ligne": 46,
+  "classe": "F1-set",
+  "aussi_useIterableCallbackReturn": true,
+  "type_itéré": "Set",
+  "remplacement": "for (const frame of frames) { cancelAnimationFrame(frame); }"
+ },
+ {
+  "règle": "noForEach",
+  "chemin": "src/hooks/useRowSaveFlash.ts",
+  "ligne": 47,
+  "classe": "F4-map-values",
+  "aussi_useIterableCallbackReturn": true,
+  "type_itéré": "Map",
+  "remplacement": "for (const animation of running.values()) { animation.cancel(); }"
+ },
+ {
+  "règle": "noForEach",
+  "chemin": "src/hooks/useRowSaveFlash.ts",
+  "ligne": 18,
+  "classe": "F5-return-devient-continue",
+  "aussi_useIterableCallbackReturn": false,
+  "type_itéré": "NodeListOf",
+  "remplacement": "for (const row of document .querySelectorAll<HTMLElement>(\"[data-row-id]\")) { … corps inchangé … }"
+ },
+ {
+  "règle": "noForEach",
+  "chemin": "src/hooks/useSQLite.ts",
+  "ligne": 217,
+  "classe": "F2-tableau-simple",
+  "aussi_useIterableCallbackReturn": false,
+  "type_itéré": "Array",
+  "remplacement": "for (const key of Object.keys(obj)) { mapped[mapper(key)] = obj[key]; }"
+ },
+ {
+  "règle": "noForEach",
+  "chemin": "src/hooks/useSQLite.ts",
+  "ligne": 306,
+  "classe": "F2-tableau-simple",
+  "aussi_useIterableCallbackReturn": false,
+  "type_itéré": "Array",
+  "remplacement": "for (const field of booleanFields) { … corps inchangé … }"
+ },
+ {
+  "règle": "noForEach",
+  "chemin": "src/hooks/useSQLite.ts",
+  "ligne": 331,
+  "classe": "F1-set",
+  "aussi_useIterableCallbackReturn": true,
+  "type_itéré": "Set",
+  "remplacement": "for (const listener of writeListeners) { listener(); }"
+ },
+ {
+  "règle": "noForEach",
+  "chemin": "src/lib/invoice-pdf.ts",
+  "ligne": 218,
+  "classe": "F2-tableau-simple",
+  "aussi_useIterableCallbackReturn": false,
+  "type_itéré": "Array",
+  "remplacement": "for (const line of ownerLines) { ensure(6); text(line, left, y, 11, true); y += 6; }"
+ },
+ {
+  "règle": "noForEach",
+  "chemin": "src/lib/invoice-pdf.ts",
+  "ligne": 154,
+  "classe": "F2-tableau-simple",
+  "aussi_useIterableCallbackReturn": false,
+  "type_itéré": "Array",
+  "remplacement": "for (const line of lines) { text(line, nameX, infoY, 9, false, \"#52525b\"); infoY += 4.5; }"
+ },
+ {
+  "règle": "noForEach",
+  "chemin": "src/lib/invoice-pdf.ts",
+  "ligne": 231,
+  "classe": "F2-tableau-simple",
+  "aussi_useIterableCallbackReturn": false,
+  "type_itéré": "Array",
+  "remplacement": "for (const line of clientLines) { ensure(5); text(line, left, y, 9, false, \"#52525b\"); y += 5; }"
+ },
+ {
+  "règle": "noForEach",
+  "chemin": "src/lib/invoice-pdf.ts",
+  "ligne": 239,
+  "classe": "F2-tableau-simple",
+  "aussi_useIterableCallbackReturn": false,
+  "type_itéré": "Array",
+  "remplacement": "for (const item of data.items) { … corps inchangé … }"
+ },
+ {
+  "règle": "noForEach",
+  "chemin": "src/lib/invoice-pdf.ts",
+  "ligne": 152,
+  "classe": "F2-tableau-simple",
+  "aussi_useIterableCallbackReturn": false,
+  "type_itéré": "Array",
+  "remplacement": "for (const value of identity) { … corps inchangé … }"
+ },
+ {
+  "règle": "noForEach",
+  "chemin": "src/lib/metrics.ts",
+  "ligne": 327,
+  "classe": "F2-tableau-simple",
+  "aussi_useIterableCallbackReturn": false,
+  "type_itéré": "Array",
+  "remplacement": "for (const catName of categoryNames) { … corps inchangé … }"
+ },
+ {
+  "règle": "noForEach",
+  "chemin": "src/modules/agenda/hooks/use-agenda-page-model.tsx",
+  "ligne": 330,
+  "classe": "F5-return-devient-continue",
+  "aussi_useIterableCallbackReturn": false,
+  "type_itéré": "Array",
+  "remplacement": "for (const appointment of appointments) { … corps inchangé … }"
+ },
+ {
+  "règle": "noForEach",
+  "chemin": "src/modules/agenda/hooks/use-agenda-page-model.tsx",
+  "ligne": 368,
+  "classe": "F2-tableau-simple",
+  "aussi_useIterableCallbackReturn": false,
+  "type_itéré": "Array",
+  "remplacement": "for (const appointment of dailyAppointments) { … corps inchangé … }"
+ },
+ {
+  "règle": "noForEach",
+  "chemin": "src/modules/clinique/clinic-services.ts",
+  "ligne": 43,
+  "classe": "F1-set",
+  "aussi_useIterableCallbackReturn": true,
+  "type_itéré": "Set",
+  "remplacement": "for (const listener of listeners) { listener(); }"
+ },
+ {
+  "règle": "noForEach",
+  "chemin": "src/modules/consultations/lib/voice-to-soap.ts",
+  "ligne": 151,
+  "classe": "F1-set",
+  "aussi_useIterableCallbackReturn": false,
+  "type_itéré": "Set",
+  "remplacement": "for (const token of tokens) { if (source.has(token)) { grounded += 1; } }"
+ },
+ {
+  "règle": "noForEach",
+  "chemin": "src/modules/consultations/local-ai/audio-capture.ts",
+  "ligne": 306,
+  "classe": "F2-tableau-simple",
+  "aussi_useIterableCallbackReturn": false,
+  "type_itéré": "Array",
+  "remplacement": "for (const buffer of buffers) { pcm.set(buffer, offset); offset += buffer.length; }"
+ },
+ {
+  "règle": "noForEach",
+  "chemin": "src/modules/consultations/local-ai/audio-capture.ts",
+  "ligne": 134,
+  "classe": "F2-tableau-simple",
+  "aussi_useIterableCallbackReturn": true,
+  "type_itéré": "Array",
+  "remplacement": "for (const track of granted.getTracks()) { track.stop(); }"
+ },
+ {
+  "règle": "noForEach",
+  "chemin": "src/modules/consultations/local-ai/audio-capture.ts",
+  "ligne": 158,
+  "classe": "F2-tableau-simple",
+  "aussi_useIterableCallbackReturn": true,
+  "type_itéré": "Array",
+  "remplacement": "for (const track of stream.getTracks()) { track.stop(); }"
+ },
+ {
+  "règle": "noForEach",
+  "chemin": "src/modules/consultations/local-ai/audio-capture.ts",
+  "ligne": 163,
+  "classe": "F2-tableau-simple",
+  "aussi_useIterableCallbackReturn": true,
+  "type_itéré": "Array",
+  "remplacement": "for (const track of stream.getTracks()) { track.stop(); }"
+ },
+ {
+  "règle": "noForEach",
+  "chemin": "src/modules/consultations/local-ai/audio-capture.ts",
+  "ligne": 255,
+  "classe": "F2-tableau-simple",
+  "aussi_useIterableCallbackReturn": true,
+  "type_itéré": "Array",
+  "remplacement": "for (const track of stream.getTracks()) { track.stop(); }"
+ },
+ {
+  "règle": "noForEach",
+  "chemin": "src/modules/consultations/services/ai-model-installation.ts",
+  "ligne": 40,
+  "classe": "F1-set",
+  "aussi_useIterableCallbackReturn": true,
+  "type_itéré": "Set",
+  "remplacement": "for (const listener of listeners) { listener(); }"
+ },
+ {
+  "règle": "noForEach",
+  "chemin": "src/modules/dashboard/hooks/use-dashboard-version.ts",
+  "ligne": 19,
+  "classe": "F1-set",
+  "aussi_useIterableCallbackReturn": true,
+  "type_itéré": "Set",
+  "remplacement": "for (const listener of listeners) { listener(); }"
+ },
+ {
+  "règle": "noForEach",
+  "chemin": "src/modules/documents/components/consultation-documents-assistant.tsx",
+  "ligne": 87,
+  "classe": "F3-nodelist",
+  "aussi_useIterableCallbackReturn": true,
+  "type_itéré": "NodeListOf",
+  "remplacement": "for (const element of parsed .querySelectorAll(\"script,style,iframe,object,link\")) { element.remove(); }"
+ },
+ {
+  "règle": "noForEach",
+  "chemin": "src/modules/documents/components/consultation-documents-assistant.tsx",
+  "ligne": 90,
+  "classe": "F3-nodelist",
+  "aussi_useIterableCallbackReturn": true,
+  "type_itéré": "NodeListOf",
+  "remplacement": "for (const element of parsed .querySelectorAll(\"p,h1,h2,h3,li,br\")) { element.append(\"\\n\"); }"
+ },
+ {
+  "règle": "noForEach",
+  "chemin": "src/modules/documents/lib/managed-document-pdf.ts",
+  "ligne": 107,
+  "classe": "F2-tableau-simple",
+  "aussi_useIterableCallbackReturn": false,
+  "type_itéré": "Array",
+  "remplacement": "for (const line of names) { doc.text(line, x, infoY); infoY += 6; }"
+ },
+ {
+  "règle": "noForEach",
+  "chemin": "src/modules/documents/lib/managed-document-pdf.ts",
+  "ligne": 117,
+  "classe": "F2-tableau-simple",
+  "aussi_useIterableCallbackReturn": false,
+  "type_itéré": "Array",
+  "remplacement": "for (const value of identity) { … corps inchangé … }"
+ },
+ {
+  "règle": "noForEach",
+  "chemin": "src/modules/documents/lib/managed-document-pdf.ts",
+  "ligne": 119,
+  "classe": "F2-tableau-simple",
+  "aussi_useIterableCallbackReturn": false,
+  "type_itéré": "Array",
+  "remplacement": "for (const line of lines) { doc.text(line, x, infoY); infoY += 4.5; }"
+ },
+ {
+  "règle": "noForEach",
+  "chemin": "src/modules/documents/lib/managed-document-pdf.ts",
+  "ligne": 142,
+  "classe": "F2-tableau-simple",
+  "aussi_useIterableCallbackReturn": false,
+  "type_itéré": "Array",
+  "remplacement": "for (const line of titles) { doc.text(line, left, y); y += 7; }"
+ },
+ {
+  "règle": "noForEach",
+  "chemin": "src/modules/patients/export/patient-record-pdf.ts",
+  "ligne": 757,
+  "classe": "F2-tableau-simple",
+  "aussi_useIterableCallbackReturn": false,
+  "type_itéré": "Array",
+  "remplacement": "for (const sourcePage of originals) { … corps inchangé … }"
+ },
+ {
+  "règle": "noForEach",
+  "chemin": "src/modules/patients/hooks/use-patients-page-model.tsx",
+  "ligne": 86,
+  "classe": "F2-tableau-simple",
+  "aussi_useIterableCallbackReturn": true,
+  "type_itéré": "Array",
+  "remplacement": "for (const owner of Object.values(recentOwnersById)) { merged.set(owner.id, owner); }"
+ },
+ {
+  "règle": "noForEach",
+  "chemin": "src/modules/patients/hooks/use-patients-page-model.tsx",
+  "ligne": 89,
+  "classe": "F2-tableau-simple",
+  "aussi_useIterableCallbackReturn": true,
+  "type_itéré": "Array",
+  "remplacement": "for (const owner of owners) { merged.set(owner.id, owner); }"
+ },
+ {
+  "règle": "noForEach",
+  "chemin": "src/modules/patients/hooks/use-patients-page-model.tsx",
+  "ligne": 101,
+  "classe": "F2-tableau-simple",
+  "aussi_useIterableCallbackReturn": false,
+  "type_itéré": "Array",
+  "remplacement": "for (const appointment of appointments) { … corps inchangé … }"
+ },
+ {
+  "règle": "noForEach",
+  "chemin": "src/modules/stock/hooks/create-stock-snapshot.ts",
+  "ligne": 18,
+  "classe": "F1-set",
+  "aussi_useIterableCallbackReturn": true,
+  "type_itéré": "Set",
+  "remplacement": "for (const listener of listeners) { listener(); }"
+ },
+ {
+  "règle": "noForEach",
+  "chemin": "src/modules/stock/hooks/use-stock-inventory.ts",
+  "ligne": 21,
+  "classe": "F1-set",
+  "aussi_useIterableCallbackReturn": true,
+  "type_itéré": "Set",
+  "remplacement": "for (const listener of subscribers) { listener(); }"
+ },
+ {
+  "règle": "noForEach",
+  "chemin": "src/modules/tour/tour-store.ts",
+  "ligne": 67,
+  "classe": "F1-set",
+  "aussi_useIterableCallbackReturn": true,
+  "type_itéré": "Set",
+  "remplacement": "for (const listener of listeners) { listener(); }"
+ },
+ {
+  "règle": "noForEach",
+  "chemin": "src/services/demo-data.ts",
+  "ligne": 661,
+  "classe": "F2-tableau-simple",
+  "aussi_useIterableCallbackReturn": true,
+  "type_itéré": "Array",
+  "remplacement": "for (const transaction of buildDemoTransactions(now)) { setBrowserRow(\"transactions\", transaction.id, transaction); }"
+ },
+ {
+  "règle": "noForEach",
+  "chemin": "src/services/demo-data.ts",
+  "ligne": 658,
+  "classe": "F2-tableau-simple",
+  "aussi_useIterableCallbackReturn": true,
+  "type_itéré": "Array",
+  "remplacement": "for (const appointment of buildDemoAppointments(now)) { setBrowserRow(\"appointments\", appointment.id, appointment); }"
+ },
+ {
+  "règle": "noForEach",
+  "chemin": "src/services/demo-data.ts",
+  "ligne": 664,
+  "classe": "F2-tableau-simple",
+  "aussi_useIterableCallbackReturn": true,
+  "type_itéré": "Array",
+  "remplacement": "for (const task of buildDemoTasks(now)) { setBrowserRow(\"tasks\", task.id, task); }"
+ },
+ {
+  "règle": "noForEach",
+  "chemin": "src/services/demo-data.ts",
+  "ligne": 646,
+  "classe": "F2-tableau-simple",
+  "aussi_useIterableCallbackReturn": true,
+  "type_itéré": "Array",
+  "remplacement": "for (const user of buildDemoUsers(currentUser)) { setBrowserRow(\"users\", user.id, user); }"
+ },
+ {
+  "règle": "noForEach",
+  "chemin": "src/services/demo-data.ts",
+  "ligne": 649,
+  "classe": "F2-tableau-simple",
+  "aussi_useIterableCallbackReturn": true,
+  "type_itéré": "Array",
+  "remplacement": "for (const owner of buildDemoOwners(now)) { setBrowserRow(\"owners\", owner.id, owner); }"
+ },
+ {
+  "règle": "noForEach",
+  "chemin": "src/services/demo-data.ts",
+  "ligne": 652,
+  "classe": "F2-tableau-simple",
+  "aussi_useIterableCallbackReturn": true,
+  "type_itéré": "Array",
+  "remplacement": "for (const patient of buildDemoPatients(now)) { setBrowserRow(\"patients\", patient.id, patient); }"
+ },
+ {
+  "règle": "noForEach",
+  "chemin": "src/services/demo-data.ts",
+  "ligne": 655,
+  "classe": "F2-tableau-simple",
+  "aussi_useIterableCallbackReturn": true,
+  "type_itéré": "Array",
+  "remplacement": "for (const product of buildDemoProducts(now)) { setBrowserRow(\"products\", product.id, product); }"
+ },
+ {
+  "règle": "noForEach",
+  "chemin": "src/services/demo-data.ts",
+  "ligne": 665,
+  "classe": "F2-tableau-simple",
+  "aussi_useIterableCallbackReturn": true,
+  "type_itéré": "Array",
+  "remplacement": "for (const note of buildDemoNotes(now, currentUser)) { setBrowserRow(\"notes\", note.id, note); }"
+ },
+ {
+  "règle": "noForEach",
+  "chemin": "src/services/localTextService.ts",
+  "ligne": 21,
+  "classe": "F1-set",
+  "aussi_useIterableCallbackReturn": true,
+  "type_itéré": "Set",
+  "remplacement": "for (const listener of listeners) { listener(event); }"
+ },
+ {
+  "règle": "noForEach",
+  "chemin": "src/services/sqlite/table-snapshot-cache.ts",
+  "ligne": 61,
+  "classe": "F1-set",
+  "aussi_useIterableCallbackReturn": true,
+  "type_itéré": "Set",
+  "remplacement": "for (const listener of entry.listeners) { listener(); }"
+ },
+ {
+  "règle": "useIterableCallbackReturn",
+  "chemin": "src/hooks/useRowSaveFlash.ts",
+  "ligne": 46,
+  "classe": "couvert-par-noForEach",
+  "site_noForEach": "src/hooks/useRowSaveFlash.ts:46",
+  "remplacement_minimal": "garder forEach, corps en bloc : (x) => { appel(x); } au lieu de (x) => appel(x)",
+  "remplacement_for_of": "for (const frame of frames) { cancelAnimationFrame(frame); }"
+ },
+ {
+  "règle": "useIterableCallbackReturn",
+  "chemin": "src/hooks/useRowSaveFlash.ts",
+  "ligne": 47,
+  "classe": "couvert-par-noForEach",
+  "site_noForEach": "src/hooks/useRowSaveFlash.ts:47",
+  "remplacement_minimal": "garder forEach, corps en bloc : (x) => { appel(x); } au lieu de (x) => appel(x)",
+  "remplacement_for_of": "for (const animation of running.values()) { animation.cancel(); }"
+ },
+ {
+  "règle": "useIterableCallbackReturn",
+  "chemin": "src/hooks/useSQLite.ts",
+  "ligne": 331,
+  "classe": "couvert-par-noForEach",
+  "site_noForEach": "src/hooks/useSQLite.ts:331",
+  "remplacement_minimal": "garder forEach, corps en bloc : (x) => { appel(x); } au lieu de (x) => appel(x)",
+  "remplacement_for_of": "for (const listener of writeListeners) { listener(); }"
+ },
+ {
+  "règle": "useIterableCallbackReturn",
+  "chemin": "src/lib/invoice-pdf.ts",
+  "ligne": 162,
+  "classe": "seul-index-utilisé",
+  "site_noForEach": null,
+  "remplacement_minimal": "garder forEach, corps en bloc : (x) => { appel(x); } au lieu de (x) => appel(x)",
+  "remplacement_for_of": "for (const [index, line] of numberLines.entries()) { text(line, right, 30 + index * 4, 9, false, \"#52525b\", \"right\"); }"
+ },
+ {
+  "règle": "useIterableCallbackReturn",
+  "chemin": "src/lib/invoice-pdf.ts",
+  "ligne": 346,
+  "classe": "seul-index-utilisé",
+  "site_noForEach": null,
+  "remplacement_minimal": "garder forEach, corps en bloc : (x) => { appel(x); } au lieu de (x) => appel(x)",
+  "remplacement_for_of": "for (const [i, line] of footer.entries()) { text(line, left, footerTop + 6 + i * 3.5, 8, false, \"#71717a\"); }"
+ },
+ {
+  "règle": "useIterableCallbackReturn",
+  "chemin": "src/lib/invoice-pdf.ts",
+  "ligne": 141,
+  "classe": "seul-index-utilisé",
+  "site_noForEach": null,
+  "remplacement_minimal": "garder forEach, corps en bloc : (x) => { appel(x); } au lieu de (x) => appel(x)",
+  "remplacement_for_of": "for (const [index, line] of nameLines.entries()) { text(line, nameX, 23 + index * 6, 15, true, accent); }"
+ },
+ {
+  "règle": "useIterableCallbackReturn",
+  "chemin": "src/modules/agenda/model/agenda-layout.ts",
+  "ligne": 313,
+  "classe": "seul-index-utilisé",
+  "site_noForEach": null,
+  "remplacement_minimal": "garder forEach, corps en bloc : (x) => { appel(x); } au lieu de (x) => appel(x)",
+  "remplacement_for_of": "for (const [i, event] of ordered.entries()) { … corps inchangé … }"
+ },
+ {
+  "règle": "useIterableCallbackReturn",
+  "chemin": "src/modules/clinique/clinic-services.ts",
+  "ligne": 43,
+  "classe": "couvert-par-noForEach",
+  "site_noForEach": "src/modules/clinique/clinic-services.ts:43",
+  "remplacement_minimal": "garder forEach, corps en bloc : (x) => { appel(x); } au lieu de (x) => appel(x)",
+  "remplacement_for_of": "for (const listener of listeners) { listener(); }"
+ },
+ {
+  "règle": "useIterableCallbackReturn",
+  "chemin": "src/modules/consultations/local-ai/audio-capture.ts",
+  "ligne": 134,
+  "classe": "couvert-par-noForEach",
+  "site_noForEach": "src/modules/consultations/local-ai/audio-capture.ts:134",
+  "remplacement_minimal": "garder forEach, corps en bloc : (x) => { appel(x); } au lieu de (x) => appel(x)",
+  "remplacement_for_of": "for (const track of granted.getTracks()) { track.stop(); }"
+ },
+ {
+  "règle": "useIterableCallbackReturn",
+  "chemin": "src/modules/consultations/local-ai/audio-capture.ts",
+  "ligne": 158,
+  "classe": "couvert-par-noForEach",
+  "site_noForEach": "src/modules/consultations/local-ai/audio-capture.ts:158",
+  "remplacement_minimal": "garder forEach, corps en bloc : (x) => { appel(x); } au lieu de (x) => appel(x)",
+  "remplacement_for_of": "for (const track of stream.getTracks()) { track.stop(); }"
+ },
+ {
+  "règle": "useIterableCallbackReturn",
+  "chemin": "src/modules/consultations/local-ai/audio-capture.ts",
+  "ligne": 163,
+  "classe": "couvert-par-noForEach",
+  "site_noForEach": "src/modules/consultations/local-ai/audio-capture.ts:163",
+  "remplacement_minimal": "garder forEach, corps en bloc : (x) => { appel(x); } au lieu de (x) => appel(x)",
+  "remplacement_for_of": "for (const track of stream.getTracks()) { track.stop(); }"
+ },
+ {
+  "règle": "useIterableCallbackReturn",
+  "chemin": "src/modules/consultations/local-ai/audio-capture.ts",
+  "ligne": 255,
+  "classe": "couvert-par-noForEach",
+  "site_noForEach": "src/modules/consultations/local-ai/audio-capture.ts:255",
+  "remplacement_minimal": "garder forEach, corps en bloc : (x) => { appel(x); } au lieu de (x) => appel(x)",
+  "remplacement_for_of": "for (const track of stream.getTracks()) { track.stop(); }"
+ },
+ {
+  "règle": "useIterableCallbackReturn",
+  "chemin": "src/modules/consultations/local-ai/embedding-index.ts",
+  "ligne": 376,
+  "classe": "seul-index-utilisé",
+  "site_noForEach": null,
+  "remplacement_minimal": "garder forEach, corps en bloc : (x) => { appel(x); } au lieu de (x) => appel(x)",
+  "remplacement_for_of": "for (const [index, value] of normalizedEmbedding(vector).entries()) { view.setFloat32(index * 4, value, true); }"
+ },
+ {
+  "règle": "useIterableCallbackReturn",
+  "chemin": "src/modules/consultations/services/ai-model-installation.ts",
+  "ligne": 40,
+  "classe": "couvert-par-noForEach",
+  "site_noForEach": "src/modules/consultations/services/ai-model-installation.ts:40",
+  "remplacement_minimal": "garder forEach, corps en bloc : (x) => { appel(x); } au lieu de (x) => appel(x)",
+  "remplacement_for_of": "for (const listener of listeners) { listener(); }"
+ },
+ {
+  "règle": "useIterableCallbackReturn",
+  "chemin": "src/modules/dashboard/hooks/use-dashboard-version.ts",
+  "ligne": 19,
+  "classe": "couvert-par-noForEach",
+  "site_noForEach": "src/modules/dashboard/hooks/use-dashboard-version.ts:19",
+  "remplacement_minimal": "garder forEach, corps en bloc : (x) => { appel(x); } au lieu de (x) => appel(x)",
+  "remplacement_for_of": "for (const listener of listeners) { listener(); }"
+ },
+ {
+  "règle": "useIterableCallbackReturn",
+  "chemin": "src/modules/dashboard/model/hex-activity.ts",
+  "ligne": 297,
+  "classe": "seul-index-utilisé",
+  "site_noForEach": null,
+  "remplacement_minimal": "garder forEach, corps en bloc : (x) => { appel(x); } au lieu de (x) => appel(x)",
+  "remplacement_for_of": "for (const [row, week] of month.weeks.entries()) { … corps inchangé … }"
+ },
+ {
+  "règle": "useIterableCallbackReturn",
+  "chemin": "src/modules/dashboard/model/hex-activity.ts",
+  "ligne": 298,
+  "classe": "seul-index-utilisé",
+  "site_noForEach": null,
+  "remplacement_minimal": "(day, col) => { if (day) { cells.push(dayCell(day, offset + col, row)); } }",
+  "remplacement_for_of": "for (const [col, day] of week.entries()) { if (day) { cells.push(dayCell(day, offset + col, row)); } }"
+ },
+ {
+  "règle": "useIterableCallbackReturn",
+  "chemin": "src/modules/dashboard/model/hex-activity.ts",
+  "ligne": 304,
+  "classe": "seul-index-utilisé",
+  "site_noForEach": null,
+  "remplacement_minimal": "garder forEach, corps en bloc : (x) => { appel(x); } au lieu de (x) => appel(x)",
+  "remplacement_for_of": "for (const [at, text] of WEEKDAY_SHORT.entries()) { columnCaptions.push({ at, text }); }"
+ },
+ {
+  "règle": "useIterableCallbackReturn",
+  "chemin": "src/modules/documents/components/consultation-documents-assistant.tsx",
+  "ligne": 89,
+  "classe": "couvert-par-noForEach",
+  "site_noForEach": "src/modules/documents/components/consultation-documents-assistant.tsx:87",
+  "remplacement_minimal": "garder forEach, corps en bloc : (x) => { appel(x); } au lieu de (x) => appel(x)",
+  "remplacement_for_of": "for (const element of parsed .querySelectorAll(\"script,style,iframe,object,link\")) { element.remove(); }"
+ },
+ {
+  "règle": "useIterableCallbackReturn",
+  "chemin": "src/modules/documents/components/consultation-documents-assistant.tsx",
+  "ligne": 92,
+  "classe": "couvert-par-noForEach",
+  "site_noForEach": "src/modules/documents/components/consultation-documents-assistant.tsx:90",
+  "remplacement_minimal": "garder forEach, corps en bloc : (x) => { appel(x); } au lieu de (x) => appel(x)",
+  "remplacement_for_of": "for (const element of parsed .querySelectorAll(\"p,h1,h2,h3,li,br\")) { element.append(\"\\n\"); }"
+ },
+ {
+  "règle": "useIterableCallbackReturn",
+  "chemin": "src/modules/documents/lib/managed-document-pdf.ts",
+  "ligne": 173,
+  "classe": "seul-index-utilisé",
+  "site_noForEach": null,
+  "remplacement_minimal": "garder forEach, corps en bloc : (x) => { appel(x); } au lieu de (x) => appel(x)",
+  "remplacement_for_of": "for (const [index, line] of footer.entries()) { doc.text(line, left, footerTop + 6 + index * 3.8); }"
+ },
+ {
+  "règle": "useIterableCallbackReturn",
+  "chemin": "src/modules/patients/export/patient-record-pdf.ts",
+  "ligne": 377,
+  "classe": "seul-index-utilisé",
+  "site_noForEach": null,
+  "remplacement_minimal": "garder forEach, corps en bloc : (x) => { appel(x); } au lieu de (x) => appel(x)",
+  "remplacement_for_of": "for (const [offset, line] of cell.entries()) { … corps inchangé … }"
+ },
+ {
+  "règle": "useIterableCallbackReturn",
+  "chemin": "src/modules/patients/export/patient-record-pdf.ts",
+  "ligne": 862,
+  "classe": "seul-index-utilisé",
+  "site_noForEach": null,
+  "remplacement_minimal": "garder forEach, corps en bloc : (x) => { appel(x); } au lieu de (x) => appel(x)",
+  "remplacement_for_of": "for (const [row, line] of margins.patient.entries()) { overlay.text(line, LEFT, 17 + row * 4.1); }"
+ },
+ {
+  "règle": "useIterableCallbackReturn",
+  "chemin": "src/modules/patients/export/patient-record-pdf.ts",
+  "ligne": 866,
+  "classe": "seul-index-utilisé",
+  "site_noForEach": null,
+  "remplacement_minimal": "garder forEach, corps en bloc : (x) => { appel(x); } au lieu de (x) => appel(x)",
+  "remplacement_for_of": "for (const [row, line] of margins.clinic.entries()) { overlay.text(line, RIGHT, 12 + row * 4, { align: \"right\" }); }"
+ },
+ {
+  "règle": "useIterableCallbackReturn",
+  "chemin": "src/modules/patients/export/patient-record-pdf.ts",
+  "ligne": 880,
+  "classe": "seul-index-utilisé",
+  "site_noForEach": null,
+  "remplacement_minimal": "garder forEach, corps en bloc : (x) => { appel(x); } au lieu de (x) => appel(x)",
+  "remplacement_for_of": "for (const [row, line] of margins.legal.entries()) { overlay.text(line, LEFT, margins.footerTop + 5 + row * 3.5); }"
+ },
+ {
+  "règle": "useIterableCallbackReturn",
+  "chemin": "src/modules/patients/health-card/health-card-pdf.ts",
+  "ligne": 164,
+  "classe": "seul-index-utilisé",
+  "site_noForEach": null,
+  "remplacement_minimal": "garder forEach, corps en bloc : (x) => { appel(x); } au lieu de (x) => appel(x)",
+  "remplacement_for_of": "for (const [index, line] of shown.entries()) { this.doc.text(line, x, y + index * leading); }"
+ },
+ {
+  "règle": "useIterableCallbackReturn",
+  "chemin": "src/modules/patients/health-card/health-card-pdf.ts",
+  "ligne": 656,
+  "classe": "seul-index-utilisé",
+  "site_noForEach": null,
+  "remplacement_minimal": "garder forEach, corps en bloc : (x) => { appel(x); } au lieu de (x) => appel(x)",
+  "remplacement_for_of": "for (const [index, point] of points.entries()) { … corps inchangé … }"
+ },
+ {
+  "règle": "useIterableCallbackReturn",
+  "chemin": "src/modules/patients/hooks/use-patients-page-model.tsx",
+  "ligne": 86,
+  "classe": "couvert-par-noForEach",
+  "site_noForEach": "src/modules/patients/hooks/use-patients-page-model.tsx:86",
+  "remplacement_minimal": "garder forEach, corps en bloc : (x) => { appel(x); } au lieu de (x) => appel(x)",
+  "remplacement_for_of": "for (const owner of Object.values(recentOwnersById)) { merged.set(owner.id, owner); }"
+ },
+ {
+  "règle": "useIterableCallbackReturn",
+  "chemin": "src/modules/patients/hooks/use-patients-page-model.tsx",
+  "ligne": 89,
+  "classe": "couvert-par-noForEach",
+  "site_noForEach": "src/modules/patients/hooks/use-patients-page-model.tsx:89",
+  "remplacement_minimal": "garder forEach, corps en bloc : (x) => { appel(x); } au lieu de (x) => appel(x)",
+  "remplacement_for_of": "for (const owner of owners) { merged.set(owner.id, owner); }"
+ },
+ {
+  "règle": "useIterableCallbackReturn",
+  "chemin": "src/modules/stock/hooks/create-stock-snapshot.ts",
+  "ligne": 18,
+  "classe": "couvert-par-noForEach",
+  "site_noForEach": "src/modules/stock/hooks/create-stock-snapshot.ts:18",
+  "remplacement_minimal": "garder forEach, corps en bloc : (x) => { appel(x); } au lieu de (x) => appel(x)",
+  "remplacement_for_of": "for (const listener of listeners) { listener(); }"
+ },
+ {
+  "règle": "useIterableCallbackReturn",
+  "chemin": "src/modules/stock/hooks/use-stock-inventory.ts",
+  "ligne": 21,
+  "classe": "couvert-par-noForEach",
+  "site_noForEach": "src/modules/stock/hooks/use-stock-inventory.ts:21",
+  "remplacement_minimal": "garder forEach, corps en bloc : (x) => { appel(x); } au lieu de (x) => appel(x)",
+  "remplacement_for_of": "for (const listener of subscribers) { listener(); }"
+ },
+ {
+  "règle": "useIterableCallbackReturn",
+  "chemin": "src/modules/tour/tour-store.ts",
+  "ligne": 67,
+  "classe": "couvert-par-noForEach",
+  "site_noForEach": "src/modules/tour/tour-store.ts:67",
+  "remplacement_minimal": "garder forEach, corps en bloc : (x) => { appel(x); } au lieu de (x) => appel(x)",
+  "remplacement_for_of": "for (const listener of listeners) { listener(); }"
+ },
+ {
+  "règle": "useIterableCallbackReturn",
+  "chemin": "src/services/demo-data.ts",
+  "ligne": 658,
+  "classe": "couvert-par-noForEach",
+  "site_noForEach": "src/services/demo-data.ts:658",
+  "remplacement_minimal": "garder forEach, corps en bloc : (x) => { appel(x); } au lieu de (x) => appel(x)",
+  "remplacement_for_of": "for (const appointment of buildDemoAppointments(now)) { setBrowserRow(\"appointments\", appointment.id, appointment); }"
+ },
+ {
+  "règle": "useIterableCallbackReturn",
+  "chemin": "src/services/demo-data.ts",
+  "ligne": 661,
+  "classe": "couvert-par-noForEach",
+  "site_noForEach": "src/services/demo-data.ts:661",
+  "remplacement_minimal": "garder forEach, corps en bloc : (x) => { appel(x); } au lieu de (x) => appel(x)",
+  "remplacement_for_of": "for (const transaction of buildDemoTransactions(now)) { setBrowserRow(\"transactions\", transaction.id, transaction); }"
+ },
+ {
+  "règle": "useIterableCallbackReturn",
+  "chemin": "src/services/demo-data.ts",
+  "ligne": 646,
+  "classe": "couvert-par-noForEach",
+  "site_noForEach": "src/services/demo-data.ts:646",
+  "remplacement_minimal": "garder forEach, corps en bloc : (x) => { appel(x); } au lieu de (x) => appel(x)",
+  "remplacement_for_of": "for (const user of buildDemoUsers(currentUser)) { setBrowserRow(\"users\", user.id, user); }"
+ },
+ {
+  "règle": "useIterableCallbackReturn",
+  "chemin": "src/services/demo-data.ts",
+  "ligne": 649,
+  "classe": "couvert-par-noForEach",
+  "site_noForEach": "src/services/demo-data.ts:649",
+  "remplacement_minimal": "garder forEach, corps en bloc : (x) => { appel(x); } au lieu de (x) => appel(x)",
+  "remplacement_for_of": "for (const owner of buildDemoOwners(now)) { setBrowserRow(\"owners\", owner.id, owner); }"
+ },
+ {
+  "règle": "useIterableCallbackReturn",
+  "chemin": "src/services/demo-data.ts",
+  "ligne": 652,
+  "classe": "couvert-par-noForEach",
+  "site_noForEach": "src/services/demo-data.ts:652",
+  "remplacement_minimal": "garder forEach, corps en bloc : (x) => { appel(x); } au lieu de (x) => appel(x)",
+  "remplacement_for_of": "for (const patient of buildDemoPatients(now)) { setBrowserRow(\"patients\", patient.id, patient); }"
+ },
+ {
+  "règle": "useIterableCallbackReturn",
+  "chemin": "src/services/demo-data.ts",
+  "ligne": 655,
+  "classe": "couvert-par-noForEach",
+  "site_noForEach": "src/services/demo-data.ts:655",
+  "remplacement_minimal": "garder forEach, corps en bloc : (x) => { appel(x); } au lieu de (x) => appel(x)",
+  "remplacement_for_of": "for (const product of buildDemoProducts(now)) { setBrowserRow(\"products\", product.id, product); }"
+ },
+ {
+  "règle": "useIterableCallbackReturn",
+  "chemin": "src/services/demo-data.ts",
+  "ligne": 664,
+  "classe": "couvert-par-noForEach",
+  "site_noForEach": "src/services/demo-data.ts:664",
+  "remplacement_minimal": "garder forEach, corps en bloc : (x) => { appel(x); } au lieu de (x) => appel(x)",
+  "remplacement_for_of": "for (const task of buildDemoTasks(now)) { setBrowserRow(\"tasks\", task.id, task); }"
+ },
+ {
+  "règle": "useIterableCallbackReturn",
+  "chemin": "src/services/demo-data.ts",
+  "ligne": 665,
+  "classe": "couvert-par-noForEach",
+  "site_noForEach": "src/services/demo-data.ts:665",
+  "remplacement_minimal": "garder forEach, corps en bloc : (x) => { appel(x); } au lieu de (x) => appel(x)",
+  "remplacement_for_of": "for (const note of buildDemoNotes(now, currentUser)) { setBrowserRow(\"notes\", note.id, note); }"
+ },
+ {
+  "règle": "useIterableCallbackReturn",
+  "chemin": "src/services/localTextService.ts",
+  "ligne": 21,
+  "classe": "couvert-par-noForEach",
+  "site_noForEach": "src/services/localTextService.ts:21",
+  "remplacement_minimal": "garder forEach, corps en bloc : (x) => { appel(x); } au lieu de (x) => appel(x)",
+  "remplacement_for_of": "for (const listener of listeners) { listener(event); }"
+ },
+ {
+  "règle": "useIterableCallbackReturn",
+  "chemin": "src/services/sqlite/table-snapshot-cache.ts",
+  "ligne": 61,
+  "classe": "couvert-par-noForEach",
+  "site_noForEach": "src/services/sqlite/table-snapshot-cache.ts:61",
+  "remplacement_minimal": "garder forEach, corps en bloc : (x) => { appel(x); } au lieu de (x) => appel(x)",
+  "remplacement_for_of": "for (const listener of entry.listeners) { listener(); }"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/components/auth-clinic.css",
+  "ligne": 140,
+  "classe": "a2-aucune-propriété-commune",
+  "sélecteur_tardif": ".auth-clinic-eyebrow",
+  "spécificité_tardive": "0,1,0",
+  "ligne_plus_spécifique": 131,
+  "sélecteur_plus_spécifique": ":root:root .auth-clinic .auth-clinic-eyebrow",
+  "spécificité_plus_haute": "0,4,0",
+  "propriétés_communes": [],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/components/auth-clinic.css",
+  "ligne": 639,
+  "classe": "a4-jamais-ensemble-observé",
+  "sélecteur_tardif": ".dark .auth-clinic .auth-clinic-step-label",
+  "spécificité_tardive": "0,3,0",
+  "ligne_plus_spécifique": 631,
+  "sélecteur_plus_spécifique": ":root:root .auth-clinic .auth-clinic-step-label",
+  "spécificité_plus_haute": "0,4,0",
+  "propriétés_communes": [
+   "color/color"
+  ],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/components/ui/data-table.css",
+  "ligne": 84,
+  "classe": "a2-aucune-propriété-commune",
+  "sélecteur_tardif": ":root:root:root .tuff-table tbody td:last-child",
+  "spécificité_tardive": "0,5,2",
+  "ligne_plus_spécifique": 71,
+  "sélecteur_plus_spécifique": ":root:root:root .tuff-table tbody tr > td:last-child",
+  "spécificité_plus_haute": "0,5,3",
+  "propriétés_communes": [],
+  "éléments_visés_par_les_deux": 20,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/design-system/clean.css",
+  "ligne": 1727,
+  "classe": "a4-jamais-ensemble-observé",
+  "sélecteur_tardif": ":root[data-skin=\"clean\"][data-skin][data-skin]:where(:not([data-sidebar-tone=\"light\"])) .app-sidebar .sidebar-nav-link[data-active]:not([data-active=\"false\"])",
+  "spécificité_tardive": "0,8,0",
+  "ligne_plus_spécifique": 1721,
+  "sélecteur_plus_spécifique": ":root[data-skin=\"clean\"][data-skin][data-skin][data-sidebar-tone=\"light\"] .app-sidebar .sidebar-nav-link[data-active]:not([data-active=\"false\"])",
+  "spécificité_plus_haute": "0,9,0",
+  "propriétés_communes": [
+   "background/background",
+   "border/border",
+   "box-shadow/box-shadow"
+  ],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/design-system/clean.css",
+  "ligne": 416,
+  "classe": "a3-mêmes-valeurs",
+  "sélecteur_tardif": ":root[data-skin=\"clean\"][data-skin][data-skin] [data-slot=\"app-header\"] .shell-sidebar-toggle svg",
+  "spécificité_tardive": "0,6,1",
+  "ligne_plus_spécifique": 362,
+  "sélecteur_plus_spécifique": ":root[data-skin=\"clean\"][data-skin][data-skin] [data-slot=\"app-header\"] .shell-toolbar-actions :is(button, .shell-toolbar-control) svg",
+  "spécificité_plus_haute": "0,7,1",
+  "propriétés_communes": [
+   "width/width",
+   "height/height",
+   "stroke-width/stroke-width"
+  ],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/design-system/clean.css",
+  "ligne": 569,
+  "classe": "a4-jamais-ensemble-observé",
+  "sélecteur_tardif": ":root[data-skin=\"clean\"] .app-sidebar [data-slot=\"sidebar-menu-button\"] .sidebar-nav-icon svg",
+  "spécificité_tardive": "0,5,1",
+  "ligne_plus_spécifique": 362,
+  "sélecteur_plus_spécifique": ":root[data-skin=\"clean\"][data-skin][data-skin] [data-slot=\"app-header\"] .shell-toolbar-actions :is(button, .shell-toolbar-control) svg",
+  "spécificité_plus_haute": "0,7,1",
+  "propriétés_communes": [
+   "width/width",
+   "height/height"
+  ],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "@layer utilities",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/design-system/clean.css",
+  "ligne": 570,
+  "classe": "a4-jamais-ensemble-observé",
+  "sélecteur_tardif": ":root[data-skin=\"clean\"] .app-sidebar [data-slot=\"sidebar-menu-button\"] > svg",
+  "spécificité_tardive": "0,4,1",
+  "ligne_plus_spécifique": 362,
+  "sélecteur_plus_spécifique": ":root[data-skin=\"clean\"][data-skin][data-skin] [data-slot=\"app-header\"] .shell-toolbar-actions :is(button, .shell-toolbar-control) svg",
+  "spécificité_plus_haute": "0,7,1",
+  "propriétés_communes": [
+   "width/width",
+   "height/height"
+  ],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "@layer utilities",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/design-system/clean.css",
+  "ligne": 577,
+  "classe": "b-chevauchement-réel",
+  "sélecteur_tardif": ":root[data-skin=\"clean\"] :is(.app-sidebar [data-slot=\"sidebar-menu-button\"], .premium-shortcuts button, [data-list-row], [data-slot=\"table-row\"], .medical-data-table tr, .shell-toolbar-actions) svg",
+  "spécificité_tardive": "0,4,1",
+  "ligne_plus_spécifique": 362,
+  "sélecteur_plus_spécifique": ":root[data-skin=\"clean\"][data-skin][data-skin] [data-slot=\"app-header\"] .shell-toolbar-actions :is(button, .shell-toolbar-control) svg",
+  "spécificité_plus_haute": "0,7,1",
+  "propriétés_communes": [
+   "stroke-width/stroke-width"
+  ],
+  "éléments_visés_par_les_deux": 112,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer (la règle de la ligne 362 gagne déjà par spécificité) ; si l'on réordonne : déplacer la règle de la ligne 577 avant la ligne 362, rendu mesuré identique sur 20 écrans"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/design-system/clean.css",
+  "ligne": 578,
+  "classe": "b-chevauchement-réel",
+  "sélecteur_tardif": ":root[data-skin=\"clean\"] :is(.app-sidebar [data-slot=\"sidebar-menu-button\"], .premium-shortcuts button, [data-list-row], [data-slot=\"table-row\"], .medical-data-table tr, .shell-toolbar-actions) svg [stroke-width]",
+  "spécificité_tardive": "0,5,1",
+  "ligne_plus_spécifique": 368,
+  "sélecteur_plus_spécifique": ":root[data-skin=\"clean\"][data-skin][data-skin] [data-slot=\"app-header\"] .shell-toolbar-actions :is(button, .shell-toolbar-control) svg [stroke-width]",
+  "spécificité_plus_haute": "0,8,1",
+  "propriétés_communes": [
+   "stroke-width/stroke-width"
+  ],
+  "éléments_visés_par_les_deux": 196,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer (la règle de la ligne 368 gagne déjà par spécificité) ; si l'on réordonne : déplacer la règle de la ligne 578 avant la ligne 368, rendu mesuré identique sur 20 écrans"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/design-system/clean.css",
+  "ligne": 583,
+  "classe": "a4-jamais-ensemble-observé",
+  "sélecteur_tardif": ":root[data-skin=\"clean\"] .app-sidebar [data-slot=\"sidebar-menu-button\"] svg",
+  "spécificité_tardive": "0,4,1",
+  "ligne_plus_spécifique": 362,
+  "sélecteur_plus_spécifique": ":root[data-skin=\"clean\"][data-skin][data-skin] [data-slot=\"app-header\"] .shell-toolbar-actions :is(button, .shell-toolbar-control) svg",
+  "spécificité_plus_haute": "0,7,1",
+  "propriétés_communes": [
+   "color/color"
+  ],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/design-system/clean.css",
+  "ligne": 584,
+  "classe": "a4-jamais-ensemble-observé",
+  "sélecteur_tardif": ":root[data-skin=\"clean\"] .app-sidebar [data-slot=\"sidebar-menu-button\"][data-active]:not([data-active=\"false\"]) svg",
+  "spécificité_tardive": "0,6,1",
+  "ligne_plus_spécifique": 362,
+  "sélecteur_plus_spécifique": ":root[data-skin=\"clean\"][data-skin][data-skin] [data-slot=\"app-header\"] .shell-toolbar-actions :is(button, .shell-toolbar-control) svg",
+  "spécificité_plus_haute": "0,7,1",
+  "propriétés_communes": [
+   "color/color"
+  ],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/design-system/clean.css",
+  "ligne": 586,
+  "classe": "a4-jamais-ensemble-observé",
+  "sélecteur_tardif": ":root[data-skin=\"clean\"] .app-sidebar [data-slot=\"sidebar-menu-button\"]:hover svg",
+  "spécificité_tardive": "0,5,1",
+  "ligne_plus_spécifique": 362,
+  "sélecteur_plus_spécifique": ":root[data-skin=\"clean\"][data-skin][data-skin] [data-slot=\"app-header\"] .shell-toolbar-actions :is(button, .shell-toolbar-control) svg",
+  "spécificité_plus_haute": "0,7,1",
+  "propriétés_communes": [
+   "color/color"
+  ],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "@media (hover: hover) and (pointer: fine)",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/design-system/clean.css",
+  "ligne": 590,
+  "classe": "a4-jamais-ensemble-observé",
+  "sélecteur_tardif": ":root[data-skin=\"clean\"] .medical-data-table td .size-10 svg",
+  "spécificité_tardive": "0,4,2",
+  "ligne_plus_spécifique": 362,
+  "sélecteur_plus_spécifique": ":root[data-skin=\"clean\"][data-skin][data-skin] [data-slot=\"app-header\"] .shell-toolbar-actions :is(button, .shell-toolbar-control) svg",
+  "spécificité_plus_haute": "0,7,1",
+  "propriétés_communes": [
+   "width/width",
+   "height/height"
+  ],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/design-system/clean.css",
+  "ligne": 593,
+  "classe": "a2-aucune-propriété-commune",
+  "sélecteur_tardif": ":root[data-skin=\"clean\"] body",
+  "spécificité_tardive": "0,2,1",
+  "ligne_plus_spécifique": 261,
+  "sélecteur_plus_spécifique": ":root[data-skin=\"clean\"][data-skin][data-skin] body",
+  "spécificité_plus_haute": "0,4,1",
+  "propriétés_communes": [],
+  "éléments_visés_par_les_deux": 28,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/design-system/clean.css",
+  "ligne": 629,
+  "classe": "a4-jamais-ensemble-observé",
+  "sélecteur_tardif": ":root[data-skin=\"clean\"] :is(button, [role=\"button\"], [role=\"menuitem\"], [role=\"tab\"]):is(:disabled, [aria-disabled=\"true\"], [data-disabled]) svg",
+  "spécificité_tardive": "0,4,1",
+  "ligne_plus_spécifique": 362,
+  "sélecteur_plus_spécifique": ":root[data-skin=\"clean\"][data-skin][data-skin] [data-slot=\"app-header\"] .shell-toolbar-actions :is(button, .shell-toolbar-control) svg",
+  "spécificité_plus_haute": "0,7,1",
+  "propriétés_communes": [
+   "color/color"
+  ],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/design-system/clean.css",
+  "ligne": 722,
+  "classe": "a4-jamais-ensemble-observé",
+  "sélecteur_tardif": ":root[data-skin=\"clean\"] :is([data-tabs-style=\"segmented\"], .dashboard-mode-toggle, .flow-density, .stock-view-toggle) > * svg",
+  "spécificité_tardive": "0,3,1",
+  "ligne_plus_spécifique": 362,
+  "sélecteur_plus_spécifique": ":root[data-skin=\"clean\"][data-skin][data-skin] [data-slot=\"app-header\"] .shell-toolbar-actions :is(button, .shell-toolbar-control) svg",
+  "spécificité_plus_haute": "0,7,1",
+  "propriétés_communes": [
+   "width/width",
+   "height/height",
+   "color/color"
+  ],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/design-system/clean.css",
+  "ligne": 746,
+  "classe": "a2-aucune-propriété-commune",
+  "sélecteur_tardif": ":root[data-skin=\"clean\"] .dashboard-mode-toggle > button",
+  "spécificité_tardive": "0,3,1",
+  "ligne_plus_spécifique": 499,
+  "sélecteur_plus_spécifique": ":root[data-skin=\"clean\"][data-skin][data-skin] .premium-shortcuts button",
+  "spécificité_plus_haute": "0,5,1",
+  "propriétés_communes": [],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/design-system/clean.css",
+  "ligne": 752,
+  "classe": "a2-aucune-propriété-commune",
+  "sélecteur_tardif": ":root[data-skin=\"clean\"] .stock-view-toggle > button",
+  "spécificité_tardive": "0,3,1",
+  "ligne_plus_spécifique": 499,
+  "sélecteur_plus_spécifique": ":root[data-skin=\"clean\"][data-skin][data-skin] .premium-shortcuts button",
+  "spécificité_plus_haute": "0,5,1",
+  "propriétés_communes": [],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/design-system/clean.css",
+  "ligne": 817,
+  "classe": "a2-aucune-propriété-commune",
+  "sélecteur_tardif": ":root[data-skin=\"clean\"] .agenda-month-calendar .agenda-month-grid > span",
+  "spécificité_tardive": "0,4,1",
+  "ligne_plus_spécifique": 480,
+  "sélecteur_plus_spécifique": ":root[data-skin=\"clean\"][data-skin][data-skin] .app-sidebar [data-slot=\"sidebar-menu-button\"] > span",
+  "spécificité_plus_haute": "0,6,1",
+  "propriétés_communes": [],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/design-system/clean.css",
+  "ligne": 985,
+  "classe": "a4-jamais-ensemble-observé",
+  "sélecteur_tardif": ":root[data-skin=\"clean\"][data-skin][data-skin] :is(.patient-record-page, .patient-peek-panel) .medical-tabs > * svg",
+  "spécificité_tardive": "0,6,1",
+  "ligne_plus_spécifique": 362,
+  "sélecteur_plus_spécifique": ":root[data-skin=\"clean\"][data-skin][data-skin] [data-slot=\"app-header\"] .shell-toolbar-actions :is(button, .shell-toolbar-control) svg",
+  "spécificité_plus_haute": "0,7,1",
+  "propriétés_communes": [
+   "width/width",
+   "height/height",
+   "color/color"
+  ],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/design-system/clean.css",
+  "ligne": 1036,
+  "classe": "a4-jamais-ensemble-observé",
+  "sélecteur_tardif": ":root[data-skin=\"clean\"][data-skin][data-skin] .patient-peek-panel .medical-peek-content > section",
+  "spécificité_tardive": "0,6,1",
+  "ligne_plus_spécifique": 1006,
+  "sélecteur_plus_spécifique": ":root[data-skin=\"clean\"][data-skin][data-skin] .patient-record-page .medical-permanent-grid > section + section",
+  "spécificité_plus_haute": "0,6,2",
+  "propriétés_communes": [
+   "box-shadow/box-shadow"
+  ],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/design-system/clean.css",
+  "ligne": 1059,
+  "classe": "a2-aucune-propriété-commune",
+  "sélecteur_tardif": ":root[data-skin=\"clean\"] .kpiSub .delta > svg",
+  "spécificité_tardive": "0,4,1",
+  "ligne_plus_spécifique": 362,
+  "sélecteur_plus_spécifique": ":root[data-skin=\"clean\"][data-skin][data-skin] [data-slot=\"app-header\"] .shell-toolbar-actions :is(button, .shell-toolbar-control) svg",
+  "spécificité_plus_haute": "0,7,1",
+  "propriétés_communes": [],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/design-system/clean.css",
+  "ligne": 1130,
+  "classe": "a2-aucune-propriété-commune",
+  "sélecteur_tardif": ":root[data-skin=\"clean\"] .stay-occupancy-compact .stay-occupancy-units > span",
+  "spécificité_tardive": "0,4,1",
+  "ligne_plus_spécifique": 480,
+  "sélecteur_plus_spécifique": ":root[data-skin=\"clean\"][data-skin][data-skin] .app-sidebar [data-slot=\"sidebar-menu-button\"] > span",
+  "spécificité_plus_haute": "0,6,1",
+  "propriétés_communes": [],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/design-system/clean.css",
+  "ligne": 277,
+  "classe": "a3-mêmes-valeurs",
+  "sélecteur_tardif": ":root[data-skin=\"clean\"][data-skin][data-skin] [data-slot=\"sidebar-inset\"]",
+  "spécificité_tardive": "0,5,0",
+  "ligne_plus_spécifique": 267,
+  "sélecteur_plus_spécifique": ":root[data-skin=\"clean\"][data-skin][data-skin] [data-slot=\"sidebar-wrapper\"] [data-slot=\"sidebar-inset\"]",
+  "spécificité_plus_haute": "0,6,0",
+  "propriétés_communes": [
+   "background/background"
+  ],
+  "éléments_visés_par_les_deux": 28,
+  "contextes": [
+   "@layer utilities",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/design-system/clean.css",
+  "ligne": 1151,
+  "classe": "a2-aucune-propriété-commune",
+  "sélecteur_tardif": ":root[data-skin=\"clean\"] .stay-occupancy-units > span",
+  "spécificité_tardive": "0,3,1",
+  "ligne_plus_spécifique": 480,
+  "sélecteur_plus_spécifique": ":root[data-skin=\"clean\"][data-skin][data-skin] .app-sidebar [data-slot=\"sidebar-menu-button\"] > span",
+  "spécificité_plus_haute": "0,6,1",
+  "propriétés_communes": [],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/design-system/clean.css",
+  "ligne": 1203,
+  "classe": "a2-aucune-propriété-commune",
+  "sélecteur_tardif": ":root[data-skin=\"clean\"] :is(.kpis, .section-atlas-grid) > *",
+  "spécificité_tardive": "0,3,0",
+  "ligne_plus_spécifique": 727,
+  "sélecteur_plus_spécifique": ":root[data-skin=\"clean\"] :is([data-tabs-style=\"segmented\"], .dashboard-mode-toggle, .flow-density, .stock-view-toggle) > * svg *",
+  "spécificité_plus_haute": "0,3,1",
+  "propriétés_communes": [],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/design-system/clean.css",
+  "ligne": 1204,
+  "classe": "a2-aucune-propriété-commune",
+  "sélecteur_tardif": ":root[data-skin=\"clean\"] :is(.kpis, .section-atlas-grid) > :last-child",
+  "spécificité_tardive": "0,4,0",
+  "ligne_plus_spécifique": 867,
+  "sélecteur_plus_spécifique": ":root[data-skin=\"clean\"] div.sticky[class*=\"bg-primary/6\"] > :last-child",
+  "spécificité_plus_haute": "0,5,1",
+  "propriétés_communes": [],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/design-system/clean.css",
+  "ligne": 1306,
+  "classe": "a4-jamais-ensemble-observé",
+  "sélecteur_tardif": ":root[data-skin=\"clean\"] .command-palette [data-slot=\"command-input-wrapper\"] svg",
+  "spécificité_tardive": "0,4,1",
+  "ligne_plus_spécifique": 362,
+  "sélecteur_plus_spécifique": ":root[data-skin=\"clean\"][data-skin][data-skin] [data-slot=\"app-header\"] .shell-toolbar-actions :is(button, .shell-toolbar-control) svg",
+  "spécificité_plus_haute": "0,7,1",
+  "propriétés_communes": [
+   "width/width",
+   "height/height",
+   "color/color"
+  ],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/design-system/clean.css",
+  "ligne": 1369,
+  "classe": "a4-jamais-ensemble-observé",
+  "sélecteur_tardif": ":root[data-skin=\"clean\"] .command-palette [cmdk-item] > div:first-child:has(> svg) svg",
+  "spécificité_tardive": "0,5,3",
+  "ligne_plus_spécifique": 362,
+  "sélecteur_plus_spécifique": ":root[data-skin=\"clean\"][data-skin][data-skin] [data-slot=\"app-header\"] .shell-toolbar-actions :is(button, .shell-toolbar-control) svg",
+  "spécificité_plus_haute": "0,7,1",
+  "propriétés_communes": [
+   "width/width",
+   "height/height"
+  ],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/design-system/clean.css",
+  "ligne": 1441,
+  "classe": "a4-jamais-ensemble-observé",
+  "sélecteur_tardif": ":root[data-skin=\"clean\"] [data-slot=\"page-header\"] .premium-page-icon svg",
+  "spécificité_tardive": "0,4,1",
+  "ligne_plus_spécifique": 362,
+  "sélecteur_plus_spécifique": ":root[data-skin=\"clean\"][data-skin][data-skin] [data-slot=\"app-header\"] .shell-toolbar-actions :is(button, .shell-toolbar-control) svg",
+  "spécificité_plus_haute": "0,7,1",
+  "propriétés_communes": [
+   "width/width",
+   "height/height"
+  ],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/design-system/clean.css",
+  "ligne": 1466,
+  "classe": "a2-aucune-propriété-commune",
+  "sélecteur_tardif": ":root[data-skin=\"clean\"] .quick-actions-menu [data-tone=\"orange\"] svg",
+  "spécificité_tardive": "0,4,1",
+  "ligne_plus_spécifique": 362,
+  "sélecteur_plus_spécifique": ":root[data-skin=\"clean\"][data-skin][data-skin] [data-slot=\"app-header\"] .shell-toolbar-actions :is(button, .shell-toolbar-control) svg",
+  "spécificité_plus_haute": "0,7,1",
+  "propriétés_communes": [],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/design-system/clean.css",
+  "ligne": 1470,
+  "classe": "a2-aucune-propriété-commune",
+  "sélecteur_tardif": ":root[data-skin=\"clean\"] .dashboard-mode-toggle button[value=\"clinical\"] svg",
+  "spécificité_tardive": "0,4,2",
+  "ligne_plus_spécifique": 362,
+  "sélecteur_plus_spécifique": ":root[data-skin=\"clean\"][data-skin][data-skin] [data-slot=\"app-header\"] .shell-toolbar-actions :is(button, .shell-toolbar-control) svg",
+  "spécificité_plus_haute": "0,7,1",
+  "propriétés_communes": [],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/design-system/clean.css",
+  "ligne": 1533,
+  "classe": "a2-aucune-propriété-commune",
+  "sélecteur_tardif": ":root[data-skin=\"clean\"] body",
+  "spécificité_tardive": "0,2,1",
+  "ligne_plus_spécifique": 261,
+  "sélecteur_plus_spécifique": ":root[data-skin=\"clean\"][data-skin][data-skin] body",
+  "spécificité_plus_haute": "0,4,1",
+  "propriétés_communes": [],
+  "éléments_visés_par_les_deux": 28,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/design-system/clean.css",
+  "ligne": 1561,
+  "classe": "a4-jamais-ensemble-observé",
+  "sélecteur_tardif": ":root[data-skin=\"clean\"] [data-slot=\"band\"] [data-tabs-style=\"segmented\"]",
+  "spécificité_tardive": "0,4,0",
+  "ligne_plus_spécifique": 1317,
+  "sélecteur_plus_spécifique": ":root[data-skin=\"clean\"][data-skin] .command-palette [data-tabs-style=\"segmented\"]",
+  "spécificité_plus_haute": "0,5,0",
+  "propriétés_communes": [
+   "background/background"
+  ],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/design-system/clean.css",
+  "ligne": 1639,
+  "classe": "a4-jamais-ensemble-observé",
+  "sélecteur_tardif": ":root[data-skin=\"clean\"][data-skin] .settings-nav-item > svg",
+  "spécificité_tardive": "0,4,1",
+  "ligne_plus_spécifique": 362,
+  "sélecteur_plus_spécifique": ":root[data-skin=\"clean\"][data-skin][data-skin] [data-slot=\"app-header\"] .shell-toolbar-actions :is(button, .shell-toolbar-control) svg",
+  "spécificité_plus_haute": "0,7,1",
+  "propriétés_communes": [
+   "width/width",
+   "height/height"
+  ],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/design-system/clean.css",
+  "ligne": 1664,
+  "classe": "a2-aucune-propriété-commune",
+  "sélecteur_tardif": ":root[data-skin=\"clean\"][data-skin] [data-slot=\"dropdown-menu-trigger\"] > span",
+  "spécificité_tardive": "0,4,1",
+  "ligne_plus_spécifique": 480,
+  "sélecteur_plus_spécifique": ":root[data-skin=\"clean\"][data-skin][data-skin] .app-sidebar [data-slot=\"sidebar-menu-button\"] > span",
+  "spécificité_plus_haute": "0,6,1",
+  "propriétés_communes": [],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/design-system/clean.css",
+  "ligne": 1705,
+  "classe": "b-chevauchement-réel",
+  "sélecteur_tardif": ":root[data-skin=\"clean\"][data-skin][data-skin] .app-sidebar [data-slot=\"sidebar-group-label\"]",
+  "spécificité_tardive": "0,6,0",
+  "ligne_plus_spécifique": 522,
+  "sélecteur_plus_spécifique": ":root[data-skin=\"clean\"][data-skin][data-skin] [data-state=\"expanded\"] .app-sidebar [data-slot=\"sidebar-group-label\"]",
+  "spécificité_plus_haute": "0,7,0",
+  "propriétés_communes": [
+   "margin/margin-bottom"
+  ],
+  "éléments_visés_par_les_deux": 78,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer (la règle de la ligne 522 gagne déjà par spécificité) ; si l'on réordonne : déplacer la règle de la ligne 1705 avant la ligne 522, rendu mesuré identique sur 20 écrans"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/design-system/clean.css",
+  "ligne": 1775,
+  "classe": "a2-aucune-propriété-commune",
+  "sélecteur_tardif": ":root[data-skin=\"clean\"] :is([data-slot=\"button\"], button.group\\/button)",
+  "spécificité_tardive": "0,3,1",
+  "ligne_plus_spécifique": 791,
+  "sélecteur_plus_spécifique": ":root[data-skin=\"clean\"] .medical-data-table td :is([data-slot=\"button\"], button.group\\/button)",
+  "spécificité_plus_haute": "0,4,2",
+  "propriétés_communes": [],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "@media (prefers-reduced-motion: no-preference)",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/design-system/clean.css",
+  "ligne": 1814,
+  "classe": "a2-aucune-propriété-commune",
+  "sélecteur_tardif": ":root[data-skin=\"clean\"] [data-slot=\"stat-value\"] > *",
+  "spécificité_tardive": "0,3,0",
+  "ligne_plus_spécifique": 727,
+  "sélecteur_plus_spécifique": ":root[data-skin=\"clean\"] :is([data-tabs-style=\"segmented\"], .dashboard-mode-toggle, .flow-density, .stock-view-toggle) > * svg *",
+  "spécificité_plus_haute": "0,3,1",
+  "propriétés_communes": [],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/design-system/clean.css",
+  "ligne": 1839,
+  "classe": "a2-aucune-propriété-commune",
+  "sélecteur_tardif": ":root[data-skin=\"clean\"] [data-tabs-style=\"segmented\"] [data-slot=\"tabs-trigger\"]",
+  "spécificité_tardive": "0,4,0",
+  "ligne_plus_spécifique": 1324,
+  "sélecteur_plus_spécifique": ":root[data-skin=\"clean\"][data-skin] .command-palette [data-tabs-style=\"segmented\"] > [data-slot=\"tabs-trigger\"]",
+  "spécificité_plus_haute": "0,6,0",
+  "propriétés_communes": [],
+  "éléments_visés_par_les_deux": 6,
+  "contextes": [
+   "@media (prefers-reduced-motion: no-preference)",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/design-system/clean.css",
+  "ligne": 1139,
+  "classe": "a4-jamais-ensemble-observé",
+  "sélecteur_tardif": ":root[data-skin=\"clean\"] .stay-occupancy-head strong",
+  "spécificité_tardive": "0,3,1",
+  "ligne_plus_spécifique": 1129,
+  "sélecteur_plus_spécifique": ":root[data-skin=\"clean\"] .stay-occupancy-compact .stay-occupancy-head strong",
+  "spécificité_plus_haute": "0,4,1",
+  "propriétés_communes": [
+   "font-size/font-size"
+  ],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/design-system/premium-workspace.css",
+  "ligne": 327,
+  "classe": "a4-jamais-ensemble-observé",
+  "sélecteur_tardif": ":root[data-skin=\"clean\"] .care-toolbar input",
+  "spécificité_tardive": "0,3,1",
+  "ligne_plus_spécifique": 223,
+  "sélecteur_plus_spécifique": ":root[data-skin=\"clean\"] .quick-reminder-fields [data-slot=\"input-group\"] input",
+  "spécificité_plus_haute": "0,4,1",
+  "propriétés_communes": [
+   "background/background",
+   "border/border",
+   "border/border-radius",
+   "border-radius/border",
+   "border-radius/border-radius"
+  ],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/design-system/premium-workspace.css",
+  "ligne": 634,
+  "classe": "a2-aucune-propriété-commune",
+  "sélecteur_tardif": ":root[data-skin=\"clean\"] :is(.patient-record-page, .patient-peek-panel) :is(.medical-tabs, .medical-avatar, .medical-owner-links) svg",
+  "spécificité_tardive": "0,4,1",
+  "ligne_plus_spécifique": 498,
+  "sélecteur_plus_spécifique": ":root[data-skin=\"clean\"] .patient-record-page .medical-tabs [role=\"tab\"] svg",
+  "spécificité_plus_haute": "0,5,1",
+  "propriétés_communes": [],
+  "éléments_visés_par_les_deux": 42,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/design-system/premium-workspace.css",
+  "ligne": 674,
+  "classe": "a4-jamais-ensemble-observé",
+  "sélecteur_tardif": ":root[data-skin=\"clean\"] .soap-panel-header [data-slot=\"button\"]",
+  "spécificité_tardive": "0,4,0",
+  "ligne_plus_spécifique": 313,
+  "sélecteur_plus_spécifique": ":root[data-skin=\"clean\"] .care-toolbar [role=\"group\"] [data-slot=\"button\"]",
+  "spécificité_plus_haute": "0,5,0",
+  "propriétés_communes": [
+   "min-height/min-height"
+  ],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/design-system/premium.css",
+  "ligne": 753,
+  "classe": "a4-jamais-ensemble-observé",
+  "sélecteur_tardif": "[data-skin=\"clean\"] .shell-toolbar-actions .shell-toolbar-control svg",
+  "spécificité_tardive": "0,3,1",
+  "ligne_plus_spécifique": 437,
+  "sélecteur_plus_spécifique": "[data-skin=\"clean\"] [data-collapsible=\"icon\"] .app-sidebar [data-slot=\"sidebar-menu-button\"] svg",
+  "spécificité_plus_haute": "0,4,1",
+  "propriétés_communes": [
+   "width/width",
+   "height/height"
+  ],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   "@layer utilities"
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/design-system/premium.css",
+  "ligne": 787,
+  "classe": "a2-aucune-propriété-commune",
+  "sélecteur_tardif": "[data-skin=\"clean\"]",
+  "spécificité_tardive": "0,1,0",
+  "ligne_plus_spécifique": 64,
+  "sélecteur_plus_spécifique": ".dark [data-skin=\"clean\"]",
+  "spécificité_plus_haute": "0,2,0",
+  "propriétés_communes": [],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/design-system/premium.css",
+  "ligne": 641,
+  "classe": "a2-aucune-propriété-commune",
+  "sélecteur_tardif": "[data-skin=\"clean\"] .app-sidebar .sidebar-nav-icon svg",
+  "spécificité_tardive": "0,3,1",
+  "ligne_plus_spécifique": 437,
+  "sélecteur_plus_spécifique": "[data-skin=\"clean\"] [data-collapsible=\"icon\"] .app-sidebar [data-slot=\"sidebar-menu-button\"] svg",
+  "spécificité_plus_haute": "0,4,1",
+  "propriétés_communes": [],
+  "éléments_visés_par_les_deux": 22,
+  "contextes": [
+   "",
+   "@layer utilities"
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/design-system/premium.css",
+  "ligne": 646,
+  "classe": "a2-aucune-propriété-commune",
+  "sélecteur_tardif": "[data-skin=\"clean\"] .app-sidebar .sidebar-nav-icon svg",
+  "spécificité_tardive": "0,3,1",
+  "ligne_plus_spécifique": 437,
+  "sélecteur_plus_spécifique": "[data-skin=\"clean\"] [data-collapsible=\"icon\"] .app-sidebar [data-slot=\"sidebar-menu-button\"] svg",
+  "spécificité_plus_haute": "0,4,1",
+  "propriétés_communes": [],
+  "éléments_visés_par_les_deux": 22,
+  "contextes": [
+   "",
+   "@layer utilities"
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/design-system/premium.css",
+  "ligne": 751,
+  "classe": "a4-jamais-ensemble-observé",
+  "sélecteur_tardif": "[data-skin=\"clean\"] .topIcon svg",
+  "spécificité_tardive": "0,2,1",
+  "ligne_plus_spécifique": 437,
+  "sélecteur_plus_spécifique": "[data-skin=\"clean\"] [data-collapsible=\"icon\"] .app-sidebar [data-slot=\"sidebar-menu-button\"] svg",
+  "spécificité_plus_haute": "0,4,1",
+  "propriétés_communes": [
+   "width/width",
+   "height/height"
+  ],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   "@layer utilities"
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/design-system/premium.css",
+  "ligne": 752,
+  "classe": "a4-jamais-ensemble-observé",
+  "sélecteur_tardif": "[data-skin=\"clean\"] .shell-toolbar-actions button svg",
+  "spécificité_tardive": "0,2,2",
+  "ligne_plus_spécifique": 437,
+  "sélecteur_plus_spécifique": "[data-skin=\"clean\"] [data-collapsible=\"icon\"] .app-sidebar [data-slot=\"sidebar-menu-button\"] svg",
+  "spécificité_plus_haute": "0,4,1",
+  "propriétés_communes": [
+   "width/width",
+   "height/height"
+  ],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   "@layer utilities"
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/index.css",
+  "ligne": 473,
+  "classe": "a1-même-règle",
+  "sélecteur_tardif": ".document-rich-content ul[data-type=\"taskList\"] input[type=\"checkbox\"]",
+  "spécificité_tardive": "0,3,2",
+  "ligne_plus_spécifique": 472,
+  "sélecteur_plus_spécifique": ".tiptap-editor .ProseMirror ul[data-type=\"taskList\"] input[type=\"checkbox\"]",
+  "spécificité_plus_haute": "0,4,2",
+  "propriétés_communes": [
+   "width/width",
+   "height/height",
+   "border-radius/border-radius",
+   "accent-color/accent-color",
+   "cursor/cursor"
+  ],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/index.css",
+  "ligne": 408,
+  "classe": "a2-aucune-propriété-commune",
+  "sélecteur_tardif": ".document-rich-content th",
+  "spécificité_tardive": "0,1,1",
+  "ligne_plus_spécifique": 393,
+  "sélecteur_plus_spécifique": ".tiptap-editor .ProseMirror th",
+  "spécificité_plus_haute": "0,2,1",
+  "propriétés_communes": [],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/index.css",
+  "ligne": 415,
+  "classe": "a1-même-règle",
+  "sélecteur_tardif": ".document-rich-content tr > :last-child",
+  "spécificité_tardive": "0,2,1",
+  "ligne_plus_spécifique": 414,
+  "sélecteur_plus_spécifique": ".tiptap-editor .ProseMirror tr > :last-child",
+  "spécificité_plus_haute": "0,3,1",
+  "propriétés_communes": [
+   "border-right/border-right"
+  ],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/index.css",
+  "ligne": 419,
+  "classe": "a4-jamais-ensemble-observé",
+  "sélecteur_tardif": ".document-rich-content table p",
+  "spécificité_tardive": "0,1,2",
+  "ligne_plus_spécifique": 354,
+  "sélecteur_plus_spécifique": ".tiptap-editor .ProseMirror p",
+  "spécificité_plus_haute": "0,2,1",
+  "propriétés_communes": [
+   "margin/margin-bottom"
+  ],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/index.css",
+  "ligne": 450,
+  "classe": "a1-même-règle",
+  "sélecteur_tardif": ".document-rich-content ul[data-type=\"taskList\"]",
+  "spécificité_tardive": "0,2,1",
+  "ligne_plus_spécifique": 449,
+  "sélecteur_plus_spécifique": ".tiptap-editor .ProseMirror ul[data-type=\"taskList\"]",
+  "spécificité_plus_haute": "0,3,1",
+  "propriétés_communes": [
+   "margin/margin",
+   "padding/padding",
+   "list-style/list-style"
+  ],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/index.css",
+  "ligne": 466,
+  "classe": "a1-même-règle",
+  "sélecteur_tardif": ".document-rich-content ul[data-type=\"taskList\"] li > label",
+  "spécificité_tardive": "0,2,3",
+  "ligne_plus_spécifique": 465,
+  "sélecteur_plus_spécifique": ".tiptap-editor .ProseMirror ul[data-type=\"taskList\"] li > label",
+  "spécificité_plus_haute": "0,3,3",
+  "propriétés_communes": [
+   "flex/flex",
+   "margin-top/margin-top",
+   "user-select/user-select"
+  ],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/index.css",
+  "ligne": 482,
+  "classe": "a1-même-règle",
+  "sélecteur_tardif": ".document-rich-content ul[data-type=\"taskList\"] li > div",
+  "spécificité_tardive": "0,2,3",
+  "ligne_plus_spécifique": 481,
+  "sélecteur_plus_spécifique": ".tiptap-editor .ProseMirror ul[data-type=\"taskList\"] li > div",
+  "spécificité_plus_haute": "0,3,3",
+  "propriétés_communes": [
+   "flex/flex",
+   "min-width/min-width"
+  ],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/index.css",
+  "ligne": 1337,
+  "classe": "a4-jamais-ensemble-observé",
+  "sélecteur_tardif": ".modal-banner-marks",
+  "spécificité_tardive": "0,1,0",
+  "ligne_plus_spécifique": 1249,
+  "sélecteur_plus_spécifique": ".modal-banner-illustrated.modal-workflow-banner .modal-banner-marks",
+  "spécificité_plus_haute": "0,3,0",
+  "propriétés_communes": [
+   "display/display"
+  ],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   "@media (max-width: 639px)"
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/index.css",
+  "ligne": 1346,
+  "classe": "a4-jamais-ensemble-observé",
+  "sélecteur_tardif": ".modal-banner-glass",
+  "spécificité_tardive": "0,1,0",
+  "ligne_plus_spécifique": 1229,
+  "sélecteur_plus_spécifique": ".modal-banner-illustrated .modal-banner-glass",
+  "spécificité_plus_haute": "0,2,0",
+  "propriétés_communes": [
+   "background/background",
+   "box-shadow/box-shadow"
+  ],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/index.css",
+  "ligne": 1385,
+  "classe": "a2-aucune-propriété-commune",
+  "sélecteur_tardif": ".modal-banner-glass > svg",
+  "spécificité_tardive": "0,1,1",
+  "ligne_plus_spécifique": 663,
+  "sélecteur_plus_spécifique": "html[dir=\"rtl\"] .rtl-shell [data-slot=\"sidebar-trigger\"] svg",
+  "spécificité_plus_haute": "0,3,2",
+  "propriétés_communes": [],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/index.css",
+  "ligne": 1411,
+  "classe": "a2-aucune-propriété-commune",
+  "sélecteur_tardif": ".dark .modal-banner-glass > svg",
+  "spécificité_tardive": "0,2,1",
+  "ligne_plus_spécifique": 663,
+  "sélecteur_plus_spécifique": "html[dir=\"rtl\"] .rtl-shell [data-slot=\"sidebar-trigger\"] svg",
+  "spécificité_plus_haute": "0,3,2",
+  "propriétés_communes": [],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/index.css",
+  "ligne": 1555,
+  "classe": "a2-aucune-propriété-commune",
+  "sélecteur_tardif": ".modal-banner-compact .modal-banner-glass > svg",
+  "spécificité_tardive": "0,2,1",
+  "ligne_plus_spécifique": 663,
+  "sélecteur_plus_spécifique": "html[dir=\"rtl\"] .rtl-shell [data-slot=\"sidebar-trigger\"] svg",
+  "spécificité_plus_haute": "0,3,2",
+  "propriétés_communes": [],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/index.css",
+  "ligne": 1588,
+  "classe": "a2-aucune-propriété-commune",
+  "sélecteur_tardif": ".modal-banner-glass",
+  "spécificité_tardive": "0,1,0",
+  "ligne_plus_spécifique": 1229,
+  "sélecteur_plus_spécifique": ".modal-banner-illustrated .modal-banner-glass",
+  "spécificité_plus_haute": "0,2,0",
+  "propriétés_communes": [],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "@media (max-width: 639px), (max-height: 700px)",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/index.css",
+  "ligne": 1593,
+  "classe": "a2-aucune-propriété-commune",
+  "sélecteur_tardif": ".modal-banner-glass > svg",
+  "spécificité_tardive": "0,1,1",
+  "ligne_plus_spécifique": 663,
+  "sélecteur_plus_spécifique": "html[dir=\"rtl\"] .rtl-shell [data-slot=\"sidebar-trigger\"] svg",
+  "spécificité_plus_haute": "0,3,2",
+  "propriétés_communes": [],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "@media (max-width: 639px), (max-height: 700px)",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/index.css",
+  "ligne": 1648,
+  "classe": "a4-jamais-ensemble-observé",
+  "sélecteur_tardif": ".modal-banner-glass",
+  "spécificité_tardive": "0,1,0",
+  "ligne_plus_spécifique": 1229,
+  "sélecteur_plus_spécifique": ".modal-banner-illustrated .modal-banner-glass",
+  "spécificité_plus_haute": "0,2,0",
+  "propriétés_communes": [
+   "background/background"
+  ],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "@media (prefers-reduced-transparency: reduce)",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/index.css",
+  "ligne": 396,
+  "classe": "a1-même-règle",
+  "sélecteur_tardif": ".document-rich-content td",
+  "spécificité_tardive": "0,1,1",
+  "ligne_plus_spécifique": 394,
+  "sélecteur_plus_spécifique": ".tiptap-editor .ProseMirror td",
+  "spécificité_plus_haute": "0,2,1",
+  "propriétés_communes": [
+   "position/position",
+   "min-width/min-width",
+   "padding/padding",
+   "border-right/border-right",
+   "border-bottom/border-bottom",
+   "text-align/text-align",
+   "vertical-align/vertical-align",
+   "overflow-wrap/overflow-wrap"
+  ],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/index.css",
+  "ligne": 2222,
+  "classe": "a2-aucune-propriété-commune",
+  "sélecteur_tardif": ".medical-data-table thead th",
+  "spécificité_tardive": "0,1,2",
+  "ligne_plus_spécifique": 393,
+  "sélecteur_plus_spécifique": ".tiptap-editor .ProseMirror th",
+  "spécificité_plus_haute": "0,2,1",
+  "propriétés_communes": [],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/index.css",
+  "ligne": 2239,
+  "classe": "a2-aucune-propriété-commune",
+  "sélecteur_tardif": ".medical-data-table tbody td",
+  "spécificité_tardive": "0,1,2",
+  "ligne_plus_spécifique": 394,
+  "sélecteur_plus_spécifique": ".tiptap-editor .ProseMirror td",
+  "spécificité_plus_haute": "0,2,1",
+  "propriétés_communes": [],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/index.css",
+  "ligne": 2334,
+  "classe": "a2-aucune-propriété-commune",
+  "sélecteur_tardif": ".modal-workflow-banner .modal-banner-marks",
+  "spécificité_tardive": "0,2,0",
+  "ligne_plus_spécifique": 1249,
+  "sélecteur_plus_spécifique": ".modal-banner-illustrated.modal-workflow-banner .modal-banner-marks",
+  "spécificité_plus_haute": "0,3,0",
+  "propriétés_communes": [],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   "@media (max-width: 639px)"
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/index.css",
+  "ligne": 2373,
+  "classe": "a4-jamais-ensemble-observé",
+  "sélecteur_tardif": ".agenda-planner-heading [data-slot=\"badge\"]",
+  "spécificité_tardive": "0,2,0",
+  "ligne_plus_spécifique": 2243,
+  "sélecteur_plus_spécifique": ".workspace-table tbody [data-slot=\"badge\"]",
+  "spécificité_plus_haute": "0,2,1",
+  "propriétés_communes": [
+   "border-color/border-color"
+  ],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/index.css",
+  "ligne": 2449,
+  "classe": "a2-aucune-propriété-commune",
+  "sélecteur_tardif": "[data-widget-accent] .widget-metrics > div",
+  "spécificité_tardive": "0,2,1",
+  "ligne_plus_spécifique": 481,
+  "sélecteur_plus_spécifique": ".tiptap-editor .ProseMirror ul[data-type=\"taskList\"] li > div",
+  "spécificité_plus_haute": "0,3,3",
+  "propriétés_communes": [],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "@media (max-width: 639px)",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/index.css",
+  "ligne": 2457,
+  "classe": "a2-aucune-propriété-commune",
+  "sélecteur_tardif": ".widget-body > :last-child",
+  "spécificité_tardive": "0,2,0",
+  "ligne_plus_spécifique": 414,
+  "sélecteur_plus_spécifique": ".tiptap-editor .ProseMirror tr > :last-child",
+  "spécificité_plus_haute": "0,3,1",
+  "propriétés_communes": [],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/index.css",
+  "ligne": 2479,
+  "classe": "a2-aucune-propriété-commune",
+  "sélecteur_tardif": ".patient-record-dialog .record-summary > div",
+  "spécificité_tardive": "0,2,1",
+  "ligne_plus_spécifique": 481,
+  "sélecteur_plus_spécifique": ".tiptap-editor .ProseMirror ul[data-type=\"taskList\"] li > div",
+  "spécificité_plus_haute": "0,3,3",
+  "propriétés_communes": [],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/index.css",
+  "ligne": 2536,
+  "classe": "a3-mêmes-valeurs",
+  "sélecteur_tardif": ".patient-record-dialog .modal-banner-marks",
+  "spécificité_tardive": "0,2,0",
+  "ligne_plus_spécifique": 1249,
+  "sélecteur_plus_spécifique": ".modal-banner-illustrated.modal-workflow-banner .modal-banner-marks",
+  "spécificité_plus_haute": "0,3,0",
+  "propriétés_communes": [
+   "display/display"
+  ],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "@media (max-width: 639px)",
+   "@media (max-width: 639px)"
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/index.css",
+  "ligne": 2544,
+  "classe": "a2-aucune-propriété-commune",
+  "sélecteur_tardif": ".dashboard-v2-widget .widget-metrics > div + div",
+  "spécificité_tardive": "0,2,2",
+  "ligne_plus_spécifique": 481,
+  "sélecteur_plus_spécifique": ".tiptap-editor .ProseMirror ul[data-type=\"taskList\"] li > div",
+  "spécificité_plus_haute": "0,3,3",
+  "propriétés_communes": [],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/index.css",
+  "ligne": 2564,
+  "classe": "a2-aucune-propriété-commune",
+  "sélecteur_tardif": ".settings-nav-group > p",
+  "spécificité_tardive": "0,1,1",
+  "ligne_plus_spécifique": 354,
+  "sélecteur_plus_spécifique": ".tiptap-editor .ProseMirror p",
+  "spécificité_plus_haute": "0,2,1",
+  "propriétés_communes": [],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/index.css",
+  "ligne": 2584,
+  "classe": "a2-aucune-propriété-commune",
+  "sélecteur_tardif": ".settings-nav-item svg",
+  "spécificité_tardive": "0,1,1",
+  "ligne_plus_spécifique": 663,
+  "sélecteur_plus_spécifique": "html[dir=\"rtl\"] .rtl-shell [data-slot=\"sidebar-trigger\"] svg",
+  "spécificité_plus_haute": "0,3,2",
+  "propriétés_communes": [],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/index.css",
+  "ligne": 2613,
+  "classe": "a2-aucune-propriété-commune",
+  "sélecteur_tardif": ".settings-nav-group > p",
+  "spécificité_tardive": "0,1,1",
+  "ligne_plus_spécifique": 354,
+  "sélecteur_plus_spécifique": ".tiptap-editor .ProseMirror p",
+  "spécificité_plus_haute": "0,2,1",
+  "propriétés_communes": [],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "@media (max-width: 780px)",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/index.css",
+  "ligne": 2621,
+  "classe": "a3-mêmes-valeurs",
+  "sélecteur_tardif": ".modal-banner-marks",
+  "spécificité_tardive": "0,1,0",
+  "ligne_plus_spécifique": 1249,
+  "sélecteur_plus_spécifique": ".modal-banner-illustrated.modal-workflow-banner .modal-banner-marks",
+  "spécificité_plus_haute": "0,3,0",
+  "propriétés_communes": [
+   "display/display"
+  ],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   "@media (max-width: 639px)"
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/index.css",
+  "ligne": 395,
+  "classe": "a1-même-règle",
+  "sélecteur_tardif": ".document-rich-content th",
+  "spécificité_tardive": "0,1,1",
+  "ligne_plus_spécifique": 393,
+  "sélecteur_plus_spécifique": ".tiptap-editor .ProseMirror th",
+  "spécificité_plus_haute": "0,2,1",
+  "propriétés_communes": [
+   "position/position",
+   "min-width/min-width",
+   "padding/padding",
+   "border-right/border-right",
+   "border-bottom/border-bottom",
+   "text-align/text-align",
+   "vertical-align/vertical-align",
+   "overflow-wrap/overflow-wrap"
+  ],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/index.css",
+  "ligne": 373,
+  "classe": "a1-même-règle",
+  "sélecteur_tardif": ".document-rich-content table",
+  "spécificité_tardive": "0,1,1",
+  "ligne_plus_spécifique": 372,
+  "sélecteur_plus_spécifique": ".tiptap-editor .ProseMirror table",
+  "spécificité_plus_haute": "0,2,1",
+  "propriétés_communes": [
+   "width/width",
+   "min-width/min-width",
+   "margin/margin",
+   "border/border",
+   "border/border-collapse",
+   "border/border-spacing",
+   "border/border-radius",
+   "border-collapse/border",
+   "border-collapse/border-collapse",
+   "border-spacing/border",
+   "border-spacing/border-spacing",
+   "border-radius/border",
+   "border-radius/border-radius",
+   "background/background",
+   "font-size/font-size",
+   "line-height/line-height",
+   "table-layout/table-layout",
+   "overflow/overflow"
+  ],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/index.css",
+  "ligne": 366,
+  "classe": "a1-même-règle",
+  "sélecteur_tardif": ".document-rich-content .tableWrapper",
+  "spécificité_tardive": "0,2,0",
+  "ligne_plus_spécifique": 365,
+  "sélecteur_plus_spécifique": ".tiptap-editor .ProseMirror .tableWrapper",
+  "spécificité_plus_haute": "0,3,0",
+  "propriétés_communes": [
+   "max-width/max-width",
+   "margin/margin",
+   "overflow-x/overflow-x"
+  ],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/index.css",
+  "ligne": 1761,
+  "classe": "a2-aucune-propriété-commune",
+  "sélecteur_tardif": ".app-sidebar .sidebar-nav-icon svg",
+  "spécificité_tardive": "0,2,1",
+  "ligne_plus_spécifique": 663,
+  "sélecteur_plus_spécifique": "html[dir=\"rtl\"] .rtl-shell [data-slot=\"sidebar-trigger\"] svg",
+  "spécificité_plus_haute": "0,3,2",
+  "propriétés_communes": [],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/modules/agenda/components/agenda-cards.css",
+  "ligne": 421,
+  "classe": "a2-aucune-propriété-commune",
+  "sélecteur_tardif": ".agenda-week-track",
+  "spécificité_tardive": "0,1,0",
+  "ligne_plus_spécifique": 377,
+  "sélecteur_plus_spécifique": ".agenda-week-day:not(:disabled):hover .agenda-week-track",
+  "spécificité_plus_haute": "0,4,0",
+  "propriétés_communes": [],
+  "éléments_visés_par_les_deux": 14,
+  "contextes": [
+   "@media (prefers-reduced-motion: reduce)",
+   "@media (hover: hover) and (pointer: fine)"
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/modules/agenda/components/agenda-cards.css",
+  "ligne": 391,
+  "classe": "b-chevauchement-réel",
+  "sélecteur_tardif": ".agenda-week-track",
+  "spécificité_tardive": "0,1,0",
+  "ligne_plus_spécifique": 377,
+  "sélecteur_plus_spécifique": ".agenda-week-day:not(:disabled):hover .agenda-week-track",
+  "spécificité_plus_haute": "0,4,0",
+  "propriétés_communes": [
+   "background/background"
+  ],
+  "éléments_visés_par_les_deux": 14,
+  "contextes": [
+   "",
+   "@media (hover: hover) and (pointer: fine)"
+  ],
+  "remplacement": "rien à changer (la règle de la ligne 377 gagne déjà par spécificité) ; si l'on réordonne : déplacer la règle de la ligne 391 avant la ligne 377, rendu mesuré identique sur 20 écrans"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/modules/dashboard/components/clinical/clinical-workspace.css",
+  "ligne": 222,
+  "classe": "a4-jamais-ensemble-observé",
+  "sélecteur_tardif": ".visit-flow-track > span",
+  "spécificité_tardive": "0,1,1",
+  "ligne_plus_spécifique": 109,
+  "sélecteur_plus_spécifique": ".visit-flow-steps li > span",
+  "spécificité_plus_haute": "0,1,2",
+  "propriétés_communes": [
+   "display/display",
+   "height/height",
+   "background/background",
+   "border-radius/border-radius"
+  ],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/modules/dashboard/components/clinical/clinical-workspace.css",
+  "ligne": 292,
+  "classe": "a2-aucune-propriété-commune",
+  "sélecteur_tardif": ".visit-flow-track > span",
+  "spécificité_tardive": "0,1,1",
+  "ligne_plus_spécifique": 109,
+  "sélecteur_plus_spécifique": ".visit-flow-steps li > span",
+  "spécificité_plus_haute": "0,1,2",
+  "propriétés_communes": [],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "@media (prefers-reduced-motion: reduce)",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/modules/dashboard/components/clinical/clinical-workspace.css",
+  "ligne": 434,
+  "classe": "a4-jamais-ensemble-observé",
+  "sélecteur_tardif": ".visit-flow-details > span",
+  "spécificité_tardive": "0,1,1",
+  "ligne_plus_spécifique": 109,
+  "sélecteur_plus_spécifique": ".visit-flow-steps li > span",
+  "spécificité_plus_haute": "0,1,2",
+  "propriétés_communes": [
+   "display/display",
+   "align-items/place-items"
+  ],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/modules/dashboard/components/premium-analytics.css",
+  "ligne": 863,
+  "classe": "b-chevauchement-réel",
+  "sélecteur_tardif": "[data-skin=\"clean\"] table th",
+  "spécificité_tardive": "0,1,2",
+  "ligne_plus_spécifique": 400,
+  "sélecteur_plus_spécifique": "[data-skin=\"clean\"] table thead th",
+  "spécificité_plus_haute": "0,1,3",
+  "propriétés_communes": [
+   "height/height",
+   "padding/padding",
+   "font-size/font-size",
+   "font-weight/font-weight",
+   "color/color",
+   "text-align/text-align",
+   "text-transform/text-transform",
+   "letter-spacing/letter-spacing",
+   "background/background",
+   "box-shadow/box-shadow"
+  ],
+  "éléments_visés_par_les_deux": 52,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer (la règle de la ligne 400 gagne déjà par spécificité) ; si l'on réordonne : déplacer la règle de la ligne 863 avant la ligne 400, rendu mesuré identique sur 20 écrans"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/modules/dashboard/components/premium-analytics.css",
+  "ligne": 889,
+  "classe": "b-chevauchement-réel",
+  "sélecteur_tardif": "[data-skin=\"clean\"] table td",
+  "spécificité_tardive": "0,1,2",
+  "ligne_plus_spécifique": 413,
+  "sélecteur_plus_spécifique": "[data-skin=\"clean\"] table tbody td",
+  "spécificité_plus_haute": "0,1,3",
+  "propriétés_communes": [
+   "padding/padding",
+   "background/background",
+   "box-shadow/box-shadow",
+   "transition/transition"
+  ],
+  "éléments_visés_par_les_deux": 480,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer (la règle de la ligne 413 gagne déjà par spécificité) ; si l'on réordonne : déplacer la règle de la ligne 889 avant la ligne 413, rendu mesuré identique sur 20 écrans"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/modules/dashboard/components/premium-analytics.css",
+  "ligne": 995,
+  "classe": "a4-jamais-ensemble-observé",
+  "sélecteur_tardif": "[data-skin=\"clean\"] [data-slot=\"command-input-wrapper\"] input",
+  "spécificité_tardive": "0,2,1",
+  "ligne_plus_spécifique": 826,
+  "sélecteur_plus_spécifique": "[data-skin=\"clean\"] .dashboard-stage .border-b:has(input) input",
+  "spécificité_plus_haute": "0,3,2",
+  "propriétés_communes": [
+   "border/border",
+   "border/border-radius",
+   "box-shadow/box-shadow",
+   "background/background"
+  ],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/modules/flow-board/flow-board.css",
+  "ligne": 242,
+  "classe": "a2-aucune-propriété-commune",
+  "sélecteur_tardif": ".flow-card-meta",
+  "spécificité_tardive": "0,1,0",
+  "ligne_plus_spécifique": 227,
+  "sélecteur_plus_spécifique": ".flow-card-sub .flow-card-meta",
+  "spécificité_plus_haute": "0,2,0",
+  "propriétés_communes": [],
+  "éléments_visés_par_les_deux": 2,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/modules/flow-board/flow-board.css",
+  "ligne": 517,
+  "classe": "a2-aucune-propriété-commune",
+  "sélecteur_tardif": ".flow-card",
+  "spécificité_tardive": "0,1,0",
+  "ligne_plus_spécifique": 126,
+  "sélecteur_plus_spécifique": ".flow-lane-list > li > .flow-card",
+  "spécificité_plus_haute": "0,2,1",
+  "propriétés_communes": [],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "@media (prefers-reduced-motion: reduce)",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/modules/flow-board/flow-board.css",
+  "ligne": 132,
+  "classe": "a4-jamais-ensemble-observé",
+  "sélecteur_tardif": ".flow-card",
+  "spécificité_tardive": "0,1,0",
+  "ligne_plus_spécifique": 126,
+  "sélecteur_plus_spécifique": ".flow-lane-list > li > .flow-card",
+  "spécificité_plus_haute": "0,2,1",
+  "propriétés_communes": [
+   "flex-direction/flex"
+  ],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/modules/hospitalizations/stays/hospitalisation.css",
+  "ligne": 49,
+  "classe": "a4-jamais-ensemble-observé",
+  "sélecteur_tardif": ".vitals-latest-words",
+  "spécificité_tardive": "0,1,0",
+  "ligne_plus_spécifique": 45,
+  "sélecteur_plus_spécifique": ".vitals-latest li[data-verdict=\"above\"] .vitals-latest-words",
+  "spécificité_plus_haute": "0,3,1",
+  "propriétés_communes": [
+   "color/color"
+  ],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/modules/hospitalizations/stays/hospitalisation.css",
+  "ligne": 59,
+  "classe": "a2-aucune-propriété-commune",
+  "sélecteur_tardif": ".vitals-latest-words",
+  "spécificité_tardive": "0,1,0",
+  "ligne_plus_spécifique": 45,
+  "sélecteur_plus_spécifique": ".vitals-latest li[data-verdict=\"above\"] .vitals-latest-words",
+  "spécificité_plus_haute": "0,3,1",
+  "propriétés_communes": [],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "@media (max-width: 639px)",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/modules/patient-reminders/patient-reminders.css",
+  "ligne": 52,
+  "classe": "a2-aucune-propriété-commune",
+  "sélecteur_tardif": ":root .medical-reminder-dialog button",
+  "spécificité_tardive": "0,2,1",
+  "ligne_plus_spécifique": 44,
+  "sélecteur_plus_spécifique": ":root[data-skin=\"clean\"] .medical-reminder-dialog button",
+  "spécificité_plus_haute": "0,3,1",
+  "propriétés_communes": [],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/modules/patients/export/patient-record-export.css",
+  "ligne": 80,
+  "classe": "a2-aucune-propriété-commune",
+  "sélecteur_tardif": ".patient-export-option",
+  "spécificité_tardive": "0,1,0",
+  "ligne_plus_spécifique": 77,
+  "sélecteur_plus_spécifique": ".patient-export-sections .patient-export-option + .patient-export-option",
+  "spécificité_plus_haute": "0,3,0",
+  "propriétés_communes": [],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/modules/patients/medical-record.css",
+  "ligne": 691,
+  "classe": "a2-aucune-propriété-commune",
+  "sélecteur_tardif": ".medical-icon-action",
+  "spécificité_tardive": "0,1,0",
+  "ligne_plus_spécifique": 687,
+  "sélecteur_plus_spécifique": ".medical-kpi-heading .medical-icon-action",
+  "spécificité_plus_haute": "0,2,0",
+  "propriétés_communes": [],
+  "éléments_visés_par_les_deux": 12,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/modules/patients/medical-record.css",
+  "ligne": 1455,
+  "classe": "a4-jamais-ensemble-observé",
+  "sélecteur_tardif": ".medical-permanent-grid > section",
+  "spécificité_tardive": "0,1,1",
+  "ligne_plus_spécifique": 1068,
+  "sélecteur_plus_spécifique": ".medical-overview > section + section",
+  "spécificité_plus_haute": "0,1,2",
+  "propriétés_communes": [
+   "padding/padding-top",
+   "margin/margin-top",
+   "border/border-top"
+  ],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/modules/patients/medical-record.css",
+  "ligne": 1571,
+  "classe": "a2-aucune-propriété-commune",
+  "sélecteur_tardif": ":is( .patient-record-page, .patient-record-dialog, .medical-record-summary, .patient-context-popover ) *",
+  "spécificité_tardive": "0,1,0",
+  "ligne_plus_spécifique": 153,
+  "sélecteur_plus_spécifique": ".patient-record-page .patient-record-heading[data-slot=\"page-header\"] + *",
+  "spécificité_plus_haute": "0,3,0",
+  "propriétés_communes": [],
+  "éléments_visés_par_les_deux": 6,
+  "contextes": [
+   "@media (prefers-reduced-motion: reduce)",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/modules/patients/medical-record.css",
+  "ligne": 1668,
+  "classe": "a2-aucune-propriété-commune",
+  "sélecteur_tardif": ".patient-timeline-marker",
+  "spécificité_tardive": "0,1,0",
+  "ligne_plus_spécifique": 1649,
+  "sélecteur_plus_spécifique": ".patient-timeline-event > .patient-timeline-marker",
+  "spécificité_plus_haute": "0,2,0",
+  "propriétés_communes": [],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/modules/patients/medical-record.css",
+  "ligne": 2109,
+  "classe": "b-chevauchement-réel",
+  "sélecteur_tardif": ".record-block-heading-icon [stroke-width]",
+  "spécificité_tardive": "0,2,0",
+  "ligne_plus_spécifique": 126,
+  "sélecteur_plus_spécifique": ":is( .medical-identity, .medical-kpi-heading, .medical-kpi-empty, .medical-next-visit, .medical-kpi-text-action, .medical-owner, .medical-record-health, .medical-tabs, .medical-tabs-frame, .patient-context-widgets, .patient-context-popover ) svg [stroke-width]",
+  "spécificité_plus_haute": "0,2,1",
+  "propriétés_communes": [
+   "stroke-width/stroke-width"
+  ],
+  "éléments_visés_par_les_deux": 42,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer (la règle de la ligne 126 gagne déjà par spécificité) ; si l'on réordonne : déplacer la règle de la ligne 2109 avant la ligne 126, rendu mesuré identique sur 20 écrans"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/modules/patients/patient-record-blocks.css",
+  "ligne": 398,
+  "classe": "a4-jamais-ensemble-observé",
+  "sélecteur_tardif": "html:root:root:root:root:root .patient-record-page .patient-timeline-event > *",
+  "spécificité_tardive": "0,7,1",
+  "ligne_plus_spécifique": 144,
+  "sélecteur_plus_spécifique": "html:root:root:root:root:root .patient-record-page .patient-permanent .medical-permanent-grid > *",
+  "spécificité_plus_haute": "0,8,1",
+  "propriétés_communes": [
+   "min-width/min-width",
+   "padding/padding"
+  ],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/modules/patients/patient-record-blocks.css",
+  "ligne": 342,
+  "classe": "a4-jamais-ensemble-observé",
+  "sélecteur_tardif": "html:root:root:root:root:root .patient-record-page .patient-clinical-summary > *",
+  "spécificité_tardive": "0,7,1",
+  "ligne_plus_spécifique": 144,
+  "sélecteur_plus_spécifique": "html:root:root:root:root:root .patient-record-page .patient-permanent .medical-permanent-grid > *",
+  "spécificité_plus_haute": "0,8,1",
+  "propriétés_communes": [
+   "padding/padding",
+   "background/background",
+   "border/border",
+   "border/border-radius",
+   "border-radius/border",
+   "border-radius/border-radius"
+  ],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/modules/shell/premium-sidebar.css",
+  "ligne": 169,
+  "classe": "a4-jamais-ensemble-observé",
+  "sélecteur_tardif": "[data-skin=\"clean\"] .shell-header-search svg",
+  "spécificité_tardive": "0,2,1",
+  "ligne_plus_spécifique": 141,
+  "sélecteur_plus_spécifique": "[data-skin=\"clean\"] .shell-toolbar-actions .shell-toolbar-control svg",
+  "spécificité_plus_haute": "0,3,1",
+  "propriétés_communes": [
+   "width/width",
+   "height/height",
+   "stroke-width/stroke-width",
+   "color/color"
+  ],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/modules/shell/premium-sidebar.css",
+  "ligne": 555,
+  "classe": "b-chevauchement-réel",
+  "sélecteur_tardif": ".app-sidebar [data-slot=\"sidebar-menu-button\"][data-active]",
+  "spécificité_tardive": "0,3,0",
+  "ligne_plus_spécifique": 273,
+  "sélecteur_plus_spécifique": "[data-skin=\"clean\"] .app-sidebar [data-slot=\"sidebar-menu-button\"][data-active]",
+  "spécificité_plus_haute": "0,4,0",
+  "propriétés_communes": [
+   "background/background",
+   "border-color/border",
+   "box-shadow/box-shadow"
+  ],
+  "éléments_visés_par_les_deux": 22,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer (la règle de la ligne 273 gagne déjà par spécificité) ; si l'on réordonne : déplacer la règle de la ligne 555 avant la ligne 273, rendu mesuré identique sur 20 écrans"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/modules/shell/premium-sidebar.css",
+  "ligne": 556,
+  "classe": "a4-jamais-ensemble-observé",
+  "sélecteur_tardif": ".app-sidebar [data-slot=\"sidebar-menu-button\"][data-active=\"true\"]",
+  "spécificité_tardive": "0,3,0",
+  "ligne_plus_spécifique": 274,
+  "sélecteur_plus_spécifique": "[data-skin=\"clean\"] .app-sidebar [data-slot=\"sidebar-menu-button\"][data-active=\"true\"]",
+  "spécificité_plus_haute": "0,4,0",
+  "propriétés_communes": [
+   "background/background",
+   "border-color/border",
+   "box-shadow/box-shadow"
+  ],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/modules/shell/premium-sidebar.css",
+  "ligne": 557,
+  "classe": "b-chevauchement-réel",
+  "sélecteur_tardif": ".app-sidebar .sidebar-nav-link[data-active]",
+  "spécificité_tardive": "0,3,0",
+  "ligne_plus_spécifique": 275,
+  "sélecteur_plus_spécifique": "[data-skin=\"clean\"] .app-sidebar .sidebar-nav-link[data-active]",
+  "spécificité_plus_haute": "0,4,0",
+  "propriétés_communes": [
+   "background/background",
+   "border-color/border",
+   "box-shadow/box-shadow"
+  ],
+  "éléments_visés_par_les_deux": 22,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer (la règle de la ligne 275 gagne déjà par spécificité) ; si l'on réordonne : déplacer la règle de la ligne 557 avant la ligne 275, rendu mesuré identique sur 20 écrans"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/modules/shell/premium-sidebar.css",
+  "ligne": 558,
+  "classe": "a4-jamais-ensemble-observé",
+  "sélecteur_tardif": ".app-sidebar .sidebar-nav-link[data-active=\"true\"]",
+  "spécificité_tardive": "0,3,0",
+  "ligne_plus_spécifique": 276,
+  "sélecteur_plus_spécifique": "[data-skin=\"clean\"] .app-sidebar .sidebar-nav-link[data-active=\"true\"]",
+  "spécificité_plus_haute": "0,4,0",
+  "propriétés_communes": [
+   "background/background",
+   "border-color/border",
+   "box-shadow/box-shadow"
+  ],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/modules/shell/shell-toolbar.css",
+  "ligne": 461,
+  "classe": "a2-aucune-propriété-commune",
+  "sélecteur_tardif": "[data-slot=\"shell-scroll-panel\"]",
+  "spécificité_tardive": "0,1,0",
+  "ligne_plus_spécifique": 285,
+  "sélecteur_plus_spécifique": ":root[data-chrome-style=\"liquid-glass\"] [data-slot=\"shell-scroll-panel\"]",
+  "spécificité_plus_haute": "0,3,0",
+  "propriétés_communes": [],
+  "éléments_visés_par_les_deux": 28,
+  "contextes": [
+   "@supports selector(::-webkit-scrollbar)",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/modules/shell/shell-toolbar.css",
+  "ligne": 454,
+  "classe": "a2-aucune-propriété-commune",
+  "sélecteur_tardif": "[data-slot=\"shell-scroll-panel\"]",
+  "spécificité_tardive": "0,1,0",
+  "ligne_plus_spécifique": 285,
+  "sélecteur_plus_spécifique": ":root[data-chrome-style=\"liquid-glass\"] [data-slot=\"shell-scroll-panel\"]",
+  "spécificité_plus_haute": "0,3,0",
+  "propriétés_communes": [],
+  "éléments_visés_par_les_deux": 28,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/modules/shell/shell-toolbar.css",
+  "ligne": 492,
+  "classe": "b-chevauchement-réel",
+  "sélecteur_tardif": ".shell-toolbar-actions .shell-toolbar-control svg",
+  "spécificité_tardive": "0,2,1",
+  "ligne_plus_spécifique": 169,
+  "sélecteur_plus_spécifique": ":root[data-chrome-style=\"liquid-glass\"] .shell-toolbar-actions .shell-toolbar-control svg",
+  "spécificité_plus_haute": "0,4,1",
+  "propriétés_communes": [
+   "width/width",
+   "height/height",
+   "filter/filter"
+  ],
+  "éléments_visés_par_les_deux": 28,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer (la règle de la ligne 169 gagne déjà par spécificité) ; si l'on réordonne : déplacer la règle de la ligne 492 avant la ligne 169, rendu mesuré identique sur 20 écrans"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/modules/shell/shell-toolbar.css",
+  "ligne": 534,
+  "classe": "b-chevauchement-réel",
+  "sélecteur_tardif": ".shell-toolbar-actions",
+  "spécificité_tardive": "0,1,0",
+  "ligne_plus_spécifique": 119,
+  "sélecteur_plus_spécifique": ":root[data-chrome-style=\"liquid-glass\"] .shell-toolbar-actions",
+  "spécificité_plus_haute": "0,3,0",
+  "propriétés_communes": [
+   "gap/gap",
+   "padding/padding",
+   "background/background",
+   "box-shadow/box-shadow",
+   "-webkit-backdrop-filter/-webkit-backdrop-filter",
+   "backdrop-filter/backdrop-filter"
+  ],
+  "éléments_visés_par_les_deux": 28,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer (la règle de la ligne 119 gagne déjà par spécificité) ; si l'on réordonne : déplacer la règle de la ligne 534 avant la ligne 119, rendu mesuré identique sur 20 écrans"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/modules/shell/shell-toolbar.css",
+  "ligne": 550,
+  "classe": "b-chevauchement-réel",
+  "sélecteur_tardif": ".dark .shell-toolbar-actions",
+  "spécificité_tardive": "0,2,0",
+  "ligne_plus_spécifique": 119,
+  "sélecteur_plus_spécifique": ":root[data-chrome-style=\"liquid-glass\"] .shell-toolbar-actions",
+  "spécificité_plus_haute": "0,3,0",
+  "propriétés_communes": [
+   "background/background",
+   "box-shadow/box-shadow"
+  ],
+  "éléments_visés_par_les_deux": 14,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer (la règle de la ligne 119 gagne déjà par spécificité) ; si l'on réordonne : déplacer la règle de la ligne 550 avant la ligne 119, rendu mesuré identique sur 20 écrans"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/modules/shell/shell-toolbar.css",
+  "ligne": 591,
+  "classe": "b-chevauchement-réel",
+  "sélecteur_tardif": ".shell-toolbar-actions",
+  "spécificité_tardive": "0,1,0",
+  "ligne_plus_spécifique": 119,
+  "sélecteur_plus_spécifique": ":root[data-chrome-style=\"liquid-glass\"] .shell-toolbar-actions",
+  "spécificité_plus_haute": "0,3,0",
+  "propriétés_communes": [
+   "background/background"
+  ],
+  "éléments_visés_par_les_deux": 28,
+  "contextes": [
+   "@media (prefers-reduced-transparency: reduce), (prefers-contrast: more)",
+   ""
+  ],
+  "remplacement": "rien à changer (la règle de la ligne 119 gagne déjà par spécificité) ; si l'on réordonne : déplacer la règle de la ligne 591 avant la ligne 119, rendu mesuré identique sur 20 écrans"
+ },
+ {
+  "règle": "noDescendingSpecificity",
+  "chemin": "src/modules/shell/shell-toolbar.css",
+  "ligne": 764,
+  "classe": "a4-jamais-ensemble-observé",
+  "sélecteur_tardif": ".shell-account-menu .shell-account-item svg",
+  "spécificité_tardive": "0,2,1",
+  "ligne_plus_spécifique": 169,
+  "sélecteur_plus_spécifique": ":root[data-chrome-style=\"liquid-glass\"] .shell-toolbar-actions .shell-toolbar-control svg",
+  "spécificité_plus_haute": "0,4,1",
+  "propriétés_communes": [
+   "width/width",
+   "height/height"
+  ],
+  "éléments_visés_par_les_deux": 0,
+  "contextes": [
+   "",
+   ""
+  ],
+  "remplacement": "rien à changer ; ignorer (règle désactivée pour le CSS)"
+ },
+ {
+  "règle": "useFilenamingConvention",
+  "chemin": "src/App.tsx",
+  "ligne": 0,
+  "classe": "casse-seule",
+  "remplacement": "renommer en src/app.tsx",
+  "références": 3,
+  "références_tests": 0,
+  "alternative": "exception de configuration (override Biome, filenameCases kebab/camel/Pascal, strictCase false)"
+ },
+ {
+  "règle": "useFilenamingConvention",
+  "chemin": "src/components/AgendaListView.tsx",
+  "ligne": 0,
+  "classe": "nom-composé",
+  "remplacement": "renommer en src/components/agenda-list-view.tsx",
+  "références": 6,
+  "références_tests": 1,
+  "alternative": "exception de configuration (override Biome, filenameCases kebab/camel/Pascal, strictCase false)"
+ },
+ {
+  "règle": "useFilenamingConvention",
+  "chemin": "src/components/Auth.tsx",
+  "ligne": 0,
+  "classe": "casse-seule",
+  "remplacement": "renommer en src/components/auth.tsx",
+  "références": 2,
+  "références_tests": 0,
+  "alternative": "exception de configuration (override Biome, filenameCases kebab/camel/Pascal, strictCase false)"
+ },
+ {
+  "règle": "useFilenamingConvention",
+  "chemin": "src/components/Avatar.tsx",
+  "ligne": 0,
+  "classe": "casse-seule",
+  "remplacement": "renommer en src/components/avatar.tsx",
+  "références": 6,
+  "références_tests": 0,
+  "alternative": "exception de configuration (override Biome, filenameCases kebab/camel/Pascal, strictCase false)"
+ },
+ {
+  "règle": "useFilenamingConvention",
+  "chemin": "src/components/CommandPalette.tsx",
+  "ligne": 0,
+  "classe": "nom-composé",
+  "remplacement": "renommer en src/components/command-palette.tsx",
+  "références": 5,
+  "références_tests": 2,
+  "alternative": "exception de configuration (override Biome, filenameCases kebab/camel/Pascal, strictCase false)"
+ },
+ {
+  "règle": "useFilenamingConvention",
+  "chemin": "src/components/Editor.tsx",
+  "ligne": 0,
+  "classe": "casse-seule",
+  "remplacement": "renommer en src/components/editor.tsx",
+  "références": 1,
+  "références_tests": 0,
+  "alternative": "exception de configuration (override Biome, filenameCases kebab/camel/Pascal, strictCase false)"
+ },
+ {
+  "règle": "useFilenamingConvention",
+  "chemin": "src/components/HeroPattern.tsx",
+  "ligne": 0,
+  "classe": "nom-composé",
+  "remplacement": "renommer en src/components/hero-pattern.tsx",
+  "références": 2,
+  "références_tests": 0,
+  "alternative": "exception de configuration (override Biome, filenameCases kebab/camel/Pascal, strictCase false)"
+ },
+ {
+  "règle": "useFilenamingConvention",
+  "chemin": "src/components/LicenseGate.tsx",
+  "ligne": 0,
+  "classe": "nom-composé",
+  "remplacement": "renommer en src/components/license-gate.tsx",
+  "références": 2,
+  "références_tests": 0,
+  "alternative": "exception de configuration (override Biome, filenameCases kebab/camel/Pascal, strictCase false)"
+ },
+ {
+  "règle": "useFilenamingConvention",
+  "chemin": "src/components/LicenseStatusCard.tsx",
+  "ligne": 0,
+  "classe": "nom-composé",
+  "remplacement": "renommer en src/components/license-status-card.tsx",
+  "références": 1,
+  "références_tests": 0,
+  "alternative": "exception de configuration (override Biome, filenameCases kebab/camel/Pascal, strictCase false)"
+ },
+ {
+  "règle": "useFilenamingConvention",
+  "chemin": "src/components/Logo.tsx",
+  "ligne": 0,
+  "classe": "casse-seule",
+  "remplacement": "renommer en src/components/logo.tsx",
+  "références": 13,
+  "références_tests": 0,
+  "alternative": "exception de configuration (override Biome, filenameCases kebab/camel/Pascal, strictCase false)"
+ },
+ {
+  "règle": "useFilenamingConvention",
+  "chemin": "src/components/MotivationalHeader.tsx",
+  "ligne": 0,
+  "classe": "nom-composé",
+  "remplacement": "renommer en src/components/motivational-header.tsx",
+  "références": 8,
+  "références_tests": 0,
+  "alternative": "exception de configuration (override Biome, filenameCases kebab/camel/Pascal, strictCase false)"
+ },
+ {
+  "règle": "useFilenamingConvention",
+  "chemin": "src/components/NotesPro.tsx",
+  "ligne": 0,
+  "classe": "nom-composé",
+  "remplacement": "renommer en src/components/notes-pro.tsx",
+  "références": 2,
+  "références_tests": 0,
+  "alternative": "exception de configuration (override Biome, filenameCases kebab/camel/Pascal, strictCase false)"
+ },
+ {
+  "règle": "useFilenamingConvention",
+  "chemin": "src/components/PageDate.tsx",
+  "ligne": 0,
+  "classe": "nom-composé",
+  "remplacement": "renommer en src/components/page-date.tsx",
+  "références": 1,
+  "références_tests": 0,
+  "alternative": "exception de configuration (override Biome, filenameCases kebab/camel/Pascal, strictCase false)"
+ },
+ {
+  "règle": "useFilenamingConvention",
+  "chemin": "src/components/Parametres.tsx",
+  "ligne": 0,
+  "classe": "casse-seule",
+  "remplacement": "renommer en src/components/parametres.tsx",
+  "références": 7,
+  "références_tests": 2,
+  "alternative": "exception de configuration (override Biome, filenameCases kebab/camel/Pascal, strictCase false)"
+ },
+ {
+  "règle": "useFilenamingConvention",
+  "chemin": "src/components/QuickPatientPicker.tsx",
+  "ligne": 0,
+  "classe": "nom-composé",
+  "remplacement": "renommer en src/components/quick-patient-picker.tsx",
+  "références": 1,
+  "références_tests": 0,
+  "alternative": "exception de configuration (override Biome, filenameCases kebab/camel/Pascal, strictCase false)"
+ },
+ {
+  "règle": "useFilenamingConvention",
+  "chemin": "src/components/SectionGarden.tsx",
+  "ligne": 0,
+  "classe": "nom-composé",
+  "remplacement": "renommer en src/components/section-garden.tsx",
+  "références": 1,
+  "références_tests": 0,
+  "alternative": "exception de configuration (override Biome, filenameCases kebab/camel/Pascal, strictCase false)"
+ },
+ {
+  "règle": "useFilenamingConvention",
+  "chemin": "src/components/SelectionBubbleMenu.tsx",
+  "ligne": 0,
+  "classe": "nom-composé",
+  "remplacement": "renommer en src/components/selection-bubble-menu.tsx",
+  "références": 1,
+  "références_tests": 0,
+  "alternative": "exception de configuration (override Biome, filenameCases kebab/camel/Pascal, strictCase false)"
+ },
+ {
+  "règle": "useFilenamingConvention",
+  "chemin": "src/components/SetupWizard.tsx",
+  "ligne": 0,
+  "classe": "nom-composé",
+  "remplacement": "renommer en src/components/setup-wizard.tsx",
+  "références": 2,
+  "références_tests": 0,
+  "alternative": "exception de configuration (override Biome, filenameCases kebab/camel/Pascal, strictCase false)"
+ },
+ {
+  "règle": "useFilenamingConvention",
+  "chemin": "src/components/SlashCommandMenu.tsx",
+  "ligne": 0,
+  "classe": "nom-composé",
+  "remplacement": "renommer en src/components/slash-command-menu.tsx",
+  "références": 1,
+  "références_tests": 0,
+  "alternative": "exception de configuration (override Biome, filenameCases kebab/camel/Pascal, strictCase false)"
+ },
+ {
+  "règle": "useFilenamingConvention",
+  "chemin": "src/components/SlashCommandsExtension.tsx",
+  "ligne": 0,
+  "classe": "nom-composé",
+  "remplacement": "renommer en src/components/slash-commands-extension.tsx",
+  "références": 3,
+  "références_tests": 1,
+  "alternative": "exception de configuration (override Biome, filenameCases kebab/camel/Pascal, strictCase false)"
+ },
+ {
+  "règle": "useFilenamingConvention",
+  "chemin": "src/components/Tasks.tsx",
+  "ligne": 0,
+  "classe": "casse-seule",
+  "remplacement": "renommer en src/components/tasks.tsx",
+  "références": 6,
+  "références_tests": 1,
+  "alternative": "exception de configuration (override Biome, filenameCases kebab/camel/Pascal, strictCase false)"
+ },
+ {
+  "règle": "useFilenamingConvention",
+  "chemin": "src/components/Team.tsx",
+  "ligne": 0,
+  "classe": "casse-seule",
+  "remplacement": "renommer en src/components/team.tsx",
+  "références": 1,
+  "références_tests": 0,
+  "alternative": "exception de configuration (override Biome, filenameCases kebab/camel/Pascal, strictCase false)"
+ },
+ {
+  "règle": "useFilenamingConvention",
+  "chemin": "src/contexts/AuthContext.tsx",
+  "ligne": 0,
+  "classe": "nom-composé",
+  "remplacement": "renommer en src/contexts/auth-context.tsx",
+  "références": 52,
+  "références_tests": 3,
+  "alternative": "exception de configuration (override Biome, filenameCases kebab/camel/Pascal, strictCase false)"
+ },
+ {
+  "règle": "useFilenamingConvention",
+  "chemin": "src/hooks/useDelayedSkeleton.ts",
+  "ligne": 0,
+  "classe": "nom-composé",
+  "remplacement": "renommer en src/hooks/use-delayed-skeleton.ts",
+  "références": 3,
+  "références_tests": 0,
+  "alternative": "exception de configuration (override Biome, filenameCases kebab/camel/Pascal, strictCase false)"
+ },
+ {
+  "règle": "useFilenamingConvention",
+  "chemin": "src/hooks/useListCursor.ts",
+  "ligne": 0,
+  "classe": "nom-composé",
+  "remplacement": "renommer en src/hooks/use-list-cursor.ts",
+  "références": 6,
+  "références_tests": 1,
+  "alternative": "exception de configuration (override Biome, filenameCases kebab/camel/Pascal, strictCase false)"
+ },
+ {
+  "règle": "useFilenamingConvention",
+  "chemin": "src/hooks/useNowTick.ts",
+  "ligne": 0,
+  "classe": "nom-composé",
+  "remplacement": "renommer en src/hooks/use-now-tick.ts",
+  "références": 4,
+  "références_tests": 0,
+  "alternative": "exception de configuration (override Biome, filenameCases kebab/camel/Pascal, strictCase false)"
+ },
+ {
+  "règle": "useFilenamingConvention",
+  "chemin": "src/hooks/usePatientIntentPrefetch.ts",
+  "ligne": 0,
+  "classe": "nom-composé",
+  "remplacement": "renommer en src/hooks/use-patient-intent-prefetch.ts",
+  "références": 1,
+  "références_tests": 0,
+  "alternative": "exception de configuration (override Biome, filenameCases kebab/camel/Pascal, strictCase false)"
+ },
+ {
+  "règle": "useFilenamingConvention",
+  "chemin": "src/hooks/useRowSaveFlash.ts",
+  "ligne": 0,
+  "classe": "nom-composé",
+  "remplacement": "renommer en src/hooks/use-row-save-flash.ts",
+  "références": 1,
+  "références_tests": 0,
+  "alternative": "exception de configuration (override Biome, filenameCases kebab/camel/Pascal, strictCase false)"
+ },
+ {
+  "règle": "useFilenamingConvention",
+  "chemin": "src/hooks/useSQLite.ts",
+  "ligne": 0,
+  "classe": "nom-composé",
+  "remplacement": "renommer en src/hooks/use-sqlite.ts",
+  "références": 27,
+  "références_tests": 6,
+  "alternative": "exception de configuration (override Biome, filenameCases kebab/camel/Pascal, strictCase false)"
+ },
+ {
+  "règle": "useFilenamingConvention",
+  "chemin": "src/hooks/useSaveIndicator.ts",
+  "ligne": 0,
+  "classe": "nom-composé",
+  "remplacement": "renommer en src/hooks/use-save-indicator.ts",
+  "références": 2,
+  "références_tests": 0,
+  "alternative": "exception de configuration (override Biome, filenameCases kebab/camel/Pascal, strictCase false)"
+ },
+ {
+  "règle": "useFilenamingConvention",
+  "chemin": "src/modules/dashboard/hooks/usePostOpFollowUp.ts",
+  "ligne": 0,
+  "classe": "nom-composé",
+  "remplacement": "renommer en src/modules/dashboard/hooks/use-post-op-follow-up.ts",
+  "références": 2,
+  "références_tests": 0,
+  "alternative": "exception de configuration (override Biome, filenameCases kebab/camel/Pascal, strictCase false)"
+ },
+ {
+  "règle": "useFilenamingConvention",
+  "chemin": "src/services/activationAdminWindowService.ts",
+  "ligne": 0,
+  "classe": "nom-composé",
+  "remplacement": "renommer en src/services/activation-admin-window-service.ts",
+  "références": 5,
+  "références_tests": 0,
+  "alternative": "exception de configuration (override Biome, filenameCases kebab/camel/Pascal, strictCase false)"
+ },
+ {
+  "règle": "useFilenamingConvention",
+  "chemin": "src/services/adminAccess.ts",
+  "ligne": 0,
+  "classe": "nom-composé",
+  "remplacement": "renommer en src/services/admin-access.ts",
+  "références": 10,
+  "références_tests": 3,
+  "alternative": "exception de configuration (override Biome, filenameCases kebab/camel/Pascal, strictCase false)"
+ },
+ {
+  "règle": "useFilenamingConvention",
+  "chemin": "src/services/aiConversationStore.ts",
+  "ligne": 0,
+  "classe": "nom-composé",
+  "remplacement": "renommer en src/services/ai-conversation-store.ts",
+  "références": 2,
+  "références_tests": 1,
+  "alternative": "exception de configuration (override Biome, filenameCases kebab/camel/Pascal, strictCase false)"
+ },
+ {
+  "règle": "useFilenamingConvention",
+  "chemin": "src/services/aiOutput.ts",
+  "ligne": 0,
+  "classe": "nom-composé",
+  "remplacement": "renommer en src/services/ai-output.ts",
+  "références": 1,
+  "références_tests": 1,
+  "alternative": "exception de configuration (override Biome, filenameCases kebab/camel/Pascal, strictCase false)"
+ },
+ {
+  "règle": "useFilenamingConvention",
+  "chemin": "src/services/aiToolProtocol.ts",
+  "ligne": 0,
+  "classe": "nom-composé",
+  "remplacement": "renommer en src/services/ai-tool-protocol.ts",
+  "références": 2,
+  "références_tests": 1,
+  "alternative": "exception de configuration (override Biome, filenameCases kebab/camel/Pascal, strictCase false)"
+ },
+ {
+  "règle": "useFilenamingConvention",
+  "chemin": "src/services/appSettingsService.ts",
+  "ligne": 0,
+  "classe": "nom-composé",
+  "remplacement": "renommer en src/services/app-settings-service.ts",
+  "références": 17,
+  "références_tests": 6,
+  "alternative": "exception de configuration (override Biome, filenameCases kebab/camel/Pascal, strictCase false)"
+ },
+ {
+  "règle": "useFilenamingConvention",
+  "chemin": "src/services/assistantWorkspace.ts",
+  "ligne": 0,
+  "classe": "nom-composé",
+  "remplacement": "renommer en src/services/assistant-workspace.ts",
+  "références": 1,
+  "références_tests": 1,
+  "alternative": "exception de configuration (override Biome, filenameCases kebab/camel/Pascal, strictCase false)"
+ },
+ {
+  "règle": "useFilenamingConvention",
+  "chemin": "src/services/auditService.ts",
+  "ligne": 0,
+  "classe": "nom-composé",
+  "remplacement": "renommer en src/services/audit-service.ts",
+  "références": 2,
+  "références_tests": 0,
+  "alternative": "exception de configuration (override Biome, filenameCases kebab/camel/Pascal, strictCase false)"
+ },
+ {
+  "règle": "useFilenamingConvention",
+  "chemin": "src/services/backupCrypto.ts",
+  "ligne": 0,
+  "classe": "nom-composé",
+  "remplacement": "renommer en src/services/backup-crypto.ts",
+  "références": 3,
+  "références_tests": 0,
+  "alternative": "exception de configuration (override Biome, filenameCases kebab/camel/Pascal, strictCase false)"
+ },
+ {
+  "règle": "useFilenamingConvention",
+  "chemin": "src/services/backupScheduler.ts",
+  "ligne": 0,
+  "classe": "nom-composé",
+  "remplacement": "renommer en src/services/backup-scheduler.ts",
+  "références": 3,
+  "références_tests": 0,
+  "alternative": "exception de configuration (override Biome, filenameCases kebab/camel/Pascal, strictCase false)"
+ },
+ {
+  "règle": "useFilenamingConvention",
+  "chemin": "src/services/backupService.ts",
+  "ligne": 0,
+  "classe": "nom-composé",
+  "remplacement": "renommer en src/services/backup-service.ts",
+  "références": 9,
+  "références_tests": 2,
+  "alternative": "exception de configuration (override Biome, filenameCases kebab/camel/Pascal, strictCase false)"
+ },
+ {
+  "règle": "useFilenamingConvention",
+  "chemin": "src/services/billingService.ts",
+  "ligne": 0,
+  "classe": "nom-composé",
+  "remplacement": "renommer en src/services/billing-service.ts",
+  "références": 24,
+  "références_tests": 5,
+  "alternative": "exception de configuration (override Biome, filenameCases kebab/camel/Pascal, strictCase false)"
+ },
+ {
+  "règle": "useFilenamingConvention",
+  "chemin": "src/services/browserCredentials.ts",
+  "ligne": 0,
+  "classe": "nom-composé",
+  "remplacement": "renommer en src/services/browser-credentials.ts",
+  "références": 3,
+  "références_tests": 1,
+  "alternative": "exception de configuration (override Biome, filenameCases kebab/camel/Pascal, strictCase false)"
+ },
+ {
+  "règle": "useFilenamingConvention",
+  "chemin": "src/services/geminiService.ts",
+  "ligne": 0,
+  "classe": "nom-composé",
+  "remplacement": "renommer en src/services/gemini-service.ts",
+  "références": 3,
+  "références_tests": 0,
+  "alternative": "exception de configuration (override Biome, filenameCases kebab/camel/Pascal, strictCase false)"
+ },
+ {
+  "règle": "useFilenamingConvention",
+  "chemin": "src/services/invoiceSettingsService.ts",
+  "ligne": 0,
+  "classe": "nom-composé",
+  "remplacement": "renommer en src/services/invoice-settings-service.ts",
+  "références": 22,
+  "références_tests": 8,
+  "alternative": "exception de configuration (override Biome, filenameCases kebab/camel/Pascal, strictCase false)"
+ },
+ {
+  "règle": "useFilenamingConvention",
+  "chemin": "src/services/licenseActivationService.ts",
+  "ligne": 0,
+  "classe": "nom-composé",
+  "remplacement": "renommer en src/services/license-activation-service.ts",
+  "références": 12,
+  "références_tests": 5,
+  "alternative": "exception de configuration (override Biome, filenameCases kebab/camel/Pascal, strictCase false)"
+ },
+ {
+  "règle": "useFilenamingConvention",
+  "chemin": "src/services/licenseLease.ts",
+  "ligne": 0,
+  "classe": "nom-composé",
+  "remplacement": "renommer en src/services/license-lease.ts",
+  "références": 5,
+  "références_tests": 2,
+  "alternative": "exception de configuration (override Biome, filenameCases kebab/camel/Pascal, strictCase false)"
+ },
+ {
+  "règle": "useFilenamingConvention",
+  "chemin": "src/services/licenseRuntime.ts",
+  "ligne": 0,
+  "classe": "nom-composé",
+  "remplacement": "renommer en src/services/license-runtime.ts",
+  "références": 5,
+  "références_tests": 1,
+  "alternative": "exception de configuration (override Biome, filenameCases kebab/camel/Pascal, strictCase false)"
+ },
+ {
+  "règle": "useFilenamingConvention",
+  "chemin": "src/services/licenseService.ts",
+  "ligne": 0,
+  "classe": "nom-composé",
+  "remplacement": "renommer en src/services/license-service.ts",
+  "références": 3,
+  "références_tests": 0,
+  "alternative": "exception de configuration (override Biome, filenameCases kebab/camel/Pascal, strictCase false)"
+ },
+ {
+  "règle": "useFilenamingConvention",
+  "chemin": "src/services/localDataReset.ts",
+  "ligne": 0,
+  "classe": "nom-composé",
+  "remplacement": "renommer en src/services/local-data-reset.ts",
+  "références": 5,
+  "références_tests": 3,
+  "alternative": "exception de configuration (override Biome, filenameCases kebab/camel/Pascal, strictCase false)"
+ },
+ {
+  "règle": "useFilenamingConvention",
+  "chemin": "src/services/localTextService.ts",
+  "ligne": 0,
+  "classe": "nom-composé",
+  "remplacement": "renommer en src/services/local-text-service.ts",
+  "références": 5,
+  "références_tests": 0,
+  "alternative": "exception de configuration (override Biome, filenameCases kebab/camel/Pascal, strictCase false)"
+ },
+ {
+  "règle": "useFilenamingConvention",
+  "chemin": "src/services/notifications/useNotificationCenter.ts",
+  "ligne": 0,
+  "classe": "nom-composé",
+  "remplacement": "renommer en src/services/notifications/use-notification-center.ts",
+  "références": 3,
+  "références_tests": 0,
+  "alternative": "exception de configuration (override Biome, filenameCases kebab/camel/Pascal, strictCase false)"
+ },
+ {
+  "règle": "useFilenamingConvention",
+  "chemin": "src/services/updateService.ts",
+  "ligne": 0,
+  "classe": "nom-composé",
+  "remplacement": "renommer en src/services/update-service.ts",
+  "références": 6,
+  "références_tests": 1,
+  "alternative": "exception de configuration (override Biome, filenameCases kebab/camel/Pascal, strictCase false)"
+ },
+ {
+  "règle": "useFilenamingConvention",
+  "chemin": "src/services/vetKnowledgeService.ts",
+  "ligne": 0,
+  "classe": "nom-composé",
+  "remplacement": "renommer en src/services/vet-knowledge-service.ts",
+  "références": 6,
+  "références_tests": 2,
+  "alternative": "exception de configuration (override Biome, filenameCases kebab/camel/Pascal, strictCase false)"
+ }
+]

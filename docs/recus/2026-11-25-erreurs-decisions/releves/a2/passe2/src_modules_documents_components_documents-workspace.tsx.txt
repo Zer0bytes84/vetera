@@ -1,0 +1,3 @@
+CSS_IDENTIQUE : css 0, ordre css 0, morceaux 0, ordre 0, imports 1 (texte JS changé dans 1 morceaux)
+  [texte] assets/documents-workspace.js|src/modules/documents/components/documents-workspace.tsx
+  [imports] assets/documents-workspace.js|src/modules/documents/components/documents-workspace.tsx.imports: assets/rolldown-runtime.js,assets/react.js,assets/file-text.js,assets/searchable-select.js,assets/useSQLite.js,assets/consultation-documents-assistant.js,assets/document-composer.js,assets/visuallyHidden.js,assets/utils.js -> assets/rolldown-runtime.js,assets/file-text.js,assets/react.js,assets/visuallyHidden.js,assets/searchable-select.js,assets/useSQLite.js,assets/consultation-documents-assistant.js,assets/document-composer.js,assets/utils.js
