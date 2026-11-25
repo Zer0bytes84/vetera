@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
 import { buildActivityHeatmap, buildDayUnits, buildMonthForecast, buildSpeciesSplit, buildVisitKinds, heatLegend, heatLevel, shares } from "@/modules/dashboard/model/dashboard-widgets";
 import type { ScheduleEntry } from "@/modules/dashboard/v2/model";
 import type { Transaction } from "@/types/db";
@@ -97,11 +97,14 @@ describe("prévision des encaissements du mois", () => {
 
 describe("phrase de prévision", () => {
   const now = new Date(2026, 9, 29, 9, 0);
-  // Imported here: the component module carries its CSS, which Vitest ignores.
-  const sentence = async (transactions: Transaction[], at = now) => {
-    const { forecastSentence } = await import("@/modules/dashboard/components/widget-units");
-    return forecastSentence(buildMonthForecast(transactions, at)).replace(/\s/g, " ");
-  };
+  // Imported once, before the tests: the component module carries its CSS, which Vitest ignores, and loading it is not
+  // what these tests time.
+  let forecastSentence: typeof import("@/modules/dashboard/components/widget-units").forecastSentence;
+  beforeAll(async () => {
+    ({ forecastSentence } = await import("@/modules/dashboard/components/widget-units"));
+  });
+  const sentence = async (transactions: Transaction[], at = now) =>
+    forecastSentence(buildMonthForecast(transactions, at)).replace(/\s/g, " ");
 
   it("s'écrit avec les chiffres calculés, jamais en dur", async () => {
     expect(await sentence([paid("2026-10-02", 2_900_000), paid("2026-09-15", 3_000_000)])).toBe(

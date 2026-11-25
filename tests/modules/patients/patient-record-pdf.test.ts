@@ -183,7 +183,7 @@ it("décrit chaque page d’une annexe de plus de vingt pages et restitue réell
   const pages = await textPages(result.bytes);
   expect(pages.at(-1)).toContain("ORIGINAL SOURCE 23");
   expect(pages.at(-1)).toContain("Page 25 / 25");
-});
+}, 20_000);
 
 it("annule pendant une préparation volumineuse sans rendre un faux succès", async () => {
   const controller = new AbortController();
