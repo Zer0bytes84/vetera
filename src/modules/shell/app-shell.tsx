@@ -200,10 +200,10 @@ function AppShellInner() {
   useEffect(() => {
     const handleAssistantToggle = (event: Event) => {
       const custom = event as CustomEvent<AssistantOpenOptions>;
-      if (custom.detail?.open !== undefined) {
-        setAiAssistantOpen(custom.detail.open);
-      } else {
+      if (custom.detail?.open === undefined) {
         setAiAssistantOpen((prev) => !prev);
+      } else {
+        setAiAssistantOpen(custom.detail.open);
       }
       if (custom.detail?.patientId) {
         setAssistantPatientId(custom.detail.patientId);
@@ -287,7 +287,8 @@ function AppShellInner() {
     const updateScrollGeometry = () => {
       const style = getComputedStyle(panel);
       const borders =
-        parseFloat(style.borderLeftWidth) + parseFloat(style.borderRightWidth);
+        Number.parseFloat(style.borderLeftWidth) +
+        Number.parseFloat(style.borderRightWidth);
       const scrollbarWidth = Math.max(
         0,
         panel.offsetWidth - panel.clientWidth - borders
