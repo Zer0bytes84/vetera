@@ -1,11 +1,11 @@
-import {
-  EMPTY_SOAP,
-  SOAP_SECTIONS,
-  containsDosage,
-  type LocalSoapNote,
-} from "./soap-schema";
 import { parsePatientMentions } from "./patient-mentions";
 import { stripSoapLayout } from "./soap-layout";
+import {
+  containsDosage,
+  EMPTY_SOAP,
+  type LocalSoapNote,
+  SOAP_SECTIONS,
+} from "./soap-schema";
 
 // Only explicit section labels and stated care intentions are recognized here.
 // Unlabelled observations stay in S for the veterinarian to classify at review.

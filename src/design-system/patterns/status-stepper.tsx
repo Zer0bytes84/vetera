@@ -1,7 +1,8 @@
 import { HugeiconsIcon } from "@hugeicons/react";
 import { ArrowRight01Icon } from "@/lib/hugeicons";
-import { ActionButton, SignalBadge } from "../primitives";
 import type { AppointmentStatus } from "@/types/db";
+import { ActionButton, SignalBadge } from "../primitives";
+
 const labels: Record<AppointmentStatus, string> = {
   scheduled: "Planifié",
   confirmed: "Confirmé",

@@ -1,4 +1,13 @@
-import { ToolbarIcon } from "./components/toolbar-icon";
+import { HugeiconsIcon, type IconSvgElement } from "@hugeicons/react";
+import { type RefObject, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Button } from "@/components/ui/button";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { type FocusEntityKind, useFocus } from "@/contexts/focus-provider";
 import {
   Calendar01Icon,
   CalendarCheckIn01Icon,
@@ -10,17 +19,6 @@ import {
   Task01Icon,
   Tick01Icon,
 } from "@/lib/hugeicons";
-import { HugeiconsIcon, type IconSvgElement } from "@hugeicons/react";
-import { useMemo, useState, type RefObject } from "react";
-import { useTranslation } from "react-i18next";
-
-import { Button } from "@/components/ui/button";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { type FocusEntityKind, useFocus } from "@/contexts/focus-provider";
 import { cn } from "@/lib/utils";
 import {
   NOTIFICATION_SOURCE_ACCENT,
@@ -31,6 +29,7 @@ import {
 } from "@/services/notifications/types";
 import { useNotificationCenter } from "@/services/notifications/useNotificationCenter";
 import type { View } from "@/types";
+import { ToolbarIcon } from "./components/toolbar-icon";
 
 const NOTIFICATION_FILTERS = ["all", "unread", "critical"] as const;
 type NotificationFilter = (typeof NOTIFICATION_FILTERS)[number];

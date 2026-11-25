@@ -1,4 +1,3 @@
-import { formatDinars } from "@/utils/display-format";
 import type {
   Appointment,
   Owner,
@@ -7,6 +6,7 @@ import type {
   Task,
   Transaction,
 } from "@/types/db";
+import { formatDinars } from "@/utils/display-format";
 
 const SQLITE_TIMESTAMP_REGEX = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/;
 

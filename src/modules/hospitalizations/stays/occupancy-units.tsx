@@ -1,4 +1,4 @@
-import { occupancySummary, type OccupancyState } from "./occupancy";
+import { type OccupancyState, occupancySummary } from "./occupancy";
 import type { Stay, StayLocation } from "./store";
 
 const STATE_LABEL: Record<OccupancyState, string> = {

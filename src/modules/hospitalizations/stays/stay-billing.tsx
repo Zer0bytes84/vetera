@@ -6,13 +6,13 @@ import {
   useProductsRepository,
 } from "@/data/repositories";
 import { emitSQLiteDataChanged } from "@/hooks/useSQLite";
-import { isTauriRuntime } from "@/services/browser-store";
+import { guard } from "@/lib/guard";
 import { billingService } from "@/services/billingService";
-import { stayDays } from "./domain";
+import { isTauriRuntime } from "@/services/browser-store";
 import { prepareStayInvoice, stayInvoiceInput } from "./billing";
+import { stayDays } from "./domain";
 import { staysService } from "./service";
 import type { Stay } from "./store";
-import { guard } from "@/lib/guard";
 
 export function StayBilling({ stay }: { stay: Stay }) {
   const { currentUser } = useAuth();

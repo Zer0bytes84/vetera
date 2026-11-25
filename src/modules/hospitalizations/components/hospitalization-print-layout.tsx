@@ -1,9 +1,8 @@
-import { Hospital } from "@/lib/icons";
 import { useEffect, useRef } from "react";
-
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useHospitalizationVitalsRepository } from "@/data/repositories";
+import { Hospital } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 import type { Hospitalization, Patient } from "@/types/db";
 

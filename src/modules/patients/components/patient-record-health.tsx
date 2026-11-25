@@ -1,7 +1,7 @@
-import { Check, ArrowRight, ListChecks } from "@/lib/icons";
-import { RecordBlockHeading } from "./record-block-heading";
+import { ArrowRight, Check, ListChecks } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 import type { Owner, Patient, Vaccination, WeightEntry } from "@/types/db";
+import { RecordBlockHeading } from "./record-block-heading";
 
 interface PatientRecordHealthProps {
   className?: string;

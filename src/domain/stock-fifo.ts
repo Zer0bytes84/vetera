@@ -1,6 +1,6 @@
 import {
-  StockError,
   insufficientStockMessage,
+  StockError,
   stockBalance,
   stockQuantity,
 } from "./stock";

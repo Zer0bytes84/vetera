@@ -1,9 +1,9 @@
 import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
-import { SkeletonBlock } from "../primitives";
 import { Panel, Shell, ShellHeader } from "@/components/ui/surface";
-import { ErrorState } from "./error-state";
 import { cn } from "@/lib/utils";
+import { SkeletonBlock } from "../primitives";
+import { ErrorState } from "./error-state";
 
 export function WidgetShell({
   icon,

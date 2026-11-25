@@ -1,22 +1,29 @@
+import { Cpu } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Field, FieldLabel, FieldDescription } from "@/components/ui/field";
-import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
-import { Switch } from "@/components/ui/choice-controls";
-import { Cpu } from "lucide-react";
 import { SettingsSection } from "@/components/settings-section";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/choice-controls";
+import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { Progress } from "@/components/ui/progress";
+import { guard } from "@/lib/guard";
 import {
   ArrowDown,
-  Microphone,
-  MessageSquarePlus,
-  Search,
   Check,
   FolderOpen,
+  MessageSquarePlus,
+  Microphone,
+  Search,
 } from "@/lib/icons";
 import { isTauriRuntime } from "@/services/browser-store";
+import {
+  GEMMA4_SUSPENDED,
+  getGeneratorPreference,
+  hasGeneratorFallenBack,
+  setGeneratorPreference,
+} from "../local-ai/generator-choice";
 import { importLocalModel } from "../local-ai/models";
 import {
   aiModelInstallation,
@@ -25,19 +32,12 @@ import {
 import {
   AI_MODELS_CATALOG,
   AI_MODELS_CHANGED_EVENT,
-  allAIModelsReady,
   type AIModelId,
+  allAIModelsReady,
   dictationModelReady,
   NEW_ASSISTANT,
   TOTAL_AI_MODELS_SIZE_LABEL,
 } from "../services/ai-model-provisioning";
-import {
-  GEMMA4_SUSPENDED,
-  getGeneratorPreference,
-  hasGeneratorFallenBack,
-  setGeneratorPreference,
-} from "../local-ai/generator-choice";
-import { guard } from "@/lib/guard";
 
 const icons = {
   whisper: Microphone,

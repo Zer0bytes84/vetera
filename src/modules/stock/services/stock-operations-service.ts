@@ -7,14 +7,14 @@ import {
 import { announceInventoryChanged } from "./inventory-service";
 import {
   applyConsumptionThresholdInDatabase,
+  type BarcodeOperationInput,
   barcodeProductInDatabase,
   barcodeStockOperationInDatabase,
   saveBarcodeInDatabase,
   saveLocationInDatabase,
   stockOperationsSnapshotInDatabase,
-  transferStockInDatabase,
-  type BarcodeOperationInput,
   type TransferInput,
+  transferStockInDatabase,
 } from "./stock-operations-store";
 
 function changed() {

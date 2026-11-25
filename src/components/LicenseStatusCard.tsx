@@ -1,12 +1,12 @@
-import { useEffect, useState } from "react";
 import { ShieldCheck } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
 import { SettingsBody, SettingsSection } from "@/components/settings-section";
+import { Button } from "@/components/ui/button";
+import { guard } from "@/lib/guard";
 import {
   checkLicenseAccess,
   type LicenseAccess,
 } from "@/services/licenseRuntime";
-import { guard } from "@/lib/guard";
 
 export function LicenseStatusCard() {
   const [access, setAccess] = useState<LicenseAccess | null>(null);

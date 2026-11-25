@@ -1,9 +1,9 @@
 import { GState, jsPDF } from "jspdf";
-import { formatPhone } from "@/utils/display-format";
 import {
   INVOICE_ACCENTS,
   type InvoiceSettings,
 } from "@/services/invoiceSettingsService";
+import { formatPhone } from "@/utils/display-format";
 import { savePdf } from "./save-pdf";
 import { isTestDataFolder } from "./test-data-folder";
 

@@ -1,6 +1,6 @@
-import { createStockSnapshotHook } from "./create-stock-snapshot";
 import { stockOperationsService } from "../services/stock-operations-service";
 import type { StockOperationsSnapshot } from "../services/stock-operations-store";
+import { createStockSnapshotHook } from "./create-stock-snapshot";
 
 const useSnapshot = createStockSnapshotHook<StockOperationsSnapshot>(
   { barcodes: [], consumption: [], transfers: [] },

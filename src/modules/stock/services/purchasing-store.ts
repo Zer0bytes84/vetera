@@ -1,7 +1,7 @@
 import { StockError, stockBalance, stockQuantity } from "@/domain/stock";
 import { stockDate, stockDay, stockTimestamp } from "@/domain/stock-date";
-import { stockProductInDatabase, type StockDatabase } from "./stock-database";
 import { receiveStockInDatabase, registerLotInDatabase } from "./lot-store";
+import { type StockDatabase, stockProductInDatabase } from "./stock-database";
 
 export interface StockSupplier {
   address: string;

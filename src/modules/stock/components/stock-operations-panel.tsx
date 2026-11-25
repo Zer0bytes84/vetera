@@ -1,9 +1,8 @@
 import { useEffect, useRef, useState } from "react";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { SearchableSelect } from "@/components/ui/searchable-select";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Table,
   TableBody,
@@ -12,25 +11,26 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProductsRepository } from "@/data/repositories";
 import {
-  StockError,
   parseStockQuantityInput,
+  StockError,
   stockBalance,
   stockQuantityLabel,
 } from "@/domain/stock";
 import { stockDay, stockTimestamp } from "@/domain/stock-date";
-import { generateId } from "@/services/sqlite/database";
+import { guard, guardSync } from "@/lib/guard";
 import { isTauriRuntime } from "@/services/browser-store";
-import { useStockOperations } from "../hooks/use-stock-operations";
+import { generateId } from "@/services/sqlite/database";
 import { useStockInventory } from "../hooks/use-stock-inventory";
-import { stockOperationsService } from "../services/stock-operations-service";
-import type { StockProduct } from "../services/stock-database";
+import { useStockOperations } from "../hooks/use-stock-operations";
 import type { InventoryLocation } from "../services/lot-store";
+import type { StockProduct } from "../services/stock-database";
+import { stockOperationsService } from "../services/stock-operations-service";
 import { StockDatePicker } from "./stock-date-picker";
 import { StockLotSelect } from "./stock-lot-select";
-import { guard, guardSync } from "@/lib/guard";
 
 const failure = (error: unknown) =>
   error instanceof StockError

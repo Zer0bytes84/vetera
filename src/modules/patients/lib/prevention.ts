@@ -1,8 +1,8 @@
-import type { Vaccination } from "@/types/db";
 import type {
   MedicalReminder,
   ReminderType,
 } from "@/modules/patient-reminders/store";
+import type { Vaccination } from "@/types/db";
 import { currentVaccineReminders } from "../health-card/health-card-data";
 
 export interface PreventionCountdown {

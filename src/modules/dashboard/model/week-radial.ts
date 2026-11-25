@@ -1,6 +1,6 @@
 import type { Invoice, Transaction } from "@/types/db";
 import { settlementRate } from "../v2/financial-model";
-import { stateOf, type DayUnitState } from "./dashboard-widgets";
+import { type DayUnitState, stateOf } from "./dashboard-widgets";
 
 /**
  * « Cette semaine »: the week's figures, and its appointments as the cycle a ring of dots draws, by hour of

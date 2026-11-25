@@ -4,8 +4,8 @@ import {
   parseTourState,
   serializeTourState,
   TOUR_STORAGE_KEY,
-  UNREADABLE_TOUR_STATE,
   type TourState,
+  UNREADABLE_TOUR_STATE,
 } from "./tour-state";
 
 type Storage = Pick<globalThis.Storage, "getItem" | "setItem" | "removeItem">;

@@ -1,8 +1,8 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { ArrowDownRight, ArrowUpRight } from "@/lib/icons";
 import { cn } from "@/lib/utils";
-import { ArrowUpRight, ArrowDownRight } from "@/lib/icons";
 
 export type SettleTone =
   | "neutral"

@@ -1,4 +1,4 @@
-import { careDisplayStatus, type CareTask } from "./domain";
+import { type CareTask, careDisplayStatus } from "./domain";
 
 type DayTask = Pick<CareTask, "id" | "statut" | "heure_prevue" | "patient_id">;
 

@@ -1,8 +1,8 @@
-import { useId, useRef, type RefObject } from "react";
+import { type RefObject, useId, useRef } from "react";
 import { cn } from "@/lib/utils";
 import {
-  LineMascotArt,
   type LineAnimalKey,
+  LineMascotArt,
   type LineMood,
 } from "./line-mascots";
 import { useMascotLife } from "./use-mascot-life";

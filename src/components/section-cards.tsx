@@ -1,12 +1,5 @@
 "use client";
 
-import type { ReactNode } from "react";
-import {
-  StatGrid,
-  type Stat,
-  type StatIcon,
-  type StatTone,
-} from "@/components/ui/stat-grid";
 import {
   BanknotesIcon,
   CalendarDaysIcon,
@@ -20,8 +13,15 @@ import {
   UsersIcon,
   WalletIcon,
 } from "@heroicons/react/20/solid";
-import { formatNumber } from "@/utils/display-format";
+import type { ReactNode } from "react";
+import {
+  type Stat,
+  StatGrid,
+  type StatIcon,
+  type StatTone,
+} from "@/components/ui/stat-grid";
 import { cn } from "@/lib/utils";
+import { formatNumber } from "@/utils/display-format";
 
 export interface SectionCardItem {
   actionLabel?: string;

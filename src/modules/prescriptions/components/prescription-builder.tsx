@@ -1,3 +1,32 @@
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  NativeSelect,
+  NativeSelectOption,
+} from "@/components/ui/native-select";
+import { Textarea } from "@/components/ui/textarea";
+import { useAuth } from "@/contexts/AuthContext";
+import {
+  usePrescriptionItemsRepository,
+  usePrescriptionsRepository,
+  useWeightEntriesRepository,
+} from "@/data/repositories";
 import {
   ArrowDown,
   ArrowsDownUp,
@@ -9,41 +38,9 @@ import {
   Trash,
   X,
 } from "@/lib/icons";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
-
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  NativeSelect,
-  NativeSelectOption,
-} from "@/components/ui/native-select";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { Textarea } from "@/components/ui/textarea";
-import { useAuth } from "@/contexts/AuthContext";
-import {
-  usePrescriptionItemsRepository,
-  usePrescriptionsRepository,
-  useWeightEntriesRepository,
-} from "@/data/repositories";
 import { cn } from "@/lib/utils";
 import { useAudit } from "@/services/use-audit";
-import { toast } from "sonner";
 import type { Patient, PrescriptionItem } from "@/types/db";
-import type { PrescriptionVet } from "../types";
-
 import {
   computeDose,
   type DoseComputation,
@@ -66,6 +63,7 @@ import {
   instantiateTemplateItems,
   type PrescriptionTemplate,
 } from "../lib/prescription-templates";
+import type { PrescriptionVet } from "../types";
 import { DoseCalculatorCard } from "./dose-calculator-card";
 import { MedicationPicker } from "./medication-picker";
 import { PrescriptionPreview } from "./prescription-preview";

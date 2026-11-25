@@ -1,11 +1,11 @@
 import { useSyncExternalStore } from "react";
 import { EMPTY_MODEL_STATUS, type LocalModelStatus } from "../local-ai/models";
 import {
+  type AIProvisioningProgress,
   allAIModelsReady,
   checkAIModelsStatus,
   provisionAllAIModels,
   provisionNewAssistant,
-  type AIProvisioningProgress,
 } from "./ai-model-provisioning";
 
 export interface AIInstallationState {

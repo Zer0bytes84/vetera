@@ -1,11 +1,11 @@
-import {
-  ChatCircleDots,
-  ChartLineUp,
-  ClipboardText,
-  ListChecks,
-  type Icon,
-} from "@/lib/icons";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  ChartLineUp,
+  ChatCircleDots,
+  ClipboardText,
+  type Icon,
+  ListChecks,
+} from "@/lib/icons";
 import { cn } from "@/lib/utils";
 import type { SoapSectionKey } from "@/types/db";
 

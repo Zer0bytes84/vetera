@@ -1,8 +1,8 @@
 import { useId } from "react";
 import { Input } from "@/components/ui/input";
 import { SearchableSelect } from "@/components/ui/searchable-select";
-import type { Product } from "@/types/db";
 import { parseStockQuantityInput, stockQuantityLabel } from "@/domain/stock";
+import type { Product } from "@/types/db";
 
 /** Same physical-unit control in care, consultations and dispensing. */
 export function ProductStockFields({

@@ -1,5 +1,5 @@
-import { parkIdleModel, reserveClinicalModel } from "./model-lease";
 import { recordGeneratorFallback } from "./generator-choice";
+import { parkIdleModel, reserveClinicalModel } from "./model-lease";
 import type {
   LocalAiProgress,
   WorkerRequest,

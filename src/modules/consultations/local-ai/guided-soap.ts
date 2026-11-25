@@ -1,9 +1,9 @@
-import { routeGuidedTreatments } from "./treatment-routing";
 import {
+  type LocalSoapNote,
   localSoapSchema,
   SOAP_SECTIONS,
-  type LocalSoapNote,
 } from "./soap-schema";
+import { routeGuidedTreatments } from "./treatment-routing";
 
 /** Human-selected sections, with explicit treatment needs routed verbatim to P. */
 export function assembleGuidedNote(

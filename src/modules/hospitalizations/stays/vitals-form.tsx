@@ -2,9 +2,10 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
+import { guard } from "@/lib/guard";
 import { staysService } from "./service";
 import { announceStaysChanged } from "./use-stays";
-import { guard } from "@/lib/guard";
+
 const fields = [
   { key: "temperatureC", label: "Température (°C)" },
   { key: "heartRate", label: "FC (/min)" },

@@ -3,24 +3,24 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProductsRepository } from "@/data/repositories";
 import {
-  StockError,
-  parseStockQuantityInput,
-  stockBalance,
   insufficientStockMessage,
+  parseStockQuantityInput,
+  StockError,
+  stockBalance,
 } from "@/domain/stock";
-import { generateId } from "@/services/sqlite/database";
-import { isTauriRuntime } from "@/services/browser-store";
+import { stockDay } from "@/domain/stock-date";
+import { guard } from "@/lib/guard";
 import { ProductStockFields } from "@/modules/stock/components/product-stock-fields";
 import { StockInvoiceLink } from "@/modules/stock/components/stock-invoice-link";
 import { StockLotSelect } from "@/modules/stock/components/stock-lot-select";
 import { useStockInventory } from "@/modules/stock/hooks/use-stock-inventory";
-import { stockDay } from "@/domain/stock-date";
 import { clinicalStockService } from "@/modules/stock/services/clinical-stock-service";
 import type {
   Dispensation,
   DispensingLineInput,
 } from "@/modules/stock/services/clinical-stock-store";
-import { guard } from "@/lib/guard";
+import { isTauriRuntime } from "@/services/browser-store";
+import { generateId } from "@/services/sqlite/database";
 
 export function PrescriptionDispensing({
   prescriptionId,

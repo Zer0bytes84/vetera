@@ -1,8 +1,8 @@
 import { useMemo } from "react";
 import { Bell } from "@/lib/icons";
 import { cn } from "@/lib/utils";
-import type { Vaccination } from "@/types/db";
 import { usePatientReminders } from "@/modules/patient-reminders/use-patient-reminders";
+import type { Vaccination } from "@/types/db";
 import { countdownLabel, preventionCountdowns } from "../lib/prevention";
 import { recordDate } from "./medical-record-summary";
 import { RecordBlockHeading } from "./record-block-heading";

@@ -18,7 +18,7 @@ import {
   motion,
   useReducedMotion,
 } from "motion/react";
-import { useEffect, useRef, useState, type KeyboardEvent } from "react";
+import { type KeyboardEvent, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/action-button";
 import { Checkbox } from "@/components/ui/choice-controls";
 import { RollingNumber } from "@/components/ui/rolling-number";

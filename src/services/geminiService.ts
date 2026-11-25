@@ -1,5 +1,5 @@
-import { noteMarkdownToHTML } from "@/lib/note-markdown";
 import { APP_NAME } from "@/lib/brand";
+import { noteMarkdownToHTML } from "@/lib/note-markdown";
 import type { ChatMessage } from "../types";
 import { generateText, type LocalChatTurn } from "./localTextService";
 

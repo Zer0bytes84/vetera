@@ -1,7 +1,5 @@
-import { Check, FloppyDisk, Pencil, Trash, Warning, X } from "@/lib/icons";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -12,6 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Check, FloppyDisk, Pencil, Trash, Warning, X } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 
 import {

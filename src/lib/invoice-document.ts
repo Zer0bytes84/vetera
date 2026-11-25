@@ -1,9 +1,9 @@
-import type { InvoiceDetail } from "@/types/db";
 import {
   DEFAULT_INVOICE_SETTINGS,
   normalizeInvoiceSettings,
 } from "@/services/invoiceSettingsService";
-import { invoiceFileKey, type InvoicePdfData } from "./invoice-pdf";
+import type { InvoiceDetail } from "@/types/db";
+import { type InvoicePdfData, invoiceFileKey } from "./invoice-pdf";
 
 /** Re-exports use the identity frozen at issue time, not today's settings. */
 export function invoiceDocument(invoice: InvoiceDetail, patientName: string) {

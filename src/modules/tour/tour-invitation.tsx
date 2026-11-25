@@ -4,13 +4,13 @@ import { MapIcon, XMarkIcon } from "@heroicons/react/16/solid";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Panel, Shell } from "@/components/ui/surface";
-import { TOUR_INVITATION_COPY } from "./tour-steps";
 import {
   closeInvitation,
   invitationVisible,
   showInvitation,
   startTour,
 } from "./tour-state";
+import { TOUR_INVITATION_COPY } from "./tour-steps";
 import { tourStore, useTourState } from "./tour-store";
 import "./tour.css";
 

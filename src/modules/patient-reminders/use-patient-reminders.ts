@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { guard } from "@/lib/guard";
 import { patientRemindersService } from "./service";
 import type { PatientReminder, ReminderType } from "./store";
-import { guard } from "@/lib/guard";
 export const PATIENT_REMINDERS_CHANGED = "baitari:patient-reminders-changed";
 export function announcePatientRemindersChanged() {
   window.dispatchEvent(new Event(PATIENT_REMINDERS_CHANGED));

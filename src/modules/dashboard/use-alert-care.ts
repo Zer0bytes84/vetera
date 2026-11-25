@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { guard } from "@/lib/guard";
 import type { CareTask } from "@/modules/care-tasks/domain";
 import { careTasksService } from "@/modules/care-tasks/service";
 import { CARE_TASKS_CHANGED } from "@/modules/care-tasks/use-care-tasks";
 import { ALERT_DAYS_AHEAD, alertWindow } from "./model/alert-bars";
-import { guard } from "@/lib/guard";
 
 /**
  * The care of the alerts' window (six days back to seven days ahead), and every earlier care still not done, which stays late

@@ -1,6 +1,6 @@
 import {
-  documentLocalDay,
   DOCUMENT_TYPES,
+  documentLocalDay,
   type PatientDocument,
 } from "../document-domain";
 

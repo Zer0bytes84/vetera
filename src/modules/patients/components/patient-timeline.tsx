@@ -1,19 +1,5 @@
-import { meaningful } from "../lib/meaningful";
-import {
-  CalendarBlank,
-  FileText,
-  ClipboardText,
-  PencilSimple,
-  Notebook,
-  Pill,
-  ReceiptText,
-  Stethoscope,
-  Syringe,
-  TrendUp,
-} from "@/lib/icons";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,6 +9,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
+import { APPOINTMENT_STATUS_META } from "@/config/status-meta";
 import {
   useAppointmentsRepository,
   useConsultationDocumentsRepository,
@@ -32,21 +19,26 @@ import {
   useVaccinationsRepository,
   useWeightEntriesRepository,
 } from "@/data/repositories";
-import { usePatientDocuments } from "@/modules/documents/hooks/use-managed-documents";
-import { isTauriRuntime } from "@/services/browser-store";
 import {
-  collectTimelinePieces,
-  piecesByVisit,
-  type TimelinePiece,
-  type TimelinePieceKind,
-} from "../lib/timeline-pieces";
-import { APPOINTMENT_STATUS_META } from "@/config/status-meta";
+  CalendarBlank,
+  ClipboardText,
+  FileText,
+  Notebook,
+  PencilSimple,
+  Pill,
+  ReceiptText,
+  Stethoscope,
+  Syringe,
+  TrendUp,
+} from "@/lib/icons";
 import { cn } from "@/lib/utils";
+import { isSoapReviewed } from "@/modules/consultations/local-ai/soap-review";
 import {
   OFF_VISIT_KINDS,
   readOffVisitNote,
 } from "@/modules/consultations/off-visit-note";
-import { isSoapReviewed } from "@/modules/consultations/local-ai/soap-review";
+import { usePatientDocuments } from "@/modules/documents/hooks/use-managed-documents";
+import { isTauriRuntime } from "@/services/browser-store";
 import type {
   Appointment,
   ConsultationSoap,
@@ -55,6 +47,13 @@ import type {
   Vaccination,
   WeightEntry,
 } from "@/types/db";
+import { meaningful } from "../lib/meaningful";
+import {
+  collectTimelinePieces,
+  piecesByVisit,
+  type TimelinePiece,
+  type TimelinePieceKind,
+} from "../lib/timeline-pieces";
 
 const loadServicesBillingService = () => import("@/services/billingService");
 

@@ -1,15 +1,15 @@
-import { KpiMiniChart } from "../../v2/kpi-mini-chart";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { ArrowDown01Icon, ArrowRight01Icon } from "@/lib/hugeicons";
 import { TrendingUp } from "lucide-react";
+import { Panel, Shell, ShellHeader } from "@/components/ui/surface";
 import {
   ActionButton,
   EmptyState,
-  SkeletonBlock,
   focusRing,
+  SkeletonBlock,
 } from "@/design-system/primitives";
-import { Panel, Shell, ShellHeader } from "@/components/ui/surface";
+import { ArrowDown01Icon, ArrowRight01Icon } from "@/lib/hugeicons";
 import type { buildClinicalTrends } from "../../model/clinical-dashboard";
+import { KpiMiniChart } from "../../v2/kpi-mini-chart";
 import type { WidgetState } from "./shared";
 
 export function TrendsModule({

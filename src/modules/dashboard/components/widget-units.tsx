@@ -1,13 +1,12 @@
-import { useState, type ReactNode } from "react";
 import { ArrowRightIcon } from "@heroicons/react/16/solid";
-import { Bird, Cat, Dog, Horse, PawPrint, Rabbit, Turtle } from "@/lib/icons";
+import { type ReactNode, useState } from "react";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Bird, Cat, Dog, Horse, PawPrint, Rabbit, Turtle } from "@/lib/icons";
 import { formatNumber } from "@/utils/display-format";
-import { formatCentimes } from "../v2/model";
 import type {
   DayUnit,
   DayUnitState,
@@ -15,6 +14,7 @@ import type {
   SpeciesRow,
 } from "../model/dashboard-widgets";
 import { shares } from "../model/dashboard-widgets";
+import { formatCentimes } from "../v2/model";
 import "./widget-units.css";
 
 /** One category line: mark, name, count, share, aligned to the right. */

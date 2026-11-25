@@ -2,19 +2,19 @@
 // vector score, with the veterinary lexicon as a score bonus instead of an
 // absolute priority. The section index (v2) stays available for rollback.
 import {
+  assertSearchScope,
   EMBEDDING_MODEL_KEY,
   MIN_LEXICAL_FLOOR_SCORE,
   MIN_SEARCH_SCORE,
-  assertSearchScope,
   type SearchChunk,
   type SearchScope,
 } from "./embedding-index";
-import type { SearchModel } from "./worker-protocol";
 import {
   matchesExactSearchTerms,
   matchesNumericConstraints,
   matchesSearchTerms,
 } from "./veterinary-lexicon";
+import type { SearchModel } from "./worker-protocol";
 
 export type SearchGeneration =
   | "sections"

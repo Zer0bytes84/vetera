@@ -8,9 +8,9 @@
  * `negative`, `warning` are our tones; never the TuffUI theme); text is French, never under 12 px; no demo data.
  */
 
-import { Check, Square, CircleStop, TriangleAlert } from "lucide-react";
+import { Check, CircleStop, Square, TriangleAlert } from "lucide-react";
 import { AnimatePresence, MotionConfig, motion } from "motion/react";
-import { useEffect, useState, type ReactNode } from "react";
+import { type ReactNode, useEffect, useState } from "react";
 import { Button } from "@/components/ui/action-button";
 import { RollingNumber } from "@/components/ui/rolling-number";
 import { Panel, Shell } from "@/components/ui/surface";

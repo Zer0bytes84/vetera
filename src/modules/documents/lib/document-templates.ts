@@ -1,6 +1,6 @@
 import { z } from "zod";
-import type { Appointment, Owner, Patient } from "@/types/db";
 import type { LocalSoapNote } from "@/modules/consultations/local-ai/soap-schema";
+import type { Appointment, Owner, Patient } from "@/types/db";
 
 export const DOCUMENT_KINDS = {
   prescription: "Ordonnance",

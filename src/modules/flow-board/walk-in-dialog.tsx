@@ -10,11 +10,11 @@ import {
   FormDialogHeader,
 } from "@/components/ui/form-dialog";
 import { Spinner } from "@/components/ui/spinner";
-import { CheckmarkCircle02Icon, UserAdd01Icon } from "@/lib/hugeicons";
-import { findDossiers } from "@/modules/agenda/quick-search";
-import { PatientDossierSearch } from "@/modules/agenda/components/patient-dossier-search";
-import type { Owner, Patient } from "@/types/db";
 import { guard } from "@/lib/guard";
+import { CheckmarkCircle02Icon, UserAdd01Icon } from "@/lib/hugeicons";
+import { PatientDossierSearch } from "@/modules/agenda/components/patient-dossier-search";
+import { findDossiers } from "@/modules/agenda/quick-search";
+import type { Owner, Patient } from "@/types/db";
 
 /**
  * A patient at the desk without a booking. Same dialog and same dossier

@@ -1,7 +1,4 @@
-import { FileText } from "@/lib/icons";
-import { ModalBanner } from "@/components/ui/modal-banner";
 import { useTranslation } from "react-i18next";
-
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -10,6 +7,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { ModalBanner } from "@/components/ui/modal-banner";
+import { FileText } from "@/lib/icons";
 import type { Patient } from "@/types/db";
 import type { PrescriptionVet, PreviewItem } from "../types";
 

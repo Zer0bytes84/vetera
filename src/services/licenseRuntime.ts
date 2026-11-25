@@ -1,7 +1,7 @@
 import {
   getLicenseInfo,
-  saveLicenseState,
   type StoredLicense,
+  saveLicenseState,
 } from "./appSettingsService";
 import {
   activateLicense,

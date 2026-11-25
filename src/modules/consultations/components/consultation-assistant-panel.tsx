@@ -1,23 +1,22 @@
+import LayoutRightIcon from "@hugeicons/core-free-icons/LayoutRightIcon";
+import { HugeiconsIcon } from "@hugeicons/react";
 import {
   createContext,
+  type ReactNode,
   useContext,
   useEffect,
   useId,
   useRef,
   useState,
-  type ReactNode,
 } from "react";
 import { createPortal } from "react-dom";
-import { cn } from "@/lib/utils";
-
-import { HugeiconsIcon } from "@hugeicons/react";
-import LayoutRightIcon from "@hugeicons/core-free-icons/LayoutRightIcon";
 import { Button } from "@/components/ui/button";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 import { AssistantBrandAvatar } from "./assistant-brand-avatar";
 
 const PanelControlsContext = createContext<{

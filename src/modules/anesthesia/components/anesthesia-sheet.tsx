@@ -1,7 +1,5 @@
-import { Syringe } from "@/lib/icons";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -11,6 +9,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { Syringe } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 import type { AnesthesiaSheet, Patient } from "@/types/db";
 

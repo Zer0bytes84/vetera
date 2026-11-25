@@ -1,8 +1,8 @@
 import { getSetting, setSetting } from "@/services/appSettingsService";
 
 import {
-  parseTemplates,
   type PrescriptionTemplate,
+  parseTemplates,
 } from "./prescription-templates";
 
 /** Clé locale (table app_settings, SQLite ou stockage navigateur). */

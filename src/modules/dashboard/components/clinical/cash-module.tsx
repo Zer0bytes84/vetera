@@ -1,13 +1,13 @@
 import { Wallet } from "lucide-react";
 import { ListFilter } from "@/components/ui/list-controls";
-import { KpiSegments } from "../../v2/kpi-mini-chart";
-import { EmptyState, SignalBadge, Stat } from "@/design-system/primitives";
 import { WidgetShell } from "@/design-system/patterns/widget-shell";
+import { EmptyState, SignalBadge, Stat } from "@/design-system/primitives";
 import type {
   buildClinicalCash,
   ClinicalCashPeriod,
 } from "../../model/clinical-dashboard";
 import type { Receivable } from "../../v2/financial-model";
+import { KpiSegments } from "../../v2/kpi-mini-chart";
 import {
   formatCentimes,
   formatCurrency,

@@ -1,8 +1,8 @@
-import { prepareModelDictation } from "./treatment-routing";
 import type { Appointment, ConsultationSoap, Patient } from "@/types/db";
+import { buildDictationScaffold } from "./dictation-scaffold";
 import type { LocalSoapNote } from "./soap-schema";
 import { containsDosage, SOAP_SECTIONS } from "./soap-schema";
-import { buildDictationScaffold } from "./dictation-scaffold";
+import { prepareModelDictation } from "./treatment-routing";
 
 export const MAX_TRANSCRIPT_LENGTH = 6000;
 const excerpt = (text?: string | null, limit = 480) =>

@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { SlotPicker, type Slot } from "@/components/ui/slot-picker";
+import { type Slot, SlotPicker } from "@/components/ui/slot-picker";
 import { formatNumber } from "@/utils/display-format";
 import { buildFreeSlots, type FreeSlot } from "../model/free-slots";
 

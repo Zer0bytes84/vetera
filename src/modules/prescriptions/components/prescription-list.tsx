@@ -1,20 +1,18 @@
-import { Pill, Plus, Printer } from "@/lib/icons";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   usePrescriptionItemsRepository,
   usePrescriptionsRepository,
 } from "@/data/repositories";
+import { Pill, Plus, Printer } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 import type { Patient } from "@/types/db";
-import type { PrescriptionVet } from "../types";
-
 import { formatNumber } from "../lib/dose-calculator";
-import { PrescriptionPreview, type PreviewItem } from "./prescription-preview";
+import type { PrescriptionVet } from "../types";
 import { PrescriptionDispensing } from "./prescription-dispensing";
+import { PrescriptionPreview, type PreviewItem } from "./prescription-preview";
 
 export interface PrescriptionListProps {
   /** Si fourni, limite l'affichage à cette consultation. */

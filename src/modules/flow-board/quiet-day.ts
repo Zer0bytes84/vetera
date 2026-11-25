@@ -1,5 +1,5 @@
-import type { Appointment, Patient, Transaction } from "@/types/db";
 import { parseDashboardDate } from "@/modules/dashboard/v2/model";
+import type { Appointment, Patient, Transaction } from "@/types/db";
 import { isSameLocalDay } from "./model";
 
 /**

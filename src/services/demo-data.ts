@@ -1,6 +1,6 @@
 import {
-  getBrowserTable,
   getBrowserSetting,
+  getBrowserTable,
   isTauriRuntime,
   replaceBrowserTable,
   setBrowserRow,

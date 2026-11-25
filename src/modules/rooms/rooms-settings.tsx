@@ -1,9 +1,10 @@
-import { useState, type FormEvent } from "react";
-import { toast } from "sonner";
 import { DoorOpen } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { type FormEvent, useState } from "react";
+import { toast } from "sonner";
 import { SettingsSection } from "@/components/settings-section";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { guard } from "@/lib/guard";
 import {
   Archive,
   ArrowDown,
@@ -18,7 +19,6 @@ import { isTauriRuntime } from "@/services/browser-store";
 import { roomsService } from "./service";
 import { ROOM_NAME_MAX_LENGTH, type Room } from "./store";
 import { announceRoomsChanged, refreshRooms, useRooms } from "./use-rooms";
-import { guard } from "@/lib/guard";
 
 const message = (error: unknown) =>
   error instanceof Error

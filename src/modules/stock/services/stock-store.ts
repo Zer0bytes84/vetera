@@ -1,18 +1,18 @@
 import {
-  StockError,
   insufficientStockMessage,
+  StockError,
   stockBalance,
   stockQuantity,
 } from "@/domain/stock";
 import type { StockSelection } from "@/domain/stock-fifo";
 import {
-  hasStockLots,
   consumeStockLotsInDatabase,
+  hasStockLots,
 } from "./lot-consumption-store";
 import {
+  countUnassignedStockInDatabase,
   prepareStockAllocations,
   receiveStockInDatabase,
-  countUnassignedStockInDatabase,
 } from "./lot-store";
 import { stockProductInDatabase as lotProductInDatabase } from "./stock-database";
 

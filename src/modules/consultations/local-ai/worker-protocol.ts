@@ -1,5 +1,5 @@
-import type { DictationLanguage } from "./whisper-language";
 import type { GeneratorCandidate, GeneratorFamily } from "./generator-choice";
+import type { DictationLanguage } from "./whisper-language";
 
 /** Local search model: v1 (EmbeddingGemma 300M fp32), v2 (EmbeddingGemma 2 text, q8) or arctic-embed-l-v2 (q8). */
 export type SearchModel = "embeddinggemma" | "embeddinggemma2" | "arctic";

@@ -1,12 +1,12 @@
+import type { ComponentProps } from "react";
 import { useMemo } from "react";
 import { DivergingBars } from "@/components/ui/diverging-bars";
 import { formatNumber } from "@/utils/display-format";
 import {
   ALERT_CATEGORIES,
-  buildAlertBars,
   type AlertReminder,
+  buildAlertBars,
 } from "../model/alert-bars";
-import type { ComponentProps } from "react";
 
 type Inputs = Pick<
   Parameters<typeof buildAlertBars>[0],

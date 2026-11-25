@@ -5,12 +5,12 @@ import {
   runDbTransaction,
 } from "@/services/sqlite/database";
 import {
-  consumeConsultationProductInDatabase,
-  dispensePrescriptionInDatabase,
   type ClinicalStockUse,
   type ClinicalUseInput,
+  consumeConsultationProductInDatabase,
   type Dispensation,
   type DispensingInput,
+  dispensePrescriptionInDatabase,
 } from "./clinical-stock-store";
 
 function changed() {

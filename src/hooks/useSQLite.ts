@@ -6,13 +6,7 @@ import {
   useSyncExternalStore,
 } from "react";
 import { toast } from "sonner";
-import { tablesAffectedByDelete } from "@/services/sqlite/related-tables";
 import { PATIENTS_WITH_REFERENCE_SQL } from "@/modules/patients/reference/reference";
-import {
-  TableSnapshotCache,
-  type CachedRow,
-} from "@/services/sqlite/table-snapshot-cache";
-
 import {
   type BrowserTableName,
   getBrowserTable,
@@ -22,6 +16,11 @@ import {
   setBrowserRow,
   updateBrowserRow,
 } from "@/services/browser-store";
+import { tablesAffectedByDelete } from "@/services/sqlite/related-tables";
+import {
+  type CachedRow,
+  TableSnapshotCache,
+} from "@/services/sqlite/table-snapshot-cache";
 import {
   generateId,
   type getDatabase,

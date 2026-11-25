@@ -2,7 +2,7 @@
 // Free to use. If it helps you, you can support it: https://ko-fi.com/yurigokoryan
 "use client";
 
-import { Check, Minus, Search, X, type LucideIcon } from "lucide-react";
+import { Check, type LucideIcon, Minus, Search, X } from "lucide-react";
 import { useId } from "react";
 import { cn } from "@/lib/utils";
 

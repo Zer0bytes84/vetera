@@ -3,11 +3,11 @@ import { toast } from "sonner";
 import { QuickPatientPicker } from "@/components/QuickPatientPicker";
 import { useAuth } from "@/contexts/AuthContext";
 import { useAppointmentsRepository } from "@/data/repositories";
+import { guard } from "@/lib/guard";
 import { startInFlux } from "@/modules/flow-board/open-in-flux";
 import { prepareQuickConsultation } from "@/modules/shell/model/quick-consultation";
 import type { View } from "@/types";
 import type { Patient } from "@/types/db";
-import { guard } from "@/lib/guard";
 
 export default function QuickConsultation({
   open,

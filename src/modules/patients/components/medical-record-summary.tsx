@@ -1,17 +1,17 @@
-import type { KeyboardEvent } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Phone, Mail, User } from "@/lib/icons";
+import type { KeyboardEvent } from "react";
+import { WhatsAppLink } from "@/components/whatsapp-link";
+import { getPatientStatusMeta } from "@/config/status-meta";
+import { Mail, Phone, User } from "@/lib/icons";
 import { getSpeciesGlyph } from "@/lib/species-icons";
 import { getSpeciesTheme } from "@/lib/species-theme";
-import { getPatientStatusMeta } from "@/config/status-meta";
+import { cn } from "@/lib/utils";
+import { contactMessage } from "@/lib/whatsapp";
 import type { Owner, Patient } from "@/types/db";
+import { formatPhone } from "@/utils/display-format";
 import { computeAge, formatAgeFr } from "../lib/age";
 import { normalizeDate } from "./patients-shared";
-import { formatPhone } from "@/utils/display-format";
-import { cn } from "@/lib/utils";
 import { RecordBlockHeading } from "./record-block-heading";
-import { WhatsAppLink } from "@/components/whatsapp-link";
-import { contactMessage } from "@/lib/whatsapp";
 import "../medical-record.css";
 
 function ownerInitials(owner: {

@@ -1,14 +1,15 @@
 import {
-  LineChart,
   Line,
+  LineChart,
+  ReferenceArea,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  ReferenceArea,
 } from "recharts";
-import { referenceRange } from "./vitals-summary";
 import type { VitalSign } from "./store";
+import { referenceRange } from "./vitals-summary";
+
 const metrics = [
   { key: "temperature_c", label: "Température", unit: "°C" },
   { key: "heart_rate", label: "Fréquence cardiaque", unit: "/min" },

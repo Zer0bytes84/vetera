@@ -1,7 +1,5 @@
-import { ArrowsClockwise, Hospital, Plus } from "@/lib/icons";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,6 +9,7 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 import { useHospitalizationsRepository } from "@/data/repositories";
+import { ArrowsClockwise, Hospital, Plus } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 import type { Hospitalization, Patient } from "@/types/db";
 

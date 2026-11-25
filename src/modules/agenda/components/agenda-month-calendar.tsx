@@ -1,8 +1,7 @@
-import { ArrowLeft01Icon, ArrowRight01Icon } from "@/lib/hugeicons";
 import { HugeiconsIcon } from "@hugeicons/react";
-
 import { Button } from "@/components/ui/button";
 import { getAppointmentTypeMeta } from "@/config/status-meta";
+import { ArrowLeft01Icon, ArrowRight01Icon } from "@/lib/hugeicons";
 import { cn } from "@/lib/utils";
 import type { Appointment } from "@/types/db";
 

@@ -1,15 +1,18 @@
-import { LocalInferenceSession } from "./inference-client";
-import { getLocalModelUrls, type LocalModelStatus } from "./models";
-import { generateValidatedSoap } from "./generate-soap";
 import {
   assertFaithfulSoap,
   buildDictationScaffold,
   SoapFidelityError,
 } from "./dictation-scaffold";
+import type { SoapRetryPart } from "./generate-soap";
+import { generateValidatedSoap } from "./generate-soap";
+import { GUIDED_RUBRIC_TITLES, guidedDictationTranscript } from "./guided-soap";
+import { LocalInferenceSession } from "./inference-client";
+import { getLocalModelUrls, type LocalModelStatus } from "./models";
+import { createSoapPrompt, type LocalPatientContext } from "./patient-context";
 import {
+  type LocalSoapNote,
   localSoapSchema,
   SOAP_SECTIONS,
-  type LocalSoapNote,
 } from "./soap-schema";
 import {
   mergeProtectedDictation,
@@ -17,9 +20,6 @@ import {
   prepareModelDictation,
   routeGuidedTreatments,
 } from "./treatment-routing";
-import { GUIDED_RUBRIC_TITLES, guidedDictationTranscript } from "./guided-soap";
-import type { SoapRetryPart } from "./generate-soap";
-import { createSoapPrompt, type LocalPatientContext } from "./patient-context";
 import type { LocalAiProgress } from "./worker-protocol";
 
 interface SoapDraftOptions {

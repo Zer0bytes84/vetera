@@ -1,13 +1,13 @@
 import {
+  isSoapReviewed,
+  soapSourceKey,
+} from "@/modules/consultations/local-ai/soap-review";
+import {
   getBrowserTable,
   insertBrowserRow,
   isTauriRuntime,
 } from "@/services/browser-store";
 import { generateId, runDbTransaction } from "@/services/sqlite/database";
-import {
-  isSoapReviewed,
-  soapSourceKey,
-} from "@/modules/consultations/local-ai/soap-review";
 import type { Appointment, ConsultationSoap, Note } from "@/types/db";
 import { documentToHtml } from "./document-templates";
 

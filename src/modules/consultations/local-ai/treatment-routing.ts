@@ -1,6 +1,6 @@
-import { containsDosage, type LocalSoapNote } from "./soap-schema";
 import { evidenceTokens } from "./dictation-scaffold";
 import { stripSoapLayout } from "./soap-layout";
+import { containsDosage, type LocalSoapNote } from "./soap-schema";
 
 // Decimal doses (2.5 mg) are not sentence boundaries.
 const sentences = (text: string) =>

@@ -2,11 +2,11 @@ import path from "node:path";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import { loadEnv, type Plugin } from "vite";
-import { defineConfig, configDefaults } from "vitest/config";
-// @ts-expect-error Shared Node build helper.
-import { localAiRuntimePlugin } from "./scripts/local-ai-runtime-plugin.mjs";
+import { configDefaults, defineConfig } from "vitest/config";
 // @ts-expect-error Build helper is shared with Node integration tests.
 import { licenseBuildConfig } from "./scripts/license-build-config.mjs";
+// @ts-expect-error Shared Node build helper.
+import { localAiRuntimePlugin } from "./scripts/local-ai-runtime-plugin.mjs";
 // @ts-expect-error Development-only test harness, a Node helper (see docs/TEST-HARNESS.md).
 import { testHarnessPlugin } from "./scripts/test-harness-plugin.mjs";
 

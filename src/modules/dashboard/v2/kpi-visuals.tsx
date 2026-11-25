@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState, type KeyboardEvent } from "react";
+import { type KeyboardEvent, useId, useState } from "react";
 import {
   ArrowDownRight,
   ArrowUpRight,
@@ -14,9 +14,9 @@ import {
   Turtle,
 } from "@/lib/icons";
 import { getSpeciesTheme } from "@/lib/species-theme";
+import { cn } from "@/lib/utils";
 import { formatNumber } from "@/utils/display-format";
 import { formatCentimes } from "./model";
-import { cn } from "@/lib/utils";
 import "./kpi-visuals.css";
 
 function handleKeyNavigation(

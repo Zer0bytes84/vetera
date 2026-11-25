@@ -1,12 +1,5 @@
 import "@/design-system/page-header-line.css";
 import {
-  CalendarPlus,
-  FirstAid,
-  Notebook,
-  Pencil,
-  PencilSimple,
-} from "@/lib/icons";
-import {
   Archive,
   ArchiveRestore,
   ChevronDown,
@@ -16,9 +9,6 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { getSpeciesTheme } from "@/lib/species-theme";
-import { speciesIcon } from "@/lib/species-icon";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,11 +18,21 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { StatusPill, type StatusTone } from "@/components/ui/status-pill";
 import { getPatientStatusMeta } from "@/config/status-meta";
-import { computeAge, formatAgeFr } from "../lib/age";
+import {
+  AlertTriangle,
+  CalendarPlus,
+  FirstAid,
+  Notebook,
+  Pencil,
+  PencilSimple,
+} from "@/lib/icons";
+import { speciesIcon } from "@/lib/species-icon";
+import { getSpeciesTheme } from "@/lib/species-theme";
+import { cn } from "@/lib/utils";
 import { isTauriRuntime } from "@/services/browser-store";
 import type { Invoice, Owner, Patient } from "@/types/db";
 import { formatDinars, formatPhone } from "@/utils/display-format";
-import { AlertTriangle } from "@/lib/icons";
+import { computeAge, formatAgeFr } from "../lib/age";
 import { isClinicalSignal } from "./medical-record-summary";
 
 const loadServicesBillingService = () => import("@/services/billingService");

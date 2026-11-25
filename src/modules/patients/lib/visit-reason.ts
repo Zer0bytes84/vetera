@@ -1,5 +1,5 @@
-import { meaningful } from "./meaningful";
 import type { Appointment } from "@/types/db";
+import { meaningful } from "./meaningful";
 
 /**
  * The reason typed for the visit. Titles built as "Patient - Type" repeat the

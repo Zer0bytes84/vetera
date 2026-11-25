@@ -1,4 +1,4 @@
-import { careDisplayStatus, type CareTask } from "@/modules/care-tasks/domain";
+import { type CareTask, careDisplayStatus } from "@/modules/care-tasks/domain";
 import type { Appointment, Invoice, Patient, Product } from "@/types/db";
 import { isOpenInvoice } from "../v2/financial-model";
 import { parseDashboardDate, startOfDay } from "../v2/model";

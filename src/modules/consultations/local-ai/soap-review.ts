@@ -1,5 +1,5 @@
 import type { ConsultationSoap } from "@/types/db";
-import { SOAP_SECTIONS, type LocalSoapNote } from "./soap-schema";
+import { type LocalSoapNote, SOAP_SECTIONS } from "./soap-schema";
 
 export function soapSourceKey(note: LocalSoapNote): string {
   return JSON.stringify(SOAP_SECTIONS.map(({ key }) => note[key]));

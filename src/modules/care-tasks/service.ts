@@ -1,19 +1,21 @@
+import { emitSQLiteDataChanged } from "@/hooks/useSQLite";
 import {
   generateId,
   runDbRead,
   runDbTransaction,
 } from "@/services/sqlite/database";
-import { createCareStore } from "./store";
 import type { CareStatus } from "./domain";
-import { emitSQLiteDataChanged } from "@/hooks/useSQLite";
+import { createCareStore } from "./store";
+
 const store = createCareStore(
   { read: runDbRead, transaction: runDbTransaction },
   generateId
 );
 
+import { toast } from "sonner";
 // Register with the service, independently of which clinical view is mounted.
 import { subscribeCareTaskCompleted } from "./hooks";
-import { toast } from "sonner";
+
 subscribeCareTaskCompleted(async ({ taskId }) => {
   try {
     const { billCompletedCareTask } = await import("@/services/billingService");

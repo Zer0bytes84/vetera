@@ -1,11 +1,3 @@
-import {
-  Building01Icon,
-  Logout01Icon,
-  Notification01Icon,
-  Settings01Icon,
-  UserCircleIcon,
-  Wallet01Icon,
-} from "@/lib/hugeicons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { ChevronsUpDown } from "lucide-react";
 import Avatar from "@/components/Avatar";
@@ -20,6 +12,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ShortcutTooltip } from "@/design-system/patterns/shortcut-tooltip";
+import {
+  Building01Icon,
+  Logout01Icon,
+  Notification01Icon,
+  Settings01Icon,
+  UserCircleIcon,
+  Wallet01Icon,
+} from "@/lib/hugeicons";
 
 export interface AccountMenuProps {
   avatarUrl?: string | null;

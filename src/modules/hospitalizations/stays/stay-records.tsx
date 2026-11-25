@@ -1,21 +1,22 @@
+import { useCallback, useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
 } from "@/components/ui/dialog";
-import { CarePlanForm } from "./care-plan-form";
-import { useCallback, useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
 import { useFocus } from "@/contexts/focus-provider";
 import { useUsersRepository } from "@/data/repositories";
 import type { CareTask } from "@/modules/care-tasks/domain";
 import { CARE_TASKS_CHANGED } from "@/modules/care-tasks/use-care-tasks";
-import { staysService } from "./service";
-import type { StayHistory, CarePlan } from "./store";
-import { STAYS_CHANGED } from "./use-stays";
 import { formatPersonName } from "@/utils/display-format";
+import { CarePlanForm } from "./care-plan-form";
+import { staysService } from "./service";
+import type { CarePlan, StayHistory } from "./store";
+import { STAYS_CHANGED } from "./use-stays";
+
 const eventLabels: Record<string, string> = {
   admission: "Admission",
   statut: "Changement de statut",

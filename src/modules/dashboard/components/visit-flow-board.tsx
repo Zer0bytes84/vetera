@@ -1,5 +1,7 @@
+import { HugeiconsIcon } from "@hugeicons/react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { useRoomLabel } from "@/modules/rooms/use-rooms";
+import { Panel, Shell, ShellHeader } from "@/components/ui/surface";
+import { ActionButton, SignalBadge } from "@/design-system/primitives";
 import {
   AlertTriangle,
   ArrowRight,
@@ -10,10 +12,8 @@ import {
   DoorOpen,
   Stethoscope,
 } from "@/lib/icons";
-import { HugeiconsIcon } from "@hugeicons/react";
 import { getSpeciesGlyph } from "@/lib/species-icons";
-import { ActionButton, SignalBadge } from "@/design-system/primitives";
-import { Panel, Shell, ShellHeader } from "@/components/ui/surface";
+import { useRoomLabel } from "@/modules/rooms/use-rooms";
 import type { NowSnapshot } from "../model/clinical-dashboard";
 import { formatTime } from "../v2/model";
 import "./clinical/clinical-workspace.css";

@@ -1,4 +1,3 @@
-import { CaretUpDown, Check, Pill } from "@/lib/icons";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Badge } from "@/components/ui/badge";
@@ -16,6 +15,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { CaretUpDown, Check, Pill } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 
 import {

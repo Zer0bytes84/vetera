@@ -1,17 +1,17 @@
-import { useState } from "react";
 import { CheckCircle2 } from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
 } from "@/components/ui/dialog";
 import { useFocus } from "@/contexts/focus-provider";
-import { suggestCareTasksFromPlan } from "./domain";
 import { CareTaskForm } from "./care-task-form";
+import { suggestCareTasksFromPlan } from "./domain";
 import { CARE_LIST_DAY_KEY } from "./use-care-tasks";
 
 interface CreatedCareTask {

@@ -1,19 +1,3 @@
-import { openPatientPeek } from "@/modules/patients/pages/patient-peek";
-import { useRoomLabel } from "@/modules/rooms/use-rooms";
-import {
-  Cat,
-  Dog,
-  Bird,
-  Rabbit,
-  ChevronLeft,
-  ChevronRight,
-  MapPin,
-  MoreHorizontal,
-  PawPrint,
-  Phone,
-  Stethoscope,
-  UserRound,
-} from "@/lib/icons";
 import { type ReactNode, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,24 +7,40 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { openWhatsApp } from "@/components/whatsapp-link";
 import { getAppointmentTypeMeta } from "@/config/status-meta";
 import { canTransitionAppointmentStatus } from "@/domain/clinical/scheduling";
-import { cn } from "@/lib/utils";
-import {
-  AppointmentStatusBadge,
-  AppointmentTypeBadge,
-  type AgendaTableRow,
-} from "@/modules/agenda/components/agenda-shared";
-import type { Appointment, AppointmentStatus } from "@/types/db";
-import { formatPhone } from "@/utils/display-format";
-import { openWhatsApp } from "@/components/whatsapp-link";
 import { canRelanceFromAgenda } from "@/lib/appointment-relance";
+import {
+  Bird,
+  Cat,
+  ChevronLeft,
+  ChevronRight,
+  Dog,
+  MapPin,
+  MoreHorizontal,
+  PawPrint,
+  Phone,
+  Rabbit,
+  Stethoscope,
+  UserRound,
+} from "@/lib/icons";
+import { cn } from "@/lib/utils";
 import {
   appointmentMessage,
   missedAppointmentMessage,
   whatsAppLink,
   whatsAppNumber,
 } from "@/lib/whatsapp";
+import {
+  type AgendaTableRow,
+  AppointmentStatusBadge,
+  AppointmentTypeBadge,
+} from "@/modules/agenda/components/agenda-shared";
+import { openPatientPeek } from "@/modules/patients/pages/patient-peek";
+import { useRoomLabel } from "@/modules/rooms/use-rooms";
+import type { Appointment, AppointmentStatus } from "@/types/db";
+import { formatPhone } from "@/utils/display-format";
 import "@/modules/agenda/components/agenda-cards.css";
 
 interface AgendaListViewProps {

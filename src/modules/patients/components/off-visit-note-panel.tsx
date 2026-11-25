@@ -1,28 +1,28 @@
 import { lazy, Suspense, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { CheckCircle, CircleNotch } from "@/lib/icons";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
+import { guard } from "@/lib/guard";
+import { CheckCircle, CircleNotch } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 import { AssistantBrandAvatar } from "@/modules/consultations/components/assistant-brand-avatar";
 import { ConsultationAssistantPanel } from "@/modules/consultations/components/consultation-assistant-panel";
-import { SoapSectionEditor } from "@/modules/consultations/components/soap-section-editor";
 import type { SoapNoteOrigin } from "@/modules/consultations/components/local-consultation-assistant";
+import { SoapSectionEditor } from "@/modules/consultations/components/soap-section-editor";
 import {
   EMPTY_SOAP,
-  SOAP_SECTIONS,
   type LocalSoapNote,
+  SOAP_SECTIONS,
 } from "@/modules/consultations/local-ai/soap-schema";
 import {
   OFF_VISIT_KINDS,
+  type OffVisitKind,
   readOffVisitNote,
   saveOffVisitNote,
-  type OffVisitKind,
 } from "@/modules/consultations/off-visit-note";
 import type { Note } from "@/types/db";
 import { recordDate } from "./medical-record-summary";
-import { guard } from "@/lib/guard";
 
 const LocalConsultationAssistant = lazy(
   () =>

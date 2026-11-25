@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useSyncExternalStore } from "react";
 import { isTauriRuntime } from "@/services/browser-store";
 import { roomsService } from "./service";
-import { roomLabel, type Room } from "./store";
+import { type Room, roomLabel } from "./store";
 
 export const ROOMS_CHANGED = "baitari:rooms-changed";
 

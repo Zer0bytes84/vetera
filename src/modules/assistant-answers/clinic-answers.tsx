@@ -8,7 +8,7 @@
  */
 
 import { ArrowUp, Database, RotateCcw } from "lucide-react";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { type ReactNode, useEffect, useRef, useState } from "react";
 import { Button, IconButton } from "@/components/ui/action-button";
 import { AgentComposer } from "@/components/ui/agent-composer";
 import { ChatThread, type ThreadMessage } from "@/components/ui/chat-thread";
@@ -17,9 +17,9 @@ import {
   type ConfirmationStatus,
 } from "@/components/ui/confirmation-card";
 import {
-  DataTable,
   type DataColumn,
   type DataRow,
+  DataTable,
 } from "@/components/ui/data-table";
 import { PromptSuggestions } from "@/components/ui/prompt-suggestions";
 import { SourceList } from "@/components/ui/source-list";

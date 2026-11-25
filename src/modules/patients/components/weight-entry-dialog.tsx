@@ -1,9 +1,6 @@
-import { Plus, Scales, Trash } from "@/lib/icons";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-
-import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -14,6 +11,9 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+
+import { Button } from "@/components/ui/button";
+import { DatePicker } from "@/components/ui/date-picker";
 import { Dialog } from "@/components/ui/dialog";
 import {
   Field,
@@ -36,10 +36,10 @@ import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/contexts/AuthContext";
 import { useWeightEntriesRepository } from "@/data/repositories";
+import { guard } from "@/lib/guard";
+import { Plus, Scales, Trash } from "@/lib/icons";
 import type { WeightEntry } from "@/types/db";
 import { toDateInputValue } from "./patients-shared";
-import { DatePicker } from "@/components/ui/date-picker";
-import { guard } from "@/lib/guard";
 
 interface WeightEntryDialogProps {
   onOpenChange: (open: boolean) => void;

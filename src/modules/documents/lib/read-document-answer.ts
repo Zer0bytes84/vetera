@@ -1,6 +1,6 @@
 import {
-  LocalInferenceSession,
   abortError,
+  LocalInferenceSession,
 } from "@/modules/consultations/local-ai/inference-client";
 import {
   getLocalModelUrls,

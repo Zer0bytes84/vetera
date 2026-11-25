@@ -1,9 +1,9 @@
 import { useId, useMemo } from "react";
 import { SearchableSelect } from "@/components/ui/searchable-select";
-import { useStockInventory } from "../hooks/use-stock-inventory";
-import { stockDay, stockTimestamp } from "@/domain/stock-date";
 import { stockBalance, stockQuantityLabel } from "@/domain/stock";
+import { stockDay, stockTimestamp } from "@/domain/stock-date";
 import { guardSync } from "@/lib/guard";
+import { useStockInventory } from "../hooks/use-stock-inventory";
 
 export function StockLotSelect({
   productId,

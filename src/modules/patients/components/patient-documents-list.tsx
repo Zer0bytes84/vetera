@@ -1,16 +1,6 @@
-import {
-  FileText,
-  Image as ImageIcon,
-  Plus,
-  Trash,
-  UploadSimple,
-} from "@/lib/icons";
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -21,7 +11,9 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { useAuth } from "@/contexts/AuthContext";
+
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Empty,
   EmptyDescription,
@@ -29,15 +21,23 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   useConsultationDocumentsRepository,
   useNotesRepository,
 } from "@/data/repositories";
-import { readOffVisitNote } from "@/modules/consultations/off-visit-note";
-import { cn } from "@/lib/utils";
-import type { ConsultationDocument } from "@/types/db";
-import { PatientDocumentRegistry } from "@/modules/documents/components/patient-document-registry";
 import { guard } from "@/lib/guard";
+import {
+  FileText,
+  Image as ImageIcon,
+  Plus,
+  Trash,
+  UploadSimple,
+} from "@/lib/icons";
+import { cn } from "@/lib/utils";
+import { readOffVisitNote } from "@/modules/consultations/off-visit-note";
+import { PatientDocumentRegistry } from "@/modules/documents/components/patient-document-registry";
+import type { ConsultationDocument } from "@/types/db";
 
 interface PatientDocumentsListProps {
   className?: string;
