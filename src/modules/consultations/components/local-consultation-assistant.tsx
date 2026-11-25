@@ -1,3 +1,4 @@
+// biome-ignore-all assist/source/organizeImports: ranger ces imports change l'ordre des règles dans la feuille CSS assemblée (A2, CSS_CHANGE, décision du 25/11) ; l'ordre actuel est celui que l'app affiche
 import { analyzeTreatmentDictation } from "../local-ai/treatment-routing";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import {

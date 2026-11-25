@@ -1,3 +1,4 @@
+// biome-ignore-all assist/source/organizeImports: ranger ces imports change l'ordre d'injection des feuilles CSS de la coquille (A2, CSS_CHANGE, décision du 25/11) ; l'ordre actuel est celui que l'app affiche
 import { SearchableSelect } from "@/components/ui/searchable-select";
 import { ReceiptPercentIcon } from "@heroicons/react/20/solid";
 import { ListFilter } from "@/components/ui/list-controls";

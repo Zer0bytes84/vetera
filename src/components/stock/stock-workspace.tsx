@@ -1,3 +1,4 @@
+// biome-ignore-all assist/source/organizeImports: ranger ces imports change l'ordre d'injection des feuilles CSS de la coquille (A2, CSS_CHANGE, décision du 25/11) ; l'ordre actuel est celui que l'app affiche
 import { formatDisplayText, formatNumber } from "@/utils/display-format";
 import { ListFilter, ListSearch } from "@/components/ui/list-controls";
 import { SectionCards } from "@/components/section-cards";

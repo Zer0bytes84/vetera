@@ -1,3 +1,4 @@
+// biome-ignore-all assist/source/organizeImports: ranger ces imports change l'ordre des règles dans la feuille CSS assemblée (A2, CSS_CHANGE, décision du 25/11) ; l'ordre actuel est celui que l'app affiche
 import StaysPage from "@/modules/hospitalizations/stays/stays-page";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { PageSubnavContext } from "@/design-system/patterns/page-header";
