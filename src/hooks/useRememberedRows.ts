@@ -26,10 +26,12 @@ export function readRememberedRows(
     ) as Partial<RememberedRows> | null;
     if (
       saved &&
+      typeof saved.rows === "number" &&
+      typeof saved.rowHeight === "number" &&
       Number.isFinite(saved.rows) &&
       Number.isFinite(saved.rowHeight) &&
-      saved.rows! >= 0 &&
-      saved.rowHeight! >= 0
+      saved.rows >= 0 &&
+      saved.rowHeight >= 0
     ) {
       const columns =
         Array.isArray(saved.columns) &&
@@ -37,8 +39,8 @@ export function readRememberedRows(
           ? saved.columns
           : undefined;
       return {
-        rows: Math.round(saved.rows!),
-        rowHeight: Math.round(saved.rowHeight! * 100) / 100,
+        rows: Math.round(saved.rows),
+        rowHeight: Math.round(saved.rowHeight * 100) / 100,
         columns,
       };
     }

@@ -12,6 +12,7 @@
 
 import reference from "@/data/vet-knowledge/doses-validees-aissa.json";
 import rcp from "@/data/vet-knowledge/medications-rcp.json";
+import { mustExist } from "@/lib/must-exist";
 
 interface Line {
   attendu:
@@ -197,8 +198,15 @@ export function validatedDose(
   if (!differences || differences.length) {
     return null;
   }
-  const medication = CATALOGUE.find((item) => item.id === medicationId)!;
-  const ref = REFERENCE.molecules.find((item) => item.nom === medication.nom)!;
+  // differencesFromReference has just found both, with the same searches.
+  const medication = mustExist(
+    CATALOGUE.find((item) => item.id === medicationId),
+    `molécule ${medicationId} du catalogue`
+  );
+  const ref = mustExist(
+    REFERENCE.molecules.find((item) => item.nom === medication.nom),
+    `molécule ${medication.nom} de la référence validée`
+  );
   // Every RCP of the reference (Tolfedine has its injectable and its two tablets): the first alone would cite the
   // injectable for an oral dose.
   const source = ref.sources;

@@ -418,14 +418,15 @@ const BackupSettings: React.FC = () => {
     const password = passphrase || undefined;
     setPending(null);
     setPassphrase("");
-    if (action.kind === "restore" && action.filename) {
+    const { filename } = action;
+    if (action.kind === "restore" && filename) {
       void run(
-        () => restoreBackup(action.filename!, password),
+        () => restoreBackup(filename, password),
         "Sauvegarde restaurée. Redémarrage…",
         true
       );
-    } else if (action.kind === "delete" && action.filename) {
-      void run(() => deleteBackup(action.filename!), "Sauvegarde supprimée.");
+    } else if (action.kind === "delete" && filename) {
+      void run(() => deleteBackup(filename), "Sauvegarde supprimée.");
     } else {
       void run(
         () => importDatabase(password),

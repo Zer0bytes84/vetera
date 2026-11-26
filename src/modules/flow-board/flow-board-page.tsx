@@ -200,8 +200,9 @@ function Timer({
       </span>
     );
   }
-  const minutes = minutesSince(card.since, now);
-  if (minutes === null) {
+  const { since } = card;
+  const minutes = minutesSince(since, now);
+  if (minutes === null || !since) {
     return <span className="flow-timer">prévu {clock(card.startTime)}</span>;
   }
   const warn = card.lane === "waiting" && minutes >= WAIT_WARNING_MINUTES;
@@ -210,8 +211,8 @@ function Timer({
       className={cn("flow-timer", warn && "is-warning")}
       title={
         card.lane === "waiting"
-          ? `En attente depuis ${clock(card.since!)}`
-          : `Dans cette étape depuis ${clock(card.since!)}`
+          ? `En attente depuis ${clock(since)}`
+          : `Dans cette étape depuis ${clock(since)}`
       }
     >
       {minutes < 1 ? "< 1 min" : durationLabel(minutes)}

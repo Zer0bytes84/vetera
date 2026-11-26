@@ -84,6 +84,7 @@ import {
   MoreHorizontal,
   RefreshCw,
 } from "@/lib/icons";
+import { mustExist } from "@/lib/must-exist";
 import { cn } from "@/lib/utils";
 import { MovementAllocationDetails } from "@/modules/stock/components/movement-allocation-details";
 import { PurchasingPanel } from "@/modules/stock/components/purchasing-panel";
@@ -235,7 +236,10 @@ function CatalogueTable({
       label: "Produit",
       sortable: true,
       format: (_, row) => {
-        const product = byId.get(row.id)!;
+        const product = mustExist(
+          byId.get(row.id),
+          `produit de la ligne de stock ${row.id}`
+        );
         return (
           <span className="block min-w-0 max-w-64">
             <span className="block truncate font-medium text-sm">
@@ -254,7 +258,10 @@ function CatalogueTable({
       label: "État",
       sortable: true,
       format: (_, row) => {
-        const product = byId.get(row.id)!;
+        const product = mustExist(
+          byId.get(row.id),
+          `produit de la ligne de stock ${row.id}`
+        );
         return (
           <span className="block">
             <StatusPill tone={STATUS_TONE[productStatus(product)]}>
@@ -278,7 +285,12 @@ function CatalogueTable({
         <span className="font-medium font-sans text-sm">
           {row.qty}{" "}
           <span className="font-normal text-muted-foreground text-xs">
-            {byId.get(row.id)!.unit}
+            {
+              mustExist(
+                byId.get(row.id),
+                `produit de la ligne de stock ${row.id}`
+              ).unit
+            }
           </span>
         </span>
       ),
@@ -326,7 +338,10 @@ function CatalogueTable({
       noExport: true,
       priority: 1,
       format: (_, row) => {
-        const product = byId.get(row.id)!;
+        const product = mustExist(
+          byId.get(row.id),
+          `produit de la ligne de stock ${row.id}`
+        );
         return (
           <div
             className="flex items-center justify-end gap-1"
@@ -384,7 +399,11 @@ function CatalogueTable({
       loadingLabel="Chargement du catalogue"
       loadingRevealed={loadingRevealed}
       noun={["référence", "références"]}
-      onRowClick={(row) => onOpen(byId.get(row.id)!)}
+      onRowClick={(row) =>
+        onOpen(
+          mustExist(byId.get(row.id), `produit de la ligne de stock ${row.id}`)
+        )
+      }
       pageSize={PAGE_SIZE}
       rowProps={(row) => ({
         tabIndex: 0,

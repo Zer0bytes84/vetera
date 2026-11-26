@@ -434,12 +434,12 @@ export function PatientRecordExportDialog({
                 <p className="font-medium">
                   {progress?.label || "Préparation du dossier…"}
                 </p>
-                {Boolean(progress?.pages) && (
+                {progress?.pages ? (
                   <p className="text-muted-foreground">
-                    {progress!.pages}{" "}
-                    {progress!.pages > 1 ? "pages préparées" : "page préparée"}
+                    {progress.pages}{" "}
+                    {progress.pages > 1 ? "pages préparées" : "page préparée"}
                   </p>
-                )}
+                ) : null}
               </div>
               <progress
                 aria-label="Préparation du dossier PDF"

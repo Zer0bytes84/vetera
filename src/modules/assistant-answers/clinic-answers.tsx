@@ -43,6 +43,7 @@ import { UserMessage } from "@/components/ui/user-message";
 import { useSQLite } from "@/hooks/useSQLite";
 import { announce } from "@/lib/announce";
 import { guard } from "@/lib/guard";
+import { mustExist } from "@/lib/must-exist";
 import { splitUnit } from "@/modules/dashboard/components/chart-path";
 import { parseDashboardDate } from "@/modules/dashboard/v2/model";
 import type { Task } from "@/types/db";
@@ -583,9 +584,10 @@ export function AnswerView({
         <Shell className="answer-cards">
           <StatCardGrid count={answer.cards.length}>
             {answer.cards.map((card) => {
-              const figure = answer.figures.find(
-                (item) => item.id === card.figure
-              )!;
+              const figure = mustExist(
+                answer.figures.find((item) => item.id === card.figure),
+                `chiffre ${card.figure} d’une carte de réponse`
+              );
               const [value, unit] =
                 figure.kind === "money"
                   ? splitUnit(formatDinars(figure.value / 100, 2))

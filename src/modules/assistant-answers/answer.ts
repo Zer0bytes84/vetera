@@ -668,17 +668,22 @@ function appointments({
   // A missed appointment can be followed by a call: proposed as tasks, saved only if the vet validates the card.
   const drafts: TaskDraft[] = kept
     .filter((row) => row.status === "no_show")
-    .map((row) => {
-      const patient = patients.get(row.patientId)!;
+    .flatMap((row) => {
+      const patient = patients.get(row.patientId);
+      if (!patient) {
+        return [];
+      }
       const owner = ownerName(owners.get(patient.ownerId));
       const when = parseDashboardDate(row.startTime);
-      return {
-        key: `no-show:${row.id}`,
-        title: `Rappeler ${owner || "le propriétaire"} : absence de ${patient.name}${when ? ` le ${shortDay(when)}` : ""}`,
-        description: `Rendez-vous manqué${when ? ` le ${shortDay(when)}` : ""} (${row.type}). Tâche proposée par l’assistant et validée par vous.`,
-        patientId: patient.id,
-        dueDate: isoDay(now),
-      };
+      return [
+        {
+          key: `no-show:${row.id}`,
+          title: `Rappeler ${owner || "le propriétaire"} : absence de ${patient.name}${when ? ` le ${shortDay(when)}` : ""}`,
+          description: `Rendez-vous manqué${when ? ` le ${shortDay(when)}` : ""} (${row.type}). Tâche proposée par l’assistant et validée par vous.`,
+          patientId: patient.id,
+          dueDate: isoDay(now),
+        },
+      ];
     });
   return {
     kind: "answer",

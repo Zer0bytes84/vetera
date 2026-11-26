@@ -414,7 +414,7 @@ function Sparkline({
         </linearGradient>
       </defs>
       <motion.path
-        animate={{ d: `${d}L${pts.at(-1)![0]},${h}L${pts[0][0]},${h}Z` }}
+        animate={{ d: `${d}L${lx},${h}L${pts[0][0]},${h}Z` }}
         fill={`url(#${id})`}
         transition={{ duration: 0.4, ease: EASE_IN_OUT }}
       />
