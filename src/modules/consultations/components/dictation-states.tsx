@@ -56,6 +56,7 @@ export function DictationLevelMeter({
     >
       {BARS.map((_, index) => (
         <span
+          // biome-ignore lint/suspicious/noArrayIndexKey: barres du vumètre, BARS est une constante de cinq valeurs ; la position nomme aussi la variable CSS --bar-i
           key={index}
           style={{ "--bar": `var(--bar-${index}, 0)` } as CSSProperties}
         />

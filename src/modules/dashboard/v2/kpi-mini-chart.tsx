@@ -113,6 +113,7 @@ export function KpiMiniChart({
               className="studio-mini-bar"
               fill="currentColor"
               height={Math.max(2, (value / max) * 30)}
+              // biome-ignore lint/suspicious/noArrayIndexKey: une barre par position de l'axe du mini graphique, jamais réordonnée
               key={i}
               opacity={
                 active === i
@@ -143,7 +144,14 @@ export function KpiMiniChart({
               strokeWidth="2"
             />
             {points.map(([x, y], i) => (
-              <circle cx={x} cy={y} fill="currentColor" key={i} r="2.5" />
+              <circle
+                cx={x}
+                cy={y}
+                fill="currentColor"
+                // biome-ignore lint/suspicious/noArrayIndexKey: un point par position de l'axe de la mini courbe, jamais réordonné
+                key={i}
+                r="2.5"
+              />
             ))}
             {active !== null && (
               <circle

@@ -136,6 +136,7 @@ export function PlanCareTasks({
                   return (
                     <div
                       className="flex items-center gap-3 rounded-xl border border-border p-3"
+                      // biome-ignore lint/suspicious/noArrayIndexKey: suggestions dérivées du plan dans un ordre stable ; l'état created est indexé par la même position (createdAt(i))
                       key={`${i}:${s.label}`}
                     >
                       <div className="min-w-0 flex-1">

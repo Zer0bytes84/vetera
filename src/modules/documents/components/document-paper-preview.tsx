@@ -44,7 +44,10 @@ export function DocumentPaperPreview({ dataUrl }: { dataUrl: string | null }) {
         </p>
       ) : pages.length ? (
         pages.map((page, index) => (
-          <figure key={index}>
+          <figure
+            // biome-ignore lint/suspicious/noArrayIndexKey: l'index est le numéro de page d'un aperçu recalculé en entier à chaque document
+            key={index}
+          >
             <img alt={`Aperçu du document, page ${index + 1}`} src={page} />
             <figcaption>
               Page {index + 1} sur {pages.length}

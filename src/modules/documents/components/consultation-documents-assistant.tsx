@@ -814,6 +814,7 @@ export default function ConsultationDocumentsAssistant({
                 {answer.extraits.map((quote, index) => (
                   <blockquote
                     className="rounded-lg bg-muted p-3"
+                    // biome-ignore lint/suspicious/noArrayIndexKey: extraits d'une réponse remplacée en bloc à chaque question, jamais modifiés un par un
                     key={`${quote.page}:${index}`}
                   >
                     <p className="whitespace-pre-wrap text-sm">{quote.texte}</p>

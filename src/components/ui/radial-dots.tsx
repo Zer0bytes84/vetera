@@ -196,7 +196,11 @@ export function RadialDots({
                 const turn = n <= 12 ? (i + 0.5) / n : i / n;
                 const [tx, ty] = polar(turn, C + 24);
                 return (
-                  <g className="text-muted-foreground" key={i}>
+                  <g
+                    className="text-muted-foreground"
+                    // biome-ignore lint/suspicious/noArrayIndexKey: une graduation par tranche du cadran, son angle vient de i
+                    key={i}
+                  >
                     <line
                       stroke="currentColor"
                       strokeOpacity={labeled ? 0.7 : 0.3}
@@ -247,6 +251,7 @@ export function RadialDots({
                   <motion.g
                     animate={{ opacity: 1 }}
                     initial={{ opacity: 0 }}
+                    // biome-ignore lint/suspicious/noArrayIndexKey: une tranche animée par position du cadran, son angle vient de i
                     key={i}
                     transition={{
                       duration: 0.3,
@@ -273,6 +278,7 @@ export function RadialDots({
                             cx={x}
                             cy={y}
                             data-dot=""
+                            // biome-ignore lint/suspicious/noArrayIndexKey: un point coloré par emplacement k de la tranche, emplacements fixes calculés depuis k
                             key={k}
                             r={dotR}
                             style={{ fill: color }}
@@ -282,6 +288,7 @@ export function RadialDots({
                             className="fill-foreground/15"
                             cx={x}
                             cy={y}
+                            // biome-ignore lint/suspicious/noArrayIndexKey: un point vide par emplacement k de la tranche, emplacements fixes calculés depuis k
                             key={k}
                             r={round(dotR * 0.42)}
                           />
@@ -296,6 +303,7 @@ export function RadialDots({
                 <path
                   d={wedge(i)}
                   fill="transparent"
+                  // biome-ignore lint/suspicious/noArrayIndexKey: une zone de survol par tranche du cadran, et select(i) attend justement cette position
                   key={i}
                   onPointerEnter={() => select(i, false)}
                 />

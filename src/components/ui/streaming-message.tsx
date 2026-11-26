@@ -277,7 +277,10 @@ function Content({
   return (
     <div className="flex flex-col gap-3 text-pretty leading-6">
       {paragraphs.map((paragraph, p) => (
-        <p key={p}>
+        <p
+          // biome-ignore lint/suspicious/noArrayIndexKey: le texte ne fait que s'allonger ; une clé par contenu remonterait le paragraphe en cours à chaque mot (mesuré dans Chromium)
+          key={p}
+        >
           {parseInline(paragraph).map((segment, s) => {
             const words = tokenize(segment.text);
             const nodes = words.map((word) => {
@@ -299,6 +302,7 @@ function Content({
               return (
                 <code
                   className="rounded-md bg-foreground/[0.07] px-1 py-px font-mono text-[0.75rem]"
+                  // biome-ignore lint/suspicious/noArrayIndexKey: segment de code d'un paragraphe qui ne fait que s'allonger ; une clé par contenu le remonterait à chaque mot
                   key={s}
                 >
                   {nodes}
@@ -307,12 +311,23 @@ function Content({
             }
             if (segment.kind === "bold") {
               return (
-                <strong className="font-semibold" key={s}>
+                <strong
+                  className="font-semibold"
+                  // biome-ignore lint/suspicious/noArrayIndexKey: segment gras d'un paragraphe qui ne fait que s'allonger ; une clé par contenu le remonterait à chaque mot
+                  key={s}
+                >
                   {nodes}
                 </strong>
               );
             }
-            return <Fragment key={s}>{nodes}</Fragment>;
+            return (
+              <Fragment
+                // biome-ignore lint/suspicious/noArrayIndexKey: segment simple d'un paragraphe qui ne fait que s'allonger ; une clé par contenu le remonterait à chaque mot
+                key={s}
+              >
+                {nodes}
+              </Fragment>
+            );
           })}
           {streaming && p === paragraphs.length - 1 && (
             <motion.span

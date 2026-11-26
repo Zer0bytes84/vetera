@@ -116,6 +116,7 @@ export function ContextWindowMeter({
                 ? "bg-warning/20"
                 : "bg-foreground/[0.07]")
           )}
+          // biome-ignore lint/suspicious/noArrayIndexKey: cases de la jauge en nombre fixe (20 ou 100), seule leur couleur change
           key={i}
           style={{ background: color ?? undefined }}
         />

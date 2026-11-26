@@ -116,21 +116,27 @@ export function PatientIdentity({
         {/* What the animal is, in one sober line: species, breed, sex, age, chip. */}
         <p className="medical-identity-meta">
           {[
-            patient.species,
-            patient.breed,
-            sexLabel
-              ? `${sexLabel}${patient.sterilized ? (patient.sex === "F" ? " stérilisée" : " stérilisé") : ""} ${sexSymbol}`.trim()
-              : patient.sterilized
-                ? "Stérilisé"
+            ["espece", patient.species],
+            ["race", patient.breed],
+            [
+              "sexe",
+              sexLabel
+                ? `${sexLabel}${patient.sterilized ? (patient.sex === "F" ? " stérilisée" : " stérilisé") : ""} ${sexSymbol}`.trim()
+                : patient.sterilized
+                  ? "Stérilisé"
+                  : null,
+            ],
+            ["age", ageLabel],
+            [
+              "puce",
+              !showIdentifiers && patient.chipNumber?.trim()
+                ? `Puce ${patient.chipNumber.trim()}`
                 : null,
-            ageLabel,
-            !showIdentifiers && patient.chipNumber?.trim()
-              ? `Puce ${patient.chipNumber.trim()}`
-              : null,
+            ],
           ]
-            .filter(Boolean)
-            .map((part, index) => (
-              <span key={index}>{part}</span>
+            .filter(([, part]) => Boolean(part))
+            .map(([field, part]) => (
+              <span key={field}>{part}</span>
             ))}
         </p>
 

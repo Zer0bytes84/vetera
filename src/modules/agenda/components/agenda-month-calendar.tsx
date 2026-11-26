@@ -122,6 +122,7 @@ export function AgendaMonthCalendar({
                 <span
                   aria-hidden="true"
                   className="h-[84px] bg-muted/30"
+                  // biome-ignore lint/suspicious/noArrayIndexKey: cases vides de remplissage de la grille du mois, identiques entre elles et sans état
                   key={`empty-${index}`}
                 />
               );

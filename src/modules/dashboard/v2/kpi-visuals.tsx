@@ -120,7 +120,11 @@ export function KpiConsultationsCadence({
           const y = svgHeight - 2 - barHeight;
 
           return (
-            <g className="kpi-bar-slot" key={i}>
+            <g
+              className="kpi-bar-slot"
+              // biome-ignore lint/suspicious/noArrayIndexKey: un emplacement de barre par jour de la fenêtre, repéré par sa position (le dernier est aujourd'hui)
+              key={i}
+            >
               {/* Background ambient pillar for today */}
               {isToday && (
                 <rect

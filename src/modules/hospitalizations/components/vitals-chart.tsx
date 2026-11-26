@@ -115,6 +115,7 @@ export function VitalsChart({
             return (
               <line
                 className="text-zinc-500"
+                // biome-ignore lint/suspicious/noArrayIndexKey: cinq lignes de grille fixes, créées par Array.from({ length: 5 })
                 key={`grid-${i}`}
                 stroke="currentColor"
                 strokeOpacity={0.1}
@@ -179,7 +180,7 @@ export function VitalsChart({
                       cx={xOf(sorted[i].recordedAt)}
                       cy={y}
                       fill={s.color}
-                      key={i}
+                      key={sorted[i].id}
                       r={3}
                       style={{ color: s.color }}
                     />

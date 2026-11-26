@@ -311,6 +311,7 @@ export function FocusTrendChart({
                     className="focusMarker"
                     cx={x(k)}
                     cy={yVisits(p.visits)}
+                    // biome-ignore lint/suspicious/noArrayIndexKey: un marqueur par point de la courbe, repéré par sa position sur l'axe
                     key={k}
                     r={2.5}
                   />

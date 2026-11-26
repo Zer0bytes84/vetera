@@ -441,7 +441,11 @@ export function ChartCard({
               ) : (
                 <>
                   {grid.map((_, i) => (
-                    <g className="text-muted-foreground" key={i}>
+                    <g
+                      className="text-muted-foreground"
+                      // biome-ignore lint/suspicious/noArrayIndexKey: une graduation par position de l'axe vertical, sa position est son identité
+                      key={i}
+                    >
                       <line
                         stroke="currentColor"
                         strokeDasharray={i === 0 ? undefined : "3 4"}
@@ -487,6 +491,7 @@ export function ChartCard({
                       <text
                         className="fill-muted-foreground"
                         fontSize="12"
+                        // biome-ignore lint/suspicious/noArrayIndexKey: une étiquette par position de l'axe horizontal ; deux libellés peuvent se ressembler, la position non
                         key={i}
                         textAnchor={i === 0 ? "start" : "middle"}
                         x={x(i)}
@@ -523,6 +528,7 @@ export function ChartCard({
                                   : s.color
                               }
                               initial={{ y: base, height: 0 }}
+                              // biome-ignore lint/suspicious/noArrayIndexKey: une barre par série et par position ; la clé par position fait glisser la barre d'une valeur à l'autre au changement de période
                               key={`${s.id}-${i}`}
                               opacity={
                                 activeIndex === null || activeIndex === i
@@ -588,6 +594,7 @@ export function ChartCard({
                                   cx={px}
                                   cy={py}
                                   fill="var(--card-inset)"
+                                  // biome-ignore lint/suspicious/noArrayIndexKey: un marqueur par point de la courbe, repéré par sa position sur l'axe
                                   key={i}
                                   r={2.5}
                                   stroke={s.color}
@@ -631,6 +638,7 @@ export function ChartCard({
                     <rect
                       fill="transparent"
                       height={innerH}
+                      // biome-ignore lint/suspicious/noArrayIndexKey: une zone de survol par position de l'axe, et select(i) attend justement cette position
                       key={i}
                       onClick={() => select(i, false)}
                       onPointerEnter={() => select(i, false)}
@@ -706,7 +714,10 @@ export function ChartCard({
                       </tr>
                     ))
                   : data.labels.map((label, i) => (
-                      <tr key={i}>
+                      <tr
+                        // biome-ignore lint/suspicious/noArrayIndexKey: une ligne du tableau accessible par position de l'axe, dans l'ordre des données du graphique
+                        key={i}
+                      >
                         <th scope="row">{tooltipTitles?.[i] ?? label}</th>
                         {visible.map((s) => (
                           <td key={s.id}>{valueFmt(s)(s.values[i] ?? 0)}</td>

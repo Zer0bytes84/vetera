@@ -1384,12 +1384,18 @@ export default function CommandPalette({
                                 segment.hit ? (
                                   <mark
                                     className="rounded-[3px] bg-primary/12 px-0.5 text-foreground dark:bg-primary/25"
+                                    // biome-ignore lint/suspicious/noArrayIndexKey: segment surligné d'un passage ; highlightPassage redécoupe tout le passage à chaque requête, dans l'ordre du texte, et le segment n'a pas d'état
                                     key={index}
                                   >
                                     {segment.text}
                                   </mark>
                                 ) : (
-                                  <span key={index}>{segment.text}</span>
+                                  <span
+                                    // biome-ignore lint/suspicious/noArrayIndexKey: segment non surligné du même découpage, refait en bloc à chaque requête, dans l'ordre du texte et sans état
+                                    key={index}
+                                  >
+                                    {segment.text}
+                                  </span>
                                 )
                             )}
                           </p>

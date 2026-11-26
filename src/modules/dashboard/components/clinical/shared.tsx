@@ -14,7 +14,11 @@ export function RowSkeleton({ count = 3 }: { count?: number }) {
   return (
     <div className="space-y-3">
       {Array.from({ length: count }, (_, index) => (
-        <div className="flex h-14 items-center gap-3" key={index}>
+        <div
+          className="flex h-14 items-center gap-3"
+          // biome-ignore lint/suspicious/noArrayIndexKey: cases identiques du squelette de chargement, au nombre fixé par count
+          key={index}
+        >
           <SkeletonBlock className="size-9 shrink-0" />
           <div className="flex-1">
             <SkeletonBlock className="h-3 w-1/2" />

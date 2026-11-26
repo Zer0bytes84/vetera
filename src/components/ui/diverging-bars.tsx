@@ -394,6 +394,7 @@ export function DivergingBars({
                       dim && "opacity-40",
                       fromKeyboard && "duration-0"
                     )}
+                    // biome-ignore lint/suspicious/noArrayIndexKey: un groupe de barres par position de l'axe, dans l'ordre des données, sans état propre
                     key={`${label}-${i}`}
                   >
                     {visible.map((s) => {
@@ -445,6 +446,7 @@ export function DivergingBars({
                     )}
                     dx={i === 0 ? -barW / 2 : 0}
                     fontSize="12"
+                    // biome-ignore lint/suspicious/noArrayIndexKey: une étiquette par position de l'axe horizontal, dans l'ordre des données
                     key={`${label}-${i}`}
                     textAnchor={i === 0 ? "start" : "middle"}
                     x={x(i)}
@@ -460,6 +462,7 @@ export function DivergingBars({
                 <rect
                   fill="transparent"
                   height={UP_H + (below ? ZERO_GAP + downH : 0) + 12}
+                  // biome-ignore lint/suspicious/noArrayIndexKey: une zone de survol par position de l'axe, et select(i) attend justement cette position
                   key={`${label}-${i}`}
                   onClick={() => select(i, false)}
                   onPointerEnter={() => select(i, false)}
@@ -537,7 +540,10 @@ export function DivergingBars({
               </thead>
               <tbody>
                 {labels.map((label, i) => (
-                  <tr key={`${label}-${i}`}>
+                  <tr
+                    // biome-ignore lint/suspicious/noArrayIndexKey: une ligne du tableau accessible par position de l'axe, dans l'ordre des données du graphique
+                    key={`${label}-${i}`}
+                  >
                     <th scope="row">{label}</th>
                     {visible.map((s) => (
                       <td key={s.id}>{format(s.values[i] ?? 0)}</td>

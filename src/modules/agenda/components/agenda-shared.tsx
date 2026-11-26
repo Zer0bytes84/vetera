@@ -1390,7 +1390,13 @@ export function AgendaMonthView({
 
           {monthDays.map((day, index) => {
             if (!day) {
-              return <div className="min-h-[146px]" key={`empty-${index}`} />;
+              return (
+                <div
+                  className="min-h-[146px]"
+                  // biome-ignore lint/suspicious/noArrayIndexKey: cases vides de remplissage de la grille du mois, identiques entre elles et sans état
+                  key={`empty-${index}`}
+                />
+              );
             }
 
             const appointments = getAppointmentsForDate(day);
