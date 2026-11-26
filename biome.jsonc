@@ -41,6 +41,10 @@
         // Décision C du 25/11 : mêmes motifs voulus sur des éléments non interactifs (graphiques focalisables, grilles).
         "noNoninteractiveElementInteractions": "off"
       },
+      "complexity": {
+        // Décision C du 25/11 : ici void dit « promesse lancée exprès, sans l'attendre » ; la règle n'a pas d'option.
+        "noVoid": "off"
+      },
       "correctness": {
         // Décision C du 25/11 : images de taille inconnue (data URL, avatars), dimensionnées par les classes.
         "useImageSize": "off"
