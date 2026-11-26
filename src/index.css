@@ -2317,6 +2317,7 @@ button:focus-visible,
 [data-slot="assistant-panel"],
 .assistant-panel-body {
   overflow: hidden;
+  /* biome-ignore lint/suspicious/noDuplicateProperties: repli voulu, hidden d'abord pour un WebKit plus ancien que Safari 16 qui ignore clip (voir le commentaire au-dessus) */
   overflow: clip;
 }
 
