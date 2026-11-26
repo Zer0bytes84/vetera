@@ -234,6 +234,7 @@ export function PrescriptionBuilder({
   >(null);
 
   // Init : si une prescription existe pour cette consultation, on hydrate
+  // biome-ignore lint/correctness/useExhaustiveDependencies: le formulaire s'hydrate quand les données d'ordonnance arrivent (longueurs des listes) ; suivre forAppointment et forPrescription remettrait la saisie à zéro si leur identité change.
   useEffect(() => {
     const existing = prescriptionsRepo
       .forAppointment(appointmentId)

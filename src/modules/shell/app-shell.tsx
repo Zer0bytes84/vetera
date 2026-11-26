@@ -242,6 +242,7 @@ function AppShellInner() {
   // (navigationTick), and while the page fills in (lazy view, data read after the first paint, which in the desktop app comes
   // later than the paint) it stays pinned at zero until the person scrolls themselves.
   const [navigationTick, setNavigationTick] = useState(0);
+  // biome-ignore lint/correctness/useExhaustiveDependencies: currentView, currentPatientId et navigationTick ne sont pas lus, mais chaque navigation doit ramener le panneau en haut.
   useEffect(() => {
     const panel = sidebarScrollRef.current;
     if (!panel) {
@@ -278,6 +279,7 @@ function AppShellInner() {
     };
   }, [currentView, currentPatientId, navigationTick]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: currentView et currentPatientId ne sont pas lus, mais chaque navigation change le contenu dont il faut recalculer la géométrie de défilement.
   useEffect(() => {
     const panel = sidebarScrollRef.current;
     if (!panel) {

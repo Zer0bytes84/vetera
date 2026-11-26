@@ -120,7 +120,7 @@ function SidebarProvider({
   const toggleSidebar = React.useCallback(
     () =>
       isMobile ? setOpenMobile((open) => !open) : setOpen((open) => !open),
-    [isMobile, setOpen, setOpenMobile]
+    [isMobile, setOpen]
   );
 
   const setSidebarWidth = React.useCallback((width: number) => {
@@ -185,7 +185,6 @@ function SidebarProvider({
       setSidebarWidth,
       resetSidebarWidth,
       openMobile,
-      setOpenMobile,
       toggleSidebar,
     ]
   );

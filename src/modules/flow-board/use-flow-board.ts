@@ -87,6 +87,7 @@ export function useFlowBoard(vetId: string, query = "") {
   }, [idsKey]);
 
   // Appointment changes (status, new booking) arrive through the shared cache.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: appointments.data n'est pas lu, mais un changement des rendez-vous (statut, nouvelle prise) doit relire le tableau de flux.
   useEffect(() => {
     void refresh();
   }, [refresh, appointments.data]);

@@ -327,6 +327,7 @@ export default function LocalConsultationAssistant({
       return existing;
     }
   };
+  // biome-ignore lint/correctness/useExhaustiveDependencies: dictationNote est recréée à chaque rendu et lit les mêmes réponses que fullTranscript ; l'ajouter recalculerait la note à chaque rendu.
   const activeSoapDraft: LocalSoapNote = useMemo(() => {
     if (note) {
       return note;
@@ -485,6 +486,7 @@ export default function LocalConsultationAssistant({
     await ai.stop();
   };
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: seul le passage à l'écoute compte : ajouter ai.seconds remettrait l'heure de départ à chaque seconde.
   useEffect(() => {
     if (ai.phase === "listening") {
       setListeningSince(Date.now() - ai.seconds * 1000);
@@ -845,6 +847,7 @@ export default function LocalConsultationAssistant({
   // rubric (and the models card opening or closing above it). A dictation
   // state appearing above the field (listening, permission, error) must not
   // push Stop and the language below the edge: follow it too.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: activeTab, sectionIndex, setupOpen, ai.phase et visibleError ne sont pas lus, mais chacun change la hauteur de la dictée, qui doit rester défilée en bas.
   useLayoutEffect(() => {
     const list = dictationScrollRef.current;
     if (list) {

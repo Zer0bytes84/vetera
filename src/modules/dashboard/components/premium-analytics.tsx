@@ -569,6 +569,7 @@ export function PremiumAnalytics({
     ]
   );
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: updatedAt est une date neuve à chaque rendu quand le tableau de bord n'en reçoit pas ; ce sont now (l'horloge) et les données qui doivent faire bouger les chiffres.
   const weekStats = useMemo(
     () =>
       buildWeekFacts({

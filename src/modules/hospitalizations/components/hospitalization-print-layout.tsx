@@ -37,7 +37,7 @@ export function HospitalizationPrintLayout({
     if (!ref.current) {
       return;
     }
-  }, [hospitalization.id]);
+  }, []);
 
   return (
     <div className={cn("hospitalization-print-root", className)}>

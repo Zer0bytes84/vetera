@@ -36,6 +36,7 @@ export function ConsultationProducts({
   const [error, setError] = useState<string | null>(null);
   const [loadError, setLoadError] = useState(false);
   const [revision, setRevision] = useState(0);
+  // biome-ignore lint/correctness/useExhaustiveDependencies: revision n'est pas lu : Réessayer et chaque ajout l'incrémentent pour relire les produits utilisés.
   useEffect(() => {
     if (!desktop) {
       return;

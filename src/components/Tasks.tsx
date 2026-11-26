@@ -19,7 +19,7 @@ import {
   ShieldExclamationIcon,
 } from "@heroicons/react/20/solid";
 import type React from "react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useEffectEvent, useMemo, useState } from "react";
 import { toast } from "sonner";
 import MotivationalHeader from "@/components/MotivationalHeader";
 import { SectionCards } from "@/components/section-cards";
@@ -616,6 +616,7 @@ const Tasks: React.FC = () => {
     (task) => selectedIds.has(task.id) && selectableIds.has(task.id)
   );
   const listRef = useListCursor({ storageKey: "reminders" });
+  const onToggleSelectedKey = useEffectEvent(toggleSelected);
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
       if (
@@ -642,7 +643,7 @@ const Tasks: React.FC = () => {
           return;
         }
         event.preventDefault();
-        toggleSelected(row.dataset.taskId);
+        onToggleSelectedKey(row.dataset.taskId);
       } else if (event.key === "Escape" && selectedIds.size) {
         setSelectedIds(new Set());
       }

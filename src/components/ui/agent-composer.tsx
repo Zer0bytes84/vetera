@@ -91,6 +91,7 @@ export function AgentComposer({
   // The caller's ref (to focus the field, set the caret) and the one that sizes it point at the same element.
   useImperativeHandle(textareaRef, () => inner.current as HTMLTextAreaElement);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: value n'est pas lu, mais chaque changement du texte doit recalculer la hauteur du champ (scrollHeight).
   useLayoutEffect(() => {
     const el = inner.current;
     if (!el || fill) {

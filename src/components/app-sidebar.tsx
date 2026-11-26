@@ -67,6 +67,7 @@ export function AppSidebar({
   const { state } = useSidebar();
   const navigationRef = React.useRef<HTMLDivElement>(null);
   const isCollapsed = state === "collapsed";
+  // biome-ignore lint/correctness/useExhaustiveDependencies: currentView et isCollapsed ne sont pas lus, mais un changement de vue ou de largeur doit ramener l'élément actif dans la zone visible de la navigation.
   React.useEffect(() => {
     const navigation = navigationRef.current;
     if (!navigation) {

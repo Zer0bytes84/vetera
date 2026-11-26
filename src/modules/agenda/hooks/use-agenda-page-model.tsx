@@ -812,6 +812,7 @@ export function useAgendaPageModel(onNavigate?: (view: View) => void) {
   const openCreate = useEffectEvent(handleOpenCreate);
   const openCreateForPatient = useEffectEvent(handleOpenCreateForPatient);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: les gestionnaires passent par useEffectEvent ; patientsById, ownersById et selectedDate relancent la lecture du rendez-vous en attente quand les données arrivent.
   useEffect(() => {
     const consumePendingAppointment = () => {
       if (typeof window === "undefined") {

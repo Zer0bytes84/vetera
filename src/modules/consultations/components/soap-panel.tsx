@@ -252,6 +252,7 @@ export function SoapPanel({
   if (autosaveDue && saveStatus !== "pending") {
     setSaveStatus("pending");
   }
+  // biome-ignore lint/correctness/useExhaustiveDependencies: saveStatus n'est pas lu dans l'effet, mais chaque changement de l'état de sauvegarde doit réarmer la minuterie d'enregistrement automatique.
   useEffect(() => {
     if (!autosaveDue) {
       return;

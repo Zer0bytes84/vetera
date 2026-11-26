@@ -20,6 +20,12 @@ import type { Owner, Patient } from "@/types/db";
 const ownerName = (owner?: Owner) =>
   owner ? `${owner.lastName} ${owner.firstName}`.trim() : "";
 
+const normalize = (value: string) =>
+  value
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+
 interface QuickPatientPickerProps {
   description: string;
   onOpenChange: (open: boolean) => void;
@@ -50,12 +56,6 @@ export function QuickPatientPicker({
       setQuery("");
     }
   }
-
-  const normalize = (value: string) =>
-    value
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "");
 
   const filtered = useMemo<Patient[]>(() => {
     const q = normalize(query.trim());

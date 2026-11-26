@@ -142,6 +142,7 @@ export function ClinicAnswers({ patientId, renderAvatar }: Props) {
   const scroller = useRef<HTMLDivElement>(null);
   const saving = useRef(new Set<string>());
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: turns.length n'est pas lu, mais chaque nouvelle question doit faire défiler la vue jusqu'à elle.
   useEffect(() => {
     // The new question goes to the top of the view: the answer is read from its first line, not from its last.
     const questions = scroller.current?.querySelectorAll("[data-question]");

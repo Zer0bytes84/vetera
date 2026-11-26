@@ -1,4 +1,10 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useEffectEvent,
+  useMemo,
+  useState,
+} from "react";
 import { toast } from "sonner";
 import type { SectionCardItem } from "@/components/section-cards";
 import { useAuth } from "@/contexts/AuthContext";
@@ -253,6 +259,7 @@ export function useFinancesPageModel({
       }
     );
   };
+  const onOpenPendingInvoice = useEffectEvent(openInvoiceDetail);
 
   useEffect(() => {
     if (isTauriRuntime()) {
@@ -294,7 +301,7 @@ export function useFinancesPageModel({
                 invoice.documentStatus !== "void"
             );
           if (existing) {
-            void openInvoiceDetail(existing);
+            void onOpenPendingInvoice(existing);
             return;
           }
           setInvoiceDraft({

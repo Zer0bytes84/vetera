@@ -74,6 +74,7 @@ export function useFluxRequests({
     };
   });
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: appointmentById est lu par la ref latest ; la dépendance relance le traitement de la demande en attente quand les rendez-vous changent.
   useEffect(() => {
     const serve = () => {
       const { appointmentById, focus, flowUndo, open, transitionStatus } =

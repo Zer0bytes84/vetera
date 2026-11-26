@@ -234,6 +234,7 @@ function TimeGrid({
     }));
   // Every appointment of the days shown sets the hours: the grid runs from the first to the last,
   // and the hour is drawn only as tall as needed for all of them to fit the screen without a scroll.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: place est recréée à chaque rendu ; ses vraies entrées sont days et getAppointmentsForDate, qui doivent replacer les rendez-vous quand les données changent.
   const first = useMemo(
     () => visibleHours(place(maxHourPx).flatMap((column) => column.placed)),
     // getAppointmentsForDate changes with the data, which is what must re-place the blocks.
@@ -246,6 +247,7 @@ function TimeGrid({
     MIN_HOUR_PX,
     maxHourPx
   );
+  // biome-ignore lint/correctness/useExhaustiveDependencies: comme pour first : place est recréée à chaque rendu, days et getAppointmentsForDate sont ses entrées réelles, hourPx la hauteur retenue.
   const columns = useMemo(
     () => place(hourPx),
     // eslint-disable-next-line react-hooks/exhaustive-deps

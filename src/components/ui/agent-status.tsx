@@ -72,6 +72,7 @@ export const formatElapsed = (ms: number) => {
 
 function useElapsed(startedAt: number, running: boolean) {
   const [now, setNow] = useState(startedAt);
+  // biome-ignore lint/correctness/useExhaustiveDependencies: startedAt n'est pas lu dans l'effet, mais une nouvelle exécution (nouveau startedAt) doit relancer le minuteur.
   useEffect(() => {
     // Tick once now (also freezes the time when the run ends), then every second.
     const tick = () => setNow(Date.now());

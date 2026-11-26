@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useEffectEvent, useState } from "react";
 import {
   type ClinicalAlert,
   evaluateVitals,
@@ -110,9 +110,10 @@ export function usePostOpFollowUp() {
     );
   };
 
+  const onRefresh = useEffectEvent(loadPatients);
   useEffect(() => {
-    loadPatients();
-    const id = setInterval(loadPatients, REFRESH_INTERVAL_MS);
+    onRefresh();
+    const id = setInterval(() => onRefresh(), REFRESH_INTERVAL_MS);
     return () => clearInterval(id);
   }, []);
 

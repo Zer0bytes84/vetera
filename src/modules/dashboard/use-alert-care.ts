@@ -51,6 +51,7 @@ export function useAlertCare(now: Date) {
     );
   }, []);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: dayKey n'est pas lu, mais le changement de jour doit relancer la lecture des soins.
   useEffect(() => {
     void refresh();
     const again = () => void refresh();

@@ -23,6 +23,7 @@ export function PatientRecordPreview({
   const [error, setError] = useState("");
   const [retry, setRetry] = useState(0);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: retry n'est pas lu : le bouton Réessayer l'incrémente pour relancer le rendu du PDF.
   useEffect(() => {
     let cancelled = false;
     let dispose: (() => void) | undefined;

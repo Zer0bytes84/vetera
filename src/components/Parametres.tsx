@@ -13,7 +13,7 @@ import {
   PanelLeft,
   UserRound,
 } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useEffectEvent, useState } from "react";
 import { toast } from "sonner";
 import { LicenseStatusCard } from "@/components/LicenseStatusCard";
 import { MascotSettings } from "@/components/mascot/mascot-settings";
@@ -358,8 +358,9 @@ const BackupSettings: React.FC = () => {
     await read();
   };
 
+  const onMountRead = useEffectEvent(read);
   useEffect(() => {
-    void read();
+    void onMountRead();
   }, []);
   const formatDate = (date: string) =>
     new Date(date).toLocaleString("fr-FR", {
@@ -625,25 +626,25 @@ interface ParametresProps {
   onThemeChange?: (theme: "light" | "dark" | "system") => void;
 }
 
+const sanitizeAvatarValue = (value?: string | null) => {
+  if (typeof value !== "string") {
+    return "";
+  }
+  const normalized = value.trim();
+  if (!normalized) {
+    return "";
+  }
+  if (["undefined", "null", "nan"].includes(normalized.toLowerCase())) {
+    return "";
+  }
+  return normalized;
+};
+
 const Parametres: React.FC<ParametresProps> = ({
   currentTheme = "light",
   onNavigate,
   onThemeChange,
 }) => {
-  const sanitizeAvatarValue = (value?: string | null) => {
-    if (typeof value !== "string") {
-      return "";
-    }
-    const normalized = value.trim();
-    if (!normalized) {
-      return "";
-    }
-    if (["undefined", "null", "nan"].includes(normalized.toLowerCase())) {
-      return "";
-    }
-    return normalized;
-  };
-
   const [activeTab, setActiveTab] = useState<SettingsTab>(() => {
     if (typeof window === "undefined") {
       return "profil";
@@ -719,6 +720,7 @@ const Parametres: React.FC<ParametresProps> = ({
     loadProfileState();
   }, [currentUser, userDoc]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: currentTheme n'est pas lu, mais quand le thème clair/sombre change l'effet doit relire la classe dark du document et réappliquer les couleurs.
   useEffect(() => {
     const isDark = document.documentElement.classList.contains("dark");
     applyTheme(themeConfig, isDark);
