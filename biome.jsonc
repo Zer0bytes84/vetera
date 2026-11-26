@@ -46,7 +46,12 @@
       },
       "complexity": {
         // Décision C du 25/11 : ici void dit « promesse lancée exprès, sans l'attendre » ; la règle n'a pas d'option.
-        "noVoid": "off"
+        "noVoid": "off",
+        // Décision C du 25/11 : avertissement au seuil d'Ultracite (20) ; la dette reste visible sans bloquer.
+        "noExcessiveCognitiveComplexity": {
+          "level": "warn",
+          "options": { "maxAllowedComplexity": 20 }
+        }
       },
       "correctness": {
         // Décision C du 25/11 : images de taille inconnue (data URL, avatars), dimensionnées par les classes.
