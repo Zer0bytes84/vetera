@@ -437,6 +437,7 @@ const Editor: React.FC<EditorProps> = ({
         <div
           aria-label="Modifier le tableau"
           className="flex flex-wrap items-center gap-1 rounded-lg bg-[#f3f7f1] p-1 dark:bg-white/5"
+          role="toolbar"
         >
           <Button
             className="h-7 gap-1.5 px-2 text-xs"

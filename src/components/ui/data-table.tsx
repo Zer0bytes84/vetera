@@ -500,6 +500,7 @@ export function DataTable<R extends DataRow>({
                 <tbody className={cn(!loadingRevealed && "invisible")}>
                   {reserved.rows === 0 ? (
                     // Empty last time: the place of the empty state, without its words.
+                    // biome-ignore lint/a11y/noAriaHiddenOnFocusable: faux positif, Biome lit le rôle row comme interactif ; ce tr natif n'a ni tabindex ni contenu focalisable (une cellule vide).
                     <tr
                       aria-hidden="true"
                       style={{ height: reserved.rowHeight }}
@@ -508,6 +509,7 @@ export function DataTable<R extends DataRow>({
                     </tr>
                   ) : null}
                   {Array.from({ length: reserved.rows }, (_, i) => (
+                    // biome-ignore lint/a11y/noAriaHiddenOnFocusable: faux positif, Biome lit le rôle row comme interactif ; ce tr natif n'a ni tabindex ni contenu focalisable (des cellules vides).
                     <tr
                       aria-hidden="true"
                       data-zebra={i % 2 === 1 ? "odd" : undefined}
@@ -554,6 +556,7 @@ export function DataTable<R extends DataRow>({
                         {...rowProps?.(row)}
                       >
                         {selectable && (
+                          // biome-ignore lint/a11y/useKeyWithClickEvents: cellule de sélection : arrête le clic vers onRowClick ; la TuffCheckbox qu'elle contient a son propre clavier.
                           <td
                             className="px-2 py-2.5"
                             onClick={(e) => e.stopPropagation()}

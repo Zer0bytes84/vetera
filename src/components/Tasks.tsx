@@ -1562,7 +1562,6 @@ function ManualReminderRow({
   const completed = item.task.status === "done";
   return (
     <article
-      aria-selected={selected}
       className={cn(
         "group flex flex-col gap-3 p-3 transition-shadow sm:flex-row sm:items-center",
         focused && "relative z-10 ring-2 ring-sky-500/40 ring-inset"

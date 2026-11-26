@@ -343,6 +343,7 @@ function CatalogueTable({
           `produit de la ligne de stock ${row.id}`
         );
         return (
+          // biome-ignore lint/a11y/useKeyWithClickEvents: arrête le clic vers la ligne du tableau de stock ; Commander et le menu d'actions enfants ont leur propre clavier.
           <div
             className="flex items-center justify-end gap-1"
             onClick={(event) => event.stopPropagation()}

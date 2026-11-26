@@ -100,7 +100,11 @@ function CareDayStrip({
     return null;
   }
   return (
-    <div aria-label="Frise des soins du jour" className="care-strip">
+    <div
+      aria-label="Frise des soins du jour"
+      className="care-strip"
+      role="region"
+    >
       <div className="care-strip-track">
         {line.now !== null && (
           <span

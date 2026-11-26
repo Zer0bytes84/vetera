@@ -146,7 +146,6 @@ export function ConsultationAssistantPanel({
           }
         }}
         ref={panelRef}
-        role="complementary"
         style={{ top: topInset }}
       >
         {/* `clip`, not `hidden`: a hidden box can still be scrolled by code, and a scrolled panel loses its header. */}

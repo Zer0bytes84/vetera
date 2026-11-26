@@ -969,6 +969,7 @@ export function PatientDetailPage({
                 aria-busy="true"
                 aria-label="Chargement du suivi clinique"
                 className="medical-kpi-strip"
+                role="status"
               >
                 {[0, 1, 2].map((index) => (
                   <div className="medical-kpi" key={index}>
@@ -1306,6 +1307,7 @@ export function PatientDetailPage({
                         <span
                           aria-label={`${sectionCount} élément${sectionCount > 1 ? "s" : ""}`}
                           className="patient-rail-count"
+                          role="img"
                         >
                           {sectionCount}
                         </span>
@@ -1319,6 +1321,7 @@ export function PatientDetailPage({
                 className="medical-tab-content"
                 id="record-tab-content"
                 role="tabpanel"
+                // biome-ignore lint/a11y/noNoninteractiveTabindex: tabpanel focalisable, motif APG quand le panneau ne commence pas par un contrôle.
                 tabIndex={0}
               >
                 {activeTab === "overview" && (

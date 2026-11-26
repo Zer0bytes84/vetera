@@ -392,6 +392,7 @@ function DraggableCard(props: CardProps) {
     .join(", ");
   return (
     <li>
+      {/* biome-ignore lint/a11y/useKeyWithClickEvents: carte de la grille à focus itinérant : le onKeyDown du tableau (.flow-board) gère son clavier, la touche O ouvre le même aperçu du patient. */}
       <article
         {...attributes}
         {...listeners}
