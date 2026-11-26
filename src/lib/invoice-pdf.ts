@@ -342,7 +342,7 @@ export function buildInvoicePdf(
   }
   text("Montant réglé", 110, y, 10, false, "#52525b");
   text(invoiceMoney(data.paidAmount), right, y, 10, false, "#52525b", "right");
-  y += 10;
+  y += 8;
   if (data.refundAmount) {
     text("Remboursé", 110, y, 10, false, "#52525b");
     text(
@@ -356,6 +356,8 @@ export function buildInvoicePdf(
     );
     y += 8;
   }
+  // The lines above step by the same 8 mm; the rule keeps its distance from whichever comes last.
+  y += 2;
   doc.setDrawColor("#d4d4d8");
   doc.line(110, y - 5, right, y - 5);
   text("Reste à payer", 110, y, 11, true);

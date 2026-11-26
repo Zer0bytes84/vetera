@@ -68,6 +68,51 @@ describe("facture PDF : le détail des règlements", () => {
     ).toThrow("cohérents");
   });
 
+  it("avec un avoir émis et un remboursement : même bloc Règlements, totaux cohérents", () => {
+    // 6 000 DA facturés, 1 000 DA d'avoir émis après coup, 6 000 DA réglés en deux fois, 1 000 DA remboursés :
+    // reste 6 000 − 1 000 − 6 000 + 1 000 = 0 DA, rien à rembourser de plus.
+    const withCredit: InvoicePdfData = {
+      ...data,
+      creditAmount: 100_000,
+      refundAmount: 100_000,
+      paidAmount: 600_000,
+      balanceAmount: 0,
+      payments: [
+        {
+          amount: 550_000,
+          date: new Date(2026, 10, 19, 10),
+          method: "Espèces",
+        },
+        { amount: 50_000, date: new Date(2026, 10, 26, 9), method: "Carte" },
+      ],
+    };
+    const pdf = buildInvoicePdf(withCredit, DEFAULT_INVOICE_SETTINGS).output();
+    const order = [
+      "GLEMENTS",
+      "19 nov. 2026",
+      "26 nov. 2026",
+      "Total de la facture",
+      "Avoirs ",
+      "Montant r",
+      "Rembours",
+      "Reste ",
+      "Facture r",
+    ].map((label) => pdf.indexOf(label));
+    expect(order.every((at) => at > -1)).toBe(true);
+    expect(order).toEqual([...order].sort((a, b) => a - b));
+    expect(pdf).toContain("(1 000 DA)");
+    expect(pdf).toContain("(6 000 DA)");
+    expect(pdf).toContain("(0 DA)");
+    expect(pdf).not.toContain("rembourser");
+    // Le remboursement reste à part des règlements : un montant réglé qui ne vaut pas leur somme est refusé.
+    expect(() =>
+      buildInvoicePdf(
+        { ...withCredit, paidAmount: 500_000, balanceAmount: 0 },
+        DEFAULT_INVOICE_SETTINGS
+      )
+    ).toThrow("cohérents");
+  });
+
   it("passe à la page suivante quand les règlements sont nombreux", () => {
     const many = Array.from({ length: 40 }, (_, index) => ({
       amount: 15_000,
@@ -153,6 +198,28 @@ describe("facture émise vers PDF : les règlements", () => {
       },
       { amount: 50_000, date: new Date(2026, 10, 26), method: "Espèces" },
     ]);
+    expect(() =>
+      buildInvoicePdf(built, DEFAULT_INVOICE_SETTINGS)
+    ).not.toThrow();
+  });
+
+  it("porte l'avoir et le remboursement de la facture à côté de ses règlements", () => {
+    const { data: built } = invoiceDocument(
+      {
+        ...invoice,
+        creditAmount: 100_000,
+        completedRefundAmount: 100_000,
+        balanceAmount: 0,
+      } as InvoiceDetail,
+      "Maya"
+    );
+    expect(built).toMatchObject({
+      creditAmount: 100_000,
+      refundAmount: 100_000,
+      paidAmount: 600_000,
+      balanceAmount: 0,
+    });
+    expect(built.payments).toHaveLength(2);
     expect(() =>
       buildInvoicePdf(built, DEFAULT_INVOICE_SETTINGS)
     ).not.toThrow();
