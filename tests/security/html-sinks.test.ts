@@ -22,6 +22,7 @@ const SINK =
   /dangerouslySetInnerHTML|\.innerHTML\b|\.outerHTML\b|insertAdjacentHTML|\.srcdoc\b|createContextualFragment|new DOMParser|document\.write\(/;
 const SOURCE_FILE = /\.(?:ts|tsx)$/;
 const TEST_FILE = /\.test\./;
+const OPEN_DATA_URL = /window\.open\([^)]*[dD]ataUrl/;
 const PREVIEW_HTML = /__html: previewHtml\b/;
 const RAW_CONTENT_HTML = /__html: content\b/;
 const PREVIEW_MEMO =
@@ -55,6 +56,12 @@ describe("les écritures de HTML dans la page", () => {
     expect(source).toMatch(PREVIEW_HTML);
     expect(source).not.toMatch(RAW_CONTENT_HTML);
     expect(source).toMatch(PREVIEW_MEMO);
+  });
+
+  it("aucune pièce jointe n'est ouverte dans une fenêtre sans passer par openAttachment", () => {
+    for (const path of sources("src")) {
+      expect(readFileSync(path, "utf8"), path).not.toMatch(OPEN_DATA_URL);
+    }
   });
 
   it("le dépôt des notes filtre à la lecture et à l'écriture", () => {

@@ -55,6 +55,10 @@ import {
   TimerIcon,
 } from "@/lib/hugeicons";
 import { Hospital, Pill, Syringe } from "@/lib/icons";
+import {
+  ATTACHMENT_REFUSED_MESSAGE,
+  openAttachment,
+} from "@/lib/safe-attachment";
 import { cn } from "@/lib/utils";
 import {
   billingDraft,
@@ -1086,9 +1090,11 @@ export function ConsultationSessionDialog({
                               <div className="flex items-center gap-2">
                                 <Button
                                   className="cursor-pointer"
-                                  onClick={() =>
-                                    window.open(document.dataUrl, "_blank")
-                                  }
+                                  onClick={() => {
+                                    if (!openAttachment(document.dataUrl)) {
+                                      toast.error(ATTACHMENT_REFUSED_MESSAGE);
+                                    }
+                                  }}
                                   size="xs"
                                   type="button"
                                   variant="ghost"

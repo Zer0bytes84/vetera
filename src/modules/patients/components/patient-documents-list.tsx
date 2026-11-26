@@ -34,6 +34,10 @@ import {
   Trash,
   UploadSimple,
 } from "@/lib/icons";
+import {
+  ATTACHMENT_REFUSED_MESSAGE,
+  openAttachment,
+} from "@/lib/safe-attachment";
 import { cn } from "@/lib/utils";
 import { readOffVisitNote } from "@/modules/consultations/off-visit-note";
 import { PatientDocumentRegistry } from "@/modules/documents/components/patient-document-registry";
@@ -170,7 +174,9 @@ export function PatientDocumentsList({
     if (onOpenDocument) {
       onOpenDocument(doc);
     } else {
-      window.open(doc.dataUrl, "_blank");
+      if (!openAttachment(doc.dataUrl)) {
+        toast.error(ATTACHMENT_REFUSED_MESSAGE);
+      }
     }
   };
 
