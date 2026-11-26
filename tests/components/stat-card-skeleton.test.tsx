@@ -18,7 +18,10 @@ describe("carte de chiffre", () => {
     const html = renderToStaticMarkup(
       <StatCard label="Dépensé" tone="negative" unit="DA" value="3 200" />
     );
-    const labelId = ID_ATTRIBUTE.exec(html)![1];
+    const labelId = mustExist(
+      ID_ATTRIBUTE.exec(html),
+      "identifiant du libellé"
+    )[1];
     expect(html).toContain(`role="group"`);
     expect(html).toContain(`aria-labelledby="${labelId}"`);
     expect(html).toContain(">Dépensé</p>");
@@ -61,10 +64,15 @@ describe("Loading Skeleton", () => {
     expect(html).toContain('role="status"');
     expect(html).toContain('aria-busy="true"');
     expect(html).toMatch(LOADING_ARIA_LABEL);
-    const shapes = html.match(/data-slot="loading-skeleton-shape"/g)!.length;
+    const shapes = mustExist(
+      html.match(/data-slot="loading-skeleton-shape"/g),
+      "formes du squelette"
+    ).length;
     expect(
-      html.match(/<span aria-hidden="true" class="loading-skeleton-shape/g)!
-        .length
+      mustExist(
+        html.match(/<span aria-hidden="true" class="loading-skeleton-shape/g),
+        "formes masquées du squelette"
+      ).length
     ).toBe(shapes);
   });
 
@@ -139,6 +147,7 @@ describe("la région d'annonce partagée", () => {
 });
 
 import { StatGrid } from "@/components/ui/stat-grid";
+import { mustExist } from "@/lib/must-exist";
 
 describe("Chiffres clés pendant leur lecture (StatGrid)", () => {
   const data = [
@@ -171,7 +180,10 @@ describe("Chiffres clés pendant leur lecture (StatGrid)", () => {
     expect(html).toContain('role="status"');
     expect(html).toContain('aria-busy="true"');
     expect(html).toContain('aria-label="Chargement des chiffres clés"');
-    expect(html.match(/loading-skeleton-shape/g)!.length).toBeGreaterThan(8);
+    expect(
+      mustExist(html.match(/loading-skeleton-shape/g), "formes du squelette")
+        .length
+    ).toBeGreaterThan(8);
     expect(html).toContain(">Chiffres clés<");
   });
   it("tant que le délai n'est pas passé, les cartes de squelette tiennent la place sans se montrer", () => {

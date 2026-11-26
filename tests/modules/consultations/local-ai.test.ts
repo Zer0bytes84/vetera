@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { mustExist } from "@/lib/must-exist";
 import {
   normalizeMicrophoneAudio,
   prepareMicrophone,
@@ -141,7 +142,10 @@ describe("deterministic patient mentions", () => {
   });
   it("replaces only the mention at the cursor, quoting spaces", () => {
     const text = "Pour @Re ce matin";
-    const range = autocompleteMention(text, 8)!;
+    const range = mustExist(
+      autocompleteMention(text, 8),
+      "mention at the cursor"
+    );
     expect(insertPatientMention(text, range, "Rex Junior").value).toBe(
       'Pour @"Rex Junior"  ce matin'
     );

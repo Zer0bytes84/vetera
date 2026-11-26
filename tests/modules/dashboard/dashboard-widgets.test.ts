@@ -1,4 +1,5 @@
 import { beforeAll, describe, expect, it } from "vitest";
+import { mustExist } from "@/lib/must-exist";
 import {
   buildActivityHeatmap,
   buildDayUnits,
@@ -297,7 +298,11 @@ describe("heatmap de l'activité", () => {
       "month",
       now
     );
-    const day = (n: number) => map.days.find((d) => d.date.getDate() === n)!;
+    const day = (n: number) =>
+      mustExist(
+        map.days.find((d) => d.date.getDate() === n),
+        "jour de la carte"
+      );
     expect(day(4).count).toBe(2);
     expect(day(5).count).toBe(1);
     expect(map.total).toBe(3);

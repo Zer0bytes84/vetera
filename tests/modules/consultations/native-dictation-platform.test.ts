@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 
 vi.mock("@/services/browser-store", () => ({ isTauriRuntime: () => true }));
 
+import { mustExist } from "@/lib/must-exist";
 import { nativeDictationEnabled } from "@/modules/consultations/local-ai/native-dictation";
 
 describe("moteur de dictée selon le poste", () => {
@@ -46,7 +47,10 @@ describe("installation de la dictée", () => {
       macosOnly?: boolean;
       files: { path: string; url: string; size: number; sha256: string }[];
     }[];
-    const turbo = manifest.find((model) => model.id === "whisper-turbo")!;
+    const turbo = mustExist(
+      manifest.find((model) => model.id === "whisper-turbo"),
+      "modèle whisper-turbo"
+    );
     expect(turbo.macosOnly).toBe(true);
     expect(turbo.files).toEqual([
       {

@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { mustExist } from "@/lib/must-exist";
 import {
   answerQuestion,
   verifyAnswer,
@@ -56,18 +57,33 @@ describe("tranche 1 : cartes, graphiques, tableaux", () => {
     expect(answer.cards.find((card) => card.figure === "expense")?.tone).toBe(
       "negative"
     );
-    const chart = answer.chart!;
+    const chart = mustExist(answer.chart, "graphique de la réponse");
     expect(chart.kind).toBe("area");
     expect(chart.bucket).toBe("jour");
     expect(chart.series[0].points).toHaveLength(30);
     const figure = (id: string) =>
-      answer.figures.find((item) => item.id === id)!.value;
-    const table = answer.table!.rows.map((row) => Number(row.amount));
+      mustExist(
+        answer.figures.find((item) => item.id === id),
+        "chiffre de la réponse"
+      ).value;
+    const table = mustExist(answer.table, "tableau de la réponse").rows.map(
+      (row) => Number(row.amount)
+    );
     expect(
-      sum(chart.series.find((series) => series.id === "income")!.points)
+      sum(
+        mustExist(
+          chart.series.find((series) => series.id === "income"),
+          "série des recettes"
+        ).points
+      )
     ).toBe(figure("income"));
     expect(
-      sum(chart.series.find((series) => series.id === "expense")!.points)
+      sum(
+        mustExist(
+          chart.series.find((series) => series.id === "expense"),
+          "série des dépenses"
+        ).points
+      )
     ).toBe(figure("expense"));
     expect(figure("income")).toBe(
       table.filter((amount) => amount > 0).reduce((a, b) => a + b, 0)
@@ -79,15 +95,23 @@ describe("tranche 1 : cartes, graphiques, tableaux", () => {
     const answer = shown(
       answerQuestion("Recettes des 30 derniers jours", cash, { now: NOW })
     );
-    expect(answer.chart!.series.map((series) => series.id)).toEqual(["income"]);
+    expect(
+      mustExist(answer.chart, "graphique de la réponse").series.map(
+        (series) => series.id
+      )
+    ).toEqual(["income"]);
   });
 
   it("une longue période passe aux semaines puis aux mois, et la somme tient toujours", () => {
     const quarter = shown(
       answerQuestion("Recettes des 90 derniers jours", cash, { now: NOW })
     );
-    expect(quarter.chart!.bucket).toBe("semaine");
-    expect(quarter.chart!.series[0].points).toHaveLength(13);
+    expect(mustExist(quarter.chart, "graphique de la réponse").bucket).toBe(
+      "semaine"
+    );
+    expect(
+      mustExist(quarter.chart, "graphique de la réponse").series[0].points
+    ).toHaveLength(13);
     const year = shown(
       answerQuestion(
         "Recettes de l'année dernière",
@@ -104,9 +128,15 @@ describe("tranche 1 : cartes, graphiques, tableaux", () => {
         { now: NOW }
       )
     );
-    expect(year.chart!.bucket).toBe("mois");
-    expect(year.chart!.series[0].points).toHaveLength(12);
-    expect(sum(year.chart!.series[0].points)).toBe(5000);
+    expect(mustExist(year.chart, "graphique de la réponse").bucket).toBe(
+      "mois"
+    );
+    expect(
+      mustExist(year.chart, "graphique de la réponse").series[0].points
+    ).toHaveLength(12);
+    expect(
+      sum(mustExist(year.chart, "graphique de la réponse").series[0].points)
+    ).toBe(5000);
   });
 
   it("rendez-vous : cartes par état, barres par jour qui égalent le nombre de rendez-vous", () => {
@@ -130,8 +160,12 @@ describe("tranche 1 : cartes, graphiques, tableaux", () => {
     expect(answer.cards.find((card) => card.figure === "no_show")?.tone).toBe(
       "negative"
     );
-    expect(answer.chart!.kind).toBe("bars");
-    expect(sum(answer.chart!.series[0].points)).toBe(3);
+    expect(mustExist(answer.chart, "graphique de la réponse").kind).toBe(
+      "bars"
+    );
+    expect(
+      sum(mustExist(answer.chart, "graphique de la réponse").series[0].points)
+    ).toBe(3);
   });
 
   it("patients : les dossiers actifs par espèce en barres, qui égalent la carte", () => {
@@ -145,9 +179,16 @@ describe("tranche 1 : cartes, graphiques, tableaux", () => {
     const answer = shown(
       answerQuestion("Combien de patients ?", data, { now: NOW })
     );
-    expect(answer.chart!.bucket).toBe("espece");
-    expect(sum(answer.chart!.series[0].points)).toBe(
-      answer.figures.find((figure) => figure.id === "active")!.value
+    expect(mustExist(answer.chart, "graphique de la réponse").bucket).toBe(
+      "espece"
+    );
+    expect(
+      sum(mustExist(answer.chart, "graphique de la réponse").series[0].points)
+    ).toBe(
+      mustExist(
+        answer.figures.find((figure) => figure.id === "active"),
+        "chiffre des dossiers actifs"
+      ).value
     );
   });
 
@@ -165,14 +206,23 @@ describe("tranche 1 : cartes, graphiques, tableaux", () => {
       })
     );
     const touched = structuredClone(answer);
-    touched.chart!.series[0].points[3].value += 1;
+    mustExist(
+      touched.chart,
+      "graphique de la réponse"
+    ).series[0].points[3].value += 1;
     expect(verifyAnswer(touched).kind).toBe("refusal");
     const card = structuredClone(answer);
     card.cards.push({ figure: "invented", tone: "neutral" });
     expect(verifyAnswer(card).kind).toBe("refusal");
     const negative = structuredClone(answer);
-    negative.chart!.series[0].points[0].value = -1;
-    negative.chart!.series[0].points[1].value += 1;
+    mustExist(
+      negative.chart,
+      "graphique de la réponse"
+    ).series[0].points[0].value = -1;
+    mustExist(
+      negative.chart,
+      "graphique de la réponse"
+    ).series[0].points[1].value += 1;
     expect(verifyAnswer(negative).kind).toBe("refusal");
     expect(verifyAnswer(structuredClone(answer)).kind).toBe("answer");
   });
@@ -199,15 +249,26 @@ describe("tranche 1 : cartes, graphiques, tableaux", () => {
         );
       }
       if (unit === "semaine") {
-        expect(buckets.at(-1)!.first, `${days} jours`).not.toBe(
-          buckets.at(-1)!.last
-        );
+        expect(
+          mustExist(buckets.at(-1), "dernière tranche").first,
+          `${days} jours`
+        ).not.toBe(mustExist(buckets.at(-1), "dernière tranche").last);
       }
       if (unit === "semaine") {
         expect(
-          next(next(next(next(next(next(buckets.at(-1)!.first)))))),
+          next(
+            next(
+              next(
+                next(
+                  next(
+                    next(mustExist(buckets.at(-1), "dernière tranche").first)
+                  )
+                )
+              )
+            )
+          ),
           `${days} jours`
-        ).toBe(buckets.at(-1)!.last);
+        ).toBe(mustExist(buckets.at(-1), "dernière tranche").last);
       }
     }
   });
@@ -270,11 +331,15 @@ describe("tranche 1 : cartes, graphiques, tableaux", () => {
     const answer = shown(
       answerQuestion("Combien de patients ?", data, { now: NOW })
     );
-    const points = answer.chart!.series[0].points;
+    const points = mustExist(answer.chart, "graphique de la réponse").series[0]
+      .points;
     expect(points).toHaveLength(8);
-    expect(points.at(-1)!.label).toBe("Autres");
+    expect(mustExist(points.at(-1), "dernier point").label).toBe("Autres");
     expect(sum(points)).toBe(
-      answer.figures.find((figure) => figure.id === "active")!.value
+      mustExist(
+        answer.figures.find((figure) => figure.id === "active"),
+        "chiffre des dossiers actifs"
+      ).value
     );
   });
 
@@ -287,7 +352,9 @@ describe("tranche 1 : cartes, graphiques, tableaux", () => {
       answerQuestion("Absences des 30 derniers jours", data, { now: NOW })
     );
     expect(answer.cards).toEqual([{ figure: "rows", tone: "negative" }]);
-    expect(answer.chart!.series[0].label).toBe("Absences");
+    expect(
+      mustExist(answer.chart, "graphique de la réponse").series[0].label
+    ).toBe("Absences");
   });
 
   it("le contrôle refait les cartes et le graphique : un point déplacé, une série rattachée ailleurs, un ton inversé sont refusés", () => {
@@ -297,13 +364,14 @@ describe("tranche 1 : cartes, graphiques, tableaux", () => {
       })
     );
     const moved = structuredClone(answer);
-    const points = moved.chart!.series[0].points;
+    const points = mustExist(moved.chart, "graphique de la réponse").series[0]
+      .points;
     const from = points.findIndex((point) => point.value > 0);
     points[(from + 1) % points.length].value += points[from].value;
     points[from].value = 0;
     expect(verifyAnswer(moved).kind).toBe("refusal");
     const tied = structuredClone(answer);
-    tied.chart!.series[0].tie = "rows";
+    mustExist(tied.chart, "graphique de la réponse").series[0].tie = "rows";
     expect(verifyAnswer(tied).kind).toBe("refusal");
     const tone = structuredClone(answer);
     tone.cards[0].tone = "negative";

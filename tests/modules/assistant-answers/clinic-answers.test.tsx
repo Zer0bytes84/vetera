@@ -1,5 +1,6 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
+import { mustExist } from "@/lib/must-exist";
 import { answerQuestion } from "@/modules/assistant-answers/answer";
 import {
   AnswerView,
@@ -131,10 +132,10 @@ describe("la version courte de la carte, au pied du panneau", () => {
   });
 
   it("montre le titre de la carte, « Voir la carte » et le même bouton de validation, sans rien de plus", () => {
-    const waiting = pendingProposal(
-      [withId("Absences des 30 derniers jours", "a")],
-      {}
-    )!;
+    const waiting = mustExist(
+      pendingProposal([withId("Absences des 30 derniers jours", "a")], {}),
+      "carte en attente"
+    );
     const html = renderToStaticMarkup(
       <ProposalDock
         onConfirm={() => undefined}
@@ -151,10 +152,10 @@ describe("la version courte de la carte, au pied du panneau", () => {
   });
 
   it("pendant l'enregistrement, le bouton attend ; après un échec, la version courte dit l'erreur de la carte", () => {
-    const { proposal } = pendingProposal(
-      [withId("Absences des 30 derniers jours", "a")],
-      {}
-    )!;
+    const { proposal } = mustExist(
+      pendingProposal([withId("Absences des 30 derniers jours", "a")], {}),
+      "carte en attente"
+    );
     const saving = renderToStaticMarkup(
       <ProposalDock
         card={{ status: "confirming" }}

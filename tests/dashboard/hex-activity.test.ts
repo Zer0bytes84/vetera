@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { mustExist } from "@/lib/must-exist";
 import {
   buildActivityHeatmap,
   buildHourlyActivity,
@@ -117,8 +118,18 @@ describe("hexagones : quatre vues", () => {
       expect(v.cells.filter((c) => c.future).map((c) => c.id)[0]).toBe("h13");
     });
     it("les repères et le pied disent ce que le calendrier disait", () => {
-      expect(v.stats.find((s) => s.key === "active")!.value).toBe("2 sur 13");
-      expect(v.stats.find((s) => s.key === "busiest")!.value).toBe("09 h · 2");
+      expect(
+        mustExist(
+          v.stats.find((s) => s.key === "active"),
+          "repère des créneaux actifs"
+        ).value
+      ).toBe("2 sur 13");
+      expect(
+        mustExist(
+          v.stats.find((s) => s.key === "busiest"),
+          "repère du créneau le plus chargé"
+        ).value
+      ).toBe("09 h · 2");
       expect(v.footer).toBe("1 rendez-vous déjà prévu d’ici ce soir");
     });
   });
@@ -245,7 +256,12 @@ describe("hexagones : quatre vues", () => {
   it("la légende donne une marche par rendez-vous jusqu'à quatre, comme avant", () => {
     const v = buildHexActivity("month", list, now);
     expect(v.legend.map((l) => l.level)).toEqual([0, 1, 2, 3, 4]);
-    expect(v.cells.find((c) => c.id === "2026-11-07")!.level).toBe(3);
+    expect(
+      mustExist(
+        v.cells.find((c) => c.id === "2026-11-07"),
+        "cellule du 7 novembre"
+      ).level
+    ).toBe(3);
   });
   it("le détail d'une cellule : passé, futur, vide", () => {
     expect(slotDetail(2, false)).toBe("2 rendez-vous");

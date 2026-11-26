@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
+import { mustExist } from "@/lib/must-exist";
 import {
   answerQuestion,
   proposeTasks,
@@ -145,7 +146,10 @@ describe("rapprochement au centime : l'assistant, le tableau de bord et le journ
     })
   );
   const figure = (id: string) =>
-    answer.figures.find((entry) => entry.id === id)!.value;
+    mustExist(
+      answer.figures.find((entry) => entry.id === id),
+      "chiffre de la réponse"
+    ).value;
 
   it("égale la carte Trésorerie du tableau de bord (recettes, dépenses, solde)", () => {
     expect(figure("income")).toBe(dashboard.cash.income);
@@ -155,8 +159,12 @@ describe("rapprochement au centime : l'assistant, le tableau de bord et le journ
   });
 
   it("égale le journal de Finances : mêmes lignes réglées, filtre de dates d'`isDateInRange`", () => {
-    const from = formatDateInput(answer.period!.from);
-    const to = formatDateInput(answer.period!.to);
+    const from = formatDateInput(
+      mustExist(answer.period, "période de la réponse").from
+    );
+    const to = formatDateInput(
+      mustExist(answer.period, "période de la réponse").to
+    );
     const sum = (type: "income" | "expense") =>
       transactions
         .filter(
@@ -171,7 +179,9 @@ describe("rapprochement au centime : l'assistant, le tableau de bord et le journ
   });
 
   it("le tableau affiché redonne les chiffres de la phrase", () => {
-    const amounts = answer.table!.rows.map((row) => Number(row.amount));
+    const amounts = mustExist(answer.table, "tableau de la réponse").rows.map(
+      (row) => Number(row.amount)
+    );
     expect(
       amounts.filter((value) => value > 0).reduce((a, b) => a + b, 0)
     ).toBe(figure("income"));
@@ -419,7 +429,9 @@ describe("autres refus et attaques", () => {
     );
     expect(
       Math.round(
-        (long.period!.to.getTime() - long.period!.from.getTime()) / 86_400_000
+        (mustExist(long.period, "période de la réponse").to.getTime() -
+          mustExist(long.period, "période de la réponse").from.getTime()) /
+          86_400_000
       )
     ).toBeLessThanOrEqual(731);
   });
@@ -545,7 +557,10 @@ describe("équipe rouge : afficher un chiffre faux ou sans source malgré les ga
     const base = asAnswer(ask("Recettes de ce mois"));
     const cut = verifyAnswer({
       ...base,
-      table: { ...base.table!, rows: base.table!.rows.slice(1) },
+      table: {
+        ...mustExist(base.table, "tableau de la réponse"),
+        rows: mustExist(base.table, "tableau de la réponse").rows.slice(1),
+      },
     });
     expect(cut.kind === "refusal" && cut.reason).toBe("unverifiable");
   });
@@ -652,7 +667,10 @@ describe("une période que le catalogue ne lit pas est refusée, pas approchée"
 });
 
 describe("la seule écriture : la carte validée", () => {
-  const drafts = asAnswer(ask("Absences des 30 derniers jours")).proposal!;
+  const drafts = mustExist(
+    asAnswer(ask("Absences des 30 derniers jours")).proposal,
+    "carte proposée"
+  );
 
   it("écrit les tâches proposées, une fois", async () => {
     const saved: string[] = [];

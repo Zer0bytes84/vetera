@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { mustExist } from "@/lib/must-exist";
 import {
   analyticsRanges,
   buildPremiumAnalytics,
@@ -90,7 +91,10 @@ describe("période choisie au sélecteur de dates", () => {
     }
   });
   it("borne la durée en gardant le dernier jour", () => {
-    const r = customAnalyticsRange({ from: "2000-01-01", to: "2026-10-11" })!;
+    const r = mustExist(
+      customAnalyticsRange({ from: "2000-01-01", to: "2026-10-11" }),
+      "plage personnalisée bornée"
+    );
     expect(r.to).toEqual(new Date(2026, 9, 11, 23, 59, 59, 999));
     const days =
       Math.round(
@@ -115,13 +119,16 @@ describe("période choisie au sélecteur de dates", () => {
     expect(days("2026-10-01", "2026-10-31")).toBe(31);
     expect(days("2026-09-01", "2026-10-31")).toBe(9);
     expect(
-      trendBuckets(
-        "custom",
-        analyticsRanges("custom", now, { from: "2026-09-01", to: "2026-10-31" })
-          .current
-      )
-        .at(-1)!
-        .to.getDate()
+      mustExist(
+        trendBuckets(
+          "custom",
+          analyticsRanges("custom", now, {
+            from: "2026-09-01",
+            to: "2026-10-31",
+          }).current
+        ).at(-1),
+        "tranches de la plage personnalisée"
+      ).to.getDate()
     ).toBe(31);
   });
   it("pilote les chiffres : seuls les jours choisis comptent, la comparaison est la période d'avant", () => {

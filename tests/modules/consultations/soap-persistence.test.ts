@@ -3,6 +3,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { DatabaseSync } from "node:sqlite";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { mustExist } from "@/lib/must-exist";
 import { assembleGuidedNote } from "../../../src/modules/consultations/local-ai/guided-soap";
 import {
   isSoapReviewed,
@@ -25,13 +26,15 @@ vi.mock("sonner", () => ({ toast: { error: vi.fn() } }));
 vi.mock("../../../src/services/sqlite/database", () => {
   const db = {
     select: async (sql: string, params: unknown[] = []) =>
-      fixture.db!.prepare(sql).all(...(params as (string | number | null)[])),
+      mustExist(fixture.db, "base de test")
+        .prepare(sql)
+        .all(...(params as (string | number | null)[])),
     execute: async (sql: string, params: unknown[] = []) => {
       if (fixture.fail) {
         throw new Error("Écriture indisponible");
       }
-      const result = fixture
-        .db!.prepare(sql)
+      const result = mustExist(fixture.db, "base de test")
+        .prepare(sql)
         .run(...(params as (string | number | null)[]));
       return {
         rowsAffected: Number(result.changes),
@@ -68,10 +71,14 @@ beforeEach(async () => {
     {
       execute: async (sql, params = []) =>
         params.length
-          ? fixture.db!.prepare(sql).run(...(params as string[]))
-          : fixture.db!.exec(sql),
+          ? mustExist(fixture.db, "base de test")
+              .prepare(sql)
+              .run(...(params as string[]))
+          : mustExist(fixture.db, "base de test").exec(sql),
       select: async <T>(sql, params = []) =>
-        fixture.db!.prepare(sql).all(...(params as string[])) as T,
+        mustExist(fixture.db, "base de test")
+          .prepare(sql)
+          .all(...(params as string[])) as T,
     },
     SQLITE_MIGRATIONS
   );
@@ -92,13 +99,15 @@ async function setup() {
   const repositories = await import("../../../src/data/repositories");
   await sqlite.prefetchSQLiteTables(["consultation_soaps"]);
   return () => {
-    let result: ReturnType<typeof repositories.useConsultationSoapsRepository>;
+    let result:
+      | ReturnType<typeof repositories.useConsultationSoapsRepository>
+      | undefined;
     function Probe() {
       result = repositories.useConsultationSoapsRepository();
       return null;
     }
     renderToStaticMarkup(React.createElement(Probe));
-    return result!;
+    return mustExist(result, "résultat du hook rendu");
   };
 }
 const fields = {
@@ -125,9 +134,12 @@ describe("SOAP validé : dépôt et hook réels vers SQLite sur disque", () => {
     expect(read().data).toHaveLength(0);
     const saved = await read().upsertForAppointment("visit", "rex", approved);
     expect(saved).toMatchObject(approved);
-    fixture.db!.close();
+    mustExist(fixture.db, "base de test").close();
     fixture.db = new DatabaseSync(file);
-    const row = fixture.db.prepare("SELECT * FROM consultation_soaps").get()!;
+    const row = mustExist(
+      fixture.db.prepare("SELECT * FROM consultation_soaps").get(),
+      "ligne SOAP enregistrée"
+    );
     expect(row).toMatchObject({
       ...fields,
       transcript: approved.transcript,
@@ -150,9 +162,13 @@ describe("SOAP validé : dépôt et hook réels vers SQLite sur disque", () => {
     };
     const second = await read().upsertForAppointment("visit", "rex", patch);
     expect(second).toMatchObject(patch);
-    expect(second!.id).toBe(first!.id);
+    expect(mustExist(second, "section mise à jour").id).toBe(
+      mustExist(first, "section enregistrée").id
+    );
     expect(
-      fixture.db!.prepare("SELECT plan FROM consultation_soaps").all()
+      mustExist(fixture.db, "base de test")
+        .prepare("SELECT plan FROM consultation_soaps")
+        .all()
     ).toEqual([{ plan: patch.plan }]);
   });
   it("remplace la section validée en SQLite et conserve les autres après réouverture", async () => {
@@ -169,7 +185,7 @@ describe("SOAP validé : dépôt et hook réels vers SQLite sur disque", () => {
     };
     await read().upsertForAppointment("visit", "rex", patch);
     await read().upsertForAppointment("visit", "rex", patch);
-    fixture.db!.close();
+    mustExist(fixture.db, "base de test").close();
     fixture.db = new DatabaseSync(file);
     const rows = fixture.db
       .prepare(
@@ -188,7 +204,12 @@ describe("SOAP validé : dépôt et hook réels vers SQLite sur disque", () => {
       })
     ).toBeNull();
     expect(
-      fixture.db!.prepare("SELECT plan FROM consultation_soaps").get()!.plan
+      mustExist(
+        mustExist(fixture.db, "base de test")
+          .prepare("SELECT plan FROM consultation_soaps")
+          .get(),
+        "ligne SOAP"
+      ).plan
     ).toBe(fields.plan);
     fixture.fail = false;
     expect(
@@ -203,9 +224,12 @@ describe("SOAP validé : dépôt et hook réels vers SQLite sur disque", () => {
       await read().upsertForAppointment("missing", "rex", approved)
     ).toBeNull();
     expect(
-      fixture
-        .db!.prepare("SELECT COUNT(*) AS count FROM consultation_soaps")
-        .get()!.count
+      mustExist(
+        mustExist(fixture.db, "base de test")
+          .prepare("SELECT COUNT(*) AS count FROM consultation_soaps")
+          .get(),
+        "comptage des SOAP"
+      ).count
     ).toBe(0);
   });
 });

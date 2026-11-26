@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { mustExist } from "@/lib/must-exist";
 import type {
   SearchChunk,
   SearchScope,
@@ -60,7 +61,10 @@ describe("découpage en extraits", () => {
       expect(passage).toMatch(ENDS_WITH_PERIOD);
     }
     for (let i = 1; i < passages.length; i++) {
-      const previousLast = passages[i - 1].split(SENTENCE_BREAK).at(-1)!;
+      const previousLast = mustExist(
+        passages[i - 1].split(SENTENCE_BREAK).at(-1),
+        "dernière phrase du passage précédent"
+      );
       expect(passages[i].startsWith(previousLast)).toBe(true);
     }
   });
@@ -189,7 +193,10 @@ describe("classement par score vectoriel avec bonus lexical", () => {
       5,
       [document]
     );
-    const lexical = ranked.find((r) => r.sourceId === "patient-document:1")!;
+    const lexical = mustExist(
+      ranked.find((r) => r.sourceId === "patient-document:1"),
+      "passage lexical du document"
+    );
     expect(lexical.score).toBe(LEXICAL_ONLY_SCORE);
     expect(lexical.text).toContain("Amoxicilline");
     expect(lexical.text.length).toBeLessThanOrEqual(PASSAGE_CHARACTERS + 1);

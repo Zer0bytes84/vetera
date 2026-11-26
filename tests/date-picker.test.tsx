@@ -5,13 +5,14 @@ import {
   formatDateValue,
   parseDateValue,
 } from "@/components/ui/date-picker";
+import { mustExist } from "@/lib/must-exist";
 
 const REQUIRED_INPUT = /<input[^>]*required/;
 
 it("lit et écrit un jour civil sans décalage UTC", () => {
   const date = parseDateValue("2026-03-29");
   expect(date?.getDate()).toBe(29);
-  expect(formatDateValue(date!)).toBe("2026-03-29");
+  expect(formatDateValue(mustExist(date, "date lue"))).toBe("2026-03-29");
   expect(parseDateValue("")).toBeUndefined();
   expect(parseDateValue("29/03/2026")).toBeUndefined();
 });

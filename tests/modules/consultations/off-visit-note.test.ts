@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
+import { mustExist } from "@/lib/must-exist";
 import { documentSearchChunks } from "@/modules/consultations/local-ai/embedding-index";
 import {
   buildOffVisitNote,
@@ -53,7 +54,10 @@ describe("note hors visite", () => {
       createdAt: "2026-10-29T15:00:00.000Z",
     });
     expect(note.content).toContain("Gastrite probable.");
-    const meta = readOffVisitNote(note)!;
+    const meta = mustExist(
+      readOffVisitNote(note),
+      "métadonnées de la note hors visite"
+    );
     expect(meta).toMatchObject({
       kind: "call",
       origin: "dictee",
@@ -61,10 +65,12 @@ describe("note hors visite", () => {
       reviewedBy: "vet-1",
       transcript: "vomit depuis hier soir",
     });
-    expect(JSON.parse(note.tags!)).not.toHaveProperty(
-      "offVisitNote.appointmentId"
-    );
-    expect(JSON.parse(note.tags!)).not.toHaveProperty("clinicalDocument");
+    expect(
+      JSON.parse(mustExist(note.tags, "étiquettes de la note"))
+    ).not.toHaveProperty("offVisitNote.appointmentId");
+    expect(
+      JSON.parse(mustExist(note.tags, "étiquettes de la note"))
+    ).not.toHaveProperty("clinicalDocument");
   });
 
   it("tells it apart from the record's other notes", () => {

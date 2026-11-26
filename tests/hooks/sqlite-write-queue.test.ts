@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { mustExist } from "@/lib/must-exist";
 
 const fixture = vi.hoisted(() => ({
   rows: [
@@ -61,7 +62,10 @@ vi.mock("../../src/services/sqlite/database", () => {
           };
         });
       } else if (sql.startsWith("INSERT")) {
-        const fields = sql.match(/\(([^)]+)\)/)![1].split(", ");
+        const fields = mustExist(
+          sql.match(/\(([^)]+)\)/),
+          "INSERT columns"
+        )[1].split(", ");
         fixture.rows.push(
           Object.fromEntries(
             fields.map((field, index) => [field, params[index]])
@@ -107,13 +111,13 @@ async function setup(warm = true) {
   // Server rendering invokes the real React hooks without a browser DOM.
   // Effects are intentionally absent: each operation below uses the public API.
   const read = () => {
-    let result: ReturnType<typeof sqlite.useSQLite<Row>>;
+    let result: ReturnType<typeof sqlite.useSQLite<Row>> | undefined;
     function Probe() {
       result = sqlite.useSQLite<Row>("appointments");
       return null;
     }
     renderToStaticMarkup(React.createElement(Probe));
-    return result!;
+    return mustExist(result, "hook result");
   };
   return { ...sqlite, read };
 }

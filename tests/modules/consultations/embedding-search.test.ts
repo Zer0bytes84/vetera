@@ -102,13 +102,13 @@ vi.mock("../../../src/services/sqlite/database", () => ({
   generateId: () => `embedding-${++fixture.nextId}`,
   runDbRead: async (fn: (db: unknown) => unknown) => fn(adapter()),
   runDbTransaction: async (fn: (db: unknown) => unknown) => {
-    fixture.db!.exec("BEGIN");
+    mustExist(fixture.db, "test database").exec("BEGIN");
     try {
       const result = await fn(adapter());
-      fixture.db!.exec("COMMIT");
+      mustExist(fixture.db, "test database").exec("COMMIT");
       return result;
     } catch (error) {
-      fixture.db!.exec("ROLLBACK");
+      mustExist(fixture.db, "test database").exec("ROLLBACK");
       throw error;
     }
   },
@@ -116,16 +116,21 @@ vi.mock("../../../src/services/sqlite/database", () => ({
 function adapter() {
   return {
     select: async <T>(sql: string, params: unknown[] = []) =>
-      fixture.db!.prepare(sql).all(...params) as T,
+      mustExist(fixture.db, "test database")
+        .prepare(sql)
+        .all(...params) as T,
     execute: async (sql: string, params: unknown[] = []) => {
       if (fixture.failInsert && sql.startsWith("INSERT INTO embeddings")) {
         throw new Error("Écriture échouée");
       }
-      return fixture.db!.prepare(sql).run(...params);
+      return mustExist(fixture.db, "test database")
+        .prepare(sql)
+        .run(...params);
     },
   };
 }
 
+import { mustExist } from "@/lib/must-exist";
 import {
   detectSearchOrphans,
   indexPatientDocuments,
@@ -164,8 +169,8 @@ function soap(
   } as ConsultationSoap;
 }
 function insertSoap(note: ConsultationSoap) {
-  fixture
-    .db!.prepare(
+  mustExist(fixture.db, "test database")
+    .prepare(
       "INSERT INTO consultation_soaps (id,appointment_id,patient_id,subjective,objective,assessment,plan,content) VALUES (?,?,?,?,?,?,?,?)"
     )
     .run(
@@ -203,10 +208,14 @@ beforeEach(async () => {
     {
       execute: async (sql, params = []) =>
         params.length
-          ? fixture.db!.prepare(sql).run(...params)
-          : fixture.db!.exec(sql),
+          ? mustExist(fixture.db, "test database")
+              .prepare(sql)
+              .run(...params)
+          : mustExist(fixture.db, "test database").exec(sql),
       select: async <T>(sql, params = []) =>
-        fixture.db!.prepare(sql).all(...params) as T,
+        mustExist(fixture.db, "test database")
+          .prepare(sql)
+          .all(...params) as T,
     },
     SQLITE_MIGRATIONS
   );
@@ -248,8 +257,8 @@ describe("Lecture des nouveaux documents sans copie dans les anciennes notes", (
           pages: [{ page: 2, text: "Amoxicilline 50 mg matin et soir." }],
         })
       : null;
-    fixture
-      .db!.prepare(
+    mustExist(fixture.db, "test database")
+      .prepare(
         "INSERT INTO documents(id,patient_id,patient_name,type_document,titre,contenu_genere,statut,clinic_snapshot,values_snapshot,created_at,updated_at,created_by,author_name,finalized_at,attachment_json) VALUES(?,?,?,'import',?,'Amoxicilline 50 mg matin et soir.',?,'{}','{}','2026-10-17T09:00:00Z','2026-10-17T09:00:00Z','vet','Dr Test',?,?)"
       )
       .run(
@@ -282,7 +291,9 @@ describe("Lecture des nouveaux documents sans copie dans les anciennes notes", (
       "Page 2"
     );
     expect(
-      fixture.db!.prepare("SELECT COUNT(*) AS count FROM notes").get()
+      mustExist(fixture.db, "test database")
+        .prepare("SELECT COUNT(*) AS count FROM notes")
+        .get()
     ).toEqual({ count: 0 });
   });
   it("exclut immédiatement les documents annulés, les brouillons, les scans et les images", async () => {
@@ -290,7 +301,7 @@ describe("Lecture des nouveaux documents sans copie dans les anciennes notes", (
     insertDocument("draft", "rex", "brouillon");
     insertDocument("scan", "rex", "finalise", "scan");
     insertDocument("image", "rex", "finalise", "image");
-    fixture.db!.exec(
+    mustExist(fixture.db, "test database").exec(
       "UPDATE documents SET statut='annule',motif_annulation='Erreur de patient' WHERE id='cancelled'"
     );
     expect(
@@ -313,9 +324,10 @@ describe("Lecture des nouveaux documents sans copie dans les anciennes notes", (
 });
 describe("Recherche sémantique locale : index et isolation", () => {
   it("retrouve bactérie dans une rubrique bactérienne sans abaisser le seuil sémantique", () => {
-    const chunk = soapSearchChunks(soap()).find(
-      (row) => row.section === "assessment"
-    )!;
+    const chunk = mustExist(
+      soapSearchChunks(soap()).find((row) => row.section === "assessment"),
+      "chunk de l’évaluation"
+    );
     const withScore = (score: number) => {
       const result = vector();
       result[0] = score;
@@ -386,8 +398,8 @@ describe("Recherche sémantique locale : index et isolation", () => {
     ).rejects.toThrow();
   });
   it("ne permet pas au mode global de rechercher une note non validée", async () => {
-    fixture
-      .db!.prepare(
+    mustExist(fixture.db, "test database")
+      .prepare(
         "UPDATE consultation_soaps SET ai_draft='{}' WHERE patient_id='mocha'"
       )
       .run();
@@ -430,8 +442,8 @@ describe("Recherche sémantique locale : index et isolation", () => {
   });
   it("stores actual 3072-byte float32 blobs with source and timestamps", async () => {
     await persist();
-    const rows = fixture
-      .db!.prepare(
+    const rows = mustExist(fixture.db, "test database")
+      .prepare(
         "SELECT typeof(embedding) AS type,length(embedding) AS bytes,created_at,updated_at,source_type,source_id FROM embeddings"
       )
       .all();
@@ -446,7 +458,7 @@ describe("Recherche sémantique locale : index et isolation", () => {
   });
   it("retrieves an indexed section after closing and reopening SQLite", async () => {
     await persist();
-    fixture.db!.close();
+    mustExist(fixture.db, "test database").close();
     fixture.db = new DatabaseSync(join(directory, "search.db"));
     const rows = await readPatientSearchRows(adapter(), scope, "sections");
     expect(rows).toHaveLength(1);
@@ -485,10 +497,15 @@ describe("Recherche sémantique locale : index et isolation", () => {
   });
   it("rejects a forged patient/source association at the SQL boundary", async () => {
     await persist();
-    const row = fixture.db!.prepare("SELECT id FROM embeddings LIMIT 1").get()!;
+    const row = mustExist(
+      mustExist(fixture.db, "test database")
+        .prepare("SELECT id FROM embeddings LIMIT 1")
+        .get(),
+      "embedding row"
+    );
     expect(() =>
-      fixture
-        .db!.prepare("UPDATE embeddings SET patient_id='mocha' WHERE id=?")
+      mustExist(fixture.db, "test database")
+        .prepare("UPDATE embeddings SET patient_id='mocha' WHERE id=?")
         .run(row.id)
     ).toThrow(INCOMPATIBLE_ERROR);
   });
@@ -503,7 +520,12 @@ describe("Recherche sémantique locale : index et isolation", () => {
       )
     ).rejects.toThrow(SINGLE_ONLY_ERROR);
     expect(
-      fixture.db!.prepare("SELECT COUNT(*) AS n FROM embeddings").get()!.n
+      mustExist(
+        mustExist(fixture.db, "test database")
+          .prepare("SELECT COUNT(*) AS n FROM embeddings")
+          .get(),
+        "count row"
+      ).n
     ).toBe(0);
   });
   it("requires all scope filters explicitly", async () => {
@@ -550,7 +572,7 @@ describe("Recherche sémantique locale : index et isolation", () => {
   });
   it("rejects the source if it changed while inference was running", async () => {
     const chunks = soapSearchChunks(soap());
-    fixture.db!.exec(
+    mustExist(fixture.db, "test database").exec(
       "UPDATE consultation_soaps SET assessment='Autre évaluation' WHERE id='soap-rex'"
     );
     await expect(
@@ -563,7 +585,7 @@ describe("Recherche sémantique locale : index et isolation", () => {
   });
   it("invalidates changed sections immediately then regenerates after renewed human review", async () => {
     await persist();
-    fixture.db!.exec(
+    mustExist(fixture.db, "test database").exec(
       "UPDATE consultation_soaps SET assessment='Nouvelle évaluation' WHERE id='soap-rex'"
     );
     expect(await readPatientSearchRows(adapter(), scope, "sections")).toEqual(
@@ -578,10 +600,8 @@ describe("Recherche sémantique locale : index et isolation", () => {
       []
     );
     const changed = { ...soap(), assessment: "Nouvelle évaluation" };
-    fixture
-      .db!.prepare(
-        "UPDATE consultation_soaps SET content=? WHERE id='soap-rex'"
-      )
+    mustExist(fixture.db, "test database")
+      .prepare("UPDATE consultation_soaps SET content=? WHERE id='soap-rex'")
       .run(reviewedSoapContent(changed, "{}", "vet"));
     const results = await searchPatientDocuments(scope, "Évaluation");
     expect(results[0].text).toBe("Nouvelle évaluation");
@@ -639,8 +659,8 @@ describe("Recherche sémantique locale : index et isolation", () => {
         new AbortController().signal,
         () => undefined
       );
-      const counts = fixture
-        .db!.prepare(
+      const counts = mustExist(fixture.db, "test database")
+        .prepare(
           "SELECT model_key AS key, COUNT(*) AS n FROM embeddings GROUP BY model_key ORDER BY model_key"
         )
         .all() as Array<{ key: string; n: number }>;
@@ -693,9 +713,12 @@ describe("Recherche sémantique locale : index et isolation", () => {
       true
     );
     expect(
-      fixture
-        .db!.prepare("SELECT COUNT(*) AS n FROM embeddings WHERE model_key=?")
-        .get(PASSAGE_V2_MODEL_KEY)!.n
+      mustExist(
+        mustExist(fixture.db, "test database")
+          .prepare("SELECT COUNT(*) AS n FROM embeddings WHERE model_key=?")
+          .get(PASSAGE_V2_MODEL_KEY),
+        "count row"
+      ).n
     ).toBe(0);
     fixture.embedding2 = true;
     fixture.models = [];
@@ -706,15 +729,21 @@ describe("Recherche sémantique locale : index et isolation", () => {
     );
     expect(fixture.models).toEqual(["embeddinggemma2"]);
     expect(
-      fixture
-        .db!.prepare("SELECT COUNT(*) AS n FROM embeddings WHERE model_key=?")
-        .get(PASSAGE_V2_MODEL_KEY)!.n
+      mustExist(
+        mustExist(fixture.db, "test database")
+          .prepare("SELECT COUNT(*) AS n FROM embeddings WHERE model_key=?")
+          .get(PASSAGE_V2_MODEL_KEY),
+        "count row"
+      ).n
     ).toBe(4);
     // The v1 indexes are untouched by the v2 one.
     expect(
-      fixture
-        .db!.prepare("SELECT COUNT(*) AS n FROM embeddings WHERE model_key=?")
-        .get(PASSAGE_MODEL_KEY)!.n
+      mustExist(
+        mustExist(fixture.db, "test database")
+          .prepare("SELECT COUNT(*) AS n FROM embeddings WHERE model_key=?")
+          .get(PASSAGE_MODEL_KEY),
+        "count row"
+      ).n
     ).toBe(4);
   });
   it("A2 : l’index arctic, tronqué à 768 dimensions, n’existe que si arctic est installé", async () => {
@@ -724,9 +753,12 @@ describe("Recherche sémantique locale : index et isolation", () => {
       () => undefined
     );
     expect(
-      fixture
-        .db!.prepare("SELECT COUNT(*) AS n FROM embeddings WHERE model_key=?")
-        .get(PASSAGE_ARCTIC_MODEL_KEY)!.n
+      mustExist(
+        mustExist(fixture.db, "test database")
+          .prepare("SELECT COUNT(*) AS n FROM embeddings WHERE model_key=?")
+          .get(PASSAGE_ARCTIC_MODEL_KEY),
+        "count row"
+      ).n
     ).toBe(0);
     fixture.arctic = true;
     fixture.models = [];
@@ -736,10 +768,8 @@ describe("Recherche sémantique locale : index et isolation", () => {
       () => undefined
     );
     expect(fixture.models).toEqual(["arctic"]);
-    const rows = fixture
-      .db!.prepare(
-        "SELECT embedding AS vector FROM embeddings WHERE model_key=?"
-      )
+    const rows = mustExist(fixture.db, "test database")
+      .prepare("SELECT embedding AS vector FROM embeddings WHERE model_key=?")
       .all(PASSAGE_ARCTIC_MODEL_KEY) as { vector: Uint8Array }[];
     expect(rows).toHaveLength(4);
     expect(rows.every((row) => row.vector.byteLength === 3072)).toBe(true);
@@ -750,9 +780,12 @@ describe("Recherche sémantique locale : index et isolation", () => {
     );
     expect(stored[0]).toBeCloseTo(1);
     expect(
-      fixture
-        .db!.prepare("SELECT COUNT(*) AS n FROM embeddings WHERE model_key=?")
-        .get(PASSAGE_MODEL_KEY)!.n
+      mustExist(
+        mustExist(fixture.db, "test database")
+          .prepare("SELECT COUNT(*) AS n FROM embeddings WHERE model_key=?")
+          .get(PASSAGE_MODEL_KEY),
+        "count row"
+      ).n
     ).toBe(4);
   });
   it("A2 : la recherche v2 interroge EmbeddingGemma 2, et revient à la v1 tant que la v2 manque", async () => {
@@ -783,7 +816,9 @@ describe("Recherche sémantique locale : index et isolation", () => {
       { length: 80 },
       (_, i) => `Observation ${i} du suivi rénal et digestif détaillée.`
     ).join(" ");
-    fixture.db!.exec("DELETE FROM consultation_soaps WHERE id='soap-rex'");
+    mustExist(fixture.db, "test database").exec(
+      "DELETE FROM consultation_soaps WHERE id='soap-rex'"
+    );
     insertSoap(
       soap("rex", "soap-rex", {
         subjective: "Suivi.",
@@ -809,7 +844,9 @@ describe("Recherche sémantique locale : index et isolation", () => {
   it("deletes embeddings with the source and leaves the other patient intact", async () => {
     await persist();
     await persist(soap("mocha", "soap-mocha"));
-    fixture.db!.exec("DELETE FROM consultation_soaps WHERE id='soap-rex'");
+    mustExist(fixture.db, "test database").exec(
+      "DELETE FROM consultation_soaps WHERE id='soap-rex'"
+    );
     expect(await readPatientSearchRows(adapter(), scope, "sections")).toEqual(
       []
     );
@@ -823,14 +860,21 @@ describe("Recherche sémantique locale : index et isolation", () => {
   });
   it("cascades through patient deletion", async () => {
     await persist();
-    fixture.db!.exec("DELETE FROM patients WHERE id='rex'");
+    mustExist(fixture.db, "test database").exec(
+      "DELETE FROM patients WHERE id='rex'"
+    );
     expect(
-      fixture.db!.prepare("SELECT COUNT(*) AS n FROM embeddings").get()!.n
+      mustExist(
+        mustExist(fixture.db, "test database")
+          .prepare("SELECT COUNT(*) AS n FROM embeddings")
+          .get(),
+        "count row"
+      ).n
     ).toBe(0);
   });
   it("detects orphaned rows even if foreign keys were disabled externally", async () => {
     await persist();
-    fixture.db!.exec(
+    mustExist(fixture.db, "test database").exec(
       "PRAGMA foreign_keys=OFF; DELETE FROM consultation_soaps WHERE id='soap-rex'"
     );
     expect(await detectSearchOrphans(adapter(), "rex")).toHaveLength(4);
@@ -847,11 +891,11 @@ describe("Recherche sémantique locale : index et isolation", () => {
   it("rolls back an index replacement if insertion fails", async () => {
     await persist();
     fixture.failInsert = true;
-    fixture.db!.exec("BEGIN");
+    mustExist(fixture.db, "test database").exec("BEGIN");
     try {
       await persist();
     } catch {
-      fixture.db!.exec("ROLLBACK");
+      mustExist(fixture.db, "test database").exec("ROLLBACK");
     }
     expect(
       await readPatientSearchRows(adapter(), scope, "sections")
@@ -866,8 +910,8 @@ describe("Recherche sémantique locale : index et isolation", () => {
         clinicalDocument: { reviewedAt: "2026-10-09", type: "protocol" },
       }),
     } as Note;
-    fixture
-      .db!.prepare(
+    mustExist(fixture.db, "test database")
+      .prepare(
         "INSERT INTO notes(id,user_id,title,content,tags,patient_id) VALUES(?,'vet','Protocole',?,?,?)"
       )
       .run(note.id, note.content, note.tags, note.patientId);
@@ -887,9 +931,16 @@ describe("Recherche sémantique locale : index et isolation", () => {
         "sections"
       )
     ).toHaveLength(1);
-    fixture.db!.exec("DELETE FROM notes WHERE id='protocol'");
+    mustExist(fixture.db, "test database").exec(
+      "DELETE FROM notes WHERE id='protocol'"
+    );
     expect(
-      fixture.db!.prepare("SELECT COUNT(*) AS n FROM embeddings").get()!.n
+      mustExist(
+        mustExist(fixture.db, "test database")
+          .prepare("SELECT COUNT(*) AS n FROM embeddings")
+          .get(),
+        "count row"
+      ).n
     ).toBe(0);
   });
   it("does not index unapproved or unlinked documents", () => {
@@ -1140,8 +1191,8 @@ describe("Recherche sémantique locale : index et isolation", () => {
 
   it("indexe et retrouve les données à travers l'ensemble des 6 domaines cliniques (patients, consultations, SOAP, documents, protocoles, produits)", async () => {
     // 1. Ajouter un produit (Vaccin rage, antibiotique Synulox)
-    fixture
-      .db!.prepare(
+    mustExist(fixture.db, "test database")
+      .prepare(
         "INSERT INTO products (id, name, category, sub_category, quantity, unit, min_stock, purchase_price_amount, sale_price_amount) VALUES (?, ?, ?, ?, ?, ?, 0, 100, 200)"
       )
       .run(
@@ -1152,8 +1203,8 @@ describe("Recherche sémantique locale : index et isolation", () => {
         15,
         "flacon"
       );
-    fixture
-      .db!.prepare(
+    mustExist(fixture.db, "test database")
+      .prepare(
         "INSERT INTO products (id, name, category, sub_category, quantity, unit, min_stock, purchase_price_amount, sale_price_amount) VALUES (?, ?, ?, ?, ?, ?, 0, 150, 300)"
       )
       .run(
@@ -1166,8 +1217,8 @@ describe("Recherche sémantique locale : index et isolation", () => {
       );
 
     // 2. Ajouter une consultation (appointment) de type Vaccin
-    fixture
-      .db!.prepare(
+    mustExist(fixture.db, "test database")
+      .prepare(
         "INSERT INTO appointments (id, patient_id, owner_id, vet_id, title, start_time, end_time, status, type, reason, diagnosis, treatment, notes) VALUES (?, ?, 'owner', 'vet', ?, '2026-10-10 14:00:00', '2026-10-10 14:30:00', 'completed', 'Vaccin', ?, ?, ?, ?)"
       )
       .run(
@@ -1181,8 +1232,8 @@ describe("Recherche sémantique locale : index et isolation", () => {
       );
 
     // 3. Ajouter une note document et protocole
-    fixture
-      .db!.prepare(
+    mustExist(fixture.db, "test database")
+      .prepare(
         "INSERT INTO notes (id, user_id, title, content, patient_id, tags) VALUES (?, 'vet', ?, ?, ?, ?)"
       )
       .run(
@@ -1199,8 +1250,8 @@ describe("Recherche sémantique locale : index et isolation", () => {
       );
 
     // 4. Mettre à jour les informations du patient rex (IRC dans affections chroniques)
-    fixture
-      .db!.prepare(
+    mustExist(fixture.db, "test database")
+      .prepare(
         "UPDATE patients SET chronic_conditions = 'Insuffisance rénale chronique (IRC)' WHERE id = 'rex'"
       )
       .run();
@@ -1262,8 +1313,8 @@ describe("recherche clinique exacte dans les sources validées", () => {
   it("retrouve bactérie sans modèle et garde le patient et la rubrique", async () => {
     const fields = { ...soap(), assessment: "Cause bactérienne" };
     const updated = soap("rex", "soap-rex", fields);
-    fixture
-      .db!.prepare(
+    mustExist(fixture.db, "test database")
+      .prepare(
         "UPDATE consultation_soaps SET assessment=?,content=? WHERE id=?"
       )
       .run(updated.assessment, updated.content, updated.id);
@@ -1284,7 +1335,7 @@ describe("recherche clinique exacte dans les sources validées", () => {
     ).toEqual([]);
   });
   it("ne restitue pas une note modifiée sans nouvelle validation", async () => {
-    fixture.db!.exec(
+    mustExist(fixture.db, "test database").exec(
       "UPDATE consultation_soaps SET assessment='Cause bactérienne' WHERE id='soap-rex'"
     );
     fixture.failEmbedding = true;

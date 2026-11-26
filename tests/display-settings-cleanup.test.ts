@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { mustExist } from "@/lib/must-exist";
 import {
   applyTheme,
   getThemeConfig,
@@ -67,7 +68,14 @@ describe("paramètres d'affichage retirés : migration", () => {
     const { storage, values, dataset } = install(TESTER);
     const config = getThemeConfig();
     expect(config).toEqual({ cleanFont: "plex" });
-    expect(JSON.parse(storage.get("theme-config")!)).toEqual({
+    expect(
+      JSON.parse(
+        mustExist(
+          storage.get("theme-config"),
+          "configuration du thème enregistrée"
+        )
+      )
+    ).toEqual({
       cleanFont: "plex",
     });
     for (const key of REMOVED_DISPLAY_KEYS) {

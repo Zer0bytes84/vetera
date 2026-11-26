@@ -1,6 +1,7 @@
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { mustExist } from "@/lib/must-exist";
 import {
   AIModelSettings,
   NewAssistantCard,
@@ -186,7 +187,9 @@ it("propage l’accès refusé et n’enregistre jamais la clé de téléchargem
   expect(download).toHaveBeenCalledWith(undefined, "test-ephemeral-key");
   expect(hasCompletedAIOnboarding()).toBe(false);
   for (let index = 0; index < disk.length; index++) {
-    expect(disk.getItem(disk.key(index)!)).not.toContain("test-ephemeral-key");
+    expect(
+      disk.getItem(mustExist(disk.key(index), "clé du stockage"))
+    ).not.toContain("test-ephemeral-key");
   }
 });
 

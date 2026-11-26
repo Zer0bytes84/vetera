@@ -88,8 +88,12 @@ describe("préparation du micro : écoute annoncée une fois le niveau stable", 
   )("%s : écoute annoncée après la montée de 3,5 s, pas avant", (_, windows) => {
     const result = feed(fromWindows(windows));
     expect(result).toMatchObject({ state: "stable", reason: "montée" });
-    expect(result!.at).toBeGreaterThanOrEqual(3.75);
-    expect(result!.at).toBeLessThanOrEqual(4.1);
+    expect(mustExist(result, "annonce de l’écoute").at).toBeGreaterThanOrEqual(
+      3.75
+    );
+    expect(mustExist(result, "annonce de l’écoute").at).toBeLessThanOrEqual(
+      4.1
+    );
   });
 
   it.each(
@@ -97,21 +101,29 @@ describe("préparation du micro : écoute annoncée une fois le niveau stable", 
   )("%s : limite connue, une voix déjà là pendant l'atténuation avance l'annonce de 0,25 s", (_, windows) => {
     const result = feed(fromWindows(windows));
     expect(result).toMatchObject({ state: "stable", reason: "montée" });
-    expect(result!.at).toBeGreaterThanOrEqual(3.2);
+    expect(mustExist(result, "annonce de l’écoute").at).toBeGreaterThanOrEqual(
+      3.2
+    );
   });
 
   it("une entrée qui ne monte jamais est prise comme prête au délai de secours, pas avant", () => {
     const result = feed(() => -48);
     expect(result).toMatchObject({ state: "stable", reason: "délai" });
-    expect(result!.at).toBeGreaterThanOrEqual(MICROPHONE_WARMUP.maxSeconds);
-    expect(result!.at).toBeLessThan(MICROPHONE_WARMUP.maxSeconds + 0.1);
+    expect(mustExist(result, "annonce de l’écoute").at).toBeGreaterThanOrEqual(
+      MICROPHONE_WARMUP.maxSeconds
+    );
+    expect(mustExist(result, "annonce de l’écoute").at).toBeLessThan(
+      MICROPHONE_WARMUP.maxSeconds + 0.1
+    );
   });
 
   it("un clic isolé dans une pièce silencieuse n'annonce pas l'écoute", () => {
     const result = feed((seconds) =>
       seconds >= 1.5 && seconds < 1.75 ? -45 : seconds < 3.5 ? -66 : -45
     );
-    expect(result!.at).toBeGreaterThanOrEqual(3.75);
+    expect(mustExist(result, "annonce de l’écoute").at).toBeGreaterThanOrEqual(
+      3.75
+    );
   });
 });
 
@@ -171,6 +183,7 @@ vi.mock("@/modules/consultations/local-ai/whisper-session", () => ({
   releaseWhisperSession: () => undefined,
 }));
 
+import { mustExist } from "@/lib/must-exist";
 import { useLocalConsultationAi } from "@/modules/consultations/hooks/use-local-consultation-ai";
 
 function setup(options?: Parameters<typeof useLocalConsultationAi>[0]) {

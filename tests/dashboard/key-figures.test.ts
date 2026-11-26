@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { mustExist } from "@/lib/must-exist";
 import {
   buildKeyFigures,
   changeBadge,
@@ -194,10 +195,14 @@ describe("les quatre chiffres clés, minimalistes : libellé, valeur, écart, un
     expect(cash.value).toBe(formatCentimes(30_000));
     expect(cash.delta).toBe(200);
     expect(cash.line).toBe(`Solde net : ${formatCentimes(30_000)}`);
-    expect(cash.trend!.every((v, i, arr) => i === 0 || v >= arr[i - 1])).toBe(
-      true
+    expect(
+      mustExist(cash.trend, "tendance de la trésorerie").every(
+        (v, i, arr) => i === 0 || v >= arr[i - 1]
+      )
+    ).toBe(true);
+    expect(mustExist(cash.trend, "tendance de la trésorerie").at(-1)).toBe(
+      30_000
     );
-    expect(cash.trend!.at(-1)).toBe(30_000);
     // 300 DA encaissés contre 100 DA la période d'avant : l'objectif d'égaler est atteint, plafonné à 100 %.
     expect(cash.goal).toEqual({
       ratio: 1,
@@ -218,7 +223,12 @@ describe("les quatre chiffres clés, minimalistes : libellé, valeur, écart, un
     expect(rdv.value).toBe("5");
     expect(rdv.delta).toBe(400);
     expect(rdv.line).toBe("2 honorés · 1 annulé · 1 absence");
-    expect(rdv.trend!.reduce((n, v) => n + v, 0)).toBe(5);
+    expect(
+      mustExist(rdv.trend, "tendance des rendez-vous").reduce(
+        (n, v) => n + v,
+        0
+      )
+    ).toBe(5);
     expect(rdv.goal).toEqual({ ratio: 0.4, label: "Honorés : 2 sur 5" });
   });
   it("Rendez-vous : le singulier ne prend pas de s, le zéro non plus", () => {
@@ -266,7 +276,7 @@ describe("les quatre chiffres clés, minimalistes : libellé, valeur, écart, un
         invoice("a", { balanceAmount: 2500 }),
         invoice("c", { balanceAmount: 0, settlementStatus: "paid" }),
       ];
-      const rate = settlementRate(inv)!;
+      const rate = mustExist(settlementRate(inv), "taux de règlement");
       const c = figures(base(), receivablesSummary(inv, []), rate)[2];
       expect(c.goal).toEqual({ ratio: rate / 100, label: "Factures réglées" });
       expect(rate).toBeCloseTo(87.5, 1);

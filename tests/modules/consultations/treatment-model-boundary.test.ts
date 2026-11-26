@@ -43,6 +43,7 @@ vi.mock("@/modules/consultations/local-ai/inference-client", () => ({
   },
 }));
 
+import { mustExist } from "@/lib/must-exist";
 import { useLocalConsultationAi } from "@/modules/consultations/hooks/use-local-consultation-ai";
 
 const context = {
@@ -90,7 +91,7 @@ describe("frontière du modèle local pour les traitements", () => {
   it("préserve une dose humaine sans la montrer au modèle ni en calculer une", async () => {
     const dose = "Le patient a besoin de 2.5 mg pendant trois jours.";
     const draft = await setup().generate(models, `Toux. ${dose}`, context);
-    expect(draft!.plan).toBe(dose);
+    expect(mustExist(draft, "brouillon généré").plan).toBe(dose);
     expect(JSON.stringify(fixture.requests)).not.toContain("2.5 mg");
   });
   it("ne charge aucun modèle quand la dictée ne contient qu’un traitement protégé", async () => {

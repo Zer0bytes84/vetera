@@ -22,12 +22,13 @@ vi.mock("@/services/sqlite/database", () => ({
   toSQLiteTimestamp: (date: Date) => date.toISOString(),
   runDbRead: async (operation: (db: CareDatabase) => Promise<unknown>) => {
     await harness.queue;
-    return operation(harness.db!);
+    return operation(mustExist(harness.db, "base de test"));
   },
   runDbTransaction: (operation: (db: CareDatabase) => Promise<unknown>) =>
     transaction(operation),
 }));
 
+import { mustExist } from "@/lib/must-exist";
 import {
   billCompletedCareTask,
   getInvoice,
@@ -203,9 +204,10 @@ it("revient à faire, restitue la quantité décimale aux lots exacts et conserv
     author_id: "autre-vet",
     reason: "Validation par erreur",
   });
-  const debit = sqlite
-    .prepare("SELECT * FROM stock_movements WHERE type='usage'")
-    .get()!;
+  const debit = mustExist(
+    sqlite.prepare("SELECT * FROM stock_movements WHERE type='usage'").get(),
+    "mouvement de consommation"
+  );
   expect(
     sqlite.prepare("SELECT * FROM stock_movements WHERE type='return'").get()
   ).toMatchObject({
@@ -341,9 +343,10 @@ it("une péremption ou un archivage ultérieur n’empêche pas la restitution p
 
 it("restitue un ancien débit sans répartition par lot en stock non affecté, sans inventer de lot", async () => {
   const task = await completed();
-  const movement = sqlite
-    .prepare("SELECT id FROM stock_movements WHERE type='usage'")
-    .get()!;
+  const movement = mustExist(
+    sqlite.prepare("SELECT id FROM stock_movements WHERE type='usage'").get(),
+    "mouvement de consommation"
+  );
   sqlite
     .prepare("DELETE FROM stock_movement_allocations WHERE movement_id=?")
     .run(movement.id);

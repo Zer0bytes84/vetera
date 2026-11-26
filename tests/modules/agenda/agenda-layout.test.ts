@@ -78,7 +78,12 @@ describe("placement des rendez-vous d'une journée", () => {
     const placed = layoutDayEvents(near, day, 28);
     expect(placed.map((p) => p.columns)).toEqual([2, 2]);
     expect(placed.map((p) => p.column).sort()).toEqual([0, 1]);
-    expect(placed.find((p) => p.item.id === "dora")!.end - 840).toBe(28);
+    expect(
+      mustExist(
+        placed.find((p) => p.item.id === "dora"),
+        "rendez-vous dora"
+      ).end - 840
+    ).toBe(28);
   });
   it("coupe à minuit un rendez-vous qui le dépasse et reprend à minuit celui de la veille", () => {
     const [late] = layoutDayEvents([ev("late", at(23), at(1, 0, 1))], day);
@@ -177,6 +182,7 @@ describe("tous les rendez-vous tiennent dans la grille", () => {
   });
 });
 
+import { mustExist } from "@/lib/must-exist";
 import {
   layoutTimeGrid,
   ROW_PX,
@@ -250,7 +256,10 @@ describe("axe du temps élastique : l'heure s'étend pour tout montrer", () => {
   });
   it("étend aussi une heure creuse après une heure chargée sans décaler les rendez-vous suivants", () => {
     const g = grid([[...crowd(10), ev("apres", at(15), at(16))]]);
-    const after = g.days[0].find((b) => b.item.id === "apres")!;
+    const after = mustExist(
+      g.days[0].find((b) => b.item.id === "apres"),
+      "rendez-vous apres"
+    );
     expect(after.top).toBeCloseTo(g.yAt(15 * 60), 5);
     expect(after.top).toBeGreaterThan(g.yAt(14 * 60) - 1);
   });
@@ -278,7 +287,10 @@ describe("axe du temps élastique : l'heure s'étend pour tout montrer", () => {
   it("dessine un rendez-vous de 5 minutes sur une ligne, sans lui prêter la fin du bloc minimal", () => {
     // Heure 14 agrandie par une salve de dix : le bloc court ne grandit pas avec elle.
     const g = grid([[...crowd(10), ev("court", at(14, 30), at(14, 35))]]);
-    const short = g.days[0].find((b) => b.item.id === "court")!;
+    const short = mustExist(
+      g.days[0].find((b) => b.item.id === "court"),
+      "rendez-vous court"
+    );
     expect(short.end - short.start).toBe(5);
     expect(short.height).toBeGreaterThanOrEqual(22);
     expect(short.height).toBeLessThan(40);

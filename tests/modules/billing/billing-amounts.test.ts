@@ -18,7 +18,7 @@ vi.mock("@/services/sqlite/database", () => ({
   toSQLiteTimestamp: (date: Date) => date.toISOString(),
   runDbRead: async (operation: (db: Db) => Promise<unknown>) => {
     await harness.queue;
-    return operation(harness.db!);
+    return operation(mustExist(harness.db, "base de test"));
   },
   runDbTransaction: (operation: (db: Db) => Promise<unknown>) =>
     transaction(operation),
@@ -49,10 +49,10 @@ vi.mock("@/hooks/useSQLite", () => ({
     add: vi.fn(),
     update: async (id: string, patch: Record<string, unknown>) => {
       if (table === "appointments" && patch.status) {
-        harness.db!.execute("UPDATE appointments SET status = ? WHERE id = ?", [
-          patch.status,
-          id,
-        ]);
+        mustExist(harness.db, "base de test").execute(
+          "UPDATE appointments SET status = ? WHERE id = ?",
+          [patch.status, id]
+        );
       }
       return true;
     },
@@ -61,6 +61,7 @@ vi.mock("@/hooks/useSQLite", () => ({
 }));
 
 import { useAppointmentsRepository } from "@/data/repositories";
+import { mustExist } from "@/lib/must-exist";
 import { billingDraft } from "@/modules/billing/billing-draft";
 
 let sqlite: DatabaseSync;
@@ -69,7 +70,7 @@ function transaction<T>(operation: (db: Db) => Promise<T>): Promise<T> {
   const result = harness.queue.then(async () => {
     sqlite.exec("BEGIN IMMEDIATE");
     try {
-      const value = await operation(harness.db!);
+      const value = await operation(mustExist(harness.db, "base de test"));
       sqlite.exec("COMMIT");
       return value;
     } catch (error) {
@@ -154,7 +155,7 @@ describe("montants de la facturation", () => {
     await useAppointmentsRepository().completeWithBilling({
       appointmentId: "visit",
       items: draft.items,
-      amountReceivedDa: draft.received!,
+      amountReceivedDa: mustExist(draft.received, "montant reçu du brouillon"),
     });
 
     expect(invoice()).toEqual({ gross: 470_000, status: "issued" });
@@ -168,7 +169,7 @@ describe("montants de la facturation", () => {
     await repository.completeWithBilling({
       appointmentId: "visit",
       items: first.items,
-      amountReceivedDa: first.received!,
+      amountReceivedDa: mustExist(first.received, "montant reçu du brouillon"),
     });
     expect(payments()).toEqual([]);
 
@@ -183,7 +184,7 @@ describe("montants de la facturation", () => {
     await repository.completeWithBilling({
       appointmentId: "visit",
       items: rest.items,
-      amountReceivedDa: rest.received!,
+      amountReceivedDa: mustExist(rest.received, "montant reçu du brouillon"),
     });
 
     expect(invoice()).toEqual({ gross: 500_000, status: "issued" });
