@@ -101,6 +101,7 @@
         "src/hooks/useListCursor.ts",
         "src/hooks/useNowTick.ts",
         "src/hooks/usePatientIntentPrefetch.ts",
+        "src/hooks/useRememberedRows.ts",
         "src/hooks/useRowSaveFlash.ts",
         "src/hooks/useSaveIndicator.ts",
         "src/hooks/useSQLite.ts",
