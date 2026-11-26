@@ -157,7 +157,7 @@ export function formatFileSize(sizeBytes: number) {
   return `${rounded} ${units[power]}`;
 }
 
-export async function readFileAsDataUrl(file: File): Promise<string> {
+export function readFileAsDataUrl(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => {

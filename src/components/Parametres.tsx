@@ -712,7 +712,7 @@ const Parametres: React.FC<ParametresProps> = ({
   );
 
   useEffect(() => {
-    const loadProfileState = async () => {
+    const loadProfileState = () => {
       if (currentUser) {
         setDisplayName(currentUser.displayName || "");
       }
