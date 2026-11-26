@@ -536,6 +536,7 @@ export function ConsultationSessionDialog({
   // The form is filled again only when the consultation or the patient changes
   // (new id), never when their data reloads: a reload would overwrite what is
   // being typed and skip the next autosave.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: le formulaire se recharge depuis sourceRef seulement quand appointment.id ou patient.id change, jamais à un simple rechargement des données.
   useEffect(() => {
     const { appointment: current, patient: currentPatient } = sourceRef.current;
     setPatientNameValue(currentPatient.name);
@@ -610,6 +611,7 @@ export function ConsultationSessionDialog({
 
   const getAutosavePayload = useEffectEvent(() => buildPayload());
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: autosaveKey résume le contenu du formulaire : chaque modification doit reprogrammer l'enregistrement automatique, la charge étant lue par getAutosavePayload.
   useEffect(() => {
     if (!autosaveReadyRef.current) {
       autosaveReadyRef.current = true;

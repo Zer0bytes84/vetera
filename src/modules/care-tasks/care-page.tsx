@@ -322,6 +322,7 @@ export default function CarePage({
     setHistory([]);
     setHistoryError(false);
   }
+  // biome-ignore lint/correctness/useExhaustiveDependencies: tasks n'est pas lu, mais une liste de soins rechargée doit relire l'historique du soin sélectionné, remis à zéro au rendu juste au-dessus.
   useEffect(() => {
     let live = true;
     if (selected) {

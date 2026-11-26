@@ -176,6 +176,7 @@ export function ClinicAnswers({ patientId, renderAvatar }: Props) {
   // A question already being read: a second Entrée before the answer is ignored.
   const asking = useRef(false);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: turns.length n'est pas lu, mais chaque nouvelle question doit faire défiler la vue jusqu'à elle.
   useEffect(() => {
     // The new question goes to the top of the view: the answer is read from its first line, not from its last. Only the
     // thread scrolls: `scrollIntoView` also scrolled the panel's own containers, which pushed the panel's header out of

@@ -382,6 +382,7 @@ const NotesPro: React.FC = () => {
   }, [updateNote]);
 
   // Leaving a note (another note, the library, another page) writes the waiting edit at once.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: selectedNoteId n'est pas lu, mais son changement lance le nettoyage qui écrit tout de suite l'édition en attente de la note quittée.
   useEffect(() => () => void flushSave(), [selectedNoteId, flushSave]);
 
   const triggerSave = useCallback(

@@ -142,6 +142,7 @@ function useWidth(paused = false) {
   // null until measured: the chart draws once at its real width, so entrance
   // animations don't tween from a guessed size.
   const [width, setWidth] = useState<number | null>(null);
+  // biome-ignore lint/correctness/useExhaustiveDependencies: paused n'est pas lu, mais quand le squelette laisse place au graphique, l'effet doit mesurer la zone qui vient d'apparaître.
   useLayoutEffect(() => {
     const el = ref.current;
     if (!el) {

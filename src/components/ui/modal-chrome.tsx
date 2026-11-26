@@ -162,6 +162,7 @@ export function ModalBandActions({ children }: { children: ReactNode }) {
   const anchor = useRef<HTMLSpanElement>(null);
   const group = useRef<HTMLDivElement>(null);
   const generatedId = useId();
+  // biome-ignore lint/correctness/useExhaustiveDependencies: target n'est pas lu, mais il décide si le groupe des boutons est rendu dans la bande : quand il change, les contrôles du nouveau groupe doivent être rattachés au formulaire.
   useLayoutEffect(() => {
     const form = anchor.current?.closest("form");
     const box = group.current;

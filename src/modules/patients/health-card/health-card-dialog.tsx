@@ -128,6 +128,7 @@ export function HealthCardDialog({
     setArtifact(null);
     setError("");
   }
+  // biome-ignore lint/correctness/useExhaustiveDependencies: attempt n'est pas lu : le bouton Réessayer l'incrémente pour relancer la préparation du carnet.
   useEffect(() => {
     const input = snapshot;
     if (loading || !input) {
