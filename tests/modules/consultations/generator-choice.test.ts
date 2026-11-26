@@ -95,8 +95,9 @@ vi.mock("@mediapipe/tasks-genai", () => ({
     ) => {
       const url = options.baseOptions.modelAssetBuffer.url;
       engine.loads.push(url);
-      if (url.includes("gemma4"))
+      if (url.includes("gemma4")) {
         throw new Error("Mémoire graphique insuffisante");
+      }
       return {
         sizeInTokens: (text: string) => Math.ceil(text.length / 4),
         setOptions: async () => {},

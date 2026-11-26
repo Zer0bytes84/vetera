@@ -6,13 +6,13 @@ import { useCallback, useState } from "react";
  * arrive. The very first launch has no memory and falls back on the list's default.
  */
 
-export type RememberedRows = {
+export interface RememberedRows {
   rows: number;
   /** One row's height; with 0 rows, the height of what the list shows when empty. */
   rowHeight: number;
   /** A table's column widths, head cell by head cell. */
   columns?: number[];
-};
+}
 
 const PREFIX = "vetera:skeleton-rows:";
 
@@ -71,7 +71,9 @@ export function useRememberedRows<T extends HTMLElement>(
   const [reserved] = useState(() => readRememberedRows(key, fallback));
   const measure = useCallback(
     (node: T | null) => {
-      if (!node || typeof ResizeObserver === "undefined") return;
+      if (!node || typeof ResizeObserver === "undefined") {
+        return;
+      }
       const record = () => {
         if (layout === "block") {
           // A region may be empty (hidden): its height, 0, is remembered as well.
@@ -88,8 +90,9 @@ export function useRememberedRows<T extends HTMLElement>(
           layout === "grid"
             ? (node.firstElementChild?.getBoundingClientRect().height ?? 0)
             : (node.getBoundingClientRect().height - gap * (rows - 1)) / rows;
-        if (rows > 0 && height > 0)
+        if (rows > 0 && height > 0) {
           rememberRows(key, { rows, rowHeight: height });
+        }
       };
       const observer = new ResizeObserver(record);
       observer.observe(node);

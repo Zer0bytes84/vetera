@@ -58,7 +58,9 @@ vi.mock("../../../src/modules/consultations/local-ai/inference-client", () => ({
       fixture.maximum = Math.max(fixture.maximum, fixture.leases);
       return {
         request: async (message: { texts: string[]; model?: string }) => {
-          if (fixture.failEmbedding) throw new Error("Modèle indisponible");
+          if (fixture.failEmbedding) {
+            throw new Error("Modèle indisponible");
+          }
           fixture.embeds++;
           fixture.models.push(message.model ?? "embeddinggemma");
           return {
@@ -75,7 +77,9 @@ vi.mock("../../../src/modules/consultations/local-ai/inference-client", () => ({
         parked: false,
         isClosed: false,
         close() {
-          if (!this.parked && !this.isClosed) fixture.leases--;
+          if (!this.parked && !this.isClosed) {
+            fixture.leases--;
+          }
           this.isClosed = true;
         },
         park() {
@@ -111,8 +115,9 @@ function adapter() {
     select: async <T>(sql: string, params: unknown[] = []) =>
       fixture.db!.prepare(sql).all(...params) as T,
     execute: async (sql: string, params: unknown[] = []) => {
-      if (fixture.failInsert && sql.startsWith("INSERT INTO embeddings"))
+      if (fixture.failInsert && sql.startsWith("INSERT INTO embeddings")) {
         throw new Error("Écriture échouée");
+      }
       return fixture.db!.prepare(sql).run(...params);
     },
   };
@@ -318,7 +323,7 @@ describe("Recherche sémantique locale : index et isolation", () => {
       {
         ...chunk,
         text: "Perte de poids\n\nCause bactérienne",
-        vector: withScore(0.284146),
+        vector: withScore(0.284_146),
       },
       {
         ...chunk,
@@ -331,7 +336,7 @@ describe("Recherche sémantique locale : index et isolation", () => {
     const found = rankPatientChunks(rows, vector(), scope, 5, 0.6, "bactérie");
     expect(found).toHaveLength(1);
     expect(found[0].text).toContain("Cause bactérienne");
-    expect(found[0].score).toBeCloseTo(0.284146);
+    expect(found[0].score).toBeCloseTo(0.284_146);
   });
   it("ne confond pas variantes textuelles avec des synonymes ni préfixes arbitraires", () => {
     expect(matchesSearchTerms("bactérie", "Cause bactérienne")).toBe(true);
@@ -503,8 +508,9 @@ describe("Recherche sémantique locale : index et isolation", () => {
       { ...scope, patientId: "" },
       { ...scope, sourceTypes: [] },
       { ...scope, sections: [] },
-    ])
+    ]) {
       await expect(readPatientSearchRows(adapter(), invalid)).rejects.toThrow();
+    }
   });
   it("returns no irrelevant result and applies a minimum threshold", () => {
     const rows = soapSearchChunks(soap()).map((row) => ({
@@ -534,8 +540,9 @@ describe("Recherche sémantique locale : index et isolation", () => {
       Array(768).fill(0),
       Array(768).fill(NaN),
       Array(768).fill(Infinity),
-    ])
+    ]) {
       expect(() => normalizedEmbedding(v)).toThrow();
+    }
     expect(() => embeddingFromHex("not-a-blob")).toThrow();
   });
   it("rejects the source if it changed while inference was running", async () => {

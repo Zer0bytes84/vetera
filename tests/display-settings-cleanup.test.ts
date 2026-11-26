@@ -67,8 +67,9 @@ describe("paramètres d'affichage retirés : migration", () => {
     expect(JSON.parse(storage.get("theme-config")!)).toEqual({
       cleanFont: "plex",
     });
-    for (const key of REMOVED_DISPLAY_KEYS)
+    for (const key of REMOVED_DISPLAY_KEYS) {
       expect(storage.has(key), key).toBe(false);
+    }
     // Kept: the mode, the collapse behaviour, the sidebar tone. The retired markers give way to one.
     expect(storage.get("theme")).toBe("dark");
     expect(storage.get("baitari-sidebar-tone")).toBe(
@@ -80,8 +81,9 @@ describe("paramètres d'affichage retirés : migration", () => {
       "baitari-premium-default-v1",
       "baitari-clean-default-v1",
       "baitari-clean-default-v2",
-    ])
+    ]) {
       expect(storage.has(retired), retired).toBe(false);
+    }
 
     applyTheme(config, true);
     expect(dataset).toMatchObject({

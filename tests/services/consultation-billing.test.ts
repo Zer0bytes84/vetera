@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const state = vi.hoisted(() => ({
-  payments: [] as Array<Record<string, unknown>>,
+  payments: [] as Record<string, unknown>[],
   add: vi.fn(),
   update: vi.fn(),
 }));
@@ -48,7 +48,7 @@ describe("consultation payment retries", () => {
     const first = await repository.completeWithBilling(input);
     const retry = await repository.completeWithBilling(input);
     expect(state.add).toHaveBeenCalledTimes(1);
-    expect(first.totalAmount).toBe(420000);
+    expect(first.totalAmount).toBe(420_000);
     expect(retry.invoiceNumber).toBe(first.invoiceNumber);
   });
   it("does not report success when recording the payment fails", async () => {

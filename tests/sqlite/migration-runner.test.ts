@@ -2,7 +2,7 @@ import { DatabaseSync } from "node:sqlite";
 import { afterEach, describe, expect, it } from "vitest";
 import {
   type MigrationDatabase,
-  MigrationError,
+  type MigrationError,
   parseSqlStatements,
   runSqliteMigrations,
 } from "../../src/services/sqlite/migration-runner";
@@ -490,7 +490,7 @@ describe("runSqliteMigrations", () => {
       {
         id: "legacy-invoice-matched-income",
         number: "LEGACY-matched-income",
-        gross_amount: 12345,
+        gross_amount: 12_345,
         legacy_source_transaction_id: "matched-income",
       },
     ]);
@@ -505,7 +505,7 @@ describe("runSqliteMigrations", () => {
       {
         id: "legacy-payment-matched-income",
         invoice_id: "legacy-invoice-matched-income",
-        amount: 12345,
+        amount: 12_345,
         status: "completed",
         journal_transaction_id: "matched-income",
       },
@@ -538,9 +538,9 @@ describe("runSqliteMigrations", () => {
         )
         .get()
     ).toEqual({
-      invoice_amount: 12345,
-      payment_amount: 12345,
-      transaction_amount: 12345,
+      invoice_amount: 12_345,
+      payment_amount: 12_345,
+      transaction_amount: 12_345,
     });
     expect(
       database.connection

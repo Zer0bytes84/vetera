@@ -36,7 +36,7 @@ it("les segments se lisent en français", () => {
   const html = renderToStaticMarkup(
     <SegmentedBar
       label="Répartition"
-      max={10000}
+      max={10_000}
       segments={[{ id: "a", value: 2500, label: "Soins", color: "red" }]}
     />
   );

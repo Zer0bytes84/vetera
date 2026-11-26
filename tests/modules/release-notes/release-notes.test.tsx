@@ -52,10 +52,11 @@ describe("notes de version", () => {
     for (const n of publishedReleaseNotes()) {
       expect(n.highlights.length).toBeGreaterThanOrEqual(3);
       expect(n.highlights.length).toBeLessThanOrEqual(4);
-      for (const h of n.highlights)
+      for (const h of n.highlights) {
         expect(`${h.title} ${h.text}`).not.toMatch(
           /\b(API|SQLite|React|CSS|composant|token|jeton|bug|refactor)/i
         );
+      }
     }
   });
 

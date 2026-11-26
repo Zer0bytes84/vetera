@@ -7,8 +7,8 @@ import {
 } from "../../../src/modules/hospitalizations/stays/domain";
 
 describe("Séjours : machine à états", () => {
-  for (const from of STAY_STATUSES)
-    for (const to of STAY_STATUSES)
+  for (const from of STAY_STATUSES) {
+    for (const to of STAY_STATUSES) {
       it(`${from} vers ${to}`, () => {
         const permitted =
           (from === "admis" && to === "en_cours") ||
@@ -17,9 +17,14 @@ describe("Séjours : machine à états", () => {
           (["admis", "en_cours", "sortie_prevue"].includes(from) &&
             to === "annule");
         const action = () => assertStayTransition(from, to, "vet", "Motif");
-        if (permitted) expect(action).not.toThrow();
-        else expect(action).toThrow();
+        if (permitted) {
+          expect(action).not.toThrow();
+        } else {
+          expect(action).toThrow();
+        }
       });
+    }
+  }
   it("exige un auteur et un motif d’annulation", () => {
     expect(() => assertStayTransition("admis", "en_cours", " ")).toThrow();
     expect(() => assertStayTransition("admis", "annule", "vet", " ")).toThrow();
@@ -91,8 +96,11 @@ describe("Horaires locaux lors du changement d’heure", () => {
         ).toBe(2);
       }
     } finally {
-      if (previous === undefined) delete process.env.TZ;
-      else process.env.TZ = previous;
+      if (previous === undefined) {
+        delete process.env.TZ;
+      } else {
+        process.env.TZ = previous;
+      }
     }
   });
   it("refuse une heure inexistante au passage à l’heure d’été", () => {
@@ -105,8 +113,11 @@ describe("Horaires locaux lors du changement d’heure", () => {
         ])
       ).toThrow("n’existe pas");
     } finally {
-      if (previous === undefined) delete process.env.TZ;
-      else process.env.TZ = previous;
+      if (previous === undefined) {
+        delete process.env.TZ;
+      } else {
+        process.env.TZ = previous;
+      }
     }
   });
 });

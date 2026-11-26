@@ -75,8 +75,9 @@ describe("migration : Premium retombe sur Clean au premier lancement", () => {
     expect(JSON.parse(storage.get("theme-config")!)).toEqual({
       cleanFont: "geist",
     });
-    for (const [key, value] of Object.entries(NEIGHBOURS))
+    for (const [key, value] of Object.entries(NEIGHBOURS)) {
       expect(storage.get(key), key).toBe(value);
+    }
     expect(errors).not.toHaveBeenCalled();
     expect(warnings).not.toHaveBeenCalled();
   });
@@ -175,7 +176,9 @@ describe("équipe rouge : tenter de faire échouer le retour sur Clean", () => {
       "theme-config": '{"cleanFont":"plex"}',
     });
     const config = getThemeConfig();
-    for (let i = 0; i < 200; i++) applyTheme(config, i % 2 === 1);
+    for (let i = 0; i < 200; i++) {
+      applyTheme(config, i % 2 === 1);
+    }
     expect(dataset).toMatchObject({
       skin: "clean",
       cleanFont: "plex",
@@ -269,9 +272,11 @@ describe("garde : plus rien de Premium qui change le rendu", () => {
 
   it("toute règle CSS qui nomme data-skin vise Clean", async () => {
     const values = new Set<string>();
-    for (const { text } of await sources())
-      for (const match of text.matchAll(/data-skin="([^"]*)"/g))
+    for (const { text } of await sources()) {
+      for (const match of text.matchAll(/data-skin="([^"]*)"/g)) {
         values.add(match[1]);
+      }
+    }
     expect([...values]).toEqual(["clean"]);
   });
 });

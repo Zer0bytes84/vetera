@@ -23,9 +23,13 @@ root.walkRules((rule) => {
 const tokensOf = (selector: string) => {
   const found = new Map<string, string>();
   root.walkRules((rule) => {
-    if (!rule.selectors.includes(selector)) return;
+    if (!rule.selectors.includes(selector)) {
+      return;
+    }
     rule.walkDecls((decl) => {
-      if (decl.prop.startsWith("--clean-")) found.set(decl.prop, decl.value);
+      if (decl.prop.startsWith("--clean-")) {
+        found.set(decl.prop, decl.value);
+      }
     });
   });
   return found;
@@ -35,7 +39,9 @@ const darkDeclarations = tokensOf(DARK);
 const rulesFor = (pattern: RegExp) => {
   const found: postcss.Rule[] = [];
   root.walkRules((rule) => {
-    if (pattern.test(rule.selector)) found.push(rule);
+    if (pattern.test(rule.selector)) {
+      found.push(rule);
+    }
   });
   return found;
 };
@@ -142,8 +148,9 @@ describe("thème Clean : jetons", () => {
         name.startsWith("--clean-icon-") && name !== "--clean-icon-stroke"
     );
     expect(masks.length).toBeGreaterThan(0);
-    for (const [name, value] of masks)
+    for (const [name, value] of masks) {
       expect(value, name).toContain("stroke-width='1.5'");
+    }
   });
 
   it("réserve le quatrième gris au texte et aux icônes désactivés", () => {
@@ -166,10 +173,12 @@ describe("thème Clean : déclinaison sombre", () => {
           name
         )
     );
-    for (const name of darkDeclarations.keys())
+    for (const name of darkDeclarations.keys()) {
       expect(declarations.has(name)).toBe(true);
-    for (const name of colours)
+    }
+    for (const name of colours) {
       expect(darkDeclarations.has(name), name).toBe(true);
+    }
     for (const name of [
       "--clean-control",
       "--clean-row-table",
@@ -194,8 +203,11 @@ describe("thème Clean : déclinaison sombre", () => {
   it("aucune règle ne vise un seul mode : clair et sombre partagent le traitement", () => {
     const modeOnly: string[] = [];
     root.walkRules((rule) => {
-      for (const selector of rule.selectors)
-        if (/:not\(\.dark\)|\.dark /.test(selector)) modeOnly.push(selector);
+      for (const selector of rule.selectors) {
+        if (/:not\(\.dark\)|\.dark /.test(selector)) {
+          modeOnly.push(selector);
+        }
+      }
     });
     expect(modeOnly).toEqual([]);
   });
@@ -214,8 +226,9 @@ describe("thème Clean : sidebar sombre dans les deux déclinaisons", () => {
     root.walkRules((rule) => {
       if (rule.selectors.length === 1 && rule.selectors[0] === SIDEBAR) {
         rule.walkDecls((decl) => {
-          if (decl.prop.startsWith("--"))
+          if (decl.prop.startsWith("--")) {
             sidebarOnly.set(decl.prop, decl.value);
+          }
         });
       }
     });
@@ -355,8 +368,9 @@ describe("polices par thème", () => {
   );
   const cleanTokens = new Map<string, string>();
   root.walkRules((rule) => {
-    if (!rule.selectors.includes(SCOPE) || !rule.selectors.includes(DARK))
+    if (!rule.selectors.includes(SCOPE) || !rule.selectors.includes(DARK)) {
       return;
+    }
     rule.walkDecls((decl) =>
       cleanTokens.set(
         decl.prop,
@@ -658,7 +672,9 @@ describe("thème Clean : pureté", () => {
     const loose: string[] = [];
     root.walkRules((rule) => {
       for (const selector of rule.selectors) {
-        if (!selector.trim().startsWith(SCOPE)) loose.push(selector);
+        if (!selector.trim().startsWith(SCOPE)) {
+          loose.push(selector);
+        }
       }
     });
     expect(loose).toEqual([]);

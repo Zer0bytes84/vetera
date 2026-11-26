@@ -17,8 +17,9 @@ it("calcule les mois calendaires avec plafonnement et années bissextiles", () =
 });
 it("refuse dates inexistantes et intervalles invalides", () => {
   expect(() => assertDateOnly("2026-02-30")).toThrow();
-  for (const months of [0, -1, 1.5, 121])
+  for (const months of [0, -1, 1.5, 121]) {
     expect(() => addCalendarMonths("2026-01-01", months)).toThrow();
+  }
 });
 it("calcule le retard uniquement pour les rappels en cours, après le jour d’échéance", () => {
   expect(isReminderOverdue("en_cours", "2026-10-12", "2026-10-12")).toBe(false);

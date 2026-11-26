@@ -24,24 +24,24 @@ const data: InvoicePdfData = {
   date: new Date("2026-09-29T12:00:00Z"),
   patientName: "Milo",
   ownerName: "Nadia Benali",
-  items: [{ description: "Consultation et soins", amount: 700000 }],
-  totalAmount: 700000,
-  paidAmount: 400000,
-  balanceAmount: 300000,
+  items: [{ description: "Consultation et soins", amount: 700_000 }],
+  totalAmount: 700_000,
+  paidAmount: 400_000,
+  balanceAmount: 300_000,
 };
 
 describe("personalized invoice PDFs", () => {
   it("keeps centimes accurate, including fractional dinars", () => {
-    expect(invoiceMoney(200000)).toBe("2 000 DA");
-    expect(invoiceMoney(200050)).toBe("2 000,50 DA");
+    expect(invoiceMoney(200_000)).toBe("2 000 DA");
+    expect(invoiceMoney(200_050)).toBe("2 000,50 DA");
     expect(() => invoiceMoney(20.5)).toThrow();
   });
   it("refuses inconsistent totals or payment balances", () => {
     expect(() =>
-      buildInvoicePdf({ ...data, totalAmount: 200000 }, settings)
+      buildInvoicePdf({ ...data, totalAmount: 200_000 }, settings)
     ).toThrow("cohérents");
     expect(() =>
-      buildInvoicePdf({ ...data, balanceAmount: 200000 }, settings)
+      buildInvoicePdf({ ...data, balanceAmount: 200_000 }, settings)
     ).toThrow("cohérents");
   });
   it("exports partial payments and adds pages for a long invoice", () => {
@@ -50,15 +50,15 @@ describe("personalized invoice PDFs", () => {
     expect(single.output()).toContain("3 000 DA");
     const items = Array.from({ length: 75 }, (_, i) => ({
       description: `Prestation ${i + 1} : consultation et soins complémentaires avec suivi`,
-      amount: 10000,
+      amount: 10_000,
     }));
     const many = buildInvoicePdf(
       {
         ...data,
         items,
-        totalAmount: 750000,
-        paidAmount: 400000,
-        balanceAmount: 350000,
+        totalAmount: 750_000,
+        paidAmount: 400_000,
+        balanceAmount: 350_000,
       },
       settings
     );
@@ -79,10 +79,10 @@ describe("personalized invoice PDFs", () => {
     const doc = buildInvoicePdf(
       {
         ...data,
-        paidAmount: 500000,
-        creditAmount: 100000,
-        refundAmount: 50000,
-        balanceAmount: 150000,
+        paidAmount: 500_000,
+        creditAmount: 100_000,
+        refundAmount: 50_000,
+        balanceAmount: 150_000,
       },
       settings
     );

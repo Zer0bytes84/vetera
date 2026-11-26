@@ -52,7 +52,7 @@ describe("installation de la dictée", () => {
       {
         path: "ggml-large-v3-turbo-q8_0.bin",
         url: "https://huggingface.co/ggerganov/whisper.cpp/resolve/5359861c739e955e79d9a303bcbc70fb988958b1/ggml-large-v3-turbo-q8_0.bin",
-        size: 874188075,
+        size: 874_188_075,
         sha256:
           "317eb69c11673c9de1e1f0d459b253999804ec71ac4c23c17ecf5fbe24e259a1",
       },

@@ -55,7 +55,9 @@ export function headerFocusesClose(nodes: ReactNode[]) {
 }
 
 export function modalSlotOf(node: ReactNode): ModalSlot | undefined {
-  if (!isValidElement(node) || typeof node.type === "string") return undefined;
+  if (!isValidElement(node) || typeof node.type === "string") {
+    return undefined;
+  }
   return (node.type as { modalSlot?: ModalSlot }).modalSlot;
 }
 
@@ -121,11 +123,18 @@ export function useInModalChrome() {
 
 /** Une mention de pied (texte, erreur, aide) reste sous le contenu ; tout le reste est une action. */
 function isFooterMeta(node: ReactNode) {
-  if (typeof node === "string" || typeof node === "number") return true;
-  if (!isValidElement<{ className?: unknown; "data-footer"?: unknown }>(node))
+  if (typeof node === "string" || typeof node === "number") {
+    return true;
+  }
+  if (!isValidElement<{ className?: unknown; "data-footer"?: unknown }>(node)) {
     return false;
-  if (node.type === "p" || node.type === "span") return true;
-  if (node.props["data-footer"] === "meta") return true;
+  }
+  if (node.type === "p" || node.type === "span") {
+    return true;
+  }
+  if (node.props["data-footer"] === "meta") {
+    return true;
+  }
   return (
     typeof node.props.className === "string" &&
     /\b(modal-medical-footer-meta|patient-export-footer-hint)\b/.test(
@@ -137,8 +146,9 @@ function isFooterMeta(node: ReactNode) {
 export function splitFooter(children: ReactNode) {
   const meta: ReactNode[] = [];
   const actions: ReactNode[] = [];
-  for (const child of flattenChildren(children))
+  for (const child of flattenChildren(children)) {
     (isFooterMeta(child) ? meta : actions).push(child);
+  }
   return { actions, meta };
 }
 
@@ -154,15 +164,19 @@ export function ModalBandActions({ children }: { children: ReactNode }) {
   useLayoutEffect(() => {
     const form = anchor.current?.closest("form");
     const box = group.current;
-    if (!form || !box) return;
-    if (!form.id)
+    if (!form || !box) {
+      return;
+    }
+    if (!form.id) {
       form.id = `modal-form-${generatedId.replace(/[^a-zA-Z0-9_-]/g, "")}`;
+    }
     const link = () => {
       for (const control of box.querySelectorAll(
         "button, input, select, textarea"
       )) {
-        if (!control.hasAttribute("form"))
+        if (!control.hasAttribute("form")) {
           control.setAttribute("form", form.id);
+        }
       }
     };
     link();
@@ -170,7 +184,9 @@ export function ModalBandActions({ children }: { children: ReactNode }) {
     observer.observe(box, { childList: true, subtree: true });
     return () => observer.disconnect();
   }, [generatedId, target]);
-  if (target === undefined) return <>{children}</>;
+  if (target === undefined) {
+    return <>{children}</>;
+  }
   return (
     <>
       <span data-slot="modal-actions-anchor" hidden ref={anchor} />
@@ -191,13 +207,16 @@ export function ModalBandActions({ children }: { children: ReactNode }) {
  * pied). Les actions passées en tête ne le prennent donc pas ; un champ `autoFocus` garde la main.
  */
 export function firstPanelField(panel: HTMLElement | null): HTMLElement | null {
-  if (!panel) return null;
+  if (!panel) {
+    return null;
+  }
   const candidates = panel.querySelectorAll<HTMLElement>(
     'input:not([type="hidden"]):not([disabled]), textarea:not([disabled]), select:not([disabled]), button:not([disabled]), a[href], [tabindex]:not([tabindex="-1"]), [contenteditable="true"]'
   );
   for (const el of candidates) {
-    if (el.closest("[hidden], [inert]") || !el.getClientRects().length)
+    if (el.closest("[hidden], [inert]") || !el.getClientRects().length) {
       continue;
+    }
     return el;
   }
   return null;

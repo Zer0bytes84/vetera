@@ -25,8 +25,9 @@ const ref = reference as unknown as {
 describe("doses validées par Aïssa dans le produit", () => {
   it("les 24 molécules du catalogue sont, champ pour champ, celles de la référence relue", () => {
     expect(ref.molecules).toHaveLength(24);
-    for (const molecule of molecules)
+    for (const molecule of molecules) {
       expect(differencesFromReference(molecule.id), molecule.nom).toEqual([]);
+    }
     expect(VALIDATION).toMatchObject({ par: "Aïssa", le: "2026-11-18" });
   });
 

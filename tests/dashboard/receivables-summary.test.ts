@@ -11,9 +11,9 @@ const invoice = (id: string, over: Partial<Invoice> = {}) =>
     documentStatus: "issued",
     issuedAt: "2026-10-01",
     createdAt: "2026-10-01",
-    grossAmount: 10000,
+    grossAmount: 10_000,
     creditAmount: 0,
-    balanceAmount: 10000,
+    balanceAmount: 10_000,
     completedPaymentAmount: 0,
     settlementStatus: "unpaid",
     ...over,
@@ -41,7 +41,7 @@ describe("créances : reste à recouvrer, factures impayées et en retard", () =
   it("additionne les soldes des factures impayées, en dinars, et les compte", () => {
     const s = receivablesSummary(
       [
-        invoice("a", { balanceAmount: 10000 }),
+        invoice("a", { balanceAmount: 10_000 }),
         invoice("b", { balanceAmount: 2500 }),
       ],
       []
@@ -84,13 +84,13 @@ describe("créances : reste à recouvrer, factures impayées et en retard", () =
     // 100 DA facturés, 40 DA d'avoir : au plus 60 DA à recouvrer, même si le solde dit 100.
     expect(
       receivablesSummary(
-        [invoice("a", { creditAmount: 4000, balanceAmount: 10000 })],
+        [invoice("a", { creditAmount: 4000, balanceAmount: 10_000 })],
         []
       ).total
     ).toBe(60);
     // Un avoir qui couvre tout : plus rien à recouvrer, plus de facture impayée.
     const s = receivablesSummary(
-      [invoice("a", { creditAmount: 10000, balanceAmount: 10000 })],
+      [invoice("a", { creditAmount: 10_000, balanceAmount: 10_000 })],
       []
     );
     expect(s).toMatchObject({ total: 0, unpaidInvoices: 0 });
@@ -132,8 +132,9 @@ describe("créances : reste à recouvrer, factures impayées et en retard", () =
       ],
       [[invoice("a", { balanceAmount: -1 })], [entry("m", { amount: 0 })]],
     ];
-    for (const [inv, tx] of cases)
+    for (const [inv, tx] of cases) {
       expect(receivablesSummary(inv, tx).total).toBeCloseTo(legacy(inv, tx), 6);
+    }
   });
   it("sans aucune facture : zéro partout, sans erreur", () => {
     expect(receivablesSummary([], [])).toEqual({
@@ -187,12 +188,12 @@ describe("évolution du reste à recouvrer sur la période", () => {
       inv("b", -2, { balanceAmount: 2500 }),
       inv("c", -20, { balanceAmount: 0, settlementStatus: "paid" }),
     ];
-    const t = [pay("p", "a", -5, 4000), pay("q", "c", -15, 10000)];
+    const t = [pay("p", "a", -5, 4000), pay("q", "c", -15, 10_000)];
     const trend = receivablesTrend(i, t, ends(-9, -4, -1, 0));
     expect(trend.at(-1)).toBeCloseTo(receivablesSummary(i, t).total, 6);
   });
   it("une facture émise après une date n'est pas encore due à cette date", () => {
-    const i = [inv("late", -2, { balanceAmount: 10000 })];
+    const i = [inv("late", -2, { balanceAmount: 10_000 })];
     expect(receivablesTrend(i, [], ends(-5, -3, -2, 0))).toEqual([
       0, 0, 100, 100,
     ]);
@@ -208,12 +209,12 @@ describe("évolution du reste à recouvrer sur la période", () => {
     expect(receivablesTrend([], [e], ends(-6, -4, 0))).toEqual([0, 50, 50]);
     expect(
       receivablesTrend(
-        [inv("a", -10, { balanceAmount: 10000 })],
+        [inv("a", -10, { balanceAmount: 10_000 })],
         [e],
         ends(0)
       ).at(-1)
     ).toBeCloseTo(
-      receivablesSummary([inv("a", -10, { balanceAmount: 10000 })], [e]).total,
+      receivablesSummary([inv("a", -10, { balanceAmount: 10_000 })], [e]).total,
       6
     );
   });

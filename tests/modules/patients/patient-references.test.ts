@@ -12,7 +12,9 @@ import { SQLITE_MIGRATIONS } from "@/services/sqlite/migrations";
 
 const databases: DatabaseSync[] = [];
 afterEach(() => {
-  for (const db of databases) db.close();
+  for (const db of databases) {
+    db.close();
+  }
   databases.length = 0;
 });
 
@@ -25,7 +27,9 @@ function open() {
       return db.prepare(sql).all(...(args as (string | number | null)[])) as T;
     },
     async execute(sql: string, args: unknown[] = []) {
-      if (!args.length) return db.exec(sql);
+      if (!args.length) {
+        return db.exec(sql);
+      }
       return db.prepare(sql).run(...(args as (string | number | null)[]));
     },
   };
@@ -143,7 +147,7 @@ describe("références patient", () => {
 
   it("garde le format au-delà de quatre chiffres", () => {
     expect(formatPatientReference(11)).toBe("ID-0011");
-    expect(formatPatientReference(12345)).toBe("ID-12345");
+    expect(formatPatientReference(12_345)).toBe("ID-12345");
   });
 
   it("reconnaît la référence tapée telle quelle", () => {
@@ -162,8 +166,9 @@ describe("références patient", () => {
     }
     expect(patientReferenceNumber("0011")).toBe(11);
     const index = patientReferenceSearchText("ID-0011").toLowerCase();
-    for (const typed of ["0011", "id-0011", "id0011"])
+    for (const typed of ["0011", "id-0011", "id0011"]) {
       expect(index).toContain(typed);
+    }
   });
 });
 

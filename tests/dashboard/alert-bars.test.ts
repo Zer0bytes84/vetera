@@ -23,9 +23,9 @@ const invoice = (over: Record<string, unknown>) =>
     issuedAt: "2026-10-01",
     createdAt: "2026-10-01",
     dueAt: null,
-    grossAmount: 10000,
+    grossAmount: 10_000,
     creditAmount: 0,
-    balanceAmount: 10000,
+    balanceAmount: 10_000,
     settlementStatus: "unpaid",
     ...over,
   }) as never;
@@ -178,7 +178,7 @@ describe("créances", () => {
     }), // réglée
     invoice({ dueAt: "2026-11-12", documentStatus: "draft" }), // brouillon
     invoice({ dueAt: "2026-11-12", documentStatus: "void" }), // annulée
-    invoice({ dueAt: "2026-11-12", creditAmount: 10000 }), // soldée par un avoir
+    invoice({ dueAt: "2026-11-12", creditAmount: 10_000 }), // soldée par un avoir
     invoice({ dueAt: null, issuedAt: "2026-09-01" }), // sans échéance : aujourd'hui, même émise il y a longtemps
     invoice({ dueAt: "2026-12-25" }), // hors fenêtre
   ];

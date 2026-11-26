@@ -43,8 +43,9 @@ beforeEach(() => {
   vi.stubGlobal(
     "fetch",
     vi.fn(async (url: string) => {
-      if (!/LiberationSans-(Regular|Bold)\.ttf/.test(url))
+      if (!/LiberationSans-(Regular|Bold)\.ttf/.test(url)) {
         throw new Error(`Unexpected resource: ${url}`);
+      }
       const font = await readFile(
         resolve(
           "node_modules/pdfjs-dist/standard_fonts",
@@ -143,7 +144,9 @@ function dataUrl(bytes: Uint8Array, mime = "application/pdf"): string {
 
 async function receipt(name: string, bytes: Uint8Array): Promise<void> {
   const destination = process.env.BAITARI_PDF_RECEIPTS;
-  if (!destination) return;
+  if (!destination) {
+    return;
+  }
   await mkdir(destination, { recursive: true });
   await writeFile(resolve(destination, name), bytes);
 }
@@ -170,7 +173,9 @@ async function originalPdf(count = 1, rotation = 0) {
   const font = await pdf.embedFont(StandardFonts.Helvetica);
   for (let index = 0; index < count; index++) {
     const page = pdf.addPage(index % 2 ? [841.89, 595.28] : [595.28, 841.89]);
-    if (rotation) page.setRotation(degrees(rotation));
+    if (rotation) {
+      page.setRotation(degrees(rotation));
+    }
     page.drawText(`ORIGINAL SOURCE ${index + 1}`, {
       x: 24,
       y: 44,
@@ -274,7 +279,7 @@ it("scinde une ligne de tableau extrême, répète ses colonnes et conserve les 
   await withPdf(result.bytes, async (pdf) => {
     for (let index = 2; index <= pdf.numPages; index++) {
       const content = await (await pdf.getPage(index)).getTextContent();
-      for (const item of content.items)
+      for (const item of content.items) {
         if (
           "str" in item &&
           /LongueObservation|Observation_|Dose_/.test(item.str)
@@ -284,6 +289,7 @@ it("scinde une ligne de tableau extrême, répète ses colonnes et conserve les 
           expect(item.transform[5]).toBeGreaterThan(105);
           expect(item.transform[5]).toBeLessThan(735);
         }
+      }
     }
   });
   await receipt("dossier-tableau.pdf", result.bytes);
@@ -382,7 +388,9 @@ it("décrit chaque page d’une annexe de plus de vingt pages et restitue réell
 it("annule pendant une préparation volumineuse sans rendre un faux succès", async () => {
   const controller = new AbortController();
   const progress = vi.fn((value) => {
-    if (value.pages >= 5) controller.abort();
+    if (value.pages >= 5) {
+      controller.abort();
+    }
   });
   const yieldToMain = vi.fn(
     async () => new Promise<void>((resolve) => setTimeout(resolve, 0))
@@ -549,8 +557,9 @@ it("conserve les titres et dates des blocs sans corps, y compris deux préfaces 
     "16/10/2026 · Version 2",
     "premier.pdf",
     "second.pdf",
-  ])
+  ]) {
     expect(text).toContain(value);
+  }
 });
 
 it("refuse explicitement une note adhésive visible sans apparence PDF au lieu de l’omettre", async () => {
@@ -679,7 +688,7 @@ it("intègre une image entière avec son rapport de proportions et les annotatio
       maxY = 0,
       redLeft = false,
       redRight = false;
-    for (let y = 0; y < panorama.height; y++)
+    for (let y = 0; y < panorama.height; y++) {
       for (let x = 0; x < panorama.width; x++) {
         const offset = (y * panorama.width + x) * 4;
         if (
@@ -693,10 +702,15 @@ it("intègre une image entière avec son rapport de proportions et les annotatio
           maxY = Math.max(maxY, y);
         }
         if (panorama.data[offset] > 200 && panorama.data[offset + 1] < 50) {
-          if (x < 100) redLeft = true;
-          if (x > 490) redRight = true;
+          if (x < 100) {
+            redLeft = true;
+          }
+          if (x > 490) {
+            redRight = true;
+          }
         }
       }
+    }
     // Green occupies 580/120 of the image; both red end strips remain visible.
     expect((maxX - minX + 1) / (maxY - minY + 1)).toBeCloseTo(580 / 120, 1);
     expect(redLeft && redRight).toBe(true);
@@ -706,7 +720,7 @@ it("intègre une image entière avec son rapport de proportions et les annotatio
       redMaxX = 0,
       redMinY = Infinity,
       redMaxY = 0;
-    for (let y = 0; y < formImage.height; y++)
+    for (let y = 0; y < formImage.height; y++) {
       for (let x = 0; x < formImage.width; x++) {
         const index = (y * formImage.width + x) * 4;
         if (
@@ -721,6 +735,7 @@ it("intègre une image entière avec son rapport de proportions et les annotatio
           redMaxY = Math.max(redMaxY, y);
         }
       }
+    }
     expect(redPixels).toBeGreaterThan(10_000);
     expect((redMaxX - redMinX + 1) / (redMaxY - redMinY + 1)).toBeCloseTo(
       300 / 90,

@@ -17,7 +17,7 @@ vi.mock("@/modules/consultations/local-ai/audio-capture", () => ({
   createLevelMeter: () => ({ read: () => 0, close: () => {} }),
   captureAudio: async () => {
     fixture.events.push("capture");
-    return { stop: () => new Float32Array(16000), cancel: () => {} };
+    return { stop: () => new Float32Array(16_000), cancel: () => {} };
   },
 }));
 vi.mock("@/modules/consultations/local-ai/whisper-session", () => ({

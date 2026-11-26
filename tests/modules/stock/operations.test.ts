@@ -415,7 +415,7 @@ it("la consommation ne compte que les sorties réelles de 30 jours, pas les réc
       unit: "ml",
       quantity: 5,
       min_stock: 0,
-      suggested_minimum: 2.333334,
+      suggested_minimum: 2.333_334,
     },
   ]);
   expect(await stockOperationsSnapshotInDatabase(db, now)).toEqual(first);
@@ -445,10 +445,12 @@ it("un seuil proposé exige un clic explicite et une proposition encore à jour"
   ).rejects.toThrow("a changé");
 });
 it("produit archivé, code invalide, absence d’auteur et quantité non physique sont refusés", async () => {
-  for (const code of ["", "a\tb", "x".repeat(129)])
+  for (const code of ["", "a\tb", "x".repeat(129)]) {
     expect(() => normalizeBarcode(code)).toThrow();
-  for (const quantity of [0, -1, Number.NaN, Number.POSITIVE_INFINITY])
+  }
+  for (const quantity of [0, -1, Number.NaN, Number.POSITIVE_INFINITY]) {
     await expect(scan("in", quantity)).rejects.toThrow();
+  }
   await expect(
     transaction(() =>
       barcodeStockOperationInDatabase(

@@ -38,10 +38,10 @@ describe("ancienneté des créances", () => {
   it("range le solde de chaque facture ouverte dans sa tranche d'âge, en dinars", () => {
     const rows = receivablesAging(
       [
-        invoice("a", daysAgo(5), 500000, 500000),
-        invoice("b", daysAgo(45), 300000, 100000),
-        invoice("c", daysAgo(75), 200000, 200000),
-        invoice("d", daysAgo(200), 100000, 100000),
+        invoice("a", daysAgo(5), 500_000, 500_000),
+        invoice("b", daysAgo(45), 300_000, 100_000),
+        invoice("c", daysAgo(75), 200_000, 200_000),
+        invoice("d", daysAgo(200), 100_000, 100_000),
       ],
       [],
       now
@@ -57,8 +57,8 @@ describe("ancienneté des créances", () => {
   it("ignore ce qui est soldé, annulé ou non émis, comme « Créances »", () => {
     const rows = receivablesAging(
       [
-        invoice("paid", daysAgo(10), 100000, 0),
-        invoice("draft", daysAgo(10), 100000, 100000, {
+        invoice("paid", daysAgo(10), 100_000, 0),
+        invoice("draft", daysAgo(10), 100_000, 100_000, {
           documentStatus: "draft",
         }),
       ],
@@ -70,7 +70,7 @@ describe("ancienneté des créances", () => {
 
   it("déduit les avoirs du solde, jamais plus que le net", () => {
     const [recent] = receivablesAging(
-      [invoice("a", daysAgo(3), 100000, 100000, { creditAmount: 40000 })],
+      [invoice("a", daysAgo(3), 100_000, 100_000, { creditAmount: 40_000 })],
       [],
       now
     );
@@ -81,9 +81,9 @@ describe("ancienneté des créances", () => {
     const rows = receivablesAging(
       [],
       [
-        entry("m1", daysAgo(10), 50000, "pending"),
-        entry("m2", daysAgo(10), 50000, "paid"),
-        entry("m3", daysAgo(10), 50000, "pending", { sourceType: "invoice" }),
+        entry("m1", daysAgo(10), 50_000, "pending"),
+        entry("m2", daysAgo(10), 50_000, "paid"),
+        entry("m3", daysAgo(10), 50_000, "pending", { sourceType: "invoice" }),
       ],
       now
     );
@@ -93,10 +93,10 @@ describe("ancienneté des créances", () => {
 
   it("la somme des tranches est le total de « Reste à recouvrer » : aucun écart avec le chiffre existant", () => {
     const invoices = [
-      invoice("a", daysAgo(5), 500000, 500000),
-      invoice("b", daysAgo(120), 300000, 100000),
+      invoice("a", daysAgo(5), 500_000, 500_000),
+      invoice("b", daysAgo(120), 300_000, 100_000),
     ];
-    const entries = [entry("m1", daysAgo(40), 70000, "pending")];
+    const entries = [entry("m1", daysAgo(40), 70_000, "pending")];
     const sum = receivablesAging(invoices, entries, now).reduce(
       (total, row) => total + row.amount,
       0

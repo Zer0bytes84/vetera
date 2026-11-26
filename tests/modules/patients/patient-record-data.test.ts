@@ -416,13 +416,14 @@ describe("Patient record options and civil filenames", () => {
       { from: "2026-02-29", to: "2026-10-17" },
       { from: "", to: "2026-10-17" },
       { from: "2026-10-18", to: "2026-10-17" },
-    ])
+    ]) {
       expect(() =>
         validatePatientRecordOptions({
           ...DEFAULT_PATIENT_RECORD_OPTIONS,
           period,
         })
       ).toThrow();
+    }
     expect(() =>
       validatePatientRecordOptions({
         ...only("identity"),
@@ -462,8 +463,9 @@ describe("Patient record assembly", () => {
       "DICTÉE SECRÈTE",
       "RAPPEL ANNULÉ",
       "DOCUMENT ANNULÉ",
-    ])
+    ]) {
       expect(output).not.toContain(forbidden);
+    }
     expect(output).toContain("13,7 mg");
     expect(output).toContain("0,42 mL");
     expect(output).toContain("Note clinique non validée");
@@ -526,8 +528,9 @@ describe("Patient record assembly", () => {
     const snapshot = assemblePatientRecordSnapshot(raw, only("reminders"), at);
     const table = snapshot.sections[0].blocks[0];
     expect(table.kind).toBe("table");
-    if (table.kind !== "table")
+    if (table.kind !== "table") {
       throw new Error("Le tableau des rappels est absent.");
+    }
     expect(table.columns).toEqual([
       "Type",
       "Échéance",
@@ -582,8 +585,9 @@ describe("Patient record assembly", () => {
       "d2",
       "historic",
       "free",
-    ])
+    ]) {
       expect(metadata).not.toContain(id);
+    }
     expect(metadata).toContain("Dr Lina");
     expect(metadata).toContain("Autre vétérinaire");
     expect(metadata).toContain("Consignée le 01/10/2026");

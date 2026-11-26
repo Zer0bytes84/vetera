@@ -21,14 +21,14 @@ it("convertit les prix en DA exactement et conserve les autres données", () => 
       description: "Soin",
       productId: "product",
       quantityMilli: 2500,
-      unitAmount: 12345,
+      unitAmount: 12_345,
       discountBps: 1000,
       taxBps: 1900,
     },
   ]);
   expect(draftPriceLines(invoice, { line: "0" })[0].unitAmount).toBe(0);
   expect(draftPriceLines(invoice, { line: "0.01" })[0].unitAmount).toBe(1);
-  expect(priceInput(12345)).toBe("123,45");
+  expect(priceInput(12_345)).toBe("123,45");
 });
 it("refuse les prix invalides ou hors précision sans accepter une saisie partielle", () => {
   for (const value of [

@@ -8,7 +8,7 @@ const invoice = (id: string, overrides: Partial<Invoice> = {}) =>
     id,
     documentStatus: "issued",
     issuedAt: "2026-09-15",
-    grossAmount: 10000,
+    grossAmount: 10_000,
     creditAmount: 2000,
     balanceAmount: 3000,
     completedPaymentAmount: 5000,
@@ -19,7 +19,7 @@ const transaction = (id: string, overrides: Partial<Transaction> = {}) =>
     id,
     type: "income",
     status: "paid",
-    amount: 10000,
+    amount: 10_000,
     date: "2026-09-15",
     ...overrides,
   }) as Transaction;

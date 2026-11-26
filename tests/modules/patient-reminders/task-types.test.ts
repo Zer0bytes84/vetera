@@ -5,7 +5,9 @@ import { TASK_REMINDER_TYPES_MIGRATION_SQL } from "@/modules/patient-reminders/t
 
 const databases: DatabaseSync[] = [];
 afterEach(() => {
-  for (const db of databases) db.close();
+  for (const db of databases) {
+    db.close();
+  }
   databases.length = 0;
 });
 function setup() {

@@ -10,7 +10,9 @@ import { SQLITE_MIGRATIONS } from "@/services/sqlite/migrations";
 
 const databases: DatabaseSync[] = [];
 afterEach(() => {
-  for (const db of databases) db.close();
+  for (const db of databases) {
+    db.close();
+  }
   databases.length = 0;
 });
 
@@ -112,7 +114,9 @@ describe("gestion des salles", () => {
   async function clinic(rooms: Array<string | null> = []) {
     const { db, adapter } = open();
     await runSqliteMigrations(adapter, beforeRooms);
-    if (rooms.length) seedClinic(db, rooms);
+    if (rooms.length) {
+      seedClinic(db, rooms);
+    }
     await runSqliteMigrations(adapter, SQLITE_MIGRATIONS);
     return { db, rooms: store(adapter) };
   }

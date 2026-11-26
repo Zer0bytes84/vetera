@@ -7,7 +7,7 @@ describe("Barre segmentée de trésorerie Premium", () => {
     const html = renderToStaticMarkup(
       <SettleProgressBar
         segments={[
-          { value: 548400, tone: "ink", label: "Encaissé" },
+          { value: 548_400, tone: "ink", label: "Encaissé" },
           { value: 1500, tone: "amber", label: "En cours" },
           { value: 1, tone: "blue", label: "En retard" },
         ]}

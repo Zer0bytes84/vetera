@@ -3,10 +3,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { runSqliteMigrations } from "@/services/sqlite/migration-runner";
 import { SQLITE_MIGRATIONS } from "@/services/sqlite/migrations";
 
-type Db = {
+interface Db {
   select<T>(sql: string, values?: unknown[]): Promise<T>;
   execute(sql: string, values?: unknown[]): Promise<{ rowsAffected: number }>;
-};
+}
 
 const harness = vi.hoisted(() => ({
   db: null as Db | null,
@@ -157,8 +157,8 @@ describe("montants de la facturation", () => {
       amountReceivedDa: draft.received!,
     });
 
-    expect(invoice()).toEqual({ gross: 470000, status: "issued" });
-    expect(payments()).toEqual([400000]);
+    expect(invoice()).toEqual({ gross: 470_000, status: "issued" });
+    expect(payments()).toEqual([400_000]);
     expect(stage()).toBe("billing");
   });
 
@@ -186,8 +186,8 @@ describe("montants de la facturation", () => {
       amountReceivedDa: rest.received!,
     });
 
-    expect(invoice()).toEqual({ gross: 500000, status: "issued" });
-    expect(payments()).toEqual([500000]);
+    expect(invoice()).toEqual({ gross: 500_000, status: "issued" });
+    expect(payments()).toEqual([500_000]);
     expect(stage()).toBe("done");
   });
 

@@ -18,7 +18,8 @@ describe("Date d’admission choisie dans le calendrier", () => {
   it("refuse les sélections absentes, invalides et les heures incomplètes", () => {
     expect(admissionDateTime(undefined, "14:30")).toBeNull();
     expect(admissionDateTime(new Date("invalid"), "14:30")).toBeNull();
-    for (const time of ["", "12:30 PM", "24:00", "14:60", "14:", "9:30"])
+    for (const time of ["", "12:30 PM", "24:00", "14:60", "14:", "9:30"]) {
       expect(admissionDateTime(new Date(), time)).toBeNull();
+    }
   });
 });

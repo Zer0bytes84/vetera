@@ -5,9 +5,13 @@ import { expect, it } from "vitest";
 function files(dir: string, out: string[] = []): string[] {
   for (const name of readdirSync(dir)) {
     const path = join(dir, name);
-    if (statSync(path).isDirectory()) files(path, out);
+    if (statSync(path).isDirectory()) {
+      files(path, out);
+    }
     // The expectations below are forward-slash literals: normalise join()'s Windows separators.
-    else if (/\.tsx?$/.test(name)) out.push(path.replace(/\\/g, "/"));
+    else if (/\.tsx?$/.test(name)) {
+      out.push(path.replace(/\\/g, "/"));
+    }
   }
   return out;
 }

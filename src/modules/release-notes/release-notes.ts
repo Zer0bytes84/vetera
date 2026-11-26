@@ -35,19 +35,19 @@ import {
  * - `draft` : en préparation pour la prochaine version, jamais montrée. À la publication, passer l'entrée en `published`
  *   (avec la date) et vérifier que `version` est bien celle du `package.json`.
  */
-export type ReleaseHighlight = {
+export interface ReleaseHighlight {
   icon: LucideIcon;
   title: string;
   text: string;
-};
+}
 
-export type ReleaseNote = {
+export interface ReleaseNote {
   version: string;
   status: "published" | "draft";
   /** Date de publication, `AAAA-MM-JJ`. Absente tant que la version est en brouillon. */
   date?: string;
   highlights: ReleaseHighlight[];
-};
+}
 
 /** Les plus récentes en premier. */
 export const RELEASE_NOTES: ReleaseNote[] = [

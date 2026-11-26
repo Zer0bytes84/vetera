@@ -39,21 +39,21 @@ describe("invoicedByNature", () => {
   it("sums each nature on both periods and gives the change", () => {
     const rows = invoicedByNature(
       [
-        line("i1", "2026-10-05 10:00:00", 400000, null, "Consultation"),
-        line("i2", "2026-09-05 10:00:00", 200000, null, "Consultation"),
-        line("i3", "2026-10-06 10:00:00", 300000, null, "Chirurgie"),
-        line("stay-invoice:s1", "2026-10-07T10:00:00.000Z", 150000),
-        line("i4", "2026-08-01 10:00:00", 999999, "p"),
+        line("i1", "2026-10-05 10:00:00", 400_000, null, "Consultation"),
+        line("i2", "2026-09-05 10:00:00", 200_000, null, "Consultation"),
+        line("i3", "2026-10-06 10:00:00", 300_000, null, "Chirurgie"),
+        line("stay-invoice:s1", "2026-10-07T10:00:00.000Z", 150_000),
+        line("i4", "2026-08-01 10:00:00", 999_999, "p"),
       ],
       ranges
     );
     expect(
       rows.map((row) => [row.key, row.value, row.previous, row.change])
     ).toEqual([
-      ["consultations", 400000, 200000, 100],
-      ["chirurgie", 300000, 0, null],
+      ["consultations", 400_000, 200_000, 100],
+      ["chirurgie", 300_000, 0, null],
       ["produits", 0, 0, 0],
-      ["hospitalisation", 150000, 0, null],
+      ["hospitalisation", 150_000, 0, null],
     ]);
   });
 });

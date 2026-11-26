@@ -397,8 +397,9 @@ it("un échec d’attribution annule réception, lot, mouvement et solde", async
     "stock_balances",
     "stock_movements",
     "stock_inventory_operations",
-  ])
+  ]) {
     expect(connection.prepare(`SELECT * FROM ${table}`).all()).toHaveLength(0);
+  }
 });
 
 it("un échec d’attribution annule aussi la consommation entière", async () => {
@@ -483,7 +484,7 @@ it("le comptage global refuse d’écraser les lots; un comptage ciblé est tra�
 });
 
 it("données incorrectes ou lot étranger ne produisent aucune sortie silencieuse", async () => {
-  for (const expiryDate of ["2026-02-30", "2026-13-01", "inconnue"])
+  for (const expiryDate of ["2026-02-30", "2026-13-01", "inconnue"]) {
     await expect(
       transaction(() =>
         registerLotInDatabase(
@@ -494,6 +495,7 @@ it("données incorrectes ou lot étranger ne produisent aucune sortie silencieus
         )
       )
     ).rejects.toThrow("date de péremption");
+  }
   await expect(
     transaction(() =>
       registerLotInDatabase(

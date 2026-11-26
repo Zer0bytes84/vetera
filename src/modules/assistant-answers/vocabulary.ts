@@ -287,8 +287,9 @@ export function understood(
             SUBJECT_WORDS.has(word) ||
             NEUTRAL_WORDS.has(word)
         )
-    )
+    ) {
       return { ok: false, reason: "name", name };
+    }
   }
   for (const pattern of PERIOD_PHRASES) {
     rest = rest.replace(pattern, () => {
@@ -296,7 +297,9 @@ export function understood(
       return " ";
     });
   }
-  if (periods > 1) return { ok: false, reason: "periods", count: periods };
+  if (periods > 1) {
+    return { ok: false, reason: "periods", count: periods };
+  }
   for (const name of [...names].sort((a, b) => b.length - a.length)) {
     rest = rest.replace(
       new RegExp(
@@ -306,7 +309,9 @@ export function understood(
       " "
     );
   }
-  for (const pattern of SUBJECT_PHRASES) rest = rest.replace(pattern, " ");
+  for (const pattern of SUBJECT_PHRASES) {
+    rest = rest.replace(pattern, " ");
+  }
   // « en retard » is read here as « retard »: a tasks filter, not a word of the appointments' answer.
   rest = rest.replace(/\ben retard\b/g, " retard ");
   const foreign = (word: string) =>

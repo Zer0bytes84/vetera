@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
-  ClinicalValidationError,
+  type ClinicalValidationError,
   normalizeOwnerDraft,
   normalizePatientDraft,
 } from "../../src/domain/clinical/owner-patient";

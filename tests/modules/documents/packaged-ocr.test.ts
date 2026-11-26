@@ -81,7 +81,7 @@ describe("Moteur de reconnaissance embarqué", () => {
     const { ocr, worker } = setup();
     const loading = ocr.initialize();
     const rejection = expect(loading).rejects.toThrow("n’a pas répondu");
-    await vi.advanceTimersByTimeAsync(90000);
+    await vi.advanceTimersByTimeAsync(90_000);
     await rejection;
     expect(worker.terminated).toBe(true);
   });

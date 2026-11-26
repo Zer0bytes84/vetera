@@ -36,7 +36,7 @@ export const CLINIC_TABLES = [
 type ClinicTable = (typeof CLINIC_TABLES)[number];
 
 /** How the data was read: shown under each answer. */
-export type ReadReceipt = {
+export interface ReadReceipt {
   /** « sqlite » on the desktop, « navigateur » in a browser. */
   via: "sqlite" | "navigateur";
   /** Statements that went through the port (selects and the snapshot's BEGIN/COMMIT). */
@@ -45,7 +45,7 @@ export type ReadReceipt = {
   changes: number;
   rows: number;
   at: string;
-};
+}
 
 export class ReadIntegrityError extends Error {
   constructor(changes: number) {
@@ -122,7 +122,9 @@ export async function readClinicData(
   const { tables, invoices, changes } = await run((db) =>
     readClinicTables(db, counter)
   );
-  if (changes !== 0) throw new ReadIntegrityError(changes);
+  if (changes !== 0) {
+    throw new ReadIntegrityError(changes);
+  }
   const rows =
     CLINIC_TABLES.reduce((sum, table) => sum + tables[table].length, 0) +
     invoices.length;

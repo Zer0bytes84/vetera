@@ -239,8 +239,9 @@ describe("Isolated SQLite patient record reads", () => {
       "DICTÉE",
       "999",
       "NE PAS EXPORTER",
-    ])
+    ]) {
       expect(output).not.toContain(forbidden);
+    }
     expect(dump(db)).toBe(before);
     expect(state.statements[0]).toBe("BEGIN DEFERRED TRANSACTION");
     expect(state.statements.at(-1)).toBe("COMMIT");
@@ -309,7 +310,9 @@ describe("Isolated SQLite patient record reads", () => {
       ...db,
       async select<T>(query: string, values?: unknown[]) {
         const result = await db.select<T>(query, values);
-        if (query.includes("FROM appointments")) controller.abort();
+        if (query.includes("FROM appointments")) {
+          controller.abort();
+        }
         return result;
       },
     };

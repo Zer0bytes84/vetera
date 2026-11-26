@@ -34,12 +34,18 @@ describe("poste secondaire sur le réseau local", () => {
 
   it("ouvre la base du poste principal sans migrer ni réparer en local", async () => {
     invoke.mockImplementation(async (command: string) => {
-      if (command === "clinic_network_launch_mode") return "client";
-      if (command === "clinic_network_connect")
+      if (command === "clinic_network_launch_mode") {
+        return "client";
+      }
+      if (command === "clinic_network_connect") {
         return { workstationName: "Accueil" };
-      if (command === "clinic_network_select") return [{ id: "rex" }];
-      if (command === "clinic_network_execute")
+      }
+      if (command === "clinic_network_select") {
+        return [{ id: "rex" }];
+      }
+      if (command === "clinic_network_execute") {
         return { rowsAffected: 1, lastInsertId: 7 };
+      }
       throw new Error(`commande inattendue ${command}`);
     });
     const { getDatabase, runDbTransaction } = await freshDatabaseModule();
@@ -79,11 +85,18 @@ describe("poste secondaire sur le réseau local", () => {
     const queries: string[] = [];
     invoke.mockImplementation(
       async (command: string, args?: { query?: string }) => {
-        if (command === "clinic_network_launch_mode") return "client";
-        if (command === "clinic_network_connect") return {};
-        if (args?.query) queries.push(args.query);
-        if (args?.query?.startsWith("INSERT"))
+        if (command === "clinic_network_launch_mode") {
+          return "client";
+        }
+        if (command === "clinic_network_connect") {
+          return {};
+        }
+        if (args?.query) {
+          queries.push(args.query);
+        }
+        if (args?.query?.startsWith("INSERT")) {
           throw "UNIQUE constraint failed: patients.id";
+        }
         return { rowsAffected: 0 };
       }
     );
@@ -103,8 +116,9 @@ describe("poste secondaire sur le réseau local", () => {
 
   it("reste sur la base locale quand le mode réseau est inconnu ou indisponible", async () => {
     invoke.mockImplementation(async (command: string) => {
-      if (command === "clinic_network_launch_mode")
+      if (command === "clinic_network_launch_mode") {
         throw new Error("commande absente");
+      }
       return undefined;
     });
     const { getDatabase } = await freshDatabaseModule();

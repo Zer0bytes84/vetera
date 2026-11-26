@@ -7,12 +7,12 @@ import type { ConfirmationStatus } from "@/components/ui/confirmation-card";
 import type { Turn } from "./clinic-answers";
 import type { Proposal } from "./types";
 
-export type CardState = {
+export interface CardState {
   status: ConfirmationStatus | "dismissed";
   error?: string;
   reference?: string;
   doneAt?: string;
-};
+}
 
 /** The latest card still waiting for the vet (neither validated nor set aside), with its turn: what the foot of the panel shows. */
 export function pendingProposal(
@@ -23,9 +23,13 @@ export function pendingProposal(
     const turn = turns[index];
     const proposal =
       turn.answer.kind === "answer" ? turn.answer.proposal : null;
-    if (!proposal) continue;
+    if (!proposal) {
+      continue;
+    }
     const card = cards[turn.id];
-    if (card?.status === "done" || card?.status === "dismissed") continue;
+    if (card?.status === "done" || card?.status === "dismissed") {
+      continue;
+    }
     return { turnId: turn.id, proposal, card };
   }
   return null;

@@ -79,8 +79,9 @@ describe("local reset safety", () => {
         fn({
           ...db,
           execute: async (query: string, values: unknown[] = []) => {
-            if (fail && query.startsWith("CREATE TABLE IF NOT EXISTS users"))
+            if (fail && query.startsWith("CREATE TABLE IF NOT EXISTS users")) {
               throw new Error("Simulated disk failure");
+            }
             return db.execute(query, values);
           },
         })

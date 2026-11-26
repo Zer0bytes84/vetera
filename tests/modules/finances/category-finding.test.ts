@@ -12,7 +12,7 @@ describe("categoryFinding", () => {
           { label: "Pharmacie", value: 2100 },
           { label: "Consultation", value: 6200 },
         ],
-        10000
+        10_000
       )
     ).toBe(
       "Consultation représente 62 % des encaissements des 30 derniers jours, devant Pharmacie (21 %)."

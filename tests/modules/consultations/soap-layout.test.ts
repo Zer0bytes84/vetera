@@ -111,8 +111,9 @@ describe("note de référence assemblée par le code", () => {
     ).default;
     const note = assembleGuidedNote(EMPTY_SOAP, cas.rubriques);
     const text = soapNoteText(layoutSoapNote(note));
-    for (const heading of Object.values(SOAP_FULL_HEADINGS))
+    for (const heading of Object.values(SOAP_FULL_HEADINGS)) {
       expect(text).toContain(heading);
+    }
     expect(text).toContain("\n1. Soins au cabinet");
     expect(text).toContain("\n- Température 38.5 °C, normale.");
     const words = (value: string) => evidenceTokens(value).sort().join(" ");

@@ -1,4 +1,3 @@
-import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import type {
@@ -92,8 +91,9 @@ it("affiche les quatre rappels à traiter même en l’absence de rappels médic
   harness.tasks = [task("1"), task("2"), task("3"), task("4")];
   const html = render();
   expect(html).toMatch(/À traiter[\s\S]*?<span class="sr-only">4<\/span>/);
-  for (const id of ["1", "2", "3", "4"])
+  for (const id of ["1", "2", "3", "4"]) {
     expect(html).toContain(`data-task-id="${id}"`);
+  }
   expect(html).not.toContain("Aucun rappel dans cette vue.");
 });
 

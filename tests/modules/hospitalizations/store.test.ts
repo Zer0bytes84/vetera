@@ -7,7 +7,9 @@ import { createStayStore } from "../../../src/modules/hospitalizations/stays/sto
 
 const databases: DatabaseSync[] = [];
 afterEach(() => {
-  for (const db of databases) db.close();
+  for (const db of databases) {
+    db.close();
+  }
   databases.length = 0;
 });
 function setup() {
@@ -189,10 +191,11 @@ it("génère les mêmes tâches de soins et annule seulement les occurrences fut
   const future = db
     .prepare("SELECT heure_prevue,statut FROM care_tasks WHERE stay_id=?")
     .all(stay.id) as { heure_prevue: string; statut: string }[];
-  for (const task of future)
+  for (const task of future) {
     expect(task.statut).toBe(
       task.heure_prevue >= "2026-10-13T12:00:00.000Z" ? "annule" : "a_faire"
     );
+  }
   await expect(
     store.createPlan(
       stay.id,

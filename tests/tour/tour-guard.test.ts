@@ -34,8 +34,9 @@ describe("tour guidé : ce qu'il ne fait jamais", () => {
     for (const { name, text } of code.filter(
       ({ name }) => name !== "tour-store.ts"
     )) {
-      for (const pattern of forbidden)
+      for (const pattern of forbidden) {
         expect(text, `${name} ${pattern}`).not.toMatch(pattern);
+      }
     }
   });
 

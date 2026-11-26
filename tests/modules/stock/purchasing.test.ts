@@ -251,8 +251,9 @@ it("dépassement sur la deuxième ligne : annule aussi la première, les lots et
     "stock_balances",
     "product_lots",
     "stock_movements",
-  ])
+  ]) {
     expect(sqlite.prepare(`SELECT * FROM ${table}`).all()).toHaveLength(0);
+  }
   expect(balance()).toBe(0);
   expect(balance("p2")).toBe(0);
   expect((await purchasingSnapshotInDatabase(db)).orders[0].status).toBe(

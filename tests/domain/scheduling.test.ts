@@ -3,7 +3,7 @@ import {
   assertAppointmentStatusTransition,
   findAppointmentConflicts,
   normalizeAppointmentInterval,
-  SchedulingError,
+  type SchedulingError,
 } from "../../src/domain/clinical/scheduling";
 import type { Appointment } from "../../src/types/db";
 

@@ -35,7 +35,9 @@ export function ValidatedDosePanel({
     () => validatedDose(medicationId, species, weightKg),
     [medicationId, species, weightKg]
   );
-  if (!dose) return null;
+  if (!dose) {
+    return null;
+  }
   const line = dose.line;
   const facts = line
     ? [

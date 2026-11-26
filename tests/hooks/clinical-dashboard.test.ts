@@ -174,18 +174,20 @@ describe("clinical dashboard decisions", () => {
 
   it("keeps money in centimes and excludes pending, future and out-of-period entries", () => {
     const transactions = [
-      cash("today", "2026-10-03 10:00:00", 125050),
-      cash("expense", "2026-10-03 11:00:00", 12000, "expense"),
-      cash("pending", "2026-10-03", 700000, "income", "pending"),
-      cash("future", "2026-10-04", 100000),
-      cash("previous", "2026-09-30", 50000),
+      cash("today", "2026-10-03 10:00:00", 125_050),
+      cash("expense", "2026-10-03 11:00:00", 12_000, "expense"),
+      cash("pending", "2026-10-03", 700_000, "income", "pending"),
+      cash("future", "2026-10-04", 100_000),
+      cash("previous", "2026-09-30", 50_000),
     ];
     expect(buildClinicalCash(transactions, now, "today")).toMatchObject({
-      income: 125050,
-      expense: 12000,
+      income: 125_050,
+      expense: 12_000,
       count: 2,
     });
-    expect(buildClinicalCash(transactions, now, "quarter").income).toBe(175050);
+    expect(buildClinicalCash(transactions, now, "quarter").income).toBe(
+      175_050
+    );
     expect(
       buildClinicalCash(transactions, now, "month").recent.map((row) => row.id)
     ).toEqual(["expense", "today", "previous"]);

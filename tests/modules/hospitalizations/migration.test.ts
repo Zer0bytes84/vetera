@@ -5,7 +5,9 @@ import { STAYS_MIGRATION_SQL } from "../../../src/modules/hospitalizations/stays
 
 const databases: DatabaseSync[] = [];
 afterEach(() => {
-  for (const db of databases) db.close();
+  for (const db of databases) {
+    db.close();
+  }
   databases.length = 0;
 });
 function setup() {

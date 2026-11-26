@@ -71,8 +71,8 @@ const input = {
     },
   ],
   transactions: [
-    { type: "income", status: "paid", date: at(12, 9), amount: 150000 },
-    { type: "income", status: "pending", date: at(12, 9), amount: 99900 },
+    { type: "income", status: "paid", date: at(12, 9), amount: 150_000 },
+    { type: "income", status: "pending", date: at(12, 9), amount: 99_900 },
     { type: "expense", status: "paid", date: at(12, 9), amount: 5000 },
     { type: "income", status: "paid", date: at(11, 9), amount: 7000 },
   ],
@@ -94,14 +94,14 @@ describe("journée sans visite : ce que le Flux montre, lu dans les dossiers", (
       week: 2,
       cancelledToday: 1,
       noShowToday: 1,
-      receiptsToday: 150000,
+      receiptsToday: 150_000,
     });
   });
   it("le filtre de vétérinaire du tableau vaut pour les rendez-vous, pas pour la caisse", () => {
     const quiet = buildQuietDay({ ...input, vetId: "v1" });
     expect(quiet.next?.appointmentId).toBe("d");
     expect(quiet.next?.reason).toBe("Vaccin");
-    expect(quiet.receiptsToday).toBe(150000);
+    expect(quiet.receiptsToday).toBe(150_000);
   });
   it("sans rendez-vous à venir, pas de prochain rendez-vous", () => {
     expect(buildQuietDay({ ...input, appointments: [] }).next).toBeNull();

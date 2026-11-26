@@ -133,8 +133,8 @@ describe("période choisie au sélecteur de dates", () => {
       visit("before", "a", "2026-09-30T09:00:00"),
     ];
     d.transactions = [
-      income("i1", "2026-10-06", 10000),
-      income("i2", "2026-10-12", 50000),
+      income("i1", "2026-10-06", 10_000),
+      income("i2", "2026-10-12", 50_000),
       income("i0", "2026-09-30", 4000),
     ];
     const m = buildPremiumAnalytics(d, "custom", now, {
@@ -143,7 +143,7 @@ describe("période choisie au sélecteur de dates", () => {
     });
     expect(m.patients.visits).toBe(2);
     expect(m.patients.previousVisits).toBe(1);
-    expect(m.cash.income).toBe(10000);
+    expect(m.cash.income).toBe(10_000);
     expect(m.cash.previous).toBe(4000);
   });
   it("sans données dans la période, tout est à zéro sans erreur", () => {

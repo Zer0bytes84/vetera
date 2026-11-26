@@ -9,18 +9,18 @@ import {
 
 describe("formatage partagé pour l’affichage", () => {
   it("groupe les montants avec des espaces insécables et la virgule française", () => {
-    expect(formatNumber(19100)).toBe("19\u00a0100");
-    expect(formatNumber(1287423.5, { minimumFractionDigits: 2 })).toBe(
+    expect(formatNumber(19_100)).toBe("19\u00a0100");
+    expect(formatNumber(1_287_423.5, { minimumFractionDigits: 2 })).toBe(
       "1\u00a0287\u00a0423,50"
     );
-    expect(formatDinars(19100.5)).toBe("19\u00a0100,5\u00a0DA");
+    expect(formatDinars(19_100.5)).toBe("19\u00a0100,5\u00a0DA");
     expect(formatDinars(0)).toBe("0\u00a0DA");
   });
 
   it("préserve les centimes et les règles d’arrondi existantes", () => {
-    expect(formatDZD(1910050)).toBe(formatDinars(19100.5));
-    expect(toCentimes(19100.5)).toBe(1910050);
-    expect(formatDinars(19100.5, 0)).toBe("19\u00a0101\u00a0DA");
+    expect(formatDZD(1_910_050)).toBe(formatDinars(19_100.5));
+    expect(toCentimes(19_100.5)).toBe(1_910_050);
+    expect(formatDinars(19_100.5, 0)).toBe("19\u00a0101\u00a0DA");
   });
 
   it.each([

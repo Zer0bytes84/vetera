@@ -1,14 +1,13 @@
-import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { beforeEach, expect, it, vi } from "vitest";
 import type { CareStatus } from "../../../src/modules/care-tasks/domain";
 
-type Task = {
+interface Task {
   id: string;
   patient_id: string;
   heure_prevue: string;
   statut: CareStatus;
-};
+}
 const harness = vi.hoisted(() => ({
   tasks: [] as Task[],
   now: new Date("2026-10-13T12:00:00Z"),

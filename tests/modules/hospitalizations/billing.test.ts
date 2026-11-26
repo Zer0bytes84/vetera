@@ -29,7 +29,7 @@ const product: Product = {
   createdAt: "",
   minStock: 0,
   quantity: 0,
-  salePriceAmount: 10000,
+  salePriceAmount: 10_000,
   purchasePriceAmount: 0,
   unit: "jour",
 };
@@ -39,7 +39,7 @@ it("calcule les journées au tarif réel sans mouvement de stock et prépare seu
     id: "stay-invoice:stay",
     patientId: "patient",
     ownerId: "owner",
-    lines: [{ quantityMilli: 2000, unitAmount: 10000 }],
+    lines: [{ quantityMilli: 2000, unitAmount: 10_000 }],
   });
   expect(input.lines?.[0].productId).toBeUndefined();
 });

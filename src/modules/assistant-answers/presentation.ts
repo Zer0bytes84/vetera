@@ -20,7 +20,12 @@ import type {
  * 00:00, and stepping by 24 hours would slip a bucket by an hour and drop its rows. A day is its « YYYY-MM-DD » key;
  * days compare as text.
  */
-type Bucket = { key: string; label: string; first: string; last: string };
+interface Bucket {
+  key: string;
+  label: string;
+  first: string;
+  last: string;
+}
 
 const iso = (date: Date) =>
   `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
@@ -50,10 +55,12 @@ export function bucketsOf(period: Period): {
   const days: Date[] = [];
   for (let i = 0; ; i++) {
     const day = at(from.y, from.m, from.d + i);
-    if (iso(day) > lastKey) break;
+    if (iso(day) > lastKey) {
+      break;
+    }
     days.push(day);
   }
-  if (days.length <= 62)
+  if (days.length <= 62) {
     return {
       unit: "jour",
       buckets: days.map((day) => ({
@@ -63,6 +70,7 @@ export function bucketsOf(period: Period): {
         last: iso(day),
       })),
     };
+  }
   if (days.length <= 182) {
     const buckets: Bucket[] = [];
     for (let end = days.length - 1; end >= 0; end -= 7) {
@@ -106,12 +114,16 @@ export function seriesOver(
   for (const row of rows) {
     const raw = row[dateKey];
     const date = typeof raw === "string" ? parseDashboardDate(raw) : null;
-    if (!date) continue;
+    if (!date) {
+      continue;
+    }
     const key = iso(date);
     const index = buckets.findIndex(
       (bucket) => key >= bucket.first && key <= bucket.last
     );
-    if (index >= 0) sums[index] += value(row);
+    if (index >= 0) {
+      sums[index] += value(row);
+    }
   }
   return buckets.map((bucket, index) => ({
     key: bucket.key,
@@ -160,7 +172,9 @@ const MAX_SPECIES = 8;
 
 function chartOf(answer: Built): AnswerChart | null {
   const { table, figures, topic, period } = answer;
-  if (!table || table.rows.length === 0) return null;
+  if (!table || table.rows.length === 0) {
+    return null;
+  }
   const has = (id: string) => figures.some((figure) => figure.id === id);
   if (topic === "patients" && has("active")) {
     const all = table.rows.map((row) => ({
@@ -197,11 +211,13 @@ function chartOf(answer: Built): AnswerChart | null {
       ],
     };
   }
-  if (!period || topic === "tasks") return null;
+  if (!period || topic === "tasks") {
+    return null;
+  }
   const { unit, buckets } = bucketsOf(period);
   if (topic === "cash") {
     const series: AnswerSeries[] = [];
-    if (has("income"))
+    if (has("income")) {
       series.push({
         id: "income",
         label: "Encaissé",
@@ -214,7 +230,8 @@ function chartOf(answer: Built): AnswerChart | null {
           buckets
         ),
       });
-    if (has("expense"))
+    }
+    if (has("expense")) {
       series.push({
         id: "expense",
         label: "Dépensé",
@@ -227,6 +244,7 @@ function chartOf(answer: Built): AnswerChart | null {
           buckets
         ),
       });
+    }
     return series.length
       ? {
           title: `Journal de caisse par ${unit}`,
@@ -239,7 +257,9 @@ function chartOf(answer: Built): AnswerChart | null {
   }
   const dateKey = topic === "appointments" ? "start" : "created";
   const rows = figures.find((figure) => figure.id === "rows");
-  if (!rows) return null;
+  if (!rows) {
+    return null;
+  }
   // The series is named like its figure: « Absences » when the question asked for them.
   const label = rows.label;
   return {

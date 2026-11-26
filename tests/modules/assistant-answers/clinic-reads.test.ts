@@ -95,8 +95,9 @@ describe("porte de lecture de l'onglet Données", () => {
       "SELECT 1; DELETE FROM patients",
       "PRAGMA writable_schema = 1",
       "ATTACH DATABASE 'x' AS y",
-    ])
+    ]) {
       expect(isReadStatement(write), write).toBe(false);
+    }
     const guarded = guardReadConnection(connection());
     expect(() => guarded.select("DELETE FROM patients")).toThrow(ReadRefused);
     expect(() => guarded.execute("INSERT INTO owners(id) VALUES('x')")).toThrow(
@@ -140,8 +141,9 @@ describe("porte de lecture de l'onglet Données", () => {
     const moving: ReadConnection = {
       ...connection(),
       async select<T>(query: string, values: unknown[] = []) {
-        if (query.startsWith("SELECT total_changes()"))
+        if (query.startsWith("SELECT total_changes()")) {
           return [{ changes: calls++ === 0 ? 4 : 5 }] as T;
+        }
         return connection().select<T>(query, values);
       },
     };
@@ -164,9 +166,10 @@ describe("porte de lecture de l'onglet Données", () => {
     expect(receipt.statements).toBe(statements.length);
     const answer = answerQuestion("recettes de ce mois", data, { now: NOW });
     expect(answer.kind).toBe("answer");
-    if (answer.kind === "answer")
+    if (answer.kind === "answer") {
       expect(
         answer.figures.find((figure) => figure.id === "income")?.value
-      ).toBe(150000);
+      ).toBe(150_000);
+    }
   });
 });

@@ -36,11 +36,17 @@ function lineMg(
   weight: number | undefined
 ) {
   const prefill = referencePrefill(id, species, weight);
-  if (!prefill) return "non validée";
-  if (!prefill.dose) return "vide";
+  if (!prefill) {
+    return "non validée";
+  }
+  if (!prefill.dose) {
+    return "vide";
+  }
   const { min, max, unit } = prefill.dose;
   // Une dose fixe par animal est la dose de la ligne, même sans poids (carbimazole).
-  if (unit === "mg/tot") return { min, max };
+  if (unit === "mg/tot") {
+    return { min, max };
+  }
   const computed = computeDose({ min, max, unit, range: min !== max }, weight);
   return { min: computed.computedMg, max: max * weight! };
 }

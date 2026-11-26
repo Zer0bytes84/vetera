@@ -27,7 +27,9 @@ vi.mock("../../../src/services/sqlite/database", () => {
     select: async (sql: string, params: unknown[] = []) =>
       fixture.db!.prepare(sql).all(...(params as (string | number | null)[])),
     execute: async (sql: string, params: unknown[] = []) => {
-      if (fixture.fail) throw new Error("Écriture indisponible");
+      if (fixture.fail) {
+        throw new Error("Écriture indisponible");
+      }
       const result = fixture
         .db!.prepare(sql)
         .run(...(params as (string | number | null)[]));

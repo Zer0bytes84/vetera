@@ -192,7 +192,7 @@ describe("Lecture locale des documents du patient", () => {
   });
   it("refuse une source trop longue au lieu de la tronquer", async () => {
     await expect(
-      readPatientDocument(document({ content: "a".repeat(60001) }))
+      readPatientDocument(document({ content: "a".repeat(60_001) }))
     ).rejects.toThrow(/capacité/);
   });
 });
@@ -251,7 +251,7 @@ describe("Import PDF sans appel distant ni OCR silencieuse", () => {
       )
     ).rejects.toThrow(/20 pages/);
     pdfFixture.pageCount = 1;
-    pdfFixture.text = "a".repeat(60001);
+    pdfFixture.text = "a".repeat(60_001);
     await expect(
       preparePatientAttachment(
         new File(["%PDF-test"], "long.pdf", { type: "application/pdf" })
@@ -284,8 +284,11 @@ describe("Registre et recherche patient", () => {
         })
       ).toHaveLength(1);
     } finally {
-      if (original) process.env.TZ = original;
-      else delete process.env.TZ;
+      if (original) {
+        process.env.TZ = original;
+      } else {
+        delete process.env.TZ;
+      }
     }
   });
   it("combine recherche, type et dates inclusives sans altérer les documents", () => {

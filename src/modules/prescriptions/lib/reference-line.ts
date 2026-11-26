@@ -7,12 +7,12 @@
 import type { PrescriptionItem } from "@/types/db";
 import { referencePrefill } from "./validated-doses";
 
-export type LineDoseFields = {
+export interface LineDoseFields {
   dosageMax?: number;
   dosageMin?: number;
   dosagePerKg: number;
   dosageUnit: PrescriptionItem["dosageUnit"];
-};
+}
 
 /** The line's dose fields from the reference, or `null` for a molecule outside it (the catalogue parser then applies). */
 export function referenceLineFields(
@@ -21,7 +21,9 @@ export function referenceLineFields(
   weightKg: number | undefined
 ): LineDoseFields | null {
   const prefill = referencePrefill(medicationId, species, weightKg);
-  if (!prefill) return null;
+  if (!prefill) {
+    return null;
+  }
   const dose = prefill.dose;
   return dose
     ? {
@@ -46,7 +48,9 @@ export function referenceLineFields(
 export function followReferenceDose<
   T extends LineDoseFields & { medicationId?: string; referenceDose?: boolean },
 >(item: T, species: string | null, weightKg: number | undefined): T {
-  if (!item.referenceDose) return item;
+  if (!item.referenceDose) {
+    return item;
+  }
   const fields = referenceLineFields(item.medicationId, species, weightKg);
   return fields ? { ...item, ...fields } : item;
 }

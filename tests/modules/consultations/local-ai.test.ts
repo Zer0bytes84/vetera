@@ -281,8 +281,9 @@ describe("offline runtime and exclusive model lease", () => {
       "http://127.0.0.1:5180/patients",
       "asset://localhost/models-evil/test",
       "asset://localhost/models/%2e%2e/private",
-    ])
+    ]) {
       expect(() => assertLocalUrl(url, roots)).toThrow();
+    }
   });
   it("blocks fetch before transmission and disables redirects", async () => {
     const fetch = vi
@@ -336,33 +337,34 @@ describe("local audio", () => {
   });
   it("rejects silence, constant DC, sub-threshold noise and invalid samples", () => {
     for (const input of [
-      new Float32Array(16000),
+      new Float32Array(16_000),
       new Float32Array([0.3, 0.3]),
       new Float32Array([-0.0001, 0.0001]),
-    ])
+    ]) {
       expect(() => normalizeMicrophoneAudio(input)).toThrow("Aucun son");
+    }
     expect(() => normalizeMicrophoneAudio(new Float32Array([NaN]))).toThrow(
       "invalide"
     );
   });
   it("resamples 44.1 kHz without pitch changes or a duration mismatch", () => {
-    const input = Float32Array.from({ length: 44100 }, (_, i) =>
-      Math.sin((2 * Math.PI * 440 * i) / 44100)
+    const input = Float32Array.from({ length: 44_100 }, (_, i) =>
+      Math.sin((2 * Math.PI * 440 * i) / 44_100)
     );
-    const output = resampleAudio(input, 44100);
-    expect(output).toHaveLength(16000);
+    const output = resampleAudio(input, 44_100);
+    expect(output).toHaveLength(16_000);
     const crossings = output.reduce(
       (n, sample, i) => n + (i > 0 && output[i - 1] <= 0 && sample > 0 ? 1 : 0),
       0
     );
     expect(crossings).toBeGreaterThanOrEqual(439);
     expect(crossings).toBeLessThanOrEqual(441);
-    expect(() => resampleAudio(input, 44100, 0)).toThrow("invalide");
+    expect(() => resampleAudio(input, 44_100, 0)).toThrow("invalide");
   });
   it("resamples 48 kHz PCM to 16 kHz without skipping signal averaging", () => {
     const input = new Float32Array([0, 1, 2, 3, 4, 5]);
-    expect([...resampleAudio(input, 48000)]).toEqual([1, 4]);
-    expect(resampleAudio(input, 16000)).not.toBe(input);
+    expect([...resampleAudio(input, 48_000)]).toEqual([1, 4]);
+    expect(resampleAudio(input, 16_000)).not.toBe(input);
     expect(() => resampleAudio(input, 0)).toThrow();
   });
   it("reports unavailable or refused microphones in French", async () => {

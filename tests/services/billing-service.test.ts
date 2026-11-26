@@ -175,7 +175,7 @@ describe("billing service idempotency", () => {
         {
           description: "Vaccin",
           quantityMilli: 1000,
-          unitAmount: 1_000,
+          unitAmount: 1000,
         },
       ],
     });
@@ -186,7 +186,7 @@ describe("billing service idempotency", () => {
     const paymentInput = {
       invoiceId: invoice.id,
       idempotencyKey: "payment-a",
-      amount: 5_000,
+      amount: 5000,
       method: "card" as const,
       reference: " Receipt 42 ",
       paidAt: "2026-08-01T11:00:00.000Z",
@@ -197,7 +197,7 @@ describe("billing service idempotency", () => {
     ).toBe(payment.id);
     expect(billingAuditCount("record-payment")).toBe(1);
     await expect(
-      recordPayment({ ...paymentInput, amount: 4_999 })
+      recordPayment({ ...paymentInput, amount: 4999 })
     ).rejects.toMatchObject({
       code: "IDEMPOTENCY_KEY_CONFLICT",
     });
@@ -213,7 +213,7 @@ describe("billing service idempotency", () => {
           productId: "catalogue-product-a",
           description: "Goodwill adjustment",
           quantityMilli: 1000,
-          unitAmount: 1_000,
+          unitAmount: 1000,
           discountBps: 0,
           taxBps: 0,
         },
@@ -252,7 +252,7 @@ describe("billing service idempotency", () => {
     const refundInput = {
       paymentId: payment.id,
       idempotencyKey: "refund-a",
-      amount: 1_000,
+      amount: 1000,
       reason: " Customer request ",
       refundedAt: "2026-08-01T13:00:00.000Z",
     };
@@ -290,7 +290,7 @@ describe("billing void replay", () => {
     const payment = await recordPayment({
       invoiceId: paymentInvoice.id,
       idempotencyKey: "payment-to-void",
-      amount: 5_000,
+      amount: 5000,
       method: "card",
       paidAt: "2026-08-01T11:00:00.000Z",
     });
@@ -313,14 +313,14 @@ describe("billing void replay", () => {
     const refundablePayment = await recordPayment({
       invoiceId: refundInvoice.id,
       idempotencyKey: "payment-to-refund",
-      amount: 5_000,
+      amount: 5000,
       method: "cash",
       paidAt: "2026-08-01T13:00:00.000Z",
     });
     const refund = await recordRefund({
       paymentId: refundablePayment.id,
       idempotencyKey: "refund-to-void",
-      amount: 1_000,
+      amount: 1000,
       refundedAt: "2026-08-01T14:00:00.000Z",
     });
     const voidRefundInput = {
@@ -358,7 +358,7 @@ describe("billing void replay", () => {
 describe("credit-note voiding", () => {
   it("voids only issued credit notes, restores derived settlement, and rejects foreign invoice lines", async () => {
     const { invoice: invoiceA } = await createIssuedInvoice("invoice-a");
-    const { invoice: invoiceB } = await createIssuedInvoice("invoice-b", 2_000);
+    const { invoice: invoiceB } = await createIssuedInvoice("invoice-b", 2000);
 
     await expect(
       issueCreditNote({
@@ -394,14 +394,14 @@ describe("credit-note voiding", () => {
           invoiceLineId: invoiceA.lines[0].id,
           description: "Pricing correction",
           quantityMilli: 1000,
-          unitAmount: 2_000,
+          unitAmount: 2000,
         },
       ],
     });
     const beforeVoid = await getInvoice(invoiceA.id);
     expect(beforeVoid).toMatchObject({
-      creditAmount: 2_000,
-      balanceAmount: 8_000,
+      creditAmount: 2000,
+      balanceAmount: 8000,
       settlementStatus: "partial",
     });
     await expect(
@@ -443,7 +443,7 @@ describe("invoice branding snapshot", () => {
         {
           description: "Consultation",
           quantityMilli: 1000,
-          unitAmount: 200000,
+          unitAmount: 200_000,
           discountBps: 0,
           taxBps: 0,
         },
@@ -464,7 +464,7 @@ describe("invoice branding snapshot", () => {
     await recordPayment({
       invoiceId: draft.id,
       idempotencyKey: "brand-pay",
-      amount: 50000,
+      amount: 50_000,
       method: "cash",
     });
     const persisted = await getInvoice(draft.id);
@@ -474,9 +474,9 @@ describe("invoice branding snapshot", () => {
     expect(document.settings.name).toBe("Cabinet Jardin");
     expect(document.settings.logoDataUrl).toBe(clinicSnapshot.logoDataUrl);
     expect(document.data).toMatchObject({
-      totalAmount: 200000,
-      paidAmount: 50000,
-      balanceAmount: 150000,
+      totalAmount: 200_000,
+      paidAmount: 50_000,
+      balanceAmount: 150_000,
     });
   });
   it("rejects a remote logo before issuing an invoice", async () => {
@@ -487,7 +487,7 @@ describe("invoice branding snapshot", () => {
         {
           description: "Consultation",
           quantityMilli: 1000,
-          unitAmount: 200000,
+          unitAmount: 200_000,
           discountBps: 0,
           taxBps: 0,
         },
@@ -572,7 +572,7 @@ it("séjour sorti vers contrôle et brouillon de journées utilise les tables ex
       createdAt: "",
       quantity: 0,
       minStock: 0,
-      salePriceAmount: 10000,
+      salePriceAmount: 10_000,
       purchasePriceAmount: 0,
       unit: "jour",
     },
@@ -590,7 +590,7 @@ it("séjour sorti vers contrôle et brouillon de journées utilise les tables ex
   expect(first.documentStatus).toBe("draft");
   expect(first.lines).toHaveLength(1);
   expect(first.lines[0].quantityMilli).toBe(2000);
-  expect(first.grossAmount).toBe(20000);
+  expect(first.grossAmount).toBe(20_000);
   expect(billingAuditCount("create-invoice-draft")).toBe(1);
   expect(
     database.connection
@@ -708,14 +708,14 @@ it("modifie le tarif d’un brouillon de soin à zéro, persiste son total puis 
     lines,
     actor: { userId: "vet" },
   });
-  expect(saved.grossAmount).toBe(175050);
+  expect(saved.grossAmount).toBe(175_050);
   expect(saved.lines[0]).toMatchObject({
     quantityMilli: 1000,
-    unitAmount: 175050,
+    unitAmount: 175_050,
     description: "Injection",
   });
-  expect((await getInvoice(draft.id))?.grossAmount).toBe(175050);
-  expect((await billCompletedCareTask("care-zero")).grossAmount).toBe(175050);
+  expect((await getInvoice(draft.id))?.grossAmount).toBe(175_050);
+  expect((await billCompletedCareTask("care-zero")).grossAmount).toBe(175_050);
   await issueInvoice({
     invoiceId: draft.id,
     clinicSnapshot: CLINIC,
@@ -791,7 +791,7 @@ describe("lignes des factures émises", () => {
         {
           description: "Ostéosynthèse",
           quantityMilli: 1000,
-          unitAmount: 300000,
+          unitAmount: 300_000,
           discountBps: 0,
           taxBps: 0,
         },
@@ -847,7 +847,7 @@ describe("lignes des factures émises", () => {
         lineNature(line),
       ])
     ).toEqual([
-      [300000, null, "Chirurgie", "chirurgie"],
+      [300_000, null, "Chirurgie", "chirurgie"],
       [500, "nature-product", "Chirurgie", "produits"],
     ]);
     expect(

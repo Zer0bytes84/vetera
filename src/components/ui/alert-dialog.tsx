@@ -70,7 +70,9 @@ function AlertDialogContent({
   const band: React.ReactNode[] = [];
   const explanation: React.ReactNode[] = [];
   for (const header of headers) {
-    if (!isValidElement<React.ComponentProps<"div">>(header)) continue;
+    if (!isValidElement<React.ComponentProps<"div">>(header)) {
+      continue;
+    }
     const inner = flattenChildren(header.props.children);
     explanation.push(
       ...inner.filter(

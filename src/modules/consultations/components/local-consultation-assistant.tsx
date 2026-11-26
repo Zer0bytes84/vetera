@@ -973,16 +973,18 @@ export default function LocalConsultationAssistant({
           event.key !== "Escape" ||
           event.defaultPrevented ||
           event.nativeEvent.isComposing
-        )
+        ) {
           return;
+        }
         const target = event.target as HTMLElement;
         // In a text field, Échap belongs to the field (an answer being written, a dictation): the panel stays.
         if (
           target.closest(
             "input, textarea, [contenteditable='true'], [role='dialog'], [role='alertdialog'], [role='listbox'], [role='menu'], [data-slot='select-content']"
           )
-        )
+        ) {
           return;
+        }
         event.preventDefault();
         requestClose();
       }}

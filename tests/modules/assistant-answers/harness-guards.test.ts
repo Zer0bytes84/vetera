@@ -126,7 +126,9 @@ describe("Données : les gardes du harnais", () => {
       ],
     });
     expect(answer.kind).toBe("answer");
-    if (answer.kind !== "answer") return;
+    if (answer.kind !== "answer") {
+      return;
+    }
     expect(answer.period?.from.getDate()).toBe(dayAfter.getDate());
     expect(answer.figures.find((figure) => figure.id === "rows")?.value).toBe(
       1

@@ -33,13 +33,16 @@ describe("charte d'interaction", () => {
     const loose: string[] = [];
     for (const file of files("src", /\.css$/)) {
       postcss.parse(readFileSync(file, "utf8")).walkRules((rule) => {
-        if (!rule.selector.includes(":hover")) return;
+        if (!rule.selector.includes(":hover")) {
+          return;
+        }
         for (let parent = rule.parent; parent; parent = parent.parent) {
           if (
             parent.type === "atrule" &&
             /hover/.test((parent as postcss.AtRule).params)
-          )
+          ) {
             return;
+          }
         }
         loose.push(`${file}: ${rule.selector.slice(0, 60)}`);
       });

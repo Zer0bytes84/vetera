@@ -38,7 +38,7 @@ import { cn } from "@/lib/utils";
 
 export type ChartType = "bar" | "line" | "area" | "donut";
 
-export type ChartSeries = {
+export interface ChartSeries {
   id: string;
   label: string;
   /** One value per label. For a donut, a slice is the sum of its values. */
@@ -55,9 +55,9 @@ export type ChartSeries = {
   markers?: boolean;
   /** Text after the label in the legend, e.g. a total and its change. */
   detail?: string;
-};
+}
 
-export type ChartCardProps = {
+export interface ChartCardProps {
   data: { labels: string[]; series: ChartSeries[] };
   type?: ChartType;
   title: string;
@@ -91,7 +91,7 @@ export type ChartCardProps = {
   loadingRevealed?: boolean;
   loadingLabel?: string;
   className?: string;
-};
+}
 
 // The app's accent tones, in the order a series gets them: blue, green, violet, amber, rose.
 const palette = [

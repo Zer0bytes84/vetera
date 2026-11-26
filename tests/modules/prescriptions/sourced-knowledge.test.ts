@@ -99,11 +99,14 @@ describe("règles de sécurité sourcées", () => {
       expect(rule.source!.label, rule.id).toMatch(/^RCP .+ \(ANMV\)$/);
     }
     const groups = new Set(Object.keys(SAFETY_GROUPS));
-    for (const rule of INTERACTION_RULES)
-      for (const group of rule.between)
+    for (const rule of INTERACTION_RULES) {
+      for (const group of rule.between) {
         expect(groups.has(group), rule.id).toBe(true);
-    for (const rule of CONTRAINDICATION_RULES)
+      }
+    }
+    for (const rule of CONTRAINDICATION_RULES) {
       expect(groups.has(rule.group), rule.id).toBe(true);
+    }
     const ids = [...INTERACTION_RULES, ...CONTRAINDICATION_RULES].map(
       (rule) => rule.id
     );

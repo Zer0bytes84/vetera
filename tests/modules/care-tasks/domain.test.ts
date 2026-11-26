@@ -8,7 +8,7 @@ import {
 
 const statuses: CareStatus[] = ["a_faire", "en_cours", "fait", "annule"];
 describe("Transitions des soins", () => {
-  for (const from of statuses)
+  for (const from of statuses) {
     for (const to of statuses) {
       it(`${from} vers ${to}`, () => {
         const allowed =
@@ -19,10 +19,14 @@ describe("Transitions des soins", () => {
               : [];
         const action = () =>
           assertCareTransition(from, to, "vet", "Motif explicite");
-        if (allowed.includes(to)) expect(action).not.toThrow();
-        else expect(action).toThrow();
+        if (allowed.includes(to)) {
+          expect(action).not.toThrow();
+        } else {
+          expect(action).toThrow();
+        }
       });
     }
+  }
   it("exige auteur et motif", () => {
     expect(() => assertCareTransition("a_faire", "fait", " ")).toThrow();
     expect(() =>
@@ -39,13 +43,14 @@ describe("Retard dérivé", () => {
         now
       )
     ).toBe("a_faire"));
-  for (const statut of statuses)
+  for (const statut of statuses) {
     it(`respecte ${statut}`, () =>
       expect(
         careDisplayStatus({ statut, heure_prevue: "2026-10-12T11:59:59Z" }, now)
       ).toBe(
         statut === "a_faire" || statut === "en_cours" ? "en_retard" : statut
       ));
+  }
 });
 it("préserve le Plan mot pour mot et n’invente ni dose ni horaire", () => {
   const result = suggestCareTasksFromPlan(

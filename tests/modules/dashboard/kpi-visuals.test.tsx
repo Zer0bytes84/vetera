@@ -41,7 +41,7 @@ describe("KPI visual components", () => {
             "6 oct.",
             "7 oct.",
           ]}
-          values={[10000, 15000, 20000, 18000, 25000, 30000, 37500]}
+          values={[10_000, 15_000, 20_000, 18_000, 25_000, 30_000, 37_500]}
         />
       );
 
@@ -83,7 +83,7 @@ describe("KPI visual components", () => {
     it("renders full recovery gauge when waiting amount is 0", () => {
       const html = renderToStaticMarkup(
         <KpiReceivablesGauge
-          periodPaid={3750000}
+          periodPaid={3_750_000}
           waitingAmount={0}
           waitingCount={0}
         />
@@ -97,8 +97,8 @@ describe("KPI visual components", () => {
     it("renders warning status when waiting amount is greater than 0", () => {
       const html = renderToStaticMarkup(
         <KpiReceivablesGauge
-          periodPaid={3500000}
-          waitingAmount={1500000}
+          periodPaid={3_500_000}
+          waitingAmount={1_500_000}
           waitingCount={2}
         />
       );

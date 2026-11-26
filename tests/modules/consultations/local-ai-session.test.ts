@@ -123,7 +123,7 @@ describe("exclusive clinical inference session", () => {
         "generated"
       )
     ).rejects.toThrow("délai prévu");
-    await vi.advanceTimersByTimeAsync(480001);
+    await vi.advanceTimersByTimeAsync(480_001);
     await rejected;
     expect(workers[0].terminate).toHaveBeenCalledOnce();
     expect(isClinicalModelReserved()).toBe(false);

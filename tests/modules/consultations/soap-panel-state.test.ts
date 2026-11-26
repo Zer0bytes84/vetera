@@ -53,23 +53,25 @@ const statuses = ["idle", "pending", "saving", "saved", "error"] as const;
 describe("note SOAP : l'indicateur « modifié » et la sauvegarde automatique, avant et après", () => {
   it("l'indicateur « modifié » est identique à l'ancienne formule sur toutes les combinaisons", () => {
     let n = 0;
-    for (const initialised of [false, true])
-      for (const saved of saveds)
+    for (const initialised of [false, true]) {
+      for (const saved of saveds) {
         for (const payload of payloads) {
           expect(isSoapUnsaved(initialised, saved, payload)).toBe(
             oldDirty(initialised, saved, payload)
           );
           n++;
         }
+      }
+    }
     expect(n).toBe(2 * saveds.length * payloads.length);
   });
 
   it("la sauvegarde automatique est due exactement quand l'ancien effet y arrivait", () => {
-    for (const initialised of [false, true])
-      for (const assistantOpen of [false, true])
-        for (const saveStatus of statuses)
-          for (const saved of saveds)
-            for (const payload of payloads)
+    for (const initialised of [false, true]) {
+      for (const assistantOpen of [false, true]) {
+        for (const saveStatus of statuses) {
+          for (const saved of saveds) {
+            for (const payload of payloads) {
               expect(
                 isSoapAutosaveDue({
                   initialised,
@@ -81,6 +83,11 @@ describe("note SOAP : l'indicateur « modifié » et la sauvegarde automatique, 
               ).toBe(
                 oldDue(initialised, assistantOpen, saveStatus, saved, payload)
               );
+            }
+          }
+        }
+      }
+    }
   });
 
   it("cas cliniques de référence", () => {

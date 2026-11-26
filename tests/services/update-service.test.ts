@@ -44,10 +44,10 @@ beforeEach(() => {
   settings.clear();
 });
 
-type Notice = {
+interface Notice {
   action: { onClick: () => void };
   cancel: { onClick: () => void };
-};
+}
 const flush = () => new Promise((resolve) => setTimeout(resolve, 0));
 const DISMISSED = "updates.dismissed_version";
 

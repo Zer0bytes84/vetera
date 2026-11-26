@@ -87,7 +87,9 @@ describe("prévision des encaissements du mois", () => {
       new Date(2026, 9, 29, 9, 0)
     );
     expect(forecast.kind).toBe("forecast");
-    if (forecast.kind !== "forecast") return;
+    if (forecast.kind !== "forecast") {
+      return;
+    }
     // 29 000 DA in 29 days: 1 000 DA a day, 31 000 DA over October.
     expect(forecast.projected).toBe(3_100_000);
     expect(forecast.previousTotal).toBe(3_000_000);

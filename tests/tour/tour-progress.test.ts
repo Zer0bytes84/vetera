@@ -397,7 +397,9 @@ describe("tour guidé : l'étape est-elle réellement faite ?", () => {
     const seen: number[] = [];
     for (let guard = 0; guard < 6; guard++) {
       const out = evaluateStep(state, snapshot);
-      if (!out.done) break;
+      if (!out.done) {
+        break;
+      }
       seen.push(state.step);
       state = advanceTour(state, out);
     }

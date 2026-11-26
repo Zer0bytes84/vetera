@@ -128,7 +128,9 @@ describe("la région d'annonce partagée", () => {
     const region = nodes["app-announcer"];
     expect(region.attrs["aria-live"]).toBe("polite");
     expect(region.textContent).toBe("");
-    for (const frame of frames) frame();
+    for (const frame of frames) {
+      frame();
+    }
     expect(region.textContent).toBe("Réponse affichée");
   });
 });

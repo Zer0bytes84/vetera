@@ -20,7 +20,7 @@ const lease: LicenseLease = {
   plan: "clinic",
   issuedAt: time,
   expiresAt: null,
-  leaseUntil: time + 7 * 86400000,
+  leaseUntil: time + 7 * 86_400_000,
 };
 function token(payload = lease) {
   const p = Buffer.from(JSON.stringify(payload)).toString("base64url");
@@ -40,7 +40,7 @@ describe("signed license lease", () => {
   it("rejects tampering and a different server key", async () => {
     const [p, s] = token().split(".");
     const edited = Buffer.from(
-      JSON.stringify({ ...lease, leaseUntil: time + 999999999 })
+      JSON.stringify({ ...lease, leaseUntil: time + 999_999_999 })
     ).toString("base64url");
     await expect(
       verifyLicenseLease(`${edited}.${s}`, publicKey, "device-1", lease.email)
@@ -63,10 +63,10 @@ describe("signed license lease", () => {
   it("rejects unlimited trials, overlong leases, and missing fields even when signed", async () => {
     for (const payload of [
       { ...lease, plan: "trial" },
-      { ...lease, leaseUntil: time + 8 * 86400000 },
+      { ...lease, leaseUntil: time + 8 * 86_400_000 },
       { ...lease, expiresAt: time + 100 },
       { ...lease, issuedAt: undefined },
-    ])
+    ]) {
       await expect(
         verifyLicenseLease(
           token(payload as LicenseLease),
@@ -75,6 +75,7 @@ describe("signed license lease", () => {
           lease.email
         )
       ).rejects.toThrow();
+    }
   });
   it("expires at the exact lease boundary without locally extending access", () => {
     expect(getLeaseTimeError(lease, lease.leaseUntil - 1)).toBeNull();
@@ -84,6 +85,8 @@ describe("signed license lease", () => {
     expect(
       getLeaseTimeError({ ...lease, expiresAt: time + 1000 }, time + 1000)
     ).toContain("expiré");
-    expect(getLeaseTimeError(lease, time, time + 3600000)).toContain("horloge");
+    expect(getLeaseTimeError(lease, time, time + 3_600_000)).toContain(
+      "horloge"
+    );
   });
 });

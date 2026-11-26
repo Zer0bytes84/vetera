@@ -12,7 +12,9 @@ import { appointment, clinic, line, NOW, patient } from "./fixtures";
  * drawn from the table's rows and adds up, to the centime, to the figure it names, which the table already adds up to.
  */
 const shown = (answer: Answer) => {
-  if (answer.kind !== "answer") throw new Error(`refus : ${answer.text}`);
+  if (answer.kind !== "answer") {
+    throw new Error(`refus : ${answer.text}`);
+  }
   return answer;
 };
 const sum = (points: { value: number }[]) =>
@@ -28,11 +30,11 @@ const day = (offset: number, hour = 10) =>
 describe("tranche 1 : cartes, graphiques, tableaux", () => {
   const cash = clinic({
     transactions: [
-      line("t1", "income", 150000, day(-1)),
+      line("t1", "income", 150_000, day(-1)),
       line("t2", "income", 2550, day(-12, 23)),
-      line("t3", "expense", 20000, day(-3)),
-      line("t4", "income", 99999, day(-200)),
-      line("t5", "expense", 12345, day(-29, 0)),
+      line("t3", "expense", 20_000, day(-3)),
+      line("t4", "income", 99_999, day(-200)),
+      line("t5", "expense", 12_345, day(-29, 0)),
     ],
   });
 
@@ -70,7 +72,7 @@ describe("tranche 1 : cartes, graphiques, tableaux", () => {
     expect(figure("income")).toBe(
       table.filter((amount) => amount > 0).reduce((a, b) => a + b, 0)
     );
-    expect(figure("income")).toBe(152550);
+    expect(figure("income")).toBe(152_550);
   });
 
   it("les recettes seules : la seule aire des encaissements", () => {
@@ -191,19 +193,22 @@ describe("tranche 1 : cartes, graphiques, tableaux", () => {
         explicit: true,
       });
       expect(buckets[0].first, String(days)).toBe("2026-01-01");
-      for (let i = 1; i < buckets.length; i++)
+      for (let i = 1; i < buckets.length; i++) {
         expect(buckets[i].first, `${days} jours, seau ${i}`).toBe(
           next(buckets[i - 1].last)
         );
-      if (unit === "semaine")
+      }
+      if (unit === "semaine") {
         expect(buckets.at(-1)!.first, `${days} jours`).not.toBe(
           buckets.at(-1)!.last
         );
-      if (unit === "semaine")
+      }
+      if (unit === "semaine") {
         expect(
           next(next(next(next(next(next(buckets.at(-1)!.first)))))),
           `${days} jours`
         ).toBe(buckets.at(-1)!.last);
+      }
     }
   });
 
@@ -234,8 +239,9 @@ describe("tranche 1 : cartes, graphiques, tableaux", () => {
         if (
           answerQuestion(question, clinic({ transactions: rows }), { now })
             .kind !== "answer"
-        )
+        ) {
           refused.push(`${now.toDateString()} · ${question}`);
+        }
       }
     }
     expect(refused).toEqual([]);

@@ -22,19 +22,23 @@ describe("thème Clean : finition mesurée", () => {
   it("existe et reste sous la portée Clean", () => {
     expect(CLEAN).toContain(MARK);
     FINISH.walkRules((rule) => {
-      for (const selector of rule.selectors)
+      for (const selector of rule.selectors) {
         expect(
           selector.trim().startsWith(':root[data-skin="clean"]'),
           selector
         ).toBe(true);
+      }
     });
   });
 
   it("ne pose aucun espacement hors de l'échelle 2 4 6 8 10 12 16 20 24 32 40 48", () => {
     const off: string[] = [];
     FINISH.walkDecls(/^(padding|margin|gap|row-gap|column-gap)/, (decl) => {
-      for (const px of pixels(decl.value))
-        if (!SPACE.has(px)) off.push(`${decl.prop}: ${decl.value}`);
+      for (const px of pixels(decl.value)) {
+        if (!SPACE.has(px)) {
+          off.push(`${decl.prop}: ${decl.value}`);
+        }
+      }
     });
     expect(off).toEqual([]);
   });
@@ -42,8 +46,11 @@ describe("thème Clean : finition mesurée", () => {
   it("ne pose aucun rayon hors de l'échelle 4 6 8 10 12", () => {
     const off: string[] = [];
     FINISH.walkDecls("border-radius", (decl) => {
-      for (const px of pixels(decl.value))
-        if (!RADIUS.has(px)) off.push(decl.value);
+      for (const px of pixels(decl.value)) {
+        if (!RADIUS.has(px)) {
+          off.push(decl.value);
+        }
+      }
     });
     expect(off).toEqual([]);
   });

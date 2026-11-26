@@ -105,8 +105,9 @@ describe("Documents issus de la note validée", () => {
     expect(rendered).not.toMatch(
       /normal|bonne santé|apte|mg\/kg|Valable 3 mois/i
     );
-    if (template.kind === "report")
+    if (template.kind === "report") {
       expect(rendered).toContain("Examen et observations\n\n");
+    }
   });
   it("copies a clinician's existing dose exactly, never calculating it from weight", () => {
     const plan = "Traitement saisi par le vétérinaire : 2,5 mg matin et soir.";

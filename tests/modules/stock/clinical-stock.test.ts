@@ -197,13 +197,13 @@ it("origine rejouée : même mouvement, conflit de quantité refusé", async () 
   ).toBe(9.9);
 });
 it("quantités absentes, négatives, infinies ou trop précises refusées", async () => {
-  for (const quantity of [0, -1, NaN, Infinity, 0.0000001]) {
+  for (const quantity of [0, -1, NaN, Infinity, 0.000_000_1]) {
     expect(() => stockQuantity(quantity)).toThrow(StockError);
     await expect(
       store.create({ ...draft, productQuantity: quantity }, "vet")
     ).rejects.toThrow(StockError);
   }
-  expect(stockQuantity(0.000001)).toBe(0.000001);
+  expect(stockQuantity(0.000_001)).toBe(0.000_001);
   expect(db.prepare("SELECT * FROM care_tasks").all()).toHaveLength(0);
 });
 it("un produit supprimé ou archivé ne peut pas être lié à un nouveau soin", async () => {

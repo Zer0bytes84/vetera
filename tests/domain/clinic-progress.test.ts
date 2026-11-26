@@ -35,7 +35,7 @@ const transaction = (
   type: Transaction["type"]
 ): Transaction => ({
   id: `${type}-${status}`,
-  amount: 10000,
+  amount: 10_000,
   category: "Consultation",
   description: "Paiement",
   method: "cash",

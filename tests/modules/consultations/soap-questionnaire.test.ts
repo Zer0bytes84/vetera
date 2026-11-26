@@ -7,7 +7,7 @@ import {
 } from "@/modules/consultations/assistant-events";
 import {
   SOAP_QUESTIONNAIRE_STEPS,
-  SoapQuestionnaireStep,
+  type SoapQuestionnaireStep,
 } from "@/modules/consultations/local-ai/soap-questionnaire-config";
 
 describe("SOAP Questionnaire Config", () => {

@@ -24,8 +24,9 @@ describe("actions rapides", () => {
       "product",
       "invoice",
     ]);
-    for (const shortcut of QUICK_ACTIONS)
+    for (const shortcut of QUICK_ACTIONS) {
       expect(menu).toMatch(new RegExp(`\\n\\s*${shortcut.id}: `));
+    }
     expect(menu).toContain("QUICK_ACTIONS.map");
   });
 

@@ -32,8 +32,9 @@ describe("courbe lissée monotone", () => {
       [40, 10],
     ] as const;
     const d = monotonePath(points);
-    for (const [x, y] of points)
+    for (const [x, y] of points) {
       expect(d).toContain(`${x.toFixed(1)},${y.toFixed(1)}`);
+    }
   });
 
   it("ne dépasse jamais la ligne de base ni le pic (pas de rebond)", () => {

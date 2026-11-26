@@ -3,7 +3,7 @@ import {
   assertCreditWithinRemaining,
   assertPaymentWithinBalance,
   assertRefundWithinAvailable,
-  BillingDomainError,
+  type BillingDomainError,
   calculateInvoiceBalance,
   calculateLineAmounts,
   deriveInvoiceSettlementStatus,
@@ -75,7 +75,7 @@ describe("billing money arithmetic", () => {
       calculateLineAmounts({
         quantityMilli: 1000,
         unitAmount: 100,
-        discountBps: 10001,
+        discountBps: 10_001,
         taxBps: 0,
       })
     ).toThrowError(
@@ -102,11 +102,11 @@ describe("billing settlement ledger", () => {
     expect(
       calculateInvoiceBalance({
         grossAmount: 10_000,
-        issuedCreditAmount: 1_000,
-        completedPaymentAmount: 5_000,
+        issuedCreditAmount: 1000,
+        completedPaymentAmount: 5000,
         completedRefundAmount: 500,
       })
-    ).toBe(4_500);
+    ).toBe(4500);
   });
 
   it("derives open, partial, paid, overdue, and credited without storing settlement", () => {
@@ -124,7 +124,7 @@ describe("billing settlement ledger", () => {
     expect(
       deriveInvoiceSettlementStatus(
         "issued",
-        { ...base, completedPaymentAmount: 2_500 },
+        { ...base, completedPaymentAmount: 2500 },
         null,
         now
       )
@@ -148,7 +148,7 @@ describe("billing settlement ledger", () => {
     expect(
       deriveInvoiceSettlementStatus(
         "issued",
-        { ...base, completedPaymentAmount: 2_500 },
+        { ...base, completedPaymentAmount: 2500 },
         "2026-07-31T12:00:00.000Z",
         now
       )
@@ -165,22 +165,22 @@ describe("billing settlement ledger", () => {
   });
 
   it("enforces payment, credit, and refund ceilings", () => {
-    expect(() => assertPaymentWithinBalance(1_001, 1_000)).toThrowError(
+    expect(() => assertPaymentWithinBalance(1001, 1000)).toThrowError(
       expect.objectContaining<Partial<BillingDomainError>>({
         code: "PAYMENT_EXCEEDS_BALANCE",
       })
     );
-    expect(() => assertCreditWithinRemaining(1_001, 1_000)).toThrowError(
+    expect(() => assertCreditWithinRemaining(1001, 1000)).toThrowError(
       expect.objectContaining<Partial<BillingDomainError>>({
         code: "CREDIT_EXCEEDS_REMAINING",
       })
     );
-    expect(() => assertRefundWithinAvailable(1_001, 1_000)).toThrowError(
+    expect(() => assertRefundWithinAvailable(1001, 1000)).toThrowError(
       expect.objectContaining<Partial<BillingDomainError>>({
         code: "REFUND_EXCEEDS_AVAILABLE",
       })
     );
-    expect(() => assertPaymentWithinBalance(0, 1_000)).toThrowError(
+    expect(() => assertPaymentWithinBalance(0, 1000)).toThrowError(
       expect.objectContaining<Partial<BillingDomainError>>({
         code: "AMOUNT_INVALID",
       })

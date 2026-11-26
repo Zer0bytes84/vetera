@@ -55,7 +55,7 @@ import { type CardState, pendingProposal } from "./pending-proposal";
 import { saveProposal } from "./save-proposal";
 import type { Answer, AnswerColumn, CellKind, Proposal } from "./types";
 
-export type Turn = {
+export interface Turn {
   id: string;
   question: string;
   at: string;
@@ -63,7 +63,7 @@ export type Turn = {
   answer: Answer;
   receipt?: ReadReceipt;
   tasksRead?: Task[];
-};
+}
 
 const confirmLabelOf = (proposal: Proposal) =>
   proposal.tasks.length > 1
@@ -122,11 +122,11 @@ const clock = (value: string | Date) =>
 const plural = (count: number, one: string, many: string) =>
   `${count} ${count > 1 ? many : one}`;
 
-type Props = {
+interface Props {
   /** The record open behind the panel: « ce patient » in a question means this one. */
   patientId?: string;
   renderAvatar?: (message: ThreadMessage) => ReactNode;
-};
+}
 
 export function ClinicAnswers({ patientId, renderAvatar }: Props) {
   // The tasks store serves only the card's write (and its check for tasks already open); answers never read from it.

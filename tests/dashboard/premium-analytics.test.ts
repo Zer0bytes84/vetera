@@ -103,17 +103,17 @@ describe("métriques réelles, sans séries de démonstration", () => {
   it("compte les mouvements payés en centimes, pas les écritures en attente ni futures", () => {
     const data = empty();
     data.transactions = [
-      movement("a", "2026-10-15", 150000),
-      movement("b", "2026-10-14", 100000),
-      movement("c", "2026-10-15", 20000, "expense"),
-      movement("d", "2026-10-15", 90000, "income", "pending"),
-      movement("e", "2026-10-16", 500000),
+      movement("a", "2026-10-15", 150_000),
+      movement("b", "2026-10-14", 100_000),
+      movement("c", "2026-10-15", 20_000, "expense"),
+      movement("d", "2026-10-15", 90_000, "income", "pending"),
+      movement("e", "2026-10-16", 500_000),
     ];
     expect(buildPremiumAnalytics(data, "today", now).cash).toEqual({
-      income: 150000,
-      expense: 20000,
-      net: 130000,
-      previous: 100000,
+      income: 150_000,
+      expense: 20_000,
+      net: 130_000,
+      previous: 100_000,
       change: 50,
     });
   });
@@ -138,7 +138,7 @@ describe("métriques réelles, sans séries de démonstration", () => {
   });
   it("le choix commun met à jour les trois métriques", () => {
     const data = empty();
-    data.transactions = [movement("a", "2026-10-10", 20000)];
+    data.transactions = [movement("a", "2026-10-10", 20_000)];
     data.appointments = [visit("a", "a", "2026-10-10")];
     data.tasks = [
       {
@@ -168,7 +168,7 @@ describe("métriques réelles, sans séries de démonstration", () => {
       today.actions.count,
     ]).toEqual([0, 0, 0]);
     expect([week.cash.income, week.patients.count, week.actions.count]).toEqual(
-      [20000, 1, 1]
+      [20_000, 1, 1]
     );
     expect(week.actions).toMatchObject({ urgent: 1, tasks: 1, reminders: 0 });
   });
@@ -238,8 +238,8 @@ describe("projection d’affichage TEST ZO", () => {
         { id: "invoice", ownerId: "owner", patientId: "test" },
       ] as Invoice[],
       transactions: [
-        { ...movement("pay", "2026-10-15", 10000), sourceId: "invoice" },
-        movement("real-pay", "2026-10-15", 20000),
+        { ...movement("pay", "2026-10-15", 10_000), sourceId: "invoice" },
+        movement("real-pay", "2026-10-15", 20_000),
       ],
     };
     const snapshot = JSON.stringify(data);

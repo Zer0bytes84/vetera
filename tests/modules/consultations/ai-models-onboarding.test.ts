@@ -180,8 +180,9 @@ it("propage l’accès refusé et n’enregistre jamais la clé de téléchargem
   ).rejects.toEqual(error);
   expect(download).toHaveBeenCalledWith(undefined, "test-ephemeral-key");
   expect(hasCompletedAIOnboarding()).toBe(false);
-  for (let index = 0; index < disk.length; index++)
+  for (let index = 0; index < disk.length; index++) {
     expect(disk.getItem(disk.key(index)!)).not.toContain("test-ephemeral-key");
+  }
 });
 
 it("annule avant de télécharger lorsque le signal est déjà arrêté", async () => {

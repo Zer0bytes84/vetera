@@ -144,7 +144,7 @@ describe("heures affichées et créneau cliqué", () => {
     expect(slotAt(0, 56, 7, 20)).toBe(420);
     expect(slotAt(56 + 40, 56, 7, 20)).toBe(8 * 60 + 30);
     expect(slotAt(-50, 56, 7, 20)).toBe(420);
-    expect(slotAt(99999, 56, 7, 20)).toBe(20 * 60 - 30);
+    expect(slotAt(99_999, 56, 7, 20)).toBe(20 * 60 - 30);
   });
 });
 
@@ -211,8 +211,9 @@ describe("axe du temps élastique : l'heure s'étend pour tout montrer", () => {
       blocks.every((b) => b.stacked && b.columns === 1 && b.height >= 24)
     ).toBe(true);
     const tops = blocks.map((b) => b.top).sort((a, b) => a - b);
-    for (let i = 1; i < tops.length; i += 1)
+    for (let i = 1; i < tops.length; i += 1) {
       expect(tops[i] - tops[i - 1]).toBeGreaterThanOrEqual(ROW_PX);
+    }
     // Chaque bloc reste dans la grille.
     expect(
       Math.max(...blocks.map((b) => b.top + b.height))
@@ -264,8 +265,9 @@ describe("axe du temps élastique : l'heure s'étend pour tout montrer", () => {
     ]);
     const tops = g.days[0].map((b) => b.top).sort((a, b) => a - b);
     expect(new Set(tops).size).toBe(16);
-    for (let i = 1; i < tops.length; i += 1)
+    for (let i = 1; i < tops.length; i += 1) {
       expect(tops[i] - tops[i - 1]).toBeGreaterThanOrEqual(ROW_PX);
+    }
   });
   it("retrouve la minute sous un clic, grille élastique comprise", () => {
     const g = grid([crowd(10)]);

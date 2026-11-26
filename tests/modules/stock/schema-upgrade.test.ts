@@ -30,7 +30,9 @@ function database() {
 }
 
 afterEach(() => {
-  for (const connection of connections) connection.close();
+  for (const connection of connections) {
+    connection.close();
+  }
   connections.length = 0;
 });
 

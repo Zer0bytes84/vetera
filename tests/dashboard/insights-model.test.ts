@@ -37,11 +37,11 @@ describe("Dashboard insights", () => {
     const data = buildDashboardInsights(
       [],
       [
-        transaction("2026-09-30T09:00:00", 120050),
-        transaction("2026-09-10T09:00:00", 45000, "expense"),
-        transaction("2026-09-10T09:00:00", 99900, "income", "pending"),
-        transaction("2026-10-01T09:00:00", 99900),
-        transaction("2025-09-30T09:00:00", 99900),
+        transaction("2026-09-30T09:00:00", 120_050),
+        transaction("2026-09-10T09:00:00", 45_000, "expense"),
+        transaction("2026-09-10T09:00:00", 99_900, "income", "pending"),
+        transaction("2026-10-01T09:00:00", 99_900),
+        transaction("2025-09-30T09:00:00", 99_900),
       ],
       reference,
       84

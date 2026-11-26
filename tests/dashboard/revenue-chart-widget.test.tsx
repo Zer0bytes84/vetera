@@ -7,7 +7,7 @@ const points: FocusPoint[] = [
   {
     label: "1 oct.",
     long: "jeu. 1 octobre 2026",
-    receipts: 12000,
+    receipts: 12_000,
     visits: 2,
     previousReceipts: 6000,
     previousVisits: 1,
@@ -15,7 +15,7 @@ const points: FocusPoint[] = [
   {
     label: "2 oct.",
     long: "ven. 2 octobre 2026",
-    receipts: 14700,
+    receipts: 14_700,
     visits: 4,
     previousReceipts: 0,
     previousVisits: 0,
@@ -56,8 +56,9 @@ it("propose courbe, barres, aires et la répartition par type d'acte, sur les m�
     "Barres",
     "Aires",
     "Répartition des consultations par type d’acte",
-  ])
+  ]) {
     expect(html).toContain(`aria-label="${label}"`);
+  }
   expect(html.match(/aria-pressed="false"/g)?.length).toBeGreaterThanOrEqual(3);
 });
 it("garde le sélecteur de période et le pied (prévision du mois, lien Finances)", () => {

@@ -43,7 +43,7 @@ import { formatNumber } from "@/utils/display-format";
  */
 export type StatTone = "green" | "blue" | "violet" | "amber" | "rose";
 
-export type Stat = {
+export interface Stat {
   id: string;
   label: string;
   /** Preformatted value, e.g. "26 700 DA" or "1 204". Rolls when it changes. */
@@ -66,9 +66,9 @@ export type Stat = {
   emphasize?: boolean;
   /** The name of the card when it is clickable. */
   ariaLabel?: string;
-};
+}
 
-export type StatGridProps = {
+export interface StatGridProps {
   data: Stat[];
   title?: string;
   subtitle?: string;
@@ -97,7 +97,7 @@ export type StatGridProps = {
   loadingRevealed?: boolean;
   loadingLabel?: string;
   className?: string;
-};
+}
 
 export function StatGrid({
   data,

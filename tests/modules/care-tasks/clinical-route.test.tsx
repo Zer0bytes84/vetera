@@ -1,4 +1,3 @@
-import React from "react";
 import { renderToReadableStream } from "react-dom/server";
 import { expect, it, vi } from "vitest";
 

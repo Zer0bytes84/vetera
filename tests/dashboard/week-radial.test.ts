@@ -28,7 +28,7 @@ const income = (
 describe("« Cette semaine » : les faits, identiques à ceux d'avant", () => {
   it("recettes et consultations de la semaine, avec la semaine d'avant sur la même durée", () => {
     const transactions = [
-      income("2026-11-03", 10000),
+      income("2026-11-03", 10_000),
       income("2026-11-06", 3900),
       income("2026-10-28", 5400),
       income("2026-11-02", 700, "pending"),
@@ -42,7 +42,7 @@ describe("« Cette semaine » : les faits, identiques à ceux d'avant", () => {
       appt(at(27, 9, 0, 9), "cancelled"),
     ];
     const f = buildWeekFacts({ transactions, appointments, invoices: [], now });
-    expect(f.income).toBe(13900);
+    expect(f.income).toBe(13_900);
     expect(f.visits).toBe(3); // dimanche 8 est après ce soir : pas encore dans la semaine
     expect(f.previousIncome).toBe(5400);
     expect(f.previousVisits).toBe(1);
@@ -83,7 +83,7 @@ describe("« Cette semaine » : les faits, identiques à ceux d'avant", () => {
         documentStatus: "issued",
         issuedAt: "2026-10-01",
         createdAt: "x",
-        grossAmount: 10000,
+        grossAmount: 10_000,
         creditAmount: 0,
         balanceAmount: 2500,
         settlementStatus: "unpaid",

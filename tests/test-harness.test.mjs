@@ -52,8 +52,9 @@ function response() {
 const call = async (state, options) => {
   const res = response();
   handleHarnessRequest(request(options), res, state);
-  for (let i = 0; i < 50 && !res.finished; i += 1)
+  for (let i = 0; i < 50 && !res.finished; i += 1) {
     await new Promise((r) => setTimeout(r, 5));
+  }
   return res;
 };
 
@@ -192,8 +193,9 @@ describe("le pilote de test : la file de tâches", () => {
 
   it("ignore tout fichier dont le nom n'est pas un numéro", async () => {
     const state = createHarnessState(path.join(folder(), "h"));
-    for (const name of ["abc.js", "..js", ".5.tmp", "5.txt", "5.js.bak"])
+    for (const name of ["abc.js", "..js", ".5.tmp", "5.txt", "5.js.bak"]) {
       writeFileSync(path.join(state.jobs, name), "return 1");
+    }
     expect((await call(state, { token: state.token })).statusCode).toBe(204);
   });
 
@@ -309,8 +311,9 @@ describe("le pilote de test : le script injecté dans la page", () => {
       "toasts",
       "waitFor",
       "tauri",
-    ])
+    ]) {
       expect(source).toContain(`${name}:`);
+    }
     expect(source).toContain("unhandledrejection");
     expect(source).toContain("console.");
   });
@@ -437,8 +440,9 @@ describe("le pilote de test : les aides, exécutées pour de bon", () => {
 
   it("errors(true) vide le tampon, et le tampon ne grossit pas sans fin", () => {
     const { H, listeners } = pageWith();
-    for (let i = 0; i < 350; i += 1)
+    for (let i = 0; i < 350; i += 1) {
       listeners.error[0]({ message: `e${i}`, filename: "f", lineno: i });
+    }
     const all = H.errors();
     expect(all).toHaveLength(200);
     expect(all[0].message).toContain("e150");

@@ -47,7 +47,7 @@ import "./data-table.css";
 
 export type DataRow = { id: string } & Record<string, string | number | null>;
 
-export type DataColumn<R extends DataRow = DataRow> = {
+export interface DataColumn<R extends DataRow = DataRow> {
   key: keyof R & string;
   label: string;
   align?: "left" | "right";
@@ -63,7 +63,7 @@ export type DataColumn<R extends DataRow = DataRow> = {
   hideLabel?: boolean;
   /** Which columns survive a narrow table: 1 always, 2 hides below a 28rem-wide table, 3 below 36rem. */
   priority?: 1 | 2 | 3;
-};
+}
 
 const hideBelow = {
   1: "",
@@ -73,7 +73,7 @@ const hideBelow = {
 const priorityOf = (c: { priority?: 1 | 2 | 3 }, i: number) =>
   hideBelow[c.priority ?? (i < 2 ? 1 : i < 4 ? 2 : 3)];
 
-export type DataTableProps<R extends DataRow = DataRow> = {
+export interface DataTableProps<R extends DataRow = DataRow> {
   data: R[];
   columns: DataColumn<R>[];
   title: string;
@@ -119,7 +119,7 @@ export type DataTableProps<R extends DataRow = DataRow> = {
   skeletonKey?: string;
   /** The place reserved before anything is remembered. */
   skeletonFallback?: RememberedRows;
-};
+}
 
 export type Sort = { key: string; dir: "asc" | "desc" } | null;
 

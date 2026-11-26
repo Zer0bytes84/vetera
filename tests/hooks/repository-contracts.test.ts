@@ -30,14 +30,17 @@ function readHook<T>(factory: () => T): T {
 
 describe("repository public contracts", () => {
   for (const [name, factory] of Object.entries(repositories)) {
-    if (!name.startsWith("use") || typeof factory !== "function") continue;
+    if (!name.startsWith("use") || typeof factory !== "function") {
+      continue;
+    }
     it(`${name} preserves its common store API`, () => {
       const result = readHook(factory as () => Record<string, unknown>);
       expect(Array.isArray(result.data)).toBe(true);
       expect(typeof result.loading).toBe("boolean");
       expect(typeof result.isRefreshing).toBe("boolean");
-      for (const method of ["add", "update", "remove", "set", "refresh"])
+      for (const method of ["add", "update", "remove", "set", "refresh"]) {
         expect(typeof result[method], `${name}.${method}`).toBe("function");
+      }
     });
   }
   it("retains domain workflow methods", () => {

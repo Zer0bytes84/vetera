@@ -89,8 +89,9 @@ describe("assistant documents", () => {
       new Date("2026-09-21T10:00:00Z")
     );
     expect(output).toContain("Prochain");
-    for (const excluded of ["Annulé", "Autre", "Passé"])
+    for (const excluded of ["Annulé", "Autre", "Passé"]) {
       expect(output).not.toContain(excluded);
+    }
   });
   it("never claims the message was sent", () => {
     expect(buildAssistantDocument("email", record)).toContain(

@@ -78,7 +78,9 @@ describe("barre latérale : charte", () => {
   it("la variante Tailwind dark s'arrête à une barre forcée claire, sans changer de spécificité", () => {
     let variant = "";
     css("src/index.css").walkAtRules("custom-variant", (rule) => {
-      if (rule.params.startsWith("dark")) variant = selectorText(rule.params);
+      if (rule.params.startsWith("dark")) {
+        variant = selectorText(rule.params);
+      }
     });
     expect(
       variant.startsWith(
@@ -135,10 +137,11 @@ describe("barre latérale : charte", () => {
       selector.includes('[data-sidebar="sidebar"][data-mobile="true"]')
     );
     expect(sidebar.length).toBe(5);
-    for (const selector of sidebar)
+    for (const selector of sidebar) {
       expect(selector.startsWith(`:root[data-skin="clean"]${GUARD}`)).toBe(
         true
       );
+    }
     let chrome = "";
     css("src/design-system/clean.css").walkRules((rule) => {
       if (

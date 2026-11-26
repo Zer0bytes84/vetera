@@ -435,7 +435,7 @@ it.each([
 ])("protège une facture avec %s et laisse tout intact avec une erreur en français", async (kind) => {
   const task = await completed();
   const invoice = await issued(task.id);
-  if (kind === "règlement")
+  if (kind === "règlement") {
     await recordPayment({
       invoiceId: invoice.id,
       idempotencyKey: "paid",
@@ -443,7 +443,7 @@ it.each([
       method: "cash",
       paidAt: now,
     });
-  else
+  } else {
     await issueCreditNote({
       invoiceId: invoice.id,
       idempotencyKey: "credit",
@@ -457,6 +457,7 @@ it.each([
         },
       ],
     });
+  }
   const before = snapshot();
   await expect(
     store.undoCompletion(task.id, "vet", "Erreur", 0)

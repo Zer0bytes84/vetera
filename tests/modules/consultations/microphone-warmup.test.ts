@@ -6,7 +6,7 @@ import {
   MICROPHONE_WARMUP,
 } from "@/modules/consultations/local-ai/microphone-warmup";
 
-const CHUNK = 4096 / 48000;
+const CHUNK = 4096 / 48_000;
 const rms = (db: number) => 10 ** (db / 20);
 /** Chunks of 4096 samples at 48 kHz, with the level each one is recorded at. */
 function feed(profile: (seconds: number) => number, until = 8) {
@@ -16,7 +16,9 @@ function feed(profile: (seconds: number) => number, until = 8) {
       seconds < 0.05 ? 0 : rms(profile(seconds)),
       seconds
     );
-    if (result.state === "stable") return result;
+    if (result.state === "stable") {
+      return result;
+    }
   }
   return null;
 }
@@ -151,9 +153,10 @@ vi.mock("@/modules/consultations/local-ai/audio-capture", () => ({
   ) => {
     fixture.options.push(options);
     // The measured profile, recorded as soon as the capture runs.
-    for (let seconds = CHUNK; seconds <= 4.5; seconds += CHUNK)
+    for (let seconds = CHUNK; seconds <= 4.5; seconds += CHUNK) {
       options.onLevel?.(rms(seconds < 3.4 ? -62 : -43), seconds);
-    return { stop: () => new Float32Array(16000), cancel: () => {} };
+    }
+    return { stop: () => new Float32Array(16_000), cancel: () => {} };
   },
 }));
 vi.mock("@/modules/consultations/local-ai/whisper-session", () => ({

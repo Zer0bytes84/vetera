@@ -35,8 +35,9 @@ describe("note du cas de référence dictée par rubriques", () => {
     expect(scaffold.objective.startsWith("Température 38.5 °C")).toBe(true);
     expect(scaffold.assessment).toBe(answers.assessment);
     // Les phrases de posologie ne sont jamais montrées au modèle.
-    for (const value of Object.values(scaffold))
+    for (const value of Object.values(scaffold)) {
       expect(containsDosage(value)).toBe(false);
+    }
   });
 
   it("les phrases écartées du modèle reviennent mot pour mot dans la rubrique où elles ont été dictées", () => {

@@ -12,18 +12,20 @@ import "./loading-skeleton.css";
  * from assistive tech; when the content arrives, `doneLabel` is announced once.
  */
 
-type Props = {
+interface Props {
   busy?: boolean;
   label: string;
   doneLabel?: string;
   className?: string;
   children?: ReactNode;
-};
+}
 
 function useDoneAnnouncement(busy: boolean, doneLabel?: string) {
   const wasBusy = useRef(busy);
   useEffect(() => {
-    if (wasBusy.current && !busy && doneLabel) announce(doneLabel);
+    if (wasBusy.current && !busy && doneLabel) {
+      announce(doneLabel);
+    }
     wasBusy.current = busy;
   }, [busy, doneLabel]);
 }
@@ -164,17 +166,19 @@ export function SkeletonRegion({
     { rows: 1, rowHeight: fallbackHeight },
     "block"
   );
-  if (!busy)
+  if (!busy) {
     return (
       <div className={className} data-skeleton-region={memoryKey} ref={measure}>
         {children}
       </div>
     );
+  }
   // Empty last time: nothing to hold, nothing drawn (a class such as `empty:hidden` keeps the layout the same).
-  if (reserved.rowHeight === 0)
+  if (reserved.rowHeight === 0) {
     return (
       <div className={className} data-skeleton-region={memoryKey} hidden />
     );
+  }
   const lines = Math.max(1, Math.floor((reserved.rowHeight - 16) / 64));
   return (
     <div

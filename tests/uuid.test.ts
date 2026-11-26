@@ -15,10 +15,11 @@ it("génère des UUID v4 uniques sans randomUUID, avec une source cryptographiqu
   });
   const ids = Array.from({ length: 1000 }, createUuid);
   expect(new Set(ids).size).toBe(ids.length);
-  for (const id of ids)
+  for (const id of ids) {
     expect(id).toMatch(
       /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/
     );
+  }
 });
 it("refuse de remplacer l’aléatoire sécurisé par Math.random", () => {
   vi.stubGlobal("crypto", undefined);

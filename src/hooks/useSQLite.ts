@@ -105,12 +105,12 @@ const invalidateTableRows = (tableName: string) => {
   tableRowsCache.delete(tableName);
 };
 
-type SQLiteChangedDetail = {
+interface SQLiteChangedDetail {
   tableName: string;
   cacheFresh?: boolean;
   cacheInvalidated?: boolean;
   sourceId?: string;
-};
+}
 
 // External writes (imports, authentication, invoicing) must invalidate even
 // when no consumer of that table is mounted. Invalidate once per event, before
@@ -275,7 +275,7 @@ const normalizeDbPayloadToExistingColumns = (
   payload: Record<string, unknown>,
   availableColumns: Set<string>
 ) => {
-  const mappedEntries: Array<[string, unknown]> = [];
+  const mappedEntries: [string, unknown][] = [];
   for (const [key, value] of Object.entries(payload)) {
     // A patient's reference is read from its own table and is never written back.
     if (key === "reference" && !availableColumns.has(key)) {
@@ -321,11 +321,11 @@ const normalizeBooleanFields = (
   return next;
 };
 
-export type SQLiteWriteStatus = {
+export interface SQLiteWriteStatus {
   pending: number;
   error: string | null;
   savedAt: number | null;
-};
+}
 let writeStatus: SQLiteWriteStatus = { pending: 0, error: null, savedAt: null };
 const writeListeners = new Set<() => void>();
 export const getSQLiteWriteStatus = () => writeStatus;

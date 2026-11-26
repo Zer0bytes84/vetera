@@ -145,10 +145,11 @@ describe("Migration et administration des modèles", () => {
     expect(new Set(templates.map((entry) => entry.kind))).toEqual(
       new Set(["prescription", "certificate", "report", "referral"])
     );
-    for (const old of DEFAULT_DOCUMENT_TEMPLATES)
+    for (const old of DEFAULT_DOCUMENT_TEMPLATES) {
       expect(templates.find((entry) => entry.id === old.id)?.body).toBe(
         old.body
       );
+    }
   });
   it("leaves legacy generated notes and custom template overrides unchanged", async () => {
     const isolated = new DatabaseSync(":memory:");
@@ -306,8 +307,11 @@ describe("Migration et administration des modèles", () => {
       );
       expect(result.content).toContain("Prescription du 17/10/2026");
     } finally {
-      if (original) process.env.TZ = original;
-      else delete process.env.TZ;
+      if (original) {
+        process.env.TZ = original;
+      } else {
+        delete process.env.TZ;
+      }
     }
   });
   it("forbids deleting a used template through both service and SQLite", async () => {
@@ -378,8 +382,9 @@ describe("Génération, relecture et traçabilité", () => {
       "document-report",
       "admin"
     );
-    for (const value of Object.values(fields))
+    for (const value of Object.values(fields)) {
       expect(report.content).toContain(value);
+    }
     const certificate = await store.prepare(
       "visit",
       "rex",

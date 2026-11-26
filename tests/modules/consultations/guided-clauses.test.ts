@@ -92,11 +92,14 @@ describe("dictée transcrite sans points : filtre des posologies par proposition
     );
     const unchanged = mergeGuidedProtected(scaffold, routed);
     for (const key of KEYS) {
-      if (routed[key].trim()) expect(scaffold[key].trim()).not.toBe("");
-      if (!routed[key].trim())
+      if (routed[key].trim()) {
+        expect(scaffold[key].trim()).not.toBe("");
+      }
+      if (!routed[key].trim()) {
         expect(sections[key].mode === "exclue").toBe(
           Boolean(answers[key as keyof typeof answers].trim())
         );
+      }
       expect(containsDosage(scaffold[key])).toBe(false);
       // Filtrée par proposition : la rubrique revient telle que dictée, mot pour
       // mot et dans l'ordre. Filtrée par phrase : comme avant ce correctif.
@@ -145,8 +148,9 @@ describe("dictée transcrite sans points : filtre des posologies par proposition
     const { sections, scaffold, restored } = draftWithFaithfulModel(answers);
     expect(sections.plan.mode).toBe("proposition");
     expect(scaffold.plan).toContain("Nettoyage du conduit au cabinet");
-    for (const dose of ["5 gouttes", "2 fois", "10 jours"])
+    for (const dose of ["5 gouttes", "2 fois", "10 jours"]) {
       expect(scaffold.plan).not.toContain(dose);
+    }
     expect(containsDosage(scaffold.plan)).toBe(false);
     expect(restored.plan).toBe(plan);
   });

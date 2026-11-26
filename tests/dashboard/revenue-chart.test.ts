@@ -107,7 +107,7 @@ describe("chiffres du graphique : ceux que le graphique a toujours affichés", (
     expect(count(1)).toMatch(/^1 consultation$/);
     expect(count(2)).toMatch(/consultations$/);
     expect(count(0)).toMatch(/^0 consultation$/);
-    expect(compactMoney(15000)).toBe(
+    expect(compactMoney(15_000)).toBe(
       `${formatNumber(15, { maximumFractionDigits: 1 })} k`
     );
     expect(compactMoney(950)).toBe(formatNumber(950));
@@ -141,10 +141,11 @@ describe("répartition des consultations par type d'acte", () => {
     );
   });
   it("le détail donne le nombre et la part, comme la carte Consultations", () => {
-    for (const row of kinds)
+    for (const row of kinds) {
       expect(donut.find((s) => s.id === row.key)?.detail).toBe(
         `${formatNumber(row.count)} · ${row.share} %`
       );
+    }
     expect(kinds.reduce((n, row) => n + row.share, 0)).toBe(100);
   });
   it("sans consultation, aucune part", () => {

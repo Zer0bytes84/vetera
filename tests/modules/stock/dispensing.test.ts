@@ -239,8 +239,9 @@ it("échec de facture : tout revient à l’état initial, réessai possible", a
     "stock_movements",
     "invoices",
     "prescription_dispensations",
-  ])
+  ]) {
     expect(connection.prepare(`SELECT * FROM ${table}`).all()).toHaveLength(0);
+  }
   connection.exec("DROP TRIGGER fail_invoice");
   await transaction(() => dispensePrescriptionInDatabase(db, input, id, now));
   expect(

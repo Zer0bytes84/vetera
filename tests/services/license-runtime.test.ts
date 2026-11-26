@@ -9,7 +9,9 @@ const mock = vi.hoisted(() => ({
 }));
 vi.mock("@/services/appSettingsService", () => ({
   getLicenseInfo: async () => {
-    if (mock.state === "locked") throw new Error("database is locked");
+    if (mock.state === "locked") {
+      throw new Error("database is locked");
+    }
     return mock.state;
   },
   saveLicenseState: async (state: any) => {
@@ -59,7 +61,7 @@ const lease = {
   plan: "clinic",
   issuedAt: now - 1000,
   expiresAt: null,
-  leaseUntil: now + 86400000,
+  leaseUntil: now + 86_400_000,
 };
 beforeEach(() => {
   resetLicenseRuntimeCache();
@@ -102,7 +104,7 @@ describe("license access lifecycle", () => {
     mock.verify.mockResolvedValue({ ...lease, leaseUntil: now });
     expect((await checkLicenseAccess()).allowed).toBe(false);
     mock.verify.mockResolvedValue(lease);
-    mock.state.lastSeen = now + 3600000;
+    mock.state.lastSeen = now + 3_600_000;
     expect((await checkLicenseAccess()).message).toContain("horloge");
   });
   it("requires an online migration for legacy unsigned activation", async () => {

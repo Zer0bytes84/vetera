@@ -25,8 +25,12 @@ function oldDelta(
   current: number,
   inverse = false
 ) {
-  if (previous === 0 && current === 0) return { kind: "nothing" as const };
-  if (value === null && previous === 0) return { kind: "no-base" as const };
+  if (previous === 0 && current === 0) {
+    return { kind: "nothing" as const };
+  }
+  if (value === null && previous === 0) {
+    return { kind: "no-base" as const };
+  }
   const computed =
     value ??
     Math.round(((current - previous) / Math.abs(previous)) * 1000) / 10;
@@ -57,26 +61,31 @@ describe("badge d'écart : un sur chaque carte, avec les règles de l'ancienne r
     expect(changeBadge(null, 5, 0, n)).toEqual({ delta: -100 });
   });
   it("coïncide avec l'ancienne règle partout où il y avait un pourcentage, sens compris", () => {
-    for (const previous of [1, 2, 5, 40])
-      for (const current of [0, 1, 3, 5, 100])
+    for (const previous of [1, 2, 5, 40]) {
+      for (const current of [0, 1, 3, 5, 100]) {
         for (const inverse of [false, true]) {
           const change = ((current - previous) / Math.abs(previous)) * 100;
           const old = oldDelta(change, previous, current, inverse);
           const now = changeBadge(change, previous, current, n);
           expect(old.kind).toBe("pct");
-          if (old.kind !== "pct") continue;
+          if (old.kind !== "pct") {
+            continue;
+          }
           expect(now.delta).toBe(old.computed);
           const flat = now.delta === 0;
           const good = !flat && now.delta > 0 === !inverse;
           expect(flat ? "neutral" : good ? "good" : "bad").toBe(old.sense);
         }
+      }
+    }
   });
   it("toujours un nombre, jamais NaN ni infini, même sur des bases extrêmes", () => {
-    for (const previous of [0, 0.01, 1, 1e9])
+    for (const previous of [0, 0.01, 1, 1e9]) {
       for (const current of [0, 0.01, 1, 1e9]) {
         const b = changeBadge(null, previous, current, n);
         expect(Number.isFinite(b.delta)).toBe(true);
       }
+    }
   });
 });
 
@@ -156,7 +165,9 @@ describe("les quatre chiffres clés, minimalistes : libellé, valeur, écart, un
     ]);
   });
   it("chaque carte a son badge d'écart, créances et actions comprises", () => {
-    for (const f of figures()) expect(typeof f.delta).toBe("number");
+    for (const f of figures()) {
+      expect(typeof f.delta).toBe("number");
+    }
   });
   it("chaque carte n'a qu'une ligne de texte, courte, et plus de ligne de comparaison", () => {
     const d = base();
@@ -174,22 +185,22 @@ describe("les quatre chiffres clés, minimalistes : libellé, valeur, écart, un
   it("Trésorerie : recettes, écart, solde net, courbe cumulée", () => {
     const d = base();
     d.transactions = [
-      income("a", "2026-10-10", 20000),
-      income("b", "2026-10-12", 10000),
-      income("p", "2026-08-20", 10000),
+      income("a", "2026-10-10", 20_000),
+      income("b", "2026-10-12", 10_000),
+      income("p", "2026-08-20", 10_000),
     ];
     const cash = figures(d)[0];
-    expect(cash.value).toBe(formatCentimes(30000));
+    expect(cash.value).toBe(formatCentimes(30_000));
     expect(cash.delta).toBe(200);
-    expect(cash.line).toBe(`Solde net : ${formatCentimes(30000)}`);
+    expect(cash.line).toBe(`Solde net : ${formatCentimes(30_000)}`);
     expect(cash.trend!.every((v, i, arr) => i === 0 || v >= arr[i - 1])).toBe(
       true
     );
-    expect(cash.trend!.at(-1)).toBe(30000);
+    expect(cash.trend!.at(-1)).toBe(30_000);
     // 300 DA encaissés contre 100 DA la période d'avant : l'objectif d'égaler est atteint, plafonné à 100 %.
     expect(cash.goal).toEqual({
       ratio: 1,
-      label: `Période précédente : ${formatCentimes(10000)}`,
+      label: `Période précédente : ${formatCentimes(10_000)}`,
     });
   });
   it("Rendez-vous : le nombre, l'écart, honorés, annulés et absences, et sa courbe par jour", () => {
@@ -221,9 +232,9 @@ describe("les quatre chiffres clés, minimalistes : libellé, valeur, écart, un
         documentStatus: "issued",
         issuedAt: "2026-10-01",
         createdAt: "2026-10-01",
-        grossAmount: 10000,
+        grossAmount: 10_000,
         creditAmount: 0,
-        balanceAmount: 10000,
+        balanceAmount: 10_000,
         completedPaymentAmount: 0,
         settlementStatus: "unpaid",
         ...over,
@@ -239,14 +250,14 @@ describe("les quatre chiffres clés, minimalistes : libellé, valeur, écart, un
         receivablesSummary(inv, []),
         settlementRate(inv)
       )[2];
-      expect(c.value).toBe(formatCentimes(15000));
+      expect(c.value).toBe(formatCentimes(15_000));
       expect(c.line).toBe("2 factures impayées · 1 en retard");
       // Rien n'était dû avant la période : le badge dit la hausse, en dinars.
       expect([c.tone, c.emphasize, c.delta, c.deltaText]).toEqual([
         "rose",
         true,
         150,
-        `+${formatCentimes(15000)}`,
+        `+${formatCentimes(15_000)}`,
       ]);
     });
     it("l'objectif est la part des factures réglées, calculée sur les factures", () => {
@@ -451,18 +462,18 @@ describe("objectifs de la vue KPI : sur quelles cartes, et avec quelles données
       appointments: [],
       transactions: [
         income("a", "2026-10-10", 5000),
-        income("p", "2026-08-20", 20000),
+        income("p", "2026-08-20", 20_000),
       ],
     };
     expect(build(d)[0].goal).toEqual({
       ratio: 0.25,
-      label: `Période précédente : ${formatCentimes(20000)}`,
+      label: `Période précédente : ${formatCentimes(20_000)}`,
     });
     const above = {
       appointments: [],
       transactions: [
-        income("a", "2026-10-10", 50000),
-        income("p", "2026-08-20", 20000),
+        income("a", "2026-10-10", 50_000),
+        income("p", "2026-08-20", 20_000),
       ],
     };
     expect(build(above)[0].goal?.ratio).toBe(1);
@@ -501,16 +512,17 @@ describe("objectifs de la vue KPI : sur quelles cartes, et avec quelles données
     const d = {
       appointments: [appt("1", "2026-10-10T09:00:00", "completed")],
       transactions: [
-        income("a", "2026-10-10", 90000),
+        income("a", "2026-10-10", 90_000),
         income("p", "2026-08-20", 100),
       ],
     };
-    for (const f of build(d, 99.9))
+    for (const f of build(d, 99.9)) {
       if (f.goal) {
         expect(Number.isFinite(f.goal.ratio)).toBe(true);
         expect(f.goal.ratio).toBeGreaterThanOrEqual(0);
         expect(f.goal.ratio).toBeLessThanOrEqual(1);
       }
+    }
   });
 });
 
@@ -535,7 +547,7 @@ describe("badge des créances : ce qui est dû aujourd'hui contre ce qui l'étai
       documentStatus: "issued",
       issuedAt: issued,
       createdAt: issued,
-      grossAmount: 10000,
+      grossAmount: 10_000,
       creditAmount: 0,
       balanceAmount: balance,
       completedPaymentAmount: 0,
@@ -569,7 +581,7 @@ describe("badge des créances : ce qui est dû aujourd'hui contre ce qui l'étai
 
   it("une facture émise avant la période et une pendant : +50 % (100 DA dus au début, 150 DA aujourd'hui)", () => {
     const { model, card } = run([
-      invoice("a", "2026-08-01", 10000),
+      invoice("a", "2026-08-01", 10_000),
       invoice("b", "2026-10-05", 5000, { grossAmount: 5000 }),
     ]);
     expect(model.receivablesBefore).toBe(100);
@@ -596,13 +608,13 @@ describe("badge des créances : ce qui est dû aujourd'hui contre ce qui l'étai
     expect([card.delta, card.deltaText]).toEqual([0, undefined]);
   });
   it("aucune facture avant la période : le badge dit la hausse en dinars, jamais un pourcentage infini", () => {
-    const { card } = run([invoice("a", "2026-10-05", 10000)]);
-    expect(card.deltaText).toBe(`+${formatCentimes(10000)}`);
+    const { card } = run([invoice("a", "2026-10-05", 10_000)]);
+    expect(card.deltaText).toBe(`+${formatCentimes(10_000)}`);
     expect(Number.isFinite(card.delta)).toBe(true);
   });
   it("la tonalité suit le sens : une hausse des créances est défavorable, une baisse favorable", () => {
     // Le composant lit higherIsBetter : moins de créances, c'est mieux.
-    expect(run([invoice("a", "2026-10-05", 10000)]).card.higherIsBetter).toBe(
+    expect(run([invoice("a", "2026-10-05", 10_000)]).card.higherIsBetter).toBe(
       false
     );
   });

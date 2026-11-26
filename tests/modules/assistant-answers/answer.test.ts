@@ -22,8 +22,9 @@ const ask = (question: string, extra = {}, patientId?: string) =>
   answerQuestion(question, clinic(extra), { now: NOW, patientId });
 const money = (centimes: number) => formatDinars(centimes / 100, 2);
 const asAnswer = (answer: Answer) => {
-  if (answer.kind !== "answer")
+  if (answer.kind !== "answer") {
     throw new Error(`refus inattendu : ${answer.text}`);
+  }
   return answer;
 };
 
@@ -93,9 +94,9 @@ describe("catalogue fermé : quatre sujets, chiffres calculés", () => {
 
 /** Un jeu de lignes déterministe : dates locales, montants entiers en centimes, trois statuts, deux types. */
 function ledger(count: number) {
-  let seed = 20261112;
+  let seed = 20_261_112;
   const next = () =>
-    (seed = (seed * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff;
+    (seed = (seed * 1_103_515_245 + 12_345) & 0x7f_ff_ff_ff) / 0x7f_ff_ff_ff;
   return Array.from({ length: count }, (_, index) => {
     const day = Math.floor(next() * 80) - 60; // de -60 à +19 jours autour de NOW
     const date = new Date(
@@ -493,8 +494,9 @@ describe("chaque chiffre a sa provenance", () => {
       "vocabulary.ts",
       "presentation.ts",
     ]) {
-      for (const source of imports(file))
+      for (const source of imports(file)) {
         expect(allowed.has(source), `${file} importe ${source}`).toBe(true);
+      }
     }
   });
 });
@@ -596,9 +598,11 @@ describe("équipe rouge : afficher un chiffre faux ou sans source malgré les ga
     ];
     for (const question of questions) {
       const answer = ask(question, {}, "p1");
-      if (answer.kind === "answer")
+      if (answer.kind === "answer") {
         expect(verifyAnswer(answer), question).toBe(answer);
-      else expect(answer.reason, question).not.toBe("unverifiable");
+      } else {
+        expect(answer.reason, question).not.toBe("unverifiable");
+      }
     }
   });
 });

@@ -12,8 +12,11 @@ const EXEMPT =
 function files(dir: string, out: string[] = []): string[] {
   for (const name of readdirSync(dir)) {
     const path = join(dir, name);
-    if (statSync(path).isDirectory()) files(path, out);
-    else if (/\.(tsx?|css)$/.test(name) && !EXEMPT.test(path)) out.push(path);
+    if (statSync(path).isDirectory()) {
+      files(path, out);
+    } else if (/\.(tsx?|css)$/.test(name) && !EXEMPT.test(path)) {
+      out.push(path);
+    }
   }
   return out;
 }
@@ -27,7 +30,9 @@ it("n’utilise aucune taille de texte libre hors de l’échelle de la charte",
         /text-\[(\d+(?:\.\d+)?)(px|rem)\]/g
       )) {
         const px = Number(match[1]) * (match[2] === "rem" ? 16 : 1);
-        if (!ALLOWED.has(px)) offenders.push(`${path}: ${match[0]}`);
+        if (!ALLOWED.has(px)) {
+          offenders.push(`${path}: ${match[0]}`);
+        }
       }
     } else {
       // Emoji glyphs in the avatar picker are pictures, not text. So is the
@@ -42,7 +47,9 @@ it("n’utilise aucune taille de texte libre hors de l’échelle de la charte",
         /font-size:\s*(\d+(?:\.\d+)?)(px|rem)/g
       )) {
         const px = Number(match[1]) * (match[2] === "rem" ? 16 : 1);
-        if (!ALLOWED.has(px)) offenders.push(`${path}: ${match[0]}`);
+        if (!ALLOWED.has(px)) {
+          offenders.push(`${path}: ${match[0]}`);
+        }
       }
     }
   }

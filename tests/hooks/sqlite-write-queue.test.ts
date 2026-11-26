@@ -19,7 +19,7 @@ vi.mock("../../src/services/sqlite/database", () => {
   const db = {
     select: async (sql: string, params: unknown[] = []) => {
       fixture.calls.push(sql);
-      if (sql.startsWith("PRAGMA"))
+      if (sql.startsWith("PRAGMA")) {
         return [
           "id",
           "patient_id",
@@ -28,6 +28,7 @@ vi.mock("../../src/services/sqlite/database", () => {
           "created_at",
           "updated_at",
         ].map((name) => ({ name }));
+      }
       const rows = sql.includes("WHERE id = ?")
         ? fixture.rows.filter((row) => row.id === params[0])
         : fixture.rows;
@@ -48,7 +49,9 @@ vi.mock("../../src/services/sqlite/database", () => {
           .split(", ")
           .map((part) => part.split(" = ")[0]);
         fixture.rows = fixture.rows.map((row) => {
-          if (row.id !== params.at(-1)) return row;
+          if (row.id !== params.at(-1)) {
+            return row;
+          }
           rowsAffected++;
           return {
             ...row,
@@ -87,13 +90,20 @@ vi.mock("../../src/services/sqlite/database", () => {
   };
 });
 
-type Row = { id: string; patientId: string; status: string; name: string };
+interface Row {
+  id: string;
+  patientId: string;
+  status: string;
+  name: string;
+}
 
 async function setup(warm = true) {
   const React = await import("react");
   const { renderToStaticMarkup } = await import("react-dom/server");
   const sqlite = await import("../../src/hooks/useSQLite");
-  if (warm) await sqlite.prefetchSQLiteTables(["appointments"]);
+  if (warm) {
+    await sqlite.prefetchSQLiteTables(["appointments"]);
+  }
   // Server rendering invokes the real React hooks without a browser DOM.
   // Effects are intentionally absent: each operation below uses the public API.
   const read = () => {

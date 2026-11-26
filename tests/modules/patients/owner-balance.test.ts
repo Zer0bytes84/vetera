@@ -14,13 +14,13 @@ describe("solde du propriétaire, dans sa ligne", () => {
   it("additionne ce que le propriétaire doit sur ses factures émises, tous animaux confondus", () => {
     const r = summarizeOwnerBalance(
       [
-        inv({ balanceAmount: 12000, settlementStatus: "open" }),
+        inv({ balanceAmount: 12_000, settlementStatus: "open" }),
         inv({ balanceAmount: 3000, settlementStatus: "partial" }),
         inv({ balanceAmount: 500, ownerId: "o2" }),
       ],
       "o1"
     );
-    expect(r).toEqual({ cents: 15000, late: false });
+    expect(r).toEqual({ cents: 15_000, late: false });
   });
   it("est en retard dès qu'une facture ouverte l'est", () => {
     expect(

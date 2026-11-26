@@ -185,8 +185,9 @@ describe("l'adresse d'un lien", () => {
       "https://",
       "juste-un-mot",
       "http://",
-    ])
+    ]) {
       expect(normalizeLinkUrl(bad), bad).toBeNull();
+    }
   });
   it("donne un titre lisible", () => {
     expect(linkTitle("https://www.exemple.dz/page")).toBe("exemple.dz");
@@ -295,8 +296,9 @@ describe("la page rendue", () => {
     expect(html).toContain("Documents");
     expect(html).toContain('aria-label="Ajouter"');
     expect(html).toContain('aria-label="Rechercher"');
-    for (const label of ["Tous", "Documents", "Fichiers", "Images", "Liens"])
+    for (const label of ["Tous", "Documents", "Fichiers", "Images", "Liens"]) {
       expect(html).toContain(label);
+    }
     expect(html).not.toContain('data-slot="band"');
   });
   it("montre à chaque ligne son genre et son détail", () => {

@@ -32,8 +32,12 @@ const leadingComments = /^(?:\s|--[^\n]*\n|\/\*[\s\S]*?\*\/)*/;
 /** A single statement that starts with SELECT or WITH and writes nothing. */
 export function isReadStatement(query: string): boolean {
   const body = query.replace(leadingComments, "").trim().replace(/;\s*$/, "");
-  if (!/^(?:SELECT|WITH)\b/i.test(body)) return false;
-  if (body.includes(";")) return false;
+  if (!/^(?:SELECT|WITH)\b/i.test(body)) {
+    return false;
+  }
+  if (body.includes(";")) {
+    return false;
+  }
   // A WITH clause may hide a write (WITH x AS (...) DELETE ...).
   return !/\b(?:INSERT|UPDATE|DELETE|REPLACE|DROP|ALTER|CREATE|ATTACH|DETACH|PRAGMA|VACUUM|REINDEX)\b/i.test(
     body
@@ -51,14 +55,21 @@ export function guardReadConnection(
 ): ReadConnection {
   return {
     select<T>(query: string, values: unknown[] = []) {
-      if (!isReadStatement(query)) throw new ReadRefused(query);
-      if (counter) counter.statements += 1;
+      if (!isReadStatement(query)) {
+        throw new ReadRefused(query);
+      }
+      if (counter) {
+        counter.statements += 1;
+      }
       return connection.select<T>(query, values);
     },
     execute(query: string, values: unknown[] = []) {
-      if (!SNAPSHOT_STATEMENTS.has(query.trim()) || values.length)
+      if (!SNAPSHOT_STATEMENTS.has(query.trim()) || values.length) {
         throw new ReadRefused(query);
-      if (counter) counter.statements += 1;
+      }
+      if (counter) {
+        counter.statements += 1;
+      }
       return connection.execute(query, values);
     },
   };

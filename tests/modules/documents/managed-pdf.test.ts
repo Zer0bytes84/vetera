@@ -69,8 +69,11 @@ it("nomme le PDF avec type, patient et date sans caractères de chemin", () => {
       })
     ).toBe("Compte_rendu_Rex_2026-10-17.pdf");
   } finally {
-    if (original) process.env.TZ = original;
-    else delete process.env.TZ;
+    if (original) {
+      process.env.TZ = original;
+    } else {
+      delete process.env.TZ;
+    }
   }
 });
 it("bloque export et impression d’un brouillon ou document annulé avant toute ouverture système", async () => {

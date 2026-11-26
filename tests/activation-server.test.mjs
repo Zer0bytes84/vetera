@@ -196,11 +196,13 @@ test("invalid, normalized-impossible, past dates and endless trials are refused"
     "2027-02-30T12:00:00Z",
     42,
     "",
-  ])
+  ]) {
     assert.equal((await f.create({ expiresAt })).status, 400);
+  }
   assert.equal((await f.create({ plan: "trial" })).status, 400);
-  for (const maxDevices of [0, -1, 1.5, 21, "2"])
+  for (const maxDevices of [0, -1, 1.5, 21, "2"]) {
     assert.equal((await f.create({ maxDevices })).status, 400);
+  }
 });
 test("renewal checks signature and binding but allows expired offline lease online", async (t) => {
   const f = await fixture(t);
@@ -298,8 +300,9 @@ test("shipping config rejects localhost, HTTP, missing and wrong public keys", a
     "https://127.0.0.1:8787",
     "https://localhost",
     "https://user:secret@example.test",
-  ])
+  ]) {
     assert.throws(() => validateLicenseBuild(url, f.publicKey));
+  }
   assert.throws(() =>
     validateLicenseBuild("https://activation.example.test", "bad")
   );

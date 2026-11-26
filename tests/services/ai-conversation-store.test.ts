@@ -98,7 +98,7 @@ describe("AI conversation store", () => {
     expect(restored?.conversations[0].messages.length).toBeLessThanOrEqual(40);
     expect(
       restored?.conversations[0].messages[0].content.length
-    ).toBeLessThanOrEqual(8_000);
+    ).toBeLessThanOrEqual(8000);
   });
 
   it("drops an oversized cache instead of parsing it on startup", () => {
