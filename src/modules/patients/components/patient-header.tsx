@@ -1,36 +1,66 @@
 import "@/design-system/page-header-line.css";
-import { CalendarPlus, FirstAid, Notebook, Pencil, PencilSimple } from "@/lib/icons";
-import { Archive, ArchiveRestore, ChevronDown, Download, HeartPulse, Zap } from "lucide-react";
+import {
+  Archive,
+  ArchiveRestore,
+  ChevronDown,
+  Download,
+  HeartPulse,
+  Zap,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { getSpeciesTheme } from "@/lib/species-theme";
-import { speciesIcon } from "@/lib/species-icon";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { StatusPill, type StatusTone } from "@/components/ui/status-pill";
 import { getPatientStatusMeta } from "@/config/status-meta";
-import { computeAge, formatAgeFr } from "../lib/age";
+import {
+  AlertTriangle,
+  CalendarPlus,
+  FirstAid,
+  Notebook,
+  Pencil,
+  PencilSimple,
+} from "@/lib/icons";
+import { speciesIcon } from "@/lib/species-icon";
+import { getSpeciesTheme } from "@/lib/species-theme";
+import { cn } from "@/lib/utils";
 import { isTauriRuntime } from "@/services/browser-store";
 import type { Invoice, Owner, Patient } from "@/types/db";
 import { formatDinars, formatPhone } from "@/utils/display-format";
-import { AlertTriangle } from "@/lib/icons";
+import { computeAge, formatAgeFr } from "../lib/age";
 import { isClinicalSignal } from "./medical-record-summary";
 
 const loadServicesBillingService = () => import("@/services/billingService");
-
 
 /**
  * What the owner still owes, over every issued invoice in their name (all
  * their animals), in centimes. Null while unknown: nothing is shown then.
  */
 export function summarizeOwnerBalance(
-  invoices: Pick<Invoice, "ownerId" | "documentStatus" | "balanceAmount" | "settlementStatus">[],
-  ownerId: string,
+  invoices: Pick<
+    Invoice,
+    "ownerId" | "documentStatus" | "balanceAmount" | "settlementStatus"
+  >[],
+  ownerId: string
 ) {
-  const open = invoices.filter((invoice) => invoice.ownerId === ownerId && invoice.documentStatus === "issued");
+  const open = invoices.filter(
+    (invoice) =>
+      invoice.ownerId === ownerId && invoice.documentStatus === "issued"
+  );
   return {
-    cents: open.reduce((sum, invoice) => sum + Math.max(0, invoice.balanceAmount), 0),
-    late: open.some((invoice) => invoice.balanceAmount > 0 && invoice.settlementStatus === "overdue"),
+    cents: open.reduce(
+      (sum, invoice) => sum + Math.max(0, invoice.balanceAmount),
+      0
+    ),
+    late: open.some(
+      (invoice) =>
+        invoice.balanceAmount > 0 && invoice.settlementStatus === "overdue"
+    ),
   };
 }
 
@@ -41,12 +71,16 @@ function useOwnerBalance(ownerId?: string) {
     late: boolean;
   } | null>(null);
   useEffect(() => {
-    if (!ownerId || !isTauriRuntime()) return;
+    if (!(ownerId && isTauriRuntime())) {
+      return;
+    }
     let cancelled = false;
     void loadServicesBillingService()
       .then(({ listInvoices }) => listInvoices())
       .then((invoices) => {
-        if (cancelled) return;
+        if (cancelled) {
+          return;
+        }
         const { cents, late } = summarizeOwnerBalance(invoices, ownerId);
         setBalance({ ownerId, cents, late });
       })
@@ -67,6 +101,17 @@ const STATUS_TONE: Record<string, StatusTone> = {
   decede: "neutral",
 };
 
+function sexLabelOf(sex: Patient["sex"]): "Mâle" | "Femelle" | null {
+  switch (sex) {
+    case "M":
+      return "Mâle";
+    case "F":
+      return "Femelle";
+    default:
+      return null;
+  }
+}
+
 /**
  * The record's header, on the model of the other pages: one line, the patient's name with its identity in context (species,
  * breed, owner), the ID badge, the status as a pill, and on the right the owner's balance and the main note button. The way
@@ -83,12 +128,11 @@ export function PatientRecordHeader({
   const balance = useOwnerBalance(owner?.id);
   const status = getPatientStatusMeta(patient.status);
   const age = computeAge(patient.dateOfBirth);
-  const sex =
-    patient.sex === "M" ? "Mâle" : patient.sex === "F" ? "Femelle" : null;
+  const sex = sexLabelOf(patient.sex);
   // The patient's line: the allergy first, then the restraint, then who the animal is; then the owner, with their phone and their
   // balance. When one of them is not recorded it says so, discreetly, in the same place.
   const allergyText = patient.allergies?.trim();
-  const allergy = isClinicalSignal(allergyText) ? allergyText! : "";
+  const allergy = isClinicalSignal(allergyText) ? allergyText : "";
   const restraint = patient.restraint?.trim();
   const facts = [
     patient.species,
@@ -110,18 +154,23 @@ export function PatientRecordHeader({
   const context = (
     <>
       {allergy ? (
-        <span className="patient-record-allergy mr-2 inline-flex items-center gap-1.5 rounded-full bg-negative/10 px-2.5 py-0.5 align-middle text-[0.8125rem] font-medium text-negative" role="alert">
+        <span
+          className="patient-record-allergy mr-2 inline-flex items-center gap-1.5 rounded-full bg-negative/10 px-2.5 py-0.5 align-middle font-medium text-[0.8125rem] text-negative"
+          role="alert"
+        >
           <AlertTriangle aria-hidden="true" className="shrink-0" size={13} />
           Allergie : {allergy}
         </span>
       ) : (
         <span className="patient-record-allergy-note text-muted-foreground/80">
-          {allergyText ? "Aucune allergie connue" : "Allergies non renseignées"} ·{" "}
+          {allergyText ? "Aucune allergie connue" : "Allergies non renseignées"}{" "}
+          ·{" "}
         </span>
       )}
       {/* Same separator as the facts that follow: a middle dot between two word spaces, no extra margin. */}
       <span className={restraint ? undefined : "text-muted-foreground/80"}>
-        {restraint ? `Contention : ${restraint}` : "Contention non renseignée"} ·{" "}
+        {restraint ? `Contention : ${restraint}` : "Contention non renseignée"}{" "}
+        ·{" "}
       </span>
       {facts.join(" · ")}
       {ownerFacts.length ? (
@@ -131,8 +180,13 @@ export function PatientRecordHeader({
         </>
       ) : null}
       {due ? (
-        <StatusPill className="ml-2 align-middle" size="sm" tone={due.late ? "negative" : "warning"}>
-          {due.late ? "Solde en retard" : "Solde dû"} {formatDinars(due.cents / 100)}
+        <StatusPill
+          className="ml-2 align-middle"
+          size="sm"
+          tone={due.late ? "negative" : "warning"}
+        >
+          {due.late ? "Solde en retard" : "Solde dû"}{" "}
+          {formatDinars(due.cents / 100)}
         </StatusPill>
       ) : null}
     </>
@@ -150,7 +204,7 @@ export function PatientRecordHeader({
           className={cn(
             "grid size-11 shrink-0 place-items-center overflow-hidden rounded-full",
             speciesTheme.avatarBg,
-            speciesTheme.avatarIconColor,
+            speciesTheme.avatarIconColor
           )}
         >
           {patient.avatarUrl ? (
@@ -184,7 +238,7 @@ export function PatientRecordHeader({
             </StatusPill>
           </h1>
           {/* The identity in context, under the name, smaller: never cut, the owner's name least of all. */}
-          <p className="patient-record-context mt-0.5 text-[0.8125rem] leading-5 text-muted-foreground">
+          <p className="patient-record-context mt-0.5 text-[0.8125rem] text-muted-foreground leading-5">
             {context}
           </p>
         </div>
@@ -236,106 +290,126 @@ export function PatientRecordActions({
 
   return (
     <div className="patient-record-actions flex items-center gap-2">
-
-        <Button
-          className="medical-action rounded-full px-4"
-          data-testid="patient-record-edit"
-          onClick={onEditProfile}
-          size="sm"
-          variant="outline"
+      <Button
+        className="medical-action rounded-full px-4"
+        data-testid="patient-record-edit"
+        onClick={onEditProfile}
+        size="sm"
+        variant="outline"
+      >
+        <PencilSimple aria-hidden="true" className="size-4" />
+        Modifier
+      </Button>
+      {/* The record's actions behind one button, as the « + » of the header holds the quick actions. */}
+      <DropdownMenu>
+        <DropdownMenuTrigger
+          render={
+            <Button
+              className="medical-action rounded-full px-4"
+              data-testid="patient-record-actions"
+              size="sm"
+            />
+          }
         >
-          <PencilSimple aria-hidden="true" className="size-4" />
-          Modifier
-        </Button>
-        {/* The record's actions behind one button, as the « + » of the header holds the quick actions. */}
-        <DropdownMenu>
-          <DropdownMenuTrigger
-            render={
-              <Button
-                className="medical-action rounded-full px-4"
-                data-testid="patient-record-actions"
-                size="sm"
-              />
-            }
-          >
-            <Zap aria-hidden="true" className="size-4" />
-            Actions
-            <ChevronDown aria-hidden="true" className="size-4 opacity-80" />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="patient-record-actions-menu w-72" sideOffset={8}>
-            <DropdownMenuItem onClick={onEditProfile}>
+          <Zap aria-hidden="true" className="size-4" />
+          Actions
+          <ChevronDown aria-hidden="true" className="size-4 opacity-80" />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent
+          align="end"
+          className="patient-record-actions-menu w-72"
+          sideOffset={8}
+        >
+          <DropdownMenuItem onClick={onEditProfile}>
+            <PencilSimple aria-hidden="true" className="size-4" />
+            Modifier le dossier
+          </DropdownMenuItem>
+          {onNewOffVisitNote ? (
+            <DropdownMenuItem onClick={onNewOffVisitNote}>
               <PencilSimple aria-hidden="true" className="size-4" />
-              Modifier le dossier
+              Note hors visite
             </DropdownMenuItem>
-            {onNewOffVisitNote ? (
-              <DropdownMenuItem onClick={onNewOffVisitNote}>
-                <PencilSimple aria-hidden="true" className="size-4" />
-                Note hors visite
-              </DropdownMenuItem>
-            ) : null}
-            <DropdownMenuItem onClick={onNewAppointment}>
-              <CalendarPlus aria-hidden="true" className="size-4" />
-              Planifier un rendez-vous
+          ) : null}
+          <DropdownMenuItem onClick={onNewAppointment}>
+            <CalendarPlus aria-hidden="true" className="size-4" />
+            Planifier un rendez-vous
+          </DropdownMenuItem>
+          {onOpenCare ? (
+            <DropdownMenuItem onClick={onOpenCare}>
+              <FirstAid aria-hidden="true" className="size-4" />
+              Ouvrir les soins
             </DropdownMenuItem>
-            {onOpenCare ? (
-              <DropdownMenuItem onClick={onOpenCare}>
-                <FirstAid aria-hidden="true" className="size-4" />
-                Ouvrir les soins
+          ) : null}
+          {onExportPdf ? (
+            <DropdownMenuItem onClick={onExportPdf}>
+              <Download
+                aria-hidden="true"
+                className="size-4"
+                strokeWidth={1.5}
+              />
+              Exporter en PDF
+            </DropdownMenuItem>
+          ) : null}
+          {onHealthCard ? (
+            <DropdownMenuItem
+              data-testid="patient-health-card"
+              onClick={onHealthCard}
+            >
+              <HeartPulse
+                aria-hidden="true"
+                className="size-4"
+                strokeWidth={1.5}
+              />
+              Carnet de santé
+            </DropdownMenuItem>
+          ) : null}
+          {archived && onUnarchive ? (
+            <>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                data-testid="patient-unarchive"
+                onClick={onUnarchive}
+              >
+                <ArchiveRestore aria-hidden="true" className="size-4" />
+                Désarchiver ce dossier
               </DropdownMenuItem>
-            ) : null}
-            {onExportPdf ? (
-              <DropdownMenuItem onClick={onExportPdf}>
-                <Download aria-hidden="true" className="size-4" strokeWidth={1.5} />
-                Exporter en PDF
+            </>
+          ) : null}
+          {!archived && onArchive ? (
+            <>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                data-testid="patient-archive"
+                onClick={onArchive}
+              >
+                <Archive aria-hidden="true" className="size-4" />
+                Archiver ce dossier
               </DropdownMenuItem>
-            ) : null}
-            {onHealthCard ? (
-              <DropdownMenuItem data-testid="patient-health-card" onClick={onHealthCard}>
-                <HeartPulse aria-hidden="true" className="size-4" strokeWidth={1.5} />
-                Carnet de santé
-              </DropdownMenuItem>
-            ) : null}
-            {archived && onUnarchive ? (
-              <>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem data-testid="patient-unarchive" onClick={onUnarchive}>
-                  <ArchiveRestore aria-hidden="true" className="size-4" />
-                  Désarchiver ce dossier
-                </DropdownMenuItem>
-              </>
-            ) : null}
-            {!archived && onArchive ? (
-              <>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem data-testid="patient-archive" onClick={onArchive}>
-                  <Archive aria-hidden="true" className="size-4" />
-                  Archiver ce dossier
-                </DropdownMenuItem>
-              </>
-            ) : null}
-          </DropdownMenuContent>
-        </DropdownMenu>
-        {primary ? (
-          <Button
-            className="medical-action medical-action-primary rounded-full px-4"
-            onClick={primary.onClick}
-            size="sm"
-          >
-            <primary.icon aria-hidden="true" className="size-4" />
-            {primary.label}
-          </Button>
-        ) : null}
-        {onEditOwner ? (
-          <Button
-            className="medical-action medical-action-primary rounded-full px-4"
-            data-testid="patient-owner-edit"
-            onClick={onEditOwner}
-            size="sm"
-          >
-            <Pencil aria-hidden="true" className="size-4" />
-            Modifier les coordonnées
-          </Button>
-        ) : null}
+            </>
+          ) : null}
+        </DropdownMenuContent>
+      </DropdownMenu>
+      {primary ? (
+        <Button
+          className="medical-action medical-action-primary rounded-full px-4"
+          onClick={primary.onClick}
+          size="sm"
+        >
+          <primary.icon aria-hidden="true" className="size-4" />
+          {primary.label}
+        </Button>
+      ) : null}
+      {onEditOwner ? (
+        <Button
+          className="medical-action medical-action-primary rounded-full px-4"
+          data-testid="patient-owner-edit"
+          onClick={onEditOwner}
+          size="sm"
+        >
+          <Pencil aria-hidden="true" className="size-4" />
+          Modifier les coordonnées
+        </Button>
+      ) : null}
     </div>
   );
 }

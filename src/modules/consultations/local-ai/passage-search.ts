@@ -1,22 +1,31 @@
 // Passage index (phase A1): sources are split into short passages, ranked by
 // vector score, with the veterinary lexicon as a score bonus instead of an
 // absolute priority. The section index (v2) stays available for rollback.
+
+import { WHITESPACE_RUN } from "@/lib/patterns";
 import {
+  assertSearchScope,
   EMBEDDING_MODEL_KEY,
   MIN_LEXICAL_FLOOR_SCORE,
   MIN_SEARCH_SCORE,
-  assertSearchScope,
   type SearchChunk,
   type SearchScope,
 } from "./embedding-index";
-import type { SearchModel } from "./worker-protocol";
 import {
   matchesExactSearchTerms,
   matchesNumericConstraints,
   matchesSearchTerms,
 } from "./veterinary-lexicon";
+import type { SearchModel } from "./worker-protocol";
 
-export type SearchGeneration = "sections" | "passages" | "passages2" | "passages3";
+const PASSAGE_BREAK = /(?<=[.!?;:])\s+|\n+/u;
+const SENTENCE_END_SPACE = /(?<=[.!?;:])\s+/u;
+
+export type SearchGeneration =
+  | "sections"
+  | "passages"
+  | "passages2"
+  | "passages3";
 /** Chosen on the phase A1 bench: 800 characters ≈ 200 tokens in French. */
 export const PASSAGE_CHARACTERS = 800;
 export const PASSAGE_MODEL_KEY =
@@ -25,7 +34,8 @@ export const PASSAGE_MODEL_KEY =
 export const PASSAGE_V2_MODEL_KEY =
   "embeddinggemma2-text-q8-webgpu-768-passages800-v4";
 /** Candidate measured for A2: arctic-embed-l-v2 (q8, WASM), truncated to 768 dimensions. */
-export const PASSAGE_ARCTIC_MODEL_KEY = "arctic-embed-l-v2-q8-wasm-768-passages800-v5";
+export const PASSAGE_ARCTIC_MODEL_KEY =
+  "arctic-embed-l-v2-q8-wasm-768-passages800-v5";
 export const SEARCH_INDEX_KEYS: Record<SearchGeneration, string> = {
   sections: EMBEDDING_MODEL_KEY,
   passages: PASSAGE_MODEL_KEY,
@@ -40,7 +50,10 @@ export const GENERATION_MODEL: Record<SearchGeneration, SearchModel> = {
 };
 /** Indexes kept current: v1 ones always (rollback), each A2 candidate only once its model is installed. */
 export const INDEXED_GENERATIONS: SearchGeneration[] = ["sections", "passages"];
-export const indexedGenerations = (models: { embedding2Ready?: boolean; arcticReady?: boolean }): SearchGeneration[] => [
+export const indexedGenerations = (models: {
+  embedding2Ready?: boolean;
+  arcticReady?: boolean;
+}): SearchGeneration[] => [
   ...INDEXED_GENERATIONS,
   ...(models.embedding2Ready ? (["passages2"] as const) : []),
   ...(models.arcticReady ? (["passages3"] as const) : []),
@@ -54,32 +67,40 @@ export const LEXICAL_ONLY_SCORE = MIN_SEARCH_SCORE + LEXICAL_BONUS;
  * each passage repeating the previous one's last sentence. A sentence longer
  * than `size` is cut at word boundaries so no passage can exceed the model limit.
  */
-export function splitPassages(text: string, size = PASSAGE_CHARACTERS): string[] {
+export function splitPassages(
+  text: string,
+  size = PASSAGE_CHARACTERS
+): string[] {
   const sentences = text
-    .split(/(?<=[.!?;:])\s+|\n+/u)
+    .split(PASSAGE_BREAK)
     .map((sentence) => sentence.trim())
     .filter(Boolean)
     .flatMap((sentence) => {
-      if (sentence.length <= size) return [sentence];
+      if (sentence.length <= size) {
+        return [sentence];
+      }
       const pieces: string[] = [];
       let current = "";
-      for (const word of sentence.split(/\s+/)) {
+      for (const word of sentence.split(WHITESPACE_RUN)) {
         if (current && current.length + word.length + 1 > size) {
           pieces.push(current);
           current = "";
         }
         current = current ? `${current} ${word}` : word.slice(0, size);
       }
-      if (current) pieces.push(current);
+      if (current) {
+        pieces.push(current);
+      }
       return pieces;
     });
   const passages: string[] = [];
   let current: string[] = [];
   let length = 0;
   for (const sentence of sentences) {
-    if (current.length && length + sentence.length > size) {
+    const last = current.at(-1);
+    if (last !== undefined && length + sentence.length > size) {
       passages.push(current.join(" "));
-      const overlap = current.at(-1)!;
+      const overlap = last;
       // The overlap is dropped when it would push the passage past the limit.
       current = overlap.length + sentence.length < size ? [overlap] : [];
       length = current.length ? overlap.length + 1 : 0;
@@ -87,21 +108,38 @@ export function splitPassages(text: string, size = PASSAGE_CHARACTERS): string[]
     current.push(sentence);
     length += sentence.length + 1;
   }
-  if (current.length) passages.push(current.join(" "));
+  if (current.length) {
+    passages.push(current.join(" "));
+  }
   return passages;
 }
 
 /** One search row per passage, numbered per source section. */
-export function passageChunks(chunks: SearchChunk[], size = PASSAGE_CHARACTERS): SearchChunk[] {
+export function passageChunks(
+  chunks: SearchChunk[],
+  size = PASSAGE_CHARACTERS
+): SearchChunk[] {
   return chunks.flatMap((chunk) =>
-    splitPassages(chunk.text, size).map((text, chunkIndex) => ({ ...chunk, text, chunkIndex })),
+    splitPassages(chunk.text, size).map((text, chunkIndex) => ({
+      ...chunk,
+      text,
+      chunkIndex,
+    }))
   );
 }
 
 /** The passage of `text` that best matches `query` lexically, for display. */
-export function bestPassage(text: string, query: string, size = PASSAGE_CHARACTERS) {
+export function bestPassage(
+  text: string,
+  query: string,
+  size = PASSAGE_CHARACTERS
+) {
   const passages = splitPassages(text, size);
-  return passages.find((passage) => matchesSearchTerms(query, passage)) ?? passages[0] ?? text;
+  return (
+    passages.find((passage) => matchesSearchTerms(query, passage)) ??
+    passages[0] ??
+    text
+  );
 }
 
 /**
@@ -110,9 +148,11 @@ export function bestPassage(text: string, query: string, size = PASSAGE_CHARACTE
  */
 export function focusExcerpt(text: string, query: string, lead = 90) {
   let offset = 0;
-  for (const sentence of text.split(/(?<=[.!?;:])\s+/u)) {
+  for (const sentence of text.split(SENTENCE_END_SPACE)) {
     const start = text.indexOf(sentence, offset);
-    if (matchesSearchTerms(query, sentence)) return start > lead ? `… ${text.slice(start)}` : text;
+    if (matchesSearchTerms(query, sentence)) {
+      return start > lead ? `… ${text.slice(start)}` : text;
+    }
     offset = start + sentence.length;
   }
   return text;
@@ -123,10 +163,10 @@ export function focusExcerpt(text: string, query: string, lead = 90) {
  * one model to another, so the semantic threshold and the lexical scores do too.
  */
 export interface SearchCalibration {
-  minimum: number;
-  lexicalFloor: number;
   bonus: number;
+  lexicalFloor: number;
   lexicalOnly: number;
+  minimum: number;
 }
 /** v1 values (EmbeddingGemma 300M), calibrated on whole sections then kept for passages. */
 export const V1_CALIBRATION: SearchCalibration = {
@@ -142,10 +182,13 @@ export const MODEL_CALIBRATION: Record<SearchModel, SearchCalibration> = {
 };
 /** Unit vector of any dimension (rankPassages compares query and passages of the same model). */
 const unitVector = (vector: number[]) => {
-  if (!vector.length || vector.some((value) => !Number.isFinite(value)))
+  if (!vector.length || vector.some((value) => !Number.isFinite(value))) {
     throw new Error("L’extrait n’a pas pu être préparé pour la recherche.");
+  }
   const norm = Math.hypot(...vector);
-  if (!norm) throw new Error("L’extrait de recherche est vide.");
+  if (!norm) {
+    throw new Error("L’extrait de recherche est vide.");
+  }
   return vector.map((value) => value / norm);
 };
 
@@ -167,7 +210,7 @@ export function rankPassages<T extends SearchChunk & { vector: number[] }>(
   queryText: string,
   limit = 5,
   lexicalOnly: SearchChunk[] = [],
-  calibration: SearchCalibration = V1_CALIBRATION,
+  calibration: SearchCalibration = V1_CALIBRATION
 ): RankedPassage<SearchChunk>[] {
   assertSearchScope(scope);
   const unit = query ? unitVector(query) : null;
@@ -178,40 +221,75 @@ export function rankPassages<T extends SearchChunk & { vector: number[] }>(
     matchesNumericConstraints(queryText, row.text);
   const scored: RankedPassage<SearchChunk>[] = [];
   for (const row of rows) {
-    if (!inScope(row)) continue;
+    if (!inScope(row)) {
+      continue;
+    }
     const lexical = matchesSearchTerms(queryText, row.text);
     const cosine = unit
-      ? unitVector(row.vector).reduce((sum, value, i) => sum + value * unit[i], 0)
-      : lexical ? calibration.minimum : 0;
+      ? unitVector(row.vector).reduce(
+          (sum, value, i) => sum + value * unit[i],
+          0
+        )
+      : lexical
+        ? calibration.minimum
+        : 0;
     const eligible =
       cosine >= calibration.minimum ||
-      (lexical && (cosine >= calibration.lexicalFloor || matchesExactSearchTerms(queryText, row.text)));
-    if (!eligible) continue;
+      (lexical &&
+        (cosine >= calibration.lexicalFloor ||
+          matchesExactSearchTerms(queryText, row.text)));
+    if (!eligible) {
+      continue;
+    }
     const { vector: _vector, ...chunk } = row;
     void _vector;
-    scored.push({ ...chunk, score: cosine + (lexical ? calibration.bonus : 0), match: lexical ? "text" : "semantic" });
+    scored.push({
+      ...chunk,
+      score: cosine + (lexical ? calibration.bonus : 0),
+      match: lexical ? "text" : "semantic",
+    });
   }
   for (const chunk of lexicalOnly) {
-    if (!inScope(chunk) || !matchesSearchTerms(queryText, chunk.text)) continue;
-    scored.push({ ...chunk, text: bestPassage(chunk.text, queryText), score: calibration.lexicalOnly, match: "text" });
+    if (!(inScope(chunk) && matchesSearchTerms(queryText, chunk.text))) {
+      continue;
+    }
+    scored.push({
+      ...chunk,
+      text: bestPassage(chunk.text, queryText),
+      score: calibration.lexicalOnly,
+      match: "text",
+    });
   }
   const best = new Map<string, RankedPassage<SearchChunk>>();
   for (const row of scored) {
     const key = `${row.sourceType}:${row.sourceId}`;
     const current = best.get(key);
-    if (!current || row.score > current.score) best.set(key, row);
+    if (!current || row.score > current.score) {
+      best.set(key, row);
+    }
   }
   return [...best.values()]
-    .sort((a, b) => b.score - a.score || a.sourceId.localeCompare(b.sourceId) || a.chunkIndex - b.chunkIndex)
+    .sort(
+      (a, b) =>
+        b.score - a.score ||
+        a.sourceId.localeCompare(b.sourceId) ||
+        a.chunkIndex - b.chunkIndex
+    )
     .slice(0, Math.max(1, Math.min(20, limit)));
 }
 
 /** Section index (v2) merge, unchanged: lexical matches first, then semantic rows. */
-export function mergeLexicalFirst<T extends SearchChunk>(lexical: T[], semantic: T[], limit = 5) {
+export function mergeLexicalFirst<T extends SearchChunk>(
+  lexical: T[],
+  semantic: T[],
+  limit = 5
+) {
   const found = new Map<string, T>();
   for (const row of [...lexical, ...semantic]) {
     const key = `${row.sourceType}:${row.sourceId}:${row.section}:${row.chunkIndex}`;
-    if (!found.has(key)) found.set(key, row);
+    if (!found.has(key)) {
+      found.set(key, row);
+    }
   }
   return [...found.values()].slice(0, limit);
 }

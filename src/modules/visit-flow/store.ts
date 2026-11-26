@@ -1,5 +1,9 @@
 import type { AppointmentStatus } from "@/types/db";
-import { VISIT_FLOW_UNDO_WINDOW_MS, type VisitFlowCause, type VisitFlowStage } from "./domain";
+import {
+  VISIT_FLOW_UNDO_WINDOW_MS,
+  type VisitFlowCause,
+  type VisitFlowStage,
+} from "./domain";
 
 export interface VisitFlowEvent {
   actorId: string | null;
@@ -36,8 +40,8 @@ export interface VisitFlowBoardState extends VisitFlowState {
 }
 
 export interface FlowDatabase {
-  select<T>(sql: string, values?: unknown[]): Promise<T>;
   execute(sql: string, values?: unknown[]): Promise<{ rowsAffected: number }>;
+  select<T>(sql: string, values?: unknown[]): Promise<T>;
 }
 
 export interface FlowPersistence {
@@ -46,11 +50,14 @@ export interface FlowPersistence {
 }
 
 export class VisitFlowError extends Error {
+  readonly code: "not_found" | "stale" | "not_undoable" | "expired";
+
   constructor(
-    readonly code: "not_found" | "stale" | "not_undoable" | "expired",
+    code: "not_found" | "stale" | "not_undoable" | "expired",
     message: string
   ) {
     super(message);
+    this.code = code;
     this.name = "VisitFlowError";
   }
 }
@@ -79,7 +86,8 @@ const toEvent = (row: EventRow): VisitFlowEvent => ({
   id: Number(row.id),
   toStage: row.to_stage,
   toStatus: row.to_status,
-  undoesEventId: row.undoes_event_id === null ? null : Number(row.undoes_event_id),
+  undoesEventId:
+    row.undoes_event_id === null ? null : Number(row.undoes_event_id),
   version: Number(row.version),
 });
 
@@ -106,9 +114,18 @@ function attribute(db: FlowDatabase, appointmentId: string, actorId: string) {
 }
 
 export function createVisitFlowStore(persistence: FlowPersistence) {
-  async function state(db: FlowDatabase, appointmentId: string): Promise<VisitFlowState> {
+  async function state(
+    db: FlowDatabase,
+    appointmentId: string
+  ): Promise<VisitFlowState> {
     const rows = await db.select<
-      Array<{ appointment_id: string; care: number; stage: VisitFlowStage | null; status: AppointmentStatus; version: number | null }>
+      Array<{
+        appointment_id: string;
+        care: number;
+        stage: VisitFlowStage | null;
+        status: AppointmentStatus;
+        version: number | null;
+      }>
     >(
       `SELECT s.appointment_id, s.care, s.stage, s.status, f.version
        FROM visit_flow_stages s LEFT JOIN visit_flow f ON f.appointment_id = s.appointment_id
@@ -116,7 +133,9 @@ export function createVisitFlowStore(persistence: FlowPersistence) {
       [appointmentId]
     );
     const row = rows[0];
-    if (!row) throw new VisitFlowError("not_found", "Ce rendez-vous n'existe plus.");
+    if (!row) {
+      throw new VisitFlowError("not_found", "Ce rendez-vous n'existe plus.");
+    }
     return {
       appointmentId: row.appointment_id,
       care: Number(row.care) === 1,
@@ -135,8 +154,12 @@ export function createVisitFlowStore(persistence: FlowPersistence) {
      * Stage of several visits at once, with when each entered its stage and
      * when it arrived. Times come from the journal, so they are real.
      */
-    boardStates(appointmentIds: readonly string[]): Promise<VisitFlowBoardState[]> {
-      if (appointmentIds.length === 0) return Promise.resolve([]);
+    boardStates(
+      appointmentIds: readonly string[]
+    ): Promise<VisitFlowBoardState[]> {
+      if (appointmentIds.length === 0) {
+        return Promise.resolve([]);
+      }
       return persistence.read(async (db) =>
         (
           await db.select<
@@ -175,9 +198,10 @@ export function createVisitFlowStore(persistence: FlowPersistence) {
     events(appointmentId: string): Promise<VisitFlowEvent[]> {
       return persistence.read(async (db) =>
         (
-          await db.select<EventRow[]>("SELECT * FROM visit_flow_events WHERE appointment_id = ? ORDER BY id", [
-            appointmentId,
-          ])
+          await db.select<EventRow[]>(
+            "SELECT * FROM visit_flow_events WHERE appointment_id = ? ORDER BY id",
+            [appointmentId]
+          )
         ).map(toEvent)
       );
     },
@@ -186,21 +210,37 @@ export function createVisitFlowStore(persistence: FlowPersistence) {
      * Moves an open visit between Consultation and Soins ou résultats.
      * `expectedVersion` rejects a move based on an outdated screen.
      */
-    setCare(appointmentId: string, care: boolean, actorId: string | null, expectedVersion?: number) {
+    setCare(
+      appointmentId: string,
+      care: boolean,
+      actorId: string | null,
+      expectedVersion?: number
+    ) {
       return persistence.transaction(async (db) => {
         const current = await state(db, appointmentId);
-        if (expectedVersion !== undefined && current.version !== expectedVersion) {
-          throw new VisitFlowError("stale", "Ce patient vient d'être déplacé sur un autre poste. Le tableau est à jour.");
+        if (
+          expectedVersion !== undefined &&
+          current.version !== expectedVersion
+        ) {
+          throw new VisitFlowError(
+            "stale",
+            "Ce patient vient d'être déplacé sur un autre poste. Le tableau est à jour."
+          );
         }
         if (current.status !== "in_progress") {
-          throw new VisitFlowError("not_undoable", "Seule une consultation en cours passe en soins ou résultats.");
+          throw new VisitFlowError(
+            "not_undoable",
+            "Seule une consultation en cours passe en soins ou résultats."
+          );
         }
         await db.execute(
           `INSERT INTO visit_flow(appointment_id, care) VALUES (?, ?)
            ON CONFLICT(appointment_id) DO UPDATE SET care = excluded.care`,
           [appointmentId, care ? 1 : 0]
         );
-        if (actorId) await attribute(db, appointmentId, actorId);
+        if (actorId) {
+          await attribute(db, appointmentId, actorId);
+        }
         return state(db, appointmentId);
       });
     },
@@ -213,21 +253,30 @@ export function createVisitFlowStore(persistence: FlowPersistence) {
       return persistence.transaction(async (db) => {
         const current = await state(db, appointmentId);
         if (current.status !== "completed") {
-          throw new VisitFlowError("not_undoable", "Seule une consultation clôturée peut être marquée sans frais.");
+          throw new VisitFlowError(
+            "not_undoable",
+            "Seule une consultation clôturée peut être marquée sans frais."
+          );
         }
         await db.execute(
           `INSERT INTO visit_flow(appointment_id, no_charge) VALUES (?, 1)
            ON CONFLICT(appointment_id) DO UPDATE SET no_charge = 1`,
           [appointmentId]
         );
-        if (actorId) await attribute(db, appointmentId, actorId);
+        if (actorId) {
+          await attribute(db, appointmentId, actorId);
+        }
         return state(db, appointmentId);
       });
     },
 
     /** Names who made the transition the triggers just journaled. */
     async attribute(appointmentId: string, actorId: string | null) {
-      if (actorId) await persistence.transaction((db) => attribute(db, appointmentId, actorId));
+      if (actorId) {
+        await persistence.transaction((db) =>
+          attribute(db, appointmentId, actorId)
+        );
+      }
     },
 
     /** The last move of a visit, if it can still be taken back, and for how long. */
@@ -240,10 +289,15 @@ export function createVisitFlowStore(persistence: FlowPersistence) {
           [appointmentId, WINDOW_SECONDS]
         );
         const row = rows[0];
-        if (!row) return null;
+        if (!row) {
+          return null;
+        }
         return {
           ...toEvent(row),
-          remainingMs: Math.max(0, Math.round((WINDOW_SECONDS - Number(row.age)) * 1000)),
+          remainingMs: Math.max(
+            0,
+            Math.round((WINDOW_SECONDS - Number(row.age)) * 1000)
+          ),
         };
       });
     },
@@ -259,21 +313,38 @@ export function createVisitFlowStore(persistence: FlowPersistence) {
           [eventId]
         );
         const row = rows[0];
-        if (!row) throw new VisitFlowError("not_found", "Ce déplacement n'existe plus.");
+        if (!row) {
+          throw new VisitFlowError(
+            "not_found",
+            "Ce déplacement n'existe plus."
+          );
+        }
         const event = toEvent(row);
         const latest = await latestEvent(db, event.appointmentId);
         if (latest?.id !== event.id) {
-          throw new VisitFlowError("stale", "Ce patient a bougé depuis. Rien n'a été annulé.");
+          throw new VisitFlowError(
+            "stale",
+            "Ce patient a bougé depuis. Rien n'a été annulé."
+          );
         }
-        if (!["status", "care"].includes(event.cause) || !event.fromStatus) {
-          throw new VisitFlowError("not_undoable", "Ce déplacement ne s'annule pas ici.");
+        if (!(["status", "care"].includes(event.cause) && event.fromStatus)) {
+          throw new VisitFlowError(
+            "not_undoable",
+            "Ce déplacement ne s'annule pas ici."
+          );
         }
         if (Number(row.age) > WINDOW_SECONDS) {
-          throw new VisitFlowError("expired", "Le délai de 10 secondes est passé. Déplacez le patient à nouveau si besoin.");
+          throw new VisitFlowError(
+            "expired",
+            "Le délai de 10 secondes est passé. Déplacez le patient à nouveau si besoin."
+          );
         }
 
         if (event.cause === "care") {
-          await db.execute("UPDATE visit_flow SET care = 1 - care WHERE appointment_id = ?", [event.appointmentId]);
+          await db.execute(
+            "UPDATE visit_flow SET care = 1 - care WHERE appointment_id = ?",
+            [event.appointmentId]
+          );
         } else {
           // Status rules only go forward; taking back a mistake is the exception.
           await db.execute(
@@ -283,13 +354,15 @@ export function createVisitFlowStore(persistence: FlowPersistence) {
         }
         const reverted = await latestEvent(db, event.appointmentId);
         if (!reverted || reverted.id === event.id) {
-          throw new VisitFlowError("stale", "Ce patient a bougé depuis. Rien n'a été annulé.");
+          throw new VisitFlowError(
+            "stale",
+            "Ce patient a bougé depuis. Rien n'a été annulé."
+          );
         }
-        await db.execute("UPDATE visit_flow_events SET cause = 'undo', undoes_event_id = ?, actor_id = ? WHERE id = ?", [
-          event.id,
-          actorId,
-          reverted.id,
-        ]);
+        await db.execute(
+          "UPDATE visit_flow_events SET cause = 'undo', undoes_event_id = ?, actor_id = ? WHERE id = ?",
+          [event.id, actorId, reverted.id]
+        );
         return state(db, event.appointmentId);
       });
     },

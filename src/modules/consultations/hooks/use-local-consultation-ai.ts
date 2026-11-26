@@ -1,30 +1,34 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { captureAudio, createLevelMeter, prepareMicrophone } from "../local-ai/audio-capture";
-import { createWarmupDetector } from "../local-ai/microphone-warmup";
+import { guard } from "@/lib/guard";
 import {
-  LocalInferenceSession,
-  abortError,
-} from "../local-ai/inference-client";
-import { getLocalModelUrls, type LocalModelStatus } from "../local-ai/models";
-import { prepareSoapDraft } from "../local-ai/soap-pipeline";
-import { normalizeSpokenMentions } from "../local-ai/patient-mentions";
-import type { LocalSoapNote } from "../local-ai/soap-schema";
-import type { LocalPatientContext } from "../local-ai/patient-context";
-import type { LocalAiProgress } from "../local-ai/worker-protocol";
-import type { DictationLanguage } from "../local-ai/whisper-language";
-import { whisperThreads } from "../local-ai/whisper-threads";
+  captureAudio,
+  createLevelMeter,
+  prepareMicrophone,
+} from "../local-ai/audio-capture";
 import { normalizeTemperatureSymbols } from "../local-ai/dictation-text";
+import {
+  abortError,
+  type LocalInferenceSession,
+} from "../local-ai/inference-client";
+import { createWarmupDetector } from "../local-ai/microphone-warmup";
+import { getLocalModelUrls, type LocalModelStatus } from "../local-ai/models";
 import {
   nativeDictationEnabled,
   nativeDictationStatus,
   transcribeNatively,
 } from "../local-ai/native-dictation";
+import type { LocalPatientContext } from "../local-ai/patient-context";
+import { normalizeSpokenMentions } from "../local-ai/patient-mentions";
+import { prepareSoapDraft } from "../local-ai/soap-pipeline";
+import type { LocalSoapNote } from "../local-ai/soap-schema";
+import type { DictationLanguage } from "../local-ai/whisper-language";
 import {
   parkWhisperSession,
   releaseWhisperSession,
   takeWhisperSession,
 } from "../local-ai/whisper-session";
-import { guard } from "@/lib/guard";
+import { whisperThreads } from "../local-ai/whisper-threads";
+import type { LocalAiProgress } from "../local-ai/worker-protocol";
 
 export type LocalAiPhase =
   | "idle"
@@ -36,30 +40,30 @@ export type LocalAiPhase =
   | "transcribing"
   | "loading-soap"
   | "generating";
-type Attempt = {
+interface Attempt {
+  capture?: Awaited<ReturnType<typeof captureAudio>>;
   controller: AbortController;
   language?: DictationLanguage;
-  session?: LocalInferenceSession;
-  microphone?: Awaited<ReturnType<typeof prepareMicrophone>>;
-  capture?: Awaited<ReturnType<typeof captureAudio>>;
-  /** Live microphone level for the recording indicator. */
-  meter?: ReturnType<typeof createLevelMeter>;
-  /** Model and threads of the dictation session, to reuse it for the next rubric. */
-  whisperKey?: string;
   /** Model load started with the microphone; awaited before transcribing. */
   loading?: Promise<void>;
+  /** Live microphone level for the recording indicator. */
+  meter?: ReturnType<typeof createLevelMeter>;
+  microphone?: Awaited<ReturnType<typeof prepareMicrophone>>;
   /** Native companion path: no WASM session, no parked model. */
   native?: boolean;
-};
+  session?: LocalInferenceSession;
+  /** Model and threads of the dictation session, to reuse it for the next rubric. */
+  whisperKey?: string;
+}
 type PreparedMicrophone = Awaited<ReturnType<typeof prepareMicrophone>>;
 /** Microphone kept open between the dictations of one guided note. */
-type HeldMicrophone = {
-  microphone: PreparedMicrophone;
+interface HeldMicrophone {
   controller: AbortController;
+  idle?: ReturnType<typeof setTimeout>;
+  microphone: PreparedMicrophone;
   /** Its level has settled once: later dictations listen at once. */
   settled: boolean;
-  idle?: ReturnType<typeof setTimeout>;
-};
+}
 /** A held microphone left unused this long is closed. */
 export const MICROPHONE_HOLD_MS = 120_000;
 export function useLocalConsultationAi({
@@ -83,20 +87,28 @@ export function useLocalConsultationAi({
   const releaseMicrophone = useCallback(() => {
     const current = held.current;
     held.current = null;
-    if (!current) return;
+    if (!current) {
+      return;
+    }
     clearTimeout(current.idle);
     current.controller.abort();
     current.microphone.close();
   }, []);
   useEffect(() => {
-    if (!native) return;
+    if (!native) {
+      return;
+    }
     let alive = true;
     nativeDictationStatus()
       .then((status) => {
-        if (alive) setNativeReady(status.disponible);
+        if (alive) {
+          setNativeReady(status.disponible);
+        }
       })
       .catch(() => {
-        if (alive) setNativeReady(false);
+        if (alive) {
+          setNativeReady(false);
+        }
       });
     return () => {
       alive = false;
@@ -109,51 +121,64 @@ export function useLocalConsultationAi({
     attempt.meter?.close();
     attempt.microphone?.close();
     attempt.session?.close();
-    if (active.current === attempt) active.current = null;
+    if (active.current === attempt) {
+      active.current = null;
+    }
   }, []);
   /** Current microphone level (0..1), read by the indicator outside React renders. */
   const readLevel = useCallback(() => active.current?.meter?.read() ?? 0, []);
   const cancel = useCallback(() => {
-    if (active.current) dispose(active.current);
+    if (active.current) {
+      dispose(active.current);
+    }
     releaseMicrophone();
     setPhase("idle");
     setProgress({ message: "" });
   }, [dispose, releaseMicrophone]);
   const reportFailure = useCallback(
     (attempt: Attempt, failure: unknown) => {
-      if (active.current !== attempt) return;
+      if (active.current !== attempt) {
+        return;
+      }
       const aborted =
         attempt.controller.signal.aborted ||
         (failure instanceof Error && failure.name === "AbortError");
       dispose(attempt);
       releaseMicrophone();
       setPhase("idle");
-      if (!aborted)
+      if (!aborted) {
         setError(
           failure instanceof Error
             ? failure.message
             : "Le traitement local a échoué. Réessayez."
         );
+      }
     },
     [dispose, releaseMicrophone]
   );
   useEffect(
     () => () => {
-      if (active.current) dispose(active.current);
+      if (active.current) {
+        dispose(active.current);
+      }
       releaseMicrophone();
       releaseWhisperSession();
     },
     [dispose, releaseMicrophone]
   );
   useEffect(() => {
-    if (phase !== "listening") return;
+    if (phase !== "listening") {
+      return;
+    }
     const timer = setInterval(() => setSeconds((value) => value + 1), 1000);
     return () => clearInterval(timer);
   }, [phase]);
 
   const start = useCallback(
     async (models: LocalModelStatus, language: DictationLanguage = "fr") => {
-      if (active.current) return;
+      if (active.current) {
+        return;
+      }
       setError(null);
       setSeconds(0);
       setTranscription(null);
@@ -165,127 +190,153 @@ export function useLocalConsultationAi({
       active.current = attempt;
       const signal = attempt.controller.signal;
       const update = (event: LocalAiProgress) => {
-        if (active.current === attempt) setProgress(event);
+        if (active.current === attempt) {
+          setProgress(event);
+        }
       };
-      await guard(async () => {
-        if (native) {
-          // No silent WASM fallback in the desktop app: a missing companion or
-          // model is said before the microphone opens.
-          const status = await nativeDictationStatus();
-          setNativeReady(status.disponible);
-          if (!status.disponible)
-            throw new Error(
-              status.raison ??
-                "Le moteur de dictée natif n’est pas disponible sur cet ordinateur."
-            );
-        } else {
-          const urls = getLocalModelUrls(models);
-          if (!models.whisperReady)
-            throw new Error(
-              "Installez la dictée sur cet ordinateur avant de commencer."
-            );
-          setPhase("loading-whisper");
-          setProgress({ message: "Préparation de la dictée…" });
-          const threads = whisperThreads();
-          attempt.whisperKey = `${urls.modelRoot}#${threads}`;
-          const taken = await takeWhisperSession(
-            attempt.whisperKey,
-            signal,
-            update
-          );
-          attempt.session = taken.session;
-          // The microphone opens at once; the model loads while the vet speaks
-          // (12 to 18 s on an M1 with 8 GB after a search evicted it).
-          attempt.loading = taken.loaded
-            ? Promise.resolve()
-            : attempt.session
-                .request({ type: "load-whisper", ...urls, threads }, "ready")
-                .then(() => undefined);
-          attempt.loading.catch((failure) => {
-            // A load failure while listening stops the dictation and says why.
-            if (attempt.capture) reportFailure(attempt, failure);
-          });
-        }
-        let microphone: PreparedMicrophone;
-        const kept = held.current;
-        if (
-          holdMicrophone &&
-          kept &&
-          kept.microphone.stream.getAudioTracks().every((track) => track.readyState === "live") &&
-          kept.microphone.audio?.state !== "closed"
-        ) {
-          clearTimeout(kept.idle);
-          microphone = kept.microphone;
-        } else {
-          releaseMicrophone();
-          setPhase("microphone");
-          setProgress({ message: "Autorisation du microphone…" });
-          if (holdMicrophone) {
-            // Its own lifetime: the dictation ends, the microphone stays open.
-            const controller = new AbortController();
-            const follow = () => controller.abort();
-            signal.addEventListener("abort", follow, { once: true });
-            microphone = await guard(() => prepareMicrophone(controller.signal), {
-              cleanup: () => {
-                signal.removeEventListener("abort", follow);
-              },
-            });
-            held.current = { microphone, controller, settled: false };
+      await guard(
+        async () => {
+          if (native) {
+            // No silent WASM fallback in the desktop app: a missing companion or
+            // model is said before the microphone opens.
+            const status = await nativeDictationStatus();
+            setNativeReady(status.disponible);
+            if (!status.disponible) {
+              throw new Error(
+                status.raison ??
+                  "Le moteur de dictée natif n’est pas disponible sur cet ordinateur."
+              );
+            }
           } else {
-            microphone = await prepareMicrophone(signal);
-            attempt.microphone = microphone;
-          }
-        }
-        if (signal.aborted) throw abortError();
-        const warmup = holdMicrophone && !held.current?.settled ? createWarmupDetector() : null;
-        let settle = () => {};
-        const settled = new Promise<void>((resolve) => {
-          settle = resolve;
-        });
-        attempt.capture = await captureAudio(
-          microphone.stream,
-          signal,
-          () => {
-            void stopRef.current();
-          },
-          microphone.audio,
-          {
-            keepOpen: holdMicrophone,
-            onLevel: warmup
-              ? (rms, recorded) => {
-                  if (warmup.push(rms, recorded).state === "stable") settle();
-                }
-              : undefined,
-          }
-        );
-        attempt.meter = createLevelMeter(microphone.audio, microphone.stream);
-        if (warmup) {
-          // Recording already runs; the vet is asked to wait for "listening".
-          setPhase("warming");
-          setProgress({ message: "Préparation du micro…" });
-          await new Promise<void>((resolve, reject) => {
-            const onAbort = () => reject(abortError());
-            if (signal.aborted) return onAbort();
-            signal.addEventListener("abort", onAbort, { once: true });
-            void settled.then(() => {
-              signal.removeEventListener("abort", onAbort);
-              resolve();
+            const urls = getLocalModelUrls(models);
+            if (!models.whisperReady) {
+              throw new Error(
+                "Installez la dictée sur cet ordinateur avant de commencer."
+              );
+            }
+            setPhase("loading-whisper");
+            setProgress({ message: "Préparation de la dictée…" });
+            const threads = whisperThreads();
+            attempt.whisperKey = `${urls.modelRoot}#${threads}`;
+            const taken = await takeWhisperSession(
+              attempt.whisperKey,
+              signal,
+              update
+            );
+            attempt.session = taken.session;
+            // The microphone opens at once; the model loads while the vet speaks
+            // (12 to 18 s on an M1 with 8 GB after a search evicted it).
+            attempt.loading = taken.loaded
+              ? Promise.resolve()
+              : attempt.session
+                  .request({ type: "load-whisper", ...urls, threads }, "ready")
+                  .then(() => undefined);
+            attempt.loading.catch((failure) => {
+              // A load failure while listening stops the dictation and says why.
+              if (attempt.capture) {
+                reportFailure(attempt, failure);
+              }
             });
+          }
+          let microphone: PreparedMicrophone;
+          const kept = held.current;
+          if (
+            holdMicrophone &&
+            kept?.microphone.stream
+              .getAudioTracks()
+              .every((track) => track.readyState === "live") &&
+            kept.microphone.audio?.state !== "closed"
+          ) {
+            clearTimeout(kept.idle);
+            microphone = kept.microphone;
+          } else {
+            releaseMicrophone();
+            setPhase("microphone");
+            setProgress({ message: "Autorisation du microphone…" });
+            if (holdMicrophone) {
+              // Its own lifetime: the dictation ends, the microphone stays open.
+              const controller = new AbortController();
+              const follow = () => controller.abort();
+              signal.addEventListener("abort", follow, { once: true });
+              microphone = await guard(
+                () => prepareMicrophone(controller.signal),
+                {
+                  cleanup: () => {
+                    signal.removeEventListener("abort", follow);
+                  },
+                }
+              );
+              held.current = { microphone, controller, settled: false };
+            } else {
+              microphone = await prepareMicrophone(signal);
+              attempt.microphone = microphone;
+            }
+          }
+          if (signal.aborted) {
+            throw abortError();
+          }
+          const warmup =
+            holdMicrophone && !held.current?.settled
+              ? createWarmupDetector()
+              : null;
+          let settle = () => {
+            // Remplacé aussitôt par le resolve de la promesse ci-dessous.
+          };
+          const settled = new Promise<void>((resolve) => {
+            settle = resolve;
           });
-          if (held.current) held.current.settled = true;
-        }
-        setPhase("listening");
-        setProgress({
-          message:
-            language === "fr"
-              ? "Le micro vous écoute. Parlez naturellement en français."
-              : "Le micro vous écoute. La langue sera reconnue sur cet ordinateur.",
-        });
-      }, {
-        recover: (failure) => {
-          reportFailure(attempt, failure);
+          attempt.capture = await captureAudio(
+            microphone.stream,
+            signal,
+            () => {
+              void stopRef.current();
+            },
+            microphone.audio,
+            {
+              keepOpen: holdMicrophone,
+              onLevel: warmup
+                ? (rms, recorded) => {
+                    if (warmup.push(rms, recorded).state === "stable") {
+                      settle();
+                    }
+                  }
+                : undefined,
+            }
+          );
+          attempt.meter = createLevelMeter(microphone.audio, microphone.stream);
+          if (warmup) {
+            // Recording already runs; the vet is asked to wait for "listening".
+            setPhase("warming");
+            setProgress({ message: "Préparation du micro…" });
+            await new Promise<void>((resolve, reject) => {
+              const onAbort = () => reject(abortError());
+              if (signal.aborted) {
+                return onAbort();
+              }
+              signal.addEventListener("abort", onAbort, { once: true });
+              void settled.then(() => {
+                signal.removeEventListener("abort", onAbort);
+                resolve();
+              });
+            });
+            if (held.current) {
+              held.current.settled = true;
+            }
+          }
+          setPhase("listening");
+          setProgress({
+            message:
+              language === "fr"
+                ? "Le micro vous écoute. Parlez naturellement en français."
+                : "Le micro vous écoute. La langue sera reconnue sur cet ordinateur.",
+          });
         },
-      });
+        {
+          recover: (failure) => {
+            reportFailure(attempt, failure);
+          },
+        }
+      );
     },
     // `native` fixes the engine for the life of the hook (a state, not a prop):
     // it is stable, and naming it keeps the branch honest for the linter.
@@ -293,8 +344,12 @@ export function useLocalConsultationAi({
   );
   const stop = useCallback(async () => {
     const attempt = active.current;
-    if (!attempt?.capture || phase !== "listening") return null;
-    if (!attempt.native && !attempt.session) return null;
+    if (!attempt?.capture || phase !== "listening") {
+      return null;
+    }
+    if (!(attempt.native || attempt.session)) {
+      return null;
+    }
     // Synchronously detach the capture so repeated clicks/limit events cannot
     // request a second transcription with the same transferred buffer.
     const capture = attempt.capture;
@@ -303,54 +358,72 @@ export function useLocalConsultationAi({
     attempt.meter = undefined;
     setPhase("transcribing");
     setProgress({ message: "Transcription locale en cours…" });
-    return await guard(async () => {
-      const audio = capture.stop();
-      attempt.microphone?.close();
-      let raw: string;
-      if (attempt.native) {
-        // One companion process per dictation; it exits when the text is read.
-        const result = await transcribeNatively(
-          audio,
-          attempt.language ?? "fr"
-        );
-        if (active.current !== attempt || attempt.controller.signal.aborted)
-          throw abortError();
-        raw = result.texte;
-      } else {
-        const session = attempt.session;
-        if (!session) throw new Error("Session de dictée absente.");
-        // A dictation shorter than the load waits for the model here.
-        await attempt.loading;
-        const result = await session.request(
-          { type: "transcribe", audio, language: attempt.language ?? "fr", keep: true },
-          "transcript",
-          [audio.buffer as ArrayBuffer]
-        );
-        if (result.type !== "transcript")
-          throw new Error("Échec de transcription.");
-        if (active.current !== attempt || attempt.controller.signal.aborted)
-          throw abortError();
-        raw = result.text;
-        // The model stays loaded for the next rubric; any other local task evicts it.
-        attempt.session = undefined;
-        if (attempt.whisperKey) parkWhisperSession(session, attempt.whisperKey);
-        else session.close();
-      }
-      const text = normalizeSpokenMentions(normalizeTemperatureSymbols(raw));
-      setTranscription(text);
-      dispose(attempt);
-      if (held.current) held.current.idle = setTimeout(releaseMicrophone, MICROPHONE_HOLD_MS);
-      setPhase("idle");
-      setProgress({
-        message: "Transcription terminée. Vous pouvez relire votre dictée.",
-      });
-      return text;
-    }, {
-      recover: (failure) => {
-        reportFailure(attempt, failure);
-        return null;
+    return await guard(
+      async () => {
+        const audio = capture.stop();
+        attempt.microphone?.close();
+        let raw: string;
+        if (attempt.native) {
+          // One companion process per dictation; it exits when the text is read.
+          const result = await transcribeNatively(
+            audio,
+            attempt.language ?? "fr"
+          );
+          if (active.current !== attempt || attempt.controller.signal.aborted) {
+            throw abortError();
+          }
+          raw = result.texte;
+        } else {
+          const session = attempt.session;
+          if (!session) {
+            throw new Error("Session de dictée absente.");
+          }
+          // A dictation shorter than the load waits for the model here.
+          await attempt.loading;
+          const result = await session.request(
+            {
+              type: "transcribe",
+              audio,
+              language: attempt.language ?? "fr",
+              keep: true,
+            },
+            "transcript",
+            [audio.buffer as ArrayBuffer]
+          );
+          if (result.type !== "transcript") {
+            throw new Error("Échec de transcription.");
+          }
+          if (active.current !== attempt || attempt.controller.signal.aborted) {
+            throw abortError();
+          }
+          raw = result.text;
+          // The model stays loaded for the next rubric; any other local task evicts it.
+          attempt.session = undefined;
+          if (attempt.whisperKey) {
+            parkWhisperSession(session, attempt.whisperKey);
+          } else {
+            session.close();
+          }
+        }
+        const text = normalizeSpokenMentions(normalizeTemperatureSymbols(raw));
+        setTranscription(text);
+        dispose(attempt);
+        if (held.current) {
+          held.current.idle = setTimeout(releaseMicrophone, MICROPHONE_HOLD_MS);
+        }
+        setPhase("idle");
+        setProgress({
+          message: "Transcription terminée. Vous pouvez relire votre dictée.",
+        });
+        return text;
       },
-    });
+      {
+        recover: (failure) => {
+          reportFailure(attempt, failure);
+          return null;
+        },
+      }
+    );
   }, [dispose, phase, reportFailure, releaseMicrophone]);
   useEffect(() => {
     stopRef.current = stop;
@@ -362,7 +435,9 @@ export function useLocalConsultationAi({
       context: LocalPatientContext,
       guidedSource?: LocalSoapNote
     ) => {
-      if (active.current) return null;
+      if (active.current) {
+        return null;
+      }
       setError(null);
       // The dictation is over: the microphone closes before the note is written.
       releaseMicrophone();
@@ -380,15 +455,19 @@ export function useLocalConsultationAi({
             attempt.session = session;
           },
           onProgress: (event) => {
-            if (active.current !== attempt) return;
+            if (active.current !== attempt) {
+              return;
+            }
             setProgress(event);
-            if (event.stage === "loading") setPhase("loading-soap");
-            else if (
+            if (event.stage === "loading") {
+              setPhase("loading-soap");
+            } else if (
               event.stage === "generating" ||
               event.stage === "validating" ||
               event.stage === "retrying"
-            )
+            ) {
               setPhase("generating");
+            }
           },
         }).finally(() => {
           attempt.session = undefined;

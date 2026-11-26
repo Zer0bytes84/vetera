@@ -1,21 +1,40 @@
 import { motion } from "framer-motion";
 import type React from "react";
 import { Fragment } from "react";
+import {
+  CatSilhouette,
+  DogSilhouette,
+  PeekingCat,
+  PeekingDog,
+} from "./auth-peeking-pets";
 import Logo from "./Logo";
-import { CatSilhouette, DogSilhouette, PeekingCat, PeekingDog } from "./auth-peeking-pets";
 import "./auth-clinic.css";
 
 /** Left half of the first-run screens (login, activation): brand canvas,
  * bAItari wordmark, the screen's message and the rubrics at the bottom. */
-export function AuthBrandPanel({ children, rubrics }: { children: React.ReactNode; rubrics: string[] }) {
+export function AuthBrandPanel({
+  children,
+  rubrics,
+}: {
+  children: React.ReactNode;
+  rubrics: string[];
+}) {
   return (
     <section
       className="relative hidden min-h-screen flex-col justify-between border-white/50 border-r p-10 lg:flex xl:p-14 dark:border-white/[0.06]"
       onPointerMove={(event) => {
-        if (event.pointerType !== "mouse") return;
+        if (event.pointerType !== "mouse") {
+          return;
+        }
         const box = event.currentTarget.getBoundingClientRect();
-        event.currentTarget.style.setProperty("--auth-light-x", `${event.clientX - box.left}px`);
-        event.currentTarget.style.setProperty("--auth-light-y", `${event.clientY - box.top}px`);
+        event.currentTarget.style.setProperty(
+          "--auth-light-x",
+          `${event.clientX - box.left}px`
+        );
+        event.currentTarget.style.setProperty(
+          "--auth-light-y",
+          `${event.clientY - box.top}px`
+        );
       }}
     >
       <div aria-hidden="true" className="auth-brand-canvas">
@@ -44,7 +63,12 @@ export function AuthBrandPanel({ children, rubrics }: { children: React.ReactNod
       <p aria-hidden="true" className="auth-clinic-rubrics">
         {rubrics.map((rubric, index) => (
           <Fragment key={rubric}>
-            {index > 0 && <> <span>/</span> </>}
+            {index > 0 && (
+              <>
+                {" "}
+                <span>/</span>{" "}
+              </>
+            )}
             {rubric}
           </Fragment>
         ))}

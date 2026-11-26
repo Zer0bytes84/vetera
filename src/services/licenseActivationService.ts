@@ -12,8 +12,8 @@ export const LICENSE_PUBLIC_KEY = import.meta.env.VITE_LICENSE_PUBLIC_KEY || "";
 const DEVICE_ID_SETTING = "baitari-license-installation-v2";
 export interface ActivatedLicense {
   createdAt: string;
-  email: string;
   deviceCount: number;
+  email: string;
   expiresAt: string | null;
   id: string;
   maxDevices: number;
@@ -37,7 +37,10 @@ export function getStoredAdminToken(): string {
   } catch {
     /* Storage unavailable. */
   }
-  if (tokenSession !== localStorage.getItem("auth_token") || Date.now() >= tokenExpiresAt) {
+  if (
+    tokenSession !== localStorage.getItem("auth_token") ||
+    Date.now() >= tokenExpiresAt
+  ) {
     sessionAdminToken = "";
   }
   return sessionAdminToken;
@@ -94,7 +97,9 @@ export function getDeviceId(): Promise<string> {
         });
       }
       const stored = localStorage.getItem(DEVICE_ID_SETTING);
-      if (stored) return stored;
+      if (stored) {
+        return stored;
+      }
       const id = createUuid();
       localStorage.setItem(DEVICE_ID_SETTING, id);
       return id;
@@ -114,7 +119,7 @@ async function licenseRequest(
   body: Record<string, string>,
   timeoutMs = LICENSE_REQUEST_TIMEOUT_MS
 ): Promise<LicenseActivationResult> {
-  if (!ACTIVATION_SERVER_URL || !LICENSE_PUBLIC_KEY) {
+  if (!(ACTIVATION_SERVER_URL && LICENSE_PUBLIC_KEY)) {
     throw new LicenseActivationError(
       "Le serveur d’activation n’est pas configuré pour cette version. Contactez l’administrateur.",
       0,
@@ -131,14 +136,19 @@ async function licenseRequest(
     );
   }
   const deviceId = await getDeviceId();
-  const response = await fetchAdminResponse(`${ACTIVATION_SERVER_URL}${path}`, {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({ ...body, deviceId }),
-  }, timeoutMs);
+  const response = await fetchAdminResponse(
+    `${ACTIVATION_SERVER_URL}${path}`,
+    {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ ...body, deviceId }),
+    },
+    timeoutMs
+  );
   const payload = await readAdminResponse<LicenseActivationResult>(response);
-  if (!payload?.activationToken || !payload.license?.email)
+  if (!(payload?.activationToken && payload.license?.email)) {
     throw new LicenseActivationError("Réponse d’activation invalide.");
+  }
   const email = body.email || payload.license.email;
   const lease = await verifyLicenseLease(
     payload.activationToken,
@@ -146,20 +156,25 @@ async function licenseRequest(
     deviceId,
     email
   );
-  if (lease.sub !== payload.license.id)
+  if (lease.sub !== payload.license.id) {
     throw new LicenseActivationError("Réponse d’activation incohérente.");
+  }
   return payload;
 }
 
-export async function activateLicense(
+export function activateLicense(
   email: string,
   key: string,
   timeoutMs?: number
 ): Promise<LicenseActivationResult> {
-  return licenseRequest("/v1/activate", {
-    email: email.trim().toLowerCase(),
-    key,
-  }, timeoutMs);
+  return licenseRequest(
+    "/v1/activate",
+    {
+      email: email.trim().toLowerCase(),
+      key,
+    },
+    timeoutMs
+  );
 }
 
 export function renewLicenseActivation(

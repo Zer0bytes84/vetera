@@ -4,26 +4,32 @@
  * ouvert est un rappel non terminé ; « d'ici 7 jours » compte les rappels ouverts datés de demain à J+7.
  */
 export interface QuietReminder {
-  kind: "manual" | "medical" | "automatic";
-  date: Date | null;
   completed: boolean;
-  title: string;
+  date: Date | null;
+  kind: "manual" | "medical" | "automatic";
   patientName?: string;
+  title: string;
 }
 
 export interface ReminderQuiet<T extends QuietReminder = QuietReminder> {
+  completed: number;
   next: T | null;
   openManual: number;
   openMedical: number;
   week: number;
-  completed: number;
 }
 
-const dayKey = (date: Date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+const dayKey = (date: Date) =>
+  `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 
-export function buildReminderQuiet<T extends QuietReminder>(items: T[], now: Date): ReminderQuiet<T> {
+export function buildReminderQuiet<T extends QuietReminder>(
+  items: T[],
+  now: Date
+): ReminderQuiet<T> {
   const today = dayKey(now);
-  const horizon = dayKey(new Date(now.getFullYear(), now.getMonth(), now.getDate() + 7));
+  const horizon = dayKey(
+    new Date(now.getFullYear(), now.getMonth(), now.getDate() + 7)
+  );
   const open = items.filter((item) => !item.completed);
   const ahead = open
     .filter((item) => item.date && dayKey(item.date) > today)

@@ -2,12 +2,13 @@ import { readFileSync } from "node:fs";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
+import { codeText } from "../../helpers/code-text";
 import { HeaderSearch } from "@/modules/shell/components/header-search";
 
 // The search moved from the sidebar to the header on 5 November 2026
 // (docs/recus/2026-11-05/recherche-entete/). Only the container changed: the
 // field opens the same command palette, with the same shortcut and engine.
-const SHELL = readFileSync("src/modules/shell/app-shell.tsx", "utf8");
+const SHELL = codeText(readFileSync("src/modules/shell/app-shell.tsx", "utf8"));
 const SIDEBAR = readFileSync("src/components/app-sidebar.tsx", "utf8");
 
 describe("recherche dans l'entête", () => {
@@ -24,14 +25,14 @@ describe("recherche dans l'entête", () => {
   });
 
   it("ouvre exactement la palette d'avant : même état, même raccourci", () => {
-    expect(SHELL).toContain("<HeaderSearch onOpen={() => setPaletteOpen(true)} open={paletteOpen} />");
+    expect(SHELL).toContain(codeText("<HeaderSearch onOpen={() => setPaletteOpen(true)} open={paletteOpen} />"));
     // The ⌘K / Ctrl+K handler and the palette itself are untouched.
-    expect(SHELL).toMatch(/setPaletteOpen\(\(current\) => !current\)/);
-    expect(SHELL).toContain("onClose={() => setPaletteOpen(false)}");
+    expect(SHELL).toContain(codeText("setPaletteOpen((current) => !current)"));
+    expect(SHELL).toContain(codeText("onClose={() => setPaletteOpen(false)}"));
   });
 
   it("vit à droite de l'entête : après le fil d'Ariane, avant les outils", () => {
-    const toggle = SHELL.indexOf("<HeaderSidebarToggle />");
+    const toggle = SHELL.indexOf(codeText("<HeaderSidebarToggle />"));
     const crumb = SHELL.indexOf("<HeaderBreadcrumb");
     const search = SHELL.indexOf("<HeaderSearch ");
     const tools = SHELL.indexOf("shell-toolbar-actions");
@@ -53,7 +54,7 @@ describe("recherche dans l'entête", () => {
     expect(toggle).toContain("onClick={toggleSidebar}");
     expect(toggle).toContain('shortcut="⌘ B"');
     // Le séparateur est posé par l'entête, entre le bouton et le fil d'Ariane.
-    const from = SHELL.indexOf("<HeaderSidebarToggle />");
+    const from = SHELL.indexOf(codeText("<HeaderSidebarToggle />"));
     const to = SHELL.indexOf("<HeaderBreadcrumb");
     expect(SHELL.slice(from, to)).toContain('className="shell-header-divider"');
   });

@@ -1,7 +1,6 @@
 "use client";
 
 import { Dialog as SheetPrimitive } from "@base-ui/react/dialog";
-import { XIcon } from "@/lib/icons";
 import type * as React from "react";
 import { useRef } from "react";
 import {
@@ -16,6 +15,7 @@ import {
   useInModalChrome,
 } from "@/components/ui/modal-chrome";
 import { Button } from "@/components/ui/button";
+import { XIcon } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 
 function Sheet({ ...props }: SheetPrimitive.Root.Props) {
@@ -179,10 +179,7 @@ markModalSlot(SheetFooter, "footer");
 function SheetTitle({ className, ...props }: SheetPrimitive.Title.Props) {
   return (
     <SheetPrimitive.Title
-      className={cn(
-        "font-heading font-medium t-24 text-foreground",
-        className
-      )}
+      className={cn("t-24 font-heading font-medium text-foreground", className)}
       data-slot="sheet-title"
       {...props}
     />

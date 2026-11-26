@@ -1,4 +1,3 @@
-import { getBrowserPasswordHash } from "../browserCredentials";
 import bcrypt from "bcryptjs";
 import {
   clearBrowserRows,
@@ -8,7 +7,10 @@ import {
   isTauriRuntime,
   updateBrowserRow,
 } from "../browser-store";
+import { getBrowserPasswordHash } from "../browserCredentials";
 import { generateId, runDbOperation, runDbRead } from "./database";
+
+const LEGACY_SHA256_HASH = /^[a-f0-9]{64}$/i;
 
 export interface LoginCredentials {
   email: string;
@@ -52,23 +54,23 @@ async function getRegistrationRole(): Promise<string> {
   return result[0]?.count === 0 ? "admin" : "stagiaire";
 }
 
-type BrowserUserRecord = {
-  id: string;
-  email: string;
-  passwordHash?: string;
-  password_hash?: string;
+interface BrowserUserRecord {
+  avatarUrl?: string | null;
   displayName: string;
+  email: string;
+  id: string;
+  password_hash?: string;
+  passwordHash?: string;
   role: string;
   status: "active" | "inactive";
-  avatarUrl?: string | null;
-};
+}
 
-type BrowserSessionRecord = {
-  id: string;
-  userId: string;
-  token: string;
+interface BrowserSessionRecord {
   expiresAt: string;
-};
+  id: string;
+  token: string;
+  userId: string;
+}
 
 function legacySha256(value: string): string {
   const rightRotate = (word: number, amount: number) =>
@@ -110,6 +112,7 @@ function legacySha256(value: string): string {
 
   const workingHash = hash.slice(0, 8);
   for (let j = 0; j < words[lengthProperty]; ) {
+    // biome-ignore lint/suspicious/noAssignInExpressions: SHA-256 écrit à la main (empreintes des anciens comptes) : l’avance de 16 mots dans la découpe est voulue, une réécriture risquerait de changer l’empreinte.
     const w = words.slice(j, (j += 16));
     const oldHash = workingHash.slice();
     for (let i = 0; i < 64; i += 1) {
@@ -122,6 +125,7 @@ function legacySha256(value: string): string {
         (rightRotate(e, 6) ^ rightRotate(e, 11) ^ rightRotate(e, 25)) +
         ((e & workingHash[5]) ^ (~e & workingHash[6])) +
         k[i] +
+        // biome-ignore lint/suspicious/noAssignInExpressions: SHA-256 écrit à la main : le mot w[i] du message étendu est calculé et rangé dans la même expression, on ne réécrit pas ce code de hachage.
         (w[i] =
           i < 16
             ? w[i] | 0
@@ -166,11 +170,14 @@ export async function hashPassword(password: string): Promise<string> {
   return bcrypt.hash(password, salt);
 }
 
+// biome-ignore lint/suspicious/useAwait: rend false ou une comparaison SHA-256 synchrone dans plusieurs branches ; la signature Promise<boolean> exige async (tsc TS2322 sans)
 export async function verifyPassword(
   password: string,
   hash: unknown
 ): Promise<boolean> {
-  if (typeof password !== "string" || typeof hash !== "string" || !hash) return false;
+  if (typeof password !== "string" || typeof hash !== "string" || !hash) {
+    return false;
+  }
   if (
     hash.startsWith("$2") ||
     hash.startsWith("$2a") ||
@@ -179,7 +186,7 @@ export async function verifyPassword(
     return bcrypt.compare(password, hash);
   }
 
-  if (/^[a-f0-9]{64}$/i.test(hash)) {
+  if (LEGACY_SHA256_HASH.test(hash)) {
     return legacySha256(password) === hash.toLowerCase();
   }
 
@@ -202,7 +209,9 @@ export async function login(credentials: LoginCredentials): Promise<AuthUser> {
 
     const storedHash = getBrowserPasswordHash(user);
     if (!storedHash) {
-      throw new Error("Ce profil ne possède pas de mot de passe enregistré dans ce navigateur. Les comptes de l’application Tauri ne sont pas partagés avec le navigateur.");
+      throw new Error(
+        "Ce profil ne possède pas de mot de passe enregistré dans ce navigateur. Les comptes de l’application Tauri ne sont pas partagés avec le navigateur."
+      );
     }
     const isValid = await verifyPassword(credentials.password, storedHash);
     if (!isValid) {
@@ -386,7 +395,9 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
       );
     }
 
-    if (!user || user.status !== "active") return null;
+    if (!user || user.status !== "active") {
+      return null;
+    }
 
     return {
       id: user.id,
@@ -412,7 +423,9 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
     );
   }
 
-  if (users.length === 0 || users[0].status !== "active") return null;
+  if (users.length === 0 || users[0].status !== "active") {
+    return null;
+  }
 
   const user = users[0];
 

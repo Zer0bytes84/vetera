@@ -20,7 +20,7 @@ export function ShortcutTooltip({
       <TooltipContent>
         {label}
         {shortcut && (
-          <kbd className="ml-2 rounded border border-current/25 px-1 font-mono t-12">
+          <kbd className="t-12 ml-2 rounded border border-current/25 px-1 font-mono">
             {shortcut}
           </kbd>
         )}

@@ -10,9 +10,14 @@ export function PageDate() {
   useEffect(() => {
     const midnight = new Date(today);
     midnight.setHours(24, 0, 0, 0);
-    const timer = window.setTimeout(() => setToday(new Date()), Math.max(1000, midnight.getTime() - Date.now()));
+    const timer = window.setTimeout(
+      () => setToday(new Date()),
+      Math.max(1000, midnight.getTime() - Date.now())
+    );
     const refresh = () => {
-      if (document.visibilityState === "visible") setToday(new Date());
+      if (document.visibilityState === "visible") {
+        setToday(new Date());
+      }
     };
     document.addEventListener("visibilitychange", refresh);
     return () => {
@@ -25,11 +30,19 @@ export function PageDate() {
   const language = i18n.language || "fr-FR";
   const label = language.startsWith("fr")
     ? formatLongDay(today)
-    : new Intl.DateTimeFormat(language, { weekday: "long", day: "numeric", month: "long" }).format(today);
+    : new Intl.DateTimeFormat(language, {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+      }).format(today);
   const localDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
 
   return (
-    <time data-slot="page-date" dateTime={localDate} className="block text-xs normal-case leading-4 text-muted-foreground">
+    <time
+      className="block text-muted-foreground text-xs normal-case leading-4"
+      data-slot="page-date"
+      dateTime={localDate}
+    >
       {label}
     </time>
   );

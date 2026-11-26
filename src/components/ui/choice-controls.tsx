@@ -17,11 +17,17 @@ const inset =
   "shadow-[inset_0_1px_2px_rgb(0_0_0/0.14)] dark:shadow-[inset_0_1px_2px_rgb(0_0_0/0.5)]";
 
 /** Controlled when `value` is set, otherwise keeps its own state. */
-function useControllable<T>(value: T | undefined, initial: T, onChange?: (v: T) => void) {
+function useControllable<T>(
+  value: T | undefined,
+  initial: T,
+  onChange?: (v: T) => void
+) {
   const [inner, setInner] = useState(initial);
   const current = value === undefined ? inner : value;
   const set = (next: T) => {
-    if (value === undefined) setInner(next);
+    if (value === undefined) {
+      setInner(next);
+    }
     onChange?.(next);
   };
   return [current, set] as const;
@@ -29,12 +35,12 @@ function useControllable<T>(value: T | undefined, initial: T, onChange?: (v: T) 
 
 const ease = "ease-[cubic-bezier(0.23,1,0.32,1)]";
 
-type Labelled = {
+interface Labelled {
+  className?: string;
+  description?: React.ReactNode;
   /** Visible label next to the control; clicking it toggles the control. */
   label?: React.ReactNode;
-  description?: React.ReactNode;
-  className?: string;
-};
+}
 
 function Field({
   label,
@@ -42,9 +48,17 @@ function Field({
   className,
   children,
 }: Labelled & { children: React.ReactNode }) {
-  if (!label) return <>{children}</>;
+  if (!label) {
+    return <>{children}</>;
+  }
   return (
-    <label className={cn("flex cursor-pointer items-start gap-3 select-none", className)}>
+    // biome-ignore lint/a11y/noLabelWithoutControl: Field générique : le contrôle (Checkbox, Radio…) arrive par children, Biome ne peut pas le voir.
+    <label
+      className={cn(
+        "flex cursor-pointer select-none items-start gap-3",
+        className
+      )}
+    >
       <span className="flex min-h-5 items-center">{children}</span>
       <span className="min-w-0 flex-1">
         <span className="block text-sm">{label}</span>
@@ -59,7 +73,10 @@ function Field({
 }
 
 export type SwitchProps = Labelled &
-  Omit<React.ComponentProps<"button">, "onChange" | "value" | "defaultChecked"> & {
+  Omit<
+    React.ComponentProps<"button">,
+    "onChange" | "value" | "defaultChecked"
+  > & {
     checked?: boolean;
     defaultChecked?: boolean;
     onCheckedChange?: (checked: boolean) => void;
@@ -79,52 +96,52 @@ export function Switch({
   const [checked, setChecked] = useControllable(
     checkedProp,
     defaultChecked,
-    onCheckedChange,
+    onCheckedChange
   );
   // Keyboard toggles skip the slide; pointer toggles get it.
   const [instant, setInstant] = useState(false);
 
   const control = (
     <button
-      type="button"
-      role="switch"
       aria-checked={checked}
-      disabled={disabled}
-      data-instant={instant || undefined}
-      onClick={(e) => {
-        setInstant(e.detail === 0);
-        setChecked(!checked);
-      }}
       className={cn(
         "group relative h-7 w-12 shrink-0 rounded-full transition-colors duration-200 disabled:opacity-40 data-instant:transition-none",
         ease,
         // Switch green, brighter than the text-safe --positive.
         inset,
         checked ? "bg-[#34c759] dark:bg-[#30d158]" : "bg-foreground/[0.12]",
-        !label && className,
+        !label && className
       )}
+      data-instant={instant || undefined}
+      disabled={disabled}
+      onClick={(e) => {
+        setInstant(e.detail === 0);
+        setChecked(!checked);
+      }}
+      role="switch"
+      type="button"
       {...props}
     >
       <span
         aria-hidden="true"
         className={cn(
           "absolute top-1/2 left-[11px] h-2.5 w-[2px] -translate-y-1/2 rounded-full bg-white/80 transition-opacity duration-150",
-          !checked && "opacity-0",
+          !checked && "opacity-0"
         )}
       />
       <svg
         aria-hidden="true"
-        viewBox="0 0 10 10"
         className={cn(
           "absolute top-1/2 right-[8px] size-2.5 -translate-y-1/2 text-foreground/40 transition-opacity duration-150",
-          checked && "opacity-0",
+          checked && "opacity-0"
         )}
+        viewBox="0 0 10 10"
       >
         <circle
           cx="5"
           cy="5"
-          r="3.75"
           fill="none"
+          r="3.75"
           stroke="currentColor"
           strokeWidth="1.5"
         />
@@ -136,21 +153,24 @@ export function Switch({
           ease,
           checked
             ? "translate-x-5 group-enabled:group-active:translate-x-4"
-            : "dark:bg-[linear-gradient(180deg,#a8a8a8,#7a7a7a)]",
+            : "dark:bg-[linear-gradient(180deg,#a8a8a8,#7a7a7a)]"
         )}
       />
     </button>
   );
 
   return (
-    <Field label={label} description={description} className={className}>
+    <Field className={className} description={description} label={label}>
       {control}
     </Field>
   );
 }
 
 export type CheckboxProps = Labelled &
-  Omit<React.ComponentProps<"button">, "onChange" | "value" | "defaultChecked"> & {
+  Omit<
+    React.ComponentProps<"button">,
+    "onChange" | "value" | "defaultChecked"
+  > & {
     checked?: boolean | "mixed";
     defaultChecked?: boolean | "mixed";
     onCheckedChange?: (checked: boolean) => void;
@@ -170,42 +190,46 @@ export function Checkbox({
   const [checked, setChecked] = useControllable<boolean | "mixed">(
     checkedProp,
     defaultChecked,
-    (v) => onCheckedChange?.(v === true),
+    (v) => onCheckedChange?.(v === true)
   );
   const on = checked !== false;
 
   return (
-    <Field label={label} description={description} className={className}>
+    <Field className={className} description={description} label={label}>
       <button
-        type="button"
-        role="checkbox"
         aria-checked={checked}
-        disabled={disabled}
-        onClick={() => setChecked(checked !== true)}
         className={cn(
           "flex size-5 shrink-0 items-center justify-center rounded-[6px] transition-[background-color,scale] duration-150 active:scale-[0.92] disabled:opacity-40",
           ease,
           inset,
-          on ? "bg-brand text-white" : "bg-foreground/[0.12] hover:bg-foreground/[0.18]",
-          !label && className,
+          on
+            ? "bg-brand text-white"
+            : "bg-foreground/[0.12] hover:bg-foreground/[0.18]",
+          !label && className
         )}
+        disabled={disabled}
+        onClick={() => setChecked(checked !== true)}
+        role="checkbox"
+        type="button"
         {...props}
       >
         {checked === "mixed" ? (
-          <Minus strokeWidth={2.5} className="size-3" aria-hidden="true" />
+          <Minus aria-hidden="true" className="size-3" strokeWidth={2.5} />
         ) : (
-          checked && <Check strokeWidth={2.5} className="size-3" aria-hidden="true" />
+          checked && (
+            <Check aria-hidden="true" className="size-3" strokeWidth={2.5} />
+          )
         )}
       </button>
     </Field>
   );
 }
 
-type RadioContext = {
-  value: string | undefined;
-  select: (value: string) => void;
+interface RadioContext {
   name: string;
-};
+  select: (value: string) => void;
+  value: string | undefined;
+}
 const RadioCtx = createContext<RadioContext | null>(null);
 
 export type RadioGroupProps = Omit<
@@ -230,20 +254,26 @@ export function RadioGroup({
   ...props
 }: RadioGroupProps) {
   const [value, setValue] = useControllable(valueProp, defaultValue, (v) => {
-    if (v !== undefined) onValueChange?.(v);
+    if (v !== undefined) {
+      onValueChange?.(v);
+    }
   });
   const ref = useRef<HTMLDivElement>(null);
 
   const onKeyDown = (e: React.KeyboardEvent) => {
-    const step = { ArrowDown: 1, ArrowRight: 1, ArrowUp: -1, ArrowLeft: -1 }[e.key];
-    if (!step) return;
+    const step = { ArrowDown: 1, ArrowRight: 1, ArrowUp: -1, ArrowLeft: -1 }[
+      e.key
+    ];
+    if (!step) {
+      return;
+    }
     e.preventDefault();
     const radios = [
       ...(ref.current?.querySelectorAll<HTMLButtonElement>(
-        '[role="radio"]:not(:disabled)',
+        '[role="radio"]:not(:disabled)'
       ) ?? []),
     ];
-    const at = radios.findIndex((r) => r === document.activeElement);
+    const at = radios.indexOf(document.activeElement as HTMLButtonElement);
     const next = radios[(at + step + radios.length) % radios.length];
     next?.focus();
     next?.click();
@@ -252,11 +282,11 @@ export function RadioGroup({
   return (
     <RadioCtx.Provider value={{ value, select: setValue, name: label }}>
       <div
+        aria-label={label}
+        className={cn("flex flex-col gap-2.5", className)}
+        onKeyDown={onKeyDown}
         ref={ref}
         role="radiogroup"
-        aria-label={label}
-        onKeyDown={onKeyDown}
-        className={cn("flex flex-col gap-2.5", className)}
         {...props}
       >
         {children}
@@ -277,27 +307,31 @@ export function Radio({
   ...props
 }: RadioProps) {
   const group = useContext(RadioCtx);
-  if (!group) throw new Error("<Radio> must be used inside <RadioGroup>");
+  if (!group) {
+    throw new Error("<Radio> must be used inside <RadioGroup>");
+  }
   const checked = group.value === value;
   // The checked radio is the group's tab stop; with none checked, every radio is.
   const tabStop = checked || group.value === undefined;
 
   return (
-    <Field label={label} description={description} className={className}>
+    <Field className={className} description={description} label={label}>
       <button
-        type="button"
-        role="radio"
         aria-checked={checked}
-        tabIndex={tabStop ? 0 : -1}
-        disabled={disabled}
-        onClick={() => group.select(value)}
         className={cn(
           "flex size-5 shrink-0 items-center justify-center rounded-full transition-[background-color,scale] duration-150 active:scale-[0.92] disabled:opacity-40",
           ease,
           inset,
-          checked ? "bg-brand" : "bg-foreground/[0.12] hover:bg-foreground/[0.18]",
-          !label && className,
+          checked
+            ? "bg-brand"
+            : "bg-foreground/[0.12] hover:bg-foreground/[0.18]",
+          !label && className
         )}
+        disabled={disabled}
+        onClick={() => group.select(value)}
+        role="radio"
+        tabIndex={tabStop ? 0 : -1}
+        type="button"
         {...props}
       >
         <span
@@ -305,7 +339,7 @@ export function Radio({
           className={cn(
             "size-2 rounded-full bg-white transition-[scale,opacity] duration-150",
             ease,
-            checked ? "scale-100 opacity-100" : "scale-50 opacity-0",
+            checked ? "scale-100 opacity-100" : "scale-50 opacity-0"
           )}
         />
       </button>

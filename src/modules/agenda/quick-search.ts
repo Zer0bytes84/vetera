@@ -3,6 +3,9 @@
  * in the dossier, in any order. Selecting a dossier writes "patient + owner"
  * into the field, and species or breed sit between those words in the index.
  */
+
+import { WHITESPACE_RUN } from "@/lib/patterns";
+
 /**
  * Text written into the quick search when a dossier is selected: the
  * patient's name and the owner's real names only. A placeholder such as
@@ -19,8 +22,14 @@ export function selectedDossierSearchLabel(
 }
 
 export function matchesEveryWord(searchIndex: string, query: string) {
-  const words = query.trim().toLowerCase().split(/\s+/).filter(Boolean);
-  if (!words.length) return false;
+  const words = query
+    .trim()
+    .toLowerCase()
+    .split(WHITESPACE_RUN)
+    .filter(Boolean);
+  if (!words.length) {
+    return false;
+  }
   const index = searchIndex.toLowerCase();
   return words.every((word) => index.includes(word));
 }
@@ -33,10 +42,27 @@ export interface DossierMatch<P, O> {
 
 /** Dossiers whose patient or owner holds every word of the query, at most `limit`. */
 export function findDossiers<
-  P extends { breed?: string | null; name: string; ownerId: string; species: string },
-  O extends { email?: string | null; firstName?: string | null; lastName?: string | null; phone?: string | null },
->(patients: readonly P[], ownersById: ReadonlyMap<string, O>, query: string, limit = 8): DossierMatch<P, O>[] {
-  if (!query.trim()) return [];
+  P extends {
+    breed?: string | null;
+    name: string;
+    ownerId: string;
+    species: string;
+  },
+  O extends {
+    email?: string | null;
+    firstName?: string | null;
+    lastName?: string | null;
+    phone?: string | null;
+  },
+>(
+  patients: readonly P[],
+  ownersById: ReadonlyMap<string, O>,
+  query: string,
+  limit = 8
+): DossierMatch<P, O>[] {
+  if (!query.trim()) {
+    return [];
+  }
   return patients
     .map((patient) => {
       const owner = ownersById.get(patient.ownerId);

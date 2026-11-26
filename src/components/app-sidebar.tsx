@@ -1,17 +1,18 @@
 "use client";
 
-import { SidebarIcon } from "@/modules/shell/components/sidebar-icon";
 import {
-  AccountSidebarFooter,
   type AccountMenuProps,
+  AccountSidebarFooter,
 } from "@/modules/shell/components/account-menu";
+import { SidebarIcon } from "@/modules/shell/components/sidebar-icon";
 import "@/modules/shell/premium-sidebar.css";
-import * as React from "react";
+import type React from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { navigationSections } from "@/app/config/navigation";
 import { prefetchView } from "@/app/config/view-registry";
 import { SidebarBrand } from "@/components/mascot/sidebar-brand";
-import { NavMain, type NavItem } from "@/components/nav-main";
+import { type NavItem, NavMain } from "@/components/nav-main";
 import {
   Sidebar,
   SidebarContent,
@@ -21,11 +22,15 @@ import {
 } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
 import {
+  type ClinicTab,
+  isClinicTabVisible,
+  useHospitalizationEnabled,
+} from "@/modules/clinique/clinic-services";
+import {
   CLINIC_TAB_EVENT,
   CLINIC_TAB_OPEN_EVENT,
   CLINIC_TAB_PENDING_KEY,
 } from "@/modules/clinique/clinic-tab-events";
-import { type ClinicTab, isClinicTabVisible, useHospitalizationEnabled } from "@/modules/clinique/clinic-services";
 import { isTauriRuntime } from "@/services/browser-store";
 import type { View } from "@/types";
 
@@ -37,9 +42,15 @@ type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
 };
 
 /** Opens a section of Soins & hospitalisation, mounted or not. */
-function openClinicTab(tab: ClinicTab, currentView: View, onNavigate: (view: View) => void) {
+function openClinicTab(
+  tab: ClinicTab,
+  currentView: View,
+  onNavigate: (view: View) => void
+) {
   if (currentView === "clinique" || currentView === "soins") {
-    window.dispatchEvent(new CustomEvent(CLINIC_TAB_OPEN_EVENT, { detail: tab }));
+    window.dispatchEvent(
+      new CustomEvent(CLINIC_TAB_OPEN_EVENT, { detail: tab })
+    );
     return;
   }
   sessionStorage.setItem(CLINIC_TAB_PENDING_KEY, tab);
@@ -55,20 +66,28 @@ export function AppSidebar({
 }: AppSidebarProps) {
   const { t } = useTranslation();
   const { state } = useSidebar();
-  const navigationRef = React.useRef<HTMLDivElement>(null);
+  const navigationRef = useRef<HTMLDivElement>(null);
   const isCollapsed = state === "collapsed";
-  React.useEffect(() => {
+  // biome-ignore lint/correctness/useExhaustiveDependencies: currentView et isCollapsed ne sont pas lus, mais un changement de vue ou de largeur doit ramener l'élément actif dans la zone visible de la navigation.
+  useEffect(() => {
     const navigation = navigationRef.current;
-    if (!navigation) return;
+    if (!navigation) {
+      return;
+    }
     const revealActiveItem = () => {
-      const active = navigation.querySelector<HTMLElement>('[data-active]');
-      if (!active) return;
+      const active = navigation.querySelector<HTMLElement>("[data-active]");
+      if (!active) {
+        return;
+      }
       const viewport = navigation.getBoundingClientRect();
       const item = active.getBoundingClientRect();
       const top = item.top - viewport.top;
       const bottom = item.bottom - viewport.bottom;
-      if (top < 8) navigation.scrollTop += top - 8;
-      else if (bottom > -8) navigation.scrollTop += bottom + 8;
+      if (top < 8) {
+        navigation.scrollTop += top - 8;
+      } else if (bottom > -8) {
+        navigation.scrollTop += bottom + 8;
+      }
     };
     const frame = requestAnimationFrame(revealActiveItem);
     const observer = new ResizeObserver(revealActiveItem);
@@ -80,14 +99,18 @@ export function AppSidebar({
   }, [currentView, isCollapsed]);
 
   // The section shown inside Soins & hospitalisation, reported by the workspace.
-  const [clinicTab, setClinicTab] = React.useState<ClinicTab>("soins");
-  React.useEffect(() => {
-    const onTab = (event: Event) => setClinicTab((event as CustomEvent<ClinicTab>).detail);
+  const [clinicTab, setClinicTab] = useState<ClinicTab>("soins");
+  useEffect(() => {
+    const onTab = (event: Event) =>
+      setClinicTab((event as CustomEvent<ClinicTab>).detail);
     window.addEventListener(CLINIC_TAB_EVENT, onTab);
     return () => window.removeEventListener(CLINIC_TAB_EVENT, onTab);
   }, []);
   // Sub-pages unfold with their page; a toggle overrides that until the next visit.
-  const [toggled, setToggled] = React.useState<{ view: View; open: Partial<Record<View, boolean>> }>({ view: currentView, open: {} });
+  const [toggled, setToggled] = useState<{
+    view: View;
+    open: Partial<Record<View, boolean>>;
+  }>({ view: currentView, open: {} });
   const unfolded = toggled.view === currentView ? toggled.open : {};
 
   const isDesktopRuntime = isTauriRuntime();
@@ -124,11 +147,17 @@ export function AppSidebar({
       isActive: inClinic && clinicTab === entry.tab,
       onClick: () => openClinicTab(entry.tab, currentView, onNavigate),
     }));
-  const subPages: Partial<Record<View, { open: boolean; children: NavItem["children"] }>> = {
+  const subPages: Partial<
+    Record<View, { open: boolean; children: NavItem["children"] }>
+  > = {
     finances: {
       open: currentView === "finances" || currentView === "finances_analytics",
       children: [
-        { title: t("views.finances_analytics"), isActive: currentView === "finances_analytics", onClick: () => onNavigate("finances_analytics") },
+        {
+          title: t("views.finances_analytics"),
+          isActive: currentView === "finances_analytics",
+          onClick: () => onNavigate("finances_analytics"),
+        },
       ],
     },
   };
@@ -147,7 +176,11 @@ export function AppSidebar({
       onIntent: () => prefetchView(item.view),
       children: sub?.children,
       expanded,
-      onToggle: () => setToggled({ view: currentView, open: { ...unfolded, [item.view]: !expanded } }),
+      onToggle: () =>
+        setToggled({
+          view: currentView,
+          open: { ...unfolded, [item.view]: !expanded },
+        }),
     };
   };
 
@@ -162,28 +195,27 @@ export function AppSidebar({
     ...(operationsSection?.items ?? []),
   ].map(toNavItem);
 
-
   return (
     <Sidebar
       {...props}
-      data-desktop-runtime={isDesktopRuntime ? "true" : undefined}
       className={cn(
         "app-sidebar restored-sidebar",
         variant !== "sidebar" && "border-none",
         props.className
       )}
+      data-desktop-runtime={isDesktopRuntime ? "true" : undefined}
       variant={variant}
     >
       <div className="apple-sidebar-glow" />
 
       <SidebarHeader
-        data-window-drag-region={isDesktopRuntime ? "true" : undefined}
         className={cn(
           "relative z-10 flex shrink-0 flex-row items-center p-0",
           "h-[calc(var(--header-height)+var(--titlebar-clearance))]",
           sidebarHeaderPadding,
           "w-full bg-transparent"
         )}
+        data-window-drag-region={isDesktopRuntime ? "true" : undefined}
         style={{ paddingTop: "var(--titlebar-clearance)" }}
       >
         {/* Hairline separator */}
@@ -202,18 +234,21 @@ export function AppSidebar({
             isCollapsed ? "justify-center" : "justify-between"
           )}
         >
-          <SidebarBrand collapsed={isCollapsed} onHome={() => onNavigate("dashboard")} />
+          <SidebarBrand
+            collapsed={isCollapsed}
+            onHome={() => onNavigate("dashboard")}
+          />
         </div>
       </SidebarHeader>
       <SidebarContent
-        ref={navigationRef}
         className={cn(
           "relative z-10 overflow-y-auto",
           "[scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
           isCollapsed
-            ? "flex flex-col items-center overflow-y-auto! overflow-x-hidden px-0 py-5"
+            ? "overflow-y-auto! flex flex-col items-center overflow-x-hidden px-0 py-5"
             : "px-4 pt-2 pb-6"
         )}
+        ref={navigationRef}
       >
         <div
           className={cn(
@@ -221,7 +256,6 @@ export function AppSidebar({
             isCollapsed ? "w-full items-center gap-4" : "gap-4"
           )}
         >
-
           <NavMain items={workspaceItems} title="Espace de travail" />
 
           <NavMain items={clinicItems} title="Clinique" />
@@ -242,7 +276,7 @@ export function AppSidebar({
           isCollapsed ? (
             <AccountSidebarFooter {...account} collapsed />
           ) : (
-            <div className="mt-2 border-t border-sidebar-border/70 pt-2">
+            <div className="mt-2 border-sidebar-border/70 border-t pt-2">
               <AccountSidebarFooter {...account} />
             </div>
           )

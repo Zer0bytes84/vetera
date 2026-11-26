@@ -1,12 +1,10 @@
-import { formatPhone, formatPersonName } from "@/utils/display-format";
-import { Pill, Stethoscope } from "@/lib/icons";
 import { useTranslation } from "react-i18next";
-
 import { Badge } from "@/components/ui/badge";
+import { Pill, Stethoscope } from "@/lib/icons";
 import type { Patient } from "@/types/db";
-import type { PrescriptionVet, PreviewItem } from "../types";
-
+import { formatPersonName, formatPhone } from "@/utils/display-format";
 import { formatNumber } from "../lib/dose-calculator";
+import type { PrescriptionVet, PreviewItem } from "../types";
 
 export interface PrescriptionPrintLayoutProps {
   className?: string;
@@ -59,7 +57,9 @@ export function PrescriptionPrintLayout({
               {t("prescriptions.preview.clinicName")}
             </h1>
             <p className="text-[11px] text-muted-foreground uppercase tracking-[0.18em]">
-              {(vet?.displayName && formatPersonName(vet.displayName)) || vet?.email || "—"}
+              {(vet?.displayName && formatPersonName(vet.displayName)) ||
+                vet?.email ||
+                "—"}
             </p>
             <p className="mt-0.5 text-[11px] text-muted-foreground">
               {vet?.specialty ?? "Vétérinaire"}
@@ -87,7 +87,7 @@ export function PrescriptionPrintLayout({
                 {patient.breed ? `, ${patient.breed}` : ""})
               </span>
               {patient.reference ? (
-                <span className="mt-0.5 block font-mono font-medium tabular-nums">
+                <span className="mt-0.5 block font-medium font-mono tabular-nums">
                   Réf. {patient.reference}
                 </span>
               ) : null}

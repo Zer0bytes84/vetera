@@ -10,27 +10,27 @@ import {
   buildTodaySchedule,
   endOfDay,
   parseDashboardDate,
-  startOfDay,
   type ScheduleEntry,
+  startOfDay,
 } from "../v2/model";
 
 export interface NowSnapshot {
-  today: ScheduleEntry[];
-  next?: ScheduleEntry;
   allergies?: string;
-  waiting: ScheduleEntry[];
-  /** Waiting room order with an estimated time for each patient. */
-  queue: QueueEstimate[];
-  maximumWait: number;
-  startsIn: number | null;
   /** When the summary was computed, shown as "Mis à jour à". */
   at: Date;
+  maximumWait: number;
+  next?: ScheduleEntry;
+  /** Waiting room order with an estimated time for each patient. */
+  queue: QueueEstimate[];
+  startsIn: number | null;
+  today: ScheduleEntry[];
+  waiting: ScheduleEntry[];
 }
 export interface QueueEstimate {
   entry: ScheduleEntry;
-  position: number;
   /** Estimated time the patient is seen, from the planned slot lengths. */
   estimatedAt: Date;
+  position: number;
 }
 const MINIMUM_SLOT_MS = 5 * 60_000;
 /**
@@ -48,16 +48,21 @@ export function estimateQueue(
   let cursor = Math.max(now.getTime(), current ? current.end.getTime() : 0);
   return waiting.map((entry, index) => {
     const estimatedAt = new Date(cursor);
-    cursor += Math.max(MINIMUM_SLOT_MS, entry.end.getTime() - entry.start.getTime());
+    cursor += Math.max(
+      MINIMUM_SLOT_MS,
+      entry.end.getTime() - entry.start.getTime()
+    );
     return { entry, position: index + 1, estimatedAt };
   });
 }
 export function buildNowSnapshot(
-  today: ScheduleEntry[],
+  scheduled: ScheduleEntry[],
   patients: Patient[],
   now: Date
 ): NowSnapshot {
-  today = today.filter((row) => row.appointment.status !== "cancelled");
+  const today = scheduled.filter(
+    (row) => row.appointment.status !== "cancelled"
+  );
   const waiting = today.filter((row) =>
     ["arrived", "waiting"].includes(row.appointment.status)
   );
@@ -114,8 +119,8 @@ export function buildClinicalTrends(
         month: "short",
       }),
       count: completed.filter((row) => {
-        const date = parseDashboardDate(row.startTime)!;
-        return date >= from && date <= to;
+        const date = parseDashboardDate(row.startTime);
+        return date !== null && date >= from && date <= to;
       }).length,
     };
   });
@@ -207,9 +212,12 @@ export function buildClinicalCash(
   period: ClinicalCashPeriod
 ) {
   const start = startOfDay(period === "quarter" ? addDays(now, -89) : now);
-  if (period === "month") start.setDate(1);
-  if (period === "week")
+  if (period === "month") {
+    start.setDate(1);
+  }
+  if (period === "week") {
     start.setDate(start.getDate() - ((start.getDay() + 6) % 7));
+  }
   if (period === "year") {
     start.setMonth(0, 1);
   }
@@ -221,7 +229,7 @@ export function buildClinicalCash(
   const recent = [...paid]
     .filter(
       (row) =>
-        (parseDashboardDate(row.date)?.getTime() ?? Infinity) <=
+        (parseDashboardDate(row.date)?.getTime() ?? Number.POSITIVE_INFINITY) <=
         endOfDay(now).getTime()
     )
     .sort(
@@ -258,8 +266,12 @@ export function buildDayContext(
       ...new Set(
         rows.flatMap((row) => {
           const date = parseDashboardDate(row.startTime);
-          if (!date || (next ? date <= endOfDay(now) : date >= startOfDay(now)))
+          if (
+            !date ||
+            (next ? date <= endOfDay(now) : date >= startOfDay(now))
+          ) {
             return [];
+          }
           return [startOfDay(date).getTime()];
         })
       ),
@@ -276,7 +288,9 @@ export function buildDayContext(
       })
     )
     .slice(0, 3);
-  if (upcoming.length) return { label: "Prochaines visites", rows: upcoming };
+  if (upcoming.length) {
+    return { label: "Prochaines visites", rows: upcoming };
+  }
   const completed = appointments.filter((row) => row.status === "completed");
   return {
     label: "Dernières visites",

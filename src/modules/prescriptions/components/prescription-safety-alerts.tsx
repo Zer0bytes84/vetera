@@ -1,9 +1,6 @@
 import { Warning } from "@/lib/icons";
 
-import type {
-  SafetyAlert,
-  SafetyAlertLevel,
-} from "../lib/prescription-safety";
+import type { SafetyAlert, SafetyAlertLevel } from "../lib/prescription-safety";
 
 import "./prescription-safety.css";
 
@@ -50,7 +47,11 @@ function AlertSubject({ alert }: { alert: SafetyAlert }) {
 }
 
 /** Bandeau rouge non bloquant, au-dessus des lignes de l'ordonnance. */
-export function PrescriptionSafetyBanner({ alerts }: { alerts: SafetyAlert[] }) {
+export function PrescriptionSafetyBanner({
+  alerts,
+}: {
+  alerts: SafetyAlert[];
+}) {
   if (alerts.length === 0) {
     return null;
   }
@@ -67,8 +68,8 @@ export function PrescriptionSafetyBanner({ alerts }: { alerts: SafetyAlert[] }) 
         {alerts.length > 1 ? "alertes" : "alerte"}
       </p>
       <p className="rx-safety-sub">
-        Alerte informative : l'ordonnance reste modifiable et peut être
-        validée après vérification.
+        Alerte informative : l'ordonnance reste modifiable et peut être validée
+        après vérification.
       </p>
       <ul className="rx-safety-list">
         {alerts.map((alert) => (
@@ -91,7 +92,11 @@ export function PrescriptionSafetyBanner({ alerts }: { alerts: SafetyAlert[] }) 
 }
 
 /** Badges rouges sur la ligne du médicament concerné. */
-export function PrescriptionSafetyBadges({ alerts }: { alerts: SafetyAlert[] }) {
+export function PrescriptionSafetyBadges({
+  alerts,
+}: {
+  alerts: SafetyAlert[];
+}) {
   if (alerts.length === 0) {
     return null;
   }

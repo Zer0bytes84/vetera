@@ -1,3 +1,4 @@
+// biome-ignore-all assist/source/organizeImports: ranger ces imports change l'ordre des règles dans la feuille CSS assemblée (A2, CSS_CHANGE, décision du 25/11) ; l'ordre actuel est celui que l'app affiche
 import type { ReactNode } from "react";
 import { NowBoardView } from "./now-board-view";
 import { DashboardLayoutManager } from "./dashboard-layout-manager";
@@ -19,49 +20,49 @@ import type { Receivable } from "../v2/financial-model";
 export type { WidgetState } from "./clinical/shared";
 
 export interface ClinicalDashboardViewProps {
-  now: NowSnapshot;
+  actionFilter: ActionFilter;
+  alerts: ClinicalAlert[];
+  busyIds: string[];
+  cash: ReturnType<typeof buildClinicalCash>;
+  cashPeriod: ClinicalCashPeriod;
+  context: { label: string; rows: ScheduleEntry[] };
   day: ScheduleEntry[];
   dayDate: Date;
-  context: { label: string; rows: ScheduleEntry[] };
-  alerts: ClinicalAlert[];
   followUp: { count: number; underTreatment: number; hospitalized: number };
+  isCustomizing: boolean;
+  now: NowSnapshot;
+  onActionFilter: (filter: ActionFilter) => void;
+  onAgenda: () => void;
+  onCashPeriod: (period: ClinicalCashPeriod) => void;
+  onCompleteTask: (id: string) => void;
+  onCustomizingChange: (value: boolean) => void;
+  onFinances: () => void;
+  /** Visits move on in Flux only: the dashboard shows them there. */
+  onFlux: (id?: string) => void;
+  onOpenAlert: (alert: ClinicalAlert) => void;
+  onOpenPatient: (id: string) => void;
+  onPatientIntent: () => void;
+  onPatientIntentCancel: () => void;
+  onPatients: () => void;
+  onPlan: (date?: Date) => void;
+  onReminders: () => void;
+  onShiftDay: (days: number) => void;
+  onToday: () => void;
+  onTrendsOpen: (open: boolean) => void;
+  onTrendsPeriod: (days: 30 | 90) => void;
   patientRows: ReturnType<typeof buildPatientFollowUpRows>;
-  cash: ReturnType<typeof buildClinicalCash>;
   pending: number;
-  cashPeriod: ClinicalCashPeriod;
   receivables: Receivable[];
-  trends: ReturnType<typeof buildClinicalTrends>;
-  actionFilter: ActionFilter;
   reducedMotion: boolean;
+  renderRow: (id: string, index: number, content: ReactNode) => ReactNode;
   states: Record<
     "now" | "day" | "actions" | "patients" | "cash" | "trends",
     WidgetState
   >;
-  busyIds: string[];
-  isCustomizing: boolean;
-  onCustomizingChange: (value: boolean) => void;
+  trends: ReturnType<typeof buildClinicalTrends>;
   trendsOpen: boolean;
-  onTrendsOpen: (open: boolean) => void;
-  onTrendsPeriod: (days: 30 | 90) => void;
-  onCashPeriod: (period: ClinicalCashPeriod) => void;
-  onActionFilter: (filter: ActionFilter) => void;
-  onShiftDay: (days: number) => void;
-  onToday: () => void;
-  /** Visits move on in Flux only: the dashboard shows them there. */
-  onFlux: (id?: string) => void;
-  onOpenPatient: (id: string) => void;
-  onPatientIntent: () => void;
-  onPatientIntentCancel: () => void;
-  onCompleteTask: (id: string) => void;
-  onOpenAlert: (alert: ClinicalAlert) => void;
-  onAgenda: () => void;
-  onPlan: (date?: Date) => void;
-  onPatients: () => void;
-  onFinances: () => void;
-  onReminders: () => void;
   /** The dashboard's view switch, shown beside « Ouvrir Flux ». */
   viewControl?: ReactNode;
-  renderRow: (id: string, index: number, content: ReactNode) => ReactNode;
 }
 export function ClinicalDashboardView(p: ClinicalDashboardViewProps) {
   const blocks = [
@@ -73,12 +74,12 @@ export function ClinicalDashboardView(p: ClinicalDashboardViewProps) {
         "clinical-now",
         0,
         <NowBoardView
-          snapshot={p.now}
-          loading={p.states.now.loading}
-          skeleton={p.states.now.skeleton}
           error={p.states.now.error}
-          onRetry={p.states.now.retry}
+          loading={p.states.now.loading}
           onFlux={p.onFlux}
+          onRetry={p.states.now.retry}
+          skeleton={p.states.now.skeleton}
+          snapshot={p.now}
           viewControl={p.viewControl}
         />
       ),
@@ -92,31 +93,31 @@ export function ClinicalDashboardView(p: ClinicalDashboardViewProps) {
         1,
         <div className="grid items-stretch gap-3 xl:grid-cols-[minmax(0,1.65fr)_minmax(300px,1fr)]">
           <DayModule
-            key={p.dayDate.toDateString()}
-            rows={p.day}
-            date={p.dayDate}
             context={p.context}
-            state={p.states.day}
-            reducedMotion={p.reducedMotion}
-            onShiftDay={p.onShiftDay}
-            onToday={p.onToday}
+            date={p.dayDate}
+            key={p.dayDate.toDateString()}
             onAgenda={p.onAgenda}
-            onPlan={() => p.onPlan(p.dayDate)}
-            onPatient={p.onOpenPatient}
+            onFlux={p.onFlux}
             onIntent={p.onPatientIntent}
             onIntentCancel={p.onPatientIntentCancel}
-            onFlux={p.onFlux}
+            onPatient={p.onOpenPatient}
+            onPlan={() => p.onPlan(p.dayDate)}
+            onShiftDay={p.onShiftDay}
+            onToday={p.onToday}
+            reducedMotion={p.reducedMotion}
+            rows={p.day}
+            state={p.states.day}
           />
           <ActionsModule
             alerts={p.alerts}
             busyIds={p.busyIds}
             filter={p.actionFilter}
-            onFilter={p.onActionFilter}
-            state={p.states.actions}
-            reducedMotion={p.reducedMotion}
-            onOpen={p.onOpenAlert}
-            onComplete={p.onCompleteTask}
             onAll={p.onReminders}
+            onComplete={p.onCompleteTask}
+            onFilter={p.onActionFilter}
+            onOpen={p.onOpenAlert}
+            reducedMotion={p.reducedMotion}
+            state={p.states.actions}
           />
         </div>
       ),
@@ -130,22 +131,22 @@ export function ClinicalDashboardView(p: ClinicalDashboardViewProps) {
         2,
         <div className="grid items-stretch gap-3 lg:grid-cols-2">
           <PatientsModule
-            summary={p.followUp}
-            rows={p.patientRows}
-            state={p.states.patients}
-            onPatient={p.onOpenPatient}
             onIntent={p.onPatientIntent}
             onIntentCancel={p.onPatientIntentCancel}
+            onPatient={p.onOpenPatient}
             onPatients={p.onPatients}
+            rows={p.patientRows}
+            state={p.states.patients}
+            summary={p.followUp}
           />
           <CashModule
             cash={p.cash}
-            pending={p.pending}
-            receivables={p.receivables}
-            period={p.cashPeriod}
-            onPeriod={p.onCashPeriod}
-            state={p.states.cash}
             onFinances={p.onFinances}
+            onPeriod={p.onCashPeriod}
+            pending={p.pending}
+            period={p.cashPeriod}
+            receivables={p.receivables}
+            state={p.states.cash}
           />
         </div>
       ),
@@ -158,12 +159,12 @@ export function ClinicalDashboardView(p: ClinicalDashboardViewProps) {
         "clinical-trends",
         3,
         <TrendsModule
-          open={p.trendsOpen}
-          onOpen={p.onTrendsOpen}
           model={p.trends}
+          onOpen={p.onTrendsOpen}
           onPeriod={p.onTrendsPeriod}
-          state={p.states.trends}
           onPlan={p.onPlan}
+          open={p.trendsOpen}
+          state={p.states.trends}
         />
       ),
     },
@@ -173,9 +174,9 @@ export function ClinicalDashboardView(p: ClinicalDashboardViewProps) {
       blocks={blocks}
       firstBlockIds={["clinical-now", "clinical-day"]}
       isEditing={p.isCustomizing}
+      migrateFromPrefix="dashboard_studio_v1"
       onEditingChange={p.onCustomizingChange}
       storageKeyPrefix="dashboard_clinical_v1"
-      migrateFromPrefix="dashboard_studio_v1"
     />
   );
 }

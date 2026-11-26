@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { type CSSProperties, useEffect, useRef, useState } from "react";
 import { AgentStatus } from "@/components/ui/agent-status";
 import "./dictation-states.css";
 
@@ -15,7 +15,13 @@ const SILENCE = 0.08;
  * breath in silence. Animated outside React renders (requestAnimationFrame
  * writes CSS variables), so the assistant panel never re-renders per frame.
  */
-export function DictationLevelMeter({ read, className }: { read: () => number; className?: string }) {
+export function DictationLevelMeter({
+  read,
+  className,
+}: {
+  read: () => number;
+  className?: string;
+}) {
   const ref = useRef<HTMLSpanElement>(null);
   useEffect(() => {
     let frame = 0;
@@ -28,7 +34,10 @@ export function DictationLevelMeter({ read, className }: { read: () => number; c
         // A slight per-bar sway keeps a sustained voice from looking frozen.
         BARS.forEach((weight, index) => {
           const sway = 0.82 + 0.18 * Math.sin(time / 140 + index * 1.7);
-          node.style.setProperty(`--bar-${index}`, (smooth * weight * sway).toFixed(3));
+          node.style.setProperty(
+            `--bar-${index}`,
+            (smooth * weight * sway).toFixed(3)
+          );
         });
         node.toggleAttribute("data-silent", smooth < SILENCE);
       }
@@ -46,21 +55,29 @@ export function DictationLevelMeter({ read, className }: { read: () => number; c
       role="img"
     >
       {BARS.map((_, index) => (
-        <span key={index} style={{ "--bar": `var(--bar-${index}, 0)` } as CSSProperties} />
+        <span
+          // biome-ignore lint/suspicious/noArrayIndexKey: barres du vumètre, BARS est une constante de cinq valeurs ; la position nomme aussi la variable CSS --bar-i
+          key={index}
+          style={{ "--bar": `var(--bar-${index}, 0)` } as CSSProperties}
+        />
       ))}
     </span>
   );
 }
 
 /** After this wait, the panel explains where the permission is given. */
-const HINT_AFTER_MS = 5_000;
+const HINT_AFTER_MS = 5000;
 
 /**
  * Waiting for macOS to answer the microphone permission: never a dead end.
  * Annuler always ends the wait; after a few seconds the panel says where to
  * grant the permission, in case the system dialog never showed.
  */
-export function MicrophonePermissionWait({ onCancel }: { onCancel: () => void }) {
+export function MicrophonePermissionWait({
+  onCancel,
+}: {
+  onCancel: () => void;
+}) {
   const [hint, setHint] = useState(false);
   const [startedAt] = useState(() => Date.now());
   useEffect(() => {
@@ -74,7 +91,7 @@ export function MicrophonePermissionWait({ onCancel }: { onCancel: () => void })
         onStop={onCancel}
         stopLabel="Annuler"
       />
-      <p className="px-2 text-xs leading-relaxed text-muted-foreground">
+      <p className="px-2 text-muted-foreground text-xs leading-relaxed">
         {hint
           ? "Aucune fenêtre ne s’affiche ? Ouvrez Réglages Système → Confidentialité et sécurité → Microphone, autorisez Baitari, puis cliquez à nouveau sur Dicter."
           : "Si macOS vous le demande, cliquez sur Autoriser."}
@@ -92,7 +109,11 @@ export function MicrophoneWarmup({ onCancel }: { onCancel: () => void }) {
   return (
     <div className="microphone-warmup">
       <AgentStatus
-        data={{ label: "Préparation du micro…", detail: "Parlez dès « Écoute en cours ».", startedAt }}
+        data={{
+          label: "Préparation du micro…",
+          detail: "Parlez dès « Écoute en cours ».",
+          startedAt,
+        }}
         onStop={onCancel}
         stopLabel="Annuler"
       />

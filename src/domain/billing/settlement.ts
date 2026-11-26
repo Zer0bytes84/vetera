@@ -82,7 +82,11 @@ export function assertCreditWithinRemaining(
   remainingAmount: number
 ): void {
   assertPositiveAmount(amount);
-  if (!Number.isSafeInteger(remainingAmount) || remainingAmount < 0 || amount > remainingAmount) {
+  if (
+    !Number.isSafeInteger(remainingAmount) ||
+    remainingAmount < 0 ||
+    amount > remainingAmount
+  ) {
     throw new BillingDomainError(
       "CREDIT_EXCEEDS_REMAINING",
       "L'avoir dépasse le total encore créditable de la facture."
@@ -95,7 +99,11 @@ export function assertRefundWithinAvailable(
   availableAmount: number
 ): void {
   assertPositiveAmount(amount);
-  if (!Number.isSafeInteger(availableAmount) || availableAmount < 0 || amount > availableAmount) {
+  if (
+    !Number.isSafeInteger(availableAmount) ||
+    availableAmount < 0 ||
+    amount > availableAmount
+  ) {
     throw new BillingDomainError(
       "REFUND_EXCEEDS_AVAILABLE",
       "Le remboursement dépasse le montant encore remboursable du paiement."
@@ -114,7 +122,10 @@ export function deriveInvoiceSettlementStatus(
   }
 
   const balance = calculateInvoiceBalance(totals);
-  if (totals.grossAmount > 0 && totals.issuedCreditAmount >= totals.grossAmount) {
+  if (
+    totals.grossAmount > 0 &&
+    totals.issuedCreditAmount >= totals.grossAmount
+  ) {
     return "credited";
   }
   if (balance <= 0) {

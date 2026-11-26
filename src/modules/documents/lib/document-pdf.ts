@@ -1,6 +1,7 @@
 import { jsPDF } from "jspdf";
 import { savePdf } from "@/lib/save-pdf";
 
+// biome-ignore lint/suspicious/useAwait: jsPDF compose le document de façon synchrone avant savePdf ; consultation-documents-assistant.tsx fait .catch sur le résultat et ne verrait pas une erreur levée sans async
 export async function exportClinicalDocument(
   title: string,
   text: string
@@ -30,5 +31,5 @@ export async function exportClinicalDocument(
   }
   const filename =
     title.replace(/[^\p{L}\p{N} _-]/gu, "").slice(0, 90) || "Document";
-  return savePdf(doc, filename + ".pdf");
+  return savePdf(doc, `${filename}.pdf`);
 }

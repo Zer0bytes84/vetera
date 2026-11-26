@@ -1,6 +1,6 @@
 import type { Invoice, Transaction } from "@/types/db";
 import { settlementRate } from "../v2/financial-model";
-import { stateOf, type DayUnitState } from "./dashboard-widgets";
+import { type DayUnitState, stateOf } from "./dashboard-widgets";
 
 /**
  * « Cette semaine »: the week's figures, and its appointments as the cycle a ring of dots draws, by hour of
@@ -46,14 +46,18 @@ export function buildWeekFacts(data: {
   const income = (from: Date, to: Date) =>
     transactions
       .filter((t) => {
-        if (t.type !== "income" || t.status !== "paid" || !t.date) return false;
+        if (t.type !== "income" || t.status !== "paid" || !t.date) {
+          return false;
+        }
         const d = new Date(t.date);
         return d >= from && d <= to;
       })
       .reduce((sum, t) => sum + (t.amount || 0), 0);
   const visitsBetween = (from: Date, to: Date) =>
     appointments.filter((a) => {
-      if (!a.startTime || NOT_VISITS.includes(a.status)) return false;
+      if (!a.startTime || NOT_VISITS.includes(a.status)) {
+        return false;
+      }
       const d = new Date(a.startTime);
       return d >= from && d <= to;
     }).length;
@@ -71,23 +75,34 @@ export function buildWeekFacts(data: {
 }
 
 export interface WeekRadial {
-  total: number;
-  hour: { labels: string[]; values: Record<DayUnitState, number[]> };
-  weekday: { labels: string[]; values: Record<DayUnitState, number[]> };
   byState: Record<DayUnitState, number>;
+  hour: { labels: string[]; values: Record<DayUnitState, number[]> };
+  total: number;
+  weekday: { labels: string[]; values: Record<DayUnitState, number[]> };
 }
 
 /** The week's visits, per hour and per weekday (Monday first), by state; their sum is the week's figure. */
-export function buildWeekRadial(appointments: { startTime?: string | null; status: string }[], now: Date): WeekRadial {
+export function buildWeekRadial(
+  appointments: { startTime?: string | null; status: string }[],
+  now: Date
+): WeekRadial {
   const { startOfWeek, endOfToday } = weekWindow(now);
-  const empty = (n: number) => ({ done: Array<number>(n).fill(0), underway: Array<number>(n).fill(0), upcoming: Array<number>(n).fill(0) });
+  const empty = (n: number) => ({
+    done: new Array<number>(n).fill(0),
+    underway: new Array<number>(n).fill(0),
+    upcoming: new Array<number>(n).fill(0),
+  });
   const hour = empty(24);
   const weekday = empty(7);
   let total = 0;
   for (const a of appointments) {
-    if (!a.startTime || NOT_VISITS.includes(a.status)) continue;
+    if (!a.startTime || NOT_VISITS.includes(a.status)) {
+      continue;
+    }
     const d = new Date(a.startTime);
-    if (d < startOfWeek || d > endOfToday) continue;
+    if (d < startOfWeek || d > endOfToday) {
+      continue;
+    }
     const state = stateOf(a.status);
     hour[state][d.getHours()] += 1;
     weekday[state][(d.getDay() + 6) % 7] += 1;
@@ -97,7 +112,14 @@ export function buildWeekRadial(appointments: { startTime?: string | null; statu
   return {
     total,
     hour: { labels: Array.from({ length: 24 }, (_, h) => hh(h)), values: hour },
-    weekday: { labels: ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"], values: weekday },
-    byState: { done: sum(hour.done), underway: sum(hour.underway), upcoming: sum(hour.upcoming) },
+    weekday: {
+      labels: ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"],
+      values: weekday,
+    },
+    byState: {
+      done: sum(hour.done),
+      underway: sum(hour.underway),
+      upcoming: sum(hour.upcoming),
+    },
   };
 }

@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { guard } from "@/lib/guard";
 import type { CareTask } from "@/modules/care-tasks/domain";
 import { careTasksService } from "@/modules/care-tasks/service";
 import { CARE_TASKS_CHANGED } from "@/modules/care-tasks/use-care-tasks";
 import { ALERT_DAYS_AHEAD, alertWindow } from "./model/alert-bars";
-import { guard } from "@/lib/guard";
 
 /**
  * The care of the alerts' window (six days back to seven days ahead), and every earlier care still not done, which stays late
@@ -19,22 +19,39 @@ export function useAlertCare(now: Date) {
   const refresh = useCallback(async () => {
     const request = ++sequence.current;
     const { from } = alertWindow(new Date());
-    const end = new Date(from.getFullYear(), from.getMonth(), from.getDate() + 6 + ALERT_DAYS_AHEAD + 2);
-    return await guard(async () => {
-      const [rows, older] = await Promise.all([careTasksService.list(from, end), careTasksService.overdueBefore(from)]);
-      if (request !== sequence.current) return;
-      setTasks([...older, ...rows]);
-      setError(null);
-    }, {
-      recover: () => {
-        if (request === sequence.current) setError("Les soins n’ont pas pu être chargés.");
+    const end = new Date(
+      from.getFullYear(),
+      from.getMonth(),
+      from.getDate() + 6 + ALERT_DAYS_AHEAD + 2
+    );
+    return await guard(
+      async () => {
+        const [rows, older] = await Promise.all([
+          careTasksService.list(from, end),
+          careTasksService.overdueBefore(from),
+        ]);
+        if (request !== sequence.current) {
+          return;
+        }
+        setTasks([...older, ...rows]);
+        setError(null);
       },
-      cleanup: () => {
-        if (request === sequence.current) setLoading(false);
-      },
-    });
+      {
+        recover: () => {
+          if (request === sequence.current) {
+            setError("Les soins n’ont pas pu être chargés.");
+          }
+        },
+        cleanup: () => {
+          if (request === sequence.current) {
+            setLoading(false);
+          }
+        },
+      }
+    );
   }, []);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: dayKey n'est pas lu, mais le changement de jour doit relancer la lecture des soins.
   useEffect(() => {
     void refresh();
     const again = () => void refresh();

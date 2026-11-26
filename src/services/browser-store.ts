@@ -1,4 +1,7 @@
-import { formatPatientReference, patientReferenceNumber } from "@/modules/patients/reference/reference";
+import {
+  formatPatientReference,
+  patientReferenceNumber,
+} from "@/modules/patients/reference/reference";
 export type BrowserTableName =
   | "users"
   | "sessions"
@@ -33,15 +36,15 @@ export type BrowserTableName =
   | "audit_log"
   | "notification_state";
 
-export type BrowserRow = {
-  id?: string;
+export interface BrowserRow {
   createdAt?: string;
+  id?: string;
   updatedAt?: string;
-};
+}
 
-type BrowserDatabaseState = {
+interface BrowserDatabaseState {
   tables: Record<BrowserTableName, BrowserRow[]>;
-};
+}
 
 const STORAGE_KEY = "vetera.browser-db.v1";
 
@@ -174,16 +177,28 @@ const PATIENT_REFERENCE_COUNTER_KEY = `${STORAGE_KEY}.patient-reference-counter`
  * The browser demo store mirrors the SQLite trigger: a counter kept apart from
  * the rows, so a deleted patient's number is never given again.
  */
-function withPatientReference<T extends BrowserRow>(state: BrowserDatabaseState, row: T): T {
+function withPatientReference<T extends BrowserRow>(
+  state: BrowserDatabaseState,
+  row: T
+): T {
   if ((row as { reference?: string }).reference) {
     return row;
   }
   const highestStored = state.tables.patients.reduce(
-    (highest, entry) => Math.max(highest, patientReferenceNumber((entry as { reference?: string }).reference ?? "") ?? 0),
+    (highest, entry) =>
+      Math.max(
+        highest,
+        patientReferenceNumber(
+          (entry as { reference?: string }).reference ?? ""
+        ) ?? 0
+      ),
     0
   );
-  const saved = Number(window.localStorage.getItem(PATIENT_REFERENCE_COUNTER_KEY) ?? 0);
-  const next = Math.max(highestStored, Number.isSafeInteger(saved) ? saved : 0) + 1;
+  const saved = Number(
+    window.localStorage.getItem(PATIENT_REFERENCE_COUNTER_KEY) ?? 0
+  );
+  const next =
+    Math.max(highestStored, Number.isSafeInteger(saved) ? saved : 0) + 1;
   window.localStorage.setItem(PATIENT_REFERENCE_COUNTER_KEY, String(next));
   return { ...row, reference: formatPatientReference(next) };
 }
@@ -194,7 +209,9 @@ export function insertBrowserRow<T extends BrowserRow>(
 ): T {
   const state = readState();
   const preparedRow =
-    tableName === "patients" ? withPatientReference(state, withTimestamps(row)) : withTimestamps(row);
+    tableName === "patients"
+      ? withPatientReference(state, withTimestamps(row))
+      : withTimestamps(row);
 
   state.tables[tableName] = [...state.tables[tableName], preparedRow];
   writeState(state);
@@ -264,12 +281,14 @@ let browserTransactionQueue: Promise<unknown> = Promise.resolve();
 export function runBrowserTablesTransaction<T>(
   operation: (tables: Record<BrowserTableName, BrowserRow[]>) => Promise<T>
 ): Promise<T> {
-  const pending = browserTransactionQueue.catch(() => undefined).then(async () => {
-    const state = cloneState(readState());
-    const result = await operation(state.tables);
-    writeState(state);
-    return result;
-  });
+  const pending = browserTransactionQueue
+    .catch(() => undefined)
+    .then(async () => {
+      const state = cloneState(readState());
+      const result = await operation(state.tables);
+      writeState(state);
+      return result;
+    });
   browserTransactionQueue = pending;
   return pending;
 }

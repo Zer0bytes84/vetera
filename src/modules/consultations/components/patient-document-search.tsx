@@ -1,6 +1,12 @@
+import {
+  Check as CheckIcon,
+  Copy as CopyIcon,
+  Plus as PlusIcon,
+} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
+import { Button as ActionButton } from "@/components/ui/action-button";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,7 +17,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Input } from "@/components/ui/input";
+import { PromptSuggestions } from "@/components/ui/prompt-suggestions";
+import { SourceList } from "@/components/ui/source-list";
+import { ToolCallBlock } from "@/components/ui/tool-call-block";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import {
   ChevronDown,
   CircleNotch,
@@ -21,25 +35,19 @@ import {
   Stop,
   X,
 } from "@/lib/icons";
-import { toast } from "sonner";
-import { Check as CheckIcon, Copy as CopyIcon, Plus as PlusIcon } from "lucide-react";
-import { Button as ActionButton } from "@/components/ui/action-button";
-import { PromptSuggestions } from "@/components/ui/prompt-suggestions";
-import { SourceList } from "@/components/ui/source-list";
-import { ToolCallBlock } from "@/components/ui/tool-call-block";
 import { useLocalConsultationAi } from "../hooks/use-local-consultation-ai";
-import { getLocalModels, importLocalModel } from "../local-ai/models";
-import {
-  indexPatientDocuments,
-  indexAllPatientsDocuments,
-  searchPatientDocuments,
-  searchAllPatientsClinical,
-} from "../local-ai/embedding-store";
 import type {
   SearchChunk,
   SearchSection,
   SourceType,
 } from "../local-ai/embedding-index";
+import {
+  indexAllPatientsDocuments,
+  indexPatientDocuments,
+  searchAllPatientsClinical,
+  searchPatientDocuments,
+} from "../local-ai/embedding-store";
+import { getLocalModels, importLocalModel } from "../local-ai/models";
 import { bestPassage } from "../local-ai/passage-search";
 import { highlightPassage } from "../local-ai/search-highlight";
 import "./assistant-thinking.css";
@@ -97,25 +105,31 @@ type SearchResult = SearchChunk & {
 };
 
 export interface PatientDocumentSearchProps {
-  patientId?: string;
   onInsertExcerpt?: (excerpt: string, section?: SearchSection) => void;
+  patientId?: string;
 }
 
 /** Passage with the query terms highlighted. */
 function Passage({ text, query }: { text: string; query: string }) {
   return (
-    <p className="line-clamp-6 t-13 leading-relaxed text-foreground whitespace-pre-wrap">
+    <p className="t-13 line-clamp-6 whitespace-pre-wrap text-foreground leading-relaxed">
       {highlightPassage(text, query).map((segment, index) =>
         segment.hit ? (
           <mark
-            key={index}
             className="rounded-[3px] bg-primary/12 px-0.5 text-foreground dark:bg-primary/25"
+            // biome-ignore lint/suspicious/noArrayIndexKey: segment surligné d'un passage ; highlightPassage redécoupe tout le passage à chaque requête, dans l'ordre du texte, et le segment n'a pas d'état
+            key={index}
           >
             {segment.text}
           </mark>
         ) : (
-          <span key={index}>{segment.text}</span>
-        ),
+          <span
+            // biome-ignore lint/suspicious/noArrayIndexKey: segment non surligné du même découpage, refait en bloc à chaque requête, dans l'ordre du texte et sans état
+            key={index}
+          >
+            {segment.text}
+          </span>
+        )
       )}
     </p>
   );
@@ -126,7 +140,9 @@ export function PatientDocumentSearch({
   onInsertExcerpt,
 }: PatientDocumentSearchProps) {
   const dictation = useLocalConsultationAi();
-  const [audience, setAudience] = useState<"patient" | "all">(patientId ? "patient" : "all");
+  const [audience, setAudience] = useState<"patient" | "all">(
+    patientId ? "patient" : "all"
+  );
   const [ready, setReady] = useState(false);
   const [busy, setBusy] = useState(false);
   const [query, setQuery] = useState("");
@@ -139,10 +155,17 @@ export function PatientDocumentSearch({
   const [results, setResults] = useState<SearchResult[]>([]);
   const active = useRef<AbortController | null>(null);
   // The last operation the assistant ran, shown as one folded row: what it did, how long it took, what it found.
-  const [lastRun, setLastRun] = useState<{ id: number; name: string; startedAt: number; durationMs?: number } | null>(null);
+  const [lastRun, setLastRun] = useState<{
+    id: number;
+    name: string;
+    startedAt: number;
+    durationMs?: number;
+  } | null>(null);
 
   // Une nouvelle transcription remplace la requête, dès le rendu qui la reçoit (corrigé au rendu, sans effet).
-  const [seenTranscription, setSeenTranscription] = useState<string | null>(null);
+  const [seenTranscription, setSeenTranscription] = useState<string | null>(
+    null
+  );
   if (dictation.transcription !== seenTranscription) {
     setSeenTranscription(dictation.transcription);
     if (dictation.transcription) {
@@ -156,9 +179,13 @@ export function PatientDocumentSearch({
     let alive = true;
     void getLocalModels()
       .then((models) => {
-        if (alive) setReady(!!models.embeddingReady);
+        if (alive) {
+          setReady(!!models.embeddingReady);
+        }
       })
-      .catch(() => {});
+      .catch(() => {
+        // État des modèles illisible : la recherche reste marquée « pas prête ».
+      });
     return () => {
       alive = false;
       active.current?.abort();
@@ -173,7 +200,7 @@ export function PatientDocumentSearch({
         setResults([]);
         setLastRun(null);
         setMessage(
-          "Dossier modifié. La recherche réactualisera les sources validées.",
+          "Dossier modifié. La recherche réactualisera les sources validées."
         );
       }
     };
@@ -182,7 +209,7 @@ export function PatientDocumentSearch({
   }, []);
 
   const run = async (indexOnly: boolean, forcedQuery?: string) => {
-    const searchQuery = forcedQuery !== undefined ? forcedQuery : query;
+    const searchQuery = forcedQuery === undefined ? query : forcedQuery;
     active.current?.abort();
     const controller = new AbortController();
     active.current = controller;
@@ -193,153 +220,166 @@ export function PatientDocumentSearch({
     const startedAt = Date.now();
     setLastRun({
       id: startedAt,
-      name: indexOnly ? "Actualisation de l’index" : "Recherche dans les dossiers",
+      name: indexOnly
+        ? "Actualisation de l’index"
+        : "Recherche dans les dossiers",
       startedAt,
     });
 
-    return await guard(async () => {
-      if (indexOnly) {
-        const count =
-          audience === "all" || !patientId
-            ? await indexAllPatientsDocuments(controller.signal, (event) =>
-                setMessage(event.message),
-              )
-            : await indexPatientDocuments(
-                patientId,
-                controller.signal,
-                (event) => setMessage(event.message),
-              );
-        if (!controller.signal.aborted) {
-          setMessage(
-            count
-              ? `${count.toLocaleString("fr-FR")} extraits validés et indexés.`
-              : "L’index des sources validées est à jour.",
-          );
-        }
-      } else {
-        if (!searchQuery.trim()) {
-          setError("Veuillez saisir une recherche ou choisir une suggestion.");
-          setBusy(false);
-          return;
-        }
-
-        const isAllTypes = type === "all";
-        const targetSources: SourceType[] = isAllTypes
-          ? [
-              "soap",
-              "document",
-              "protocol",
-              "consultation",
-              "patient",
-              "product",
-            ]
-          : [type as SourceType];
-        const targetSections: SearchSection[] = isAllTypes
-          ? [
-              "subjective",
-              "objective",
-              "assessment",
-              "plan",
-              "document",
-              "protocol",
-              "consultation",
-              "patient",
-              "product",
-            ]
-          : type === "soap"
-            ? section === "all"
-              ? SOAP_ALL_SECTIONS
-              : [section as SearchSection]
-            : [type as SearchSection];
-
-        const filters = { sourceTypes: targetSources, sections: targetSections };
-        const found =
-          audience === "all" || !patientId
-            ? await searchAllPatientsClinical(
-                filters,
-                searchQuery,
-                controller.signal,
-                (event) => setMessage(event.message),
-              )
-            : await searchPatientDocuments(
-                {
+    return await guard(
+      async () => {
+        if (indexOnly) {
+          const count =
+            audience === "all" || !patientId
+              ? await indexAllPatientsDocuments(controller.signal, (event) =>
+                  setMessage(event.message)
+                )
+              : await indexPatientDocuments(
                   patientId,
-                  sourceTypes: targetSources.filter((t) =>
-                    ["soap", "document", "protocol"].includes(t),
-                  ) as SourceType[],
-                  sections: targetSections.filter((s) =>
-                    [
-                      "subjective",
-                      "objective",
-                      "assessment",
-                      "plan",
-                      "document",
-                      "protocol",
-                    ].includes(s),
-                  ) as SearchSection[],
-                },
-                searchQuery,
-                controller.signal,
-                (event) => setMessage(event.message),
-              );
+                  controller.signal,
+                  (event) => setMessage(event.message)
+                );
+          if (!controller.signal.aborted) {
+            setMessage(
+              count
+                ? `${count.toLocaleString("fr-FR")} extraits validés et indexés.`
+                : "L’index des sources validées est à jour."
+            );
+          }
+        } else {
+          if (!searchQuery.trim()) {
+            setError(
+              "Veuillez saisir une recherche ou choisir une suggestion."
+            );
+            setBusy(false);
+            return;
+          }
 
-        if (!controller.signal.aborted) {
-          setResults(found);
-          setSearchedQuery(searchQuery);
-          setMessage(
-            found.length
-              ? `${found.length} passage${found.length > 1 ? "s" : ""} trouvé${found.length > 1 ? "s" : ""}`
-              : "Aucun passage validé suffisamment proche pour cette recherche.",
-          );
+          const isAllTypes = type === "all";
+          const targetSources: SourceType[] = isAllTypes
+            ? [
+                "soap",
+                "document",
+                "protocol",
+                "consultation",
+                "patient",
+                "product",
+              ]
+            : [type as SourceType];
+          const targetSections: SearchSection[] = isAllTypes
+            ? [
+                "subjective",
+                "objective",
+                "assessment",
+                "plan",
+                "document",
+                "protocol",
+                "consultation",
+                "patient",
+                "product",
+              ]
+            : type === "soap"
+              ? section === "all"
+                ? SOAP_ALL_SECTIONS
+                : [section as SearchSection]
+              : [type as SearchSection];
+
+          const filters = {
+            sourceTypes: targetSources,
+            sections: targetSections,
+          };
+          const found =
+            audience === "all" || !patientId
+              ? await searchAllPatientsClinical(
+                  filters,
+                  searchQuery,
+                  controller.signal,
+                  (event) => setMessage(event.message)
+                )
+              : await searchPatientDocuments(
+                  {
+                    patientId,
+                    sourceTypes: targetSources.filter((t) =>
+                      ["soap", "document", "protocol"].includes(t)
+                    ) as SourceType[],
+                    sections: targetSections.filter((s) =>
+                      [
+                        "subjective",
+                        "objective",
+                        "assessment",
+                        "plan",
+                        "document",
+                        "protocol",
+                      ].includes(s)
+                    ) as SearchSection[],
+                  },
+                  searchQuery,
+                  controller.signal,
+                  (event) => setMessage(event.message)
+                );
+
+          if (!controller.signal.aborted) {
+            setResults(found);
+            setSearchedQuery(searchQuery);
+            setMessage(
+              found.length
+                ? `${found.length} passage${found.length > 1 ? "s" : ""} trouvé${found.length > 1 ? "s" : ""}`
+                : "Aucun passage validé suffisamment proche pour cette recherche."
+            );
+          }
         }
+      },
+      {
+        recover: (failure) => {
+          if (!controller.signal.aborted) {
+            setError(
+              failure instanceof Error
+                ? failure.message
+                : "La recherche n’a pas abouti."
+            );
+          }
+        },
+        cleanup: () => {
+          if (active.current === controller) {
+            active.current = null;
+            setBusy(false);
+            setLastRun((previous) =>
+              previous && previous.startedAt === startedAt
+                ? { ...previous, durationMs: Date.now() - startedAt }
+                : previous
+            );
+          }
+        },
       }
-    }, {
-      recover: (failure) => {
-        if (!controller.signal.aborted) {
-          setError(
-            failure instanceof Error
-              ? failure.message
-              : "La recherche n’a pas abouti.",
-          );
-        }
-      },
-      cleanup: () => {
-        if (active.current === controller) {
-          active.current = null;
-          setBusy(false);
-          setLastRun((previous) =>
-            previous && previous.startedAt === startedAt
-              ? { ...previous, durationMs: Date.now() - startedAt }
-              : previous,
-          );
-        }
-      },
-    });
+    );
   };
 
   const install = async () => {
     setBusy(true);
     setError("");
     setMessage("Installation de la recherche locale…");
-    await guard(async () => {
-      const models = await importLocalModel("embeddinggemma");
-      if (models) {
-        setReady(!!models.embeddingReady);
-        setMessage("La recherche locale est prête.");
-        toast.success("Recherche locale configurée.");
-      } else {
-        setMessage("");
+    await guard(
+      async () => {
+        const models = await importLocalModel("embeddinggemma");
+        if (models) {
+          setReady(!!models.embeddingReady);
+          setMessage("La recherche locale est prête.");
+          toast.success("Recherche locale configurée.");
+        } else {
+          setMessage("");
+        }
+      },
+      {
+        recover: () => {
+          setError(
+            "L’installation de la recherche locale a échoué. Vérifiez que les fichiers de la recherche locale sont bien présents sur cet ordinateur."
+          );
+        },
+        cleanup: () => {
+          setBusy(false);
+        },
       }
-    }, {
-      recover: () => {
-        setError(
-          "L’installation de la recherche locale a échoué. Vérifiez que les fichiers de la recherche locale sont bien présents sur cet ordinateur.",
-        );
-      },
-      cleanup: () => {
-        setBusy(false);
-      },
-    });
+    );
   };
 
   const dictate = async () => {
@@ -381,27 +421,34 @@ export function PatientDocumentSearch({
     .filter(Boolean)
     .join(" · ");
 
-  if (!ready)
+  if (!ready) {
     return (
       <div className="flex flex-col items-center justify-center gap-3 px-6 py-10 text-center text-foreground">
         <Search className="size-5 text-muted-foreground" />
         <div className="space-y-1">
           <h4 className="t-14 font-medium">Recherche dans les dossiers</h4>
-          <p className="max-w-[300px] t-12 text-muted-foreground">
-            Elle fonctionne entièrement sur cet ordinateur, sans connexion internet.
+          <p className="t-12 max-w-[300px] text-muted-foreground">
+            Elle fonctionne entièrement sur cet ordinateur, sans connexion
+            internet.
           </p>
         </div>
-        <Button size="sm" disabled={locked} onClick={() => void install()} className="gap-2">
+        <Button
+          className="gap-2"
+          disabled={locked}
+          onClick={() => void install()}
+          size="sm"
+        >
           {busy ? <CircleNotch className="size-3.5 animate-spin" /> : null}
           Installer la recherche locale
         </Button>
         {error && (
-          <p role="alert" className="t-12 text-destructive">
+          <p className="t-12 text-destructive" role="alert">
             {error}
           </p>
         )}
       </div>
     );
+  }
 
   return (
     <div className="flex h-full min-h-0 flex-1 flex-col gap-2.5 overflow-hidden text-foreground">
@@ -409,36 +456,38 @@ export function PatientDocumentSearch({
         className="flex shrink-0 items-center gap-2"
         onSubmit={(event) => {
           event.preventDefault();
-          if (!locked) void run(false);
+          if (!locked) {
+            void run(false);
+          }
         }}
       >
         <div className="relative flex min-w-0 flex-1 items-center">
           <Search className="pointer-events-none absolute left-3 size-4 text-muted-foreground" />
           <Input
             aria-label="Rechercher dans les dossiers"
+            className="t-13 h-9 pr-16 pl-9"
+            disabled={locked}
+            onChange={(event) => {
+              setQuery(event.target.value);
+              setResults([]);
+            }}
             placeholder={
               audience === "all" || !patientId
                 ? "Symptôme, pathologie, traitement…"
                 : "Observation, antécédent, examen…"
             }
             value={query}
-            onChange={(event) => {
-              setQuery(event.target.value);
-              setResults([]);
-            }}
-            disabled={locked}
-            className="h-9 pl-9 pr-16 t-13"
           />
           <div className="absolute right-1 flex items-center">
             {query && !locked && (
               <button
-                type="button"
                 aria-label="Effacer la recherche"
+                className="grid size-7 place-items-center rounded-md text-muted-foreground hover:text-foreground"
                 onClick={() => {
                   setQuery("");
                   resetResults();
                 }}
-                className="grid size-7 place-items-center rounded-md text-muted-foreground hover:text-foreground"
+                type="button"
               >
                 <X className="size-3.5" />
               </button>
@@ -447,15 +496,17 @@ export function PatientDocumentSearch({
               <TooltipTrigger
                 render={
                   <button
-                    type="button"
-                    aria-label={listening ? "Arrêter la dictée" : "Dicter la recherche"}
-                    disabled={busy || (dictation.busy && !listening)}
-                    onClick={() => void dictate()}
+                    aria-label={
+                      listening ? "Arrêter la dictée" : "Dicter la recherche"
+                    }
                     className={
                       listening
                         ? "grid size-7 place-items-center rounded-md bg-destructive text-white"
                         : "grid size-7 place-items-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-50"
                     }
+                    disabled={busy || (dictation.busy && !listening)}
+                    onClick={() => void dictate()}
+                    type="button"
                   />
                 }
               >
@@ -465,15 +516,17 @@ export function PatientDocumentSearch({
                   <Microphone className="size-3.5" />
                 )}
               </TooltipTrigger>
-              <TooltipContent>{listening ? "Arrêter la dictée" : "Dicter"}</TooltipContent>
+              <TooltipContent>
+                {listening ? "Arrêter la dictée" : "Dicter"}
+              </TooltipContent>
             </Tooltip>
           </div>
         </div>
         <Button
-          type="submit"
-          size="sm"
+          className="t-12 h-9 shrink-0 px-3"
           disabled={locked || !query.trim()}
-          className="h-9 shrink-0 px-3 t-12"
+          size="sm"
+          type="submit"
         >
           Rechercher
         </Button>
@@ -484,11 +537,11 @@ export function PatientDocumentSearch({
           <DropdownMenuTrigger
             render={
               <Button
-                variant="ghost"
-                size="xs"
-                disabled={locked}
-                className="-ml-1.5 h-7 min-w-0 gap-1 px-1.5 t-12 font-normal text-muted-foreground hover:text-foreground"
                 aria-label={`Filtres : ${filterSummary}`}
+                className="t-12 -ml-1.5 h-7 min-w-0 gap-1 px-1.5 font-normal text-muted-foreground hover:text-foreground"
+                disabled={locked}
+                size="xs"
+                variant="ghost"
               >
                 <span className="truncate">{filterSummary}</span>
                 <ChevronDown className="size-3 shrink-0" />
@@ -498,32 +551,42 @@ export function PatientDocumentSearch({
           <DropdownMenuContent align="start" className="w-60">
             <DropdownMenuLabel>Rechercher dans</DropdownMenuLabel>
             <DropdownMenuRadioGroup
-              value={patientId ? audience : "all"}
               onValueChange={(value) => {
                 setAudience(value as "patient" | "all");
                 resetResults();
               }}
+              value={patientId ? audience : "all"}
             >
-              <DropdownMenuRadioItem value="patient" disabled={!patientId} className="t-12">
+              <DropdownMenuRadioItem
+                className="t-12"
+                disabled={!patientId}
+                value="patient"
+              >
                 Ce dossier patient
               </DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="all" className="t-12">
+              <DropdownMenuRadioItem className="t-12" value="all">
                 Tous les patients
               </DropdownMenuRadioItem>
             </DropdownMenuRadioGroup>
             <DropdownMenuSeparator />
             <DropdownMenuLabel>Source</DropdownMenuLabel>
             <DropdownMenuRadioGroup
-              value={type}
               onValueChange={(value) => {
                 const source = (value ?? "all") as SourceType | "all";
                 setType(source);
-                setSection(source === "soap" || source === "all" ? "all" : source);
+                setSection(
+                  source === "soap" || source === "all" ? "all" : source
+                );
                 setResults([]);
               }}
+              value={type}
             >
               {SOURCES.map((item) => (
-                <DropdownMenuRadioItem key={item.key} value={item.key} className="t-12">
+                <DropdownMenuRadioItem
+                  className="t-12"
+                  key={item.key}
+                  value={item.key}
+                >
                   {item.label}
                 </DropdownMenuRadioItem>
               ))}
@@ -533,14 +596,18 @@ export function PatientDocumentSearch({
                 <DropdownMenuSeparator />
                 <DropdownMenuLabel>Rubrique SOAP</DropdownMenuLabel>
                 <DropdownMenuRadioGroup
-                  value={section}
                   onValueChange={(value) => {
                     setSection((value ?? "all") as SearchSection | "all");
                     setResults([]);
                   }}
+                  value={section}
                 >
                   {SECTIONS.map((item) => (
-                    <DropdownMenuRadioItem key={item.key} value={item.key} className="t-12">
+                    <DropdownMenuRadioItem
+                      className="t-12"
+                      key={item.key}
+                      value={item.key}
+                    >
                       {item.label}
                     </DropdownMenuRadioItem>
                   ))}
@@ -548,7 +615,10 @@ export function PatientDocumentSearch({
               </>
             )}
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="gap-2 t-12" onClick={() => void run(true)}>
+            <DropdownMenuItem
+              className="t-12 gap-2"
+              onClick={() => void run(true)}
+            >
               <RefreshCw className="size-3.5" />
               Actualiser l’index
             </DropdownMenuItem>
@@ -556,15 +626,20 @@ export function PatientDocumentSearch({
         </DropdownMenu>
 
         {!lastRun && (busy || dictation.busy) ? (
-          <span role="status" className="flex min-w-0 items-center gap-1.5 t-12 text-muted-foreground">
+          <span
+            className="t-12 flex min-w-0 items-center gap-1.5 text-muted-foreground"
+            role="status"
+          >
             <CircleNotch className="size-3 shrink-0 animate-spin" />
             <span className="assistant-thinking-text truncate">
               {dictation.busy ? dictation.progress.message : message}
             </span>
           </span>
         ) : (
-          !lastRun && message && !error && (
-            <span role="status" className="truncate t-12 text-muted-foreground">
+          !lastRun &&
+          message &&
+          !error && (
+            <span className="t-12 truncate text-muted-foreground" role="status">
               {message}
             </span>
           )
@@ -593,8 +668,8 @@ export function PatientDocumentSearch({
 
       {error && (
         <div
+          className="t-12 shrink-0 rounded-lg bg-destructive/10 px-3 py-2 text-destructive"
           role="alert"
-          className="shrink-0 rounded-lg bg-destructive/10 px-3 py-2 t-12 text-destructive"
         >
           {error}
         </div>
@@ -603,7 +678,7 @@ export function PatientDocumentSearch({
       <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
         {results.length === 0 && !busy && !error && (
           <div className="flex flex-col items-center gap-3 px-4 py-8 text-center">
-            <p className="max-w-[320px] t-12 text-muted-foreground">
+            <p className="t-12 max-w-[320px] text-muted-foreground">
               {query.trim()
                 ? "Aucun passage trouvé. Essayez un synonyme, une reformulation ou élargissez les filtres."
                 : "Retrouvez le passage utile dans les notes, documents et protocoles validés : symptômes, pathologies, molécules ou synonymes."}
@@ -611,7 +686,10 @@ export function PatientDocumentSearch({
             {!query.trim() && (
               <PromptSuggestions
                 className="items-center"
-                data={SUGGESTED_QUERIES.map((suggested) => ({ id: suggested, title: suggested }))}
+                data={SUGGESTED_QUERIES.map((suggested) => ({
+                  id: suggested,
+                  title: suggested,
+                }))}
                 heading="Suggestions"
                 onSelect={(_, prompt) => {
                   setQuery(prompt);
@@ -631,7 +709,9 @@ export function PatientDocumentSearch({
               const passage = bestPassage(result.text, searchedQuery);
               return {
                 id: uniqueKey,
-                group: SOURCES.find((item) => item.key === result.sourceType)?.label ?? "Source",
+                group:
+                  SOURCES.find((item) => item.key === result.sourceType)
+                    ?.label ?? "Source",
                 title:
                   (audience === "all" || !patientId) && result.patientName
                     ? result.patientName

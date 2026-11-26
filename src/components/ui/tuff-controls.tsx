@@ -2,7 +2,7 @@
 // Free to use. If it helps you, you can support it: https://ko-fi.com/yurigokoryan
 "use client";
 
-import { Check, Minus, Search, X, type LucideIcon } from "lucide-react";
+import { Check, type LucideIcon, Minus, Search, X } from "lucide-react";
 import { useId } from "react";
 import { cn } from "@/lib/utils";
 
@@ -28,7 +28,7 @@ export function QuietButton({
       className={cn(
         base,
         "h-8 gap-1.5 px-3.5 text-[0.8125rem] text-muted-foreground hover:bg-foreground/[0.06] hover:text-foreground",
-        className,
+        className
       )}
       type={type}
       {...props}
@@ -55,7 +55,7 @@ export function IconButton({
       className={cn(
         base,
         "size-8 text-muted-foreground hover:bg-foreground/[0.06] hover:text-foreground",
-        className,
+        className
       )}
       type={type}
       {...props}
@@ -84,7 +84,7 @@ export function TuffCheckbox({
         on
           ? "bg-brand text-white"
           : "bg-foreground/[0.12] hover:bg-foreground/[0.18]",
-        className,
+        className
       )}
       onClick={() => onCheckedChange?.(checked !== true)}
       role="checkbox"
@@ -128,7 +128,7 @@ export function SearchField({
         aria-label={placeholder}
         className={cn(
           control,
-          "h-9 rounded-full pr-9 pl-8 [&::-webkit-search-cancel-button]:hidden",
+          "h-9 rounded-full pr-9 pl-8 [&::-webkit-search-cancel-button]:hidden"
         )}
         id={id}
         placeholder={placeholder}
@@ -174,7 +174,7 @@ export function EmptyState({
         compact
           ? "items-center gap-3 px-3 py-3 text-left"
           : "flex-col items-center px-6 py-10 text-center",
-        className,
+        className
       )}
     >
       {Icon && (
@@ -182,7 +182,7 @@ export function EmptyState({
           aria-hidden="true"
           className={cn(
             "flex shrink-0 items-center justify-center bg-foreground/[0.06] text-muted-foreground",
-            compact ? "size-9 rounded-xl" : "mb-4 size-12 rounded-2xl",
+            compact ? "size-9 rounded-xl" : "mb-4 size-12 rounded-2xl"
           )}
         >
           <Icon className={compact ? "size-4" : "size-5"} strokeWidth={2} />
@@ -195,8 +195,8 @@ export function EmptyState({
         {description && (
           <p
             className={cn(
-              "text-[0.8125rem] text-pretty text-muted-foreground",
-              compact ? "mt-0.5" : "mx-auto mt-1 max-w-xs",
+              "text-pretty text-[0.8125rem] text-muted-foreground",
+              compact ? "mt-0.5" : "mx-auto mt-1 max-w-xs"
             )}
           >
             {description}

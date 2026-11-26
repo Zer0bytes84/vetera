@@ -6,21 +6,23 @@ import { invoke } from "@tauri-apps/api/core";
 import { isTauriRuntime } from "@/services/browser-store";
 import type { DictationLanguage } from "./whisper-language";
 
+const MACOS_PLATFORM = /Macintosh|Mac OS X/;
+
 export interface NativeDictationStatus {
+  cheminAttendu: string;
   disponible: boolean;
   modele: string | null;
-  cheminAttendu: string;
-  source: string;
   raison: string | null;
+  source: string;
 }
 
 export interface NativeDictationResult {
-  texte: string;
-  secondes: number;
-  pid: number | null;
-  pidApplication: number;
   code: number | null;
   journal: string;
+  pid: number | null;
+  pidApplication: number;
+  secondes: number;
+  texte: string;
 }
 
 /**
@@ -30,10 +32,10 @@ export interface NativeDictationResult {
 export function nativeDictationEnabled(
   platform = globalThis.navigator?.userAgent ?? ""
 ) {
-  return isTauriRuntime() && /Macintosh|Mac OS X/.test(platform);
+  return isTauriRuntime() && MACOS_PLATFORM.test(platform);
 }
 
-export async function nativeDictationStatus(): Promise<NativeDictationStatus> {
+export function nativeDictationStatus(): Promise<NativeDictationStatus> {
   return invoke<NativeDictationStatus>("dictee_status");
 }
 
@@ -44,15 +46,16 @@ export async function nativeDictationStatus(): Promise<NativeDictationStatus> {
 export function encodePcmBase64(pcm: Float32Array) {
   const octets = new Uint8Array(pcm.buffer, pcm.byteOffset, pcm.byteLength);
   let binaire = "";
-  const morceau = 0x2000;
-  for (let index = 0; index < octets.length; index += morceau)
+  const morceau = 0x20_00;
+  for (let index = 0; index < octets.length; index += morceau) {
     binaire += String.fromCharCode(
       ...octets.subarray(index, Math.min(index + morceau, octets.length))
     );
+  }
   return btoa(binaire);
 }
 
-export async function transcribeNatively(
+export function transcribeNatively(
   pcm: Float32Array,
   language: DictationLanguage = "fr"
 ): Promise<NativeDictationResult> {

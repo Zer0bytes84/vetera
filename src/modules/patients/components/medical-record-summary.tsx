@@ -1,33 +1,65 @@
-import type { KeyboardEvent } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Phone, Mail, User } from "@/lib/icons";
+import type { KeyboardEvent } from "react";
+import { WhatsAppLink } from "@/components/whatsapp-link";
+import { getPatientStatusMeta } from "@/config/status-meta";
+import { Mail, Phone, User } from "@/lib/icons";
 import { getSpeciesGlyph } from "@/lib/species-icons";
 import { getSpeciesTheme } from "@/lib/species-theme";
-import { getPatientStatusMeta } from "@/config/status-meta";
+import { cn } from "@/lib/utils";
+import { contactMessage } from "@/lib/whatsapp";
 import type { Owner, Patient } from "@/types/db";
+import { formatPhone } from "@/utils/display-format";
 import { computeAge, formatAgeFr } from "../lib/age";
 import { normalizeDate } from "./patients-shared";
-import { formatPhone } from "@/utils/display-format";
-import { cn } from "@/lib/utils";
 import { RecordBlockHeading } from "./record-block-heading";
-import { WhatsAppLink } from "@/components/whatsapp-link";
-import { contactMessage } from "@/lib/whatsapp";
 import "../medical-record.css";
 
-function ownerInitials(owner: { firstName?: string | null; lastName?: string | null }): string {
-  return `${owner.firstName?.[0] || ""}${owner.lastName?.[0] || ""}`.toUpperCase() || "P";
+function ownerInitials(owner: {
+  firstName?: string | null;
+  lastName?: string | null;
+}): string {
+  return (
+    `${owner.firstName?.[0] || ""}${owner.lastName?.[0] || ""}`.toUpperCase() ||
+    "P"
+  );
 }
 
 export function recordDate(value?: string | null, withTime = false) {
-  if (!value) return "À compléter";
+  if (!value) {
+    return "À compléter";
+  }
   const parsed = normalizeDate(value);
-  if (!parsed) return "Date indisponible";
+  if (!parsed) {
+    return "Date indisponible";
+  }
   return parsed.toLocaleDateString("fr-FR", {
     day: "numeric",
     month: "short",
     year: "numeric",
     ...(withTime ? { hour: "2-digit", minute: "2-digit" } : {}),
   });
+}
+
+function sexLabelOf(sex: Patient["sex"]): "Mâle" | "Femelle" | null {
+  switch (sex) {
+    case "M":
+      return "Mâle";
+    case "F":
+      return "Femelle";
+    default:
+      return null;
+  }
+}
+
+function sexSymbolOf(sex: Patient["sex"]): "♂" | "♀" | "" {
+  switch (sex) {
+    case "M":
+      return "♂";
+    case "F":
+      return "♀";
+    default:
+      return "";
+  }
 }
 
 export function PatientIdentity({
@@ -47,9 +79,8 @@ export function PatientIdentity({
   const ageLabel = age ? formatAgeFr(age) : null;
   const status = getPatientStatusMeta(patient.status);
   const speciesTheme = getSpeciesTheme(patient.species);
-  const sexLabel =
-    patient.sex === "M" ? "Mâle" : patient.sex === "F" ? "Femelle" : null;
-  const sexSymbol = patient.sex === "M" ? "♂" : patient.sex === "F" ? "♀" : "";
+  const sexLabel = sexLabelOf(patient.sex);
+  const sexSymbol = sexSymbolOf(patient.sex);
 
   return (
     <div
@@ -60,32 +91,32 @@ export function PatientIdentity({
           "medical-avatar relative shrink-0 transition duration-200 hover:scale-[1.03]",
           speciesTheme.avatarBg,
           speciesTheme.avatarBorder,
-          speciesTheme.avatarGlow,
+          speciesTheme.avatarGlow
         )}
       >
         {patient.avatarUrl ? (
           <img
-            src={patient.avatarUrl}
             alt={patient.name}
             className="h-full w-full object-cover"
+            src={patient.avatarUrl}
           />
         ) : (
           <HugeiconsIcon
+            aria-hidden="true"
+            className={cn(
+              "transition-transform duration-200",
+              speciesTheme.avatarIconColor
+            )}
             icon={getSpeciesGlyph(patient.species)}
             size={compact ? 24 : 36}
             strokeWidth={1.5}
-            className={cn(
-              "transition-transform duration-200",
-              speciesTheme.avatarIconColor,
-            )}
-            aria-hidden="true"
           />
         )}
       </div>
 
       <div className="min-w-0 flex-1">
         <div className="medical-identity-line flex flex-wrap items-center gap-2">
-          <h1 className="medical-identity-name text-2xl font-bold tracking-tight text-foreground">
+          <h1 className="medical-identity-name font-bold text-2xl text-foreground tracking-tight">
             {patient.name}
           </h1>
           {patient.reference ? (
@@ -98,7 +129,7 @@ export function PatientIdentity({
           ) : null}
           {/* The status is the only tag with a hue; species and sex are facts. */}
           <span className={cn("medical-status", status.className)}>
-            <span className="medical-status-dot" aria-hidden="true" />
+            <span aria-hidden="true" className="medical-status-dot" />
             {status.label}
           </span>
         </div>
@@ -106,21 +137,27 @@ export function PatientIdentity({
         {/* What the animal is, in one sober line: species, breed, sex, age, chip. */}
         <p className="medical-identity-meta">
           {[
-            patient.species,
-            patient.breed,
-            sexLabel
-              ? `${sexLabel}${patient.sterilized ? (patient.sex === "F" ? " stérilisée" : " stérilisé") : ""} ${sexSymbol}`.trim()
-              : patient.sterilized
-                ? "Stérilisé"
+            ["espece", patient.species],
+            ["race", patient.breed],
+            [
+              "sexe",
+              sexLabel
+                ? `${sexLabel}${patient.sterilized ? (patient.sex === "F" ? " stérilisée" : " stérilisé") : ""} ${sexSymbol}`.trim()
+                : patient.sterilized
+                  ? "Stérilisé"
+                  : null,
+            ],
+            ["age", ageLabel],
+            [
+              "puce",
+              !showIdentifiers && patient.chipNumber?.trim()
+                ? `Puce ${patient.chipNumber.trim()}`
                 : null,
-            ageLabel,
-            !showIdentifiers && patient.chipNumber?.trim()
-              ? `Puce ${patient.chipNumber.trim()}`
-              : null,
+            ],
           ]
-            .filter(Boolean)
-            .map((part, index) => (
-              <span key={index}>{part}</span>
+            .filter(([, part]) => Boolean(part))
+            .map(([field, part]) => (
+              <span key={field}>{part}</span>
             ))}
         </p>
 
@@ -137,11 +174,11 @@ export function PatientIdentity({
         ) : null}
 
         {showIdentifiers ? (
-          <div className="medical-record-id flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+          <div className="medical-record-id flex flex-wrap items-center gap-2 text-muted-foreground text-xs">
             {patient.chipNumber?.trim() ? (
               <>
                 <span
-                  className="font-mono tabular-nums text-foreground/70"
+                  className="font-mono text-foreground/70 tabular-nums"
                   title="Puce d’identification"
                 >
                   Puce {patient.chipNumber.trim()}
@@ -154,7 +191,7 @@ export function PatientIdentity({
             {patient.tattooNumber?.trim() ? (
               <>
                 <span
-                  className="font-mono tabular-nums text-foreground/70"
+                  className="font-mono text-foreground/70 tabular-nums"
                   title="Tatouage"
                 >
                   Tatouage {patient.tattooNumber.trim()}
@@ -174,7 +211,9 @@ export function PatientIdentity({
 
 // Les réponses négatives explicites ne constituent pas une alerte clinique.
 export function isClinicalSignal(value?: string) {
-  if (!value?.trim()) return false;
+  if (!value?.trim()) {
+    return false;
+  }
   const normalized = value
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
@@ -199,15 +238,21 @@ export function isClinicalSignal(value?: string) {
 }
 
 /** `animal` is the patient's name: with it, a WhatsApp button opens a first message about the animal. */
-export function OwnerContact({ animal, owner }: { animal?: string; owner?: Owner }) {
+export function OwnerContact({
+  animal,
+  owner,
+}: {
+  animal?: string;
+  owner?: Owner;
+}) {
   if (!owner) {
     return (
       <section
-        className="medical-owner p-5"
         aria-label="Coordonnées du propriétaire"
+        className="medical-owner p-5"
       >
         <RecordBlockHeading icon={User}>Propriétaire</RecordBlockHeading>
-        <p className="medical-contact-hint text-xs text-muted-foreground">
+        <p className="medical-contact-hint text-muted-foreground text-xs">
           Associez un propriétaire depuis les informations du patient.
         </p>
       </section>
@@ -219,23 +264,23 @@ export function OwnerContact({ animal, owner }: { animal?: string; owner?: Owner
 
   return (
     <section
-      className="medical-owner p-5"
       aria-label="Coordonnées du propriétaire"
+      className="medical-owner p-5"
     >
       <RecordBlockHeading icon={User}>Propriétaire</RecordBlockHeading>
-      <div className="medical-owner-card flex items-center gap-3.5 p-3 rounded-xl bg-muted/40 border border-border/60">
+      <div className="medical-owner-card flex items-center gap-3.5 rounded-xl border border-border/60 bg-muted/40 p-3">
         <div
-          className="medical-owner-avatar size-11 rounded-xl flex items-center justify-center font-bold text-sm text-white bg-gradient-to-br from-indigo-500 to-purple-600 shadow-sm shrink-0"
           aria-hidden="true"
+          className="medical-owner-avatar flex size-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 font-bold text-sm text-white shadow-sm"
         >
           {initials}
         </div>
         <div className="min-w-0 flex-1">
-          <p className="medical-owner-name font-semibold text-sm text-foreground">
+          <p className="medical-owner-name font-semibold text-foreground text-sm">
             {owner.firstName} {owner.lastName}
           </p>
           {(owner.address || owner.city) && (
-            <p className="medical-owner-address text-xs text-muted-foreground truncate mt-0.5">
+            <p className="medical-owner-address mt-0.5 truncate text-muted-foreground text-xs">
               {[owner.address, owner.city].filter(Boolean).join(", ")}
             </p>
           )}
@@ -245,11 +290,11 @@ export function OwnerContact({ animal, owner }: { animal?: string; owner?: Owner
       <div className="medical-owner-links mt-3 flex flex-wrap gap-2">
         {owner.phone && (
           <a
+            className="inline-flex items-center gap-2 rounded-lg border border-emerald-200/80 bg-emerald-50 px-3 py-1.5 font-medium text-emerald-700 text-xs transition-colors hover:bg-emerald-100 dark:border-emerald-800/40 dark:bg-emerald-950/50 dark:text-emerald-300"
             href={`tel:${owner.phone}`}
             title={`Appeler ${phoneLabel}`}
-            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200/80 transition-colors dark:bg-emerald-950/50 dark:text-emerald-300 dark:border-emerald-800/40"
           >
-            <Phone size={14} className="shrink-0" aria-hidden="true" />
+            <Phone aria-hidden="true" className="shrink-0" size={14} />
             <span>{phoneLabel}</span>
           </a>
         )}
@@ -263,19 +308,19 @@ export function OwnerContact({ animal, owner }: { animal?: string; owner?: Owner
         ) : null}
         {owner.email && (
           <a
+            className="inline-flex items-center gap-2 rounded-lg border border-sky-200/80 bg-sky-50 px-3 py-1.5 font-medium text-sky-700 text-xs transition-colors hover:bg-sky-100 dark:border-sky-800/40 dark:bg-sky-950/50 dark:text-sky-300"
             href={`mailto:${owner.email}`}
             title={`Écrire à ${owner.email}`}
-            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium bg-sky-50 text-sky-700 hover:bg-sky-100 border border-sky-200/80 transition-colors dark:bg-sky-950/50 dark:text-sky-300 dark:border-sky-800/40"
           >
-            <Mail size={14} className="shrink-0" aria-hidden="true" />
+            <Mail aria-hidden="true" className="shrink-0" size={14} />
             <span>{owner.email}</span>
           </a>
         )}
       </div>
 
       {owner.communicationNotes && (
-        <div className="medical-contact-note mt-3 p-2.5 rounded-lg bg-amber-50/60 border border-amber-200/60 text-xs text-amber-900 dark:bg-amber-950/30 dark:text-amber-200 dark:border-amber-800/40">
-          <span className="font-semibold block mb-0.5">Consigne contact</span>
+        <div className="medical-contact-note mt-3 rounded-lg border border-amber-200/60 bg-amber-50/60 p-2.5 text-amber-900 text-xs dark:border-amber-800/40 dark:bg-amber-950/30 dark:text-amber-200">
+          <span className="mb-0.5 block font-semibold">Consigne contact</span>
           {owner.communicationNotes}
         </div>
       )}
@@ -283,22 +328,47 @@ export function OwnerContact({ animal, owner }: { animal?: string; owner?: Owner
   );
 }
 
+function nextTabIndex(
+  event: KeyboardEvent<HTMLDivElement>,
+  index: number,
+  tabs: readonly unknown[]
+): number {
+  switch (event.key) {
+    case "Home":
+      return 0;
+    case "End":
+      return tabs.length - 1;
+    default:
+      return (
+        (index +
+          (event.key === "ArrowRight" || event.key === "ArrowDown" ? 1 : -1) +
+          tabs.length) %
+        tabs.length
+      );
+  }
+}
+
 export function handleRecordTabKeys(event: KeyboardEvent<HTMLDivElement>) {
-  const keys = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"];
-  if (!keys.includes(event.key)) return;
+  const keys = [
+    "ArrowLeft",
+    "ArrowRight",
+    "ArrowUp",
+    "ArrowDown",
+    "Home",
+    "End",
+  ];
+  if (!keys.includes(event.key)) {
+    return;
+  }
   const tabs = Array.from(
-    event.currentTarget.querySelectorAll<HTMLButtonElement>("[role=tab]"),
+    event.currentTarget.querySelectorAll<HTMLButtonElement>("[role=tab]")
   );
   const index = tabs.indexOf(event.target as HTMLButtonElement);
-  if (index < 0) return;
+  if (index < 0) {
+    return;
+  }
   event.preventDefault();
-  const next =
-    event.key === "Home"
-      ? 0
-      : event.key === "End"
-        ? tabs.length - 1
-        : (index + (event.key === "ArrowRight" || event.key === "ArrowDown" ? 1 : -1) + tabs.length) %
-          tabs.length;
+  const next = nextTabIndex(event, index, tabs);
   tabs[next]?.focus();
   tabs[next]?.click();
   tabs[next]?.scrollIntoView({ block: "nearest", inline: "nearest" });

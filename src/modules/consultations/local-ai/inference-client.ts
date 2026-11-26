@@ -1,5 +1,5 @@
-import { parkIdleModel, reserveClinicalModel } from "./model-lease";
 import { recordGeneratorFallback } from "./generator-choice";
+import { parkIdleModel, reserveClinicalModel } from "./model-lease";
 import type {
   LocalAiProgress,
   WorkerRequest,
@@ -8,7 +8,31 @@ import type {
 
 export const abortError = () =>
   new DOMException("Tâche annulée.", "AbortError");
+function createWorker(kind: "whisper" | "soap" | "embedding"): Worker {
+  switch (kind) {
+    case "whisper":
+      return new Worker(
+        new URL("../workers/whisper.worker.ts", import.meta.url),
+        { type: "module" }
+      );
+    case "embedding":
+      return new Worker(
+        new URL("../workers/embedding.worker.ts", import.meta.url),
+        { type: "module" }
+      );
+    default:
+      return new Worker(new URL("../workers/soap.worker.ts", import.meta.url), {
+        type: "module",
+      });
+  }
+}
+
 export class LocalInferenceSession {
+  private worker: Worker;
+  private release: () => void;
+  private signal: AbortSignal;
+  private onProgress: (event: LocalAiProgress) => void;
+  private readonly spawn: () => Worker;
   private pending: {
     resolve: (message: WorkerResponse) => void;
     reject: (error: Error) => void;
@@ -22,20 +46,29 @@ export class LocalInferenceSession {
   private readonly unavailable = new Set<string>();
   private lastRequest: WorkerRequest | null = null;
   private constructor(
-    private worker: Worker,
-    private release: () => void,
-    private signal: AbortSignal,
-    private onProgress: (event: LocalAiProgress) => void,
-    private readonly spawn: () => Worker = () => worker
+    worker: Worker,
+    release: () => void,
+    signal: AbortSignal,
+    onProgress: (event: LocalAiProgress) => void,
+    spawn: () => Worker = () => worker
   ) {
+    this.worker = worker;
+    this.release = release;
+    this.signal = signal;
+    this.onProgress = onProgress;
+    this.spawn = spawn;
     this.attach(worker);
     signal.addEventListener("abort", this.onAbort, { once: true });
   }
   private attach(worker: Worker) {
     worker.onmessage = ({ data }: MessageEvent<WorkerResponse>) => {
-      if (this.closed) return;
+      if (this.closed) {
+        return;
+      }
       if (data.type === "progress") {
-        if (!this.unpark) this.onProgress(data);
+        if (!this.unpark) {
+          this.onProgress(data);
+        }
         return;
       }
       if (data.type === "error") {
@@ -46,7 +79,9 @@ export class LocalInferenceSession {
         this.retryWithout(data.url);
         return;
       }
-      if (data.type === "generated" && data.fellBack) recordGeneratorFallback();
+      if (data.type === "generated" && data.fellBack) {
+        recordGeneratorFallback();
+      }
       if (this.pending && data.type === this.pending.expected) {
         const { resolve, timer } = this.pending;
         this.pending = null;
@@ -71,7 +106,9 @@ export class LocalInferenceSession {
   /** Same request, fresh worker, without the generation model that failed. */
   private retryWithout(url: string) {
     const request = this.lastRequest;
-    if (!this.pending || request?.type !== "generate") return;
+    if (!this.pending || request?.type !== "generate") {
+      return;
+    }
     this.unavailable.add(url);
     this.worker.terminate();
     this.worker = this.spawn();
@@ -80,41 +117,47 @@ export class LocalInferenceSession {
   }
   private post(message: WorkerRequest, transfer: Transferable[]) {
     const request =
-      message.type === "generate" && message.generators.some((candidate) => this.unavailable.has(candidate.url))
-        ? { ...message, generators: message.generators.filter((candidate) => !this.unavailable.has(candidate.url)), fellBack: true }
+      message.type === "generate" &&
+      message.generators.some((candidate) =>
+        this.unavailable.has(candidate.url)
+      )
+        ? {
+            ...message,
+            generators: message.generators.filter(
+              (candidate) => !this.unavailable.has(candidate.url)
+            ),
+            fellBack: true,
+          }
         : message;
     this.lastRequest = message;
     this.worker.postMessage(request, transfer);
   }
+  // biome-ignore lint/suspicious/useAwait: lève abortError sur un signal déjà annulé, reserveClinicalModel lève si une tâche locale tourne et new Worker peut lever ; async garde ces erreurs en rejet
   static async create(
     kind: "whisper" | "soap" | "embedding",
     signal: AbortSignal,
     onProgress: (event: LocalAiProgress) => void
   ) {
-    if (signal.aborted) throw abortError();
+    if (signal.aborted) {
+      throw abortError();
+    }
     const release = reserveClinicalModel();
     try {
-      if (signal.aborted) throw abortError();
-      const worker =
-        kind === "whisper"
-          ? new Worker(
-              new URL("../workers/whisper.worker.ts", import.meta.url),
-              { type: "module" }
-            )
-          : kind === "embedding"
-            ? new Worker(
-                new URL("../workers/embedding.worker.ts", import.meta.url),
-                { type: "module" }
-              )
-            : new Worker(
-                new URL("../workers/soap.worker.ts", import.meta.url),
-                {
-                  type: "module",
-                }
-              );
+      if (signal.aborted) {
+        throw abortError();
+      }
+      const worker = createWorker(kind);
       const spawn = () =>
-        new Worker(new URL("../workers/soap.worker.ts", import.meta.url), { type: "module" });
-      return new LocalInferenceSession(worker, release, signal, onProgress, kind === "soap" ? spawn : undefined);
+        new Worker(new URL("../workers/soap.worker.ts", import.meta.url), {
+          type: "module",
+        });
+      return new LocalInferenceSession(
+        worker,
+        release,
+        signal,
+        onProgress,
+        kind === "soap" ? spawn : undefined
+      );
     } catch (error) {
       release();
       throw error;
@@ -125,10 +168,12 @@ export class LocalInferenceSession {
     expected: WorkerResponse["type"],
     transfer: Transferable[] = []
   ) {
-    if (this.closed || this.unpark || this.signal.aborted)
+    if (this.closed || this.unpark || this.signal.aborted) {
       return Promise.reject(abortError());
-    if (this.pending)
+    }
+    if (this.pending) {
       return Promise.reject(new Error("Le moteur local est occupé."));
+    }
     return new Promise<WorkerResponse>((resolve, reject) => {
       const timer = setTimeout(() => {
         this.reject(
@@ -165,15 +210,21 @@ export class LocalInferenceSession {
    * local task evicts it (worker terminated) before starting.
    */
   park() {
-    if (this.closed || this.unpark || this.pending) return;
+    if (this.closed || this.unpark || this.pending) {
+      return;
+    }
     this.signal.removeEventListener("abort", this.onAbort);
     this.release();
     this.unpark = parkIdleModel(() => this.close());
   }
   /** Takes the lease again for a parked session; throws if another task holds it. */
   resume(signal: AbortSignal, onProgress: (event: LocalAiProgress) => void) {
-    if (this.closed || !this.unpark) throw new Error("Session locale fermée.");
-    if (signal.aborted) throw abortError();
+    if (this.closed || !this.unpark) {
+      throw new Error("Session locale fermée.");
+    }
+    if (signal.aborted) {
+      throw abortError();
+    }
     this.unpark();
     this.unpark = null;
     try {
@@ -187,7 +238,9 @@ export class LocalInferenceSession {
     signal.addEventListener("abort", this.onAbort, { once: true });
   }
   close() {
-    if (this.closed) return;
+    if (this.closed) {
+      return;
+    }
     this.closed = true;
     this.unpark?.();
     this.signal.removeEventListener("abort", this.onAbort);

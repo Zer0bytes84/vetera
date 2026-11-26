@@ -1,5 +1,3 @@
-import { formatDisplayText, formatNumber } from "@/utils/display-format";
-import { ArrowUpRight, CalendarBlank, ClipboardList } from "@/lib/icons";
 import {
   Popover,
   PopoverContent,
@@ -7,22 +5,24 @@ import {
   PopoverTitle,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import type { Appointment, Task } from "@/types/db";
+import { ArrowUpRight, CalendarBlank, ClipboardList } from "@/lib/icons";
 import { cn } from "@/lib/utils";
+import type { Appointment, Task } from "@/types/db";
+import { formatDisplayText, formatNumber } from "@/utils/display-format";
 import { normalizeDate } from "./patients-shared";
 
 interface PatientContextWidgetsProps {
   appointments: Appointment[];
-  appointmentsLoading: boolean;
   appointmentsError: boolean;
+  appointmentsLoading: boolean;
   now: number;
   onOpenHistory: () => void;
   onOpenTask: (taskId: string) => void;
   onRetryTasks: () => void;
   patientName: string;
   tasks: Task[];
-  tasksLoading: boolean;
   tasksError: boolean;
+  tasksLoading: boolean;
 }
 
 function shortDate(value: string) {
@@ -55,11 +55,11 @@ export function PatientContextWidgets({
     );
   });
   const firstVisit = [...visitsToday].sort((a, b) =>
-    a.startTime.localeCompare(b.startTime),
+    a.startTime.localeCompare(b.startTime)
   )[0];
   const visitTime = normalizeDate(firstVisit?.startTime)?.toLocaleTimeString(
     "fr-FR",
-    { hour: "2-digit", minute: "2-digit" },
+    { hour: "2-digit", minute: "2-digit" }
   );
   const visitDetail = appointmentsLoading
     ? "Chargement des rendez-vous"
@@ -73,44 +73,43 @@ export function PatientContextWidgets({
     : tasksError
       ? "Actions indisponibles"
       : formatDisplayText(
-          tasks[0]?.title || "Aucune action en attente pour ce patient",
+          tasks[0]?.title || "Aucune action en attente pour ce patient"
         );
   return (
     <section
-      className="patient-context-widgets"
       aria-label={`Repères du dossier de ${patientName}`}
+      className="patient-context-widgets"
     >
       <button
-        type="button"
+        aria-busy={appointmentsLoading}
+        aria-label={`Voir les rendez-vous de ${patientName}`}
         className="patient-context-card group"
         onClick={onOpenHistory}
-        aria-label={`Voir les rendez-vous de ${patientName}`}
-        aria-busy={appointmentsLoading}
+        type="button"
       >
         <span className="patient-context-heading flex items-center gap-2">
-          <span className="size-7 rounded-md flex items-center justify-center bg-sky-50 text-sky-600 border border-sky-200/60 dark:bg-sky-950/60 dark:text-sky-400 dark:border-sky-800/40 shrink-0 shadow-xs">
-            <CalendarBlank size={15} weight="duotone" aria-hidden="true" />
+          <span className="flex size-7 shrink-0 items-center justify-center rounded-md border border-sky-200/60 bg-sky-50 text-sky-600 shadow-xs dark:border-sky-800/40 dark:bg-sky-950/60 dark:text-sky-400">
+            <CalendarBlank aria-hidden="true" size={15} weight="duotone" />
           </span>
-          <span className="text-xs font-medium text-muted-foreground group-hover:text-foreground transition-colors">
+          <span className="font-medium text-muted-foreground text-xs transition-colors group-hover:text-foreground">
             RDV aujourd’hui
           </span>
           <ArrowUpRight
-            size={14}
-            className="ml-auto text-muted-foreground/60 group-hover:text-foreground transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
             aria-hidden="true"
+            className="ml-auto text-muted-foreground/60 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-foreground"
+            size={14}
           />
         </span>
         <span
           className={cn(
-            "patient-context-value text-2xl font-bold tracking-tight text-foreground",
+            "patient-context-value font-bold text-2xl text-foreground tracking-tight",
             appointmentsError ? "patient-context-date" : "",
             // A zero is printed as a zero, without the weight of a figure.
-            !appointmentsLoading &&
-              !appointmentsError &&
+            !(appointmentsLoading || appointmentsError) &&
               visitsToday.length === 0
               ? "is-zero"
               : "",
-            visitsToday.length > 0 ? "text-sky-600 dark:text-sky-400" : "",
+            visitsToday.length > 0 ? "text-sky-600 dark:text-sky-400" : ""
           )}
         >
           {appointmentsLoading
@@ -120,7 +119,7 @@ export function PatientContextWidgets({
               : formatNumber(visitsToday.length)}
         </span>
         <span
-          className="patient-context-detail text-xs text-muted-foreground truncate"
+          className="patient-context-detail truncate text-muted-foreground text-xs"
           title={visitDetail}
         >
           {visitDetail}
@@ -129,31 +128,31 @@ export function PatientContextWidgets({
 
       <Popover>
         <PopoverTrigger
-          className="patient-context-card group"
-          aria-label={`Voir les actions à suivre pour ${patientName}`}
           aria-busy={tasksLoading}
+          aria-label={`Voir les actions à suivre pour ${patientName}`}
+          className="patient-context-card group"
         >
           <span className="patient-context-heading flex items-center gap-2">
-            <span className="size-7 rounded-md flex items-center justify-center bg-amber-50 text-amber-600 border border-amber-200/60 dark:bg-amber-950/60 dark:text-amber-400 dark:border-amber-800/40 shrink-0 shadow-xs">
-              <ClipboardList size={15} weight="duotone" aria-hidden="true" />
+            <span className="flex size-7 shrink-0 items-center justify-center rounded-md border border-amber-200/60 bg-amber-50 text-amber-600 shadow-xs dark:border-amber-800/40 dark:bg-amber-950/60 dark:text-amber-400">
+              <ClipboardList aria-hidden="true" size={15} weight="duotone" />
             </span>
-            <span className="text-xs font-medium text-muted-foreground group-hover:text-foreground transition-colors">
+            <span className="font-medium text-muted-foreground text-xs transition-colors group-hover:text-foreground">
               Actions à suivre
             </span>
             <ArrowUpRight
-              size={14}
-              className="ml-auto text-muted-foreground/60 group-hover:text-foreground transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
               aria-hidden="true"
+              className="ml-auto text-muted-foreground/60 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-foreground"
+              size={14}
             />
           </span>
           <span
             className={cn(
-              "patient-context-value text-2xl font-bold tracking-tight text-foreground",
+              "patient-context-value font-bold text-2xl text-foreground tracking-tight",
               tasksError ? "patient-context-date" : "",
-              !tasksLoading && !tasksError && tasks.length === 0
+              !(tasksLoading || tasksError) && tasks.length === 0
                 ? "is-zero"
                 : "",
-              tasks.length > 0 ? "text-amber-600 dark:text-amber-400" : "",
+              tasks.length > 0 ? "text-amber-600 dark:text-amber-400" : ""
             )}
           >
             {tasksLoading
@@ -163,13 +162,13 @@ export function PatientContextWidgets({
                 : formatNumber(tasks.length)}
           </span>
           <span
-            className="patient-context-detail text-xs text-muted-foreground truncate"
+            className="patient-context-detail truncate text-muted-foreground text-xs"
             title={taskDetail}
           >
             {taskDetail}
           </span>
         </PopoverTrigger>
-        <PopoverContent className="patient-context-popover" align="start">
+        <PopoverContent align="start" className="patient-context-popover">
           <PopoverTitle>Actions pour {patientName}</PopoverTitle>
           <PopoverDescription>
             Tâches et rappels rattachés à ce dossier.
@@ -181,7 +180,7 @@ export function PatientContextWidgets({
           ) : tasksError ? (
             <div className="patient-context-empty" role="status">
               <p>Les actions n’ont pas pu être chargées.</p>
-              <button type="button" onClick={onRetryTasks}>
+              <button onClick={onRetryTasks} type="button">
                 Réessayer
               </button>
             </div>
@@ -190,9 +189,9 @@ export function PatientContextWidgets({
               {tasks.map((task) => (
                 <li key={task.id}>
                   <button
-                    type="button"
-                    onClick={() => onOpenTask(task.id)}
                     aria-label={`Ouvrir l’action : ${formatDisplayText(task.title)}`}
+                    onClick={() => onOpenTask(task.id)}
+                    type="button"
                   >
                     <span>
                       <strong>{formatDisplayText(task.title)}</strong>
@@ -203,7 +202,7 @@ export function PatientContextWidgets({
                         {task.priority === "high" && " · Prioritaire"}
                       </span>
                     </span>
-                    <ArrowUpRight size={16} aria-hidden="true" />
+                    <ArrowUpRight aria-hidden="true" size={16} />
                   </button>
                 </li>
               ))}

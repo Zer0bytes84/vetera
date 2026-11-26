@@ -1,16 +1,6 @@
-import {
-  FileText,
-  Image as ImageIcon,
-  Plus,
-  Trash,
-  UploadSimple,
-} from "@/lib/icons";
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -21,7 +11,9 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { useAuth } from "@/contexts/AuthContext";
+
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Empty,
   EmptyDescription,
@@ -29,23 +21,31 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   useConsultationDocumentsRepository,
   useNotesRepository,
 } from "@/data/repositories";
-import { readOffVisitNote } from "@/modules/consultations/off-visit-note";
-import { cn } from "@/lib/utils";
-import type { ConsultationDocument } from "@/types/db";
-import { PatientDocumentRegistry } from "@/modules/documents/components/patient-document-registry";
 import { guard } from "@/lib/guard";
+import {
+  FileText,
+  Image as ImageIcon,
+  Plus,
+  Trash,
+  UploadSimple,
+} from "@/lib/icons";
+import { cn } from "@/lib/utils";
+import { readOffVisitNote } from "@/modules/consultations/off-visit-note";
+import { PatientDocumentRegistry } from "@/modules/documents/components/patient-document-registry";
+import type { ConsultationDocument } from "@/types/db";
 
 interface PatientDocumentsListProps {
   className?: string;
   onOpenDocument?: (document: ConsultationDocument) => void;
-  onUpload?: () => void;
   onOpenNotes?: () => void;
   /** Notes kept without a visit open in the record, not in the Documents editor. */
   onOpenOffVisitNote?: (noteId: string) => void;
+  onUpload?: () => void;
   patientId: string;
 }
 
@@ -108,14 +108,14 @@ export function PatientDocumentsList({
   const { currentUser } = useAuth();
   const uploadControl = useRef<{ open: () => void }>(null);
   const [deleteTarget, setDeleteTarget] = useState<ConsultationDocument | null>(
-    null,
+    null
   );
 
   const docs = repo.data
     .filter((doc) => doc.patientId === patientId)
     .sort(
       (a, b) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     );
   // Les écrits du dossier sont visibles par toute l'équipe soignante,
   // pas seulement leur auteur.
@@ -123,36 +123,47 @@ export function PatientDocumentsList({
     .filter((note) => note.patientId === patientId)
     .sort(
       (a, b) =>
-        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
+        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
     );
 
   const openNotes = (noteId?: string) => {
     sessionStorage.setItem("documents:open-patient", patientId);
-    if (noteId) sessionStorage.setItem("documents:open-note", noteId);
+    if (noteId) {
+      sessionStorage.setItem("documents:open-note", noteId);
+    }
     onOpenNotes?.();
   };
 
   const createClinicalNote = async () => {
-    if (!currentUser) return;
+    if (!currentUser) {
+      return;
+    }
     const created = await notesRepo.createEmptyNote(currentUser.uid);
-    if (!created) return;
+    if (!created) {
+      return;
+    }
     await notesRepo.update(created.id, { patientId, title: "Note clinique" });
     openNotes(created.id);
   };
 
   const confirmDelete = async () => {
-    if (!deleteTarget) return;
-    await guard(async () => {
-      await repo.remove(deleteTarget.id);
-      toast.success("Document supprimé avec succès.");
-    }, {
-      recover: (_err) => {
-        toast.error("Erreur lors de la suppression.");
+    if (!deleteTarget) {
+      return;
+    }
+    await guard(
+      async () => {
+        await repo.remove(deleteTarget.id);
+        toast.success("Document supprimé avec succès.");
       },
-      cleanup: () => {
-        setDeleteTarget(null);
-      },
-    });
+      {
+        recover: (_err) => {
+          toast.error("Erreur lors de la suppression.");
+        },
+        cleanup: () => {
+          setDeleteTarget(null);
+        },
+      }
+    );
   };
 
   const handleOpen = (doc: ConsultationDocument) => {
@@ -167,18 +178,18 @@ export function PatientDocumentsList({
     <div className={cn("clinical-surface flex flex-col p-5 sm:p-6", className)}>
       <PatientDocumentRegistry
         key={patientId}
-        patientId={patientId}
         onUpload={onUpload}
+        patientId={patientId}
         uploadControl={uploadControl}
       />
-      <div className="mt-8 border-t border-border pt-5">
+      <div className="mt-8 border-border border-t pt-5">
         <div className="mb-4 flex flex-row items-center justify-between gap-2">
           <div className="flex items-center gap-2.5">
             <span className="flex size-8 items-center justify-center rounded-xl bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-300">
               <FileText className="size-4" weight="duotone" />
             </span>
             <div>
-              <div className="font-bold t-12 text-muted-foreground uppercase tracking-wider">
+              <div className="t-12 font-bold text-muted-foreground uppercase tracking-wider">
                 Pièces jointes antérieures
               </div>
               <div className="mt-0.5 text-muted-foreground text-xs">
@@ -217,7 +228,7 @@ export function PatientDocumentsList({
           {clinicalNotes.length ? (
             clinicalNotes.slice(0, 3).map((note) => (
               <button
-                className="flex w-full items-center justify-between gap-2 border-t border-border/50 py-2 text-left text-xs hover:text-primary"
+                className="flex w-full items-center justify-between gap-2 border-border/50 border-t py-2 text-left text-xs hover:text-primary"
                 key={note.id}
                 onClick={() =>
                   onOpenOffVisitNote && readOffVisitNote(note)
@@ -235,13 +246,13 @@ export function PatientDocumentsList({
               </button>
             ))
           ) : (
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               Aucun écrit pour ce patient.
             </p>
           )}
           {clinicalNotes.length > 3 && (
             <button
-              className="mt-1 text-xs font-medium text-primary"
+              className="mt-1 font-medium text-primary text-xs"
               onClick={() => openNotes()}
               type="button"
             >
@@ -278,7 +289,7 @@ export function PatientDocumentsList({
                     <span
                       className={cn(
                         "flex size-9 shrink-0 items-center justify-center rounded-lg",
-                        meta.className,
+                        meta.className
                       )}
                     >
                       <Icon className="size-4" weight="duotone" />
@@ -294,13 +305,13 @@ export function PatientDocumentsList({
                             {doc.fileName}
                           </span>
                           <Badge
-                            className="rounded-full px-1.5 py-0 font-medium t-12"
+                            className="t-12 rounded-full px-1.5 py-0 font-medium"
                             variant="outline"
                           >
                             {meta.label}
                           </Badge>
                         </div>
-                        <div className="mt-0.5 flex items-center gap-2 t-12 text-muted-foreground">
+                        <div className="t-12 mt-0.5 flex items-center gap-2 text-muted-foreground">
                           <span>{formatDate(doc.createdAt)}</span>
                           <span aria-hidden>·</span>
                           <span>{formatBytes(doc.sizeBytes)}</span>
@@ -334,10 +345,12 @@ export function PatientDocumentsList({
           )}
         </div>
         <AlertDialog
-          open={deleteTarget !== null}
           onOpenChange={(open) => {
-            if (!open) setDeleteTarget(null);
+            if (!open) {
+              setDeleteTarget(null);
+            }
           }}
+          open={deleteTarget !== null}
         >
           <AlertDialogContent size="sm">
             <AlertDialogHeader>
@@ -351,8 +364,8 @@ export function PatientDocumentsList({
             <AlertDialogFooter>
               <AlertDialogCancel>Annuler</AlertDialogCancel>
               <AlertDialogAction
-                onClick={() => void confirmDelete()}
                 className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                onClick={() => void confirmDelete()}
               >
                 Supprimer
               </AlertDialogAction>

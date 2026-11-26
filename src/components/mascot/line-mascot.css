@@ -21,24 +21,26 @@
 
 /* Breathing, a slow rise of the whole figure from its shoulders. */
 .lm-figure {
-  transform-box: view-box;
   transform-origin: 60px 120px;
+  transform-box: view-box;
   animation: lm-breathe 4.4s ease-in-out infinite;
 }
 
 @keyframes lm-breathe {
-  50% { transform: translateY(-0.6px) scaleY(1.018); }
+  50% {
+    transform: translateY(-0.6px) scaleY(1.018);
+  }
 }
 
 /* The head tilts round its neck (set by the frame loop). */
 .lm-face {
-  transform-box: view-box;
   transform-origin: 60px 104px;
+  transform-box: view-box;
 }
 
 .lm-eye-open {
-  transform-box: fill-box;
   transform-origin: center;
+  transform-box: fill-box;
   transition: transform 70ms ease-out;
 }
 
@@ -54,8 +56,12 @@
   transition: transform 180ms ease-out;
 }
 
-.lm-root[data-twitch="l"] .lm-ear[data-side="l"] { transform: rotate(-9deg); }
-.lm-root[data-twitch="r"] .lm-ear[data-side="r"] { transform: rotate(9deg); }
+.lm-root[data-twitch="l"] .lm-ear[data-side="l"] {
+  transform: rotate(-9deg);
+}
+.lm-root[data-twitch="r"] .lm-ear[data-side="r"] {
+  transform: rotate(9deg);
+}
 
 /* Moods: what changes is the eyes, the brows and the mouth. */
 .lm-eye-happy,
@@ -95,6 +101,13 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .lm-figure { animation: none; }
-  .lm-eye-open, .lm-gaze, .lm-ear, .lm-cheeks { transition: none; }
+  .lm-figure {
+    animation: none;
+  }
+  .lm-eye-open,
+  .lm-gaze,
+  .lm-ear,
+  .lm-cheeks {
+    transition: none;
+  }
 }

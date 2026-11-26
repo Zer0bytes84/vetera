@@ -9,8 +9,26 @@ import { ShortcutTooltip } from "@/design-system/patterns/shortcut-tooltip";
  */
 function SidebarGlyph({ open }: { open: boolean }) {
   return (
-    <svg aria-hidden="true" fill="none" focusable="false" height={18} stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} viewBox="0 0 24 24" width={18}>
-      {open ? <path d="M3 8.5A4 4 0 0 1 7 4.5h2.5v15H7a4 4 0 0 1-4-4z" fill="currentColor" fillOpacity={0.22} stroke="none" /> : null}
+    <svg
+      aria-hidden="true"
+      fill="none"
+      focusable="false"
+      height={18}
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={1.5}
+      viewBox="0 0 24 24"
+      width={18}
+    >
+      {open ? (
+        <path
+          d="M3 8.5A4 4 0 0 1 7 4.5h2.5v15H7a4 4 0 0 1-4-4z"
+          fill="currentColor"
+          fillOpacity={0.22}
+          stroke="none"
+        />
+      ) : null}
       <rect height={15} rx={4} width={18} x={3} y={4.5} />
       <path d="M9.5 4.5v15" />
     </svg>
@@ -31,17 +49,17 @@ export function HeaderSidebarToggle() {
       ? "Déployer la barre latérale"
       : "Réduire la barre latérale";
   return (
-      <ShortcutTooltip label={label} shortcut="⌘ B">
-        <button
-          aria-label={label}
-          className="topIcon shell-sidebar-toggle"
-          data-sidebar="trigger"
-          data-state={state}
-          onClick={toggleSidebar}
-          type="button"
-        >
-          <SidebarGlyph open={!collapsed} />
-        </button>
-      </ShortcutTooltip>
+    <ShortcutTooltip label={label} shortcut="⌘ B">
+      <button
+        aria-label={label}
+        className="topIcon shell-sidebar-toggle"
+        data-sidebar="trigger"
+        data-state={state}
+        onClick={toggleSidebar}
+        type="button"
+      >
+        <SidebarGlyph open={!collapsed} />
+      </button>
+    </ShortcutTooltip>
   );
 }

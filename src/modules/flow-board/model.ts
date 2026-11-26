@@ -1,12 +1,25 @@
+import { WHITESPACE_RUN } from "@/lib/patterns";
 import { vaccinationBannerEntries } from "@/modules/patients/lib/vaccination-banner";
-import { VISIT_FLOW_STAGES, type VisitFlowStage } from "@/modules/visit-flow/domain";
+import {
+  VISIT_FLOW_STAGES,
+  type VisitFlowStage,
+} from "@/modules/visit-flow/domain";
 import type { VisitFlowBoardState } from "@/modules/visit-flow/store";
-import type { Appointment, Owner, Patient, User, Vaccination } from "@/types/db";
+import type {
+  Appointment,
+  Owner,
+  Patient,
+  User,
+  Vaccination,
+} from "@/types/db";
 
 /** Booked today but not arrived yet: shown above the board, not a stage. */
 export const PLANNED = "planned" as const;
 export type BoardLane = typeof PLANNED | VisitFlowStage;
-export const BOARD_LANES: readonly BoardLane[] = [PLANNED, ...VISIT_FLOW_STAGES];
+export const BOARD_LANES: readonly BoardLane[] = [
+  PLANNED,
+  ...VISIT_FLOW_STAGES,
+];
 
 /** Waiting longer than this turns the timer amber. */
 export const WAIT_WARNING_MINUTES = 15;
@@ -29,9 +42,9 @@ export interface FlowCard {
   patientId: string;
   patientName: string;
   reason: string;
-  species: string;
   /** When the visit entered its lane; null when the journal has no trace. */
   since: string | null;
+  species: string;
   startTime: string;
   status: Appointment["status"];
   urgent: boolean;
@@ -46,7 +59,8 @@ export interface FlowBoard {
   leftOpen: FlowCard[];
 }
 
-const NO_ALLERGY = /^(aucun(?:e)?(?:\s+connue)?|néant|neant|non|ras|r\.a\.s\.?|-)$/i;
+const NO_ALLERGY =
+  /^(aucun(?:e)?(?:\s+connue)?|néant|neant|non|ras|r\.a\.s\.?|-)$/i;
 const BITE = /\b(mord\w*|morsure\w*|agressi\w*|museli[eè]re\w*|dangereu\w*)\b/i;
 const ALERT_ORDER: FlowAlertKind[] = ["allergy", "bite", "vaccine"];
 
@@ -67,7 +81,9 @@ export function patientAlerts(
   vaccinations: readonly Vaccination[],
   now: Date
 ): FlowAlert[] {
-  if (!patient) return [];
+  if (!patient) {
+    return [];
+  }
   const alerts: FlowAlert[] = [];
   const allergies = patient.allergies?.trim();
   if (allergies && !NO_ALLERGY.test(allergies)) {
@@ -77,25 +93,38 @@ export function patientAlerts(
     const text = note?.trim();
     const match = text ? BITE.exec(text) : null;
     if (text && match) {
-      alerts.push({ kind: "bite", label: "Mord", detail: `D'après le dossier : « ${firstSentence(text, match)} »` });
+      alerts.push({
+        kind: "bite",
+        label: "Mord",
+        detail: `D'après le dossier : « ${firstSentence(text, match)} »`,
+      });
       break;
     }
   }
-  const late = vaccinationBannerEntries(patient.id, vaccinations, now).filter((entry) => entry.status === "overdue");
+  const late = vaccinationBannerEntries(patient.id, vaccinations, now).filter(
+    (entry) => entry.status === "overdue"
+  );
   if (late.length > 0) {
     alerts.push({
       kind: "vaccine",
-      label: late.length > 1 ? `${late.length} vaccins en retard` : "Vaccin en retard",
+      label:
+        late.length > 1
+          ? `${late.length} vaccins en retard`
+          : "Vaccin en retard",
       detail: late.map((entry) => entry.name).join(", "),
     });
   }
-  return alerts.sort((a, b) => ALERT_ORDER.indexOf(a.kind) - ALERT_ORDER.indexOf(b.kind));
+  return alerts.sort(
+    (a, b) => ALERT_ORDER.indexOf(a.kind) - ALERT_ORDER.indexOf(b.kind)
+  );
 }
 
 export function isSameLocalDay(iso: string, day: Date) {
   const date = new Date(iso);
   return (
-    date.getFullYear() === day.getFullYear() && date.getMonth() === day.getMonth() && date.getDate() === day.getDate()
+    date.getFullYear() === day.getFullYear() &&
+    date.getMonth() === day.getMonth() &&
+    date.getDate() === day.getDate()
   );
 }
 
@@ -104,11 +133,11 @@ export interface BoardInput {
   now: Date;
   owners: readonly Owner[];
   patients: readonly Patient[];
+  /** Words to find in the patient, owner, reason, species or veterinarian. */
+  query?: string;
   states: readonly VisitFlowBoardState[];
   users: readonly User[];
   vaccinations: readonly Vaccination[];
-  /** Words to find in the patient, owner, reason, species or veterinarian. */
-  query?: string;
   /** Only this veterinarian's visits; empty for everyone. */
   vetId?: string;
 }
@@ -121,31 +150,57 @@ const fold = (text: string) =>
 
 /** Every word of the query must appear somewhere on the card. */
 export function matchesQuery(card: FlowCard, query: string | undefined) {
-  const words = fold(query ?? "").split(/\s+/).filter(Boolean);
-  if (words.length === 0) return true;
-  const haystack = fold([card.patientName, card.ownerName, card.reason, card.species, card.vetName].join(" "));
+  const words = fold(query ?? "")
+    .split(WHITESPACE_RUN)
+    .filter(Boolean);
+  if (words.length === 0) {
+    return true;
+  }
+  const haystack = fold(
+    [
+      card.patientName,
+      card.ownerName,
+      card.reason,
+      card.species,
+      card.vetName,
+    ].join(" ")
+  );
   return words.every((word) => haystack.includes(word));
 }
 
 /** Today's visits by lane, urgent ones first, then longest waiting first. */
 export function buildFlowBoard(input: BoardInput): FlowBoard {
-  const patients = new Map(input.patients.map((patient) => [patient.id, patient]));
+  const patients = new Map(
+    input.patients.map((patient) => [patient.id, patient])
+  );
   const owners = new Map(input.owners.map((owner) => [owner.id, owner]));
   const users = new Map(input.users.map((user) => [user.id, user]));
-  const states = new Map(input.states.map((state) => [state.appointmentId, state]));
-  const lanes = Object.fromEntries(BOARD_LANES.map((lane) => [lane, [] as FlowCard[]])) as Record<BoardLane, FlowCard[]>;
+  const states = new Map(
+    input.states.map((state) => [state.appointmentId, state])
+  );
+  const lanes = Object.fromEntries(
+    BOARD_LANES.map((lane) => [lane, [] as FlowCard[]])
+  ) as Record<BoardLane, FlowCard[]>;
   const leftOpen: FlowCard[] = [];
 
   for (const appointment of input.appointments) {
-    if (input.vetId && appointment.vetId !== input.vetId) continue;
+    if (input.vetId && appointment.vetId !== input.vetId) {
+      continue;
+    }
     const state = states.get(appointment.id);
     const stage = state?.stage ?? null;
     const today = isSameLocalDay(appointment.startTime, input.now);
-    const stillOpen = stage === "waiting" || stage === "consultation" || stage === "care";
-    if (!today && !stillOpen) continue;
-    const planned = appointment.status === "scheduled" || appointment.status === "confirmed";
+    const stillOpen =
+      stage === "waiting" || stage === "consultation" || stage === "care";
+    if (!(today || stillOpen)) {
+      continue;
+    }
+    const planned =
+      appointment.status === "scheduled" || appointment.status === "confirmed";
     const lane: BoardLane | null = planned ? PLANNED : stage;
-    if (!lane) continue;
+    if (!lane) {
+      continue;
+    }
     const patient = patients.get(appointment.patientId);
     const owner = owners.get(appointment.ownerId);
     const card: FlowCard = {
@@ -166,32 +221,53 @@ export function buildFlowBoard(input: BoardInput): FlowBoard {
       vetId: appointment.vetId,
       vetName: users.get(appointment.vetId)?.displayName ?? "",
     };
-    if (!matchesQuery(card, input.query)) continue;
-    if (today) lanes[lane].push(card);
-    else leftOpen.push(card);
+    if (!matchesQuery(card, input.query)) {
+      continue;
+    }
+    if (today) {
+      lanes[lane].push(card);
+    } else {
+      leftOpen.push(card);
+    }
   }
 
-  const time = (value: string | null, fallback: string) => new Date(value ?? fallback).getTime();
+  const time = (value: string | null, fallback: string) =>
+    new Date(value ?? fallback).getTime();
   for (const lane of BOARD_LANES) {
     lanes[lane].sort((a, b) => {
-      if (a.urgent !== b.urgent) return a.urgent ? -1 : 1;
-      if (lane === PLANNED || lane === "done") return time(null, a.startTime) - time(null, b.startTime);
+      if (a.urgent !== b.urgent) {
+        return a.urgent ? -1 : 1;
+      }
+      if (lane === PLANNED || lane === "done") {
+        return time(null, a.startTime) - time(null, b.startTime);
+      }
       return time(a.since, a.startTime) - time(b.since, b.startTime);
     });
   }
   // Oldest first: the visit forgotten the longest comes up first.
-  leftOpen.sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
+  leftOpen.sort(
+    (a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
+  );
   return { lanes, leftOpen };
 }
 
 export function minutesSince(iso: string | null, now: Date): number | null {
-  if (!iso) return null;
-  return Math.max(0, Math.floor((now.getTime() - new Date(iso).getTime()) / 60_000));
+  if (!iso) {
+    return null;
+  }
+  return Math.max(
+    0,
+    Math.floor((now.getTime() - new Date(iso).getTime()) / 60_000)
+  );
 }
 
 export function durationLabel(minutes: number): string {
-  if (minutes < 1) return "à l'instant";
-  if (minutes < 60) return `${minutes} min`;
+  if (minutes < 1) {
+    return "à l'instant";
+  }
+  if (minutes < 60) {
+    return `${minutes} min`;
+  }
   const hours = Math.floor(minutes / 60);
   const rest = minutes % 60;
   return rest ? `${hours} h ${String(rest).padStart(2, "0")}` : `${hours} h`;
@@ -207,25 +283,72 @@ export type BoardMove =
  * What moving a card from one lane to another does. Only forward steps a
  * click can safely make; the rest is done where it belongs, with a reason.
  */
-export function boardMove(from: BoardLane, to: BoardLane): BoardMove | { refused: string } | null {
-  if (from === to) return null;
-  if (from === PLANNED && to === "waiting") return { kind: "status", status: "arrived" };
-  if (from === PLANNED && to === "consultation") return { kind: "status", status: "in_progress" };
-  if (from === "waiting" && to === "consultation") return { kind: "status", status: "in_progress" };
-  if (from === "consultation" && to === "care") return { kind: "care", care: true };
-  if (from === "care" && to === "consultation") return { kind: "care", care: false };
-  if ((from === "consultation" || from === "care") && to === "billing") return { kind: "close" };
-  if (to === "done") return { refused: "Terminé arrive seul, dès que la facture est entièrement réglée." };
-  return { refused: "Pour revenir en arrière, utilisez « Annuler » juste après le déplacement." };
+export function boardMove(
+  from: BoardLane,
+  to: BoardLane
+): BoardMove | { refused: string } | null {
+  if (from === to) {
+    return null;
+  }
+  if (from === PLANNED && to === "waiting") {
+    return { kind: "status", status: "arrived" };
+  }
+  if (from === PLANNED && to === "consultation") {
+    return { kind: "status", status: "in_progress" };
+  }
+  if (from === "waiting" && to === "consultation") {
+    return { kind: "status", status: "in_progress" };
+  }
+  if (from === "consultation" && to === "care") {
+    return { kind: "care", care: true };
+  }
+  if (from === "care" && to === "consultation") {
+    return { kind: "care", care: false };
+  }
+  if ((from === "consultation" || from === "care") && to === "billing") {
+    return { kind: "close" };
+  }
+  if (to === "done") {
+    return {
+      refused:
+        "Terminé arrive seul, dès que la facture est entièrement réglée.",
+    };
+  }
+  return {
+    refused:
+      "Pour revenir en arrière, utilisez « Annuler » juste après le déplacement.",
+  };
 }
 
 /** The one-click action of each lane, and the lane it leads to. */
-export const PRIMARY_ACTION: Partial<Record<BoardLane, { label: string; title: string; to: BoardLane }>> = {
-  [PLANNED]: { label: "Arrivé", title: "Le patient est arrivé : il passe en Attente", to: "waiting" },
-  waiting: { label: "Faire entrer", title: "Faire entrer en consultation", to: "consultation" },
-  consultation: { label: "En soins", title: "Passer en Soins ou résultats", to: "care" },
-  care: { label: "Reprendre", title: "Reprendre la consultation", to: "consultation" },
-  billing: { label: "Facturer", title: "Établir la facture et encaisser", to: "done" },
+export const PRIMARY_ACTION: Partial<
+  Record<BoardLane, { label: string; title: string; to: BoardLane }>
+> = {
+  [PLANNED]: {
+    label: "Arrivé",
+    title: "Le patient est arrivé : il passe en Attente",
+    to: "waiting",
+  },
+  waiting: {
+    label: "Faire entrer",
+    title: "Faire entrer en consultation",
+    to: "consultation",
+  },
+  consultation: {
+    label: "En soins",
+    title: "Passer en Soins ou résultats",
+    to: "care",
+  },
+  care: {
+    label: "Reprendre",
+    title: "Reprendre la consultation",
+    to: "consultation",
+  },
+  billing: {
+    label: "Facturer",
+    title: "Établir la facture et encaisser",
+    to: "done",
+  },
 };
 
 export type WalkIn =
@@ -237,13 +360,31 @@ export type WalkIn =
  * A patient who shows up at the desk: already in the waiting room or in
  * consultation, booked today and not arrived yet, or a true walk-in.
  */
-export function walkInFor(patientId: string, appointments: readonly Appointment[], now: Date): WalkIn {
-  const todays = appointments.filter((a) => a.patientId === patientId && isSameLocalDay(a.startTime, now));
-  const here = todays.find((a) => a.status === "arrived" || a.status === "waiting" || a.status === "in_progress");
-  if (here) return { kind: "already-here", appointment: here };
+export function walkInFor(
+  patientId: string,
+  appointments: readonly Appointment[],
+  now: Date
+): WalkIn {
+  const todays = appointments.filter(
+    (a) => a.patientId === patientId && isSameLocalDay(a.startTime, now)
+  );
+  const here = todays.find(
+    (a) =>
+      a.status === "arrived" ||
+      a.status === "waiting" ||
+      a.status === "in_progress"
+  );
+  if (here) {
+    return { kind: "already-here", appointment: here };
+  }
   const booked = todays
     .filter((a) => a.status === "scheduled" || a.status === "confirmed")
-    .sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime())[0];
-  if (booked) return { kind: "booked", appointment: booked };
+    .sort(
+      (a, b) =>
+        new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
+    )[0];
+  if (booked) {
+    return { kind: "booked", appointment: booked };
+  }
   return { kind: "new" };
 }

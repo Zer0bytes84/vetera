@@ -1,6 +1,7 @@
 import type { InvoiceSettings } from "@/services/invoiceSettingsService";
 
 export interface PatientRecordOptions {
+  includeAttachments: boolean;
   period: { from: string; to: string } | null;
   sections: {
     identity: boolean;
@@ -9,24 +10,29 @@ export interface PatientRecordOptions {
     reminders: boolean;
     notes: boolean;
   };
-  includeAttachments: boolean;
 }
 
 export const DEFAULT_PATIENT_RECORD_OPTIONS: PatientRecordOptions = {
   period: null,
-  sections: { identity: true, consultations: true, documents: true, reminders: true, notes: true },
+  sections: {
+    identity: true,
+    consultations: true,
+    documents: true,
+    reminders: true,
+    notes: true,
+  },
   includeAttachments: true,
 };
 
 export interface PatientRecordSource {
+  createdAt?: string;
+  dataUrl: string;
+  fileName: string;
   id: string;
+  mimeType: "application/pdf" | "image/jpeg" | "image/png";
+  origin: "generated" | "import";
   patientId: string;
   title: string;
-  fileName: string;
-  mimeType: "application/pdf" | "image/jpeg" | "image/png";
-  dataUrl: string;
-  createdAt?: string;
-  origin: "generated" | "import";
 }
 
 export type PatientRecordBlock =
@@ -35,45 +41,45 @@ export type PatientRecordBlock =
   | { kind: "source"; source: PatientRecordSource };
 
 export interface PatientRecordSection {
+  blocks: PatientRecordBlock[];
   id: keyof PatientRecordOptions["sections"] | "attachments";
   title: string;
-  blocks: PatientRecordBlock[];
 }
 
 /** A read-only snapshot. The PDF engine never queries or mutates clinical data. */
 export interface PatientRecordSnapshot {
+  clinic: InvoiceSettings;
+  cover: { species?: string; breed?: string; ownerName?: string };
+  exportDay: string;
+  filename: string;
+  generatedAt: string;
+  options: PatientRecordOptions;
   patientId: string;
   patientName: string;
   requestedBy: string;
-  generatedAt: string;
-  exportDay: string;
-  filename: string;
-  options: PatientRecordOptions;
-  clinic: InvoiceSettings;
-  cover: { species?: string; breed?: string; ownerName?: string };
   sections: PatientRecordSection[];
 }
 
 export interface PatientRecordProgress {
-  stage: "preparing" | "content" | "attachments" | "finalizing";
   current: number;
-  total?: number;
-  pages: number;
   label: string;
+  pages: number;
+  stage: "preparing" | "content" | "attachments" | "finalizing";
+  total?: number;
 }
 
 export interface PatientRecordPdf {
   bytes: Uint8Array;
-  pageCount: number;
   filename: string;
+  generatedAt: string;
+  pageCount: number;
   patientId: string;
   patientName: string;
   requestedBy: string;
-  generatedAt: string;
 }
 
 export interface PatientRecordGenerationOptions {
-  signal?: AbortSignal;
   onProgress?: (progress: PatientRecordProgress) => void;
+  signal?: AbortSignal;
   yieldToMain?: () => Promise<void>;
 }

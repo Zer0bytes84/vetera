@@ -7,10 +7,15 @@ import {
   useRef,
   useState,
 } from "react";
+import { guard } from "@/lib/guard";
 import { writeCachedProfile } from "@/lib/profile-cache";
 import { bootstrapScheduler, stopScheduler } from "@/services/backupScheduler";
-import * as AuthService from "@/services/sqlite/auth";
-import { guard } from "@/lib/guard";
+import {
+  login as authLogin,
+  logout as authLogout,
+  register as authRegister,
+  getCurrentUser as getCurrentAuthUser,
+} from "@/services/sqlite/auth";
 
 const loadServicesAuditService = () => import("@/services/auditService");
 
@@ -101,85 +106,94 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
     const isInitialLoad = !hasInitializedRef.current;
     const refreshPromise = (async () => {
-      await guard(async () => {
-        // Only show the global loading skeleton on the very first load.
-        // Background refreshes must not blank out the app on WebView2.
-        if (isInitialLoad) {
-          setLoading(true);
-        }
-        const user = isInitialLoad
-          ? await withTimeout(
-              AuthService.getCurrentUser(),
-              INITIAL_AUTH_TIMEOUT_MS,
-              "Auth initialization timed out"
-            )
-          : await AuthService.getCurrentUser();
-        if (user) {
-          setCurrentUser({
-            id: user.id,
-            uid: user.id,
-            email: user.email,
-            displayName: user.displayName,
-            role: user.role,
-            avatarUrl: user.avatarUrl ?? null,
-          });
-          writeCachedProfile(user.email, {
-            displayName: user.displayName || undefined,
-            avatarUrl: user.avatarUrl ?? undefined,
-          });
-        } else if (isInitialLoad) {
-          setCurrentUser(null);
-        } else if (!localStorage.getItem("auth_token")) {
-          setCurrentUser(null);
-        }
-        setError(null);
-      }, {
-        recover: (error: any) => {
-          if (isTransientDbError(error)) {
-            setError(null);
-          } else {
-            console.error("Error refreshing user:", error);
-            setError(error.message || "Failed to refresh user");
+      await guard(
+        async () => {
+          // Only show the global loading skeleton on the very first load.
+          // Background refreshes must not blank out the app on WebView2.
+          if (isInitialLoad) {
+            setLoading(true);
           }
-          // Never null out the user on a transient error after bootstrap.
+          const user = isInitialLoad
+            ? await withTimeout(
+                getCurrentAuthUser(),
+                INITIAL_AUTH_TIMEOUT_MS,
+                "Auth initialization timed out"
+              )
+            : await getCurrentAuthUser();
+          if (user) {
+            setCurrentUser({
+              id: user.id,
+              uid: user.id,
+              email: user.email,
+              displayName: user.displayName,
+              role: user.role,
+              avatarUrl: user.avatarUrl ?? null,
+            });
+            writeCachedProfile(user.email, {
+              displayName: user.displayName || undefined,
+              avatarUrl: user.avatarUrl ?? undefined,
+            });
+          } else if (isInitialLoad) {
+            setCurrentUser(null);
+          } else if (!localStorage.getItem("auth_token")) {
+            setCurrentUser(null);
+          }
+          setError(null);
         },
-        cleanup: () => {
-          hasInitializedRef.current = true;
-          setLoading(false);
-        },
-      });
+        {
+          recover: (error: unknown) => {
+            if (isTransientDbError(error)) {
+              setError(null);
+            } else {
+              console.error("Error refreshing user:", error);
+              setError((error as Error).message || "Failed to refresh user");
+            }
+            // Never null out the user on a transient error after bootstrap.
+          },
+          cleanup: () => {
+            hasInitializedRef.current = true;
+            setLoading(false);
+          },
+        }
+      );
     })();
 
     refreshPromiseRef.current = refreshPromise;
-    await guard(async () => {
-      await refreshPromise;
-    }, {
-      cleanup: () => {
-        if (refreshPromiseRef.current === refreshPromise) {
-          refreshPromiseRef.current = null;
-        }
+    await guard(
+      async () => {
+        await refreshPromise;
       },
-    });
+      {
+        cleanup: () => {
+          if (refreshPromiseRef.current === refreshPromise) {
+            refreshPromiseRef.current = null;
+          }
+        },
+      }
+    );
   }, []);
 
   // Charger l'utilisateur au démarrage
   useEffect(() => {
     const loadUser = async () => {
-      await guard(async () => {
-        await refreshCurrentUser();
-        // Boot the backup scheduler once the user is resolved so the first
-        // run benefits from the live DB connection.
-        void bootstrapScheduler();
-      }, {
-        recover: (error: any) => {
-          console.error("Error loading user:", error);
-          setError(error.message || "Failed to load user");
+      await guard(
+        async () => {
+          await refreshCurrentUser();
+          // Boot the backup scheduler once the user is resolved so the first
+          // run benefits from the live DB connection.
+          void bootstrapScheduler();
         },
-        cleanup: () => {
-          hasInitializedRef.current = true;
-          setLoading(false);
-        },
-      });
+        {
+          recover: (error: unknown) => {
+            console.error("Error loading user:", error);
+            setError((error as Error).message || "Failed to load user");
+          },
+          cleanup: () => {
+            hasInitializedRef.current = true;
+            setLoading(false);
+          },
+        }
+      );
     };
 
     loadUser();
@@ -219,38 +233,41 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   }, [refreshCurrentUser]);
 
   const login = async (email: string, password: string) => {
-    await guard(async () => {
-      const user = await AuthService.login({ email, password });
-      setCurrentUser({
-        id: user.id,
-        uid: user.id,
-        email: user.email,
-        displayName: user.displayName,
-        role: user.role,
-        avatarUrl: user.avatarUrl ?? null,
-      });
-      writeCachedProfile(user.email, {
-        displayName: user.displayName || undefined,
-        avatarUrl: user.avatarUrl ?? undefined,
-      });
-      setError(null);
-      // Audit log: login (ne doit jamais casser la session)
-      try {
-        const { auditLogin } = await loadServicesAuditService();
-        await auditLogin({
+    await guard(
+      async () => {
+        const user = await authLogin({ email, password });
+        setCurrentUser({
           id: user.id,
-          displayName: user.displayName,
+          uid: user.id,
           email: user.email,
+          displayName: user.displayName,
+          role: user.role,
+          avatarUrl: user.avatarUrl ?? null,
         });
-      } catch {
-        // silencieux
-      }
-    }, {
-      recover: (err: any) => {
-        setError(err.message);
-        throw err;
+        writeCachedProfile(user.email, {
+          displayName: user.displayName || undefined,
+          avatarUrl: user.avatarUrl ?? undefined,
+        });
+        setError(null);
+        // Audit log: login (ne doit jamais casser la session)
+        try {
+          const { auditLogin } = await loadServicesAuditService();
+          await auditLogin({
+            id: user.id,
+            displayName: user.displayName,
+            email: user.email,
+          });
+        } catch {
+          // silencieux
+        }
       },
-    });
+      {
+        recover: (err: unknown) => {
+          setError((err as Error).message);
+          throw err;
+        },
+      }
+    );
   };
 
   const register = async (
@@ -258,7 +275,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     password: string,
     displayName: string
   ): Promise<AuthUser> => {
-    const user = await AuthService.register({ email, password, displayName });
+    const user = await authRegister({ email, password, displayName });
     setCurrentUser({
       id: user.id,
       uid: user.id,
@@ -283,7 +300,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const logout = async () => {
     const current = currentUserRef.current;
-    await AuthService.logout();
+    await authLogout();
     setCurrentUser(null);
     if (current) {
       try {

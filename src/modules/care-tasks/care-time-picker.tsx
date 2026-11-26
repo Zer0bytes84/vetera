@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Clock } from "./care-icons";
 import { Button } from "@/components/ui/button";
 import {
   Popover,
@@ -7,10 +6,11 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import {
+  addMinutesToTime,
   QUICK_TIMES,
   TIME_PERIODS,
-  addMinutesToTime,
 } from "@/modules/agenda/components/agenda-shared";
+import { Clock } from "./care-icons";
 
 export function CareTimePicker({
   value,
@@ -25,20 +25,22 @@ export function CareTimePicker({
   const [draft, setDraft] = useState(value);
   return (
     <Popover
-      open={open}
       onOpenChange={(nextOpen) => {
-        if (nextOpen) setDraft(value);
+        if (nextOpen) {
+          setDraft(value);
+        }
         setOpen(nextOpen);
       }}
+      open={open}
     >
       <PopoverTrigger
         aria-label={`Choisir l’${label.toLocaleLowerCase("fr-FR")}`}
         render={
           <Button
+            className="t-13 h-11 w-[115px] shrink-0 justify-start gap-2 rounded-xl px-3"
             data-field="time"
             type="button"
             variant="outline"
-            className="h-11 w-[115px] shrink-0 justify-start gap-2 rounded-xl px-3 t-13"
           />
         }
       >
@@ -50,15 +52,15 @@ export function CareTimePicker({
         className="w-[320px] max-w-[calc(100vw-32px)] gap-4 p-4"
       >
         <div className="flex items-center justify-between gap-3">
-          <h3 className="text-sm font-medium">{label}</h3>
-          <span className="text-lg font-medium tabular-nums" aria-live="polite">
+          <h3 className="font-medium text-sm">{label}</h3>
+          <span aria-live="polite" className="font-medium text-lg tabular-nums">
             {draft || "À choisir"}
           </span>
         </div>
         <div className="max-h-[240px] space-y-4 overflow-y-auto">
           {TIME_PERIODS.map((period) => (
-            <div key={period.id} className="space-y-2">
-              <p className="text-xs font-medium text-muted-foreground">
+            <div className="space-y-2" key={period.id}>
+              <p className="font-medium text-muted-foreground text-xs">
                 {period.label}
               </p>
               <div className="grid grid-cols-4 gap-2">
@@ -69,12 +71,12 @@ export function CareTimePicker({
                       (period.id === "evening" && slot === period.to))
                 ).map((slot) => (
                   <Button
+                    aria-pressed={draft === slot}
+                    className="h-11 rounded-lg px-2 text-sm tabular-nums"
                     key={slot}
+                    onClick={() => setDraft(slot)}
                     type="button"
                     variant={draft === slot ? "default" : "outline"}
-                    className="h-11 rounded-lg px-2 text-sm tabular-nums"
-                    aria-pressed={draft === slot}
-                    onClick={() => setDraft(slot)}
                   >
                     {slot}
                   </Button>
@@ -84,17 +86,17 @@ export function CareTimePicker({
           ))}
         </div>
         <div className="space-y-2 border-t pt-3">
-          <p className="text-xs text-muted-foreground">Ajuster à la minute</p>
+          <p className="text-muted-foreground text-xs">Ajuster à la minute</p>
           <div className="grid grid-cols-4 gap-2">
             {[-5, -1, 1, 5].map((delta) => (
               <Button
+                aria-label={`${delta > 0 ? "Ajouter" : "Retirer"} ${Math.abs(delta)} minute${Math.abs(delta) > 1 ? "s" : ""}`}
+                className="h-11 px-2 text-xs"
+                disabled={!draft}
                 key={delta}
+                onClick={() => setDraft(addMinutesToTime(draft, delta))}
                 type="button"
                 variant="secondary"
-                disabled={!draft}
-                className="h-11 px-2 text-xs"
-                aria-label={`${delta > 0 ? "Ajouter" : "Retirer"} ${Math.abs(delta)} minute${Math.abs(delta) > 1 ? "s" : ""}`}
-                onClick={() => setDraft(addMinutesToTime(draft, delta))}
               >
                 {delta > 0 ? "+" : "−"}
                 {Math.abs(delta)} min
@@ -103,31 +105,31 @@ export function CareTimePicker({
           </div>
           <div className="grid grid-cols-2 gap-2">
             <Button
-              type="button"
-              variant="ghost"
               className="h-11 text-xs"
               onClick={() => setDraft("00:00")}
+              type="button"
+              variant="ghost"
             >
               Minuit
             </Button>
             <Button
-              type="button"
-              variant="ghost"
               className="h-11 text-xs"
               onClick={() => setDraft("23:00")}
+              type="button"
+              variant="ghost"
             >
               23:00
             </Button>
           </div>
         </div>
         <Button
-          type="button"
-          disabled={!draft}
           className="h-11 w-full"
+          disabled={!draft}
           onClick={() => {
             onChange(draft);
             setOpen(false);
           }}
+          type="button"
         >
           Choisir {draft || "une heure"}
         </Button>

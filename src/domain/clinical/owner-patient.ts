@@ -1,5 +1,7 @@
 import type { Owner, Patient } from "@/types/db";
 
+const EMAIL_ADDRESS = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 export type OwnerDraft = Omit<Owner, "id" | "createdAt" | "updatedAt">;
 export type PatientDraft = Omit<
   Patient,
@@ -31,7 +33,7 @@ const trimOptional = (value?: string) => value?.trim() || undefined;
 function normalizePhone(value?: string): string | undefined {
   const trimmed = value?.trim();
   if (!trimmed) {
-    return undefined;
+    return;
   }
 
   const normalized = trimmed.replace(/[^\d+]/g, "");
@@ -48,9 +50,9 @@ function normalizePhone(value?: string): string | undefined {
 function normalizeEmail(value?: string): string | undefined {
   const normalized = value?.trim().toLocaleLowerCase("fr-FR");
   if (!normalized) {
-    return undefined;
+    return;
   }
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalized)) {
+  if (!EMAIL_ADDRESS.test(normalized)) {
     throw new ClinicalValidationError(
       "OWNER_EMAIL_INVALID",
       "L'adresse email du propriétaire n'est pas valide."
@@ -66,13 +68,13 @@ export function normalizeOwnerDraft(owner: OwnerDraft): OwnerDraft {
   const email = normalizeEmail(owner.email);
   const secondaryContactPhone = normalizePhone(owner.secondaryContactPhone);
 
-  if (!firstName && !lastName) {
+  if (!(firstName || lastName)) {
     throw new ClinicalValidationError(
       "OWNER_NAME_REQUIRED",
       "Le nom ou le prénom du propriétaire est obligatoire."
     );
   }
-  if (!phone && !email) {
+  if (!(phone || email)) {
     throw new ClinicalValidationError(
       "OWNER_CONTACT_REQUIRED",
       "Ajoutez un téléphone ou un email pour pouvoir contacter le propriétaire."

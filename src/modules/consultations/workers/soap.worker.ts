@@ -1,8 +1,11 @@
 /// <reference lib="webworker" />
 import type { LlmInference } from "@mediapipe/tasks-genai";
+import {
+  type GeneratorFamily,
+  wrapUserTurn,
+} from "../local-ai/generator-choice";
 import { enforceOfflineWorker } from "../local-ai/offline-policy";
 import { estimateTokenCapacity } from "../local-ai/token-capacity";
-import { wrapUserTurn, type GeneratorFamily } from "../local-ai/generator-choice";
 import type {
   WorkerRequest,
   WorkerResponse,
@@ -25,15 +28,21 @@ const release = () => {
 };
 const openWeights = async (url: string) => {
   const response = await fetch(url);
-  if (!response.ok || !response.body)
+  if (!(response.ok && response.body)) {
     throw new Error("Fichier de modèle inaccessible.");
+  }
   return response.body.getReader();
 };
 self.onmessage = async ({ data }: MessageEvent<WorkerRequest>) => {
-  if (data.type !== "generate") return;
+  if (data.type !== "generate") {
+    return;
+  }
   let stage: "load" | "generate" = "load";
   try {
-    enforceOfflineWorker([...data.generators.map((candidate) => candidate.url), data.runtimeRoot]);
+    enforceOfflineWorker([
+      ...data.generators.map((candidate) => candidate.url),
+      data.runtimeRoot,
+    ]);
     // MediaPipe counts BOTH input and output in maxTokens. The reply reserve
     // follows the dictation scaffold plus a small formatting margin, so long
     // inputs can never silently exhaust the reply.
@@ -44,15 +53,19 @@ self.onmessage = async ({ data }: MessageEvent<WorkerRequest>) => {
           ? 768
           : 512;
     const candidates = data.generators;
-    if (!candidates.length) throw new Error("Aucun modèle de rédaction disponible.");
-    if (!model || !candidates.some((candidate) => candidate.url === loadedUrl)) {
+    if (!candidates.length) {
+      throw new Error("Aucun modèle de rédaction disponible.");
+    }
+    if (
+      !(model && candidates.some((candidate) => candidate.url === loadedUrl))
+    ) {
       release();
       const gpu = (
         navigator as Navigator & {
           gpu?: { requestAdapter: () => Promise<unknown> };
         }
       ).gpu;
-      if (!gpu || !(await gpu.requestAdapter())) {
+      if (!(gpu && (await gpu.requestAdapter()))) {
         throw new Error(unavailableGraphics);
       }
       const { FilesetResolver, LlmInference } = await import(
@@ -88,13 +101,19 @@ self.onmessage = async ({ data }: MessageEvent<WorkerRequest>) => {
           });
           // A damaged file can be accepted and only fail at its first use:
           // the tokenizer must answer before the model counts as loaded.
-          if (model.sizeInTokens(wrapUserTurn(data.prompt, candidate.family)) === undefined)
+          if (
+            model.sizeInTokens(wrapUserTurn(data.prompt, candidate.family)) ===
+            undefined
+          ) {
             throw new Error("Tokenizer indisponible.");
+          }
         } catch (error) {
           // Not enough memory or graphics, or an unusable file: the session
           // moves on silently to the next model (Gemma 3) in a fresh worker.
           release();
-          if (candidates.length === 1) throw error;
+          if (candidates.length === 1) {
+            throw error;
+          }
           send({ type: "generator-unavailable", url: candidate.url });
           return;
         }
@@ -102,21 +121,27 @@ self.onmessage = async ({ data }: MessageEvent<WorkerRequest>) => {
         loadedFamily = candidate.family;
         capacity = nextCapacity;
       }
-      if (!model) throw new Error("Aucun modèle de rédaction disponible.");
+      if (!model) {
+        throw new Error("Aucun modèle de rédaction disponible.");
+      }
     }
     const prompt = wrapUserTurn(data.prompt, loadedFamily);
     const inputTokens = model.sizeInTokens(prompt);
     const templateTokens = data.responseTemplate
       ? model.sizeInTokens(data.responseTemplate)
       : 448;
-    if (inputTokens === undefined || templateTokens === undefined)
+    if (inputTokens === undefined || templateTokens === undefined) {
       throw new Error("Le moteur local n’a pas pu mesurer la note.");
+    }
     const needed = inputTokens + reserve(templateTokens);
     if (needed > capacity) {
       // Rare: unusually dense text. setOptions releases the converted engine
       // before creating its replacement, so one model stays loaded at a time.
+      if (!loadedUrl) {
+        throw new Error("Aucun modèle chargé.");
+      }
       await model.setOptions({
-        baseOptions: { modelAssetBuffer: await openWeights(loadedUrl!) },
+        baseOptions: { modelAssetBuffer: await openWeights(loadedUrl) },
         maxTokens: needed,
       });
       capacity = needed;
@@ -151,7 +176,12 @@ self.onmessage = async ({ data }: MessageEvent<WorkerRequest>) => {
         });
       }
     });
-    send({ type: "generated", text, generator: loadedFamily, fellBack: data.fellBack ?? false });
+    send({
+      type: "generated",
+      text,
+      generator: loadedFamily,
+      fellBack: data.fellBack ?? false,
+    });
   } catch (error) {
     release();
     send({
@@ -162,7 +192,9 @@ self.onmessage = async ({ data }: MessageEvent<WorkerRequest>) => {
           : stage === "load"
             ? "L’assistant n’a pas pu être chargé. Vérifiez le fichier de préparation des notes installé et la mémoire disponible." +
               // Development builds keep the engine's own message for diagnosis.
-              (import.meta.env.DEV ? ` (${String(error instanceof Error ? error.message : error)})` : "")
+              (import.meta.env.DEV
+                ? ` (${String(error instanceof Error ? error.message : error)})`
+                : "")
             : data.purpose === "document"
               ? "La lecture assistée a échoué. Le texte du document reste disponible pour votre relecture."
               : "La préparation locale de la note a échoué. Votre dictée est conservée ; vous pouvez réessayer.",

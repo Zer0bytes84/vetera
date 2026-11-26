@@ -1,15 +1,16 @@
 import { FolderOpen, Users } from "lucide-react";
 import type { ReactNode, Ref } from "react";
+import { Button } from "@/components/ui/button";
 import {
-  DataTable,
   type DataColumn,
   type DataRow,
+  DataTable,
 } from "@/components/ui/data-table";
-import { IconButton, QuietButton } from "@/components/ui/tuff-controls";
-import { Button } from "@/components/ui/button";
-import { Pencil } from "@/lib/icons";
 import { StatusPill, type StatusTone } from "@/components/ui/status-pill";
+import { IconButton, QuietButton } from "@/components/ui/tuff-controls";
 import { PATIENT_STATUS_META } from "@/config/status-meta";
+import { Pencil } from "@/lib/icons";
+import { mustExist } from "@/lib/must-exist";
 import { speciesIcon } from "@/lib/species-icon";
 import {
   formatOwnerName,
@@ -17,9 +18,9 @@ import {
   formatVisitTimeRange,
   getAgeLabel,
 } from "@/modules/patients/components/patients-shared";
-import { clinicalFlags } from "../lib/patient-list";
-import type { PatientsViewProps } from "../hooks/use-patients-page-model";
 import type { Owner, Patient } from "@/types/db";
+import type { PatientsViewProps } from "../hooks/use-patients-page-model";
+import { clinicalFlags } from "../lib/patient-list";
 
 type PatientRecord = PatientsViewProps["visiblePatients"][number];
 
@@ -29,12 +30,12 @@ type PatientRecord = PatientsViewProps["visiblePatients"][number];
  */
 
 interface PatientRow extends DataRow {
-  patient: string;
-  owner: string;
-  status: string;
   last: string;
   next: string;
   open: string;
+  owner: string;
+  patient: string;
+  status: string;
 }
 
 const STATUS_TONE: Record<Patient["status"], StatusTone> = {
@@ -77,7 +78,9 @@ function SpeciesAvatar({ species }: { species?: string }) {
 
 function Flags({ patient }: { patient: Patient }) {
   const flags = clinicalFlags(patient);
-  if (!flags.length) return null;
+  if (!flags.length) {
+    return null;
+  }
   const [first, ...more] = flags;
   return (
     <>
@@ -130,7 +133,7 @@ export function PatientsTable({
       last: lastVisit ?? "",
       next: upcomingAppointment?.startTime ?? "",
       open: "",
-    }),
+    })
   );
 
   const columns: DataColumn<PatientRow>[] = [
@@ -139,7 +142,10 @@ export function PatientsTable({
       label: "Patient",
       sortable: true,
       format: (_, row) => {
-        const { patient } = byId.get(row.id)!;
+        const { patient } = mustExist(
+          byId.get(row.id),
+          `dossier de la ligne ${row.id}`
+        );
         const details = [
           patient.species,
           patient.breed,
@@ -153,7 +159,7 @@ export function PatientsTable({
             <SpeciesAvatar species={patient.species} />
             <span className="min-w-0">
               <span className="flex min-w-0 items-center gap-2">
-                <span className="truncate text-sm font-medium capitalize text-foreground">
+                <span className="truncate font-medium text-foreground text-sm capitalize">
                   {patient.name}
                 </span>
                 <Flags patient={patient} />
@@ -171,11 +177,14 @@ export function PatientsTable({
       label: "Propriétaire",
       sortable: true,
       format: (_, row) => {
-        const { owner } = byId.get(row.id)!;
+        const { owner } = mustExist(
+          byId.get(row.id),
+          `dossier de la ligne ${row.id}`
+        );
         return (
           <span className="flex min-w-0 items-center gap-1">
             <span className="block min-w-0">
-              <span className="block truncate text-sm capitalize text-foreground">
+              <span className="block truncate text-foreground text-sm capitalize">
                 {formatOwnerName(owner)}
               </span>
               {owner?.phone ? (
@@ -212,7 +221,10 @@ export function PatientsTable({
       label: "Statut",
       sortable: true,
       format: (_, row) => {
-        const { patient } = byId.get(row.id)!;
+        const { patient } = mustExist(
+          byId.get(row.id),
+          `dossier de la ligne ${row.id}`
+        );
         return (
           <StatusPill tone={STATUS_TONE[patient.status] ?? "neutral"}>
             {PATIENT_STATUS_META[patient.status]?.label ?? patient.status}
@@ -226,7 +238,7 @@ export function PatientsTable({
       sortable: true,
       format: (value) =>
         value ? (
-          <span className="tabular-nums text-foreground">
+          <span className="text-foreground tabular-nums">
             {formatPatientDate(String(value))}
           </span>
         ) : (
@@ -260,8 +272,12 @@ export function PatientsTable({
       priority: 1,
       align: "left",
       format: (_, row) => {
-        const { patient } = byId.get(row.id)!;
+        const { patient } = mustExist(
+          byId.get(row.id),
+          `dossier de la ligne ${row.id}`
+        );
         return (
+          // biome-ignore lint/a11y/useKeyWithClickEvents: arrête le clic vers la ligne patient ; les IconButton enfants ont leur propre clavier.
           <div
             className="flex items-center justify-end gap-1"
             onClick={(event) => event.stopPropagation()}
@@ -274,7 +290,7 @@ export function PatientsTable({
                 color:
                   FOLDER_TONES[
                     entries.findIndex(
-                      (entry) => entry.patient.id === patient.id,
+                      (entry) => entry.patient.id === patient.id
                     ) % FOLDER_TONES.length
                   ],
               }}
@@ -313,7 +329,11 @@ export function PatientsTable({
       loadingLabel="Chargement des dossiers"
       loadingRevealed={loadingRevealed}
       noun={["dossier", "dossiers"]}
-      onRowClick={(row) => onOpen(byId.get(row.id)!.patient)}
+      onRowClick={(row) =>
+        onOpen(
+          mustExist(byId.get(row.id), `dossier de la ligne ${row.id}`).patient
+        )
+      }
       pageSize={10}
       skeletonFallback={{ rows: 5, rowHeight: 64 }}
       skeletonKey="patients"
@@ -321,10 +341,15 @@ export function PatientsTable({
         "aria-label": `Ouvrir le dossier de ${row.patient}`,
         tabIndex: 0,
         onKeyDown: (event) => {
-          if (event.target !== event.currentTarget) return;
+          if (event.target !== event.currentTarget) {
+            return;
+          }
           if (event.key === "Enter" || event.key === " ") {
             event.preventDefault();
-            onOpen(byId.get(row.id)!.patient);
+            onOpen(
+              mustExist(byId.get(row.id), `dossier de la ligne ${row.id}`)
+                .patient
+            );
           }
         },
         ...({ "data-list-row": "", "data-row-id": row.id } as object),

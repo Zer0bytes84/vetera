@@ -1,7 +1,7 @@
 const STORAGE_KEY = "baitari-ai-agent-state-v1";
 const MAX_CONVERSATIONS = 20;
 const MAX_MESSAGES_PER_CONVERSATION = 40;
-const MAX_MESSAGE_LENGTH = 8_000;
+const MAX_MESSAGE_LENGTH = 8000;
 const MAX_STATE_LENGTH = 1_500_000;
 const MAX_RAW_STATE_LENGTH = 2_000_000;
 
@@ -10,17 +10,17 @@ export interface PersistedAIMessage {
   content: string;
   id: string;
   isToolCall?: boolean;
+  role: "user" | "assistant";
   thoughtTimeSeconds?: number;
   timestamp: string;
   toolSteps?: { title: string; type?: string; sources?: string[] }[];
-  role: "user" | "assistant";
 }
 
 export interface PersistedAIConversation {
-  patientId?: string;
   createdAt: string;
   id: string;
   messages: PersistedAIMessage[];
+  patientId?: string;
   title: string;
   updatedAt: string;
 }
@@ -49,14 +49,21 @@ const asString = (value: unknown, fallback = ""): string =>
 
 const asDateString = (value: unknown): string => {
   const date = new Date(asString(value));
-  return Number.isNaN(date.getTime()) ? new Date().toISOString() : date.toISOString();
+  return Number.isNaN(date.getTime())
+    ? new Date().toISOString()
+    : date.toISOString();
 };
 
 const parseMessage = (value: unknown): PersistedAIMessage | null => {
-  if (!isRecord(value)) return null;
-  const role = value.role === "user" || value.role === "assistant" ? value.role : null;
+  if (!isRecord(value)) {
+    return null;
+  }
+  const role =
+    value.role === "user" || value.role === "assistant" ? value.role : null;
   const content = asString(value.content);
-  if (!role || !asString(value.id) || !content) return null;
+  if (!(role && asString(value.id) && content)) {
+    return null;
+  }
 
   return {
     actionCard: value.actionCard,
@@ -64,14 +71,18 @@ const parseMessage = (value: unknown): PersistedAIMessage | null => {
     id: asString(value.id),
     isToolCall: value.isToolCall === true,
     thoughtTimeSeconds:
-      typeof value.thoughtTimeSeconds === "number" ? value.thoughtTimeSeconds : undefined,
+      typeof value.thoughtTimeSeconds === "number"
+        ? value.thoughtTimeSeconds
+        : undefined,
     timestamp: asDateString(value.timestamp),
     toolSteps: Array.isArray(value.toolSteps)
       ? value.toolSteps.filter(isRecord).map((step) => ({
           title: asString(step.title, "Étape clinique"),
           type: asString(step.type) || undefined,
           sources: Array.isArray(step.sources)
-            ? step.sources.filter((source): source is string => typeof source === "string")
+            ? step.sources.filter(
+                (source): source is string => typeof source === "string"
+              )
             : undefined,
         }))
       : undefined,
@@ -80,17 +91,24 @@ const parseMessage = (value: unknown): PersistedAIMessage | null => {
 };
 
 const parseConversation = (value: unknown): PersistedAIConversation | null => {
-  if (!isRecord(value)) return null;
+  if (!isRecord(value)) {
+    return null;
+  }
   const id = asString(value.id);
-  if (!id) return null;
+  if (!id) {
+    return null;
+  }
 
   const messages = Array.isArray(value.messages)
-    ? value.messages.map(parseMessage).filter((message): message is PersistedAIMessage => Boolean(message))
+    ? value.messages
+        .map(parseMessage)
+        .filter((message): message is PersistedAIMessage => Boolean(message))
     : [];
 
   return {
     createdAt: asDateString(value.createdAt),
-    patientId: typeof value.patientId === "string" ? value.patientId : undefined,
+    patientId:
+      typeof value.patientId === "string" ? value.patientId : undefined,
     id,
     messages: messages.slice(-MAX_MESSAGES_PER_CONVERSATION),
     title: asString(value.title, "Nouvelle conversation").slice(0, 120),
@@ -100,11 +118,15 @@ const parseConversation = (value: unknown): PersistedAIConversation | null => {
 
 export function loadAIAgentState(): PersistedAIAgentState | null {
   const storage = getStorage();
-  if (!storage) return null;
+  if (!storage) {
+    return null;
+  }
 
   try {
     const raw = storage.getItem(STORAGE_KEY);
-    if (!raw) return null;
+    if (!raw) {
+      return null;
+    }
     if (raw.length > MAX_RAW_STATE_LENGTH) {
       // Do not make every app launch parse an oversized or runaway cache.
       storage.removeItem(STORAGE_KEY);
@@ -112,16 +134,24 @@ export function loadAIAgentState(): PersistedAIAgentState | null {
     }
 
     const parsed: unknown = JSON.parse(raw);
-    if (!isRecord(parsed) || !Array.isArray(parsed.conversations)) return null;
+    if (!(isRecord(parsed) && Array.isArray(parsed.conversations))) {
+      return null;
+    }
 
     const conversations = parsed.conversations
       .map(parseConversation)
-      .filter((conversation): conversation is PersistedAIConversation => Boolean(conversation))
+      .filter((conversation): conversation is PersistedAIConversation =>
+        Boolean(conversation)
+      )
       .slice(0, MAX_CONVERSATIONS);
-    if (conversations.length === 0) return null;
+    if (conversations.length === 0) {
+      return null;
+    }
 
     const requestedActiveId = asString(parsed.activeConversationId);
-    const activeConversationId = conversations.some(({ id }) => id === requestedActiveId)
+    const activeConversationId = conversations.some(
+      ({ id }) => id === requestedActiveId
+    )
       ? requestedActiveId
       : conversations[0].id;
 
@@ -140,17 +170,21 @@ export function loadAIAgentState(): PersistedAIAgentState | null {
 
 export function saveAIAgentState(state: PersistedAIAgentState): void {
   const storage = getStorage();
-  if (!storage) return;
+  if (!storage) {
+    return;
+  }
 
   try {
     const boundedConversations = state.conversations
       .slice(0, MAX_CONVERSATIONS)
       .map((conversation) => ({
         ...conversation,
-        messages: conversation.messages.slice(-MAX_MESSAGES_PER_CONVERSATION).map((message) => ({
-          ...message,
-          content: message.content.slice(-MAX_MESSAGE_LENGTH),
-        })),
+        messages: conversation.messages
+          .slice(-MAX_MESSAGES_PER_CONVERSATION)
+          .map((message) => ({
+            ...message,
+            content: message.content.slice(-MAX_MESSAGE_LENGTH),
+          })),
       }));
 
     const createPayload = (conversations: PersistedAIConversation[]) => ({
@@ -162,7 +196,7 @@ export function saveAIAgentState(state: PersistedAIAgentState): void {
       ...conversation,
       messages: conversation.messages.slice(-24).map((message) => ({
         ...message,
-        content: message.content.slice(-2_500),
+        content: message.content.slice(-2500),
       })),
     }));
 
@@ -170,15 +204,24 @@ export function saveAIAgentState(state: PersistedAIAgentState): void {
     let serialized = JSON.stringify(payload);
 
     // Keep local persistence small enough not to block a Tauri WebView on startup.
-    while (serialized.length > MAX_STATE_LENGTH && payload.conversations.length > 1) {
+    while (
+      serialized.length > MAX_STATE_LENGTH &&
+      payload.conversations.length > 1
+    ) {
       let removableIndex = -1;
-      for (let index = payload.conversations.length - 1; index >= 0; index -= 1) {
+      for (
+        let index = payload.conversations.length - 1;
+        index >= 0;
+        index -= 1
+      ) {
         if (payload.conversations[index].id !== state.activeConversationId) {
           removableIndex = index;
           break;
         }
       }
-      if (removableIndex < 0) break;
+      if (removableIndex < 0) {
+        break;
+      }
       payload.conversations.splice(removableIndex, 1);
       serialized = JSON.stringify(payload);
     }
@@ -188,7 +231,7 @@ export function saveAIAgentState(state: PersistedAIAgentState): void {
         ...conversation,
         messages: conversation.messages.slice(-12).map((message) => ({
           ...message,
-          content: message.content.slice(-1_200),
+          content: message.content.slice(-1200),
         })),
       }));
       serialized = JSON.stringify(payload);

@@ -1,11 +1,3 @@
-import { formatNumber, formatPersonName } from "@/utils/display-format";
-import { TERMINAL_APPOINTMENT_STATUSES } from "@/domain/clinical/scheduling";
-import type { BusySlot } from "../components/agenda-shared";
-import { useFlowUndo } from "@/modules/visit-flow/use-flow-undo";
-import { startInFlux } from "@/modules/flow-board/open-in-flux";
-import type { View } from "@/types";
-import { agendaDayStats, isActiveBooking } from "../components/agenda-slots";
-import { findDossiers, selectedDossierSearchLabel } from "../quick-search";
 import {
   useDeferredValue,
   useEffect,
@@ -15,9 +7,7 @@ import {
 } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-
-import { type SectionCardItem } from "@/components/section-cards";
-
+import type { SectionCardItem } from "@/components/section-cards";
 import { APPOINTMENT_STATUS_META } from "@/config/status-meta";
 import { useFocus } from "@/contexts/focus-provider";
 import {
@@ -27,41 +17,49 @@ import {
   usePatientsRepository,
   useUsersRepository,
 } from "@/data/repositories";
+import { TERMINAL_APPOINTMENT_STATUSES } from "@/domain/clinical/scheduling";
+import { guard, guardSync } from "@/lib/guard";
+import {
+  type AgendaTableRow,
+  APPOINTMENT_TYPES,
+  CALENDAR_END_HOUR,
+  CALENDAR_START_HOUR,
+  DAY_HOUR_HEIGHT,
+  formatDateInput,
+  formatDateLabel,
+  formatDateTimeLabel,
+  formatDuration,
+  formatOwnerName,
+  formatTime,
+  formatTimeCompact,
+  getAppointmentPresentation,
+  getMonthDays,
+  getTimePosition,
+  getWeekDays,
+  isSameDay,
+  normalizeDate,
+  normalizeEntityId,
+  TABLE_TABS,
+  type TableTab,
+  type ViewMode,
+} from "@/modules/agenda/components/agenda-shared";
+import { startInFlux } from "@/modules/flow-board/open-in-flux";
+import { roomLabel } from "@/modules/rooms/store";
+import { useRooms } from "@/modules/rooms/use-rooms";
+import { useFlowUndo } from "@/modules/visit-flow/use-flow-undo";
+import { generateId } from "@/services/sqlite/database";
 
 import { useAudit } from "@/services/use-audit";
-import { generateId } from "@/services/sqlite/database";
-import { useRooms } from "@/modules/rooms/use-rooms";
-import { roomLabel } from "@/modules/rooms/store";
+import type { View } from "@/types";
 import type {
   Appointment,
   AppointmentRecurrence,
   RecurrenceFrequency,
 } from "@/types/db";
-import {
-  APPOINTMENT_TYPES,
-  CALENDAR_START_HOUR,
-  CALENDAR_END_HOUR,
-  DAY_HOUR_HEIGHT,
-  TABLE_TABS,
-  ViewMode,
-  TableTab,
-  AgendaTableRow,
-  normalizeDate,
-  formatDateInput,
-  isSameDay,
-  formatTime,
-  formatTimeCompact,
-  formatDateLabel,
-  formatDateTimeLabel,
-  formatDuration,
-  getTimePosition,
-  getWeekDays,
-  getMonthDays,
-  formatOwnerName,
-  normalizeEntityId,
-  getAppointmentPresentation,
-} from "@/modules/agenda/components/agenda-shared";
-import { guard, guardSync } from "@/lib/guard";
+import { formatNumber, formatPersonName } from "@/utils/display-format";
+import type { BusySlot } from "../components/agenda-shared";
+import { agendaDayStats, isActiveBooking } from "../components/agenda-slots";
+import { findDossiers, selectedDossierSearchLabel } from "../quick-search";
 
 export function useAgendaPageModel(onNavigate?: (view: View) => void) {
   const { t } = useTranslation();
@@ -98,9 +96,20 @@ export function useAgendaPageModel(onNavigate?: (view: View) => void) {
   // Active rooms, plus the archived room of an appointment being edited so
   // saving it never moves it to another room.
   const roomOptions = useMemo(() => {
-    const options = activeRooms.map((room) => ({ archived: false, label: room.name, value: room.id }));
-    if (selectedRoom && !options.some((option) => option.value === selectedRoom)) {
-      options.push({ archived: true, label: roomLabel(selectedRoom, rooms) ?? selectedRoom, value: selectedRoom });
+    const options = activeRooms.map((room) => ({
+      archived: false,
+      label: room.name,
+      value: room.id,
+    }));
+    if (
+      selectedRoom &&
+      !options.some((option) => option.value === selectedRoom)
+    ) {
+      options.push({
+        archived: true,
+        label: roomLabel(selectedRoom, rooms) ?? selectedRoom,
+        value: selectedRoom,
+      });
     }
     return options;
   }, [activeRooms, rooms, selectedRoom]);
@@ -138,7 +147,10 @@ export function useAgendaPageModel(onNavigate?: (view: View) => void) {
   ) => {
     try {
       await transitionStatus(appointment.id, nextStatus);
-      void flowUndo.confirm(appointment.id, APPOINTMENT_STATUS_META[nextStatus].label);
+      void flowUndo.confirm(
+        appointment.id,
+        APPOINTMENT_STATUS_META[nextStatus].label
+      );
     } catch (error) {
       console.error(error);
       toast.error(
@@ -295,9 +307,19 @@ export function useAgendaPageModel(onNavigate?: (view: View) => void) {
       selected &&
       !matches.some((entry) => entry.patient.id === selected.id) &&
       personSearchTerm.trim() ===
-        selectedDossierSearchLabel(selected.name, ownersById.get(selected.ownerId))
+        selectedDossierSearchLabel(
+          selected.name,
+          ownersById.get(selected.ownerId)
+        )
     ) {
-      return [{ owner: ownersById.get(selected.ownerId), patient: selected, searchIndex: "" }, ...matches];
+      return [
+        {
+          owner: ownersById.get(selected.ownerId),
+          patient: selected,
+          searchIndex: "",
+        },
+        ...matches,
+      ];
     }
     return matches;
   }, [ownersById, patients, patientsById, personSearchTerm, selectedPatientId]);
@@ -305,17 +327,17 @@ export function useAgendaPageModel(onNavigate?: (view: View) => void) {
   const appointmentsByDate = useMemo(() => {
     const map = new Map<string, Appointment[]>();
 
-    appointments.forEach((appointment) => {
+    for (const appointment of appointments) {
       const start = normalizeDate(appointment.startTime);
       if (!start) {
-        return;
+        continue;
       }
 
       const key = formatDateInput(start);
       const current = map.get(key) ?? [];
       current.push(appointment);
       map.set(key, current);
-    });
+    }
 
     map.forEach((value, key) => {
       map.set(
@@ -343,11 +365,11 @@ export function useAgendaPageModel(onNavigate?: (view: View) => void) {
 
   const appointmentsByVet = useMemo(() => {
     const map = new Map<string, Appointment[]>();
-    dailyAppointments.forEach((appointment) => {
+    for (const appointment of dailyAppointments) {
       const current = map.get(appointment.vetId) ?? [];
       current.push(appointment);
       map.set(appointment.vetId, current);
-    });
+    }
     return map;
   }, [dailyAppointments]);
 
@@ -357,24 +379,49 @@ export function useAgendaPageModel(onNavigate?: (view: View) => void) {
     const vetId = selectedVetId || vets[0]?.id || "";
     const [year, month, day] = formDate.split("-").map(Number);
     return appointments.flatMap((appointment) => {
-      if (appointment.id === editingAppointmentId) return [];
-      if (TERMINAL_APPOINTMENT_STATUSES.includes(appointment.status)) return [];
+      if (appointment.id === editingAppointmentId) {
+        return [];
+      }
+      if (TERMINAL_APPOINTMENT_STATUSES.includes(appointment.status)) {
+        return [];
+      }
       const sameVet = Boolean(vetId) && appointment.vetId === vetId;
-      const sameRoom = Boolean(selectedRoom) && appointment.room === selectedRoom;
-      if (!sameVet && !sameRoom) return [];
+      const sameRoom =
+        Boolean(selectedRoom) && appointment.room === selectedRoom;
+      if (!(sameVet || sameRoom)) {
+        return [];
+      }
       const start = new Date(appointment.startTime);
       const end = new Date(appointment.endTime);
-      if (start.getFullYear() !== year || start.getMonth() + 1 !== month || start.getDate() !== day) return [];
-      const endMinutes = end.toDateString() === start.toDateString() ? end.getHours() * 60 + end.getMinutes() : 24 * 60;
+      if (
+        start.getFullYear() !== year ||
+        start.getMonth() + 1 !== month ||
+        start.getDate() !== day
+      ) {
+        return [];
+      }
+      const endMinutes =
+        end.toDateString() === start.toDateString()
+          ? end.getHours() * 60 + end.getMinutes()
+          : 24 * 60;
       return [
         {
           end: endMinutes,
-          label: patientsById.get(appointment.patientId)?.name ?? "un autre patient",
+          label:
+            patientsById.get(appointment.patientId)?.name ?? "un autre patient",
           start: start.getHours() * 60 + start.getMinutes(),
         },
       ];
     });
-  }, [appointments, editingAppointmentId, formDate, patientsById, selectedRoom, selectedVetId, vets]);
+  }, [
+    appointments,
+    editingAppointmentId,
+    formDate,
+    patientsById,
+    selectedRoom,
+    selectedVetId,
+    vets,
+  ]);
 
   const selectedAppointment = useMemo(
     () =>
@@ -444,7 +491,10 @@ export function useAgendaPageModel(onNavigate?: (view: View) => void) {
   const nextAppointment = upcomingAppointments[0];
   // One reading of the selected day for the indicators and the day-load card:
   // cancelled and missed visits hold no time, urgencies are those of the day.
-  const dayStats = useMemo(() => agendaDayStats(dailyAppointments), [dailyAppointments]);
+  const dayStats = useMemo(
+    () => agendaDayStats(dailyAppointments),
+    [dailyAppointments]
+  );
   const urgentOpenCount = dayStats.openUrgent.length;
   const totalPlannedMinutes = dayStats.minutes;
   const engagedVetsCount = vets.filter((vet) =>
@@ -470,21 +520,30 @@ export function useAgendaPageModel(onNavigate?: (view: View) => void) {
       );
     const moreUrgent = day.openUrgent.length - urgentNames.length;
 
-    const nextStart = nextAppointment ? normalizeDate(nextAppointment.startTime) : null;
+    const nextStart = nextAppointment
+      ? normalizeDate(nextAppointment.startTime)
+      : null;
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
-    const nextDay = !nextStart
-      ? ""
-      : isSameDay(nextStart, new Date())
+    const nextDay = nextStart
+      ? isSameDay(nextStart, new Date())
         ? "Aujourd'hui"
         : isSameDay(nextStart, tomorrow)
           ? "Demain"
-          : formatDateLabel(nextStart, { weekday: "short", day: "numeric", month: "short" });
+          : formatDateLabel(nextStart, {
+              weekday: "short",
+              day: "numeric",
+              month: "short",
+            })
+      : "";
     const nextPatient = nextAppointment
-      ? patientsById.get(nextAppointment.patientId)?.name || nextAppointment.title
+      ? patientsById.get(nextAppointment.patientId)?.name ||
+        nextAppointment.title
       : "";
     const nextVet = nextAppointment
-      ? formatPersonName(vets.find((vet) => vet.id === nextAppointment.vetId)?.displayName)
+      ? formatPersonName(
+          vets.find((vet) => vet.id === nextAppointment.vetId)?.displayName
+        )
       : "";
 
     return [
@@ -518,7 +577,8 @@ export function useAgendaPageModel(onNavigate?: (view: View) => void) {
           defaultValue: "Urgences ouvertes",
         }),
         value: formatNumber(day.openUrgent.length),
-        badge: day.openUrgent.length > 0 ? `Non terminées ${dayName}` : undefined,
+        badge:
+          day.openUrgent.length > 0 ? `Non terminées ${dayName}` : undefined,
         tone: day.openUrgent.length > 0 ? "critical" : undefined,
         detailRow:
           day.openUrgent.length > 0
@@ -543,7 +603,9 @@ export function useAgendaPageModel(onNavigate?: (view: View) => void) {
         title: t("agenda.overview.nextAppointment", {
           defaultValue: "Prochain rendez-vous",
         }),
-        value: nextAppointment ? formatTimeCompact(nextAppointment.startTime) : "Aucun",
+        value: nextAppointment
+          ? formatTimeCompact(nextAppointment.startTime)
+          : "Aucun",
         badge: nextAppointment
           ? `${nextDay} · ${nextAppointment.type || "Rendez-vous"}`
           : undefined,
@@ -572,7 +634,7 @@ export function useAgendaPageModel(onNavigate?: (view: View) => void) {
 
     if (viewMode === "week") {
       const start = weekDays[0];
-      const end = weekDays[weekDays.length - 1];
+      const end = weekDays.at(-1) ?? start;
       return `${formatDateLabel(start, { day: "numeric", month: "long" })} - ${formatDateLabel(
         end,
         {
@@ -596,7 +658,8 @@ export function useAgendaPageModel(onNavigate?: (view: View) => void) {
       vets
         .map((vet) => ({
           vet,
-          count: (appointmentsByVet.get(vet.id) ?? []).filter(isActiveBooking).length,
+          count: (appointmentsByVet.get(vet.id) ?? []).filter(isActiveBooking)
+            .length,
         }))
         .filter((entry) => entry.count > 0)
         .sort((left, right) => right.count - left.count),
@@ -608,7 +671,8 @@ export function useAgendaPageModel(onNavigate?: (view: View) => void) {
       APPOINTMENT_TYPES.map((type) => ({
         type,
         count: dailyAppointments.filter(
-          (appointment) => appointment.type === type && isActiveBooking(appointment)
+          (appointment) =>
+            appointment.type === type && isActiveBooking(appointment)
         ).length,
       })).filter((item) => item.count > 0),
     [dailyAppointments]
@@ -645,7 +709,11 @@ export function useAgendaPageModel(onNavigate?: (view: View) => void) {
     resetForm(selectedDate);
   };
 
-  const handleOpenCreate = (date = selectedDate, time?: string, vetId?: string) => {
+  const handleOpenCreate = (
+    date = selectedDate,
+    time?: string,
+    vetId?: string
+  ) => {
     resetForm(date);
     if (time) {
       setFormTime(time);
@@ -725,7 +793,10 @@ export function useAgendaPageModel(onNavigate?: (view: View) => void) {
     }
   };
 
-  const handleOpenCreateForPatient = (patientId: string, date = selectedDate) => {
+  const handleOpenCreateForPatient = (
+    patientId: string,
+    date = selectedDate
+  ) => {
     const normalizedPatientId = normalizeEntityId(patientId);
     const patient = patientsById.get(normalizedPatientId);
     if (!patient) {
@@ -743,6 +814,7 @@ export function useAgendaPageModel(onNavigate?: (view: View) => void) {
   const openCreate = useEffectEvent(handleOpenCreate);
   const openCreateForPatient = useEffectEvent(handleOpenCreateForPatient);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: les gestionnaires passent par useEffectEvent ; patientsById, ownersById et selectedDate relancent la lecture du rendez-vous en attente quand les données arrivent.
   useEffect(() => {
     const consumePendingAppointment = () => {
       if (typeof window === "undefined") {
@@ -754,37 +826,47 @@ export function useAgendaPageModel(onNavigate?: (view: View) => void) {
         return false;
       }
 
-      return guardSync(() => {
-        const pending = JSON.parse(raw) as {
-          patientId?: string;
-          create?: boolean;
-          date?: string;
-          time?: string;
-          vetId?: string;
-        };
-        const requestedDate = pending.date ? new Date(pending.date) : undefined;
-        const date = requestedDate && !Number.isNaN(requestedDate.getTime()) ? requestedDate : undefined;
-        if (date) setSelectedDate(date);
-        if (!pending.patientId) {
-          window.sessionStorage.removeItem("vetera:pending-appointment");
-          if (pending.create) {
-            openCreate(date, pending.time, pending.vetId);
-            return true;
+      return guardSync(
+        () => {
+          const pending = JSON.parse(raw) as {
+            patientId?: string;
+            create?: boolean;
+            date?: string;
+            time?: string;
+            vetId?: string;
+          };
+          const requestedDate = pending.date
+            ? new Date(pending.date)
+            : undefined;
+          const date =
+            requestedDate && !Number.isNaN(requestedDate.getTime())
+              ? requestedDate
+              : undefined;
+          if (date) {
+            setSelectedDate(date);
           }
-          return false;
-        }
+          if (!pending.patientId) {
+            window.sessionStorage.removeItem("vetera:pending-appointment");
+            if (pending.create) {
+              openCreate(date, pending.time, pending.vetId);
+              return true;
+            }
+            return false;
+          }
 
-        const opened = openCreateForPatient(pending.patientId, date);
-        if (opened) {
-          window.sessionStorage.removeItem("vetera:pending-appointment");
-        }
-        return opened;
-      }, {
-        recover: () => {
-          window.sessionStorage.removeItem("vetera:pending-appointment");
-          return false;
+          const opened = openCreateForPatient(pending.patientId, date);
+          if (opened) {
+            window.sessionStorage.removeItem("vetera:pending-appointment");
+          }
+          return opened;
         },
-      });
+        {
+          recover: () => {
+            window.sessionStorage.removeItem("vetera:pending-appointment");
+            return false;
+          },
+        }
+      );
     };
 
     const handleNewAppointment = (event: Event) => {
@@ -901,97 +983,102 @@ export function useAgendaPageModel(onNavigate?: (view: View) => void) {
 
     setIsSubmitting(true);
 
-    await guard(async () => {
-      const saved = await saveAppointment({
-        ...(editingAppointmentId ? { id: editingAppointmentId } : {}),
-        patientId: selectedPatientId,
-        ownerId: patient?.ownerId,
-        vetId: effectiveVetId,
-        title: `${patient?.name || "Patient"} - ${selectedType}`,
-        type: selectedType,
-        startTime: start,
-        endTime: end,
-        status:
-          (editingAppointmentId
-            ? appointments.find((entry) => entry.id === editingAppointmentId)
-                ?.status
-            : undefined) ?? "scheduled",
-        reason,
-        room: selectedRoom || undefined,
-      });
+    await guard(
+      async () => {
+        const saved = await saveAppointment({
+          ...(editingAppointmentId ? { id: editingAppointmentId } : {}),
+          patientId: selectedPatientId,
+          ownerId: patient?.ownerId,
+          vetId: effectiveVetId,
+          title: `${patient?.name || "Patient"} - ${selectedType}`,
+          type: selectedType,
+          startTime: start,
+          endTime: end,
+          status:
+            (editingAppointmentId
+              ? appointments.find((entry) => entry.id === editingAppointmentId)
+                  ?.status
+              : undefined) ?? "scheduled",
+          reason,
+          room: selectedRoom || undefined,
+        });
 
-      if (!saved) {
-        throw new Error("Le rendez-vous n’a pas pu être enregistré.");
-      }
-
-      await audit.log({
-        action: editingAppointmentId ? "update" : "create",
-        entity: "appointment",
-        entityId: saved.id,
-        payload: {
-          patientId: saved.patientId,
-          startTime: saved.startTime,
-          room: saved.room,
-          type: saved.type,
-        },
-      });
-
-      if (recurrenceEnabled && !editingAppointmentId) {
-        const recurrence: Omit<
-          AppointmentRecurrence,
-          "createdAt" | "updatedAt"
-        > = {
-          id: generateId(),
-          parentAppointmentId: saved.id,
-          frequency: recurrenceFrequency,
-          intervalCount: 1,
-          daysOfWeek:
-            recurrenceFrequency === "weekly" && recurrenceDaysOfWeek.length > 0
-              ? JSON.stringify(recurrenceDaysOfWeek)
-              : null,
-          endDate: recurrenceEndDate || null,
-          maxOccurrences: recurrenceMaxOccurrences,
-          generatedCount: 1,
-        };
-        await recurrencesStore.add(recurrence);
-      }
-
-      toast.success(
-        editingAppointmentId
-          ? "Le rendez-vous a été mis à jour."
-          : "Le rendez-vous a été ajouté à l’agenda."
-      );
-
-      setSelectedAppointmentId(saved.id);
-      setSelectedDate(start);
-      setViewMode("list");
-      closeDialog();
-    }, {
-      recover: (error) => {
-        console.error(error);
-        const message =
-          error instanceof Error
-            ? error.message
-            : typeof error === "string"
-              ? error
-              : "Erreur inconnue";
-        if (
-          message.toLowerCase().includes("database is locked") ||
-          message.toLowerCase().includes("code: 5")
-        ) {
-          const userMessage = "Base occupée, réessayez dans quelques secondes.";
-          setFormError(userMessage);
-          toast.error(userMessage);
-        } else {
-          const userMessage = `Impossible d’enregistrer ce rendez-vous: ${message}`;
-          setFormError(userMessage);
-          toast.error(userMessage);
+        if (!saved) {
+          throw new Error("Le rendez-vous n’a pas pu être enregistré.");
         }
+
+        await audit.log({
+          action: editingAppointmentId ? "update" : "create",
+          entity: "appointment",
+          entityId: saved.id,
+          payload: {
+            patientId: saved.patientId,
+            startTime: saved.startTime,
+            room: saved.room,
+            type: saved.type,
+          },
+        });
+
+        if (recurrenceEnabled && !editingAppointmentId) {
+          const recurrence: Omit<
+            AppointmentRecurrence,
+            "createdAt" | "updatedAt"
+          > = {
+            id: generateId(),
+            parentAppointmentId: saved.id,
+            frequency: recurrenceFrequency,
+            intervalCount: 1,
+            daysOfWeek:
+              recurrenceFrequency === "weekly" &&
+              recurrenceDaysOfWeek.length > 0
+                ? JSON.stringify(recurrenceDaysOfWeek)
+                : null,
+            endDate: recurrenceEndDate || null,
+            maxOccurrences: recurrenceMaxOccurrences,
+            generatedCount: 1,
+          };
+          await recurrencesStore.add(recurrence);
+        }
+
+        toast.success(
+          editingAppointmentId
+            ? "Le rendez-vous a été mis à jour."
+            : "Le rendez-vous a été ajouté à l’agenda."
+        );
+
+        setSelectedAppointmentId(saved.id);
+        setSelectedDate(start);
+        setViewMode("list");
+        closeDialog();
       },
-      cleanup: () => {
-        setIsSubmitting(false);
-      },
-    });
+      {
+        recover: (error) => {
+          console.error(error);
+          const message =
+            error instanceof Error
+              ? error.message
+              : typeof error === "string"
+                ? error
+                : "Erreur inconnue";
+          if (
+            message.toLowerCase().includes("database is locked") ||
+            message.toLowerCase().includes("code: 5")
+          ) {
+            const userMessage =
+              "Base occupée, réessayez dans quelques secondes.";
+            setFormError(userMessage);
+            toast.error(userMessage);
+          } else {
+            const userMessage = `Impossible d’enregistrer ce rendez-vous: ${message}`;
+            setFormError(userMessage);
+            toast.error(userMessage);
+          }
+        },
+        cleanup: () => {
+          setIsSubmitting(false);
+        },
+      }
+    );
   };
 
   const tableRowsByTab = useMemo<Record<TableTab, AgendaTableRow[]>>(() => {

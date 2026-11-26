@@ -11,16 +11,16 @@
   position: relative;
   display: grid;
   grid-template-columns: 72px minmax(0, 1fr);
-  align-items: start;
   gap: 14px 16px;
+  align-items: start;
   padding: 16px 16px 16px 20px;
-  border: 1px solid color-mix(in oklab, var(--foreground) 9%, transparent);
-  border-radius: 14px;
-  /* En Premium, --card est transparent : la carte prend la surface blanche. */
-  background: var(--surface, var(--card));
   color: var(--card-foreground, var(--foreground));
   cursor: pointer;
   outline: none;
+  /* En Premium, --card est transparent : la carte prend la surface blanche. */
+  background: var(--surface, var(--card));
+  border: 1px solid color-mix(in oklab, var(--foreground) 9%, transparent);
+  border-radius: 14px;
   transition:
     border-color 160ms var(--ease-out, ease-out),
     box-shadow 160ms var(--ease-out, ease-out),
@@ -30,8 +30,8 @@
 @media (min-width: 640px) {
   .agenda-appt-card {
     grid-template-columns: 84px 44px minmax(0, 1fr) auto;
-    align-items: center;
     gap: 18px;
+    align-items: center;
     padding: 18px 18px 18px 22px;
   }
 }
@@ -40,8 +40,8 @@
   .agenda-appt-card:hover {
     border-color: color-mix(in oklab, var(--foreground) 18%, transparent);
     box-shadow:
-    0 1px 2px rgb(0 0 0 / 0.04),
-    0 8px 24px -16px rgb(0 0 0 / 0.18);
+      0 1px 2px rgb(0 0 0 / 0.04),
+      0 8px 24px -16px rgb(0 0 0 / 0.18);
   }
 }
 
@@ -50,8 +50,12 @@
 }
 
 .agenda-appt-card[data-selected] {
+  background: color-mix(
+    in oklab,
+    var(--primary) 4%,
+    var(--surface, var(--card))
+  );
   border-color: color-mix(in oklab, var(--primary) 50%, var(--border));
-  background: color-mix(in oklab, var(--primary) 4%, var(--surface, var(--card)));
   box-shadow: 0 0 0 3px color-mix(in oklab, var(--primary) 12%, transparent);
 }
 
@@ -71,26 +75,26 @@
 
 .agenda-appt-date {
   margin-bottom: 6px;
-  color: var(--muted-foreground);
   font-size: 12px;
   font-weight: 500;
+  color: var(--muted-foreground);
 }
 
 .agenda-appt-start {
-  color: var(--foreground);
   font-family: var(--font-display, var(--font-sans));
   font-size: 24px;
-  font-variant-numeric: tabular-nums;
   font-weight: 600;
-  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
   line-height: 1;
+  color: var(--foreground);
+  letter-spacing: -0.03em;
 }
 
 .agenda-appt-range {
   margin-top: 6px;
-  color: var(--muted-foreground);
   font-size: 12px;
   font-variant-numeric: tabular-nums;
+  color: var(--muted-foreground);
   white-space: nowrap;
 }
 
@@ -115,24 +119,24 @@
 
 .agenda-appt-title-row {
   display: flex;
-  min-width: 0;
   flex-wrap: wrap;
-  align-items: center;
   gap: 6px 12px;
+  align-items: center;
+  min-width: 0;
 }
 
 .agenda-appt-patient {
-  overflow: hidden;
   max-width: 100%;
-  border-radius: 4px;
-  color: var(--foreground);
+  overflow: hidden;
+  text-overflow: ellipsis;
   font-size: 16px;
   font-weight: 600;
-  letter-spacing: -0.015em;
   line-height: 1.25;
+  color: var(--foreground);
   text-align: left;
-  text-overflow: ellipsis;
+  letter-spacing: -0.015em;
   white-space: nowrap;
+  border-radius: 4px;
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -150,57 +154,57 @@
 .agenda-appt-badges {
   display: inline-flex;
   flex-wrap: wrap;
-  align-items: center;
   gap: 6px;
+  align-items: center;
 }
 
 /* Badges en pastilles arrondies, point de couleur pour chaque statut. */
 .agenda-appointment-list .agenda-appt-card [data-slot="badge"] {
+  gap: 6px;
   height: 22px;
   min-height: 22px;
-  gap: 6px;
   padding: 0 9px 0 8px;
-  border-radius: 999px;
   font-size: 12px;
   font-weight: 500;
   line-height: 1;
+  border-radius: 999px;
 }
 
 .agenda-appointment-list .agenda-appt-card [data-slot="badge"]::before {
-  content: "";
+  flex: 0 0 6px;
   width: 6px;
   height: 6px;
-  flex: 0 0 6px;
-  border-radius: 50%;
+  content: "";
   background: var(--premium-tag-color, currentColor);
+  border-radius: 50%;
 }
 
 .agenda-appt-reason {
-  overflow: hidden;
   margin-top: 4px;
-  color: var(--muted-foreground);
+  overflow: hidden;
+  text-overflow: ellipsis;
   font-size: 13px;
   line-height: 1.45;
-  text-overflow: ellipsis;
+  color: var(--muted-foreground);
   white-space: nowrap;
 }
 
 .agenda-appt-meta {
   display: flex;
-  min-width: 0;
   flex-wrap: wrap;
-  align-items: center;
   gap: 4px 14px;
+  align-items: center;
+  min-width: 0;
   margin-top: 10px;
-  color: color-mix(in oklab, var(--muted-foreground) 88%, transparent);
   font-size: 12px;
+  color: color-mix(in oklab, var(--muted-foreground) 88%, transparent);
 }
 
 .agenda-appt-meta > span {
   display: inline-flex;
-  min-width: 0;
-  align-items: center;
   gap: 6px;
+  align-items: center;
+  min-width: 0;
 }
 
 .agenda-appt-meta svg {
@@ -211,9 +215,9 @@
 .agenda-appt-actions {
   display: flex;
   grid-column: 2;
+  gap: 4px;
   align-items: center;
   justify-content: flex-end;
-  gap: 4px;
 }
 
 @media (min-width: 640px) {
@@ -229,25 +233,25 @@
 }
 
 .agenda-load-figure {
-  color: var(--foreground);
   font-family: var(--font-display, var(--font-sans));
   font-size: 24px;
-  font-variant-numeric: tabular-nums;
   font-weight: 600;
-  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
   line-height: 1.1;
+  color: var(--foreground);
+  letter-spacing: -0.03em;
 }
 
 .agenda-load-caption {
-  color: var(--muted-foreground);
   font-size: 13px;
   line-height: 1.45;
+  color: var(--muted-foreground);
 }
 
 .agenda-load-bar {
   display: flex;
-  height: 8px;
   gap: 3px;
+  height: 8px;
 }
 
 .agenda-load-bar-segment {
@@ -257,17 +261,17 @@
 
 .agenda-load-legend {
   display: flex;
+  gap: 12px;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  color: var(--foreground);
   font-size: 13px;
+  color: var(--foreground);
 }
 
 .agenda-load-count {
-  color: var(--muted-foreground);
   font-size: 13px;
   font-variant-numeric: tabular-nums;
+  color: var(--muted-foreground);
 }
 
 .agenda-load-section {
@@ -276,30 +280,30 @@
 }
 
 .agenda-load-name {
-  color: var(--foreground);
   font-size: 14px;
   font-weight: 500;
+  color: var(--foreground);
 }
 
 .agenda-load-muted {
-  color: var(--muted-foreground);
   font-size: 12px;
   line-height: 1.45;
+  color: var(--muted-foreground);
 }
 
 .agenda-load-meter {
   display: block;
   height: 4px;
   overflow: hidden;
-  border-radius: 999px;
   background: color-mix(in oklab, var(--foreground) 7%, transparent);
+  border-radius: 999px;
 }
 
 .agenda-load-meter > span {
   display: block;
   height: 100%;
-  border-radius: inherit;
   background: color-mix(in oklab, var(--foreground) 38%, transparent);
+  border-radius: inherit;
 }
 
 .agenda-load-stats {
@@ -309,36 +313,36 @@
 }
 
 .agenda-load-stats dt {
-  color: var(--muted-foreground);
   font-size: 12px;
+  color: var(--muted-foreground);
 }
 
 .agenda-load-stats dd {
   margin-top: 2px;
-  color: var(--foreground);
   font-family: var(--font-display, var(--font-sans));
   font-size: 18px;
-  font-variant-numeric: tabular-nums;
   font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--foreground);
 }
 
 .agenda-load-label {
-  color: var(--muted-foreground);
   font-size: 12px;
   font-weight: 500;
-  letter-spacing: 0.04em;
+  color: var(--muted-foreground);
   text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .agenda-load-next {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
   gap: 4px 12px;
+  align-items: center;
   padding: 12px 12px 8px 14px;
+  background: var(--surface, var(--card));
   border: 1px solid color-mix(in oklab, var(--foreground) 9%, transparent);
   border-radius: 12px;
-  background: var(--surface, var(--card));
 }
 
 .agenda-load-next-action {
@@ -356,13 +360,13 @@
 
 .agenda-week-day {
   display: grid;
-  width: 100%;
-  justify-items: center;
   gap: 6px;
+  justify-items: center;
+  width: 100%;
   padding: 4px 0;
-  border-radius: 8px;
-  color: var(--muted-foreground);
   font-size: 12px;
+  color: var(--muted-foreground);
+  border-radius: 8px;
 }
 
 .agenda-week-day:not(:disabled) {
@@ -386,26 +390,26 @@
 
 .agenda-week-track {
   display: flex;
+  align-items: flex-end;
   width: 100%;
   max-width: 28px;
   height: 44px;
-  align-items: flex-end;
   overflow: hidden;
-  border-radius: 6px;
   background: color-mix(in oklab, var(--foreground) 5%, transparent);
+  border-radius: 6px;
   transition: background-color 160ms var(--ease-out, ease-out);
 }
 
 .agenda-week-track > span {
   display: block;
   width: 100%;
-  border-radius: 4px;
   background: color-mix(in oklab, var(--foreground) 24%, transparent);
+  border-radius: 4px;
 }
 
 .agenda-week-day[data-selected] {
-  color: var(--foreground);
   font-weight: 600;
+  color: var(--foreground);
 }
 
 .agenda-week-day[data-selected] .agenda-week-track > span {
@@ -434,8 +438,8 @@
 
 .agenda-side-empty {
   display: grid;
-  justify-items: center;
   gap: 6px;
+  justify-items: center;
   padding: 28px 24px;
   text-align: center;
 }

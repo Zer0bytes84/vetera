@@ -1,6 +1,5 @@
-import { useSQLite } from "@/hooks/useSQLite";
-import { roomsService } from "@/modules/rooms/service";
-import { PATIENTS_WITH_REFERENCE_SQL } from "@/modules/patients/reference/reference";
+import { useMemo } from "react";
+import { toast } from "sonner";
 import {
   normalizeOwnerDraft,
   normalizePatientDraft,
@@ -10,11 +9,33 @@ import {
   assertNoAppointmentConflict,
   normalizeAppointmentInterval,
 } from "@/domain/clinical/scheduling";
-import * as AppSettingsService from "@/services/appSettingsService";
-import { getInvoiceSettings } from "@/services/invoiceSettingsService";
+import { useSQLite } from "@/hooks/useSQLite";
+import { PATIENTS_WITH_REFERENCE_SQL } from "@/modules/patients/reference/reference";
+import { roomsService } from "@/modules/rooms/service";
+import { useStockInventory } from "@/modules/stock/hooks/use-stock-inventory";
+import {
+  announceInventoryChanged,
+  inventoryService,
+} from "@/modules/stock/services/inventory-service";
+import { summarizeInventory } from "@/modules/stock/services/inventory-store";
+import {
+  getLicenseInfo,
+  getSetting,
+  isSetupComplete,
+  markSetupComplete,
+  saveLicenseInfo,
+  setSetting,
+} from "@/services/appSettingsService";
 import { billingService } from "@/services/billingService";
 import { getBrowserTable, isTauriRuntime } from "@/services/browser-store";
-import * as AuthService from "@/services/sqlite/auth";
+import { getInvoiceSettings } from "@/services/invoiceSettingsService";
+import {
+  getCurrentUser,
+  login,
+  logout,
+  register,
+  updatePassword,
+} from "@/services/sqlite/auth";
 import {
   generateId,
   runDbRead,
@@ -29,18 +50,18 @@ import type {
   AppointmentRecurrence,
   AuditLogEntry,
   ConsultationDocument,
-  LibraryItem,
   ConsultationSoap,
   Hospitalization,
   HospitalizationVital,
+  LibraryItem,
   Note,
   Owner,
   Patient,
   Prescription,
   PrescriptionItem,
   Product,
-  StockMovement,
   Reminder,
+  StockMovement,
   Task,
   Transaction,
   User,
@@ -48,11 +69,6 @@ import type {
   WeightEntry,
 } from "@/types/db";
 import { toCentimes } from "@/utils/currency";
-import { useMemo } from "react";
-import { toast } from "sonner";
-import { inventoryService, announceInventoryChanged } from "@/modules/stock/services/inventory-service";
-import { useStockInventory } from "@/modules/stock/hooks/use-stock-inventory";
-import { summarizeInventory } from "@/modules/stock/services/inventory-store";
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -104,27 +120,31 @@ const rowToPatient = (row: Record<string, unknown>): Patient => ({
 });
 
 export const authRepository = {
-  getCurrentUser: AuthService.getCurrentUser,
-  login: AuthService.login,
-  logout: AuthService.logout,
-  register: AuthService.register,
-  updatePassword: AuthService.updatePassword,
+  getCurrentUser,
+  login,
+  logout,
+  register,
+  updatePassword,
 };
 
 export const appSettingsRepository = {
-  getSetting: AppSettingsService.getSetting,
-  setSetting: AppSettingsService.setSetting,
-  isSetupComplete: AppSettingsService.isSetupComplete,
-  markSetupComplete: AppSettingsService.markSetupComplete,
-  getLicenseInfo: AppSettingsService.getLicenseInfo,
-  saveLicenseInfo: AppSettingsService.saveLicenseInfo,
+  getSetting,
+  setSetting,
+  isSetupComplete,
+  markSetupComplete,
+  getLicenseInfo,
+  saveLicenseInfo,
 };
 
 // Les comparateurs et la date du jour vivent hors des hooks : le compilateur React ne traduit pas `??` dans le test d'un ternaire.
-const byScheduledAtDescending = (a: { scheduledAt?: string | null }, b: { scheduledAt?: string | null }) =>
-  (a.scheduledAt ?? "") < (b.scheduledAt ?? "") ? 1 : -1;
-const byScheduledAtAscending = (a: { scheduledAt?: string | null }, b: { scheduledAt?: string | null }) =>
-  (a.scheduledAt ?? "") < (b.scheduledAt ?? "") ? -1 : 1;
+const byScheduledAtDescending = (
+  a: { scheduledAt?: string | null },
+  b: { scheduledAt?: string | null }
+) => ((a.scheduledAt ?? "") < (b.scheduledAt ?? "") ? 1 : -1);
+const byScheduledAtAscending = (
+  a: { scheduledAt?: string | null },
+  b: { scheduledAt?: string | null }
+) => ((a.scheduledAt ?? "") < (b.scheduledAt ?? "") ? -1 : 1);
 const currentDate = () => new Date();
 
 export function useUsersRepository() {
@@ -134,6 +154,7 @@ export function useUsersRepository() {
 export function useOwnersRepository() {
   const store = useSQLite<Owner>("owners");
 
+  // biome-ignore lint/suspicious/useAwait: lève « Propriétaire introuvable » avant store.update ; async garde ce refus en rejet pour les appelants qui attendent la promesse
   const update = async (id: string, patch: Partial<Owner>) => {
     const current = store.data.find((owner) => owner.id === id);
     if (!current) {
@@ -239,7 +260,8 @@ export function useAppointmentsRepository() {
       input.room ??
       (input.id
         ? undefined
-        : ((await roomsService.defaultRoomId().catch(() => null)) ?? undefined));
+        : ((await roomsService.defaultRoomId().catch(() => null)) ??
+          undefined));
     assertNoAppointmentConflict(
       {
         id: appointmentId,
@@ -324,7 +346,12 @@ export function useAppointmentsRepository() {
     const totalAmount = toCentimes(totalAmountDa);
     const receivedAmountDa = Math.min(
       totalAmountDa,
-      Math.max(0, Number.isFinite(Number(amountReceivedDa)) ? Number(amountReceivedDa) : totalAmountDa)
+      Math.max(
+        0,
+        Number.isFinite(Number(amountReceivedDa))
+          ? Number(amountReceivedDa)
+          : totalAmountDa
+      )
     );
     const receivedAmount = toCentimes(receivedAmountDa);
 
@@ -353,8 +380,13 @@ export function useAppointmentsRepository() {
         });
       }
 
-      if (invoice.documentStatus !== "draft" && invoice.grossAmount !== totalAmount) {
-        throw new Error("Cette consultation est déjà facturée avec un autre montant. Consultez la facture dans Finances.");
+      if (
+        invoice.documentStatus !== "draft" &&
+        invoice.grossAmount !== totalAmount
+      ) {
+        throw new Error(
+          "Cette consultation est déjà facturée avec un autre montant. Consultez la facture dans Finances."
+        );
       }
 
       if (invoice.documentStatus === "draft") {
@@ -371,7 +403,11 @@ export function useAppointmentsRepository() {
 
       invoiceNumber = invoice.number ?? invoiceNumber;
 
-      if (invoice.documentStatus === "issued" && invoice.balanceAmount > 0 && receivedAmount > 0) {
+      if (
+        invoice.documentStatus === "issued" &&
+        invoice.balanceAmount > 0 &&
+        receivedAmount > 0
+      ) {
         const invoiceDetail = await billingService.getInvoice(invoice.id);
         const paymentSequence = invoiceDetail?.payments.length ?? 0;
         await billingService.recordPayment({
@@ -404,10 +440,15 @@ export function useAppointmentsRepository() {
     if (receivedAmount > 0 && !isTauriRuntime()) {
       // Read persisted rows, not the render snapshot, when retrying an export.
       const existing = getBrowserTable<Transaction>("transactions").find(
-        (entry) => entry.referenceId === appointment.id && entry.type === "income" && entry.status === "paid"
+        (entry) =>
+          entry.referenceId === appointment.id &&
+          entry.type === "income" &&
+          entry.status === "paid"
       );
       if (existing && existing.amount !== receivedAmount) {
-        throw new Error("Un encaissement existe déjà avec un autre montant. Consultez Finances.");
+        throw new Error(
+          "Un encaissement existe déjà avec un autre montant. Consultez Finances."
+        );
       }
       if (!existing) {
         const payment = await transactionsStore.add({
@@ -420,11 +461,20 @@ export function useAppointmentsRepository() {
           status: "paid",
           date: new Date().toISOString(),
         } as Omit<Transaction, "id" | "createdAt" | "updatedAt">);
-        if (!payment) throw new Error("L’encaissement n’a pas été enregistré.");
+        if (!payment) {
+          throw new Error("L’encaissement n’a pas été enregistré.");
+        }
       }
     }
 
-    return { totalAmount, totalAmountDa, amountReceived: receivedAmount, amountReceivedDa: receivedAmountDa, balanceAmountDa: totalAmountDa - receivedAmountDa, invoiceNumber };
+    return {
+      totalAmount,
+      totalAmountDa,
+      amountReceived: receivedAmount,
+      amountReceivedDa: receivedAmountDa,
+      balanceAmountDa: totalAmountDa - receivedAmountDa,
+      invoiceNumber,
+    };
   };
 
   return {
@@ -611,6 +661,7 @@ export function usePatientsRepository() {
     };
   };
 
+  // biome-ignore lint/suspicious/useAwait: lève « Patient introuvable » avant patientsStore.update ; async garde ce refus en rejet pour les appelants qui attendent la promesse
   const update = async (id: string, patch: Partial<Patient>) => {
     const current = patientsStore.data.find((patient) => patient.id === id);
     if (!current) {
@@ -680,16 +731,48 @@ export function useTransactionsRepository() {
 export function useProductsRepository() {
   const productsStore = useSQLite<Product>("products");
   const inventory = useStockInventory();
-  const summaries = useMemo(() => summarizeInventory(inventory.balances), [inventory.balances]);
-  const products = useMemo(() => productsStore.data.map(product => {
-    if (!isTauriRuntime()) return product;
-    const summary = summaries.get(product.id);
-    return {...product, ...(inventory.supported ? {availableQuantity: Math.max(0, Math.min(product.quantity, summary?.availableQuantity ?? 0)),
-      expiredQuantity: summary?.expiredQuantity ?? 0, expiringQuantity: summary?.expiringQuantity ?? 0,
-      lotsCount: summary?.lotsCount ?? 0, nearestExpiryDate: summary?.nearestExpiryDate ?? null, inventoryInvalid: summary?.invalid ?? false} : {}),
-      availabilityPending: !inventory.ready};
-  }), [productsStore.data, inventory.supported, inventory.ready, summaries]);
-  const saveProduct = (productId: string | undefined, draft: Partial<Product>, authorId?: string) => inventoryService.saveProduct({id: productId ?? generateId(), create: !productId, draft, authorId});
+  const summaries = useMemo(
+    () => summarizeInventory(inventory.balances),
+    [inventory.balances]
+  );
+  const products = useMemo(
+    () =>
+      productsStore.data.map((product) => {
+        if (!isTauriRuntime()) {
+          return product;
+        }
+        const summary = summaries.get(product.id);
+        return {
+          ...product,
+          ...(inventory.supported
+            ? {
+                availableQuantity: Math.max(
+                  0,
+                  Math.min(product.quantity, summary?.availableQuantity ?? 0)
+                ),
+                expiredQuantity: summary?.expiredQuantity ?? 0,
+                expiringQuantity: summary?.expiringQuantity ?? 0,
+                lotsCount: summary?.lotsCount ?? 0,
+                nearestExpiryDate: summary?.nearestExpiryDate ?? null,
+                inventoryInvalid: summary?.invalid ?? false,
+              }
+            : {}),
+          availabilityPending: !inventory.ready,
+        };
+      }),
+    [productsStore.data, inventory.supported, inventory.ready, summaries]
+  );
+  const saveProduct = (
+    productId: string | undefined,
+    draft: Partial<Product>,
+    authorId?: string
+  ) =>
+    inventoryService.saveProduct({
+      id: productId ?? generateId(),
+      create: !productId,
+      draft,
+      authorId,
+    });
   const movementsStore = useSQLite<StockMovement>("stock_movements");
   const transactionsStore = useSQLite<Transaction>("transactions");
 
@@ -722,7 +805,18 @@ export function useProductsRepository() {
     if (isTauriRuntime()) {
       const now = toSQLiteTimestamp(new Date());
       await runDbTransaction(async (db) => {
-        await changeStockInDatabase(db, {productId, quantity, mode: "restock", unitCostAmount, reason: "Réapprovisionnement", occurredAt: now}, generateId);
+        await changeStockInDatabase(
+          db,
+          {
+            productId,
+            quantity,
+            mode: "restock",
+            unitCostAmount,
+            reason: "Réapprovisionnement",
+            occurredAt: now,
+          },
+          generateId
+        );
         if (createExpense && unitCostAmount > 0) {
           await db.execute(
             `INSERT INTO transactions (
@@ -792,20 +886,28 @@ export function useProductsRepository() {
       throw new Error("Un motif est requis pour corriger le stock.");
     }
     const product = productsStore.data.find((entry) => entry.id === productId);
-    if (!product) throw new Error("Produit introuvable.");
+    if (!product) {
+      throw new Error("Produit introuvable.");
+    }
     const delta = Number(quantity) - Number(product.quantity);
 
     if (isTauriRuntime()) {
       const now = toSQLiteTimestamp(new Date());
       await runDbTransaction(async (db) => {
-        await changeStockInDatabase(db, {productId, quantity, mode: "adjustment", reason, occurredAt: now}, generateId);
+        await changeStockInDatabase(
+          db,
+          { productId, quantity, mode: "adjustment", reason, occurredAt: now },
+          generateId
+        );
       });
       announceInventoryChanged();
       await Promise.all([productsStore.refresh(), movementsStore.refresh()]);
       return;
     }
 
-    if (delta === 0) return;
+    if (delta === 0) {
+      return;
+    }
     await productsStore.update(product.id, { quantity });
     await movementsStore.add({
       productId: product.id,
@@ -820,12 +922,25 @@ export function useProductsRepository() {
     ...productsStore,
     data: products,
     saveProduct,
-    add: async (draft: Omit<Product, "id" | "createdAt" | "updatedAt">) => isTauriRuntime() && await inventoryService.supported()
-      ? saveProduct(undefined, draft) : productsStore.add(draft),
+    add: async (draft: Omit<Product, "id" | "createdAt" | "updatedAt">) =>
+      isTauriRuntime() && (await inventoryService.supported())
+        ? saveProduct(undefined, draft)
+        : productsStore.add(draft),
     update: async (productId: string, draft: Partial<Product>) => {
-      if (!isTauriRuntime() || !await inventoryService.supported()) return productsStore.update(productId, draft);
-      try {await saveProduct(productId, draft); return true;}
-      catch (error) { toast.error(error instanceof Error ? error.message : "Le produit n’a pas pu être enregistré."); return false; }
+      if (!(isTauriRuntime() && (await inventoryService.supported()))) {
+        return productsStore.update(productId, draft);
+      }
+      try {
+        await saveProduct(productId, draft);
+        return true;
+      } catch (error) {
+        toast.error(
+          error instanceof Error
+            ? error.message
+            : "Le produit n’a pas pu être enregistré."
+        );
+        return false;
+      }
     },
     movements: movementsStore.data,
     movementsLoading: movementsStore.loading,
@@ -1283,13 +1398,13 @@ export function useAuditLogRepository() {
   };
 }
 
-export type NotificationStateRow = {
+export interface NotificationStateRow {
+  createdAt: string;
+  dismissedAt: string | null;
   id: string;
   notificationId: string;
   readAt: string | null;
-  dismissedAt: string | null;
-  createdAt: string;
-};
+}
 
 /**
  * Persistance du read/dismiss des notifications agrégées.
@@ -1337,4 +1452,5 @@ export function useNotificationStateRepository() {
     },
   };
 }
+
 import { changeStockInDatabase } from "@/modules/stock/services/stock-store";

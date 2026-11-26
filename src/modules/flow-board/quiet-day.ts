@@ -1,5 +1,5 @@
-import type { Appointment, Patient, Transaction } from "@/types/db";
 import { parseDashboardDate } from "@/modules/dashboard/v2/model";
+import type { Appointment, Patient, Transaction } from "@/types/db";
 import { isSameLocalDay } from "./model";
 
 /**
@@ -10,6 +10,7 @@ import { isSameLocalDay } from "./model";
  * caisse, qui est celle du cabinet.
  */
 export interface QuietDay {
+  cancelledToday: number;
   next: {
     appointmentId: string;
     startTime: string;
@@ -19,12 +20,11 @@ export interface QuietDay {
     /** Le prochain rendez-vous est aujourd'hui, plus tard. */
     today: boolean;
   } | null;
-  /** Rendez-vous planifiés ou confirmés des sept prochains jours, aujourd'hui compris. */
-  week: number;
-  cancelledToday: number;
   noShowToday: number;
   /** Recettes payées aujourd'hui, en centimes. */
   receiptsToday: number;
+  /** Rendez-vous planifiés ou confirmés des sept prochains jours, aujourd'hui compris. */
+  week: number;
 }
 
 const UPCOMING = new Set<Appointment["status"]>(["scheduled", "confirmed"]);
@@ -37,23 +37,40 @@ export function buildQuietDay({
   now,
   vetId = "",
 }: {
-  appointments: Pick<Appointment, "id" | "patientId" | "vetId" | "startTime" | "status" | "reason" | "type">[];
+  appointments: Pick<
+    Appointment,
+    "id" | "patientId" | "vetId" | "startTime" | "status" | "reason" | "type"
+  >[];
   patients: Pick<Patient, "id" | "name">[];
   vets: { id: string; name: string }[];
   transactions: Pick<Transaction, "type" | "status" | "date" | "amount">[];
   now: Date;
   vetId?: string;
 }): QuietDay {
-  const mine = vetId ? appointments.filter((appointment) => appointment.vetId === vetId) : appointments;
-  const weekEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 7);
+  const mine = vetId
+    ? appointments.filter((appointment) => appointment.vetId === vetId)
+    : appointments;
+  const weekEnd = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate() + 7
+  );
   const upcoming = mine
     .filter((appointment) => UPCOMING.has(appointment.status))
-    .map((appointment) => ({ appointment, at: new Date(appointment.startTime) }))
-    .filter(({ at }) => !Number.isNaN(at.getTime()) && at.getTime() > now.getTime())
+    .map((appointment) => ({
+      appointment,
+      at: new Date(appointment.startTime),
+    }))
+    .filter(
+      ({ at }) => !Number.isNaN(at.getTime()) && at.getTime() > now.getTime()
+    )
     .sort((a, b) => a.at.getTime() - b.at.getTime());
   const first = upcoming[0]?.appointment;
-  const patientName = (id: string) => patients.find((patient) => patient.id === id)?.name ?? "Patient";
-  const today = mine.filter((appointment) => isSameLocalDay(appointment.startTime, now));
+  const patientName = (id: string) =>
+    patients.find((patient) => patient.id === id)?.name ?? "Patient";
+  const today = mine.filter((appointment) =>
+    isSameLocalDay(appointment.startTime, now)
+  );
   return {
     next: first
       ? {
@@ -66,11 +83,16 @@ export function buildQuietDay({
         }
       : null,
     week: upcoming.filter(({ at }) => at < weekEnd).length,
-    cancelledToday: today.filter((appointment) => appointment.status === "cancelled").length,
-    noShowToday: today.filter((appointment) => appointment.status === "no_show").length,
+    cancelledToday: today.filter(
+      (appointment) => appointment.status === "cancelled"
+    ).length,
+    noShowToday: today.filter((appointment) => appointment.status === "no_show")
+      .length,
     receiptsToday: transactions
       .filter((row) => {
-        if (row.type !== "income" || row.status !== "paid") return false;
+        if (row.type !== "income" || row.status !== "paid") {
+          return false;
+        }
         // Read as the dashboard's Trésorerie reads it: a SQLite timestamp is UTC, a bare day is local.
         const day = parseDashboardDate(row.date);
         return Boolean(day && day.toDateString() === now.toDateString());

@@ -1,19 +1,17 @@
-import { parseDashboardDate } from "./model";
-import { useState } from "react";
 import {
-  format,
-  startOfDay,
-  endOfDay,
-  startOfWeek,
-  endOfWeek,
-  startOfMonth,
-  endOfMonth,
-  startOfYear,
-  endOfYear,
   addDays,
   addMonths,
+  endOfDay,
+  endOfMonth,
+  endOfWeek,
+  endOfYear,
+  format,
+  startOfDay,
+  startOfMonth,
+  startOfWeek,
+  startOfYear,
 } from "date-fns";
-import { ChevronDown } from "@/lib/icons";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -22,6 +20,8 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { ChevronDown } from "@/lib/icons";
+import { parseDashboardDate } from "./model";
 
 export type KpiPeriod = "day" | "week" | "month" | "year" | "all";
 export const KPI_PERIOD_LABELS: Record<KpiPeriod, string> = {
@@ -62,15 +62,25 @@ export function kpiWithin(value: string, range: { from: string; to: string }) {
     (!range.to || date <= range.to)
   );
 }
+function bucketStart(
+  period: KpiPeriod,
+  date: Date,
+  range: ReturnType<typeof kpiRange>
+): Date {
+  switch (period) {
+    case "day":
+      return addDays(startOfDay(date), -6);
+    case "all":
+      return startOfYear(date);
+    default:
+      return new Date(`${range.from}T12:00:00`);
+  }
+}
+
 export function kpiBuckets(period: KpiPeriod, date: Date) {
   // Today's value is complemented by seven days of context; other periods use their calendar span.
   const range = kpiRange(period, date);
-  const start =
-    period === "day"
-      ? addDays(startOfDay(date), -6)
-      : period === "all"
-        ? startOfYear(date)
-        : new Date(`${range.from}T12:00:00`);
+  const start = bucketStart(period, date, range);
   const count =
     period === "year" || period === "all"
       ? 12
@@ -116,13 +126,13 @@ export function KpiPeriodFilter({
 }) {
   const [open, setOpen] = useState(false);
   return (
-    <DropdownMenu open={open} onOpenChange={setOpen}>
+    <DropdownMenu onOpenChange={setOpen} open={open}>
       <DropdownMenuTrigger
         render={
           <Button
-            variant="ghost"
-            className="h-6 shrink-0 gap-1 rounded-full px-2 t-12 font-medium text-muted-foreground hover:text-foreground hover:bg-background/80 transition-colors shadow-none active:scale-[0.96] !outline-none !ring-0 focus:!ring-0 focus-visible:!ring-0 !border-transparent data-[state=open]:bg-background/90"
             aria-label={`Période ${label} : ${KPI_PERIOD_LABELS[value]}`}
+            className="t-12 !outline-none !ring-0 focus:!ring-0 focus-visible:!ring-0 !border-transparent h-6 shrink-0 gap-1 rounded-full px-2 font-medium text-muted-foreground shadow-none transition-colors hover:bg-background/80 hover:text-foreground active:scale-[0.96] data-[state=open]:bg-background/90"
+            variant="ghost"
           >
             {KPI_PERIOD_LABELS[value]}
             <ChevronDown className="size-3 opacity-60" />
@@ -131,11 +141,11 @@ export function KpiPeriodFilter({
       />
       <DropdownMenuContent align="end">
         <DropdownMenuRadioGroup
-          value={value}
           onValueChange={(next) => {
             onChange(next as KpiPeriod);
             setOpen(false);
           }}
+          value={value}
         >
           {Object.entries(KPI_PERIOD_LABELS).map(([key, text]) => (
             <DropdownMenuRadioItem key={key} value={key}>

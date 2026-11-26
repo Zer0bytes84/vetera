@@ -1,3 +1,4 @@
+import { mustExist } from "@/lib/must-exist";
 import { isOpenInvoice } from "@/modules/dashboard/v2/financial-model";
 import type { Invoice, Transaction } from "@/types/db";
 
@@ -10,45 +11,85 @@ export const AGING_BUCKETS = [
   { id: "recent", label: "Moins de 30 jours", from: 0, to: 30 },
   { id: "month", label: "30 à 60 jours", from: 30, to: 60 },
   { id: "quarter", label: "60 à 90 jours", from: 60, to: 90 },
-  { id: "old", label: "Plus de 90 jours", from: 90, to: Infinity },
+  {
+    id: "old",
+    label: "Plus de 90 jours",
+    from: 90,
+    to: Number.POSITIVE_INFINITY,
+  },
 ] as const;
 
-export type AgingBucket = {
-  id: (typeof AGING_BUCKETS)[number]["id"];
-  label: string;
+export interface AgingBucket {
   /** Dinars still to collect in this age band. */
   amount: number;
   /** Open invoices and pending entries in it. */
   count: number;
-};
+  id: (typeof AGING_BUCKETS)[number]["id"];
+  label: string;
+}
 
 const DAY = 86_400_000;
 
 function bucketOf(ageDays: number) {
-  return AGING_BUCKETS.find((bucket) => ageDays >= bucket.from && ageDays < bucket.to) ?? AGING_BUCKETS[AGING_BUCKETS.length - 1];
+  return (
+    AGING_BUCKETS.find(
+      (bucket) => ageDays >= bucket.from && ageDays < bucket.to
+    ) ?? AGING_BUCKETS[3] // The oldest band, « Plus de 90 jours »: the last of the four.
+  );
 }
 
-export function receivablesAging(invoices: Invoice[], transactions: Transaction[], now: Date): AgingBucket[] {
-  const rows: AgingBucket[] = AGING_BUCKETS.map(({ id, label }) => ({ id, label, amount: 0, count: 0 }));
+export function receivablesAging(
+  invoices: Invoice[],
+  transactions: Transaction[],
+  now: Date
+): AgingBucket[] {
+  const rows: AgingBucket[] = AGING_BUCKETS.map(({ id, label }) => ({
+    id,
+    label,
+    amount: 0,
+    count: 0,
+  }));
   const place = (since: string, amount: number) => {
     const issued = new Date(since).getTime();
-    if (!Number.isFinite(issued) || amount <= 0) return;
-    const bucket = bucketOf(Math.max(0, Math.floor((now.getTime() - issued) / DAY)));
-    const row = rows.find((candidate) => candidate.id === bucket.id)!;
+    if (!Number.isFinite(issued) || amount <= 0) {
+      return;
+    }
+    const bucket = bucketOf(
+      Math.max(0, Math.floor((now.getTime() - issued) / DAY))
+    );
+    const row = mustExist(
+      rows.find((candidate) => candidate.id === bucket.id),
+      `ligne de la tranche ${bucket.id}`
+    );
     row.amount += amount;
     row.count += 1;
   };
   for (const invoice of invoices) {
-    if (!isOpenInvoice(invoice)) continue;
+    if (!isOpenInvoice(invoice)) {
+      continue;
+    }
     const net = Math.max(0, invoice.grossAmount - invoice.creditAmount) / 100;
-    place((invoice.issuedAt ?? invoice.createdAt)!, Math.min(net, Math.max(0, invoice.balanceAmount) / 100));
+    place(
+      invoice.issuedAt ?? invoice.createdAt,
+      Math.min(net, Math.max(0, invoice.balanceAmount) / 100)
+    );
   }
   // The manual entries still pending, as « Créances » counts them: income not tied to an invoice, not yet paid.
   const migrated = new Set(
-    invoices.filter((invoice) => invoice.documentStatus === "issued").map((invoice) => invoice.legacySourceTransactionId).filter(Boolean),
+    invoices
+      .filter((invoice) => invoice.documentStatus === "issued")
+      .map((invoice) => invoice.legacySourceTransactionId)
+      .filter(Boolean)
   );
   for (const entry of transactions) {
-    if (entry.type !== "income" || entry.sourceType || migrated.has(entry.id) || entry.status === "paid") continue;
+    if (
+      entry.type !== "income" ||
+      entry.sourceType ||
+      migrated.has(entry.id) ||
+      entry.status === "paid"
+    ) {
+      continue;
+    }
     place(entry.date, Math.max(0, entry.amount) / 100);
   }
   return rows;

@@ -1,3 +1,5 @@
+const LANGUAGE_TOKEN = /^<\|([a-z]{2,3})\|>$/;
+
 export type DictationLanguage = "fr" | "auto";
 
 export const DICTATION_LANGUAGE_KEY = "baitari.local-dictation.language";
@@ -25,9 +27,9 @@ export function selectWhisperLanguage(
   languageTokens: Record<string, number>
 ) {
   let language: string | null = null;
-  let highest = -Infinity;
+  let highest = Number.NEGATIVE_INFINITY;
   for (const [token, index] of Object.entries(languageTokens)) {
-    const code = /^<\|([a-z]{2,3})\|>$/.exec(token)?.[1];
+    const code = LANGUAGE_TOKEN.exec(token)?.[1];
     const value = logits[index];
     if (
       code &&
@@ -40,9 +42,10 @@ export function selectWhisperLanguage(
       language = code;
     }
   }
-  if (!language)
+  if (!language) {
     throw new Error(
       "La langue n’a pas pu être reconnue. Choisissez Français et réessayez."
     );
+  }
   return language;
 }

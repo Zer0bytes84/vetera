@@ -8,7 +8,14 @@
  * `negative`, `warning` are our tones; never the TuffUI theme); text is French, never under 12 px; no demo data.
  */
 
-import { cloneElement, isValidElement, useEffect, useId, useRef, useState } from "react";
+import {
+  cloneElement,
+  isValidElement,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+} from "react";
 import { cn } from "@/lib/utils";
 
 // Shared across every tooltip on the page: once one has been open, the next
@@ -16,16 +23,16 @@ import { cn } from "@/lib/utils";
 let lastClosedAt = 0;
 const WARM_MS = 400;
 
-export type TooltipProps = {
-  content: React.ReactNode;
+export interface TooltipProps {
+  align?: "start" | "center" | "end";
   /** A single focusable element; it gets aria-describedby pointing at the tooltip. */
   children: React.ReactElement<{ "aria-describedby"?: string; title?: string }>;
-  side?: "top" | "bottom";
-  align?: "start" | "center" | "end";
+  className?: string;
+  content: React.ReactNode;
   /** Hover delay for the first tooltip, in ms. Focus always opens instantly. */
   delay?: number;
-  className?: string;
-};
+  side?: "top" | "bottom";
+}
 
 const placement = {
   top: {
@@ -70,7 +77,9 @@ export function Tooltip({
   };
   const hide = () => {
     clearTimeout(timer.current);
-    if (open) lastClosedAt = Date.now();
+    if (open) {
+      lastClosedAt = Date.now();
+    }
     setOpen(false);
   };
 
@@ -85,25 +94,25 @@ export function Tooltip({
   return (
     <span
       className="relative inline-flex"
+      onBlur={hide}
+      onFocus={(e) => e.target.matches(":focus-visible") && show(true)}
+      onKeyDown={(e) => e.key === "Escape" && hide()}
       onPointerEnter={(e) => e.pointerType === "mouse" && show(false)}
       onPointerLeave={hide}
-      onFocus={(e) => e.target.matches(":focus-visible") && show(true)}
-      onBlur={hide}
-      onKeyDown={(e) => e.key === "Escape" && hide()}
     >
       {trigger}
       <span
-        id={id}
-        role="tooltip"
         aria-hidden={!open}
-        data-open={open || undefined}
         className={cn(
-          "pointer-events-none absolute z-50 w-max max-w-64 rounded-xl bg-surface-raised px-2.5 py-1.5 text-xs text-foreground",
+          "pointer-events-none absolute z-50 w-max max-w-64 rounded-xl bg-surface-raised px-2.5 py-1.5 text-foreground text-xs",
           "scale-[0.97] opacity-0 transition-[opacity,scale] duration-[125ms] ease-[cubic-bezier(0.23,1,0.32,1)] data-open:scale-100 data-open:opacity-100 motion-reduce:scale-100",
           instant && "duration-0",
           placement[side][align],
-          className,
+          className
         )}
+        data-open={open || undefined}
+        id={id}
+        role="tooltip"
       >
         {content}
       </span>

@@ -1,5 +1,5 @@
-import { Segmented } from "@/components/ui/segmented-control";
 import { SettingsRow } from "@/components/settings-section";
+import { Segmented } from "@/components/ui/segmented-control";
 import { useDashboardVersion } from "../hooks/use-dashboard-version";
 
 /** One row of the « Tableau de bord » section of Paramètres: which dashboard opens by default. */
@@ -12,7 +12,9 @@ export function DashboardVersionSetting() {
     >
       <Segmented<"analytics" | "clinical">
         label="Version du tableau de bord"
-        onValueChange={(next) => { void setVersion(next); }}
+        onValueChange={(next) => {
+          void setVersion(next);
+        }}
         options={[
           { value: "analytics", label: "Vue d’ensemble" },
           { value: "clinical", label: "Journée clinique" },

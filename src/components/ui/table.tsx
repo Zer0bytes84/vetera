@@ -11,7 +11,10 @@ function Table({ className, ...props }: React.ComponentProps<"table">) {
       data-slot="table-container"
     >
       <table
-        className={cn("w-full caption-bottom text-sm/6 tabular-nums", className)}
+        className={cn(
+          "w-full caption-bottom text-sm/6 tabular-nums",
+          className
+        )}
         data-slot="table"
         {...props}
       />
@@ -56,7 +59,7 @@ function TableRow({ className, ...props }: React.ComponentProps<"tr">) {
   return (
     <tr
       className={cn(
-        "border-b border-border/60 transition-colors hover:bg-muted/60 focus-within:bg-muted/60 has-aria-expanded:bg-muted data-[state=selected]:bg-muted",
+        "border-border/60 border-b transition-colors focus-within:bg-muted/60 hover:bg-muted/60 has-aria-expanded:bg-muted data-[state=selected]:bg-muted",
         className
       )}
       data-slot="table-row"
@@ -69,7 +72,7 @@ function TableHead({ className, ...props }: React.ComponentProps<"th">) {
   return (
     <th
       className={cn(
-        "h-11 whitespace-nowrap px-4 text-start align-middle font-normal text-xs text-muted-foreground [&:has([role=checkbox])]:pe-0",
+        "h-11 whitespace-nowrap px-4 text-start align-middle font-normal text-muted-foreground text-xs [&:has([role=checkbox])]:pe-0",
         className
       )}
       data-slot="table-head"

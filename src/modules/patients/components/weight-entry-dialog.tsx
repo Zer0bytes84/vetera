@@ -1,9 +1,6 @@
-import { Plus, Scales, Trash } from "@/lib/icons";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-
-import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -14,6 +11,9 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+
+import { Button } from "@/components/ui/button";
+import { DatePicker } from "@/components/ui/date-picker";
 import { Dialog } from "@/components/ui/dialog";
 import {
   Field,
@@ -36,10 +36,10 @@ import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/contexts/AuthContext";
 import { useWeightEntriesRepository } from "@/data/repositories";
+import { guard } from "@/lib/guard";
+import { Plus, Scales, Trash } from "@/lib/icons";
 import type { WeightEntry } from "@/types/db";
 import { toDateInputValue } from "./patients-shared";
-import { DatePicker } from "@/components/ui/date-picker";
-import { guard } from "@/lib/guard";
 
 interface WeightEntryDialogProps {
   onOpenChange: (open: boolean) => void;
@@ -75,7 +75,7 @@ export function WeightEntryDialog({
 
   const [weight, setWeight] = useState("");
   const [date, setDate] = useState(() =>
-    toDateInputValue(new Date().toISOString()),
+    toDateInputValue(new Date().toISOString())
   );
   const [bcs, setBcs] = useState("");
   const [notes, setNotes] = useState("");
@@ -86,7 +86,10 @@ export function WeightEntryDialog({
 
   // À chaque ouverture, ou quand l'entrée éditée change : le formulaire repart des valeurs de l'entrée
   // (corrigé au rendu, sans effet : plus d'image avec les anciennes valeurs, et le dialogue reste monté).
-  const [seenForm, setSeenForm] = useState<{ open: boolean; entry: WeightEntry | null | undefined } | null>(null);
+  const [seenForm, setSeenForm] = useState<{
+    open: boolean;
+    entry: WeightEntry | null | undefined;
+  } | null>(null);
   if (!seenForm || seenForm.open !== open || seenForm.entry !== weightEntry) {
     setSeenForm({ open, entry: weightEntry });
     if (open) {
@@ -113,51 +116,54 @@ export function WeightEntryDialog({
     }
     setIsSubmitting(true);
     setError(null);
-    await guard(async () => {
-      const payload = {
-        patientId,
-        weightKg: weightNumber,
-        measuredAt: new Date(date).toISOString(),
-        bcs: bcs ? Number(bcs) : undefined,
-        notes: notes.trim() || undefined,
-        vetId: currentUser?.id,
-      };
-      if (weightEntry?.id) {
-        const ok = await repo.update(weightEntry.id, payload);
-        if (!ok) {
-          throw new Error("Update failed");
+    await guard(
+      async () => {
+        const payload = {
+          patientId,
+          weightKg: weightNumber,
+          measuredAt: new Date(date).toISOString(),
+          bcs: bcs ? Number(bcs) : undefined,
+          notes: notes.trim() || undefined,
+          vetId: currentUser?.id,
+        };
+        if (weightEntry?.id) {
+          const ok = await repo.update(weightEntry.id, payload);
+          if (!ok) {
+            throw new Error("Update failed");
+          }
+          toast.success(
+            t("patientDetail.weight.saved", {
+              defaultValue: "Poids enregistré.",
+            })
+          );
+        } else {
+          const created = await repo.add(
+            payload as unknown as Omit<
+              WeightEntry,
+              "id" | "createdAt" | "updatedAt"
+            >
+          );
+          if (!created) {
+            throw new Error("Insert failed");
+          }
+          toast.success(
+            t("patientDetail.weight.saved", {
+              defaultValue: "Poids enregistré.",
+            })
+          );
         }
-        toast.success(
-          t("patientDetail.weight.saved", {
-            defaultValue: "Poids enregistré.",
-          }),
-        );
-      } else {
-        const created = await repo.add(
-          payload as unknown as Omit<
-            WeightEntry,
-            "id" | "createdAt" | "updatedAt"
-          >,
-        );
-        if (!created) {
-          throw new Error("Insert failed");
-        }
-        toast.success(
-          t("patientDetail.weight.saved", {
-            defaultValue: "Poids enregistré.",
-          }),
-        );
+        onOpenChange(false);
+      },
+      {
+        recover: (err) => {
+          console.error("[WeightEntryDialog] save failed", err);
+          setError(err instanceof Error ? err.message : "Erreur");
+        },
+        cleanup: () => {
+          setIsSubmitting(false);
+        },
       }
-      onOpenChange(false);
-    }, {
-      recover: (err) => {
-        console.error("[WeightEntryDialog] save failed", err);
-        setError(err instanceof Error ? err.message : "Erreur");
-      },
-      cleanup: () => {
-        setIsSubmitting(false);
-      },
-    });
+    );
   };
 
   const confirmDelete = async () => {
@@ -165,22 +171,25 @@ export function WeightEntryDialog({
       return;
     }
     setIsDeleting(true);
-    await guard(async () => {
-      const ok = await repo.remove(weightEntry.id);
-      if (ok) {
-        toast.success(
-          t("patientDetail.weight.deleted", {
-            defaultValue: "Mesure supprimée.",
-          }),
-        );
-        setConfirmDeleteOpen(false);
-        onOpenChange(false);
-      }
-    }, {
-      cleanup: () => {
-        setIsDeleting(false);
+    await guard(
+      async () => {
+        const ok = await repo.remove(weightEntry.id);
+        if (ok) {
+          toast.success(
+            t("patientDetail.weight.deleted", {
+              defaultValue: "Mesure supprimée.",
+            })
+          );
+          setConfirmDeleteOpen(false);
+          onOpenChange(false);
+        }
       },
-    });
+      {
+        cleanup: () => {
+          setIsDeleting(false);
+        },
+      }
+    );
   };
 
   return (
@@ -320,7 +329,7 @@ export function WeightEntryDialog({
           </FormDialogFooter>
         </FormDialogContent>
       </Dialog>
-      <AlertDialog open={confirmDeleteOpen} onOpenChange={setConfirmDeleteOpen}>
+      <AlertDialog onOpenChange={setConfirmDeleteOpen} open={confirmDeleteOpen}>
         <AlertDialogContent size="sm">
           <AlertDialogHeader>
             <AlertDialogTitle>
@@ -340,8 +349,8 @@ export function WeightEntryDialog({
               {t("common.cancel", { defaultValue: "Annuler" })}
             </AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => void confirmDelete()}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={() => void confirmDelete()}
             >
               {t("common.delete", { defaultValue: "Supprimer" })}
             </AlertDialogAction>

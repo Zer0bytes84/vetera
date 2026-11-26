@@ -1,6 +1,6 @@
 import {
-  LocalInferenceSession,
   abortError,
+  LocalInferenceSession,
 } from "@/modules/consultations/local-ai/inference-client";
 import {
   getLocalModelUrls,
@@ -20,10 +20,11 @@ export async function readDocumentAnswer(
   signal: AbortSignal,
   onProgress: (event: LocalAiProgress) => void
 ) {
-  if (!models.generatorReady)
+  if (!models.generatorReady) {
     throw new Error(
       "Installez la lecture assistée sur cet ordinateur. Le texte reconnu peut déjà être relu."
     );
+  }
   const urls = getLocalModelUrls(models);
   const session = await LocalInferenceSession.create(
     "soap",
@@ -32,7 +33,9 @@ export async function readDocumentAnswer(
   );
   try {
     for (const attempt of [1, 2] as const) {
-      if (signal.aborted) throw abortError();
+      if (signal.aborted) {
+        throw abortError();
+      }
       const { prompt, partial } = createDocumentReadingPrompt(
         source,
         question,
@@ -42,13 +45,18 @@ export async function readDocumentAnswer(
         { type: "generate", ...urls, prompt, attempt, purpose: "document" },
         "generated"
       );
-      if (response.type !== "generated")
+      if (response.type !== "generated") {
         throw new Error("La lecture assistée a échoué.");
-      if (signal.aborted) throw abortError();
+      }
+      if (signal.aborted) {
+        throw abortError();
+      }
       try {
         return { answer: parseDocumentAnswer(response.text, source), partial };
       } catch (error) {
-        if (attempt === 2) throw error;
+        if (attempt === 2) {
+          throw error;
+        }
         onProgress({
           stage: "retrying",
           message: "Vérification des extraits : nouvel essai…",

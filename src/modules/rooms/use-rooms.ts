@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useSyncExternalStore } from "react";
 import { isTauriRuntime } from "@/services/browser-store";
 import { roomsService } from "./service";
-import { roomLabel, type Room } from "./store";
+import { type Room, roomLabel } from "./store";
 
 export const ROOMS_CHANGED = "baitari:rooms-changed";
 
@@ -19,22 +19,32 @@ const listeners = new Set<() => void>();
 
 function publish(next: RoomsSnapshot) {
   snapshot = next;
-  for (const listener of listeners) listener();
+  for (const listener of listeners) {
+    listener();
+  }
 }
 
 export function refreshRooms(): Promise<void> {
   if (!isTauriRuntime()) {
-    if (!snapshot.loaded) publish({ error: null, loaded: true, rooms: [] });
+    if (!snapshot.loaded) {
+      publish({ error: null, loaded: true, rooms: [] });
+    }
     return Promise.resolve();
   }
   const current = ++request;
   pending = roomsService.list().then(
     (rooms) => {
-      if (current === request) publish({ error: null, loaded: true, rooms });
+      if (current === request) {
+        publish({ error: null, loaded: true, rooms });
+      }
     },
     () => {
       if (current === request) {
-        publish({ ...snapshot, error: "Les salles n'ont pas pu être chargées.", loaded: true });
+        publish({
+          ...snapshot,
+          error: "Les salles n'ont pas pu être chargées.",
+          loaded: true,
+        });
       }
     }
   );
@@ -47,7 +57,9 @@ export function announceRoomsChanged() {
 
 function subscribe(listener: () => void) {
   listeners.add(listener);
-  if (listeners.size === 1 && !snapshot.loaded && !pending) void refreshRooms();
+  if (listeners.size === 1 && !snapshot.loaded && !pending) {
+    void refreshRooms();
+  }
   return () => {
     listeners.delete(listener);
   };
@@ -58,11 +70,20 @@ if (typeof window !== "undefined") {
 }
 
 export function useRooms() {
-  const state = useSyncExternalStore(subscribe, () => snapshot, () => snapshot);
+  const state = useSyncExternalStore(
+    subscribe,
+    () => snapshot,
+    () => snapshot
+  );
   useEffect(() => {
-    if (!state.loaded && !pending) void refreshRooms();
+    if (!(state.loaded || pending)) {
+      void refreshRooms();
+    }
   }, [state.loaded]);
-  const active = useMemo(() => state.rooms.filter((room) => !room.archivedAt), [state.rooms]);
+  const active = useMemo(
+    () => state.rooms.filter((room) => !room.archivedAt),
+    [state.rooms]
+  );
   return { ...state, active };
 }
 
@@ -73,7 +94,8 @@ export function useRooms() {
 export function useRoomLabel() {
   const { rooms } = useRooms();
   return useCallback(
-    (roomId: string | null | undefined) => (rooms.length > 1 ? roomLabel(roomId, rooms) : null),
+    (roomId: string | null | undefined) =>
+      rooms.length > 1 ? roomLabel(roomId, rooms) : null,
     [rooms]
   );
 }

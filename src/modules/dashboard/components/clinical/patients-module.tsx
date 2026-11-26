@@ -1,8 +1,8 @@
 import { PawPrint } from "lucide-react";
-import { KpiSegments } from "../../v2/kpi-mini-chart";
-import { EmptyState, SignalBadge, focusRing } from "@/design-system/primitives";
 import { WidgetShell } from "@/design-system/patterns/widget-shell";
+import { EmptyState, focusRing, SignalBadge } from "@/design-system/primitives";
 import type { buildPatientFollowUpRows } from "../../model/clinical-dashboard";
+import { KpiSegments } from "../../v2/kpi-mini-chart";
 import {
   ModuleLink,
   ModuleTotals,
@@ -30,17 +30,21 @@ export function PatientsModule({
 }) {
   return (
     <WidgetShell
-      icon={PawPrint}
-      className="clinical-module clinical-patients-module"
-      title="Suivi des patients"
-      subtitle="Soins en cours, puis dossiers récemment suivis"
       // The empty state carries its own button to the same page.
-      actions={rows.length ? <ModuleLink onClick={onPatients}>Dossiers</ModuleLink> : undefined}
+      actions={
+        rows.length ? (
+          <ModuleLink onClick={onPatients}>Dossiers</ModuleLink>
+        ) : undefined
+      }
+      className="clinical-module clinical-patients-module"
+      error={state.error}
+      icon={PawPrint}
+      onRetry={state.retry}
       pending={state.loading}
       showSkeleton={state.skeleton}
-      error={state.error}
-      onRetry={state.retry}
       skeleton={<RowSkeleton />}
+      subtitle="Soins en cours, puis dossiers récemment suivis"
+      title="Suivi des patients"
     >
       <ModuleTotals
         values={[
@@ -85,22 +89,22 @@ export function PatientsModule({
         <div className="divide-y divide-hairline">
           {rows.slice(0, 3).map(({ patient, ownerName, hospitalized }) => (
             <button
-              type="button"
-              key={patient.id}
-              data-row-id={patient.id}
-              onPointerEnter={onIntent}
-              onFocus={onIntent}
-              onPointerLeave={onIntentCancel}
-              onBlur={onIntentCancel}
               className={`flex w-full items-center gap-3 rounded-control py-3 text-left transition-colors duration-150 hover:bg-frame ${focusRing}`}
+              data-row-id={patient.id}
+              key={patient.id}
+              onBlur={onIntentCancel}
               onClick={() => onPatient(patient.id)}
+              onFocus={onIntent}
+              onPointerEnter={onIntent}
+              onPointerLeave={onIntentCancel}
+              type="button"
             >
               <PatientPortrait patient={patient} />
               <span className="min-w-0 flex-1">
-                <span className="block truncate t-13 font-medium">
+                <span className="t-13 block truncate font-medium">
                   {patient.name}
                 </span>
-                <span className="mt-1 block truncate t-12 text-ink-muted">
+                <span className="t-12 mt-1 block truncate text-ink-muted">
                   {patient.species} · {ownerName}
                 </span>
               </span>
@@ -122,16 +126,16 @@ export function PatientsModule({
         </div>
       ) : (
         <EmptyState
-          compact
-          title="Le premier dossier commence ici"
-          description="Créez un patient pour relier ses visites, ses notes et son suivi."
           action={
             <ModuleLink onClick={onPatients}>Ouvrir les patients</ModuleLink>
           }
+          compact
+          description="Créez un patient pour relier ses visites, ses notes et son suivi."
+          title="Le premier dossier commence ici"
         />
       )}
       {rows.length > 3 && (
-        <div className="mt-1 border-t border-hairline pt-3 t-12 text-ink-muted">
+        <div className="t-12 mt-1 border-hairline border-t pt-3 text-ink-muted">
           {rows.length - 3} autre{rows.length - 3 > 1 ? "s" : ""} dossier
           {rows.length - 3 > 1 ? "s" : ""} dans la bibliothèque patients
         </div>

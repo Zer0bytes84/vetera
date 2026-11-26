@@ -4,18 +4,18 @@ export type FinancialSource = "all" | "invoices" | "manual";
 export interface FinancialCategory {
   id: string;
   label: string;
-  totalValue: number;
-  safeValue: number;
-  riskValue: number;
-  totalCount: number;
   riskCount: number;
+  riskValue: number;
+  safeValue: number;
+  totalCount: number;
+  totalValue: number;
 }
 export type RiskCategoryData = FinancialCategory;
 export interface Receivable {
+  balance: number;
+  detail: string;
   id: string;
   label: string;
-  detail: string;
-  balance: number;
 }
 
 /** All source amounts are centimes; display aggregates are dinars. */
@@ -101,8 +101,9 @@ export function buildFinancialOverview(
   for (const transaction of manual) {
     const value = Math.max(0, transaction.amount) / 100;
     categories[1].totalValue += value;
-    if (transaction.status === "paid") categories[1].safeValue += value;
-    else {
+    if (transaction.status === "paid") {
+      categories[1].safeValue += value;
+    } else {
       categories[1].riskValue += value;
       if (value > 0) {
         categories[1].riskCount++;
@@ -131,21 +132,51 @@ export function buildFinancialOverview(
  * dinars; the counts are invoices only, a manual entry is not an invoice.
  */
 /** An issued invoice with something left to collect, net of its credit notes: what « Créances » counts. */
-export function isOpenInvoice(invoice: Pick<Invoice, "documentStatus" | "issuedAt" | "createdAt" | "grossAmount" | "creditAmount" | "balanceAmount">) {
-  if (invoice.documentStatus !== "issued" || !(invoice.issuedAt ?? invoice.createdAt)) return false;
+export function isOpenInvoice(
+  invoice: Pick<
+    Invoice,
+    | "documentStatus"
+    | "issuedAt"
+    | "createdAt"
+    | "grossAmount"
+    | "creditAmount"
+    | "balanceAmount"
+  >
+) {
+  if (
+    invoice.documentStatus !== "issued" ||
+    !(invoice.issuedAt ?? invoice.createdAt)
+  ) {
+    return false;
+  }
   const net = Math.max(0, invoice.grossAmount - invoice.creditAmount) / 100;
   return Math.min(net, Math.max(0, invoice.balanceAmount) / 100) > 0;
 }
 
-export function receivablesSummary(invoices: Invoice[], transactions: Transaction[]) {
-  const overview = buildFinancialOverview(invoices, transactions, { from: "", to: "" }, "all");
-  const total = overview.categories.reduce((sum, category) => sum + category.riskValue, 0);
+export function receivablesSummary(
+  invoices: Invoice[],
+  transactions: Transaction[]
+) {
+  const overview = buildFinancialOverview(
+    invoices,
+    transactions,
+    { from: "", to: "" },
+    "all"
+  );
+  const total = overview.categories.reduce(
+    (sum, category) => sum + category.riskValue,
+    0
+  );
   const open = invoices.filter(isOpenInvoice);
   return {
     total,
     unpaidInvoices: open.length,
-    overdueInvoices: open.filter((invoice) => invoice.settlementStatus === "overdue").length,
-    pendingEntries: overview.categories.find((category) => category.id === "manual")?.riskCount ?? 0,
+    overdueInvoices: open.filter(
+      (invoice) => invoice.settlementStatus === "overdue"
+    ).length,
+    pendingEntries:
+      overview.categories.find((category) => category.id === "manual")
+        ?.riskCount ?? 0,
   };
 }
 
@@ -158,30 +189,69 @@ const localDay = (date: Date) =>
  * Going back in time, an invoice issued after a date was not owed yet, and a payment received after
  * it was still outstanding; a manual entry is owed from its date. Days are compared by calendar day.
  */
-export function receivablesTrend(invoices: Invoice[], transactions: Transaction[], ends: Date[]): number[] {
-  const issued = invoices.filter((invoice) => invoice.documentStatus === "issued" && (invoice.issuedAt ?? invoice.createdAt));
-  const migrated = new Set(issued.map((invoice) => invoice.legacySourceTransactionId).filter(Boolean));
+export function receivablesTrend(
+  invoices: Invoice[],
+  transactions: Transaction[],
+  ends: Date[]
+): number[] {
+  const issued = invoices.filter(
+    (invoice) =>
+      invoice.documentStatus === "issued" &&
+      (invoice.issuedAt ?? invoice.createdAt)
+  );
+  const migrated = new Set(
+    issued.map((invoice) => invoice.legacySourceTransactionId).filter(Boolean)
+  );
   const open = issued.map((invoice) => {
     const net = Math.max(0, invoice.grossAmount - invoice.creditAmount) / 100;
     const balance = Math.min(net, Math.max(0, invoice.balanceAmount) / 100);
     const payments = transactions
-      .filter((row) => row.type === "income" && row.status === "paid" && row.sourceType === "billing_payment" && row.referenceId === invoice.id)
-      .map((row) => ({ day: row.date.slice(0, 10), amount: Math.max(0, row.amount) / 100 }));
-    return { day: (invoice.issuedAt ?? invoice.createdAt).slice(0, 10), net, balance, payments };
+      .filter(
+        (row) =>
+          row.type === "income" &&
+          row.status === "paid" &&
+          row.sourceType === "billing_payment" &&
+          row.referenceId === invoice.id
+      )
+      .map((row) => ({
+        day: row.date.slice(0, 10),
+        amount: Math.max(0, row.amount) / 100,
+      }));
+    return {
+      day: (invoice.issuedAt ?? invoice.createdAt).slice(0, 10),
+      net,
+      balance,
+      payments,
+    };
   });
   const entries = transactions
-    .filter((row) => row.type === "income" && !row.sourceType && !migrated.has(row.id) && row.status !== "paid" && row.amount > 0)
+    .filter(
+      (row) =>
+        row.type === "income" &&
+        !row.sourceType &&
+        !migrated.has(row.id) &&
+        row.status !== "paid" &&
+        row.amount > 0
+    )
     .map((row) => ({ day: row.date.slice(0, 10), amount: row.amount / 100 }));
   return ends.map((end) => {
     const at = localDay(end);
     let owed = 0;
     for (const invoice of open) {
-      if (invoice.day > at) continue;
+      if (invoice.day > at) {
+        continue;
+      }
       // Paid after that day: still outstanding then. Never more than the invoice's net.
-      const later = invoice.payments.filter((payment) => payment.day > at).reduce((sum, payment) => sum + payment.amount, 0);
+      const later = invoice.payments
+        .filter((payment) => payment.day > at)
+        .reduce((sum, payment) => sum + payment.amount, 0);
       owed += Math.min(invoice.net, invoice.balance + later);
     }
-    for (const entry of entries) if (entry.day <= at) owed += entry.amount;
+    for (const entry of entries) {
+      if (entry.day <= at) {
+        owed += entry.amount;
+      }
+    }
     return Math.round(owed * 100) / 100;
   });
 }
@@ -193,19 +263,35 @@ export function receivablesTrend(invoices: Invoice[], transactions: Transaction[
  * 100 % while a balance remains.
  */
 export function settlementRate(invoices: Invoice[]): number | null {
-  const [category] = buildFinancialOverview(invoices, [], { from: "", to: "" }, "invoices").categories;
-  if (!category || category.totalValue <= 0) return null;
-  const rate = Math.round((category.safeValue / category.totalValue) * 1000) / 10;
+  const [category] = buildFinancialOverview(
+    invoices,
+    [],
+    { from: "", to: "" },
+    "invoices"
+  ).categories;
+  if (!category || category.totalValue <= 0) {
+    return null;
+  }
+  const rate =
+    Math.round((category.safeValue / category.totalValue) * 1000) / 10;
   return category.riskValue > 0 ? Math.min(rate, 99.9) : rate;
 }
 
 /** Never show a full goal meter while any balance remains outstanding. */
-export function collectionProgress(total: number, collected: number, segments = 40) {
-  if (total <= 0) return { percentage: null, filledSegments: 0 };
+export function collectionProgress(
+  total: number,
+  collected: number,
+  segments = 40
+) {
+  if (total <= 0) {
+    return { percentage: null, filledSegments: 0 };
+  }
   const fraction = Math.max(0, Math.min(1, collected / total));
   const incomplete = collected < total;
   return {
     percentage: Math.min(incomplete ? 99 : 100, Math.round(fraction * 100)),
-    filledSegments: incomplete ? Math.min(segments - 1, Math.floor(fraction * segments)) : segments,
+    filledSegments: incomplete
+      ? Math.min(segments - 1, Math.floor(fraction * segments))
+      : segments,
   };
 }

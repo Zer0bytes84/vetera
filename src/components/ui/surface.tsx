@@ -2,7 +2,11 @@
 // Free to use. If it helps you, you can support it: https://ko-fi.com/yurigokoryan
 
 /** Header and tile icons: a Lucide glyph or a Heroicons solid, both take className. */
-type ShellIcon = import("react").ComponentType<{ className?: string; strokeWidth?: number | string }>;
+type ShellIcon = import("react").ComponentType<{
+  className?: string;
+  strokeWidth?: number | string;
+}>;
+
 import { cn } from "@/lib/utils";
 
 /*
@@ -16,14 +20,17 @@ import { cn } from "@/lib/utils";
 type DivProps = React.ComponentProps<"div">;
 
 /** Outer frame. Headers and footers sit in its padding, content in panels. */
-export function Shell({ className, ...props }: React.ComponentProps<"section">) {
+export function Shell({
+  className,
+  ...props
+}: React.ComponentProps<"section">) {
   return (
     <section
-      data-slot="band"
       className={cn(
         "@container w-full rounded-[calc(var(--radius-panel)+var(--card-frame))] bg-[var(--card-band)] p-[var(--card-frame)]",
-        className,
+        className
       )}
+      data-slot="band"
       {...props}
     />
   );
@@ -33,7 +40,10 @@ export function Shell({ className, ...props }: React.ComponentProps<"section">) 
 export function Panel({ className, ...props }: DivProps) {
   return (
     <div
-      className={cn("rounded-[var(--radius-panel)] bg-[var(--card-inset)]", className)}
+      className={cn(
+        "rounded-[var(--radius-panel)] bg-[var(--card-inset)]",
+        className
+      )}
       data-slot="panel"
       {...props}
     />
@@ -42,7 +52,12 @@ export function Panel({ className, ...props }: DivProps) {
 
 /** One level deeper: code, payloads, details inside a panel. */
 export function Inset({ className, ...props }: DivProps) {
-  return <div className={cn("rounded-xl bg-foreground/[0.04]", className)} {...props} />;
+  return (
+    <div
+      className={cn("rounded-xl bg-foreground/[0.04]", className)}
+      {...props}
+    />
+  );
 }
 
 /** Icon in a tinted square. Pass a Phosphor icon, or children for anything else. */
@@ -57,7 +72,7 @@ export function IconTile({
       aria-hidden="true"
       className={cn(
         "flex size-9 shrink-0 items-center justify-center rounded-xl bg-foreground/[0.06] text-muted-foreground",
-        className,
+        className
       )}
       {...props}
     >
@@ -94,14 +109,22 @@ export function ShellHeader({
 }: ShellHeaderProps) {
   return (
     <div
-      className={cn("flex items-center gap-3 pt-1.5 pr-3.5 pb-3 pl-1.5", className)}
+      className={cn(
+        "flex items-center gap-3 pt-1.5 pr-3.5 pb-3 pl-1.5",
+        className
+      )}
       {...props}
     >
       {icon && <IconTile icon={icon} />}
       <div className={cn("min-w-0 flex-1", !icon && "pl-2")}>
-        <Heading className="truncate text-sm/6 font-semibold">{title}</Heading>
+        <Heading className="truncate font-semibold text-sm/6">{title}</Heading>
         {subtitle && (
-          <p className={cn("text-[0.8125rem] text-muted-foreground", subtitleClassName ?? "truncate")}>
+          <p
+            className={cn(
+              "text-[0.8125rem] text-muted-foreground",
+              subtitleClassName ?? "truncate"
+            )}
+          >
             {subtitle}
           </p>
         )}

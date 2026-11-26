@@ -3,7 +3,9 @@ export function normalizeDashboardOrder(
   value: unknown,
   availableIds: string[]
 ): string[] {
-  if (!Array.isArray(value)) return [...availableIds];
+  if (!Array.isArray(value)) {
+    return [...availableIds];
+  }
   const available = new Set(availableIds);
   const known = value.filter(
     (id): id is string => typeof id === "string" && available.has(id)

@@ -1,12 +1,11 @@
-import { Bird, Cat, Dog, Fish, PawPrint, Rabbit, Turtle } from "@/lib/icons";
 import type React from "react";
 import { useState } from "react";
-
 import {
   AvatarFallback,
   AvatarImage,
   Avatar as ShadAvatar,
 } from "@/components/ui/avatar";
+import { Bird, Cat, Dog, Fish, PawPrint, Rabbit, Turtle } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 
 export type AvatarSize = "sm" | "md" | "lg" | "xl" | "2xl";

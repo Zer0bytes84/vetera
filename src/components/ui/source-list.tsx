@@ -19,35 +19,45 @@ import { IconTile, Panel, Shell, ShellHeader } from "@/components/ui/surface";
 import { enter } from "@/lib/motion-tokens";
 import { cn } from "@/lib/utils";
 
-export type Source = {
-  id: string;
-  /** Whose and what: « Rex · Évaluation ». */
-  title: ReactNode;
+export interface Source {
+  /** The vet's actions on the passage: copy, insert. */
+  actions?: ReactNode;
+  /** Display date, e.g. « 12 oct. 2026 ». */
+  date?: string;
   /** The kind of record it comes from; sources are grouped by it. */
   group: string;
   icon?: LucideIcon;
-  /** A short tag after the title, e.g. the SOAP rubric. */
-  tag?: string;
-  /** Display date, e.g. « 12 oct. 2026 ». */
-  date?: string;
+  id: string;
   /** The passage found, already highlighted by the caller: it is what the source is shown for. */
   passage: ReactNode;
-  /** The vet's actions on the passage: copy, insert. */
-  actions?: ReactNode;
-};
+  /** A short tag after the title, e.g. the SOAP rubric. */
+  tag?: string;
+  /** Whose and what: « Rex · Évaluation ». */
+  title: ReactNode;
+}
 
-export type SourceListProps = {
-  sources: Source[];
-  heading: string;
-  subtitle?: string;
+export interface SourceListProps {
   className?: string;
-};
+  heading: string;
+  sources: Source[];
+  subtitle?: string;
+}
 
-export function SourceList({ sources, heading, subtitle, className }: SourceListProps) {
-  const groups = sources.reduce<{ name: string; icon?: LucideIcon; items: Source[] }[]>((acc, source) => {
+export function SourceList({
+  sources,
+  heading,
+  subtitle,
+  className,
+}: SourceListProps) {
+  const groups = sources.reduce<
+    { name: string; icon?: LucideIcon; items: Source[] }[]
+  >((acc, source) => {
     const group = acc.find((g) => g.name === source.group);
-    if (group) group.items.push(source);
-    else acc.push({ name: source.group, icon: source.icon, items: [source] });
+    if (group) {
+      group.items.push(source);
+    } else {
+      acc.push({ name: source.group, icon: source.icon, items: [source] });
+    }
     return acc;
   }, []);
 
@@ -58,29 +68,50 @@ export function SourceList({ sources, heading, subtitle, className }: SourceList
         <Panel className="flex flex-col gap-3 border border-border p-1.5">
           {groups.map((group, g) => (
             <motion.section
-              key={group.name}
+              animate={{
+                opacity: 1,
+                y: 0,
+                transition: { ...enter, delay: g * 0.04 },
+              }}
               aria-label={group.name}
-              animate={{ opacity: 1, y: 0, transition: { ...enter, delay: g * 0.04 } }}
               initial={{ opacity: 0, y: 6 }}
+              key={group.name}
             >
-              <h4 className="flex items-center gap-3 px-3 pt-1.5 pb-1 text-xs text-muted-foreground">
-                {group.icon ? <IconTile className="size-5 rounded-md" icon={group.icon} /> : null}
+              <h4 className="flex items-center gap-3 px-3 pt-1.5 pb-1 text-muted-foreground text-xs">
+                {group.icon ? (
+                  <IconTile className="size-5 rounded-md" icon={group.icon} />
+                ) : null}
                 {group.name}
                 <span className="tabular-nums">· {group.items.length}</span>
               </h4>
               <ul className="flex flex-col">
                 {group.items.map((source) => (
-                  <li className="flex flex-col gap-1.5 rounded-xl px-3 py-3" key={source.id}>
+                  <li
+                    className="flex flex-col gap-1.5 rounded-xl px-3 py-3"
+                    key={source.id}
+                  >
                     <div className="flex items-baseline gap-3">
-                      <span className="min-w-0 flex-1 truncate text-sm font-medium">{source.title}</span>
-                      {source.tag ? <Tag className="font-sans">{source.tag}</Tag> : null}
+                      <span className="min-w-0 flex-1 truncate font-medium text-sm">
+                        {source.title}
+                      </span>
+                      {source.tag ? (
+                        <Tag className="font-sans">{source.tag}</Tag>
+                      ) : null}
                       {source.date ? (
-                        <span className="shrink-0 text-xs text-muted-foreground">{source.date}</span>
+                        <span className="shrink-0 text-muted-foreground text-xs">
+                          {source.date}
+                        </span>
                       ) : null}
                     </div>
                     {/* The passage found, put forward. */}
-                    <div className="rounded-xl border-l-2 border-brand bg-brand/[0.06] px-3 py-2">{source.passage}</div>
-                    {source.actions ? <div className="flex items-center justify-end gap-1.5">{source.actions}</div> : null}
+                    <div className="rounded-xl border-brand border-l-2 bg-brand/[0.06] px-3 py-2">
+                      {source.passage}
+                    </div>
+                    {source.actions ? (
+                      <div className="flex items-center justify-end gap-1.5">
+                        {source.actions}
+                      </div>
+                    ) : null}
                   </li>
                 ))}
               </ul>

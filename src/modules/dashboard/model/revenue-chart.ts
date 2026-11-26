@@ -1,34 +1,45 @@
 import type { ChartSeries } from "@/components/ui/chart-card";
 import { formatNumber } from "@/utils/display-format";
-import { seriesChange, type FocusPoint } from "../components/focus-trend-chart";
+import { type FocusPoint, seriesChange } from "../components/focus-trend-chart";
 import type { VisitKindRow } from "./dashboard-widgets";
 
 /** The chart's figures, from the same points as before: nothing is recomputed from another source. */
 
 export const money = (value: number) => `${formatNumber(value)} DA`;
-export const count = (value: number) => `${formatNumber(value)} consultation${value > 1 ? "s" : ""}`;
+export const count = (value: number) =>
+  `${formatNumber(value)} consultation${value > 1 ? "s" : ""}`;
 /** Compact scale label: 15 000 → « 15 k ». */
 export const compactMoney = (value: number) =>
-  value >= 1000 ? `${formatNumber(value / 1000, { maximumFractionDigits: 1 })} k` : formatNumber(value);
+  value >= 1000
+    ? `${formatNumber(value / 1000, { maximumFractionDigits: 1 })} k`
+    : formatNumber(value);
 
-const sum = (values: (number | undefined)[]) => values.reduce<number>((total, value) => total + (value ?? 0), 0);
+const sum = (values: (number | undefined)[]) =>
+  values.reduce<number>((total, value) => total + (value ?? 0), 0);
 
 /** « +203,4 % contre 8 800 DA la période précédente », or the reason there is none. */
 export function changeText(change: number | null, previous: string) {
-  if (change === null) return "Pas de période précédente comparable";
+  if (change === null) {
+    return "Pas de période précédente comparable";
+  }
   return `${change > 0 ? "+" : ""}${formatNumber(change, { maximumFractionDigits: 1 })} % contre ${previous} la période précédente`;
 }
 
 export interface RevenueChartModel {
-  labels: string[];
-  titles: string[];
-  receipts: number[];
-  visits: number[];
-  totals: { receipts: number; visits: number; previousReceipts: number; previousVisits: number };
   changes: { receipts: number | null; visits: number | null };
+  labels: string[];
   /** The same point in the previous period, as the tooltip's last line. */
   note: (index: number) => string | undefined;
+  receipts: number[];
   series: ChartSeries[];
+  titles: string[];
+  totals: {
+    receipts: number;
+    visits: number;
+    previousReceipts: number;
+    previousVisits: number;
+  };
+  visits: number[];
 }
 
 /**
@@ -45,9 +56,15 @@ export function buildRevenueChart(points: FocusPoint[]): RevenueChartModel {
     previousReceipts: sum(points.map((p) => p.previousReceipts)),
     previousVisits: sum(points.map((p) => p.previousVisits)),
   };
-  const hasPrevious = points.some((p) => p.previousReceipts !== undefined || p.previousVisits !== undefined);
+  const hasPrevious = points.some(
+    (p) => p.previousReceipts !== undefined || p.previousVisits !== undefined
+  );
   const changes = {
-    receipts: seriesChange(totals.receipts, totals.previousReceipts, hasPrevious),
+    receipts: seriesChange(
+      totals.receipts,
+      totals.previousReceipts,
+      hasPrevious
+    ),
     visits: seriesChange(totals.visits, totals.previousVisits, hasPrevious),
   };
   return {
@@ -59,7 +76,13 @@ export function buildRevenueChart(points: FocusPoint[]): RevenueChartModel {
     changes,
     note: (index) => {
       const point = points[index];
-      if (!point || (point.previousReceipts === undefined && point.previousVisits === undefined)) return undefined;
+      if (
+        !point ||
+        (point.previousReceipts === undefined &&
+          point.previousVisits === undefined)
+      ) {
+        return;
+      }
       return `Période précédente : ${money(point.previousReceipts ?? 0)} · ${formatNumber(point.previousVisits ?? 0)}`;
     },
     series: [
@@ -96,7 +119,13 @@ const KIND_COLORS: Record<string, string> = {
   urgence: "var(--tone-amber)",
   contrôle: "var(--muted-foreground)",
 };
-const FALLBACK_COLORS = ["var(--tone-violet)", "var(--tone-blue)", "var(--tone-green)", "var(--tone-amber)", "var(--tone-rose)"];
+const FALLBACK_COLORS = [
+  "var(--tone-violet)",
+  "var(--tone-blue)",
+  "var(--tone-green)",
+  "var(--tone-amber)",
+  "var(--tone-rose)",
+];
 
 /** The period's consultations split by type of act: one slice per type, each the count of its visits. */
 export function buildKindsDonut(kinds: VisitKindRow[]): ChartSeries[] {
@@ -105,7 +134,9 @@ export function buildKindsDonut(kinds: VisitKindRow[]): ChartSeries[] {
     id: kind.key,
     label: kind.name,
     values: [kind.count],
-    color: KIND_COLORS[kind.key] ?? FALLBACK_COLORS[spare++ % FALLBACK_COLORS.length],
+    color:
+      KIND_COLORS[kind.key] ??
+      FALLBACK_COLORS[spare++ % FALLBACK_COLORS.length],
     format: (v: number) => formatNumber(v),
     valueFormat: count,
     detail: `${formatNumber(kind.count)} · ${kind.share} %`,

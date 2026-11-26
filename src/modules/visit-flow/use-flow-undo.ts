@@ -19,8 +19,12 @@ export function useFlowUndo() {
 
   const record = useCallback(
     async (appointmentId: string) => {
-      if (!isTauriRuntime()) return;
-      await visitFlowService.attribute(appointmentId, actorId).catch(() => undefined);
+      if (!isTauriRuntime()) {
+        return;
+      }
+      await visitFlowService
+        .attribute(appointmentId, actorId)
+        .catch(() => undefined);
     },
     [actorId]
   );
@@ -28,7 +32,9 @@ export function useFlowUndo() {
   const confirm = useCallback(
     async (appointmentId: string, message: string) => {
       await record(appointmentId);
-      const event = isTauriRuntime() ? await visitFlowService.undoable(appointmentId).catch(() => null) : null;
+      const event = isTauriRuntime()
+        ? await visitFlowService.undoable(appointmentId).catch(() => null)
+        : null;
       if (!event) {
         toast.success(message);
         return;
@@ -52,7 +58,11 @@ export function useFlowUndo() {
                 toast.success("Déplacement annulé.");
               },
               (error: unknown) => {
-                toast.error(error instanceof Error ? error.message : "Le déplacement n'a pas pu être annulé.");
+                toast.error(
+                  error instanceof Error
+                    ? error.message
+                    : "Le déplacement n'a pas pu être annulé."
+                );
               }
             );
           },

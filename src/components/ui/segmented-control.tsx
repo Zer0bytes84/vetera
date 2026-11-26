@@ -13,22 +13,22 @@ import { useId, useRef, useState } from "react";
 import { spring } from "@/lib/motion-tokens";
 import { cn } from "@/lib/utils";
 
-export type SegmentedOption<T extends string = string> = {
-  value: T;
-  label: React.ReactNode;
+export interface SegmentedOption<T extends string = string> {
   disabled?: boolean;
-};
+  label: React.ReactNode;
+  value: T;
+}
 
-export type SegmentedProps<T extends string = string> = {
-  options: SegmentedOption<T>[];
-  value?: T;
+export interface SegmentedProps<T extends string = string> {
+  className?: string;
   defaultValue?: T;
-  onValueChange?: (value: T) => void;
   /** Accessible name for the group. */
   label: string;
+  onValueChange?: (value: T) => void;
+  options: SegmentedOption<T>[];
   size?: "sm" | "md";
-  className?: string;
-};
+  value?: T;
+}
 
 /**
  * Segmented control with a sliding active pill. Pointer changes slide the pill;
@@ -51,18 +51,26 @@ export function Segmented<T extends string = string>({
 
   const select = (next: T, fromKeyboard: boolean) => {
     setInstant(fromKeyboard);
-    if (valueProp === undefined) setInner(next);
+    if (valueProp === undefined) {
+      setInner(next);
+    }
     onValueChange?.(next);
   };
 
   const onKeyDown = (e: React.KeyboardEvent) => {
-    const step = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key];
-    if (!step) return;
+    const step = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[
+      e.key
+    ];
+    if (!step) {
+      return;
+    }
     e.preventDefault();
     const enabled = options.filter((o) => !o.disabled);
     const at = enabled.findIndex((o) => o.value === value);
     const next = enabled[(at + step + enabled.length) % enabled.length];
-    if (!next) return;
+    if (!next) {
+      return;
+    }
     select(next.value, true);
     ref.current
       ?.querySelector<HTMLButtonElement>(`[data-value="${next.value}"]`)
@@ -72,41 +80,41 @@ export function Segmented<T extends string = string>({
   return (
     <MotionConfig reducedMotion="user">
       <div
-        ref={ref}
-        role="radiogroup"
         aria-label={label}
-        onKeyDown={onKeyDown}
         className={cn(
           "inline-flex items-center rounded-full bg-foreground/[0.05] p-0.5",
           size === "sm" ? "h-8" : "h-9",
-          className,
+          className
         )}
+        onKeyDown={onKeyDown}
+        ref={ref}
+        role="radiogroup"
       >
         {options.map((option) => {
           const active = option.value === value;
           return (
             <button
-              key={option.value}
-              type="button"
-              role="radio"
               aria-checked={active}
-              data-value={option.value}
-              tabIndex={active ? 0 : -1}
-              disabled={option.disabled}
-              onClick={(e) => select(option.value, e.detail === 0)}
               className={cn(
                 "relative h-full rounded-full font-medium transition-[color,scale] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] active:scale-[0.97] disabled:opacity-40",
                 size === "sm" ? "px-3 text-[0.8125rem]" : "px-4 text-sm",
                 active
                   ? "text-foreground"
-                  : "text-muted-foreground hover:text-foreground",
+                  : "text-muted-foreground hover:text-foreground"
               )}
+              data-value={option.value}
+              disabled={option.disabled}
+              key={option.value}
+              onClick={(e) => select(option.value, e.detail === 0)}
+              role="radio"
+              tabIndex={active ? 0 : -1}
+              type="button"
             >
               {active && (
                 <motion.span
+                  className="absolute inset-0 rounded-full bg-surface-raised"
                   layoutId={pillId}
                   transition={instant ? { duration: 0 } : spring}
-                  className="absolute inset-0 rounded-full bg-surface-raised"
                 />
               )}
               <span className="relative">{option.label}</span>

@@ -1,12 +1,17 @@
-import { ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/16/solid";
-import * as React from "react";
+import {
+  ChevronDownIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+} from "@heroicons/react/16/solid";
+import { fr } from "date-fns/locale";
+import type React from "react";
+import { useEffect, useRef } from "react";
 import {
   type DayButton,
   DayPicker,
   getDefaultClassNames,
   type Locale,
 } from "react-day-picker";
-import { fr } from "date-fns/locale";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -33,8 +38,6 @@ function Calendar({
   return (
     <DayPicker
       captionLayout={captionLayout}
-      // The library names its month buttons in English; the app is French.
-      labels={{ labelPrevious: () => "Mois précédent", labelNext: () => "Mois suivant", ...labels }}
       className={cn(
         "group/calendar bg-background in-data-[slot=card-content]:bg-transparent in-data-[slot=popover-content]:bg-transparent p-2 [--cell-radius:var(--radius-md)] [--cell-size:--spacing(7)]",
         RTL_NEXT,
@@ -89,7 +92,7 @@ function Calendar({
         table: "w-full border-collapse",
         weekdays: cn("flex", defaultClassNames.weekdays),
         weekday: cn(
-          "flex-1 select-none rounded-(--cell-radius) font-normal t-13 text-muted-foreground",
+          "t-13 flex-1 select-none rounded-(--cell-radius) font-normal text-muted-foreground",
           defaultClassNames.weekday
         ),
         week: cn("mt-2 flex w-full", defaultClassNames.week),
@@ -98,7 +101,7 @@ function Calendar({
           defaultClassNames.week_number_header
         ),
         week_number: cn(
-          "select-none t-13 text-muted-foreground",
+          "t-13 select-none text-muted-foreground",
           defaultClassNames.week_number
         ),
         day: cn(
@@ -181,6 +184,12 @@ function Calendar({
           date.toLocaleString(locale?.code, { month: "short" }),
         ...formatters,
       }}
+      // The library names its month buttons in English; the app is French.
+      labels={{
+        labelPrevious: () => "Mois précédent",
+        labelNext: () => "Mois suivant",
+        ...labels,
+      }}
       locale={locale}
       showOutsideDays={showOutsideDays}
       weekStartsOn={weekStartsOn}
@@ -198,8 +207,8 @@ function CalendarDayButton({
 }: React.ComponentProps<typeof DayButton> & { locale?: Partial<Locale> }) {
   const defaultClassNames = getDefaultClassNames();
 
-  const ref = React.useRef<HTMLButtonElement>(null);
-  React.useEffect(() => {
+  const ref = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
     if (modifiers.focused) {
       ref.current?.focus();
     }

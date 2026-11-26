@@ -1,4 +1,13 @@
-import { ToolbarIcon } from "./components/toolbar-icon";
+import { HugeiconsIcon, type IconSvgElement } from "@hugeicons/react";
+import { type RefObject, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Button } from "@/components/ui/button";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { type FocusEntityKind, useFocus } from "@/contexts/focus-provider";
 import {
   Calendar01Icon,
   CalendarCheckIn01Icon,
@@ -10,17 +19,6 @@ import {
   Task01Icon,
   Tick01Icon,
 } from "@/lib/hugeicons";
-import { HugeiconsIcon, type IconSvgElement } from "@hugeicons/react";
-import { useMemo, useState, type RefObject } from "react";
-import { useTranslation } from "react-i18next";
-
-import { Button } from "@/components/ui/button";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { type FocusEntityKind, useFocus } from "@/contexts/focus-provider";
 import { cn } from "@/lib/utils";
 import {
   NOTIFICATION_SOURCE_ACCENT,
@@ -31,6 +29,7 @@ import {
 } from "@/services/notifications/types";
 import { useNotificationCenter } from "@/services/notifications/useNotificationCenter";
 import type { View } from "@/types";
+import { ToolbarIcon } from "./components/toolbar-icon";
 
 const NOTIFICATION_FILTERS = ["all", "unread", "critical"] as const;
 type NotificationFilter = (typeof NOTIFICATION_FILTERS)[number];
@@ -150,20 +149,20 @@ function NotificationItemRow({
             <div className="flex items-center gap-2">
               <span
                 className={cn(
-                  "truncate font-semibold t-13 tracking-tight",
+                  "t-13 truncate font-semibold tracking-tight",
                   item.isRead ? "text-foreground/70" : "text-foreground"
                 )}
               >
                 {item.title}
               </span>
-              <span className="ml-auto inline-flex shrink-0 items-center rounded-full bg-foreground/5 px-2 py-0.5 font-medium t-12 text-foreground/60 uppercase tracking-widest">
+              <span className="t-12 ml-auto inline-flex shrink-0 items-center rounded-full bg-foreground/5 px-2 py-0.5 font-medium text-foreground/60 uppercase tracking-widest">
                 {accent.label}
               </span>
             </div>
 
             <span
               className={cn(
-                "mt-1 line-clamp-2 block t-12 leading-relaxed",
+                "t-12 mt-1 line-clamp-2 block leading-relaxed",
                 item.isRead
                   ? "text-muted-foreground/70"
                   : "text-muted-foreground/90"
@@ -174,7 +173,7 @@ function NotificationItemRow({
 
             <div
               className={cn(
-                "mt-2.5 flex items-center gap-1.5 font-semibold t-12 uppercase tracking-wider transition duration-150",
+                "t-12 mt-2.5 flex items-center gap-1.5 font-semibold uppercase tracking-wider transition duration-150",
                 item.isRead
                   ? "text-muted-foreground/40"
                   : "text-primary/70 group-hover/row:text-primary"
@@ -239,12 +238,38 @@ function NotificationItemRow({
 }
 
 export interface NotificationCenterProps {
-  open?: boolean;
-  onOpenChange?: (open: boolean) => void;
   anchor?: HTMLElement | null | RefObject<HTMLElement | null>;
   hideTrigger?: boolean;
   onNavigate: (view: View) => void;
   onNavigateToPatient?: (patientId: string) => void;
+  onOpenChange?: (open: boolean) => void;
+  open?: boolean;
+}
+
+function filterLabel(
+  option: NotificationFilter,
+  unreadCount: number,
+  criticalCount: number
+): string {
+  switch (option) {
+    case "all":
+      return "Toutes";
+    case "unread":
+      return `Non lues${unreadCount > 0 ? ` (${unreadCount})` : ""}`;
+    default:
+      return `Critiques${criticalCount > 0 ? ` (${criticalCount})` : ""}`;
+  }
+}
+
+function emptyFilterTitle(filter: NotificationFilter): string {
+  switch (filter) {
+    case "unread":
+      return "Rien de non lu";
+    case "critical":
+      return "Aucune critique";
+    default:
+      return "Aucune notification";
+  }
 }
 
 export function NotificationCenter({
@@ -270,7 +295,10 @@ export function NotificationCenter({
 
   const [localOpen, setLocalOpen] = useState(false);
   const open = controlledOpen ?? localOpen;
-  const setOpen = (next: boolean) => { setLocalOpen(next); onOpenChange?.(next); };
+  const setOpen = (next: boolean) => {
+    setLocalOpen(next);
+    onOpenChange?.(next);
+  };
   const [filter, setFilter] = useState<NotificationFilter>("all");
 
   const filteredItems = useMemo(() => {
@@ -322,36 +350,43 @@ export function NotificationCenter({
     }
   };
 
+  const openLabel = t("notifications.open", { defaultValue: "Notifications" });
+  // Le bouton porte un aria-label, qui remplace son contenu : le nombre doit y être, la pastille est cachée.
+  const triggerLabel =
+    unreadCount > 0
+      ? `${openLabel}, ${unreadCount} non lue${unreadCount > 1 ? "s" : ""}`
+      : openLabel;
+
   return (
     <Popover onOpenChange={setOpen} open={open}>
-      {!hideTrigger && <PopoverTrigger
-        render={
-          <Button
-            aria-label={t("notifications.open", {
-              defaultValue: "Notifications",
-            })}
-            className="shell-toolbar-control relative size-9 rounded-full"
-            size="icon"
-            variant="outline"
-          />
-        }
-      >
-        <ToolbarIcon name="notifications" />
-        {unreadCount > 0 ? (
-          <span
-            aria-label={`${unreadCount} non lues`}
-            className={cn(
-              "absolute -top-1 -right-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full px-1 font-semibold t-12 text-white ring-2 ring-background",
-              criticalCount > 0 ? "bg-rose-500" : "bg-amber-500"
-            )}
-          >
-            {unreadCount > 99 ? "99+" : unreadCount}
-          </span>
-        ) : null}
-      </PopoverTrigger>}
+      {!hideTrigger && (
+        <PopoverTrigger
+          render={
+            <Button
+              aria-label={triggerLabel}
+              className="shell-toolbar-control relative size-9 rounded-full"
+              size="icon"
+              variant="outline"
+            />
+          }
+        >
+          <ToolbarIcon name="notifications" />
+          {unreadCount > 0 ? (
+            <span
+              aria-hidden="true"
+              className={cn(
+                "t-12 absolute -top-1 -right-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full px-1 font-semibold text-white ring-2 ring-background",
+                criticalCount > 0 ? "bg-rose-500" : "bg-amber-500"
+              )}
+            >
+              {unreadCount > 99 ? "99+" : unreadCount}
+            </span>
+          ) : null}
+        </PopoverTrigger>
+      )}
       <PopoverContent
-        anchor={anchor}
         align="end"
+        anchor={anchor}
         className="w-[min(400px,calc(100vw-24px))] gap-0 p-0"
         sideOffset={8}
       >
@@ -370,7 +405,7 @@ export function NotificationCenter({
           </div>
           {unreadCount > 0 ? (
             <Button
-              className="h-7 shrink-0 rounded-md px-2 t-12"
+              className="t-12 h-7 shrink-0 rounded-md px-2"
               onClick={() => markAllRead()}
               size="sm"
               variant="ghost"
@@ -387,7 +422,7 @@ export function NotificationCenter({
 
         {topItems.length > 0 ? (
           <div className="border-foreground/5 border-b bg-gradient-to-b from-muted/30 to-background/50 px-4 py-3">
-            <p className="font-semibold t-12 text-primary uppercase tracking-wider">
+            <p className="t-12 font-semibold text-primary uppercase tracking-wider">
               Priorité absolue
             </p>
             <ul className="mt-3 flex flex-col gap-2">
@@ -427,14 +462,14 @@ export function NotificationCenter({
 
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2">
-                          <span className="truncate font-semibold t-12 text-foreground tracking-tight">
+                          <span className="t-12 truncate font-semibold text-foreground tracking-tight">
                             {item.title}
                           </span>
-                          <span className="ml-auto shrink-0 rounded-full bg-foreground/5 px-1.5 py-0.5 font-medium t-12 text-foreground/60 uppercase tracking-widest">
+                          <span className="t-12 ml-auto shrink-0 rounded-full bg-foreground/5 px-1.5 py-0.5 font-medium text-foreground/60 uppercase tracking-widest">
                             {accent.label}
                           </span>
                         </div>
-                        <span className="mt-0.5 block truncate t-12 text-muted-foreground/90">
+                        <span className="t-12 mt-0.5 block truncate text-muted-foreground/90">
                           {item.description}
                         </span>
                       </div>
@@ -447,32 +482,31 @@ export function NotificationCenter({
         ) : null}
 
         <div className="flex items-center border-foreground/10 border-b px-3 py-1.5">
-          <div aria-label="Filtrer les notifications" data-tabs-style="segmented" role="group">
-          {NOTIFICATION_FILTERS.map((option) => {
-            const active = filter === option;
-            const label =
-              option === "all"
-                ? "Toutes"
-                : option === "unread"
-                  ? `Non lues${unreadCount > 0 ? ` (${unreadCount})` : ""}`
-                  : `Critiques${criticalCount > 0 ? ` (${criticalCount})` : ""}`;
-            return (
-              <button
-                aria-pressed={active}
-                className={cn(
-                  "cursor-pointer rounded-full px-2.5 py-1 font-medium t-12 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/30",
-                  active
-                    ? "bg-foreground text-background"
-                    : "text-muted-foreground hover:bg-foreground/5 hover:text-foreground"
-                )}
-                key={option}
-                onClick={() => setFilter(option)}
-                type="button"
-              >
-                {label}
-              </button>
-            );
-          })}
+          <div
+            aria-label="Filtrer les notifications"
+            data-tabs-style="segmented"
+            role="group"
+          >
+            {NOTIFICATION_FILTERS.map((option) => {
+              const active = filter === option;
+              const label = filterLabel(option, unreadCount, criticalCount);
+              return (
+                <button
+                  aria-pressed={active}
+                  className={cn(
+                    "t-12 cursor-pointer rounded-full px-2.5 py-1 font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/30",
+                    active
+                      ? "bg-foreground text-background"
+                      : "text-muted-foreground hover:bg-foreground/5 hover:text-foreground"
+                  )}
+                  key={option}
+                  onClick={() => setFilter(option)}
+                  type="button"
+                >
+                  {label}
+                </button>
+              );
+            })}
           </div>
         </div>
 
@@ -489,11 +523,7 @@ export function NotificationCenter({
                 strokeWidth={1.5}
               />
               <p className="font-medium text-foreground text-sm">
-                {filter === "unread"
-                  ? "Rien de non lu"
-                  : filter === "critical"
-                    ? "Aucune critique"
-                    : "Aucune notification"}
+                {emptyFilterTitle(filter)}
               </p>
               <p className="mt-1 text-muted-foreground text-xs">
                 {filter === "all"

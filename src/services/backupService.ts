@@ -316,8 +316,7 @@ async function applyRetention(
   const now = Date.now();
   const ageMs = MAX_BACKUP_AGE_DAYS * 24 * 60 * 60 * 1000;
   const survivors: BackupInfo[] = [];
-  for (let i = 0; i < metadata.backups.length; i += 1) {
-    const entry = metadata.backups[i];
+  for (const entry of metadata.backups) {
     const age = now - new Date(entry.date).getTime();
     if (age > ageMs) {
       try {
@@ -418,15 +417,13 @@ export async function restoreBackup(
       }
       const container = parseContainer(bytes);
       plaintext = await decryptPayload(container, passphrase);
-    } else {
+    } else if (bytes.length > 12 && bytes[0] === 0x42 && bytes[1] === 0x41) {
       // Either a legacy raw .db file, or a plaintext bdb container.
-      if (bytes.length > 12 && bytes[0] === 0x42 && bytes[1] === 0x41) {
-        // New container format with FLAG_ENCRYPTED = 0
-        const parsed = parseContainer(bytes);
-        plaintext = parsed.rawPayload;
-      } else {
-        plaintext = bytes;
-      }
+      // New container format with FLAG_ENCRYPTED = 0
+      const parsed = parseContainer(bytes);
+      plaintext = parsed.rawPayload;
+    } else {
+      plaintext = bytes;
     }
 
     if (!hasSqliteHeader(plaintext)) {
@@ -659,6 +656,7 @@ export async function importDatabaseFromFile(
  * Decode backup bytes: detect encrypted container, decrypt if needed, fall
  * back to a raw SQLite blob. Throws on integrity / format failure.
  */
+// biome-ignore lint/suspicious/useAwait: rend des octets déjà en clair dans plusieurs branches (la signature Promise<Uint8Array> exige async, tsc TS2739) et parseContainer ou le mot de passe manquant lèvent ; async garde ces erreurs en rejet
 async function decodeBackupBytes(
   bytes: Uint8Array,
   passphrase?: string

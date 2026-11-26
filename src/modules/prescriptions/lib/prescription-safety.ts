@@ -22,6 +22,13 @@ import {
   type SafetyGroupId,
 } from "./prescription-safety-rules";
 
+const FINDING_SEPARATOR = /[,;\n/]+|\s+et\s+/i;
+const LONG_TERM_DURATION =
+  /\b(a vie|long cours|au long|chronique|permanent|continu|illimite|nouvel ordre)/;
+const DURATION_AMOUNT =
+  /(\d+(?:\.\d+)?)(?:\s*(?:-|a|au)\s*(\d+(?:\.\d+)?))?\s*(jours?|j|semaines?|sem|mois|ans?|heures?|h)\b/;
+const SINGLE_DOSE = /\b(dose unique|injection unique|une fois|unique)\b/;
+
 export type SafetyAlertLevel = "interaction" | "contraindication";
 
 export interface SafetyMedication {
@@ -54,15 +61,15 @@ export interface SafetyAlert {
     origin: "ordonnance" | "traitement";
     prescribedOn?: string;
   };
-  reason: string;
-  ruleId: string;
-  /** Référence officielle de la règle (RCP), quand elle est sourcée. */
-  source?: RuleSource;
   /** Pour une contre-indication : la mention du dossier en cause. */
   patientFinding?: {
     field: "allergies" | "conditions";
     text: string;
   };
+  reason: string;
+  ruleId: string;
+  /** Référence officielle de la règle (RCP), quand elle est sourcée. */
+  source?: RuleSource;
 }
 
 export interface SafetyCheckInput {
@@ -135,7 +142,7 @@ function sameMolecule(a: SafetyMedication, b: SafetyMedication): boolean {
 /** Découpe un champ libre du dossier en mentions (« A, B ; C »). */
 function splitFindings(value: string | null | undefined): string[] {
   return (value ?? "")
-    .split(/[,;\n/]+|\s+et\s+/i)
+    .split(FINDING_SEPARATOR)
     .map((part) => part.trim())
     .filter((part) => part.length > 0);
 }
@@ -300,7 +307,9 @@ const DAY_MS = 24 * 60 * 60 * 1000;
  * Convertit une durée libre (« 5-7 jours », « 2 semaines », « à vie ») en
  * jours. `Infinity` pour un traitement au long cours, `null` si illisible.
  */
-export function durationToDays(duration: string | null | undefined): number | null {
+export function durationToDays(
+  duration: string | null | undefined
+): number | null {
   // Normalisation légère : on garde tirets et décimales (« 5-7 j », « 1,5 mois »).
   const text = (duration ?? "")
     .normalize("NFD")
@@ -311,27 +320,32 @@ export function durationToDays(duration: string | null | undefined): number | nu
   if (!text) {
     return null;
   }
-  if (
-    /\b(a vie|long cours|au long|chronique|permanent|continu|illimite|nouvel ordre)/.test(
-      text
-    )
-  ) {
+  if (LONG_TERM_DURATION.test(text)) {
     return Number.POSITIVE_INFINITY;
   }
-  const match = text.match(
-    /(\d+(?:\.\d+)?)(?:\s*(?:-|a|au)\s*(\d+(?:\.\d+)?))?\s*(jours?|j|semaines?|sem|mois|ans?|heures?|h)\b/
-  );
+  const match = text.match(DURATION_AMOUNT);
   if (match) {
     const toNumber = (raw: string) => Number.parseFloat(raw);
-    const amount = Math.max(toNumber(match[1]), match[2] ? toNumber(match[2]) : 0);
+    const amount = Math.max(
+      toNumber(match[1]),
+      match[2] ? toNumber(match[2]) : 0
+    );
     const unit = match[3];
-    if (unit.startsWith("sem")) return amount * 7;
-    if (unit === "mois") return amount * 30;
-    if (unit.startsWith("an")) return amount * 365;
-    if (unit.startsWith("h")) return Math.max(1, Math.ceil(amount / 24));
+    if (unit.startsWith("sem")) {
+      return amount * 7;
+    }
+    if (unit === "mois") {
+      return amount * 30;
+    }
+    if (unit.startsWith("an")) {
+      return amount * 365;
+    }
+    if (unit.startsWith("h")) {
+      return Math.max(1, Math.ceil(amount / 24));
+    }
     return amount;
   }
-  if (/\b(dose unique|injection unique|une fois|unique)\b/.test(text)) {
+  if (SINGLE_DOSE.test(text)) {
     return 1;
   }
   return null;
@@ -352,7 +366,10 @@ export function isTreatmentActive(
   if (days === Number.POSITIVE_INFINITY) {
     return start.getTime() <= now.getTime();
   }
-  return now.getTime() >= start.getTime() && now.getTime() < start.getTime() + days * DAY_MS;
+  return (
+    now.getTime() >= start.getTime() &&
+    now.getTime() < start.getTime() + days * DAY_MS
+  );
 }
 
 /**
@@ -396,7 +413,9 @@ export function collectActiveTreatments({
       key: item.id,
       name: item.medicationName,
       className: item.medicationClass,
-      aliases: item.medicationId ? (resolveAliases?.(item.medicationId) ?? []) : [],
+      aliases: item.medicationId
+        ? (resolveAliases?.(item.medicationId) ?? [])
+        : [],
       prescribedOn: byId.get(item.prescriptionId)?.prescriptionDate,
     }));
 }

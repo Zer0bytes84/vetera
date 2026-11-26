@@ -1,6 +1,11 @@
 /** The label shown for a user's role (Paramètres, sidebar footer). */
-export function roleLabel(role: string | null | undefined, email?: string | null): string {
-  if (email === "zohir.kh@gmail.com") return "Super Administrateur";
+export function roleLabel(
+  role: string | null | undefined,
+  email?: string | null
+): string {
+  if (email === "zohir.kh@gmail.com") {
+    return "Super Administrateur";
+  }
   switch (role || "stagiaire") {
     case "admin":
       return "Administrateur";

@@ -1,15 +1,17 @@
-import { DashboardSquareEditIcon } from "@/lib/hugeicons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Stethoscope } from "lucide-react";
 import React from "react";
+import { DashboardSquareEditIcon } from "@/lib/hugeicons";
 import "./dashboard-greeting.css";
-import { ShortcutTooltip } from "@/design-system/patterns/shortcut-tooltip";
-import { prepareAppointment } from "@/modules/shell/model/clinical-actions";
 import { useTranslation } from "react-i18next";
+import { PageDate } from "@/components/PageDate";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
-import { PageDate } from "@/components/PageDate";
 import { PageHeader } from "@/design-system/patterns/page-header";
+import { ShortcutTooltip } from "@/design-system/patterns/shortcut-tooltip";
+import { prepareAppointment } from "@/modules/shell/model/clinical-actions";
+
+const TRAILING_WAVE_EMOJI = /\s*👋\s*$/;
 
 interface MotivationalHeaderProps {
   dashboardViewControl?: React.ReactNode;
@@ -151,14 +153,29 @@ const MotivationalHeader: React.FC<MotivationalHeaderProps> = ({
   const resolvedSubtitle = subtitle || headerCopy.subtitle;
 
   const renderTitle = (titleText: string) => {
-    const cleanTitle = titleText.replace(/\s*👋\s*$/, "");
+    const cleanTitle = titleText.replace(TRAILING_WAVE_EMOJI, "");
     return (
       <div className="space-y-1">
         <PageDate />
-        <h1 className="flex flex-wrap items-center gap-2.5 font-display font-semibold text-2xl text-foreground tracking-tight leading-tight">
-          <span>{isDashboard && cleanTitle.includes(userName) ? <>{cleanTitle.slice(0, cleanTitle.indexOf(userName))}<span className="dashboard-greeting-name">{userName}</span>{cleanTitle.slice(cleanTitle.indexOf(userName) + userName.length)}</> : cleanTitle}</span>
-          {isDashboard && <span className="dashboard-greeting-wave" aria-hidden="true">👋</span>}
-
+        <h1 className="flex flex-wrap items-center gap-2.5 font-display font-semibold text-2xl text-foreground leading-tight tracking-tight">
+          <span>
+            {isDashboard && cleanTitle.includes(userName) ? (
+              <>
+                {cleanTitle.slice(0, cleanTitle.indexOf(userName))}
+                <span className="dashboard-greeting-name">{userName}</span>
+                {cleanTitle.slice(
+                  cleanTitle.indexOf(userName) + userName.length
+                )}
+              </>
+            ) : (
+              cleanTitle
+            )}
+          </span>
+          {isDashboard && (
+            <span aria-hidden="true" className="dashboard-greeting-wave">
+              👋
+            </span>
+          )}
         </h1>
       </div>
     );
@@ -233,10 +250,10 @@ const MotivationalHeader: React.FC<MotivationalHeaderProps> = ({
               <Button
                 aria-label="Personnaliser le tableau de bord"
                 aria-pressed={isCustomizing}
-                size="icon-sm"
                 className="size-[30px] rounded-full bg-background/65 p-0"
                 disabled={isCustomizing}
                 onClick={onCustomize}
+                size="icon-sm"
                 title="Personnaliser le tableau de bord"
                 variant="outline"
               >
@@ -249,9 +266,9 @@ const MotivationalHeader: React.FC<MotivationalHeaderProps> = ({
             ) : null}
             <ShortcutTooltip label="Nouvelle consultation" shortcut="N">
               <Button
-                data-primary-action="true"
                 aria-keyshortcuts="N"
-                className="dashboard-primary-action h-9 w-auto min-w-0 flex-none rounded-lg px-3.5 t-13 font-medium"
+                className="dashboard-primary-action t-13 h-9 w-auto min-w-0 flex-none rounded-lg px-3.5 font-medium"
+                data-primary-action="true"
                 onClick={() => {
                   prepareAppointment();
                   onNavigate("agenda");
@@ -265,9 +282,9 @@ const MotivationalHeader: React.FC<MotivationalHeaderProps> = ({
                 }}
               >
                 <Stethoscope
+                  aria-hidden="true"
                   className="mr-1.5 size-4"
                   strokeWidth={1}
-                  aria-hidden="true"
                 />
                 Nouvelle consultation
               </Button>

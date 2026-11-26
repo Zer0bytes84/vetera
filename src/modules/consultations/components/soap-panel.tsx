@@ -1,4 +1,3 @@
-import { PlanCareTasks } from "@/modules/care-tasks/plan-care-tasks";
 import {
   lazy,
   Suspense,
@@ -10,17 +9,6 @@ import {
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import {
-  CheckCircle,
-  CircleNotch,
-  FloppyDisk,
-  FileText,
-  Notebook,
-  Trash,
-  XCircle,
-} from "@/lib/icons";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -30,31 +18,54 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Shell, ShellHeader } from "@/components/ui/surface";
 import { useAuth } from "@/contexts/AuthContext";
 import { useConsultationSoapsRepository } from "@/data/repositories";
+import {
+  CheckCircle,
+  CircleNotch,
+  FileText,
+  FloppyDisk,
+  Notebook,
+  Trash,
+  XCircle,
+} from "@/lib/icons";
 import { cn } from "@/lib/utils";
+import { PlanCareTasks } from "@/modules/care-tasks/plan-care-tasks";
+import { meaningful } from "@/modules/patients/lib/meaningful";
 import {
   EMPTY_SOAP,
-  SOAP_SECTIONS,
   type LocalSoapNote,
+  SOAP_SECTIONS,
 } from "../local-ai/soap-schema";
-import { SoapSectionEditor } from "./soap-section-editor";
-import { hasNote, isSoapAutosaveDue, isSoapUnsaved, samePayload, type Payload, type SaveStatus } from "../soap-panel-state";
+import {
+  hasNote,
+  isSoapAutosaveDue,
+  isSoapUnsaved,
+  type Payload,
+  type SaveStatus,
+  samePayload,
+} from "../soap-panel-state";
 import { AssistantBrandAvatar } from "./assistant-brand-avatar";
-import { meaningful } from "@/modules/patients/lib/meaningful";
-import { Shell, ShellHeader } from "@/components/ui/surface";
+import { SoapSectionEditor } from "./soap-section-editor";
 import "./soap-surface.css";
-import { ConsultationAssistantPanel } from "./consultation-assistant-panel";
-import { isSoapReviewed, reviewedSoapContent } from "../local-ai/soap-review";
-import { OPEN_SOAP_ASSISTANT_EVENT } from "@/modules/consultation-workspace/consultation-closure";
-import type { SoapNoteOrigin } from "./local-consultation-assistant";
 import { guard } from "@/lib/guard";
+import { OPEN_SOAP_ASSISTANT_EVENT } from "@/modules/consultation-workspace/consultation-closure";
+import { isSoapReviewed, reviewedSoapContent } from "../local-ai/soap-review";
+import { ConsultationAssistantPanel } from "./consultation-assistant-panel";
+import type { SoapNoteOrigin } from "./local-consultation-assistant";
 
 const ConsultationDocumentsAssistant = lazy(
   () =>
     import("@/modules/documents/components/consultation-documents-assistant")
 );
-const DocumentComposer = lazy(() => import("@/modules/documents/components/document-composer").then((module) => ({ default: module.DocumentComposer })));
+const DocumentComposer = lazy(() =>
+  import("@/modules/documents/components/document-composer").then((module) => ({
+    default: module.DocumentComposer,
+  }))
+);
 
 const LocalConsultationAssistant = lazy(
   () => import("./local-consultation-assistant")
@@ -77,7 +88,9 @@ const emptyPayload: Payload = {
 function readContentObject(raw: string): Record<string, unknown> {
   try {
     const parsed: unknown = JSON.parse(raw);
-    if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) return parsed as Record<string, unknown>;
+    if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+      return parsed as Record<string, unknown>;
+    }
   } catch {
     /* Legacy content can be empty. */
   }
@@ -121,7 +134,12 @@ export function SoapPanel({
   // « Dicter la note » from the closing bar of this consultation.
   useEffect(() => {
     const open = (event: Event) => {
-      if ((event as CustomEvent<{ appointmentId: string }>).detail?.appointmentId === appointmentId) setAssistantOpen(true);
+      if (
+        (event as CustomEvent<{ appointmentId: string }>).detail
+          ?.appointmentId === appointmentId
+      ) {
+        setAssistantOpen(true);
+      }
     };
     window.addEventListener(OPEN_SOAP_ASSISTANT_EVENT, open);
     return () => window.removeEventListener(OPEN_SOAP_ASSISTANT_EVENT, open);
@@ -131,7 +149,7 @@ export function SoapPanel({
   }, [repo]);
   // Dès que la note enregistrée est lue, le panneau part d'elle (corrigé au rendu, sans effet) ;
   // les références lues par les minuteries et le nettoyage sont posées juste après, dans l'effet qui suit.
-  if (!initialised && !repo.loading) {
+  if (!(initialised || repo.loading)) {
     // A section holding only a placeholder (« Na », « n/a », « - »…) is read as empty; the stored text is left alone until the next real save.
     const value: Payload = existing
       ? {
@@ -152,7 +170,9 @@ export function SoapPanel({
     setSaveStatus(existing ? "saved" : "idle");
   }
   useEffect(() => {
-    if (!initialised) return;
+    if (!initialised) {
+      return;
+    }
     latest.current = payload;
     lastSaved.current = savedSnapshot;
     hydrated.current = true;
@@ -164,35 +184,44 @@ export function SoapPanel({
       const operation = (async () => {
         await previous?.catch(() => undefined);
         setSaveStatus("saving");
-        await guard(async () => {
-          const saved = await repoRef.current.upsertForAppointment(
-            appointmentId,
-            patientId,
-            snapshot,
-            currentUser?.id
-          );
-          if (!saved)
-            throw new Error(
-              "La base locale n’a pas confirmé l’enregistrement."
+        await guard(
+          async () => {
+            const saved = await repoRef.current.upsertForAppointment(
+              appointmentId,
+              patientId,
+              snapshot,
+              currentUser?.id
             );
-          lastSaved.current = snapshot;
-          setSavedSnapshot(snapshot);
-          setSaveStatus("saved");
-        }, {
-          recover: (error) => {
-            setSaveStatus("error");
-            throw error;
+            if (!saved) {
+              throw new Error(
+                "La base locale n’a pas confirmé l’enregistrement."
+              );
+            }
+            lastSaved.current = snapshot;
+            setSavedSnapshot(snapshot);
+            setSaveStatus("saved");
           },
-        });
+          {
+            recover: (error) => {
+              setSaveStatus("error");
+              throw error;
+            },
+          }
+        );
       })();
       pendingSave.current = operation;
-      await guard(async () => {
-        await operation;
-      }, {
-        cleanup: () => {
-          if (pendingSave.current === operation) pendingSave.current = null;
+      await guard(
+        async () => {
+          await operation;
         },
-      });
+        {
+          cleanup: () => {
+            if (pendingSave.current === operation) {
+              pendingSave.current = null;
+            }
+          },
+        }
+      );
     },
     [appointmentId, currentUser?.id, patientId]
   );
@@ -202,7 +231,9 @@ export function SoapPanel({
     persistRef.current = persist;
   }, [payload, persist]);
   const clearTimer = useCallback(() => {
-    if (timer.current) clearTimeout(timer.current);
+    if (timer.current) {
+      clearTimeout(timer.current);
+    }
     timer.current = null;
   }, []);
   const reportSaveError = useCallback(
@@ -211,10 +242,21 @@ export function SoapPanel({
   );
   // La sauvegarde automatique est due : l'état « en attente » est posé dès le rendu (corrigé au rendu, sans effet),
   // l'effet ne fait que lancer la minuterie.
-  const autosaveDue = isSoapAutosaveDue({ initialised, assistantOpen, saveStatus, saved: savedSnapshot, payload });
-  if (autosaveDue && saveStatus !== "pending") setSaveStatus("pending");
+  const autosaveDue = isSoapAutosaveDue({
+    initialised,
+    assistantOpen,
+    saveStatus,
+    saved: savedSnapshot,
+    payload,
+  });
+  if (autosaveDue && saveStatus !== "pending") {
+    setSaveStatus("pending");
+  }
+  // biome-ignore lint/correctness/useExhaustiveDependencies: saveStatus n'est pas lu dans l'effet, mais chaque changement de l'état de sauvegarde doit réarmer la minuterie d'enregistrement automatique.
   useEffect(() => {
-    if (!autosaveDue) return;
+    if (!autosaveDue) {
+      return;
+    }
     timer.current = setTimeout(() => {
       void persist(payload).catch(reportSaveError);
     }, 800);
@@ -304,23 +346,29 @@ export function SoapPanel({
   return (
     <Shell className={cn("soap-panel", className)}>
       <ShellHeader
+        as="h3"
         aside={
           <>
             <Button
               className="rounded-full px-4"
-              disabled={!initialised || dirty || saveStatus === "saving" || !isSoapReviewed(payload)}
-              size="sm"
+              disabled={
+                !initialised ||
+                dirty ||
+                saveStatus === "saving" ||
+                !isSoapReviewed(payload)
+              }
               onClick={() => setDocumentComposerOpen(true)}
+              size="sm"
             >
               <FileText className="size-3.5" /> Générer un document
             </Button>
             <Button
+              aria-expanded={documentsOpen}
               className="rounded-full px-4"
               disabled={!initialised || saveStatus === "saving"}
+              onClick={() => setDocumentsOpen(!documentsOpen)}
               size="sm"
               variant="outline"
-              onClick={() => setDocumentsOpen(!documentsOpen)}
-              aria-expanded={documentsOpen}
             >
               <FileText className="size-3.5" /> Documents
             </Button>
@@ -335,6 +383,8 @@ export function SoapPanel({
               {t("consultations.soap.meta.save")}
             </Button>
             <Button
+              aria-expanded={assistantOpen}
+              aria-label="Ouvrir l’assistant de consultation"
               className="rounded-full px-4"
               disabled={!initialised || saveStatus === "saving"}
               onClick={() => {
@@ -343,8 +393,6 @@ export function SoapPanel({
               }}
               size="sm"
               variant={assistantOpen ? "default" : "outline"}
-              aria-expanded={assistantOpen}
-              aria-label="Ouvrir l’assistant de consultation"
             >
               <AssistantBrandAvatar size={20} /> Assistant
             </Button>
@@ -360,7 +408,6 @@ export function SoapPanel({
             </Button>
           </>
         }
-        as="h3"
         className="soap-panel-header"
         icon={Notebook}
         subtitle={
@@ -371,24 +418,24 @@ export function SoapPanel({
         title="Note clinique"
       />
       <div className="soap-editor-grid grid gap-1.5 lg:grid-cols-2">
-          {SOAP_SECTIONS.map(({ key }) => (
-            <div key={key} className="space-y-2">
+        {SOAP_SECTIONS.map(({ key }) => (
+          <div className="space-y-2" key={key}>
             <SoapSectionEditor
-              sectionKey={key}
-              title={t(`consultations.soap.sections.${key}`)}
-              placeholder={t(`consultations.soap.placeholders.${key}`)}
-              value={payload[key]}
-              status={activeSection === key ? "active" : "default"}
-              onFocusSection={() => setActiveSection(key)}
               disabled={!initialised}
               onChange={(value) => {
                 setPayload((previous) => ({ ...previous, [key]: value }));
                 setSaveStatus("pending");
               }}
+              onFocusSection={() => setActiveSection(key)}
+              placeholder={t(`consultations.soap.placeholders.${key}`)}
+              sectionKey={key}
+              status={activeSection === key ? "active" : "default"}
+              title={t(`consultations.soap.sections.${key}`)}
+              value={payload[key]}
             />
-            </div>
-          ))}
-        </div>
+          </div>
+        ))}
+      </div>
       {hasNote(payload) && (
         <div className="soap-panel-footer flex flex-wrap items-center justify-end gap-2 px-2 pt-3">
           {payload.plan.trim() && isSoapReviewed(payload) && !dirty ? (
@@ -396,7 +443,8 @@ export function SoapPanel({
           ) : null}
           {isSoapReviewed(payload) && !dirty ? (
             <span className="inline-flex h-8 items-center gap-1.5 rounded-full px-3 text-[0.8125rem] text-[var(--tone-green)]">
-              <CheckCircle className="size-3.5" /> Note validée pour les documents
+              <CheckCircle className="size-3.5" /> Note validée pour les
+              documents
             </span>
           ) : (
             <>
@@ -409,7 +457,8 @@ export function SoapPanel({
                 onClick={() => void approveManualNote()}
                 size="sm"
               >
-                <CheckCircle className="size-3.5" /> Valider la note pour les documents
+                <CheckCircle className="size-3.5" /> Valider la note pour les
+                documents
               </Button>
             </>
           )}
@@ -418,27 +467,34 @@ export function SoapPanel({
       {documentsOpen && (
         <Suspense
           fallback={
-            <p role="status" className="text-sm text-muted-foreground">
+            <p className="text-muted-foreground text-sm" role="status">
               Ouverture des documents…
             </p>
           }
         >
           <ConsultationDocumentsAssistant
             appointmentId={appointmentId}
-            patientId={patientId}
             onClose={() => setDocumentsOpen(false)}
+            patientId={patientId}
           />
         </Suspense>
       )}
-      {documentComposerOpen && <Suspense fallback={<p role="status">Ouverture de la génération…</p>}>
-        <DocumentComposer open={documentComposerOpen} patientId={patientId} consultationId={appointmentId} onClose={() => setDocumentComposerOpen(false)} />
-      </Suspense>}
+      {documentComposerOpen && (
+        <Suspense fallback={<p role="status">Ouverture de la génération…</p>}>
+          <DocumentComposer
+            consultationId={appointmentId}
+            onClose={() => setDocumentComposerOpen(false)}
+            open={documentComposerOpen}
+            patientId={patientId}
+          />
+        </Suspense>
+      )}
       <ConsultationAssistantPanel open={assistantOpen}>
         <Suspense
           fallback={
             <p
+              className="flex items-center gap-2 text-muted-foreground text-sm"
               role="status"
-              className="flex items-center gap-2 text-sm text-muted-foreground"
             >
               <CircleNotch className="size-4 animate-spin" /> Ouverture de
               l’assistant…
@@ -447,14 +503,14 @@ export function SoapPanel({
         >
           <LocalConsultationAssistant
             appointmentId={appointmentId}
-            patientId={patientId}
             existingNote={payload}
             onClose={() => setAssistantOpen(false)}
             onValidate={validateNote}
+            patientId={patientId}
           />
         </Suspense>
       </ConsultationAssistantPanel>
-      <AlertDialog open={clearDialogOpen} onOpenChange={setClearDialogOpen}>
+      <AlertDialog onOpenChange={setClearDialogOpen} open={clearDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Effacer toute la note SOAP ?</AlertDialogTitle>
@@ -488,7 +544,7 @@ function SaveStatusPill({ status }: { status: SaveStatus }) {
     idle: "notSaved",
   }[status];
   return (
-    <Badge variant="outline" className="gap-1 t-12">
+    <Badge className="t-12 gap-1" variant="outline">
       {status === "saving" && (
         <CircleNotch className="size-3 animate-spin motion-reduce:animate-none" />
       )}

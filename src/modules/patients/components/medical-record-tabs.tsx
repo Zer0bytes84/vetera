@@ -1,9 +1,11 @@
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { type ReactNode, useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "@/lib/icons";
 import { handleRecordTabKeys } from "./medical-record-summary";
 
 function revealTab(rail: HTMLDivElement, tab: HTMLElement) {
-  if (rail.scrollWidth <= rail.clientWidth) return;
+  if (rail.scrollWidth <= rail.clientWidth) {
+    return;
+  }
   const railBounds = rail.getBoundingClientRect();
   const tabBounds = tab.getBoundingClientRect();
   const inset =
@@ -27,7 +29,9 @@ export function MedicalRecordTabs({
 
   useEffect(() => {
     const rail = railRef.current;
-    if (!rail) return;
+    if (!rail) {
+      return;
+    }
 
     const updateEdges = () => {
       const start = rail.scrollLeft > 1;
@@ -35,14 +39,16 @@ export function MedicalRecordTabs({
       setEdges((current) =>
         current.start === start && current.end === end
           ? current
-          : { start, end },
+          : { start, end }
       );
     };
     const revealSelected = () => {
       const selected = rail.querySelector<HTMLButtonElement>(
-        '[role="tab"][aria-selected="true"]',
+        '[role="tab"][aria-selected="true"]'
       );
-      if (selected) revealTab(rail, selected);
+      if (selected) {
+        revealTab(rail, selected);
+      }
       updateEdges();
     };
 
@@ -71,7 +77,9 @@ export function MedicalRecordTabs({
 
   const scrollTabs = (direction: -1 | 1) => {
     const rail = railRef.current;
-    if (!rail) return;
+    if (!rail) {
+      return;
+    }
     rail.scrollBy({
       left: direction * Math.max(160, rail.clientWidth * 0.65),
       behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
@@ -83,45 +91,45 @@ export function MedicalRecordTabs({
   return (
     <div
       className="medical-tabs-frame"
-      data-overflow-start={edges.start || undefined}
       data-overflow-end={edges.end || undefined}
+      data-overflow-start={edges.start || undefined}
     >
       <div
-        ref={railRef}
-        role="tablist"
         aria-label={label}
         aria-orientation="vertical"
         className="medical-tabs"
         data-tabs-style="nav"
-        onKeyDown={handleRecordTabKeys}
         onFocusCapture={(event) => {
           const tab = (event.target as HTMLElement).closest('[role="tab"]');
           if (tab instanceof HTMLElement && railRef.current) {
             revealTab(railRef.current, tab);
           }
         }}
+        onKeyDown={handleRecordTabKeys}
+        ref={railRef}
+        role="tablist"
       >
         {children}
       </div>
       <button
-        type="button"
-        className="medical-tabs-scroll medical-tabs-scroll-start"
         aria-label="Afficher les onglets précédents"
-        title="Onglets précédents"
+        className="medical-tabs-scroll medical-tabs-scroll-start"
         disabled={!edges.start}
         onClick={() => scrollTabs(-1)}
+        title="Onglets précédents"
+        type="button"
       >
-        <ChevronLeft size={16} aria-hidden="true" />
+        <ChevronLeft aria-hidden="true" size={16} />
       </button>
       <button
-        type="button"
-        className="medical-tabs-scroll medical-tabs-scroll-end"
         aria-label="Afficher les onglets suivants"
-        title="Onglets suivants"
+        className="medical-tabs-scroll medical-tabs-scroll-end"
         disabled={!edges.end}
         onClick={() => scrollTabs(1)}
+        title="Onglets suivants"
+        type="button"
       >
-        <ChevronRight size={16} aria-hidden="true" />
+        <ChevronRight aria-hidden="true" size={16} />
       </button>
     </div>
   );

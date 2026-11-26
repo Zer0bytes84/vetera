@@ -11,7 +11,12 @@ export function ViewSwitch<T extends string>({
   onChange: (value: T) => void;
 }) {
   return (
-    <div aria-label={label} className="filter-segments" data-tabs-style="segmented" role="group">
+    <div
+      aria-label={label}
+      className="filter-segments"
+      data-tabs-style="segmented"
+      role="group"
+    >
       {options.map((option) => (
         <button
           aria-pressed={value === option.value}

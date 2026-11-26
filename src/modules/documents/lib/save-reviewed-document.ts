@@ -1,22 +1,19 @@
 import {
+  isSoapReviewed,
+  soapSourceKey,
+} from "@/modules/consultations/local-ai/soap-review";
+import {
   getBrowserTable,
   insertBrowserRow,
   isTauriRuntime,
 } from "@/services/browser-store";
 import { generateId, runDbTransaction } from "@/services/sqlite/database";
-import {
-  isSoapReviewed,
-  soapSourceKey,
-} from "@/modules/consultations/local-ai/soap-review";
 import type { Appointment, ConsultationSoap, Note } from "@/types/db";
 import { documentToHtml } from "./document-templates";
 
 export interface ReviewedDocumentInput {
-  title: string;
-  text: string;
-  patientId: string;
   appointmentId: string;
-  userId: string;
+  patientId: string;
   reviewed: boolean;
   source:
     | {
@@ -31,36 +28,47 @@ export interface ReviewedDocumentInput {
         pages: { number: number; text: string; method: string }[];
         question?: string;
       };
+  text: string;
+  title: string;
+  userId: string;
 }
 export function assertDocumentSource(
   input: ReviewedDocumentInput,
   appointment: Pick<Appointment, "patientId"> | undefined,
   soap?: ConsultationSoap
 ) {
-  if (!input.reviewed)
+  if (!input.reviewed) {
     throw new Error(
       "Relisez et validez le document avant tout enregistrement."
     );
-  if (!input.userId || !input.patientId || !input.appointmentId)
+  }
+  if (!(input.userId && input.patientId && input.appointmentId)) {
     throw new Error(
       "Le patient, la consultation et le vétérinaire doivent être identifiés."
     );
-  if (!input.title.trim() || !input.text.trim() || input.text.length > 60000)
+  }
+  if (
+    !(input.title.trim() && input.text.trim()) ||
+    input.text.length > 60_000
+  ) {
     throw new Error(
       "Le document doit contenir un titre et un texte de 60 000 caractères maximum."
     );
-  if (appointment?.patientId !== input.patientId)
+  }
+  if (appointment?.patientId !== input.patientId) {
     throw new Error("La consultation n’appartient pas à ce patient.");
+  }
   if (
     input.source.type === "soap" &&
     (!soap ||
       soap.patientId !== input.patientId ||
       !isSoapReviewed(soap) ||
       soapSourceKey(soap) !== input.source.sourceKey)
-  )
+  ) {
     throw new Error(
       "La note a changé ou n’est pas validée. Validez-la puis préparez à nouveau le document."
     );
+  }
 }
 export async function saveReviewedDocument(
   input: ReviewedDocumentInput

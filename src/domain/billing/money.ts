@@ -17,7 +17,12 @@ const BASIS_POINTS = 10000n;
 
 function assertSafeInteger(
   value: number,
-  code: "AMOUNT_INVALID" | "QUANTITY_INVALID" | "UNIT_AMOUNT_INVALID" | "DISCOUNT_BPS_INVALID" | "TAX_BPS_INVALID",
+  code:
+    | "AMOUNT_INVALID"
+    | "QUANTITY_INVALID"
+    | "UNIT_AMOUNT_INVALID"
+    | "DISCOUNT_BPS_INVALID"
+    | "TAX_BPS_INVALID",
   message: string,
   minimum: number
 ): number {
@@ -80,7 +85,7 @@ export function calculateLineAmounts(
     "La remise doit être comprise entre 0 et 10 000 points de base.",
     0
   );
-  if (discountBps > 10000) {
+  if (discountBps > 10_000) {
     throw new BillingDomainError(
       "DISCOUNT_BPS_INVALID",
       "La remise doit être comprise entre 0 et 10 000 points de base."
@@ -146,11 +151,15 @@ export function sumBillingLines(
 ): BillingTotals {
   const totals = lines.reduce(
     (accumulator, line) => ({
-      baseAmount: accumulator.baseAmount + assertNonNegativeAmount(line.baseAmount),
+      baseAmount:
+        accumulator.baseAmount + assertNonNegativeAmount(line.baseAmount),
       discountAmount:
-        accumulator.discountAmount + assertNonNegativeAmount(line.discountAmount),
-      taxAmount: accumulator.taxAmount + assertNonNegativeAmount(line.taxAmount),
-      grossAmount: accumulator.grossAmount + assertNonNegativeAmount(line.grossAmount),
+        accumulator.discountAmount +
+        assertNonNegativeAmount(line.discountAmount),
+      taxAmount:
+        accumulator.taxAmount + assertNonNegativeAmount(line.taxAmount),
+      grossAmount:
+        accumulator.grossAmount + assertNonNegativeAmount(line.grossAmount),
     }),
     {
       baseAmount: 0,

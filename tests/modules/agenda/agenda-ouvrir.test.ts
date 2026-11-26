@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
 import { expect, it } from "vitest";
+import { codeText } from "../../helpers/code-text";
 
 const read = (path: string) => readFileSync(path, "utf8");
 
@@ -12,9 +13,9 @@ it("fait démarrer la visite dans Flux depuis « Ouvrir » de l'Agenda", () => {
 });
 
 it("démarre une visite neuve et cible une visite terminée sans la redémarrer", () => {
-  const flux = read("src/modules/flow-board/open-in-flux.ts");
-  // Only a visit not yet in consultation moves to in_progress; any other is focused.
+  const flux = codeText(read("src/modules/flow-board/open-in-flux.ts"));
+  // Only a visit not yet in consultation moves to in_progress; any other is focused (with or without a block).
   expect(flux).toMatch(/key === START_KEY && PRE_CONSULTATION_STATUSES\.includes\(target\.status\)[\s\S]*?transitionStatus\(target\.id, "in_progress"\)/);
-  expect(flux).toMatch(/else focus\(target\.id\)/);
+  expect(flux).toMatch(/else (\{)?focus\(target\.id\)/);
   expect(read("src/domain/clinical/scheduling.ts")).not.toMatch(/PRE_CONSULTATION_STATUSES[^\]]*"completed"/);
 });

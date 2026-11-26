@@ -1,12 +1,12 @@
 import type { ReactNode } from "react";
-import { Heartbeat, Pill } from "@/lib/icons";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
+import { Heartbeat, Pill } from "@/lib/icons";
 import { AppointmentTypeBadge } from "@/modules/agenda/components/agenda-shared";
 import type { Appointment, ConsultationSoap } from "@/types/db";
 import type { HealthCardTreatment } from "../health-card/health-card-data";
-import { visitReason } from "../lib/visit-reason";
 import { meaningful } from "../lib/meaningful";
+import { visitReason } from "../lib/visit-reason";
 import { isClinicalSignal, recordDate } from "./medical-record-summary";
 import { RecordBlockHeading } from "./record-block-heading";
 
@@ -52,8 +52,8 @@ export function PatientClinicalSummary({
   const chronic = chronicConditions?.trim();
   return (
     <section
-      className="patient-clinical-summary"
       aria-labelledby="patient-clinical-summary-title"
+      className="patient-clinical-summary"
     >
       <h2 className="sr-only" id="patient-clinical-summary-title">
         Synthèse clinique

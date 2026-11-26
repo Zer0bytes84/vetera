@@ -8,61 +8,85 @@
  * `negative`, `warning` are our tones; never the TuffUI theme); text is French, never under 12 px; no demo data.
  */
 
-import { Undo2, MessageCircleMore, Check, type LucideIcon, PencilLine } from "lucide-react";
-import { AnimatePresence, LayoutGroup, MotionConfig, motion } from "motion/react";
-import { useEffect, useId, useRef, useState, type KeyboardEvent } from "react";
+import {
+  Check,
+  type LucideIcon,
+  MessageCircleMore,
+  PencilLine,
+  Undo2,
+} from "lucide-react";
+import {
+  AnimatePresence,
+  LayoutGroup,
+  MotionConfig,
+  motion,
+} from "motion/react";
+import { type KeyboardEvent, useEffect, useId, useRef, useState } from "react";
 import { Button } from "@/components/ui/action-button";
 import { StatusPill } from "@/components/ui/status-pill";
 import { IconTile, Shell } from "@/components/ui/surface";
 import { enter, exit as leave } from "@/lib/motion-tokens";
 import { cn } from "@/lib/utils";
 
-export type QuestionOption = {
-  id: string;
-  label: string;
+export interface QuestionOption {
   description?: string;
   icon?: LucideIcon;
-};
+  id: string;
+  label: string;
+}
 
-export type AgentQuestionData = {
-  question: string;
-  options: QuestionOption[];
-  /** Allow several answers instead of one. */
-  multiple?: boolean;
+export interface AgentQuestionData {
   /** Adds an « Autre chose… » card that turns into a text field. */
   allowOther?: boolean;
+  /** Allow several answers instead of one. */
+  multiple?: boolean;
+  options: QuestionOption[];
+  question: string;
   /** The option the agent would pick, and why. */
   suggested?: { optionId: string; reason: string };
-};
+}
 
-export type QuestionAnswer = {
+export interface QuestionAnswer {
   /** Ids of the picked options. */
   optionIds: string[];
   /** Free text from « Autre chose… ». */
   other?: string;
-};
+}
 
-export type AgentQuestionProps = {
-  data: AgentQuestionData;
-  /** Controls the state; leave unset to let the card track it. */
-  status?: "pending" | "answered" | "delegated";
-  answer?: QuestionAnswer;
-  onSubmit?: (answer: QuestionAnswer) => void;
-  /** « Laisser l’assistant choisir »: the assistant goes with its suggestion. */
-  onDelegate?: () => void;
-  /** Called from the Undo pill shown for `undoMs` after answering. */
-  onUndo?: () => void;
-  undoMs?: number;
-  /** Controlled selection for multiple-choice questions. */
-  selected?: string[];
-  onSelectedChange?: (ids: string[]) => void;
+export interface AgentQuestionProps {
   /** Name shown above the question: « Assistant IA », never a model name. */
   agent?: string;
+  answer?: QuestionAnswer;
   className?: string;
-};
+  data: AgentQuestionData;
+  /** « Laisser l’assistant choisir »: the assistant goes with its suggestion. */
+  onDelegate?: () => void;
+  onSelectedChange?: (ids: string[]) => void;
+  onSubmit?: (answer: QuestionAnswer) => void;
+  /** Called from the Undo pill shown for `undoMs` after answering. */
+  onUndo?: () => void;
+  /** Controlled selection for multiple-choice questions. */
+  selected?: string[];
+  /** Controls the state; leave unset to let the card track it. */
+  status?: "pending" | "answered" | "delegated";
+  undoMs?: number;
+}
 
 // Cards morph into the summary on screen: a critically damped spring.
 const morph = { type: "spring", duration: 0.35, bounce: 0 } as const;
+
+function answerAnnouncement(
+  status: "pending" | "answered" | "delegated"
+): string {
+  switch (status) {
+    case "answered":
+      return "Réponse envoyée";
+    case "delegated":
+      return "Laissé à l’assistant";
+    default:
+      return "";
+  }
+}
 
 export function AgentQuestion({
   data,
@@ -103,11 +127,13 @@ export function AgentQuestion({
     onSubmit?.(a);
   };
   const pick = (optionId: string) => {
-    if (!data.multiple) return submit({ optionIds: [optionId] });
+    if (!data.multiple) {
+      return submit({ optionIds: [optionId] });
+    }
     setSelected(
       selected.includes(optionId)
         ? selected.filter((x) => x !== optionId)
-        : [...selected, optionId],
+        : [...selected, optionId]
     );
   };
   const undo = () => {
@@ -119,12 +145,24 @@ export function AgentQuestion({
 
   // Roving focus: arrows move between cards, following the grid's column count.
   const onGridKey = (e: KeyboardEvent<HTMLDivElement>) => {
-    const cards = [...(grid.current?.querySelectorAll<HTMLElement>("[data-card]") ?? [])];
+    const cards = [
+      ...(grid.current?.querySelectorAll<HTMLElement>("[data-card]") ?? []),
+    ];
     const i = cards.indexOf(document.activeElement as HTMLElement);
-    if (i < 0) return;
-    const cols = getComputedStyle(grid.current!).gridTemplateColumns.split(" ").length;
-    const step = { ArrowRight: 1, ArrowLeft: -1, ArrowDown: cols, ArrowUp: -cols }[e.key];
-    if (!step) return;
+    const el = grid.current;
+    if (i < 0 || !el) {
+      return;
+    }
+    const cols = getComputedStyle(el).gridTemplateColumns.split(" ").length;
+    const step = {
+      ArrowRight: 1,
+      ArrowLeft: -1,
+      ArrowDown: cols,
+      ArrowUp: -cols,
+    }[e.key];
+    if (!step) {
+      return;
+    }
     e.preventDefault();
     cards[Math.min(Math.max(i + step, 0), cards.length - 1)]?.focus();
   };
@@ -138,10 +176,12 @@ export function AgentQuestion({
         <div className="flex items-center gap-3 pt-1.5 pr-2 pb-3 pl-1.5">
           <IconTile icon={MessageCircleMore} />
           <div className="min-w-0 flex-1">
-            <p className="text-xs text-muted-foreground">Question de l’{agent}</p>
+            <p className="text-muted-foreground text-xs">
+              Question de l’{agent}
+            </p>
             <h3
+              className="mt-0.5 text-pretty font-medium text-[1rem]"
               id={`${id}-q`}
-              className="mt-0.5 text-[1rem] font-medium text-pretty"
             >
               {data.question}
             </h3>
@@ -150,73 +190,79 @@ export function AgentQuestion({
         {status === "pending" && data.suggested && suggested && (
           <p className="-mt-1 flex items-start gap-1.5 px-3.5 pb-3 text-[0.8125rem] text-muted-foreground">
             <span>
-              Suggestion : <span className="text-foreground">{suggested.label}</span> —{" "}
+              Suggestion :{" "}
+              <span className="text-foreground">{suggested.label}</span> —{" "}
               {data.suggested.reason}
             </span>
           </p>
         )}
         <LayoutGroup id={id}>
           {status === "pending" ? (
+            // biome-ignore lint/a11y/useAriaPropsSupportedByRole: role vaut group ou radiogroup selon data.multiple, les deux acceptent aria-labelledby ; Biome ne lit pas le rôle calculé.
             <div
+              aria-labelledby={`${id}-q`}
+              className="grid @md:grid-cols-2 grid-cols-1 gap-1.5"
+              onKeyDown={onGridKey}
               ref={grid}
               role={data.multiple ? "group" : "radiogroup"}
-              aria-labelledby={`${id}-q`}
-              onKeyDown={onGridKey}
-              className="grid grid-cols-1 gap-1.5 @md:grid-cols-2"
             >
               {data.options.map((o, i) => {
                 const on = selected.includes(o.id);
                 return (
                   <Card
+                    checked={on}
                     key={o.id}
+                    onClick={() => pick(o.id)}
                     option={o}
                     role={data.multiple ? "checkbox" : "radio"}
-                    checked={on}
-                    tabIndex={i === 0 ? 0 : -1}
                     suggested={o.id === data.suggested?.optionId}
-                    onClick={() => pick(o.id)}
+                    tabIndex={i === 0 ? 0 : -1}
                   />
                 );
               })}
               {data.allowOther &&
                 (writing ? (
                   <motion.form
+                    className="@md:col-span-2 flex items-center gap-2 rounded-2xl bg-[var(--card-inset)] p-2"
                     layout
-                    transition={morph}
                     onSubmit={(e) => {
                       e.preventDefault();
-                      if (!data.multiple && other.trim())
+                      if (!data.multiple && other.trim()) {
                         submit({ optionIds: [], other: other.trim() });
+                      }
                     }}
-                    className="flex items-center gap-2 rounded-2xl bg-[var(--card-inset)] p-2 @md:col-span-2"
+                    transition={morph}
                   >
                     <input
+                      aria-label="Votre réponse"
                       autoFocus
-                      value={other}
+                      className="h-9 min-w-0 flex-1 bg-transparent px-2 text-sm outline-none placeholder:text-muted-foreground"
                       onChange={(e) => setOther(e.target.value)}
                       onKeyDown={(e) => e.key === "Escape" && setWriting(false)}
                       placeholder="Dites à l’assistant ce que vous souhaitez"
-                      aria-label="Votre réponse"
-                      className="h-9 min-w-0 flex-1 bg-transparent px-2 text-sm outline-none placeholder:text-muted-foreground"
+                      value={other}
                     />
                     {!data.multiple && (
-                      <Button type="submit" variant="primary" disabled={!other.trim()}>
+                      <Button
+                        disabled={!other.trim()}
+                        type="submit"
+                        variant="primary"
+                      >
                         Répondre
                       </Button>
                     )}
                   </motion.form>
                 ) : (
                   <button
-                    type="button"
+                    className="flex min-h-16 items-center gap-3 rounded-2xl bg-[var(--card-inset)]/50 p-3.5 text-left text-muted-foreground text-sm transition-[color,background-color,scale] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] hover:bg-[var(--card-inset)] hover:text-foreground active:scale-[0.98]"
                     data-card
-                    tabIndex={-1}
                     onClick={() => setWriting(true)}
-                    className="flex min-h-16 items-center gap-3 rounded-2xl bg-[var(--card-inset)]/50 p-3.5 text-left text-sm text-muted-foreground transition-[color,background-color,scale] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] hover:bg-[var(--card-inset)] hover:text-foreground active:scale-[0.98]"
+                    tabIndex={-1}
+                    type="button"
                   >
                     <PencilLine
-                     
-                      className="size-4 shrink-0"
                       aria-hidden="true"
+                      className="size-4 shrink-0"
                     />
                     Autre chose…
                   </button>
@@ -238,11 +284,11 @@ export function AgentQuestion({
                 <>
                   {chosen.map((o) => (
                     <Card
+                      checked
                       key={o.id}
                       option={o}
-                      role="radio"
-                      checked
                       readOnly
+                      role="radio"
                       suggested={false}
                     />
                   ))}
@@ -261,12 +307,12 @@ export function AgentQuestion({
             <>
               {onDelegate && (
                 <Button
-                  variant="quiet"
+                  className="-ml-1 px-2.5 font-normal"
                   onClick={() => {
                     setOwn({ status: "delegated" });
                     onDelegate();
                   }}
-                  className="-ml-1 px-2.5 font-normal"
+                  variant="quiet"
                 >
                   Laisser l’assistant choisir
                 </Button>
@@ -274,17 +320,20 @@ export function AgentQuestion({
               <AnimatePresence>
                 {data.multiple && count > 0 && (
                   <motion.div
-                    initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1, transition: enter }}
-                    exit={{ opacity: 0, scale: 0.95, transition: leave }}
                     className="ml-auto origin-right"
+                    exit={{ opacity: 0, scale: 0.95, transition: leave }}
+                    initial={{ opacity: 0, scale: 0.95 }}
                   >
                     <Button
-                      variant="primary"
-                      size="md"
                       onClick={() =>
-                        submit({ optionIds: selected, other: other.trim() || undefined })
+                        submit({
+                          optionIds: selected,
+                          other: other.trim() || undefined,
+                        })
                       }
+                      size="md"
+                      variant="primary"
                     >
                       Envoyer {count} {count === 1 ? "choix" : "choix"}
                     </Button>
@@ -293,15 +342,11 @@ export function AgentQuestion({
               </AnimatePresence>
             </>
           ) : (
-            <Settled status={status} undoMs={undoMs} onUndo={undo} />
+            <Settled onUndo={undo} status={status} undoMs={undoMs} />
           )}
         </div>
-        <p role="status" aria-live="polite" className="sr-only">
-          {status === "answered"
-            ? "Réponse envoyée"
-            : status === "delegated"
-              ? "Laissé à l’assistant"
-              : ""}
+        <p aria-live="polite" className="sr-only" role="status">
+          {answerAnnouncement(status)}
         </p>
       </Shell>
     </MotionConfig>
@@ -331,17 +376,17 @@ function Card({
             "flex size-8 shrink-0 items-center justify-center rounded-xl",
             checked
               ? "bg-brand text-white"
-              : "bg-foreground/[0.05] text-muted-foreground",
+              : "bg-foreground/[0.05] text-muted-foreground"
           )}
         >
-          <Icon className="size-4" aria-hidden="true" />
+          <Icon aria-hidden="true" className="size-4" />
         </span>
       )}
       <span className="min-w-0 flex-1">
-        <span className="flex items-center gap-2 text-sm font-medium">
+        <span className="flex items-center gap-2 font-medium text-sm">
           {option.label}
           {suggested && (
-            <StatusPill tone="brand" size="sm">
+            <StatusPill size="sm" tone="brand">
               Suggéré
             </StatusPill>
           )}
@@ -354,32 +399,33 @@ function Card({
       </span>
       {checked && (
         <Check
-          strokeWidth={2.5}
-          className="mt-0.5 size-4 shrink-0 text-brand"
           aria-label="Choisi"
+          className="mt-0.5 size-4 shrink-0 text-brand"
+          strokeWidth={2.5}
         />
       )}
     </>
   );
   const base = cn(
     "flex min-h-16 items-start gap-3 rounded-2xl p-3.5 text-left",
-    checked ? "bg-brand/10" : "bg-[var(--card-inset)]",
+    checked ? "bg-brand/10" : "bg-[var(--card-inset)]"
   );
   return (
     <motion.div layoutId={`card-${option.id}`} transition={morph}>
       {readOnly ? (
         <div className={base}>{content}</div>
       ) : (
+        // biome-ignore lint/a11y/useAriaPropsSupportedByRole: role vaut checkbox ou radio selon la question, les deux acceptent aria-checked ; Biome ne lit pas la variable.
         <button
-          type="button"
-          data-card
-          role={role}
           aria-checked={checked}
           className={cn(
             base,
             "w-full transition-[background-color,scale] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] hover:bg-surface-raised/60 active:scale-[0.98]",
-            checked && "hover:bg-brand/15",
+            checked && "hover:bg-brand/15"
           )}
+          data-card
+          role={role}
+          type="button"
           {...props}
         >
           {content}
@@ -407,22 +453,26 @@ function Settled({
   return (
     <>
       <span className="flex items-center gap-1.5 px-1.5 text-muted-foreground">
-        <Check strokeWidth={2.5} className="size-3.5 text-positive" aria-hidden="true" />
+        <Check
+          aria-hidden="true"
+          className="size-3.5 text-positive"
+          strokeWidth={2.5}
+        />
         {status === "answered" ? "Réponse envoyée" : "L’assistant choisira"}
       </span>
       <AnimatePresence>
         {undoable && (
           <motion.div
-            initial={{ opacity: 0 }}
             animate={{ opacity: 1, transition: enter }}
-            exit={{ opacity: 0, transition: leave }}
             className="ml-auto"
+            exit={{ opacity: 0, transition: leave }}
+            initial={{ opacity: 0 }}
           >
             <Button
+              className="gap-1 px-3 text-xs"
               icon={Undo2}
               iconWeight="bold"
               onClick={onUndo}
-              className="gap-1 px-3 text-xs"
             >
               Annuler
             </Button>

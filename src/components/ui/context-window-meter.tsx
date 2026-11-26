@@ -16,26 +16,26 @@ import { Panel, Shell } from "@/components/ui/surface";
 import { cn } from "@/lib/utils";
 
 /** One part of what is counted (here: characters of the dictation). */
-export type ContextSegment = {
-  id: string;
-  label: string;
-  tokens: number;
-  /** Secondary text under the label. */
-  detail?: string;
-  /** Marks a segment that is always kept. */
-  pinned?: boolean;
+export interface ContextSegment {
   /** Any CSS color. Defaults to the built-in palette by position. */
   color?: string;
-};
+  /** Secondary text under the label. */
+  detail?: string;
+  id: string;
+  label: string;
+  /** Marks a segment that is always kept. */
+  pinned?: boolean;
+  tokens: number;
+}
 
-export type ContextWindowMeterProps = {
+export interface ContextWindowMeterProps {
+  className?: string;
   data: { limit: number; segments: ContextSegment[]; model?: string };
-  /** Share of the limit (0–1) where the warning zone starts. */
-  warnAt?: number;
   /** `card` for a panel, `inline` for a single row in a composer footer. */
   variant?: "card" | "inline";
-  className?: string;
-};
+  /** Share of the limit (0–1) where the warning zone starts. */
+  warnAt?: number;
+}
 
 // Segment colours: our own tones, in order (blue, violet, green, amber, rose, quiet grey).
 const palette = [
@@ -56,15 +56,20 @@ export const formatTokens = (n: number) =>
 function fillCells(
   segments: { tokens: number; color: string }[],
   limit: number,
-  count: number,
+  count: number
 ) {
   const cells: (string | null)[] = [];
   for (const s of segments) {
     // Every non-empty segment gets at least one cell, so small ones stay visible.
-    const n = s.tokens > 0 ? Math.max(1, Math.round((s.tokens / limit) * count)) : 0;
-    for (let i = 0; i < n && cells.length < count; i++) cells.push(s.color);
+    const n =
+      s.tokens > 0 ? Math.max(1, Math.round((s.tokens / limit) * count)) : 0;
+    for (let i = 0; i < n && cells.length < count; i++) {
+      cells.push(s.color);
+    }
   }
-  while (cells.length < count) cells.push(null);
+  while (cells.length < count) {
+    cells.push(null);
+  }
   return cells;
 }
 
@@ -89,20 +94,19 @@ export function ContextWindowMeter({
 
   const grid = (
     <div
-      role="meter"
       aria-label="Longueur de la dictée"
-      aria-valuemin={0}
       aria-valuemax={limit}
+      aria-valuemin={0}
       aria-valuenow={used}
       aria-valuetext={`${used.toLocaleString("fr-FR")} sur ${limit.toLocaleString("fr-FR")} caractères (${percent} %)`}
       className={cn(
         "grid",
-        inline ? "w-28 grid-cols-[repeat(20,1fr)] gap-px" : "grid-cols-20 gap-1",
+        inline ? "w-28 grid-cols-[repeat(20,1fr)] gap-px" : "grid-cols-20 gap-1"
       )}
+      role="meter"
     >
       {cells.map((color, i) => (
         <span
-          key={i}
           aria-hidden="true"
           className={cn(
             "transition-colors duration-200 ease-out motion-reduce:duration-0",
@@ -110,17 +114,17 @@ export function ContextWindowMeter({
             !color &&
               (i >= Math.round(warnAt * count)
                 ? "bg-warning/20"
-                : "bg-foreground/[0.07]"),
+                : "bg-foreground/[0.07]")
           )}
+          // biome-ignore lint/suspicious/noArrayIndexKey: cases de la jauge en nombre fixe (20 ou 100), seule leur couleur change
+          key={i}
           style={{ background: color ?? undefined }}
         />
       ))}
     </div>
   );
 
-  const announcement = warning
-      ? "Limite de la dictée proche"
-      : "";
+  const announcement = warning ? "Limite de la dictée proche" : "";
 
   if (inline) {
     return (
@@ -128,9 +132,8 @@ export function ContextWindowMeter({
         <div className={cn("flex items-center gap-2 text-xs", className)}>
           {warning && (
             <TriangleAlert
-             
-              className="size-3.5 text-warning"
               aria-label="Proche de la limite"
+              className="size-3.5 text-warning"
             />
           )}
           {grid}
@@ -141,7 +144,7 @@ export function ContextWindowMeter({
             {" / "}
             {formatTokens(limit)}
           </span>
-          <p role="status" aria-live="polite" className="sr-only">
+          <p aria-live="polite" className="sr-only" role="status">
             {announcement}
           </p>
         </div>
@@ -151,47 +154,53 @@ export function ContextWindowMeter({
 
   return (
     <MotionConfig reducedMotion="user">
-      <Shell aria-label="Longueur de la dictée" className={cn("max-w-md", className)}>
+      <Shell
+        aria-label="Longueur de la dictée"
+        className={cn("max-w-md", className)}
+      >
         <Panel className="p-4">
           <div className="mb-1 flex items-center justify-between gap-3">
             <h3 className="text-[0.8125rem] text-muted-foreground">
               Dictée
               {data.model && (
-                <Tag className="ml-2 rounded-full px-2 text-foreground">{data.model}</Tag>
+                <Tag className="ml-2 rounded-full px-2 text-foreground">
+                  {data.model}
+                </Tag>
               )}
             </h3>
           </div>
           <p className="mb-4 flex items-baseline gap-2">
             <span
               className={cn(
-                "font-mono text-[1.5rem] leading-tight font-medium tracking-tight tabular-nums",
-                warning && "text-warning",
+                "font-medium font-mono text-[1.5rem] tabular-nums leading-tight tracking-tight",
+                warning && "text-warning"
               )}
             >
               <RollingNumber value={formatTokens(used)} />
             </span>
             <span className="text-[0.8125rem] text-muted-foreground">
-              sur {formatTokens(limit)} · <RollingNumber value={`${percent} %`} /> utilisé
+              sur {formatTokens(limit)} ·{" "}
+              <RollingNumber value={`${percent} %`} /> utilisé
             </span>
           </p>
           {grid}
           <p
             className={cn(
               "mt-3 flex items-center gap-1.5 text-xs",
-              warning ? "text-warning" : "text-muted-foreground",
+              warning ? "text-warning" : "text-muted-foreground"
             )}
           >
             {warning && (
-              <TriangleAlert className="size-3.5 shrink-0" aria-hidden="true" />
+              <TriangleAlert aria-hidden="true" className="size-3.5 shrink-0" />
             )}
             {warning
               ? `Zone d’alerte : ${formatTokens(Math.max(limit - used, 0))} caractères restants`
               : `Les cases teintées marquent les derniers ${100 - Math.round(warnAt * 100)} %`}
           </p>
         </Panel>
-        <ul className="grid grid-cols-1 gap-x-4 gap-y-1 px-3 py-3 @sm:grid-cols-2">
+        <ul className="grid @sm:grid-cols-2 grid-cols-1 gap-x-4 gap-y-1 px-3 py-3">
           {colored.map((s) => (
-            <li key={s.id} className="flex items-start gap-2.5 py-1">
+            <li className="flex items-start gap-2.5 py-1" key={s.id}>
               <span
                 aria-hidden="true"
                 className="mt-1 size-2.5 shrink-0 rounded-[3px]"
@@ -202,25 +211,24 @@ export function ContextWindowMeter({
                   {s.label}
                   {s.pinned && (
                     <Lock
-                     
-                      className="size-3 shrink-0 text-muted-foreground"
                       aria-label="Conservé"
+                      className="size-3 shrink-0 text-muted-foreground"
                     />
                   )}
                 </span>
                 {s.detail && (
-                  <span className="block truncate text-xs text-muted-foreground">
+                  <span className="block truncate text-muted-foreground text-xs">
                     {s.detail}
                   </span>
                 )}
               </span>
-              <span className="font-mono text-xs text-muted-foreground tabular-nums">
+              <span className="font-mono text-muted-foreground text-xs tabular-nums">
                 {formatTokens(s.tokens)}
               </span>
             </li>
           ))}
         </ul>
-        <p role="status" aria-live="polite" className="sr-only">
+        <p aria-live="polite" className="sr-only" role="status">
           {announcement}
         </p>
       </Shell>

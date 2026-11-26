@@ -8,45 +8,53 @@
  * `negative`, `warning` are our tones; never the TuffUI theme); text is French, never under 12 px; no demo data.
  */
 
-import { RotateCw, Check, Copy, FileText, Image as ImageIcon, Pencil, CircleAlert } from "lucide-react";
+import {
+  Check,
+  CircleAlert,
+  Copy,
+  FileText,
+  Image as ImageIcon,
+  Pencil,
+  RotateCw,
+} from "lucide-react";
 import { AnimatePresence, MotionConfig, motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import { Button, IconButton } from "@/components/ui/action-button";
+import { Spinner } from "@/components/ui/loader";
 import { Textarea as TextArea } from "@/components/ui/textarea";
 import { enter, exit } from "@/lib/motion-tokens";
 import { cn } from "@/lib/utils";
-import { Spinner } from "@/components/ui/loader";
 
-export type UserMessageAttachment = {
+export interface UserMessageAttachment {
   id: string;
-  name: string;
   kind: "image" | "file";
-  /** Bytes. */
-  size?: number;
+  name: string;
   /** Optional thumbnail for images. */
   previewUrl?: string;
-};
+  /** Bytes. */
+  size?: number;
+}
 
 export type UserMessageStatus = "sending" | "sent" | "failed";
 
-export type UserMessageData = {
-  id: string;
-  content: string;
+export interface UserMessageData {
   attachments?: UserMessageAttachment[];
+  content: string;
+  edited?: boolean;
+  id: string;
   /** Display time, e.g. « 14:02 ». */
   sentAt?: string;
   status?: UserMessageStatus;
-  edited?: boolean;
-};
+}
 
-export type UserMessageProps = {
+export interface UserMessageProps {
+  className?: string;
   data: UserMessageData;
+  onCopy?: (text: string) => void;
   /** Save the edited text. Hides the edit action when omitted (the panel edits a rubric by going back to it). */
   onEdit?: (text: string) => void;
   onRetry?: () => void;
-  onCopy?: (text: string) => void;
-  className?: string;
-};
+}
 
 export const formatBytes = (n: number) =>
   n < 1024
@@ -69,7 +77,9 @@ export function UserMessage({
   const editButton = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
-    if (!copied) return;
+    if (!copied) {
+      return;
+    }
     const timer = setTimeout(() => setCopied(false), 1500);
     return () => clearTimeout(timer);
   }, [copied]);
@@ -85,19 +95,30 @@ export function UserMessage({
   };
   const save = () => {
     const text = draft.trim();
-    if (!text) return;
+    if (!text) {
+      return;
+    }
     setEditing(false);
-    if (text !== content) onEdit?.(text);
+    if (text !== content) {
+      onEdit?.(text);
+    }
   };
   const copy = () => {
-    navigator.clipboard?.writeText(content).catch(() => {});
+    navigator.clipboard?.writeText(content).catch(() => {
+      // Copie refusée par le presse-papiers : rien à signaler à l’utilisateur.
+    });
     onCopy?.(content);
     setCopied(true);
   };
 
   return (
     <MotionConfig reducedMotion="user">
-      <div className={cn("group flex w-full flex-col items-end gap-1.5", className)}>
+      <div
+        className={cn(
+          "group flex w-full flex-col items-end gap-1.5",
+          className
+        )}
+      >
         {attachments.length > 0 && (
           <ul
             aria-label="Pièces jointes"
@@ -105,20 +126,20 @@ export function UserMessage({
           >
             {attachments.map((file) => (
               <li
-                key={file.id}
                 className="flex items-center gap-2 rounded-xl bg-foreground/[0.05] py-1.5 pr-3 pl-1.5"
+                key={file.id}
               >
                 <span className="flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-foreground/[0.06] text-muted-foreground">
                   {file.previewUrl ? (
                     <img
-                      src={file.previewUrl}
                       alt=""
                       className="size-full object-cover"
+                      src={file.previewUrl}
                     />
                   ) : file.kind === "image" ? (
-                    <ImageIcon className="size-4" aria-hidden="true" />
+                    <ImageIcon aria-hidden="true" className="size-4" />
                   ) : (
-                    <FileText className="size-4" aria-hidden="true" />
+                    <FileText aria-hidden="true" className="size-4" />
                   )}
                 </span>
                 <span className="min-w-0">
@@ -126,7 +147,7 @@ export function UserMessage({
                     {file.name}
                   </span>
                   {file.size !== undefined && (
-                    <span className="block text-xs text-muted-foreground">
+                    <span className="block text-muted-foreground text-xs">
                       {file.kind === "image" ? "Image" : "Fichier"} ·{" "}
                       {formatBytes(file.size)}
                     </span>
@@ -137,53 +158,62 @@ export function UserMessage({
           </ul>
         )}
 
-        <AnimatePresence mode="popLayout" initial={false}>
+        <AnimatePresence initial={false} mode="popLayout">
           {editing ? (
             <motion.form
-              key="edit"
-              initial={{ opacity: 0, scale: 0.98 }}
               animate={{ opacity: 1, scale: 1, transition: enter }}
+              className="flex w-full max-w-[85%] origin-top-right flex-col gap-2 rounded-2xl bg-surface p-1.5"
               exit={{ opacity: 0, transition: exit }}
+              initial={{ opacity: 0, scale: 0.98 }}
+              key="edit"
               onSubmit={(e) => {
                 e.preventDefault();
                 save();
               }}
-              className="flex w-full max-w-[85%] origin-top-right flex-col gap-2 rounded-2xl bg-surface p-1.5"
             >
               <TextArea
                 aria-label="Modifier le message"
                 autoFocus
-                value={draft}
                 onChange={(e) => setDraft(e.target.value)}
-                onFocus={(e) => e.target.setSelectionRange(draft.length, draft.length)}
+                onFocus={(e) =>
+                  e.target.setSelectionRange(draft.length, draft.length)
+                }
                 onKeyDown={(e) => {
-                  if (e.key === "Escape") cancel();
+                  if (e.key === "Escape") {
+                    cancel();
+                  }
                   if (e.key === "Enter" && !e.shiftKey) {
                     e.preventDefault();
                     save();
                   }
                 }}
                 rows={Math.min(6, Math.max(2, draft.split("\n").length))}
+                value={draft}
               />
               <div className="flex justify-end gap-1.5">
-                <Button type="button" variant="quiet" size="sm" onClick={cancel}>
+                <Button
+                  onClick={cancel}
+                  size="sm"
+                  type="button"
+                  variant="quiet"
+                >
                   Annuler
                 </Button>
-                <Button type="submit" size="sm" disabled={!draft.trim()}>
+                <Button disabled={!draft.trim()} size="sm" type="submit">
                   Enregistrer
                 </Button>
               </div>
             </motion.form>
           ) : (
             <motion.div
-              key="bubble"
-              initial={{ opacity: 0 }}
               animate={{ opacity: 1, transition: enter }}
-              exit={{ opacity: 0, transition: exit }}
               className={cn(
-                "max-w-[85%] rounded-2xl rounded-br-md bg-brand/10 px-3.5 py-2 text-sm leading-relaxed whitespace-pre-wrap",
-                status === "sending" && "opacity-70",
+                "max-w-[85%] whitespace-pre-wrap rounded-2xl rounded-br-md bg-brand/10 px-3.5 py-2 text-sm leading-relaxed",
+                status === "sending" && "opacity-70"
               )}
+              exit={{ opacity: 0, transition: exit }}
+              initial={{ opacity: 0 }}
+              key="bubble"
             >
               {content}
             </motion.div>
@@ -191,35 +221,40 @@ export function UserMessage({
         </AnimatePresence>
 
         {!editing && (
-          <div className="flex items-center gap-1 text-xs text-muted-foreground">
+          <div className="flex items-center gap-1 text-muted-foreground text-xs">
             <span
               className={cn(
-                "flex items-center gap-1 opacity-0 transition-opacity duration-150 group-focus-within:opacity-100 group-hover:opacity-100 [@media(hover:none)]:opacity-100",
+                "flex items-center gap-1 opacity-0 transition-opacity duration-150 group-focus-within:opacity-100 group-hover:opacity-100 [@media(hover:none)]:opacity-100"
               )}
             >
               {onEdit && status !== "sending" && (
                 <IconButton
-                  ref={editButton}
                   icon={Pencil}
                   label="Modifier le message"
-                  variant="quiet"
-                  size="sm"
                   onClick={startEdit}
+                  ref={editButton}
+                  size="sm"
+                  variant="quiet"
                 />
               )}
               <IconButton
                 icon={copied ? Check : Copy}
                 iconWeight={copied ? "bold" : "fill"}
                 label={copied ? "Copié" : "Copier le message"}
-                variant="quiet"
-                size="sm"
                 onClick={copy}
+                size="sm"
+                variant="quiet"
               />
             </span>
-            <Delivery status={status} sentAt={sentAt} edited={edited} onRetry={onRetry} />
+            <Delivery
+              edited={edited}
+              onRetry={onRetry}
+              sentAt={sentAt}
+              status={status}
+            />
           </div>
         )}
-        <p role="status" aria-live="polite" className="sr-only">
+        <p aria-live="polite" className="sr-only" role="status">
           {status === "failed" ? "Message non envoyé" : copied ? "Copié" : ""}
         </p>
       </div>
@@ -238,33 +273,37 @@ function Delivery({
   edited?: boolean;
   onRetry?: () => void;
 }) {
-  if (status === "sending")
+  if (status === "sending") {
     return (
       <span className="flex items-center gap-1 px-1">
-        <Spinner size="sm" label="Envoi" className="text-current" />
+        <Spinner className="text-current" label="Envoi" size="sm" />
         <span aria-hidden="true">Envoi…</span>
       </span>
     );
-  if (status === "failed")
+  }
+  if (status === "failed") {
     return (
       <span className="flex items-center gap-1.5 pl-1 text-negative">
-        <CircleAlert className="size-3.5" aria-hidden="true" />
+        <CircleAlert aria-hidden="true" className="size-3.5" />
         Non envoyé
         {onRetry && (
           <Button
-            variant="danger"
-            size="sm"
             icon={RotateCw}
             iconWeight="bold"
             onClick={onRetry}
+            size="sm"
+            variant="danger"
           >
             Réessayer
           </Button>
         )}
       </span>
     );
+  }
   // Nothing to say about a message that went through, unless it was edited or a time is given.
-  if (!edited && !sentAt) return null;
+  if (!(edited || sentAt)) {
+    return null;
+  }
   return (
     <span className="px-1 tabular-nums">
       {edited ? "Modifié" : "Envoyé"}

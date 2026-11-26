@@ -47,17 +47,21 @@
 
 [data-skin="clean"] .app-sidebar::after,
 [data-skin="clean"] [data-slot="sidebar-container"]::after {
-  content: "" !important;
   position: absolute !important;
   top: 0 !important;
   right: 0 !important;
   bottom: 0 !important;
-  width: 2px !important;
-  background: linear-gradient(to right, var(--rule-highlight) 0 1px, var(--rule-shadow) 1px 2px) !important;
-  box-shadow: none !important;
-  pointer-events: none !important;
   z-index: 50 !important;
   display: block !important;
+  width: 2px !important;
+  pointer-events: none !important;
+  content: "" !important;
+  background: linear-gradient(
+    to right,
+    var(--rule-highlight) 0 1px,
+    var(--rule-shadow) 1px 2px
+  ) !important;
+  box-shadow: none !important;
 }
 
 /* Header bottom engraved hairline matching reference .topbar::after (60px height) */
@@ -75,35 +79,36 @@
 }
 
 [data-skin="clean"] [data-slot="app-header"]::after {
-  content: "" !important;
   position: absolute !important;
-  left: 0 !important;
   right: 0 !important;
   bottom: 0 !important;
-  height: 1px !important;
-  background: var(--rule-highlight) !important;
-  box-shadow: 0 1px 0 var(--rule-shadow) !important;
-  pointer-events: none !important;
+  left: 0 !important;
   z-index: 50 !important;
   display: block !important;
+  height: 1px !important;
+  pointer-events: none !important;
+  content: "" !important;
+  background: var(--rule-highlight) !important;
+  box-shadow: 0 1px 0 var(--rule-shadow) !important;
 }
 
 /* Header square button controls matching reference .topIcon */
 [data-skin="clean"] .shell-toolbar-actions,
 :root[data-skin="clean"] .shell-toolbar-actions,
-:root[data-skin="clean"][data-chrome-style="liquid-glass"] .shell-toolbar-actions {
+:root[data-skin="clean"][data-chrome-style="liquid-glass"]
+  .shell-toolbar-actions {
   display: flex !important;
-  align-items: center !important;
   gap: 8px !important;
+  align-items: center !important;
   padding: 0 !important;
   margin: 0 !important;
   margin-left: auto !important;
+  background: transparent !important;
   border: none !important;
   border-radius: 0 !important;
-  background: transparent !important;
   box-shadow: none !important;
-  backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
 }
 
 [data-skin="clean"] .shell-toolbar-actions::before {
@@ -112,52 +117,61 @@
 
 [data-skin="clean"] .shell-toolbar-actions .shell-toolbar-control,
 :root[data-skin="clean"] .shell-toolbar-actions .shell-toolbar-control,
-:root[data-skin="clean"][data-chrome-style="liquid-glass"] .shell-toolbar-actions .shell-toolbar-control {
+:root[data-skin="clean"][data-chrome-style="liquid-glass"]
+  .shell-toolbar-actions
+  .shell-toolbar-control {
   display: grid !important;
   place-items: center !important;
   width: 36px !important;
-  height: 36px !important;
   min-width: 36px !important;
+  height: 36px !important;
   min-height: 36px !important;
   padding: 0 !important;
+  color: var(--ink) !important;
+  cursor: pointer !important;
+  background: var(--surface) !important;
   border: 1px solid var(--border) !important;
   border-radius: 8px !important;
-  background: var(--surface) !important;
-  color: var(--ink) !important;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
-  cursor: pointer !important;
-  transition: background-color 160ms var(--ease-out-quint), border-color 160ms var(--ease-out-quint) !important;
+  transition:
+    background-color 160ms var(--ease-out-quint),
+    border-color 160ms var(--ease-out-quint) !important;
 }
 
 @media (hover: hover) and (pointer: fine) {
   [data-skin="clean"] .shell-toolbar-actions .shell-toolbar-control:hover,
-:root[data-skin="clean"] .shell-toolbar-actions .shell-toolbar-control:hover,
-:root[data-skin="clean"][data-chrome-style="liquid-glass"] .shell-toolbar-actions .shell-toolbar-control:hover {
-    border-color: var(--border-hover) !important;
+  :root[data-skin="clean"] .shell-toolbar-actions .shell-toolbar-control:hover,
+  :root[data-skin="clean"][data-chrome-style="liquid-glass"]
+    .shell-toolbar-actions
+    .shell-toolbar-control:hover {
     background: var(--surface-hover) !important;
+    border-color: var(--border-hover) !important;
   }
 }
 
 [data-skin="clean"] .shell-toolbar-actions .shell-toolbar-control svg,
 :root[data-skin="clean"] .shell-toolbar-actions .shell-toolbar-control svg,
-:root[data-skin="clean"][data-chrome-style="liquid-glass"] .shell-toolbar-actions .shell-toolbar-control svg {
+:root[data-skin="clean"][data-chrome-style="liquid-glass"]
+  .shell-toolbar-actions
+  .shell-toolbar-control
+  svg {
   width: 18px !important;
   height: 18px !important;
-  stroke-width: 1.5 !important;
   color: var(--ink) !important;
   filter: none !important;
+  stroke-width: 1.5 !important;
 }
 
 /* Header search field matching reference .search */
 [data-skin="clean"] .shell-header-search,
 :root[data-skin="clean"] .shell-header-search {
   height: 36px !important;
-  border-radius: 8px !important;
-  border: 1px solid var(--border) !important;
-  background: var(--surface) !important;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
   padding: 0 10px !important;
   color: var(--faint) !important;
+  background: var(--surface) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -169,8 +183,8 @@
 [data-skin="clean"] .shell-header-search svg {
   width: 16px !important;
   height: 16px !important;
-  stroke-width: 1.5 !important;
   color: var(--soft) !important;
+  stroke-width: 1.5 !important;
 }
 
 [data-skin="clean"] .shell-header-search kbd {
@@ -179,13 +193,13 @@
   width: 20px !important;
   height: 20px !important;
   padding: 0 !important;
-  border-radius: 5px !important;
-  background: var(--fill) !important;
-  border: none !important;
-  box-shadow: inset 0 -1px 0 var(--rule-shadow) !important;
   font-size: 12px !important;
   font-weight: 500 !important;
   color: var(--soft) !important;
+  background: var(--fill) !important;
+  border: none !important;
+  border-radius: 5px !important;
+  box-shadow: inset 0 -1px 0 var(--rule-shadow) !important;
 }
 
 /* Base typography and anti-aliasing */
@@ -193,9 +207,9 @@
   font-family: var(--app-font-sans);
   font-size: 14px;
   font-weight: 400;
-  color: var(--nav-text);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  color: var(--nav-text);
   text-rendering: optimizeLegibility;
 }
 
@@ -215,14 +229,14 @@
 [data-skin="clean"] .app-sidebar .premium-shortcuts-heading {
   height: auto;
   min-height: 18px;
-  margin: 0 0 4px;
   padding: 0 10px;
-  color: var(--nav-muted) !important;
+  margin: 0 0 4px;
   font-size: 12px !important;
-  line-height: 16px !important;
   font-weight: 500 !important;
-  letter-spacing: 0.06em !important;
+  line-height: 16px !important;
+  color: var(--nav-muted) !important;
   text-transform: uppercase !important;
+  letter-spacing: 0.06em !important;
 }
 
 /* Level 2: Main navigation items (14px medium 500, letter-spacing -0.28px matching reference .navLink) */
@@ -232,98 +246,144 @@
 
 [data-skin="clean"] .app-sidebar [data-slot="sidebar-menu-button"],
 [data-skin="clean"] .app-sidebar .sidebar-nav-link {
-  min-height: var(--premium-nav-row);
-  height: var(--premium-nav-row);
   gap: 10px;
+  height: var(--premium-nav-row);
+  min-height: var(--premium-nav-row);
   padding: 0 10px;
-  border-radius: 8px !important;
-  color: var(--nav-text);
   font-size: 14px !important;
   font-weight: 500 !important;
-  letter-spacing: -0.01em !important;
   line-height: 1.25 !important;
+  color: var(--nav-text);
+  letter-spacing: -0.01em !important;
   background: transparent;
   border: 1px solid transparent;
+  border-radius: 8px !important;
   box-shadow: none !important;
-  transition: background-color 0.16s ease, color 0.16s ease, border-color 0.16s ease;
+  transition:
+    background-color 0.16s ease,
+    color 0.16s ease,
+    border-color 0.16s ease;
 }
 
 [data-skin="clean"] .app-sidebar [data-slot="sidebar-menu-button"] > span,
 [data-skin="clean"] .app-sidebar .sidebar-nav-link > span {
   font-family: inherit;
-  line-height: 1.25;
   font-size: 14px !important;
   font-weight: 500 !important;
+  line-height: 1.25;
   letter-spacing: -0.01em !important;
 }
 
 @media (hover: hover) and (pointer: fine) {
   [data-skin="clean"] .app-sidebar [data-slot="sidebar-menu-button"]:hover {
-    background: var(--nav-hover) !important;
     color: var(--nav-ink) !important;
+    background: var(--nav-hover) !important;
   }
 }
 
 @media (hover: hover) and (pointer: fine) {
-  [data-skin="clean"] .app-sidebar [data-slot="sidebar-menu-button"]:hover .sidebar-nav-icon svg {
+  [data-skin="clean"]
+    .app-sidebar
+    [data-slot="sidebar-menu-button"]:hover
+    .sidebar-nav-icon
+    svg {
     color: var(--nav-ink) !important;
   }
 }
 
 [data-skin="clean"] .app-sidebar [data-slot="sidebar-menu-button"][data-active],
-[data-skin="clean"] .app-sidebar [data-slot="sidebar-menu-button"][data-active="true"],
+[data-skin="clean"]
+  .app-sidebar
+  [data-slot="sidebar-menu-button"][data-active="true"],
 [data-skin="clean"] .app-sidebar .sidebar-nav-link[data-active],
 [data-skin="clean"] .app-sidebar .sidebar-nav-link[data-active="true"] {
-  color: var(--nav-ink) !important;
   font-weight: 500 !important;
+  color: var(--nav-ink) !important;
   background: #ffffff !important;
   border: 1px solid rgba(0, 0, 0, 0.07) !important;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06) !important;
 }
 
-:root.dark[data-skin="clean"]:where(:not([data-sidebar-tone="light"])) .app-sidebar [data-slot="sidebar-menu-button"][data-active],
-:root.dark[data-skin="clean"]:where(:not([data-sidebar-tone="light"])) .app-sidebar [data-slot="sidebar-menu-button"][data-active="true"],
-:root.dark[data-skin="clean"]:where(:not([data-sidebar-tone="light"])) .app-sidebar .sidebar-nav-link[data-active],
-:root.dark[data-skin="clean"]:where(:not([data-sidebar-tone="light"])) .app-sidebar .sidebar-nav-link[data-active="true"],
-:root[data-skin="clean"] .dark .app-sidebar [data-slot="sidebar-menu-button"][data-active],
-:root[data-skin="clean"] .dark .app-sidebar [data-slot="sidebar-menu-button"][data-active="true"],
+:root.dark[data-skin="clean"]:where(:not([data-sidebar-tone="light"]))
+  .app-sidebar
+  [data-slot="sidebar-menu-button"][data-active],
+:root.dark[data-skin="clean"]:where(:not([data-sidebar-tone="light"]))
+  .app-sidebar
+  [data-slot="sidebar-menu-button"][data-active="true"],
+:root.dark[data-skin="clean"]:where(:not([data-sidebar-tone="light"]))
+  .app-sidebar
+  .sidebar-nav-link[data-active],
+:root.dark[data-skin="clean"]:where(:not([data-sidebar-tone="light"]))
+  .app-sidebar
+  .sidebar-nav-link[data-active="true"],
+:root[data-skin="clean"]
+  .dark
+  .app-sidebar
+  [data-slot="sidebar-menu-button"][data-active],
+:root[data-skin="clean"]
+  .dark
+  .app-sidebar
+  [data-slot="sidebar-menu-button"][data-active="true"],
 :root[data-skin="clean"] .dark .app-sidebar .sidebar-nav-link[data-active],
-:root[data-skin="clean"] .dark .app-sidebar .sidebar-nav-link[data-active="true"] {
-  color: #f3f3f3 !important;
+:root[data-skin="clean"]
+  .dark
+  .app-sidebar
+  .sidebar-nav-link[data-active="true"] {
   font-weight: 500 !important;
+  color: #f3f3f3 !important;
   background: #262626 !important;
   border: 1px solid rgba(255, 255, 255, 0.07) !important;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4) !important;
 }
 
-[data-skin="clean"] .app-sidebar [data-slot="sidebar-menu-button"][data-active] > span,
-[data-skin="clean"] .app-sidebar [data-slot="sidebar-menu-button"][data-active="true"] > span {
+[data-skin="clean"]
+  .app-sidebar
+  [data-slot="sidebar-menu-button"][data-active]
+  > span,
+[data-skin="clean"]
+  .app-sidebar
+  [data-slot="sidebar-menu-button"][data-active="true"]
+  > span {
   font-weight: 500 !important;
   color: var(--nav-ink) !important;
 }
 
-[data-skin="clean"] .app-sidebar [data-slot="sidebar-menu-button"][data-active] svg,
-[data-skin="clean"] .app-sidebar [data-slot="sidebar-menu-button"][data-active="true"] svg,
-[data-skin="clean"] .app-sidebar [data-slot="sidebar-menu-button"][data-active] .sidebar-nav-icon svg,
-[data-skin="clean"] .app-sidebar [data-slot="sidebar-menu-button"][data-active="true"] .sidebar-nav-icon svg {
+[data-skin="clean"]
+  .app-sidebar
+  [data-slot="sidebar-menu-button"][data-active]
+  svg,
+[data-skin="clean"]
+  .app-sidebar
+  [data-slot="sidebar-menu-button"][data-active="true"]
+  svg,
+[data-skin="clean"]
+  .app-sidebar
+  [data-slot="sidebar-menu-button"][data-active]
+  .sidebar-nav-icon
+  svg,
+[data-skin="clean"]
+  .app-sidebar
+  [data-slot="sidebar-menu-button"][data-active="true"]
+  .sidebar-nav-icon
+  svg {
   color: var(--nav-ink) !important;
 }
 
 /* Solid sidebar icons with a consistent 24px optical box. */
 [data-skin="clean"] .app-sidebar .sidebar-nav-icon {
   display: flex;
-  width: 20px;
-  height: 20px;
   flex: 0 0 20px;
   align-items: center;
   justify-content: center;
+  width: 20px;
+  height: 20px;
 }
 
 [data-skin="clean"] .app-sidebar .sidebar-nav-icon svg {
   width: 20px !important;
   height: 20px !important;
-  transform: none;
   color: var(--nav-muted);
+  transform: none;
   transition: color 0.16s ease;
 }
 
@@ -349,13 +409,19 @@
 }
 
 @media (hover: hover) and (pointer: fine) {
-  [data-skin="clean"] .app-sidebar [data-slot="sidebar-footer"] :is(button, a):hover {
+  [data-skin="clean"]
+    .app-sidebar
+    [data-slot="sidebar-footer"]
+    :is(button, a):hover {
     background: var(--nav-hover);
   }
 }
 
 [data-skin="clean"] .app-sidebar [data-slot="sidebar-footer"] span.font-medium,
-[data-skin="clean"] .app-sidebar [data-slot="sidebar-footer"] span.font-semibold {
+[data-skin="clean"]
+  .app-sidebar
+  [data-slot="sidebar-footer"]
+  span.font-semibold {
   font-size: 13px !important;
   font-weight: 500 !important;
   color: var(--nav-ink) !important;
@@ -381,11 +447,18 @@
 }
 
 /* Collapsible icon mode */
-[data-skin="clean"] [data-collapsible="icon"] .app-sidebar [data-slot="sidebar-content"] {
+[data-skin="clean"]
+  [data-collapsible="icon"]
+  .app-sidebar
+  [data-slot="sidebar-content"] {
   padding-inline: 0;
 }
 
-[data-skin="clean"] [data-collapsible="icon"] .app-sidebar .sidebar-nav-icon svg {
+[data-skin="clean"]
+  [data-collapsible="icon"]
+  .app-sidebar
+  .sidebar-nav-icon
+  svg {
   width: 20px !important;
   height: 20px !important;
 }
@@ -415,137 +488,209 @@
 
 @layer utilities {
   /* En-tête : logo puis bouton de dépliage, centrés. */
-  [data-skin="clean"] [data-collapsible="icon"] .app-sidebar [data-slot="sidebar-header"] > div {
+  [data-skin="clean"]
+    [data-collapsible="icon"]
+    .app-sidebar
+    [data-slot="sidebar-header"]
+    > div {
     flex-direction: column !important;
+    gap: 8px !important;
     align-items: center !important;
     justify-content: center !important;
-    gap: 8px !important;
   }
   [data-skin="clean"] [data-collapsible="icon"] .app-sidebar .sidebar-brand {
     margin-inline: auto !important;
   }
 
   /* Navigation : une colonne centrée, cases de 40 px. */
-  [data-skin="clean"] [data-collapsible="icon"] .app-sidebar [data-slot="sidebar-content"] {
+  [data-skin="clean"]
+    [data-collapsible="icon"]
+    .app-sidebar
+    [data-slot="sidebar-content"] {
     padding-block: 8px !important;
     /* Fenêtre basse : la colonne défile au lieu de passer sous le pied. */
     overflow-y: auto !important;
     scrollbar-width: none !important;
   }
-  [data-skin="clean"] [data-collapsible="icon"] .app-sidebar [data-slot="sidebar-content"]::-webkit-scrollbar {
+  [data-skin="clean"]
+    [data-collapsible="icon"]
+    .app-sidebar
+    [data-slot="sidebar-content"]::-webkit-scrollbar {
     display: none !important;
   }
-  [data-skin="clean"] [data-collapsible="icon"] .app-sidebar [data-slot="sidebar-content"] > div {
+  [data-skin="clean"]
+    [data-collapsible="icon"]
+    .app-sidebar
+    [data-slot="sidebar-content"]
+    > div {
     gap: 0 !important;
   }
-  [data-skin="clean"] [data-collapsible="icon"] .app-sidebar [data-slot="sidebar-menu"] {
-    align-items: center !important;
+  [data-skin="clean"]
+    [data-collapsible="icon"]
+    .app-sidebar
+    [data-slot="sidebar-menu"] {
     gap: 4px !important;
+    align-items: center !important;
   }
-  [data-skin="clean"] [data-collapsible="icon"] .app-sidebar [data-slot="sidebar-menu-item"] {
+  [data-skin="clean"]
+    [data-collapsible="icon"]
+    .app-sidebar
+    [data-slot="sidebar-menu-item"] {
     display: flex !important;
     justify-content: center !important;
     width: 100% !important;
   }
-  [data-skin="clean"] [data-collapsible="icon"] .app-sidebar [data-slot="sidebar-menu"] [data-slot="sidebar-menu-button"] {
+  [data-skin="clean"]
+    [data-collapsible="icon"]
+    .app-sidebar
+    [data-slot="sidebar-menu"]
+    [data-slot="sidebar-menu-button"] {
+    justify-content: center !important;
     width: 40px !important;
     height: 40px !important;
     min-height: 40px !important;
     padding: 0 !important;
-    justify-content: center !important;
-    border-radius: 10px !important;
     color: var(--ink-muted) !important;
     background: transparent !important;
+    border-radius: 10px !important;
     box-shadow: none !important;
-    transition: background-color 160ms ease, color 160ms ease, box-shadow 160ms ease !important;
+    transition:
+      background-color 160ms ease,
+      color 160ms ease,
+      box-shadow 160ms ease !important;
   }
   @media (hover: hover) and (pointer: fine) {
-  [data-skin="clean"] [data-collapsible="icon"] .app-sidebar [data-slot="sidebar-menu"] [data-slot="sidebar-menu-button"]:hover {
-    color: var(--ink) !important;
-    background: var(--nav-hover) !important;
+    [data-skin="clean"]
+      [data-collapsible="icon"]
+      .app-sidebar
+      [data-slot="sidebar-menu"]
+      [data-slot="sidebar-menu-button"]:hover {
+      color: var(--ink) !important;
+      background: var(--nav-hover) !important;
+    }
   }
-}
-  [data-skin="clean"] [data-collapsible="icon"] .app-sidebar [data-slot="sidebar-menu"] [data-slot="sidebar-menu-button"][data-active="true"] {
+  [data-skin="clean"]
+    [data-collapsible="icon"]
+    .app-sidebar
+    [data-slot="sidebar-menu"]
+    [data-slot="sidebar-menu-button"][data-active="true"] {
     color: var(--ink) !important;
     background: var(--surface) !important;
-    box-shadow: 0 0 0 1px var(--line), 0 1px 2px color-mix(in srgb, var(--ink) 8%, transparent) !important;
+    box-shadow:
+      0 0 0 1px var(--line),
+      0 1px 2px color-mix(in srgb, var(--ink) 8%, transparent) !important;
   }
-  [data-skin="clean"] [data-collapsible="icon"] .app-sidebar [data-slot="sidebar-menu"] [data-slot="sidebar-menu-button"] .sidebar-nav-icon {
+  [data-skin="clean"]
+    [data-collapsible="icon"]
+    .app-sidebar
+    [data-slot="sidebar-menu"]
+    [data-slot="sidebar-menu-button"]
+    .sidebar-nav-icon {
     display: grid !important;
     place-items: center !important;
     width: 20px !important;
     height: 20px !important;
     margin: 0 !important;
   }
-  [data-skin="clean"] [data-collapsible="icon"] .app-sidebar [data-slot="sidebar-menu"] [data-slot="sidebar-menu-button"] .sidebar-nav-icon svg [stroke-width] {
+  [data-skin="clean"]
+    [data-collapsible="icon"]
+    .app-sidebar
+    [data-slot="sidebar-menu"]
+    [data-slot="sidebar-menu-button"]
+    .sidebar-nav-icon
+    svg
+    [stroke-width] {
     stroke-width: 1.5;
   }
 
   /* Groupes : un court filet centré au lieu d'un vide irrégulier. */
-  [data-skin="clean"] [data-collapsible="icon"] .app-sidebar [data-slot="sidebar-group"] + [data-slot="sidebar-group"]::before {
-    content: "";
+  [data-skin="clean"]
+    [data-collapsible="icon"]
+    .app-sidebar
+    [data-slot="sidebar-group"]
+    + [data-slot="sidebar-group"]::before {
     display: block;
     width: 20px;
     height: 1px;
     margin: 12px auto;
+    content: "";
     background: var(--line-strong);
   }
 
   /* Pied : avatar et réglages sur le même axe, mêmes cases. */
-  [data-skin="clean"] [data-collapsible="icon"] .app-sidebar [data-slot="sidebar-footer"] {
-    align-items: center !important;
+  [data-skin="clean"]
+    [data-collapsible="icon"]
+    .app-sidebar
+    [data-slot="sidebar-footer"] {
     gap: 4px !important;
+    align-items: center !important;
     padding-block: 12px !important;
   }
-  [data-skin="clean"] [data-collapsible="icon"] .app-sidebar [data-slot="sidebar-footer"] > button {
+  [data-skin="clean"]
+    [data-collapsible="icon"]
+    .app-sidebar
+    [data-slot="sidebar-footer"]
+    > button {
     width: 40px !important;
     height: 40px !important;
     margin-inline: auto !important;
-    border-radius: 10px !important;
     color: var(--ink-muted) !important;
+    border-radius: 10px !important;
   }
   @media (hover: hover) and (pointer: fine) {
-  [data-skin="clean"] [data-collapsible="icon"] .app-sidebar [data-slot="sidebar-footer"] > button:hover {
-    color: var(--ink) !important;
-    background: var(--nav-hover) !important;
+    [data-skin="clean"]
+      [data-collapsible="icon"]
+      .app-sidebar
+      [data-slot="sidebar-footer"]
+      > button:hover {
+      color: var(--ink) !important;
+      background: var(--nav-hover) !important;
+    }
   }
-}
 }
 
 /* ---------- Folding: the sub-pages ----------
    At rest the sidebar shows the pages; sub-pages unfold with their page or
    on their chevron. */
 .app-sidebar .sidebar-disclosure {
+  flex: none;
   width: 12px;
   height: 12px;
-  flex: none;
   transition: transform 150ms cubic-bezier(0.23, 1, 0.32, 1);
 }
-.app-sidebar .sidebar-disclosure[data-open="true"] { transform: rotate(90deg); }
+.app-sidebar .sidebar-disclosure[data-open="true"] {
+  transform: rotate(90deg);
+}
 .app-sidebar .sidebar-subpages-toggle,
-[data-skin="clean"] .app-sidebar .sidebar-subpages-toggle[data-slot="sidebar-menu-action"] {
+[data-skin="clean"]
+  .app-sidebar
+  .sidebar-subpages-toggle[data-slot="sidebar-menu-action"] {
   top: calc(var(--premium-nav-row, 32px) / 2 - 10px);
-  transform: none;
   color: var(--nav-muted, currentColor);
+  transform: none;
 }
 .app-sidebar .sidebar-subpages {
-  margin: 2px 0 2px;
-  padding: 0 0 0 33px;
-  border: 0;
   gap: 2px;
+  padding: 0 0 0 33px;
+  margin: 2px 0 2px;
+  border: 0;
   transform: none;
 }
 .app-sidebar .sidebar-subpage-link {
   width: 100%;
   height: 28px;
   padding-inline: 8px;
-  transform: none;
   font-size: 13px;
   color: var(--nav-text, currentColor);
+  transform: none;
 }
-.app-sidebar .sidebar-subpage-link[data-active] { color: var(--nav-ink, currentColor); }
+.app-sidebar .sidebar-subpage-link[data-active] {
+  color: var(--nav-ink, currentColor);
+}
 @media (prefers-reduced-motion: reduce) {
-  .app-sidebar .sidebar-disclosure { transition: none; }
+  .app-sidebar .sidebar-disclosure {
+    transition: none;
+  }
 }
 
 /* -- Essai Catalyst (2026-11-11) : etat actif epure --------------------
@@ -562,22 +707,30 @@
 }
 .app-sidebar [data-slot="sidebar-menu-button"][data-active="true"]::after,
 .app-sidebar .sidebar-nav-link[data-active="true"]::after {
-  content: "";
   position: absolute;
-  left: -11px;
   top: 8px;
   bottom: 8px;
+  left: -11px;
   width: 2px;
-  border-radius: 999px;
+  content: "";
   background: currentColor;
+  border-radius: 999px;
 }
 
 /* Dark mode with a light sidebar: the active item keeps its light pill
    (the dark pill rule above reaches it through its unguarded selector). */
-:root.dark[data-skin="clean"][data-sidebar-tone="light"] .app-sidebar [data-slot="sidebar-menu-button"][data-active],
-:root.dark[data-skin="clean"][data-sidebar-tone="light"] .app-sidebar [data-slot="sidebar-menu-button"][data-active="true"],
-:root.dark[data-skin="clean"][data-sidebar-tone="light"] .app-sidebar .sidebar-nav-link[data-active],
-:root.dark[data-skin="clean"][data-sidebar-tone="light"] .app-sidebar .sidebar-nav-link[data-active="true"] {
+:root.dark[data-skin="clean"][data-sidebar-tone="light"]
+  .app-sidebar
+  [data-slot="sidebar-menu-button"][data-active],
+:root.dark[data-skin="clean"][data-sidebar-tone="light"]
+  .app-sidebar
+  [data-slot="sidebar-menu-button"][data-active="true"],
+:root.dark[data-skin="clean"][data-sidebar-tone="light"]
+  .app-sidebar
+  .sidebar-nav-link[data-active],
+:root.dark[data-skin="clean"][data-sidebar-tone="light"]
+  .app-sidebar
+  .sidebar-nav-link[data-active="true"] {
   background: #ffffff !important;
   border: 1px solid rgba(0, 0, 0, 0.07) !important;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06) !important;
@@ -585,10 +738,18 @@
 
 /* Forced dark sidebar (any mode): the active item takes the dark pill,
    its label follows the sidebar's own tokens. */
-:root[data-skin="clean"][data-sidebar-tone="dark"] .app-sidebar [data-slot="sidebar-menu-button"][data-active],
-:root[data-skin="clean"][data-sidebar-tone="dark"] .app-sidebar [data-slot="sidebar-menu-button"][data-active="true"],
-:root[data-skin="clean"][data-sidebar-tone="dark"] .app-sidebar .sidebar-nav-link[data-active],
-:root[data-skin="clean"][data-sidebar-tone="dark"] .app-sidebar .sidebar-nav-link[data-active="true"] {
+:root[data-skin="clean"][data-sidebar-tone="dark"]
+  .app-sidebar
+  [data-slot="sidebar-menu-button"][data-active],
+:root[data-skin="clean"][data-sidebar-tone="dark"]
+  .app-sidebar
+  [data-slot="sidebar-menu-button"][data-active="true"],
+:root[data-skin="clean"][data-sidebar-tone="dark"]
+  .app-sidebar
+  .sidebar-nav-link[data-active],
+:root[data-skin="clean"][data-sidebar-tone="dark"]
+  .app-sidebar
+  .sidebar-nav-link[data-active="true"] {
   background: #262626 !important;
   border: 1px solid rgba(255, 255, 255, 0.07) !important;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4) !important;

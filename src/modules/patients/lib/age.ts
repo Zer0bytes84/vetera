@@ -1,8 +1,8 @@
-export type AgeParts = {
-  years: number;
-  months: number;
+export interface AgeParts {
   days: number;
-};
+  months: number;
+  years: number;
+}
 
 /**
  * Calcule l'âge détaillé d'un patient à partir de sa date de naissance (ISO).

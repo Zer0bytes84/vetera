@@ -13,7 +13,7 @@ export class RemoteClinicDatabase extends Database {
     super("lan:poste-principal");
   }
 
-  override async execute(
+  override execute(
     query: string,
     bindValues?: unknown[]
   ): Promise<QueryResult> {
@@ -23,14 +23,14 @@ export class RemoteClinicDatabase extends Database {
     });
   }
 
-  override async select<T>(query: string, bindValues?: unknown[]): Promise<T> {
+  override select<T>(query: string, bindValues?: unknown[]): Promise<T> {
     return invoke<T>("clinic_network_select", {
       query,
       values: bindValues ?? [],
     });
   }
 
-  override async close(): Promise<boolean> {
+  override close(): Promise<boolean> {
     return invoke<boolean>("clinic_network_close");
   }
 }

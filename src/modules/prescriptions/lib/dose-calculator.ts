@@ -20,6 +20,9 @@
 
 import type { PrescriptionDosageUnit } from "@/types/db";
 
+const DIGIT = /\d/;
+const TRAILING_ZEROS = /\.?0+$/;
+
 export type DoseUnit = PrescriptionDosageUnit | string;
 
 export interface ParsedPosology {
@@ -53,13 +56,22 @@ const UNIT_ALT =
   "(mg/kg|mg\\/kg|mg\\s*\\/\\s*kg|mg/mL|mg\\/mL|mg\\s*\\/\\s*mL|mg|UI/kg|UI\\/kg|mL/kg|mL\\/kg|mL|cp/kg|cp\\/kg)";
 
 /** Écriture canonique des unités, quelle que soit la casse du texte. */
-const CANONICAL_UNITS = ["mg/kg", "mg/mL", "mg", "UI/kg", "mL/kg", "mL", "cp/kg"];
+const CANONICAL_UNITS = [
+  "mg/kg",
+  "mg/mL",
+  "mg",
+  "UI/kg",
+  "mL/kg",
+  "mL",
+  "cp/kg",
+];
 
 function canonicalUnit(raw: string): DoseUnit {
   const compact = raw.replace(/\s/g, "");
   return (
-    CANONICAL_UNITS.find((unit) => unit.toLowerCase() === compact.toLowerCase()) ??
-    compact
+    CANONICAL_UNITS.find(
+      (unit) => unit.toLowerCase() === compact.toLowerCase()
+    ) ?? compact
   );
 }
 
@@ -90,7 +102,9 @@ export function parsePosology(input: string): ParsedPosology | null {
   }
 
   // 2. Valeur unique : "val unit"
-  const singleMatch = text.match(new RegExp(`^(${NUMBER})\\s*${UNIT_ALT}$`, "i"));
+  const singleMatch = text.match(
+    new RegExp(`^(${NUMBER})\\s*${UNIT_ALT}$`, "i")
+  );
   if (singleMatch) {
     return {
       unit: canonicalUnit(singleMatch[2]),
@@ -112,8 +126,16 @@ export function parsePosology(input: string): ParsedPosology | null {
 export function prescriptionUnitFor(
   unit: DoseUnit
 ): PrescriptionDosageUnit | null {
-  if (unit === "mg") return "mg/tot";
-  const known: PrescriptionDosageUnit[] = ["mg/kg", "mg/tot", "mL/kg", "UI/kg", "cp/kg"];
+  if (unit === "mg") {
+    return "mg/tot";
+  }
+  const known: PrescriptionDosageUnit[] = [
+    "mg/kg",
+    "mg/tot",
+    "mL/kg",
+    "UI/kg",
+    "cp/kg",
+  ];
   return known.find((value) => value === unit) ?? null;
 }
 
@@ -151,7 +173,10 @@ export function parseCatalogPosology(input: string): CatalogPosology | null {
     `^J1 puis ${NUMBER}(?:\\s*[–-]\\s*${NUMBER})?\\s*\\S+$`,
     "i"
   );
-  if (!posology || (/\d/.test(remainder) && !loadingThenMaintenance.test(remainder))) {
+  if (
+    !posology ||
+    (DIGIT.test(remainder) && !loadingThenMaintenance.test(remainder))
+  ) {
     return null;
   }
   return { posology, remainder };
@@ -249,5 +274,5 @@ export function formatNumber(value: number): string {
     return String(Number(value.toPrecision(3)));
   }
   const fixed = value.toFixed(2);
-  return fixed.replace(/\.?0+$/, "");
+  return fixed.replace(TRAILING_ZEROS, "");
 }

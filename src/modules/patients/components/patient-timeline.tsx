@@ -1,19 +1,5 @@
-import { meaningful } from "../lib/meaningful";
-import {
-  CalendarBlank,
-  FileText,
-  ClipboardText,
-  PencilSimple,
-  Notebook,
-  Pill,
-  ReceiptText,
-  Stethoscope,
-  Syringe,
-  TrendUp,
-} from "@/lib/icons";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,6 +9,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
+import { APPOINTMENT_STATUS_META } from "@/config/status-meta";
 import {
   useAppointmentsRepository,
   useConsultationDocumentsRepository,
@@ -32,21 +19,27 @@ import {
   useVaccinationsRepository,
   useWeightEntriesRepository,
 } from "@/data/repositories";
-import { usePatientDocuments } from "@/modules/documents/hooks/use-managed-documents";
-import { isTauriRuntime } from "@/services/browser-store";
 import {
-  collectTimelinePieces,
-  piecesByVisit,
-  type TimelinePiece,
-  type TimelinePieceKind,
-} from "../lib/timeline-pieces";
-import { APPOINTMENT_STATUS_META } from "@/config/status-meta";
+  CalendarBlank,
+  ClipboardText,
+  FileText,
+  Notebook,
+  PencilSimple,
+  Pill,
+  ReceiptText,
+  Stethoscope,
+  Syringe,
+  TrendUp,
+} from "@/lib/icons";
+import { ISO_DATE_PREFIX } from "@/lib/patterns";
 import { cn } from "@/lib/utils";
+import { isSoapReviewed } from "@/modules/consultations/local-ai/soap-review";
 import {
   OFF_VISIT_KINDS,
   readOffVisitNote,
 } from "@/modules/consultations/off-visit-note";
-import { isSoapReviewed } from "@/modules/consultations/local-ai/soap-review";
+import { usePatientDocuments } from "@/modules/documents/hooks/use-managed-documents";
+import { isTauriRuntime } from "@/services/browser-store";
 import type {
   Appointment,
   ConsultationSoap,
@@ -55,30 +48,44 @@ import type {
   Vaccination,
   WeightEntry,
 } from "@/types/db";
+import { meaningful } from "../lib/meaningful";
+import {
+  collectTimelinePieces,
+  piecesByVisit,
+  type TimelinePiece,
+  type TimelinePieceKind,
+} from "../lib/timeline-pieces";
+
+const APPOINTMENT_ID_PREFIX = /^apt-/;
+const NOTE_ID_PREFIX = /^note-/;
 
 const loadServicesBillingService = () => import("@/services/billingService");
 
 type TimelineKind =
-  "consultation" | "note" | "vaccination" | "weight" | "piece";
+  | "consultation"
+  | "note"
+  | "vaccination"
+  | "weight"
+  | "piece";
 
-type TimelineEntry = {
-  id: string;
+interface TimelineEntry {
   at: string;
+  context?: string;
+  id: string;
   kind: TimelineKind;
   label: string;
-  context?: string;
-  summary: string;
-  summaryDetail?: string;
-  /** Quiet: the state an event normally ends in, read as plain text; only the others stay a tag. */
-  statusBadge?: { label: string; className: string; quiet?: boolean };
   /** A visit that was planned or confirmed and whose time has passed with no other status. */
   overdue?: boolean;
-  weightEntry?: WeightEntry;
-  /** Prescriptions, invoices and results this event produced. */
-  pieces?: TimelinePiece[];
   /** A piece no visit produced stands as its own event. */
   piece?: TimelinePiece;
-};
+  /** Prescriptions, invoices and results this event produced. */
+  pieces?: TimelinePiece[];
+  /** Quiet: the state an event normally ends in, read as plain text; only the others stay a tag. */
+  statusBadge?: { label: string; className: string; quiet?: boolean };
+  summary: string;
+  summaryDetail?: string;
+  weightEntry?: WeightEntry;
+}
 
 const KIND_ICON: Record<TimelineKind, typeof Stethoscope> = {
   consultation: Stethoscope,
@@ -124,11 +131,15 @@ const PIECE_DATE = new Intl.DateTimeFormat("fr-FR", {
  */
 export function pieceDetail(
   piece: Pick<TimelinePiece, "kind" | "detail">,
-  eventAt: string,
+  eventAt: string
 ) {
-  if (piece.kind !== "invoice" || !piece.detail) return piece.detail;
+  if (piece.kind !== "invoice" || !piece.detail) {
+    return piece.detail;
+  }
   const [number, ...rest] = piece.detail.split(" · ");
-  if (!number.startsWith("LEGACY-")) return piece.detail;
+  if (!number.startsWith("LEGACY-")) {
+    return piece.detail;
+  }
   const date = new Date(eventAt);
   return (
     [Number.isNaN(date.getTime()) ? "" : PIECE_DATE.format(date), ...rest]
@@ -140,9 +151,11 @@ export function pieceDetail(
 /** Planned or confirmed, and its end is behind us: the visit is not history yet. */
 export function isOverdueVisit(
   apt: Pick<Appointment, "status" | "startTime" | "endTime">,
-  now: number,
+  now: number
 ) {
-  if (apt.status !== "scheduled" && apt.status !== "confirmed") return false;
+  if (apt.status !== "scheduled" && apt.status !== "confirmed") {
+    return false;
+  }
   const end = new Date(apt.endTime || apt.startTime).getTime();
   return !Number.isNaN(end) && end < now;
 }
@@ -157,11 +170,11 @@ const TYPE_LABEL: Record<Appointment["type"], string> = {
 
 function formatDateParts(iso: string, includeTime: boolean) {
   if (!includeTime) {
-    const civilDate = iso.match(/^(\d{4})-(\d{2})-(\d{2})/);
+    const civilDate = iso.match(ISO_DATE_PREFIX);
     if (civilDate) {
       const [, year, month, day] = civilDate;
       const date = new Date(
-        Date.UTC(Number(year), Number(month) - 1, Number(day)),
+        Date.UTC(Number(year), Number(month) - 1, Number(day))
       );
       return {
         date: date.toLocaleDateString("fr-FR", {
@@ -205,7 +218,7 @@ const oneLine = (value?: string | null) => meaningful(value);
  */
 export function consultationSummary(
   apt: Pick<Appointment, "diagnosis" | "treatment" | "notes">,
-  soap?: ConsultationSoap | null,
+  soap?: ConsultationSoap | null
 ): { summary: string; summaryDetail?: string } {
   const assessment = oneLine(soap?.assessment);
   const plan = oneLine(soap?.plan);
@@ -243,18 +256,20 @@ function buildEntries(
   notes: Note[] = [],
   getSoap: (appointmentId: string) => ConsultationSoap | null = () => null,
   pieces: TimelinePiece[] = [],
-  now = Date.now(),
+  now = Date.now()
 ): TimelineEntry[] {
   const items: TimelineEntry[] = [];
   const { attached, loose } = piecesByVisit(
     pieces,
-    new Set(appointments.map((apt) => apt.id)),
+    new Set(appointments.map((apt) => apt.id))
   );
 
   // Notes kept without a visit: dated by their validation, never a consultation.
   for (const note of notes) {
     const meta = readOffVisitNote(note);
-    if (!meta) continue;
+    if (!meta) {
+      continue;
+    }
     items.push({
       id: `note-${note.id}`,
       at: note.createdAt,
@@ -357,7 +372,7 @@ function buildEntries(
   }
 
   return items.sort(
-    (a, b) => new Date(b.at).getTime() - new Date(a.at).getTime(),
+    (a, b) => new Date(b.at).getTime() - new Date(a.at).getTime()
   );
 }
 
@@ -368,7 +383,9 @@ const MONTH_FORMAT = new Intl.DateTimeFormat("fr-FR", {
 
 function monthLabel(iso: string) {
   const date = new Date(iso);
-  if (Number.isNaN(date.getTime())) return "Date inconnue";
+  if (Number.isNaN(date.getTime())) {
+    return "Date inconnue";
+  }
   const label = MONTH_FORMAT.format(date);
   return label.charAt(0).toUpperCase() + label.slice(1);
 }
@@ -377,15 +394,18 @@ function monthLabel(iso: string) {
 function usePatientInvoices(patientId: string) {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   useEffect(() => {
-    if (!isTauriRuntime()) return;
+    if (!isTauriRuntime()) {
+      return;
+    }
     let cancelled = false;
     void loadServicesBillingService()
       .then(({ listInvoices }) => listInvoices())
       .then((rows) => {
-        if (!cancelled)
+        if (!cancelled) {
           setInvoices(
-            rows.filter((invoice) => invoice.patientId === patientId),
+            rows.filter((invoice) => invoice.patientId === patientId)
           );
+        }
       })
       .catch(() => {
         // A missing invoice list leaves the visits themselves readable.
@@ -410,7 +430,7 @@ function PieceChip({
   const detail = pieceDetail(piece, eventAt);
   const content = (
     <>
-      <Icon className="size-3.5 shrink-0" weight="duotone" aria-hidden="true" />
+      <Icon aria-hidden="true" className="size-3.5 shrink-0" weight="duotone" />
       <span className="font-medium">{piece.label}</span>
       {detail ? (
         <span className="truncate text-muted-foreground">{detail}</span>
@@ -455,12 +475,12 @@ export function PatientTimeline({
     () =>
       collectTimelinePieces({
         attachments: attachmentsRepo.data.filter(
-          (doc) => doc.patientId === patientId,
+          (doc) => doc.patientId === patientId
         ),
         documents,
         invoices,
         prescriptions: prescriptionsRepo.data.filter(
-          (rx) => rx.patientId === patientId,
+          (rx) => rx.patientId === patientId
         ),
       }),
     [
@@ -469,7 +489,7 @@ export function PatientTimeline({
       invoices,
       prescriptionsRepo.data,
       patientId,
-    ],
+    ]
   );
 
   const entries = useMemo(
@@ -480,7 +500,7 @@ export function PatientTimeline({
         weightsRepo.forPatient(patientId),
         notesRepo.data.filter((note) => note.patientId === patientId),
         soapsRepo.forAppointment,
-        pieces,
+        pieces
       ),
     [
       appointmentsRepo.data,
@@ -490,7 +510,7 @@ export function PatientTimeline({
       soapsRepo.forAppointment,
       patientId,
       pieces,
-    ],
+    ]
   );
 
   // A few events first; « Afficher plus » adds the next ones. The count
@@ -505,8 +525,11 @@ export function PatientTimeline({
   for (const entry of visible) {
     const label = monthLabel(entry.at);
     const current = months.at(-1);
-    if (current?.label === label) current.entries.push(entry);
-    else months.push({ label, entries: [entry] });
+    if (current?.label === label) {
+      current.entries.push(entry);
+    } else {
+      months.push({ label, entries: [entry] });
+    }
   }
 
   return (
@@ -528,9 +551,9 @@ export function PatientTimeline({
         </Empty>
       ) : (
         <div
+          aria-label="Chronologie du patient"
           className="patient-timeline"
           role="region"
-          aria-label="Chronologie du patient"
         >
           {months.map((month) => (
             <section className="patient-timeline-month" key={month.label}>
@@ -542,29 +565,38 @@ export function PatientTimeline({
                     : KIND_ICON[entry.kind];
                   const dateParts = formatDateParts(
                     entry.at,
-                    entry.kind === "consultation" || entry.kind === "note",
+                    entry.kind === "consultation" || entry.kind === "note"
                   );
                   // The visit the Synthèse shows in full: its note is not repeated here.
                   const compact = entry.id === `apt-${summarizedVisitId}`;
                   const noReport = entry.summary === NO_REPORT;
+                  const { weightEntry, piece: openPiece } = entry;
                   return (
                     <li
                       className="patient-timeline-event"
-                      key={entry.id}
-                      data-kind={entry.kind}
-                      data-piece={entry.piece?.kind}
                       data-compact={compact || undefined}
+                      data-kind={entry.kind}
                       data-overdue={entry.overdue || undefined}
+                      data-piece={entry.piece?.kind}
+                      key={entry.id}
                     >
-                      <time className="patient-timeline-date" dateTime={entry.at}>
+                      <time
+                        className="patient-timeline-date"
+                        dateTime={entry.at}
+                      >
                         {dateParts.date}
                         {dateParts.time ? ` · ${dateParts.time}` : ""}
                       </time>
                       <div className="patient-timeline-kind">
-                        <span className="patient-timeline-marker" aria-hidden="true">
+                        <span
+                          aria-hidden="true"
+                          className="patient-timeline-marker"
+                        >
                           <Icon className="size-3.5" />
                         </span>
-                        <span className="patient-timeline-title">{entry.label}</span>
+                        <span className="patient-timeline-title">
+                          {entry.label}
+                        </span>
                       </div>
                       <div className="patient-timeline-body">
                         {entry.context || entry.kind === "consultation" ? (
@@ -575,8 +607,14 @@ export function PatientTimeline({
                             {entry.context || "Non renseigné"}
                           </p>
                         ) : null}
-                        {!entry.context && !entry.summary && !entry.summaryDetail && entry.kind !== "consultation" ? (
-                          <p className="patient-timeline-note">Aucun détail renseigné</p>
+                        {!(
+                          entry.context ||
+                          entry.summary ||
+                          entry.summaryDetail
+                        ) && entry.kind !== "consultation" ? (
+                          <p className="patient-timeline-note">
+                            Aucun détail renseigné
+                          </p>
                         ) : null}
                         {compact ? null : noReport ? (
                           <p className="patient-timeline-note">{NO_REPORT}</p>
@@ -598,8 +636,8 @@ export function PatientTimeline({
                       <div className="patient-timeline-side">
                         {entry.pieces?.length ? (
                           <ul
-                            className="patient-timeline-pieces"
                             aria-label="Pièces de cet événement"
+                            className="patient-timeline-pieces"
                           >
                             {entry.pieces.map((piece) => (
                               <li key={piece.id}>
@@ -619,8 +657,8 @@ export function PatientTimeline({
                         ) : entry.statusBadge ? (
                           <Badge
                             className={cn(
-                              "rounded-full px-2 py-0.5 font-medium t-12",
-                              entry.statusBadge.className,
+                              "t-12 rounded-full px-2 py-0.5 font-medium",
+                              entry.statusBadge.className
                             )}
                             variant="secondary"
                           >
@@ -634,7 +672,7 @@ export function PatientTimeline({
                               className="h-7 gap-1 rounded-full px-3 text-xs"
                               onClick={() =>
                                 onJumpToAppointment(
-                                  entry.id.replace(/^apt-/, ""),
+                                  entry.id.replace(APPOINTMENT_ID_PREFIX, "")
                                 )
                               }
                               size="sm"
@@ -647,7 +685,7 @@ export function PatientTimeline({
                             <Button
                               className="h-7 gap-1 rounded-full px-3 text-xs"
                               onClick={() =>
-                                onOpenNote(entry.id.replace(/^note-/, ""))
+                                onOpenNote(entry.id.replace(NOTE_ID_PREFIX, ""))
                               }
                               size="sm"
                               variant="outline"
@@ -659,20 +697,20 @@ export function PatientTimeline({
                               />
                             </Button>
                           ) : entry.kind === "weight" &&
-                            entry.weightEntry &&
+                            weightEntry &&
                             onEditWeight ? (
                             <Button
                               className="h-7 rounded-full px-3 text-xs"
-                              onClick={() => onEditWeight(entry.weightEntry!)}
+                              onClick={() => onEditWeight(weightEntry)}
                               size="sm"
                               variant="outline"
                             >
                               Modifier
                             </Button>
-                          ) : entry.piece && onOpenPiece ? (
+                          ) : openPiece && onOpenPiece ? (
                             <Button
                               className="h-7 rounded-full px-3 text-xs"
-                              onClick={() => onOpenPiece(entry.piece!)}
+                              onClick={() => onOpenPiece(openPiece)}
                               size="sm"
                               variant="outline"
                             >

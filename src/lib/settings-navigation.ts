@@ -24,7 +24,10 @@ export const SETTINGS_SECTION_KEY = "baitari:pending-settings-section";
 export const SETTINGS_SECTION_EVENT = "baitari:open-settings-section";
 
 export function isSettingsTab(value: unknown): value is SettingsTab {
-  return typeof value === "string" && (SETTINGS_TABS as readonly string[]).includes(value);
+  return (
+    typeof value === "string" &&
+    (SETTINGS_TABS as readonly string[]).includes(value)
+  );
 }
 
 /** Ask Paramètres to open `section`; the caller still navigates to the page. */
@@ -34,5 +37,7 @@ export function requestSettingsSection(section: SettingsTab): void {
   } catch {
     // Private mode without storage: the event below still reaches an open page.
   }
-  window.dispatchEvent(new CustomEvent(SETTINGS_SECTION_EVENT, { detail: section }));
+  window.dispatchEvent(
+    new CustomEvent(SETTINGS_SECTION_EVENT, { detail: section })
+  );
 }

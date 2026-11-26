@@ -1,16 +1,5 @@
-import {
-  ArrowLeft,
-  Heartbeat,
-  Hospital,
-  IdentificationBadge,
-  Notebook,
-  Pill,
-  Printer,
-  Thermometer,
-} from "@/lib/icons";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -31,6 +20,16 @@ import {
   useHospitalizationsRepository,
   useHospitalizationVitalsRepository,
 } from "@/data/repositories";
+import {
+  ArrowLeft,
+  Heartbeat,
+  Hospital,
+  IdentificationBadge,
+  Notebook,
+  Pill,
+  Printer,
+  Thermometer,
+} from "@/lib/icons";
 import { cn } from "@/lib/utils";
 import type {
   Hospitalization,
@@ -101,7 +100,7 @@ export function HospitalizationDetail({
               <Hospital className="size-5 text-sky-600" weight="duotone" />
             </div>
             <div className="grid flex-1 gap-0.5">
-              <CardDescription className="font-mono t-12 uppercase tracking-[0.06em]">
+              <CardDescription className="t-12 font-mono uppercase tracking-[0.06em]">
                 {patient.name} · {patient.species}
               </CardDescription>
               <CardTitle className="text-lg tracking-tight">
@@ -154,7 +153,7 @@ export function HospitalizationDetail({
         <CardContent className="grid gap-4 p-6">
           {hospitalization.diagnosis ? (
             <div className="grid gap-1">
-              <p className="font-mono t-12 text-muted-foreground uppercase tracking-[0.06em]">
+              <p className="t-12 font-mono text-muted-foreground uppercase tracking-[0.06em]">
                 {t("modules.hospitalizations.fields.diagnosis", "Diagnostic")}
               </p>
               <p className="text-sm">{hospitalization.diagnosis}</p>
@@ -164,7 +163,7 @@ export function HospitalizationDetail({
           <div className="grid gap-3 sm:grid-cols-2">
             {hospitalization.weightKg ? (
               <div className="rounded-lg border border-border/40 bg-muted/20 p-3">
-                <p className="font-mono t-12 text-muted-foreground uppercase tracking-[0.06em]">
+                <p className="t-12 font-mono text-muted-foreground uppercase tracking-[0.06em]">
                   {t("modules.hospitalizations.fields.weightKg", "Poids")}
                 </p>
                 <p className="font-semibold text-base">
@@ -174,7 +173,7 @@ export function HospitalizationDetail({
             ) : null}
             {hospitalization.temperatureC ? (
               <div className="rounded-lg border border-border/40 bg-muted/20 p-3">
-                <p className="font-mono t-12 text-muted-foreground uppercase tracking-[0.06em]">
+                <p className="t-12 font-mono text-muted-foreground uppercase tracking-[0.06em]">
                   {t(
                     "modules.hospitalizations.fields.temperatureC",
                     "T° initiale"
@@ -187,7 +186,7 @@ export function HospitalizationDetail({
             ) : null}
             {hospitalization.ivFluids ? (
               <div className="rounded-lg border border-border/40 bg-muted/20 p-3 sm:col-span-2">
-                <p className="font-mono t-12 text-muted-foreground uppercase tracking-[0.06em]">
+                <p className="t-12 font-mono text-muted-foreground uppercase tracking-[0.06em]">
                   {t("modules.hospitalizations.fields.ivFluids", "Fluides IV")}
                 </p>
                 <p className="font-medium text-sm">
@@ -202,7 +201,7 @@ export function HospitalizationDetail({
           ) : null}
           {hospitalization.feedingPlan ? (
             <div className="grid gap-1">
-              <p className="font-mono t-12 text-muted-foreground uppercase tracking-[0.06em]">
+              <p className="t-12 font-mono text-muted-foreground uppercase tracking-[0.06em]">
                 {t(
                   "modules.hospitalizations.fields.feedingPlan",
                   "Alimentation"
@@ -213,7 +212,7 @@ export function HospitalizationDetail({
           ) : null}
           {hospitalization.specialCare ? (
             <div className="grid gap-1">
-              <p className="font-mono t-12 text-muted-foreground uppercase tracking-[0.06em]">
+              <p className="t-12 font-mono text-muted-foreground uppercase tracking-[0.06em]">
                 {t("modules.hospitalizations.fields.specialCare", "Soins")}
               </p>
               <p className="whitespace-pre-wrap text-sm">
@@ -225,7 +224,7 @@ export function HospitalizationDetail({
           <Separator />
 
           <div className="flex flex-wrap items-center gap-1.5">
-            <span className="font-mono t-12 text-muted-foreground uppercase tracking-[0.06em]">
+            <span className="t-12 font-mono text-muted-foreground uppercase tracking-[0.06em]">
               {t("modules.hospitalizations.fields.changeStatus", "Statut")}
             </span>
             {(
@@ -257,7 +256,7 @@ export function HospitalizationDetail({
       <Card className="h-fit lg:col-span-7">
         <CardHeader className="flex-row items-center justify-between border-border/40 border-b">
           <div className="grid gap-0.5">
-            <CardDescription className="font-mono t-12 uppercase tracking-[0.06em]">
+            <CardDescription className="t-12 font-mono uppercase tracking-[0.06em]">
               {t("modules.hospitalizations.vitals.title", "Constantes")}
             </CardDescription>
             <CardTitle className="text-base">
@@ -388,6 +387,21 @@ export function HospitalizationDetail({
   );
 }
 
+function vitalToneClass(
+  colorTone: "destructive" | "warning" | "neutral" | "success"
+): string {
+  switch (colorTone) {
+    case "destructive":
+      return "border-rose-500/40 bg-rose-500/5";
+    case "warning":
+      return "border-amber-500/40 bg-amber-500/5";
+    case "success":
+      return "border-emerald-500/40 bg-emerald-500/5";
+    default:
+      return "border-border/40 bg-muted/20";
+  }
+}
+
 function VitalCell({
   icon,
   label,
@@ -402,17 +416,10 @@ function VitalCell({
   tone?: "success" | "warning" | "destructive" | "neutral";
 }) {
   const colorTone = tone ?? (critical ? "destructive" : "neutral");
-  const bgClass =
-    colorTone === "destructive"
-      ? "border-rose-500/40 bg-rose-500/5"
-      : colorTone === "warning"
-        ? "border-amber-500/40 bg-amber-500/5"
-        : colorTone === "success"
-          ? "border-emerald-500/40 bg-emerald-500/5"
-          : "border-border/40 bg-muted/20";
+  const bgClass = vitalToneClass(colorTone);
   return (
     <div className={cn("rounded-lg border p-3", bgClass)}>
-      <p className="flex items-center gap-1 font-mono t-12 text-muted-foreground uppercase tracking-[0.06em]">
+      <p className="t-12 flex items-center gap-1 font-mono text-muted-foreground uppercase tracking-[0.06em]">
         {icon}
         {label}
       </p>

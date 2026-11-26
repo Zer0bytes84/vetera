@@ -13,17 +13,20 @@ import { DirectionProvider } from "@/components/ui/direction";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import i18n, { isRtlLanguage } from "@/i18n/config";
-import { isActivationAdminRoute } from "@/services/activationAdminWindowService";
 import { initWindowControls } from "@/modules/shell/window-controls";
+import { isActivationAdminRoute } from "@/services/activationAdminWindowService";
 import "@/modules/shell/window-controls.css";
+import { mustExist } from "@/lib/must-exist";
 
 // Windows: our header is the title bar (minimize, maximize, close from tauri-plugin-decorum). Nothing happens elsewhere.
-if (!isActivationAdminRoute()) initWindowControls();
+if (!isActivationAdminRoute()) {
+  initWindowControls();
+}
 
-type ErrorBoundaryState = {
-  hasError: boolean;
+interface ErrorBoundaryState {
   error: Error | null;
-};
+  hasError: boolean;
+}
 
 class ErrorBoundary extends React.Component<
   React.PropsWithChildren,
@@ -102,7 +105,9 @@ function AppProviders() {
   return <AuthProvider>{content}</AuthProvider>;
 }
 
-createRoot(document.getElementById("root")!).render(
+createRoot(
+  mustExist(document.getElementById("root"), "élément #root de index.html")
+).render(
   <StrictMode>
     <ErrorBoundary>
       <AppDirectionProvider>

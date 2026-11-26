@@ -3,10 +3,10 @@
    1 and scale 0.96 to 1, 1.8 s each way, eased in and out, looping. */
 .startup-splash {
   display: grid;
-  min-height: 100dvh;
   place-items: center;
-  background: var(--background);
+  min-height: 100dvh;
   color: var(--foreground);
+  background: var(--background);
 }
 .startup-splash-mark {
   display: grid;

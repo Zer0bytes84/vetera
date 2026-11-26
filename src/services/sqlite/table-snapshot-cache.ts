@@ -1,17 +1,23 @@
 /** Shared, immutable snapshots. Pending writes are separate layers so rollback
  * never discards a later write, including edits made by another hook instance. */
-export type CachedRow = { id: string; [key: string]: unknown };
-type Layer<R> = { id: string; apply: (rows: R[]) => R[] };
-type Entry<R> = {
+export interface CachedRow {
+  id: string;
+  [key: string]: unknown;
+}
+interface Layer<R> {
+  apply: (rows: R[]) => R[];
+  id: string;
+}
+interface Entry<R> {
   base?: R[];
-  visible?: R[];
   generation: number;
   layers: Map<number, Layer<R>>;
   listeners: Set<() => void>;
-};
+  visible?: R[];
+}
 
 export class TableSnapshotCache<R extends { id: string }> {
-  private tables = new Map<string, Entry<R>>();
+  private readonly tables = new Map<string, Entry<R>>();
   private nextToken = 0;
   private entry(table: string): Entry<R> {
     let entry = this.tables.get(table);
@@ -47,15 +53,20 @@ export class TableSnapshotCache<R extends { id: string }> {
     let rows = entry.base;
     if (rows !== undefined || entry.layers.size) {
       rows ??= [];
-      for (const layer of entry.layers.values()) rows = layer.apply(rows);
+      for (const layer of entry.layers.values()) {
+        rows = layer.apply(rows);
+      }
     }
     entry.visible = rows;
-    entry.listeners.forEach((listener) => listener());
+    for (const listener of entry.listeners) {
+      listener();
+    }
   }
   replace(table: string, rows: R[], generation?: number) {
     const entry = this.entry(table);
-    if (generation !== undefined && generation !== entry.generation)
+    if (generation !== undefined && generation !== entry.generation) {
       return false;
+    }
     entry.base = rows;
     this.publish(entry);
     return true;
@@ -71,7 +82,9 @@ export class TableSnapshotCache<R extends { id: string }> {
   commit(table: string, token: number, row?: R | null) {
     const entry = this.entry(table);
     const layer = entry.layers.get(token);
-    if (!layer) return;
+    if (!layer) {
+      return;
+    }
     if (entry.base !== undefined) {
       entry.base =
         row === undefined

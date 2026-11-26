@@ -1,4 +1,9 @@
 /** Display-only formatting. Repository values and contact links stay intact. */
+
+import { WHITESPACE_RUN } from "@/lib/patterns";
+
+const PHONE_TEXT = /^\+?[\d\s().-]+$/;
+
 // Calling-code identifiers from libphonenumber-js metadata, checked 2026-10-08.
 // https://github.com/catamphetamine/libphonenumber-js
 const callingCodes = new Set(
@@ -25,17 +30,25 @@ export function formatDinars(value: number, maximumFractionDigits = 2) {
 /** Group the national number by pairs without guessing a country. */
 export function formatPhone(value?: string | null) {
   const text = value?.trim() || "";
-  if (!text || !/^\+?[\d\s().-]+$/.test(text)) return text;
+  if (!(text && PHONE_TEXT.test(text))) {
+    return text;
+  }
   const digits = text.replace(/\D/g, "");
-  if (!digits) return text;
+  if (!digits) {
+    return text;
+  }
   const pairs = (number: string) =>
     number.replace(/(\d)(?=(\d{2})+$)/g, "$1\u00a0");
-  if (!text.startsWith("+")) return pairs(digits);
+  if (!text.startsWith("+")) {
+    return pairs(digits);
+  }
   const code = [1, 2, 3]
     .map((length) => digits.slice(0, length))
     .find((prefix) => callingCodes.has(prefix));
   // Keep incomplete or unknown international numbers as entered.
-  if (!code || digits.length <= code.length) return text;
+  if (!code || digits.length <= code.length) {
+    return text;
+  }
   return `+${code}\u00a0${pairs(digits.slice(code.length))}`;
 }
 
@@ -50,8 +63,16 @@ export function formatDisplayText(value: string) {
     );
 }
 
-const clockFormatter = new Intl.DateTimeFormat("fr-FR", { hour: "2-digit", minute: "2-digit", hour12: false });
-const longDayFormatter = new Intl.DateTimeFormat("fr-FR", { weekday: "long", day: "numeric", month: "long" });
+const clockFormatter = new Intl.DateTimeFormat("fr-FR", {
+  hour: "2-digit",
+  minute: "2-digit",
+  hour12: false,
+});
+const longDayFormatter = new Intl.DateTimeFormat("fr-FR", {
+  weekday: "long",
+  day: "numeric",
+  month: "long",
+});
 
 /** Clock time as "09:30", whatever the browser locale. */
 export function formatClockTime(date: Date) {
@@ -66,10 +87,16 @@ export function formatLongDay(date: Date) {
 /** "Il y a 2 min", "Il y a 3 h", "Il y a 2 j": units separated by a non-breaking space. */
 export function formatElapsed(date: Date, now = new Date()) {
   const minutes = Math.floor((now.getTime() - date.getTime()) / 60_000);
-  if (minutes < 1) return "À l’instant";
-  if (minutes < 60) return `Il y a ${minutes}\u00a0min`;
+  if (minutes < 1) {
+    return "À l’instant";
+  }
+  if (minutes < 60) {
+    return `Il y a ${minutes}\u00a0min`;
+  }
   const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `Il y a ${hours}\u00a0h`;
+  if (hours < 24) {
+    return `Il y a ${hours}\u00a0h`;
+  }
   return `Il y a ${Math.floor(hours / 24)}\u00a0j`;
 }
 
@@ -77,7 +104,7 @@ const PERSON_TITLES = /^(dr|pr|mme|mlle|m|me|mr)\.?$/i;
 
 /** First name for a greeting: titles (Dr, Pr, Mme…) are skipped, "Dr Lina Ait Salem" gives "Lina". */
 export function firstNameOf(name?: string | null, fallback = "") {
-  const words = (name ?? "").split(/\s+/).filter(Boolean);
+  const words = (name ?? "").split(WHITESPACE_RUN).filter(Boolean);
   const first = words.find((word) => !PERSON_TITLES.test(word));
   return first ?? fallback;
 }

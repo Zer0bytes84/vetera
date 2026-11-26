@@ -1,20 +1,17 @@
-import { createUuid } from "@/lib/uuid";
-import { Calendar01Icon } from "@/lib/hugeicons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { fr } from "date-fns/locale";
-
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-
+import { Calendar01Icon } from "@/lib/hugeicons";
+import { ISO_DATE } from "@/lib/patterns";
 import { cn } from "@/lib/utils";
-
+import { createUuid } from "@/lib/uuid";
 import type {
   BillingDocumentStatus,
   Invoice,
@@ -174,9 +171,7 @@ export function formatDate(value?: string | null) {
   if (!value) {
     return "Non définie";
   }
-  const date = /^\d{4}-\d{2}-\d{2}$/.test(value)
-    ? parseDateInput(value)
-    : new Date(value);
+  const date = ISO_DATE.test(value) ? parseDateInput(value) : new Date(value);
   if (!date) {
     return "Date invalide";
   }
@@ -211,11 +206,11 @@ export function formatDateInput(date: Date) {
 
 export function parseDateInput(value: string) {
   if (!value) {
-    return undefined;
+    return;
   }
   const [year, month, day] = value.split("-").map(Number);
-  if (!year || !month || !day) {
-    return undefined;
+  if (!(year && month && day)) {
+    return;
   }
   return new Date(year, month - 1, day);
 }
@@ -240,7 +235,7 @@ export function DateFilter({
           render={
             <Button
               aria-label={label}
-              className="list-filter-control h-[30px] w-full justify-between rounded-full bg-background px-2.5 text-xs font-normal"
+              className="h-[30px] w-full list-filter-control justify-between rounded-full bg-background px-2.5 font-normal text-xs"
               variant="outline"
             >
               <span className={cn(!value && "text-muted-foreground")}>

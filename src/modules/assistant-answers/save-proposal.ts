@@ -13,7 +13,11 @@ import type { Proposal } from "./types";
 type NewTask = Omit<Task, "id" | "createdAt" | "updatedAt">;
 type AddTask = (task: NewTask) => Promise<Task | null>;
 
-export async function saveProposal(proposal: Proposal, existing: Task[], add: AddTask): Promise<{ created: number; expected: number }> {
+export async function saveProposal(
+  proposal: Proposal,
+  existing: Task[],
+  add: AddTask
+): Promise<{ created: number; expected: number }> {
   const pending = proposeTasks(proposal.tasks, existing)?.tasks ?? [];
   let created = 0;
   for (const draft of pending) {
@@ -26,7 +30,9 @@ export async function saveProposal(proposal: Proposal, existing: Task[], add: Ad
       status: "todo",
       isReminder: false,
     });
-    if (row) created += 1;
+    if (row) {
+      created += 1;
+    }
   }
   return { created, expected: pending.length };
 }

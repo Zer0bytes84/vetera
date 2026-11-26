@@ -2,11 +2,11 @@ import { useMemo, useState } from "react";
 import { RadialDots } from "@/components/ui/radial-dots";
 import { formatNumber } from "@/utils/display-format";
 import {
+  type buildWeekFacts,
   buildWeekRadial,
   RADIAL_VIEWS,
-  WEEK_STATES,
   type RadialView,
-  type buildWeekFacts,
+  WEEK_STATES,
 } from "../model/week-radial";
 import { ViewSwitch } from "./view-switch";
 
@@ -42,7 +42,7 @@ export function WeekRadialWidget({
   const [view, setView] = useState<RadialView>("weekday");
   const radial = useMemo(
     () => buildWeekRadial(appointments, now),
-    [appointments, now],
+    [appointments, now]
   );
   const sectors = radial[view === "hour" ? "hour" : "weekday"];
   const hourly = view === "hour";
@@ -80,6 +80,6 @@ export function WeekRadialWidget({
           value={view}
         />
       }
-    ></RadialDots>
+    />
   );
 }

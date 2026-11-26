@@ -1,15 +1,18 @@
+const PARENT_DIRECTORY_SEGMENT = /(?:^|\/)\.\.(?:\/|$)/;
+
 export function assertLocalUrl(value: string, roots: string[]) {
-  if (!roots.some((root) => value.startsWith(root)))
+  if (!roots.some((root) => value.startsWith(root))) {
     throw new Error(
       "Accès réseau interdit : l’assistant utilise uniquement les fichiers locaux importés."
     );
+  }
   const url = new URL(value);
   if (
     !["http:", "https:", "asset:", "tauri:"].includes(url.protocol) ||
     url.username ||
     url.password ||
     !roots.some((root) => url.href.startsWith(new URL(root).href)) ||
-    /(?:^|\/)\.\.(?:\/|$)/.test(
+    PARENT_DIRECTORY_SEGMENT.test(
       decodeURIComponent(value.split("?")[0].split("#")[0])
     )
   ) {
@@ -30,7 +33,9 @@ export function enforceOfflineWorker(roots: string[]) {
           : input.url;
     assertLocalUrl(url, roots);
     const response = await originalFetch(input, { ...init, redirect: "error" });
-    if (response.url) assertLocalUrl(response.url, roots);
+    if (response.url) {
+      assertLocalUrl(response.url, roots);
+    }
     return response;
   };
   const originalOpen = XMLHttpRequest.prototype.open;

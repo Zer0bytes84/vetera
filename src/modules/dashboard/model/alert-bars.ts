@@ -1,4 +1,5 @@
-import { careDisplayStatus, type CareTask } from "@/modules/care-tasks/domain";
+import { ISO_DATE_PREFIX } from "@/lib/patterns";
+import { type CareTask, careDisplayStatus } from "@/modules/care-tasks/domain";
 import type { Appointment, Invoice, Patient, Product } from "@/types/db";
 import { isOpenInvoice } from "../v2/financial-model";
 import { parseDashboardDate, startOfDay } from "../v2/model";
@@ -20,14 +21,18 @@ import { parseDashboardDate, startOfDay } from "../v2/model";
  */
 
 export interface AlertReminder {
+  echeance: string;
   id: string;
   patient_id: string;
   statut: string;
-  echeance: string;
 }
 
 export type AlertCategory =
-  "reminders" | "care" | "stock" | "receivables" | "appointments";
+  | "reminders"
+  | "care"
+  | "stock"
+  | "receivables"
+  | "appointments";
 
 export const ALERT_CATEGORIES: { id: AlertCategory; label: string }[] = [
   { id: "reminders", label: "Rappels" },
@@ -44,8 +49,10 @@ const DAY_MS = 86_400_000;
 
 /** "2026-10-18" is midnight local, with no time-zone shift. */
 function dateOnly(value: string): Date | null {
-  const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(value);
-  if (!match) return parseDashboardDate(value);
+  const match = ISO_DATE_PREFIX.exec(value);
+  if (!match) {
+    return parseDashboardDate(value);
+  }
   return new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
 }
 
@@ -58,12 +65,12 @@ export function alertWindow(now: Date) {
     from: new Date(
       today.getFullYear(),
       today.getMonth(),
-      today.getDate() - ALERT_DAYS_BACK,
+      today.getDate() - ALERT_DAYS_BACK
     ),
     to: new Date(
       today.getFullYear(),
       today.getMonth(),
-      today.getDate() + ALERT_DAYS_AHEAD,
+      today.getDate() + ALERT_DAYS_AHEAD
     ),
   };
 }
@@ -110,16 +117,16 @@ export function buildAlertBars({
   const count = ALERT_DAYS_BACK + ALERT_DAYS_AHEAD + 1;
   const days = Array.from(
     { length: count },
-    (_, i) => new Date(from.getFullYear(), from.getMonth(), from.getDate() + i),
+    (_, i) => new Date(from.getFullYear(), from.getMonth(), from.getDate() + i)
   );
   const values: Record<AlertCategory, number[]> = {
-    reminders: Array(count).fill(0),
-    care: Array(count).fill(0),
-    stock: Array(count).fill(0),
-    receivables: Array(count).fill(0),
-    appointments: Array(count).fill(0),
+    reminders: new Array(count).fill(0),
+    care: new Array(count).fill(0),
+    stock: new Array(count).fill(0),
+    receivables: new Array(count).fill(0),
+    appointments: new Array(count).fill(0),
   };
-  const late = Array<number>(count).fill(0);
+  const late = new Array<number>(count).fill(0);
   let olderLate = 0;
   const older: Record<AlertCategory, number> = {
     reminders: 0,
@@ -134,60 +141,83 @@ export function buildAlertBars({
     const index = dayDiff(from, day);
     if (index < 0) {
       older[category] += 1;
-      if (isLate) olderLate += 1;
+      if (isLate) {
+        olderLate += 1;
+      }
       return;
     }
-    if (index >= count) return;
+    if (index >= count) {
+      return;
+    }
     values[category][index] += 1;
-    if (isLate) late[index] += 1;
+    if (isLate) {
+      late[index] += 1;
+    }
   };
 
   const deceased = new Set(
-    patients.filter((p) => p.status === "decede").map((p) => p.id),
+    patients.filter((p) => p.status === "decede").map((p) => p.id)
   );
   for (const reminder of reminders) {
-    if (reminder.statut !== "en_cours" || deceased.has(reminder.patient_id))
+    if (reminder.statut !== "en_cours" || deceased.has(reminder.patient_id)) {
       continue;
+    }
     const due = dateOnly(reminder.echeance);
-    if (due) file("reminders", due, due < today);
+    if (due) {
+      file("reminders", due, due < today);
+    }
   }
 
   for (const task of careTasks) {
-    if (task.statut !== "a_faire" && task.statut !== "en_cours") continue;
+    if (task.statut !== "a_faire" && task.statut !== "en_cours") {
+      continue;
+    }
     const planned = parseDashboardDate(task.heure_prevue);
-    if (planned)
+    if (planned) {
       file("care", planned, careDisplayStatus(task, now) === "en_retard");
+    }
   }
 
   for (const product of products) {
-    if (product.archivedAt || product.stockTracked === false) continue;
+    if (product.archivedAt || product.stockTracked === false) {
+      continue;
+    }
     const quantity = product.availableQuantity ?? product.quantity;
-    if (quantity <= 0 || quantity <= product.minStock)
+    if (quantity <= 0 || quantity <= product.minStock) {
       file("stock", today, false);
+    }
     const expiryValue = product.nearestExpiryDate ?? product.expiryDate;
     const expiry = expiryValue ? dateOnly(expiryValue) : null;
-    if ((product.expiredQuantity ?? 0) > 0 || (expiry && expiry < today))
+    if ((product.expiredQuantity ?? 0) > 0 || (expiry && expiry < today)) {
       file("stock", expiry ?? today, true);
-    else if (expiry) file("stock", expiry, false);
+    } else if (expiry) {
+      file("stock", expiry, false);
+    }
   }
 
   for (const invoice of invoices) {
-    if (!isOpenInvoice(invoice)) continue;
+    if (!isOpenInvoice(invoice)) {
+      continue;
+    }
     // No due date: what is owed is a state, dated today like a shortage, never lost before the window.
     const due = invoice.dueAt ? dateOnly(invoice.dueAt) : today;
-    if (due) file("receivables", due, invoice.settlementStatus === "overdue");
+    if (due) {
+      file("receivables", due, invoice.settlementStatus === "overdue");
+    }
   }
 
   for (const appointment of appointments) {
     if (
       appointment.status !== "scheduled" &&
       appointment.status !== "confirmed"
-    )
+    ) {
       continue;
+    }
     const start = parseDashboardDate(appointment.startTime);
     const end = parseDashboardDate(appointment.endTime) ?? start;
-    if (start && end && end.getTime() < now.getTime())
+    if (start && end && end.getTime() < now.getTime()) {
       file("appointments", start, true);
+    }
   }
 
   const olderTotal =
@@ -204,14 +234,14 @@ export function buildAlertBars({
       values.care[i] +
       values.stock[i] +
       values.receivables[i] +
-      values.appointments[i],
+      values.appointments[i]
   );
   const sum = (list: number[]) => list.reduce((n, v) => n + v, 0);
   const lateInWindow = sum(late);
   return {
     days,
     labels: days.map((d) =>
-      d.toLocaleDateString("fr-FR", { day: "numeric", month: "short" }),
+      d.toLocaleDateString("fr-FR", { day: "numeric", month: "short" })
     ),
     titles: days.map((d) => {
       const text = d.toLocaleDateString("fr-FR", {
@@ -236,7 +266,7 @@ export function buildAlertBars({
       labels: [
         "Avant",
         ...days.map((d) =>
-          d.toLocaleDateString("fr-FR", { day: "numeric", month: "short" }),
+          d.toLocaleDateString("fr-FR", { day: "numeric", month: "short" })
         ),
       ],
       titles: [

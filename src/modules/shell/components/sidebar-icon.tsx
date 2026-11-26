@@ -39,7 +39,15 @@ const sidebarViewIcons: Partial<
   parametres: Cog6ToothIcon,
 };
 
-export function SidebarIcon({ view, className }: { view: View; className?: string }) {
+export function SidebarIcon({
+  view,
+  className,
+}: {
+  view: View;
+  className?: string;
+}) {
   const Icon = sidebarViewIcons[view] ?? Squares2X2Icon;
-  return <Icon aria-hidden="true" className={className} height={20} width={20} />;
+  return (
+    <Icon aria-hidden="true" className={className} height={20} width={20} />
+  );
 }

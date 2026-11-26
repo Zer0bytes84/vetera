@@ -1,6 +1,11 @@
-import * as React from "react";
-import type { TooltipValueType } from "recharts";
-import * as RechartsPrimitive from "recharts";
+import type React from "react";
+import { createContext, useContext, useId, useMemo } from "react";
+import type {
+  DefaultLegendContentProps,
+  DefaultTooltipContentProps,
+  TooltipValueType,
+} from "recharts";
+import { Legend, ResponsiveContainer, Tooltip } from "recharts";
 
 import { cn } from "@/lib/utils";
 
@@ -21,14 +26,14 @@ export type ChartConfig = Record<
   )
 >;
 
-type ChartContextProps = {
+interface ChartContextProps {
   config: ChartConfig;
-};
+}
 
-const ChartContext = React.createContext<ChartContextProps | null>(null);
+const ChartContext = createContext<ChartContextProps | null>(null);
 
 function useChart() {
-  const context = React.useContext(ChartContext);
+  const context = useContext(ChartContext);
 
   if (!context) {
     throw new Error("useChart must be used within a <ChartContainer />");
@@ -46,15 +51,13 @@ function ChartContainer({
   ...props
 }: React.ComponentProps<"div"> & {
   config: ChartConfig;
-  children: React.ComponentProps<
-    typeof RechartsPrimitive.ResponsiveContainer
-  >["children"];
+  children: React.ComponentProps<typeof ResponsiveContainer>["children"];
   initialDimension?: {
     width: number;
     height: number;
   };
 }) {
-  const uniqueId = React.useId();
+  const uniqueId = useId();
   const chartId = `chart-${id ?? uniqueId.replace(/:/g, "")}`;
 
   return (
@@ -69,11 +72,9 @@ function ChartContainer({
         {...props}
       >
         <ChartStyle config={config} id={chartId} />
-        <RechartsPrimitive.ResponsiveContainer
-          initialDimension={initialDimension}
-        >
+        <ResponsiveContainer initialDimension={initialDimension}>
           {children}
-        </RechartsPrimitive.ResponsiveContainer>
+        </ResponsiveContainer>
       </div>
     </ChartContext.Provider>
   );
@@ -90,6 +91,7 @@ const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
 
   return (
     <style
+      // biome-ignore lint/security/noDangerouslySetInnerHtml: feuille de style générée ici depuis la configuration du graphique (couleurs par thème et par série), aucun contenu saisi par l’utilisateur.
       dangerouslySetInnerHTML={{
         __html: Object.entries(THEMES)
           .map(
@@ -112,7 +114,7 @@ ${colorConfig
   );
 };
 
-const ChartTooltip = RechartsPrimitive.Tooltip;
+const ChartTooltip = Tooltip;
 
 function ChartTooltipContent({
   active,
@@ -128,7 +130,7 @@ function ChartTooltipContent({
   color,
   nameKey,
   labelKey,
-}: React.ComponentProps<typeof RechartsPrimitive.Tooltip> &
+}: React.ComponentProps<typeof Tooltip> &
   React.ComponentProps<"div"> & {
     hideLabel?: boolean;
     hideIndicator?: boolean;
@@ -136,15 +138,12 @@ function ChartTooltipContent({
     nameKey?: string;
     labelKey?: string;
   } & Omit<
-    RechartsPrimitive.DefaultTooltipContentProps<
-      TooltipValueType,
-      TooltipNameType
-    >,
+    DefaultTooltipContentProps<TooltipValueType, TooltipNameType>,
     "accessibilityLayer"
   >) {
   const { config } = useChart();
 
-  const tooltipLabel = React.useMemo(() => {
+  const tooltipLabel = useMemo(() => {
     if (hideLabel || !payload?.length) {
       return null;
     }
@@ -208,7 +207,7 @@ function ChartTooltipContent({
                   "flex w-full flex-wrap items-stretch gap-2 [&>svg]:h-2.5 [&>svg]:w-2.5 [&>svg]:text-muted-foreground",
                   indicator === "dot" && "items-center"
                 )}
-                key={index}
+                key={String(item.dataKey ?? item.name ?? index)}
               >
                 {formatter && item?.value !== undefined && item.name ? (
                   formatter(item.value, item.name, item, index, item.payload)
@@ -268,7 +267,7 @@ function ChartTooltipContent({
   );
 }
 
-const ChartLegend = RechartsPrimitive.Legend;
+const ChartLegend = Legend;
 
 function ChartLegendContent({
   className,
@@ -279,7 +278,7 @@ function ChartLegendContent({
 }: React.ComponentProps<"div"> & {
   hideIcon?: boolean;
   nameKey?: string;
-} & RechartsPrimitive.DefaultLegendContentProps) {
+} & DefaultLegendContentProps) {
   const { config } = useChart();
 
   if (!payload?.length) {

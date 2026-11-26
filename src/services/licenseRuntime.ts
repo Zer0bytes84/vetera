@@ -1,7 +1,7 @@
 import {
   getLicenseInfo,
-  saveLicenseState,
   type StoredLicense,
+  saveLicenseState,
 } from "./appSettingsService";
 import {
   activateLicense,
@@ -12,22 +12,22 @@ import {
 } from "./licenseActivationService";
 import { getLeaseTimeError, verifyLicenseLease } from "./licenseLease";
 
-export type LicenseAccess = {
+export interface LicenseAccess {
   allowed: boolean;
-  message: string;
-  offlineUntil?: number;
+  email?: string;
   expiresAt?: number | null;
   /** End of the signed lease that granted this access (never extended locally). */
   leaseUntil?: number;
-  email?: string;
+  message: string;
+  offlineUntil?: number;
   /** The check itself failed (local read, IPC): nothing was decided. */
   transient?: boolean;
-};
+}
 
-export type LicenseCheckOptions = {
+export interface LicenseCheckOptions {
   /** Network timeout for the activation server; background rechecks use a short one. */
   timeoutMs?: number;
-};
+}
 const TERMINAL_CODES = new Set([
   "REVOKED",
   "EXPIRED",
@@ -49,7 +49,9 @@ export async function acceptLicenseActivation(
     email
   );
   const error = getLeaseTimeError(lease, Date.now());
-  if (error) throw new Error(error);
+  if (error) {
+    throw new Error(error);
+  }
   await saveLicenseState({
     key: "",
     email: lease.email,
@@ -66,19 +68,22 @@ export function checkLicenseAccess(
   options: LicenseCheckOptions = {}
 ): Promise<LicenseAccess> {
   // A local check in flight does not answer a request to ask the server.
-  if (pending && forceOnline && !pendingOnline)
+  if (pending && forceOnline && !pendingOnline) {
     return pending.then(() => checkLicenseAccess(true, options));
+  }
   if (!pending) {
     pendingOnline = forceOnline;
     pending = check(forceOnline, options)
-      .catch((error): LicenseAccess => ({
-        allowed: false,
-        transient: true,
-        message:
-          error instanceof Error
-            ? error.message
-            : "Impossible de lire l’activation locale.",
-      }))
+      .catch(
+        (error): LicenseAccess => ({
+          allowed: false,
+          transient: true,
+          message:
+            error instanceof Error
+              ? error.message
+              : "Impossible de lire l’activation locale.",
+        })
+      )
       .then((result) => record(result, forceOnline))
       .finally(() => {
         pending = null;
@@ -95,31 +100,49 @@ export function checkLicenseAccess(
 // ---------------------------------------------------------------------------
 export const LICENSE_LOCAL_RECHECK_MS = 5 * 60_000;
 export const LICENSE_ONLINE_RECHECK_MS = 15 * 60_000;
-export const LICENSE_BACKGROUND_TIMEOUT_MS = 4_000;
+export const LICENSE_BACKGROUND_TIMEOUT_MS = 4000;
 let lastAccess: LicenseAccess | null = null;
 let lastCheckAt = 0;
 let lastOnlineAt = 0;
 
 function record(result: LicenseAccess, online: boolean): LicenseAccess {
-  if (result.transient) return result;
+  if (result.transient) {
+    return result;
+  }
   const now = Date.now();
   // A local check cannot tell that the server is back: an offline access stays
   // offline (banner and reconnection retry) until the server answers again.
   const access =
-    !online && result.allowed && !result.offlineUntil && lastAccess?.allowed && lastAccess.offlineUntil
-      ? { ...result, offlineUntil: lastAccess.offlineUntil, message: lastAccess.message }
+    !online &&
+    result.allowed &&
+    !result.offlineUntil &&
+    lastAccess?.allowed &&
+    lastAccess.offlineUntil
+      ? {
+          ...result,
+          offlineUntil: lastAccess.offlineUntil,
+          message: lastAccess.message,
+        }
       : result;
   lastAccess = access;
   lastCheckAt = now;
-  if (online) lastOnlineAt = now;
+  if (online) {
+    lastOnlineAt = now;
+  }
   return access;
 }
 
 /** The last granted access, while its signed lease and licence term still hold. */
 export function getCachedLicenseAccess(now = Date.now()): LicenseAccess | null {
-  if (!lastAccess?.allowed) return null;
-  if (lastAccess.leaseUntil === undefined || now >= lastAccess.leaseUntil) return null;
-  if (lastAccess.expiresAt != null && now >= lastAccess.expiresAt) return null;
+  if (!lastAccess?.allowed) {
+    return null;
+  }
+  if (lastAccess.leaseUntil === undefined || now >= lastAccess.leaseUntil) {
+    return null;
+  }
+  if (lastAccess.expiresAt != null && now >= lastAccess.expiresAt) {
+    return null;
+  }
   return lastAccess;
 }
 
@@ -139,10 +162,12 @@ export function recheckLicenseInBackground(
   const online =
     now - lastOnlineAt >= LICENSE_ONLINE_RECHECK_MS ||
     (reason === "online" && Boolean(lastAccess?.offlineUntil));
-  if (!online && now - lastCheckAt < LICENSE_LOCAL_RECHECK_MS) return null;
-  return checkLicenseAccess(online, { timeoutMs: LICENSE_BACKGROUND_TIMEOUT_MS }).then(
-    (access) => (access.transient && getCachedLicenseAccess()) || access
-  );
+  if (!online && now - lastCheckAt < LICENSE_LOCAL_RECHECK_MS) {
+    return null;
+  }
+  return checkLicenseAccess(online, {
+    timeoutMs: LICENSE_BACKGROUND_TIMEOUT_MS,
+  }).then((access) => (access.transient && getCachedLicenseAccess()) || access);
 }
 
 /** Tests only: forget the in-memory access between cases. */
@@ -157,13 +182,14 @@ async function check(
   options: LicenseCheckOptions = {}
 ): Promise<LicenseAccess> {
   let stored = await getLicenseInfo();
-  if (!stored)
+  if (!stored) {
     return {
       allowed: false,
       message: "Activez la licence de ce poste pour ouvrir votre cabinet.",
     };
+  }
   const deviceId = await getDeviceId();
-  let lease;
+  let lease: Awaited<ReturnType<typeof verifyLicenseLease>> | undefined;
   try {
     lease = await verifyLicenseLease(
       stored.activationToken,
@@ -175,7 +201,10 @@ async function check(
     /* A legacy installation can migrate online using its existing key. */
   }
   const now = Date.now();
-  const lastSeen = Number.isFinite(stored.lastSeen) ? stored.lastSeen! : 0;
+  const lastSeen =
+    typeof stored.lastSeen === "number" && Number.isFinite(stored.lastSeen)
+      ? stored.lastSeen
+      : 0;
   const timeError = lease ? getLeaseTimeError(lease, now, lastSeen) : null;
   const needsOnline =
     forceOnline ||
@@ -188,7 +217,11 @@ async function check(
       const result =
         !lease && stored.key
           ? await activateLicense(stored.email, stored.key, options.timeoutMs)
-          : await renewLicenseActivation(stored.activationToken, stored.email, options.timeoutMs);
+          : await renewLicenseActivation(
+              stored.activationToken,
+              stored.email,
+              options.timeoutMs
+            );
       lease = await verifyLicenseLease(
         result.activationToken,
         LICENSE_PUBLIC_KEY,
@@ -196,8 +229,9 @@ async function check(
         stored.email
       );
       const freshError = getLeaseTimeError(lease, Date.now(), lastSeen);
-      if (freshError)
+      if (freshError) {
         return { allowed: false, message: freshError, email: stored.email };
+      }
       const updated: StoredLicense = {
         key: "",
         email: lease.email,
@@ -222,7 +256,7 @@ async function check(
       const invalidTime = lease
         ? getLeaseTimeError(lease, Date.now(), lastSeen)
         : null;
-      if (stored.denied || !lease || invalidTime)
+      if (stored.denied || !lease || invalidTime) {
         return {
           allowed: false,
           email: stored.email,
@@ -233,6 +267,7 @@ async function check(
               ? error.message
               : "Une connexion est nécessaire pour vérifier cette licence."),
         };
+      }
       // Only a still-valid signed lease permits a network outage, rate limit,
       // or server failure. The lease deadline is never extended locally.
       await saveLicenseState({
@@ -250,15 +285,17 @@ async function check(
       };
     }
   }
-  if (!lease)
+  if (!lease) {
     return {
       allowed: false,
       message: "Cette installation doit être réactivée.",
       email: stored.email,
     };
+  }
   const finalError = getLeaseTimeError(lease, Date.now(), lastSeen);
-  if (finalError)
+  if (finalError) {
     return { allowed: false, message: finalError, email: stored.email };
+  }
   await saveLicenseState({
     ...stored,
     lastSeen: Math.max(Date.now(), lastSeen),

@@ -1,13 +1,5 @@
-import {
-  Add01Icon,
-  Calendar01Icon,
-  Cancel01Icon,
-  CheckmarkCircle02Icon,
-  Package02Icon,
-  Refresh01Icon,
-  SparklesIcon,
-} from "@/lib/hugeicons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import { toast } from "sonner";
 
 import MotivationalHeader from "@/components/MotivationalHeader";
 import { StockWorkspace } from "@/components/stock/stock-workspace";
@@ -27,7 +19,15 @@ import {
   NativeSelectOption,
 } from "@/components/ui/native-select";
 import { Spinner } from "@/components/ui/spinner";
-import { toast } from "sonner";
+import {
+  Add01Icon,
+  Calendar01Icon,
+  Cancel01Icon,
+  CheckmarkCircle02Icon,
+  Package02Icon,
+  Refresh01Icon,
+  SparklesIcon,
+} from "@/lib/hugeicons";
 
 import {
   CATEGORIES,
@@ -159,7 +159,10 @@ export function StockView(props: StockViewProps) {
 
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <Field>
-                  <FieldLabel>Nom du produit <span className="modal-required">requis</span></FieldLabel>
+                  <FieldLabel>
+                    Nom du produit{" "}
+                    <span className="modal-required">requis</span>
+                  </FieldLabel>
                   <Input
                     onChange={(e) =>
                       setFormData({ ...formData, name: e.target.value })
@@ -211,11 +214,24 @@ export function StockView(props: StockViewProps) {
 
               <div className="flex items-center justify-between gap-4 py-2">
                 <div>
-                  <label htmlFor="product-stock-tracked" className="text-sm font-medium">Suivre le stock</label>
-                  <p className="text-xs text-muted-foreground">Désactivez pour une prestation ou un acte sans produit physique.</p>
+                  <label
+                    className="font-medium text-sm"
+                    htmlFor="product-stock-tracked"
+                  >
+                    Suivre le stock
+                  </label>
+                  <p className="text-muted-foreground text-xs">
+                    Désactivez pour une prestation ou un acte sans produit
+                    physique.
+                  </p>
                 </div>
-                <Switch id="product-stock-tracked" checked={formData.stockTracked !== false}
-                  onCheckedChange={checked => setFormData({...formData, stockTracked: checked})} />
+                <Switch
+                  checked={formData.stockTracked !== false}
+                  id="product-stock-tracked"
+                  onCheckedChange={(checked) =>
+                    setFormData({ ...formData, stockTracked: checked })
+                  }
+                />
               </div>
               <div className="grid grid-cols-3 gap-4">
                 <Field>
@@ -587,4 +603,5 @@ export function StockView(props: StockViewProps) {
     </div>
   );
 }
+
 import { Switch } from "@/components/ui/switch";

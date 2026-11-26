@@ -9,7 +9,7 @@ import {
   motion,
   useReducedMotion,
 } from "motion/react";
-import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import { type ReactNode, useLayoutEffect, useRef, useState } from "react";
 import { Panel, Shell, ShellHeader } from "@/components/ui/surface";
 import { EASE_OUT, enter, exit } from "@/lib/motion-tokens";
 import { cn } from "@/lib/utils";
@@ -27,55 +27,58 @@ import { cn } from "@/lib/utils";
  *  - the header's right side takes a toolbar (the views), and a slot under the grid holds the figures.
  */
 
-export type HexCell = {
-  id: string;
+export interface HexCell {
   /** Grid position. Odd rows sit half a cell to the right. */
   col: number;
-  row: number;
   count: number;
-  /** 0 for an empty cell, then 1 to 4. */
-  level: number;
-  /** Written inside the hexagon. */
-  label?: string;
-  /** Tooltip title and body. */
-  title: string;
   detail: string;
   /** After now: booked, not happened. */
   future?: boolean;
+  id: string;
+  /** Written inside the hexagon. */
+  label?: string;
+  /** 0 for an empty cell, then 1 to 4. */
+  level: number;
+  row: number;
+  /** Tooltip title and body. */
+  title: string;
   today?: boolean;
-};
+}
 
-export type HexCaption = { at: number; text: string };
+export interface HexCaption {
+  at: number;
+  text: string;
+}
 
-export type HexDensityProps = {
-  cells: HexCell[];
-  cols: number;
-  rows: number;
-  /** Above the grid, at a column. */
-  columnCaptions?: HexCaption[];
-  /** Left of the grid, at a row. */
-  rowCaptions?: HexCaption[];
-  /** Colour of a filled cell. */
-  tone?: string;
+export interface HexDensityProps {
   /** Height of the grid's area in px: hexagons shrink to fit it, and every view takes the same space. */
   areaHeight?: number;
-  /** Largest hexagon radius in px. It shrinks so every column fits. */
-  radius?: number;
-  title: string;
-  subtitle?: ReactNode;
-  /** Right of the header: the views. */
-  toolbar?: ReactNode;
-  /** Read by screen readers instead of the grid. */
-  summary: string;
+  binUnit?: string;
+  cells: HexCell[];
   /** Under the grid, in the panel: the figures and the footer. */
   children?: ReactNode;
-  /** What one count is called, plural, and what one cell is called, plural. */
-  unit?: string;
-  binUnit?: string;
+  className?: string;
+  cols: number;
+  /** Above the grid, at a column. */
+  columnCaptions?: HexCaption[];
   /** Written on the fullest cell. */
   densestLabel?: string;
-  className?: string;
-};
+  /** Largest hexagon radius in px. It shrinks so every column fits. */
+  radius?: number;
+  /** Left of the grid, at a row. */
+  rowCaptions?: HexCaption[];
+  rows: number;
+  subtitle?: ReactNode;
+  /** Read by screen readers instead of the grid. */
+  summary: string;
+  title: string;
+  /** Colour of a filled cell. */
+  tone?: string;
+  /** Right of the header: the views. */
+  toolbar?: ReactNode;
+  /** What one count is called, plural, and what one cell is called, plural. */
+  unit?: string;
+}
 
 const SQRT3 = Math.sqrt(3);
 const TIP_W = 200;
@@ -90,11 +93,15 @@ function useWidth() {
   const [width, setWidth] = useState<number | null>(null);
   useLayoutEffect(() => {
     const el = ref.current;
-    if (!el) return;
+    if (!el) {
+      return;
+    }
     setWidth(el.getBoundingClientRect().width);
-    if (typeof ResizeObserver === "undefined") return;
+    if (typeof ResizeObserver === "undefined") {
+      return;
+    }
     const observer = new ResizeObserver(([entry]) =>
-      setWidth(entry.contentRect.width),
+      setWidth(entry.contentRect.width)
     );
     observer.observe(el);
     return () => observer.disconnect();
@@ -103,12 +110,10 @@ function useWidth() {
 }
 
 function hexPath(r: number) {
-  return (
-    Array.from({ length: 6 }, (_, k) => {
-      const a = (Math.PI / 3) * k - Math.PI / 2;
-      return `${k ? "L" : "M"}${round(r * Math.cos(a))} ${round(r * Math.sin(a))}`;
-    }).join("") + "Z"
-  );
+  return `${Array.from({ length: 6 }, (_, k) => {
+    const a = (Math.PI / 3) * k - Math.PI / 2;
+    return `${k ? "L" : "M"}${round(r * Math.cos(a))} ${round(r * Math.sin(a))}`;
+  }).join("")}Z`;
 }
 
 export function HexDensity({
@@ -140,13 +145,14 @@ export function HexDensity({
   const plotW = Math.max(width - gutter, 40);
   const fitH = (areaHeight - top - 4) / (1.5 * (rows - 1) + 2);
   const r = round(
-    Math.max(5, Math.min(radius, plotW / ((cols + 0.5) * SQRT3), fitH)),
+    Math.max(5, Math.min(radius, plotW / ((cols + 0.5) * SQRT3), fitH))
   );
   const dx = SQRT3 * r;
   const dy = 1.5 * r;
   // The grid sits in the middle of what the captions leave.
   const left = gutter + Math.max(0, (plotW - (cols + 0.5) * dx) / 2);
   const centre = (cell: { col: number; row: number }) => ({
+    // biome-ignore lint/suspicious/noBitwiseOperators: row & 1 donne la parité de la rangée, qui décale une rangée sur deux de la grille hexagonale
     cx: round(left + dx / 2 + (cell.col + (cell.row & 1) / 2) * dx),
     cy: round(top + r + cell.row * dy),
   });
@@ -156,15 +162,16 @@ export function HexDensity({
   const placed = cells.map((cell) => ({ ...cell, ...centre(cell) }));
   const byId = new Map(placed.map((cell) => [cell.id, cell]));
   const columns = new Map<number, typeof placed>();
-  for (const cell of placed)
+  for (const cell of placed) {
     columns.set(cell.col, [...(columns.get(cell.col) ?? []), cell]);
+  }
   const lastCol = Math.max(1, ...columns.keys());
   const activeCell = active === null ? undefined : byId.get(active);
   const filledCells = placed.filter((cell) => cell.count > 0);
   const peak = Math.max(1, ...placed.map((cell) => cell.count));
   const densest = filledCells.reduce<(typeof placed)[number] | undefined>(
     (best, cell) => (!best || cell.count > best.count ? cell : best),
-    undefined,
+    undefined
   );
   // Runners-up get the same outline, so a cluster reads as a cluster.
   const marked = new Set(
@@ -172,7 +179,7 @@ export function HexDensity({
       .sort((a, b) => b.count - a.count)
       .slice(0, 4)
       .filter((cell) => cell.count >= peak * 0.85)
-      .map((cell) => cell.id),
+      .map((cell) => cell.id)
   );
   const markColor = tone.includes("--tone-blue")
     ? "var(--foreground)"
@@ -181,7 +188,7 @@ export function HexDensity({
     STEPS[
       Math.min(
         STEPS.length - 1,
-        Math.ceil(Math.sqrt(count / peak) * STEPS.length) - 1,
+        Math.ceil(Math.sqrt(count / peak) * STEPS.length) - 1
       )
     ];
   const callout = densest && !activeCell;
@@ -205,12 +212,18 @@ export function HexDensity({
         best = cell.id;
       }
     }
-    if (best !== active) select(best, false);
+    if (best !== active) {
+      select(best, false);
+    }
   };
 
   const onKeyDown = (event: React.KeyboardEvent) => {
-    if (!placed.length) return;
-    if (event.key === "Escape") return select(null, true);
+    if (!placed.length) {
+      return;
+    }
+    if (event.key === "Escape") {
+      return select(null, true);
+    }
     const from = activeCell ?? placed.find((cell) => cell.today) ?? placed[0];
     const dirs: Record<string, [number, number]> = {
       ArrowRight: [1, 0],
@@ -219,19 +232,26 @@ export function HexDensity({
       ArrowUp: [0, -1],
     };
     let next: string | undefined;
-    if (event.key === "Home") next = placed[0].id;
-    else if (event.key === "End") next = placed.at(-1)!.id;
-    else if (event.key in dirs) {
-      if (!activeCell) next = from.id;
-      else {
+    if (event.key === "Home") {
+      next = placed[0].id;
+    } else if (event.key === "End") {
+      const last = placed.at(-1);
+      if (!last) {
+        return;
+      }
+      next = last.id;
+    } else if (event.key in dirs) {
+      if (activeCell) {
         // Nearest cell in that direction, preferring the same row or column.
         const [ux, uy] = dirs[event.key];
-        let best = Infinity;
+        let best = Number.POSITIVE_INFINITY;
         for (const cell of placed) {
           const along = (cell.cx - from.cx) * ux + (cell.cy - from.cy) * uy;
-          if (along <= 1) continue;
+          if (along <= 1) {
+            continue;
+          }
           const across = Math.abs(
-            (cell.cx - from.cx) * uy - (cell.cy - from.cy) * ux,
+            (cell.cx - from.cx) * uy - (cell.cy - from.cy) * ux
           );
           const score = along + across * 3;
           if (score < best) {
@@ -240,8 +260,12 @@ export function HexDensity({
           }
         }
         next = next ?? from.id;
+      } else {
+        next = from.id;
       }
-    } else return;
+    } else {
+      return;
+    }
     event.preventDefault();
     select(next, true);
   };
@@ -252,11 +276,11 @@ export function HexDensity({
     <MotionConfig reducedMotion="user">
       <Shell className={cn("flex h-full flex-col", className)}>
         <ShellHeader
+          as="h2"
           aside={toolbar}
           icon={CalendarIcon}
           subtitle={subtitle}
           title={title}
-          as="h2"
         />
         <Panel className="flex flex-1 flex-col p-4">
           <div className="flex items-center" style={{ minHeight: areaHeight }}>
@@ -267,6 +291,7 @@ export function HexDensity({
               onKeyDown={onKeyDown}
               ref={ref}
               role="group"
+              // biome-ignore lint/a11y/noNoninteractiveTabindex: graphique focalisable : onKeyDown fait parcourir les cellules aux flèches, ce tabIndex est son entrée au clavier.
               tabIndex={0}
             >
               <svg
@@ -335,16 +360,12 @@ export function HexDensity({
                             className={cn(
                               "text-foreground transition-[opacity,fill-opacity] duration-200 ease-out",
                               active !== null && !isActive && "opacity-55",
-                              fromKeyboard && "duration-0",
+                              fromKeyboard && "duration-0"
                             )}
                             d={path}
                             data-future={cell.future || undefined}
                             data-level={cell.count}
                             data-today={cell.today || undefined}
-                            style={{
-                              fill: filled ? tone : "currentColor",
-                              fillOpacity: filled ? fill : 0.07,
-                            }}
                             stroke={
                               isActive || cell.today
                                 ? "var(--foreground)"
@@ -355,23 +376,29 @@ export function HexDensity({
                                     : "none"
                             }
                             strokeDasharray={
-                              !isActive &&
-                              !cell.today &&
-                              !marked.has(cell.id) &&
-                              cell.future
+                              !(
+                                isActive ||
+                                cell.today ||
+                                marked.has(cell.id)
+                              ) && cell.future
                                 ? "2.5 2.5"
                                 : undefined
                             }
                             strokeLinejoin="round"
                             strokeOpacity={
-                              !isActive &&
-                              !cell.today &&
-                              !marked.has(cell.id) &&
-                              cell.future
+                              !(
+                                isActive ||
+                                cell.today ||
+                                marked.has(cell.id)
+                              ) && cell.future
                                 ? 0.5
                                 : 1
                             }
                             strokeWidth={isActive || cell.today ? 2 : 1}
+                            style={{
+                              fill: filled ? tone : "currentColor",
+                              fillOpacity: filled ? fill : 0.07,
+                            }}
                           />
                           {cell.label ? (
                             <text
@@ -402,7 +429,7 @@ export function HexDensity({
                       opacity: 1,
                       transition: { ...enter, delay: reduce ? 0 : 0.35 },
                     }}
-                    className="pointer-events-none absolute z-10 -translate-y-1/2 rounded-full bg-[var(--card-raised)] px-2.5 py-1 text-xs whitespace-nowrap text-muted-foreground"
+                    className="pointer-events-none absolute z-10 -translate-y-1/2 whitespace-nowrap rounded-full bg-[var(--card-raised)] px-2.5 py-1 text-muted-foreground text-xs"
                     exit={{ opacity: 0, transition: exit }}
                     initial={{ opacity: 0 }}
                     key="callout"
@@ -431,7 +458,7 @@ export function HexDensity({
                       width: Math.min(TIP_W, width),
                       left: Math.min(
                         Math.max(activeCell.cx - TIP_W / 2, 0),
-                        Math.max(width - TIP_W, 0),
+                        Math.max(width - TIP_W, 0)
                       ),
                       top: activeCell.cy + (tipBelow ? r + 6 : -r - 6),
                       y: tipBelow ? 0 : "-100%",
@@ -458,7 +485,7 @@ export function HexDensity({
               : ""}
           </p>
 
-          <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
+          <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-muted-foreground text-xs">
             <span>
               {filledCells.length} {binUnit} · pic{" "}
               <span className="text-foreground tabular-nums">
@@ -471,7 +498,13 @@ export function HexDensity({
             >
               Moins
               {STEPS.map((step) => (
-                <svg height="10" key={step} viewBox="-5 -5.5 10 11" width="9">
+                <svg
+                  aria-hidden="true"
+                  height="10"
+                  key={step}
+                  viewBox="-5 -5.5 10 11"
+                  width="9"
+                >
                   <path d={hexPath(5)} fill={tone} fillOpacity={step} />
                 </svg>
               ))}

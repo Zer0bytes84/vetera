@@ -1,9 +1,25 @@
 import { useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { isTauriRuntime } from "@/services/browser-store";
-import { aiModelInstallation, useAIModelInstallation } from "../services/ai-model-installation";
-import { allAIModelsReady, checkAIModelsStatus, dismissNewAssistantOffer, NEW_ASSISTANT, shouldOfferNewAssistant, shouldShowAIOnboarding, setAIOnboardingDismissed, triggerOpenAIOnboarding, TOTAL_AI_MODELS_SIZE_LABEL } from "../services/ai-model-provisioning";
-import { GEMMA4_SUSPENDED, setGeneratorPreference } from "../local-ai/generator-choice";
+import {
+  GEMMA4_SUSPENDED,
+  setGeneratorPreference,
+} from "../local-ai/generator-choice";
+import {
+  aiModelInstallation,
+  useAIModelInstallation,
+} from "../services/ai-model-installation";
+import {
+  allAIModelsReady,
+  checkAIModelsStatus,
+  dismissNewAssistantOffer,
+  NEW_ASSISTANT,
+  setAIOnboardingDismissed,
+  shouldOfferNewAssistant,
+  shouldShowAIOnboarding,
+  TOTAL_AI_MODELS_SIZE_LABEL,
+  triggerOpenAIOnboarding,
+} from "../services/ai-model-provisioning";
 
 const TOAST_ID = "baitari-local-tools-installation";
 
@@ -15,69 +31,134 @@ export function AIModelInstallPrompt() {
   const progressHidden = useRef(false);
 
   useEffect(() => {
-    if (!isTauriRuntime()) return;
+    if (!isTauriRuntime()) {
+      return;
+    }
     let alive = true;
-    void shouldShowAIOnboarding().then(async show => {
-      if (!alive || offered.current || aiModelInstallation.getSnapshot().running) return;
-      if (show) {
+    void shouldShowAIOnboarding()
+      .then(async (show) => {
+        if (
+          !alive ||
+          offered.current ||
+          aiModelInstallation.getSnapshot().running
+        ) {
+          return;
+        }
+        if (show) {
+          offered.current = true;
+          toast.info("Vos outils IA locaux", {
+            id: TOAST_ID,
+            duration: 20_000,
+            description: `Dictée, notes et recherche (${TOTAL_AI_MODELS_SIZE_LABEL}).`,
+            action: {
+              label: "Télécharger",
+              onClick: () => {
+                void aiModelInstallation.start();
+              },
+            },
+            cancel: { label: "Plus tard", onClick: setAIOnboardingDismissed },
+          });
+          return;
+        }
+        // Base tools installed first; only then the new assistant, in one tap.
+        if (!(shouldOfferNewAssistant(await checkAIModelsStatus()) && alive)) {
+          return;
+        }
         offered.current = true;
-        toast.info("Vos outils IA locaux", {
-          id: TOAST_ID, duration: 20_000,
-          description: `Dictée, notes et recherche (${TOTAL_AI_MODELS_SIZE_LABEL}).`,
-          action: {label: "Télécharger", onClick: () => { void aiModelInstallation.start(); }},
-          cancel: {label: "Plus tard", onClick: setAIOnboardingDismissed},
+        toast.info(NEW_ASSISTANT.name, {
+          id: TOAST_ID,
+          duration: 20_000,
+          description: `Plus fidèle à vos dictées (${NEW_ASSISTANT.sizeLabel}), en arrière-plan.`,
+          action: {
+            label: "Télécharger",
+            onClick: () => {
+              void aiModelInstallation.startNewAssistant();
+            },
+          },
+          cancel: { label: "Plus tard", onClick: dismissNewAssistantOffer },
         });
-        return;
-      }
-      // Base tools installed first; only then the new assistant, in one tap.
-      if (!shouldOfferNewAssistant(await checkAIModelsStatus()) || !alive) return;
-      offered.current = true;
-      toast.info(NEW_ASSISTANT.name, {
-        id: TOAST_ID, duration: 20_000,
-        description: `Plus fidèle à vos dictées (${NEW_ASSISTANT.sizeLabel}), en arrière-plan.`,
-        action: {label: "Télécharger", onClick: () => { void aiModelInstallation.startNewAssistant(); }},
-        cancel: {label: "Plus tard", onClick: dismissNewAssistantOffer},
+      })
+      .catch(() => {
+        /* Optional installation must never interrupt startup. */
       });
-    }).catch(() => { /* Optional installation must never interrupt startup. */ });
-    return () => { alive = false; };
+    return () => {
+      alive = false;
+    };
   }, []);
 
   useEffect(() => {
     if (state.running) {
-      if (!wasRunning.current) progressHidden.current = false;
+      if (!wasRunning.current) {
+        progressHidden.current = false;
+      }
       wasRunning.current = true;
-      if (!progressHidden.current) toast.loading("Installation en arrière-plan", {
-        id: TOAST_ID, duration: Infinity, closeButton: true,
-        description: state.progress
-          ? `${state.progress.stepMessage} ${state.progress.percentage} %`
-          : "Préparation du téléchargement. Votre travail reste disponible.",
-        action: {label: "Gérer", onClick: triggerOpenAIOnboarding},
-        onDismiss: () => { progressHidden.current = true; },
-      });
+      if (!progressHidden.current) {
+        toast.loading("Installation en arrière-plan", {
+          id: TOAST_ID,
+          duration: Number.POSITIVE_INFINITY,
+          closeButton: true,
+          description: state.progress
+            ? `${state.progress.stepMessage} ${state.progress.percentage} %`
+            : "Préparation du téléchargement. Votre travail reste disponible.",
+          action: { label: "Gérer", onClick: triggerOpenAIOnboarding },
+          onDismiss: () => {
+            progressHidden.current = true;
+          },
+        });
+      }
       return;
     }
-    if (!wasRunning.current) return;
+    if (!wasRunning.current) {
+      return;
+    }
     wasRunning.current = false;
     if (state.error) {
       toast.error("Installation à reprendre", {
-        id: TOAST_ID, duration: 20_000,
-        description: state.errorCode === "access_required" ? "Autorisez l’accès dans les paramètres, ou importez vos fichiers." : state.error,
-        action: state.errorCode === "access_required"
-          ? {label: "Gérer l’accès", onClick: triggerOpenAIOnboarding}
-          : {label: "Réessayer", onClick: () => { void aiModelInstallation.start(); }},
-        cancel: state.errorCode === "access_required" ? undefined : {label: "Paramètres", onClick: triggerOpenAIOnboarding},
+        id: TOAST_ID,
+        duration: 20_000,
+        description:
+          state.errorCode === "access_required"
+            ? "Autorisez l’accès dans les paramètres, ou importez vos fichiers."
+            : state.error,
+        action:
+          state.errorCode === "access_required"
+            ? { label: "Gérer l’accès", onClick: triggerOpenAIOnboarding }
+            : {
+                label: "Réessayer",
+                onClick: () => {
+                  void aiModelInstallation.start();
+                },
+              },
+        cancel:
+          state.errorCode === "access_required"
+            ? undefined
+            : { label: "Paramètres", onClick: triggerOpenAIOnboarding },
       });
     } else if (state.target === "generator4" && state.status.generator4Ready) {
       toast.success("Nouvelle version installée", {
-        id: TOAST_ID, duration: 10_000,
+        id: TOAST_ID,
+        duration: 10_000,
         description: GEMMA4_SUSPENDED
           ? "L’assistant actuel reste en place. La nouvelle version est temporairement indisponible."
           : "L’assistant actuel reste en place. Essayez la nouvelle version, ou activez-la plus tard dans les paramètres.",
-        ...(GEMMA4_SUSPENDED ? {} : {action: {label: "Essayer", onClick: () => setGeneratorPreference("gemma4")}}),
+        ...(GEMMA4_SUSPENDED
+          ? {}
+          : {
+              action: {
+                label: "Essayer",
+                onClick: () => setGeneratorPreference("gemma4"),
+              },
+            }),
       });
     } else if (allAIModelsReady(state.status)) {
-      toast.success("Vos outils IA sont prêts", {id: TOAST_ID, description: "Vous pouvez désormais les utiliser hors ligne.", duration: 6000});
-    } else toast.dismiss(TOAST_ID);
+      toast.success("Vos outils IA sont prêts", {
+        id: TOAST_ID,
+        description: "Vous pouvez désormais les utiliser hors ligne.",
+        duration: 6000,
+      });
+    } else {
+      toast.dismiss(TOAST_ID);
+    }
   }, [state]);
 
   return null;

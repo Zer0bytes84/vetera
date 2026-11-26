@@ -29,9 +29,9 @@ export function MascotChoices({
 
   return (
     <div
+      aria-label="Choix de la mascotte ou du logo"
       className="mascot-choices-container"
       role="group"
-      aria-label="Choix de la mascotte ou du logo"
     >
       {/* Grid of choices */}
       <div className="mascot-choices" data-compact={compact ? "true" : "false"}>
@@ -49,9 +49,14 @@ export function MascotChoices({
               type="button"
             >
               {/* Still portraits: fifteen faces following the pointer would be a crowd. */}
-              <MascotAvatar animal={animal} animated={false} overflow size={compact ? 54 : 64} />
+              <MascotAvatar
+                animal={animal}
+                animated={false}
+                overflow
+                size={compact ? 54 : 64}
+              />
               <span>{MASCOT_ASSETS[animal].label}</span>
-              <span className="mascot-choice-check" aria-hidden="true">
+              <span aria-hidden="true" className="mascot-choice-check">
                 {selected ? "✓" : ""}
               </span>
             </button>
@@ -71,7 +76,7 @@ export function MascotChoices({
             <Logo collapsed variant="refined" />
           </span>
           <span>Logo classique</span>
-          <span className="mascot-choice-check" aria-hidden="true">
+          <span aria-hidden="true" className="mascot-choice-check">
             {preferences.mode === "logo" ? "✓" : ""}
           </span>
         </button>

@@ -9,6 +9,6 @@ export function useMascotPreferences() {
   return useSyncExternalStore(
     subscribeToMascotPreferences,
     getMascotPreferences,
-    getServerMascotPreferences,
+    getServerMascotPreferences
   );
 }

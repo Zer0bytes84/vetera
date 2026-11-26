@@ -1,15 +1,15 @@
-import { routeGuidedTreatments } from "./treatment-routing";
 import {
+  type LocalSoapNote,
   localSoapSchema,
   SOAP_SECTIONS,
-  type LocalSoapNote,
 } from "./soap-schema";
+import { routeGuidedTreatments } from "./treatment-routing";
 
 /** Human-selected sections, with explicit treatment needs routed verbatim to P. */
 export function assembleGuidedNote(
   existing: LocalSoapNote,
   answers: LocalSoapNote,
-  humanAnswers: LocalSoapNote = answers,
+  humanAnswers: LocalSoapNote = answers
 ): LocalSoapNote {
   const routed = routeGuidedTreatments(answers);
   return localSoapSchema.parse(
@@ -19,8 +19,8 @@ export function assembleGuidedNote(
         humanAnswers[key].trim() || routed[key].trim()
           ? routed[key].trim()
           : existing[key].trim(),
-      ]),
-    ),
+      ])
+    )
   );
 }
 

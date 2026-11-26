@@ -15,16 +15,16 @@ import { MascotChoices } from "./mascot-choices";
 
 export interface MascotProps {
   animal?: MascotAnimal;
-  mood?: MascotMood;
   animated?: boolean;
-  size?: number;
+  className?: string;
+  fallbackToLogo?: boolean;
   framing?: "full" | "portrait";
+  interactive?: boolean;
+  mood?: MascotMood;
+  onSelect?: () => void;
   /** Ears and paws may leave the round frame instead of being cut by it. */
   overflow?: boolean;
-  className?: string;
-  interactive?: boolean;
-  fallbackToLogo?: boolean;
-  onSelect?: () => void;
+  size?: number;
 }
 
 export function Mascot({
@@ -43,29 +43,29 @@ export function Mascot({
   const [open, setOpen] = useState(false);
 
   const effectiveAnimal = animal || preferences.animal;
-  const isAnimated = animated !== undefined ? animated : preferences.animated;
+  const isAnimated = animated === undefined ? preferences.animated : animated;
   const isLogoMode = fallbackToLogo && preferences.mode === "logo" && !animal;
 
   const content = isLogoMode ? (
     <div
       aria-hidden="true"
       className={cn(
-        "inline-flex shrink-0 items-center justify-center rounded-full border border-border/70 bg-card shadow-xs overflow-hidden",
+        "inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full border border-border/70 bg-card shadow-xs",
         className
       )}
       style={{ width: size, height: size }}
     >
-      <Logo collapsed variant="refined" className="scale-75" />
+      <Logo className="scale-75" collapsed variant="refined" />
     </div>
   ) : (
     <MascotAvatar
       animal={effectiveAnimal}
       animated={isAnimated}
-      mood={mood}
-      size={size}
-      framing={framing}
-      overflow={overflow}
       className={className}
+      framing={framing}
+      mood={mood}
+      overflow={overflow}
+      size={size}
     />
   );
 
@@ -74,18 +74,18 @@ export function Mascot({
   }
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover onOpenChange={setOpen} open={open}>
       <PopoverTrigger
-        type="button"
         aria-label="Changer de mascotte ou logo"
         className={cn(
-          "inline-flex shrink-0 items-center justify-center rounded-full transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer",
+          "inline-flex shrink-0 cursor-pointer items-center justify-center rounded-full transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
           className
         )}
+        type="button"
       >
         {content}
       </PopoverTrigger>
-      <PopoverContent align="start" sideOffset={8} className="mascot-picker">
+      <PopoverContent align="start" className="mascot-picker" sideOffset={8}>
         <div className="mascot-picker-heading">
           <PopoverTitle>Compagnon Baitari</PopoverTitle>
           <PopoverDescription>
@@ -103,5 +103,3 @@ export function Mascot({
     </Popover>
   );
 }
-
-export { MascotAvatar, type MascotMood } from "./mascot-avatar";

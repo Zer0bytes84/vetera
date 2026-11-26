@@ -1,6 +1,12 @@
-import { careDisplayStatus, type CareTask } from "@/modules/care-tasks/domain";
-import type { Appointment, Hospitalization, Invoice, Patient } from "@/types/db";
+import { ISO_DATE_PREFIX } from "@/lib/patterns";
+import { type CareTask, careDisplayStatus } from "@/modules/care-tasks/domain";
 import type { View } from "@/types";
+import type {
+  Appointment,
+  Hospitalization,
+  Invoice,
+  Patient,
+} from "@/types/db";
 import { formatNumber } from "@/utils/display-format";
 import { isOpenInvoice } from "../v2/financial-model";
 import { formatCentimes, parseDashboardDate, startOfDay } from "../v2/model";
@@ -20,28 +26,40 @@ import type { AlertReminder } from "./alert-bars";
  */
 
 export type MorningStatus = "late" | "open";
-export type MorningId = "care" | "appointments" | "reminders" | "invoices" | "stays";
+export type MorningId =
+  | "care"
+  | "appointments"
+  | "reminders"
+  | "invoices"
+  | "stays";
 
 export interface MorningItem {
-  id: MorningId;
-  label: string;
+  ariaLabel: string;
   /** null : la source n'a pas pu être lue. */
   count: number | null;
+  id: MorningId;
+  label: string;
   /** La ligne sous le chiffre : le contexte qui aide à décider. */
   line: string;
   /** La page où l'action se fait. */
   view: View;
-  ariaLabel: string;
 }
 
-const ACTIVE_STAY = new Set<Hospitalization["status"]>(["admitted", "monitoring", "critical"]);
+const ACTIVE_STAY = new Set<Hospitalization["status"]>([
+  "admitted",
+  "monitoring",
+  "critical",
+]);
 const REMINDER_AHEAD_DAYS = 7;
 
-const plural = (n: number, one: string, many = `${one}s`) => `${formatNumber(n)} ${n > 1 ? many : one}`;
+const plural = (n: number, one: string, many = `${one}s`) =>
+  `${formatNumber(n)} ${n > 1 ? many : one}`;
 
 function dateOnly(value: string): Date | null {
-  const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(value);
-  if (!match) return parseDashboardDate(value);
+  const match = ISO_DATE_PREFIX.exec(value);
+  if (!match) {
+    return parseDashboardDate(value);
+  }
   return new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
 }
 
@@ -68,7 +86,13 @@ export function buildMorningWatch({
   patients: Pick<Patient, "id" | "status">[];
   invoices: Pick<
     Invoice,
-    "documentStatus" | "issuedAt" | "createdAt" | "grossAmount" | "creditAmount" | "balanceAmount" | "settlementStatus"
+    | "documentStatus"
+    | "issuedAt"
+    | "createdAt"
+    | "grossAmount"
+    | "creditAmount"
+    | "balanceAmount"
+    | "settlementStatus"
   >[];
   stays: Pick<Hospitalization, "status">[];
   /** Le cabinet propose l'hospitalisation : sinon, pas de carte Hospitalisés. */
@@ -76,11 +100,19 @@ export function buildMorningWatch({
 }): MorningItem[] {
   const late = status === "late";
   const today = startOfDay(now);
-  const tomorrow = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
+  const tomorrow = new Date(
+    today.getFullYear(),
+    today.getMonth(),
+    today.getDate() + 1
+  );
 
   // Soins
-  const openCare = careTasks.filter((task) => task.statut === "a_faire" || task.statut === "en_cours");
-  const lateCare = openCare.filter((task) => careDisplayStatus(task, now) === "en_retard").length;
+  const openCare = careTasks.filter(
+    (task) => task.statut === "a_faire" || task.statut === "en_cours"
+  );
+  const lateCare = openCare.filter(
+    (task) => careDisplayStatus(task, now) === "en_retard"
+  ).length;
   const care: MorningItem = {
     id: "care",
     label: late ? "Soins en retard" : "Soins à faire",
@@ -100,13 +132,25 @@ export function buildMorningWatch({
   let absentToday = 0;
   for (const appointment of appointments) {
     const start = parseDashboardDate(appointment.startTime);
-    if (!start) continue;
+    if (!start) {
+      continue;
+    }
     const end = parseDashboardDate(appointment.endTime) ?? start;
     const isToday = start >= today && start < tomorrow;
-    if (appointment.status === "no_show" && isToday) absentToday += 1;
-    if (appointment.status !== "scheduled" && appointment.status !== "confirmed") continue;
-    if (end.getTime() < now.getTime()) untreated += 1;
-    else if (isToday) upcomingToday += 1;
+    if (appointment.status === "no_show" && isToday) {
+      absentToday += 1;
+    }
+    if (
+      appointment.status !== "scheduled" &&
+      appointment.status !== "confirmed"
+    ) {
+      continue;
+    }
+    if (end.getTime() < now.getTime()) {
+      untreated += 1;
+    } else if (isToday) {
+      upcomingToday += 1;
+    }
   }
   const visits: MorningItem = {
     id: "appointments",
@@ -120,16 +164,31 @@ export function buildMorningWatch({
   };
 
   // Rappels médicaux
-  const deceased = new Set(patients.filter((patient) => patient.status === "decede").map((patient) => patient.id));
-  const horizon = new Date(today.getFullYear(), today.getMonth(), today.getDate() + REMINDER_AHEAD_DAYS + 1);
+  const deceased = new Set(
+    patients
+      .filter((patient) => patient.status === "decede")
+      .map((patient) => patient.id)
+  );
+  const horizon = new Date(
+    today.getFullYear(),
+    today.getMonth(),
+    today.getDate() + REMINDER_AHEAD_DAYS + 1
+  );
   let due = 0;
   let soon = 0;
   for (const reminder of reminders) {
-    if (reminder.statut !== "en_cours" || deceased.has(reminder.patient_id)) continue;
+    if (reminder.statut !== "en_cours" || deceased.has(reminder.patient_id)) {
+      continue;
+    }
     const day = dateOnly(reminder.echeance);
-    if (!day) continue;
-    if (day < today) due += 1;
-    else if (day < horizon) soon += 1;
+    if (!day) {
+      continue;
+    }
+    if (day < today) {
+      due += 1;
+    } else if (day < horizon) {
+      soon += 1;
+    }
   }
   const remindersItem: MorningItem = {
     id: "reminders",
@@ -146,9 +205,19 @@ export function buildMorningWatch({
 
   // Factures
   const open = invoices.filter(isOpenInvoice);
-  const overdue = open.filter((invoice) => invoice.settlementStatus === "overdue");
+  const overdue = open.filter(
+    (invoice) => invoice.settlementStatus === "overdue"
+  );
   const owed = (list: typeof open) =>
-    list.reduce((sum, invoice) => sum + Math.min(Math.max(0, invoice.grossAmount - invoice.creditAmount), Math.max(0, invoice.balanceAmount)), 0);
+    list.reduce(
+      (sum, invoice) =>
+        sum +
+        Math.min(
+          Math.max(0, invoice.grossAmount - invoice.creditAmount),
+          Math.max(0, invoice.balanceAmount)
+        ),
+      0
+    );
   const invoicesItem: MorningItem = {
     id: "invoices",
     label: late ? "Factures en retard" : "Factures impayées",
@@ -161,7 +230,9 @@ export function buildMorningWatch({
   };
 
   const items = [care, visits, remindersItem, invoicesItem];
-  if (!hospitalization) return items;
+  if (!hospitalization) {
+    return items;
+  }
 
   // Hospitalisés
   const active = stays.filter((stay) => ACTIVE_STAY.has(stay.status));

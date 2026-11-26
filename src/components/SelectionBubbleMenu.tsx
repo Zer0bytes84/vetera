@@ -1,14 +1,3 @@
-import {
-  CheckListIcon,
-  CheckmarkCircle02Icon,
-  Heading01Icon,
-  Heading02Icon,
-  MagicWand01Icon,
-  SparklesIcon,
-  TextBoldIcon,
-  TextItalicIcon,
-  TextStrikethroughIcon,
-} from "@/lib/hugeicons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import type { Editor } from "@tiptap/react";
 import type React from "react";
@@ -21,6 +10,17 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
+import {
+  CheckListIcon,
+  CheckmarkCircle02Icon,
+  Heading01Icon,
+  Heading02Icon,
+  MagicWand01Icon,
+  SparklesIcon,
+  TextBoldIcon,
+  TextItalicIcon,
+  TextStrikethroughIcon,
+} from "@/lib/hugeicons";
 
 interface SelectionBubbleMenuProps {
   editor: Editor;

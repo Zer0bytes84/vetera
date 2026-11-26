@@ -1,3 +1,4 @@
+import { WHITESPACE_RUN } from "@/lib/patterns";
 import type { Appointment } from "@/types/db";
 
 /** A booking that still holds its slot: cancelled and missed visits free it. */
@@ -10,7 +11,7 @@ const TITLES = /^(dr|pr|mme|mlle|m)\.?$/i;
 /** "Dr Lina Ait Salem" gives "LA": the title is not a name. */
 export function personInitials(name?: string | null) {
   const words = (name ?? "")
-    .split(/\s+/)
+    .split(WHITESPACE_RUN)
     .filter((word) => word && !TITLES.test(word));
   const initials = words
     .slice(0, 2)
@@ -50,11 +51,19 @@ export function freeSlotStarts({
     ])
     .filter(([start, end]) => Number.isFinite(start) && Number.isFinite(end));
   const free: number[] = [];
-  for (let minutes = startHour * 60; minutes < (endHour + 1) * 60; minutes += SLOT_MINUTES) {
+  for (
+    let minutes = startHour * 60;
+    minutes < (endHour + 1) * 60;
+    minutes += SLOT_MINUTES
+  ) {
     const start = dayStart.getTime() + minutes * 60_000;
     const end = start + SLOT_MINUTES * 60_000;
-    if (end <= now.getTime()) continue;
-    if (busy.some(([from, to]) => from < end && to > start)) continue;
+    if (end <= now.getTime()) {
+      continue;
+    }
+    if (busy.some(([from, to]) => from < end && to > start)) {
+      continue;
+    }
     free.push(minutes);
   }
   return free;
@@ -67,7 +76,10 @@ const UNDERWAY = new Set(["arrived", "waiting", "in_progress"]);
  * and never as booked time; urgent visits stay open until they are finished.
  */
 export function agendaDayStats<
-  T extends Pick<Appointment, "startTime" | "endTime" | "status" | "type" | "vetId">,
+  T extends Pick<
+    Appointment,
+    "startTime" | "endTime" | "status" | "type" | "vetId"
+  >,
 >(day: T[]) {
   const booked = day.filter(isActiveBooking);
   const minutes = booked.reduce((sum, appointment) => {
@@ -81,10 +93,14 @@ export function agendaDayStats<
     booked: booked.length,
     completed: booked.filter((a) => a.status === "completed").length,
     underway: booked.filter((a) => UNDERWAY.has(a.status)).length,
-    planned: booked.filter((a) => a.status === "scheduled" || a.status === "confirmed").length,
+    planned: booked.filter(
+      (a) => a.status === "scheduled" || a.status === "confirmed"
+    ).length,
     cancelled: day.length - booked.length,
     minutes,
     vets: new Set(booked.map((a) => a.vetId)).size,
-    openUrgent: booked.filter((a) => a.type === "Urgence" && a.status !== "completed"),
+    openUrgent: booked.filter(
+      (a) => a.type === "Urgence" && a.status !== "completed"
+    ),
   };
 }

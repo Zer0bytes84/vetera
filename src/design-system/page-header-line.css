@@ -6,36 +6,36 @@
   display: flex !important;
   flex-direction: row !important;
   flex-wrap: wrap !important;
+  gap: 12px 24px !important;
   align-items: center !important;
   justify-content: space-between !important;
-  gap: 12px 24px !important;
   padding: 0 2px !important;
   margin: 0 0 12px !important;
-  border: 0 !important;
   background: none !important;
+  border: 0 !important;
   box-shadow: none !important;
 }
 :root .page-header.page-header-line[data-slot="page-header"]::before,
 :root .page-header.page-header-line[data-slot="page-header"]::after {
-  content: none !important;
   display: none !important;
+  content: none !important;
 }
 .page-header-line .page-header-lead {
   display: flex;
-  min-width: 0;
   flex: 1 1 320px;
-  align-items: center;
   gap: 12px;
+  align-items: center;
+  min-width: 0;
 }
 .page-header-line .page-header-title {
   min-width: 0;
   margin: 0;
   overflow: hidden;
+  text-overflow: ellipsis;
   font-size: 24px;
   font-weight: 500;
   line-height: 1.25;
-  letter-spacing: -0.02em;
-  text-overflow: ellipsis;
-  white-space: nowrap;
   color: var(--foreground);
+  letter-spacing: -0.02em;
+  white-space: nowrap;
 }

@@ -1,6 +1,8 @@
 import { z } from "zod";
-import type { Appointment, Owner, Patient } from "@/types/db";
 import type { LocalSoapNote } from "@/modules/consultations/local-ai/soap-schema";
+import type { Appointment, Owner, Patient } from "@/types/db";
+
+const PARAGRAPH_BREAK = /\n\n+/;
 
 export const DOCUMENT_KINDS = {
   prescription: "Ordonnance",
@@ -9,11 +11,11 @@ export const DOCUMENT_KINDS = {
 } as const;
 export type ClinicalDocumentKind = keyof typeof DOCUMENT_KINDS;
 export interface ClinicalDocumentTemplate {
+  body: string;
+  createdAt: string;
   id: string;
   kind: ClinicalDocumentKind;
   name: string;
-  body: string;
-  createdAt: string;
   updatedAt: string;
 }
 const date = "2026-10-07T00:00:00.000Z";
@@ -58,19 +60,21 @@ export const TEMPLATE_FIELDS = [
 export const documentTemplateSchema = z.object({
   name: z.string().trim().min(1, "Nommez le modèle.").max(100),
   kind: z.enum(["prescription", "certificate", "report"]),
-  body: z.string().trim().min(1, "Le modèle est vide.").max(12000),
+  body: z.string().trim().min(1, "Le modèle est vide.").max(12_000),
 });
 export function validateTemplate(input: unknown) {
   const value = documentTemplateSchema.parse(input);
   for (const match of value.body.matchAll(/\{\{([^{}]+)\}\}/g)) {
-    if (!(TEMPLATE_FIELDS as readonly string[]).includes(match[1].trim()))
+    if (!(TEMPLATE_FIELDS as readonly string[]).includes(match[1].trim())) {
       throw new Error(
         `Champ inconnu dans le modèle : ${match[1]}. Utilisez les champs proposés.`
       );
+    }
   }
   const residue = value.body.replace(/\{\{([^{}]+)\}\}/g, "");
-  if (residue.includes("{{") || residue.includes("}}"))
+  if (residue.includes("{{") || residue.includes("}}")) {
     throw new Error("Un champ du modèle est mal fermé.");
+  }
   return value;
 }
 export function renderClinicalDocument(
@@ -117,6 +121,6 @@ export const escapeHtml = (text: string) =>
     .replace(/'/g, "&#39;");
 export const documentToHtml = (text: string) =>
   text
-    .split(/\n\n+/)
+    .split(PARAGRAPH_BREAK)
     .map((part) => `<p>${escapeHtml(part).replace(/\n/g, "<br>")}</p>`)
     .join("");

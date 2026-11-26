@@ -1,17 +1,26 @@
 import { DEFAULT_DOCUMENT_TEMPLATES } from "./lib/document-templates";
 
 // Keep SQL statements on one line: the migration parser discards empty lines.
-const literal = (value: string) => `'${value.replace(/'/g, "''").replace(/\n/g, "' || char(10) || '")}'`;
+const literal = (value: string) =>
+  `'${value.replace(/'/g, "''").replace(/\n/g, "' || char(10) || '")}'`;
 export const REFERRAL_TEMPLATE = {
-  id: "document-referral", kind: "referral" as const, name: "Lettre de référence",
+  id: "document-referral",
+  kind: "referral" as const,
+  name: "Lettre de référence",
   body: "LETTRE DE RÉFÉRENCE\n\nÀ l’attention de {{reference.destinataire}}\n\nPatient : {{patient.nom}} · {{patient.espece}}\nPropriétaire : {{client.nom}}\nConsultation du {{consultation.date}}\nVétérinaire : {{clinicien.nom}}\n\nMotif de référence\n{{reference.motif}}\n\nMotif et contexte\n{{soap.motif}}\n\nExamen et observations\n{{soap.examen}}\n\nÉvaluation consignée\n{{soap.diagnostic}}\n\nPlan de soins\n{{soap.plan}}\n\nSignature : [à compléter].",
-  createdAt: "2026-10-17T00:00:00.000Z", updatedAt: "2026-10-17T00:00:00.000Z",
+  createdAt: "2026-10-17T00:00:00.000Z",
+  updatedAt: "2026-10-17T00:00:00.000Z",
 };
 
-export const MANAGED_DOCUMENT_DEFAULTS = [...DEFAULT_DOCUMENT_TEMPLATES, REFERRAL_TEMPLATE];
-const seeds = MANAGED_DOCUMENT_DEFAULTS.map((template) => `
+export const MANAGED_DOCUMENT_DEFAULTS = [
+  ...DEFAULT_DOCUMENT_TEMPLATES,
+  REFERRAL_TEMPLATE,
+];
+const seeds = MANAGED_DOCUMENT_DEFAULTS.map(
+  (template) => `
 INSERT OR IGNORE INTO document_templates(id,kind,name,body,created_at,updated_at,nom,type_document,corps_modele,actif)
-VALUES (${literal(template.id)},${literal(template.kind === "referral" ? "report" : template.kind)},${literal(template.name)},${literal(template.body)},${literal(template.createdAt)},${literal(template.updatedAt)},${literal(template.name)},${literal(template.kind)},${literal(template.body)},1);`).join("\n");
+VALUES (${literal(template.id)},${literal(template.kind === "referral" ? "report" : template.kind)},${literal(template.name)},${literal(template.body)},${literal(template.createdAt)},${literal(template.updatedAt)},${literal(template.name)},${literal(template.kind)},${literal(template.body)},1);`
+).join("\n");
 
 /** Additive: the legacy three bodies and every existing document remain untouched. */
 export const DOCUMENTS_MIGRATION_SQL = `

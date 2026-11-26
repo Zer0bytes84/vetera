@@ -1,18 +1,25 @@
+import {
+  DOCUMENT_TYPES,
+  type PatientDocument,
+} from "@/modules/documents/document-domain";
 import type { ConsultationDocument, Invoice, Prescription } from "@/types/db";
-import { DOCUMENT_TYPES, type PatientDocument } from "@/modules/documents/document-domain";
 
-export type TimelinePieceKind = "prescription" | "invoice" | "result" | "document";
+export type TimelinePieceKind =
+  | "prescription"
+  | "invoice"
+  | "result"
+  | "document";
 
 /** A paper the visit produced: prescription, invoice, analysis result, document. */
 export interface TimelinePiece {
+  /** The visit that produced it, when known. */
+  appointmentId: string | null;
   at: string;
+  /** Number or file name, shown next to the label. */
+  detail?: string;
   id: string;
   kind: TimelinePieceKind;
   label: string;
-  /** Number or file name, shown next to the label. */
-  detail?: string;
-  /** The visit that produced it, when known. */
-  appointmentId: string | null;
   /** Target to open: the record object behind the piece. */
   sourceId: string;
 }
@@ -29,6 +36,19 @@ const INVOICE_STATUS: Record<Invoice["documentStatus"], string> = {
   issued: "émise",
   void: "annulée",
 };
+
+function documentPieceKind(
+  kind: PatientDocument["kind"]
+): "prescription" | "result" | "document" {
+  switch (kind) {
+    case "prescription":
+      return "prescription";
+    case "import":
+      return "result";
+    default:
+      return "document";
+  }
+}
 
 /**
  * Every piece of a patient's record, each tied to the visit it came from.
@@ -59,13 +79,21 @@ export function collectTimelinePieces({
     });
   }
   for (const invoice of invoices) {
-    if (invoice.documentStatus === "draft") continue;
+    if (invoice.documentStatus === "draft") {
+      continue;
+    }
     pieces.push({
       at: invoice.issuedAt || invoice.createdAt,
       id: `invoice-${invoice.id}`,
       kind: "invoice",
       label: "Facture",
-      detail: [invoice.number, invoice.documentStatus === "void" ? INVOICE_STATUS.void : ""].filter(Boolean).join(" · ") || undefined,
+      detail:
+        [
+          invoice.number,
+          invoice.documentStatus === "void" ? INVOICE_STATUS.void : "",
+        ]
+          .filter(Boolean)
+          .join(" · ") || undefined,
       appointmentId: invoice.appointmentId || null,
       sourceId: invoice.id,
     });
@@ -82,12 +110,17 @@ export function collectTimelinePieces({
     });
   }
   for (const document of documents) {
-    if (document.status === "annule") continue;
+    if (document.status === "annule") {
+      continue;
+    }
     pieces.push({
       at: document.finalizedAt || document.createdAt,
       id: `document-${document.id}`,
-      kind: document.kind === "prescription" ? "prescription" : document.kind === "import" ? "result" : "document",
-      label: document.kind === "import" ? "Document importé" : DOCUMENT_TYPES[document.kind],
+      kind: documentPieceKind(document.kind),
+      label:
+        document.kind === "import"
+          ? "Document importé"
+          : DOCUMENT_TYPES[document.kind],
       detail: document.title || undefined,
       appointmentId: document.consultationId,
       sourceId: document.id,
@@ -97,7 +130,10 @@ export function collectTimelinePieces({
 }
 
 /** Pieces of each visit, and the pieces no visit produced. */
-export function piecesByVisit(pieces: readonly TimelinePiece[], visitIds: ReadonlySet<string>) {
+export function piecesByVisit(
+  pieces: readonly TimelinePiece[],
+  visitIds: ReadonlySet<string>
+) {
   const attached = new Map<string, TimelinePiece[]>();
   const loose: TimelinePiece[] = [];
   for (const piece of pieces) {

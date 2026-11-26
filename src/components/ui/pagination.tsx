@@ -1,10 +1,10 @@
+import type * as React from "react";
+import { Button } from "@/components/ui/button";
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
   MoreHorizontalIcon,
 } from "@/lib/icons";
-import type * as React from "react";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 function Pagination({ className, ...props }: React.ComponentProps<"nav">) {
@@ -13,7 +13,6 @@ function Pagination({ className, ...props }: React.ComponentProps<"nav">) {
       aria-label="pagination"
       className={cn("mx-auto flex w-full justify-center", className)}
       data-slot="pagination"
-      role="navigation"
       {...props}
     />
   );

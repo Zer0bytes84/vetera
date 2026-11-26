@@ -8,6 +8,8 @@ import type {
   WorkerResponse,
 } from "../local-ai/worker-protocol";
 
+const NO_SPEECH_ERROR = /Aucune parole|langue n’a pas/;
+
 let transcriber: AutomaticSpeechRecognitionPipeline | null = null;
 const send = (message: WorkerResponse) => self.postMessage(message);
 self.onmessage = async ({ data }: MessageEvent<WorkerRequest>) => {
@@ -21,11 +23,15 @@ self.onmessage = async ({ data }: MessageEvent<WorkerRequest>) => {
       env.useFSCache = false;
       env.localModelPath = data.modelRoot;
       const wasm = env.backends.onnx.wasm;
-      if (!wasm) throw new Error("Runtime WASM indisponible.");
+      if (!wasm) {
+        throw new Error("Runtime WASM indisponible.");
+      }
       wasm.wasmPaths = `${data.runtimeRoot}onnx/`;
       // Threads need SharedArrayBuffer, i.e. a cross-origin isolated page.
       const threads = data.threads ?? 1;
-      if (threads > 1) exposeSharedMemory();
+      if (threads > 1) {
+        exposeSharedMemory();
+      }
       wasm.numThreads = typeof SharedArrayBuffer === "function" ? threads : 1;
       wasm.proxy = false;
       send({
@@ -44,24 +50,33 @@ self.onmessage = async ({ data }: MessageEvent<WorkerRequest>) => {
         {
           ...(data.device === "hybride"
             ? {
-                device: { encoder_model: "webgpu", decoder_model_merged: "wasm" },
-                dtype: { encoder_model: data.dtype ?? "q8", decoder_model_merged: "q8" },
+                device: {
+                  encoder_model: "webgpu",
+                  decoder_model_merged: "wasm",
+                },
+                dtype: {
+                  encoder_model: data.dtype ?? "q8",
+                  decoder_model_merged: "q8",
+                },
               }
             : { device: data.device ?? "wasm", dtype: data.dtype ?? "q8" }),
           local_files_only: true,
           progress_callback: (event) => {
-            if (event.status === "progress")
+            if (event.status === "progress") {
               send({
                 type: "progress",
                 message: "Chargement de la dictée depuis cet ordinateur…",
                 progress: event.progress / 100,
               });
+            }
           },
         }
       );
       send({ type: "ready", threads: wasm.numThreads ?? 1 });
     } else if (data.type === "transcribe") {
-      if (!transcriber) throw new Error("Whisper n’est pas chargé.");
+      if (!transcriber) {
+        throw new Error("Whisper n’est pas chargé.");
+      }
       const { Tensor, WhisperTextStreamer } = await import(
         "@huggingface/transformers"
       );
@@ -72,7 +87,7 @@ self.onmessage = async ({ data }: MessageEvent<WorkerRequest>) => {
           message: "Reconnaissance locale de la langue…",
         });
         const features = await transcriber.processor(
-          data.audio.subarray(0, 30 * 16000)
+          data.audio.subarray(0, 30 * 16_000)
         );
         const model = transcriber.model;
         const config = model.generation_config as unknown as {
@@ -80,12 +95,15 @@ self.onmessage = async ({ data }: MessageEvent<WorkerRequest>) => {
           decoder_start_token_id: number;
         } | null;
         if (
-          !config?.lang_to_id ||
-          !Number.isInteger(config.decoder_start_token_id)
-        )
+          !(
+            config?.lang_to_id &&
+            Number.isInteger(config.decoder_start_token_id)
+          )
+        ) {
           throw new Error(
             "La langue n’a pas pu être reconnue. Choisissez Français et réessayez."
           );
+        }
         const detected = await model({
           ...features,
           decoder_input_ids: new Tensor(
@@ -126,10 +144,11 @@ self.onmessage = async ({ data }: MessageEvent<WorkerRequest>) => {
       });
       const text =
         (Array.isArray(result) ? result[0]?.text : result.text)?.trim() ?? "";
-      if (!text)
+      if (!text) {
         throw new Error(
           "Aucune parole reconnue. Vérifiez le micro et réessayez."
         );
+      }
       // Complete disposal before acknowledging the result, unless the client
       // keeps the model for the next rubric: it then parks this worker, and
       // terminates it before any generation worker may start.
@@ -147,8 +166,7 @@ self.onmessage = async ({ data }: MessageEvent<WorkerRequest>) => {
     await transcriber?.dispose().catch(() => undefined);
     transcriber = null;
     const message =
-      error instanceof Error &&
-      /Aucune parole|langue n’a pas/.test(error.message)
+      error instanceof Error && NO_SPEECH_ERROR.test(error.message)
         ? error.message
         : data.type === "load-whisper"
           ? "La dictée n’a pas pu être chargée. Vérifiez les fichiers installés sur cet ordinateur."

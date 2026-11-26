@@ -1,3 +1,10 @@
+import { HugeiconsIcon } from "@hugeicons/react";
+import { AnimatePresence, motion } from "framer-motion";
+import type React from "react";
+import { useState } from "react";
+import { Spinner } from "@/components/ui/spinner";
+import { useAuth } from "@/contexts/AuthContext";
+import { useTauriDrag } from "@/hooks/use-tauri-drag";
 import {
   Alert02Icon,
   ArrowLeft01Icon,
@@ -10,15 +17,8 @@ import {
   User02Icon,
   ViewIcon,
 } from "@/lib/hugeicons";
-import { HugeiconsIcon } from "@hugeicons/react";
-import { AnimatePresence, motion } from "framer-motion";
-import type React from "react";
-import { useState } from "react";
-import { Spinner } from "@/components/ui/spinner";
-import { useAuth } from "@/contexts/AuthContext";
-import { useTauriDrag } from "@/hooks/use-tauri-drag";
-import Logo from "./Logo";
 import { AuthBrandPanel, AuthGlassBackdrop } from "./auth-brand-panel";
+import Logo from "./Logo";
 import "./auth-clinic.css";
 import { guard } from "@/lib/guard";
 
@@ -42,25 +42,28 @@ const Auth: React.FC = () => {
     event.preventDefault();
     setFormError("");
     setLoading(true);
-    await guard(async () => {
-      if (view === "login") {
-        await login(email, password);
-      } else {
-        await register(email, password, name);
+    await guard(
+      async () => {
+        if (view === "login") {
+          await login(email, password);
+        } else {
+          await register(email, password, name);
+        }
+      },
+      {
+        recover: (error) => {
+          console.error(error);
+          setFormError(
+            error instanceof Error
+              ? error.message
+              : "Une erreur est survenue. Veuillez réessayer."
+          );
+        },
+        cleanup: () => {
+          setLoading(false);
+        },
       }
-    }, {
-      recover: (error) => {
-        console.error(error);
-        setFormError(
-          error instanceof Error
-            ? error.message
-            : "Une erreur est survenue. Veuillez réessayer."
-        );
-      },
-      cleanup: () => {
-        setLoading(false);
-      },
-    });
+    );
   };
 
   const changeView = (nextView: "login" | "register") => {
@@ -76,9 +79,10 @@ const Auth: React.FC = () => {
       onMouseDown={handleWindowMouseDown}
       ref={windowDragRef}
     >
-
       <div className="relative z-10 grid min-h-screen lg:grid-cols-[minmax(0,1.08fr)_minmax(460px,0.92fr)]">
-        <AuthBrandPanel rubrics={["Consultations", "Soins", "Rappels", "Équipe"]}>
+        <AuthBrandPanel
+          rubrics={["Consultations", "Soins", "Rappels", "Équipe"]}
+        >
           <p className="auth-clinic-eyebrow">
             Baitari <span>·</span> de l’arabe bayṭarī, vétérinaire
           </p>
@@ -237,7 +241,11 @@ const Auth: React.FC = () => {
                       id="password"
                       minLength={6}
                       onChange={(event) => setPassword(event.target.value)}
-                      placeholder={view === "login" ? "Votre mot de passe" : "6 caractères minimum"}
+                      placeholder={
+                        view === "login"
+                          ? "Votre mot de passe"
+                          : "6 caractères minimum"
+                      }
                       required
                       type={showPassword ? "text" : "password"}
                       value={password}
@@ -248,7 +256,7 @@ const Auth: React.FC = () => {
                           ? "Masquer le mot de passe"
                           : "Afficher le mot de passe"
                       }
-                      className="absolute inset-y-1.5 end-1.5 flex items-center gap-1.5 rounded-lg px-2.5 font-medium t-12 text-zinc-500 transition-colors hover:bg-black/[0.04] hover:text-zinc-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35 dark:hover:bg-white/[0.06] dark:hover:text-white"
+                      className="t-12 absolute inset-y-1.5 end-1.5 flex items-center gap-1.5 rounded-lg px-2.5 font-medium text-zinc-500 transition-colors hover:bg-black/[0.04] hover:text-zinc-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35 dark:hover:bg-white/[0.06] dark:hover:text-white"
                       onClick={() => setShowPassword((visible) => !visible)}
                       type="button"
                     >

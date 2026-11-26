@@ -1,13 +1,16 @@
-import type { IconSvgElement } from "@hugeicons/react";
 import BirdIcon from "@hugeicons/core-free-icons/BirdIcon";
 import FishSymbolIcon from "@hugeicons/core-free-icons/FishSymbolIcon";
+import type { IconSvgElement } from "@hugeicons/react";
 
 // Veterinary subjects absent from the free catalog. Authored on the same
 // 24px grid and rendered by Hugeicons at the shared 1.5px stroke width.
 export const CatGlyph: IconSvgElement = [
   [
     "path",
-    { key: "cat-head", d: "M4 10V3l6 4h4l6-4v7c1 2 1 5 0 7-2 3-6 4-8 4s-6-1-8-4c-1-2-1-5 0-7Z" },
+    {
+      key: "cat-head",
+      d: "M4 10V3l6 4h4l6-4v7c1 2 1 5 0 7-2 3-6 4-8 4s-6-1-8-4c-1-2-1-5 0-7Z",
+    },
   ],
   [
     "path",
@@ -35,7 +38,10 @@ export const RabbitGlyph: IconSvgElement = [
       d: "M8 11C5 6 5 2 7 2s3 4 3 8M14 10c0-6 1-8 3-8s2 5-1 9M5 15c0-3 3-5 7-5s7 2 7 5-3 6-7 6-7-3-7-6Z",
     },
   ],
-  ["path", { key: "rabbit-face", d: "M9 14h.01M15 14h.01M10 17l2 1 2-1M12 18v2" }],
+  [
+    "path",
+    { key: "rabbit-face", d: "M9 14h.01M15 14h.01M10 17l2 1 2-1M12 18v2" },
+  ],
 ];
 export const TurtleGlyph: IconSvgElement = [
   ["ellipse", { key: "turtle-shell", cx: 11, cy: 12, rx: 7, ry: 6 }],
@@ -63,11 +69,23 @@ export const PawPrintGlyph: IconSvgElement = [
 
 export function getSpeciesGlyph(species?: string): IconSvgElement {
   const value = species?.toLocaleLowerCase("fr") ?? "";
-  if (value.includes("chien")) return DogGlyph;
-  if (value.includes("chat")) return CatGlyph;
-  if (value.includes("lapin")) return RabbitGlyph;
-  if (value.includes("oiseau")) return BirdIcon;
-  if (value.includes("poisson")) return FishSymbolIcon;
-  if (value.includes("tortue") || value.includes("reptile")) return TurtleGlyph;
+  if (value.includes("chien")) {
+    return DogGlyph;
+  }
+  if (value.includes("chat")) {
+    return CatGlyph;
+  }
+  if (value.includes("lapin")) {
+    return RabbitGlyph;
+  }
+  if (value.includes("oiseau")) {
+    return BirdIcon;
+  }
+  if (value.includes("poisson")) {
+    return FishSymbolIcon;
+  }
+  if (value.includes("tortue") || value.includes("reptile")) {
+    return TurtleGlyph;
+  }
   return PawPrintGlyph;
 }

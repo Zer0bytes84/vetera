@@ -3,18 +3,20 @@ import { isTauriRuntime } from "@/services/browser-store";
 import type { AIProvisioningProgress } from "../services/ai-model-provisioning";
 import { generatorCandidates } from "./generator-choice";
 
+const TRAILING_SLASH = /\/$/;
+
 export interface LocalModelStatus {
-  root: string | null;
-  whisperReady: boolean;
-  whisperModel?: string | null;
-  generatorReady: boolean;
-  embeddingReady?: boolean;
-  /** EmbeddingGemma 2 (phase A2), installed alongside v1. */
-  embedding2Ready?: boolean;
   /** arctic-embed-l-v2 (A2 candidate). */
   arcticReady?: boolean;
+  /** EmbeddingGemma 2 (phase A2), installed alongside v1. */
+  embedding2Ready?: boolean;
+  embeddingReady?: boolean;
   /** New assistant version (Gemma 4 E2B), installed next to Gemma 3. */
   generator4Ready?: boolean;
+  generatorReady: boolean;
+  root: string | null;
+  whisperModel?: string | null;
+  whisperReady: boolean;
   /** Native dictation model (whisper.cpp large-v3-turbo q8), desktop macOS. */
   whisperTurboReady?: boolean;
 }
@@ -23,11 +25,13 @@ export const EMPTY_MODEL_STATUS: LocalModelStatus = {
   whisperReady: false,
   generatorReady: false,
 };
+// biome-ignore lint/suspicious/useAwait: hors Tauri rend l'objet EMPTY_MODEL_STATUS, pas une promesse ; la signature Promise<LocalModelStatus> exige async (tsc TS2739 sans)
 export async function getLocalModels(): Promise<LocalModelStatus> {
   return isTauriRuntime()
     ? invoke("local_ai_model_status")
     : EMPTY_MODEL_STATUS;
 }
+// biome-ignore lint/suspicious/useAwait: lève hors de l'application de bureau avant invoke ; async garde ce refus en rejet
 export async function downloadLocalModels(
   onProgress?: (progress: AIProvisioningProgress) => void,
   accessToken?: string,
@@ -35,26 +39,41 @@ export async function downloadLocalModels(
   only?: string[]
 ): Promise<LocalModelStatus> {
   if (!isTauriRuntime()) {
-    throw new Error("Le téléchargement des outils locaux se fait dans l’application de bureau. Vous pouvez continuer à utiliser la version web.");
+    throw new Error(
+      "Le téléchargement des outils locaux se fait dans l’application de bureau. Vous pouvez continuer à utiliser la version web."
+    );
   }
   const channel = new Channel<AIProvisioningProgress>();
-  channel.onmessage = progress => onProgress?.(progress);
-  return invoke("download_local_ai_models", { onProgress: channel, accessToken: accessToken?.trim() || null, only: only ?? null });
+  channel.onmessage = (progress) => onProgress?.(progress);
+  return invoke("download_local_ai_models", {
+    onProgress: channel,
+    accessToken: accessToken?.trim() || null,
+    only: only ?? null,
+  });
 }
 export async function cancelLocalModelDownload() {
-  if (isTauriRuntime()) await invoke("cancel_local_ai_download");
+  if (isTauriRuntime()) {
+    await invoke("cancel_local_ai_download");
+  }
 }
 export async function importLocalModel(
   kind: "whisper" | "generator" | "embeddinggemma"
 ) {
-  if (!isTauriRuntime())
+  if (!isTauriRuntime()) {
     throw new Error(
       "L’import des modèles se fait dans l’application Baitari de bureau."
     );
+  }
   const { open } = await import("@tauri-apps/plugin-dialog");
   const path = await open(
-    kind !== "generator"
+    kind === "generator"
       ? {
+          directory: false,
+          multiple: false,
+          title: "Choisir le fichier de préparation des notes",
+          filters: [{ name: "Préparation des notes", extensions: ["task"] }],
+        }
+      : {
           directory: true,
           multiple: false,
           title:
@@ -62,23 +81,20 @@ export async function importLocalModel(
               ? "Choisir le dossier de dictée téléchargé"
               : "Choisir le dossier de recherche locale téléchargé",
         }
-      : {
-          directory: false,
-          multiple: false,
-          title: "Choisir le fichier de préparation des notes",
-          filters: [{ name: "Préparation des notes", extensions: ["task"] }],
-        }
   );
-  if (!path || Array.isArray(path)) return null;
+  if (!path || Array.isArray(path)) {
+    return null;
+  }
   return invoke<LocalModelStatus>("import_local_ai_model", {
     kind,
     source: path,
   });
 }
 export function getLocalModelUrls(status: LocalModelStatus) {
-  if (!status.root)
+  if (!status.root) {
     throw new Error("Importez d’abord les modèles locaux depuis le disque.");
-  const modelRoot = `${convertFileSrc(status.root).replace(/\/$/, "")}/`;
+  }
+  const modelRoot = `${convertFileSrc(status.root).replace(TRAILING_SLASH, "")}/`;
   return {
     modelRoot,
     modelUrl: `${modelRoot}generator/gemma3.task`,

@@ -14,6 +14,7 @@ import {
 } from "@/modules/consultations/services/ai-model-provisioning";
 import { createAIModelInstallation } from "@/modules/consultations/services/ai-model-installation";
 import { AIModelSettings, NewAssistantCard } from "@/modules/consultations/components/ai-model-settings";
+import { tagsWith } from "../../helpers/code-text";
 
 const missing = {root: "/local-models", whisperReady: false, generatorReady: false, embeddingReady: false};
 const ready = {...missing, whisperReady: true, generatorReady: true, embeddingReady: true};
@@ -228,8 +229,9 @@ describe("Carte de la nouvelle version dans les Paramètres", () => {
   it("suspendue : interrupteur grisé, non coché, mention « Temporairement indisponible »", () => {
     const html = renderToStaticMarkup(createElement(NewAssistantCard, {installed: true, downloading: false, busy: false, enabled: true, fellBack: false, onEnable: () => {}}));
     expect(html).toContain("Temporairement indisponible");
-    expect(html).toMatch(/role="switch"[^>]*(aria-disabled="true"|disabled)/);
-    expect(html).toMatch(/role="switch"[^>]*aria-checked="false"/);
+    const [toggle] = tagsWith(html, 'role="switch"');
+    expect(toggle).toMatch(/aria-disabled="true"|\sdisabled[\s=>]/);
+    expect(toggle).toContain('aria-checked="false"');
     expect(html).toContain("Utiliser la nouvelle version");
   });
 });

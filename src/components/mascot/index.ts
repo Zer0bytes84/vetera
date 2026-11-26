@@ -1,4 +1,11 @@
+export { LineMascot } from "./line-mascot";
 export { Mascot, type MascotProps } from "./mascot";
+export {
+  LEGACY_VECTOR_MASCOTS,
+  MASCOT_ANIMALS,
+  MASCOT_ASSETS,
+  MASCOT_CHOICES,
+} from "./mascot-assets";
 export {
   MascotAvatar,
   type MascotAvatarProps,
@@ -7,10 +14,3 @@ export {
 export { MascotChoices } from "./mascot-choices";
 export { MascotSettings } from "./mascot-settings";
 export { SidebarBrand } from "./sidebar-brand";
-export {
-  MASCOT_ANIMALS,
-  MASCOT_ASSETS,
-  MASCOT_CHOICES,
-  LEGACY_VECTOR_MASCOTS,
-} from "./mascot-assets";
-export { LineMascot } from "./line-mascot";

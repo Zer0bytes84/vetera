@@ -16,7 +16,9 @@ const subscribe = (listener: () => void) => {
 };
 function publish(version: DashboardVersion) {
   localStorage.setItem(KEY, version);
-  listeners.forEach((listener) => listener());
+  for (const listener of listeners) {
+    listener();
+  }
 }
 export function useDashboardVersion() {
   const version = useSyncExternalStore(
@@ -33,8 +35,9 @@ export function useDashboardVersion() {
           active &&
           initialRevision === revision &&
           (value === "clinical" || value === "analytics" || value === "classic")
-        )
+        ) {
           publish(value === "clinical" ? "clinical" : "analytics");
+        }
       })
       .catch(() => undefined);
     return () => {
@@ -48,7 +51,9 @@ export function useDashboardVersion() {
     try {
       await setSetting(KEY, next);
     } catch {
-      if (request === revision) publish(previous);
+      if (request === revision) {
+        publish(previous);
+      }
       toast.error("Le choix du tableau de bord n’a pas été enregistré.", {
         action: {
           label: "Réessayer",

@@ -21,7 +21,9 @@ export interface ExistingInvoice {
 /** Whole dinars typed by a person; anything else (empty, negative, letters) is null. */
 export function parseDinars(text: string): number | null {
   const clean = text.replace(/\s/g, "").replace(",", ".");
-  if (!clean) return null;
+  if (!clean) {
+    return null;
+  }
   const value = Number(clean);
   return Number.isFinite(value) && value >= 0 ? value : null;
 }
@@ -40,23 +42,39 @@ export interface BillingDraft {
   total: number;
 }
 
-export function billingDraft(lines: readonly DraftLine[], receivedText: string, existing?: ExistingInvoice | null): BillingDraft {
+export function billingDraft(
+  lines: readonly DraftLine[],
+  receivedText: string,
+  existing?: ExistingInvoice | null
+): BillingDraft {
   const items = existing
     ? existing.lines.map((line) => ({ amount: line.amountDa, desc: line.desc }))
-    : lines.map((line) => ({ amount: parseDinars(line.amount), desc: line.desc.trim() }));
+    : lines.map((line) => ({
+        amount: parseDinars(line.amount),
+        desc: line.desc.trim(),
+      }));
   const missingPrice = items.some((item) => item.amount === null);
   const missingLabel = items.some((item) => !item.desc);
-  const total = existing ? existing.grossDa : items.reduce((sum, item) => sum + (item.amount ?? 0), 0);
+  const total = existing
+    ? existing.grossDa
+    : items.reduce((sum, item) => sum + (item.amount ?? 0), 0);
   const due = existing ? existing.balanceDa : total;
-  const free = !existing && !missingPrice && total === 0;
+  const free = !(existing || missingPrice) && total === 0;
   const received = free ? 0 : parseDinars(receivedText);
 
   let problem: string | null = null;
-  if (items.length === 0) problem = "Ajoutez au moins une prestation.";
-  else if (missingLabel) problem = "Donnez un libellé à chaque prestation.";
-  else if (missingPrice) problem = "Indiquez le prix de chaque prestation.";
-  else if (received === null) problem = "Indiquez le montant réglé aujourd'hui, 0 DA si le client ne paie pas maintenant.";
-  else if (received > due) problem = `Le règlement dépasse le reste dû (${due.toLocaleString("fr-FR")} DA).`;
+  if (items.length === 0) {
+    problem = "Ajoutez au moins une prestation.";
+  } else if (missingLabel) {
+    problem = "Donnez un libellé à chaque prestation.";
+  } else if (missingPrice) {
+    problem = "Indiquez le prix de chaque prestation.";
+  } else if (received === null) {
+    problem =
+      "Indiquez le montant réglé aujourd'hui, 0 DA si le client ne paie pas maintenant.";
+  } else if (received > due) {
+    problem = `Le règlement dépasse le reste dû (${due.toLocaleString("fr-FR")} DA).`;
+  }
 
   return {
     balanceAfter: Math.max(0, due - (received ?? 0)),

@@ -1,12 +1,24 @@
 import type { VitalSign } from "./store";
-import { latestReadings, VITAL_METRICS, vitalsByDay, type Verdict } from "./vitals-summary";
+import {
+  latestReadings,
+  type Verdict,
+  VITAL_METRICS,
+  vitalsByDay,
+} from "./vitals-summary";
 
 const number = (value: number, digits: number) =>
-  value.toLocaleString("fr-FR", { maximumFractionDigits: digits, minimumFractionDigits: digits });
+  value.toLocaleString("fr-FR", {
+    maximumFractionDigits: digits,
+    minimumFractionDigits: digits,
+  });
 /** "°C" and "kg" take a space, a rate such as "/min" does not. */
-const withUnit = (value: string, unit: string) => (unit.startsWith("/") ? `${value}${unit}` : `${value} ${unit}`);
+const withUnit = (value: string, unit: string) =>
+  unit.startsWith("/") ? `${value}${unit}` : `${value} ${unit}`;
 const clock = (value: string) =>
-  new Date(value).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+  new Date(value).toLocaleTimeString("fr-FR", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 const verdictWords: Record<Verdict, string> = {
   below: "sous le repère",
   within: "dans le repère",
@@ -14,9 +26,17 @@ const verdictWords: Record<Verdict, string> = {
 };
 
 /** The last value of each measure in words, against the species reference and the reading before. */
-export function VitalsLatest({ vitals, species }: { vitals: VitalSign[]; species: string }) {
+export function VitalsLatest({
+  vitals,
+  species,
+}: {
+  vitals: VitalSign[];
+  species: string;
+}) {
   const readings = latestReadings(species, vitals);
-  if (!readings.length) return null;
+  if (!readings.length) {
+    return null;
+  }
   const animal = species ? species.toLocaleLowerCase("fr") : "l’espèce";
   return (
     <div className="vitals-latest">
@@ -52,12 +72,18 @@ export function VitalsLatest({ vitals, species }: { vitals: VitalSign[]; species
 /** Lowest and highest value of each measure, one row per day. */
 export function VitalsByDay({ vitals }: { vitals: VitalSign[] }) {
   const days = vitalsByDay(vitals);
-  if (!days.length) return null;
-  const metrics = VITAL_METRICS.filter(({ key }) => days.some((day) => day.ranges[key]));
+  if (!days.length) {
+    return null;
+  }
+  const metrics = VITAL_METRICS.filter(({ key }) =>
+    days.some((day) => day.ranges[key])
+  );
   return (
     <div className="vitals-by-day overflow-x-auto">
       <table>
-        <caption className="t-13 font-medium">Par jour, du plus bas au plus haut</caption>
+        <caption className="t-13 font-medium">
+          Par jour, du plus bas au plus haut
+        </caption>
         <thead>
           <tr>
             <th scope="col">Jour</th>
@@ -72,7 +98,11 @@ export function VitalsByDay({ vitals }: { vitals: VitalSign[] }) {
           {days.map((day) => (
             <tr key={day.day}>
               <td className="vitals-by-day-date">
-                {new Date(`${day.day}T12:00:00`).toLocaleDateString("fr-FR", { weekday: "short", day: "numeric", month: "short" })}
+                {new Date(`${day.day}T12:00:00`).toLocaleDateString("fr-FR", {
+                  weekday: "short",
+                  day: "numeric",
+                  month: "short",
+                })}
                 <span>
                   {day.count} relevé{day.count > 1 ? "s" : ""}
                 </span>

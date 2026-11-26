@@ -1,5 +1,11 @@
 import { formatNumber } from "@/utils/display-format";
-import { buildActivityHeatmap, buildHourlyActivity, heatLegend, heatLevel, type HeatDay } from "./dashboard-widgets";
+import {
+  buildActivityHeatmap,
+  buildHourlyActivity,
+  type HeatDay,
+  heatLegend,
+  heatLevel,
+} from "./dashboard-widgets";
 
 /**
  * The clinic's activity as hexagons, in four views: one hexagon per hour of today, a grid of days and hours
@@ -18,21 +24,21 @@ export const HEX_VIEWS: { value: HexView; label: string }[] = [
 ];
 
 export interface HexCellData {
-  id: string;
   /** Position in the hexagon grid; odd rows sit half a cell to the right. */
   col: number;
-  row: number;
   count: number;
-  /** 0 for an empty cell, then 1 to 4: the heatmap's own steps. */
-  level: number;
-  /** Written inside the hexagon: a day number, an hour, a count. */
-  label?: string;
-  /** What the tooltip names: a day, an hour. */
-  title: string;
   /** What the tooltip says about it: « 2 rendez-vous », « Rien de prévu ». */
   detail: string;
   /** After now: what is already booked, not what happened. */
   future: boolean;
+  id: string;
+  /** Written inside the hexagon: a day number, an hour, a count. */
+  label?: string;
+  /** 0 for an empty cell, then 1 to 4: the heatmap's own steps. */
+  level: number;
+  row: number;
+  /** What the tooltip names: a day, an hour. */
+  title: string;
   today: boolean;
 }
 
@@ -42,30 +48,54 @@ export interface HexCaption {
 }
 
 export interface HexActivity {
-  view: HexView;
   cells: HexCellData[];
   cols: number;
-  rows: number;
   columnCaptions: HexCaption[];
-  rowCaptions: HexCaption[];
-  total: number;
+  footer: string;
   /** « rendez-vous sur la période » */
   heroCaption: string;
-  stats: { key: string; name: string; value: string }[];
   legend: ReturnType<typeof heatLegend>;
-  footer: string;
   peak: number;
+  rowCaptions: HexCaption[];
+  rows: number;
+  stats: { key: string; name: string; value: string }[];
+  total: number;
+  view: HexView;
 }
 
-const WEEKDAYS = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"];
-const plural = (count: number, word: string) => `${formatNumber(count)} ${word}${count > 1 && !word.endsWith("s") ? "s" : ""}`;
+const WEEKDAYS = [
+  "Lundi",
+  "Mardi",
+  "Mercredi",
+  "Jeudi",
+  "Vendredi",
+  "Samedi",
+  "Dimanche",
+];
+const plural = (count: number, word: string) =>
+  `${formatNumber(count)} ${word}${count > 1 && !word.endsWith("s") ? "s" : ""}`;
 const hh = (hour: number) => String(hour).padStart(2, "0");
-const longDay = (date: Date) => date.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
-const shortDay = (date: Date) => date.toLocaleDateString("fr-FR", { weekday: "short", day: "numeric", month: "short" });
+const longDay = (date: Date) =>
+  date.toLocaleDateString("fr-FR", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+const shortDay = (date: Date) =>
+  date.toLocaleDateString("fr-FR", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+  });
 
 /** What a cell's tooltip says: done cells count visits, later ones what is booked. */
 export function slotDetail(count: number, future: boolean) {
-  if (future) return count ? `${plural(count, "rendez-vous")} prévu${count > 1 ? "s" : ""}` : "Rien de prévu";
+  if (future) {
+    return count
+      ? `${plural(count, "rendez-vous")} prévu${count > 1 ? "s" : ""}`
+      : "Rien de prévu";
+  }
   return count ? plural(count, "rendez-vous") : "Aucun rendez-vous";
 }
 
@@ -73,14 +103,35 @@ const WEEKDAY_SHORT = WEEKDAYS.map((name) => name.slice(0, 3));
 
 /** The figures under a calendar view, worded as the heatmap always worded them. */
 function periodFigures(map: ReturnType<typeof buildActivityHeatmap>) {
-  const futureBooked = map.days.filter((day) => day.future).reduce((sum, day) => sum + day.count, 0);
+  const futureBooked = map.days
+    .filter((day) => day.future)
+    .reduce((sum, day) => sum + day.count, 0);
   const lastDay = `${map.to.getDate() === 1 ? "1er" : map.to.getDate()} ${map.to.toLocaleDateString("fr-FR", { month: "short" })}`;
-  const busiestWeekday = map.total ? map.weekdays.indexOf(Math.max(...map.weekdays)) : -1;
+  const busiestWeekday = map.total
+    ? map.weekdays.indexOf(Math.max(...map.weekdays))
+    : -1;
   return {
     stats: [
-      { key: "active", name: "Jours d’activité", value: `${formatNumber(map.activeDays)} sur ${formatNumber(map.elapsedDays)}` },
-      { key: "busiest", name: "Jour le plus chargé", value: map.busiest ? `${shortDay(map.busiest.date)} · ${formatNumber(map.busiest.count)}` : "—" },
-      { key: "weekday", name: "Jour de semaine le plus actif", value: busiestWeekday >= 0 ? `${WEEKDAYS[busiestWeekday]} · ${formatNumber(map.weekdays[busiestWeekday])}` : "—" },
+      {
+        key: "active",
+        name: "Jours d’activité",
+        value: `${formatNumber(map.activeDays)} sur ${formatNumber(map.elapsedDays)}`,
+      },
+      {
+        key: "busiest",
+        name: "Jour le plus chargé",
+        value: map.busiest
+          ? `${shortDay(map.busiest.date)} · ${formatNumber(map.busiest.count)}`
+          : "—",
+      },
+      {
+        key: "weekday",
+        name: "Jour de semaine le plus actif",
+        value:
+          busiestWeekday >= 0
+            ? `${WEEKDAYS[busiestWeekday]} · ${formatNumber(map.weekdays[busiestWeekday])}`
+            : "—",
+      },
     ],
     footer: futureBooked
       ? `${plural(futureBooked, "rendez-vous")} déjà prévu${futureBooked > 1 ? "s" : ""} d’ici le ${lastDay}`
@@ -105,7 +156,11 @@ const dayCell = (day: HeatDay, col: number, row: number): HexCellData => ({
   today: day.today,
 });
 
-export function buildHexActivity(view: HexView, appointments: { startTime?: string | null; status: string }[], now: Date): HexActivity {
+export function buildHexActivity(
+  view: HexView,
+  appointments: { startTime?: string | null; status: string }[],
+  now: Date
+): HexActivity {
   if (view === "day") {
     const { today } = buildHourlyActivity(appointments, now);
     const max = Math.max(0, ...today);
@@ -126,20 +181,37 @@ export function buildHexActivity(view: HexView, appointments: { startTime?: stri
     const active = today.filter((count) => count > 0).length;
     const busiest = max ? today.indexOf(max) : -1;
     const morning = today.slice(0, 12).reduce((sum, count) => sum + count, 0);
-    const futureBooked = today.slice(hour + 1).reduce((sum, count) => sum + count, 0);
+    const futureBooked = today
+      .slice(hour + 1)
+      .reduce((sum, count) => sum + count, 0);
     return {
       view,
       cells,
       cols: 12,
       rows: 2,
       columnCaptions: [],
-      rowCaptions: [{ at: 0, text: "0–11 h" }, { at: 1, text: "12–23 h" }],
+      rowCaptions: [
+        { at: 0, text: "0–11 h" },
+        { at: 1, text: "12–23 h" },
+      ],
       total,
       heroCaption: "rendez-vous aujourd’hui",
       stats: [
-        { key: "active", name: "Heures d’activité", value: `${formatNumber(active)} sur ${formatNumber(hour + 1)}` },
-        { key: "busiest", name: "Heure la plus chargée", value: busiest >= 0 ? `${hh(busiest)} h · ${formatNumber(max)}` : "—" },
-        { key: "halves", name: "Matin · après-midi", value: `${formatNumber(morning)} · ${formatNumber(total - morning)}` },
+        {
+          key: "active",
+          name: "Heures d’activité",
+          value: `${formatNumber(active)} sur ${formatNumber(hour + 1)}`,
+        },
+        {
+          key: "busiest",
+          name: "Heure la plus chargée",
+          value: busiest >= 0 ? `${hh(busiest)} h · ${formatNumber(max)}` : "—",
+        },
+        {
+          key: "halves",
+          name: "Matin · après-midi",
+          value: `${formatNumber(morning)} · ${formatNumber(total - morning)}`,
+        },
       ],
       legend: heatLegend(max),
       footer: futureBooked
@@ -156,17 +228,28 @@ export function buildHexActivity(view: HexView, appointments: { startTime?: stri
   if (view === "week") {
     const { weekFrom, week } = buildHourlyActivity(appointments, now);
     const map = buildActivityHeatmap(appointments, "week", now);
-    const used = week.flatMap((day) => day.map((count, h) => (count ? h : -1))).filter((h) => h >= 0);
+    const used = week
+      .flatMap((day) => day.map((count, h) => (count ? h : -1)))
+      .filter((h) => h >= 0);
     // The working day by default, stretched to hold any appointment before or after it.
     const first = Math.min(8, ...used);
     const last = Math.max(19, ...used);
     const max = Math.max(0, ...week.flat());
     const cells: HexCellData[] = [];
     for (let d = 0; d < 7; d += 1) {
-      const date = new Date(weekFrom.getFullYear(), weekFrom.getMonth(), weekFrom.getDate() + d);
+      const date = new Date(
+        weekFrom.getFullYear(),
+        weekFrom.getMonth(),
+        weekFrom.getDate() + d
+      );
       for (let h = first; h <= last; h += 1) {
         const count = week[d][h];
-        const slot = new Date(date.getFullYear(), date.getMonth(), date.getDate(), h);
+        const slot = new Date(
+          date.getFullYear(),
+          date.getMonth(),
+          date.getDate(),
+          h
+        );
         const future = slot > now;
         cells.push({
           id: `d${d}h${h}`,
@@ -178,7 +261,8 @@ export function buildHexActivity(view: HexView, appointments: { startTime?: stri
           title: `${shortDay(date)} · ${hh(h)} h`,
           detail: slotDetail(count, future),
           future,
-          today: date.toDateString() === now.toDateString() && h === now.getHours(),
+          today:
+            date.toDateString() === now.toDateString() && h === now.getHours(),
         });
       }
     }
@@ -189,7 +273,10 @@ export function buildHexActivity(view: HexView, appointments: { startTime?: stri
       cols: 7,
       rows: last - first + 1,
       columnCaptions: WEEKDAY_SHORT.map((text, at) => ({ at, text })),
-      rowCaptions: Array.from({ length: last - first + 1 }, (_, at) => ({ at, text: `${hh(first + at)} h` })),
+      rowCaptions: Array.from({ length: last - first + 1 }, (_, at) => ({
+        at,
+        text: `${hh(first + at)} h`,
+      })),
       total: map.total,
       heroCaption: "rendez-vous sur la période",
       stats: figures.stats,
@@ -204,10 +291,22 @@ export function buildHexActivity(view: HexView, appointments: { startTime?: stri
   const columnCaptions: HexCaption[] = [];
   map.months.forEach((month, block) => {
     const offset = block * 8;
-    if (view === "quarter") columnCaptions.push({ at: offset, text: month.label });
-    month.weeks.forEach((week, row) => week.forEach((day, col) => day && cells.push(dayCell(day, offset + col, row))));
+    if (view === "quarter") {
+      columnCaptions.push({ at: offset, text: month.label });
+    }
+    month.weeks.forEach((week, row) => {
+      week.forEach((day, col) => {
+        if (day) {
+          cells.push(dayCell(day, offset + col, row));
+        }
+      });
+    });
   });
-  if (view === "month") WEEKDAY_SHORT.forEach((text, at) => columnCaptions.push({ at, text }));
+  if (view === "month") {
+    WEEKDAY_SHORT.forEach((text, at) => {
+      columnCaptions.push({ at, text });
+    });
+  }
   const figures = periodFigures(map);
   return {
     view,

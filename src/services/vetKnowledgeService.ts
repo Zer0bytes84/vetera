@@ -5,6 +5,7 @@
  * vétérinaires locale (médicaments, maladies, espèces, urgences).
  */
 
+import { WHITESPACE_RUN } from "@/lib/patterns";
 import diseasesData from "../data/vet-knowledge/diseases.json";
 import emergenciesData from "../data/vet-knowledge/emergencies.json";
 // Import des données JSON (Vite gère l'import JSON)
@@ -36,9 +37,9 @@ export interface Medication {
       attention?: string;
     }
   >;
-  tempsAttente?: Record<string, string>;
   /** Références officielles (RCP) des données de la fiche, quand elles sont sourcées. */
   sources?: MedicationSource[];
+  tempsAttente?: Record<string, string>;
 }
 
 export interface MedicationSource {
@@ -114,7 +115,7 @@ function calculateRelevance(
 ): { score: number; matchedTerms: string[] } {
   const normalizedText = normalizeString(text);
   const queryTerms = normalizeString(query)
-    .split(/\s+/)
+    .split(WHITESPACE_RUN)
     .filter((t) => t.length > 2);
 
   let score = 0;
@@ -161,11 +162,11 @@ function objectToSearchableText(obj: unknown): string {
 }
 
 class VetKnowledgeService {
-  private medications: Medication[];
-  private diseases: Disease[];
-  private species: Species[];
-  private emergencies: Emergency[];
-  private referenceData: typeof referenceData;
+  private readonly medications: Medication[];
+  private readonly diseases: Disease[];
+  private readonly species: Species[];
+  private readonly emergencies: Emergency[];
+  private readonly referenceData: typeof referenceData;
 
   constructor() {
     // Merge base medications with extended medications
@@ -296,7 +297,7 @@ class VetKnowledgeService {
   /**
    * Liste publique des médicaments (lecture seule, pour catalog/cascades)
    */
-  public getAllMedications(): readonly Medication[] {
+  getAllMedications(): readonly Medication[] {
     return this.medications;
   }
 
@@ -462,7 +463,7 @@ ${sp.alimentsToxiques ? `- Aliments toxiques: ${sp.alimentsToxiques.join(", ")}`
       "\n\n📚 **INFORMATIONS DE LA BASE DE CONNAISSANCES VÉTÉRINAIRES:**\n\n";
 
     for (const result of results) {
-      context += this.formatResultForLLM(result) + "\n\n";
+      context += `${this.formatResultForLLM(result)}\n\n`;
     }
 
     context +=

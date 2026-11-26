@@ -25,6 +25,8 @@ export interface Owner {
 
 export interface Patient {
   allergies?: string;
+  /** Dossier archivé : horodatage ISO ; absent ou null tant qu il est actif. */
+  archivedAt?: string | null;
   avatarUrl?: string;
   breed?: string;
   /** N° d'identification électronique (puce) */
@@ -38,14 +40,12 @@ export interface Patient {
 
   // Champs Médicaux
   lastVisit?: string; // ISO string
-  /** Dossier archivé : horodatage ISO ; absent ou null tant qu il est actif. */
-  archivedAt?: string | null;
   name: string;
   ownerId: string;
-  /** Contention : comment tenir l'animal en sécurité (muselière, à deux…). */
-  restraint?: string;
   /** Référence lisible « ID-0011 », attribuée à la création, jamais modifiée. */
   reference?: string;
+  /** Contention : comment tenir l'animal en sécurité (muselière, à deux…). */
+  restraint?: string;
   sex: "M" | "F";
   species: "Chien" | "Chat" | "NAC" | "Cheval" | string;
   status: "sante" | "traitement" | "hospitalise" | "decede";
@@ -70,25 +70,25 @@ export interface User {
 
 export interface Product {
   archivedAt?: string;
-  category: string;
-  createdAt: string;
-  expiryDate?: string;
-  id: string;
-  minStock: number;
-  name: string;
-  purchasePriceAmount: number; // In centimes
-  quantity: number;
-  /** False for services/acts that have a tariff but no physical stock. */
-  stockTracked?: boolean;
+  availabilityPending?: boolean;
   /** Derived availability, never written as catalogue quantities. */
   availableQuantity?: number;
+  category: string;
+  createdAt: string;
   expiredQuantity?: number;
   expiringQuantity?: number;
-  lotsCount?: number;
-  nearestExpiryDate?: string | null;
-  availabilityPending?: boolean;
+  expiryDate?: string;
+  id: string;
   inventoryInvalid?: boolean;
+  lotsCount?: number;
+  minStock: number;
+  name: string;
+  nearestExpiryDate?: string | null;
+  purchasePriceAmount: number; // In centimes
+  quantity: number;
   salePriceAmount: number; // In centimes
+  /** False for services/acts that have a tariff but no physical stock. */
+  stockTracked?: boolean;
   subCategory?: string;
   unit: string;
 }
@@ -101,25 +101,31 @@ export type StockMovementType =
   | "return";
 
 export interface StockMovement {
-  id: string;
-  productId: string;
-  type: StockMovementType;
-  quantityDelta: number;
-  quantityAfter: number;
-  unitCostAmount?: number;
-  reason?: string;
-  referenceId?: string;
-  sourceType?: "manual" | "care" | "consultation" | "prescription" | "receipt" | "transfer";
-  sourceId?: string;
-  sourceLineId?: string;
-  sourceLabel?: string;
-  patientId?: string;
   authorId?: string;
+  createdAt: string;
+  id: string;
   invoiceId?: string;
   invoiceLineId?: string;
-  unitSnapshot?: string;
+  patientId?: string;
+  productId: string;
   productNameSnapshot?: string;
-  createdAt: string;
+  quantityAfter: number;
+  quantityDelta: number;
+  reason?: string;
+  referenceId?: string;
+  sourceId?: string;
+  sourceLabel?: string;
+  sourceLineId?: string;
+  sourceType?:
+    | "manual"
+    | "care"
+    | "consultation"
+    | "prescription"
+    | "receipt"
+    | "transfer";
+  type: StockMovementType;
+  unitCostAmount?: number;
+  unitSnapshot?: string;
 }
 
 export type AppointmentStatus =
@@ -231,14 +237,14 @@ export interface Transaction {
   date: string; // ISO string
   description: string;
   id: string;
+  /** Billing projections are append-only at the database layer. */
+  isLocked?: boolean | 0 | 1;
   /**
    * The expanded cash-journal methods introduced with billing migration 015.
    * Existing finance UI currently presents cash/card; callers should preserve
    * the extra values when rendering or exporting a locked journal projection.
    */
   method: TransactionPaymentMethod;
-  /** Billing projections are append-only at the database layer. */
-  isLocked?: boolean | 0 | 1;
   referenceId?: string | null;
   sourceId?: string | null;
   sourceType?: TransactionSourceType | null;
@@ -288,23 +294,23 @@ export interface BillingOwnerSnapshot {
  * explicit snapshot at issue time so issued documents remain self-contained.
  */
 export interface BillingClinicSnapshot {
+  accent?: "graphite" | "forest" | "blue";
   address?: string | null;
   email?: string | null;
+  footer?: string | null;
   id?: string | null;
   legalName?: string | null;
+  logoDataUrl?: string | null;
   name: string;
   phone?: string | null;
   registrationNumber?: string | null;
-  logoDataUrl?: string | null;
-  footer?: string | null;
-  accent?: "graphite" | "forest" | "blue";
 }
 
 export interface BillingLineInput {
-  /** Existing draft line identity, preserved when editing its price. */
-  id?: string;
   description: string;
   discountBps?: number;
+  /** Existing draft line identity, preserved when editing its price. */
+  id?: string;
   productId?: string | null;
   quantityMilli: number;
   taxBps?: number;
@@ -365,8 +371,8 @@ export interface Invoice {
   subtotalAmount: number;
   taxAmount: number;
   updatedAt: string;
-  voidReason?: string | null;
   voidedAt?: string | null;
+  voidReason?: string | null;
 }
 
 export interface CreditNote {
@@ -385,8 +391,8 @@ export interface CreditNote {
   subtotalAmount: number;
   taxAmount: number;
   updatedAt: string;
-  voidReason?: string | null;
   voidedAt?: string | null;
+  voidReason?: string | null;
 }
 
 export interface InvoicePayment {
@@ -401,8 +407,8 @@ export interface InvoicePayment {
   reference?: string | null;
   status: BillingPaymentStatus;
   updatedAt: string;
-  voidReason?: string | null;
   voidedAt?: string | null;
+  voidReason?: string | null;
 }
 
 export type Payment = InvoicePayment;
@@ -419,8 +425,8 @@ export interface Refund {
   refundedAt: string;
   status: BillingPaymentStatus;
   updatedAt: string;
-  voidReason?: string | null;
   voidedAt?: string | null;
+  voidReason?: string | null;
 }
 
 export interface InvoiceDetail extends Invoice {
@@ -479,7 +485,6 @@ export interface ConsultationDocument {
 }
 
 export interface Task {
-  reminderTypeId?: string | null;
   assignedTo?: string;
   createdAt: string;
   description?: string;
@@ -489,6 +494,7 @@ export interface Task {
   isReminder: boolean;
   patientId?: string;
   priority: "low" | "medium" | "high";
+  reminderTypeId?: string | null;
   startTime?: string; // HH:mm
   status: "todo" | "in_progress" | "done";
   title: string;

@@ -1,9 +1,43 @@
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
+  AlertCircleIcon,
   CheckmarkCircle02Icon,
   Refresh01Icon,
-  AlertCircleIcon,
 } from "@/lib/hugeicons";
+
+function saveText(state: "saving" | "saved" | "error"): string {
+  switch (state) {
+    case "saving":
+      return "Enregistrement…";
+    case "error":
+      return "Non enregistré";
+    default:
+      return "Enregistré";
+  }
+}
+
+function saveIconClass(state: "saving" | "saved" | "error"): string {
+  switch (state) {
+    case "saving":
+      return "animate-spin motion-reduce:animate-none";
+    case "error":
+      return "text-signal-critical";
+    default:
+      return "text-signal-positive";
+  }
+}
+
+function saveIcon(state: "saving" | "saved" | "error") {
+  switch (state) {
+    case "saving":
+      return Refresh01Icon;
+    case "error":
+      return AlertCircleIcon;
+    default:
+      return CheckmarkCircle02Icon;
+  }
+}
+
 export function SaveIndicator({
   state,
   onRetry,
@@ -11,43 +45,27 @@ export function SaveIndicator({
   state: "idle" | "saving" | "saved" | "error";
   onRetry?: () => void;
 }) {
-  if (state === "idle")
-    return <span className="w-[112px]" aria-hidden="true" />;
-  const text =
-    state === "saving"
-      ? "Enregistrement…"
-      : state === "error"
-        ? "Non enregistré"
-        : "Enregistré";
+  if (state === "idle") {
+    return <span aria-hidden="true" className="w-[112px]" />;
+  }
+  const text = saveText(state);
   return (
     <span
-      className="inline-flex w-[112px] items-center gap-1.5 t-12 text-ink-muted"
-      role="status"
       aria-live="polite"
+      className="t-12 inline-flex w-[112px] items-center gap-1.5 text-ink-muted"
+      role="status"
     >
       <HugeiconsIcon
-        icon={
-          state === "saving"
-            ? Refresh01Icon
-            : state === "error"
-              ? AlertCircleIcon
-              : CheckmarkCircle02Icon
-        }
-        strokeWidth={1.5}
+        className={saveIconClass(state)}
+        icon={saveIcon(state)}
         size={13}
-        className={
-          state === "saving"
-            ? "animate-spin motion-reduce:animate-none"
-            : state === "error"
-              ? "text-signal-critical"
-              : "text-signal-positive"
-        }
+        strokeWidth={1.5}
       />
       {state === "error" && onRetry ? (
         <button
-          type="button"
           className="underline underline-offset-4"
           onClick={onRetry}
+          type="button"
         >
           {text}
         </button>

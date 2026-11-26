@@ -12,5 +12,126 @@
       "vite.config.ts"
     ]
   },
+  "linter": {
+    "rules": {
+      "style": {
+        // Décision C du 25/11 : ne pas réordonner la cascade. Les 117 paires relevées sont sans effet ou volontaires,
+        // les deux vraies surcharges mortes (auth-clinic.css, transparence réduite des bannières) sont corrigées.
+        "noDescendingSpecificity": "off",
+        // Décision C du 25/11 : avertissement. Les 49 chaînes sur une même variable sont réécrites ; le reste se lit
+        // mieux en ternaires courts qu'en if/else éclatés, à reprendre au fil des fichiers.
+        "noNestedTernary": "warn"
+      },
+      "a11y": {
+        // Contrôles maison qui rendent un vrai input, textarea, select ou button étiquetable (décision C du 25/11).
+        "noLabelWithoutControl": {
+          "level": "error",
+          "options": {
+            "inputComponents": [
+              "Input",
+              "Textarea",
+              "NativeSelect",
+              "DatePicker",
+              "Checkbox",
+              "RadioGroupItem"
+            ]
+          }
+        },
+        // Décision C du 25/11 : rôles ARIA voulus (group, radio, meter…), la balise native changerait le rendu.
+        "useSemanticElements": "off",
+        // Décision C du 25/11 : ne signale que des gestionnaires voulus (poignée de fenêtre, arrêt de propagation, délégation).
+        "noStaticElementInteractions": "off",
+        // Décision C du 25/11 : mêmes motifs voulus sur des éléments non interactifs (graphiques focalisables, grilles).
+        "noNoninteractiveElementInteractions": "off"
+      },
+      "complexity": {
+        // Décision C du 25/11 : ici void dit « promesse lancée exprès, sans l'attendre » ; la règle n'a pas d'option.
+        "noVoid": "off",
+        // Décision C du 25/11 : avertissement au seuil d'Ultracite (20) ; la dette reste visible sans bloquer.
+        "noExcessiveCognitiveComplexity": {
+          "level": "warn",
+          "options": { "maxAllowedComplexity": 20 }
+        }
+      },
+      "correctness": {
+        // Décision C du 25/11 : images de taille inconnue (data URL, avatars), dimensionnées par les classes.
+        "useImageSize": "off"
+      }
+    }
+  },
+  "overrides": [
+    {
+      // Calcul binaire voulu (décision C du 25/11) : SHA-256 des anciens mots de passe (legacySha256), en-tête binaire
+      // des sauvegardes, bits de version et de variante des UUID v4. Une réécriture arithmétique y casserait un format.
+      "includes": [
+        "src/services/sqlite/auth.ts",
+        "src/services/backupCrypto.ts",
+        "src/lib/uuid.ts"
+      ],
+      "linter": { "rules": { "suspicious": { "noBitwiseOperators": "off" } } }
+    },
+    {
+      // Décision C du 25/11 : exception nominative, aucun renommage dans ce chantier (330 références, dont 8 renommages
+      // de casse seule, risqués sur macOS et Windows). À renommer plus tard, dossier par dossier, en retirant la ligne.
+      "includes": [
+        "src/App.tsx",
+        "src/components/AgendaListView.tsx",
+        "src/components/Auth.tsx",
+        "src/components/Avatar.tsx",
+        "src/components/CommandPalette.tsx",
+        "src/components/Editor.tsx",
+        "src/components/HeroPattern.tsx",
+        "src/components/LicenseGate.tsx",
+        "src/components/LicenseStatusCard.tsx",
+        "src/components/Logo.tsx",
+        "src/components/MotivationalHeader.tsx",
+        "src/components/NotesPro.tsx",
+        "src/components/PageDate.tsx",
+        "src/components/Parametres.tsx",
+        "src/components/QuickPatientPicker.tsx",
+        "src/components/SectionGarden.tsx",
+        "src/components/SelectionBubbleMenu.tsx",
+        "src/components/SetupWizard.tsx",
+        "src/components/SlashCommandMenu.tsx",
+        "src/components/SlashCommandsExtension.tsx",
+        "src/components/Tasks.tsx",
+        "src/components/Team.tsx",
+        "src/contexts/AuthContext.tsx",
+        "src/hooks/useDelayedSkeleton.ts",
+        "src/hooks/useListCursor.ts",
+        "src/hooks/useNowTick.ts",
+        "src/hooks/usePatientIntentPrefetch.ts",
+        "src/hooks/useRowSaveFlash.ts",
+        "src/hooks/useSaveIndicator.ts",
+        "src/hooks/useSQLite.ts",
+        "src/modules/dashboard/hooks/usePostOpFollowUp.ts",
+        "src/services/activationAdminWindowService.ts",
+        "src/services/adminAccess.ts",
+        "src/services/aiConversationStore.ts",
+        "src/services/aiOutput.ts",
+        "src/services/aiToolProtocol.ts",
+        "src/services/appSettingsService.ts",
+        "src/services/assistantWorkspace.ts",
+        "src/services/auditService.ts",
+        "src/services/backupCrypto.ts",
+        "src/services/backupScheduler.ts",
+        "src/services/backupService.ts",
+        "src/services/billingService.ts",
+        "src/services/browserCredentials.ts",
+        "src/services/geminiService.ts",
+        "src/services/invoiceSettingsService.ts",
+        "src/services/licenseActivationService.ts",
+        "src/services/licenseLease.ts",
+        "src/services/licenseRuntime.ts",
+        "src/services/licenseService.ts",
+        "src/services/localDataReset.ts",
+        "src/services/localTextService.ts",
+        "src/services/notifications/useNotificationCenter.ts",
+        "src/services/updateService.ts",
+        "src/services/vetKnowledgeService.ts"
+      ],
+      "linter": { "rules": { "style": { "useFilenamingConvention": "off" } } }
+    }
+  ],
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json"
 }

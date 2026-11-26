@@ -1,7 +1,5 @@
-import { ArrowsClockwise, Hospital, Plus } from "@/lib/icons";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,6 +9,7 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 import { useHospitalizationsRepository } from "@/data/repositories";
+import { ArrowsClockwise, Hospital, Plus } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 import type { Hospitalization, Patient } from "@/types/db";
 
@@ -98,7 +97,7 @@ export function HospitalizationList({
             <Hospital className="size-5 text-sky-600" weight="duotone" />
           </div>
           <div className="grid flex-1 gap-0.5">
-            <div className="font-mono t-12 text-muted-foreground uppercase tracking-[0.06em]">
+            <div className="t-12 font-mono text-muted-foreground uppercase tracking-[0.06em]">
               {t("modules.hospitalizations.subtitle", "Suivi 24h")}
             </div>
             <div className="font-semibold text-lg tracking-tight">
@@ -121,7 +120,7 @@ export function HospitalizationList({
           {filters.map((f) => (
             <button
               className={cn(
-                "rounded-full border px-3 py-1 font-medium t-12 transition",
+                "t-12 rounded-full border px-3 py-1 font-medium transition",
                 filter === f.value
                   ? "border-sky-500/40 bg-sky-500/10 text-sky-700 dark:text-sky-200"
                   : "border-border/50 bg-background text-muted-foreground hover:border-border hover:text-foreground"

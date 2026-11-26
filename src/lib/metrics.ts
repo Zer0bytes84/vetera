@@ -1,6 +1,8 @@
 import i18n from "@/i18n/config";
 import type { Appointment, Owner, Task, Transaction } from "@/types/db";
 
+const SQLITE_TIMESTAMP = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/;
+
 function startOfDay(date: Date) {
   const next = new Date(date);
   next.setHours(0, 0, 0, 0);
@@ -27,7 +29,7 @@ function safeDate(value?: string) {
   if (!value) {
     return null;
   }
-  const sqliteLike = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(value);
+  const sqliteLike = SQLITE_TIMESTAMP.test(value);
   const normalized = sqliteLike ? `${value.replace(" ", "T")}Z` : value;
   const date = new Date(normalized);
   if (!Number.isFinite(date.getTime()) && sqliteLike) {
@@ -324,7 +326,7 @@ export function buildDashboardMetrics({
     const end = endOfDay(day);
 
     const categoryValues: Record<string, number> = {};
-    categoryNames.forEach((catName) => {
+    for (const catName of categoryNames) {
       const total = paidIncome
         .filter((item) => {
           const date = safeDate(item.date);
@@ -335,7 +337,7 @@ export function buildDashboardMetrics({
         })
         .reduce((sum, item) => sum + item.amount, 0);
       categoryValues[catName] = total / 100;
-    });
+    }
 
     return {
       date: day,

@@ -34,17 +34,28 @@ export async function takeWhisperSession(
     }
     idle.session.close();
   }
-  const session = await LocalInferenceSession.create("whisper", signal, onProgress);
+  const session = await LocalInferenceSession.create(
+    "whisper",
+    signal,
+    onProgress
+  );
   return { session, loaded: false };
 }
 
 /** Keeps the loaded model for the next dictation, without its lease. */
-export function parkWhisperSession(session: LocalInferenceSession, key: string) {
+export function parkWhisperSession(
+  session: LocalInferenceSession,
+  key: string
+) {
   idleWhisper?.session.close();
   session.park();
-  if (session.isClosed) return;
+  if (session.isClosed) {
+    return;
+  }
   const timer = setTimeout(() => {
-    if (idleWhisper?.session === session) idleWhisper = null;
+    if (idleWhisper?.session === session) {
+      idleWhisper = null;
+    }
     session.close();
   }, WHISPER_IDLE_MS);
   idleWhisper = { session, key, timer };
@@ -54,7 +65,9 @@ export function parkWhisperSession(session: LocalInferenceSession, key: string) 
 export function releaseWhisperSession() {
   const idle = idleWhisper;
   idleWhisper = null;
-  if (!idle) return;
+  if (!idle) {
+    return;
+  }
   clearTimeout(idle.timer);
   idle.session.close();
 }

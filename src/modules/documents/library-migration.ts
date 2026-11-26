@@ -15,4 +15,5 @@ END;
 `;
 
 /** The pin notes already pretended to have: the column did not exist, so pinning a note failed in the desktop app. */
-export const NOTE_PIN_MIGRATION_SQL = "ALTER TABLE notes ADD COLUMN is_pinned INTEGER NOT NULL DEFAULT 0;";
+export const NOTE_PIN_MIGRATION_SQL =
+  "ALTER TABLE notes ADD COLUMN is_pinned INTEGER NOT NULL DEFAULT 0;";

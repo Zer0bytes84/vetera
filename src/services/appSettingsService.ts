@@ -81,16 +81,23 @@ export async function setSetting(key: string, value: string): Promise<void> {
 }
 
 /** Save related document settings together, so identity cannot diverge in SQLite. */
-export async function setSettings(values: Record<string, string>): Promise<void> {
+export async function setSettings(
+  values: Record<string, string>
+): Promise<void> {
   if (!isTauriRuntime()) {
-    for (const [key, value] of Object.entries(values)) setBrowserSetting(key, value);
+    for (const [key, value] of Object.entries(values)) {
+      setBrowserSetting(key, value);
+    }
     return;
   }
   await ensureTable();
   await runDbTransaction(async (db) => {
     for (const [key, value] of Object.entries(values)) {
-      await db.execute(`INSERT INTO app_settings (key, value, updated_at) VALUES (?, ?, CURRENT_TIMESTAMP)
-        ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = CURRENT_TIMESTAMP`, [key, value]);
+      await db.execute(
+        `INSERT INTO app_settings (key, value, updated_at) VALUES (?, ?, CURRENT_TIMESTAMP)
+        ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = CURRENT_TIMESTAMP`,
+        [key, value]
+      );
     }
   });
 }
@@ -146,12 +153,12 @@ export async function markSetupComplete(): Promise<void> {
  * Get stored license info
  */
 export interface StoredLicense {
-  activationToken: string;
-  key: string;
-  email: string;
   activatedAt: string;
-  lastSeen?: number;
+  activationToken: string;
   denied?: string;
+  email: string;
+  key: string;
+  lastSeen?: number;
 }
 
 export async function getLicenseInfo(): Promise<StoredLicense | null> {
@@ -162,8 +169,9 @@ export async function getLicenseInfo(): Promise<StoredLicense | null> {
       !parsed ||
       typeof parsed.email !== "string" ||
       typeof parsed.activationToken !== "string"
-    )
+    ) {
       throw new Error("Activation locale endommagée.");
+    }
     return parsed;
   }
   const [key, email, token, activatedAt] = await Promise.all([

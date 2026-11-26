@@ -1,6 +1,18 @@
-import { containsDosage, type LocalSoapNote } from "./soap-schema";
+import { mustExist } from "@/lib/must-exist";
 import { evidenceTokens } from "./dictation-scaffold";
 import { stripSoapLayout } from "./soap-layout";
+import { containsDosage, type LocalSoapNote } from "./soap-schema";
+
+const TREATMENT_INTENT =
+  /\b(?:besoin|antibiotiques?|mettre|donn\p{L}*|administr\p{L}*|traitement|prescri)/iu;
+const CLINICAL_ACT_PHRASE = /\bje\s+lui\s+fais\b/iu;
+const HOME_PRESCRIPTION_PHRASE = /\bvous\s+lui\s+donnez\b/iu;
+const CLAUSE_BREAK = /(?<=[,;])\s+/u;
+const TRAILING_CLAUSE_PUNCTUATION = /[,;]$/u;
+const LEADING_STOPS = /^[.!?]*/u;
+const LEADING_PUNCTUATION = /^\s*[.,;:!?]/u;
+const TRAILING_PUNCTUATION = /[.,;:!?]+$/u;
+const ENDS_WITH_PUNCTUATION = /[.!?,;]$/u;
 
 // Decimal doses (2.5 mg) are not sentence boundaries.
 const sentences = (text: string) =>
@@ -37,10 +49,10 @@ export type TreatmentKind =
   | "negated"
   | "observation";
 export interface DictatedStatement {
-  text: string;
   kind: TreatmentKind;
-  setting: "acte-clinique" | "ordonnance-maison" | null;
   medications: { brand: string; dci: string }[];
+  setting: "acte-clinique" | "ordonnance-maison" | null;
+  text: string;
 }
 export function analyzeTreatmentDictation(
   transcript: string
@@ -52,10 +64,7 @@ export function analyzeTreatmentDictation(
     const kind: TreatmentKind = avoidance.test(text)
       ? "avoidance"
       : negation.test(text) &&
-          (treatment.test(text) ||
-            /\b(?:besoin|antibiotiques?|mettre|donn\p{L}*|administr\p{L}*|traitement|prescri)/iu.test(
-              text
-            ))
+          (treatment.test(text) || TREATMENT_INTENT.test(text))
         ? "negated"
         : history.test(text)
           ? "history"
@@ -68,13 +77,13 @@ export function analyzeTreatmentDictation(
       text,
       kind,
       setting:
-        kind !== "treatment"
-          ? null
-          : /\bje\s+lui\s+fais\b/iu.test(text)
+        kind === "treatment"
+          ? CLINICAL_ACT_PHRASE.test(text)
             ? "acte-clinique"
-            : /\bvous\s+lui\s+donnez\b/iu.test(text)
+            : HOME_PRESCRIPTION_PHRASE.test(text)
               ? "ordonnance-maison"
-              : null,
+              : null
+          : null,
       medications: [
         ...text.matchAll(
           /(?<![\p{L}\p{N}])(Metacam|Synulox|Clavaseptin|Convenia|Cerenia|Vetmedin|Fortekor|Thyronorm)(?![\p{L}\p{N}])/giu
@@ -134,16 +143,24 @@ export function routeGuidedTreatments(answers: LocalSoapNote): LocalSoapNote {
     const statements = analyzeTreatmentDictation(answers[key]);
     for (const part of statements) {
       const target = destination(part.kind);
-      if (target && target !== key)
+      if (target && target !== key) {
         moved[target] = [moved[target], part.text].filter(Boolean).join("\n\n");
-      else kept.push(part.text);
+      } else {
+        kept.push(part.text);
+      }
     }
     // Preserve whitespace in sections that have no routing change.
     result[key] =
       kept.length === statements.length ? answers[key] : kept.join(" ");
   }
-  for (const key of ["subjective", "objective", "assessment", "plan"] as const)
+  for (const key of [
+    "subjective",
+    "objective",
+    "assessment",
+    "plan",
+  ] as const) {
     result[key] = [result[key], moved[key]].filter(Boolean).join("\n\n");
+  }
   return result;
 }
 export function prepareModelDictation(transcript: string) {
@@ -156,14 +173,19 @@ export function prepareModelDictation(transcript: string) {
     if (
       target === "plan" ||
       (!target && part.kind === "observation" && containsDosage(part.text))
-    )
+    ) {
       planSentences.push(part.text);
-    else if (target || (part.kind === "negated" && containsDosage(part.text))) {
+    } else if (
+      target ||
+      (part.kind === "negated" && containsDosage(part.text))
+    ) {
       const key = target ?? "subjective";
       protectedSections[key] = [protectedSections[key], part.text]
         .filter(Boolean)
         .join("\n\n");
-    } else kept.push(part.text);
+    } else {
+      kept.push(part.text);
+    }
   }
   return {
     text: kept.join(" "),
@@ -181,7 +203,12 @@ export function mergeGuidedProtected(
   routed: LocalSoapNote
 ): LocalSoapNote {
   const result = { ...note };
-  for (const key of ["subjective", "objective", "assessment", "plan"] as const) {
+  for (const key of [
+    "subjective",
+    "objective",
+    "assessment",
+    "plan",
+  ] as const) {
     const input = prepareModelDictation(routed[key]);
     result[key] = [
       result[key],
@@ -195,7 +222,7 @@ export function mergeGuidedProtected(
 }
 // A clause ends on a comma or semicolon followed by a space (38,5 stays whole).
 const clauses = (sentence: string) =>
-  sentence.split(/(?<=[,;])\s+/u).filter((part) => part.trim());
+  sentence.split(CLAUSE_BREAK).filter((part) => part.trim());
 // Same words, numbers and signs as the fidelity check (evidenceTokens), counted
 // on the text as written so that positions can be found again in it.
 const EVIDENCE = /[+\-−]?\d+(?:[.,]\d+)?|\p{L}+|[<>≤≥=%/]/gu;
@@ -204,24 +231,31 @@ const sameEvidence = (a: string, b: string) =>
   evidenceTokens(a).join(" ") === evidenceTokens(b).join(" ");
 
 interface Piece {
-  text: string;
-  /** First clause of its sentence: it starts a sentence again once restored. */
-  opens: boolean;
   /** Kept away from the model, restored word for word at its own place. */
   kept: boolean;
+  /** First clause of its sentence: it starts a sentence again once restored. */
+  opens: boolean;
+  text: string;
 }
 
 /** The text the model receives: the clauses it may see, sentence by sentence. */
 function modelText(pieces: Piece[]) {
   const groups: string[][] = [];
   for (const piece of pieces) {
-    if (piece.opens) groups.push([]);
-    if (!piece.kept) groups[groups.length - 1].push(piece.text);
+    if (piece.opens || groups.length === 0) {
+      groups.push([]);
+    }
+    if (!piece.kept) {
+      groups.at(-1)?.push(piece.text);
+    }
   }
   return groups
     .filter((parts) => parts.length)
     .map((parts) =>
-      [...parts.slice(0, -1), parts[parts.length - 1].replace(/[,;]$/u, ".")].join(" ")
+      [
+        ...parts.slice(0, -1),
+        (parts.at(-1) ?? "").replace(TRAILING_CLAUSE_PUNCTUATION, "."),
+      ].join(" ")
     )
     .join(" ");
 }
@@ -237,27 +271,43 @@ function restoreClauses(output: string, pieces: Piece[]) {
       seen += evidenceCount(piece.text);
       continue;
     }
-    const last = groups[groups.length - 1];
-    if (last && last.at === seen) last.parts.push(piece.text);
-    else groups.push({ at: seen, opens: piece.opens, parts: [piece.text] });
+    const last = groups.at(-1);
+    if (last && last.at === seen) {
+      last.parts.push(piece.text);
+    } else {
+      groups.push({ at: seen, opens: piece.opens, parts: [piece.text] });
+    }
   }
   // From the end, so earlier positions stay valid.
   for (const group of groups.reverse()) {
-    const ends = [...text.matchAll(EVIDENCE)].map((match) => match.index + match[0].length);
+    const ends = [...text.matchAll(EVIDENCE)].map(
+      (match) => match.index + match[0].length
+    );
     const cut = group.at === 0 ? 0 : ends[group.at - 1];
     const head = text.slice(0, cut);
     const after = text.slice(cut);
     const insert = group.parts.join(" ");
     if (group.opens) {
       // A sentence of its own: after the model's end of the previous sentence.
-      const stop = /^[.!?]*/u.exec(after)![0];
-      text = [head + stop, insert, after.slice(stop.length).trim()].filter(Boolean).join(" ");
-    } else if (/^\s*[.,;:!?]/u.test(after)) {
+      const stop = mustExist(
+        LEADING_STOPS.exec(after),
+        "correspondance de /^[.!?]*/ (elle accepte la chaîne vide)"
+      )[0];
+      text = [head + stop, insert, after.slice(stop.length).trim()]
+        .filter(Boolean)
+        .join(" ");
+    } else if (LEADING_PUNCTUATION.test(after)) {
       // Inside a sentence: the model's own punctuation follows the clauses.
-      text = head + (head ? ", " : "") + insert.replace(/[.,;:!?]+$/u, "") + after.trimStart();
+      text =
+        head +
+        (head ? ", " : "") +
+        insert.replace(TRAILING_PUNCTUATION, "") +
+        after.trimStart();
     } else {
       const rest = after.trim();
-      const tail = rest ? (/[.!?,;]$/u.test(insert) ? " " : ", ") + rest : "";
+      const tail = rest
+        ? (ENDS_WITH_PUNCTUATION.test(insert) ? " " : ", ") + rest
+        : "";
       text = head + (head ? ", " : "") + insert + tail;
     }
   }
@@ -265,12 +315,12 @@ function restoreClauses(output: string, pieces: Piece[]) {
 }
 
 export interface GuidedSection {
-  /** Text of this rubric sent to the model; empty when the model gets none of it. */
-  model: string;
   /** "phrase": whole sentences kept away (punctuated dictation, unchanged);
    * "proposition": clauses kept away, because whole sentences emptied the rubric;
    * "exclue": nothing left for the model, the rubric is not sent to it at all. */
   mode: "phrase" | "proposition" | "exclue";
+  /** Text of this rubric sent to the model; empty when the model gets none of it. */
+  model: string;
   /** Final rubric from the model's validated text. */
   restore: (output: string) => string;
 }
@@ -289,7 +339,12 @@ export function prepareGuidedSections(
   dictated: LocalSoapNote = routed
 ): Record<keyof LocalSoapNote, GuidedSection> {
   const sections = {} as Record<keyof LocalSoapNote, GuidedSection>;
-  for (const key of ["subjective", "objective", "assessment", "plan"] as const) {
+  for (const key of [
+    "subjective",
+    "objective",
+    "assessment",
+    "plan",
+  ] as const) {
     const source = routed[key];
     const input = prepareModelDictation(source);
     if (!source.trim() && dictated[key].trim()) {
@@ -301,7 +356,11 @@ export function prepareGuidedSections(
         model: input.text,
         mode: "phrase",
         restore: (output) =>
-          [output, ...input.planSentences, ...Object.values(input.protectedSections ?? {})]
+          [
+            output,
+            ...input.planSentences,
+            ...Object.values(input.protectedSections ?? {}),
+          ]
             .filter(Boolean)
             .join("\n\n"),
       };
@@ -320,8 +379,12 @@ export function prepareGuidedSections(
     // A dose pattern may span clauses the model sees ("traitement, …, une visite
     // dans 10 jours"): the clause that completes it stays away from the model too.
     pieces.forEach((piece, index) => {
-      if (!piece.kept && containsDosage(modelText(pieces.slice(0, index + 1))))
+      if (
+        !piece.kept &&
+        containsDosage(modelText(pieces.slice(0, index + 1)))
+      ) {
         piece.kept = true;
+      }
     });
     const model = modelText(pieces);
     sections[key] = model
@@ -329,7 +392,10 @@ export function prepareGuidedSections(
           model,
           mode: "proposition",
           restore: (output) => {
-            const restored = restoreClauses(stripSoapLayout(key, output), pieces);
+            const restored = restoreClauses(
+              stripSoapLayout(key, output),
+              pieces
+            );
             // Word for word or the dictation itself: never a lost or moved word.
             return sameEvidence(restored, source) ? restored : source;
           },
@@ -344,9 +410,15 @@ export function mergeProtectedDictation(
   input: ReturnType<typeof prepareModelDictation>
 ): LocalSoapNote {
   const result = appendVerbatimPlan(note, input.planSentences);
-  for (const key of ["subjective", "objective", "assessment", "plan"] as const)
+  for (const key of [
+    "subjective",
+    "objective",
+    "assessment",
+    "plan",
+  ] as const) {
     result[key] = [result[key], input.protectedSections?.[key]]
       .filter(Boolean)
       .join("\n\n");
+  }
   return result;
 }

@@ -10,7 +10,9 @@ export const CLOSURE_NEEDS_NOTE =
  * button and the closing itself ask the same question, so neither can be
  * bypassed by the other.
  */
-export function closureBlocker(soap: ConsultationSoap | null | undefined): string | null {
+export function closureBlocker(
+  soap: ConsultationSoap | null | undefined
+): string | null {
   return soap && isSoapReviewed(soap) ? null : CLOSURE_NEEDS_NOTE;
 }
 

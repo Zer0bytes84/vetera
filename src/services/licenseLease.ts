@@ -1,14 +1,14 @@
 /** A lease is trusted only after verification with the public key pinned at build time. */
 export interface LicenseLease {
-  v: 2;
   aud: "baitari-desktop";
-  sub: string;
-  email: string;
   deviceId: string;
-  plan: "trial" | "clinic";
-  issuedAt: number;
+  email: string;
   expiresAt: number | null;
+  issuedAt: number;
   leaseUntil: number;
+  plan: "trial" | "clinic";
+  sub: string;
+  v: 2;
 }
 
 const MAX_LEASE_MS = 7 * 24 * 60 * 60 * 1000;
@@ -29,8 +29,9 @@ export async function verifyLicenseLease(
 ): Promise<LicenseLease> {
   try {
     const parts = token.split(".");
-    if (parts.length !== 2 || token.length > 8000 || !publicKeyBase64)
-      throw new Error();
+    if (parts.length !== 2 || token.length > 8000 || !publicKeyBase64) {
+      throw new Error("Jeton de bail mal formé");
+    }
     const key = await crypto.subtle.importKey(
       "spki",
       decodeBase64(publicKeyBase64),
@@ -44,7 +45,9 @@ export async function verifyLicenseLease(
       decodeBase64(parts[1]),
       new TextEncoder().encode(parts[0])
     );
-    if (!valid) throw new Error();
+    if (!valid) {
+      throw new Error("Signature du bail invalide");
+    }
     const lease = JSON.parse(
       new TextDecoder().decode(decodeBase64(parts[0]))
     ) as LicenseLease;
@@ -64,8 +67,9 @@ export async function verifyLicenseLease(
         (!Number.isSafeInteger(lease.expiresAt) ||
           lease.leaseUntil > lease.expiresAt)) ||
       (lease.plan === "trial" && lease.expiresAt === null)
-    )
-      throw new Error();
+    ) {
+      throw new Error("Contenu du bail invalide");
+    }
     return lease;
   } catch {
     throw new Error(
@@ -79,11 +83,14 @@ export function getLeaseTimeError(
   now: number,
   lastSeen = 0
 ): string | null {
-  if (now + CLOCK_TOLERANCE_MS < Math.max(lease.issuedAt, lastSeen))
+  if (now + CLOCK_TOLERANCE_MS < Math.max(lease.issuedAt, lastSeen)) {
     return "L’horloge de cet appareil a reculé. Vérifiez sa date et son heure.";
-  if (lease.expiresAt !== null && now >= lease.expiresAt)
+  }
+  if (lease.expiresAt !== null && now >= lease.expiresAt) {
     return "Cette licence a expiré. Contactez l’administrateur pour la renouveler.";
-  if (now >= lease.leaseUntil)
+  }
+  if (now >= lease.leaseUntil) {
     return "Les sept jours hors connexion sont écoulés. Reconnectez ce poste pour vérifier sa licence.";
+  }
   return null;
 }

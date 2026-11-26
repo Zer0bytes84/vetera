@@ -7,23 +7,29 @@ import type { View } from "@/types";
  * (which sits outside the page) reads it. `parent` is the view the first segment goes back to
  * (« Patients » in a patient's record); without it the first segment is plain text.
  */
-export type PageCrumb = {
-  title: string;
+export interface PageCrumb {
   note?: string;
   parent?: View;
-};
+  title: string;
+}
 
 let current: PageCrumb | null = null;
 const listeners = new Set<() => void>();
 
 function same(a: PageCrumb | null, b: PageCrumb | null) {
-  return a?.title === b?.title && a?.note === b?.note && a?.parent === b?.parent;
+  return (
+    a?.title === b?.title && a?.note === b?.note && a?.parent === b?.parent
+  );
 }
 
 function publish(next: PageCrumb | null) {
-  if (same(current, next)) return;
+  if (same(current, next)) {
+    return;
+  }
   current = next;
-  for (const listener of listeners) listener();
+  for (const listener of listeners) {
+    listener();
+  }
 }
 
 function subscribe(listener: () => void) {
@@ -38,7 +44,7 @@ export function usePublishedCrumb(): PageCrumb | null {
   return useSyncExternalStore(
     subscribe,
     () => current,
-    () => null,
+    () => null
   );
 }
 
@@ -49,7 +55,9 @@ export function usePageCrumb(title: string, note?: string, parent?: View) {
     publish(mine);
     return () => {
       // Only withdraw our own: the next page may already have published.
-      if (current && same(current, mine)) publish(null);
+      if (current && same(current, mine)) {
+        publish(null);
+      }
     };
   }, [title, note, parent]);
 }

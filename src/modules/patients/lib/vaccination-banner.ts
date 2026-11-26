@@ -24,12 +24,27 @@ export function vaccinationBannerEntries(
 ): VaccinationBannerEntry[] {
   return currentVaccineReminders(patientId, vaccinations, now).flatMap(
     (vaccine): VaccinationBannerEntry[] => {
-      if (!vaccine.nextDueAt) return [];
+      if (!vaccine.nextDueAt) {
+        return [];
+      }
       if (vaccine.status === "overdue") {
-        return [{ name: vaccine.name, nextDueAt: vaccine.nextDueAt, status: "overdue", daysLate: daysOverdue(vaccine.nextDueAt, now) }];
+        return [
+          {
+            name: vaccine.name,
+            nextDueAt: vaccine.nextDueAt,
+            status: "overdue",
+            daysLate: daysOverdue(vaccine.nextDueAt, now),
+          },
+        ];
       }
       if (vaccine.status === "due_soon") {
-        return [{ name: vaccine.name, nextDueAt: vaccine.nextDueAt, status: "due_soon" }];
+        return [
+          {
+            name: vaccine.name,
+            nextDueAt: vaccine.nextDueAt,
+            status: "due_soon",
+          },
+        ];
       }
       return [];
     }

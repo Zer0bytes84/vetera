@@ -1,12 +1,12 @@
 import type { CareTask } from "./domain";
 export interface CareCompletedEvent {
-  taskId: string;
-  patientId: string;
   act: string;
-  scheduledAt: string;
   completedAt: string;
   executorId: string;
+  patientId: string;
   productId: string | null;
+  scheduledAt: string;
+  taskId: string;
 }
 type CompletionHook = (task: Readonly<CareTask>) => void | Promise<void>;
 let completionHook: CompletionHook = () => undefined;
@@ -15,7 +15,9 @@ export function registerCareCompletionHook(hook: CompletionHook) {
   const previous = completionHook;
   completionHook = hook;
   return () => {
-    if (completionHook === hook) completionHook = previous;
+    if (completionHook === hook) {
+      completionHook = previous;
+    }
   };
 }
 export async function onCareTaskCompleted(task: CareTask): Promise<void> {
@@ -25,7 +27,7 @@ const listeners = new Set<
   (event: CareCompletedEvent) => void | Promise<void>
 >();
 export function subscribeCareTaskCompleted(
-  listener: (event: CareCompletedEvent) => void | Promise<void>,
+  listener: (event: CareCompletedEvent) => void | Promise<void>
 ) {
   listeners.add(listener);
   return () => {
@@ -34,13 +36,16 @@ export function subscribeCareTaskCompleted(
 }
 /** Called only after commit. Integration failures never undo a saved care task. */
 export async function notifyCareTaskCompleted(task: CareTask) {
+  if (task.completed_at === null || task.execute_par === null) {
+    return;
+  }
   const event: CareCompletedEvent = {
     taskId: task.id,
     patientId: task.patient_id,
     act: task.label,
     scheduledAt: task.heure_prevue,
-    completedAt: task.completed_at!,
-    executorId: task.execute_par!,
+    completedAt: task.completed_at,
+    executorId: task.execute_par,
     productId: task.produit_id,
   };
   try {
@@ -55,8 +60,9 @@ export async function notifyCareTaskCompleted(task: CareTask) {
       console.error("[Care] Completion event listener failed", error);
     }
   }
-  if (typeof window !== "undefined")
+  if (typeof window !== "undefined") {
     window.dispatchEvent(
-      new CustomEvent("careTaskCompleted", { detail: event }),
+      new CustomEvent("careTaskCompleted", { detail: event })
     );
+  }
 }

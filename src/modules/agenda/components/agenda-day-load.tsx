@@ -52,7 +52,10 @@ export function AgendaDayLoadCard({
   weekDays,
 }: AgendaDayLoadCardProps) {
   const dayCount = typeSummary.reduce((sum, entry) => sum + entry.count, 0);
-  const maxVetCount = Math.max(1, ...dayLoadSummary.map((entry) => entry.count));
+  const maxVetCount = Math.max(
+    1,
+    ...dayLoadSummary.map((entry) => entry.count)
+  );
 
   return (
     <Card className="agenda-load-card agenda-side-panel board-frame">
@@ -76,10 +79,7 @@ export function AgendaDayLoadCard({
             </div>
 
             <div className="grid gap-2.5">
-              <div
-                aria-hidden="true"
-                className="agenda-load-bar"
-              >
+              <div aria-hidden="true" className="agenda-load-bar">
                 {typeSummary.map((entry) => (
                   <span
                     className={cn(
@@ -91,7 +91,7 @@ export function AgendaDayLoadCard({
                   />
                 ))}
               </div>
-              <ul className="grid gap-1.5" aria-label="Rendez-vous par type">
+              <ul aria-label="Rendez-vous par type" className="grid gap-1.5">
                 {typeSummary.map((entry) => (
                   <li className="agenda-load-legend" key={entry.type}>
                     <span className="flex items-center gap-2.5">
@@ -110,7 +110,10 @@ export function AgendaDayLoadCard({
             </div>
 
             {dayLoadSummary.length > 0 ? (
-              <ul className="agenda-load-section grid gap-3" aria-label="Rendez-vous par vétérinaire">
+              <ul
+                aria-label="Rendez-vous par vétérinaire"
+                className="agenda-load-section grid gap-3"
+              >
                 {dayLoadSummary.map((entry) => (
                   <li className="grid gap-1.5" key={entry.vet.id}>
                     <div className="flex items-baseline justify-between gap-3">
@@ -125,7 +128,11 @@ export function AgendaDayLoadCard({
                       <span className="agenda-load-count">{entry.count}</span>
                     </div>
                     <span aria-hidden="true" className="agenda-load-meter">
-                      <span style={{ width: `${(entry.count / maxVetCount) * 100}%` }} />
+                      <span
+                        style={{
+                          width: `${(entry.count / maxVetCount) * 100}%`,
+                        }}
+                      />
                     </span>
                   </li>
                 ))}
@@ -146,9 +153,11 @@ export function AgendaDayLoadCard({
         ) : (
           <>
             {/* The page's main column already says the day is free and offers the button: here, the load stays plain text. */}
-            <p className="agenda-load-caption">Aucun rendez-vous planifié ce jour-là.</p>
+            <p className="agenda-load-caption">
+              Aucun rendez-vous planifié ce jour-là.
+            </p>
 
-            {nextAppointment !== undefined ? (
+            {nextAppointment === undefined ? null : (
               <div className="agenda-load-section grid gap-2.5">
                 <p className="agenda-load-label">Prochain rendez-vous</p>
                 {nextAppointment ? (
@@ -158,20 +167,30 @@ export function AgendaDayLoadCard({
                         {nextAppointment.patientName}
                       </p>
                       <p className="agenda-load-muted">
-                        {formatDateLabel(new Date(nextAppointment.appointment.startTime), {
-                          weekday: "long",
-                          day: "numeric",
-                          month: "long",
-                        })}{" "}
-                        · {formatTimeCompact(nextAppointment.appointment.startTime)}
+                        {formatDateLabel(
+                          new Date(nextAppointment.appointment.startTime),
+                          {
+                            weekday: "long",
+                            day: "numeric",
+                            month: "long",
+                          }
+                        )}{" "}
+                        ·{" "}
+                        {formatTimeCompact(
+                          nextAppointment.appointment.startTime
+                        )}
                       </p>
                     </div>
-                    <AppointmentTypeBadge type={nextAppointment.appointment.type} />
+                    <AppointmentTypeBadge
+                      type={nextAppointment.appointment.type}
+                    />
                     {onSelectDate ? (
                       <Button
                         className="agenda-load-next-action"
                         onClick={() =>
-                          onSelectDate(new Date(nextAppointment.appointment.startTime))
+                          onSelectDate(
+                            new Date(nextAppointment.appointment.startTime)
+                          )
                         }
                         size="sm"
                         variant="ghost"
@@ -186,7 +205,7 @@ export function AgendaDayLoadCard({
                   </p>
                 )}
               </div>
-            ) : null}
+            )}
           </>
         )}
 
@@ -216,9 +235,7 @@ function WeekStrip({
     <div className="agenda-load-section grid gap-3">
       <div className="flex items-baseline justify-between gap-3">
         <p className="agenda-load-label">Semaine</p>
-        <p className="agenda-load-muted tabular-nums">
-          {total} rendez-vous
-        </p>
+        <p className="agenda-load-muted tabular-nums">{total} rendez-vous</p>
       </div>
       <ol className="agenda-week-strip">
         {days.map((day, index) => {
@@ -237,8 +254,12 @@ function WeekStrip({
                 type="button"
               >
                 <span className="agenda-week-count">{day.count}</span>
-                <span className="agenda-week-track" aria-hidden="true">
-                  <span style={{ height: `${Math.max(day.ratio * 100, day.count > 0 ? 12 : 0)}%` }} />
+                <span aria-hidden="true" className="agenda-week-track">
+                  <span
+                    style={{
+                      height: `${Math.max(day.ratio * 100, day.count > 0 ? 12 : 0)}%`,
+                    }}
+                  />
                 </span>
                 <span className="agenda-week-name">{DAY_NAMES[index]}</span>
               </button>

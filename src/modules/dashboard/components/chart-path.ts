@@ -1,3 +1,5 @@
+const VALUE_WITH_UNIT = /^(.*?)[\s\u00a0\u202f]*(DA|%)$/;
+
 /**
  * Courbe lissée monotone (Fritsch-Carlson) : passe par chaque point sans
  * dépasser les valeurs voisines, donc jamais sous zéro ni au-dessus d'un pic.
@@ -8,8 +10,12 @@ const fmt = (value: number) => value.toFixed(1);
 
 export function monotonePath(points: readonly ChartPoint[]): string {
   const n = points.length;
-  if (n === 0) return "";
-  if (n === 1) return `M${fmt(points[0][0])},${fmt(points[0][1])}`;
+  if (n === 0) {
+    return "";
+  }
+  if (n === 1) {
+    return `M${fmt(points[0][0])},${fmt(points[0][1])}`;
+  }
   if (n === 2) {
     return `M${fmt(points[0][0])},${fmt(points[0][1])} L${fmt(points[1][0])},${fmt(points[1][1])}`;
   }
@@ -26,7 +32,8 @@ export function monotonePath(points: readonly ChartPoint[]): string {
   tangent[0] = slope[0];
   tangent[n - 1] = slope[n - 2];
   for (let i = 1; i < n - 1; i++) {
-    tangent[i] = slope[i - 1] * slope[i] <= 0 ? 0 : (slope[i - 1] + slope[i]) / 2;
+    tangent[i] =
+      slope[i - 1] * slope[i] <= 0 ? 0 : (slope[i - 1] + slope[i]) / 2;
   }
   // Limite les tangentes pour garantir la monotonie entre deux points.
   for (let i = 0; i < n - 1; i++) {
@@ -57,6 +64,6 @@ export function monotonePath(points: readonly ChartPoint[]): string {
 
 /** Sépare un montant formaté de son unité : « 13 900 DA » → ["13 900", "DA"]. */
 export function splitUnit(formatted: string): [value: string, unit: string] {
-  const match = /^(.*?)[\s\u00a0\u202f]*(DA|%)$/.exec(formatted.trim());
+  const match = VALUE_WITH_UNIT.exec(formatted.trim());
   return match ? [match[1], match[2]] : [formatted, ""];
 }

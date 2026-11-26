@@ -1,3 +1,4 @@
+import { WHITESPACE_RUN } from "@/lib/patterns";
 import { cn } from "@/lib/utils";
 import { firstNameOf } from "@/utils/display-format";
 
@@ -5,12 +6,16 @@ import { firstNameOf } from "@/utils/display-format";
 export function personInitials(name?: string | null) {
   // Titles (Dr, Pr, Mme…) are not part of the initials: "Dr Lina Ait Salem" gives "LS".
   const words = (name ?? "")
-    .split(/\s+/)
+    .split(WHITESPACE_RUN)
     .filter(Boolean)
     .filter((word) => firstNameOf(word) !== "");
-  if (words.length === 0) return "?";
-  if (words.length === 1) return words[0].slice(0, 2).toUpperCase();
-  return (words[0][0] + words[words.length - 1][0]).toUpperCase();
+  if (words.length === 0) {
+    return "?";
+  }
+  if (words.length === 1) {
+    return words[0].slice(0, 2).toUpperCase();
+  }
+  return (words[0][0] + (words.at(-1)?.[0] ?? "")).toUpperCase();
 }
 
 /**
@@ -28,7 +33,7 @@ export function InitialsAvatar({
     <span
       aria-hidden="true"
       className={cn(
-        "inline-grid size-10 shrink-0 place-items-center rounded-full bg-[#F5F5F5] ring-1 ring-black/5 t-13 font-medium text-[#5D5D5D] dark:bg-white/10 dark:text-white/70",
+        "t-13 inline-grid size-10 shrink-0 place-items-center rounded-full bg-[#F5F5F5] font-medium text-[#5D5D5D] ring-1 ring-black/5 dark:bg-white/10 dark:text-white/70",
         className
       )}
       data-slot="initials-avatar"

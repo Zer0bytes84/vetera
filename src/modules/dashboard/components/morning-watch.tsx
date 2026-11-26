@@ -7,9 +7,13 @@ import {
   ReceiptPercentIcon,
 } from "@heroicons/react/20/solid";
 import { useMemo } from "react";
-import { StatGrid, type Stat, type StatTone } from "@/components/ui/stat-grid";
+import { type Stat, StatGrid, type StatTone } from "@/components/ui/stat-grid";
 import { formatNumber } from "@/utils/display-format";
-import type { MorningId, MorningItem, MorningStatus } from "../model/morning-watch";
+import type {
+  MorningId,
+  MorningItem,
+  MorningStatus,
+} from "../model/morning-watch";
 
 const ICONS: Record<MorningId, Stat["icon"]> = {
   care: HeartIcon,
@@ -51,7 +55,13 @@ export function MorningWatch({
     () =>
       items.map((item) => {
         const tone: StatTone | undefined =
-          item.count === null ? undefined : item.count === 0 ? "green" : status === "late" ? "rose" : "amber";
+          item.count === null
+            ? undefined
+            : item.count === 0
+              ? "green"
+              : status === "late"
+                ? "rose"
+                : "amber";
         return {
           id: item.id,
           label: item.label,
@@ -63,17 +73,24 @@ export function MorningWatch({
           ariaLabel: `${item.label} : ${item.count === null ? "non lu" : formatNumber(item.count)}. ${item.ariaLabel}`,
         };
       }),
-    [items, status],
+    [items, status]
   );
   const total = items.reduce((sum, item) => sum + (item.count ?? 0), 0);
-  const day = now.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" });
-  const time = now.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+  const day = now.toLocaleDateString("fr-FR", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+  });
+  const time = now.toLocaleTimeString("fr-FR", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 
   return (
     <div aria-atomic="true" aria-live="polite">
       <StatGrid
         badges={false}
-        className="max-w-none morningWatch"
+        className="morningWatch max-w-none"
         data={stats}
         goals={false}
         icon={ExclamationCircleIcon}
@@ -82,7 +99,12 @@ export function MorningWatch({
         loadingLabel="Chargement de « À traiter »"
         loadingRevealed={loadingRevealed}
         lead={
-          <div aria-label="Statut des anomalies" className="filter-segments" data-tabs-style="segmented" role="group">
+          <div
+            aria-label="Statut des anomalies"
+            className="filter-segments"
+            data-tabs-style="segmented"
+            role="group"
+          >
             {STATUSES.map((option) => (
               <button
                 aria-pressed={status === option.value}
@@ -99,7 +121,9 @@ export function MorningWatch({
         }
         onSelect={(stat) => {
           const item = items.find((entry) => entry.id === stat.id);
-          if (item) onOpen(item);
+          if (item) {
+            onOpen(item);
+          }
         }}
         sparklines={false}
         subtitle={`${day[0].toLocaleUpperCase("fr-FR")}${day.slice(1)} · ${loading ? "lecture en cours…" : `état à ${time} · ${status === "late" ? (total ? `${formatNumber(total)} en retard` : "aucun retard") : `${formatNumber(total)} ouvert${total > 1 ? "s" : ""}`}`}`}

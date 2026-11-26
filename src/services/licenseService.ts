@@ -5,7 +5,7 @@ export function formatLicenseKey(key: string): string {
     return key;
   }
 
-  return clean.match(/.{1,4}/g)!.join("-");
+  return (clean.match(/.{1,4}/g) ?? [clean]).join("-");
 }
 
 export function looksLikeLicenseKey(value: string): boolean {

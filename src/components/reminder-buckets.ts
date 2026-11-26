@@ -1,5 +1,10 @@
 /** When an open reminder falls, relative to today. */
-export type ReminderBucket = "overdue" | "today" | "tomorrow" | "later" | "undated";
+export type ReminderBucket =
+  | "overdue"
+  | "today"
+  | "tomorrow"
+  | "later"
+  | "undated";
 
 export const BUCKET_LABELS: Record<ReminderBucket, string> = {
   overdue: "En retard",
@@ -8,24 +13,40 @@ export const BUCKET_LABELS: Record<ReminderBucket, string> = {
   later: "Plus tard",
   undated: "Sans date",
 };
-export const BUCKET_ORDER: readonly ReminderBucket[] = ["overdue", "today", "tomorrow", "later", "undated"];
+export const BUCKET_ORDER: readonly ReminderBucket[] = [
+  "overdue",
+  "today",
+  "tomorrow",
+  "later",
+  "undated",
+];
 
 const dayKey = (date: Date) =>
   `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 
 export function reminderBucket(date: Date | null, now: Date): ReminderBucket {
-  if (!date) return "undated";
+  if (!date) {
+    return "undated";
+  }
   const key = dayKey(date);
   const today = dayKey(now);
-  if (key < today) return "overdue";
-  if (key === today) return "today";
+  if (key < today) {
+    return "overdue";
+  }
+  if (key === today) {
+    return "today";
+  }
   const tomorrow = new Date(now);
   tomorrow.setDate(tomorrow.getDate() + 1);
   return key === dayKey(tomorrow) ? "tomorrow" : "later";
 }
 
 /** Items in display order, cut into labelled groups that keep their count. */
-export function groupReminders<T>(items: T[], dateOf: (item: T) => Date | null, now: Date) {
+export function groupReminders<T>(
+  items: T[],
+  dateOf: (item: T) => Date | null,
+  now: Date
+) {
   const groups = new Map<ReminderBucket, T[]>();
   for (const item of items) {
     const bucket = reminderBucket(dateOf(item), now);

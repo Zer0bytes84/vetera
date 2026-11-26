@@ -1,3 +1,4 @@
+import { ISO_DATE } from "@/lib/patterns";
 import type { Appointment, Task, Transaction } from "@/types/db";
 import { addDays, endOfDay, parseDashboardDate, startOfDay } from "./model";
 
@@ -7,8 +8,10 @@ export function isInProgressPeriod(
   referenceDate: Date,
   days: number
 ) {
-  if (!value) return false;
-  const date = /^\d{4}-\d{2}-\d{2}$/.test(value)
+  if (!value) {
+    return false;
+  }
+  const date = ISO_DATE.test(value)
     ? new Date(`${value}T12:00:00`)
     : parseDashboardDate(value);
   return Boolean(

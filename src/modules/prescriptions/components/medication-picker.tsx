@@ -1,4 +1,3 @@
-import { CaretUpDown, Check, Pill } from "@/lib/icons";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Badge } from "@/components/ui/badge";
@@ -16,6 +15,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { CaretUpDown, Check, Pill } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 
 import {
@@ -86,7 +86,7 @@ export function MedicationPicker({
               {t("prescriptions.builder.noResults")}
             </CommandEmpty>
             {speciesKey ? (
-              <div className="border-border/50 border-b bg-muted/30 px-2 py-1.5 font-medium t-12 text-muted-foreground uppercase tracking-wider">
+              <div className="t-12 border-border/50 border-b bg-muted/30 px-2 py-1.5 font-medium text-muted-foreground uppercase tracking-wider">
                 {speciesLabel(speciesKey, language)}
               </div>
             ) : null}
@@ -130,12 +130,12 @@ function MedicationRow({
         <div className="flex items-center gap-2">
           <span className="truncate font-medium text-sm">{med.nom}</span>
           {med.nomCommercial?.[0] ? (
-            <span className="truncate t-12 text-muted-foreground">
+            <span className="t-12 truncate text-muted-foreground">
               ({med.nomCommercial[0]})
             </span>
           ) : null}
         </div>
-        <div className="mt-0.5 flex flex-wrap items-center gap-1.5 t-12 text-muted-foreground">
+        <div className="t-12 mt-0.5 flex flex-wrap items-center gap-1.5 text-muted-foreground">
           <span>{med.classe}</span>
           {med.posologyForSpecies ? (
             <>
@@ -153,7 +153,7 @@ function MedicationRow({
         </div>
       </div>
       {med.hasComputableDose ? (
-        <Badge className="shrink-0 t-12" variant="secondary">
+        <Badge className="t-12 shrink-0" variant="secondary">
           ✓
         </Badge>
       ) : null}

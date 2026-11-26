@@ -75,8 +75,16 @@ function WatchCard({
           <ul className="watchList">
             {list.rows.map((row) => (
               <li key={row.id}>
-                <button className="watchRow" onClick={() => onRow(row)} type="button">
-                  <span aria-hidden="true" className="watchDot" data-tone={row.tone} />
+                <button
+                  className="watchRow"
+                  onClick={() => onRow(row)}
+                  type="button"
+                >
+                  <span
+                    aria-hidden="true"
+                    className="watchDot"
+                    data-tone={row.tone}
+                  />
                   <span className="watchText">
                     <strong>{row.title}</strong>
                     <span>{row.detail}</span>
@@ -98,7 +106,10 @@ function WatchCard({
       {/* What to know, then the card's single action. */}
       <WidgetFooter action={moreLabel} onAction={onMore}>
         {error || loading ? null : summary ? (
-          <span className="watchSummary" data-tone={list.critical ? "critical" : "neutral"}>
+          <span
+            className="watchSummary"
+            data-tone={list.critical ? "critical" : "neutral"}
+          >
             {summary}
           </span>
         ) : (
@@ -114,17 +125,17 @@ export interface DashboardWatchProps {
   /** Places occupied and free, from the same data as the Occupation view. */
   hospitalizedCapacity?: ReactNode;
   onOpenPatient: (patientId: string) => void;
+  onPatients?: () => void;
   onReminders: () => void;
+  onRemindersRetry?: () => void;
   onStays: () => void;
   onStock: () => void;
   reminders: WatchList;
   remindersError?: string | null;
   remindersLoading?: boolean;
-  onRemindersRetry?: () => void;
-  stock: WatchList;
   /** Active patients by species; omitted while the patients load. */
   species?: { total: number; recent: number; rows: SpeciesRow[] };
-  onPatients?: () => void;
+  stock: WatchList;
 }
 
 /** Rangée « À surveiller » : trois listes courtes, issues des vraies données. */
@@ -155,7 +166,9 @@ export function DashboardWatch({
         note="En retard et sous 14 jours"
         onMore={onReminders}
         onRetry={onRemindersRetry}
-        onRow={(row) => (row.patientId ? onOpenPatient(row.patientId) : onReminders())}
+        onRow={(row) =>
+          row.patientId ? onOpenPatient(row.patientId) : onReminders()
+        }
         summary={reminders.critical ? `${reminders.critical} en retard` : null}
         title="Rappels à venir"
       />
@@ -178,11 +191,15 @@ export function DashboardWatch({
         moreLabel="Soins"
         note="Animaux admis en ce moment"
         onMore={onStays}
-        onRow={(row) => (row.patientId ? onOpenPatient(row.patientId) : onStays())}
+        onRow={(row) =>
+          row.patientId ? onOpenPatient(row.patientId) : onStays()
+        }
         summary={hospitalized.total ? `${hospitalized.total} en cours` : null}
         title="Hospitalisés"
       />
-      {species ? <SpeciesCard onPatients={onPatients} species={species} /> : null}
+      {species ? (
+        <SpeciesCard onPatients={onPatients} species={species} />
+      ) : null}
     </div>
   );
 }
@@ -197,7 +214,10 @@ function SpeciesCard({
 }) {
   const first = species.rows[0];
   return (
-    <section aria-label="Patients par espèce" className="card frame watchCard speciesCard">
+    <section
+      aria-label="Patients par espèce"
+      className="card frame watchCard speciesCard"
+    >
       <div className="cardHead">
         <div>
           <h2 className="cardTitle watchTitle">
@@ -207,12 +227,17 @@ function SpeciesCard({
             Patients par espèce
           </h2>
           <p className="cardNote">
-            {species.total} patient{species.total > 1 ? "s" : ""} actif{species.total > 1 ? "s" : ""}, décédés exclus
+            {species.total} patient{species.total > 1 ? "s" : ""} actif
+            {species.total > 1 ? "s" : ""}, décédés exclus
           </p>
         </div>
       </div>
       <div className="cardFlush">
-        {species.total ? <SpeciesSplit split={species} /> : <p className="watchEmpty">Aucun patient actif pour l’instant.</p>}
+        {species.total ? (
+          <SpeciesSplit split={species} />
+        ) : (
+          <p className="watchEmpty">Aucun patient actif pour l’instant.</p>
+        )}
       </div>
       <WidgetFooter action="Patients" onAction={() => onPatients?.()}>
         {first

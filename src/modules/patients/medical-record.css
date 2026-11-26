@@ -66,9 +66,9 @@
 }
 
 .patient-record-page {
-  container: patient-page / inline-size;
-  padding-inline: 24px;
   gap: 16px;
+  padding-inline: 24px;
+  container: patient-page / inline-size;
   /* Le halo partagé reste visible derrière les repères en haut du dossier. */
   background: transparent;
 }
@@ -165,22 +165,19 @@
 .patient-context-widgets {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  min-width: 0;
   gap: 12px;
+  min-width: 0;
 }
 
 .patient-context-card {
   display: flex;
   flex-direction: column;
+  gap: 6px;
   justify-content: center;
   width: 100%;
   min-width: 0;
   min-height: 112px;
-  gap: 6px;
   padding: 14px 18px;
-  border: 1px solid var(--medical-border);
-  border-radius: 14px;
-  background: var(--medical-panel);
   color: var(--medical-ink);
   text-align: left;
   cursor: pointer;
@@ -189,7 +186,12 @@
     var(--titlebar-clearance, 0px) +
     16px
   );
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03), 0 4px 12px -2px rgba(0, 0, 0, 0.02);
+  background: var(--medical-panel);
+  border: 1px solid var(--medical-border);
+  border-radius: 14px;
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.03),
+    0 4px 12px -2px rgba(0, 0, 0, 0.02);
   transition:
     transform 180ms cubic-bezier(0.2, 0, 0, 1),
     box-shadow 180ms cubic-bezier(0.2, 0, 0, 1),
@@ -198,30 +200,34 @@
 }
 
 .patient-context-card[data-popup-open] {
-  transform: translateY(-2px);
-  border-color: var(--medical-hover);
   background: var(--medical-panel);
-  box-shadow: 0 4px 14px -2px rgba(0, 0, 0, 0.08), 0 12px 24px -6px rgba(0, 0, 0, 0.04);
+  border-color: var(--medical-hover);
+  box-shadow:
+    0 4px 14px -2px rgba(0, 0, 0, 0.08),
+    0 12px 24px -6px rgba(0, 0, 0, 0.04);
+  transform: translateY(-2px);
 }
 
 @media (hover: hover) and (pointer: fine) {
   .patient-context-card:hover {
-    transform: translateY(-2px);
-    border-color: var(--medical-hover);
     background: var(--medical-panel);
-    box-shadow: 0 4px 14px -2px rgba(0, 0, 0, 0.08), 0 12px 24px -6px rgba(0, 0, 0, 0.04);
+    border-color: var(--medical-hover);
+    box-shadow:
+      0 4px 14px -2px rgba(0, 0, 0, 0.08),
+      0 12px 24px -6px rgba(0, 0, 0, 0.04);
+    transform: translateY(-2px);
   }
 }
 
 .patient-context-heading {
   display: flex;
+  gap: 8px;
   align-items: center;
   min-width: 0;
-  gap: 8px;
-  color: var(--medical-muted);
   font-size: 12px;
   font-weight: 500;
   line-height: 20px;
+  color: var(--medical-muted);
 }
 
 .patient-context-heading svg {
@@ -248,9 +254,9 @@
 .patient-context-value {
   font-size: 24px;
   font-weight: 500;
+  font-variant-numeric: tabular-nums;
   line-height: 32px;
   letter-spacing: -0.025em;
-  font-variant-numeric: tabular-nums;
 }
 
 .patient-context-date {
@@ -258,27 +264,26 @@
   letter-spacing: -0.015em;
 }
 
-
 .patient-context-detail {
   min-width: 0;
   overflow: hidden;
-  color: var(--medical-quiet);
+  text-overflow: ellipsis;
   font-size: 12px;
   line-height: 20px;
-  text-overflow: ellipsis;
+  color: var(--medical-quiet);
   white-space: nowrap;
 }
 
 .patient-context-popover[data-slot="popover-content"] {
-  width: min(360px, calc(100vw - 32px));
+  --tw-ring-shadow: 0 0 #0000;
   gap: 8px;
+  width: min(360px, calc(100vw - 32px));
   padding: 16px;
+  color: var(--medical-ink);
+  background: var(--medical-panel);
   border: 1px solid var(--medical-border);
   border-radius: 12px;
-  background: var(--medical-panel);
-  color: var(--medical-ink);
   box-shadow: 0 8px 24px #0000000a;
-  --tw-ring-shadow: 0 0 #0000;
 }
 
 .patient-context-popover [data-slot="popover-title"] {
@@ -290,9 +295,9 @@
 .patient-context-popover [data-slot="popover-description"],
 .patient-context-empty {
   margin: 0;
-  color: var(--medical-muted);
   font-size: 12px;
   line-height: 20px;
+  color: var(--medical-muted);
 }
 
 .patient-context-empty {
@@ -300,37 +305,37 @@
 }
 
 .patient-context-empty button {
-  margin-top: 8px;
   padding: 4px 8px;
-  border: 1px solid var(--medical-border);
-  border-radius: 6px;
-  background: var(--medical-soft);
+  margin-top: 8px;
   color: var(--medical-ink);
   cursor: pointer;
+  background: var(--medical-soft);
+  border: 1px solid var(--medical-border);
+  border-radius: 6px;
 }
 
 .patient-context-task-list {
   display: grid;
-  max-height: 280px;
   gap: 4px;
-  margin: 4px -4px -4px;
+  max-height: 280px;
   padding: 0;
+  margin: 4px -4px -4px;
   overflow-y: auto;
   list-style: none;
 }
 
 .patient-context-task-list button {
   display: flex;
+  gap: 12px;
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  gap: 12px;
   padding: 12px 8px;
-  border-radius: 8px;
-  background: transparent;
   color: var(--medical-ink);
   text-align: left;
   cursor: pointer;
+  background: transparent;
+  border-radius: 8px;
   transition: background-color 160ms ease;
 }
 
@@ -351,9 +356,9 @@
 .patient-context-task-meta {
   display: block;
   margin-top: 4px;
-  color: var(--medical-quiet);
   font-size: 12px;
   line-height: 20px;
+  color: var(--medical-quiet);
 }
 
 .patient-context-task-list svg {
@@ -373,7 +378,8 @@
   }
   /* With its own actions (the way back to the list), the heading spans the
      content width so they line up with the cards' right edge. */
-  :root[data-chrome-style="liquid-glass"] .patient-record-heading:has([data-slot="page-header-actions"]) {
+  :root[data-chrome-style="liquid-glass"]
+    .patient-record-heading:has([data-slot="page-header-actions"]) {
     padding-inline-end: 0;
   }
 }
@@ -386,20 +392,20 @@
   .patient-context-card {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: 16px;
     align-items: center;
     min-height: 80px;
-    column-gap: 16px;
   }
   .patient-context-heading {
     grid-column: 1;
   }
   .patient-context-value {
-    grid-column: 2;
     grid-row: 1 / 3;
+    grid-column: 2;
   }
   .patient-context-detail {
-    grid-column: 1;
     grid-row: 2;
+    grid-column: 1;
   }
   .patient-context-date {
     font-size: 16px;
@@ -409,43 +415,45 @@
 /* Identité et actions : une seule action primaire, sans effets de verre. */
 
 .medical-patient-header {
-  container: patient-summary / inline-size;
   position: relative;
+  container: patient-summary / inline-size;
   overflow: hidden;
+  background: var(--medical-panel);
   border: 1px solid var(--medical-border);
   border-radius: 16px;
-  background: var(--medical-panel);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03), 0 8px 24px -4px rgba(0, 0, 0, 0.05);
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.03),
+    0 8px 24px -4px rgba(0, 0, 0, 0.05);
 }
 
 .medical-header-main {
   display: flex;
   flex-wrap: wrap;
+  gap: 20px 24px;
   align-items: center;
   justify-content: space-between;
-  gap: 20px 24px;
   padding: 24px;
 }
 
 .medical-identity {
   display: flex;
   flex: 1 1 440px;
+  gap: 16px;
   align-items: center;
   min-width: 0;
-  gap: 16px;
 }
 
 .medical-avatar {
   display: grid;
-  place-items: center;
   flex: 0 0 72px;
+  place-items: center;
   width: 72px;
   height: 72px;
   overflow: hidden;
+  color: var(--medical-ink);
+  background: var(--medical-soft);
   border: 1px solid var(--medical-border);
   border-radius: 16px;
-  background: var(--medical-soft);
-  color: var(--medical-ink);
   box-shadow: inset 0 0 0 4px var(--medical-panel);
 }
 
@@ -458,17 +466,17 @@
 .medical-identity-line {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
   gap: 8px;
+  align-items: center;
   min-width: 0;
 }
 
 .medical-identity h1 {
   margin: 0;
-  color: var(--medical-ink);
   font-size: 24px;
   font-weight: 500;
   line-height: 32px;
+  color: var(--medical-ink);
   letter-spacing: -0.025em;
   overflow-wrap: anywhere;
 }
@@ -476,25 +484,25 @@
 .medical-identity p {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
   gap: 8px;
+  align-items: center;
   margin: 8px 0;
-  color: var(--medical-muted);
   font-size: 13px;
   font-weight: 400;
   line-height: 20px;
+  color: var(--medical-muted);
 }
 
 :is(.medical-status) {
   display: inline-flex;
+  gap: 8px;
   align-items: center;
   min-height: 24px;
-  gap: 8px;
   padding: 0 8px;
-  border-radius: 6px;
   font-size: 12px;
   font-weight: 400;
   line-height: 20px;
+  border-radius: 6px;
 }
 
 .medical-status {
@@ -505,33 +513,33 @@
   flex-shrink: 0;
   width: 6px;
   height: 6px;
-  border-radius: 50%;
   background: currentColor;
+  border-radius: 50%;
 }
 
 /* Species, sex, sterilisation: facts about the animal, in the same grey. */
 .medical-identity .medical-identity-meta {
-  margin: 4px 0 0;
   gap: 6px;
-  color: var(--medical-muted);
+  margin: 4px 0 0;
   font-size: 14px;
+  color: var(--medical-muted);
 }
 .medical-identity .medical-identity-meta:empty {
   display: none;
 }
 .medical-identity-meta > span + span::before {
-  content: "·";
   margin-right: 6px;
   color: var(--medical-quiet);
+  content: "·";
 }
 .medical-identity-phone {
-  color: var(--medical-muted);
   font-variant-numeric: tabular-nums;
+  color: var(--medical-muted);
 }
 .medical-identity-phone::before {
-  content: "·";
   margin-right: 8px;
   color: var(--medical-quiet);
+  content: "·";
 }
 
 /* Right of the card: what the owner owes, then the one primary action. */
@@ -541,12 +549,12 @@
 .medical-record-id {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
   gap: 8px;
-  color: var(--medical-quiet);
+  align-items: center;
   font-size: 12px;
-  line-height: 20px;
   font-variant-numeric: tabular-nums;
+  line-height: 20px;
+  color: var(--medical-quiet);
 }
 
 .medical-identity-compact {
@@ -573,16 +581,16 @@
 }
 
 .medical-action[data-slot="button"] {
-  height: 32px;
   gap: 8px;
+  height: 32px;
   padding-inline: 12px;
-  border-width: 1px;
-  border-radius: 8px !important;
   font-size: 13px;
   font-weight: 500;
   line-height: 20px;
   letter-spacing: normal;
   cursor: pointer;
+  border-width: 1px;
+  border-radius: 8px !important;
   box-shadow: none !important;
   transition:
     background-color 160ms ease,
@@ -591,9 +599,9 @@
 }
 
 .medical-action-primary[data-slot="button"] {
-  border-color: var(--medical-ink) !important;
-  background: var(--medical-ink) !important;
   color: var(--medical-panel) !important;
+  background: var(--medical-ink) !important;
+  border-color: var(--medical-ink) !important;
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -607,14 +615,14 @@
   display: none !important;
 }
 .medical-action-outline[data-slot="button"] {
-  border-color: var(--medical-border);
-  background: var(--medical-panel);
   color: var(--medical-ink);
+  background: var(--medical-panel);
+  border-color: var(--medical-border);
 }
 @media (hover: hover) and (pointer: fine) {
   .medical-action-outline[data-slot="button"]:hover {
-    background: var(--medical-soft);
     color: var(--medical-ink);
+    background: var(--medical-soft);
   }
 }
 
@@ -632,10 +640,12 @@
   min-width: 0;
   min-height: 160px;
   padding: 18px;
+  background: var(--medical-panel);
   border: 1px solid var(--medical-border);
   border-radius: 14px;
-  background: var(--medical-panel);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03), 0 4px 12px -2px rgba(0, 0, 0, 0.02);
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.03),
+    0 4px 12px -2px rgba(0, 0, 0, 0.02);
   transition:
     transform 180ms cubic-bezier(0.2, 0, 0, 1),
     box-shadow 180ms cubic-bezier(0.2, 0, 0, 1),
@@ -643,30 +653,32 @@
 }
 @media (hover: hover) and (pointer: fine) {
   .medical-kpi:hover {
-    transform: translateY(-2px);
     border-color: var(--medical-hover);
-    box-shadow: 0 4px 14px -2px rgba(0, 0, 0, 0.08), 0 12px 24px -6px rgba(0, 0, 0, 0.04);
+    box-shadow:
+      0 4px 14px -2px rgba(0, 0, 0, 0.08),
+      0 12px 24px -6px rgba(0, 0, 0, 0.04);
+    transform: translateY(-2px);
   }
 }
 .medical-kpi-heading {
   display: flex;
+  gap: 8px;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
   min-height: 24px;
   margin-bottom: 8px;
 }
 .medical-kpi-heading h2 {
   display: flex;
-  align-items: center;
   gap: 8px;
+  align-items: center;
   margin: 0;
-  color: var(--medical-quiet);
   font-size: 12px;
   font-weight: 500;
   line-height: 20px;
-  letter-spacing: 0.055em;
+  color: var(--medical-quiet);
   text-transform: uppercase;
+  letter-spacing: 0.055em;
 }
 .medical-kpi-heading h2 svg {
   flex-shrink: 0;
@@ -678,13 +690,13 @@
 
 .medical-icon-action {
   display: grid;
-  place-items: center;
   flex: 0 0 32px;
+  place-items: center;
   width: 32px;
   height: 32px;
-  border-radius: 8px;
   color: var(--medical-muted);
   cursor: pointer;
+  border-radius: 8px;
   transition:
     background-color 160ms ease,
     color 160ms ease;
@@ -698,24 +710,24 @@
 .medical-kpi-value-row {
   display: flex;
   flex-wrap: wrap;
+  gap: 8px;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
 }
 .medical-kpi-value {
   margin: 0;
-  color: var(--medical-ink);
   font-size: 18px;
   font-weight: 500;
-  line-height: 24px;
-  letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums;
+  line-height: 24px;
+  color: var(--medical-ink);
+  letter-spacing: -0.02em;
 }
 .medical-kpi-unit {
   margin-left: 8px;
-  color: var(--medical-muted);
   font-size: 13px;
   font-weight: 400;
+  color: var(--medical-muted);
   letter-spacing: normal;
 }
 .medical-weight-sparkline {
@@ -741,43 +753,43 @@
 .medical-kpi-caption-row {
   display: flex;
   flex-wrap: wrap;
+  gap: 8px;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
-  margin-top: auto;
   padding-top: 8px;
+  margin-top: auto;
 }
 .medical-kpi-caption,
 .medical-kpi-caption-row,
 .medical-kpi-empty p {
-  color: var(--medical-quiet);
   font-size: 12px;
   font-weight: 400;
   line-height: 20px;
+  color: var(--medical-quiet);
 }
 .medical-kpi-caption {
   margin: 8px 0 0;
 }
 .medical-kpi .medical-kpi-footer {
-  margin-top: auto;
   padding-top: 8px;
+  margin-top: auto;
 }
 .medical-weight-delta {
-  color: var(--medical-muted);
   font-variant-numeric: tabular-nums;
+  color: var(--medical-muted);
 }
 .medical-kpi-detail {
   margin: 8px 0 0;
-  color: var(--medical-muted);
   font-size: 13px;
   line-height: 20px;
+  color: var(--medical-muted);
   overflow-wrap: anywhere;
 }
 .medical-kpi-empty {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
   gap: 8px;
+  align-items: flex-start;
 }
 .medical-kpi-empty p {
   margin: 0;
@@ -786,14 +798,14 @@
 .medical-next-visit {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
   gap: 8px;
+  align-items: center;
   max-width: 100%;
   min-height: 24px;
   margin-top: 8px;
-  color: var(--medical-muted);
   font-size: 12px;
   line-height: 20px;
+  color: var(--medical-muted);
   text-align: left;
   cursor: pointer;
   border-radius: 6px;
@@ -801,7 +813,7 @@
 }
 @media (hover: hover) and (pointer: fine) {
   .medical-kpi-text-action:hover,
-.medical-next-visit:hover {
+  .medical-next-visit:hover {
     color: var(--medical-ink);
   }
 }
@@ -828,15 +840,15 @@
 .medical-kpi-load-error {
   display: flex;
   flex-wrap: wrap;
+  gap: 12px;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
   padding: 16px;
+  font-size: 13px;
+  color: var(--medical-muted);
+  background: var(--medical-panel);
   border: 1px solid var(--medical-border);
   border-radius: 12px;
-  background: var(--medical-panel);
-  color: var(--medical-muted);
-  font-size: 13px;
 }
 
 /* Une vraie alerte clinique est la seule surface rouge. */
@@ -845,15 +857,15 @@
 .medical-workspace {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  align-items: start;
   gap: 24px;
+  align-items: start;
 }
 .medical-register,
 .medical-rail {
   min-width: 0;
+  background: var(--medical-panel);
   border: 1px solid var(--medical-border);
   border-radius: 12px;
-  background: var(--medical-panel);
 }
 .medical-register {
   overflow: hidden;
@@ -864,33 +876,33 @@
 }
 .medical-register-header h2 {
   margin: 0;
-  color: var(--medical-ink);
   font-size: 16px;
   font-weight: 500;
   line-height: 24px;
+  color: var(--medical-ink);
   letter-spacing: -0.015em;
 }
 .medical-register-header p {
   margin: 8px 0 0;
-  color: var(--medical-muted);
   font-size: 13px;
   line-height: 20px;
+  color: var(--medical-muted);
 }
 
 /* Every section stays in the window's width: the row wraps, it never scrolls. */
 .medical-tabs {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
   gap: 0;
+  align-items: center;
   min-width: 0;
+  padding: 8px 24px;
   overflow: visible;
   overscroll-behavior-x: contain;
-  padding: 8px 24px;
-  border-bottom: 1px solid var(--medical-border);
-  background: var(--medical-panel);
   scroll-padding-inline: 24px;
   scrollbar-width: none;
+  background: var(--medical-panel);
+  border-bottom: 1px solid var(--medical-border);
 }
 .medical-tabs::-webkit-scrollbar {
   display: none;
@@ -905,22 +917,22 @@
 .medical-tabs-frame {
   position: relative;
   min-width: 0;
-  border-bottom: 1px solid var(--medical-border);
   background: var(--medical-panel);
+  border-bottom: 1px solid var(--medical-border);
 }
 .medical-tabs-frame .medical-tabs {
-  border-bottom: 0;
   scroll-padding-inline: 48px;
+  border-bottom: 0;
 }
 .medical-tabs-frame::before,
 .medical-tabs-frame::after {
   position: absolute;
-  z-index: 1;
   inset-block: 0;
+  z-index: 1;
   width: 48px;
+  pointer-events: none;
   content: "";
   opacity: 0;
-  pointer-events: none;
   transition: opacity 160ms ease;
 }
 .medical-tabs-frame::before {
@@ -937,18 +949,18 @@
 }
 .medical-tabs-scroll {
   position: absolute;
-  z-index: 2;
   top: 50%;
+  z-index: 2;
   display: grid;
   place-items: center;
   width: 32px;
   height: 32px;
-  transform: translateY(-50%);
-  border: 1px solid var(--medical-border);
-  border-radius: 8px;
-  background: var(--medical-panel);
   color: var(--medical-muted);
   cursor: pointer;
+  background: var(--medical-panel);
+  border: 1px solid var(--medical-border);
+  border-radius: 8px;
+  transform: translateY(-50%);
   transition:
     color 160ms ease,
     background-color 160ms ease,
@@ -961,32 +973,32 @@
   right: 8px;
 }
 .medical-tabs-scroll:disabled {
-  opacity: 0;
   pointer-events: none;
+  opacity: 0;
 }
 @media (hover: hover) and (pointer: fine) {
   .medical-tabs-scroll:not(:disabled):hover {
-    background: var(--medical-soft);
     color: var(--medical-ink);
+    background: var(--medical-soft);
   }
 }
 .medical-tabs button {
   display: inline-flex;
   flex: 0 0 auto;
+  gap: 8px;
   align-items: center;
   justify-content: center;
-  gap: 8px;
   min-height: 34px;
   padding: 0 10px;
-  border: 1px solid transparent;
-  border-radius: 8px;
-  background: transparent;
-  color: var(--medical-muted);
   font-size: 13px;
   font-weight: 500;
   line-height: 20px;
+  color: var(--medical-muted);
   white-space: nowrap;
   cursor: pointer;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
   transition:
     color 160ms ease,
     background-color 160ms ease,
@@ -1013,10 +1025,10 @@
 }
 
 .medical-tabs button[aria-selected="true"] {
-  border-color: var(--medical-border);
-  background: var(--medical-soft);
-  color: var(--medical-ink);
   font-weight: 600;
+  color: var(--medical-ink);
+  background: var(--medical-soft);
+  border-color: var(--medical-border);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 .medical-tab-content {
@@ -1026,10 +1038,10 @@
 .medical-section-title,
 .medical-overview-heading h3 {
   margin: 0;
-  color: var(--medical-ink);
   font-size: 14px;
   font-weight: 500;
   line-height: 20px;
+  color: var(--medical-ink);
 }
 .medical-section-title {
   margin-bottom: 12px;
@@ -1037,15 +1049,15 @@
 .medical-overview-heading {
   display: flex;
   flex-wrap: wrap;
+  gap: 12px;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
   margin-bottom: 16px;
 }
 .medical-overview-heading [data-slot="button"] {
-  color: var(--medical-muted);
   font-size: 12px;
   font-weight: 400;
+  color: var(--medical-muted);
 }
 @media (hover: hover) and (pointer: fine) {
   .medical-overview-heading [data-slot="button"]:hover {
@@ -1054,23 +1066,23 @@
   }
 }
 .medical-overview > section + section {
-  margin-top: 24px;
   padding-top: 24px;
+  margin-top: 24px;
   border-top: 1px solid var(--medical-border);
 }
 .medical-empty {
   display: flex;
   flex-wrap: wrap;
+  gap: 12px;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
   padding: 16px;
-  border: 1px solid var(--medical-border);
-  border-radius: 8px;
-  background: var(--medical-soft);
-  color: var(--medical-muted);
   font-size: 13px;
   line-height: 20px;
+  color: var(--medical-muted);
+  background: var(--medical-soft);
+  border: 1px solid var(--medical-border);
+  border-radius: 8px;
 }
 .medical-facts {
   display: grid;
@@ -1082,17 +1094,17 @@
   min-width: 0;
 }
 .medical-facts dt {
-  color: var(--medical-quiet);
   font-size: 12px;
   line-height: 20px;
+  color: var(--medical-quiet);
 }
 .medical-facts dd {
   margin: 2px 0 0;
-  color: var(--medical-ink);
   font-size: 14px;
   font-weight: 500;
-  line-height: 20px;
   font-variant-numeric: tabular-nums;
+  line-height: 20px;
+  color: var(--medical-ink);
 }
 .medical-visit-list {
   display: grid;
@@ -1100,16 +1112,16 @@
 }
 .medical-visit {
   display: flex;
-  align-items: center;
   gap: 12px;
+  align-items: center;
   width: 100%;
   padding: 12px 16px;
-  border: 1px solid var(--medical-border);
-  border-radius: 12px;
-  background: var(--medical-panel);
   color: var(--medical-ink);
   text-align: left;
   cursor: pointer;
+  background: var(--medical-panel);
+  border: 1px solid var(--medical-border);
+  border-radius: 12px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
   transition:
     transform 160ms cubic-bezier(0.2, 0, 0, 1),
@@ -1119,18 +1131,18 @@
 }
 @media (hover: hover) and (pointer: fine) {
   .medical-visit:hover {
-    transform: translateX(2px);
     background: var(--medical-soft);
     border-color: var(--medical-hover);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transform: translateX(2px);
   }
 }
 .medical-visit time {
   flex: 0 0 88px;
-  color: var(--medical-quiet);
   font-size: 12px;
-  line-height: 20px;
   font-variant-numeric: tabular-nums;
+  line-height: 20px;
+  color: var(--medical-quiet);
 }
 .medical-visit strong {
   display: block;
@@ -1140,17 +1152,17 @@
 }
 .medical-visit p {
   margin: 0;
-  color: var(--medical-muted);
   font-size: 12px;
   line-height: 20px;
+  color: var(--medical-muted);
 }
 .medical-peek-content {
   min-width: 0;
   padding: 24px;
 }
 .medical-peek-content > section + section {
-  margin-top: 24px;
   padding-top: 24px;
+  margin-top: 24px;
   border-top: 1px solid var(--medical-border);
 }
 
@@ -1159,55 +1171,55 @@
   padding: 24px;
 }
 .medical-rail > section + section {
-  margin-top: 24px;
   padding-top: 24px;
+  margin-top: 24px;
   border-top: 1px solid var(--medical-border);
 }
 .medical-owner h3,
 .medical-health-heading h3 {
   margin: 0;
-  color: var(--medical-quiet);
   font-size: 12px;
   font-weight: 500;
   line-height: 20px;
-  letter-spacing: 0.055em;
+  color: var(--medical-quiet);
   text-transform: uppercase;
+  letter-spacing: 0.055em;
 }
 .medical-owner h3 {
   margin-bottom: 16px;
 }
 .medical-owner-card {
   display: flex;
-  align-items: center;
   gap: 12px;
+  align-items: center;
   margin-bottom: 16px;
 }
 .medical-owner-avatar {
   display: grid;
-  place-items: center;
   flex: 0 0 40px;
+  place-items: center;
   width: 40px;
   height: 40px;
-  border: 1px solid var(--medical-border);
-  border-radius: 12px;
-  background: var(--medical-soft);
-  color: var(--medical-ink);
   font-size: 13px;
   font-weight: 500;
+  color: var(--medical-ink);
+  background: var(--medical-soft);
+  border: 1px solid var(--medical-border);
+  border-radius: 12px;
 }
 .medical-owner-name {
   margin: 0;
-  color: var(--medical-ink);
   font-size: 14px;
   font-weight: 500;
   line-height: 20px;
+  color: var(--medical-ink);
   overflow-wrap: anywhere;
 }
 .medical-owner-address {
   margin: 8px 0 0;
-  color: var(--medical-quiet);
   font-size: 12px;
   line-height: 20px;
+  color: var(--medical-quiet);
   overflow-wrap: anywhere;
 }
 .medical-owner-links {
@@ -1218,19 +1230,19 @@
 .medical-owner a,
 .medical-owner .medical-whatsapp-link {
   display: flex;
-  align-items: center;
   gap: 12px;
+  align-items: center;
   min-width: 0;
   min-height: 40px;
   padding: 8px 12px;
-  border: 1px solid var(--medical-border);
-  border-radius: 8px;
-  background: var(--medical-soft);
-  color: var(--medical-ink);
   font-size: 13px;
   line-height: 20px;
+  color: var(--medical-ink);
   text-decoration: none;
   cursor: pointer;
+  background: var(--medical-soft);
+  border: 1px solid var(--medical-border);
+  border-radius: 8px;
   transition:
     background-color 160ms ease,
     color 160ms ease;
@@ -1261,52 +1273,52 @@
 }
 .medical-contact-hint {
   margin: 0;
-  color: var(--medical-muted);
   font-size: 13px;
   line-height: 20px;
+  color: var(--medical-muted);
 }
 .medical-contact-note {
-  margin-top: 16px;
   padding: 12px;
-  border-radius: 8px;
-  background: var(--medical-soft);
-  color: var(--medical-muted);
+  margin-top: 16px;
   font-size: 12px;
   line-height: 20px;
+  color: var(--medical-muted);
   overflow-wrap: anywhere;
+  background: var(--medical-soft);
+  border-radius: 8px;
 }
 .medical-contact-note > span {
   display: block;
   margin-bottom: 8px;
-  color: var(--medical-quiet);
   font-size: 12px;
   font-weight: 500;
+  color: var(--medical-quiet);
 }
 /* Plain text, no frame: the "Modifier" button below is the way to edit it. */
 .medical-note {
-  margin: 0;
   padding: 0;
-  border: 0;
-  border-radius: 0;
-  background: transparent;
-  color: var(--medical-muted);
+  margin: 0;
   font-size: 13px;
   line-height: 20px;
-  white-space: pre-wrap;
+  color: var(--medical-muted);
   overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
 }
 .medical-rail > section > [data-slot="button"] {
   max-width: 100%;
   margin-top: 12px;
-  color: var(--medical-muted);
   font-size: 12px;
   font-weight: 400;
+  color: var(--medical-muted);
   white-space: normal;
 }
 @media (hover: hover) and (pointer: fine) {
   .medical-rail > section > [data-slot="button"]:hover {
-    background: var(--medical-soft);
     color: var(--medical-ink);
+    background: var(--medical-soft);
   }
 }
 .medical-record-health {
@@ -1314,46 +1326,46 @@
 }
 .medical-health-heading {
   display: flex;
+  gap: 12px;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
 }
 .medical-health-heading > span {
-  color: var(--medical-quiet);
   font-size: 12px;
-  line-height: 20px;
   font-variant-numeric: tabular-nums;
+  line-height: 20px;
+  color: var(--medical-quiet);
 }
 /* 4/6 is a count, not a good mark: in grey until the record is complete. */
 .patient-record-page .medical-health-heading > span {
   padding: 0 !important;
-  border: 0 !important;
-  background: none !important;
-  color: var(--medical-muted) !important;
   font-weight: 500 !important;
+  color: var(--medical-muted) !important;
+  background: none !important;
+  border: 0 !important;
 }
 .medical-health-progress {
   height: 4px;
-  overflow: hidden;
   margin-top: 12px;
-  border-radius: 4px;
+  overflow: hidden;
   background: var(--medical-soft);
+  border-radius: 4px;
 }
 .medical-health-progress > span {
   display: block;
   height: 100%;
-  border-radius: inherit;
   background: var(--medical-quiet);
+  border-radius: inherit;
   transition: width 180ms ease;
 }
 .medical-health-complete {
   display: flex;
-  align-items: flex-start;
   gap: 8px;
+  align-items: flex-start;
   margin-top: 12px;
-  color: var(--medical-muted);
   font-size: 12px;
   line-height: 20px;
+  color: var(--medical-muted);
 }
 .medical-health-complete svg {
   flex-shrink: 0;
@@ -1367,20 +1379,20 @@
 }
 .medical-health-action {
   display: flex;
+  gap: 12px;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
   width: 100%;
   min-height: 32px;
   padding: 8px 12px;
-  border: 1px solid var(--medical-border);
-  border-radius: 8px;
-  background: var(--medical-soft);
-  color: var(--medical-ink);
   font-size: 12px;
   line-height: 20px;
+  color: var(--medical-ink);
   text-align: left;
   cursor: pointer;
+  background: var(--medical-soft);
+  border: 1px solid var(--medical-border);
+  border-radius: 8px;
   transition: background-color 160ms ease;
 }
 .medical-health-action svg {
@@ -1409,7 +1421,8 @@
   .patient-record-indicators {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
-  .patient-record-indicators > :is(.patient-context-widgets, .medical-kpi-strip) {
+  .patient-record-indicators
+    > :is(.patient-context-widgets, .medical-kpi-strip) {
     display: contents;
   }
   .patient-record-indicators > .medical-kpi-load-error {
@@ -1421,19 +1434,19 @@
    then equal columns split by hairlines, each with the same small label. */
 .medical-permanent {
   min-width: 0;
+  overflow: hidden;
+  background: var(--medical-panel);
   border: 1px solid var(--medical-border);
   border-radius: 12px;
-  background: var(--medical-panel);
-  overflow: hidden;
 }
 .medical-permanent-header {
-  margin: 0;
   padding: 16px 24px;
-  border-bottom: 1px solid var(--medical-border);
-  color: var(--medical-ink);
+  margin: 0;
   font-size: 14px;
   font-weight: 500;
   line-height: 20px;
+  color: var(--medical-ink);
+  border-bottom: 1px solid var(--medical-border);
 }
 .medical-permanent-grid {
   display: grid;
@@ -1441,27 +1454,28 @@
 }
 .medical-permanent-grid > section {
   min-width: 0;
-  margin: 0;
   padding: 20px 24px;
+  margin: 0;
+  background: transparent;
   border: 0;
   border-radius: 0;
-  background: transparent;
   box-shadow: none;
 }
 .medical-permanent-grid > section + section {
   border-top: 1px solid var(--medical-border);
 }
-.medical-permanent-grid :is(.medical-section-title, .medical-owner h3, .medical-health-heading h3) {
-  margin: 0 0 12px;
+.medical-permanent-grid
+  :is(.medical-section-title, .medical-owner h3, .medical-health-heading h3) {
   padding: 0;
-  background: none;
-  box-shadow: none;
-  color: var(--medical-quiet);
+  margin: 0 0 12px;
   font-size: 12px;
   font-weight: 500;
   line-height: 16px;
-  letter-spacing: 0.04em;
+  color: var(--medical-quiet);
   text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background: none;
+  box-shadow: none;
 }
 .medical-permanent-grid .medical-health-heading {
   margin-bottom: 12px;
@@ -1475,8 +1489,8 @@
 }
 /* "Modifier les informations": its label on the column's left edge. */
 .patient-record-page .medical-permanent-grid > section > [data-slot="button"] {
-  margin-inline-start: -8px;
   padding-inline: 8px !important;
+  margin-inline-start: -8px;
 }
 @container patient-page (min-width: 720px) {
   .medical-permanent-grid {
@@ -1520,8 +1534,8 @@
     gap: 16px;
   }
   .medical-identity {
-    align-items: flex-start;
     gap: 12px;
+    align-items: flex-start;
   }
   .medical-avatar {
     flex-basis: 56px;
@@ -1533,8 +1547,8 @@
     height: auto;
     min-height: 32px;
     padding-block: 8px;
-    white-space: normal;
     text-align: left;
+    white-space: normal;
   }
   .medical-tabs {
     padding-inline: 16px;
@@ -1544,9 +1558,9 @@
     grid-template-columns: minmax(0, 1fr);
   }
   .medical-visit > div:first-child {
-    align-items: flex-start;
     flex-direction: column;
     gap: 8px;
+    align-items: flex-start;
   }
   .medical-visit time {
     flex-basis: auto;
@@ -1581,16 +1595,15 @@
   }
 }
 
-
 /* Chronologie: a vertical thread. Each event hangs on it by a small neutral
    marker whose glyph says its kind; the papers it produced (prescription,
    invoice, result) hang under it. Colour is kept for states that need a look. */
 .patient-chronologie {
   --timeline-thread: color-mix(in oklab, var(--medical-ink) 14%, transparent);
-  margin-top: 32px;
   padding-top: 24px;
-  border-top: 1px solid var(--medical-border);
+  margin-top: 32px;
   scroll-margin-top: 16px;
+  border-top: 1px solid var(--medical-border);
 }
 .patient-timeline {
   display: grid;
@@ -1598,26 +1611,26 @@
   min-width: 0;
 }
 .patient-timeline-month-label {
-  margin: 0 0 4px;
   padding-left: 36px;
-  color: var(--medical-ink);
+  margin: 0 0 4px;
   font-size: 13px;
   font-weight: 600;
   line-height: 20px;
+  color: var(--medical-ink);
 }
 .patient-timeline-list {
   position: relative;
-  margin: 0;
   padding: 0;
+  margin: 0;
   list-style: none;
 }
 .patient-timeline-list::before {
-  content: "";
   position: absolute;
   top: 16px;
   bottom: 16px;
   left: 11px;
   width: 1px;
+  content: "";
   background: var(--timeline-thread);
 }
 /* One event, one row of columns: what and when on the left, what was found
@@ -1626,8 +1639,8 @@
   position: relative;
   display: grid;
   grid-template-columns: 24px minmax(0, 1fr);
-  column-gap: 12px;
   row-gap: 6px;
+  column-gap: 12px;
   padding: 10px 0;
 }
 .patient-timeline-event > :not(.patient-timeline-marker) {
@@ -1659,29 +1672,29 @@
   place-items: center;
   width: 24px;
   height: 24px;
+  color: var(--medical-muted);
+  background: var(--medical-panel);
   border: 1px solid var(--timeline-thread);
   border-radius: 999px;
-  background: var(--medical-panel);
-  color: var(--medical-muted);
   box-shadow: 0 0 0 4px var(--medical-panel);
 }
 .patient-timeline-title {
-  color: var(--medical-ink);
   font-size: 14px;
   font-weight: 600;
   line-height: 20px;
+  color: var(--medical-ink);
   overflow-wrap: anywhere;
 }
 .patient-timeline-date {
-  color: var(--medical-quiet);
   font-size: 12px;
-  line-height: 20px;
   font-variant-numeric: tabular-nums;
+  line-height: 20px;
+  color: var(--medical-quiet);
 }
 .patient-timeline-body {
   display: grid;
-  align-content: start;
   gap: 2px;
+  align-content: start;
   min-width: 0;
 }
 /* Scoped past Clean, which gives every plain paragraph its body grey. */
@@ -1693,46 +1706,47 @@
   overflow-wrap: anywhere;
 }
 .patient-timeline-context {
-  color: var(--medical-muted);
   font-size: 13px;
   line-height: 20px;
+  color: var(--medical-muted);
 }
 .patient-timeline-context > span {
   color: var(--medical-quiet);
 }
 .patient-timeline-summary {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  -webkit-line-clamp: 3;
   font-size: 14px;
   line-height: 20px;
-  display: -webkit-box;
-  overflow: hidden;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
 }
 .patient-timeline-detail {
-  color: var(--medical-muted);
   font-size: 13px;
   line-height: 20px;
+  color: var(--medical-muted);
 }
 /* No report: a note in passing, not a line of its own weight. */
 .patient-record-page .patient-timeline-body > p.patient-timeline-note {
-  color: var(--medical-quiet);
   font-size: 12px;
   line-height: 20px;
+  color: var(--medical-quiet);
 }
 .patient-timeline-side {
   /* Its 28 px controls centred on the title's 20 px line. */
-  margin-block: -4px;
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
-  align-content: start;
   gap: 6px 12px;
+  align-content: start;
+  align-items: center;
   min-width: 0;
+  /* Its 28 px controls centred on the title's 20 px line. */
+  margin-block: -4px;
 }
 .patient-timeline-state {
-  color: var(--medical-quiet);
   font-size: 12px;
   line-height: 20px;
+  color: var(--medical-quiet);
   white-space: nowrap;
 }
 .patient-timeline-action [data-slot="button"] {
@@ -1746,47 +1760,49 @@
 .patient-timeline-more {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
   gap: 12px;
+  align-items: center;
   padding-left: 36px;
-  color: var(--medical-quiet);
   font-size: 12px;
-  line-height: 20px;
   font-variant-numeric: tabular-nums;
+  line-height: 20px;
+  color: var(--medical-quiet);
 }
 .patient-timeline-pieces {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  margin: 0;
   padding: 0;
+  margin: 0;
   list-style: none;
 }
 .patient-timeline-piece {
   display: inline-flex;
+  gap: 6px;
   align-items: center;
   max-width: 100%;
   min-height: 28px;
-  gap: 6px;
   padding: 0 10px;
-  border: 1px solid var(--medical-border);
-  border-radius: 6px;
-  background: var(--medical-panel);
-  color: var(--medical-ink);
   font-size: 12px;
   line-height: 20px;
+  color: var(--medical-ink);
+  background: var(--medical-panel);
+  border: 1px solid var(--medical-border);
+  border-radius: 6px;
 }
 .patient-timeline-piece svg {
   color: var(--medical-muted);
 }
 button.patient-timeline-piece {
   cursor: pointer;
-  transition: background-color 160ms ease, border-color 160ms ease;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease;
 }
 @media (hover: hover) and (pointer: fine) {
   button.patient-timeline-piece:hover {
-    border-color: var(--timeline-thread);
     background: var(--medical-soft);
+    border-color: var(--timeline-thread);
   }
 }
 button.patient-timeline-piece:focus-visible {
@@ -1802,69 +1818,72 @@ button.patient-timeline-piece:focus-visible {
 .patient-overview-last-meta {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
   gap: 8px;
-  color: var(--medical-quiet);
+  align-items: center;
   font-size: 13px;
   font-variant-numeric: tabular-nums;
+  color: var(--medical-quiet);
 }
 /* The kind of visit is a fact, not a state: written, not a green tag. */
 .patient-overview-last-meta > [data-slot="badge"] {
   min-height: 0 !important;
   padding: 0 !important;
-  border: 0 !important;
-  background: none !important;
-  color: var(--medical-muted) !important;
   font-size: 13px !important;
   font-weight: 400 !important;
+  color: var(--medical-muted) !important;
+  background: none !important;
+  border: 0 !important;
 }
 .patient-overview-last-meta > [data-slot="badge"]::before {
   display: none !important;
 }
-.patient-record-page .patient-overview-main .patient-overview-last .patient-overview-reason {
+.patient-record-page
+  .patient-overview-main
+  .patient-overview-last
+  .patient-overview-reason {
   margin: 6px 0 0;
-  color: var(--medical-ink);
   font-size: 18px;
   font-weight: 600;
   line-height: 24px;
+  color: var(--medical-ink);
   letter-spacing: -0.01em;
 }
 .patient-overview-soap {
   display: grid;
   gap: 12px;
-  margin: 16px 0 0;
   padding-top: 16px;
+  margin: 16px 0 0;
   border-top: 1px solid var(--medical-border);
 }
 .patient-overview-soap dt {
-  color: var(--medical-quiet);
   font-size: 12px;
   font-weight: 500;
+  color: var(--medical-quiet);
 }
 .patient-overview-soap dd {
   display: -webkit-box;
+  -webkit-box-orient: vertical;
   margin: 2px 0 0;
   overflow: hidden;
-  color: var(--medical-ink);
+  -webkit-line-clamp: 3;
   font-size: 14px;
   line-height: 20px;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
+  color: var(--medical-ink);
 }
 .patient-overview-no-note {
   margin: 12px 0 0;
-  color: var(--medical-muted);
   font-size: 13px;
   line-height: 20px;
+  color: var(--medical-muted);
 }
 .patient-overview-status {
   flex-shrink: 0;
   padding: 1px 8px;
-  border-radius: 999px;
-  background: var(--medical-soft);
-  color: var(--medical-ink);
   font-size: 12px;
   line-height: 18px;
+  color: var(--medical-ink);
+  background: var(--medical-soft);
+  border-radius: 999px;
 }
 
 /* Header: the patient's and the owner's names, bold, the reference beside. */
@@ -1876,30 +1895,30 @@ button.patient-timeline-piece:focus-visible {
   align-items: center;
   min-height: 24px;
   padding: 0 8px;
-  border: 1px solid var(--medical-border);
-  border-radius: 6px;
-  background: var(--medical-soft);
-  color: var(--medical-ink);
   font-family: var(--app-font-mono, ui-monospace, monospace);
   font-size: 13px;
   font-weight: 500;
   font-variant-numeric: tabular-nums;
+  color: var(--medical-ink);
   letter-spacing: 0.02em;
+  background: var(--medical-soft);
+  border: 1px solid var(--medical-border);
+  border-radius: 6px;
 }
 .medical-identity .medical-identity-owner {
   display: flex;
   flex-wrap: wrap;
-  align-items: baseline;
   gap: 8px;
+  align-items: baseline;
   margin: 4px 0 0;
-  color: var(--medical-muted);
   font-size: 13px;
+  color: var(--medical-muted);
 }
 .medical-identity-owner strong {
-  color: var(--medical-ink);
   font-size: 16px;
   font-weight: 700;
   line-height: 22px;
+  color: var(--medical-ink);
 }
 
 /* Safety: one flat band. The allergy is the only red mark of the record;
@@ -1907,13 +1926,13 @@ button.patient-timeline-piece:focus-visible {
 .medical-safety {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
   gap: 8px 10px;
+  align-items: center;
   min-width: 0;
   padding: 12px 24px;
+  background: var(--medical-panel);
   border: 1px solid var(--medical-border);
   border-radius: 12px;
-  background: var(--medical-panel);
 }
 /* Scoped past Clean, which gives every plain paragraph its body grey. */
 
@@ -1921,8 +1940,8 @@ button.patient-timeline-piece:focus-visible {
 .patient-clinical-summary {
   display: grid;
   gap: 24px;
-  margin-bottom: 24px;
   padding-bottom: 24px;
+  margin-bottom: 24px;
   border-bottom: 1px solid var(--medical-border);
 }
 @container patient-page (min-width: 900px) {
@@ -1939,9 +1958,9 @@ button.patient-timeline-piece:focus-visible {
 /* A block heading and, when it has one, its link on the far right. */
 .patient-summary-heading-row {
   display: flex;
+  gap: 12px;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
   min-height: 20px;
   margin-bottom: 12px;
 }
@@ -1949,15 +1968,15 @@ button.patient-timeline-piece:focus-visible {
   margin-bottom: 0;
 }
 .patient-summary-link {
-  border: 0;
-  background: none;
-  color: var(--medical-muted);
   font-size: 12px;
   line-height: 20px;
-  cursor: pointer;
+  color: var(--medical-muted);
   text-decoration: underline;
   text-decoration-color: color-mix(in oklab, currentColor 40%, transparent);
   text-underline-offset: 3px;
+  cursor: pointer;
+  background: none;
+  border: 0;
   transition: color 160ms ease;
 }
 @media (hover: hover) and (pointer: fine) {
@@ -1968,42 +1987,42 @@ button.patient-timeline-piece:focus-visible {
 .patient-summary-list {
   display: grid;
   gap: 8px;
-  margin: 0;
   padding: 0;
+  margin: 0;
   list-style: none;
 }
 .patient-summary-list > li {
   display: grid;
   gap: 2px;
   padding: 10px 12px;
+  overflow-wrap: anywhere;
+  background: var(--medical-soft);
   border: 1px solid var(--medical-border);
   border-radius: 8px;
-  background: var(--medical-soft);
-  overflow-wrap: anywhere;
 }
 .patient-summary-list strong {
-  color: var(--medical-ink);
   font-size: 14px;
   font-weight: 500;
   line-height: 20px;
+  color: var(--medical-ink);
 }
 .patient-summary-list span {
-  color: var(--medical-muted);
   font-size: 13px;
   line-height: 20px;
+  color: var(--medical-muted);
 }
 .patient-summary-list > li.patient-summary-more {
   padding: 0;
-  border: 0;
-  background: none;
-  color: var(--medical-quiet);
   font-size: 12px;
+  color: var(--medical-quiet);
+  background: none;
+  border: 0;
 }
 .patient-record-page .patient-summary-column > p.patient-summary-empty {
   margin: 0;
-  color: var(--medical-quiet);
   font-size: 13px;
   line-height: 20px;
+  color: var(--medical-quiet);
 }
 
 /* Prévention: neutral countdowns; red only once a booster is late. */
@@ -2011,8 +2030,8 @@ button.patient-timeline-piece:focus-visible {
   margin-bottom: 12px;
 }
 .medical-prevention-list {
-  margin: 0;
   padding: 0;
+  margin: 0;
   list-style: none;
 }
 .medical-prevention-list {
@@ -2024,60 +2043,61 @@ button.patient-timeline-piece:focus-visible {
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 0 12px;
   padding: 10px 12px;
+  background: var(--medical-soft);
   border: 1px solid var(--medical-border);
   border-radius: 8px;
-  background: var(--medical-soft);
 }
 .medical-prevention-label {
-  color: var(--medical-ink);
   font-size: 13px;
   font-weight: 500;
   line-height: 20px;
+  color: var(--medical-ink);
   overflow-wrap: anywhere;
 }
 .medical-prevention-count {
-  color: var(--medical-muted);
   font-size: 13px;
-  line-height: 20px;
   font-variant-numeric: tabular-nums;
+  line-height: 20px;
+  color: var(--medical-muted);
   text-align: right;
 }
 .medical-prevention-date {
   grid-column: 1 / -1;
-  color: var(--medical-quiet);
   font-size: 12px;
   line-height: 18px;
+  color: var(--medical-quiet);
 }
 .medical-prevention-list > li.is-late .medical-prevention-count {
-  color: var(--medical-danger);
   font-weight: 600;
+  color: var(--medical-danger);
 }
 .medical-prevention-empty {
   margin: 0;
-  color: var(--medical-muted);
   font-size: 13px;
   line-height: 20px;
+  color: var(--medical-muted);
 }
 
 /* Block headings: the same signature on every block of the record, a small
    grey line icon and a light grey label, same size, gap and spacing. Scoped
    and firm, because Premium and Clean style these titles with strong rules. */
-:is(.patient-record-page, .patient-peek-panel) :is(h2, h3).record-block-heading {
+:is(.patient-record-page, .patient-peek-panel)
+  :is(h2, h3).record-block-heading {
   display: flex;
-  align-items: center;
   gap: 8px;
+  align-items: center;
   min-height: 20px;
-  margin: 0 0 12px !important;
   padding: 0 !important;
-  background: none !important;
-  box-shadow: none !important;
-  /* The readable grey: 4.5:1 and more on the card, in both modes. */
-  color: var(--medical-muted) !important;
+  margin: 0 0 12px !important;
   font-size: 13px !important;
   font-weight: 500 !important;
   line-height: 20px !important;
-  letter-spacing: 0 !important;
+  /* The readable grey: 4.5:1 and more on the card, in both modes. */
+  color: var(--medical-muted) !important;
   text-transform: none !important;
+  letter-spacing: 0 !important;
+  background: none !important;
+  box-shadow: none !important;
 }
 .record-block-heading-icon {
   flex: none;

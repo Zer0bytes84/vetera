@@ -4,9 +4,9 @@ import type { Patient } from "@/types/db";
 import { isClinicalSignal } from "./medical-record-summary";
 
 interface PatientSafetyZoneProps {
-  patient: Patient;
   /** The record shows the allergy on the patient's line: the zone then holds only the restraint. */
   allergyElsewhere?: boolean;
+  patient: Patient;
 }
 
 /**
@@ -14,7 +14,10 @@ interface PatientSafetyZoneProps {
  * record, with the restraint beside it when there is one. When nothing is recorded, one discreet line is enough: no band to
  * say « not filled in ».
  */
-export function PatientSafetyZone({ patient, allergyElsewhere = false }: PatientSafetyZoneProps) {
+export function PatientSafetyZone({
+  patient,
+  allergyElsewhere = false,
+}: PatientSafetyZoneProps) {
   const allergies = patient.allergies?.trim();
   const restraint = patient.restraint?.trim();
   const hasAllergy = isClinicalSignal(allergies);
@@ -23,7 +26,8 @@ export function PatientSafetyZone({ patient, allergyElsewhere = false }: Patient
     return restraint ? (
       <section aria-label="Sécurité du patient" className="patient-safety">
         <p className="patient-safety-note text-[0.8125rem] text-muted-foreground">
-          Contention <strong className="font-medium text-foreground">{restraint}</strong>
+          Contention{" "}
+          <strong className="font-medium text-foreground">{restraint}</strong>
         </p>
       </section>
     ) : null;

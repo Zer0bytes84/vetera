@@ -1,8 +1,8 @@
 import { useMemo } from "react";
 import { Bell } from "@/lib/icons";
 import { cn } from "@/lib/utils";
-import type { Vaccination } from "@/types/db";
 import { usePatientReminders } from "@/modules/patient-reminders/use-patient-reminders";
+import type { Vaccination } from "@/types/db";
 import { countdownLabel, preventionCountdowns } from "../lib/prevention";
 import { recordDate } from "./medical-record-summary";
 import { RecordBlockHeading } from "./record-block-heading";
@@ -31,13 +31,13 @@ export function PatientPrevention({
         types,
         vaccinations,
       }),
-    [now, patientId, reminders, types, vaccinations],
+    [now, patientId, reminders, types, vaccinations]
   );
 
   return (
     <section
-      className="medical-prevention"
       aria-labelledby="medical-prevention-title"
+      className="medical-prevention"
     >
       <div className="medical-prevention-header patient-summary-heading-row">
         <RecordBlockHeading icon={Bell} id="medical-prevention-title">
@@ -45,8 +45,8 @@ export function PatientPrevention({
         </RecordBlockHeading>
         <button
           className="patient-summary-link"
-          type="button"
           onClick={onOpenVaccinations}
+          type="button"
         >
           Vaccinations
         </button>
@@ -54,7 +54,7 @@ export function PatientPrevention({
       {items.length ? (
         <ul className="medical-prevention-list">
           {items.map((item) => (
-            <li key={item.id} className={cn(item.days < 0 && "is-late")}>
+            <li className={cn(item.days < 0 && "is-late")} key={item.id}>
               <span className="medical-prevention-label">{item.label}</span>
               <span className="medical-prevention-count">
                 {countdownLabel(item.days)}

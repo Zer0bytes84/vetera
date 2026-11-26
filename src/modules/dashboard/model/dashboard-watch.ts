@@ -3,8 +3,12 @@
  * des vraies données (rappels médicaux, stock, hospitalisations).
  * Fonctions pures, sans accès aux dépôts.
  */
+
+import { ISO_DATE_PREFIX, WHITESPACE } from "@/lib/patterns";
 import type { Hospitalization, Patient, Product } from "@/types/db";
 import { parseDashboardDate, startOfDay } from "../v2/model";
+
+const PLURAL_ENDING = /[sx]$/i;
 
 export type WatchTone = "critical" | "warning" | "neutral";
 
@@ -19,16 +23,20 @@ export interface WatchRow {
 }
 
 export interface WatchList {
+  /** Nombre d'éléments en tonalité critique. */
+  critical: number;
   /** Lignes affichées (déjà limitées). */
   rows: WatchRow[];
   /** Nombre total d'éléments concernés, au-delà de la limite affichée. */
   total: number;
-  /** Nombre d'éléments en tonalité critique. */
-  critical: number;
 }
 
 const DAY_MS = 24 * 60 * 60 * 1000;
-const toneWeight: Record<WatchTone, number> = { critical: 0, warning: 1, neutral: 2 };
+const toneWeight: Record<WatchTone, number> = {
+  critical: 0,
+  warning: 1,
+  neutral: 2,
+};
 
 function shortDate(date: Date): string {
   return date.toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
@@ -36,16 +44,23 @@ function shortDate(date: Date): string {
 
 /** "2026-10-18" → minuit local, sans décalage de fuseau. */
 function dateOnly(value: string): Date | null {
-  const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(value);
-  if (!match) return parseDashboardDate(value);
+  const match = ISO_DATE_PREFIX.exec(value);
+  if (!match) {
+    return parseDashboardDate(value);
+  }
   return new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
 }
 
 function daysBetween(from: Date, to: Date): number {
-  return Math.round((startOfDay(to).getTime() - startOfDay(from).getTime()) / DAY_MS);
+  return Math.round(
+    (startOfDay(to).getTime() - startOfDay(from).getTime()) / DAY_MS
+  );
 }
 
-function finalize(rows: (WatchRow & { order: number })[], limit: number): WatchList {
+function finalize(
+  rows: (WatchRow & { order: number })[],
+  limit: number
+): WatchList {
   const sorted = [...rows].sort(
     (a, b) => toneWeight[a.tone] - toneWeight[b.tone] || a.order - b.order
   );
@@ -87,14 +102,23 @@ export function buildUpcomingReminders({
   const patientById = new Map(patients.map((p) => [p.id, p]));
   const typeById = new Map(types.map((t) => [t.id, t.name]));
   const rows = reminders.flatMap((reminder) => {
-    if (reminder.statut !== "en_cours") return [];
+    if (reminder.statut !== "en_cours") {
+      return [];
+    }
     const due = dateOnly(reminder.echeance);
-    if (!due) return [];
+    if (!due) {
+      return [];
+    }
     const delta = daysBetween(today, due);
-    if (delta > horizonDays) return [];
+    if (delta > horizonDays) {
+      return [];
+    }
     const patient = patientById.get(reminder.patient_id);
-    if (patient?.status === "decede") return [];
-    const tone: WatchTone = delta < 0 ? "critical" : delta === 0 ? "warning" : "neutral";
+    if (patient?.status === "decede") {
+      return [];
+    }
+    const tone: WatchTone =
+      delta < 0 ? "critical" : delta === 0 ? "warning" : "neutral";
     return [
       {
         id: `reminder:${reminder.id}`,
@@ -121,7 +145,11 @@ export function buildUpcomingReminders({
 
 /** "3 dose" reads "3 doses": units are stored singular; a plural form is kept. */
 export function quantityLabel(quantity: number, unit: string) {
-  const plural = Math.abs(quantity) > 1 && unit && !/[sx]$/i.test(unit) && !/\s/.test(unit);
+  const plural =
+    Math.abs(quantity) > 1 &&
+    unit &&
+    !PLURAL_ENDING.test(unit) &&
+    !WHITESPACE.test(unit);
   return `${quantity} ${plural ? `${unit}s` : unit}`.trim();
 }
 
@@ -138,7 +166,9 @@ export function buildStockWatch({
 }): WatchList {
   const today = startOfDay(now);
   const rows = products.flatMap((product) => {
-    if (product.archivedAt || product.stockTracked === false) return [];
+    if (product.archivedAt || product.stockTracked === false) {
+      return [];
+    }
     const quantity = product.availableQuantity ?? product.quantity;
     const parts: string[] = [];
     const tones: WatchTone[] = [];
@@ -165,7 +195,9 @@ export function buildStockWatch({
       order = expiry.getTime();
     }
 
-    if (tones.length === 0) return [];
+    if (tones.length === 0) {
+      return [];
+    }
     const tone = tones.reduce((worst, next) =>
       toneWeight[next] < toneWeight[worst] ? next : worst
     );
@@ -187,12 +219,27 @@ export function buildStockWatch({
 // Hospitalisés
 // ---------------------------------------------------------------------------
 
-const ACTIVE_STAY = new Set<Hospitalization["status"]>(["admitted", "monitoring", "critical"]);
+const ACTIVE_STAY = new Set<Hospitalization["status"]>([
+  "admitted",
+  "monitoring",
+  "critical",
+]);
 const STAY_LABEL: Partial<Record<Hospitalization["status"], string>> = {
   admitted: "Admis",
   monitoring: "Sous surveillance",
   critical: "État critique",
 };
+
+function stayTone(status: Hospitalization["status"]): WatchTone {
+  switch (status) {
+    case "critical":
+      return "critical";
+    case "monitoring":
+      return "warning";
+    default:
+      return "neutral";
+  }
+}
 
 export function buildHospitalizedWatch({
   limit = 4,
@@ -207,7 +254,9 @@ export function buildHospitalizedWatch({
 }): WatchList {
   const patientById = new Map(patients.map((p) => [p.id, p]));
   const rows = stays.flatMap((stay) => {
-    if (!ACTIVE_STAY.has(stay.status)) return [];
+    if (!ACTIVE_STAY.has(stay.status)) {
+      return [];
+    }
     const admitted = parseDashboardDate(stay.admissionDate);
     const day = admitted ? Math.max(1, daysBetween(admitted, now) + 1) : null;
     const patient = patientById.get(stay.patientId);
@@ -215,16 +264,14 @@ export function buildHospitalizedWatch({
       {
         id: `stay:${stay.id}`,
         title: patient?.name ?? "Patient",
-        detail: [STAY_LABEL[stay.status], stay.diagnosis?.trim()].filter(Boolean).join(" · "),
+        detail: [STAY_LABEL[stay.status], stay.diagnosis?.trim()]
+          .filter(Boolean)
+          .join(" · "),
         meta: [stay.cage ? `Cage ${stay.cage}` : null, day ? `J${day}` : null]
           .filter(Boolean)
           .join(" · "),
         patientId: stay.patientId,
-        tone: (stay.status === "critical"
-          ? "critical"
-          : stay.status === "monitoring"
-            ? "warning"
-            : "neutral") as WatchTone,
+        tone: stayTone(stay.status),
         order: admitted?.getTime() ?? 0,
       },
     ];

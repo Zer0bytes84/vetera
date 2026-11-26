@@ -1,21 +1,21 @@
+import { HugeiconsIcon } from "@hugeicons/react";
+import { AnimatePresence, motion } from "framer-motion";
 import { CalendarDays } from "lucide-react";
 import { useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
-import { HugeiconsIcon } from "@hugeicons/react";
+import { MOTION } from "@/design-system/motion";
+import { StatusStepper } from "@/design-system/patterns/status-stepper";
+import { WidgetShell } from "@/design-system/patterns/widget-shell";
+import {
+  ActionButton,
+  EmptyState,
+  focusRing,
+  IconButton,
+} from "@/design-system/primitives";
 import {
   ArrowLeft01Icon,
   ArrowRight01Icon,
   CalendarAdd01Icon,
 } from "@/lib/hugeicons";
-import {
-  ActionButton,
-  EmptyState,
-  IconButton,
-  focusRing,
-} from "@/design-system/primitives";
-import { WidgetShell } from "@/design-system/patterns/widget-shell";
-import { StatusStepper } from "@/design-system/patterns/status-stepper";
-import { MOTION } from "@/design-system/motion";
 import { formatTime, type ScheduleEntry } from "../../v2/model";
 import {
   ModuleLink,
@@ -80,23 +80,15 @@ export function DayModule({
   ).length;
   return (
     <WidgetShell
-      icon={CalendarDays}
-      className="clinical-module clinical-day-module"
-      title="Planning des visites"
-      subtitle={date.toLocaleDateString("fr-FR", {
-        weekday: "long",
-        day: "numeric",
-        month: "long",
-      })}
       actions={
         <div className="flex items-center gap-1">
           <IconButton label="Jour précédent" onClick={() => onShiftDay(-1)}>
             <HugeiconsIcon icon={ArrowLeft01Icon} size={16} strokeWidth={1.5} />
           </IconButton>
           <button
-            className={`rounded-control px-2 py-1.5 t-12 text-ink-muted hover:bg-frame ${focusRing}`}
-            type="button"
+            className={`t-12 rounded-control px-2 py-1.5 text-ink-muted hover:bg-frame ${focusRing}`}
             onClick={onToday}
+            type="button"
           >
             Aujourd’hui
           </button>
@@ -109,11 +101,19 @@ export function DayModule({
           </IconButton>
         </div>
       }
+      className="clinical-module clinical-day-module"
+      error={state.error}
+      icon={CalendarDays}
+      onRetry={state.retry}
       pending={state.loading}
       showSkeleton={state.skeleton}
-      error={state.error}
-      onRetry={state.retry}
       skeleton={<RowSkeleton />}
+      subtitle={date.toLocaleDateString("fr-FR", {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+      })}
+      title="Planning des visites"
     >
       <ModuleTotals
         values={[
@@ -131,10 +131,10 @@ export function DayModule({
         ]}
       />
       <div
+        aria-label="Filtrer les visites"
         className="clinical-filter-tabs"
         data-tabs-style="segmented"
         role="group"
-        aria-label="Filtrer les visites"
       >
         {(
           [
@@ -145,13 +145,13 @@ export function DayModule({
           ] as const
         ).map(([value, label]) => (
           <button
-            type="button"
-            key={value}
             aria-pressed={filter === value}
+            key={value}
             onClick={() => {
               setFilter(value);
               setPage(0);
             }}
+            type="button"
           >
             {label}
           </button>
@@ -162,28 +162,28 @@ export function DayModule({
           <AnimatePresence initial={false}>
             {filtered.slice(activePage * 5, activePage * 5 + 5).map((row) => (
               <motion.div
+                animate={{ opacity: 1 }}
+                className="group/row flex min-w-0 flex-wrap items-center gap-3 rounded-control py-3 transition-colors duration-150 hover:bg-frame sm:flex-nowrap"
+                data-row-id={row.appointment.id}
+                exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 4 }}
+                initial={false}
                 key={row.appointment.id}
                 layout={!reducedMotion}
-                initial={false}
-                animate={{ opacity: 1 }}
-                exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 4 }}
-                transition={{ duration: MOTION.fast, ease: MOTION.easeOut }}
-                data-row-id={row.appointment.id}
-                className="group/row flex min-w-0 flex-wrap items-center gap-3 rounded-control py-3 transition-colors duration-150 hover:bg-frame sm:flex-nowrap"
-                onPointerEnter={onIntent}
-                onFocus={onIntent}
-                onPointerLeave={onIntentCancel}
                 onBlur={onIntentCancel}
+                onFocus={onIntent}
+                onPointerEnter={onIntent}
+                onPointerLeave={onIntentCancel}
+                transition={{ duration: MOTION.fast, ease: MOTION.easeOut }}
               >
-                <div className="w-12 shrink-0 border-r border-hairline">
+                <div className="w-12 shrink-0 border-hairline border-r">
                   <time className="t-13 font-medium tabular-nums">
                     {formatTime(row.start)}
                   </time>
-                  <p className="mt-1 t-12 text-ink-muted">
+                  <p className="t-12 mt-1 text-ink-muted">
                     {Math.max(
                       0,
                       Math.round(
-                        (row.end.getTime() - row.start.getTime()) / 60000
+                        (row.end.getTime() - row.start.getTime()) / 60_000
                       )
                     )}{" "}
                     min
@@ -192,19 +192,19 @@ export function DayModule({
                 <PatientPortrait name={row.patientName} />
                 <div className="min-w-0 flex-1">
                   <button
-                    type="button"
-                    className={`max-w-full truncate rounded text-left t-13 font-medium hover:text-primary ${focusRing}`}
+                    className={`t-13 max-w-full truncate rounded text-left font-medium hover:text-primary ${focusRing}`}
                     onClick={() => onPatient(row.appointment.patientId)}
+                    type="button"
                   >
                     {row.patientName}
                   </button>
-                  <p className="mt-1 truncate t-12 text-ink-muted">
+                  <p className="t-12 mt-1 truncate text-ink-muted">
                     {row.appointment.type} · {row.ownerName}
                   </p>
                 </div>
                 <StatusStepper
-                  status={row.appointment.status}
                   onFlux={() => onFlux(row.appointment.id)}
+                  status={row.appointment.status}
                 />
               </motion.div>
             ))}
@@ -212,19 +212,8 @@ export function DayModule({
         </div>
       ) : (
         <EmptyState
-          compact
-          title={
-            rows.length
-              ? "Aucune visite dans ce filtre"
-              : "Aucun rendez-vous ce jour"
-          }
-          description={
-            rows.length
-              ? "Choisissez un autre état pour retrouver les visites de cette journée."
-              : "La prochaine visite peut se préparer dès maintenant."
-          }
           action={
-            <ActionButton quiet onClick={onPlan}>
+            <ActionButton onClick={onPlan} quiet>
               <HugeiconsIcon
                 icon={CalendarAdd01Icon}
                 size={15}
@@ -233,19 +222,30 @@ export function DayModule({
               Planifier une visite
             </ActionButton>
           }
+          compact
+          description={
+            rows.length
+              ? "Choisissez un autre état pour retrouver les visites de cette journée."
+              : "La prochaine visite peut se préparer dès maintenant."
+          }
+          title={
+            rows.length
+              ? "Aucune visite dans ce filtre"
+              : "Aucun rendez-vous ce jour"
+          }
         />
       )}
       {rows.length < 3 && context.rows.length > 0 && (
-        <div className="mt-2 border-t border-hairline pt-3">
-          <h3 className="mb-1 t-12 font-medium text-ink-muted">
+        <div className="mt-2 border-hairline border-t pt-3">
+          <h3 className="t-12 mb-1 font-medium text-ink-muted">
             {context.label}
           </h3>
           {context.rows.slice(0, 2).map((row) => (
             <button
-              type="button"
+              className={`t-12 flex w-full items-center justify-between gap-3 rounded-control py-2 text-left hover:text-primary ${focusRing}`}
               key={row.appointment.id}
               onClick={() => onPatient(row.appointment.patientId)}
-              className={`flex w-full items-center justify-between gap-3 rounded-control py-2 text-left t-12 hover:text-primary ${focusRing}`}
+              type="button"
             >
               <span className="truncate">
                 {row.patientName}
@@ -253,7 +253,7 @@ export function DayModule({
                   {row.appointment.type}
                 </span>
               </span>
-              <time className="shrink-0 t-12 text-ink-muted">
+              <time className="t-12 shrink-0 text-ink-muted">
                 {row.start.toLocaleDateString("fr-FR", {
                   day: "numeric",
                   month: "short",
@@ -263,7 +263,7 @@ export function DayModule({
           ))}
         </div>
       )}
-      <div className="mt-3 flex items-center justify-between border-t border-hairline pt-3">
+      <div className="mt-3 flex items-center justify-between border-hairline border-t pt-3">
         <span className="t-12 text-ink-muted">
           {filtered.length
             ? `${activePage * 5 + 1}–${Math.min(filtered.length, activePage * 5 + 5)} sur ${filtered.length} visites`
@@ -273,15 +273,15 @@ export function DayModule({
           {pageCount > 1 && (
             <>
               <IconButton
-                label="Visites précédentes"
                 disabled={activePage === 0}
+                label="Visites précédentes"
                 onClick={() => setPage(activePage - 1)}
               >
                 <HugeiconsIcon icon={ArrowLeft01Icon} size={14} />
               </IconButton>
               <IconButton
-                label="Visites suivantes"
                 disabled={activePage + 1 === pageCount}
+                label="Visites suivantes"
                 onClick={() => setPage(activePage + 1)}
               >
                 <HugeiconsIcon icon={ArrowRight01Icon} size={14} />

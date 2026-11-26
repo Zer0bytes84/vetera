@@ -52,13 +52,13 @@ export function Stat({
       <p className="t-12 text-ink-muted">{label}</p>
       <p
         className={cn(
-          "mt-1.5 font-display font-medium leading-tight tabular-nums tracking-[-0.035em]",
+          "mt-1.5 font-display font-medium tabular-nums leading-tight tracking-[-0.035em]",
           "t-24"
         )}
       >
         {value}
       </p>
-      {detail && <p className="mt-1.5 t-12 text-ink-muted">{detail}</p>}
+      {detail && <p className="t-12 mt-1.5 text-ink-muted">{detail}</p>}
     </div>
   );
 }
@@ -82,7 +82,7 @@ export function SignalBadge({
   return (
     <span
       className={cn(
-        "inline-flex w-fit items-center gap-1.5 rounded-md px-2 py-1 t-12 font-medium leading-none",
+        "t-12 inline-flex w-fit items-center gap-1.5 rounded-md px-2 py-1 font-medium leading-none",
         signals[tone]
       )}
     >
@@ -99,15 +99,15 @@ export function IconButton({
 }: ButtonHTMLAttributes<HTMLButtonElement> & { label: string }) {
   return (
     <button
-      type="button"
       aria-label={label}
-      title={label}
       className={cn(
         "inline-flex size-8 shrink-0 items-center justify-center rounded-control text-ink-muted hover:bg-frame hover:text-ink",
         focusRing,
         press,
         className
       )}
+      title={label}
+      type="button"
       {...props}
     >
       {children}
@@ -135,14 +135,14 @@ export function EmptyState({
       )}
     >
       {icon && (
-        <span className="text-ink-muted" aria-hidden="true">
+        <span aria-hidden="true" className="text-ink-muted">
           {icon}
         </span>
       )}
       <div>
-        <p className="font-display font-medium t-14 text-ink">{title}</p>
+        <p className="t-14 font-display font-medium text-ink">{title}</p>
         {description && (
-          <p className="mt-1 max-w-[60ch] t-13 leading-relaxed text-ink-muted">
+          <p className="t-13 mt-1 max-w-[60ch] text-ink-muted leading-relaxed">
             {description}
           </p>
         )}
@@ -171,7 +171,7 @@ export function SkeletonBlock({
 }
 export function KeyHint({ children }: { children: ReactNode }) {
   return (
-    <kbd className="inline-flex min-w-5 items-center justify-center rounded border border-hairline bg-surface-raised px-1 py-0.5 font-sans t-12 text-ink-muted">
+    <kbd className="t-12 inline-flex min-w-5 items-center justify-center rounded border border-hairline bg-surface-raised px-1 py-0.5 font-sans text-ink-muted">
       {children}
     </kbd>
   );
@@ -184,9 +184,8 @@ export function ActionButton({
 }: ButtonHTMLAttributes<HTMLButtonElement> & { quiet?: boolean }) {
   return (
     <button
-      type="button"
       className={cn(
-        "inline-flex h-[30px] items-center justify-center gap-1.5 rounded-control px-3 text-xs font-medium",
+        "inline-flex h-[30px] items-center justify-center gap-1.5 rounded-control px-3 font-medium text-xs",
         quiet
           ? "bg-frame text-ink hover:bg-signal-quiet/15"
           : "crm-primary-control bg-primary text-primary-foreground hover:bg-primary/90",
@@ -194,6 +193,7 @@ export function ActionButton({
         press,
         className
       )}
+      type="button"
       {...props}
     >
       {children}

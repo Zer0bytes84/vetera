@@ -82,9 +82,12 @@
   /* One tone step under a hovered or current list row, on any surface:
      Premium tables sit on the #f5f5f5 canvas, so the step is translucent. */
   --row-hover: rgb(0 0 0 / 0.04);
-  --app-font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --app-font-heading: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --app-font-display: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --app-font-sans:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --app-font-heading:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --app-font-display:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 
   /* Public shadcn/legacy variables remain aliases, not a second palette. */
   --background: var(--canvas);
@@ -138,8 +141,8 @@
 }
 
 @utility surface-card {
-  background: var(--surface);
   color: var(--ink);
+  background: var(--surface);
   border-radius: 16px;
   box-shadow: var(--elev-card);
 }
@@ -161,7 +164,6 @@
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  
   .animate-skeleton {
     animation: none;
   }
@@ -169,5 +171,10 @@
 
 /* CRM reference: a pressed, illuminated primary control in both themes. */
 @utility crm-primary-control {
-  box-shadow: 0 2px 3px rgb(42 42 42 / .16), 0 0 0 0.5px rgb(14 14 14 / .32), inset 0 2px 4px rgb(255 255 255 / .16), inset 0 0 0 0.5px rgb(255 255 255 / .12), inset 0 -5px 10px rgb(0 0 0 / .1);
+  box-shadow:
+    0 2px 3px rgb(42 42 42 / 0.16),
+    0 0 0 0.5px rgb(14 14 14 / 0.32),
+    inset 0 2px 4px rgb(255 255 255 / 0.16),
+    inset 0 0 0 0.5px rgb(255 255 255 / 0.12),
+    inset 0 -5px 10px rgb(0 0 0 / 0.1);
 }

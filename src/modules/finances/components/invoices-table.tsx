@@ -2,9 +2,9 @@ import { ArrowRight, FileText, MoreHorizontal } from "lucide-react";
 import type { ReactNode, Ref } from "react";
 import { Button } from "@/components/ui/button";
 import {
-  DataTable,
   type DataColumn,
   type DataRow,
+  DataTable,
 } from "@/components/ui/data-table";
 import {
   DropdownMenu,
@@ -14,7 +14,16 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { StatusPill, type StatusTone } from "@/components/ui/status-pill";
 import { IconButton, QuietButton } from "@/components/ui/tuff-controls";
-import { formatDZD } from "@/utils/currency";
+import { mustExist } from "@/lib/must-exist";
+import {
+  DOCUMENT_STATUS_META,
+  formatDate,
+  getInvoiceDisplayName,
+  getInvoiceDueLabel,
+  getInvoiceOwnerName,
+  getInvoicePatientName,
+  SETTLEMENT_STATUS_META,
+} from "@/modules/finances/components/finances-shared";
 import type {
   BillingDocumentStatus,
   Invoice,
@@ -22,15 +31,7 @@ import type {
   Owner,
   Patient,
 } from "@/types/db";
-import {
-  DOCUMENT_STATUS_META,
-  SETTLEMENT_STATUS_META,
-  formatDate,
-  getInvoiceDisplayName,
-  getInvoiceDueLabel,
-  getInvoiceOwnerName,
-  getInvoicePatientName,
-} from "@/modules/finances/components/finances-shared";
+import { formatDZD } from "@/utils/currency";
 
 /**
  * The invoice register as TuffUI's Data Table: sortable columns, the filter field, pages, a selection, a CSV export, the
@@ -39,13 +40,13 @@ import {
  */
 
 interface InvoiceRow extends DataRow {
+  actions: string;
+  amount: number;
+  balance: number;
+  due: string;
   invoice: string;
   owner: string;
   situation: string;
-  due: string;
-  amount: number;
-  balance: number;
-  actions: string;
 }
 
 const DOCUMENT_TONE: Record<BillingDocumentStatus, StatusTone> = {
@@ -122,10 +123,13 @@ export function InvoicesTable({
       label: "Facture",
       sortable: true,
       format: (_, row) => {
-        const invoice = byId.get(row.id)!;
+        const invoice = mustExist(
+          byId.get(row.id),
+          `facture de la ligne ${row.id}`
+        );
         return (
           <span className="block">
-            <span className="block text-sm font-medium tabular-nums">
+            <span className="block font-medium text-sm tabular-nums">
               {row.invoice}
             </span>
             <span className="block text-[0.8125rem] text-muted-foreground">
@@ -140,7 +144,10 @@ export function InvoicesTable({
       label: "Dossier",
       sortable: true,
       format: (_, row) => {
-        const patientName = getInvoicePatientName(byId.get(row.id)!, patients);
+        const patientName = getInvoicePatientName(
+          mustExist(byId.get(row.id), `facture de la ligne ${row.id}`),
+          patients
+        );
         return (
           <span className="block max-w-56">
             <span className="block truncate text-sm">{row.owner}</span>
@@ -159,7 +166,10 @@ export function InvoicesTable({
       sortable: true,
       priority: 1,
       format: (_, row) => {
-        const invoice = byId.get(row.id)!;
+        const invoice = mustExist(
+          byId.get(row.id),
+          `facture de la ligne ${row.id}`
+        );
         return (
           <span className="flex flex-wrap gap-1">
             <StatusPill size="sm" tone={DOCUMENT_TONE[invoice.documentStatus]}>
@@ -184,7 +194,8 @@ export function InvoicesTable({
       format: (value, row) => (
         <span
           className={
-            byId.get(row.id)!.settlementStatus === "overdue"
+            mustExist(byId.get(row.id), `facture de la ligne ${row.id}`)
+              .settlementStatus === "overdue"
               ? "font-medium text-negative"
               : "text-muted-foreground"
           }
@@ -200,7 +211,7 @@ export function InvoicesTable({
       sortable: true,
       priority: 2,
       format: (value) => (
-        <span className="font-sans text-[0.8125rem] font-medium">
+        <span className="font-medium font-sans text-[0.8125rem]">
           {formatDZD(Number(value))}
         </span>
       ),
@@ -212,10 +223,13 @@ export function InvoicesTable({
       sortable: true,
       priority: 1,
       format: (value, row) => {
-        const invoice = byId.get(row.id)!;
+        const invoice = mustExist(
+          byId.get(row.id),
+          `facture de la ligne ${row.id}`
+        );
         return (
           <span
-            className={`font-sans text-[0.8125rem] font-medium ${Number(value) > 0 ? (invoice.settlementStatus === "overdue" ? "text-negative" : "text-warning") : "text-positive"}`}
+            className={`font-medium font-sans text-[0.8125rem] ${Number(value) > 0 ? (invoice.settlementStatus === "overdue" ? "text-negative" : "text-warning") : "text-positive"}`}
           >
             {Number(value) > 0 ? formatDZD(Number(value)) : "Soldé"}
           </span>
@@ -229,10 +243,14 @@ export function InvoicesTable({
       noExport: true,
       priority: 1,
       format: (_, row) => {
-        const invoice = byId.get(row.id)!;
+        const invoice = mustExist(
+          byId.get(row.id),
+          `facture de la ligne ${row.id}`
+        );
         const draft = invoice.documentStatus === "draft";
         const issued = invoice.documentStatus === "issued";
         return (
+          // biome-ignore lint/a11y/useKeyWithClickEvents: arrête le clic vers la ligne de facture ; Émettre et les autres boutons enfants ont leur propre clavier.
           <div
             className="flex items-center justify-end gap-1"
             onClick={(event) => event.stopPropagation()}
@@ -316,13 +334,14 @@ export function InvoicesTable({
       emptyTitle="Aucune facture"
       exportName="factures"
       filters={filters}
-      toolbar={toolbar}
       icon={FileText}
       loading={loading}
       loadingLabel="Chargement des factures"
       loadingRevealed={loadingRevealed}
       noun={["facture", "factures"]}
-      onRowClick={(row) => onOpen(byId.get(row.id)!)}
+      onRowClick={(row) =>
+        onOpen(mustExist(byId.get(row.id), `facture de la ligne ${row.id}`))
+      }
       pageSize={10}
       rowProps={(row) => ({
         tabIndex: 0,
@@ -333,6 +352,7 @@ export function InvoicesTable({
       skeletonFallback={{ rows: 5, rowHeight: 44 }}
       skeletonKey="invoices"
       title="Registre des factures"
+      toolbar={toolbar}
     />
   );
 }

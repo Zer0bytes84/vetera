@@ -1,20 +1,18 @@
-import { Pill, Plus, Printer } from "@/lib/icons";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   usePrescriptionItemsRepository,
   usePrescriptionsRepository,
 } from "@/data/repositories";
+import { Pill, Plus, Printer } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 import type { Patient } from "@/types/db";
-import type { PrescriptionVet } from "../types";
-
 import { formatNumber } from "../lib/dose-calculator";
-import { PrescriptionPreview, type PreviewItem } from "./prescription-preview";
+import type { PrescriptionVet } from "../types";
 import { PrescriptionDispensing } from "./prescription-dispensing";
+import { PrescriptionPreview, type PreviewItem } from "./prescription-preview";
 
 export interface PrescriptionListProps {
   /** Si fourni, limite l'affichage à cette consultation. */
@@ -54,7 +52,7 @@ export function PrescriptionList({
     >
       <div className="mb-6 flex flex-row items-start justify-between gap-4">
         <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-1.5 truncate font-bold t-12 text-muted-foreground uppercase tracking-wider">
+          <div className="t-12 flex items-center gap-1.5 truncate font-bold text-muted-foreground uppercase tracking-wider">
             <Pill className="size-3.5 text-primary" weight="duotone" />
             {t("prescriptions.list.title")}
           </div>
@@ -91,7 +89,6 @@ export function PrescriptionList({
               const pItems = items.forPrescription(p.id);
               return (
                 <PrescriptionRow
-                  prescriptionId={p.id}
                   diagnosis={p.diagnosis}
                   items={pItems.map<PreviewItem>((it) => ({
                     id: it.id,
@@ -117,6 +114,7 @@ export function PrescriptionList({
                   key={p.id}
                   patient={patient}
                   prescriptionDate={p.prescriptionDate}
+                  prescriptionId={p.id}
                   status={p.status}
                   vet={vet}
                 />
@@ -167,7 +165,7 @@ function PrescriptionRow({
             </Badge>
           </div>
           {diagnosis ? (
-            <p className="mt-0.5 truncate t-12 text-muted-foreground">
+            <p className="t-12 mt-0.5 truncate text-muted-foreground">
               {diagnosis}
             </p>
           ) : null}
@@ -181,7 +179,7 @@ function PrescriptionRow({
         />
       </div>
       <div className="pt-0">
-        <ul className="divide-y divide-border/40 t-12">
+        <ul className="t-12 divide-y divide-border/40">
           {items.slice(0, 4).map((it) => (
             <li
               className="flex items-center justify-between gap-2 py-1.5"
@@ -201,13 +199,17 @@ function PrescriptionRow({
             </li>
           ))}
           {items.length > 4 ? (
-            <li className="pt-1 t-12 text-muted-foreground">
+            <li className="t-12 pt-1 text-muted-foreground">
               + {items.length - 4}
             </li>
           ) : null}
         </ul>
       </div>
-      <PrescriptionDispensing prescriptionId={prescriptionId} status={status} items={items} />
+      <PrescriptionDispensing
+        items={items}
+        prescriptionId={prescriptionId}
+        status={status}
+      />
     </div>
   );
 }

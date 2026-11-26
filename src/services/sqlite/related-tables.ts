@@ -59,7 +59,9 @@ export function tablesAffectedByDelete(table: string): string[] {
   const affected: string[] = [];
   const visit = (parent: string) => {
     for (const child of children[parent] ?? []) {
-      if (visited.has(child)) continue;
+      if (visited.has(child)) {
+        continue;
+      }
       visited.add(child);
       affected.push(child);
       visit(child);

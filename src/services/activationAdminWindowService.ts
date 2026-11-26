@@ -1,9 +1,12 @@
-import { requireActivationOwner } from "./adminAccess";
 import { LogicalPosition } from "@tauri-apps/api/dpi";
 import { WebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { getCurrentWindow } from "@tauri-apps/api/window";
+import { requireActivationOwner } from "./adminAccess";
 
 import { isTauriRuntime } from "./browser-store";
+
+const HASH_ROUTE_PREFIX = /^#\/?/;
+const URL_HASH = /#.*/;
 
 export const ACTIVATION_ADMIN_ROUTE = "activation-admin";
 export const ACTIVATION_ADMIN_WINDOW_LABEL = "activation-admin";
@@ -13,7 +16,10 @@ export function isActivationAdminRoute() {
     return false;
   }
 
-  return window.location.hash.replace(/^#\/?/, "") === ACTIVATION_ADMIN_ROUTE;
+  return (
+    window.location.hash.replace(HASH_ROUTE_PREFIX, "") ===
+    ACTIVATION_ADMIN_ROUTE
+  );
 }
 
 function activationAdminUrl() {
@@ -21,7 +27,7 @@ function activationAdminUrl() {
     return `#/${ACTIVATION_ADMIN_ROUTE}`;
   }
 
-  return `${window.location.href.replace(/#.*/, "")}#/${ACTIVATION_ADMIN_ROUTE}`;
+  return `${window.location.href.replace(URL_HASH, "")}#/${ACTIVATION_ADMIN_ROUTE}`;
 }
 
 export async function openActivationAdminWindow() {
@@ -38,7 +44,9 @@ export async function openActivationAdminWindow() {
     return;
   }
 
-  const existing = await WebviewWindow.getByLabel(ACTIVATION_ADMIN_WINDOW_LABEL);
+  const existing = await WebviewWindow.getByLabel(
+    ACTIVATION_ADMIN_WINDOW_LABEL
+  );
   if (existing) {
     await existing.show();
     await existing.setFocus();
@@ -64,7 +72,9 @@ export async function openActivationAdminWindow() {
   await new Promise<void>((resolve, reject) => {
     child.once("tauri://created", () => resolve());
     child.once("tauri://error", (event) => {
-      reject(new Error(String(event.payload ?? "Impossible de créer la fenêtre.")));
+      reject(
+        new Error(String(event.payload ?? "Impossible de créer la fenêtre."))
+      );
     });
   });
 }

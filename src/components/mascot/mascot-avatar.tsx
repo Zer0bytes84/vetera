@@ -9,14 +9,14 @@ export type MascotMood = "idle" | "happy" | "thinking";
 export interface MascotAvatarProps {
   animal: MascotAnimal;
   animated?: boolean;
+  className?: string;
+  framing?: "full" | "portrait";
   /** Kept for callers of the earlier portraits; the line mascot breathes on its own. */
   idle?: boolean;
-  size?: number;
-  framing?: "full" | "portrait";
-  className?: string;
   mood?: MascotMood;
   /** Ears and horns may leave the round frame. */
   overflow?: boolean;
+  size?: number;
 }
 
 /**
@@ -24,7 +24,14 @@ export interface MascotAvatarProps {
  * `animated`, its mood set by the caller when the app has one to show
  * (the assistant thinking, a welcome), its own otherwise.
  */
-export function MascotAvatar({ animal, animated = true, size = 48, className, mood = "idle", overflow = false }: MascotAvatarProps) {
+export function MascotAvatar({
+  animal,
+  animated = true,
+  size = 48,
+  className,
+  mood = "idle",
+  overflow = false,
+}: MascotAvatarProps) {
   return (
     <LineMascot
       animal={lineAnimalOf(animal)}

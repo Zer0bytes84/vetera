@@ -7,9 +7,21 @@ import { buildHexActivity } from "../model/hex-activity";
  * « Activité de la clinique »: the month's appointments, one hexagon per day (TuffUI's Hex Density). Cancellations and no-shows
  * are not visits; days after today are booked, not happened.
  */
-export function ActivityHexWidget({ appointments, now }: { appointments: { startTime?: string | null; status: string }[]; now: Date }) {
-  const model = useMemo(() => buildHexActivity("month", appointments, now), [appointments, now]);
-  const month = now.toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
+export function ActivityHexWidget({
+  appointments,
+  now,
+}: {
+  appointments: { startTime?: string | null; status: string }[];
+  now: Date;
+}) {
+  const model = useMemo(
+    () => buildHexActivity("month", appointments, now),
+    [appointments, now]
+  );
+  const month = now.toLocaleDateString("fr-FR", {
+    month: "long",
+    year: "numeric",
+  });
 
   return (
     <HexDensity

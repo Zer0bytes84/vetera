@@ -1,9 +1,8 @@
-import { Hospital } from "@/lib/icons";
 import { useEffect, useRef } from "react";
-
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useHospitalizationVitalsRepository } from "@/data/repositories";
+import { Hospital } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 import type { Hospitalization, Patient } from "@/types/db";
 
@@ -38,7 +37,7 @@ export function HospitalizationPrintLayout({
     if (!ref.current) {
       return;
     }
-  }, [hospitalization.id]);
+  }, []);
 
   return (
     <div className={cn("hospitalization-print-root", className)}>

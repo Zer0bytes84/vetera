@@ -19,7 +19,8 @@ export function VitalsChart({
     [vitals]
   );
 
-  if (sorted.length < 2) {
+  const latest = sorted.at(-1);
+  if (sorted.length < 2 || !latest) {
     return null;
   }
 
@@ -29,7 +30,7 @@ export function VitalsChart({
   const padY = 16;
 
   const firstT = new Date(sorted[0].recordedAt).getTime();
-  const lastT = new Date(sorted[sorted.length - 1].recordedAt).getTime();
+  const lastT = new Date(latest.recordedAt).getTime();
   const span = Math.max(lastT - firstT, 60_000);
 
   const xOf = (t: string) => {
@@ -69,6 +70,23 @@ export function VitalsChart({
     },
   ];
 
+  const formatTime = (iso: string) =>
+    new Date(iso).toLocaleString("fr-FR", {
+      dateStyle: "short",
+      timeStyle: "short",
+    });
+  const ranges = series.flatMap((s) => {
+    const values = s.values.filter((v): v is number => v != null);
+    if (!values.length) {
+      return [];
+    }
+    const low = Math.min(...values).toLocaleString("fr-FR");
+    const high = Math.max(...values).toLocaleString("fr-FR");
+    return [low === high ? `${s.key} ${low}` : `${s.key} de ${low} à ${high}`];
+  });
+  // Alternative textuelle de la courbe : les dernières valeurs sont affichées ailleurs, il manquait l'historique.
+  const chartLabel = `Courbes des constantes, ${sorted.length} relevés du ${formatTime(sorted[0].recordedAt)} au ${formatTime(latest.recordedAt)}${ranges.length ? ` : ${ranges.join(", ")}` : ""}`;
+
   return (
     <div
       className={cn(
@@ -86,7 +104,7 @@ export function VitalsChart({
         }}
       />
 
-      <div className="relative z-10 mb-4 flex flex-wrap items-center gap-4 t-12">
+      <div className="t-12 relative z-10 mb-4 flex flex-wrap items-center gap-4">
         {series.map((s) => (
           <div
             className="flex items-center gap-2 rounded-md border border-black/5 bg-white/50 px-2 py-1 shadow-sm dark:border-white/5 dark:bg-white/5"
@@ -104,8 +122,10 @@ export function VitalsChart({
       </div>
       <div className="relative z-10 w-full rounded-lg border border-zinc-800 bg-zinc-900 p-2 shadow-inner dark:bg-black">
         <svg
+          aria-label={chartLabel}
           className="h-[180px] w-full overflow-visible"
           preserveAspectRatio="none"
+          role="img"
           viewBox={`0 0 ${W} ${H}`}
         >
           {/* Grid lines */}
@@ -114,6 +134,7 @@ export function VitalsChart({
             return (
               <line
                 className="text-zinc-500"
+                // biome-ignore lint/suspicious/noArrayIndexKey: cinq lignes de grille fixes, créées par Array.from({ length: 5 })
                 key={`grid-${i}`}
                 stroke="currentColor"
                 strokeOpacity={0.1}
@@ -178,7 +199,7 @@ export function VitalsChart({
                       cx={xOf(sorted[i].recordedAt)}
                       cy={y}
                       fill={s.color}
-                      key={i}
+                      key={sorted[i].id}
                       r={3}
                       style={{ color: s.color }}
                     />

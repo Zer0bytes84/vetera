@@ -1,17 +1,27 @@
+import { WHITESPACE } from "@/lib/patterns";
+
+const TOOL_NAME = /^([A-Za-z][A-Za-z0-9_]*)/;
+
 export interface ToolCall {
   args: Record<string, string>;
   name: string;
   raw: string;
 }
 
-const MUTATING_TOOLS = new Set(["create_reminder", "save_patient_note", "add_note"]);
+const MUTATING_TOOLS = new Set([
+  "create_reminder",
+  "save_patient_note",
+  "add_note",
+]);
 
 const decodeQuotedValue = (value: string): string =>
   value.replace(/\\(["'])/g, "$1");
 
 export const parseToolArguments = (raw: string): Record<string, string> => {
   const normalized = raw.trim();
-  if (!normalized) return {};
+  if (!normalized) {
+    return {};
+  }
 
   try {
     const parsed: unknown = JSON.parse(normalized);
@@ -30,9 +40,7 @@ export const parseToolArguments = (raw: string): Record<string, string> => {
   const args: Record<string, string> = {};
   const argumentPattern =
     /([A-Za-z_][\w-]*)\s*=\s*(?:"((?:\\.|[^"])*)"|'((?:\\.|[^'])*)'|([^\s,]+))/g;
-  let match: RegExpExecArray | null;
-
-  while ((match = argumentPattern.exec(normalized)) !== null) {
+  for (const match of normalized.matchAll(argumentPattern)) {
     const [, key, doubleQuoted, singleQuoted, unquoted] = match;
     const value = doubleQuoted ?? singleQuoted ?? unquoted ?? "";
     args[key] = doubleQuoted || singleQuoted ? decodeQuotedValue(value) : value;
@@ -43,18 +51,28 @@ export const parseToolArguments = (raw: string): Record<string, string> => {
 
 export const extractToolCall = (text: string): ToolCall | null => {
   const markerStart = text.indexOf("[TOOL:");
-  if (markerStart < 0) return null;
+  if (markerStart < 0) {
+    return null;
+  }
 
   let cursor = markerStart + "[TOOL:".length;
-  while (/\s/.test(text[cursor] ?? "")) cursor += 1;
+  while (WHITESPACE.test(text[cursor] ?? "")) {
+    cursor += 1;
+  }
 
-  const nameMatch = text.slice(cursor).match(/^([A-Za-z][A-Za-z0-9_]*)/);
-  if (!nameMatch) return null;
+  const nameMatch = text.slice(cursor).match(TOOL_NAME);
+  if (!nameMatch) {
+    return null;
+  }
 
   const name = nameMatch[1];
   cursor += name.length;
-  while (/\s/.test(text[cursor] ?? "")) cursor += 1;
-  if (text[cursor] !== "(") return null;
+  while (WHITESPACE.test(text[cursor] ?? "")) {
+    cursor += 1;
+  }
+  if (text[cursor] !== "(") {
+    return null;
+  }
 
   const argsStart = cursor + 1;
   let depth = 1;

@@ -1,11 +1,11 @@
-import { useState } from "react";
 import { FileText } from "lucide-react";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import { SearchableSelect } from "@/components/ui/searchable-select";
 import { useSQLite } from "@/hooks/useSQLite";
-import type { Patient, Appointment, Note } from "@/types/db";
+import type { Appointment, Note, Patient } from "@/types/db";
 import ConsultationDocumentsAssistant from "./consultation-documents-assistant";
 import { DocumentComposer } from "./document-composer";
-import { Button } from "@/components/ui/button";
 
 export default function DocumentsWorkspace({
   initialPatientId = "",
@@ -18,7 +18,9 @@ export default function DocumentsWorkspace({
   const patients = useSQLite<Patient>("patients");
   const appointments = useSQLite<Appointment>("appointments");
   const notes = useSQLite<Note>("notes");
-  const sourceNote = initialNoteId ? notes.data.find((entry) => entry.id === initialNoteId) : undefined;
+  const sourceNote = initialNoteId
+    ? notes.data.find((entry) => entry.id === initialNoteId)
+    : undefined;
   const [chosenPatientId, setPatientId] = useState(initialPatientId);
   // Until the user picks one, a note linked to a patient preselects that patient.
   const patientId = chosenPatientId || sourceNote?.patientId || "";
@@ -37,37 +39,41 @@ export default function DocumentsWorkspace({
         <SearchableSelect
           id="document-workspace-patient"
           label="Patient"
+          onValueChange={(value) => {
+            setPatientId(value);
+            setAppointmentId("");
+          }}
           options={patients.data.map((patient) => ({
             value: patient.id,
             label: `${patient.name} · ${patient.species}`,
             keywords: `${patient.name} ${patient.species} ${patient.breed ?? ""}`,
           }))}
-          value={patientId}
-          onValueChange={(value) => {
-            setPatientId(value);
-            setAppointmentId("");
-          }}
           placeholder="Choisir un patient…"
+          value={patientId}
         />
         <SearchableSelect
+          disabled={!patientId}
           id="document-workspace-consultation"
           label="Consultation · pour générer un document"
+          onValueChange={setAppointmentId}
           options={visits.map((visit) => ({
             value: visit.id,
             label: `${new Date(visit.startTime).toLocaleDateString("fr-FR")} · ${visit.reason || visit.type}`,
             keywords: `${visit.reason ?? ""} ${visit.type}`,
           }))}
-          value={appointmentId}
-          onValueChange={setAppointmentId}
           placeholder="Choisir une consultation…"
-          disabled={!patientId}
+          value={appointmentId}
         />
       </div>
       {sourceNote && (
-        <p className="flex items-start gap-2 rounded-xl border border-border bg-muted/40 p-3 text-xs text-muted-foreground">
+        <p className="flex items-start gap-2 rounded-xl border border-border bg-muted/40 p-3 text-muted-foreground text-xs">
           <FileText aria-hidden="true" className="mt-0.5 size-3.5 shrink-0" />
           <span>
-            Note source : <span className="font-medium text-foreground">{sourceNote.title || "Note sans titre"}</span>.{" "}
+            Note source :{" "}
+            <span className="font-medium text-foreground">
+              {sourceNote.title || "Note sans titre"}
+            </span>
+            .{" "}
             {patientId
               ? "Son texte est chargé dans « Lire un document »."
               : "Choisissez un patient pour l'utiliser."}
@@ -75,21 +81,30 @@ export default function DocumentsWorkspace({
         </p>
       )}
       {(patients.error || appointments.error) && (
-        <p role="alert" className="text-sm text-destructive">
+        <p className="text-destructive text-sm" role="alert">
           Les dossiers n’ont pas pu être chargés.
         </p>
       )}
       {appointmentId && patientId && (
-        <Button onClick={() => setComposerOpen(true)}>Générer un document</Button>
+        <Button onClick={() => setComposerOpen(true)}>
+          Générer un document
+        </Button>
       )}
-      {composerOpen && <DocumentComposer open={composerOpen} patientId={patientId} consultationId={appointmentId} onClose={() => setComposerOpen(false)} />}
+      {composerOpen && (
+        <DocumentComposer
+          consultationId={appointmentId}
+          onClose={() => setComposerOpen(false)}
+          open={composerOpen}
+          patientId={patientId}
+        />
+      )}
       {patientId && (
         <ConsultationDocumentsAssistant
-          key={patientId}
-          patientId={patientId}
           appointmentId={appointmentId}
           initialMode="read"
           initialNoteId={sourceNote?.id}
+          key={patientId}
+          patientId={patientId}
         />
       )}
     </div>

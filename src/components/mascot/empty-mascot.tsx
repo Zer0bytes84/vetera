@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { EmptyMedia } from "@/components/ui/empty";
-import { Mascot } from "./mascot";
 import { useMascotPreferences } from "@/hooks/use-mascot-preferences";
+import { Mascot } from "./mascot";
 
 /**
  * The media of an empty state: the clinic's mascot, still, in place of an
@@ -9,7 +9,9 @@ import { useMascotPreferences } from "@/hooks/use-mascot-preferences";
  */
 export function EmptyMascot({ icon }: { icon: ReactNode }) {
   const { mode } = useMascotPreferences();
-  if (mode === "logo") return <EmptyMedia variant="icon">{icon}</EmptyMedia>;
+  if (mode === "logo") {
+    return <EmptyMedia variant="icon">{icon}</EmptyMedia>;
+  }
   return (
     <EmptyMedia>
       <Mascot animated={false} fallbackToLogo={false} size={64} />

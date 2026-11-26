@@ -1,13 +1,8 @@
-import { useRoomLabel } from "@/modules/rooms/use-rooms";
-import { StethoscopeIcon } from "@/lib/hugeicons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { ar, de, enUS, es, fr, pt } from "date-fns/locale";
-
 import { useState } from "react";
-
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-
 import {
   Empty,
   EmptyDescription,
@@ -15,16 +10,15 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
-
 import { Input } from "@/components/ui/input";
-
 import {
   APPOINTMENT_STATUS_META,
   getAppointmentTypeMeta,
 } from "@/config/status-meta";
-
 import i18n from "@/i18n/config";
+import { StethoscopeIcon } from "@/lib/hugeicons";
 import { cn } from "@/lib/utils";
+import { useRoomLabel } from "@/modules/rooms/use-rooms";
 
 import type {
   Appointment,
@@ -34,7 +28,14 @@ import type {
   RecurrenceFrequency,
 } from "@/types/db";
 import { formatClockTime, formatPersonName } from "@/utils/display-format";
-import { freeSlotStarts, isActiveBooking, personInitials } from "./agenda-slots";
+import {
+  freeSlotStarts,
+  isActiveBooking,
+  personInitials,
+} from "./agenda-slots";
+
+const TYPED_HOUR_MINUTES = /^(\d{1,2})(?:[:h.]?(\d{2})?)?$/;
+const TYPED_COMPACT_TIME = /^(\d{1,2})(\d{2})$/;
 
 export const APPOINTMENT_TYPES: Appointment["type"][] = [
   "Consultation",
@@ -114,7 +115,10 @@ export interface TimePickerProps {
 }
 
 const PICKER_HOURS = Array.from({ length: 14 }, (_, index) => index + 7);
-const PICKER_MINUTES = Array.from({ length: 12 }, (_, index) => index * STEP_MINUTES);
+const PICKER_MINUTES = Array.from(
+  { length: 12 },
+  (_, index) => index * STEP_MINUTES
+);
 
 /**
  * Reads a time typed the way people say it: "9", "905", "0905", "9:05",
@@ -122,17 +126,26 @@ const PICKER_MINUTES = Array.from({ length: 12 }, (_, index) => index * STEP_MIN
  */
 export function parseTypedTime(text: string): string | null {
   const clean = text.trim().toLowerCase().replace(/\s+/g, "");
-  if (!clean) return null;
-  const match = /^(\d{1,2})(?:[:h.]?(\d{2})?)?$/.exec(clean) ?? /^(\d{1,2})(\d{2})$/.exec(clean);
-  if (!match) return null;
+  if (!clean) {
+    return null;
+  }
+  const match =
+    TYPED_HOUR_MINUTES.exec(clean) ?? TYPED_COMPACT_TIME.exec(clean);
+  if (!match) {
+    return null;
+  }
   let hours = Number(match[1]);
   let minutes = Number(match[2] ?? 0);
-  if (!match[2] && match[1].length === 2 && hours > 23) return null;
+  if (!match[2] && match[1].length === 2 && hours > 23) {
+    return null;
+  }
   if (match[1].length === 1 && !match[2] && clean.length === 3) {
     hours = Number(clean[0]);
     minutes = Number(clean.slice(1));
   }
-  if (hours > 23 || minutes > 59) return null;
+  if (hours > 23 || minutes > 59) {
+    return null;
+  }
   return minutesToTime(hours * 60 + minutes);
 }
 
@@ -142,7 +155,9 @@ export function overlappingSlot(
   busy: readonly BusySlot[]
 ): BusySlot | null {
   const end = startMinutes + Math.max(1, durationMinutes);
-  return busy.find((slot) => startMinutes < slot.end && end > slot.start) ?? null;
+  return (
+    busy.find((slot) => startMinutes < slot.end && end > slot.start) ?? null
+  );
 }
 
 /** First start at or after `from`, on the 5-minute grid, that overlaps nothing. */
@@ -154,7 +169,9 @@ export function nextFreeTime(
 ): string | null {
   const first = Math.ceil(from / STEP_MINUTES) * STEP_MINUTES;
   for (let start = first; start <= lastStart; start += STEP_MINUTES) {
-    if (!overlappingSlot(start, durationMinutes, busy)) return minutesToTime(start);
+    if (!overlappingSlot(start, durationMinutes, busy)) {
+      return minutesToTime(start);
+    }
   }
   return null;
 }
@@ -171,14 +188,22 @@ export function AppointmentTimePicker({
   const minute = valueMinutes % 60;
   const endLabel = minutesToTime(valueMinutes + durationMinutes);
   const conflict = overlappingSlot(valueMinutes, durationMinutes, busy);
-  const suggestion = conflict ? nextFreeTime(valueMinutes, durationMinutes, busy) : null;
+  const suggestion = conflict
+    ? nextFreeTime(valueMinutes, durationMinutes, busy)
+    : null;
   // A time typed outside the grid stays reachable.
-  const hours = PICKER_HOURS.includes(hour) ? PICKER_HOURS : [...PICKER_HOURS, hour].sort((a, b) => a - b);
+  const hours = PICKER_HOURS.includes(hour)
+    ? PICKER_HOURS
+    : [...PICKER_HOURS, hour].sort((a, b) => a - b);
 
   const commit = () => {
-    if (draft === null) return;
+    if (draft === null) {
+      return;
+    }
     const parsed = parseTypedTime(draft);
-    if (parsed) onChange(parsed);
+    if (parsed) {
+      onChange(parsed);
+    }
     setDraft(null);
   };
 
@@ -189,7 +214,7 @@ export function AppointmentTimePicker({
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
         <Input
           aria-label="Heure de début"
-          className="h-10 w-[5.5rem] text-center text-base font-semibold tabular-nums"
+          className="h-10 w-[5.5rem] text-center font-semibold text-base tabular-nums"
           inputMode="numeric"
           onBlur={commit}
           onChange={(event) => setDraft(event.target.value)}
@@ -205,25 +230,35 @@ export function AppointmentTimePicker({
             } else if (event.key === "ArrowUp" || event.key === "ArrowDown") {
               event.preventDefault();
               setDraft(null);
-              onChange(addMinutesToTime(value, event.key === "ArrowUp" ? STEP_MINUTES : -STEP_MINUTES));
+              onChange(
+                addMinutesToTime(
+                  value,
+                  event.key === "ArrowUp" ? STEP_MINUTES : -STEP_MINUTES
+                )
+              );
             }
           }}
           placeholder="09:00"
           value={draft ?? value}
         />
-        <span className="text-sm tabular-nums text-muted-foreground">
+        <span className="text-muted-foreground text-sm tabular-nums">
           → {endLabel}
         </span>
         <span
           aria-live="polite"
           className={cn(
             "flex items-center gap-1.5 text-xs",
-            conflict ? "text-amber-700 dark:text-amber-300" : "text-muted-foreground"
+            conflict
+              ? "text-amber-700 dark:text-amber-300"
+              : "text-muted-foreground"
           )}
         >
           <span
             aria-hidden
-            className={cn("size-1.5 rounded-full", conflict ? "bg-amber-500" : "bg-emerald-500")}
+            className={cn(
+              "size-1.5 rounded-full",
+              conflict ? "bg-amber-500" : "bg-emerald-500"
+            )}
           />
           {conflict
             ? `Chevauche ${conflict.label} (${minutesToTime(conflict.start)} – ${minutesToTime(conflict.end)})`
@@ -235,7 +270,9 @@ export function AppointmentTimePicker({
 
       <div aria-label="Heure" className="grid grid-cols-7 gap-1.5" role="group">
         {hours.map((h) => {
-          const busyHour = busy.some((slot) => slot.start < (h + 1) * 60 && slot.end > h * 60);
+          const busyHour = busy.some(
+            (slot) => slot.start < (h + 1) * 60 && slot.end > h * 60
+          );
           return (
             <Button
               aria-pressed={h === hour}
@@ -250,7 +287,7 @@ export function AppointmentTimePicker({
               {busyHour && (
                 <span
                   aria-hidden
-                  className="absolute right-1 top-1 size-1 rounded-full bg-amber-500"
+                  className="absolute top-1 right-1 size-1 rounded-full bg-amber-500"
                 />
               )}
             </Button>
@@ -258,7 +295,11 @@ export function AppointmentTimePicker({
         })}
       </div>
 
-      <div aria-label="Minutes" className="grid grid-cols-6 gap-1.5" role="group">
+      <div
+        aria-label="Minutes"
+        className="grid grid-cols-6 gap-1.5"
+        role="group"
+      >
         {PICKER_MINUTES.map((m) => {
           const taken = overlappingSlot(hour * 60 + m, durationMinutes, busy);
           return (
@@ -267,7 +308,9 @@ export function AppointmentTimePicker({
               aria-pressed={m === minute}
               className={cn(
                 chip,
-                taken && m !== minute && "border-dashed text-muted-foreground/70 line-through decoration-amber-500/70"
+                taken &&
+                  m !== minute &&
+                  "border-dashed text-muted-foreground/70 line-through decoration-amber-500/70"
               )}
               key={m}
               onClick={() => onChange(minutesToTime(hour * 60 + m))}
@@ -359,20 +402,20 @@ export type ViewMode = "list" | "day" | "week" | "month";
 
 export type TableTab = (typeof TABLE_TABS)[number]["value"];
 
-export type AgendaTableRow = {
+export interface AgendaTableRow {
   appointment: Appointment;
-  patient?: Patient;
-  owner?: Owner;
-  vet?: AppUser;
-  patientName: string;
-  ownerName: string;
-  vetName: string;
   appointmentAt: string;
-  statusLabel: string;
-  statusClassName: string;
-  tab: TableTab;
+  owner?: Owner;
+  ownerName: string;
+  patient?: Patient;
+  patientName: string;
   searchIndex: string;
-};
+  statusClassName: string;
+  statusLabel: string;
+  tab: TableTab;
+  vet?: AppUser;
+  vetName: string;
+}
 
 export function normalizeDate(value?: string | Date | null) {
   if (!value) {
@@ -866,7 +909,7 @@ export function CalendarAppointmentContent({
 }) {
   if (isTiny) {
     return (
-      <div className="flex min-w-0 items-center gap-1.5 pl-1 font-medium t-12 leading-[12px]">
+      <div className="t-12 flex min-w-0 items-center gap-1.5 pl-1 font-medium leading-[12px]">
         <span className="shrink-0 tabular-nums">{formatTime(start)}</span>
         <span className="truncate">{patientName}</span>
       </div>
@@ -902,7 +945,7 @@ export function CalendarAppointmentContent({
       ) : null}
 
       {showReason ? (
-        <p className="mt-0.5 line-clamp-2 t-12 text-muted-foreground leading-3.5">
+        <p className="t-12 mt-0.5 line-clamp-2 text-muted-foreground leading-3.5">
           {appointment.reason}
         </p>
       ) : null}
@@ -1013,7 +1056,8 @@ export function AgendaDayView({
   /** A free half hour of a column was chosen: book it for that vet. */
   onCreateAt?: (vetId: string, time: string) => void;
 }) {
-  const showsNow = isSameDay(selectedDate, new Date()) && currentTimePosition !== null;
+  const showsNow =
+    isSameDay(selectedDate, new Date()) && currentTimePosition !== null;
   if (vets.length === 0) {
     return (
       <div className="flex flex-1 px-6 pb-6">
@@ -1050,7 +1094,10 @@ export function AgendaDayView({
                       "-translate-y-1/2 font-medium text-muted-foreground text-xs",
                       // The current time label takes the place of an hour it would touch.
                       showsNow &&
-                        Math.abs((hour - CALENDAR_START_HOUR) * DAY_HOUR_HEIGHT - (currentTimePosition ?? 0)) <
+                        Math.abs(
+                          (hour - CALENDAR_START_HOUR) * DAY_HOUR_HEIGHT -
+                            (currentTimePosition ?? 0)
+                        ) <
                           DAY_HOUR_HEIGHT / 3 &&
                         "invisible"
                     )}
@@ -1062,7 +1109,7 @@ export function AgendaDayView({
               {/* The current time is named once, in the margin. */}
               {showsNow ? (
                 <div
-                  className="pointer-events-none absolute right-2 z-20 -translate-y-1/2 rounded-full bg-primary px-2 py-0.5 font-medium t-12 text-primary-foreground tabular-nums"
+                  className="t-12 pointer-events-none absolute right-2 z-20 -translate-y-1/2 rounded-full bg-primary px-2 py-0.5 font-medium text-primary-foreground tabular-nums"
                   style={{ top: `${currentTimePosition}px` }}
                 >
                   {currentTimeLabel}
@@ -1123,16 +1170,21 @@ export function AgendaDayView({
                     return (
                       <button
                         aria-label={`Nouveau rendez-vous à ${time} avec ${formatPersonName(vet.displayName)}`}
-                        className="agenda-free-slot group/slot absolute inset-x-1 flex items-center gap-1.5 rounded-md px-2 text-left t-12 text-muted-foreground"
+                        className="agenda-free-slot group/slot t-12 absolute inset-x-1 flex items-center gap-1.5 rounded-md px-2 text-left text-muted-foreground"
                         key={minutes}
                         onClick={() => onCreateAt?.(vet.id, time)}
                         style={{
-                          top: ((minutes - CALENDAR_START_HOUR * 60) / 60) * DAY_HOUR_HEIGHT,
+                          top:
+                            ((minutes - CALENDAR_START_HOUR * 60) / 60) *
+                            DAY_HOUR_HEIGHT,
                           height: DAY_HOUR_HEIGHT / 2,
                         }}
                         type="button"
                       >
-                        <span aria-hidden="true" className="agenda-free-slot-hint">
+                        <span
+                          aria-hidden="true"
+                          className="agenda-free-slot-hint"
+                        >
                           + {time}
                         </span>
                       </button>
@@ -1338,7 +1390,13 @@ export function AgendaMonthView({
 
           {monthDays.map((day, index) => {
             if (!day) {
-              return <div className="min-h-[146px]" key={`empty-${index}`} />;
+              return (
+                <div
+                  className="min-h-[146px]"
+                  // biome-ignore lint/suspicious/noArrayIndexKey: cases vides de remplissage de la grille du mois, identiques entre elles et sans état
+                  key={`empty-${index}`}
+                />
+              );
             }
 
             const appointments = getAppointmentsForDate(day);

@@ -9,20 +9,25 @@
  */
 
 import { LoaderCircle } from "lucide-react";
-import { AnimatePresence, MotionConfig, motion, useReducedMotion } from "motion/react";
+import {
+  AnimatePresence,
+  MotionConfig,
+  motion,
+  useReducedMotion,
+} from "motion/react";
 import { useEffect, useState } from "react";
 import { EASE_OUT } from "@/lib/motion-tokens";
 import { cn } from "@/lib/utils";
 
 const spinnerSizes = { sm: "size-3.5", md: "size-4", lg: "size-6" } as const;
 
-export type SpinnerProps = {
-  size?: keyof typeof spinnerSizes;
+export interface SpinnerProps {
+  className?: string;
   /** Spoken label; also shown as text next to the icon when `showLabel` is set. */
   label?: string;
   showLabel?: boolean;
-  className?: string;
-};
+  size?: keyof typeof spinnerSizes;
+}
 
 /** A spinning ring. With reduced motion it holds still and the label carries the state. */
 export function Spinner({
@@ -33,16 +38,19 @@ export function Spinner({
 }: SpinnerProps) {
   return (
     <span
+      className={cn(
+        "inline-flex items-center gap-2 text-muted-foreground",
+        className
+      )}
       role="status"
-      className={cn("inline-flex items-center gap-2 text-muted-foreground", className)}
     >
       <LoaderCircle
-        strokeWidth={2.5}
         aria-hidden="true"
         className={cn(
           "shrink-0 animate-spin [animation-duration:700ms] motion-reduce:animate-none",
-          spinnerSizes[size],
+          spinnerSizes[size]
         )}
+        strokeWidth={2.5}
       />
       {showLabel ? (
         <span className="text-[0.8125rem]">{label}</span>
@@ -59,17 +67,17 @@ const dotSizes = {
   lg: { dot: "size-2", gap: "gap-1.5", text: "text-sm" },
 } as const;
 
-export type ThinkingProps = {
+export interface ThinkingProps {
+  className?: string;
+  /** How long each word stays, in ms. */
+  interval?: number;
   size?: keyof typeof dotSizes;
   /**
    * Words to cycle through next to the dots, e.g. ["Écoute", "Lecture", "Rédaction"].
    * One word stays put; none shows the dots alone.
    */
   words?: string[];
-  /** How long each word stays, in ms. */
-  interval?: number;
-  className?: string;
-};
+}
 
 /** Three dots in a wave, optionally with a rolling verb that says what the agent is doing. */
 export function Thinking({
@@ -84,7 +92,9 @@ export function Thinking({
   const word = words.length ? words[index % words.length] : undefined;
 
   useEffect(() => {
-    if (words.length < 2) return;
+    if (words.length < 2) {
+      return;
+    }
     const timer = setInterval(() => setIndex((i) => i + 1), interval);
     return () => clearInterval(timer);
   }, [words.length, interval]);
@@ -92,42 +102,57 @@ export function Thinking({
   return (
     <MotionConfig reducedMotion="user">
       <span
+        className={cn(
+          "inline-flex items-center gap-2 text-muted-foreground",
+          className
+        )}
         role="status"
-        className={cn("inline-flex items-center gap-2 text-muted-foreground", className)}
       >
         <span aria-hidden="true" className={cn("flex items-center", s.gap)}>
           {[0, 1, 2].map((i) => (
             <motion.span
-              key={i}
-              className={cn("rounded-full bg-current", s.dot)}
               animate={
-                reduce ? { opacity: 0.6 } : { opacity: [0.3, 1, 0.3], y: [0, -2, 0] }
+                reduce
+                  ? { opacity: 0.6 }
+                  : { opacity: [0.3, 1, 0.3], y: [0, -2, 0] }
               }
+              className={cn("rounded-full bg-current", s.dot)}
+              key={i}
               transition={
                 reduce
                   ? { duration: 0 }
-                  : { duration: 1, repeat: Infinity, ease: "easeInOut", delay: i * 0.15 }
+                  : {
+                      duration: 1,
+                      repeat: Number.POSITIVE_INFINITY,
+                      ease: "easeInOut",
+                      delay: i * 0.15,
+                    }
               }
             />
           ))}
         </span>
         {word ? (
-          <span className={cn("relative inline-flex h-[1lh] overflow-hidden", s.text)}>
-            <AnimatePresence mode="popLayout" initial={false}>
+          <span
+            className={cn(
+              "relative inline-flex h-[1lh] overflow-hidden",
+              s.text
+            )}
+          >
+            <AnimatePresence initial={false} mode="popLayout">
               <motion.span
-                key={word}
-                initial={{ y: "100%", opacity: 0 }}
                 animate={{
                   y: 0,
                   opacity: 1,
                   transition: { duration: 0.24, ease: EASE_OUT },
                 }}
+                className="whitespace-nowrap"
                 exit={{
                   y: "-100%",
                   opacity: 0,
                   transition: { duration: 0.15, ease: EASE_OUT },
                 }}
-                className="whitespace-nowrap"
+                initial={{ y: "100%", opacity: 0 }}
+                key={word}
               >
                 {word}…
               </motion.span>

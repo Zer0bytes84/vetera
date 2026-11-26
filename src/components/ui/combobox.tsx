@@ -1,6 +1,11 @@
 import { Combobox as ComboboxPrimitive } from "@base-ui/react";
-import { CheckIcon, ChevronDownIcon, XMarkIcon as XIcon } from "@heroicons/react/16/solid";
-import * as React from "react";
+import {
+  CheckIcon,
+  ChevronDownIcon,
+  XMarkIcon as XIcon,
+} from "@heroicons/react/16/solid";
+import type React from "react";
+import { useRef } from "react";
 import { Button } from "@/components/ui/button";
 import {
   InputGroup,
@@ -274,7 +279,7 @@ function ComboboxChipsInput({
 }
 
 function useComboboxAnchor() {
-  return React.useRef<HTMLDivElement | null>(null);
+  return useRef<HTMLDivElement | null>(null);
 }
 
 export {

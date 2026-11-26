@@ -8,35 +8,45 @@
  * `negative`, `warning` are our tones; never the TuffUI theme); text is French, never under 12 px; no demo data.
  */
 
-import { RotateCcw, Brain, ChevronRight, Check, Copy, CircleAlert } from "lucide-react";
-import { Mascot } from "@/components/mascot";
+import {
+  Brain,
+  Check,
+  ChevronRight,
+  CircleAlert,
+  Copy,
+  RotateCcw,
+} from "lucide-react";
 import { AnimatePresence, MotionConfig, motion } from "motion/react";
 import { Fragment, useEffect, useState } from "react";
+import { Mascot } from "@/components/mascot";
 import { Button, IconButton } from "@/components/ui/action-button";
 import { EASE_OUT } from "@/lib/motion-tokens";
 import { cn } from "@/lib/utils";
 
-export type StreamingMessageData = {
-  content: string;
-  status: "streaming" | "done" | "error";
-  reasoning?: { text: string; durationMs?: number; streaming?: boolean };
-  error?: string;
-};
+const INLINE_CODE_OR_BOLD = /(`[^`]*(?:`|$)|\*\*[^*]*(?:\*\*|$))/;
+const PARAGRAPH_BREAK = /\n{2,}/;
 
-export type StreamingMessageProps = {
+export interface StreamingMessageData {
+  content: string;
+  error?: string;
+  reasoning?: { text: string; durationMs?: number; streaming?: boolean };
+  status: "streaming" | "done" | "error";
+}
+
+export interface StreamingMessageProps {
+  /** The message in its bubble (rounded, tinted, the corner at the author's side squared), as the vet's bubble is on the other side. */
+  bubble?: boolean;
+  className?: string;
   data: StreamingMessageData;
   /** Shown in the header: « Assistant IA », never a model name. */
   model?: string;
-  /** Hide the avatar + model row when a surrounding thread already shows the author. */
-  showHeader?: boolean;
-  /** The message in its bubble (rounded, tinted, the corner at the author's side squared), as the vet's bubble is on the other side. */
-  bubble?: boolean;
-  /** Copy and regenerate under a finished message; off for the assistant's fixed prompts. */
-  showActions?: boolean;
   onCopy?: (content: string) => void;
   onRetry?: () => void;
-  className?: string;
-};
+  /** Copy and regenerate under a finished message; off for the assistant's fixed prompts. */
+  showActions?: boolean;
+  /** Hide the avatar + model row when a surrounding thread already shows the author. */
+  showHeader?: boolean;
+}
 
 // Strong ease-out for things entering; exits are quicker than entrances.
 const enter = { duration: 0.22, ease: EASE_OUT };
@@ -46,6 +56,17 @@ const fold = {
   animate: { opacity: 1, height: "auto", transition: enter },
   exit: { opacity: 0, height: 0, transition: leave },
 };
+
+function streamingAnnouncement(status: StreamingMessageData["status"]): string {
+  switch (status) {
+    case "done":
+      return "Réponse terminée";
+    case "error":
+      return "Réponse en échec";
+    default:
+      return "";
+  }
+}
 
 export function StreamingMessage({
   data,
@@ -65,8 +86,8 @@ export function StreamingMessage({
   return (
     <MotionConfig reducedMotion="user">
       <article
-        aria-label={`Message de ${model}`}
         aria-busy={streaming}
+        aria-label={`Message de ${model}`}
         className={cn("w-full max-w-xl text-sm", className)}
       >
         {showHeader && (
@@ -74,7 +95,9 @@ export function StreamingMessage({
             <Mascot className="shrink-0" size={28} />
             <span className="font-medium">{model}</span>
             {streaming && (
-              <span className="text-[0.8125rem] text-muted-foreground">Rédaction en cours…</span>
+              <span className="text-[0.8125rem] text-muted-foreground">
+                Rédaction en cours…
+              </span>
             )}
           </header>
         )}
@@ -83,10 +106,11 @@ export function StreamingMessage({
           {(content || !reasoning?.streaming) && (
             <div
               className={cn(
-                bubble && "w-fit max-w-full rounded-2xl rounded-tl-md bg-[var(--card-band)] px-3.5 py-2",
+                bubble &&
+                  "w-fit max-w-full rounded-2xl rounded-tl-md bg-[var(--card-band)] px-3.5 py-2"
               )}
             >
-              <Content text={content} streaming={streaming} settled={settled} />
+              <Content settled={settled} streaming={streaming} text={content} />
             </div>
           )}
           <AnimatePresence initial={false}>
@@ -94,9 +118,8 @@ export function StreamingMessage({
               <motion.div role="alert" {...fold} className="overflow-hidden">
                 <div className="mt-3 flex items-center gap-2.5 rounded-2xl bg-negative/10 py-2 pr-2 pl-3.5">
                   <CircleAlert
-                   
-                    className="size-4 shrink-0 text-negative"
                     aria-hidden="true"
+                    className="size-4 shrink-0 text-negative"
                   />
                   <p className="flex-1 text-[0.8125rem]">
                     <span className="font-medium text-negative">
@@ -108,10 +131,10 @@ export function StreamingMessage({
                   </p>
                   {onRetry && (
                     <Button
+                      className="h-7 px-3 text-xs"
                       icon={RotateCcw}
                       iconWeight="bold"
                       onClick={onRetry}
-                      className="h-7 px-3 text-xs"
                     >
                       Réessayer
                     </Button>
@@ -123,31 +146,27 @@ export function StreamingMessage({
           <AnimatePresence initial={false}>
             {showActions && status === "done" && (
               <motion.div
-                initial={{ opacity: 0, y: -4 }}
                 animate={{ opacity: 1, y: 0, transition: enter }}
-                exit={{ opacity: 0, transition: leave }}
                 className="mt-2 -ml-2 flex items-center gap-0.5"
+                exit={{ opacity: 0, transition: leave }}
+                initial={{ opacity: 0, y: -4 }}
               >
                 <CopyAction content={content} onCopy={onCopy} />
                 {onRetry && (
                   <IconButton
+                    className="size-7"
                     icon={RotateCcw}
                     iconWeight="bold"
                     label="Régénérer la réponse"
                     onClick={onRetry}
-                    className="size-7"
                   />
                 )}
               </motion.div>
             )}
           </AnimatePresence>
         </div>
-        <p role="status" aria-live="polite" className="sr-only">
-          {status === "done"
-            ? "Réponse terminée"
-            : status === "error"
-              ? "Réponse en échec"
-              : ""}
+        <p aria-live="polite" className="sr-only" role="status">
+          {streamingAnnouncement(status)}
         </p>
       </article>
     </MotionConfig>
@@ -166,18 +185,22 @@ function Reasoning({
   return (
     <div className="mb-3 rounded-2xl bg-foreground/[0.04]">
       <button
-        type="button"
         aria-expanded={open}
-        onClick={() => setUserOpen(!open)}
         className="flex w-full items-center gap-1.5 rounded-2xl px-3.5 py-2.5 text-[0.8125rem] text-muted-foreground transition-[color,scale] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] hover:text-foreground active:scale-[0.99]"
+        onClick={() => setUserOpen(!open)}
+        type="button"
       >
-        <Brain className="size-3.5" aria-hidden="true" />
+        <Brain aria-hidden="true" className="size-3.5" />
         {streaming ? (
           <motion.span
-            initial={{ backgroundPosition: "100% 0" }}
             animate={{ backgroundPosition: "-100% 0" }}
-            transition={{ duration: 1.6, repeat: Infinity, ease: "linear" }}
-            className="bg-[linear-gradient(90deg,var(--muted-foreground)_35%,var(--foreground)_50%,var(--muted-foreground)_65%)] bg-[length:200%_100%] bg-clip-text text-transparent"
+            className="bg-[length:200%_100%] bg-[linear-gradient(90deg,var(--muted-foreground)_35%,var(--foreground)_50%,var(--muted-foreground)_65%)] bg-clip-text text-transparent"
+            initial={{ backgroundPosition: "100% 0" }}
+            transition={{
+              duration: 1.6,
+              repeat: Number.POSITIVE_INFINITY,
+              ease: "linear",
+            }}
           >
             Réflexion…
           </motion.span>
@@ -188,16 +211,20 @@ function Reasoning({
         )}
         <motion.span
           animate={{ rotate: open ? 90 : 0 }}
-          transition={{ duration: 0.2, ease: [0.77, 0, 0.175, 1] }}
           className="ml-auto inline-flex"
+          transition={{ duration: 0.2, ease: [0.77, 0, 0.175, 1] }}
         >
-          <ChevronRight strokeWidth={2.5} className="size-3.5" aria-hidden="true" />
+          <ChevronRight
+            aria-hidden="true"
+            className="size-3.5"
+            strokeWidth={2.5}
+          />
         </motion.span>
       </button>
       <AnimatePresence initial={false}>
         {open && (
           <motion.div {...fold} className="overflow-hidden">
-            <p className="px-3.5 pb-3 text-[0.8125rem] leading-6 text-muted-foreground">
+            <p className="px-3.5 pb-3 text-[0.8125rem] text-muted-foreground leading-6">
               {text}
             </p>
           </motion.div>
@@ -207,20 +234,23 @@ function Reasoning({
   );
 }
 
-type Segment = { text: string; kind: "text" | "code" | "bold" };
+interface Segment {
+  kind: "text" | "code" | "bold";
+  text: string;
+}
 
 // Unclosed `code` or **bold** at the tail (mid-stream) already renders styled,
 // so markdown markers never flash on screen.
 function parseInline(paragraph: string): Segment[] {
   return paragraph
-    .split(/(`[^`]*(?:`|$)|\*\*[^*]*(?:\*\*|$))/)
+    .split(INLINE_CODE_OR_BOLD)
     .filter((part) => part && part !== "`" && part !== "**")
     .map((part) =>
       part.startsWith("`")
         ? { text: part.replace(/^`|`$/g, ""), kind: "code" }
         : part.startsWith("**")
           ? { text: part.replace(/^\*\*|\*\*$/g, ""), kind: "bold" }
-          : { text: part, kind: "text" },
+          : { text: part, kind: "text" }
     );
 }
 
@@ -228,7 +258,7 @@ const tokenize = (segment: string) => segment.match(/\S+\s*|\s+/g) ?? [];
 
 function countWords(text: string) {
   return text
-    .split(/\n{2,}/)
+    .split(PARAGRAPH_BREAK)
     .flatMap(parseInline)
     .reduce((sum, segment) => sum + tokenize(segment.text).length, 0);
 }
@@ -248,13 +278,16 @@ function Content({
   streaming: boolean;
   settled: number;
 }) {
-  const paragraphs = text.split(/\n{2,}/);
+  const paragraphs = text.split(PARAGRAPH_BREAK);
   const nextIndex = counter();
 
   return (
-    <div className="flex flex-col gap-3 leading-6 text-pretty">
+    <div className="flex flex-col gap-3 text-pretty leading-6">
       {paragraphs.map((paragraph, p) => (
-        <p key={p}>
+        <p
+          // biome-ignore lint/suspicious/noArrayIndexKey: le texte ne fait que s'allonger ; une clé par contenu remonterait le paragraphe en cours à chaque mot (mesuré dans Chromium)
+          key={p}
+        >
           {parseInline(paragraph).map((segment, s) => {
             const words = tokenize(segment.text);
             const nodes = words.map((word) => {
@@ -263,38 +296,56 @@ function Content({
                 <Fragment key={i}>{word}</Fragment>
               ) : (
                 <motion.span
-                  key={i}
-                  initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
+                  initial={{ opacity: 0 }}
+                  key={i}
                   transition={{ duration: 0.25, ease: EASE_OUT }}
                 >
                   {word}
                 </motion.span>
               );
             });
-            if (segment.kind === "code")
+            if (segment.kind === "code") {
               return (
                 <code
-                  key={s}
                   className="rounded-md bg-foreground/[0.07] px-1 py-px font-mono text-[0.75rem]"
+                  // biome-ignore lint/suspicious/noArrayIndexKey: segment de code d'un paragraphe qui ne fait que s'allonger ; une clé par contenu le remonterait à chaque mot
+                  key={s}
                 >
                   {nodes}
                 </code>
               );
-            if (segment.kind === "bold")
+            }
+            if (segment.kind === "bold") {
               return (
-                <strong key={s} className="font-semibold">
+                <strong
+                  className="font-semibold"
+                  // biome-ignore lint/suspicious/noArrayIndexKey: segment gras d'un paragraphe qui ne fait que s'allonger ; une clé par contenu le remonterait à chaque mot
+                  key={s}
+                >
                   {nodes}
                 </strong>
               );
-            return <Fragment key={s}>{nodes}</Fragment>;
+            }
+            return (
+              <Fragment
+                // biome-ignore lint/suspicious/noArrayIndexKey: segment simple d'un paragraphe qui ne fait que s'allonger ; une clé par contenu le remonterait à chaque mot
+                key={s}
+              >
+                {nodes}
+              </Fragment>
+            );
           })}
           {streaming && p === paragraphs.length - 1 && (
             <motion.span
-              aria-hidden="true"
               animate={{ opacity: [1, 0, 1] }}
-              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+              aria-hidden="true"
               className="ml-0.5 inline-block h-[1.1em] w-[2px] translate-y-[3px] rounded-full bg-brand"
+              transition={{
+                duration: 1,
+                repeat: Number.POSITIVE_INFINITY,
+                ease: "linear",
+              }}
             />
           )}
         </p>
@@ -312,24 +363,28 @@ function CopyAction({
 }) {
   const [copied, setCopied] = useState(false);
   useEffect(() => {
-    if (!copied) return;
+    if (!copied) {
+      return;
+    }
     const timer = setTimeout(() => setCopied(false), 1600);
     return () => clearTimeout(timer);
   }, [copied]);
 
   return (
     <IconButton
+      className={cn("size-7", copied && "text-positive hover:text-positive")}
       icon={copied ? Check : Copy}
       iconWeight={copied ? "bold" : "fill"}
       label={copied ? "Copié" : "Copier le message"}
       onClick={async () => {
         try {
           await navigator.clipboard.writeText(content);
-        } catch {}
+        } catch {
+          // Presse-papiers refusé : le bouton passe quand même à « copié », comme avant.
+        }
         setCopied(true);
         onCopy?.(content);
       }}
-      className={cn("size-7", copied && "text-positive hover:text-positive")}
     />
   );
 }

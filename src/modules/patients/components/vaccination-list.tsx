@@ -1,8 +1,6 @@
-import { PencilSimple, Plus, Syringe, Trash } from "@/lib/icons";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-
 import {
   AlertDialog,
   AlertDialogAction,
@@ -27,6 +25,7 @@ import {
   type VaccinationStatus,
 } from "@/config/status-meta";
 import { useVaccinationsRepository } from "@/data/repositories";
+import { PencilSimple, Plus, Syringe, Trash } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 import type { Vaccination } from "@/types/db";
 import { getVaccinationStatus } from "../lib";
@@ -68,7 +67,9 @@ export function VaccinationList({
   const entries = repo.forPatient(patientId);
 
   const confirmDelete = async () => {
-    if (!deleteTarget) return;
+    if (!deleteTarget) {
+      return;
+    }
     const ok = await repo.remove(deleteTarget.id);
     if (ok) {
       toast.success(t("patientDetail.vaccinations.delete"));
@@ -84,7 +85,7 @@ export function VaccinationList({
             <Syringe className="size-4" weight="duotone" />
           </span>
           <div className="min-w-0">
-            <div className="truncate font-bold t-12 text-muted-foreground uppercase tracking-wider">
+            <div className="t-12 truncate font-bold text-muted-foreground uppercase tracking-wider">
               {t("patientDetail.vaccinations.title")}
             </div>
             <div className="mt-0.5 truncate text-muted-foreground text-xs">
@@ -101,7 +102,7 @@ export function VaccinationList({
         </div>
         {onNew ? (
           <Button
-            className="medical-action medical-action-outline h-8 shrink-0 gap-1.5 t-12 font-medium cursor-pointer"
+            className="medical-action medical-action-outline t-12 h-8 shrink-0 cursor-pointer gap-1.5 font-medium"
             onClick={onNew}
             size="sm"
             variant="outline"
@@ -146,7 +147,7 @@ export function VaccinationList({
                       </span>
                       {entry.vaccineType ? (
                         <Badge
-                          className="rounded-full px-1.5 py-0 font-medium t-12"
+                          className="t-12 rounded-full px-1.5 py-0 font-medium"
                           variant="outline"
                         >
                           {entry.vaccineType}
@@ -154,8 +155,8 @@ export function VaccinationList({
                       ) : null}
                       <Badge
                         className={cn(
-                          "rounded-full px-2 py-0 font-medium t-12",
-                          meta.className,
+                          "t-12 rounded-full px-2 py-0 font-medium",
+                          meta.className
                         )}
                         variant="secondary"
                       >
@@ -207,10 +208,12 @@ export function VaccinationList({
         )}
       </div>
       <AlertDialog
-        open={deleteTarget !== null}
         onOpenChange={(open) => {
-          if (!open) setDeleteTarget(null);
+          if (!open) {
+            setDeleteTarget(null);
+          }
         }}
+        open={deleteTarget !== null}
       >
         <AlertDialogContent size="sm">
           <AlertDialogHeader>
@@ -234,8 +237,8 @@ export function VaccinationList({
               {t("common.cancel", { defaultValue: "Annuler" })}
             </AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => void confirmDelete()}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={() => void confirmDelete()}
             >
               {t("common.delete", { defaultValue: "Supprimer" })}
             </AlertDialogAction>

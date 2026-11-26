@@ -1,8 +1,6 @@
 import type { AppointmentStatus } from "@/types/db";
 
-export const DEFAULT_APPOINTMENT_REMINDER_OFFSETS = [
-  15, 30, 60, 1440,
-] as const;
+export const DEFAULT_APPOINTMENT_REMINDER_OFFSETS = [15, 30, 60, 1440] as const;
 
 export function isAppointmentReminderEligible(
   status: AppointmentStatus,

@@ -1,9 +1,10 @@
+import type { Editor } from "@tiptap/react";
 import type React from "react";
 import { forwardRef, useImperativeHandle, useState } from "react";
 import { cn } from "@/lib/utils";
 
 export interface SlashCommandItem {
-  command: (editor: any) => void;
+  command: (editor: Editor) => void;
   description: string;
   group?: string;
   icon: React.ReactNode;
@@ -16,7 +17,11 @@ interface SlashCommandMenuProps {
   items: SlashCommandItem[];
 }
 
-const SlashCommandMenu = forwardRef<any, SlashCommandMenuProps>(
+export interface SlashMenuHandle {
+  onKeyDown: (props: { event: KeyboardEvent }) => boolean;
+}
+
+const SlashCommandMenu = forwardRef<SlashMenuHandle, SlashCommandMenuProps>(
   ({ items, command }, ref) => {
     const [selectedIndex, setSelectedIndex] = useState(0);
     const [prevItems, setPrevItems] = useState(items);
@@ -89,6 +94,7 @@ const SlashCommandMenu = forwardRef<any, SlashCommandMenuProps>(
         )}
         key={item.title}
         onClick={() => selectItem(globalIndex)}
+        type="button"
       >
         <span className="flex size-7 shrink-0 items-center justify-center rounded-md border border-border bg-background text-base">
           {item.icon}
@@ -105,7 +111,12 @@ const SlashCommandMenu = forwardRef<any, SlashCommandMenuProps>(
     const getGlobalIndex = (item: SlashCommandItem) =>
       items.findIndex((i) => i.title === item.title);
 
-    const hasGroups = items.length > 5 && (formatItems.length > 0 || tableItems.length > 0 || templateItems.length > 0 || aiItems.length > 0);
+    const hasGroups =
+      items.length > 5 &&
+      (formatItems.length > 0 ||
+        tableItems.length > 0 ||
+        templateItems.length > 0 ||
+        aiItems.length > 0);
 
     return (
       <div className="max-h-[280px] min-w-[264px] overflow-hidden overflow-y-auto rounded-lg border border-border bg-popover shadow-md">
@@ -126,25 +137,39 @@ const SlashCommandMenu = forwardRef<any, SlashCommandMenuProps>(
               )}
               {tableItems.length > 0 && (
                 <div>
-                  {formatItems.length > 0 && <div className="mx-2 my-1 border-border border-t" />}
-                  <p className="px-2 pt-1.5 pb-1 font-medium text-muted-foreground text-xs">Tableaux</p>
+                  {formatItems.length > 0 && (
+                    <div className="mx-2 my-1 border-border border-t" />
+                  )}
+                  <p className="px-2 pt-1.5 pb-1 font-medium text-muted-foreground text-xs">
+                    Tableaux
+                  </p>
                   <div className="flex flex-col gap-0.5">
-                    {tableItems.map((item) => renderItem(item, getGlobalIndex(item)))}
+                    {tableItems.map((item) =>
+                      renderItem(item, getGlobalIndex(item))
+                    )}
                   </div>
                 </div>
               )}
               {templateItems.length > 0 && (
                 <div>
-                  {(formatItems.length > 0 || tableItems.length > 0) && <div className="mx-2 my-1 border-border border-t" />}
-                  <p className="px-2 pt-1.5 pb-1 font-medium text-muted-foreground text-xs">Modèles de document</p>
+                  {(formatItems.length > 0 || tableItems.length > 0) && (
+                    <div className="mx-2 my-1 border-border border-t" />
+                  )}
+                  <p className="px-2 pt-1.5 pb-1 font-medium text-muted-foreground text-xs">
+                    Modèles de document
+                  </p>
                   <div className="flex flex-col gap-0.5">
-                    {templateItems.map((item) => renderItem(item, getGlobalIndex(item)))}
+                    {templateItems.map((item) =>
+                      renderItem(item, getGlobalIndex(item))
+                    )}
                   </div>
                 </div>
               )}
               {aiItems.length > 0 && (
                 <div>
-                  {(formatItems.length > 0 || tableItems.length > 0 || templateItems.length > 0) && (
+                  {(formatItems.length > 0 ||
+                    tableItems.length > 0 ||
+                    templateItems.length > 0) && (
                     <div className="mx-2 my-1 border-border border-t" />
                   )}
                   <p className="px-2 pt-1.5 pb-1 font-medium text-muted-foreground text-xs">

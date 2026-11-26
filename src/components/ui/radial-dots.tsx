@@ -4,7 +4,7 @@
 
 import { ChartPieIcon } from "@heroicons/react/20/solid";
 import { MotionConfig, motion, useReducedMotion } from "motion/react";
-import { useState, type ReactNode } from "react";
+import { type ReactNode, useState } from "react";
 import { Panel, Shell, ShellHeader } from "@/components/ui/surface";
 import { EASE_OUT } from "@/lib/motion-tokens";
 import { cn } from "@/lib/utils";
@@ -22,37 +22,37 @@ const formatFr = (value: number) => value.toLocaleString("fr-FR");
  *  - the header's right side takes a toolbar (the views) and a slot under the legend holds the figures.
  */
 
-export type RadialSeries = {
+export interface RadialSeries {
+  /** Any CSS colour. */
+  color: string;
   id: string;
   label: string;
   /** One value per sector. Series stack outward in order. */
   values: number[];
-  /** Any CSS colour. */
-  color: string;
-};
+}
 
-export type RadialDotsProps = {
-  /** One label per sector, clockwise from the top: hours, weekdays. */
-  labels: string[];
-  series: RadialSeries[];
-  title: string;
-  subtitle?: ReactNode;
-  /** Big number in the middle and the line under it. */
-  center: { value: string; caption?: string };
+export interface RadialDotsProps {
   /** Which sector labels to draw around the edge. Defaults to the four quarters. */
   axis?: number[];
-  /** What a unit is called when a sector is hovered: « 3 rendez-vous ». */
-  format?: (value: number) => string;
-  /** What the sector's tooltip title says (centre, top line). Defaults to its label. */
-  sectorTitle?: (index: number) => string;
-  /** Right of the header: the views. */
-  toolbar?: ReactNode;
+  /** Big number in the middle and the line under it. */
+  center: { value: string; caption?: string };
   /** Under the legend, in the panel. */
   children?: ReactNode;
+  className?: string;
+  /** What a unit is called when a sector is hovered: « 3 rendez-vous ». */
+  format?: (value: number) => string;
+  /** One label per sector, clockwise from the top: hours, weekdays. */
+  labels: string[];
+  /** What the sector's tooltip title says (centre, top line). Defaults to its label. */
+  sectorTitle?: (index: number) => string;
+  series: RadialSeries[];
+  subtitle?: ReactNode;
+  title: string;
+  /** Right of the header: the views. */
+  toolbar?: ReactNode;
   /** Unit written in « 1 point = 2 rendez-vous ». */
   unit?: string;
-  className?: string;
-};
+}
 
 const SIZE = 300;
 const C = SIZE / 2;
@@ -72,10 +72,12 @@ const polar = (turn: number, r: number) => {
 };
 
 /** Units one dot stands for: 1 up to a busiest sector of 24, then whole units so the busiest sector still fits. */
-export const dotsPer = (peak: number) => Math.max(1, Math.ceil(peak / CAPACITY));
+export const dotsPer = (peak: number) =>
+  Math.max(1, Math.ceil(peak / CAPACITY));
 
 /** Dots drawn for a value: exact at one per dot, never zero for a sector that has anything. */
-export const dotsFor = (value: number, per: number) => (value > 0 ? Math.max(1, Math.round(value / per)) : 0);
+export const dotsFor = (value: number, per: number) =>
+  value > 0 ? Math.max(1, Math.round(value / per)) : 0;
 
 export function RadialDots({
   labels,
@@ -96,14 +98,26 @@ export function RadialDots({
   const [fromKeyboard, setFromKeyboard] = useState(false);
 
   const n = labels.length;
-  const totals = labels.map((_, i) => series.reduce((sum, s) => sum + (s.values[i] ?? 0), 0));
+  const totals = labels.map((_, i) =>
+    series.reduce((sum, s) => sum + (s.values[i] ?? 0), 0)
+  );
   const peak = Math.max(0, ...totals);
   const per = dotsPer(peak);
   // Only as many rings as the busiest sector needs, spread over the same reach, so a quiet week still draws dots you can see.
-  const rings = Math.min(RINGS, Math.max(3, Math.ceil(Math.max(1, Math.round(peak / per)) / LANES)));
+  const rings = Math.min(
+    RINGS,
+    Math.max(3, Math.ceil(Math.max(1, Math.round(peak / per)) / LANES))
+  );
   const ringStep = Math.min(16, (REACH - (INNER + 6)) / rings);
-  const dotR = round(Math.min(4.5, ringStep * 0.32, ((2 * Math.PI * (INNER + 6)) / n / LANES) * 0.4));
-  const quarters = axis ?? [0, n / 4, n / 2, (3 * n) / 4].filter(Number.isInteger);
+  const dotR = round(
+    Math.min(
+      4.5,
+      ringStep * 0.32,
+      ((2 * Math.PI * (INNER + 6)) / n / LANES) * 0.4
+    )
+  );
+  const quarters =
+    axis ?? [0, n / 4, n / 2, (3 * n) / 4].filter(Number.isInteger);
   const titleOf = (i: number) => sectorTitle?.(i) ?? labels[i];
 
   const select = (index: number | null, keyboard: boolean) => {
@@ -112,7 +126,9 @@ export function RadialDots({
   };
 
   const onKeyDown = (event: React.KeyboardEvent) => {
-    if (!n) return;
+    if (!n) {
+      return;
+    }
     const keys: Record<string, number> = {
       ArrowRight: (active ?? -1) + 1,
       ArrowDown: (active ?? -1) + 1,
@@ -121,8 +137,12 @@ export function RadialDots({
       Home: 0,
       End: n - 1,
     };
-    if (event.key === "Escape") return select(null, true);
-    if (!(event.key in keys)) return;
+    if (event.key === "Escape") {
+      return select(null, true);
+    }
+    if (!(event.key in keys)) {
+      return;
+    }
     event.preventDefault();
     select((keys[event.key] + n) % n, true);
   };
@@ -135,12 +155,19 @@ export function RadialDots({
     return `M${x1} ${y1}L${x2} ${y2}A${C} ${C} 0 0 1 ${x3} ${y3}L${x4} ${y4}A${INNER} ${INNER} 0 0 0 ${x1} ${y1}Z`;
   };
 
-  const seriesTotal = (s: RadialSeries) => s.values.reduce((sum, v) => sum + v, 0);
+  const seriesTotal = (s: RadialSeries) =>
+    s.values.reduce((sum, v) => sum + v, 0);
 
   return (
     <MotionConfig reducedMotion="user">
       <Shell className={cn("flex h-full flex-col", className)}>
-        <ShellHeader aside={toolbar} as="h2" icon={ChartPieIcon} subtitle={subtitle} title={title} />
+        <ShellHeader
+          as="h2"
+          aside={toolbar}
+          icon={ChartPieIcon}
+          subtitle={subtitle}
+          title={title}
+        />
         <Panel className="flex flex-1 flex-col p-4">
           <div
             aria-label={`${title}. Les flèches du clavier lisent chaque secteur.`}
@@ -148,6 +175,7 @@ export function RadialDots({
             onBlur={() => fromKeyboard && setActive(null)}
             onKeyDown={onKeyDown}
             role="group"
+            // biome-ignore lint/a11y/noNoninteractiveTabindex: graphique focalisable : onKeyDown fait lire chaque secteur aux flèches, ce tabIndex est son entrée au clavier.
             tabIndex={0}
           >
             <svg
@@ -169,7 +197,11 @@ export function RadialDots({
                 const turn = n <= 12 ? (i + 0.5) / n : i / n;
                 const [tx, ty] = polar(turn, C + 24);
                 return (
-                  <g className="text-muted-foreground" key={i}>
+                  <g
+                    className="text-muted-foreground"
+                    // biome-ignore lint/suspicious/noArrayIndexKey: une graduation par tranche du cadran, son angle vient de i
+                    key={i}
+                  >
                     <line
                       stroke="currentColor"
                       strokeOpacity={labeled ? 0.7 : 0.3}
@@ -180,7 +212,14 @@ export function RadialDots({
                       y2={y2}
                     />
                     {labeled && (
-                      <text dy="0.32em" fill="currentColor" fontSize="14" textAnchor="middle" x={tx} y={ty}>
+                      <text
+                        dy="0.32em"
+                        fill="currentColor"
+                        fontSize="14"
+                        textAnchor="middle"
+                        x={tx}
+                        y={ty}
+                      >
                         {label}
                       </text>
                     )}
@@ -188,33 +227,72 @@ export function RadialDots({
                 );
               })}
 
-              <circle className="stroke-foreground/10" cx={C} cy={C} fill="none" r={INNER - 6} />
+              <circle
+                className="stroke-foreground/10"
+                cx={C}
+                cy={C}
+                fill="none"
+                r={INNER - 6}
+              />
 
               {labels.map((_, i) => {
                 // Fill lanes ring by ring, inner series first.
-                const slots: (string | null)[] = Array(rings * LANES).fill(null);
+                const slots: (string | null)[] = new Array(rings * LANES).fill(
+                  null
+                );
                 let at = 0;
                 for (const s of series) {
                   const dots = dotsFor(s.values[i] ?? 0, per);
-                  for (let k = 0; k < dots && at < slots.length; k++) slots[at++] = s.color;
+                  for (let k = 0; k < dots && at < slots.length; k++) {
+                    slots[at++] = s.color;
+                  }
                 }
                 const dim = active !== null && active !== i;
                 return (
                   <motion.g
                     animate={{ opacity: 1 }}
                     initial={{ opacity: 0 }}
+                    // biome-ignore lint/suspicious/noArrayIndexKey: une tranche animée par position du cadran, son angle vient de i
                     key={i}
-                    transition={{ duration: 0.3, ease: EASE_OUT, delay: reduce ? 0 : i * (n > 12 ? 0.02 : 0.05) }}
+                    transition={{
+                      duration: 0.3,
+                      ease: EASE_OUT,
+                      delay: reduce ? 0 : i * (n > 12 ? 0.02 : 0.05),
+                    }}
                   >
-                    <g className={cn("transition-opacity duration-150", dim && "opacity-40", fromKeyboard && "duration-0")}>
+                    <g
+                      className={cn(
+                        "transition-opacity duration-150",
+                        dim && "opacity-40",
+                        fromKeyboard && "duration-0"
+                      )}
+                    >
                       {slots.map((color, k) => {
                         const ring = Math.floor(k / LANES);
                         const lane = k % LANES;
-                        const [x, y] = polar((i + (lane + 0.5) / LANES) / n, INNER + 6 + ring * ringStep);
+                        const [x, y] = polar(
+                          (i + (lane + 0.5) / LANES) / n,
+                          INNER + 6 + ring * ringStep
+                        );
                         return color ? (
-                          <circle cx={x} cy={y} data-dot="" key={k} r={dotR} style={{ fill: color }} />
+                          <circle
+                            cx={x}
+                            cy={y}
+                            data-dot=""
+                            // biome-ignore lint/suspicious/noArrayIndexKey: un point coloré par emplacement k de la tranche, emplacements fixes calculés depuis k
+                            key={k}
+                            r={dotR}
+                            style={{ fill: color }}
+                          />
                         ) : (
-                          <circle className="fill-foreground/15" cx={x} cy={y} key={k} r={round(dotR * 0.42)} />
+                          <circle
+                            className="fill-foreground/15"
+                            cx={x}
+                            cy={y}
+                            // biome-ignore lint/suspicious/noArrayIndexKey: un point vide par emplacement k de la tranche, emplacements fixes calculés depuis k
+                            key={k}
+                            r={round(dotR * 0.42)}
+                          />
                         );
                       })}
                     </g>
@@ -223,38 +301,64 @@ export function RadialDots({
               })}
 
               {labels.map((_, i) => (
-                <path d={wedge(i)} fill="transparent" key={i} onPointerEnter={() => select(i, false)} />
+                <path
+                  d={wedge(i)}
+                  fill="transparent"
+                  // biome-ignore lint/suspicious/noArrayIndexKey: une zone de survol par tranche du cadran, et select(i) attend justement cette position
+                  key={i}
+                  onPointerEnter={() => select(i, false)}
+                />
               ))}
             </svg>
 
             <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center">
               {active === null ? (
                 <>
-                  <p className="text-[1.5rem] font-medium tracking-tight tabular-nums">{center.value}</p>
-                  {center.caption && <p className="text-xs text-muted-foreground">{center.caption}</p>}
+                  <p className="font-medium text-[1.5rem] tabular-nums tracking-tight">
+                    {center.value}
+                  </p>
+                  {center.caption && (
+                    <p className="text-muted-foreground text-xs">
+                      {center.caption}
+                    </p>
+                  )}
                 </>
               ) : (
                 <>
-                  <p className="text-xs text-muted-foreground first-letter:uppercase">{titleOf(active)}</p>
-                  <p className="text-[1.5rem] font-medium tracking-tight tabular-nums">{format(totals[active])}</p>
+                  <p className="text-muted-foreground text-xs first-letter:uppercase">
+                    {titleOf(active)}
+                  </p>
+                  <p className="font-medium text-[1.5rem] tabular-nums tracking-tight">
+                    {format(totals[active])}
+                  </p>
                 </>
               )}
             </div>
           </div>
 
-          <ul aria-label="Légende" className="mt-3 flex flex-wrap justify-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
+          <ul
+            aria-label="Légende"
+            className="mt-3 flex flex-wrap justify-center gap-x-4 gap-y-1 text-muted-foreground text-xs"
+          >
             {series.map((s) => (
               <li className="flex items-center gap-1.5" key={s.id}>
-                <span aria-hidden="true" className="size-2 rounded-full" style={{ background: s.color }} />
+                <span
+                  aria-hidden="true"
+                  className="size-2 rounded-full"
+                  style={{ background: s.color }}
+                />
                 {s.label}
                 <span className="text-foreground tabular-nums">
-                  {(active === null ? seriesTotal(s) : (s.values[active] ?? 0)).toLocaleString("fr-FR")}
+                  {(active === null
+                    ? seriesTotal(s)
+                    : (s.values[active] ?? 0)
+                  ).toLocaleString("fr-FR")}
                 </span>
               </li>
             ))}
           </ul>
           {per > 1 ? (
-            <p className="mt-1 text-center text-xs text-muted-foreground">
+            <p className="mt-1 text-center text-muted-foreground text-xs">
               1 point = {per} {unit}
             </p>
           ) : null}

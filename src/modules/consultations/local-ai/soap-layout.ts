@@ -1,4 +1,7 @@
-import { SOAP_SECTIONS, type LocalSoapNote } from "./soap-schema";
+import { mustExist } from "@/lib/must-exist";
+import { type LocalSoapNote, SOAP_SECTIONS } from "./soap-schema";
+
+const SENTENCE_END_SPACE = /(?<=[.!?])\s+/u;
 
 /**
  * Layout of a SOAP note: full section headings, one bullet per observation and
@@ -20,14 +23,16 @@ const LIST_MARKER = /^[ \t]*(?:[-•–*]|\d{1,2}[.)])[ \t]+/u;
 const items = (text: string) =>
   text
     .split("\n")
-    .flatMap((line) => line.replace(LIST_MARKER, "").split(/(?<=[.!?])\s+/u))
+    .flatMap((line) => line.replace(LIST_MARKER, "").split(SENTENCE_END_SPACE))
     .map((item) => item.trim())
     .filter(Boolean);
 
 /** One bullet per sentence; the plan is numbered. Words are left untouched. */
 export function layoutSection(key: keyof LocalSoapNote, text: string) {
   return items(text)
-    .map((item, index) => (key === "plan" ? `${index + 1}. ${item}` : `- ${item}`))
+    .map((item, index) =>
+      key === "plan" ? `${index + 1}. ${item}` : `- ${item}`
+    )
     .join("\n");
 }
 
@@ -45,14 +50,24 @@ export function soapNoteText(note: LocalSoapNote) {
 }
 
 const comparable = (text: string) =>
-  text.normalize("NFD").replace(/\p{M}/gu, "").toLocaleLowerCase("fr-FR").replace(/[^\p{L}]+/gu, " ").trim();
+  text
+    .normalize("NFD")
+    .replace(/\p{M}/gu, "")
+    .toLocaleLowerCase("fr-FR")
+    .replace(/[^\p{L}]+/gu, " ")
+    .trim();
 
 /** The section without its own heading on the first line (full or short title). */
 export function dropSoapHeading(key: keyof LocalSoapNote, text: string) {
   const lines = text.trim().split("\n");
-  const short = SOAP_SECTIONS.find((section) => section.key === key)!.title;
+  const short = mustExist(
+    SOAP_SECTIONS.find((section) => section.key === key),
+    `rubrique ${key} dans SOAP_SECTIONS`
+  ).title;
   const headings = [SOAP_FULL_HEADINGS[key], short].map(comparable);
-  if (headings.includes(comparable(lines[0] ?? ""))) lines.shift();
+  if (headings.includes(comparable(lines[0] ?? ""))) {
+    lines.shift();
+  }
   return lines.join("\n").trim();
 }
 

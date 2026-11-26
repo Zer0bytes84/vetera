@@ -1,22 +1,20 @@
 import { useState } from "react";
 import { toast } from "sonner";
-
+import { useAuth } from "@/contexts/AuthContext";
 import {
   useProductsRepository,
   useTransactionsRepository,
 } from "@/data/repositories";
-
-import { COMMON_VET_PRODUCTS } from "@/modules/stock/components/stock-shared";
+import { StockError } from "@/domain/stock";
+import { guard } from "@/lib/guard";
+import { useCreationRequest } from "@/modules/shell/model/creation-request";
+import type { COMMON_VET_PRODUCTS } from "@/modules/stock/components/stock-shared";
+import { isTauriRuntime } from "@/services/browser-store";
 import type { Product, Transaction } from "@/types/db";
 import { toCentimes } from "@/utils/currency";
-import { StockError } from "@/domain/stock";
-import { isTauriRuntime } from "@/services/browser-store";
-import { useAuth } from "@/contexts/AuthContext";
-import { useCreationRequest } from "@/modules/shell/model/creation-request";
-import { guard } from "@/lib/guard";
 
 export function useStockPageModel() {
-  const {currentUser} = useAuth();
+  const { currentUser } = useAuth();
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
   const [isRestockModalOpen, setIsRestockModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -55,7 +53,11 @@ export function useStockPageModel() {
 
   const totalProducts = activeProducts.length;
   const stockValue = activeProducts.reduce(
-    (sum, product) => sum + (product.stockTracked === false ? 0 : product.quantity * product.purchasePriceAmount),
+    (sum, product) =>
+      sum +
+      (product.stockTracked === false
+        ? 0
+        : product.quantity * product.purchasePriceAmount),
     0
   );
   // --- Handlers ---
@@ -101,9 +103,10 @@ export function useStockPageModel() {
       !(await updateProduct(product.id, {
         archivedAt: new Date().toISOString(),
       }))
-    )
+    ) {
       return;
-    toast.success(product.name + " a été archivé.", {
+    }
+    toast.success(`${product.name} a été archivé.`, {
       duration: 5000,
       action: {
         label: "Annuler",
@@ -117,7 +120,7 @@ export function useStockPageModel() {
   };
 
   const handleSaveProduct = async () => {
-    if (!(formData.name && formData.name.trim())) {
+    if (!formData.name?.trim()) {
       toast.error("Veuillez entrer un nom de produit.");
       return;
     }
@@ -131,103 +134,132 @@ export function useStockPageModel() {
 
     setIsSubmitting(true);
 
-    await guard(async () => {
-      const productData = {
-        name: formData.name,
-        category: formData.category || "Autre",
-        subCategory: formData.subCategory || "",
-        quantity: Number(formData.quantity ?? 0),
-        stockTracked: formData.stockTracked !== false,
-        unit: formData.unit || "unité",
-        minStock: Math.max(0, Number(formData.minStock) || 0),
-        purchasePriceAmount: toCentimes(Number(formData.purchasePriceAmount)),
-        salePriceAmount: toCentimes(Number(formData.salePriceAmount)),
-        expiryDate: formData.expiryDate || "",
-      };
+    await guard(
+      async () => {
+        const productData = {
+          name: formData.name,
+          category: formData.category || "Autre",
+          subCategory: formData.subCategory || "",
+          quantity: Number(formData.quantity ?? 0),
+          stockTracked: formData.stockTracked !== false,
+          unit: formData.unit || "unité",
+          minStock: Math.max(0, Number(formData.minStock) || 0),
+          purchasePriceAmount: toCentimes(Number(formData.purchasePriceAmount)),
+          salePriceAmount: toCentimes(Number(formData.salePriceAmount)),
+          expiryDate: formData.expiryDate || "",
+        };
 
-      let productId = selectedProduct?.id;
+        let productId = selectedProduct?.id;
 
-      if (isTauriRuntime()) {
-        const {quantity, ...details} = productData;
-        const saved = await saveProduct(selectedProduct?.id, {...details, ...(!selectedProduct || quantity !== selectedProduct.quantity ? {quantity} : {})}, currentUser?.id);
-        productId = saved.id;
-      } else if (selectedProduct) {
-        const {quantity, ...details} = productData;
-        if (!(await updateProduct(selectedProduct.id, details))) throw new Error("Le produit n’a pas pu être enregistré.");
-        if (quantity !== selectedProduct.quantity) {
-          await adjustProductStock({productId: selectedProduct.id, quantity, reason: "Comptage depuis la fiche produit"});
-        }
-      } else {
-        const added = await addProduct(productData as any);
-        if (!added) throw new Error("Le produit n’a pas pu être enregistré.");
-        if (added) {
-          productId = added.id;
-          if (productData.quantity > 0) {
-            await recordStockMovement({
-              productId: added.id,
-              type: "opening",
-              quantityDelta: productData.quantity,
-              quantityAfter: productData.quantity,
-              unitCostAmount: productData.purchasePriceAmount,
-              reason: "Stock initial",
-              unitSnapshot: productData.unit,
-              productNameSnapshot: productData.name,
+        if (isTauriRuntime()) {
+          const { quantity, ...details } = productData;
+          const saved = await saveProduct(
+            selectedProduct?.id,
+            {
+              ...details,
+              ...(!selectedProduct || quantity !== selectedProduct.quantity
+                ? { quantity }
+                : {}),
+            },
+            currentUser?.id
+          );
+          productId = saved.id;
+        } else if (selectedProduct) {
+          const { quantity, ...details } = productData;
+          if (!(await updateProduct(selectedProduct.id, details))) {
+            throw new Error("Le produit n’a pas pu être enregistré.");
+          }
+          if (quantity !== selectedProduct.quantity) {
+            await adjustProductStock({
+              productId: selectedProduct.id,
+              quantity,
+              reason: "Comptage depuis la fiche produit",
             });
           }
-        }
-      }
-
-      if (
-        createExpense &&
-        Number(formData.quantity) > 0 &&
-        productId &&
-        !selectedProduct
-      ) {
-        const totalCost = toCentimes(
-          Number(formData.purchasePriceAmount) * Number(formData.quantity)
-        );
-        if (totalCost > 0) {
-          try {
-            await addTransaction({
-              date: new Date().toISOString().split("T")[0],
-              amount: totalCost,
-              type: "expense",
-              category: "Achat Stock",
-              description: `Stock initial: ${formData.name} (x${formData.quantity})`,
-              method: "cash",
-              status: expenseStatus,
-            } as any);
-          } catch (txError) {
-            console.error("Failed to add initial stock transaction:", txError);
-            toast.warning(
-              "Produit enregistré, mais la dépense initiale n’a pas été créée. Ajoutez-la depuis Finances."
-            );
+        } else {
+          const added = await addProduct(productData as any);
+          if (!added) {
+            throw new Error("Le produit n’a pas pu être enregistré.");
+          }
+          if (added) {
+            productId = added.id;
+            if (productData.quantity > 0) {
+              await recordStockMovement({
+                productId: added.id,
+                type: "opening",
+                quantityDelta: productData.quantity,
+                quantityAfter: productData.quantity,
+                unitCostAmount: productData.purchasePriceAmount,
+                reason: "Stock initial",
+                unitSnapshot: productData.unit,
+                productNameSnapshot: productData.name,
+              });
+            }
           }
         }
-      }
 
-      setIsProductModalOpen(false);
-      toast.success(
-        selectedProduct ? "Produit mis à jour." : "Produit ajouté au catalogue."
-      );
-      setSelectedProduct(null);
-      setFormData({
-        category: "Médicaments",
-        minStock: 10,
-        unit: "boite",
-        quantity: 0,
-        purchasePriceAmount: 0,
-        salePriceAmount: 0,
-      });
-    }, {
-      recover: (e) => {
-        console.error("Error saving product:", e);
-        toast.error(e instanceof StockError ? e.message : "Erreur lors de l'enregistrement. Veuillez réessayer.");
+        if (
+          createExpense &&
+          Number(formData.quantity) > 0 &&
+          productId &&
+          !selectedProduct
+        ) {
+          const totalCost = toCentimes(
+            Number(formData.purchasePriceAmount) * Number(formData.quantity)
+          );
+          if (totalCost > 0) {
+            try {
+              await addTransaction({
+                date: new Date().toISOString().split("T")[0],
+                amount: totalCost,
+                type: "expense",
+                category: "Achat Stock",
+                description: `Stock initial: ${formData.name} (x${formData.quantity})`,
+                method: "cash",
+                status: expenseStatus,
+              });
+            } catch (txError) {
+              console.error(
+                "Failed to add initial stock transaction:",
+                txError
+              );
+              toast.warning(
+                "Produit enregistré, mais la dépense initiale n’a pas été créée. Ajoutez-la depuis Finances."
+              );
+            }
+          }
+        }
+
+        setIsProductModalOpen(false);
+        toast.success(
+          selectedProduct
+            ? "Produit mis à jour."
+            : "Produit ajouté au catalogue."
+        );
+        setSelectedProduct(null);
+        setFormData({
+          category: "Médicaments",
+          minStock: 10,
+          unit: "boite",
+          quantity: 0,
+          purchasePriceAmount: 0,
+          salePriceAmount: 0,
+        });
       },
-      cleanup: () => {
-        setIsSubmitting(false);
-      },
-    });
+      {
+        recover: (e) => {
+          console.error("Error saving product:", e);
+          toast.error(
+            e instanceof StockError
+              ? e.message
+              : "Erreur lors de l'enregistrement. Veuillez réessayer."
+          );
+        },
+        cleanup: () => {
+          setIsSubmitting(false);
+        },
+      }
+    );
   };
 
   const handleRestockSubmit = async () => {
@@ -236,26 +268,29 @@ export function useStockPageModel() {
     }
     setIsSubmitting(true);
 
-    await guard(async () => {
-      await restockProduct({
-        productId: selectedProduct.id,
-        quantity: restockQty,
-        unitCostAmount: toCentimes(restockCost),
-        createExpense,
-        expenseStatus,
-      });
+    await guard(
+      async () => {
+        await restockProduct({
+          productId: selectedProduct.id,
+          quantity: restockQty,
+          unitCostAmount: toCentimes(restockCost),
+          createExpense,
+          expenseStatus,
+        });
 
-      setIsRestockModalOpen(false);
-      toast.success(`Stock de ${selectedProduct.name} mis à jour.`);
-    }, {
-      recover: (e) => {
-        console.error(e);
-        toast.error("La mise à jour du stock a échoué. Réessayez.");
+        setIsRestockModalOpen(false);
+        toast.success(`Stock de ${selectedProduct.name} mis à jour.`);
       },
-      cleanup: () => {
-        setIsSubmitting(false);
-      },
-    });
+      {
+        recover: (e) => {
+          console.error(e);
+          toast.error("La mise à jour du stock a échoué. Réessayez.");
+        },
+        cleanup: () => {
+          setIsSubmitting(false);
+        },
+      }
+    );
   };
 
   const autoFillProduct = (template: (typeof COMMON_VET_PRODUCTS)[0]) => {

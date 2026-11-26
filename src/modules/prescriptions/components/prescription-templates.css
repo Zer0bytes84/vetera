@@ -4,24 +4,24 @@
   gap: 10px;
   width: 100%;
   max-width: 34rem;
-  margin-top: 20px;
-  border-top: 1px solid color-mix(in oklab, var(--border) 70%, transparent);
   padding-top: 16px;
+  margin-top: 20px;
   text-align: left;
+  border-top: 1px solid color-mix(in oklab, var(--border) 70%, transparent);
 }
 
 .rx-template-chip {
   display: inline-flex;
   flex-direction: column;
-  align-items: flex-start;
   gap: 2px;
+  align-items: flex-start;
   min-width: 9rem;
   max-width: 100%;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg, 10px);
-  background: var(--background);
   padding: 8px 12px;
   text-align: left;
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg, 10px);
   transition:
     border-color 160ms var(--ease-out, ease-out),
     background-color 160ms var(--ease-out, ease-out);
@@ -29,8 +29,8 @@
 
 @media (hover: hover) and (pointer: fine) {
   .rx-template-chip:hover {
-    border-color: color-mix(in oklab, var(--primary) 45%, var(--border));
     background: color-mix(in oklab, var(--primary) 4%, var(--background));
+    border-color: color-mix(in oklab, var(--primary) 45%, var(--border));
   }
 }
 
@@ -42,17 +42,17 @@
 .rx-template-alert {
   --rx-safety-color: var(--destructive);
   display: inline-flex;
-  align-items: center;
   gap: 4px;
+  align-items: center;
   width: fit-content;
-  margin-top: 2px;
-  border-radius: 999px;
-  box-shadow: inset 0 0 0 1px var(--rx-safety-color);
-  color: var(--rx-safety-color);
   padding: 0 8px;
+  margin-top: 2px;
   font-size: 12px;
   font-weight: 600;
   line-height: 18px;
+  color: var(--rx-safety-color);
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 1px var(--rx-safety-color);
 }
 
 .rx-template-list {
@@ -64,40 +64,41 @@
 
 .rx-template-row {
   display: flex;
-  align-items: center;
   gap: 8px;
+  align-items: center;
   min-height: 52px;
+  padding: 8px 8px 8px 12px;
   border: 1px solid color-mix(in oklab, var(--border) 80%, transparent);
   border-radius: var(--radius-lg, 10px);
-  padding: 8px 8px 8px 12px;
 }
 
 .rx-template-empty {
-  border: 1px dashed var(--border);
-  border-radius: var(--radius-lg, 10px);
-  color: var(--muted-foreground);
   padding: 14px;
   font-size: 13px;
+  color: var(--muted-foreground);
   text-align: center;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-lg, 10px);
 }
 
 .rx-template-error {
-  border-radius: var(--radius-lg, 10px);
-  background: color-mix(in oklab, var(--destructive) 8%, var(--background));
-  color: var(--destructive);
   padding: 10px 12px;
   font-size: 13px;
+  color: var(--destructive);
+  background: color-mix(in oklab, var(--destructive) 8%, var(--background));
+  border-radius: var(--radius-lg, 10px);
 }
 
 :root[data-skin="clean"] .rx-template-alert {
   --rx-safety-color: var(--premium-red);
 }
 
-:root[data-skin="clean"] :is(.rx-template-chip, .rx-template-row, .rx-template-empty) {
+:root[data-skin="clean"]
+  :is(.rx-template-chip, .rx-template-row, .rx-template-empty) {
   border-radius: var(--premium-control-radius);
 }
 
 :root[data-skin="clean"] .rx-template-chip {
-  background: var(--surface);
   color: var(--ink);
+  background: var(--surface);
 }

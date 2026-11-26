@@ -19,19 +19,19 @@
 /* Doses of the day and day strip, under each animal's name. */
 .care-group-title {
   display: flex;
+  gap: 12px;
   align-items: baseline;
   justify-content: space-between;
-  gap: 12px;
 }
 .care-group-doses {
-  color: var(--muted-foreground);
   font-size: 13px;
   font-variant-numeric: tabular-nums;
+  color: var(--muted-foreground);
   white-space: nowrap;
 }
 .care-group-doses strong {
-  color: var(--foreground);
   font-weight: 500;
+  color: var(--foreground);
 }
 .care-strip {
   padding: 8px 0 0;
@@ -44,9 +44,9 @@
   position: absolute;
   inset: 7px 0 auto;
   height: 2px;
-  border-radius: 1px;
-  background: var(--border);
   content: "";
+  background: var(--border);
+  border-radius: 1px;
 }
 .care-strip-now {
   position: absolute;
@@ -62,15 +62,23 @@
   width: 10px;
   height: 10px;
   margin-left: -5px;
+  cursor: pointer;
+  background: var(--muted-foreground);
   border: 2px solid var(--card, #fff);
   border-radius: 999px;
-  background: var(--muted-foreground);
-  cursor: pointer;
 }
-.care-strip-mark[data-kind="done"] { background: var(--signal-positive); }
-.care-strip-mark[data-kind="late"] { background: var(--signal-critical); }
-.care-strip-mark[data-kind="soon"] { background: var(--signal-watch); }
-.care-strip-mark[data-kind="later"] { background: color-mix(in oklab, var(--muted-foreground) 55%, transparent); }
+.care-strip-mark[data-kind="done"] {
+  background: var(--signal-positive);
+}
+.care-strip-mark[data-kind="late"] {
+  background: var(--signal-critical);
+}
+.care-strip-mark[data-kind="soon"] {
+  background: var(--signal-watch);
+}
+.care-strip-mark[data-kind="later"] {
+  background: color-mix(in oklab, var(--muted-foreground) 55%, transparent);
+}
 .care-strip-mark:focus-visible {
   outline: 2px solid var(--ring);
   outline-offset: 1px;
@@ -83,21 +91,21 @@
 .care-strip-scale {
   display: flex;
   justify-content: space-between;
-  color: var(--muted-foreground);
   font-size: 12px;
   font-variant-numeric: tabular-nums;
+  color: var(--muted-foreground);
 }
 .care-strip-legend {
   display: flex;
   flex-wrap: wrap;
   gap: 4px 16px;
-  color: var(--muted-foreground);
   font-size: 12px;
+  color: var(--muted-foreground);
 }
 .care-strip-legend li {
   display: inline-flex;
-  align-items: center;
   gap: 6px;
+  align-items: center;
 }
 .care-strip-legend .care-strip-mark {
   position: static;

@@ -8,8 +8,8 @@ import "./startup-splash.css";
  */
 export function StartupSplash() {
   return (
-    <div className="startup-splash" role="status" aria-live="polite">
-      <span className="startup-splash-mark" aria-hidden="true">
+    <div aria-live="polite" className="startup-splash" role="status">
+      <span aria-hidden="true" className="startup-splash-mark">
         <Logo collapsed variant="refined" />
       </span>
       <span className="sr-only">Chargement de Baitari</span>

@@ -13,7 +13,15 @@ import {
  * ou un widget cliquable. La vue cible lit cette valeur pour scroller
  * jusqu'à l'élément et le highlight brièvement.
  */
-export type FocusEntityKind = "appointment" | "task" | "product" | "patient" | "care_patient" | "care_task" | "stay" | "invoice";
+export type FocusEntityKind =
+  | "appointment"
+  | "task"
+  | "product"
+  | "patient"
+  | "care_patient"
+  | "care_task"
+  | "stay"
+  | "invoice";
 
 export interface FocusRequest {
   id: string;
@@ -22,17 +30,17 @@ export interface FocusRequest {
   nonce: number;
 }
 
-type FocusContextValue = {
-  focus: FocusRequest | null;
-  requestFocus: (kind: FocusEntityKind, id: string) => void;
+interface FocusContextValue {
   clearFocus: () => void;
+  focus: FocusRequest | null;
   /**
    * Permet à une vue (Agenda, Taches, Stock, PatientDetail) de s'enregistrer
    * comme handler de focus. Une seule vue à la fois (la plus récemment
    * montée gagne). Retourne un cleanup.
    */
   registerHandler: (handler: ((req: FocusRequest) => void) | null) => void;
-};
+  requestFocus: (kind: FocusEntityKind, id: string) => void;
+}
 
 const FocusContext = createContext<FocusContextValue | null>(null);
 

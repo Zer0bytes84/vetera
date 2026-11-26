@@ -1,12 +1,12 @@
+import type { ComponentProps } from "react";
 import { useMemo } from "react";
 import { DivergingBars } from "@/components/ui/diverging-bars";
 import { formatNumber } from "@/utils/display-format";
 import {
   ALERT_CATEGORIES,
-  buildAlertBars,
   type AlertReminder,
+  buildAlertBars,
 } from "../model/alert-bars";
-import type { ComponentProps } from "react";
 
 type Inputs = Pick<
   Parameters<typeof buildAlertBars>[0],
@@ -37,7 +37,7 @@ export function AlertsWidget({
 }) {
   const model = useMemo(
     () => buildAlertBars({ now, ...inputs }),
-    [now, inputs],
+    [now, inputs]
   );
   const series: ComponentProps<typeof DivergingBars>["series"] =
     ALERT_CATEGORIES.map((category) => ({
@@ -65,7 +65,7 @@ export function AlertsWidget({
       className="alertsBars"
       footer={
         unavailable.length ? (
-          <p className="text-xs text-muted-foreground">
+          <p className="text-muted-foreground text-xs">
             Non comptés : {unavailable.join(", ")} (chargement impossible).
           </p>
         ) : undefined

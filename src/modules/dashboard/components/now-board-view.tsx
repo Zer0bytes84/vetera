@@ -25,10 +25,10 @@ export function NowBoardView({
   viewControl?: React.ReactNode;
 }) {
   return (
-    <div aria-label="Maintenant" aria-busy={loading || skeleton}>
+    <div aria-busy={loading || skeleton} aria-label="Maintenant" role="region">
       {loading || skeleton ? (
         <Panel>
-          <div className={`min-h-[240px] p-5 ${!skeleton ? "opacity-0" : ""}`}>
+          <div className={`min-h-[240px] p-5 ${skeleton ? "" : "opacity-0"}`}>
             <SkeletonBlock className="h-4 w-32" />
             <SkeletonBlock className="mt-4 h-10 w-1/2" />
             <SkeletonBlock className="mt-5 h-9 w-52" />
@@ -37,16 +37,20 @@ export function NowBoardView({
       ) : error ? (
         <Panel>
           <EmptyState
-            title="Les visites n’ont pas pu être chargées"
             action={
-              <ActionButton quiet onClick={onRetry}>
+              <ActionButton onClick={onRetry} quiet>
                 Réessayer
               </ActionButton>
             }
+            title="Les visites n’ont pas pu être chargées"
           />
         </Panel>
       ) : (
-        <VisitFlowBoard snapshot={snapshot} onFlux={onFlux} viewControl={viewControl} />
+        <VisitFlowBoard
+          onFlux={onFlux}
+          snapshot={snapshot}
+          viewControl={viewControl}
+        />
       )}
     </div>
   );

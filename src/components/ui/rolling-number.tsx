@@ -7,14 +7,14 @@ import { cn } from "@/lib/utils";
 
 /* Adapted for Baitari: numbers read in French (fr-FR). `motion/react` is already a dependency. */
 
-export type RollingNumberProps = {
-  /** A number (formatted with `format` or fr-FR grouping) or a preformatted string like "87.2k". */
-  value: number | string;
+export interface RollingNumberProps {
+  className?: string;
   format?: (value: number) => string;
   /** Delay between neighbouring digits, right to left, in ms. */
   stagger?: number;
-  className?: string;
-};
+  /** A number (formatted with `format` or fr-FR grouping) or a preformatted string like "87.2k". */
+  value: number | string;
+}
 
 const DIGITS = "0123456789";
 const EASE = "cubic-bezier(0.23, 1, 0.32, 1)";
@@ -47,13 +47,13 @@ export function RollingNumber({
           const fromRight = chars.length - 1 - i;
           return DIGITS.includes(char) ? (
             <Digit
-              key={fromRight}
-              digit={Number(char)}
               delay={reduce ? 0 : fromRight * stagger}
+              digit={Number(char)}
               instant={!!reduce}
+              key={fromRight}
             />
           ) : (
-            <span key={`${fromRight}${char}`} className="whitespace-pre">
+            <span className="whitespace-pre" key={`${fromRight}${char}`}>
               {char}
             </span>
           );
@@ -87,7 +87,7 @@ function Digit({
         }}
       >
         {Array.from(DIGITS, (d) => (
-          <span key={d} className="h-[1lh]">
+          <span className="h-[1lh]" key={d}>
             {d}
           </span>
         ))}

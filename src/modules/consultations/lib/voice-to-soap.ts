@@ -1,13 +1,13 @@
 import type { SoapSectionKey } from "@/types/db";
 
-export type SoapDraft = {
-  subjective: string;
-  objective: string;
+export interface SoapDraft {
   assessment: string;
-  plan: string;
   confidence: number | null;
   groundingScore?: number | null;
-};
+  objective: string;
+  plan: string;
+  subjective: string;
+}
 
 export const EMPTY_SOAP_DRAFT: SoapDraft = {
   subjective: "",
@@ -17,7 +17,6 @@ export const EMPTY_SOAP_DRAFT: SoapDraft = {
   confidence: null,
   groundingScore: null,
 };
-
 
 /**
  * Extrait le premier objet JSON valide d'une chaîne. Le LLM peut parfois
@@ -149,11 +148,11 @@ function groundedRatio(source: Set<string>, value: string) {
     return 1;
   }
   let grounded = 0;
-  tokens.forEach((token) => {
+  for (const token of tokens) {
     if (source.has(token)) {
       grounded += 1;
     }
-  });
+  }
   return grounded / tokens.size;
 }
 
@@ -197,10 +196,7 @@ export function normalizeSoapDraft(
     draft.groundingScore = populatedRatios.length
       ? Math.min(...populatedRatios)
       : 0;
-    if (
-      draft.confidence != null &&
-      draft.groundingScore < draft.confidence
-    ) {
+    if (draft.confidence != null && draft.groundingScore < draft.confidence) {
       draft.confidence = draft.groundingScore;
     }
   }

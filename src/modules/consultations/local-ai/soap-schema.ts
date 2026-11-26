@@ -1,5 +1,8 @@
 import { z } from "zod";
 
+const OPENING_CODE_FENCE = /^```(?:json)?\s*/i;
+const CLOSING_CODE_FENCE = /\s*```$/;
+
 export const SOAP_SECTIONS = [
   { key: "subjective", title: "S · Motif et antécédents" },
   { key: "objective", title: "O · Examen clinique" },
@@ -67,8 +70,8 @@ export function parseGeneratedSoap(
   // A single JSON object (optionally fenced), never a best-effort coercion.
   const text = raw
     .trim()
-    .replace(/^```(?:json)?\s*/i, "")
-    .replace(/\s*```$/, "");
+    .replace(OPENING_CODE_FENCE, "")
+    .replace(CLOSING_CODE_FENCE, "");
   let parsed: unknown;
   try {
     parsed = JSON.parse(text);
@@ -79,14 +82,24 @@ export function parseGeneratedSoap(
   }
   // Rubrics the model was not sent come back empty; it may not fill them (the
   // fidelity check refuses any text there), and no other key is accepted.
-  if (omitted.length && parsed && typeof parsed === "object" && !Array.isArray(parsed))
-    for (const key of omitted)
-      if (!(key in parsed)) (parsed as Record<string, unknown>)[key] = "";
+  if (
+    omitted.length &&
+    parsed &&
+    typeof parsed === "object" &&
+    !Array.isArray(parsed)
+  ) {
+    for (const key of omitted) {
+      if (!(key in parsed)) {
+        (parsed as Record<string, unknown>)[key] = "";
+      }
+    }
+  }
   const result = localSoapSchema.safeParse(parsed);
-  if (!result.success)
+  if (!result.success) {
     throw new SoapFormatError(
       "Le format de réponse de l’assistant n’est pas conforme aux quatre sections SOAP attendues. Votre dictée est conservée ; aucune note n’a été enregistrée."
     );
+  }
   if (Object.values(result.data).some(containsDosage)) {
     throw new Error(
       "La note proposée contient une posologie. Elle a été rejetée : les doses doivent être saisies ou calculées dans le module d’ordonnance, jamais par l’IA."

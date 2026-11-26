@@ -1,17 +1,9 @@
-import { isTauriRuntime } from "@/services/browser-store";
-import { generateId } from "@/services/sqlite/database";
-import { emitSQLiteDataChanged } from "@/hooks/useSQLite";
-import { MedicalReminderDialog } from "@/modules/patient-reminders/medical-reminder-dialog";
-import { onMedicalActRecorded } from "@/modules/patient-reminders/on-medical-act-recorded";
-import { patientRemindersService } from "@/modules/patient-reminders/service";
-import type { MedicalReminderProposal } from "@/modules/patient-reminders/store";
-import { announcePatientRemindersChanged } from "@/modules/patient-reminders/use-patient-reminders";
 import { Plus, Syringe } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-
 import { Button } from "@/components/ui/button";
+import { DatePicker } from "@/components/ui/date-picker";
 import { Dialog } from "@/components/ui/dialog";
 import { Field, FieldGroup } from "@/components/ui/field";
 import {
@@ -30,10 +22,17 @@ import { Textarea } from "@/components/ui/textarea";
 import { COMMON_VACCINES } from "@/config/status-meta";
 import { useAuth } from "@/contexts/AuthContext";
 import { useVaccinationsRepository } from "@/data/repositories";
+import { emitSQLiteDataChanged } from "@/hooks/useSQLite";
+import { guard } from "@/lib/guard";
+import { MedicalReminderDialog } from "@/modules/patient-reminders/medical-reminder-dialog";
+import { onMedicalActRecorded } from "@/modules/patient-reminders/on-medical-act-recorded";
+import { patientRemindersService } from "@/modules/patient-reminders/service";
+import type { MedicalReminderProposal } from "@/modules/patient-reminders/store";
+import { announcePatientRemindersChanged } from "@/modules/patient-reminders/use-patient-reminders";
+import { isTauriRuntime } from "@/services/browser-store";
+import { generateId } from "@/services/sqlite/database";
 import type { Vaccination } from "@/types/db";
 import { toDateInputValue } from "./patients-shared";
-import { DatePicker } from "@/components/ui/date-picker";
-import { guard } from "@/lib/guard";
 
 interface VaccinationDialogProps {
   onOpenChange: (open: boolean) => void;
@@ -56,7 +55,7 @@ export function VaccinationDialog({
   const [vaccineName, setVaccineName] = useState("");
   const [vaccineType, setVaccineType] = useState("");
   const [administeredAt, setAdministeredAt] = useState(() =>
-    toDateInputValue(new Date().toISOString()),
+    toDateInputValue(new Date().toISOString())
   );
   const [batchNumber, setBatchNumber] = useState("");
   const [manufacturer, setManufacturer] = useState("");
@@ -64,14 +63,17 @@ export function VaccinationDialog({
   const [presetId, setPresetId] = useState("");
   const [vaccinationDraftId, setVaccinationDraftId] = useState("");
   const [proposal, setProposal] = useState<MedicalReminderProposal | null>(
-    null,
+    null
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // À chaque ouverture, ou quand la vaccination éditée change : le formulaire repart de ses valeurs
   // (corrigé au rendu, sans effet : plus d'image avec les anciennes valeurs, et le dialogue reste monté).
-  const [seenForm, setSeenForm] = useState<{ open: boolean; entry: typeof vaccination } | null>(null);
+  const [seenForm, setSeenForm] = useState<{
+    open: boolean;
+    entry: typeof vaccination;
+  } | null>(null);
   if (!seenForm || seenForm.open !== open || seenForm.entry !== vaccination) {
     setSeenForm({ open, entry: vaccination });
     if (open) {
@@ -112,7 +114,9 @@ export function VaccinationDialog({
   };
 
   const handleSave = async () => {
-    if (isSubmitting) return;
+    if (isSubmitting) {
+      return;
+    }
     if (!vaccineName.trim()) {
       setError(t("patientDetail.vaccinations.invalidName"));
       return;
@@ -120,93 +124,96 @@ export function VaccinationDialog({
     setIsSubmitting(true);
     setError(null);
     let vaccinationSaved = false;
-    return await guard(async () => {
-      const payload = {
-        patientId,
-        vaccineName: vaccineName.trim(),
-        vaccineType: vaccineType.trim() || undefined,
-        administeredAt: new Date(`${administeredAt}T12:00:00`).toISOString(),
-        nextDueAt: vaccination?.nextDueAt,
-        batchNumber: batchNumber.trim() || undefined,
-        manufacturer: manufacturer.trim() || undefined,
-        notes: notes.trim() || undefined,
-        vetId: currentUser?.id,
-      };
-      if (isTauriRuntime()) {
-        await patientRemindersService.saveVaccination(
-          {
-            id: vaccinationDraftId,
-            patientId,
-            vaccineName: vaccineName.trim(),
-            vaccineType: vaccineType.trim() || undefined,
-            administeredDate: administeredAt,
-            dueDate: vaccination?.nextDueAt
-              ? toDateInputValue(vaccination.nextDueAt)
-              : undefined,
-            batchNumber: batchNumber.trim() || undefined,
-            manufacturer: manufacturer.trim() || undefined,
-            notes: notes.trim() || undefined,
-          },
-          currentUser?.id ?? "",
-        );
-        vaccinationSaved = true;
-        emitSQLiteDataChanged("vaccinations");
-        announcePatientRemindersChanged();
-        void repo.refresh().catch(() => {
-          toast.warning(
-            "La vaccination est enregistrée. Actualisez le carnet si nécessaire.",
-          );
-        });
-        if (!isEditing) {
-          const nextProposal = await onMedicalActRecorded(
+    return await guard(
+      async () => {
+        const payload = {
+          patientId,
+          vaccineName: vaccineName.trim(),
+          vaccineType: vaccineType.trim() || undefined,
+          administeredAt: new Date(`${administeredAt}T12:00:00`).toISOString(),
+          nextDueAt: vaccination?.nextDueAt,
+          batchNumber: batchNumber.trim() || undefined,
+          manufacturer: manufacturer.trim() || undefined,
+          notes: notes.trim() || undefined,
+          vetId: currentUser?.id,
+        };
+        if (isTauriRuntime()) {
+          await patientRemindersService.saveVaccination(
             {
-              date: administeredAt,
               id: vaccinationDraftId,
-              note: notes.trim() || vaccineName.trim(),
               patientId,
-              type: "vaccin",
+              vaccineName: vaccineName.trim(),
+              vaccineType: vaccineType.trim() || undefined,
+              administeredDate: administeredAt,
+              dueDate: vaccination?.nextDueAt
+                ? toDateInputValue(vaccination.nextDueAt)
+                : undefined,
+              batchNumber: batchNumber.trim() || undefined,
+              manufacturer: manufacturer.trim() || undefined,
+              notes: notes.trim() || undefined,
             },
-            patientRemindersService,
+            currentUser?.id ?? ""
           );
-          if (nextProposal) {
-            setProposal(nextProposal);
-            toast.success("Vaccination enregistrée");
-            return;
+          vaccinationSaved = true;
+          emitSQLiteDataChanged("vaccinations");
+          announcePatientRemindersChanged();
+          void repo.refresh().catch(() => {
+            toast.warning(
+              "La vaccination est enregistrée. Actualisez le carnet si nécessaire."
+            );
+          });
+          if (!isEditing) {
+            const nextProposal = await onMedicalActRecorded(
+              {
+                date: administeredAt,
+                id: vaccinationDraftId,
+                note: notes.trim() || vaccineName.trim(),
+                patientId,
+                type: "vaccin",
+              },
+              patientRemindersService
+            );
+            if (nextProposal) {
+              setProposal(nextProposal);
+              toast.success("Vaccination enregistrée");
+              return;
+            }
+          }
+        } else if (vaccination?.id) {
+          const ok = await repo.update(vaccination.id, payload);
+          if (!ok) {
+            throw new Error("La vaccination n’a pas pu être modifiée.");
+          }
+        } else {
+          const created = await repo.add(
+            payload as unknown as Omit<
+              Vaccination,
+              "id" | "createdAt" | "updatedAt"
+            >
+          );
+          if (!created) {
+            throw new Error("La vaccination n’a pas pu être enregistrée.");
           }
         }
-      } else if (vaccination?.id) {
-        const ok = await repo.update(vaccination.id, payload);
-        if (!ok) {
-          throw new Error("La vaccination n’a pas pu être modifiée.");
-        }
-      } else {
-        const created = await repo.add(
-          payload as unknown as Omit<
-            Vaccination,
-            "id" | "createdAt" | "updatedAt"
-          >,
-        );
-        if (!created) {
-          throw new Error("La vaccination n’a pas pu être enregistrée.");
-        }
+        toast.success(t("patientDetail.vaccinations.save"));
+        onOpenChange(false);
+      },
+      {
+        recover: (err) => {
+          console.error("[VaccinationDialog] save failed", err);
+          setError(
+            vaccinationSaved
+              ? "La vaccination est enregistrée. Le prochain rappel n’a pas pu être préparé. Réessayez ou fermez ce dialogue."
+              : err instanceof Error
+                ? err.message
+                : "L’enregistrement a échoué."
+          );
+        },
+        cleanup: () => {
+          setIsSubmitting(false);
+        },
       }
-      toast.success(t("patientDetail.vaccinations.save"));
-      onOpenChange(false);
-    }, {
-      recover: (err) => {
-        console.error("[VaccinationDialog] save failed", err);
-        setError(
-          vaccinationSaved
-            ? "La vaccination est enregistrée. Le prochain rappel n’a pas pu être préparé. Réessayez ou fermez ce dialogue."
-            : err instanceof Error
-              ? err.message
-              : "L’enregistrement a échoué.",
-        );
-      },
-      cleanup: () => {
-        setIsSubmitting(false);
-      },
-    });
+    );
   };
 
   if (open && proposal) {
@@ -217,7 +224,7 @@ export function VaccinationDialog({
         onConfirm={async (draft) => {
           await patientRemindersService.createFromProposal(
             draft,
-            currentUser?.id ?? "",
+            currentUser?.id ?? ""
           );
           announcePatientRemindersChanged();
           emitSQLiteDataChanged("vaccinations");

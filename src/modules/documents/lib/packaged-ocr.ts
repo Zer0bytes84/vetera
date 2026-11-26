@@ -4,7 +4,9 @@ import type { ReadingProgress } from "./document-reading";
 // Tesseract 7's packaged worker protocol. Own the Worker before initialization
 // so cancellation or a failed language load can always terminate it.
 export class PackagedOcr {
-  private worker: Worker;
+  private readonly root: string;
+  private readonly signal: AbortSignal;
+  private readonly worker: Worker;
   private pending: {
     resolve: (value: Record<string, unknown>) => void;
     reject: (error: Error) => void;
@@ -16,14 +18,20 @@ export class PackagedOcr {
   private page = 1;
   private readonly onAbort = () => this.close();
   constructor(
-    private root: string,
-    private signal: AbortSignal,
+    root: string,
+    signal: AbortSignal,
     onProgress: (event: ReadingProgress) => void
   ) {
-    if (signal.aborted) throw abortError();
-    this.worker = new Worker(root + "ocr.worker.js");
+    this.root = root;
+    this.signal = signal;
+    if (signal.aborted) {
+      throw abortError();
+    }
+    this.worker = new Worker(`${root}ocr.worker.js`);
     this.worker.onmessage = ({ data }) => {
-      if (this.closed) return;
+      if (this.closed) {
+        return;
+      }
       if (data.status === "progress") {
         onProgress({
           message: "Reconnaissance du texte sur cet ordinateur…",
@@ -34,9 +42,11 @@ export class PackagedOcr {
         const job = this.pending;
         this.pending = null;
         clearTimeout(job.timer);
-        if (data.status === "reject")
+        if (data.status === "reject") {
           job.reject(new Error("Le texte n’a pas pu être reconnu localement."));
-        else job.resolve(data.data as Record<string, unknown>);
+        } else {
+          job.resolve(data.data as Record<string, unknown>);
+        }
       }
     };
     this.worker.onerror = (event) => {
@@ -50,13 +60,16 @@ export class PackagedOcr {
     payload: Record<string, unknown>,
     transfer: Transferable[] = []
   ): Promise<Record<string, unknown>> {
-    if (this.closed || this.signal.aborted) return Promise.reject(abortError());
-    if (this.pending)
+    if (this.closed || this.signal.aborted) {
+      return Promise.reject(abortError());
+    }
+    if (this.pending) {
       return Promise.reject(
         new Error("La lecture du document est déjà en cours.")
       );
+    }
     return new Promise((resolve, reject) => {
-      const jobId = "document-" + ++this.nextJob;
+      const jobId = `document-${++this.nextJob}`;
       const timer = setTimeout(
         () =>
           this.close(
@@ -64,7 +77,7 @@ export class PackagedOcr {
               "La reconnaissance du texte n’a pas répondu. Essayez une image plus nette."
             )
           ),
-        90000
+        90_000
       );
       this.pending = { resolve, reject, timer, jobId };
       this.worker.postMessage(
@@ -80,7 +93,7 @@ export class PackagedOcr {
     await this.request("loadLanguage", {
       langs: "fra+eng",
       options: {
-        langPath: this.root + "lang",
+        langPath: `${this.root}lang`,
         cacheMethod: "none",
         gzip: false,
         lstmOnly: true,
@@ -101,7 +114,9 @@ export class PackagedOcr {
     };
   }
   close(error: Error = abortError()) {
-    if (this.closed) return;
+    if (this.closed) {
+      return;
+    }
     this.closed = true;
     this.signal.removeEventListener("abort", this.onAbort);
     this.worker.terminate();

@@ -1,5 +1,8 @@
 import type { Patient } from "@/types/db";
 
+const MENTION_BEFORE_CARET = /(?:^|\s)@([\p{L}\p{N}_'’-]*)$/u;
+const MENTION_TOKEN = /^[\p{L}\p{N}_'’-]+$/u;
+
 export const normalizePatientName = (name: string) =>
   name
     .normalize("NFD")
@@ -8,17 +11,17 @@ export const normalizePatientName = (name: string) =>
     .trim()
     .replace(/\s+/g, " ");
 export interface PatientMention {
-  start: number;
   end: number;
-  name: string;
   key: string;
+  name: string;
+  start: number;
 }
 const mentionPattern = () =>
   /(^|[^\p{L}\p{N}_@])@(?:"([^"\n]+)"|([\p{L}\p{N}_][\p{L}\p{N}_'’-]*))/gu;
 export function parsePatientMentions(text: string): PatientMention[] {
   return [...text.matchAll(mentionPattern())].map((match) => ({
-    start: match.index! + match[1].length,
-    end: match.index! + match[0].length,
+    start: match.index + match[1].length,
+    end: match.index + match[0].length,
     name: match[2] ?? match[3],
     key: normalizePatientName(match[2] ?? match[3]),
   }));
@@ -50,23 +53,26 @@ export function assertMentionsForPatient(
 ) {
   const mentions = resolvePatientMentions(text, patients, choices);
   for (const mention of mentions) {
-    if (!mention.candidates.length)
+    if (!mention.candidates.length) {
       throw new Error(
         `Le patient @${mention.name} est introuvable. Corrigez sa mention avant de générer la note.`
       );
-    if (!mention.patient)
+    }
+    if (!mention.patient) {
       throw new Error(
         `Plusieurs patients portent le nom ${mention.name}. Choisissez la fiche exacte.`
       );
-    if (mention.patient.id !== patientId)
+    }
+    if (mention.patient.id !== patientId) {
       throw new Error(
         `@${mention.name} désigne un autre patient. Ouvrez sa consultation pour dicter sa note ; cette note reste liée au patient de la fiche actuelle.`
       );
+    }
   }
   return mentions;
 }
 export function autocompleteMention(text: string, caret: number) {
-  const match = /(?:^|\s)@([\p{L}\p{N}_'’-]*)$/u.exec(text.slice(0, caret));
+  const match = MENTION_BEFORE_CARET.exec(text.slice(0, caret));
   return match
     ? { start: caret - match[1].length - 1, end: caret, query: match[1] }
     : null;
@@ -76,7 +82,7 @@ export function insertPatientMention(
   range: { start: number; end: number },
   name: string
 ) {
-  const token = /^[\p{L}\p{N}_'’-]+$/u.test(name)
+  const token = MENTION_TOKEN.test(name)
     ? `@${name}`
     : `@"${name.replaceAll('"', "")}"`;
   const value = `${text.slice(0, range.start)}${token} ${text.slice(range.end)}`;

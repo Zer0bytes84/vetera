@@ -1,15 +1,19 @@
 import { z } from "zod";
 
+const OPENING_CODE_FENCE = /^```(?:json)?\s*/i;
+const CLOSING_CODE_FENCE = /\s*```$/;
+const BLANK_LINE = /\n\s*\n/;
+
 export interface DocumentPage {
+  confidence?: number;
+  method: "text" | "ocr";
   number: number;
   text: string;
-  method: "text" | "ocr";
-  confidence?: number;
 }
 export interface ReadingProgress {
   message: string;
-  progress?: number;
   page?: number;
+  progress?: number;
 }
 export interface ReadDocument {
   name: string;
@@ -18,19 +22,23 @@ export interface ReadDocument {
 }
 export const MAX_DOCUMENT_BYTES = 12 * 1024 * 1024;
 export const MAX_DOCUMENT_PAGES = 20;
-export const MAX_DOCUMENT_CHARACTERS = 60000;
+export const MAX_DOCUMENT_CHARACTERS = 60_000;
 export function assertReadableFile(file: Pick<File, "size" | "type">) {
-  if (!file.size) throw new Error("Ce fichier est vide.");
-  if (file.size > MAX_DOCUMENT_BYTES)
+  if (!file.size) {
+    throw new Error("Ce fichier est vide.");
+  }
+  if (file.size > MAX_DOCUMENT_BYTES) {
     throw new Error(
       "Le document dépasse 12 Mo. Choisissez un fichier plus léger."
     );
+  }
   if (
     !["application/pdf", "image/png", "image/jpeg", "image/webp"].includes(
       file.type
     )
-  )
+  ) {
     throw new Error("Utilisez un PDF, une image JPG, PNG ou WebP.");
+  }
 }
 export const normalizeExtract = (text: string) =>
   text.replace(/\s+/g, " ").trim();
@@ -57,16 +65,19 @@ export function parseDocumentAnswer(
   try {
     const candidate = text
       .trim()
-      .replace(/^```(?:json)?\s*/i, "")
-      .replace(/\s*```$/, "");
+      .replace(OPENING_CODE_FENCE, "")
+      .replace(CLOSING_CODE_FENCE, "");
     const answer = readingSchema.parse(JSON.parse(candidate));
     for (const quote of answer.extraits) {
       const page = source.pages.find((entry) => entry.number === quote.page);
       if (
-        !page ||
-        !normalizeExtract(page.text).includes(normalizeExtract(quote.texte))
-      )
+        !(
+          page &&
+          normalizeExtract(page.text).includes(normalizeExtract(quote.texte))
+        )
+      ) {
         throw new Error("L’extrait ne correspond pas au document.");
+      }
     }
     return answer;
   } catch {
@@ -80,14 +91,15 @@ export function createDocumentReadingPrompt(
   question: string,
   retry = false
 ) {
-  if (!question.trim() || question.length > 500)
+  if (!question.trim() || question.length > 500) {
     throw new Error("Posez une question de 500 caractères maximum.");
+  }
   const terms: string[] = Array.from(
     question.toLocaleLowerCase("fr").match(/[\p{L}\d]{4,}/gu) ?? []
   );
   const passages = source.pages.flatMap((page) =>
     page.text
-      .split(/\n\s*\n/)
+      .split(BLANK_LINE)
       .filter((part) => part.trim())
       .flatMap((part) => {
         // Bound each extract without discarding the full text visible to the vet.
@@ -109,12 +121,15 @@ export function createDocumentReadingPrompt(
   for (const part of passages) {
     const excerpt = { page: part.page, texte: part.text };
     const cost = JSON.stringify(excerpt).length + 1;
-    if (length + cost > 6500 || selected.length >= 12) continue;
+    if (length + cost > 6500 || selected.length >= 12) {
+      continue;
+    }
     selected.push(excerpt);
     length += cost;
   }
-  if (!selected.length)
+  if (!selected.length) {
     throw new Error("Le document ne contient pas de texte lisible.");
+  }
   const payload = JSON.stringify({
     question,
     document: source.name,

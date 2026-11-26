@@ -15,19 +15,29 @@ const SHOW_KEY = "vetera:flux-show";
 const START_KEY = "vetera:pending-consultation-start";
 const REQUEST_EVENT = "vetera:flux-request";
 
-function request(key: string, appointmentId: string, navigate: (view: View) => void) {
+function request(
+  key: string,
+  appointmentId: string,
+  navigate: (view: View) => void
+) {
   window.sessionStorage.setItem(key, appointmentId);
   navigate("flux");
   window.dispatchEvent(new Event(REQUEST_EVENT));
 }
 
 /** Shows the visit in Flux, without changing its status. */
-export function showInFlux(appointmentId: string, navigate: (view: View) => void) {
+export function showInFlux(
+  appointmentId: string,
+  navigate: (view: View) => void
+) {
   request(SHOW_KEY, appointmentId, navigate);
 }
 
 /** Starts the consultation in Flux (Nouvelle consultation). */
-export function startInFlux(appointmentId: string, navigate: (view: View) => void) {
+export function startInFlux(
+  appointmentId: string,
+  navigate: (view: View) => void
+) {
   request(START_KEY, appointmentId, navigate);
 }
 
@@ -47,28 +57,55 @@ export function useFluxRequests({
 }) {
   const { transitionStatus } = useAppointmentsRepository();
   const flowUndo = useFlowUndo();
-  const latest = useRef({ appointmentById, focus, flowUndo, open, transitionStatus });
+  const latest = useRef({
+    appointmentById,
+    focus,
+    flowUndo,
+    open,
+    transitionStatus,
+  });
   useEffect(() => {
-    latest.current = { appointmentById, focus, flowUndo, open, transitionStatus };
+    latest.current = {
+      appointmentById,
+      focus,
+      flowUndo,
+      open,
+      transitionStatus,
+    };
   });
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: appointmentById est lu par la ref latest ; la dépendance relance le traitement de la demande en attente quand les rendez-vous changent.
   useEffect(() => {
     const serve = () => {
-      const { appointmentById, focus, flowUndo, open, transitionStatus } = latest.current;
+      const { appointmentById, focus, flowUndo, open, transitionStatus } =
+        latest.current;
       for (const key of [START_KEY, SHOW_KEY]) {
         const id = window.sessionStorage.getItem(key);
         const target = id ? appointmentById(id) : null;
-        if (!target) continue;
+        if (!target) {
+          continue;
+        }
         window.sessionStorage.removeItem(key);
-        if (target.status === "in_progress") open(target);
-        else if (key === START_KEY && PRE_CONSULTATION_STATUSES.includes(target.status)) {
+        if (target.status === "in_progress") {
+          open(target);
+        } else if (
+          key === START_KEY &&
+          PRE_CONSULTATION_STATUSES.includes(target.status)
+        ) {
           transitionStatus(target.id, "in_progress")
             .then((started) => {
               void flowUndo.record(target.id);
               open(started);
             })
-            .catch((error) => console.error("La consultation n'a pas pu démarrer depuis Flux", error));
-        } else focus(target.id);
+            .catch((error) =>
+              console.error(
+                "La consultation n'a pas pu démarrer depuis Flux",
+                error
+              )
+            );
+        } else {
+          focus(target.id);
+        }
       }
     };
     serve();

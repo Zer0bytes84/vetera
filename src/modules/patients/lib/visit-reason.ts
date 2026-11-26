@@ -1,5 +1,5 @@
-import { meaningful } from "./meaningful";
 import type { Appointment } from "@/types/db";
+import { meaningful } from "./meaningful";
 
 /**
  * The reason typed for the visit. Titles built as "Patient - Type" repeat the
@@ -7,7 +7,9 @@ import type { Appointment } from "@/types/db";
  */
 export function visitReason(appointment: Appointment, patientName: string) {
   const reason = meaningful(appointment.reason);
-  if (reason) return reason;
+  if (reason) {
+    return reason;
+  }
   const title = meaningful(appointment.title);
   const generated = new RegExp(
     `^${patientName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\s*[-–]\\s*`,

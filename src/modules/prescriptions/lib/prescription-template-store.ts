@@ -1,11 +1,16 @@
 import { getSetting, setSetting } from "@/services/appSettingsService";
 
-import { parseTemplates, type PrescriptionTemplate } from "./prescription-templates";
+import {
+  type PrescriptionTemplate,
+  parseTemplates,
+} from "./prescription-templates";
 
 /** Clé locale (table app_settings, SQLite ou stockage navigateur). */
 export const PRESCRIPTION_TEMPLATES_KEY = "prescription_templates_v1";
 
-export async function loadPrescriptionTemplates(): Promise<PrescriptionTemplate[]> {
+export async function loadPrescriptionTemplates(): Promise<
+  PrescriptionTemplate[]
+> {
   return parseTemplates(await getSetting(PRESCRIPTION_TEMPLATES_KEY));
 }
 

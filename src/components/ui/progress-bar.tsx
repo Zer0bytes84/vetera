@@ -56,24 +56,25 @@ export function ProgressBar({
 }: ProgressBarProps) {
   const ratio = Math.min(Math.max(value / max, 0), 1);
   return (
+    // biome-ignore lint/a11y/useAriaPropsSupportedByRole: role vaut meter ou progressbar selon kind, les deux acceptent aria-label ; Biome ne lit pas le rôle conditionnel.
     <div
-      role={kind === "meter" ? "meter" : "progressbar"}
       aria-label={label}
-      aria-valuemin={0}
       aria-valuemax={max}
+      aria-valuemin={0}
       aria-valuenow={value}
       aria-valuetext={valueText ?? `${Math.round(ratio * 100)}%`}
       className={cn(
         "relative w-full overflow-hidden rounded-full bg-foreground/[0.07]",
         heights[size],
-        className,
+        className
       )}
+      role={kind === "meter" ? "meter" : "progressbar"}
       {...props}
     >
       <div
         className={cn(
           "absolute inset-0 rounded-full transition-[clip-path,background-color] duration-500 motion-reduce:transition-none",
-          !color && fills[tone],
+          !color && fills[tone]
         )}
         style={{
           backgroundColor: color,
@@ -86,13 +87,13 @@ export function ProgressBar({
   );
 }
 
-export type BarSegment = {
-  id: string;
-  value: number;
-  label: string;
+export interface BarSegment {
   /** Any CSS color. */
   color: string;
-};
+  id: string;
+  label: string;
+  value: number;
+}
 
 export type SegmentedBarProps = Omit<React.ComponentProps<"div">, "role"> & {
   segments: BarSegment[];
@@ -117,29 +118,31 @@ export function SegmentedBar({
   const total = segments.reduce((n, s) => n + s.value, 0);
   return (
     <div
-      role="meter"
       aria-label={label}
-      aria-valuemin={0}
       aria-valuemax={max}
+      aria-valuemin={0}
       aria-valuenow={total}
       aria-valuetext={
         valueText ??
-        segments.map((s) => `${s.label} ${s.value.toLocaleString("fr-FR")}`).join(", ")
+        segments
+          .map((s) => `${s.label} ${s.value.toLocaleString("fr-FR")}`)
+          .join(", ")
       }
       className={cn("flex w-full gap-1", heights[size], className)}
+      role="meter"
       {...props}
     >
       {segments.map((s) => (
         <span
-          key={s.id}
-          title={`${s.label} · ${s.value.toLocaleString("fr-FR")}`}
           className="h-full min-w-1.5 shrink-0 rounded-full transition-[width] duration-500 motion-reduce:transition-none"
+          key={s.id}
           style={{
             width: `${(s.value / max) * 100}%`,
             backgroundColor: s.color,
             backgroundImage: striped ? STRIPES : undefined,
             transitionTimingFunction: EASE,
           }}
+          title={`${s.label} · ${s.value.toLocaleString("fr-FR")}`}
         />
       ))}
       <span className="h-full min-w-0 flex-1 rounded-full bg-foreground/[0.07]" />
