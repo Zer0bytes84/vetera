@@ -35,8 +35,13 @@ export function MorningWatch({
   onStatus,
   onOpen,
   now,
+  loading = false,
+  loadingRevealed = true,
 }: {
   items: MorningItem[];
+  /** The counts are still being read: the cards are drawn as their skeleton, never as « 0 » or « aucun retard ». */
+  loading?: boolean;
+  loadingRevealed?: boolean;
   status: MorningStatus;
   onStatus: (status: MorningStatus) => void;
   onOpen: (item: MorningItem) => void;
@@ -73,6 +78,9 @@ export function MorningWatch({
         goals={false}
         icon={ExclamationCircleIcon}
         layout="row"
+        loading={loading}
+        loadingLabel="Chargement de « À traiter »"
+        loadingRevealed={loadingRevealed}
         lead={
           <div aria-label="Statut des anomalies" className="filter-segments" data-tabs-style="segmented" role="group">
             {STATUSES.map((option) => (
@@ -94,7 +102,7 @@ export function MorningWatch({
           if (item) onOpen(item);
         }}
         sparklines={false}
-        subtitle={`${day[0].toLocaleUpperCase("fr-FR")}${day.slice(1)} · état à ${time} · ${status === "late" ? (total ? `${formatNumber(total)} en retard` : "aucun retard") : `${formatNumber(total)} ouvert${total > 1 ? "s" : ""}`}`}
+        subtitle={`${day[0].toLocaleUpperCase("fr-FR")}${day.slice(1)} · ${loading ? "lecture en cours…" : `état à ${time} · ${status === "late" ? (total ? `${formatNumber(total)} en retard` : "aucun retard") : `${formatNumber(total)} ouvert${total > 1 ? "s" : ""}`}`}`}
         title="À traiter"
       />
     </div>

@@ -73,7 +73,11 @@ export function StockView(props: StockViewProps) {
     <div className="dashboard-stage flex w-full min-w-0 flex-col gap-6 px-4 pb-8 lg:px-6">
       <MotivationalHeader
         section="stock"
-        subtitle={`${totalProducts} référence${totalProducts > 1 ? "s" : ""} · ${formatDZD(stockValue)} en stock`}
+        subtitle={
+          loading
+            ? "lecture du catalogue…"
+            : `${totalProducts} référence${totalProducts > 1 ? "s" : ""} · ${formatDZD(stockValue)} en stock`
+        }
       />
 
       <StockWorkspace

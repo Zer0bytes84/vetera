@@ -29,6 +29,8 @@ import { LocationAvailability } from "./stay-location-controls";
 import { StayRounds } from "./stay-rounds";
 import { StaySection } from "./stay-section";
 import { useStays } from "./use-stays";
+import { SkeletonRegion } from "@/components/ui/loading-skeleton";
+import { useDelayedSkeleton } from "@/hooks/useDelayedSkeleton";
 
 const labels: Record<StayStatus, string> = {
   admis: "Admis",
@@ -60,6 +62,9 @@ export default function StaysPage({
 }) {
   const { stays, locations, error, loading, refresh } = useStays(patientId);
   const patients = usePatientsRepository();
+  // The stays and their patients' names, first read only: the list keeps its place, the header says it is reading.
+  const listSkeleton = useDelayedSkeleton(loading || patients.loading);
+  const listReading = loading || patients.loading || listSkeleton;
   const [view, setView] = useState("sejours");
   const [form, setForm] = useState<"admission" | "location" | null>(null);
   const [selected, setSelected] = useState<string | null>(
@@ -158,12 +163,6 @@ export default function StaysPage({
   let content: ReactNode;
   if (error) {
     content = <ErrorState message={error} onRetry={() => void refresh()} />;
-  } else if (loading) {
-    content = (
-      <p className="t-13 text-muted-foreground" role="status">
-        Chargement des séjours…
-      </p>
-    );
   } else if (view === "tournee") {
     content = (
       <StaySection
@@ -267,7 +266,11 @@ export default function StaysPage({
   return (
     <section className="hospitalisation-view space-y-6 p-4 lg:p-6">
       <PageHeader
-        subtitle={`${active.length} séjour${active.length > 1 ? "s" : ""} actif${active.length > 1 ? "s" : ""}`}
+        subtitle={
+          listReading
+            ? "lecture des séjours…"
+            : `${active.length} séjour${active.length > 1 ? "s" : ""} actif${active.length > 1 ? "s" : ""}`
+        }
         title="Hospitalisation"
       />
       <SectionCards
@@ -315,6 +318,8 @@ export default function StaysPage({
               : "Aucune sortie préparée",
           },
         ]}
+        // Stays, places and the names of the patients leaving: no figure until all of them are read.
+        loading={loading || patients.loading}
         subtitle="Séjours et emplacements"
       />
       <Tabs onValueChange={setView} value={view}>
@@ -325,7 +330,20 @@ export default function StaysPage({
           <TabsTrigger value="emplacements">Emplacements</TabsTrigger>
         </TabsList>
       </Tabs>
-      {content}
+      {error ? (
+        content
+      ) : (
+        <SkeletonRegion
+          busy={listReading}
+          className="space-y-6"
+          fallbackHeight={160}
+          label="Chargement des séjours"
+          memoryKey={`stays:${view}${patientId ? ":patient" : ""}`}
+          revealed={listSkeleton}
+        >
+          {content}
+        </SkeletonRegion>
+      )}
       <Dialog
         onOpenChange={(open) => {
           if (!open) {

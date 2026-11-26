@@ -14,7 +14,7 @@ import {
   Table2,
 } from "lucide-react";
 import { AnimatePresence, MotionConfig, motion } from "motion/react";
-import { useMemo, useState, type ReactNode } from "react";
+import { useCallback, useMemo, useState, type ReactNode } from "react";
 import {
   EmptyState,
   IconButton,
@@ -23,6 +23,8 @@ import {
   TuffCheckbox,
 } from "@/components/ui/tuff-controls";
 import { RollingNumber } from "@/components/ui/rolling-number";
+import { SkeletonShape } from "@/components/ui/loading-skeleton";
+import { rememberRows, useRememberedRows, type RememberedRows } from "@/hooks/useRememberedRows";
 import { Panel, Shell, ShellHeader } from "@/components/ui/surface";
 import { enter, exit } from "@/lib/motion-tokens";
 import { cn } from "@/lib/utils";
@@ -100,6 +102,19 @@ export type DataTableProps<R extends DataRow = DataRow> = {
   /** Attributes of a row (keyboard access, data attributes). */
   rowProps?: (row: R) => React.HTMLAttributes<HTMLTableRowElement>;
   className?: string;
+  /**
+   * The rows are still being read (first read only): the table keeps its frame, head and controls, and its body holds the
+   * place of the rows shown last time (`skeletonKey`), in the Loading Skeleton's sheen. No count, no empty state, until the
+   * rows are known.
+   */
+  loading?: boolean;
+  /** While loading, the placeholders stay invisible until this turns true (useDelayedSkeleton): no flash on a fast read. */
+  loadingRevealed?: boolean;
+  loadingLabel?: string;
+  /** Where this table remembers how many rows it showed, and how tall: the place its next skeleton reserves. */
+  skeletonKey?: string;
+  /** The place reserved before anything is remembered. */
+  skeletonFallback?: RememberedRows;
 };
 
 export type Sort = { key: string; dir: "asc" | "desc" } | null;
@@ -180,7 +195,45 @@ export function DataTable<R extends DataRow>({
   containerRef,
   rowProps,
   className,
+  loading = false,
+  loadingRevealed = true,
+  loadingLabel,
+  skeletonKey,
+  skeletonFallback,
 }: DataTableProps<R>) {
+  const memoryKey = skeletonKey ?? `table:${title}`;
+  const { reserved } = useRememberedRows<HTMLTableElement>(
+    memoryKey,
+    skeletonFallback ?? { rows: Math.min(pageSize, 5), rowHeight: 44 },
+  );
+  // Once the rows are shown, the table remembers them for its next skeleton: their number, one row's height (or, empty,
+  // the height of the empty state) and each column's width, so the head does not move either when the rows arrive.
+  const measureTable = useCallback(
+    (table: HTMLTableElement | null) => {
+      if (!table || typeof ResizeObserver === "undefined") return;
+      const record = () => {
+        const body = table.tBodies[0];
+        const head = table.tHead?.rows[0];
+        if (!body || !head) return;
+        const rows = body.rows.length;
+        const empty = table.nextElementSibling;
+        const rowHeight = rows
+          ? body.getBoundingClientRect().height / rows
+          : (empty?.getBoundingClientRect().height ?? 0);
+        const columns = [...head.cells].map((cell) => Math.round(cell.getBoundingClientRect().width * 100) / 100);
+        if (rowHeight > 0) rememberRows(memoryKey, { rows, rowHeight, columns });
+      };
+      const observer = new ResizeObserver(record);
+      observer.observe(table);
+      if (table.nextElementSibling) observer.observe(table.nextElementSibling);
+      return () => observer.disconnect();
+    },
+    [memoryKey],
+  );
+  const columnWidth = (index: number, fallback?: string) =>
+    loading && reserved.columns?.length === columns.length + (selectable ? 1 : 0)
+      ? reserved.columns[index]
+      : fallback;
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState<Sort>(null);
   const [page, setPage] = useState(0);
@@ -242,7 +295,11 @@ export function DataTable<R extends DataRow>({
 
   return (
     <MotionConfig reducedMotion="user">
-      <Shell className={cn("w-full", className)}>
+      <Shell
+        aria-busy={loading || undefined}
+        className={cn("w-full", loading && "loading-skeleton", className)}
+        data-skeleton-region={memoryKey}
+      >
         <ShellHeader
           aside={
             <>
@@ -263,10 +320,16 @@ export function DataTable<R extends DataRow>({
           as="h2"
           icon={HeaderIcon}
           subtitle={
-            subtitle ?? (
-              <>
-                <RollingNumber value={rows.length} /> {word}
-              </>
+            loading ? (
+              <SkeletonShape
+                className={cn("loading-skeleton-inline", !loadingRevealed && "invisible")}
+              />
+            ) : (
+              subtitle ?? (
+                <>
+                  <RollingNumber value={rows.length} /> {word}
+                </>
+              )
             )
           }
           title={title}
@@ -315,12 +378,15 @@ export function DataTable<R extends DataRow>({
           </AnimatePresence>
 
           <div className="overflow-hidden" ref={containerRef}>
-            <table className="tuff-table w-full border-separate border-spacing-0 text-sm/6">
+            <table
+              className="tuff-table w-full border-separate border-spacing-0 text-sm/6"
+              ref={loading ? undefined : measureTable}
+            >
               <caption className="sr-only">{title}</caption>
               <thead>
                 <tr className="text-muted-foreground">
                   {selectable && (
-                    <th className="w-9 px-2 py-2" scope="col">
+                    <th className="w-9 px-2 py-2" scope="col" style={{ width: columnWidth(0) }}>
                       <TuffCheckbox
                         aria-label="Sélectionner toutes les lignes de la page"
                         checked={
@@ -362,7 +428,7 @@ export function DataTable<R extends DataRow>({
                         )}
                         key={c.key}
                         scope="col"
-                        style={{ width: c.width }}
+                        style={{ width: columnWidth(ci + (selectable ? 1 : 0), c.width) }}
                       >
                         {c.sortable ? (
                           <button
@@ -394,6 +460,39 @@ export function DataTable<R extends DataRow>({
                   })}
                 </tr>
               </thead>
+              {loading ? (
+                <tbody className={cn(!loadingRevealed && "invisible")}>
+                  {reserved.rows === 0 ? (
+                    // Empty last time: the place of the empty state, without its words.
+                    <tr aria-hidden="true" style={{ height: reserved.rowHeight }}>
+                      <td colSpan={columns.length + (selectable ? 1 : 0)} />
+                    </tr>
+                  ) : null}
+                  {Array.from({ length: reserved.rows }, (_, i) => (
+                    <tr
+                      aria-hidden="true"
+                      data-zebra={i % 2 === 1 ? "odd" : undefined}
+                      key={i}
+                      style={{ height: reserved.rowHeight }}
+                    >
+                      {selectable && <td className="w-9 px-2" />}
+                      {columns.map((c, ci) => (
+                        <td
+                          className={cn("px-2", priorityOf(c, ci), c.align === "right" && "text-right")}
+                          key={c.key}
+                        >
+                          <SkeletonShape
+                            className={cn(
+                              "loading-skeleton-cell",
+                              ci === 0 ? "loading-skeleton-cell-lead" : c.align === "right" ? "loading-skeleton-cell-short" : undefined,
+                            )}
+                          />
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              ) : (
               <tbody>
                 {visible.map((row, i) => {
                   const isSelected = selected.includes(row.id);
@@ -443,8 +542,9 @@ export function DataTable<R extends DataRow>({
                   );
                 })}
               </tbody>
+              )}
             </table>
-            {rows.length === 0 && (
+            {!loading && rows.length === 0 && (
               <EmptyState
                 compact
                 description={
@@ -465,10 +565,16 @@ export function DataTable<R extends DataRow>({
         </Panel>
 
         <footer className="flex items-center justify-between gap-3 py-1.5 pr-1.5 pl-3.5 text-xs text-muted-foreground">
-          <span>
-            {rows.length ? current * pageSize + 1 : 0}–
-            {Math.min((current + 1) * pageSize, rows.length)} sur {rows.length}
-          </span>
+          {loading ? (
+            <SkeletonShape
+              className={cn("loading-skeleton-inline", !loadingRevealed && "invisible")}
+            />
+          ) : (
+            <span>
+              {rows.length ? current * pageSize + 1 : 0}–
+              {Math.min((current + 1) * pageSize, rows.length)} sur {rows.length}
+            </span>
+          )}
           <span className="flex items-center gap-1">
             <IconButton
               disabled={current === 0}
@@ -478,7 +584,15 @@ export function DataTable<R extends DataRow>({
               strokeWidth={3}
             />
             <span className="w-14 text-center tabular-nums">
-              {current + 1} / {pages}
+              {loading ? (
+                <SkeletonShape
+                  className={cn("loading-skeleton-inline loading-skeleton-inline-short", !loadingRevealed && "invisible")}
+                />
+              ) : (
+                <>
+                  {current + 1} / {pages}
+                </>
+              )}
             </span>
             <IconButton
               disabled={current >= pages - 1}
@@ -490,7 +604,9 @@ export function DataTable<R extends DataRow>({
           </span>
         </footer>
         <p aria-live="polite" className="sr-only" role="status">
-          {copied
+          {loading
+            ? (loadingLabel ?? `Chargement : ${title}`)
+            : copied
             ? "Copié en CSV"
             : `${rows.length} ${word}${sort ? `, triés par ${columns.find((c) => c.key === sort.key)?.label ?? sort.key} ${sort.dir === "asc" ? "croissant" : "décroissant"}` : ""}`}
         </p>

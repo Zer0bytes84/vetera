@@ -1,0 +1,514 @@
+{
+ "tableau-de-bord (light)": {
+  "bandeVisibleDes": 1216,
+  "squeletteMonte": "jamais",
+  "squeletteVisible": "jamais",
+  "valeursFaussesAffichees": "jamais",
+  "exempleDeValeursFausses": null,
+  "sousTitrePendant": "Mercredi 25 novembre · état à 01:39 · aucun retard",
+  "valeursFinales": [
+   "0",
+   "0",
+   "0",
+   "0",
+   "0"
+  ],
+  "hauteursBande": [
+   196
+  ],
+  "hauteurBandePendant": [],
+  "hauteurBandeApres": [
+   196
+  ],
+  "decalageCumule": 0.009,
+  "erreurs": []
+ },
+ "chiffres-cles (light)": {
+  "bandeVisibleDes": 1067,
+  "squeletteMonte": "1067–7692 ms (104 images)",
+  "squeletteVisible": "1272–7692 ms (102 images)",
+  "valeursFaussesAffichees": "jamais",
+  "exempleDeValeursFausses": null,
+  "sousTitrePendant": "Du 27 oct. au 25 nov. 2026",
+  "valeursFinales": [
+   "26 700 DA",
+   "6",
+   "0 DA",
+   "2"
+  ],
+  "hauteursBande": [
+   264
+  ],
+  "hauteurBandePendant": [
+   264
+  ],
+  "hauteurBandeApres": [
+   264
+  ],
+  "decalageCumule": 0.009,
+  "erreurs": []
+ },
+ "patients (light)": {
+  "bandeVisibleDes": 1064,
+  "squeletteMonte": "jamais",
+  "squeletteVisible": "jamais",
+  "valeursFaussesAffichees": "1064–2441 ms (65 images)",
+  "exempleDeValeursFausses": [
+   "0",
+   "0",
+   "0",
+   "0"
+  ],
+  "sousTitrePendant": "Dossiers et suivi clinique",
+  "valeursFinales": [
+   "5",
+   "2",
+   "2",
+   "0"
+  ],
+  "hauteursBande": [
+   222
+  ],
+  "hauteurBandePendant": [],
+  "hauteurBandeApres": [
+   222
+  ],
+  "decalageCumule": 0,
+  "erreurs": []
+ },
+ "agenda (light)": {
+  "bandeVisibleDes": 1416,
+  "squeletteMonte": "jamais",
+  "squeletteVisible": "jamais",
+  "valeursFaussesAffichees": "1416–2719 ms (63 images)",
+  "exempleDeValeursFausses": [
+   "0",
+   "0",
+   "0 min",
+   "Aucun"
+  ],
+  "sousTitrePendant": "Rendez-vous du jour",
+  "valeursFinales": [
+   "3",
+   "1",
+   "1 h 45",
+   "10:15"
+  ],
+  "hauteursBande": [
+   222
+  ],
+  "hauteurBandePendant": [],
+  "hauteurBandeApres": [
+   222
+  ],
+  "decalageCumule": 0,
+  "erreurs": []
+ },
+ "rappels (light)": {
+  "bandeVisibleDes": 1022,
+  "squeletteMonte": "jamais",
+  "squeletteVisible": "jamais",
+  "valeursFaussesAffichees": "jamais",
+  "exempleDeValeursFausses": null,
+  "sousTitrePendant": "Mercredi 25 novembre · état à 01:40 · rien à traiter",
+  "valeursFinales": [
+   "0",
+   "0",
+   "0",
+   "0"
+  ],
+  "hauteursBande": [
+   194
+  ],
+  "hauteurBandePendant": [],
+  "hauteurBandeApres": [
+   194
+  ],
+  "decalageCumule": 0,
+  "erreurs": []
+ },
+ "soins (light)": {
+  "bandeVisibleDes": 1091,
+  "squeletteMonte": "jamais",
+  "squeletteVisible": "jamais",
+  "valeursFaussesAffichees": "jamais",
+  "exempleDeValeursFausses": null,
+  "sousTitrePendant": "Soins du jour",
+  "valeursFinales": [
+   "0",
+   "0",
+   "0"
+  ],
+  "hauteursBande": [
+   222
+  ],
+  "hauteurBandePendant": [],
+  "hauteurBandeApres": [
+   222
+  ],
+  "decalageCumule": 0,
+  "erreurs": []
+ },
+ "hospitalisation (light)": {
+  "bandeVisibleDes": 1102,
+  "squeletteMonte": "jamais",
+  "squeletteVisible": "jamais",
+  "valeursFaussesAffichees": "jamais",
+  "exempleDeValeursFausses": null,
+  "sousTitrePendant": "Séjours et emplacements",
+  "valeursFinales": [
+   "0",
+   "0",
+   "0"
+  ],
+  "hauteursBande": [
+   222
+  ],
+  "hauteurBandePendant": [],
+  "hauteurBandeApres": [
+   222
+  ],
+  "decalageCumule": 0,
+  "erreurs": []
+ },
+ "produits (light)": {
+  "bandeVisibleDes": 1009,
+  "squeletteMonte": "jamais",
+  "squeletteVisible": "jamais",
+  "valeursFaussesAffichees": "1009–2457 ms (68 images)",
+  "exempleDeValeursFausses": [
+   "0 DA",
+   "0",
+   "0",
+   "0"
+  ],
+  "sousTitrePendant": "Stock, seuils et péremptions",
+  "valeursFinales": [
+   "38 130 DA",
+   "2",
+   "2",
+   "5"
+  ],
+  "hauteursBande": [
+   222
+  ],
+  "hauteurBandePendant": [],
+  "hauteurBandeApres": [
+   222
+  ],
+  "decalageCumule": 0,
+  "erreurs": []
+ },
+ "finances (light)": {
+  "bandeVisibleDes": 939,
+  "squeletteMonte": "jamais",
+  "squeletteVisible": "jamais",
+  "valeursFaussesAffichees": "939–3833 ms (75 images)",
+  "exempleDeValeursFausses": [
+   "Chargement…",
+   "Chargement…",
+   "Chargement…",
+   "Chargement…"
+  ],
+  "sousTitrePendant": "Facturation et règlements",
+  "valeursFinales": [
+   "0 DA",
+   "0 DA",
+   "0 DA",
+   "0 DA"
+  ],
+  "hauteursBande": [
+   222
+  ],
+  "hauteurBandePendant": [],
+  "hauteurBandeApres": [
+   222
+  ],
+  "decalageCumule": 0,
+  "erreurs": []
+ },
+ "equipe (light)": {
+  "bandeVisibleDes": 930,
+  "squeletteMonte": "jamais",
+  "squeletteVisible": "jamais",
+  "valeursFaussesAffichees": "930–2223 ms (62 images)",
+  "exempleDeValeursFausses": [
+   "0",
+   "0",
+   "0",
+   "0"
+  ],
+  "sousTitrePendant": "Lecture de l’équipe…",
+  "valeursFinales": [
+   "3",
+   "2",
+   "0",
+   "0"
+  ],
+  "hauteursBande": [
+   194
+  ],
+  "hauteurBandePendant": [],
+  "hauteurBandeApres": [
+   194
+  ],
+  "decalageCumule": 0,
+  "erreurs": []
+ },
+ "tableau-de-bord (dark)": {
+  "bandeVisibleDes": 1050,
+  "squeletteMonte": "jamais",
+  "squeletteVisible": "jamais",
+  "valeursFaussesAffichees": "jamais",
+  "exempleDeValeursFausses": null,
+  "sousTitrePendant": "Mercredi 25 novembre · état à 01:41 · aucun retard",
+  "valeursFinales": [
+   "0",
+   "0",
+   "0",
+   "0",
+   "0"
+  ],
+  "hauteursBande": [
+   194
+  ],
+  "hauteurBandePendant": [],
+  "hauteurBandeApres": [
+   194
+  ],
+  "decalageCumule": 0.01,
+  "erreurs": []
+ },
+ "chiffres-cles (dark)": {
+  "bandeVisibleDes": 1079,
+  "squeletteMonte": "1079–7871 ms (107 images)",
+  "squeletteVisible": "1267–7871 ms (105 images)",
+  "valeursFaussesAffichees": "jamais",
+  "exempleDeValeursFausses": null,
+  "sousTitrePendant": "Du 27 oct. au 25 nov. 2026",
+  "valeursFinales": [
+   "26 700 DA",
+   "6",
+   "0 DA",
+   "2"
+  ],
+  "hauteursBande": [
+   262
+  ],
+  "hauteurBandePendant": [
+   262
+  ],
+  "hauteurBandeApres": [
+   262
+  ],
+  "decalageCumule": 0.01,
+  "erreurs": []
+ },
+ "patients (dark)": {
+  "bandeVisibleDes": 1063,
+  "squeletteMonte": "jamais",
+  "squeletteVisible": "jamais",
+  "valeursFaussesAffichees": "1063–2349 ms (58 images)",
+  "exempleDeValeursFausses": [
+   "0",
+   "0",
+   "0",
+   "0"
+  ],
+  "sousTitrePendant": "Dossiers et suivi clinique",
+  "valeursFinales": [
+   "5",
+   "2",
+   "2",
+   "0"
+  ],
+  "hauteursBande": [
+   222
+  ],
+  "hauteurBandePendant": [],
+  "hauteurBandeApres": [
+   222
+  ],
+  "decalageCumule": 0,
+  "erreurs": []
+ },
+ "agenda (dark)": {
+  "bandeVisibleDes": 1104,
+  "squeletteMonte": "jamais",
+  "squeletteVisible": "jamais",
+  "valeursFaussesAffichees": "1104–2334 ms (65 images)",
+  "exempleDeValeursFausses": [
+   "0",
+   "0",
+   "0 min",
+   "Aucun"
+  ],
+  "sousTitrePendant": "Rendez-vous du jour",
+  "valeursFinales": [
+   "3",
+   "1",
+   "1 h 45",
+   "10:15"
+  ],
+  "hauteursBande": [
+   222
+  ],
+  "hauteurBandePendant": [],
+  "hauteurBandeApres": [
+   222
+  ],
+  "decalageCumule": 0,
+  "erreurs": []
+ },
+ "rappels (dark)": {
+  "bandeVisibleDes": 1123,
+  "squeletteMonte": "jamais",
+  "squeletteVisible": "jamais",
+  "valeursFaussesAffichees": "jamais",
+  "exempleDeValeursFausses": null,
+  "sousTitrePendant": "Mercredi 25 novembre · état à 01:42 · rien à traiter",
+  "valeursFinales": [
+   "0",
+   "0",
+   "0",
+   "0"
+  ],
+  "hauteursBande": [
+   194
+  ],
+  "hauteurBandePendant": [],
+  "hauteurBandeApres": [
+   194
+  ],
+  "decalageCumule": 0,
+  "erreurs": []
+ },
+ "soins (dark)": {
+  "bandeVisibleDes": 1143,
+  "squeletteMonte": "jamais",
+  "squeletteVisible": "jamais",
+  "valeursFaussesAffichees": "jamais",
+  "exempleDeValeursFausses": null,
+  "sousTitrePendant": "Soins du jour",
+  "valeursFinales": [
+   "0",
+   "0",
+   "0"
+  ],
+  "hauteursBande": [
+   222
+  ],
+  "hauteurBandePendant": [],
+  "hauteurBandeApres": [
+   222
+  ],
+  "decalageCumule": 0,
+  "erreurs": []
+ },
+ "hospitalisation (dark)": {
+  "bandeVisibleDes": 1074,
+  "squeletteMonte": "jamais",
+  "squeletteVisible": "jamais",
+  "valeursFaussesAffichees": "jamais",
+  "exempleDeValeursFausses": null,
+  "sousTitrePendant": "Séjours et emplacements",
+  "valeursFinales": [
+   "0",
+   "0",
+   "0"
+  ],
+  "hauteursBande": [
+   222
+  ],
+  "hauteurBandePendant": [],
+  "hauteurBandeApres": [
+   222
+  ],
+  "decalageCumule": 0,
+  "erreurs": []
+ },
+ "produits (dark)": {
+  "bandeVisibleDes": 982,
+  "squeletteMonte": "jamais",
+  "squeletteVisible": "jamais",
+  "valeursFaussesAffichees": "982–2461 ms (70 images)",
+  "exempleDeValeursFausses": [
+   "0 DA",
+   "0",
+   "0",
+   "0"
+  ],
+  "sousTitrePendant": "Stock, seuils et péremptions",
+  "valeursFinales": [
+   "38 130 DA",
+   "2",
+   "2",
+   "5"
+  ],
+  "hauteursBande": [
+   222
+  ],
+  "hauteurBandePendant": [],
+  "hauteurBandeApres": [
+   222
+  ],
+  "decalageCumule": 0,
+  "erreurs": []
+ },
+ "finances (dark)": {
+  "bandeVisibleDes": 1003,
+  "squeletteMonte": "jamais",
+  "squeletteVisible": "jamais",
+  "valeursFaussesAffichees": "1003–3735 ms (75 images)",
+  "exempleDeValeursFausses": [
+   "Chargement…",
+   "Chargement…",
+   "Chargement…",
+   "Chargement…"
+  ],
+  "sousTitrePendant": "Facturation et règlements",
+  "valeursFinales": [
+   "0 DA",
+   "0 DA",
+   "0 DA",
+   "0 DA"
+  ],
+  "hauteursBande": [
+   222
+  ],
+  "hauteurBandePendant": [],
+  "hauteurBandeApres": [
+   222
+  ],
+  "decalageCumule": 0,
+  "erreurs": []
+ },
+ "equipe (dark)": {
+  "bandeVisibleDes": 950,
+  "squeletteMonte": "jamais",
+  "squeletteVisible": "jamais",
+  "valeursFaussesAffichees": "950–2270 ms (58 images)",
+  "exempleDeValeursFausses": [
+   "0",
+   "0",
+   "0",
+   "0"
+  ],
+  "sousTitrePendant": "Lecture de l’équipe…",
+  "valeursFinales": [
+   "3",
+   "2",
+   "0",
+   "0"
+  ],
+  "hauteursBande": [
+   194
+  ],
+  "hauteurBandePendant": [],
+  "hauteurBandeApres": [
+   194
+  ],
+  "decalageCumule": 0,
+  "erreurs": []
+ }
+}

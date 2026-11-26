@@ -47,6 +47,9 @@ import {
 } from "@/components/ui/native-select";
 import { Spinner } from "@/components/ui/spinner";
 import { SkeletonBlock } from "@/design-system/primitives";
+import { CardsSkeleton, SkeletonShape } from "@/components/ui/loading-skeleton";
+import { useDelayedSkeleton } from "@/hooks/useDelayedSkeleton";
+import { useRememberedRows } from "@/hooks/useRememberedRows";
 import { Textarea } from "@/components/ui/textarea";
 import { PATIENT_STATUS_META } from "@/config/status-meta";
 import { useAuth } from "@/contexts/AuthContext";
@@ -267,6 +270,18 @@ export function PatientDetailPage({
   const hospitalizationsRepo = useHospitalizationsRepository();
   const anesthesiaRepo = useAnesthesiaSheetsRepository();
   const documentsRepo = useConsultationDocumentsRepository();
+  // First read of the record's sources (all of them, read side by side): the page draws the record's skeleton (header, key figures, record) at the height the record
+  // took last time, instead of a spinner in an empty page. Revealed after 150 ms, kept 300 ms.
+  const recordLoading = [
+    patientsRepo, appointmentsRepo, prescriptionsRepo, prescriptionItemsRepo, vaccinationsRepo, weightsRepo, soapsRepo,
+    notesRepo, ownersRepo, tasksRepo, hospitalizationsRepo, anesthesiaRepo, documentsRepo,
+  ].some((repo) => repo.loading);
+  const recordSkeleton = useDelayedSkeleton(recordLoading);
+  const { reserved: recordSlot, measure: measureRecord } = useRememberedRows<HTMLDivElement>(
+    "patient-record",
+    { rows: 1, rowHeight: 860 },
+    "block",
+  );
 
   const [weightDialogOpen, setWeightDialogOpen] = useState(false);
   const [pdfExportOpen, setPdfExportOpen] = useState(false);
@@ -520,10 +535,37 @@ export function PatientDetailPage({
     setPrescriptionOpen(false);
   };
 
-  if (patientsRepo.loading) {
+  if (recordLoading || recordSkeleton) {
     return (
-      <div className="flex h-full w-full items-center justify-center p-8">
-        <Spinner className="size-8 text-muted-foreground" />
+      <div className="patient-record-page dashboard-stage flex w-full min-w-0 flex-col gap-5 px-4 pb-8 lg:px-6">
+        <div
+          aria-busy="true"
+          aria-label="Chargement du dossier"
+          className={cn("loading-skeleton mx-auto w-full max-w-7xl space-y-4", !recordSkeleton && "invisible")}
+          data-skeleton-region="patient-record"
+          role="status"
+          style={{ height: recordSlot.rowHeight }}
+        >
+          <div className="flex min-h-[52px] items-center gap-3">
+            <SkeletonShape className="loading-skeleton-avatar-lg" />
+            <div className="loading-skeleton-heading">
+              <SkeletonShape className="loading-skeleton-title" />
+              <SkeletonShape className="loading-skeleton-subtitle" />
+            </div>
+          </div>
+          <CardsSkeleton count={4} label="Chargement des chiffres clés du dossier" />
+          <div className="loading-skeleton-region" style={{ height: Math.max(0, recordSlot.rowHeight - 52 - 16 - 264 - 16) }}>
+            {Array.from({ length: Math.max(1, Math.floor((recordSlot.rowHeight - 364) / 64)) }, (_, i) => (
+              <div className="loading-skeleton-region-row" key={i}>
+                <SkeletonShape className="loading-skeleton-avatar" />
+                <div className="loading-skeleton-lines">
+                  <SkeletonShape className="loading-skeleton-line loading-skeleton-l1" />
+                  <SkeletonShape className="loading-skeleton-line loading-skeleton-l3" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     );
   }
@@ -689,7 +731,7 @@ export function PatientDetailPage({
       ref={pageRef}
       className="patient-record-page dashboard-stage flex w-full min-w-0 flex-col gap-5 px-4 pb-8 lg:px-6"
     >
-      <div className="mx-auto w-full max-w-7xl space-y-4">
+      <div className="mx-auto w-full max-w-7xl space-y-4" data-skeleton-region="patient-record" ref={measureRecord}>
         <PatientRecordHeader owner={owner} patient={patient} />
         {soapAppointmentId && (
           <section

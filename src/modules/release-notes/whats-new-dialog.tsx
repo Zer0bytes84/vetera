@@ -1,5 +1,5 @@
 import { Sparkles } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { Panel } from "@/components/ui/surface";
@@ -21,6 +21,8 @@ const SHOW_DELAY_MS = 900;
 export function WhatsNewGate() {
   const [note, setNote] = useState<ReleaseNote | null>(null);
   const [open, setOpen] = useState(false);
+  // The focus lands on « Compris », as before the list could scroll: Entrée still closes the window at once.
+  const close = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const version = getAppVersion();
@@ -39,7 +41,7 @@ export function WhatsNewGate() {
   if (!note) return null;
   return (
     <Dialog modal={false} onOpenChange={setOpen} open={open}>
-      <DialogContent className="whats-new-dialog" overlayClassName="hidden">
+      <DialogContent className="whats-new-dialog" initialFocus={close} overlayClassName="hidden">
         <div className="whats-new-head flex items-center gap-3">
           <span aria-hidden="true" className="grid size-9 shrink-0 place-items-center rounded-xl bg-foreground/[0.06] text-muted-foreground">
             <Sparkles className="size-4" />
@@ -49,11 +51,12 @@ export function WhatsNewGate() {
             <DialogDescription className="text-[0.8125rem] leading-5">Ce qui change pour vous au cabinet.</DialogDescription>
           </div>
         </div>
-        <Panel className="whats-new-panel">
+        {/* La seule partie qui défile quand l'écran est trop bas : atteignable au clavier, nommée pour un lecteur d'écran. */}
+        <Panel aria-label={`Nouveautés de la version ${note.version}`} className="whats-new-panel" role="region" tabIndex={0}>
           <ReleaseHighlights note={note} />
         </Panel>
         <div className="whats-new-foot">
-          <DialogClose render={<Button className="rounded-full px-5" type="button" />}>Compris</DialogClose>
+          <DialogClose render={<Button className="rounded-full px-5" ref={close} type="button" />}>Compris</DialogClose>
         </div>
       </DialogContent>
     </Dialog>

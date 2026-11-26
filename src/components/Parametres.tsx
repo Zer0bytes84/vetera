@@ -61,6 +61,8 @@ import { useLayout } from "@/contexts/layout-provider";
 import { startTour } from "@/modules/tour/tour-state";
 import { tourStore } from "@/modules/tour/tour-store";
 import { useUsersRepository } from "@/data/repositories";
+import { SkeletonShape } from "@/components/ui/loading-skeleton";
+import { useDelayedSkeleton } from "@/hooks/useDelayedSkeleton";
 import { APP_NAME } from "@/lib/brand";
 import { writeCachedProfile } from "@/lib/profile-cache";
 import {
@@ -626,7 +628,10 @@ const Parametres: React.FC<ParametresProps> = ({
   }, []);
   const { currentUser, refreshCurrentUser } = useAuth();
   const medicalReminders = usePatientReminders();
-  const { data: users, update: updateUserDoc } = useUsersRepository();
+  const { data: users, loading: usersLoading, update: updateUserDoc } = useUsersRepository();
+  // The role comes from the team's list: until it is read (first read only), the line holds its place in the sheen
+  // rather than showing the default role (« Stagiaire ») for an instant.
+  const roleSkeleton = useDelayedSkeleton(usersLoading);
   const userDoc = users.find((u) => u.email === currentUser?.email);
 
   const [displayName, setDisplayName] = useState("");
@@ -825,7 +830,13 @@ const Parametres: React.FC<ParametresProps> = ({
                   <p className="truncate text-sm text-muted-foreground">
                     {currentUser?.email}
                   </p>
-                  <p className="text-xs text-muted-foreground">{roleLabel}</p>
+                  {usersLoading || roleSkeleton ? (
+                    <p className={cn("loading-skeleton text-xs text-muted-foreground", !roleSkeleton && "invisible")}>
+                      <SkeletonShape className="loading-skeleton-inline" />
+                    </p>
+                  ) : (
+                    <p className="text-xs text-muted-foreground">{roleLabel}</p>
+                  )}
                 </div>
               </div>
               <details className="settings-avatar-picker">

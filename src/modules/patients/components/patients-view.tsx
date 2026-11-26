@@ -24,7 +24,6 @@ import {
 } from "@/components/ui/empty";
 
 import { ListFilter } from "@/components/ui/list-controls";
-import { Spinner } from "@/components/ui/spinner";
 
 import { PATIENT_STATUS_META } from "@/config/status-meta";
 
@@ -32,6 +31,7 @@ import {
   PatientDetailsDialog,
   PatientCreateDialog,
 } from "@/modules/patients/components/patients-shared";
+import { useDelayedSkeleton } from "@/hooks/useDelayedSkeleton";
 import { useListCursor } from "@/hooks/useListCursor";
 import type { PatientsViewProps } from "../hooks/use-patients-page-model";
 import { PatientsTable } from "./patients-table";
@@ -59,6 +59,7 @@ export function PatientsView(props: PatientsViewProps) {
     refreshPatients,
     resetFilters,
     sectionCards,
+    sectionCardsLoading,
     selectedPatient,
     setCreatedPatientPrompt,
     setDetailsInitialTab,
@@ -81,6 +82,8 @@ export function PatientsView(props: PatientsViewProps) {
   const [editingOwnerId, setEditingOwnerId] = useState<string | null>(null);
   const editingOwner = editingOwnerId ? ownersMap.get(editingOwnerId) : undefined;
   const listRef = useListCursor({ storageKey: "patients" });
+  // Reserved at once, revealed after 150 ms and kept 300 ms, as the band above: no flash on a fast read.
+  const listSkeleton = useDelayedSkeleton(loadingPatients);
   return (
     <div className="dashboard-stage flex w-full min-w-0 flex-col gap-6 px-4 pb-8 lg:px-6">
       <MotivationalHeader section="patients" />
@@ -101,14 +104,11 @@ export function PatientsView(props: PatientsViewProps) {
         }
         icon={UsersIcon}
         items={sectionCards}
+        loading={sectionCardsLoading}
         subtitle="Dossiers et suivi clinique"
       />
 
-      {loadingPatients ? (
-        <div className="flex flex-1 items-center justify-center py-16">
-          <Spinner className="size-6 text-muted-foreground" />
-        </div>
-      ) : patientsError ? (
+      {patientsError ? (
         <div className="flex flex-1">
           <Empty className="border border-border/80 border-dashed bg-muted/20">
             <EmptyHeader>
@@ -164,6 +164,8 @@ export function PatientsView(props: PatientsViewProps) {
           }
           filtersActive={filtersActive}
           listRef={listRef}
+          loading={loadingPatients || listSkeleton}
+          loadingRevealed={listSkeleton}
           onEditOwner={(owner) => setEditingOwnerId(owner.id)}
           onOpen={(patient) =>
             onNavigateToPatient

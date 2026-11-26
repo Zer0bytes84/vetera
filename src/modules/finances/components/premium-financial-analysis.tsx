@@ -2,6 +2,7 @@ import { useState, type ReactNode } from "react";
 import { ArrowLeft, ArrowDownRight, ArrowUpRight, ChartPie, Landmark } from "lucide-react";
 import { Button as ActionButton } from "@/components/ui/action-button";
 import { ChartCard } from "@/components/ui/chart-card";
+import { SkeletonRegion } from "@/components/ui/loading-skeleton";
 import { ProgressBar } from "@/components/ui/progress-bar";
 import { Segmented } from "@/components/ui/segmented-control";
 import { Panel, Shell, ShellHeader } from "@/components/ui/surface";
@@ -71,7 +72,10 @@ function Metric({ title, value, context, children }: { title: string; value: str
   );
 }
 
-export function PremiumFinancialAnalysis({ metrics, onNavigate, transactions = [], invoices = [], invoicesUnavailable = false }: {
+export function PremiumFinancialAnalysis({ metrics, onNavigate, transactions = [], invoices = [], invoicesUnavailable = false, loading = false, loadingRevealed = true }: {
+  /** The sources are still being read (first read only): the page holds its place in the skeleton's sheen. */
+  loading?: boolean;
+  loadingRevealed?: boolean;
   metrics: DashboardMetrics;
   onNavigate: (view: View) => void;
   /** The journal: the comparison between periods reads it, and so do the receivables. */
@@ -123,6 +127,14 @@ export function PremiumFinancialAnalysis({ metrics, onNavigate, transactions = [
     <div className="finance-analysis flex w-full min-w-0 flex-col gap-6 px-4 pb-8 lg:px-6">
       <PageHeader subtitle="encaissements et trésorerie" title="Analyse financière" />
 
+      <SkeletonRegion
+        busy={loading}
+        className="flex flex-col gap-6"
+        fallbackHeight={1200}
+        label="Chargement de l’analyse financière"
+        memoryKey="finance-analysis"
+        revealed={loadingRevealed}
+      >
       <Section
         aside={
           <ActionButton className="bg-brand text-white hover:bg-brand/90" icon={ArrowLeft} onClick={() => onNavigate("finances")} variant="primary">
@@ -258,6 +270,7 @@ export function PremiumFinancialAnalysis({ metrics, onNavigate, transactions = [
         </section>
         </div>
       </div>
+      </SkeletonRegion>
     </div>
   );
 }

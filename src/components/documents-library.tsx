@@ -20,6 +20,9 @@ import {
   type LibraryKind,
 } from "@/modules/documents/lib/library";
 import { cn } from "@/lib/utils";
+import { SkeletonShape } from "@/components/ui/loading-skeleton";
+import { useDelayedSkeleton } from "@/hooks/useDelayedSkeleton";
+import { useRememberedRows } from "@/hooks/useRememberedRows";
 import type { Note } from "@/types/db";
 
 /**
@@ -81,9 +84,12 @@ export function DocumentsLibrary({
   onToggleFavorite,
   onTogglePin,
   onDelete,
+  loading = false,
 }: {
   /** The notes and the items, already limited to the chosen folder. */
   entries: LibraryEntry[];
+  /** The notes or the items are still being read (first read only): the list holds its rows' place, no empty state. */
+  loading?: boolean;
   filter: LibraryFilter;
   /** At the far right, left of the magnifier: the assistant. */
   headerActions?: ReactNode;
@@ -152,6 +158,10 @@ export function DocumentsLibrary({
     else onDownload(entry);
   };
 
+  // First read: the rows' place is held (revealed after 150 ms, kept 300 ms), never « Rien ici pour l’instant ».
+  const listSkeleton = useDelayedSkeleton(loading);
+  const reading = loading || listSkeleton;
+  const { reserved: listSlots, measure: measureList } = useRememberedRows<HTMLUListElement>("documents-library", { rows: 4, rowHeight: 64 });
   const emptyTitle = searching ? "Aucun résultat" : filter === "all" ? "Rien ici pour l’instant" : `Aucun ${KIND_LABELS[filter as LibraryKind].toLowerCase()}`;
   const emptyText = searching
     ? `Rien ne correspond à « ${query.trim()} ».`
@@ -236,10 +246,28 @@ export function DocumentsLibrary({
         })}
       </div>
 
-      {shown.length === 0 ? (
+      {reading ? (
+        <div
+          aria-busy="true"
+          aria-label="Chargement des documents"
+          className={cn("loading-skeleton flex flex-col gap-px overflow-hidden rounded-2xl bg-background", !listSkeleton && "invisible")}
+          data-skeleton-region="documents-library"
+          role="status"
+        >
+          {Array.from({ length: Math.max(1, listSlots.rows) }, (_, i) => (
+            <div className="flex items-center gap-3 bg-[var(--card-band)] px-3" key={i} style={{ height: listSlots.rowHeight }}>
+              <SkeletonShape className="loading-skeleton-avatar-lg rounded-xl" />
+              <div className="flex flex-1 flex-col gap-2">
+                <SkeletonShape className="loading-skeleton-cell loading-skeleton-cell-lead" />
+                <SkeletonShape className="loading-skeleton-cell" />
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : shown.length === 0 ? (
         <EmptyState description={emptyText} icon={searching ? SearchX : FileText} title={emptyTitle} />
       ) : (
-        <ul aria-label="Documents" className="flex flex-col gap-px overflow-hidden rounded-2xl bg-background">
+        <ul aria-label="Documents" className="flex flex-col gap-px overflow-hidden rounded-2xl bg-background" data-skeleton-region="documents-library" ref={measureList}>
           {shown.map((entry) => {
             const KindIcon = KIND_ICONS[entry.kind];
             const folder = patientName(entry.patientId);

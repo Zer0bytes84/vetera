@@ -76,8 +76,13 @@ export function InvoicesTable({
   onDeleteDraft,
   onPay,
   onVoid,
+  loading = false,
+  loadingRevealed = true,
 }: {
   invoices: Invoice[];
+  /** The invoices are still being read (first read only): the register holds their place in the skeleton's sheen. */
+  loading?: boolean;
+  loadingRevealed?: boolean;
   owners: Owner[];
   patients: Patient[];
   filters: ReactNode;
@@ -313,6 +318,9 @@ export function InvoicesTable({
       filters={filters}
       toolbar={toolbar}
       icon={FileText}
+      loading={loading}
+      loadingLabel="Chargement des factures"
+      loadingRevealed={loadingRevealed}
       noun={["facture", "factures"]}
       onRowClick={(row) => onOpen(byId.get(row.id)!)}
       pageSize={10}
@@ -322,6 +330,8 @@ export function InvoicesTable({
       })}
       searchPlaceholder="Numéro ou propriétaire"
       selectable
+      skeletonFallback={{ rows: 5, rowHeight: 44 }}
+      skeletonKey="invoices"
       title="Registre des factures"
     />
   );

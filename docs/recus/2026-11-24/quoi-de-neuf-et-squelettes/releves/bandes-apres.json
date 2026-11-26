@@ -1,0 +1,500 @@
+{
+ "tableau-de-bord (light)": {
+  "bandeVisibleDes": 1117,
+  "squeletteMonte": "1117–9550 ms (120 images)",
+  "squeletteVisible": "1302–9550 ms (118 images)",
+  "valeursFaussesAffichees": "jamais",
+  "exempleDeValeursFausses": null,
+  "sousTitrePendant": "Mercredi 25 novembre · lecture en cours…",
+  "valeursFinales": [
+   "0",
+   "0",
+   "0",
+   "0",
+   "0"
+  ],
+  "hauteursBande": [
+   196
+  ],
+  "hauteurBandePendant": [
+   196
+  ],
+  "hauteurBandeApres": [
+   196
+  ],
+  "decalageCumule": 0.009,
+  "erreurs": []
+ },
+ "chiffres-cles (light)": {
+  "bandeVisibleDes": 1168,
+  "squeletteMonte": "1168–9519 ms (116 images)",
+  "squeletteVisible": "1378–9519 ms (114 images)",
+  "valeursFaussesAffichees": "jamais",
+  "exempleDeValeursFausses": null,
+  "sousTitrePendant": "Du 27 oct. au 25 nov. 2026",
+  "valeursFinales": [
+   "26 700 DA",
+   "6",
+   "0 DA",
+   "2"
+  ],
+  "hauteursBande": [
+   264
+  ],
+  "hauteurBandePendant": [
+   264
+  ],
+  "hauteurBandeApres": [
+   264
+  ],
+  "decalageCumule": 0.009,
+  "erreurs": []
+ },
+ "patients (light)": {
+  "bandeVisibleDes": 1008,
+  "squeletteMonte": "1008–4137 ms (77 images)",
+  "squeletteVisible": "1173–4137 ms (67 images)",
+  "valeursFaussesAffichees": "jamais",
+  "exempleDeValeursFausses": null,
+  "sousTitrePendant": "Dossiers et suivi clinique",
+  "valeursFinales": [
+   "5",
+   "2",
+   "2",
+   "0"
+  ],
+  "hauteursBande": [
+   222
+  ],
+  "hauteurBandePendant": [
+   222
+  ],
+  "hauteurBandeApres": [
+   222
+  ],
+  "decalageCumule": 0,
+  "erreurs": []
+ },
+ "agenda (light)": {
+  "bandeVisibleDes": 1116,
+  "squeletteMonte": "1116–4926 ms (88 images)",
+  "squeletteVisible": "1211–4926 ms (81 images)",
+  "valeursFaussesAffichees": "jamais",
+  "exempleDeValeursFausses": null,
+  "sousTitrePendant": "Rendez-vous du jour",
+  "valeursFinales": [
+   "3",
+   "1",
+   "1 h 45",
+   "10:15"
+  ],
+  "hauteursBande": [
+   222
+  ],
+  "hauteurBandePendant": [
+   222
+  ],
+  "hauteurBandeApres": [
+   222
+  ],
+  "decalageCumule": 0,
+  "erreurs": []
+ },
+ "rappels (light)": {
+  "bandeVisibleDes": 1081,
+  "squeletteMonte": "1081–4674 ms (87 images)",
+  "squeletteVisible": "1225–4674 ms (77 images)",
+  "valeursFaussesAffichees": "jamais",
+  "exempleDeValeursFausses": null,
+  "sousTitrePendant": "Lecture des rappels…",
+  "valeursFinales": [
+   "0",
+   "0",
+   "0",
+   "0"
+  ],
+  "hauteursBande": [
+   194
+  ],
+  "hauteurBandePendant": [
+   194
+  ],
+  "hauteurBandeApres": [
+   194
+  ],
+  "decalageCumule": 0,
+  "erreurs": []
+ },
+ "soins (light)": {
+  "bandeVisibleDes": 1026,
+  "squeletteMonte": "1026–7040 ms (256 images)",
+  "squeletteVisible": "1157–7040 ms (247 images)",
+  "valeursFaussesAffichees": "jamais",
+  "exempleDeValeursFausses": null,
+  "sousTitrePendant": "Soins du jour",
+  "valeursFinales": [
+   "0",
+   "0",
+   "0"
+  ],
+  "hauteursBande": [
+   222
+  ],
+  "hauteurBandePendant": [
+   222
+  ],
+  "hauteurBandeApres": [
+   222
+  ],
+  "decalageCumule": 0,
+  "erreurs": []
+ },
+ "hospitalisation (light)": {
+  "bandeVisibleDes": 1076,
+  "squeletteMonte": "1076–3855 ms (82 images)",
+  "squeletteVisible": "1195–3855 ms (73 images)",
+  "valeursFaussesAffichees": "jamais",
+  "exempleDeValeursFausses": null,
+  "sousTitrePendant": "Séjours et emplacements",
+  "valeursFinales": [
+   "0",
+   "0",
+   "0"
+  ],
+  "hauteursBande": [
+   222
+  ],
+  "hauteurBandePendant": [
+   222
+  ],
+  "hauteurBandeApres": [
+   222
+  ],
+  "decalageCumule": 0,
+  "erreurs": []
+ },
+ "produits (light)": {
+  "bandeVisibleDes": 1009,
+  "squeletteMonte": "1009–3837 ms (79 images)",
+  "squeletteVisible": "1161–3837 ms (69 images)",
+  "valeursFaussesAffichees": "jamais",
+  "exempleDeValeursFausses": null,
+  "sousTitrePendant": "Stock, seuils et péremptions",
+  "valeursFinales": [
+   "38 130 DA",
+   "2",
+   "2",
+   "5"
+  ],
+  "hauteursBande": [
+   222
+  ],
+  "hauteurBandePendant": [
+   222
+  ],
+  "hauteurBandeApres": [
+   222
+  ],
+  "decalageCumule": 0,
+  "erreurs": []
+ },
+ "finances (light)": {
+  "bandeVisibleDes": 1018,
+  "squeletteMonte": "1018–3905 ms (74 images)",
+  "squeletteVisible": "1168–3905 ms (65 images)",
+  "valeursFaussesAffichees": "jamais",
+  "exempleDeValeursFausses": null,
+  "sousTitrePendant": "Facturation et règlements",
+  "valeursFinales": [
+   "0 DA",
+   "0 DA",
+   "0 DA",
+   "0 DA"
+  ],
+  "hauteursBande": [
+   222
+  ],
+  "hauteurBandePendant": [
+   222
+  ],
+  "hauteurBandeApres": [
+   222
+  ],
+  "decalageCumule": 0,
+  "erreurs": []
+ },
+ "equipe (light)": {
+  "bandeVisibleDes": 1027,
+  "squeletteMonte": "1027–3806 ms (74 images)",
+  "squeletteVisible": "1179–3806 ms (65 images)",
+  "valeursFaussesAffichees": "jamais",
+  "exempleDeValeursFausses": null,
+  "sousTitrePendant": "Lecture de l’équipe…",
+  "valeursFinales": [
+   "3",
+   "2",
+   "0",
+   "0"
+  ],
+  "hauteursBande": [
+   194
+  ],
+  "hauteurBandePendant": [
+   194
+  ],
+  "hauteurBandeApres": [
+   194
+  ],
+  "decalageCumule": 0,
+  "erreurs": []
+ },
+ "tableau-de-bord (dark)": {
+  "bandeVisibleDes": 1041,
+  "squeletteMonte": "1041–9679 ms (128 images)",
+  "squeletteVisible": "1283–9679 ms (126 images)",
+  "valeursFaussesAffichees": "jamais",
+  "exempleDeValeursFausses": null,
+  "sousTitrePendant": "Mercredi 25 novembre · lecture en cours…",
+  "valeursFinales": [
+   "0",
+   "0",
+   "0",
+   "0",
+   "0"
+  ],
+  "hauteursBande": [
+   194
+  ],
+  "hauteurBandePendant": [
+   194
+  ],
+  "hauteurBandeApres": [
+   194
+  ],
+  "decalageCumule": 0.01,
+  "erreurs": []
+ },
+ "chiffres-cles (dark)": {
+  "bandeVisibleDes": 1141,
+  "squeletteMonte": "1141–9447 ms (122 images)",
+  "squeletteVisible": "1323–9447 ms (120 images)",
+  "valeursFaussesAffichees": "jamais",
+  "exempleDeValeursFausses": null,
+  "sousTitrePendant": "Du 27 oct. au 25 nov. 2026",
+  "valeursFinales": [
+   "26 700 DA",
+   "6",
+   "0 DA",
+   "2"
+  ],
+  "hauteursBande": [
+   262
+  ],
+  "hauteurBandePendant": [
+   262
+  ],
+  "hauteurBandeApres": [
+   262
+  ],
+  "decalageCumule": 0.01,
+  "erreurs": []
+ },
+ "patients (dark)": {
+  "bandeVisibleDes": 1014,
+  "squeletteMonte": "1014–4471 ms (74 images)",
+  "squeletteVisible": "1179–4471 ms (65 images)",
+  "valeursFaussesAffichees": "jamais",
+  "exempleDeValeursFausses": null,
+  "sousTitrePendant": "Dossiers et suivi clinique",
+  "valeursFinales": [
+   "5",
+   "2",
+   "2",
+   "0"
+  ],
+  "hauteursBande": [
+   222
+  ],
+  "hauteurBandePendant": [
+   222
+  ],
+  "hauteurBandeApres": [
+   222
+  ],
+  "decalageCumule": 0,
+  "erreurs": []
+ },
+ "agenda (dark)": {
+  "bandeVisibleDes": 1154,
+  "squeletteMonte": "1154–4875 ms (85 images)",
+  "squeletteVisible": "1251–4875 ms (78 images)",
+  "valeursFaussesAffichees": "jamais",
+  "exempleDeValeursFausses": null,
+  "sousTitrePendant": "Rendez-vous du jour",
+  "valeursFinales": [
+   "3",
+   "1",
+   "1 h 45",
+   "10:15"
+  ],
+  "hauteursBande": [
+   222
+  ],
+  "hauteurBandePendant": [
+   222
+  ],
+  "hauteurBandeApres": [
+   222
+  ],
+  "decalageCumule": 0,
+  "erreurs": []
+ },
+ "rappels (dark)": {
+  "bandeVisibleDes": 1062,
+  "squeletteMonte": "1062–4528 ms (83 images)",
+  "squeletteVisible": "1187–4528 ms (74 images)",
+  "valeursFaussesAffichees": "jamais",
+  "exempleDeValeursFausses": null,
+  "sousTitrePendant": "Lecture des rappels…",
+  "valeursFinales": [
+   "0",
+   "0",
+   "0",
+   "0"
+  ],
+  "hauteursBande": [
+   194
+  ],
+  "hauteurBandePendant": [
+   194
+  ],
+  "hauteurBandeApres": [
+   194
+  ],
+  "decalageCumule": 0,
+  "erreurs": []
+ },
+ "soins (dark)": {
+  "bandeVisibleDes": 973,
+  "squeletteMonte": "973–6795 ms (256 images)",
+  "squeletteVisible": "1112–6795 ms (246 images)",
+  "valeursFaussesAffichees": "jamais",
+  "exempleDeValeursFausses": null,
+  "sousTitrePendant": "Soins du jour",
+  "valeursFinales": [
+   "0",
+   "0",
+   "0"
+  ],
+  "hauteursBande": [
+   222
+  ],
+  "hauteurBandePendant": [
+   222
+  ],
+  "hauteurBandeApres": [
+   222
+  ],
+  "decalageCumule": 0,
+  "erreurs": []
+ },
+ "hospitalisation (dark)": {
+  "bandeVisibleDes": 1093,
+  "squeletteMonte": "1093–3739 ms (81 images)",
+  "squeletteVisible": "1195–3739 ms (73 images)",
+  "valeursFaussesAffichees": "jamais",
+  "exempleDeValeursFausses": null,
+  "sousTitrePendant": "Séjours et emplacements",
+  "valeursFinales": [
+   "0",
+   "0",
+   "0"
+  ],
+  "hauteursBande": [
+   222
+  ],
+  "hauteurBandePendant": [
+   222
+  ],
+  "hauteurBandeApres": [
+   222
+  ],
+  "decalageCumule": 0,
+  "erreurs": []
+ },
+ "produits (dark)": {
+  "bandeVisibleDes": 1021,
+  "squeletteMonte": "1021–3990 ms (85 images)",
+  "squeletteVisible": "1162–3990 ms (76 images)",
+  "valeursFaussesAffichees": "jamais",
+  "exempleDeValeursFausses": null,
+  "sousTitrePendant": "Stock, seuils et péremptions",
+  "valeursFinales": [
+   "38 130 DA",
+   "2",
+   "2",
+   "5"
+  ],
+  "hauteursBande": [
+   222
+  ],
+  "hauteurBandePendant": [
+   222
+  ],
+  "hauteurBandeApres": [
+   222
+  ],
+  "decalageCumule": 0,
+  "erreurs": []
+ },
+ "finances (dark)": {
+  "bandeVisibleDes": 1004,
+  "squeletteMonte": "1004–3967 ms (75 images)",
+  "squeletteVisible": "1155–3967 ms (66 images)",
+  "valeursFaussesAffichees": "jamais",
+  "exempleDeValeursFausses": null,
+  "sousTitrePendant": "Facturation et règlements",
+  "valeursFinales": [
+   "0 DA",
+   "0 DA",
+   "0 DA",
+   "0 DA"
+  ],
+  "hauteursBande": [
+   222
+  ],
+  "hauteurBandePendant": [
+   222
+  ],
+  "hauteurBandeApres": [
+   222
+  ],
+  "decalageCumule": 0,
+  "erreurs": []
+ },
+ "equipe (dark)": {
+  "bandeVisibleDes": 973,
+  "squeletteMonte": "973–3763 ms (74 images)",
+  "squeletteVisible": "1123–3763 ms (65 images)",
+  "valeursFaussesAffichees": "jamais",
+  "exempleDeValeursFausses": null,
+  "sousTitrePendant": "Lecture de l’équipe…",
+  "valeursFinales": [
+   "3",
+   "2",
+   "0",
+   "0"
+  ],
+  "hauteursBande": [
+   194
+  ],
+  "hauteurBandePendant": [
+   194
+  ],
+  "hauteurBandeApres": [
+   194
+  ],
+  "decalageCumule": 0,
+  "erreurs": []
+ }
+}

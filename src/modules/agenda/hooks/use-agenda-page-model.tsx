@@ -188,9 +188,11 @@ export function useAgendaPageModel(onNavigate?: (view: View) => void) {
     }
   }, [focus, clearFocus]);
   const recurrencesStore = useAppointmentRecurrencesRepository();
-  const { data: patients } = usePatientsRepository();
+  const { data: patients, loading: loadingPatients } = usePatientsRepository();
   const { data: owners } = useOwnersRepository();
-  const { data: users } = useUsersRepository();
+  const { data: users, loading: loadingUsers } = useUsersRepository();
+  // The band counts the day's visits and names their patients and vets: no figure until all three are read.
+  const sectionCardsLoading = loadingAppointments || loadingPatients || loadingUsers;
   const audit = useAudit();
 
   useEffect(() => {
@@ -1169,6 +1171,7 @@ export function useAgendaPageModel(onNavigate?: (view: View) => void) {
     resetForm,
     searchTerm,
     sectionCards,
+    sectionCardsLoading,
     selectAppointment,
     selectedAppointment,
     selectedAppointmentId,

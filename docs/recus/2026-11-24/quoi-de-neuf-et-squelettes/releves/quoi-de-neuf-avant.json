@@ -1,0 +1,398 @@
+[
+ {
+  "mode": "light",
+  "viewport": "1440x900",
+  "dialog": {
+   "top": 13,
+   "bottom": 887,
+   "height": 874
+  },
+  "head": {
+   "top": 19,
+   "bottom": 103,
+   "height": 84
+  },
+  "button": {
+   "top": 843,
+   "bottom": 875,
+   "height": 32
+  },
+  "panel": {
+   "top": 103,
+   "bottom": 831,
+   "height": 728,
+   "scrollHeight": 728,
+   "clientHeight": 728
+  },
+  "headVisible": true,
+  "buttonVisible": true,
+  "dialogInside": true,
+  "items": 4,
+  "title": "Quoi de neuf dans la version 5.2.0",
+  "lastItemVisibleAfterEnd": true,
+  "errors": []
+ },
+ {
+  "mode": "light",
+  "viewport": "1280x720",
+  "dialog": {
+   "top": -77,
+   "bottom": 797,
+   "height": 874
+  },
+  "head": {
+   "top": -71,
+   "bottom": 13,
+   "height": 84
+  },
+  "button": {
+   "top": 753,
+   "bottom": 785,
+   "height": 32
+  },
+  "panel": {
+   "top": 13,
+   "bottom": 741,
+   "height": 728,
+   "scrollHeight": 728,
+   "clientHeight": 728
+  },
+  "headVisible": false,
+  "buttonVisible": false,
+  "dialogInside": false,
+  "items": 4,
+  "title": "Quoi de neuf dans la version 5.2.0",
+  "lastItemVisibleAfterEnd": true,
+  "errors": []
+ },
+ {
+  "mode": "light",
+  "viewport": "1366x768",
+  "dialog": {
+   "top": -53,
+   "bottom": 821,
+   "height": 874
+  },
+  "head": {
+   "top": -47,
+   "bottom": 37,
+   "height": 84
+  },
+  "button": {
+   "top": 777,
+   "bottom": 809,
+   "height": 32
+  },
+  "panel": {
+   "top": 37,
+   "bottom": 765,
+   "height": 728,
+   "scrollHeight": 728,
+   "clientHeight": 728
+  },
+  "headVisible": false,
+  "buttonVisible": false,
+  "dialogInside": false,
+  "items": 4,
+  "title": "Quoi de neuf dans la version 5.2.0",
+  "lastItemVisibleAfterEnd": true,
+  "errors": []
+ },
+ {
+  "mode": "light",
+  "viewport": "1280x600",
+  "dialog": {
+   "top": -137,
+   "bottom": 737,
+   "height": 874
+  },
+  "head": {
+   "top": -131,
+   "bottom": -47,
+   "height": 84
+  },
+  "button": {
+   "top": 693,
+   "bottom": 725,
+   "height": 32
+  },
+  "panel": {
+   "top": -47,
+   "bottom": 681,
+   "height": 728,
+   "scrollHeight": 728,
+   "clientHeight": 728
+  },
+  "headVisible": false,
+  "buttonVisible": false,
+  "dialogInside": false,
+  "items": 4,
+  "title": "Quoi de neuf dans la version 5.2.0",
+  "lastItemVisibleAfterEnd": false,
+  "errors": []
+ },
+ {
+  "mode": "light",
+  "viewport": "1024x500",
+  "dialog": {
+   "top": -187,
+   "bottom": 687,
+   "height": 874
+  },
+  "head": {
+   "top": -181,
+   "bottom": -97,
+   "height": 84
+  },
+  "button": {
+   "top": 643,
+   "bottom": 675,
+   "height": 32
+  },
+  "panel": {
+   "top": -97,
+   "bottom": 631,
+   "height": 728,
+   "scrollHeight": 728,
+   "clientHeight": 728
+  },
+  "headVisible": false,
+  "buttonVisible": false,
+  "dialogInside": false,
+  "items": 4,
+  "title": "Quoi de neuf dans la version 5.2.0",
+  "lastItemVisibleAfterEnd": false,
+  "errors": []
+ },
+ {
+  "mode": "light",
+  "viewport": "1440x1200",
+  "dialog": {
+   "top": 163,
+   "bottom": 1037,
+   "height": 874
+  },
+  "head": {
+   "top": 169,
+   "bottom": 253,
+   "height": 84
+  },
+  "button": {
+   "top": 993,
+   "bottom": 1025,
+   "height": 32
+  },
+  "panel": {
+   "top": 253,
+   "bottom": 981,
+   "height": 728,
+   "scrollHeight": 728,
+   "clientHeight": 728
+  },
+  "headVisible": true,
+  "buttonVisible": true,
+  "dialogInside": true,
+  "items": 4,
+  "title": "Quoi de neuf dans la version 5.2.0",
+  "lastItemVisibleAfterEnd": true,
+  "errors": []
+ },
+ {
+  "mode": "dark",
+  "viewport": "1440x900",
+  "dialog": {
+   "top": 13,
+   "bottom": 887,
+   "height": 874
+  },
+  "head": {
+   "top": 19,
+   "bottom": 103,
+   "height": 84
+  },
+  "button": {
+   "top": 843,
+   "bottom": 875,
+   "height": 32
+  },
+  "panel": {
+   "top": 103,
+   "bottom": 831,
+   "height": 728,
+   "scrollHeight": 728,
+   "clientHeight": 728
+  },
+  "headVisible": true,
+  "buttonVisible": true,
+  "dialogInside": true,
+  "items": 4,
+  "title": "Quoi de neuf dans la version 5.2.0",
+  "lastItemVisibleAfterEnd": true,
+  "errors": []
+ },
+ {
+  "mode": "dark",
+  "viewport": "1280x720",
+  "dialog": {
+   "top": -77,
+   "bottom": 797,
+   "height": 874
+  },
+  "head": {
+   "top": -71,
+   "bottom": 13,
+   "height": 84
+  },
+  "button": {
+   "top": 753,
+   "bottom": 785,
+   "height": 32
+  },
+  "panel": {
+   "top": 13,
+   "bottom": 741,
+   "height": 728,
+   "scrollHeight": 728,
+   "clientHeight": 728
+  },
+  "headVisible": false,
+  "buttonVisible": false,
+  "dialogInside": false,
+  "items": 4,
+  "title": "Quoi de neuf dans la version 5.2.0",
+  "lastItemVisibleAfterEnd": true,
+  "errors": []
+ },
+ {
+  "mode": "dark",
+  "viewport": "1366x768",
+  "dialog": {
+   "top": -53,
+   "bottom": 821,
+   "height": 874
+  },
+  "head": {
+   "top": -47,
+   "bottom": 37,
+   "height": 84
+  },
+  "button": {
+   "top": 777,
+   "bottom": 809,
+   "height": 32
+  },
+  "panel": {
+   "top": 37,
+   "bottom": 765,
+   "height": 728,
+   "scrollHeight": 728,
+   "clientHeight": 728
+  },
+  "headVisible": false,
+  "buttonVisible": false,
+  "dialogInside": false,
+  "items": 4,
+  "title": "Quoi de neuf dans la version 5.2.0",
+  "lastItemVisibleAfterEnd": true,
+  "errors": []
+ },
+ {
+  "mode": "dark",
+  "viewport": "1280x600",
+  "dialog": {
+   "top": -137,
+   "bottom": 737,
+   "height": 874
+  },
+  "head": {
+   "top": -131,
+   "bottom": -47,
+   "height": 84
+  },
+  "button": {
+   "top": 693,
+   "bottom": 725,
+   "height": 32
+  },
+  "panel": {
+   "top": -47,
+   "bottom": 681,
+   "height": 728,
+   "scrollHeight": 728,
+   "clientHeight": 728
+  },
+  "headVisible": false,
+  "buttonVisible": false,
+  "dialogInside": false,
+  "items": 4,
+  "title": "Quoi de neuf dans la version 5.2.0",
+  "lastItemVisibleAfterEnd": false,
+  "errors": []
+ },
+ {
+  "mode": "dark",
+  "viewport": "1024x500",
+  "dialog": {
+   "top": -187,
+   "bottom": 687,
+   "height": 874
+  },
+  "head": {
+   "top": -181,
+   "bottom": -97,
+   "height": 84
+  },
+  "button": {
+   "top": 643,
+   "bottom": 675,
+   "height": 32
+  },
+  "panel": {
+   "top": -97,
+   "bottom": 631,
+   "height": 728,
+   "scrollHeight": 728,
+   "clientHeight": 728
+  },
+  "headVisible": false,
+  "buttonVisible": false,
+  "dialogInside": false,
+  "items": 4,
+  "title": "Quoi de neuf dans la version 5.2.0",
+  "lastItemVisibleAfterEnd": false,
+  "errors": []
+ },
+ {
+  "mode": "dark",
+  "viewport": "1440x1200",
+  "dialog": {
+   "top": 163,
+   "bottom": 1037,
+   "height": 874
+  },
+  "head": {
+   "top": 169,
+   "bottom": 253,
+   "height": 84
+  },
+  "button": {
+   "top": 993,
+   "bottom": 1025,
+   "height": 32
+  },
+  "panel": {
+   "top": 253,
+   "bottom": 981,
+   "height": 728,
+   "scrollHeight": 728,
+   "clientHeight": 728
+  },
+  "headVisible": true,
+  "buttonVisible": true,
+  "dialogInside": true,
+  "items": 4,
+  "title": "Quoi de neuf dans la version 5.2.0",
+  "lastItemVisibleAfterEnd": true,
+  "errors": []
+ }
+]

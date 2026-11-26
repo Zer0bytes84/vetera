@@ -72,6 +72,9 @@ export function useFinancesPageModel({
   // Hors de l'application de bureau, il n'y a rien à charger : l'état de départ est déjà celui que le chargement aurait posé.
   const [invoicesLoading, setInvoicesLoading] = useState(isTauriRuntime);
   const [invoiceError, setInvoiceError] = useState<string | null>(() => (isTauriRuntime() ? null : DESKTOP_ONLY_INVOICES));
+  // Whether the invoices were read once: only the first read draws the band's skeleton. A reload after a save keeps
+  // the figures it already shows, instead of blanking them every time.
+  const [invoicesRead, setInvoicesRead] = useState(false);
   const [invoiceQuery, setInvoiceQuery] = useState("");
   const [invoiceDraft, setInvoiceDraft] =
     useState<InvoiceDraft>(createInvoiceDraft);
@@ -164,6 +167,7 @@ export function useFinancesPageModel({
   const fetchInvoices = useCallback(async () => {
     await guard(async () => {
       setInvoices(await billingService.listInvoices());
+      setInvoicesRead(true);
     }, {
       recover: (error) => {
         console.error("[Finances] Unable to load invoices", error);
@@ -291,14 +295,14 @@ export function useFinancesPageModel({
   }, [invoices]);
 
   const financeSectionCards = useMemo<SectionCardItem[]>(() => {
-    // Without the invoices, no amount is known: never claim "soldé" or "aucun retard".
-    if (invoiceError || invoicesLoading) {
-      const unknown = invoicesLoading ? "Chargement…" : "Indisponible";
-      const detail = invoicesLoading ? "Lecture des factures en cours" : invoiceError ?? "";
+    // Without the invoices, no amount is known: never claim "soldé" or "aucun retard". While they are first read, the
+    // band draws its skeleton over these four cards (financeSectionCardsLoading); when the read fails, it says so.
+    if (invoiceError || !invoicesRead) {
+      const detail = invoiceError ?? "";
       // The reason is given once, on the first card.
       return ["Facturé", "Encaissé", "Solde ouvert", "En retard"].map((title, index) => ({
         title,
-        value: unknown,
+        value: invoiceError ? "Indisponible" : "",
         tone: "quiet" as const,
         trend: "neutral" as const,
         detailRow: index === 0 ? detail : undefined,
@@ -370,7 +374,8 @@ export function useFinancesPageModel({
         footerDescription: "Retards de paiement",
       },
     ];
-  }, [invoiceError, invoiceStats, invoices, invoicesLoading]);
+  }, [invoiceError, invoiceStats, invoices, invoicesRead]);
+  const financeSectionCardsLoading = !invoiceError && !invoicesRead;
 
   const filteredInvoices = useMemo(() => {
     const query = invoiceQuery.trim().toLocaleLowerCase("fr");
@@ -1006,6 +1011,7 @@ export function useFinancesPageModel({
     filteredInvoices,
     filteredTransactions,
     financeSectionCards,
+    financeSectionCardsLoading,
     invoiceAdvancedOpen,
     invoiceDocumentFilter,
     invoiceDraft,

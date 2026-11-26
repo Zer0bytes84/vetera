@@ -7,6 +7,7 @@ import { isReminderOverdue, localToday } from "./domain";
 import { usePatientReminders } from "./use-patient-reminders";
 import { RowSkeleton } from "@/modules/dashboard/components/clinical/shared";
 import type { Patient } from "@/types/db";
+import { useRememberedRows } from "@/hooks/useRememberedRows";
 
 export function MedicalRemindersModule({ onAll }: { onAll: () => void }) {
   const model = usePatientReminders();
@@ -27,6 +28,12 @@ export function MedicalRemindersWidgetContent({ model, patients, onAll, today = 
     .sort((left, right) => left.echeance.localeCompare(right.echeance));
   const upcomingCount = future.length;
   const upcoming = future.slice(0, 3);
+  // The skeleton takes the height the content took last time, so the panel does not grow when the reminders arrive.
+  const { reserved: contentSlot, measure: measureContent } = useRememberedRows<HTMLDivElement>(
+    "medical-reminders-widget",
+    { rows: 1, rowHeight: 56 },
+    "block",
+  );
 
   return (
     <WidgetShell
@@ -48,11 +55,16 @@ export function MedicalRemindersWidgetContent({ model, patients, onAll, today = 
       onRetry={model.refresh}
       pending={model.loading}
       showSkeleton={model.loading}
-      skeleton={<RowSkeleton count={1} />}
+      skeletonClassName=""
+      skeleton={
+        <div className="overflow-hidden" style={{ height: contentSlot.rowHeight }}>
+          <RowSkeleton count={1} />
+        </div>
+      }
       subtitle="Prévention et suivi médical"
       title="Rappels médicaux"
     >
-      <div className="medical-reminders-widget-content">
+      <div className="medical-reminders-widget-content" ref={measureContent}>
         <section aria-labelledby="medical-reminders-status-title" className="medical-reminders-widget-zone">
           <h3 className="medical-reminders-widget-label" id="medical-reminders-status-title">Situation</h3>
           <dl className="medical-reminders-widget-totals">

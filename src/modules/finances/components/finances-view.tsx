@@ -100,6 +100,7 @@ import {
 import type { FinancesViewProps } from "../hooks/use-finances-page-model";
 import "../finances-premium.css";
 import { DatePicker } from "@/components/ui/date-picker";
+import { useDelayedSkeleton } from "@/hooks/useDelayedSkeleton";
 import { useListCursor } from "@/hooks/useListCursor";
 import { InvoicesTable } from "./invoices-table";
 import { IconButton, QuietButton, SearchField } from "@/components/ui/tuff-controls";
@@ -118,6 +119,7 @@ export function FinancesView(props: FinancesViewProps) {
     filteredInvoices,
     filteredTransactions,
     financeSectionCards,
+    financeSectionCardsLoading,
     invoiceDocumentFilter,
     invoiceDraft,
     invoiceError,
@@ -125,7 +127,6 @@ export function FinancesView(props: FinancesViewProps) {
     invoiceFrom,
     invoiceSettlementFilter,
     invoiceTo,
-    invoicesLoading,
     isDetailLoading,
     isInvoiceDialogOpen,
     isSubmitting,
@@ -214,6 +215,8 @@ export function FinancesView(props: FinancesViewProps) {
     transactionDraft,
     transactionsLoading,
   } = props;
+  // The register holds its rows' place from the first frame; the sheen shows after 150 ms and stays 300 ms (no flash).
+  const registerSkeleton = useDelayedSkeleton(financeSectionCardsLoading);
   const viewToggle = (
     <TabsList
       aria-label="Vue des finances"
@@ -272,6 +275,7 @@ export function FinancesView(props: FinancesViewProps) {
         }
         icon={ReceiptPercentIcon}
         items={financeSectionCards}
+        loading={financeSectionCardsLoading}
         subtitle="Facturation et règlements"
       />
 
@@ -282,11 +286,7 @@ export function FinancesView(props: FinancesViewProps) {
       >
         {/* One title, the band's: on both tabs the switch lives in the table's band. */}
         <TabsContent className="space-y-5" value="invoices">
-          {invoicesLoading ? (
-            <div className="flex min-h-56 items-center justify-center">
-              <Spinner className="size-6 text-muted-foreground" />
-            </div>
-          ) : invoiceError ? (
+          {invoiceError ? (
             <Empty className="min-h-56 py-10">
               <EmptyHeader>
                 <EmptyMedia variant="icon">
@@ -298,6 +298,8 @@ export function FinancesView(props: FinancesViewProps) {
             </Empty>
           ) : (
             <InvoicesTable
+              loading={financeSectionCardsLoading || registerSkeleton}
+              loadingRevealed={registerSkeleton}
               toolbar={viewToggle}
               busy={isSubmitting}
               detailLoading={isDetailLoading}

@@ -120,6 +120,9 @@ import {
 } from "@/modules/agenda/components/agenda-shared";
 import type { AgendaViewProps } from "../hooks/use-agenda-page-model";
 import { DatePicker } from "@/components/ui/date-picker";
+import { SkeletonRegion, SkeletonShape } from "@/components/ui/loading-skeleton";
+import { cn } from "@/lib/utils";
+import { useDelayedSkeleton } from "@/hooks/useDelayedSkeleton";
 
 export function AgendaView(props: AgendaViewProps) {
   const {
@@ -152,7 +155,6 @@ export function AgendaView(props: AgendaViewProps) {
     handleSave,
     isDialogOpen,
     isSubmitting,
-    loadingAppointments,
     monthDays,
     openAppointmentInFlux,
     ownerSearchTerm,
@@ -171,6 +173,7 @@ export function AgendaView(props: AgendaViewProps) {
     resetForm,
     searchTerm,
     sectionCards,
+    sectionCardsLoading,
     selectAppointment,
     selectedAppointment,
     selectedAppointmentId,
@@ -219,6 +222,10 @@ export function AgendaView(props: AgendaViewProps) {
     viewMode,
     weekDays,
   } = props;
+  // The calendar, the list and the day's load wait for the appointments and the names they show (first read only),
+  // each in the place it took last time: no empty day before the day is read.
+  const agendaSkeleton = useDelayedSkeleton(sectionCardsLoading);
+  const agendaReading = sectionCardsLoading || agendaSkeleton;
   // The day in close-up opens first: a busy day reads at a glance before anything else.
   const [calendarView, setCalendarView] = useState<CalendarView>("day");
   const isDayScope = tableTab === "selection";
@@ -283,10 +290,13 @@ export function AgendaView(props: AgendaViewProps) {
         }
         icon={CalendarDays}
         items={sectionCards}
+        loading={sectionCardsLoading}
         subtitle="Rendez-vous du jour"
       />
 
       <AgendaCalendar
+        loading={agendaReading}
+        loadingRevealed={agendaSkeleton}
         getAppointmentsForDate={getAppointmentsForDate}
         getPatientName={getPatientName}
         monthDays={monthDays}
@@ -324,7 +334,11 @@ export function AgendaView(props: AgendaViewProps) {
                 : TABLE_TABS.find((tab) => tab.value === tableTab)?.label}
             </CardTitle>
             <CardDescription className="text-sm">
-              {!isDayScope
+              {agendaReading && isDayScope ? (
+                <span className={cn("loading-skeleton", !agendaSkeleton && "invisible")}>
+                  <SkeletonShape className="loading-skeleton-inline" />
+                </span>
+              ) : !isDayScope
                 ? TABLE_SCOPES(formatDateLabel(selectedDate))[tableTab]
                 : displayMode === "day"
                   ? `${daySummaryLabel}${dayRows.length > 0 ? ", répartis par vétérinaire" : ""}`
@@ -438,11 +452,15 @@ export function AgendaView(props: AgendaViewProps) {
                 />
               ) : null}
 
-              {loadingAppointments ? (
-                <div className="flex items-center justify-center p-6">
-                  <Spinner />
-                </div>
-              ) : displayMode === "day" && isDayScope ? (
+              <SkeletonRegion
+                busy={agendaReading}
+                className="min-w-0"
+                fallbackHeight={240}
+                label="Chargement de la liste des rendez-vous"
+                memoryKey={`agenda-list:${displayMode}:${isDayScope ? "day" : "range"}:${tableTab}`}
+                revealed={agendaSkeleton}
+              >
+              {displayMode === "day" && isDayScope ? (
                 <div className="min-w-0 overflow-x-auto pt-4">
                   <AgendaDayView
                     appointmentsByVet={appointmentsByVet}
@@ -532,6 +550,7 @@ export function AgendaView(props: AgendaViewProps) {
                   showDate={!isDayScope}
                 />
               )}
+              </SkeletonRegion>
             </Tabs>
           </CardContent>
         </Card>
@@ -668,6 +687,14 @@ export function AgendaView(props: AgendaViewProps) {
             </div>
           )}
 
+          <SkeletonRegion
+            busy={agendaReading}
+            className="min-w-0"
+            fallbackHeight={420}
+            label="Chargement de la charge de la journée"
+            memoryKey="agenda-day-load"
+            revealed={agendaSkeleton}
+          >
           <AgendaDayLoadCard
             dayLoadSummary={dayLoadSummary}
             engagedVetsCount={engagedVetsCount}
@@ -694,6 +721,7 @@ export function AgendaView(props: AgendaViewProps) {
             urgentOpenCount={urgentOpenCount}
             weekDays={weekDays}
           />
+          </SkeletonRegion>
         </aside>
       </div>
 

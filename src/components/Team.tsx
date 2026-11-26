@@ -63,6 +63,9 @@ import { TEAM_STATUS_META } from "@/config/status-meta";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUsersRepository } from "@/data/repositories";
 import { cn } from "@/lib/utils";
+import { SkeletonShape } from "@/components/ui/loading-skeleton";
+import { useDelayedSkeleton } from "@/hooks/useDelayedSkeleton";
+import { useRememberedRows } from "@/hooks/useRememberedRows";
 import { hashPassword, updatePassword } from "@/services/sqlite/auth";
 import type { User, UserRole } from "@/types/db";
 import Avatar from "./Avatar";
@@ -368,6 +371,10 @@ const Team: React.FC = () => {
   const team = readTeam(users);
   const readAt = new Date();
   const readDay = readAt.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" });
+  // The directory holds its cards' place on the first read (revealed after 150 ms, kept 300 ms): no « 0 membre ».
+  const directorySkeleton = useDelayedSkeleton(loading);
+  const reading = loading || directorySkeleton;
+  const { reserved: memberSlots, measure: measureMembers } = useRememberedRows<HTMLDivElement>("team-cards", { rows: 3, rowHeight: 168 }, "grid");
   const bandSubtitle = loading
     ? "Lecture de l’équipe…"
     : `${readDay[0].toLocaleUpperCase("fr-FR")}${readDay.slice(1)} · état à ${readAt.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })} · ${team.state}`;
@@ -391,17 +398,24 @@ const Team: React.FC = () => {
         badges={false}
         icon={UsersIcon}
         items={sectionCards}
+        loading={loading}
         subtitle={bandSubtitle}
       />
 
       {/* The directory: no section title block, a tool row as on Flux and Rappels (count on the left, search on the right). */}
       <section aria-label="Annuaire de l’équipe" className="team-directory flex flex-1 flex-col gap-3">
         <div className="team-directory-tools flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
-          <p className="text-muted-foreground t-13">
-            <span className="font-medium text-foreground tabular-nums">{formatNumber(filteredUsers.length)}</span>{" "}
-            membre{filteredUsers.length > 1 ? "s" : ""}
-            {searchTerm ? ` sur ${formatNumber(users.length)}` : ""}
-          </p>
+          {reading ? (
+            <p className={cn("loading-skeleton text-muted-foreground t-13", !directorySkeleton && "invisible")}>
+              <SkeletonShape className="loading-skeleton-inline" />
+            </p>
+          ) : (
+            <p className="text-muted-foreground t-13">
+              <span className="font-medium text-foreground tabular-nums">{formatNumber(filteredUsers.length)}</span>{" "}
+              membre{filteredUsers.length > 1 ? "s" : ""}
+              {searchTerm ? ` sur ${formatNumber(users.length)}` : ""}
+            </p>
+          )}
           <ListSearch
             className="w-full sm:w-56"
             label="Rechercher un membre"
@@ -413,9 +427,29 @@ const Team: React.FC = () => {
 
         {/* Users List */}
         <div className="flex-1">
-          {loading ? (
-            <div className="flex items-center justify-center p-6">
-              <Spinner />
+          {reading ? (
+            <div
+              aria-busy="true"
+              aria-label="Chargement de l’équipe"
+              className={cn("loading-skeleton grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3", !directorySkeleton && "invisible")}
+              data-skeleton-region="team-cards"
+              role="status"
+            >
+              {Array.from({ length: Math.max(1, memberSlots.rows) }, (_, i) => (
+                <div
+                  className="flex flex-col gap-4 rounded-xl border border-border bg-muted/30 p-5"
+                  key={i}
+                  style={{ height: memberSlots.rowHeight }}
+                >
+                  <div className="flex items-center gap-3">
+                    <SkeletonShape className="loading-skeleton-avatar-lg" />
+                    <div className="flex flex-1 flex-col gap-2">
+                      <SkeletonShape className="loading-skeleton-cell loading-skeleton-cell-lead" />
+                      <SkeletonShape className="loading-skeleton-cell" />
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           ) : filteredUsers.length === 0 ? (
             // Composed as the Rappels' empty search: the page's band, one true line, and the way out.
@@ -444,7 +478,7 @@ const Team: React.FC = () => {
               />
             </Shell>
           ) : (
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3" data-skeleton-region="team-cards" ref={measureMembers}>
               {filteredUsers.map((user) => {
                 const effectiveRole =
                   user.email === "zohir.kh@gmail.com" ? "admin" : user.role;

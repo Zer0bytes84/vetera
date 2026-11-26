@@ -137,6 +137,15 @@ export function DashboardPage({
       }),
     [now, morningStatus, alertCare.tasks, alertCare.error, presentation.appointments, medicalReminders.reminders, medicalReminders.error, presentation.patients, presentation.invoices, stays.data, hospitalization]
   );
+  // « À traiter » counts care, visits, reminders, invoices and stays: no count until every one of them is read.
+  const morningLoading =
+    alertCare.loading ||
+    appointments.loading ||
+    patients.loading ||
+    medicalReminders.loading ||
+    invoices.loading ||
+    stays.loading;
+  const morningSkeleton = useDelayedSkeleton(morningLoading);
   const openMorning = (item: MorningItem) => {
     // The Rappels view opens on the medical reminders, as the « À surveiller » row did.
     if (item.id === "reminders") window.sessionStorage.setItem("baitari:reminders-source", "medical");
@@ -379,7 +388,7 @@ export function DashboardPage({
         <TourInvitation />
         <PremiumAnalytics
           clinicalView={version === "clinical" ? clinicalView : undefined}
-          morningWatch={<MorningWatch items={morning} now={now} onOpen={openMorning} onStatus={setMorningStatus} status={morningStatus} />}
+          morningWatch={<MorningWatch items={morning} loading={morningLoading || morningSkeleton} loadingRevealed={morningSkeleton} now={now} onOpen={openMorning} onStatus={setMorningStatus} status={morningStatus} />}
           model={buildPremiumAnalytics({ ...presentation, alerts, reminders: medicalReminders.reminders }, analyticsPeriod, now, customRange)}
           period={analyticsPeriod}
           onPeriod={(next: AnalyticsPeriod) => setAnalyticsPeriod(next)}

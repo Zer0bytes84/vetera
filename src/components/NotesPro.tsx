@@ -137,12 +137,13 @@ const NotesPro: React.FC = () => {
   const { currentUser } = useAuth();
   const {
     data: notes = [],
+    loading: notesLoading,
     createEmptyNote,
     update: updateNote,
     remove: removeNote,
   } = useNotesRepository();
   const { data: patients = [] } = usePatientsRepository();
-  const { data: libraryItems = [], add: addItem, update: updateItem, remove: removeItem } = useLibraryItemsRepository();
+  const { data: libraryItems = [], loading: itemsLoading, add: addItem, update: updateItem, remove: removeItem } = useLibraryItemsRepository();
 
   // State
   const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
@@ -516,6 +517,7 @@ const NotesPro: React.FC = () => {
             entries={entries}
             filter={filter}
             headerActions={secondaryPages}
+            loading={notesLoading || itemsLoading}
             onAddFiles={(files, wanted) => void handleAddFiles(files, wanted)}
             onAddLink={(url, linkName) => void handleAddLink(url, linkName)}
             onCopyLink={(url) => void handleCopyLink(url)}
