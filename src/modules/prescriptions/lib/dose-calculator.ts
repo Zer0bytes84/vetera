@@ -182,7 +182,9 @@ export function computeDose(
     raw: `${parsed.min}${parsed.range ? `-${parsed.max}` : ""} ${parsed.unit}`,
   };
 
-  if (!weightKg || weightKg <= 0) {
+  // Pas de poids, ou pas de dose sur la ligne (laissée vide, la référence n'en donne pas) : aucun « 0 mg » calculé,
+  // ni à l'écran ni sur l'ordonnance imprimée.
+  if (!weightKg || weightKg <= 0 || !(parsed.min > 0)) {
     return base;
   }
 
@@ -236,10 +238,15 @@ export function formatComputedDose(computation: DoseComputation): string {
 
 /**
  * Formate un nombre avec 2 décimales max et suppression des zéros inutiles.
+ * Sous 1, trois chiffres significatifs : la cabergoline à 5 µg/kg donne 0.015 mg
+ * pour 3 kg, que deux décimales imprimaient « 0.01 mg » (un tiers de moins).
  */
 export function formatNumber(value: number): string {
   if (!Number.isFinite(value)) {
     return "0";
+  }
+  if (value !== 0 && Math.abs(value) < 1) {
+    return String(Number(value.toPrecision(3)));
   }
   const fixed = value.toFixed(2);
   return fixed.replace(/\.?0+$/, "");
