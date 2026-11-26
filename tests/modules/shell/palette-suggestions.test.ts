@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { suggestedPatients } from "@/modules/shell/model/palette-suggestions";
-import type { Patient, Appointment } from "@/types/db";
+import type { Appointment, Patient } from "@/types/db";
+
 const patients = [
   { id: "rex", status: "sante", lastVisit: "2026-10-08" },
   { id: "mocha", status: "traitement", lastVisit: "2026-10-09" },

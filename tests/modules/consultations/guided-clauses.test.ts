@@ -1,25 +1,25 @@
 import { describe, expect, it } from "vitest";
-import { modelScaffold } from "@/modules/consultations/local-ai/soap-pipeline";
-import {
-  mergeGuidedProtected,
-  prepareGuidedSections,
-  routeGuidedTreatments,
-} from "@/modules/consultations/local-ai/treatment-routing";
-import { guidedDictationTranscript } from "@/modules/consultations/local-ai/guided-soap";
 import {
   assertFaithfulSoap,
   evidenceTokens,
   SoapFidelityError,
 } from "@/modules/consultations/local-ai/dictation-scaffold";
+import { guidedDictationTranscript } from "@/modules/consultations/local-ai/guided-soap";
 import { createSoapPrompt } from "@/modules/consultations/local-ai/patient-context";
+import { modelScaffold } from "@/modules/consultations/local-ai/soap-pipeline";
 import {
   containsDosage,
   EMPTY_SOAP,
+  type LocalSoapNote,
   parseGeneratedSoap,
   SOAP_SECTIONS,
   SoapFormatError,
-  type LocalSoapNote,
 } from "@/modules/consultations/local-ai/soap-schema";
+import {
+  mergeGuidedProtected,
+  prepareGuidedSections,
+  routeGuidedTreatments,
+} from "@/modules/consultations/local-ai/treatment-routing";
 import typed from "../../../scripts/eval-local-ai/cas-reference/otite-max.json";
 import micro2 from "../../../scripts/eval-local-ai/cas-reference/otite-max-dicte-micro2.json";
 import rejeu1 from "../../../scripts/eval-local-ai/cas-reference/otite-max-dicte-rejeu1.json";

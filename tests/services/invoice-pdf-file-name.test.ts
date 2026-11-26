@@ -2,10 +2,10 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import {
   buildInvoicePdf,
+  type InvoicePdfData,
   invoiceFileKey,
   invoicePdfFileName,
   TEST_INVOICE_MARK,
-  type InvoicePdfData,
 } from "@/lib/invoice-pdf";
 import { DEFAULT_INVOICE_SETTINGS } from "@/services/invoiceSettingsService";
 

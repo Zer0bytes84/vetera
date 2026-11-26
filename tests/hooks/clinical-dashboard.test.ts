@@ -1,10 +1,4 @@
 import { describe, expect, it } from "vitest";
-import type {
-  Appointment,
-  Hospitalization,
-  Patient,
-  Transaction,
-} from "../../src/types/db";
 import {
   buildClinicalCash,
   buildClinicalFollowUp,
@@ -13,15 +7,21 @@ import {
   buildNowSnapshot,
 } from "../../src/modules/dashboard/model/clinical-dashboard";
 import {
+  migrateClassicDashboardOrder,
+  normalizeDashboardOrder,
+} from "../../src/modules/dashboard/model/dashboard-layout";
+import {
   buildClinicalAlerts,
   buildTodaySchedule,
   parseDashboardDate,
 } from "../../src/modules/dashboard/v2/model";
-import {
-  migrateClassicDashboardOrder,
-  normalizeDashboardOrder,
-} from "../../src/modules/dashboard/model/dashboard-layout";
 import { tablesAffectedByDelete } from "../../src/services/sqlite/related-tables";
+import type {
+  Appointment,
+  Hospitalization,
+  Patient,
+  Transaction,
+} from "../../src/types/db";
 
 const now = new Date(2026, 9, 3, 12);
 const patient: Patient = {

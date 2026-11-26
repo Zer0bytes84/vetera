@@ -1,15 +1,15 @@
 import { describe, expect, it } from "vitest";
+import { guidedDictationTranscript } from "@/modules/consultations/local-ai/guided-soap";
 import { modelScaffold } from "@/modules/consultations/local-ai/soap-pipeline";
+import {
+  containsDosage,
+  EMPTY_SOAP,
+} from "@/modules/consultations/local-ai/soap-schema";
 import {
   mergeGuidedProtected,
   prepareModelDictation,
   routeGuidedTreatments,
 } from "@/modules/consultations/local-ai/treatment-routing";
-import { guidedDictationTranscript } from "@/modules/consultations/local-ai/guided-soap";
-import {
-  containsDosage,
-  EMPTY_SOAP,
-} from "@/modules/consultations/local-ai/soap-schema";
 import cas from "../../../scripts/eval-local-ai/cas-reference/otite-max.json";
 
 // Rubric answers of the field test's reference case (fictional patient "Max").

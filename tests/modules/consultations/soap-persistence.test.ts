@@ -1,16 +1,16 @@
-import { assembleGuidedNote } from "../../../src/modules/consultations/local-ai/guided-soap";
-import { EMPTY_SOAP } from "../../../src/modules/consultations/local-ai/soap-schema";
-import { DatabaseSync } from "node:sqlite";
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { DatabaseSync } from "node:sqlite";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { assembleGuidedNote } from "../../../src/modules/consultations/local-ai/guided-soap";
+import {
+  isSoapReviewed,
+  reviewedSoapContent,
+} from "../../../src/modules/consultations/local-ai/soap-review";
+import { EMPTY_SOAP } from "../../../src/modules/consultations/local-ai/soap-schema";
 import { runSqliteMigrations } from "../../../src/services/sqlite/migration-runner";
 import { SQLITE_MIGRATIONS } from "../../../src/services/sqlite/migrations";
-import {
-  reviewedSoapContent,
-  isSoapReviewed,
-} from "../../../src/modules/consultations/local-ai/soap-review";
 
 const fixture = vi.hoisted(() => ({
   db: null as DatabaseSync | null,

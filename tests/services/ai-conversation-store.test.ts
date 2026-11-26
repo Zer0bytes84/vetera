@@ -2,8 +2,8 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
   loadAIAgentState,
-  saveAIAgentState,
   type PersistedAIAgentState,
+  saveAIAgentState,
 } from "@/services/aiConversationStore";
 
 const STORAGE_KEY = "baitari-ai-agent-state-v1";

@@ -1,14 +1,14 @@
 import { DatabaseSync } from "node:sqlite";
 import { afterEach, expect, it } from "vitest";
+import type { CareDatabase } from "@/modules/care-tasks/store";
+import { MEDICAL_REMINDERS_MIGRATION_SQL } from "@/modules/patient-reminders/medical-reminders-migration";
+import { PATIENT_REMINDERS_MIGRATION_SQL } from "@/modules/patient-reminders/migration";
+import { onMedicalActRecorded } from "@/modules/patient-reminders/on-medical-act-recorded";
 import {
   createPatientReminderStore,
   type MedicalReminderProposal,
   type VaccineReminderDraft,
 } from "@/modules/patient-reminders/store";
-import { PATIENT_REMINDERS_MIGRATION_SQL } from "@/modules/patient-reminders/migration";
-import { MEDICAL_REMINDERS_MIGRATION_SQL } from "@/modules/patient-reminders/medical-reminders-migration";
-import { onMedicalActRecorded } from "@/modules/patient-reminders/on-medical-act-recorded";
-import type { CareDatabase } from "@/modules/care-tasks/store";
 
 const databases: DatabaseSync[] = [];
 afterEach(() => {

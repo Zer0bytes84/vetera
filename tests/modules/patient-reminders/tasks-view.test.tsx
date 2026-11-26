@@ -1,11 +1,11 @@
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
-import type { Patient, Reminder, Task } from "@/types/db";
 import type {
   PatientReminder,
   ReminderType,
 } from "@/modules/patient-reminders/store";
+import type { Patient, Reminder, Task } from "@/types/db";
 
 const harness = vi.hoisted(() => ({
   tasks: [] as Task[],
@@ -152,7 +152,6 @@ it("conserve l’administration des types historiques utilisés par les rappels 
     <PatientRemindersContent
       embedded
       includeManualTypes
-      view="types"
       model={{
         reminders: [],
         types,
@@ -160,6 +159,7 @@ it("conserve l’administration des types historiques utilisés par les rappels 
         loading: false,
         refresh: async () => {},
       }}
+      view="types"
     />
   );
   expect(html).toContain("Vaccination manuelle");

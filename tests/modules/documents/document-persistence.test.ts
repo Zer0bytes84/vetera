@@ -1,12 +1,12 @@
 import { DatabaseSync } from "node:sqlite";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { runSqliteMigrations } from "../../../src/services/sqlite/migration-runner";
-import { SQLITE_MIGRATIONS } from "../../../src/services/sqlite/migrations";
 import {
   reviewedSoapContent,
   soapSourceKey,
 } from "../../../src/modules/consultations/local-ai/soap-review";
 import { DEFAULT_DOCUMENT_TEMPLATES } from "../../../src/modules/documents/lib/document-templates";
+import { runSqliteMigrations } from "../../../src/services/sqlite/migration-runner";
+import { SQLITE_MIGRATIONS } from "../../../src/services/sqlite/migrations";
 
 const fixture = vi.hoisted(() => ({
   db: null as DatabaseSync | null,
@@ -38,10 +38,12 @@ vi.mock("../../../src/services/sqlite/database", () => ({
     }
   },
 }));
+
 import {
-  saveReviewedDocument,
   type ReviewedDocumentInput,
+  saveReviewedDocument,
 } from "../../../src/modules/documents/lib/save-reviewed-document";
+
 const fields = {
   subjective: "Toux depuis hier.",
   objective: "",

@@ -2,8 +2,8 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   ChartCard,
-  fiveSteps,
   type ChartSeries,
+  fiveSteps,
 } from "@/components/ui/chart-card";
 
 const receipts: ChartSeries = {

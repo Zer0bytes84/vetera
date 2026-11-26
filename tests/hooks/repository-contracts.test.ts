@@ -1,6 +1,7 @@
-import { describe, expect, it, vi } from "vitest";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
+import { describe, expect, it, vi } from "vitest";
+
 vi.mock("../../src/hooks/useSQLite", () => ({
   useSQLite: () => ({
     data: [],
@@ -14,6 +15,7 @@ vi.mock("../../src/hooks/useSQLite", () => ({
     refresh: async () => undefined,
   }),
 }));
+
 import * as repositories from "../../src/data/repositories";
 
 function readHook<T>(factory: () => T): T {

@@ -26,6 +26,7 @@ vi.mock("@/services/browser-store", () => ({
   isTauriRuntime: () => false,
   getBrowserTable: () => state.payments,
 }));
+
 import { useAppointmentsRepository } from "@/data/repositories";
 
 beforeEach(() => {

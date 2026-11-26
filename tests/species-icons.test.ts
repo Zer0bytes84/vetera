@@ -1,6 +1,6 @@
+import { HugeiconsIcon } from "@hugeicons/react";
 import { createElement } from "react";
 import { renderToString } from "react-dom/server";
-import { HugeiconsIcon } from "@hugeicons/react";
 import { expect, it, vi } from "vitest";
 import { getSpeciesGlyph } from "../src/lib/species-icons";
 

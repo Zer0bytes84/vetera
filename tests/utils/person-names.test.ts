@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { firstNameOf } from "@/utils/display-format";
 import { personInitials } from "@/design-system/patterns/initials-avatar";
+import { firstNameOf } from "@/utils/display-format";
 
 describe("person names", () => {
   it("skips titles to find the first name", () => {

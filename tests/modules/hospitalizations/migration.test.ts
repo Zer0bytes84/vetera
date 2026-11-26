@@ -2,6 +2,7 @@ import { DatabaseSync } from "node:sqlite";
 import { afterEach, expect, it } from "vitest";
 import { CARE_TASKS_MIGRATION_SQL } from "../../../src/modules/care-tasks/migration";
 import { STAYS_MIGRATION_SQL } from "../../../src/modules/hospitalizations/stays/migration";
+
 const databases: DatabaseSync[] = [];
 afterEach(() => {
   for (const db of databases) db.close();

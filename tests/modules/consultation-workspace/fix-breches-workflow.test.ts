@@ -2,26 +2,26 @@ import { readFileSync } from "node:fs";
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { codeText } from "../../helpers/code-text";
 import {
-  closureBlocker,
   CLOSURE_NEEDS_NOTE,
+  closureBlocker,
 } from "@/modules/consultation-workspace/consultation-closure";
-import { reviewedSoapContent } from "@/modules/consultations/local-ai/soap-review";
-import {
-  levelFromRms,
-  MICROPHONE_NO_ANSWER,
-  prepareMicrophone,
-} from "@/modules/consultations/local-ai/audio-capture";
 import {
   DictationLevelMeter,
   MicrophonePermissionWait,
 } from "@/modules/consultations/components/dictation-states";
 import {
+  levelFromRms,
+  MICROPHONE_NO_ANSWER,
+  prepareMicrophone,
+} from "@/modules/consultations/local-ai/audio-capture";
+import { reviewedSoapContent } from "@/modules/consultations/local-ai/soap-review";
+import {
   consultationSummary,
   NO_REPORT,
 } from "@/modules/patients/components/patient-timeline";
 import type { ConsultationSoap } from "@/types/db";
+import { codeText } from "../../helpers/code-text";
 
 const read = (path: string) => readFileSync(path, "utf8");
 const sections = {

@@ -1,14 +1,14 @@
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
+import { reviewedSoapContent } from "@/modules/consultations/local-ai/soap-review";
+import {
+  browserDocumentDatabase,
+  createDocumentStore,
+} from "@/modules/documents/document-store";
 import {
   getBrowserTable,
   replaceBrowserTable,
   runBrowserTablesTransaction,
 } from "@/services/browser-store";
-import {
-  browserDocumentDatabase,
-  createDocumentStore,
-} from "@/modules/documents/document-store";
-import { reviewedSoapContent } from "@/modules/consultations/local-ai/soap-review";
 
 const date = "2026-10-17T12:00:00.000Z";
 const fields = {

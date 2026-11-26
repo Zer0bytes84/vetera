@@ -3,10 +3,10 @@ import { reviewedSoapContent } from "@/modules/consultations/local-ai/soap-revie
 import type { PatientDocument } from "@/modules/documents/document-domain";
 import {
   assemblePatientRecordSnapshot,
+  type PatientRecordRawData,
   patientRecordFilename,
   patientRecordPlainText,
   validatePatientRecordOptions,
-  type PatientRecordRawData,
 } from "@/modules/patients/export/patient-record-data";
 import {
   DEFAULT_PATIENT_RECORD_OPTIONS,

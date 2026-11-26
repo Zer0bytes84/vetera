@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import type { Appointment } from "@/types/db";
 import { estimateQueue } from "@/modules/dashboard/model/clinical-dashboard";
 import type { ScheduleEntry } from "@/modules/dashboard/v2/model";
+import type { Appointment } from "@/types/db";
 
 const at = (time: string) => new Date(`2026-10-21T${time}:00`);
 const entry = (

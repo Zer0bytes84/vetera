@@ -1,5 +1,5 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { MouseEvent as ReactMouseEvent } from "react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { useTauriDrag } from "@/hooks/use-tauri-drag";
 
 const native = vi.hoisted(() => ({

@@ -1,10 +1,10 @@
 import { DatabaseSync } from "node:sqlite";
 import { afterEach, expect, it } from "vitest";
+import { inventorySnapshotInDatabase } from "@/modules/stock/services/inventory-store";
+import type { StockDatabase } from "@/modules/stock/services/stock-database";
+import { stockOperationsSnapshotInDatabase } from "@/modules/stock/services/stock-operations-store";
 import { runSqliteMigrations } from "@/services/sqlite/migration-runner";
 import { SQLITE_MIGRATIONS } from "@/services/sqlite/migrations";
-import type { StockDatabase } from "@/modules/stock/services/stock-database";
-import { inventorySnapshotInDatabase } from "@/modules/stock/services/inventory-store";
-import { stockOperationsSnapshotInDatabase } from "@/modules/stock/services/stock-operations-store";
 
 const now = "2026-10-15T12:00:00Z";
 const connections: DatabaseSync[] = [];

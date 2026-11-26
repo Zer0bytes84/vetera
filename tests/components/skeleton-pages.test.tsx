@@ -1,9 +1,9 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
-  DataTable,
   type DataColumn,
   type DataRow,
+  DataTable,
 } from "@/components/ui/data-table";
 import { SkeletonRegion } from "@/components/ui/loading-skeleton";
 import { readRememberedRows, rememberRows } from "@/hooks/useRememberedRows";

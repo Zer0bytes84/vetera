@@ -1,6 +1,6 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { expect, it } from "vitest";
-import { StatGrid, type Stat } from "@/components/ui/stat-grid";
+import { type Stat, StatGrid } from "@/components/ui/stat-grid";
 
 const stat = (over: Partial<Stat> = {}): Stat => ({
   id: "s",

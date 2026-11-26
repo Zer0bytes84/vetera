@@ -6,13 +6,13 @@ import {
   formatNumber,
 } from "@/modules/prescriptions/lib/dose-calculator";
 import {
-  referencePrefill,
-  validatedDose,
-} from "@/modules/prescriptions/lib/validated-doses";
-import {
   followReferenceDose,
   referenceLineFields,
 } from "@/modules/prescriptions/lib/reference-line";
+import {
+  referencePrefill,
+  validatedDose,
+} from "@/modules/prescriptions/lib/validated-doses";
 
 /**
  * The prescription line of a validated molecule is prefilled from the reference Aïssa read, or left empty where the

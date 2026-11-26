@@ -9,7 +9,6 @@ import {
   settlementRate,
 } from "../../src/modules/dashboard/v2/financial-model";
 import { formatCentimes } from "../../src/modules/dashboard/v2/model";
-import { formatNumber } from "../../src/utils/display-format";
 import type {
   Appointment,
   Invoice,
@@ -17,6 +16,7 @@ import type {
   Task,
   Transaction,
 } from "../../src/types/db";
+import { formatNumber } from "../../src/utils/display-format";
 
 /** The old DeltaBadge, copied as it was: the oracle for the comparison rules. */
 function oldDelta(

@@ -1,6 +1,6 @@
 import { beforeEach, expect, it, vi } from "vitest";
-import type { PatientDocument } from "@/modules/documents/document-domain";
 import type { LocalModelStatus } from "@/modules/consultations/local-ai/models";
+import type { PatientDocument } from "@/modules/documents/document-domain";
 import { readPatientDocument } from "@/modules/documents/lib/patient-document-reading";
 import { readDocumentAnswer } from "@/modules/documents/lib/read-document-answer";
 

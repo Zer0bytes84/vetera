@@ -2,7 +2,7 @@
  * Les sondes de l'équipe rouge du 19 novembre (catégories A à E), rejouées sur le moteur : chacune doit être refusée
  * (aucun chiffre), sauf les questions du catalogue, qui doivent rester répondues.
  */
-import { it, expect } from "vitest";
+import { expect, it } from "vitest";
 import {
   answerQuestion,
   STARTER_QUESTIONS,

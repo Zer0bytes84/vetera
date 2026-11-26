@@ -1,19 +1,19 @@
 import { DatabaseSync } from "node:sqlite";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { runSqliteMigrations } from "../../../src/services/sqlite/migration-runner";
-import { SQLITE_MIGRATIONS } from "../../../src/services/sqlite/migrations";
-import {
-  DEFAULT_DOCUMENT_TEMPLATES,
-  renderClinicalDocument,
-} from "../../../src/modules/documents/lib/document-templates";
+import type { CareDatabase } from "../../../src/modules/care-tasks/store";
 import { reviewedSoapContent } from "../../../src/modules/consultations/local-ai/soap-review";
+import type { DocumentAttachment } from "../../../src/modules/documents/document-domain";
 import {
   createDocumentStore,
   sqliteDocumentPersistence,
 } from "../../../src/modules/documents/document-store";
 import { renderDocumentVariables } from "../../../src/modules/documents/document-variables";
-import type { CareDatabase } from "../../../src/modules/care-tasks/store";
-import type { DocumentAttachment } from "../../../src/modules/documents/document-domain";
+import {
+  DEFAULT_DOCUMENT_TEMPLATES,
+  renderClinicalDocument,
+} from "../../../src/modules/documents/lib/document-templates";
+import { runSqliteMigrations } from "../../../src/services/sqlite/migration-runner";
+import { SQLITE_MIGRATIONS } from "../../../src/services/sqlite/migrations";
 
 let db: DatabaseSync;
 let store: ReturnType<typeof createDocumentStore>;

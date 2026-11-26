@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
+import { containsDosage } from "@/modules/consultations/local-ai/soap-schema";
 import {
   citationScores,
   retrievalScores,
   scoreSoapDraft,
 } from "../../scripts/eval-local-ai/metrics";
-import { containsDosage } from "@/modules/consultations/local-ai/soap-schema";
 
 const scaffold = {
   subjective: "Boiterie depuis trois jours. Pas de vomissement.",

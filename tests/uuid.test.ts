@@ -1,6 +1,7 @@
 import { webcrypto } from "node:crypto";
 import { afterEach, expect, it, vi } from "vitest";
 import { createUuid } from "../src/lib/uuid";
+
 afterEach(() => vi.unstubAllGlobals());
 it("utilise l’UUID natif quand il est disponible", () => {
   const randomUUID = vi.fn(() => "cce3999b-9a81-43f5-9c75-673482a44ace");

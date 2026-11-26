@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { needsPageOcr } from "../../../src/modules/documents/lib/document-reading";
+
 describe("Détection des pages scannées", () => {
   it("lit les scans sans texte et les scans avec un en-tête numérique", () => {
     expect(needsPageOcr("", true)).toBe(true);

@@ -1,14 +1,14 @@
 import { describe, expect, it, vi } from "vitest";
 import {
+  ASSISTANT_TOGGLE_EVENT,
+  closeAssistant,
+  openAssistant,
+  toggleAssistant,
+} from "@/modules/consultations/assistant-events";
+import {
   SOAP_QUESTIONNAIRE_STEPS,
   SoapQuestionnaireStep,
 } from "@/modules/consultations/local-ai/soap-questionnaire-config";
-import {
-  ASSISTANT_TOGGLE_EVENT,
-  openAssistant,
-  closeAssistant,
-  toggleAssistant,
-} from "@/modules/consultations/assistant-events";
 
 describe("SOAP Questionnaire Config", () => {
   it("contient exactement 4 étapes ordonnées S - O - A - P", () => {

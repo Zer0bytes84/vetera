@@ -1,5 +1,22 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import type { Appointment, ConsultationSoap, Patient } from "@/types/db";
+import {
+  normalizeMicrophoneAudio,
+  prepareMicrophone,
+  resampleAudio,
+} from "@/modules/consultations/local-ai/audio-capture";
+import {
+  assertChatModelAvailable,
+  isClinicalModelReserved,
+  reserveClinicalModel,
+} from "@/modules/consultations/local-ai/model-lease";
+import {
+  assertLocalUrl,
+  enforceOfflineWorker,
+} from "@/modules/consultations/local-ai/offline-policy";
+import {
+  buildPatientContext,
+  createSoapPrompt,
+} from "@/modules/consultations/local-ai/patient-context";
 import {
   assertMentionsForPatient,
   autocompleteMention,
@@ -9,28 +26,11 @@ import {
   resolvePatientMentions,
 } from "@/modules/consultations/local-ai/patient-mentions";
 import {
-  buildPatientContext,
-  createSoapPrompt,
-} from "@/modules/consultations/local-ai/patient-context";
-import {
   containsDosage,
   localSoapSchema,
   parseGeneratedSoap,
 } from "@/modules/consultations/local-ai/soap-schema";
-import {
-  assertLocalUrl,
-  enforceOfflineWorker,
-} from "@/modules/consultations/local-ai/offline-policy";
-import {
-  assertChatModelAvailable,
-  isClinicalModelReserved,
-  reserveClinicalModel,
-} from "@/modules/consultations/local-ai/model-lease";
-import {
-  prepareMicrophone,
-  resampleAudio,
-  normalizeMicrophoneAudio,
-} from "@/modules/consultations/local-ai/audio-capture";
+import type { Appointment, ConsultationSoap, Patient } from "@/types/db";
 
 const patient = (id: string, name: string): Patient => ({
   id,

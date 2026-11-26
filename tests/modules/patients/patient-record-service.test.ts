@@ -1,13 +1,13 @@
 import { DatabaseSync } from "node:sqlite";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { runSqliteMigrations } from "@/services/sqlite/migration-runner";
-import { SQLITE_MIGRATIONS } from "@/services/sqlite/migrations";
 import { reviewedSoapContent } from "@/modules/consultations/local-ai/soap-review";
+import type { PatientRecordReadDatabase } from "@/modules/patients/export/patient-record-service";
 import {
   DEFAULT_PATIENT_RECORD_OPTIONS,
   type PatientRecordOptions,
 } from "@/modules/patients/export/patient-record-types";
-import type { PatientRecordReadDatabase } from "@/modules/patients/export/patient-record-service";
+import { runSqliteMigrations } from "@/services/sqlite/migration-runner";
+import { SQLITE_MIGRATIONS } from "@/services/sqlite/migrations";
 
 const state = vi.hoisted(() => ({
   native: true,
@@ -24,12 +24,13 @@ vi.mock("@/services/browser-store", async (importOriginal) => ({
   isTauriRuntime: () => state.native,
 }));
 vi.mock("@/services/sqlite/database", () => ({ runDbRead: state.read }));
-import { getBrowserTable, replaceBrowserTable } from "@/services/browser-store";
+
+import { assemblePatientRecordSnapshot } from "@/modules/patients/export/patient-record-data";
 import {
   loadPatientRecord,
   readPatientRecordSnapshotData,
 } from "@/modules/patients/export/patient-record-service";
-import { assemblePatientRecordSnapshot } from "@/modules/patients/export/patient-record-data";
+import { getBrowserTable, replaceBrowserTable } from "@/services/browser-store";
 
 const user = { id: "vet", displayName: "Dr Test" };
 const fields = {

@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 
 vi.mock("@/services/browser-store", () => ({ isTauriRuntime: () => true }));
+
 import { nativeDictationEnabled } from "@/modules/consultations/local-ai/native-dictation";
 
 describe("moteur de dictée selon le poste", () => {

@@ -1,4 +1,11 @@
 import { describe, expect, it } from "vitest";
+import {
+  analyticsRanges,
+  buildPremiumAnalytics,
+  dashboardPresentationData,
+  metricChange,
+} from "../../src/modules/dashboard/model/premium-analytics";
+import type { ClinicalAlert } from "../../src/modules/dashboard/v2/model";
 import type {
   Appointment,
   Invoice,
@@ -8,13 +15,6 @@ import type {
   Transaction,
   Vaccination,
 } from "../../src/types/db";
-import {
-  analyticsRanges,
-  buildPremiumAnalytics,
-  dashboardPresentationData,
-  metricChange,
-} from "../../src/modules/dashboard/model/premium-analytics";
-import type { ClinicalAlert } from "../../src/modules/dashboard/v2/model";
 
 const now = new Date(2026, 9, 15, 12);
 const patient = (id: string, name = id): Patient => ({

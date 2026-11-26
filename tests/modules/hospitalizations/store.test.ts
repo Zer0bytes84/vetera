@@ -1,9 +1,10 @@
 import { DatabaseSync } from "node:sqlite";
 import { afterEach, expect, it } from "vitest";
-import { createStayStore } from "../../../src/modules/hospitalizations/stays/store";
-import { STAYS_MIGRATION_SQL } from "../../../src/modules/hospitalizations/stays/migration";
 import { CARE_TASKS_MIGRATION_SQL } from "../../../src/modules/care-tasks/migration";
 import type { CareDatabase } from "../../../src/modules/care-tasks/store";
+import { STAYS_MIGRATION_SQL } from "../../../src/modules/hospitalizations/stays/migration";
+import { createStayStore } from "../../../src/modules/hospitalizations/stays/store";
+
 const databases: DatabaseSync[] = [];
 afterEach(() => {
   for (const db of databases) db.close();

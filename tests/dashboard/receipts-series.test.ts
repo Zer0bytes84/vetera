@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import type { Invoice, Transaction } from "../../src/types/db";
 import { buildFinancialOverview } from "../../src/modules/dashboard/v2/financial-model";
 import { buildReceiptsSeries } from "../../src/modules/dashboard/v2/receipts-series";
+import type { Invoice, Transaction } from "../../src/types/db";
 
 const invoice = (id: string, overrides: Partial<Invoice> = {}) =>
   ({

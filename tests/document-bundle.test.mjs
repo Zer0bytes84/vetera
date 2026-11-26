@@ -1,5 +1,6 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import { assertDocumentBundle } from "../scripts/check-document-bundle.mjs";
+
 describe("Documents compilé", () => {
   it("accepte les dépendances partagées sans cycle", () => {
     expect(

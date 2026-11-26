@@ -2,6 +2,7 @@ import { DatabaseSync } from "node:sqlite";
 import { afterEach, expect, it } from "vitest";
 import { PATIENT_REMINDERS_MIGRATION_SQL } from "@/modules/patient-reminders/migration";
 import { TASK_REMINDER_TYPES_MIGRATION_SQL } from "@/modules/patient-reminders/task-types-migration";
+
 const databases: DatabaseSync[] = [];
 afterEach(() => {
   for (const db of databases) db.close();

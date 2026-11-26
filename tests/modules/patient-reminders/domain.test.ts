@@ -8,6 +8,7 @@ import {
   medicalReminderTypeForAct,
   reminderTypesForSelect,
 } from "../../../src/modules/patient-reminders/domain";
+
 it("calcule les mois calendaires avec plafonnement et années bissextiles", () => {
   expect(addCalendarMonths("2026-01-31", 1)).toBe("2026-02-28");
   expect(addCalendarMonths("2024-01-31", 1)).toBe("2024-02-29");

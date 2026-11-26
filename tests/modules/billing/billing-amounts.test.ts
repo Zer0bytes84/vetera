@@ -59,6 +59,7 @@ vi.mock("@/hooks/useSQLite", () => ({
   }),
   emitSQLiteDataChanged: vi.fn(),
 }));
+
 import { useAppointmentsRepository } from "@/data/repositories";
 import { billingDraft } from "@/modules/billing/billing-draft";
 

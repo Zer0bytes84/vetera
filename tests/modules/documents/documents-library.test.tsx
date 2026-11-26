@@ -1,19 +1,19 @@
-import { describe, expect, it } from "vitest";
 import { renderToStaticMarkup } from "react-dom/server";
+import { describe, expect, it } from "vitest";
 import { DocumentsLibrary } from "@/components/documents-library";
 import {
   createSlashCommandsSuggestion,
   getSlashCommandItems,
 } from "@/components/SlashCommandsExtension";
 import {
-  LIBRARY_FILTERS,
-  MAX_FILE_BYTES,
   countByKind,
   dataUrlToBlob,
   entriesFrom,
   formatSize,
   judgeFile,
+  LIBRARY_FILTERS,
   linkTitle,
+  MAX_FILE_BYTES,
   matchesFilter,
   matchesQuery,
   normalizeLinkUrl,

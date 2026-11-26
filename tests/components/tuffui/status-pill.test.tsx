@@ -1,6 +1,6 @@
+import { ArrowUpRight, CircleCheck } from "lucide-react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { expect, it } from "vitest";
-import { ArrowUpRight, CircleCheck } from "lucide-react";
 import { StatusPill, Tag } from "@/components/ui/status-pill";
 
 it("chaque tonalité prend la couleur de l'app (vert, rose, ambre, bleu) et garde son texte", () => {

@@ -1,17 +1,17 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import {
-  DEFAULT_MASCOT_PREFERENCES,
-  MASCOT_ANIMALS,
-  getMascotPreferences,
-  saveMascotPreferences,
-} from "@/lib/mascot-preferences";
+import { LINE_ANIMALS } from "@/components/mascot/line-mascots";
 import {
   LEGACY_VECTOR_MASCOTS,
+  lineAnimalOf,
   MASCOT_ASSETS,
   MASCOT_CHOICES,
-  lineAnimalOf,
 } from "@/components/mascot/mascot-assets";
-import { LINE_ANIMALS } from "@/components/mascot/line-mascots";
+import {
+  DEFAULT_MASCOT_PREFERENCES,
+  getMascotPreferences,
+  MASCOT_ANIMALS,
+  saveMascotPreferences,
+} from "@/lib/mascot-preferences";
 
 describe("mascot preferences & assets", () => {
   let store: Record<string, string> = {};

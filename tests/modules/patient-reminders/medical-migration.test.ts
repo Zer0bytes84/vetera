@@ -1,10 +1,10 @@
 import { DatabaseSync } from "node:sqlite";
 import { afterEach, expect, it } from "vitest";
-import { SQLITE_MIGRATIONS } from "@/services/sqlite/migrations";
 import {
-  runSqliteMigrations,
   type MigrationDatabase,
+  runSqliteMigrations,
 } from "@/services/sqlite/migration-runner";
+import { SQLITE_MIGRATIONS } from "@/services/sqlite/migrations";
 
 const databases: DatabaseSync[] = [];
 afterEach(() => {

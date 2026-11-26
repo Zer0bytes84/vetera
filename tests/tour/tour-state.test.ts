@@ -10,8 +10,8 @@ import {
   showInvitation,
   startTour,
   TOUR_STEP_IDS,
-  UNREADABLE_TOUR_STATE,
   type TourState,
+  UNREADABLE_TOUR_STATE,
 } from "../../src/modules/tour/tour-state";
 
 const NOW = new Date("2026-11-12T10:00:00.000Z");

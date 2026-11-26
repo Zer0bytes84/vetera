@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { rankPatientChunks } from "../../../src/modules/consultations/local-ai/embedding-index";
 import { matchesSearchTerms } from "../../../src/modules/consultations/local-ai/veterinary-lexicon";
+
 const vector = (axis: number) =>
   Array.from({ length: 768 }, (_, i) => (i === axis ? 1 : 0));
 describe("Recherche hybride exacte", () => {

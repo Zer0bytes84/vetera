@@ -4,9 +4,9 @@ import {
   buildFlowBoard,
   durationLabel,
   minutesSince,
-  patientAlerts,
   PLANNED,
   PRIMARY_ACTION,
+  patientAlerts,
   walkInFor,
 } from "@/modules/flow-board/model";
 import type { VisitFlowBoardState } from "@/modules/visit-flow/store";

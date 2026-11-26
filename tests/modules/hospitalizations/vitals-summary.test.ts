@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
+import type { VitalSign } from "@/modules/hospitalizations/stays/store";
 import {
   latestReadings,
   verdict,
   vitalsByDay,
 } from "@/modules/hospitalizations/stays/vitals-summary";
-import type { VitalSign } from "@/modules/hospitalizations/stays/store";
 
 const reading = (
   at: string,

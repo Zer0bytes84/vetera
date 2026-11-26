@@ -2,8 +2,8 @@ import { readFileSync } from "node:fs";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
-import { codeText } from "../../helpers/code-text";
 import { HeaderSearch } from "@/modules/shell/components/header-search";
+import { codeText } from "../../helpers/code-text";
 
 // The search moved from the sidebar to the header on 5 November 2026
 // (docs/recus/2026-11-05/recherche-entete/). Only the container changed: the

@@ -1,12 +1,12 @@
 import { DatabaseSync } from "node:sqlite";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { runSqliteMigrations } from "@/services/sqlite/migration-runner";
-import { SQLITE_MIGRATIONS } from "@/services/sqlite/migrations";
+import { visitFlowStage } from "@/modules/visit-flow/domain";
 import {
   createVisitFlowStore,
   type FlowDatabase,
 } from "@/modules/visit-flow/store";
-import { visitFlowStage } from "@/modules/visit-flow/domain";
+import { runSqliteMigrations } from "@/services/sqlite/migration-runner";
+import { SQLITE_MIGRATIONS } from "@/services/sqlite/migrations";
 import type { AppointmentStatus } from "@/types/db";
 
 const harness = vi.hoisted(() => ({
@@ -24,6 +24,7 @@ vi.mock("@/services/sqlite/database", () => ({
   runDbTransaction: (operation: (db: FlowDatabase) => Promise<unknown>) =>
     transaction(operation),
 }));
+
 import {
   createInvoiceDraft,
   issueInvoice,

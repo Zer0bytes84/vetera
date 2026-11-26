@@ -1,21 +1,21 @@
 import { describe, expect, it } from "vitest";
+import type { PatientDocument } from "@/modules/documents/document-domain";
+import type { MedicalReminder } from "@/modules/patient-reminders/store";
+import {
+  countdownLabel,
+  preventionCountdowns,
+} from "@/modules/patients/lib/prevention";
+import {
+  collectTimelinePieces,
+  piecesByVisit,
+} from "@/modules/patients/lib/timeline-pieces";
+import { patientDocumentName } from "@/modules/patients/reference/reference";
 import type {
   ConsultationDocument,
   Invoice,
   Prescription,
   Vaccination,
 } from "@/types/db";
-import type { PatientDocument } from "@/modules/documents/document-domain";
-import type { MedicalReminder } from "@/modules/patient-reminders/store";
-import {
-  collectTimelinePieces,
-  piecesByVisit,
-} from "@/modules/patients/lib/timeline-pieces";
-import {
-  countdownLabel,
-  preventionCountdowns,
-} from "@/modules/patients/lib/prevention";
-import { patientDocumentName } from "@/modules/patients/reference/reference";
 
 const prescription = (id: string, appointmentId: string) =>
   ({

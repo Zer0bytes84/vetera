@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
-import type { Appointment, Patient } from "@/types/db";
 import {
   analyticsRanges,
   buildPremiumAnalytics,
   trendBuckets,
 } from "@/modules/dashboard/model/premium-analytics";
+import type { Appointment, Patient } from "@/types/db";
 
 const now = new Date(2026, 9, 21, 10);
 const patient = (id: string) =>

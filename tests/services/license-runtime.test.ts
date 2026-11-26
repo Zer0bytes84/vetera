@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
 const mock = vi.hoisted(() => ({
   state: null as any,
   renew: vi.fn(),
@@ -35,6 +36,8 @@ vi.mock("@/services/licenseLease", async (importOriginal) => ({
   ...(await importOriginal<any>()),
   verifyLicenseLease: mock.verify,
 }));
+
+import { LicenseActivationError } from "@/services/licenseActivationService";
 import {
   acceptLicenseActivation,
   checkLicenseAccess,
@@ -45,7 +48,7 @@ import {
   recheckLicenseInBackground,
   resetLicenseRuntimeCache,
 } from "@/services/licenseRuntime";
-import { LicenseActivationError } from "@/services/licenseActivationService";
+
 const now = Date.parse("2026-09-22T12:00:00Z");
 const lease = {
   v: 2,

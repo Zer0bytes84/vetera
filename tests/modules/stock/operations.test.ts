@@ -1,12 +1,10 @@
 import { DatabaseSync } from "node:sqlite";
 import { afterEach, beforeEach, expect, it } from "vitest";
-import { SQLITE_MIGRATIONS } from "@/services/sqlite/migrations";
-import { runSqliteMigrations } from "@/services/sqlite/migration-runner";
-import { STOCK_OPERATIONS_MIGRATION_SQL } from "@/modules/stock/stock-operations-migration";
 import {
   registerLotInDatabase,
   stockBucketsInDatabase,
 } from "@/modules/stock/services/lot-store";
+import type { StockDatabase } from "@/modules/stock/services/stock-database";
 import {
   applyConsumptionThresholdInDatabase,
   barcodeProductInDatabase,
@@ -18,7 +16,9 @@ import {
   transferStockInDatabase,
 } from "@/modules/stock/services/stock-operations-store";
 import { consumeStockInDatabase } from "@/modules/stock/services/stock-store";
-import type { StockDatabase } from "@/modules/stock/services/stock-database";
+import { STOCK_OPERATIONS_MIGRATION_SQL } from "@/modules/stock/stock-operations-migration";
+import { runSqliteMigrations } from "@/services/sqlite/migration-runner";
+import { SQLITE_MIGRATIONS } from "@/services/sqlite/migrations";
 
 let sqlite: DatabaseSync;
 let db: StockDatabase;

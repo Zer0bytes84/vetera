@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
-  SchedulingError,
   assertAppointmentStatusTransition,
   findAppointmentConflicts,
   normalizeAppointmentInterval,
+  SchedulingError,
 } from "../../src/domain/clinical/scheduling";
 import type { Appointment } from "../../src/types/db";
 

@@ -1,7 +1,7 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { expect, it } from "vitest";
-import { RevenueChartWidget } from "../../src/modules/dashboard/components/revenue-chart-widget";
 import type { FocusPoint } from "../../src/modules/dashboard/components/focus-trend-chart";
+import { RevenueChartWidget } from "../../src/modules/dashboard/components/revenue-chart-widget";
 
 const points: FocusPoint[] = [
   {

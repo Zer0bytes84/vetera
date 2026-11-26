@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { receivablesAging } from "@/modules/finances/receivables-aging";
 import { receivablesSummary } from "@/modules/dashboard/v2/financial-model";
+import { receivablesAging } from "@/modules/finances/receivables-aging";
 import type { Invoice, Transaction } from "@/types/db";
 
 const now = new Date("2026-11-08T12:00:00Z");

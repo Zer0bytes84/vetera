@@ -1,5 +1,4 @@
 import { describe, expect, it } from "vitest";
-import type { Appointment, Patient, Transaction } from "../../src/types/db";
 import {
   analyticsRanges,
   buildPremiumAnalytics,
@@ -7,6 +6,7 @@ import {
   MAX_CUSTOM_DAYS,
   trendBuckets,
 } from "../../src/modules/dashboard/model/premium-analytics";
+import type { Appointment, Patient, Transaction } from "../../src/types/db";
 
 const now = new Date(2026, 9, 15, 12);
 const patient = (id: string): Patient => ({

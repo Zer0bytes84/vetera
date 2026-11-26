@@ -6,6 +6,7 @@ import {
   recentTrend,
 } from "../../src/modules/dashboard/v2/polish-model";
 import type { Appointment, Patient } from "../../src/types/db";
+
 const reference = new Date(2026, 9, 11, 12);
 const visit = (
   id: string,

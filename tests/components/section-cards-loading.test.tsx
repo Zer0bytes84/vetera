@@ -1,6 +1,6 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
-import { SectionCards, type SectionCardItem } from "@/components/section-cards";
+import { type SectionCardItem, SectionCards } from "@/components/section-cards";
 
 /**
  * The first band of every page while its figures are read (24 November 2026): the skeleton, never a figure, as many

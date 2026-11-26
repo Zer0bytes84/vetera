@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
 const store = vi.hoisted(() => ({
   values: new Map<string, string>(),
   save: vi.fn(),
@@ -7,11 +8,13 @@ vi.mock("@/services/appSettingsService", () => ({
   getSetting: async (key: string) => store.values.get(key) ?? null,
   setSettings: store.save,
 }));
+
 import {
   DEFAULT_INVOICE_SETTINGS,
   getInvoiceSettings,
   saveInvoiceSettings,
 } from "@/services/invoiceSettingsService";
+
 beforeEach(() => {
   store.values.clear();
   store.save.mockReset();

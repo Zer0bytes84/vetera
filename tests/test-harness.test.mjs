@@ -1,8 +1,8 @@
 import {
-  mkdtempSync,
   existsSync,
-  readFileSync,
+  mkdtempSync,
   readdirSync,
+  readFileSync,
   statSync,
   writeFileSync,
 } from "node:fs";
@@ -11,11 +11,11 @@ import path from "node:path";
 import { Readable } from "node:stream";
 import { describe, expect, it } from "vitest";
 import {
-  MAX_RESULT_BYTES,
   clientSource,
   createHarnessState,
   handleHarnessRequest,
   harnessEnabled,
+  MAX_RESULT_BYTES,
   newJobId,
   testHarnessPlugin,
 } from "../scripts/test-harness-plugin.mjs";

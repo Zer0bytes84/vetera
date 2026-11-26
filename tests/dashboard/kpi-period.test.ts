@@ -1,9 +1,10 @@
 import { describe, expect, it } from "vitest";
 import {
-  kpiRange,
   kpiBuckets,
+  kpiRange,
   kpiWithin,
 } from "../../src/modules/dashboard/v2/kpi-period";
+
 const date = new Date(2026, 9, 5, 12);
 describe("dashboard KPI calendar periods", () => {
   it("uses Monday to Sunday weeks and full calendar months and years", () => {

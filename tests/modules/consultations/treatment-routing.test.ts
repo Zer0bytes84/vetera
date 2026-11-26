@@ -1,18 +1,18 @@
 import { describe, expect, it } from "vitest";
 import {
-  extractTreatmentSentences,
-  prepareModelDictation,
-  routeGuidedTreatments,
-} from "@/modules/consultations/local-ai/treatment-routing";
-import {
   assembleGuidedNote,
   guidedTranscript,
 } from "@/modules/consultations/local-ai/guided-soap";
+import { createSoapPrompt } from "@/modules/consultations/local-ai/patient-context";
 import {
   EMPTY_SOAP,
   parseGeneratedSoap,
 } from "@/modules/consultations/local-ai/soap-schema";
-import { createSoapPrompt } from "@/modules/consultations/local-ai/patient-context";
+import {
+  extractTreatmentSentences,
+  prepareModelDictation,
+  routeGuidedTreatments,
+} from "@/modules/consultations/local-ai/treatment-routing";
 
 describe("routage déterministe du traitement", () => {
   const phrase = "Mocha a besoin d’un traitement antibiotique pendant 7 jours.";

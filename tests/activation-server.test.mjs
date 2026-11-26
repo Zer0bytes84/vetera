@@ -1,14 +1,15 @@
-import { test } from "node:test";
 import assert from "node:assert/strict";
-import { mkdtemp, rm, readFile } from "node:fs/promises";
+import { createPublicKey, verify } from "node:crypto";
+import { mkdtemp, readFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { createPublicKey, verify } from "node:crypto";
+import { test } from "node:test";
 import {
   createActivationServer,
   LEASE_MS,
 } from "../activation-server/server.mjs";
 import { validateLicenseBuild } from "../scripts/license-build-config.mjs";
+
 const admin = "test-administrator-token-only-123456";
 async function fixture(t) {
   const dir = await mkdtemp(join(tmpdir(), "baitari-license-"));

@@ -1,16 +1,16 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { managedDocumentSearchChunks } from "../../../src/modules/consultations/local-ai/embedding-index";
 import type {
   DocumentAttachment,
   PatientDocument,
 } from "../../../src/modules/documents/document-domain";
-import {
-  readPatientDocument,
-  preparePatientAttachment,
-  SCANNED_DOCUMENT_MESSAGE,
-} from "../../../src/modules/documents/lib/patient-document-reading";
 import { parseDocumentAnswer } from "../../../src/modules/documents/lib/document-reading";
 import { filterPatientDocuments } from "../../../src/modules/documents/lib/filter-patient-documents";
-import { managedDocumentSearchChunks } from "../../../src/modules/consultations/local-ai/embedding-index";
+import {
+  preparePatientAttachment,
+  readPatientDocument,
+  SCANNED_DOCUMENT_MESSAGE,
+} from "../../../src/modules/documents/lib/patient-document-reading";
 
 const pdfFixture = vi.hoisted(() => ({
   pageCount: 1,

@@ -1,13 +1,13 @@
+import { Building2 } from "lucide-react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
-import { Building2 } from "lucide-react";
 import { SETTINGS_TABS } from "@/lib/settings-navigation";
 import { ReleaseHighlights } from "@/modules/release-notes/release-highlights";
 import {
   publishedReleaseNotes,
   RELEASE_NOTES,
-  releaseNoteFor,
   type ReleaseNote,
+  releaseNoteFor,
 } from "@/modules/release-notes/release-notes";
 import {
   LAST_SEEN_VERSION_KEY,

@@ -3,6 +3,7 @@ import {
   callsCsv,
   callsPrintHtml,
 } from "../../../src/modules/patient-reminders/export";
+
 it("exporte les coordonnées sans formules CSV ni rupture des cellules", () => {
   const csv = callsCsv([
     {

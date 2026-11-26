@@ -1,6 +1,6 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
-import { HexDensity, type HexCell } from "@/components/ui/hex-density";
+import { type HexCell, HexDensity } from "@/components/ui/hex-density";
 
 const cell = (
   id: string,

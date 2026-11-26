@@ -8,20 +8,20 @@ vi.mock("@/services/sqlite/database", async (original) => ({
   runDbRead: vi.fn(),
 }));
 
+import { mapTableRow, tableReadSql } from "@/hooks/useSQLite";
 import { answerQuestion } from "@/modules/assistant-answers/answer";
 import {
   CLINIC_TABLES,
+  ReadIntegrityError,
   readClinicData,
   readClinicTables,
-  ReadIntegrityError,
 } from "@/modules/assistant-answers/clinic-reads";
 import {
   guardReadConnection,
   isReadStatement,
-  ReadRefused,
   type ReadConnection,
+  ReadRefused,
 } from "@/modules/assistant-answers/read-port";
-import { mapTableRow, tableReadSql } from "@/hooks/useSQLite";
 
 /**
  * The Données tab reads through the read port carried over from the agent harness (19 November 2026): one snapshot,

@@ -1,6 +1,6 @@
+import { Calendar } from "lucide-react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { expect, it } from "vitest";
-import { Calendar } from "lucide-react";
 import {
   IconTile,
   Inset,

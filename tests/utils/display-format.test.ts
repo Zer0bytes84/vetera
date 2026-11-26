@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
+import { formatDZD, toCentimes } from "@/utils/currency";
 import {
   formatDinars,
   formatDisplayText,
   formatNumber,
   formatPhone,
 } from "@/utils/display-format";
-import { formatDZD, toCentimes } from "@/utils/currency";
 
 describe("formatage partagé pour l’affichage", () => {
   it("groupe les montants avec des espaces insécables et la virgule française", () => {

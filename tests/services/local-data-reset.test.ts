@@ -1,7 +1,8 @@
 import { DatabaseSync } from "node:sqlite";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { SQLITE_MIGRATIONS } from "@/services/sqlite/migrations";
 import { runSqliteMigrations } from "@/services/sqlite/migration-runner";
+import { SQLITE_MIGRATIONS } from "@/services/sqlite/migrations";
+
 const mock = vi.hoisted(() => ({
   admin: vi.fn(),
   password: vi.fn(),
@@ -17,7 +18,9 @@ vi.mock("@/services/backupService", () => ({ createBackup: mock.backup }));
 vi.mock("@/services/sqlite/database", () => ({
   runDbOperation: mock.operation,
 }));
-import { resetLocalData, RESET_CONFIRMATION } from "@/services/localDataReset";
+
+import { RESET_CONFIRMATION, resetLocalData } from "@/services/localDataReset";
+
 beforeEach(() => {
   mock.admin.mockReset().mockResolvedValue({ id: "admin" });
   mock.password.mockReset().mockResolvedValue({ id: "admin" });

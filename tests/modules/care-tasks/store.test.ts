@@ -1,15 +1,16 @@
 import { DatabaseSync } from "node:sqlite";
 import { afterEach, expect, it, vi } from "vitest";
-import { SQLITE_MIGRATIONS } from "@/services/sqlite/migrations";
 import { runSqliteMigrations } from "@/services/sqlite/migration-runner";
-import {
-  createCareStore,
-  type CareDatabase,
-} from "../../../src/modules/care-tasks/store";
+import { SQLITE_MIGRATIONS } from "@/services/sqlite/migrations";
 import {
   registerCareCompletionHook,
   subscribeCareTaskCompleted,
 } from "../../../src/modules/care-tasks/hooks";
+import {
+  type CareDatabase,
+  createCareStore,
+} from "../../../src/modules/care-tasks/store";
+
 const databases: DatabaseSync[] = [];
 afterEach(() => {
   for (const db of databases) db.close();

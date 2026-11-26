@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
+  type AssistantRecord,
   buildAssistantDocument,
   escapeAssistantHtml,
   waitForAssistant,
-  type AssistantRecord,
 } from "@/services/assistantWorkspace";
 
 const record: AssistantRecord = {

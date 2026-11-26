@@ -1,8 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
-  seriesChange,
   type FocusPoint,
+  seriesChange,
 } from "../../src/modules/dashboard/components/focus-trend-chart";
+import { buildVisitKinds } from "../../src/modules/dashboard/model/dashboard-widgets";
 import {
   buildKindsDonut,
   buildRevenueChart,
@@ -11,7 +12,6 @@ import {
   count,
   money,
 } from "../../src/modules/dashboard/model/revenue-chart";
-import { buildVisitKinds } from "../../src/modules/dashboard/model/dashboard-widgets";
 import { formatNumber } from "../../src/utils/display-format";
 
 const point = (

@@ -1,5 +1,5 @@
-import { describe, expect, it } from "vitest";
 import { renderToStaticMarkup } from "react-dom/server";
+import { describe, expect, it } from "vitest";
 import { SettleProgressBar } from "../../../src/modules/dashboard/v2/settle-widgets";
 
 describe("Barre segmentée de trésorerie Premium", () => {

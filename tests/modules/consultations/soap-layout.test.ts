@@ -1,13 +1,13 @@
 import { describe, expect, it } from "vitest";
+import { assertFaithfulSoap } from "@/modules/consultations/local-ai/dictation-scaffold";
+import { guidedDictationTranscript } from "@/modules/consultations/local-ai/guided-soap";
 import {
-  SOAP_FULL_HEADINGS,
   layoutSection,
   layoutSoapNote,
+  SOAP_FULL_HEADINGS,
   soapNoteText,
   stripSoapLayout,
 } from "@/modules/consultations/local-ai/soap-layout";
-import { assertFaithfulSoap } from "@/modules/consultations/local-ai/dictation-scaffold";
-import { guidedDictationTranscript } from "@/modules/consultations/local-ai/guided-soap";
 import { EMPTY_SOAP } from "@/modules/consultations/local-ai/soap-schema";
 
 const plan =

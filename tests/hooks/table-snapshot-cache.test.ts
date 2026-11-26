@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { TableSnapshotCache } from "../../src/services/sqlite/table-snapshot-cache";
+
 type Row = { id: string; name: string; status?: string };
 
 describe("shared SQLite snapshots", () => {

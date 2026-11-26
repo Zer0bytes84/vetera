@@ -1,8 +1,8 @@
 import { DatabaseSync } from "node:sqlite";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
+import type { StockDatabase } from "@/modules/stock/services/stock-store";
 import { runSqliteMigrations } from "@/services/sqlite/migration-runner";
 import { SQLITE_MIGRATIONS } from "@/services/sqlite/migrations";
-import type { StockDatabase } from "@/modules/stock/services/stock-store";
 
 const harness = vi.hoisted(() => ({
   db: null as StockDatabase | null,
@@ -28,18 +28,20 @@ vi.mock("@/services/sqlite/database", () => ({
     }
   },
 }));
+
+import { draftPriceLines } from "@/modules/finances/lib/draft-prices";
+import {
+  consumeConsultationProductInDatabase,
+  dispensePrescriptionInDatabase,
+} from "@/modules/stock/services/clinical-stock-store";
+import { registerLotInDatabase } from "@/modules/stock/services/lot-store";
 import {
   createInvoiceDraft,
   getInvoice,
   issueInvoice,
   updateInvoiceDraft,
 } from "@/services/billingService";
-import {
-  consumeConsultationProductInDatabase,
-  dispensePrescriptionInDatabase,
-} from "@/modules/stock/services/clinical-stock-store";
-import { draftPriceLines } from "@/modules/finances/lib/draft-prices";
-import { registerLotInDatabase } from "@/modules/stock/services/lot-store";
+
 let connection: DatabaseSync;
 let db: StockDatabase;
 let count = 0;

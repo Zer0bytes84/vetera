@@ -1,5 +1,6 @@
 import { webcrypto } from "node:crypto";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
+
 vi.mock("@/services/browser-store", () => ({ isTauriRuntime: () => false }));
 beforeEach(() => {
   vi.resetModules();

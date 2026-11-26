@@ -1,5 +1,6 @@
 import { expect, it } from "vitest";
 import { vitalAlerts } from "../../../src/modules/hospitalizations/stays/vital-alerts";
+
 const empty = {
   temperature_c: null,
   heart_rate: null,

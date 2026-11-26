@@ -1,5 +1,5 @@
-import { renderToStaticMarkup } from "react-dom/server";
 import { Building2 } from "lucide-react";
+import { renderToStaticMarkup } from "react-dom/server";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { SettingsRow, SettingsSection } from "@/components/settings-section";
 import {

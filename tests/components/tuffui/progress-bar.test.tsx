@@ -4,7 +4,7 @@ import { ProgressBar, SegmentedBar } from "@/components/ui/progress-bar";
 
 it("expose une barre de progression accessible, avec son nom et sa valeur", () => {
   const html = renderToStaticMarkup(
-    <ProgressBar label="Objectif" value={30} max={120} />
+    <ProgressBar label="Objectif" max={120} value={30} />
   );
   expect(html).toContain('role="progressbar"');
   expect(html).toContain('aria-label="Objectif"');
@@ -14,19 +14,19 @@ it("expose une barre de progression accessible, avec son nom et sa valeur", () =
 
 it("borne la valeur entre 0 et le maximum, même hors limites", () => {
   expect(
-    renderToStaticMarkup(<ProgressBar label="a" value={500} max={100} />)
+    renderToStaticMarkup(<ProgressBar label="a" max={100} value={500} />)
   ).toContain("inset(0 0% 0 0");
   expect(
-    renderToStaticMarkup(<ProgressBar label="a" value={-20} max={100} />)
+    renderToStaticMarkup(<ProgressBar label="a" max={100} value={-20} />)
   ).toContain("inset(0 100% 0 0");
   expect(
-    renderToStaticMarkup(<ProgressBar label="a" value={5} max={0} />)
+    renderToStaticMarkup(<ProgressBar label="a" max={0} value={5} />)
   ).toContain("progressbar");
 });
 
 it("un niveau (quota, budget) prend le rôle « meter » et la teinte demandée", () => {
   const html = renderToStaticMarkup(
-    <ProgressBar kind="meter" label="Quota" tone="positive" value={1} max={1} />
+    <ProgressBar kind="meter" label="Quota" max={1} tone="positive" value={1} />
   );
   expect(html).toContain('role="meter"');
   expect(html).toContain("bg-positive");

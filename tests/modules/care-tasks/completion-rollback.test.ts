@@ -1,16 +1,16 @@
 import { DatabaseSync } from "node:sqlite";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
-import { runSqliteMigrations } from "@/services/sqlite/migration-runner";
-import { SQLITE_MIGRATIONS } from "@/services/sqlite/migrations";
-import { createCareStore, type CareDatabase } from "@/modules/care-tasks/store";
 import { careInvoiceId } from "@/modules/care-tasks/domain";
-import { registerLotInDatabase } from "@/modules/stock/services/lot-store";
+import { type CareDatabase, createCareStore } from "@/modules/care-tasks/store";
 import { returnCareStockInDatabase } from "@/modules/stock/services/care-stock-rollback";
-import { stockOperationsSnapshotInDatabase } from "@/modules/stock/services/stock-operations-store";
 import {
   inventorySnapshotInDatabase,
   summarizeInventory,
 } from "@/modules/stock/services/inventory-store";
+import { registerLotInDatabase } from "@/modules/stock/services/lot-store";
+import { stockOperationsSnapshotInDatabase } from "@/modules/stock/services/stock-operations-store";
+import { runSqliteMigrations } from "@/services/sqlite/migration-runner";
+import { SQLITE_MIGRATIONS } from "@/services/sqlite/migrations";
 
 const harness = vi.hoisted(() => ({
   db: null as CareDatabase | null,
@@ -27,6 +27,7 @@ vi.mock("@/services/sqlite/database", () => ({
   runDbTransaction: (operation: (db: CareDatabase) => Promise<unknown>) =>
     transaction(operation),
 }));
+
 import {
   billCompletedCareTask,
   getInvoice,

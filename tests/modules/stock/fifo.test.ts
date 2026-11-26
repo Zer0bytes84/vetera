@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import { selectFifoAllocations, type StockBucket } from "@/domain/stock-fifo";
+import { type StockBucket, selectFifoAllocations } from "@/domain/stock-fifo";
 
 const first: StockBucket = {
   id: "old",

@@ -1,10 +1,10 @@
 import { DatabaseSync } from "node:sqlite";
 import { afterEach, describe, expect, it } from "vitest";
 import {
+  type MigrationDatabase,
   MigrationError,
   parseSqlStatements,
   runSqliteMigrations,
-  type MigrationDatabase,
 } from "../../src/services/sqlite/migration-runner";
 import {
   SQLITE_MIGRATIONS,

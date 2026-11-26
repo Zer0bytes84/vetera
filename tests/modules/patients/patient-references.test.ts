@@ -1,14 +1,14 @@
 import { DatabaseSync } from "node:sqlite";
 import { afterEach, describe, expect, it } from "vitest";
-import { SQLITE_MIGRATIONS } from "@/services/sqlite/migrations";
-import { runSqliteMigrations } from "@/services/sqlite/migration-runner";
 import {
   formatPatientReference,
   matchesPatientReference,
+  PATIENTS_WITH_REFERENCE_SQL,
   patientReferenceNumber,
   patientReferenceSearchText,
-  PATIENTS_WITH_REFERENCE_SQL,
 } from "@/modules/patients/reference/reference";
+import { runSqliteMigrations } from "@/services/sqlite/migration-runner";
+import { SQLITE_MIGRATIONS } from "@/services/sqlite/migrations";
 
 const databases: DatabaseSync[] = [];
 afterEach(() => {

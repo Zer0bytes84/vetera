@@ -1,6 +1,7 @@
 import { expect, it, vi } from "vitest";
 import { prepareQuickConsultation } from "@/modules/shell/model/quick-consultation";
 import type { Appointment, Patient } from "@/types/db";
+
 const patient = {
   id: "patient-1",
   ownerId: "owner-1",

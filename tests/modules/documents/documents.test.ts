@@ -1,29 +1,29 @@
 import { describe, expect, it } from "vitest";
 import {
-  DEFAULT_DOCUMENT_TEMPLATES,
-  documentToHtml,
-  renderClinicalDocument,
-  validateTemplate,
-} from "../../../src/modules/documents/lib/document-templates";
+  isSoapReviewed,
+  reviewedSoapContent,
+  soapSourceKey,
+} from "../../../src/modules/consultations/local-ai/soap-review";
 import {
   assertReadableFile,
   createDocumentReadingPrompt,
   parseDocumentAnswer,
 } from "../../../src/modules/documents/lib/document-reading";
 import {
-  isSoapReviewed,
-  reviewedSoapContent,
-  soapSourceKey,
-} from "../../../src/modules/consultations/local-ai/soap-review";
+  DEFAULT_DOCUMENT_TEMPLATES,
+  documentToHtml,
+  renderClinicalDocument,
+  validateTemplate,
+} from "../../../src/modules/documents/lib/document-templates";
+import {
+  assertDocumentSource,
+  type ReviewedDocumentInput,
+} from "../../../src/modules/documents/lib/save-reviewed-document";
 import type {
   Appointment,
   ConsultationSoap,
   Patient,
 } from "../../../src/types/db";
-import {
-  assertDocumentSource,
-  type ReviewedDocumentInput,
-} from "../../../src/modules/documents/lib/save-reviewed-document";
 
 const patient = {
   id: "rex",

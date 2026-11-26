@@ -1,32 +1,32 @@
-import { beforeEach, afterEach, describe, expect, it, vi } from "vitest";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import * as runtime from "@/services/browser-store";
-import * as models from "@/modules/consultations/local-ai/models";
-import {
-  AI_MODELS_CATALOG,
-  AI_ONBOARDING_OPEN_EVENT,
-  AI_SETTINGS_PENDING_KEY,
-  TOTAL_AI_MODELS_BYTES,
-  hasCompletedAIOnboarding,
-  hasDismissedAIOnboarding,
-  provisionAllAIModels,
-  resetAIOnboarding,
-  setAIOnboardingCompleted,
-  setAIOnboardingDismissed,
-  shouldShowAIOnboarding,
-  triggerOpenAIOnboarding,
-  dismissNewAssistantOffer,
-  NEW_ASSISTANT,
-  provisionNewAssistant,
-  shouldOfferNewAssistant,
-  type AIProvisioningProgress,
-} from "@/modules/consultations/services/ai-model-provisioning";
-import { createAIModelInstallation } from "@/modules/consultations/services/ai-model-installation";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   AIModelSettings,
   NewAssistantCard,
 } from "@/modules/consultations/components/ai-model-settings";
+import * as models from "@/modules/consultations/local-ai/models";
+import { createAIModelInstallation } from "@/modules/consultations/services/ai-model-installation";
+import {
+  AI_MODELS_CATALOG,
+  AI_ONBOARDING_OPEN_EVENT,
+  AI_SETTINGS_PENDING_KEY,
+  type AIProvisioningProgress,
+  dismissNewAssistantOffer,
+  hasCompletedAIOnboarding,
+  hasDismissedAIOnboarding,
+  NEW_ASSISTANT,
+  provisionAllAIModels,
+  provisionNewAssistant,
+  resetAIOnboarding,
+  setAIOnboardingCompleted,
+  setAIOnboardingDismissed,
+  shouldOfferNewAssistant,
+  shouldShowAIOnboarding,
+  TOTAL_AI_MODELS_BYTES,
+  triggerOpenAIOnboarding,
+} from "@/modules/consultations/services/ai-model-provisioning";
+import * as runtime from "@/services/browser-store";
 import { tagsWith } from "../../helpers/code-text";
 
 const missing = {

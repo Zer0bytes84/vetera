@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { buildDashboardInsights } from "../../src/modules/dashboard/v2/insights-model";
 import type { Appointment, Transaction } from "../../src/types/db";
+
 const reference = new Date(2026, 8, 30, 12);
 const appointment = (startTime: string, status = "completed") =>
   ({ startTime, status }) as Appointment;

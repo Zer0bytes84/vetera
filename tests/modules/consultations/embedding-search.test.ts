@@ -1,30 +1,31 @@
-import { DatabaseSync } from "node:sqlite";
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { DatabaseSync } from "node:sqlite";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { runSqliteMigrations } from "../../../src/services/sqlite/migration-runner";
-import { SQLITE_MIGRATIONS } from "../../../src/services/sqlite/migrations";
-import { reviewedSoapContent } from "../../../src/modules/consultations/local-ai/soap-review";
 import {
-  EMBEDDING_MODEL_KEY,
   documentSearchChunks,
+  EMBEDDING_MODEL_KEY,
   embeddingFromHex,
   embeddingToHex,
   normalizedEmbedding,
   rankPatientChunks,
-  soapSearchChunks,
   type SearchScope,
+  soapSearchChunks,
 } from "../../../src/modules/consultations/local-ai/embedding-index";
-import { matchesSearchTerms } from "../../../src/modules/consultations/local-ai/veterinary-lexicon";
-import type { ConsultationSoap, Note } from "../../../src/types/db";
 import {
+  PASSAGE_ARCTIC_MODEL_KEY,
   PASSAGE_CHARACTERS,
   PASSAGE_MODEL_KEY,
   PASSAGE_V2_MODEL_KEY,
-  PASSAGE_ARCTIC_MODEL_KEY,
   passageChunks,
 } from "../../../src/modules/consultations/local-ai/passage-search";
+import { reviewedSoapContent } from "../../../src/modules/consultations/local-ai/soap-review";
+import { matchesSearchTerms } from "../../../src/modules/consultations/local-ai/veterinary-lexicon";
+import { runSqliteMigrations } from "../../../src/services/sqlite/migration-runner";
+import { SQLITE_MIGRATIONS } from "../../../src/services/sqlite/migrations";
+import type { ConsultationSoap, Note } from "../../../src/types/db";
+
 const fixture = vi.hoisted(() => ({
   db: null as DatabaseSync | null,
   nextId: 0,
@@ -116,17 +117,19 @@ function adapter() {
     },
   };
 }
+
 import {
   detectSearchOrphans,
   indexPatientDocuments,
   persistSearchChunks,
-  readPatientSearchRows,
-  searchPatientDocuments,
-  searchAllPatientsDocuments,
-  searchAllPatientsClinical,
   readPatientLexicalMatches,
+  readPatientSearchRows,
+  searchAllPatientsClinical,
+  searchAllPatientsDocuments,
   searchAllPatientsFastLexical,
+  searchPatientDocuments,
 } from "../../../src/modules/consultations/local-ai/embedding-store";
+
 let directory: string;
 const scope: SearchScope = {
   patientId: "rex",

@@ -2,12 +2,12 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { AgentComposer } from "@/components/ui/agent-composer";
 import { AgentStatus } from "@/components/ui/agent-status";
+import { ChatThread } from "@/components/ui/chat-thread";
 import { ContextWindowMeter } from "@/components/ui/context-window-meter";
 import { PromptSuggestions } from "@/components/ui/prompt-suggestions";
+import { SourceList } from "@/components/ui/source-list";
 import { StreamingMessage } from "@/components/ui/streaming-message";
 import { ToolCallBlock } from "@/components/ui/tool-call-block";
-import { ChatThread } from "@/components/ui/chat-thread";
-import { SourceList } from "@/components/ui/source-list";
 import { UserMessage } from "@/components/ui/user-message";
 
 describe("composants de l'assistant : français, jetons Baitari, rien de technique", () => {
@@ -31,8 +31,6 @@ describe("composants de l'assistant : français, jetons Baitari, rien de techniq
     const html = renderToStaticMarkup(
       <AgentComposer
         label="Vos observations"
-        onValueChange={() => undefined}
-        value="vu @Re"
         menu={{
           label: "Suggestions de patients",
           items: [{ key: "1", label: "Rex", detail: "Chien · Bouras" }],
@@ -41,6 +39,8 @@ describe("composants de l'assistant : français, jetons Baitari, rien de techniq
           onPick: () => undefined,
           onDismiss: () => undefined,
         }}
+        onValueChange={() => undefined}
+        value="vu @Re"
       />
     );
     expect(html).toContain('role="combobox"');
@@ -131,7 +131,6 @@ describe("composants de l'assistant : français, jetons Baitari, rien de techniq
   it("le fil met la question de l'assistant à gauche, la réponse du vétérinaire dans sa bulle à droite, sans noms si on les tait", () => {
     const html = renderToStaticMarkup(
       <ChatThread
-        showNames={false}
         messages={[
           {
             id: "a",
@@ -147,6 +146,7 @@ describe("composants de l'assistant : français, jetons Baitari, rien de techniq
             plain: true,
           },
         ]}
+        showNames={false}
       />
     );
     expect(html).toContain("Quel est le motif ?");

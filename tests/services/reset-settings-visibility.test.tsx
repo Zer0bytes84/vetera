@@ -1,6 +1,7 @@
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
+
 const state = vi.hoisted(() => ({ role: "admin" as string | null }));
 vi.mock("@/contexts/AuthContext", () => ({
   useAuth: () => ({
@@ -11,7 +12,9 @@ vi.mock("@/services/localDataReset", () => ({
   RESET_CONFIRMATION: "RÉINITIALISER",
   resetLocalData: vi.fn(),
 }));
+
 import { LocalDataResetSettings } from "@/components/local-data-reset-settings";
+
 describe("reset settings visibility", () => {
   it("exposes a clearly named reset section for administrators", () => {
     state.role = "admin";

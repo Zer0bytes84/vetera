@@ -5,6 +5,7 @@ import {
   settlementRate,
 } from "../../src/modules/dashboard/v2/financial-model";
 import type { Invoice, Transaction } from "../../src/types/db";
+
 const range = { from: "2026-01-01", to: "2026-12-31" };
 const invoice = (id: string, overrides: Partial<Invoice> = {}) =>
   ({

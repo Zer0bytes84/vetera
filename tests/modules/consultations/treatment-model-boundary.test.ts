@@ -42,7 +42,9 @@ vi.mock("@/modules/consultations/local-ai/inference-client", () => ({
     },
   },
 }));
+
 import { useLocalConsultationAi } from "@/modules/consultations/hooks/use-local-consultation-ai";
+
 const context = {
   patient: {},
   consultation: {},

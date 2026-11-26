@@ -1,14 +1,14 @@
 import { DatabaseSync } from "node:sqlite";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
+import { StockError, stockQuantity } from "@/domain/stock";
+import { subscribeCareTaskCompleted } from "@/modules/care-tasks/hooks";
+import { type CareDatabase, createCareStore } from "@/modules/care-tasks/store";
+import {
+  changeStockInDatabase,
+  consumeStockInDatabase,
+} from "@/modules/stock/services/stock-store";
 import { runSqliteMigrations } from "@/services/sqlite/migration-runner";
 import { SQLITE_MIGRATIONS } from "@/services/sqlite/migrations";
-import { createCareStore, type CareDatabase } from "@/modules/care-tasks/store";
-import { subscribeCareTaskCompleted } from "@/modules/care-tasks/hooks";
-import { StockError, stockQuantity } from "@/domain/stock";
-import {
-  consumeStockInDatabase,
-  changeStockInDatabase,
-} from "@/modules/stock/services/stock-store";
 
 let db: DatabaseSync;
 let adapter: CareDatabase;

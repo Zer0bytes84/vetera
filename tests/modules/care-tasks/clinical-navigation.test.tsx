@@ -33,6 +33,7 @@ vi.mock("@/modules/patient-reminders/medical-reminders-widget", () => ({
 }));
 
 import ClinicalWorkspace from "../../../src/modules/clinique/pages/clinical-workspace";
+
 const render = () =>
   renderToStaticMarkup(<ClinicalWorkspace onNavigate={() => {}} />);
 const task = (

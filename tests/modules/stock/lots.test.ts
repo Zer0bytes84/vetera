@@ -1,12 +1,14 @@
 import { DatabaseSync } from "node:sqlite";
 import { afterEach, beforeEach, expect, it } from "vitest";
-import { runSqliteMigrations } from "@/services/sqlite/migration-runner";
-import { SQLITE_MIGRATIONS } from "@/services/sqlite/migrations";
-import { STOCK_LOTS_MIGRATION_SQL } from "@/modules/stock/stock-lots-migration";
 import {
-  stockProductInDatabase,
-  type StockDatabase,
-} from "@/modules/stock/services/stock-database";
+  inventorySnapshotInDatabase,
+  saveCatalogueProductInDatabase,
+  summarizeInventory,
+} from "@/modules/stock/services/inventory-store";
+import {
+  consumeStockLotsInDatabase,
+  hasStockLots,
+} from "@/modules/stock/services/lot-consumption-store";
 import {
   assertInventoryBalance,
   countStockBucketInDatabase,
@@ -15,14 +17,12 @@ import {
   stockBucketsInDatabase,
 } from "@/modules/stock/services/lot-store";
 import {
-  consumeStockLotsInDatabase,
-  hasStockLots,
-} from "@/modules/stock/services/lot-consumption-store";
-import {
-  inventorySnapshotInDatabase,
-  saveCatalogueProductInDatabase,
-  summarizeInventory,
-} from "@/modules/stock/services/inventory-store";
+  type StockDatabase,
+  stockProductInDatabase,
+} from "@/modules/stock/services/stock-database";
+import { STOCK_LOTS_MIGRATION_SQL } from "@/modules/stock/stock-lots-migration";
+import { runSqliteMigrations } from "@/services/sqlite/migration-runner";
+import { SQLITE_MIGRATIONS } from "@/services/sqlite/migrations";
 
 let connection: DatabaseSync;
 let db: StockDatabase;

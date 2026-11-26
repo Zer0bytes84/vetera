@@ -1,10 +1,10 @@
 import { readFileSync } from "node:fs";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { QUICK_ACTIONS } from "../src/lib/quick-actions";
 import {
   CLINIC_TAB_PENDING_KEY,
   takePendingClinicTab,
 } from "../src/modules/clinique/clinic-tab-events";
-import { QUICK_ACTIONS } from "../src/lib/quick-actions";
 
 const read = (path: string) => readFileSync(path, "utf8");
 

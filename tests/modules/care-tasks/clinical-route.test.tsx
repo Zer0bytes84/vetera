@@ -14,9 +14,9 @@ vi.mock("@/modules/clinique/pages/clinical-workspace", () => ({
     onNavigateToPatient?: unknown;
   }) => (
     <section
-      data-workspace="clinical"
-      data-tab={initialTab}
       data-patient-navigation={typeof onNavigateToPatient}
+      data-tab={initialTab}
+      data-workspace="clinical"
     />
   ),
 }));

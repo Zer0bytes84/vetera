@@ -1,5 +1,6 @@
 import { expect, it } from "vitest";
 import { restockNeed, stockAlert, stockExpiry } from "@/domain/stock-alerts";
+
 const today = "2026-10-15";
 const base = { quantity: 20, minStock: 20, stockTracked: true };
 it("l’échéance des lots prévaut sur celle générique et distingue hier d’aujourd’hui", () => {

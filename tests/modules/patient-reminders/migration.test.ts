@@ -1,6 +1,7 @@
 import { DatabaseSync } from "node:sqlite";
 import { expect, it } from "vitest";
 import { PATIENT_REMINDERS_MIGRATION_SQL } from "../../../src/modules/patient-reminders/migration";
+
 it("importe les échéances manuelles une seule fois sans toucher aux vaccinations ni aux notifications", () => {
   const db = new DatabaseSync(":memory:");
   try {

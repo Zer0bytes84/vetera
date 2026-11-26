@@ -1,10 +1,10 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
+import { documentSearchChunks } from "@/modules/consultations/local-ai/embedding-index";
 import {
   buildOffVisitNote,
   readOffVisitNote,
 } from "@/modules/consultations/off-visit-note";
-import { documentSearchChunks } from "@/modules/consultations/local-ai/embedding-index";
 
 const input = {
   patientId: "patient-1",

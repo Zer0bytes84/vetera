@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
 const mock = vi.hoisted(() => ({
   token: "session",
   session: { userId: "admin", expiresAt: "2099-01-01", token: "session" },
@@ -17,18 +18,20 @@ vi.mock("@/services/browser-store", () => ({
     return predicate(row) ? row : null;
   },
 }));
+
 import {
-  requireAdministrator,
-  requireActivationOwner,
   isActivationOwner,
+  requireActivationOwner,
+  requireAdministrator,
 } from "@/services/adminAccess";
 import {
-  listActivationLicenses,
   createActivationLicense,
-  verifyAdminToken,
   getStoredAdminToken,
+  listActivationLicenses,
   setStoredAdminToken,
+  verifyAdminToken,
 } from "@/services/licenseActivationService";
+
 beforeEach(() => {
   mock.token = "session";
   mock.user.email = "admin@clinic.test";

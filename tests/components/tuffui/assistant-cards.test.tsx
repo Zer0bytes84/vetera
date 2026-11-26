@@ -1,11 +1,11 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
+import { AgentQuestion } from "@/components/ui/agent-question";
 import { ConfirmationCard } from "@/components/ui/confirmation-card";
 import {
-  ToolApprovalQueue,
   type ApprovalRequest,
+  ToolApprovalQueue,
 } from "@/components/ui/tool-approval-queue";
-import { AgentQuestion } from "@/components/ui/agent-question";
 
 const request = (
   id: string,

@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
+import { EMPTY_SOAP } from "@/modules/consultations/local-ai/soap-schema";
 import {
   analyzeTreatmentDictation,
+  mergeProtectedDictation,
   prepareModelDictation,
   routeGuidedTreatments,
-  mergeProtectedDictation,
 } from "@/modules/consultations/local-ai/treatment-routing";
-import { EMPTY_SOAP } from "@/modules/consultations/local-ai/soap-schema";
 
 describe("formulations vétérinaires françaises", () => {
   it.each([

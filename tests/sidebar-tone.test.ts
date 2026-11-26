@@ -5,8 +5,8 @@ import {
   applySidebarTone,
   forcedSidebarTone,
   getSidebarTone,
-  saveSidebarTone,
   SIDEBAR_TONES,
+  saveSidebarTone,
 } from "../src/lib/sidebar-tone";
 import { selectorText } from "./helpers/code-text";
 

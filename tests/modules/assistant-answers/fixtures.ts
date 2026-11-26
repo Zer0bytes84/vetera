@@ -1,3 +1,4 @@
+import type { ClinicData } from "@/modules/assistant-answers/types";
 import type {
   Appointment,
   Owner,
@@ -5,7 +6,6 @@ import type {
   Task,
   Transaction,
 } from "@/types/db";
-import type { ClinicData } from "@/modules/assistant-answers/types";
 
 /** Thursday 12 November 2026, 10:00, local time. Every test reads the cabinet « as of » this moment. */
 export const NOW = new Date(2026, 10, 12, 10, 0, 0);

@@ -1,17 +1,17 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
-import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { degrees, PDFDocument, PDFName, rgb, StandardFonts } from "pdf-lib";
 import {
   getDocument,
   type PDFDocumentProxy,
 } from "pdfjs-dist/legacy/build/pdf.mjs";
+import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { buildPatientRecordPdf } from "@/modules/patients/export/patient-record-pdf";
-import { DEFAULT_INVOICE_SETTINGS } from "@/services/invoiceSettingsService";
 import type {
   PatientRecordSnapshot,
   PatientRecordSource,
 } from "@/modules/patients/export/patient-record-types";
+import { DEFAULT_INVOICE_SETTINGS } from "@/services/invoiceSettingsService";
 
 // The production fallback uses the browser's canvas and app-local worker/font
 // URLs. This test runs the same PDF.js renderer with its native Node canvas and

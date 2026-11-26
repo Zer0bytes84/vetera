@@ -1,5 +1,6 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createHash } from "node:crypto";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
 const mock = vi.hoisted(() => ({
   user: {
     id: "qa-user",
@@ -25,8 +26,10 @@ vi.mock("@/services/sqlite/database", () => ({
   runDbRead: vi.fn(),
   runDbOperation: vi.fn(),
 }));
-import { hashPassword, login, verifyPassword } from "@/services/sqlite/auth";
+
 import { getBrowserPasswordHash } from "@/services/browserCredentials";
+import { hashPassword, login, verifyPassword } from "@/services/sqlite/auth";
+
 beforeEach(() => {
   delete mock.user.passwordHash;
   delete mock.user.password_hash;

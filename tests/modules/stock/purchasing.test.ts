@@ -1,7 +1,5 @@
 import { DatabaseSync } from "node:sqlite";
 import { afterEach, beforeEach, expect, it } from "vitest";
-import { SQLITE_MIGRATIONS } from "@/services/sqlite/migrations";
-import { runSqliteMigrations } from "@/services/sqlite/migration-runner";
 import { PURCHASING_MIGRATION_SQL } from "@/modules/stock/purchasing-migration";
 import {
   purchasingSnapshotInDatabase,
@@ -11,6 +9,8 @@ import {
   transitionPurchaseOrderInDatabase,
 } from "@/modules/stock/services/purchasing-store";
 import type { StockDatabase } from "@/modules/stock/services/stock-database";
+import { runSqliteMigrations } from "@/services/sqlite/migration-runner";
+import { SQLITE_MIGRATIONS } from "@/services/sqlite/migrations";
 
 let sqlite: DatabaseSync;
 let db: StockDatabase;

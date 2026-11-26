@@ -1,18 +1,18 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import {
+  type DataColumn,
+  type DataRow,
   DataTable,
   nextSort,
   selectRows,
   toCsv,
-  type DataColumn,
-  type DataRow,
 } from "@/components/ui/data-table";
 
 interface Row extends DataRow {
-  nom: string;
   age: number;
   etat: string;
+  nom: string;
 }
 const data: Row[] = [
   { id: "1", nom: "Rex", age: 8, etat: "Bonne santé" },
@@ -86,8 +86,8 @@ describe("rendu", () => {
       data={data}
       noun={["patient", "patients"]}
       pageSize={3}
-      title="Liste"
       selectable
+      title="Liste"
     />
   );
   it("donne le titre, le nombre de lignes, le filtre et les deux boutons CSV, en français", () => {

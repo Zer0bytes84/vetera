@@ -2,9 +2,10 @@ import { generateKeyPairSync, sign } from "node:crypto";
 import { describe, expect, it } from "vitest";
 import {
   getLeaseTimeError,
-  verifyLicenseLease,
   type LicenseLease,
+  verifyLicenseLease,
 } from "@/services/licenseLease";
+
 const keys = generateKeyPairSync("ec", { namedCurve: "prime256v1" });
 const publicKey = keys.publicKey
   .export({ type: "spki", format: "der" })

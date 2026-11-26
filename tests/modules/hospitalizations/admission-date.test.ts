@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { admissionDateTime } from "../../../src/modules/hospitalizations/stays/admission-date";
+
 describe("Date d’admission choisie dans le calendrier", () => {
   it("conserve le jour choisi et l’heure locale, sans l’heure précédente du calendrier", () => {
     const result = admissionDateTime(new Date(2026, 9, 14, 23, 59), "14:30");

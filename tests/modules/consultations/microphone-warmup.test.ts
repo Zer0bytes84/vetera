@@ -164,6 +164,7 @@ vi.mock("@/modules/consultations/local-ai/whisper-session", () => ({
   parkWhisperSession: () => {},
   releaseWhisperSession: () => {},
 }));
+
 import { useLocalConsultationAi } from "@/modules/consultations/hooks/use-local-consultation-ai";
 
 function setup(options?: Parameters<typeof useLocalConsultationAi>[0]) {

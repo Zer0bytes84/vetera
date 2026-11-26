@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
+  findDossiers,
   matchesEveryWord,
   selectedDossierSearchLabel,
-  findDossiers,
 } from "@/modules/agenda/quick-search";
 
 describe("appointment quick search", () => {

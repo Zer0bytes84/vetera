@@ -1,10 +1,10 @@
-import { describe, expect, it } from "vitest";
 import { renderToStaticMarkup } from "react-dom/server";
+import { describe, expect, it } from "vitest";
 import {
   KpiConsultationsCadence,
   KpiIncomeSplineWave,
-  KpiSpeciesDistribution,
   KpiReceivablesGauge,
+  KpiSpeciesDistribution,
 } from "../../../src/modules/dashboard/v2/kpi-visuals";
 
 describe("KPI visual components", () => {
@@ -12,11 +12,11 @@ describe("KPI visual components", () => {
     it("renders 7-day cadence bars with proper aria-label and caption", () => {
       const html = renderToStaticMarkup(
         <KpiConsultationsCadence
-          values={[1, 2, 0, 4, 3, 5, 2]}
-          labels={["Lun.", "Mar.", "Mer.", "Jeu.", "Ven.", "Sam.", "Dim."]}
           change={25}
           completed={2}
+          labels={["Lun.", "Mar.", "Mer.", "Jeu.", "Ven.", "Sam.", "Dim."]}
           total={3}
+          values={[1, 2, 0, 4, 3, 5, 2]}
         />
       );
 
@@ -31,7 +31,7 @@ describe("KPI visual components", () => {
     it("renders spline curve wave with positive change badge", () => {
       const html = renderToStaticMarkup(
         <KpiIncomeSplineWave
-          values={[10000, 15000, 20000, 18000, 25000, 30000, 37500]}
+          change={18}
           labels={[
             "1 oct.",
             "2 oct.",
@@ -41,7 +41,7 @@ describe("KPI visual components", () => {
             "6 oct.",
             "7 oct.",
           ]}
-          change={18}
+          values={[10000, 15000, 20000, 18000, 25000, 30000, 37500]}
         />
       );
 
@@ -83,9 +83,9 @@ describe("KPI visual components", () => {
     it("renders full recovery gauge when waiting amount is 0", () => {
       const html = renderToStaticMarkup(
         <KpiReceivablesGauge
+          periodPaid={3750000}
           waitingAmount={0}
           waitingCount={0}
-          periodPaid={3750000}
         />
       );
 
@@ -97,9 +97,9 @@ describe("KPI visual components", () => {
     it("renders warning status when waiting amount is greater than 0", () => {
       const html = renderToStaticMarkup(
         <KpiReceivablesGauge
+          periodPaid={3500000}
           waitingAmount={1500000}
           waitingCount={2}
-          periodPaid={3500000}
         />
       );
 

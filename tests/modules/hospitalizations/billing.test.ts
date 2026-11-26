@@ -5,6 +5,7 @@ import {
 } from "../../../src/modules/hospitalizations/stays/billing";
 import type { Stay } from "../../../src/modules/hospitalizations/stays/store";
 import type { InvoiceDetail, Product } from "../../../src/types/db";
+
 const stay: Stay = {
   id: "stay",
   patient_id: "patient",

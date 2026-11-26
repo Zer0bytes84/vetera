@@ -13,12 +13,13 @@ vi.hoisted(() => {
     length: 0,
   };
 });
+
 import {
   AppointmentTimePicker,
+  type BusySlot,
   nextFreeTime,
   overlappingSlot,
   parseTypedTime,
-  type BusySlot,
 } from "@/modules/agenda/components/agenda-shared";
 
 describe("saisie de l'heure", () => {

@@ -2,9 +2,10 @@ import { describe, expect, it } from "vitest";
 import {
   assertStayTransition,
   carePlanOccurrences,
-  stayDays,
   STAY_STATUSES,
+  stayDays,
 } from "../../../src/modules/hospitalizations/stays/domain";
+
 describe("Séjours : machine à états", () => {
   for (const from of STAY_STATUSES)
     for (const to of STAY_STATUSES)

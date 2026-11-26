@@ -1,12 +1,15 @@
 import { beforeEach, expect, it, vi } from "vitest";
+
 vi.mock("@/services/adminAccess", () => ({
   requireAdministrator: async () => ({ id: "admin" }),
   verifyAdministratorPassword: async () => ({ id: "admin" }),
 }));
 vi.mock("@/services/sqlite/database", () => ({ runDbOperation: vi.fn() }));
-import { resetLocalData, RESET_CONFIRMATION } from "@/services/localDataReset";
+
+import { getBrowserSetting, getBrowserTable } from "@/services/browser-store";
 import { seedDemoDataIfNeeded } from "@/services/demo-data";
-import { getBrowserTable, getBrowserSetting } from "@/services/browser-store";
+import { RESET_CONFIRMATION, resetLocalData } from "@/services/localDataReset";
+
 const key = "vetera.browser-db.v1";
 let values: Map<string, string>;
 beforeEach(() => {

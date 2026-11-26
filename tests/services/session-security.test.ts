@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
 const mock = vi.hoisted(() => ({
   token: "",
   desktop: false,
@@ -29,7 +30,9 @@ vi.mock("@/services/sqlite/database", () => ({
   runDbOperation: mock.write,
   generateId: vi.fn(),
 }));
+
 import { getCurrentUser } from "@/services/sqlite/auth";
+
 beforeEach(() => {
   mock.token = "";
   mock.session = null;

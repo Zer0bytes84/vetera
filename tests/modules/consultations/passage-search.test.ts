@@ -1,17 +1,17 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import {
-  LEXICAL_BONUS,
-  LEXICAL_ONLY_SCORE,
-  PASSAGE_CHARACTERS,
-  bestPassage,
-  passageChunks,
-  rankPassages,
-  splitPassages,
-} from "@/modules/consultations/local-ai/passage-search";
 import type {
   SearchChunk,
   SearchScope,
 } from "@/modules/consultations/local-ai/embedding-index";
+import {
+  bestPassage,
+  LEXICAL_BONUS,
+  LEXICAL_ONLY_SCORE,
+  PASSAGE_CHARACTERS,
+  passageChunks,
+  rankPassages,
+  splitPassages,
+} from "@/modules/consultations/local-ai/passage-search";
 
 const sentence = (n: number) =>
   `Phrase ${n} décrivant l’examen clinique du patient avec suffisamment de détails pour remplir le passage.`;

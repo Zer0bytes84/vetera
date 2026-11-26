@@ -1,6 +1,6 @@
 import { readFile } from "node:fs/promises";
 import { afterEach, expect, it, vi } from "vitest";
-import { DEFAULT_INVOICE_SETTINGS } from "@/services/invoiceSettingsService";
+import type { PatientDocument } from "@/modules/documents/document-domain";
 import {
   buildManagedDocumentPdf,
   documentPdfFilename,
@@ -8,7 +8,7 @@ import {
   pdfBytes,
   printManagedDocument,
 } from "@/modules/documents/lib/managed-document-pdf";
-import type { PatientDocument } from "@/modules/documents/document-domain";
+import { DEFAULT_INVOICE_SETTINGS } from "@/services/invoiceSettingsService";
 
 afterEach(() => vi.unstubAllGlobals());
 it("produit des pages A4 avec police locale intégrée et pied clinique sans couper un texte long", async () => {

@@ -1,10 +1,11 @@
 import { describe, expect, it } from "vitest";
 import {
   assertCareTransition,
+  type CareStatus,
   careDisplayStatus,
   suggestCareTasksFromPlan,
-  type CareStatus,
 } from "../../../src/modules/care-tasks/domain";
+
 const statuses: CareStatus[] = ["a_faire", "en_cours", "fait", "annule"];
 describe("Transitions des soins", () => {
   for (const from of statuses)

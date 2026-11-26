@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { nearestInDirection, type Box } from "@/modules/flow-board/spatial-nav";
+import { type Box, nearestInDirection } from "@/modules/flow-board/spatial-nav";
 
 const box = (left: number, top: number, width = 280, height = 160): Box => ({
   left,

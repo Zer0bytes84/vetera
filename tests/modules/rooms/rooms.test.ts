@@ -1,12 +1,12 @@
 import { DatabaseSync } from "node:sqlite";
 import { afterEach, describe, expect, it } from "vitest";
-import { SQLITE_MIGRATIONS } from "@/services/sqlite/migrations";
-import { runSqliteMigrations } from "@/services/sqlite/migration-runner";
 import {
   createRoomStore,
-  roomLabel,
   type RoomDatabase,
+  roomLabel,
 } from "@/modules/rooms/store";
+import { runSqliteMigrations } from "@/services/sqlite/migration-runner";
+import { SQLITE_MIGRATIONS } from "@/services/sqlite/migrations";
 
 const databases: DatabaseSync[] = [];
 afterEach(() => {
