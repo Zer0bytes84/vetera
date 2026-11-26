@@ -17,7 +17,10 @@
       "style": {
         // Décision C du 25/11 : ne pas réordonner la cascade. Les 117 paires relevées sont sans effet ou volontaires,
         // les deux vraies surcharges mortes (auth-clinic.css, transparence réduite des bannières) sont corrigées.
-        "noDescendingSpecificity": "off"
+        "noDescendingSpecificity": "off",
+        // Décision C du 25/11 : avertissement. Les 49 chaînes sur une même variable sont réécrites ; le reste se lit
+        // mieux en ternaires courts qu'en if/else éclatés, à reprendre au fil des fichiers.
+        "noNestedTernary": "warn"
       },
       "a11y": {
         // Contrôles maison qui rendent un vrai input, textarea, select ou button étiquetable (décision C du 25/11).
