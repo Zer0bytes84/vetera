@@ -1,5 +1,4 @@
 import { FileText } from "@/lib/icons";
-import { ModalBanner } from "@/components/ui/modal-banner";
 import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
@@ -7,6 +6,7 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -45,36 +45,19 @@ export function PrescriptionPreview({
   const { t } = useTranslation();
   return (
     <Dialog onOpenChange={(open) => !open && onClose()} open>
-      <DialogContent className="modal-medical-shell max-h-[90dvh] w-full max-w-3xl grid-rows-[auto_minmax(0,1fr)] gap-0 overflow-hidden p-0 sm:max-w-3xl">
-        <DialogHeader className="modal-medical-header gap-0">
-          <ModalBanner
-            artwork="prescription"
-            className="modal-banner-compact modal-banner-record"
-            icon={<FileText strokeWidth={1.8} />}
-          >
-            <div className="flex min-w-0 flex-1 flex-wrap items-center justify-between gap-2">
-              <div>
-                <DialogTitle>
-                  {t("prescriptions.builder.preview")}
-                </DialogTitle>
-                <DialogDescription>
-                  {patient.name} · {patient.species}
-                </DialogDescription>
-              </div>
-              <div className="flex items-center gap-2">
-                <Button
-                  className="h-8"
-                  onClick={() => window.print()}
-                  size="sm"
-                  type="button"
-                >
-                  {t("prescriptions.builder.print")}
-                </Button>
-              </div>
-            </div>
-          </ModalBanner>
+      <DialogContent className="sm:max-w-3xl">
+        <DialogHeader icon={<FileText strokeWidth={1.8} />}>
+          <DialogTitle>{t("prescriptions.builder.preview")}</DialogTitle>
+          <DialogDescription>
+            {patient.name} · {patient.species}
+          </DialogDescription>
         </DialogHeader>
-        <div className="min-h-0 overflow-y-auto bg-muted/20 px-5 py-5">
+        <DialogFooter>
+          <Button onClick={() => window.print()} type="button">
+            {t("prescriptions.builder.print")}
+          </Button>
+        </DialogFooter>
+        <div>
           <PrescriptionPrintLayout
             className="prescription-print mx-auto max-w-[210mm] rounded-md border border-border/60 bg-white px-10 py-8 text-foreground shadow-sm"
             diagnosis={diagnosis}

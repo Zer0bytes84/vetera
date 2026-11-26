@@ -17,6 +17,7 @@
 @import "./design-system/dialogs.css";
 @import "./design-system/interaction.css";
 @import "./design-system/clean.css";
+@import "./design-system/modal-charter.css";
 
 @custom-variant dark (&:is(.dark *):where(:not([data-sidebar-tone="light"] :is([data-slot="sidebar"], [data-sidebar="sidebar"][data-mobile="true"]), [data-sidebar-tone="light"] :is([data-slot="sidebar"], [data-sidebar="sidebar"][data-mobile="true"]) *)));
 
@@ -851,7 +852,6 @@ button:focus-visible,
   border-top-color: rgba(255, 255, 255, 0.07);
 }
 
-
 .modal-section-icon {
   display: inline-flex;
   flex-shrink: 0;
@@ -882,7 +882,6 @@ button:focus-visible,
   background: linear-gradient(135deg, #fff0d8 0%, #ffe4e8 52%, #eee5ff 100%);
   border-color: color-mix(in oklch, #fb923c 30%, var(--border));
 }
-
 
 .dark .modal-section-icon {
   color: #99f6e4;
@@ -1186,452 +1185,9 @@ button:focus-visible,
   backdrop-filter: none;
 }
 
-.modal-banner {
-  position: relative;
-  isolation: isolate;
-  display: flex;
-  min-height: 184px;
-  flex-shrink: 0;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 13px;
-  padding: 24px 44px 24px;
-  overflow: hidden;
-  background: var(--card);
-  color: var(--foreground);
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.5);
-  border-bottom: 0;
-}
-
-/* Botanical editions: intact animal silhouettes, with quiet space for type. */
-.modal-banner-illustrated {
-  background: #faf8f1;
-  border-bottom: 1px solid rgb(91 105 86 / 0.12);
-}
-.modal-banner-illustrated::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background-image: var(--modal-botanical-image);
-  background-position: right bottom;
-  background-size: auto 100%;
-  background-repeat: no-repeat;
-  transform: scaleX(-1);
-  mask-image: linear-gradient(to left, black, transparent 26%);
-  -webkit-mask-image: linear-gradient(to left, black, transparent 26%);
-}
-.modal-banner-illustrated.modal-workflow-banner {
-  padding-inline-end: 160px;
-}
-.modal-banner-illustrated .modal-banner-glass {
-  background: rgb(255 255 255 / 0.5);
-  box-shadow: inset 0 1px 1px rgb(255 255 255 / 0.9), 0 3px 12px rgb(0 0 0 / 0.04);
-}
-.dark .modal-banner-illustrated {
-  background: var(--card);
-}
-
-.dark .modal-banner-illustrated::before {
-  opacity: 0.42;
-  mix-blend-mode: normal;
-}
-.dark .modal-banner-illustrated .modal-banner-glass {
-  background: rgb(255 255 255 / 0.07);
-  box-shadow: inset 0 1px 1px rgb(255 255 255 / 0.12);
-}
-@media (max-width: 639px) {
-  .modal-banner-illustrated.modal-workflow-banner {
-    padding-inline-end: 110px;
-  }
-  .modal-banner-illustrated.modal-workflow-banner .modal-banner-marks {
-    display: none;
-  }
-}
-
-/* Semantic icon palettes (Light Theme) */
-.modal-banner[data-tone="teal"] {
-  --tone-glow: rgba(16, 185, 129, 0.28);
-  --tone-icon: #0d684e;
-  --mesh-c1: oklch(0.95 0.08 175);
-  --mesh-c2: oklch(0.97 0.05 155);
-  --mesh-c3: oklch(0.94 0.06 200);
-}
-.modal-banner[data-tone="sky"] {
-  --tone-glow: rgba(14, 165, 233, 0.28);
-  --tone-icon: #0369a1;
-  --mesh-c1: oklch(0.94 0.08 235);
-  --mesh-c2: oklch(0.96 0.06 210);
-  --mesh-c3: oklch(0.93 0.05 255);
-}
-.modal-banner[data-tone="amber"] {
-  --tone-glow: rgba(245, 158, 11, 0.32);
-  --tone-icon: #b45309;
-  --mesh-c1: oklch(0.96 0.09 85);
-  --mesh-c2: oklch(0.97 0.07 70);
-  --mesh-c3: oklch(0.94 0.06 100);
-}
-.modal-banner[data-tone="violet"] {
-  --tone-glow: rgba(168, 85, 247, 0.3);
-  --tone-icon: #6b21a8;
-  --mesh-c1: oklch(0.95 0.08 300);
-  --mesh-c2: oklch(0.96 0.06 320);
-  --mesh-c3: oklch(0.93 0.05 280);
-}
-.modal-banner[data-tone="rose"] {
-  --tone-glow: rgba(244, 63, 94, 0.28);
-  --tone-icon: #be123c;
-  --mesh-c1: oklch(0.95 0.08 15);
-  --mesh-c2: oklch(0.96 0.07 350);
-  --mesh-c3: oklch(0.94 0.05 30);
-}
-
-/* Tone-specific luminous palettes (Dark Theme) */
-.dark .modal-banner[data-tone="teal"] {
-  --tone-glow: rgba(16, 185, 129, 0.35);
-  --tone-icon: #6ee7b7;
-  --mesh-c1: oklch(0.24 0.09 175 / 0.55);
-  --mesh-c2: oklch(0.2 0.07 155 / 0.45);
-  --mesh-c3: oklch(0.18 0.05 200 / 0.35);
-}
-.dark .modal-banner[data-tone="sky"] {
-  --tone-glow: rgba(56, 189, 248, 0.35);
-  --tone-icon: #7dd3fc;
-  --mesh-c1: oklch(0.24 0.09 235 / 0.55);
-  --mesh-c2: oklch(0.2 0.07 210 / 0.45);
-  --mesh-c3: oklch(0.18 0.06 255 / 0.35);
-}
-.dark .modal-banner[data-tone="amber"] {
-  --tone-glow: rgba(245, 158, 11, 0.38);
-  --tone-icon: #fcd34d;
-  --mesh-c1: oklch(0.26 0.1 80 / 0.55);
-  --mesh-c2: oklch(0.22 0.08 65 / 0.45);
-  --mesh-c3: oklch(0.19 0.06 95 / 0.35);
-}
-.dark .modal-banner[data-tone="violet"] {
-  --tone-glow: rgba(192, 132, 252, 0.35);
-  --tone-icon: #d8b4fe;
-  --mesh-c1: oklch(0.24 0.1 300 / 0.55);
-  --mesh-c2: oklch(0.2 0.08 320 / 0.45);
-  --mesh-c3: oklch(0.18 0.06 280 / 0.35);
-}
-.dark .modal-banner[data-tone="rose"] {
-  --tone-glow: rgba(251, 113, 133, 0.35);
-  --tone-icon: #fda4af;
-  --mesh-c1: oklch(0.24 0.1 15 / 0.55);
-  --mesh-c2: oklch(0.2 0.08 350 / 0.45);
-  --mesh-c3: oklch(0.18 0.06 30 / 0.35);
-}
-
-/* 1. Luminous Mesh Gradient Bloom */
-
-/* 2. Airbrush Texture Organic Blend */
-
-/* 3. Authentic Procedural Micro-Grain Overlay */
-
-/* 4. Soft Bottom Falloff to Card */
-
-/* 5. Liquid Glass Icon Badges */
-.modal-banner-marks {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 14px;
-}
-
-.modal-banner-glass {
-  position: relative;
-  display: inline-flex;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
-  width: 60px;
-  height: 60px;
-  border-radius: 19px;
-  border: 1px solid rgb(255 255 255 / 0.88);
-  border-bottom-color: rgb(255 255 255 / 0.4);
-  background: linear-gradient(
-    145deg,
-    rgb(255 255 255 / 0.76),
-    rgb(255 255 255 / 0.42)
-  );
-  box-shadow:
-    0 12px 28px -8px var(--tone-glow),
-    0 4px 12px -2px rgba(0, 0, 0, 0.05),
-    inset 0 1.5px 1px rgb(255 255 255 / 0.95),
-    inset 0 -1px 2px rgba(0, 0, 0, 0.04);
-  -webkit-backdrop-filter: blur(16px) saturate(160%);
-  backdrop-filter: blur(16px) saturate(160%);
-  transition:
-    transform 200ms ease,
-    box-shadow 200ms ease;
-}
-
-@media (hover: hover) and (pointer: fine){
-  .modal-banner-glass:hover {
-    transform: translateY(-1px) scale(1.02);
-    box-shadow:
-    0 16px 34px -8px var(--tone-glow),
-    0 6px 16px -2px rgba(0, 0, 0, 0.08),
-    inset 0 1.5px 1px rgb(255 255 255 / 0.95),
-    inset 0 -1px 2px rgba(0, 0, 0, 0.04);
-  }
-}
-
-.modal-banner-glass > svg {
-  width: 30px;
-  height: 30px;
-  stroke-width: 1.8;
-  color: var(--tone-icon, var(--foreground));
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.08));
-  transition:
-    color 200ms ease,
-    transform 200ms ease;
-}
-
-.dark .modal-banner-glass {
-  border-color: rgb(255 255 255 / 0.18);
-  border-bottom-color: rgb(255 255 255 / 0.06);
-  background: linear-gradient(
-    145deg,
-    rgb(255 255 255 / 0.14),
-    rgb(255 255 255 / 0.05)
-  );
-  box-shadow:
-    0 14px 32px -8px var(--tone-glow),
-    0 4px 14px -2px rgba(0, 0, 0, 0.5),
-    inset 0 1px 1px rgb(255 255 255 / 0.26),
-    inset 0 -1px 2px rgba(0, 0, 0, 0.3);
-}
-
-.dark .modal-banner-glass > svg {
-  filter: drop-shadow(0 1px 8px var(--tone-glow));
-}
-
-/* 6. Optical Link Connection */
-.modal-banner-connection {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-.modal-banner-connection > span {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--tone-icon, currentColor);
-  opacity: 0.3;
-  transition: opacity 150ms ease;
-}
-.modal-banner-connection > span:nth-child(2) {
-  width: 8px;
-  height: 8px;
-  opacity: 0.6;
-}
-.modal-banner-connection > span:nth-child(3) {
-  width: 6px;
-  height: 6px;
-  opacity: 0.9;
-}
-.dark .modal-banner-connection > span {
-  box-shadow: 0 0 6px var(--tone-glow);
-}
-
-/* 7. Close Control */
-.modal-banner-close {
-  position: absolute;
-  inset-block-start: 14px;
-  inset-inline-end: 14px;
-  z-index: 5;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  border: 1px solid rgb(255 255 255 / 0.7);
-  background: rgb(255 255 255 / 0.55);
-  color: var(--foreground);
-  cursor: pointer;
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
-  box-shadow: 0 2px 8px -2px rgba(0, 0, 0, 0.08);
-  transition-property: color, background-color, border-color, box-shadow, opacity, transform;
-  transition-duration: 180ms;
-  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
-}
-@media (hover: hover) and (pointer: fine){
-  .modal-banner-close:hover {
-    background: rgb(255 255 255 / 0.9);
-    transform: scale(1.06);
-    border-color: rgb(255 255 255 / 0.95);
-    box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.12);
-  }
-}
-.modal-banner-close:active {
-  transform: scale(0.94);
-}
-.modal-banner-close:focus-visible {
-  outline: 2px solid var(--primary);
-  outline-offset: 2px;
-}
-
-.dark .modal-banner-close {
-  border-color: rgb(255 255 255 / 0.14);
-  background: rgb(255 255 255 / 0.08);
-  color: rgb(255 255 255 / 0.9);
-  box-shadow: 0 2px 8px -2px rgba(0, 0, 0, 0.4);
-}
-@media (hover: hover) and (pointer: fine){
-  .dark .modal-banner-close:hover {
-    background: rgb(255 255 255 / 0.16);
-    border-color: rgb(255 255 255 / 0.24);
-    color: #ffffff;
-    box-shadow: 0 4px 14px -2px rgba(0, 0, 0, 0.6);
-  }
-}
-
-/* 8. Typography in Heading */
-.modal-form-heading {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  min-width: 0;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  width: 100%;
-  padding: 0;
-  text-align: center;
-  overflow-wrap: anywhere;
-}
-
 .modal-form-heading-aside {
   max-width: 100%;
   margin-top: 2px;
-}
-
-.modal-banner [data-slot="dialog-title"] {
-  color: var(--foreground);
-  font-family: var(--app-font-heading);
-  font-size: 24px;
-  font-weight: 600;
-  line-height: 1.25;
-  letter-spacing: -0.03em;
-  text-wrap: balance;
-}
-.dark .modal-banner [data-slot="dialog-title"] {
-  color: var(--foreground);
-  text-shadow: none;
-}
-
-.modal-banner [data-slot="dialog-description"] {
-  max-width: 50ch;
-  font-family: var(--app-font-sans);
-  font-size: 13px;
-  font-weight: 400;
-  line-height: 1.5;
-  color: var(--muted-foreground);
-  letter-spacing: normal;
-  text-wrap: pretty;
-}
-.dark .modal-banner [data-slot="dialog-description"] {
-  color: color-mix(in oklch, var(--foreground) 75%, var(--muted-foreground));
-}
-
-.modal-banner-compact {
-  min-height: 160px;
-  gap: 11px;
-  padding: 20px 28px;
-}
-.modal-banner-compact .modal-banner-glass {
-  width: 52px;
-  height: 52px;
-  border-radius: 16px;
-}
-.modal-banner-compact .modal-banner-glass > svg {
-  width: 27px;
-  height: 27px;
-}
-.modal-banner-compact [data-slot="dialog-title"] {
-  font-size: 24px;
-}
-
-.modal-banner-record {
-  min-height: 124px;
-  flex-direction: row;
-  justify-content: flex-start;
-  gap: 20px;
-  padding: 22px 36px 22px 28px;
-}
-.modal-banner-record .modal-form-heading {
-  align-items: flex-start;
-  text-align: start;
-}
-
-.dark .modal-banner {
-  background: var(--card);
-  color: var(--foreground);
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.08);
-  border-bottom: 0;
-}
-
-@media (max-width: 639px), (max-height: 700px) {
-  .modal-banner {
-    min-height: 164px;
-    gap: 12px;
-    padding: 18px 28px 20px;
-  }
-  .modal-banner-glass {
-    width: 54px;
-    height: 54px;
-    border-radius: 17px;
-  }
-  .modal-banner-glass > svg {
-    width: 29px;
-    height: 29px;
-  }
-  .modal-form-heading {
-    gap: 6px;
-  }
-  .modal-banner [data-slot="dialog-title"] {
-    font-size: 24px;
-  }
-  .modal-banner-compact {
-    min-height: 156px;
-    padding: 18px 28px;
-  }
-  .modal-banner-compact .modal-banner-glass {
-    width: 50px;
-    height: 50px;
-    border-radius: 16px;
-  }
-  .modal-banner-record {
-    min-height: 120px;
-  }
-}
-
-@media (max-width: 639px) {
-  .modal-banner-record {
-    flex-direction: column;
-    align-items: stretch;
-  }
-}
-
-@media (pointer: coarse) {
-  .modal-banner-close {
-    width: 44px;
-    height: 44px;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .modal-banner-close {
-    transition: none;
-  }
 }
 
 @media (prefers-reduced-transparency: reduce) {
@@ -1643,16 +1199,6 @@ button:focus-visible,
 
   .dark .modal-backdrop {
     background: rgb(9 7 16 / 0.9);
-  }
-
-  .modal-banner-glass {
-    background: #fbf0fb;
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-  }
-
-  .dark .modal-banner-glass {
-    background: #423447;
   }
 
   .modal-medical-footer,
@@ -1820,7 +1366,6 @@ button:focus-visible,
   background: rgb(255 255 255 / 0.075);
 }
 .restored-sidebar [data-slot="sidebar-footer"] { border-top: 0; }
-
 
 .apple-sidebar-glow {
   position: absolute;
@@ -2311,37 +1856,6 @@ button:focus-visible,
   [data-slot="table-row"][data-state="selected"] {
   background: color-mix(in oklab, var(--primary) 10%, var(--card));
 }
-.modal-workflow-banner {
-  min-height: 156px;
-  flex-direction: row;
-  justify-content: flex-start;
-  gap: 22px;
-  padding: 30px 64px 30px 32px;
-}
-.modal-workflow-banner .modal-form-heading {
-  align-items: flex-start;
-  text-align: start;
-}
-.modal-workflow-banner [data-slot="dialog-title"] {
-  font-size: 24px;
-  font-weight: 600;
-  text-wrap: pretty;
-}
-.modal-workflow-banner [data-slot="dialog-description"] {
-  max-width: 48ch;
-  text-align: start;
-}
-.modal-workflow-banner .modal-banner-marks {
-  flex-shrink: 0;
-}
-.modal-workflow-banner .modal-banner-glass {
-  width: 64px;
-  height: 64px;
-  border-radius: 20px;
-}
-.modal-workflow-banner.modal-banner-compact {
-  min-height: 140px;
-}
 .modal-form-fields [data-slot="field-label"] {
   font-size: 13px;
 }
@@ -2386,22 +1900,6 @@ button:focus-visible,
   box-shadow: 0 1px 3px rgb(0 0 0 / 0.08);
 }
 @media (max-width: 639px) {
-  .modal-workflow-banner {
-    min-height: 138px;
-    gap: 14px;
-    padding: 24px 52px 24px 20px;
-  }
-  .modal-workflow-banner .modal-banner-glass {
-    width: 48px;
-    height: 48px;
-    border-radius: 15px;
-  }
-  .modal-workflow-banner [data-slot="dialog-title"] {
-    font-size: 18px;
-  }
-  .modal-workflow-banner [data-slot="dialog-description"] {
-    font-size: 13px;
-  }
   .agenda-toolbar [data-slot="tabs-trigger"] {
     padding-inline: 10px;
   }
@@ -2460,22 +1958,6 @@ button:focus-visible,
 [data-widget-accent] > [data-slot="card-header"] {
   align-content: center;
 }
-
-/* Patient records: compact clinical register with a quiet identity banner. */
-.patient-record-dialog .modal-banner-record {
-  min-height: 112px;
-  padding: 24px 76px 24px 28px;
-  gap: 16px;
-  text-align: left;
-}
-.patient-record-dialog .modal-banner-glass {
-  width: 48px;
-  height: 48px;
-  border-radius: 14px;
-  box-shadow: none;
-  background: var(--card);
-}
-.patient-record-dialog .modal-banner-record > .flex { position: relative; z-index: 1; }
 .patient-record-dialog .record-summary > div {
   border-radius: 10px;
   box-shadow: none;
@@ -2532,8 +2014,6 @@ button:focus-visible,
 }
 .patient-record-dialog .record-detail { margin: 0; }
 @media (max-width: 639px) {
-  .patient-record-dialog .modal-banner-record { padding: 20px 58px 20px 20px; gap: 12px; }
-  .patient-record-dialog .modal-banner-marks { display: none; }
   .patient-record-dialog .record-summary { grid-template-columns: 1fr; }
 }
 
@@ -2613,12 +2093,6 @@ button:focus-visible,
   .settings-nav-group > p { display: none; }
   .settings-nav-item { width: auto; white-space: nowrap; }
 }
-
-/* Quiet dialog surfaces keep the application's semantic palette. */
-.modal-banner-illustrated, .dark .modal-banner-illustrated {
-  background: var(--card);
-}
-.modal-banner-illustrated::before, .modal-banner-illustrated::after, .modal-banner-marks { display: none; }
 .auth-panel, .dark .auth-panel { background: var(--card); backdrop-filter: none; }
 
 /* Command search owns one rounded focus frame, never a second input rectangle. */

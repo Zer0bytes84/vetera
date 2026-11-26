@@ -344,11 +344,11 @@ export function DocumentsLibrary({
 
       <Dialog onOpenChange={(next) => { if (!next) setLinkOpen(false); }} open={linkOpen}>
         <DialogContent>
+          <DialogHeader icon={<Link2 />}>
+            <DialogTitle>Ajouter un lien</DialogTitle>
+            <DialogDescription>L’adresse d’un site ou d’un e-mail. Un titre est facultatif.</DialogDescription>
+          </DialogHeader>
           <form className="grid gap-4" onSubmit={submitLink}>
-            <DialogHeader>
-              <DialogTitle>Ajouter un lien</DialogTitle>
-              <DialogDescription>L’adresse d’un site ou d’un e-mail. Un titre est facultatif.</DialogDescription>
-            </DialogHeader>
             <div className="grid gap-1.5">
               <label className="text-[0.8125rem] font-medium" htmlFor="library-link-url">Adresse</label>
               <Input autoFocus id="library-link-url" inputMode="url" onChange={(event) => setLinkUrl(event.target.value)} placeholder="exemple.dz" value={linkUrl} />
@@ -370,7 +370,7 @@ export function DocumentsLibrary({
 
       <Dialog onOpenChange={(next) => { if (!next) setPreview(null); }} open={preview !== null}>
         <DialogContent className="sm:max-w-3xl">
-          <DialogHeader>
+          <DialogHeader icon={<ImageIcon />}>
             <DialogTitle className="truncate">{preview?.title}</DialogTitle>
             <DialogDescription>{preview ? detailOf(preview, patientName(preview.patientId)) : ""}</DialogDescription>
           </DialogHeader>

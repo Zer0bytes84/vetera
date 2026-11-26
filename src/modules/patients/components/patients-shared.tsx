@@ -22,7 +22,7 @@ import { toast } from "sonner";
 import { computeAge, formatAgeFr } from "../lib";
 
 import { FormDialogHeader } from "@/components/ui/form-dialog";
-import { ModalBanner } from "@/components/ui/modal-banner";
+import { ModalBandActions } from "@/components/ui/modal-chrome";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -663,31 +663,20 @@ export function PatientDetailsDialog({
 
   return (
     <Dialog onOpenChange={(open) => !open && onClose()} open>
-      <DialogContent className="patient-record-dialog modal-medical-shell max-h-[calc(100dvh-1.5rem)] max-w-[min(1180px,calc(100%-1.5rem))] grid-rows-[auto_minmax(0,1fr)] gap-0 overflow-hidden rounded-[28px] p-0 sm:max-h-[calc(100dvh-2rem)] sm:max-w-[min(1180px,calc(100%-2rem))]">
-        <DialogHeader className="modal-medical-header shrink-0 gap-0 border-border/40 border-b">
-          <ModalBanner
-            artwork="patient-record"
-            className="modal-banner-compact modal-banner-record"
-            icon={<PawPrint strokeWidth={1.5} />}
-          >
-            <div className="flex w-full min-w-0 flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <div className="flex min-w-0 items-center gap-3.5">
-                <div className="min-w-0 space-y-0.5">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <DialogTitle className="truncate">
-                      {patient.name}
-                    </DialogTitle>
-                    <PatientStatusBadge status={patientData.status} />
-                  </div>
-                  <DialogDescription className="truncate text-xs sm:text-sm">
-                    {patientData.species}
-                    {patientData.breed ? ` · ${patientData.breed}` : ""} ·{" "}
-                    {formatOwnerName(currentOwner)}
-                  </DialogDescription>
-                </div>
-              </div>
-
-              <div className="flex shrink-0 items-center gap-2">
+      <DialogContent className="patient-record-dialog max-w-[min(1180px,calc(100%-1.5rem))] sm:max-w-[min(1180px,calc(100%-2rem))]">
+        <DialogHeader icon={<PawPrint strokeWidth={1.5} />}>
+          <div className="flex flex-wrap items-center gap-2">
+            <DialogTitle className="truncate">
+              {patient.name}
+            </DialogTitle>
+            <PatientStatusBadge status={patientData.status} />
+          </div>
+          <DialogDescription className="truncate">
+            {patientData.species}
+            {patientData.breed ? ` · ${patientData.breed}` : ""} ·{" "}
+            {formatOwnerName(currentOwner)}
+          </DialogDescription>
+          <ModalBandActions>
                 {isEditing ? (
                   <>
                     <Button
@@ -729,10 +718,9 @@ export function PatientDetailsDialog({
                     Modifier
                   </Button>
                 )}
-              </div>
-            </div>
-          </ModalBanner>
-          <div className="flex flex-col gap-4 px-5 py-4 sm:px-7 sm:py-5">
+          </ModalBandActions>
+        </DialogHeader>
+          <div className="flex flex-col gap-4">
             <div className="record-summary grid gap-2 sm:grid-cols-3">
               <div className="flex min-w-0 items-center gap-3 rounded-2xl bg-muted/30 px-3.5 py-3 text-foreground ring-1 ring-border/40 transition-colors dark:bg-muted/15 dark:ring-border/30">
                 <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-sky-500 text-white shadow-sm shadow-sky-500/20">
@@ -814,7 +802,6 @@ export function PatientDetailsDialog({
               </div>
             </div>
           </div>
-        </DialogHeader>
 
         <div className="record-workspace min-h-0 overflow-y-auto bg-card">
           <div className="grid min-h-full md:grid-cols-[180px_minmax(0,1fr)]">
@@ -1719,7 +1706,6 @@ export function PatientCreateDialog({
         }}
       >
         <FormDialogHeader
-          artwork="patient"
           description="Identité de l’animal et coordonnées du propriétaire."
           icon={<SpeciesComponentIcon species={newPatient.species} strokeWidth={1.5} />}
           title="Nouveau patient"

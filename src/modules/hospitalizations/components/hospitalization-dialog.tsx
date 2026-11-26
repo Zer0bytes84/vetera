@@ -124,14 +124,12 @@ export function HospitalizationDialog({
     <Dialog onOpenChange={onOpenChange} open={open}>
       <FormDialogContent size="md">
         <FormDialogHeader
-            artwork="hospitalization"
           description={`${patient.name} · ${patient.species}`}
           icon={<Hospital weight="duotone" />}
           title={t(
             "modules.hospitalizations.newHospitalization",
             "Nouvelle hospitalisation"
           )}
-          tone="sky"
         />
 
         <FormDialogBody className="grid gap-4">

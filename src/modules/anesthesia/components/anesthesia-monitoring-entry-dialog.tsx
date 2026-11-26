@@ -119,14 +119,12 @@ export function AnesthesiaMonitoringEntryDialog({
     <Dialog onOpenChange={onOpenChange} open={open}>
       <FormDialogContent size="md">
         <FormDialogHeader
-            artwork="monitoring"
           description={`${sheet.procedureName}`}
           icon={<Heartbeat weight="duotone" />}
           title={t(
             "modules.anesthesia.monitoring.addEntry",
             "Ajouter un point monitoring"
           )}
-          tone="rose"
         />
 
         <FormDialogBody className="grid gap-3">

@@ -1,6 +1,6 @@
 import { ErrorState } from "@/design-system/patterns/error-state";
 import { useImperativeHandle, useRef, useState, type Ref } from "react";
-import { FileText, Search, Upload, BookOpen, Eye, X } from "lucide-react";
+import { FileText, Search, Upload, BookOpen, Eye } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -87,6 +87,6 @@ export function PatientDocumentRegistry({ patientId, onUpload, uploadControl }: 
             </li>)}
           </ul>}
     <DocumentPreviewDialog documentId={previewId} onClose={() => setPreviewId(null)} onChanged={() => void registry.refresh()} />
-    <Dialog open={reader !== null} onOpenChange={open => { if (!open) setReader(null); }}><DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-4xl"><DialogHeader className="pr-12"><DialogTitle>Lecture des documents</DialogTitle><DialogDescription>L’assistant cite les textes du dossier. Les originaux restent inchangés.</DialogDescription></DialogHeader><Button className="absolute right-4 top-4" variant="ghost" size="icon" aria-label="Fermer la lecture" onClick={() => setReader(null)}><X strokeWidth={1} /></Button>{reader && <ConsultationDocumentsAssistant key={reader.document?.id ?? "patient-reader"} patientId={patientId} appointmentId={reader.document?.consultationId ?? ""} initialMode="read" initialDocument={reader.document} />}</DialogContent></Dialog>
+    <Dialog open={reader !== null} onOpenChange={open => { if (!open) setReader(null); }}><DialogContent className="sm:max-w-4xl" focusClose><DialogHeader icon={<BookOpen />}><DialogTitle>Lecture des documents</DialogTitle><DialogDescription>L’assistant cite les textes du dossier. Les originaux restent inchangés.</DialogDescription></DialogHeader>{reader && <ConsultationDocumentsAssistant key={reader.document?.id ?? "patient-reader"} patientId={patientId} appointmentId={reader.document?.consultationId ?? ""} initialMode="read" initialDocument={reader.document} />}</DialogContent></Dialog>
   </section>;
 }

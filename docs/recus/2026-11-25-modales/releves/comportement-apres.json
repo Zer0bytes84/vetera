@@ -1,0 +1,27 @@
+{
+ "lien : clic sur « Ajouter »": {
+  "fenetre": 0,
+  "ajoute": false
+ },
+ "lien : Entrée dans le champ": {
+  "fenetre": 0,
+  "ajoute": false
+ },
+ "lien : Échap": {
+  "fenetre": 0
+ },
+ "lien : croix « Fermer »": {
+  "fenetre": 0
+ },
+ "coordonnées : Entrée enregistre": {
+  "fenetre": 0,
+  "nom": true
+ },
+ "nouveau patient : ⌘↵ sans champs requis": {
+  "fenetre": 1,
+  "alertes": 0
+ },
+ "soin : « Confirmer le soin » désactivé tant que vide": {
+  "desactive": true
+ }
+}

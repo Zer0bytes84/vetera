@@ -142,7 +142,7 @@ export function HealthCardDialog({ onClose, owner, patient }: {
   return (
     <Dialog open onOpenChange={(open) => { if (!open) close(); }}>
       <FormDialogContent size="xl" className="patient-export-dialog patient-export-dialog-preview" data-testid="health-card-dialog">
-        <FormDialogHeader compact icon={<HeartPulse aria-hidden="true" className="size-5" strokeWidth={1} />}
+        <FormDialogHeader icon={<HeartPulse aria-hidden="true" className="size-5" strokeWidth={1} />}
           title="Carnet de santé"
           description={`${patient.name} · Une page récapitulative à remettre au propriétaire. Relisez-la avant de l’imprimer.`} />
         <FormDialogBody className="patient-export-preview-body">

@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/popover";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { ModalBandActions } from "@/components/ui/modal-chrome";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
 import {
@@ -253,7 +254,7 @@ export function CareTaskForm({
           {error}
         </p>
       )}
-      <div className="grid grid-cols-2 gap-3">
+      <ModalBandActions>
         <Button
           type="button"
           variant="outline"
@@ -271,7 +272,7 @@ export function CareTaskForm({
         >
           {busy ? "Enregistrement…" : "Confirmer le soin"}
         </Button>
-      </div>
+      </ModalBandActions>
     </form>
   );
 }

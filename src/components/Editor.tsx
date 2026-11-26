@@ -365,7 +365,6 @@ const Editor: React.FC<EditorProps> = ({
       <Dialog open={Boolean(suggestion)} onOpenChange={(open) => { if (!open) setSuggestion(null); }}>
         <FormDialogContent size="md">
           <FormDialogHeader
-            compact
             title="Proposition de rédaction"
             description="Relisez le texte avant de décider de l’ajouter à votre document."
             icon={<PenLine strokeWidth={1.8} />}
@@ -390,7 +389,6 @@ const Editor: React.FC<EditorProps> = ({
       <Dialog onOpenChange={setWriteModalOpen} open={writeModalOpen}>
         <FormDialogContent size="sm">
           <FormDialogHeader
-            compact
             title="Que voulez-vous écrire ?"
             description="Décrivez le document souhaité. Vous pourrez relire la proposition avant de l’insérer."
             icon={<PenLine strokeWidth={1.8} />}

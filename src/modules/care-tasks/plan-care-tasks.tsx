@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, ClipboardList } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -9,6 +9,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
+import { ModalBandActions } from "@/components/ui/modal-chrome";
 import { useFocus } from "@/contexts/focus-provider";
 import { suggestCareTasksFromPlan } from "./domain";
 import { CareTaskForm } from "./care-task-form";
@@ -66,8 +67,8 @@ export function PlanCareTasks({
         Générer les tâches de suivi
       </Button>
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-h-[85dvh] overflow-y-auto sm:max-w-[640px] sm:p-7">
-          <DialogHeader>
+        <DialogContent className="sm:max-w-[640px]">
+          <DialogHeader icon={<ClipboardList aria-hidden="true" strokeWidth={1.5} />}>
             <DialogTitle>
               Tâches de suivi
             </DialogTitle>
@@ -92,7 +93,7 @@ export function PlanCareTasks({
                   ? `${remaining} proposition${remaining > 1 ? "s restent" : " reste"} à planifier.`
                   : "Toutes les propositions de ce Plan sont planifiées."}
               </p>
-              <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+              <ModalBandActions>
                 {remaining ? (
                   <Button className="h-11 rounded-xl t-13" onClick={() => setConfirmation(null)} variant="outline">
                     Planifier un autre soin
@@ -105,7 +106,7 @@ export function PlanCareTasks({
                 <Button className="h-11 rounded-xl t-13" onClick={openCareList}>
                   Voir les soins du patient
                 </Button>
-              </div>
+              </ModalBandActions>
             </div>
           ) : selected === null ? (
             <div className="space-y-3">
@@ -138,11 +139,11 @@ export function PlanCareTasks({
                 <p>Aucun soin proposé dans ce Plan.</p>
               )}
               {created.length > 0 && (
-                <div className="flex justify-end pt-1">
+                <ModalBandActions>
                   <Button className="h-11 rounded-xl t-13" onClick={openCareList} variant="outline">
                     Voir les soins du patient
                   </Button>
-                </div>
+                </ModalBandActions>
               )}
             </div>
           ) : (

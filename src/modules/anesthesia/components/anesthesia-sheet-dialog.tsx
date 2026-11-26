@@ -124,14 +124,12 @@ export function AnesthesiaSheetDialog({
     <Dialog onOpenChange={onOpenChange} open={open}>
       <FormDialogContent size="md">
         <FormDialogHeader
-            artwork="anesthesia"
           description={`${patient.name} · ${patient.species}`}
           icon={<Syringe weight="duotone" />}
           title={t(
             "modules.anesthesia.newSheet",
             "Nouvelle feuille d'anesthésie"
           )}
-          tone="violet"
         />
 
         <FormDialogBody className="grid gap-4">

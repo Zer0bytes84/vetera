@@ -719,7 +719,6 @@ export function AgendaView(props: AgendaViewProps) {
           size="lg"
         >
           <FormDialogHeader
-            artwork="appointment"
             description="Patient, créneau et motif de consultation."
             icon={<HugeiconsIcon icon={Calendar01Icon} strokeWidth={1.5} />}
             title={
@@ -727,7 +726,6 @@ export function AgendaView(props: AgendaViewProps) {
                 ? "Modifier le rendez-vous"
                 : "Nouveau rendez-vous"
             }
-            tone="sky"
           />
 
           <FormDialogBody>

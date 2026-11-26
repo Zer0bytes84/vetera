@@ -748,11 +748,9 @@ export function FinancesView(props: FinancesViewProps) {
       <Dialog onOpenChange={setIsInvoiceDialogOpen} open={isInvoiceDialogOpen}>
         <FormDialogContent size="md">
           <FormDialogHeader
-            artwork="invoice"
             description="Patient, prestations et règlement."
             icon={<HugeiconsIcon icon={ReceiptTextIcon} strokeWidth={1.5} />}
             title="Nouvelle facture"
-            tone="violet"
           />
           <FormDialogBody>
             <FieldGroup className="gap-5">
@@ -969,8 +967,6 @@ export function FinancesView(props: FinancesViewProps) {
           {selectedInvoice ? (
             <>
               <FormDialogHeader
-                compact
-                artwork="invoice-detail"
                 title={getInvoiceDisplayName(selectedInvoice)}
                 description={`Émise le ${formatDate(selectedInvoice.issuedAt)} · échéance ${formatDate(selectedInvoice.dueAt)}`}
                 icon={
@@ -1226,7 +1222,6 @@ export function FinancesView(props: FinancesViewProps) {
       >
         <FormDialogContent size="sm">
           <FormDialogHeader
-            artwork="payment"
             description={
               paymentInvoice
                 ? `${getInvoiceDisplayName(paymentInvoice)} · solde ${formatDZD(
@@ -1236,7 +1231,6 @@ export function FinancesView(props: FinancesViewProps) {
             }
             icon={<HugeiconsIcon icon={CreditCardIcon} strokeWidth={1.5} />}
             title="Enregistrer un règlement"
-            tone="teal"
           />
           <FormDialogBody>
             <FieldGroup>
@@ -1335,13 +1329,11 @@ export function FinancesView(props: FinancesViewProps) {
       >
         <FormDialogContent size="sm">
           <FormDialogHeader
-            artwork="transaction"
             description="Détail du mouvement comptable."
             icon={<HugeiconsIcon icon={Wallet01Icon} strokeWidth={1.5} />}
             title={
               editingTransaction ? "Modifier l’écriture" : "Nouvelle écriture"
             }
-            tone="amber"
           />
           <FormDialogBody>
             <FieldGroup>

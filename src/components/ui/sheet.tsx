@@ -3,6 +3,18 @@
 import { Dialog as SheetPrimitive } from "@base-ui/react/dialog";
 import { XIcon } from "@/lib/icons";
 import type * as React from "react";
+import { useRef } from "react";
+import {
+  firstPanelField,
+  flattenChildren,
+  markModalSlot,
+  ModalBandActions,
+  ModalChrome,
+  ModalCloseIcon,
+  modalSlotOf,
+  splitFooter,
+  useInModalChrome,
+} from "@/components/ui/modal-chrome";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -38,16 +50,26 @@ function SheetOverlay({ className, ...props }: SheetPrimitive.Backdrop.Props) {
 function SheetContent({
   className,
   children,
+  focusClose = false,
+  initialFocus,
   side = "right",
   showCloseButton = true,
   showOverlay = true,
   ...props
 }: SheetPrimitive.Popup.Props & {
+  /** La croix reçoit le focus à l'ouverture, comme le faisait la croix d'origine, première du panneau. */
+  focusClose?: boolean;
   side?: "top" | "right" | "bottom" | "left";
   showCloseButton?: boolean;
   /** False for a non-modal sheet that lets the page stay usable. */
   showOverlay?: boolean;
 }) {
+  const panel = useRef<HTMLDivElement>(null);
+  // Un panneau dont l'en-tête est un SheetHeader suit la charte des fenêtres : bande, actions, panneau qui défile.
+  const parts = flattenChildren(children);
+  const header = parts.filter((child) => modalSlotOf(child) === "header");
+  const chrome = header.length > 0;
+  const close = useRef<HTMLButtonElement>(null);
   return (
     <SheetPortal>
       {showOverlay && <SheetOverlay />}
@@ -56,12 +78,28 @@ function SheetContent({
           "fixed z-50 flex flex-col gap-4 bg-popover bg-clip-padding text-popover-foreground text-sm shadow-lg transition-[opacity,transform] duration-[240ms] ease-[var(--ease-drawer)] data-[side=left]:data-ending-style:translate-x-[-2.5rem] data-[side=left]:data-starting-style:translate-x-[-2.5rem] data-[side=right]:data-ending-style:translate-x-[2.5rem] data-[side=right]:data-starting-style:translate-x-[2.5rem] data-[side=bottom]:data-ending-style:translate-y-[2.5rem] data-[side=bottom]:data-starting-style:translate-y-[2.5rem] data-[side=top]:data-ending-style:translate-y-[-2.5rem] data-[side=top]:data-starting-style:translate-y-[-2.5rem] data-[side=bottom]:inset-x-0 data-[side=top]:inset-x-0 data-[side=left]:inset-y-0 data-[side=right]:inset-y-0 data-[side=top]:top-0 data-[side=right]:right-0 data-[side=bottom]:bottom-0 data-[side=left]:left-0 data-[side=bottom]:h-auto data-[side=left]:h-full data-[side=right]:h-full data-[side=top]:h-auto data-[side=left]:w-3/4 data-[side=right]:w-3/4 data-[side=right]:border-s data-[side=left]:border-e data-[side=bottom]:border-t data-[side=top]:border-b data-ending-style:opacity-0 data-starting-style:opacity-0 sm:max-w-sm rtl:data-[side=left]:data-ending-style:-translate-x-[-2.5rem] rtl:data-[side=left]:data-starting-style:-translate-x-[-2.5rem] rtl:data-[side=right]:data-ending-style:-translate-x-[2.5rem] rtl:data-[side=right]:data-starting-style:-translate-x-[2.5rem]",
           className
         )}
+        data-chrome={chrome ? "" : undefined}
         data-side={side}
         data-slot="sheet-content"
+        initialFocus={initialFocus ?? (chrome ? () => (focusClose ? close.current : firstPanelField(panel.current)) ?? true : undefined)}
         {...props}
       >
-        {children}
-        {showCloseButton && (
+        {chrome ? (
+          <ModalChrome
+            close={
+              <SheetPrimitive.Close aria-label="Fermer" data-slot="modal-close" ref={close}>
+                <ModalCloseIcon />
+              </SheetPrimitive.Close>
+            }
+            header={header}
+            panelRef={panel}
+          >
+            {parts.filter((child) => modalSlotOf(child) !== "header")}
+          </ModalChrome>
+        ) : (
+          children
+        )}
+        {!chrome && showCloseButton && (
           <SheetPrimitive.Close
             data-slot="sheet-close"
             render={
@@ -81,25 +119,62 @@ function SheetContent({
   );
 }
 
-function SheetHeader({ className, ...props }: React.ComponentProps<"div">) {
+function SheetHeader({
+  className,
+  children,
+  icon,
+  ...props
+}: React.ComponentProps<"div"> & {
+  /** Tuile d'icône à gauche du titre, comme l'en-tête des cartes. */
+  icon?: React.ReactNode;
+}) {
   return (
     <div
       className={cn("flex flex-col gap-0.5 p-4", className)}
       data-slot="sheet-header"
       {...props}
-    />
+    >
+      {icon ? (
+        <span aria-hidden="true" data-slot="modal-icon">
+          {icon}
+        </span>
+      ) : null}
+      {icon ? <div data-slot="modal-heading-text">{children}</div> : children}
+    </div>
   );
 }
+markModalSlot(SheetHeader, "header");
 
-function SheetFooter({ className, ...props }: React.ComponentProps<"div">) {
+function SheetFooter({
+  className,
+  children,
+  ...props
+}: React.ComponentProps<"div">) {
+  const inChrome = useInModalChrome();
+  if (inChrome) {
+    const { actions, meta } = splitFooter(children);
+    return (
+      <>
+        {meta.length ? (
+          <div data-slot="modal-footer-meta" {...props}>
+            {meta}
+          </div>
+        ) : null}
+        <ModalBandActions>{actions}</ModalBandActions>
+      </>
+    );
+  }
   return (
     <div
       className={cn("mt-auto flex flex-col gap-2 p-4", className)}
       data-slot="sheet-footer"
       {...props}
-    />
+    >
+      {children}
+    </div>
   );
 }
+markModalSlot(SheetFooter, "footer");
 
 function SheetTitle({ className, ...props }: SheetPrimitive.Title.Props) {
   return (

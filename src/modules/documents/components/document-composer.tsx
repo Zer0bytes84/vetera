@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
-import { FileText, X } from "lucide-react";
+import { FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select";
-import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useAuth } from "@/contexts/AuthContext";
 import { CERTIFICATE_TYPES, DOCUMENT_TYPES, type DocumentKind, type DocumentPreparation } from "../document-domain";
 import { documentsService } from "../document-service";
@@ -75,12 +75,11 @@ export function DocumentComposer({ open, patientId, consultationId, onClose, onC
   }
   return <>
     <Dialog open={open && !createdId} onOpenChange={(value) => { if (!value && !busy) onClose(); }}>
-      <DialogContent className="document-composer-dialog" showCloseButton={false}>
-        <header className="document-preview-header">
-          <div className="space-y-1"><DialogTitle>Générer un document</DialogTitle>
-            <DialogDescription>Depuis la note clinique validée. Relisez et ajustez le contenu avant de l’enregistrer.</DialogDescription></div>
-          <Button variant="ghost" size="icon" aria-label="Fermer la génération" disabled={busy} onClick={onClose}><X strokeWidth={1} /></Button>
-        </header>
+      <DialogContent className="document-composer-dialog">
+        <DialogHeader icon={<FileText strokeWidth={1.5} />}>
+          <DialogTitle>Générer un document</DialogTitle>
+          <DialogDescription>Depuis la note clinique validée. Relisez et ajustez le contenu avant de l’enregistrer.</DialogDescription>
+        </DialogHeader>
         {(error || templatesError) && <div role="alert" className="mx-6 mt-4 rounded-lg border border-destructive/20 bg-destructive/5 p-3 text-sm text-destructive">
           {error || String(templatesError)}{templatesError && <Button variant="ghost" onClick={() => void refresh()}>Réessayer</Button>}</div>}
         {preparation ? <>
@@ -93,14 +92,14 @@ export function DocumentComposer({ open, patientId, consultationId, onClose, onC
             </div>
             <DocumentPaperPreview dataUrl={pdf} />
           </div>
-          <footer className="document-composer-footer">
-            <label><Checkbox checked={reviewed} onCheckedChange={(value) => setReviewed(value === true)} />J’ai relu ce document et je confirme son enregistrement.</label>
+          <DialogFooter>
+            <label data-footer="meta"><Checkbox checked={reviewed} onCheckedChange={(value) => setReviewed(value === true)} />J’ai relu ce document et je confirme son enregistrement.</label>
             <Button variant="outline" disabled={busy} onClick={onClose}>Fermer</Button>
             <Button disabled={busy || !reviewed || !title.trim() || !content.trim() || !pdf} onClick={() => void perform(async () => {
               const document = await documentsService.createDraft(preparation, { title, content }, currentUser?.id ?? "", reviewed);
               setCreatedId(document.id); onCreated?.();
             })}><FileText strokeWidth={1} /> Enregistrer le brouillon</Button>
-          </footer>
+          </DialogFooter>
         </> : <>
           <div className="document-composer-form">
             <div className="document-composer-grid">
@@ -122,13 +121,13 @@ export function DocumentComposer({ open, patientId, consultationId, onClose, onC
             <p className="text-sm text-muted-foreground">Le patient, la consultation, le clinicien et la note validée seront repris. Le document reste indépendant du modèle et de la note source.</p>
             {loading && <p role="status" className="text-sm text-muted-foreground">Chargement des modèles…</p>}
           </div>
-          <footer className="document-composer-footer">
+          <DialogFooter>
             <Button variant="outline" disabled={busy} onClick={onClose}>Fermer</Button>
             <Button disabled={busy || loading || !chosenId || !consultationId} onClick={() => void perform(async () => {
               const prepared = await documentsService.prepare(consultationId, patientId, chosenId, currentUser?.id ?? "", { certificateType, recipient, referralReason });
               setPreparation(prepared); setTitle(prepared.title); setContent(prepared.content); setReviewed(false);
             })}><FileText strokeWidth={1} /> {busy ? "Préparation…" : "Préparer l’aperçu"}</Button>
-          </footer>
+          </DialogFooter>
         </>}
       </DialogContent>
     </Dialog>

@@ -1,0 +1,1364 @@
+{
+ "patients-nouveau": {
+  "titre": "Nouveau patient",
+  "traits": [],
+  "ombres": [],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "22px",
+   "fond": "oklch(0.212 0 0)",
+   "ombre": false,
+   "haut": 86,
+   "bas": 814,
+   "hauteur": 729,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Créer le dossier⌘↵",
+   "pilule": true,
+   "aDroite": true,
+   "dansBande": true,
+   "enBas": false
+  },
+  "fermeture": {
+   "texte": "Fermer",
+   "visible": true
+  },
+  "defilementInterne": false,
+  "tuile": true,
+  "focus": "input Nom de l’animal",
+  "erreurs": []
+ },
+ "patients-coordonnees": {
+  "titre": "Modifier les coordonnées du propriétaire",
+  "traits": [],
+  "ombres": [],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "22px",
+   "fond": "oklch(0.212 0 0)",
+   "ombre": false,
+   "haut": 26,
+   "bas": 874,
+   "hauteur": 847,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Enregistrer",
+   "pilule": true,
+   "aDroite": true,
+   "dansBande": true,
+   "enBas": false
+  },
+  "fermeture": {
+   "texte": "Fermer",
+   "visible": true
+  },
+  "defilementInterne": false,
+  "tuile": true,
+  "focus": "input ",
+  "erreurs": []
+ },
+ "agenda-nouveau-rdv": {
+  "titre": "Nouveau rendez-vous",
+  "traits": [],
+  "ombres": [],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "22px",
+   "fond": "oklch(0.212 0 0)",
+   "ombre": false,
+   "haut": 16,
+   "bas": 884,
+   "hauteur": 868,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Ajouter au planning⌘↵",
+   "pilule": true,
+   "aDroite": true,
+   "dansBande": true,
+   "enBas": false
+  },
+  "fermeture": {
+   "texte": "Fermer",
+   "visible": true
+  },
+  "defilementInterne": true,
+  "tuile": true,
+  "focus": "button Fermer",
+  "erreurs": []
+ },
+ "flux-sans-rdv": {
+  "titre": "Arrivée sans rendez-vous",
+  "traits": [],
+  "ombres": [],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "22px",
+   "fond": "oklch(0.212 0 0)",
+   "ombre": false,
+   "haut": 320,
+   "bas": 580,
+   "hauteur": 260,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Mettre en Attente",
+   "pilule": true,
+   "aDroite": true,
+   "dansBande": true,
+   "enBas": false
+  },
+  "fermeture": {
+   "texte": "Fermer",
+   "visible": true
+  },
+  "defilementInterne": false,
+  "tuile": true,
+  "focus": "input Nom de l’animal ou du propriét",
+  "erreurs": []
+ },
+ "soins-planifier": {
+  "titre": "Planifier un soin",
+  "traits": [],
+  "ombres": [],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "22px",
+   "fond": "oklch(0.212 0 0)",
+   "ombre": false,
+   "haut": 121,
+   "bas": 779,
+   "hauteur": 658,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Confirmer le soin",
+   "pilule": true,
+   "aDroite": true,
+   "dansBande": true,
+   "enBas": false
+  },
+  "fermeture": {
+   "texte": "Fermer",
+   "visible": true
+  },
+  "defilementInterne": false,
+  "tuile": true,
+  "focus": "button Choisir un patient",
+  "erreurs": []
+ },
+ "stock-nouveau-produit": {
+  "titre": "Nouveau produit",
+  "traits": [],
+  "ombres": [],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "22px",
+   "fond": "oklch(0.212 0 0)",
+   "ombre": false,
+   "haut": 120,
+   "bas": 780,
+   "hauteur": 659,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Enregistrer",
+   "pilule": true,
+   "aDroite": true,
+   "dansBande": true,
+   "enBas": false
+  },
+  "fermeture": {
+   "texte": "Fermer",
+   "visible": true
+  },
+  "defilementInterne": false,
+  "tuile": true,
+  "focus": "button Fermer",
+  "erreurs": []
+ },
+ "finances-nouvelle-facture": {
+  "titre": "Nouvelle facture",
+  "traits": [],
+  "ombres": [],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "22px",
+   "fond": "oklch(0.212 0 0)",
+   "ombre": false,
+   "haut": 157,
+   "bas": 743,
+   "hauteur": 585,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Émettre la facture",
+   "pilule": true,
+   "aDroite": true,
+   "dansBande": true,
+   "enBas": false
+  },
+  "fermeture": {
+   "texte": "Fermer",
+   "visible": true
+  },
+  "defilementInterne": false,
+  "tuile": true,
+  "focus": "button Fermer",
+  "erreurs": []
+ },
+ "equipe-nouveau-membre": {
+  "titre": "Ajouter un membre",
+  "traits": [],
+  "ombres": [],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "22px",
+   "fond": "oklch(0.212 0 0)",
+   "ombre": false,
+   "haut": 152,
+   "bas": 748,
+   "hauteur": 596,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Ajouter",
+   "pilule": true,
+   "aDroite": true,
+   "dansBande": true,
+   "enBas": false
+  },
+  "fermeture": {
+   "texte": "Fermer",
+   "visible": true
+  },
+  "defilementInterne": false,
+  "tuile": true,
+  "focus": "button Fermer",
+  "erreurs": []
+ },
+ "dossier-archiver": {
+  "titre": "Archiver ce dossier ?",
+  "traits": [],
+  "ombres": [],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "22px",
+   "fond": "oklch(0.212 0 0)",
+   "ombre": false,
+   "haut": 336,
+   "bas": 564,
+   "hauteur": 227,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Archiver",
+   "pilule": true,
+   "aDroite": true,
+   "dansBande": true,
+   "enBas": false
+  },
+  "fermeture": {
+   "texte": "Fermer",
+   "visible": true
+  },
+  "defilementInterne": false,
+  "tuile": true,
+  "focus": "button Annuler",
+  "erreurs": []
+ },
+ "dossier-export-pdf": {
+  "titre": "Exporter le dossier en PDF",
+  "traits": [],
+  "ombres": [],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "22px",
+   "fond": "oklch(0.212 0 0)",
+   "ombre": false,
+   "haut": 70,
+   "bas": 830,
+   "hauteur": 761,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Générer",
+   "pilule": true,
+   "aDroite": true,
+   "dansBande": true,
+   "enBas": false
+  },
+  "fermeture": {
+   "texte": "Fermer",
+   "visible": true
+  },
+  "defilementInterne": false,
+  "tuile": true,
+  "focus": "button Fermer",
+  "erreurs": []
+ },
+ "dossier-carnet-sante": {
+  "titre": "Carnet de santé",
+  "traits": [],
+  "ombres": [],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "22px",
+   "fond": "oklch(0.212 0 0)",
+   "ombre": false,
+   "haut": 24,
+   "bas": 876,
+   "hauteur": 852,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Enregistrer le PDF",
+   "pilule": true,
+   "aDroite": true,
+   "dansBande": true,
+   "enBas": false
+  },
+  "fermeture": {
+   "texte": "Fermer",
+   "visible": true
+  },
+  "defilementInterne": true,
+  "tuile": true,
+  "focus": "button Fermer",
+  "erreurs": []
+ },
+ "dossier-ordonnance": {
+  "titre": "Ordonnance· Rex",
+  "traits": [],
+  "ombres": [],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "22px",
+   "fond": "oklch(0.212 0 0)",
+   "ombre": false,
+   "haut": 8,
+   "bas": 892,
+   "hauteur": 884,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Signer et finaliser",
+   "pilule": true,
+   "aDroite": true,
+   "dansBande": true,
+   "enBas": false
+  },
+  "fermeture": {
+   "texte": "Fermer",
+   "visible": true
+  },
+  "defilementInterne": false,
+  "tuile": true,
+  "focus": "button Fermer",
+  "erreurs": []
+ },
+ "dossier-hospitalisation": {
+  "titre": "Nouvelle hospitalisation",
+  "traits": [],
+  "ombres": [],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "22px",
+   "fond": "oklch(0.212 0 0)",
+   "ombre": false,
+   "haut": 127,
+   "bas": 773,
+   "hauteur": 646,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Admettre",
+   "pilule": true,
+   "aDroite": true,
+   "dansBande": true,
+   "enBas": false
+  },
+  "fermeture": {
+   "texte": "Fermer",
+   "visible": true
+  },
+  "defilementInterne": false,
+  "tuile": true,
+  "focus": "button Fermer",
+  "erreurs": []
+ },
+ "dossier-anesthesie": {
+  "titre": "Nouvelle feuille d'anesthésie",
+  "traits": [],
+  "ombres": [],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "22px",
+   "fond": "oklch(0.212 0 0)",
+   "ombre": false,
+   "haut": 52,
+   "bas": 848,
+   "hauteur": 796,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Créer la feuille",
+   "pilule": true,
+   "aDroite": true,
+   "dansBande": true,
+   "enBas": false
+  },
+  "fermeture": {
+   "texte": "Fermer",
+   "visible": true
+  },
+  "defilementInterne": false,
+  "tuile": true,
+  "focus": "button Fermer",
+  "erreurs": []
+ },
+ "dossier-vaccin": {
+  "titre": "Ajouter un vaccin",
+  "traits": [],
+  "ombres": [],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "22px",
+   "fond": "oklch(0.212 0 0)",
+   "ombre": false,
+   "haut": 71,
+   "bas": 829,
+   "hauteur": 758,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Enregistrer",
+   "pilule": true,
+   "aDroite": true,
+   "dansBande": true,
+   "enBas": false
+  },
+  "fermeture": {
+   "texte": "Fermer",
+   "visible": true
+  },
+  "defilementInterne": false,
+  "tuile": true,
+  "focus": "input Ex. Nobivac Rabies",
+  "erreurs": []
+ },
+ "dossier-pesee": {
+  "titre": "Enregistrer une pesée",
+  "traits": [],
+  "ombres": [],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "22px",
+   "fond": "oklch(0.212 0 0)",
+   "ombre": false,
+   "haut": 156,
+   "bas": 744,
+   "hauteur": 587,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Enregistrer",
+   "pilule": true,
+   "aDroite": true,
+   "dansBande": true,
+   "enBas": false
+  },
+  "fermeture": {
+   "texte": "Fermer",
+   "visible": true
+  },
+  "defilementInterne": false,
+  "tuile": true,
+  "focus": "input Ex. 12,5",
+  "erreurs": []
+ },
+ "dossier-lecture-documents": {
+  "titre": "Lecture des documents",
+  "traits": [],
+  "ombres": [],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "22px",
+   "fond": "oklch(0.212 0 0)",
+   "ombre": false,
+   "haut": 229,
+   "bas": 671,
+   "hauteur": 441,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "fermeture": {
+   "texte": "Fermer",
+   "visible": true
+  },
+  "defilementInterne": false,
+  "tuile": true,
+  "focus": "button Fermer",
+  "erreurs": []
+ },
+ "dossier-coordonnees": {
+  "titre": "Modifier les coordonnées du propriétaire",
+  "traits": [],
+  "ombres": [],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "22px",
+   "fond": "oklch(0.212 0 0)",
+   "ombre": false,
+   "haut": 26,
+   "bas": 874,
+   "hauteur": 847,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Enregistrer",
+   "pilule": true,
+   "aDroite": true,
+   "dansBande": true,
+   "enBas": false
+  },
+  "fermeture": {
+   "texte": "Fermer",
+   "visible": true
+  },
+  "defilementInterne": false,
+  "tuile": true,
+  "focus": "input ",
+  "erreurs": []
+ },
+ "stock-reception": {
+  "titre": "Réapprovisionner",
+  "traits": [],
+  "ombres": [],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "22px",
+   "fond": "oklch(0.212 0 0)",
+   "ombre": false,
+   "haut": 251,
+   "bas": 649,
+   "hauteur": 399,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Valider Stock",
+   "pilule": true,
+   "aDroite": true,
+   "dansBande": true,
+   "enBas": false
+  },
+  "fermeture": {
+   "texte": "Fermer",
+   "visible": true
+  },
+  "defilementInterne": false,
+  "tuile": true,
+  "focus": "button Fermer",
+  "erreurs": []
+ },
+ "stock-modifier": {
+  "titre": "Modifier le produit",
+  "traits": [],
+  "ombres": [],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "22px",
+   "fond": "oklch(0.212 0 0)",
+   "ombre": false,
+   "haut": 166,
+   "bas": 734,
+   "hauteur": 568,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Enregistrer",
+   "pilule": true,
+   "aDroite": true,
+   "dansBande": true,
+   "enBas": false
+  },
+  "fermeture": {
+   "texte": "Fermer",
+   "visible": true
+  },
+  "defilementInterne": false,
+  "tuile": true,
+  "focus": "button Fermer",
+  "erreurs": []
+ },
+ "stock-inventaire": {
+  "titre": "Contrôle d’inventaire",
+  "traits": [],
+  "ombres": [],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "22px",
+   "fond": "oklch(0.212 0 0)",
+   "ombre": false,
+   "haut": 204,
+   "bas": 696,
+   "hauteur": 492,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Valider le comptage",
+   "pilule": true,
+   "aDroite": true,
+   "dansBande": true,
+   "enBas": false
+  },
+  "fermeture": {
+   "texte": "Fermer",
+   "visible": true
+  },
+  "defilementInterne": false,
+  "tuile": true,
+  "focus": "select Vaccin rage canine · 8 doseVac",
+  "erreurs": []
+ },
+ "equipe-reinitialiser": {
+  "titre": "Réinitialiser le mot de passe ?",
+  "traits": [],
+  "ombres": [],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "22px",
+   "fond": "oklch(0.212 0 0)",
+   "ombre": false,
+   "haut": 355,
+   "bas": 545,
+   "hauteur": 190,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Générer",
+   "pilule": true,
+   "aDroite": true,
+   "dansBande": true,
+   "enBas": true
+  },
+  "fermeture": {
+   "texte": "Fermer",
+   "visible": true
+  },
+  "defilementInterne": false,
+  "tuile": true,
+  "focus": "button Annuler",
+  "erreurs": []
+ },
+ "equipe-modifier": {
+  "titre": "Modifier le membre",
+  "traits": [],
+  "ombres": [],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "22px",
+   "fond": "oklch(0.212 0 0)",
+   "ombre": false,
+   "haut": 152,
+   "bas": 748,
+   "hauteur": 596,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Mettre à jour",
+   "pilule": true,
+   "aDroite": true,
+   "dansBande": true,
+   "enBas": false
+  },
+  "fermeture": {
+   "texte": "Fermer",
+   "visible": true
+  },
+  "defilementInterne": false,
+  "tuile": true,
+  "focus": "button Fermer",
+  "erreurs": []
+ },
+ "equipe-supprimer": {
+  "titre": "Supprimer ce membre ?",
+  "traits": [],
+  "ombres": [],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "22px",
+   "fond": "oklch(0.212 0 0)",
+   "ombre": false,
+   "haut": 355,
+   "bas": 545,
+   "hauteur": 190,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Supprimer",
+   "pilule": true,
+   "aDroite": true,
+   "dansBande": true,
+   "enBas": true
+  },
+  "fermeture": {
+   "texte": "Fermer",
+   "visible": true
+  },
+  "defilementInterne": false,
+  "tuile": true,
+  "focus": "button Annuler",
+  "erreurs": []
+ },
+ "equipe-mot-de-passe-temporaire": {
+  "titre": "Mot de passe temporaire",
+  "traits": [],
+  "ombres": [],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "22px",
+   "fond": "oklch(0.212 0 0)",
+   "ombre": false,
+   "haut": 314,
+   "bas": 586,
+   "hauteur": 272,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Terminé",
+   "pilule": true,
+   "aDroite": true,
+   "dansBande": true,
+   "enBas": false
+  },
+  "fermeture": {
+   "texte": "Fermer",
+   "visible": true
+  },
+  "defilementInterne": false,
+  "tuile": true,
+  "focus": "button Fermer",
+  "erreurs": []
+ },
+ "documents-lien": {
+  "titre": "Ajouter un lien",
+  "traits": [],
+  "ombres": [],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "22px",
+   "fond": "oklch(0.212 0 0)",
+   "ombre": false,
+   "haut": 284,
+   "bas": 616,
+   "hauteur": 332,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Ajouter",
+   "pilule": true,
+   "aDroite": true,
+   "dansBande": true,
+   "enBas": false
+  },
+  "fermeture": {
+   "texte": "Fermer",
+   "visible": true
+  },
+  "defilementInterne": false,
+  "tuile": true,
+  "focus": "input exemple.dz",
+  "erreurs": []
+ },
+ "agenda-modifier-rdv": {
+  "titre": "Modifier le rendez-vous",
+  "traits": [],
+  "ombres": [],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "22px",
+   "fond": "oklch(0.212 0 0)",
+   "ombre": false,
+   "haut": 16,
+   "bas": 884,
+   "hauteur": 868,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Enregistrer⌘↵",
+   "pilule": true,
+   "aDroite": true,
+   "dansBande": true,
+   "enBas": false
+  },
+  "fermeture": {
+   "texte": "Fermer",
+   "visible": true
+  },
+  "defilementInterne": true,
+  "tuile": true,
+  "focus": "button Fermer",
+  "erreurs": []
+ },
+ "agenda-supprimer-rdv": {
+  "titre": "Supprimer ce rendez-vous ?",
+  "traits": [],
+  "ombres": [],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "22px",
+   "fond": "oklch(0.212 0 0)",
+   "ombre": false,
+   "haut": 355,
+   "bas": 545,
+   "hauteur": 190,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Supprimer",
+   "pilule": true,
+   "aDroite": true,
+   "dansBande": true,
+   "enBas": true
+  },
+  "fermeture": {
+   "texte": "Fermer",
+   "visible": true
+  },
+  "defilementInterne": false,
+  "tuile": true,
+  "focus": "button Annuler",
+  "erreurs": []
+ },
+ "parametres-modele-nouveau": {
+  "titre": "Nouveau modèle",
+  "traits": [],
+  "ombres": [],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "22px",
+   "fond": "oklch(0.212 0 0)",
+   "ombre": false,
+   "haut": 16,
+   "bas": 884,
+   "hauteur": 868,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Enregistrer le modèle",
+   "pilule": true,
+   "aDroite": true,
+   "dansBande": true,
+   "enBas": false
+  },
+  "fermeture": {
+   "texte": "Fermer",
+   "visible": true
+  },
+  "defilementInterne": true,
+  "tuile": true,
+  "focus": "input Ex. Compte-rendu de consultati",
+  "erreurs": []
+ },
+ "parametres-modele-supprimer": {
+  "titre": "Supprimer ce modèle ?",
+  "traits": [],
+  "ombres": [],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "22px",
+   "fond": "oklch(0.212 0 0)",
+   "ombre": false,
+   "haut": 355,
+   "bas": 545,
+   "hauteur": 190,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Supprimer le modèle",
+   "pilule": true,
+   "aDroite": true,
+   "dansBande": true,
+   "enBas": true
+  },
+  "fermeture": {
+   "texte": "Fermer",
+   "visible": true
+  },
+  "defilementInterne": false,
+  "tuile": true,
+  "focus": "button Annuler",
+  "erreurs": []
+ },
+ "parametres-reinitialiser": {
+  "titre": "Réinitialiser les données locales ?",
+  "traits": [],
+  "ombres": [],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "22px",
+   "fond": "oklch(0.212 0 0)",
+   "ombre": false,
+   "haut": 233,
+   "bas": 667,
+   "hauteur": 434,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Confirmer la réinitialisation",
+   "pilule": true,
+   "aDroite": true,
+   "dansBande": true,
+   "enBas": false
+  },
+  "fermeture": {
+   "texte": "Fermer",
+   "visible": true
+  },
+  "defilementInterne": false,
+  "tuile": true,
+  "focus": "input ",
+  "erreurs": []
+ },
+ "parametres-apercu-facture": {
+  "titre": "Aperçu de votre modèle",
+  "traits": [],
+  "ombres": [],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "22px",
+   "fond": "oklch(0.212 0 0)",
+   "ombre": false,
+   "haut": 45,
+   "bas": 855,
+   "hauteur": 810,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Exporter l’exemple",
+   "pilule": true,
+   "aDroite": true,
+   "dansBande": true,
+   "enBas": false
+  },
+  "fermeture": {
+   "texte": "Fermer",
+   "visible": true
+  },
+  "defilementInterne": true,
+  "tuile": true,
+  "focus": "button Fermer",
+  "erreurs": []
+ },
+ "hospitalisation-admettre": {
+  "titre": "Admission d’un patient",
+  "traits": [],
+  "ombres": [],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "22px",
+   "fond": "oklch(0.212 0 0)",
+   "ombre": false,
+   "haut": 205,
+   "bas": 695,
+   "hauteur": 490,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Confirmer l’admission",
+   "pilule": true,
+   "aDroite": true,
+   "dansBande": true,
+   "enBas": false
+  },
+  "fermeture": {
+   "texte": "Fermer",
+   "visible": true
+  },
+  "defilementInterne": false,
+  "tuile": true,
+  "focus": "input Patient à admettre",
+  "erreurs": []
+ },
+ "rapide-consultation": {
+  "titre": "Nouvelle consultation",
+  "traits": [],
+  "ombres": [],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "22px",
+   "fond": "oklch(0.212 0 0)",
+   "ombre": false,
+   "haut": 189,
+   "bas": 711,
+   "hauteur": 521,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "fermeture": {
+   "texte": "Fermer",
+   "visible": true
+  },
+  "defilementInterne": false,
+  "tuile": true,
+  "focus": "input Rechercher un patient...",
+  "erreurs": []
+ },
+ "rapide-soin": {
+  "titre": "Planifier un soin",
+  "traits": [],
+  "ombres": [],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "22px",
+   "fond": "oklch(0.212 0 0)",
+   "ombre": false,
+   "haut": 121,
+   "bas": 779,
+   "hauteur": 658,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Confirmer le soin",
+   "pilule": true,
+   "aDroite": true,
+   "dansBande": true,
+   "enBas": false
+  },
+  "fermeture": {
+   "texte": "Fermer",
+   "visible": true
+  },
+  "defilementInterne": false,
+  "tuile": true,
+  "focus": "button Choisir un patient",
+  "erreurs": []
+ },
+ "rapide-patient": {
+  "titre": "Nouveau patient",
+  "traits": [],
+  "ombres": [],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "22px",
+   "fond": "oklch(0.212 0 0)",
+   "ombre": false,
+   "haut": 86,
+   "bas": 814,
+   "hauteur": 729,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Créer le dossier⌘↵",
+   "pilule": true,
+   "aDroite": true,
+   "dansBande": true,
+   "enBas": false
+  },
+  "fermeture": {
+   "texte": "Fermer",
+   "visible": true
+  },
+  "defilementInterne": false,
+  "tuile": true,
+  "focus": "input Nom de l’animal",
+  "erreurs": []
+ },
+ "flux-dossier-apercu": {
+  "titre": "Dossier médical",
+  "traits": [],
+  "ombres": [],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "22px",
+   "fond": "oklch(0.212 0 0)",
+   "ombre": false,
+   "haut": 8,
+   "bas": 892,
+   "hauteur": 884,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Ouvrir le dossier détaillé",
+   "pilule": true,
+   "aDroite": true,
+   "dansBande": true,
+   "enBas": false
+  },
+  "fermeture": {
+   "texte": "Fermer",
+   "visible": true
+  },
+  "defilementInterne": true,
+  "tuile": true,
+  "focus": "button Synthèse",
+  "erreurs": []
+ },
+ "hospitalisation-emplacement": {
+  "titre": "Nouvel emplacement",
+  "traits": [],
+  "ombres": [],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "22px",
+   "fond": "oklch(0.212 0 0)",
+   "ombre": false,
+   "haut": 288,
+   "bas": 612,
+   "hauteur": 325,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Créer l’emplacement",
+   "pilule": true,
+   "aDroite": true,
+   "dansBande": true,
+   "enBas": false
+  },
+  "fermeture": {
+   "texte": "Fermer",
+   "visible": true
+  },
+  "defilementInterne": false,
+  "tuile": true,
+  "focus": "input Ex. Cage 3, Box chirurgie",
+  "erreurs": []
+ },
+ "patients-dossier-cree": {
+  "titre": "Pixel",
+  "traits": [],
+  "ombres": [],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "22px",
+   "fond": "oklch(0.212 0 0)",
+   "ombre": false,
+   "haut": 386,
+   "bas": 514,
+   "hauteur": 128,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Créer un RDV",
+   "pilule": true,
+   "aDroite": true,
+   "dansBande": true,
+   "enBas": true
+  },
+  "fermeture": {
+   "texte": "Fermer",
+   "visible": true
+  },
+  "defilementInterne": false,
+  "tuile": true,
+  "focus": "button Fermer",
+  "erreurs": []
+ },
+ "patients-fiche": {
+  "titre": "Pixel",
+  "traits": [],
+  "ombres": [],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "22px",
+   "fond": "oklch(0.212 0 0)",
+   "ombre": false,
+   "haut": 156,
+   "bas": 744,
+   "hauteur": 589,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "fermeture": {
+   "texte": "Fermer",
+   "visible": true
+  },
+  "defilementInterne": false,
+  "tuile": true,
+  "focus": "hors fenêtre",
+  "erreurs": []
+ },
+ "ordonnance-signer": {
+  "titre": "Signer l'ordonnance ?",
+  "traits": [],
+  "ombres": [],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "22px",
+   "fond": "oklch(0.212 0 0)",
+   "ombre": false,
+   "haut": 346,
+   "bas": 554,
+   "hauteur": 209,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Signer",
+   "pilule": true,
+   "aDroite": true,
+   "dansBande": true,
+   "enBas": true
+  },
+  "fermeture": {
+   "texte": "Fermer",
+   "visible": true
+  },
+  "defilementInterne": false,
+  "tuile": true,
+  "focus": "button Annuler",
+  "erreurs": []
+ },
+ "ordonnance-modeles": {
+  "titre": "Modèles d'ordonnance",
+  "traits": [],
+  "ombres": [],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "22px",
+   "fond": "oklch(0.212 0 0)",
+   "ombre": false,
+   "haut": 267,
+   "bas": 633,
+   "hauteur": 366,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Enregistrer",
+   "pilule": true,
+   "aDroite": true,
+   "dansBande": true,
+   "enBas": false
+  },
+  "fermeture": {
+   "texte": "Fermer",
+   "visible": true
+  },
+  "defilementInterne": false,
+  "tuile": true,
+  "focus": "button Fermer",
+  "erreurs": []
+ },
+ "ordonnance-apercu": {
+  "titre": "Aperçu",
+  "traits": [
+   "header.rx-header.flex bottom 2px oklab(0.964711 0.000791133 -0.00252795 / 0.9)",
+   "div.flex.size-12 top 2px oklab(0.964711 0.000791132 -0.00252795 / 0.8)",
+   "div.flex.size-12 right 2px oklab(0.964711 0.000791132 -0.00252795 / 0.8)",
+   "div.flex.size-12 bottom 2px oklab(0.964711 0.000791132 -0.00252795 / 0.8)",
+   "div.flex.size-12 left 2px oklab(0.964711 0.000791132 -0.00252795 / 0.8)",
+   "div.mt-6.border-foreground/40 bottom 1px oklab(0.964711 0.000791132 -0.00252795 / 0.4)"
+  ],
+  "ombres": [],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "22px",
+   "fond": "oklch(0.212 0 0)",
+   "ombre": false,
+   "haut": 208,
+   "bas": 692,
+   "hauteur": 485,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Imprimer / PDF",
+   "pilule": true,
+   "aDroite": true,
+   "dansBande": true,
+   "enBas": false
+  },
+  "fermeture": {
+   "texte": "Fermer",
+   "visible": true
+  },
+  "defilementInterne": false,
+  "tuile": true,
+  "focus": "button Imprimer / PDF",
+  "erreurs": []
+ }
+}

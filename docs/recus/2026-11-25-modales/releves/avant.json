@@ -1,0 +1,1499 @@
+{
+ "patients-nouveau": {
+  "titre": "Nouveau patient",
+  "traits": [],
+  "ombres": [
+   "div[dialog-content].fixed.start-1/2 rgba(255, 255, 255, 0.8) 0px 1px 0px 0px inset, rgba(15, 23,",
+   "button[dialog-close].modal-banner-close rgba(0, 0, 0, 0.08) 0px 2px 8px -2px",
+   "span.modal-section-icon.modal-section-icon-owner rgba(255, 255, 255, 0.78) 0px 1px 0px 0px inset, rgba(15, 11",
+   "span.modal-section-icon.modal-section-icon-patient rgba(255, 255, 255, 0.78) 0px 1px 0px 0px inset, rgba(15, 11",
+   "div[dialog-footer].-mx-4.-mb-4 rgba(0, 0, 0, 0.1) 0px -8px 24px -20px",
+   "button[button].group/button.rounded-lg rgba(0, 0, 0, 0.08) 0px 1px 2px 0px"
+  ],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "12px",
+   "fond": "rgb(255, 255, 255)",
+   "ombre": true,
+   "haut": 24,
+   "bas": 876,
+   "hauteur": 852,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Créer le dossier⌘↵",
+   "pilule": false,
+   "aDroite": true,
+   "dansBande": false,
+   "enBas": true
+  },
+  "fermeture": {
+   "texte": "Fermer",
+   "visible": true
+  },
+  "defilementInterne": true,
+  "tuile": false,
+  "focus": "input Nom de l’animal",
+  "erreurs": [
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ]
+ },
+ "patients-coordonnees": {
+  "titre": "Modifier les coordonnées du propriétaire",
+  "traits": [],
+  "ombres": [
+   "div[dialog-content].fixed.start-1/2 rgba(255, 255, 255, 0.8) 0px 1px 0px 0px inset, rgba(15, 23,",
+   "button[dialog-close].modal-banner-close rgba(0, 0, 0, 0.08) 0px 2px 8px -2px",
+   "div[dialog-footer].-mx-4.-mb-4 rgba(0, 0, 0, 0.1) 0px -8px 24px -20px",
+   "button[button].group/button.rounded-lg rgba(0, 0, 0, 0.08) 0px 1px 2px 0px"
+  ],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "12px",
+   "fond": "rgb(255, 255, 255)",
+   "ombre": true,
+   "haut": 24,
+   "bas": 876,
+   "hauteur": 852,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Enregistrer",
+   "pilule": false,
+   "aDroite": true,
+   "dansBande": false,
+   "enBas": true
+  },
+  "fermeture": {
+   "texte": "Fermer",
+   "visible": true
+  },
+  "defilementInterne": true,
+  "tuile": false,
+  "focus": "input ",
+  "erreurs": [
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ]
+ },
+ "agenda-nouveau-rdv": {
+  "titre": "Nouveau rendez-vous",
+  "traits": [],
+  "ombres": [
+   "div[dialog-content].fixed.start-1/2 rgba(255, 255, 255, 0.8) 0px 1px 0px 0px inset, rgba(15, 23,",
+   "button[dialog-close].modal-banner-close rgba(0, 0, 0, 0.08) 0px 2px 8px -2px",
+   "button[button].group/button.rounded-lg rgba(0, 0, 0, 0.08) 0px 1px 2px 0px",
+   "button[button].group/button.inline-flex rgba(0, 0, 0, 0.08) 0px 1px 2px 0px",
+   "div[dialog-footer].-mx-4.-mb-4 rgba(0, 0, 0, 0.1) 0px -8px 24px -20px"
+  ],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "12px",
+   "fond": "rgb(255, 255, 255)",
+   "ombre": true,
+   "haut": 24,
+   "bas": 876,
+   "hauteur": 852,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Ajouter au planning⌘↵",
+   "pilule": false,
+   "aDroite": true,
+   "dansBande": false,
+   "enBas": true
+  },
+  "fermeture": {
+   "texte": "Fermer",
+   "visible": true
+  },
+  "defilementInterne": true,
+  "tuile": false,
+  "focus": "button Fermer",
+  "erreurs": [
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ]
+ },
+ "flux-sans-rdv": {
+  "titre": "Arrivée sans rendez-vous",
+  "traits": [],
+  "ombres": [
+   "div[dialog-content].fixed.start-1/2 rgba(255, 255, 255, 0.8) 0px 1px 0px 0px inset, rgba(15, 23,",
+   "button[dialog-close].modal-banner-close rgba(0, 0, 0, 0.08) 0px 2px 8px -2px",
+   "div[dialog-footer].-mx-4.-mb-4 rgba(0, 0, 0, 0.1) 0px -8px 24px -20px"
+  ],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "12px",
+   "fond": "rgb(255, 255, 255)",
+   "ombre": true,
+   "haut": 222,
+   "bas": 678,
+   "hauteur": 457,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Mettre en Attente",
+   "pilule": false,
+   "aDroite": true,
+   "dansBande": false,
+   "enBas": true
+  },
+  "fermeture": {
+   "texte": "Fermer",
+   "visible": true
+  },
+  "defilementInterne": false,
+  "tuile": false,
+  "focus": "input Nom de l’animal ou du propriét",
+  "erreurs": [
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ]
+ },
+ "soins-planifier": {
+  "titre": "Planifier un soin",
+  "traits": [],
+  "ombres": [
+   "div[dialog-content].fixed.start-1/2 rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0"
+  ],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "12px",
+   "fond": "rgb(255, 255, 255)",
+   "ombre": true,
+   "haut": 111,
+   "bas": 789,
+   "hauteur": 679,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Confirmer le soin",
+   "pilule": false,
+   "aDroite": true,
+   "dansBande": false,
+   "enBas": true
+  },
+  "fermeture": {
+   "texte": "Annuler",
+   "visible": true
+  },
+  "defilementInterne": false,
+  "tuile": false,
+  "focus": "button Choisir un patient",
+  "erreurs": [
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ]
+ },
+ "stock-nouveau-produit": {
+  "titre": "Nouveau produit",
+  "traits": [],
+  "ombres": [
+   "div[dialog-content].fixed.start-1/2 rgba(255, 255, 255, 0.8) 0px 1px 0px 0px inset, rgba(15, 23,",
+   "button[dialog-close].modal-banner-close rgba(0, 0, 0, 0.08) 0px 2px 8px -2px",
+   "span[switch-thumb].pointer-events-none.block rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0",
+   "div[dialog-footer].-mx-4.-mb-4 rgba(0, 0, 0, 0.1) 0px -8px 24px -20px",
+   "button[button].group/button.rounded-lg rgba(0, 0, 0, 0.08) 0px 1px 2px 0px"
+  ],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "12px",
+   "fond": "rgb(255, 255, 255)",
+   "ombre": true,
+   "haut": 24,
+   "bas": 876,
+   "hauteur": 852,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Enregistrer",
+   "pilule": false,
+   "aDroite": true,
+   "dansBande": false,
+   "enBas": true
+  },
+  "fermeture": {
+   "texte": "Fermer",
+   "visible": true
+  },
+  "defilementInterne": true,
+  "tuile": false,
+  "focus": "button Fermer",
+  "erreurs": [
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ]
+ },
+ "finances-nouvelle-facture": {
+  "titre": "Nouvelle facture",
+  "traits": [],
+  "ombres": [
+   "div[dialog-content].fixed.start-1/2 rgba(255, 255, 255, 0.8) 0px 1px 0px 0px inset, rgba(15, 23,",
+   "button[dialog-close].modal-banner-close rgba(0, 0, 0, 0.08) 0px 2px 8px -2px",
+   "div[dialog-footer].-mx-4.-mb-4 rgba(0, 0, 0, 0.1) 0px -8px 24px -20px",
+   "button[button].group/button.rounded-lg rgba(0, 0, 0, 0.08) 0px 1px 2px 0px"
+  ],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "12px",
+   "fond": "rgb(255, 255, 255)",
+   "ombre": true,
+   "haut": 68,
+   "bas": 832,
+   "hauteur": 764,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Émettre la facture",
+   "pilule": false,
+   "aDroite": true,
+   "dansBande": false,
+   "enBas": true
+  },
+  "fermeture": {
+   "texte": "Fermer",
+   "visible": true
+  },
+  "defilementInterne": false,
+  "tuile": false,
+  "focus": "button Fermer",
+  "erreurs": [
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ]
+ },
+ "equipe-nouveau-membre": {
+  "titre": "Ajouter un membre",
+  "traits": [],
+  "ombres": [
+   "div[dialog-content].fixed.start-1/2 rgba(255, 255, 255, 0.8) 0px 1px 0px 0px inset, rgba(15, 23,",
+   "button[dialog-close].modal-banner-close rgba(0, 0, 0, 0.08) 0px 2px 8px -2px",
+   "div[dialog-footer].-mx-4.-mb-4 rgba(0, 0, 0, 0.1) 0px -8px 24px -20px"
+  ],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "12px",
+   "fond": "rgb(255, 255, 255)",
+   "ombre": true,
+   "haut": 76,
+   "bas": 824,
+   "hauteur": 747,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Ajouter",
+   "pilule": false,
+   "aDroite": true,
+   "dansBande": false,
+   "enBas": true
+  },
+  "fermeture": {
+   "texte": "Fermer",
+   "visible": true
+  },
+  "defilementInterne": false,
+  "tuile": false,
+  "focus": "button Fermer",
+  "erreurs": [
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ]
+ },
+ "dossier-archiver": {
+  "titre": "Archiver ce dossier ?",
+  "traits": [],
+  "ombres": [
+   "button[alert-dialog-action].group/button.rounded-lg rgba(0, 0, 0, 0.08) 0px 1px 2px 0px"
+  ],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "10px",
+   "fond": "rgb(255, 255, 255)",
+   "ombre": true,
+   "haut": 346,
+   "bas": 554,
+   "hauteur": 207,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Archiver",
+   "pilule": false,
+   "aDroite": true,
+   "dansBande": false,
+   "enBas": true
+  },
+  "fermeture": {
+   "texte": "Annuler",
+   "visible": true
+  },
+  "defilementInterne": false,
+  "tuile": false,
+  "focus": "button Annuler",
+  "erreurs": [
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ]
+ },
+ "dossier-export-pdf": {
+  "titre": "Exporter le dossier en PDF",
+  "traits": [],
+  "ombres": [
+   "div[dialog-content].fixed.start-1/2 rgba(255, 255, 255, 0.8) 0px 1px 0px 0px inset, rgba(15, 23,",
+   "button[dialog-close].modal-banner-close rgba(0, 0, 0, 0.08) 0px 2px 8px -2px",
+   "div[dialog-footer].-mx-4.-mb-4 rgba(0, 0, 0, 0.1) 0px -8px 24px -20px",
+   "button[button].group/button.rounded-lg rgba(0, 0, 0, 0.08) 0px 1px 2px 0px"
+  ],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "12px",
+   "fond": "rgb(255, 255, 255)",
+   "ombre": true,
+   "haut": 24,
+   "bas": 876,
+   "hauteur": 852,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Générer",
+   "pilule": false,
+   "aDroite": true,
+   "dansBande": false,
+   "enBas": true
+  },
+  "fermeture": {
+   "texte": "Fermer",
+   "visible": true
+  },
+  "defilementInterne": true,
+  "tuile": false,
+  "focus": "button Fermer",
+  "erreurs": [
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ]
+ },
+ "dossier-carnet-sante": {
+  "titre": "Carnet de santé",
+  "traits": [],
+  "ombres": [
+   "div[dialog-content].fixed.start-1/2 rgba(255, 255, 255, 0.8) 0px 1px 0px 0px inset, rgba(15, 23,",
+   "button[dialog-close].modal-banner-close rgba(0, 0, 0, 0.08) 0px 2px 8px -2px",
+   "div[dialog-footer].-mx-4.-mb-4 rgba(0, 0, 0, 0.1) 0px -8px 24px -20px",
+   "button[button].group/button.rounded-lg rgba(0, 0, 0, 0.08) 0px 1px 2px 0px"
+  ],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "12px",
+   "fond": "rgb(255, 255, 255)",
+   "ombre": true,
+   "haut": 24,
+   "bas": 876,
+   "hauteur": 852,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Enregistrer le PDF",
+   "pilule": false,
+   "aDroite": true,
+   "dansBande": false,
+   "enBas": true
+  },
+  "fermeture": {
+   "texte": "Fermer",
+   "visible": true
+  },
+  "defilementInterne": false,
+  "tuile": false,
+  "focus": "button Fermer",
+  "erreurs": [
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ]
+ },
+ "dossier-ordonnance": {
+  "titre": "Ordonnance· Rex",
+  "traits": [],
+  "ombres": [
+   "div[sheet-content].fixed.z-50 rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0",
+   "span.flex.size-10 rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0",
+   "button[button].group/button.rounded-lg rgba(0, 0, 0, 0.08) 0px 1px 2px 0px"
+  ],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "17.6px",
+   "fond": "rgb(255, 255, 255)",
+   "ombre": true,
+   "haut": 0,
+   "bas": 900,
+   "hauteur": 900,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Signer et finaliser",
+   "pilule": false,
+   "aDroite": true,
+   "dansBande": false,
+   "enBas": false
+  },
+  "fermeture": {
+   "texte": "Fermer",
+   "visible": true
+  },
+  "defilementInterne": false,
+  "tuile": false,
+  "focus": "button Fermer",
+  "erreurs": [
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ]
+ },
+ "dossier-hospitalisation": {
+  "titre": "Nouvelle hospitalisation",
+  "traits": [],
+  "ombres": [
+   "div[dialog-content].fixed.start-1/2 rgba(255, 255, 255, 0.8) 0px 1px 0px 0px inset, rgba(15, 23,",
+   "button[dialog-close].modal-banner-close rgba(0, 0, 0, 0.08) 0px 2px 8px -2px",
+   "div[dialog-footer].-mx-4.-mb-4 rgba(0, 0, 0, 0.1) 0px -8px 24px -20px"
+  ],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "12px",
+   "fond": "rgb(255, 255, 255)",
+   "ombre": true,
+   "haut": 29,
+   "bas": 872,
+   "hauteur": 843,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Admettre",
+   "pilule": false,
+   "aDroite": true,
+   "dansBande": false,
+   "enBas": true
+  },
+  "fermeture": {
+   "texte": "Fermer",
+   "visible": true
+  },
+  "defilementInterne": false,
+  "tuile": false,
+  "focus": "button Fermer",
+  "erreurs": [
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ]
+ },
+ "dossier-anesthesie": {
+  "titre": "Nouvelle feuille d'anesthésie",
+  "traits": [],
+  "ombres": [
+   "div[dialog-content].fixed.start-1/2 rgba(255, 255, 255, 0.8) 0px 1px 0px 0px inset, rgba(15, 23,",
+   "button[dialog-close].modal-banner-close rgba(0, 0, 0, 0.08) 0px 2px 8px -2px",
+   "div[dialog-footer].-mx-4.-mb-4 rgba(0, 0, 0, 0.1) 0px -8px 24px -20px"
+  ],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "12px",
+   "fond": "rgb(255, 255, 255)",
+   "ombre": true,
+   "haut": 24,
+   "bas": 876,
+   "hauteur": 852,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Créer la feuille",
+   "pilule": false,
+   "aDroite": true,
+   "dansBande": false,
+   "enBas": true
+  },
+  "fermeture": {
+   "texte": "Fermer",
+   "visible": true
+  },
+  "defilementInterne": true,
+  "tuile": false,
+  "focus": "button Fermer",
+  "erreurs": [
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ]
+ },
+ "dossier-vaccin": {
+  "titre": "Ajouter un vaccin",
+  "traits": [],
+  "ombres": [
+   "div[dialog-content].fixed.start-1/2 rgba(255, 255, 255, 0.8) 0px 1px 0px 0px inset, rgba(15, 23,",
+   "button[dialog-close].modal-banner-close rgba(0, 0, 0, 0.08) 0px 2px 8px -2px",
+   "div[dialog-footer].-mx-4.-mb-4 rgba(0, 0, 0, 0.1) 0px -8px 24px -20px"
+  ],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "12px",
+   "fond": "rgb(255, 255, 255)",
+   "ombre": true,
+   "haut": 24,
+   "bas": 876,
+   "hauteur": 852,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Enregistrer",
+   "pilule": false,
+   "aDroite": true,
+   "dansBande": false,
+   "enBas": true
+  },
+  "fermeture": {
+   "texte": "Fermer",
+   "visible": true
+  },
+  "defilementInterne": true,
+  "tuile": false,
+  "focus": "input Ex. Nobivac Rabies",
+  "erreurs": [
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ]
+ },
+ "dossier-pesee": {
+  "titre": "Enregistrer une pesée",
+  "traits": [],
+  "ombres": [
+   "div[dialog-content].fixed.start-1/2 rgba(255, 255, 255, 0.8) 0px 1px 0px 0px inset, rgba(15, 23,",
+   "button[dialog-close].modal-banner-close rgba(0, 0, 0, 0.08) 0px 2px 8px -2px",
+   "div[dialog-footer].-mx-4.-mb-4 rgba(0, 0, 0, 0.1) 0px -8px 24px -20px",
+   "button[button].group/button.rounded-lg rgba(0, 0, 0, 0.08) 0px 1px 2px 0px"
+  ],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "12px",
+   "fond": "rgb(255, 255, 255)",
+   "ombre": true,
+   "haut": 93,
+   "bas": 807,
+   "hauteur": 715,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Enregistrer",
+   "pilule": false,
+   "aDroite": true,
+   "dansBande": false,
+   "enBas": true
+  },
+  "fermeture": {
+   "texte": "Fermer",
+   "visible": true
+  },
+  "defilementInterne": false,
+  "tuile": false,
+  "focus": "input Ex. 12,5",
+  "erreurs": [
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ]
+ },
+ "dossier-lecture-documents": {
+  "titre": "Lecture des documents",
+  "traits": [],
+  "ombres": [
+   "div[dialog-content].fixed.start-1/2 rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0"
+  ],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "12px",
+   "fond": "rgb(255, 255, 255)",
+   "ombre": true,
+   "haut": 229,
+   "bas": 671,
+   "hauteur": 441,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "fermeture": {
+   "texte": "Fermer la lecture",
+   "visible": true
+  },
+  "defilementInterne": false,
+  "tuile": false,
+  "focus": "button Fermer la lecture",
+  "erreurs": [
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ]
+ },
+ "dossier-coordonnees": {
+  "titre": "Modifier les coordonnées du propriétaire",
+  "traits": [],
+  "ombres": [
+   "div[dialog-content].fixed.start-1/2 rgba(255, 255, 255, 0.8) 0px 1px 0px 0px inset, rgba(15, 23,",
+   "button[dialog-close].modal-banner-close rgba(0, 0, 0, 0.08) 0px 2px 8px -2px",
+   "div[dialog-footer].-mx-4.-mb-4 rgba(0, 0, 0, 0.1) 0px -8px 24px -20px",
+   "button[button].group/button.rounded-lg rgba(0, 0, 0, 0.08) 0px 1px 2px 0px"
+  ],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "12px",
+   "fond": "rgb(255, 255, 255)",
+   "ombre": true,
+   "haut": 24,
+   "bas": 876,
+   "hauteur": 852,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Enregistrer",
+   "pilule": false,
+   "aDroite": true,
+   "dansBande": false,
+   "enBas": true
+  },
+  "fermeture": {
+   "texte": "Fermer",
+   "visible": true
+  },
+  "defilementInterne": true,
+  "tuile": false,
+  "focus": "input ",
+  "erreurs": [
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ]
+ },
+ "stock-reception": {
+  "titre": "Réapprovisionner",
+  "traits": [],
+  "ombres": [
+   "div[dialog-content].fixed.start-1/2 rgba(255, 255, 255, 0.8) 0px 1px 0px 0px inset, rgba(15, 23,",
+   "button[dialog-close].modal-banner-close rgba(0, 0, 0, 0.08) 0px 2px 8px -2px",
+   "div[dialog-footer].-mx-4.-mb-4 rgba(0, 0, 0, 0.1) 0px -8px 24px -20px"
+  ],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "12px",
+   "fond": "rgb(255, 255, 255)",
+   "ombre": true,
+   "haut": 175,
+   "bas": 725,
+   "hauteur": 550,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Valider Stock",
+   "pilule": false,
+   "aDroite": true,
+   "dansBande": false,
+   "enBas": true
+  },
+  "fermeture": {
+   "texte": "Fermer",
+   "visible": true
+  },
+  "defilementInterne": false,
+  "tuile": false,
+  "focus": "button Fermer",
+  "erreurs": [
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ]
+ },
+ "stock-modifier": {
+  "titre": "Modifier le produit",
+  "traits": [],
+  "ombres": [
+   "div[dialog-content].fixed.start-1/2 rgba(255, 255, 255, 0.8) 0px 1px 0px 0px inset, rgba(15, 23,",
+   "button[dialog-close].modal-banner-close rgba(0, 0, 0, 0.08) 0px 2px 8px -2px",
+   "span[switch-thumb].pointer-events-none.block rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0",
+   "div[dialog-footer].-mx-4.-mb-4 rgba(0, 0, 0, 0.1) 0px -8px 24px -20px",
+   "button[button].group/button.rounded-lg rgba(0, 0, 0, 0.08) 0px 1px 2px 0px"
+  ],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "12px",
+   "fond": "rgb(255, 255, 255)",
+   "ombre": true,
+   "haut": 67,
+   "bas": 833,
+   "hauteur": 766,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Enregistrer",
+   "pilule": false,
+   "aDroite": true,
+   "dansBande": false,
+   "enBas": true
+  },
+  "fermeture": {
+   "texte": "Fermer",
+   "visible": true
+  },
+  "defilementInterne": false,
+  "tuile": false,
+  "focus": "button Fermer",
+  "erreurs": [
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ]
+ },
+ "stock-inventaire": {
+  "titre": "Contrôle d’inventaire",
+  "traits": [],
+  "ombres": [
+   "div[dialog-content].fixed.start-1/2 rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0",
+   "div[dialog-footer].flex.flex-col-reverse rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0",
+   "button[button].group/button.rounded-lg rgba(0, 0, 0, 0.08) 0px 1px 2px 0px"
+  ],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "12px",
+   "fond": "rgb(255, 255, 255)",
+   "ombre": true,
+   "haut": 204,
+   "bas": 696,
+   "hauteur": 493,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Valider le comptage",
+   "pilule": false,
+   "aDroite": true,
+   "dansBande": false,
+   "enBas": true
+  },
+  "fermeture": {
+   "texte": "Annuler",
+   "visible": true
+  },
+  "defilementInterne": false,
+  "tuile": false,
+  "focus": "select Vaccin rage canine · 8 doseVac",
+  "erreurs": [
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ]
+ },
+ "equipe-reinitialiser": {
+  "titre": "Réinitialiser le mot de passe ?",
+  "traits": [],
+  "ombres": [
+   "button[alert-dialog-action].group/button.rounded-lg rgba(0, 0, 0, 0.08) 0px 1px 2px 0px"
+  ],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "10px",
+   "fond": "rgb(255, 255, 255)",
+   "ombre": true,
+   "haut": 365,
+   "bas": 535,
+   "hauteur": 169,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Générer",
+   "pilule": false,
+   "aDroite": true,
+   "dansBande": false,
+   "enBas": true
+  },
+  "fermeture": {
+   "texte": "Annuler",
+   "visible": true
+  },
+  "defilementInterne": false,
+  "tuile": false,
+  "focus": "button Annuler",
+  "erreurs": [
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ]
+ },
+ "equipe-modifier": {
+  "titre": "Modifier le membre",
+  "traits": [],
+  "ombres": [
+   "div[dialog-content].fixed.start-1/2 rgba(255, 255, 255, 0.8) 0px 1px 0px 0px inset, rgba(15, 23,",
+   "button[dialog-close].modal-banner-close rgba(0, 0, 0, 0.08) 0px 2px 8px -2px",
+   "div[dialog-footer].-mx-4.-mb-4 rgba(0, 0, 0, 0.1) 0px -8px 24px -20px",
+   "button[button].group/button.rounded-lg rgba(0, 0, 0, 0.08) 0px 1px 2px 0px"
+  ],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "12px",
+   "fond": "rgb(255, 255, 255)",
+   "ombre": true,
+   "haut": 76,
+   "bas": 824,
+   "hauteur": 747,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Mettre à jour",
+   "pilule": false,
+   "aDroite": true,
+   "dansBande": false,
+   "enBas": true
+  },
+  "fermeture": {
+   "texte": "Fermer",
+   "visible": true
+  },
+  "defilementInterne": false,
+  "tuile": false,
+  "focus": "button Fermer",
+  "erreurs": [
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ]
+ },
+ "equipe-supprimer": {
+  "titre": "Supprimer ce membre ?",
+  "traits": [],
+  "ombres": [
+   "button[alert-dialog-action].group/button.rounded-lg rgba(0, 0, 0, 0.08) 0px 1px 2px 0px"
+  ],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "10px",
+   "fond": "rgb(255, 255, 255)",
+   "ombre": true,
+   "haut": 365,
+   "bas": 535,
+   "hauteur": 169,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "fermeture": {
+   "texte": "Annuler",
+   "visible": true
+  },
+  "defilementInterne": false,
+  "tuile": false,
+  "focus": "button Annuler",
+  "erreurs": [
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ]
+ },
+ "equipe-mot-de-passe-temporaire": {
+  "titre": "Mot de passe temporaire",
+  "traits": [],
+  "ombres": [
+   "div[dialog-content].fixed.start-1/2 rgba(255, 255, 255, 0.8) 0px 1px 0px 0px inset, rgba(15, 23,",
+   "button[dialog-close].modal-banner-close rgba(0, 0, 0, 0.08) 0px 2px 8px -2px",
+   "div[dialog-footer].-mx-4.-mb-4 rgba(0, 0, 0, 0.1) 0px -8px 24px -20px",
+   "button[button].group/button.rounded-lg rgba(0, 0, 0, 0.08) 0px 1px 2px 0px"
+  ],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "12px",
+   "fond": "rgb(255, 255, 255)",
+   "ombre": true,
+   "haut": 248,
+   "bas": 653,
+   "hauteur": 405,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Terminé",
+   "pilule": false,
+   "aDroite": true,
+   "dansBande": false,
+   "enBas": true
+  },
+  "fermeture": {
+   "texte": "Fermer",
+   "visible": true
+  },
+  "defilementInterne": false,
+  "tuile": false,
+  "focus": "button Fermer",
+  "erreurs": [
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ]
+ },
+ "documents-lien": {
+  "titre": "Ajouter un lien",
+  "traits": [],
+  "ombres": [
+   "div[dialog-content].fixed.start-1/2 rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0",
+   "div[dialog-footer].-mx-4.-mb-4 rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0"
+  ],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "12px",
+   "fond": "rgb(255, 255, 255)",
+   "ombre": true,
+   "haut": 275,
+   "bas": 625,
+   "hauteur": 351,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Ajouter",
+   "pilule": false,
+   "aDroite": true,
+   "dansBande": false,
+   "enBas": true
+  },
+  "fermeture": {
+   "texte": "Annuler",
+   "visible": true
+  },
+  "defilementInterne": false,
+  "tuile": false,
+  "focus": "input exemple.dz",
+  "erreurs": [
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ]
+ },
+ "agenda-modifier-rdv": {
+  "titre": "Modifier le rendez-vous",
+  "traits": [],
+  "ombres": [
+   "div[dialog-content].fixed.start-1/2 rgba(255, 255, 255, 0.8) 0px 1px 0px 0px inset, rgba(15, 23,",
+   "button[dialog-close].modal-banner-close rgba(0, 0, 0, 0.08) 0px 2px 8px -2px",
+   "button[button].group/button.rounded-lg rgba(0, 0, 0, 0.08) 0px 1px 2px 0px",
+   "button[button].group/button.inline-flex rgba(0, 0, 0, 0.08) 0px 1px 2px 0px",
+   "div[dialog-footer].-mx-4.-mb-4 rgba(0, 0, 0, 0.1) 0px -8px 24px -20px"
+  ],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "12px",
+   "fond": "rgb(255, 255, 255)",
+   "ombre": true,
+   "haut": 24,
+   "bas": 876,
+   "hauteur": 852,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Enregistrer⌘↵",
+   "pilule": false,
+   "aDroite": true,
+   "dansBande": false,
+   "enBas": true
+  },
+  "fermeture": {
+   "texte": "Fermer",
+   "visible": true
+  },
+  "defilementInterne": true,
+  "tuile": false,
+  "focus": "button Fermer",
+  "erreurs": [
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ]
+ },
+ "agenda-supprimer-rdv": {
+  "titre": "Supprimer ce rendez-vous ?",
+  "traits": [],
+  "ombres": [
+   "button[alert-dialog-action].group/button.rounded-lg rgba(0, 0, 0, 0.08) 0px 1px 2px 0px"
+  ],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "10px",
+   "fond": "rgb(255, 255, 255)",
+   "ombre": true,
+   "haut": 365,
+   "bas": 535,
+   "hauteur": 169,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "fermeture": {
+   "texte": "Annuler",
+   "visible": true
+  },
+  "defilementInterne": false,
+  "tuile": false,
+  "focus": "button Annuler",
+  "erreurs": [
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ]
+ },
+ "parametres-modele-nouveau": {
+  "titre": "Nouveau modèle",
+  "traits": [],
+  "ombres": [
+   "div[dialog-content].fixed.start-1/2 rgba(255, 255, 255, 0.8) 0px 1px 0px 0px inset, rgba(15, 23,",
+   "button[dialog-close].modal-banner-close rgba(0, 0, 0, 0.08) 0px 2px 8px -2px",
+   "button.group.relative rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0",
+   "span.absolute.top-0.5 rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0",
+   "div[dialog-footer].-mx-4.-mb-4 rgba(0, 0, 0, 0.1) 0px -8px 24px -20px"
+  ],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "12px",
+   "fond": "rgb(255, 255, 255)",
+   "ombre": true,
+   "haut": 24,
+   "bas": 876,
+   "hauteur": 852,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Enregistrer le modèle",
+   "pilule": false,
+   "aDroite": true,
+   "dansBande": false,
+   "enBas": true
+  },
+  "fermeture": {
+   "texte": "Fermer",
+   "visible": true
+  },
+  "defilementInterne": true,
+  "tuile": false,
+  "focus": "input Ex. Compte-rendu de consultati",
+  "erreurs": [
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ]
+ },
+ "parametres-modele-supprimer": {
+  "titre": "Supprimer ce modèle ?",
+  "traits": [],
+  "ombres": [],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "10px",
+   "fond": "rgb(255, 255, 255)",
+   "ombre": true,
+   "haut": 356,
+   "bas": 544,
+   "hauteur": 188,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "fermeture": {
+   "texte": "Annuler",
+   "visible": true
+  },
+  "defilementInterne": false,
+  "tuile": false,
+  "focus": "button Annuler",
+  "erreurs": [
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ]
+ },
+ "parametres-reinitialiser": {
+  "titre": "Réinitialiser les données locales ?",
+  "traits": [],
+  "ombres": [],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "10px",
+   "fond": "rgb(255, 255, 255)",
+   "ombre": true,
+   "haut": 239,
+   "bas": 661,
+   "hauteur": 421,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "fermeture": {
+   "texte": "Annuler",
+   "visible": true
+  },
+  "defilementInterne": false,
+  "tuile": false,
+  "focus": "input ",
+  "erreurs": [
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ]
+ },
+ "parametres-apercu-facture": {
+  "titre": "Aperçu de votre modèle",
+  "traits": [],
+  "ombres": [
+   "div[dialog-content].fixed.start-1/2 rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0",
+   "button[button].group/button.rounded-lg rgba(0, 0, 0, 0.08) 0px 1px 2px 0px"
+  ],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "12px",
+   "fond": "rgb(255, 255, 255)",
+   "ombre": true,
+   "haut": 45,
+   "bas": 855,
+   "hauteur": 810,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Exporter l’exemple",
+   "pilule": false,
+   "aDroite": true,
+   "dansBande": false,
+   "enBas": true
+  },
+  "fermeture": {
+   "texte": "Fermer",
+   "visible": true
+  },
+  "defilementInterne": false,
+  "tuile": false,
+  "focus": "button Fermer",
+  "erreurs": [
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ]
+ },
+ "hospitalisation-admettre": {
+  "titre": "Admission d’un patient",
+  "traits": [],
+  "ombres": [
+   "div[dialog-content].fixed.start-1/2 rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0"
+  ],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "12px",
+   "fond": "rgb(255, 255, 255)",
+   "ombre": true,
+   "haut": 212,
+   "bas": 688,
+   "hauteur": 476,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Confirmer l’admission",
+   "pilule": false,
+   "aDroite": false,
+   "dansBande": false,
+   "enBas": true
+  },
+  "fermeture": null,
+  "defilementInterne": false,
+  "tuile": false,
+  "focus": "input Patient à admettre",
+  "erreurs": [
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ]
+ },
+ "rapide-consultation": {
+  "titre": "Nouvelle consultation",
+  "traits": [],
+  "ombres": [
+   "div[dialog-content].fixed.start-1/2 rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0"
+  ],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "12px",
+   "fond": "rgb(255, 255, 255)",
+   "ombre": true,
+   "haut": 189,
+   "bas": 711,
+   "hauteur": 521,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "fermeture": {
+   "texte": "Close",
+   "visible": true
+  },
+  "defilementInterne": false,
+  "tuile": false,
+  "focus": "input Rechercher un patient...",
+  "erreurs": [
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ]
+ },
+ "rapide-soin": {
+  "titre": "Planifier un soin",
+  "traits": [],
+  "ombres": [
+   "div[dialog-content].fixed.start-1/2 rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0"
+  ],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "12px",
+   "fond": "rgb(255, 255, 255)",
+   "ombre": true,
+   "haut": 111,
+   "bas": 789,
+   "hauteur": 679,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Confirmer le soin",
+   "pilule": false,
+   "aDroite": true,
+   "dansBande": false,
+   "enBas": true
+  },
+  "fermeture": {
+   "texte": "Annuler",
+   "visible": true
+  },
+  "defilementInterne": false,
+  "tuile": false,
+  "focus": "button Choisir un patient",
+  "erreurs": [
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ]
+ },
+ "rapide-patient": {
+  "titre": "Nouveau patient",
+  "traits": [],
+  "ombres": [
+   "div[dialog-content].fixed.start-1/2 rgba(255, 255, 255, 0.8) 0px 1px 0px 0px inset, rgba(15, 23,",
+   "button[dialog-close].modal-banner-close rgba(0, 0, 0, 0.08) 0px 2px 8px -2px",
+   "span.modal-section-icon.modal-section-icon-owner rgba(255, 255, 255, 0.78) 0px 1px 0px 0px inset, rgba(15, 11",
+   "span.modal-section-icon.modal-section-icon-patient rgba(255, 255, 255, 0.78) 0px 1px 0px 0px inset, rgba(15, 11",
+   "div[dialog-footer].-mx-4.-mb-4 rgba(0, 0, 0, 0.1) 0px -8px 24px -20px",
+   "button[button].group/button.rounded-lg rgba(0, 0, 0, 0.08) 0px 1px 2px 0px"
+  ],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "12px",
+   "fond": "rgb(255, 255, 255)",
+   "ombre": true,
+   "haut": 24,
+   "bas": 876,
+   "hauteur": 852,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Créer le dossier⌘↵",
+   "pilule": false,
+   "aDroite": true,
+   "dansBande": false,
+   "enBas": true
+  },
+  "fermeture": {
+   "texte": "Fermer",
+   "visible": true
+  },
+  "defilementInterne": true,
+  "tuile": false,
+  "focus": "input Nom de l’animal",
+  "erreurs": [
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ]
+ },
+ "flux-dossier-apercu": {
+  "titre": "Dossier médical",
+  "traits": [],
+  "ombres": [
+   "button.inline-flex.items-center rgba(0, 0, 0, 0.08) 0px 1px 2px 0px"
+  ],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "0px",
+   "fond": "rgb(255, 255, 255)",
+   "ombre": false,
+   "haut": 0,
+   "bas": 900,
+   "hauteur": 900,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Ouvrir le dossier détaillé",
+   "pilule": false,
+   "aDroite": true,
+   "dansBande": false,
+   "enBas": true
+  },
+  "fermeture": {
+   "texte": "Fermer",
+   "visible": true
+  },
+  "defilementInterne": true,
+  "tuile": false,
+  "focus": "button Synthèse",
+  "erreurs": [
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ]
+ },
+ "hospitalisation-emplacement": {
+  "titre": "Nouvel emplacement",
+  "traits": [],
+  "ombres": [
+   "div[dialog-content].fixed.start-1/2 rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0"
+  ],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "12px",
+   "fond": "rgb(255, 255, 255)",
+   "ombre": true,
+   "haut": 295,
+   "bas": 605,
+   "hauteur": 311,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Créer l’emplacement",
+   "pilule": false,
+   "aDroite": false,
+   "dansBande": false,
+   "enBas": true
+  },
+  "fermeture": null,
+  "defilementInterne": false,
+  "tuile": false,
+  "focus": "input Ex. Cage 3, Box chirurgie",
+  "erreurs": [
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ]
+ },
+ "patients-dossier-cree": {
+  "titre": "Pixel",
+  "traits": [],
+  "ombres": [
+   "div[dialog-content].fixed.start-1/2 rgba(255, 255, 255, 0.8) 0px 1px 0px 0px inset, rgba(15, 23,",
+   "button[dialog-close].modal-banner-close rgba(0, 0, 0, 0.08) 0px 2px 8px -2px",
+   "div.modal-medical-footer.flex rgba(0, 0, 0, 0.1) 0px -8px 24px -20px",
+   "button[button].group/button.rounded-lg rgba(0, 0, 0, 0.08) 0px 1px 2px 0px"
+  ],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "12px",
+   "fond": "rgb(255, 255, 255)",
+   "ombre": true,
+   "haut": 323,
+   "bas": 578,
+   "hauteur": 255,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "action": {
+   "texte": "Créer un RDV",
+   "pilule": false,
+   "aDroite": true,
+   "dansBande": false,
+   "enBas": true
+  },
+  "fermeture": {
+   "texte": "Fermer",
+   "visible": true
+  },
+  "defilementInterne": false,
+  "tuile": false,
+  "focus": "button Fermer",
+  "erreurs": [
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ]
+ },
+ "patients-fiche": {
+  "titre": "Pixel",
+  "traits": [],
+  "ombres": [
+   "div[dialog-content].fixed.start-1/2 rgba(255, 255, 255, 0.8) 0px 1px 0px 0px inset, rgba(15, 23,",
+   "button[dialog-close].modal-banner-close rgba(0, 0, 0, 0.08) 0px 2px 8px -2px"
+  ],
+  "rayons": [],
+  "fonds": [],
+  "feuille": {
+   "rayon": "24px",
+   "fond": "rgb(255, 255, 255)",
+   "ombre": true,
+   "haut": 124,
+   "bas": 776,
+   "hauteur": 653,
+   "ecran": 900
+  },
+  "horsEcran": false,
+  "fermeture": {
+   "texte": "Fermer",
+   "visible": true
+  },
+  "defilementInterne": false,
+  "tuile": false,
+  "focus": "hors fenêtre",
+  "erreurs": [
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ]
+ }
+}

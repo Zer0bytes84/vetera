@@ -15,6 +15,7 @@ import {
   Sheet,
   SheetContent,
   SheetDescription,
+  SheetFooter,
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
@@ -121,13 +122,13 @@ export function PatientPeekView({
       }}
     >
       <SheetContent
-        className="patient-peek-panel w-full! gap-0 bg-card sm:max-w-[620px]"
+        className="patient-peek-panel w-full! sm:max-w-[620px]"
         data-peek-follow={follow ? "" : undefined}
         initialFocus={follow ? false : undefined}
         finalFocus={follow ? false : undefined}
         showOverlay={!follow}
       >
-        <SheetHeader className="border-b border-border px-6 py-5 pr-14">
+        <SheetHeader icon={<Notebook />}>
           <SheetTitle>Dossier médical</SheetTitle>
           <SheetDescription>
             Lecture rapide du patient et de son suivi clinique.
@@ -368,7 +369,7 @@ export function PatientPeekView({
             </>
           )}
         </div>
-        <div className="patient-peek-footer flex flex-wrap items-center justify-between gap-3 border-t border-border bg-card px-6 py-4">
+        <SheetFooter>
           <ActionButton quiet onClick={onClose}>
             Fermer
           </ActionButton>
@@ -379,7 +380,7 @@ export function PatientPeekView({
           >
             Ouvrir le dossier détaillé
           </ActionButton>
-        </div>
+        </SheetFooter>
       </SheetContent>
     </Sheet>
   );

@@ -68,7 +68,6 @@ export function WalkInDialog({
         size="md"
       >
         <FormDialogHeader
-          artwork="patient"
           description="Le patient passe directement en Attente."
           icon={<HugeiconsIcon icon={UserAdd01Icon} strokeWidth={1.5} />}
           title="Arrivée sans rendez-vous"

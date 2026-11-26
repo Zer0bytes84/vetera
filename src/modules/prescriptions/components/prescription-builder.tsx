@@ -14,6 +14,7 @@ import { useTranslation } from "react-i18next";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { ModalBandActions } from "@/components/ui/modal-chrome";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -846,75 +847,66 @@ function BuilderHeader({
   status: "draft" | "signed";
 }) {
   const { t } = useTranslation();
-  return (
-    <div className="flex flex-wrap items-center justify-between gap-2 border-border/60 border-b pb-3">
-      <div>
-        <h2 className="flex items-center gap-2 font-semibold text-base tracking-tight">
-          <Pill className="size-4 text-primary" weight="duotone" />
-          {t("prescriptions.title")}
-        </h2>
-        <p className="text-muted-foreground text-xs">
-          {t("prescriptions.subtitle")}
-        </p>
-      </div>
-      <div className="flex flex-wrap items-center gap-2">
-        {savedAt ? (
-          <Badge className="t-12" variant="outline">
-            ✓ {new Date(savedAt).toLocaleString()}
-          </Badge>
-        ) : null}
-        {status === "signed" ? (
-          <Badge
-            className="bg-emerald-500/10 t-12 text-emerald-700 dark:text-emerald-300"
-            variant="secondary"
-          >
-            {t("prescriptions.builder.signed")}
-          </Badge>
-        ) : (
-          <Badge className="t-12" variant="secondary">
-            {t("prescriptions.status.draft")}
-          </Badge>
-        )}
-        <Button
-          className="h-8 gap-1.5"
-          data-testid="prescription-templates-open"
-          onClick={onOpenTemplates}
-          size="sm"
-          type="button"
-          variant="outline"
+  // L'ordonnance s'ouvre dans un panneau latéral dont la bande porte déjà le titre : l'état et les actions y montent.
+  const actions = (
+    <>
+      {savedAt ? (
+        <Badge className="t-12" variant="outline">
+          ✓ {new Date(savedAt).toLocaleString()}
+        </Badge>
+      ) : null}
+      {status === "signed" ? (
+        <Badge
+          className="bg-emerald-500/10 t-12 text-emerald-700 dark:text-emerald-300"
+          variant="secondary"
         >
-          <Copy className="size-3.5" weight="duotone" />
-          Modèles
-        </Button>
-        <Button
-          className="h-8 gap-1.5"
-          onClick={onPreview}
-          size="sm"
-          type="button"
-          variant="outline"
-        >
-          {t("prescriptions.builder.preview")}
-        </Button>
-        <Button
-          className="h-8 gap-1.5"
-          onClick={onSaveDraft}
-          size="sm"
-          type="button"
-          variant="ghost"
-        >
-          {t("prescriptions.builder.saveDraft")}
-        </Button>
-        <Button
-          className="h-8 gap-1.5"
-          onClick={onSign}
-          size="sm"
-          type="button"
-        >
-          {t("prescriptions.builder.sign")}
-        </Button>
-      </div>
-    </div>
+          {t("prescriptions.builder.signed")}
+        </Badge>
+      ) : (
+        <Badge className="t-12" variant="secondary">
+          {t("prescriptions.status.draft")}
+        </Badge>
+      )}
+      <Button
+        className="h-8 gap-1.5"
+        data-testid="prescription-templates-open"
+        onClick={onOpenTemplates}
+        size="sm"
+        type="button"
+        variant="outline"
+      >
+        <Copy className="size-3.5" weight="duotone" />
+        Modèles
+      </Button>
+      <Button
+        className="h-8 gap-1.5"
+        onClick={onPreview}
+        size="sm"
+        type="button"
+        variant="outline"
+      >
+        {t("prescriptions.builder.preview")}
+      </Button>
+      <Button
+        className="h-8 gap-1.5"
+        onClick={onSaveDraft}
+        size="sm"
+        type="button"
+        variant="ghost"
+      >
+        {t("prescriptions.builder.saveDraft")}
+      </Button>
+      <Button
+        className="h-8 gap-1.5"
+        onClick={onSign}
+        size="sm"
+        type="button"
+      >
+        {t("prescriptions.builder.sign")}
+      </Button>
+    </>
   );
+  return <ModalBandActions>{actions}</ModalBandActions>;
 }
 
 function WeightCard({

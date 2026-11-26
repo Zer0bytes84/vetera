@@ -1,6 +1,7 @@
 "use client";
 
 import { HugeiconsIcon } from "@hugeicons/react";
+import { Search } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -65,15 +66,12 @@ export function QuickPatientPicker({
 
   return (
     <Dialog onOpenChange={onOpenChange} open={open}>
-      <DialogContent
-        className="flex max-h-[calc(100dvh-2rem)] flex-col gap-0 overflow-hidden p-0 sm:max-w-lg"
-        showCloseButton
-      >
-        <DialogHeader className="gap-1 px-5 pt-5 pb-1 pe-12">
-          <DialogTitle className="t-18 font-semibold">{title}</DialogTitle>
+      <DialogContent className="sm:max-w-lg">
+        <DialogHeader icon={<Search />}>
+          <DialogTitle>{title}</DialogTitle>
           <DialogDescription className="t-13">{description}</DialogDescription>
         </DialogHeader>
-        <div className="px-5 pt-3 pb-2">
+        <div>
           <Input
             autoFocus
             onChange={(event) => setQuery(event.target.value)}
@@ -83,7 +81,7 @@ export function QuickPatientPicker({
             value={query}
           />
         </div>
-        <div className="min-h-0 max-h-80 overflow-y-auto px-5 pb-2">
+        <div className="-mx-1.5 max-h-80 overflow-y-auto px-1.5">
           {filtered.length === 0 ? (
             <div className="flex flex-col items-center gap-1.5 py-6 text-center text-muted-foreground text-sm">
               {t("quickPatientPicker.empty", {

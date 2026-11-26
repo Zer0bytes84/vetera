@@ -50,6 +50,7 @@ function Button({
       className={cn(buttonVariants({ variant, size, className }))}
       data-slot="button"
       data-size={size}
+      data-variant={variant}
       {...props}
     />
   );

@@ -1,6 +1,8 @@
 import { useId, useState } from "react";
+import { RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { ModalBandActions } from "@/components/ui/modal-chrome";
 import type { CareTask } from "./domain";
 
 export function CareCompletionRollbackDialog({task, busy, error, onClose, onConfirm}: {
@@ -13,8 +15,8 @@ export function CareCompletionRollbackDialog({task, busy, error, onClose, onConf
   const [reason, setReason] = useState("");
   const reasonId = useId();
   return <Dialog open onOpenChange={open => {if (!open && !busy) onClose();}}>
-    <DialogContent className="care-page sm:max-w-[480px] sm:p-6">
-      <DialogHeader>
+    <DialogContent className="care-page sm:max-w-[480px]">
+      <DialogHeader icon={<RotateCcw />}>
         <DialogTitle>Annuler la validation ?</DialogTitle>
         <DialogDescription>
           Le soin « {task.label} » repassera à faire. Le stock consommé sera restitué et la facture associée sera annulée. L’historique sera conservé.
@@ -32,10 +34,10 @@ export function CareCompletionRollbackDialog({task, busy, error, onClose, onConf
         </div>
         <p className="text-xs text-muted-foreground">Si la facture comporte un règlement ou un avoir, régularisez-la d’abord dans Finances.</p>
         {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
-        <div className="grid grid-cols-2 gap-3">
+        <ModalBandActions>
           <Button type="button" variant="outline" className="min-h-11 whitespace-normal" disabled={busy} onClick={onClose}>Conserver la validation</Button>
           <Button type="submit" variant="destructive" className="min-h-11 whitespace-normal" disabled={busy || !reason.trim()}>{busy ? "Annulation…" : "Annuler la validation"}</Button>
-        </div>
+        </ModalBandActions>
       </form>
     </DialogContent>
   </Dialog>;

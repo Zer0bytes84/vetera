@@ -188,7 +188,6 @@ export function WeightEntryDialog({
       <Dialog onOpenChange={onOpenChange} open={open}>
         <FormDialogContent size="sm">
           <FormDialogHeader
-            artwork="weight"
             description="Une nouvelle mesure pour le suivi du patient."
             icon={<Scales weight="duotone" />}
             title={
@@ -196,7 +195,6 @@ export function WeightEntryDialog({
                 ? t("patientDetail.weight.editTitle")
                 : t("patientDetail.weight.dialogTitle")
             }
-            tone="teal"
           />
 
           <FormDialogBody>

@@ -55,7 +55,6 @@ export function MedicalReminderDialog({
           description={editable ? "Préparez une échéance préventive pour un patient." : "L’acte est enregistré. Confirmez ou ajustez la prochaine échéance."}
           icon={<CalendarDays strokeWidth={1} />}
           title={editable ? "Nouveau rappel médical" : "Proposer le prochain rappel"}
-          tone="sky"
         />
         <form className="contents" onSubmit={async (event) => {
           event.preventDefault();

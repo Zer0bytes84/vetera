@@ -1,5 +1,6 @@
 import { ErrorState } from "@/design-system/patterns/error-state";
 import { Syringe } from "lucide-react";
+import { ModalBandActions } from "@/components/ui/modal-chrome";
 import { careErrorMessage } from "./feedback";
 import "./care-page.css";
 import { useEffect, useState, type ReactNode } from "react";
@@ -777,8 +778,8 @@ export default function CarePage({
         </p>
       )}
       <Dialog open={creating} onOpenChange={setCreating}>
-        <DialogContent className="sm:max-w-[600px] sm:p-7">
-          <DialogHeader>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader icon={<Syringe />}>
             <DialogTitle>Planifier un soin</DialogTitle>
             <DialogDescription>
               Une tâche pour un patient, à l’heure de votre choix.
@@ -808,19 +809,8 @@ export default function CarePage({
           if (!open) setSelected(null);
         }}
       >
-        <SheetContent
-          showCloseButton={false}
-          className="care-page overflow-y-auto p-6 sm:max-w-[440px]"
-        >
-          <Button
-            variant="ghost"
-            size="sm"
-            className="absolute right-4 top-4"
-            onClick={() => setSelected(null)}
-          >
-            Fermer
-          </Button>
-          <SheetHeader>
+        <SheetContent className="care-page sm:max-w-[440px]" focusClose>
+          <SheetHeader icon={<Syringe />}>
             <SheetTitle>Détail du soin</SheetTitle>
             <SheetDescription>
               {detail ? patientName(detail.patient_id) : "Chargement…"}
@@ -860,7 +850,7 @@ export default function CarePage({
                 <p>Motif : {detail.motif_annulation}</p>
               )}
               {detail.statut === "fait" && (
-                <div className="border-y border-border py-4">
+                <ModalBandActions>
                   <Button
                     variant="outline"
                     className="min-h-11 w-full"
@@ -872,7 +862,7 @@ export default function CarePage({
                   >
                     Annuler la validation
                   </Button>
-                </div>
+                </ModalBandActions>
               )}
               {!["fait", "annule"].includes(detail.statut) && (
                 <div className="space-y-3">
@@ -962,7 +952,7 @@ export default function CarePage({
                       {stockWarning(detail)}
                     </p>
                   )}
-                  <div className="flex flex-wrap gap-2">
+                  <ModalBandActions>
                     {detail.statut === "a_faire" && (
                       <Button
                         variant="outline"
@@ -984,7 +974,7 @@ export default function CarePage({
                     >
                       Valider le soin
                     </Button>
-                  </div>
+                  </ModalBandActions>
                   <Input
                     aria-label="Motif d’annulation"
                     placeholder="Motif d’annulation"
