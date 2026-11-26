@@ -10,6 +10,12 @@ import { StreamingMessage } from "@/components/ui/streaming-message";
 import { ToolCallBlock } from "@/components/ui/tool-call-block";
 import { UserMessage } from "@/components/ui/user-message";
 
+const CHARACTER_COUNT_25_PERCENT = /1\s500 sur 6\s000 caractères \(25/;
+const AI_ACCENT_OR_TOKENS = /#5e5ce6|#bf5af2|tokens/;
+const RAW_TOOL_ARGUMENTS = /\{|json|Arguments/i;
+const SPARKLE_ICON = /lucide-sparkle/;
+const LINK_MARKUP = /href=|target="_blank"/;
+
 describe("composants de l'assistant : français, jetons Baitari, rien de technique", () => {
   it("le message de l'assistant se signe « Assistant IA » et peut taire copier et régénérer", () => {
     const html = renderToStaticMarkup(
@@ -71,9 +77,9 @@ describe("composants de l'assistant : français, jetons Baitari, rien de techniq
         variant="inline"
       />
     );
-    expect(html).toMatch(/1\s500 sur 6\s000 caractères \(25/);
+    expect(html).toMatch(CHARACTER_COUNT_25_PERCENT);
     expect(html).toContain("var(--tone-blue)");
-    expect(html).not.toMatch(/#5e5ce6|#bf5af2|tokens/);
+    expect(html).not.toMatch(AI_ACCENT_OR_TOKENS);
   });
 
   it("les suggestions sont des puces cliquables et un bouton de plus de suggestions seulement si demandé", () => {
@@ -107,7 +113,7 @@ describe("composants de l'assistant : français, jetons Baitari, rien de techniq
     expect(html).toContain("3 passages trouvés");
     expect(html).toContain("Terminé");
     expect(html).toContain("1,2 s");
-    expect(html).not.toMatch(/\{|json|Arguments/i);
+    expect(html).not.toMatch(RAW_TOOL_ARGUMENTS);
   });
 
   it("le message de l'assistant peut se voir dans sa bulle, et jamais avec une étoile « IA » générique", () => {
@@ -125,7 +131,7 @@ describe("composants de l'assistant : français, jetons Baitari, rien de techniq
       renderToStaticMarkup(
         <StreamingMessage data={{ status: "done", content: "x" }} />
       )
-    ).not.toMatch(/lucide-sparkle/);
+    ).not.toMatch(SPARKLE_ICON);
   });
 
   it("le fil met la question de l'assistant à gauche, la réponse du vétérinaire dans sa bulle à droite, sans noms si on les tait", () => {
@@ -154,7 +160,7 @@ describe("composants de l'assistant : français, jetons Baitari, rien de techniq
     expect(html).toContain("rounded-br-md");
     expect(html).toContain("flex-row-reverse");
     expect(html).not.toContain(">Assistant IA<");
-    expect(html).not.toMatch(/lucide-sparkle/);
+    expect(html).not.toMatch(SPARKLE_ICON);
   });
 
   it("la liste de sources groupe les passages par type de dossier, met le passage en avant et n'ouvre aucun lien", () => {
@@ -182,6 +188,6 @@ describe("composants de l'assistant : français, jetons Baitari, rien de techniq
     expect(html).toContain("Otite externe");
     expect(html).toContain("border-brand");
     expect(html).toContain("Copier");
-    expect(html).not.toMatch(/href=|target="_blank"/);
+    expect(html).not.toMatch(LINK_MARKUP);
   });
 });

@@ -18,6 +18,9 @@ import type {
 } from "../../src/types/db";
 import { formatNumber } from "../../src/utils/display-format";
 
+const COMPARISON_WORDING =
+  /contre|période précédente|Rien à comparer|comparable/;
+
 /** The old DeltaBadge, copied as it was: the oracle for the comparison rules. */
 function oldDelta(
   value: number | null,
@@ -175,9 +178,7 @@ describe("les quatre chiffres clés, minimalistes : libellé, valeur, écart, un
     d.tasks = [task("t", "done", "2026-10-10")];
     for (const f of figures(d)) {
       expect(f.line.length).toBeLessThanOrEqual(48);
-      expect(f.line).not.toMatch(
-        /contre|période précédente|Rien à comparer|comparable/
-      );
+      expect(f.line).not.toMatch(COMPARISON_WORDING);
       expect(Object.keys(f)).not.toContain("hint");
       expect(Object.keys(f)).not.toContain("detail");
     }

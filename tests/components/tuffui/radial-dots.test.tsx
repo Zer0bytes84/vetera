@@ -2,6 +2,9 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { dotsFor, dotsPer, RadialDots } from "@/components/ui/radial-dots";
 
+const COMPLETED_COUNT_3 = /Terminés<[^>]*>\s*3/;
+const ARROW_KEYS_HINT = /Use arrow keys/;
+
 const series = [
   { id: "a", label: "Terminés", values: [2, 0, 1], color: "var(--tone-blue)" },
   { id: "b", label: "À venir", values: [1, 0, 0], color: "var(--foreground)" },
@@ -36,7 +39,7 @@ describe("cercle de points", () => {
     expect(html).toContain("consultations");
   });
   it("la légende donne le total de chaque état, sans mention « 1 point = » quand c'est exact", () => {
-    expect(html).toMatch(/Terminés<[^>]*>\s*3/);
+    expect(html).toMatch(COMPLETED_COUNT_3);
     expect(html).not.toContain("1 point =");
   });
   it("au-delà de 24, dit combien vaut un point", () => {
@@ -47,6 +50,6 @@ describe("cercle de points", () => {
   });
   it("aucun thème TuffUI ni anglais", () => {
     expect(html).not.toContain("--brand");
-    expect(html).not.toMatch(/Use arrow keys/);
+    expect(html).not.toMatch(ARROW_KEYS_HINT);
   });
 });

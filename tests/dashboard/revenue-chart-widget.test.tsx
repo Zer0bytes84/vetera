@@ -3,6 +3,10 @@ import { expect, it } from "vitest";
 import type { FocusPoint } from "../../src/modules/dashboard/components/focus-trend-chart";
 import { RevenueChartWidget } from "../../src/modules/dashboard/components/revenue-chart-widget";
 
+const SR_ONLY_TOTAL_26700_DA = /sr-only">26\s700\sDA</;
+const GROWTH_VS_PREVIOUS_PERIOD =
+  /\+345 % contre 6\s000 DA la période précédente/;
+
 const points: FocusPoint[] = [
   {
     label: "1 oct.",
@@ -38,7 +42,7 @@ it("l'en-tête : titre, contexte de la période, total des recettes de la pério
   const html = render();
   expect(html).toContain("Recettes &amp; activité");
   expect(html).toContain("Du 1 au 2 oct. 2026");
-  expect(html).toMatch(/sr-only">26\s700\sDA</);
+  expect(html).toMatch(SR_ONLY_TOTAL_26700_DA);
 });
 it("la vue par défaut est la courbe fusionnée : recettes et consultations", () => {
   const html = render();
@@ -46,7 +50,7 @@ it("la vue par défaut est la courbe fusionnée : recettes et consultations", ()
   expect(html).toContain("Recettes");
   expect(html).toContain("Consultations");
   // 26 700 DA contre 6 000 DA : +345 % ; 6 consultations contre 1 : +500 %.
-  expect(html).toMatch(/\+345 % contre 6\s000 DA la période précédente/);
+  expect(html).toMatch(GROWTH_VS_PREVIOUS_PERIOD);
   expect(html).toContain("6 · +500 % contre 1 la période précédente");
 });
 it("propose courbe, barres, aires et la répartition par type d'acte, sur les mêmes données", () => {

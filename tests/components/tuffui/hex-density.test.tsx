@@ -2,6 +2,8 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { type HexCell, HexDensity } from "@/components/ui/hex-density";
 
+const TWO_DAYS_LABEL = /2<\/?[^>]*>?\s*jours|2 jours/;
+
 const cell = (
   id: string,
   col: number,
@@ -37,7 +39,7 @@ describe("hexagones de la clinique", () => {
   });
   it("la pastille de pied compte les jours remplis et le pic, en français", () => {
     expect(html).toContain("jours");
-    expect(html).toMatch(/2<\/?[^>]*>?\s*jours|2 jours/);
+    expect(html).toMatch(TWO_DAYS_LABEL);
     expect(html).toContain("Moins");
     expect(html).toContain("Plus");
   });

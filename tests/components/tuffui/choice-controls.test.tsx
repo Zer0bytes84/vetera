@@ -2,6 +2,8 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { expect, it } from "vitest";
 import { Switch } from "@/components/ui/choice-controls";
 
+const TEXT_11PX_CLASS = /text-\[0\.6875rem\]/;
+
 it("l'interrupteur annonce son état et passe ses attributs au bouton (id, aria-label, disabled)", () => {
   const on = renderToStaticMarkup(
     <Switch
@@ -27,5 +29,5 @@ it("l'interrupteur n'utilise que des classes de la charte : aucun jeton TuffUI h
     <Switch checked label="Oui" onCheckedChange={() => undefined} />
   );
   expect(html).toContain("Oui");
-  expect(html).not.toMatch(/text-\[0\.6875rem\]/);
+  expect(html).not.toMatch(TEXT_11PX_CLASS);
 });

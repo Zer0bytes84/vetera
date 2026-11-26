@@ -4,6 +4,8 @@ import {
   buildAlertBars,
 } from "../../src/modules/dashboard/model/alert-bars";
 
+const NAN_OR_NULL = /NaN|null/;
+
 // Lundi 9 novembre 2026, 10:00 : la fenêtre va du 3 au 16 novembre.
 const now = new Date(2026, 10, 9, 10, 0);
 const at = (day: number, h = 9, month = 10) =>
@@ -46,7 +48,7 @@ describe("fenêtre", () => {
     const r = buildAlertBars(base);
     expect(r.open).toBe(0);
     expect(r.lateAll).toBe(0);
-    expect(JSON.stringify(r)).not.toMatch(/NaN|null/);
+    expect(JSON.stringify(r)).not.toMatch(NAN_OR_NULL);
   });
 });
 

@@ -2,6 +2,8 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { type SectionCardItem, SectionCards } from "@/components/section-cards";
 
+const INVISIBLE_SKELETON_CLASS = /class="[^"]*loading-skeleton invisible/;
+
 /**
  * The first band of every page while its figures are read (24 November 2026): the skeleton, never a figure, as many
  * cards as will come, and the same rows (no badge row on a band without badges).
@@ -32,7 +34,7 @@ describe("bande de chiffres en lecture", () => {
       items.length
     );
     // Reserved at once but not yet drawn: a read that ends within 150 ms never shows the sheen.
-    expect(html).toMatch(/class="[^"]*loading-skeleton invisible/);
+    expect(html).toMatch(INVISIBLE_SKELETON_CLASS);
   });
 
   it("garde l'en-tête et ses actions pendant la lecture", () => {

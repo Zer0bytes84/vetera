@@ -5,6 +5,9 @@ import {
   REMOVED_DISPLAY_KEYS,
 } from "../src/lib/theme-store";
 
+const REMOVED_DISPLAY_ATTRIBUTES =
+  /data-variant="(glass|minimal|inset|floating)"|data-header-pattern="(aurora|tide|spectrum|topography|quiet)"|data-density="/;
+
 // Removal of the decorative display settings (5 November 2026,
 // docs/recus/2026-11-05/nettoyage-parametres/): an install that stored values
 // for them must fall back to the defaults on first launch, without error, and
@@ -169,8 +172,6 @@ describe("paramètres d'affichage retirés : migration", () => {
       .join("\n");
     expect(settings).toContain("Teinte de la barre latérale");
     expect(css).toContain('[data-sidebar-tone="light"]');
-    expect(css).not.toMatch(
-      /data-variant="(glass|minimal|inset|floating)"|data-header-pattern="(aurora|tide|spectrum|topography|quiet)"|data-density="/
-    );
+    expect(css).not.toMatch(REMOVED_DISPLAY_ATTRIBUTES);
   });
 });

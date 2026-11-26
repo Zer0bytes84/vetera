@@ -14,6 +14,11 @@ import {
 } from "../../src/modules/dashboard/model/revenue-chart";
 import { formatNumber } from "../../src/utils/display-format";
 
+const ONE_CONSULTATION = /^1 consultation$/;
+const PLURAL_CONSULTATIONS = /consultations$/;
+const ZERO_CONSULTATION = /^0 consultation$/;
+const TONE_VARIABLE = /^var\(--tone-/;
+
 const point = (
   label: string,
   receipts: number,
@@ -104,9 +109,9 @@ describe("chiffres du graphique : ceux que le graphique a toujours affichés", (
     expect(m.series[0].values).toEqual([]);
   });
   it("formate à la française : 1 consultation, 2 consultations, 15 000 → 15 k", () => {
-    expect(count(1)).toMatch(/^1 consultation$/);
-    expect(count(2)).toMatch(/consultations$/);
-    expect(count(0)).toMatch(/^0 consultation$/);
+    expect(count(1)).toMatch(ONE_CONSULTATION);
+    expect(count(2)).toMatch(PLURAL_CONSULTATIONS);
+    expect(count(0)).toMatch(ZERO_CONSULTATION);
     expect(compactMoney(15_000)).toBe(
       `${formatNumber(15, { maximumFractionDigits: 1 })} k`
     );
@@ -137,7 +142,7 @@ describe("répartition des consultations par type d'acte", () => {
       "var(--tone-amber)"
     );
     expect(donut.find((s) => s.id === "radiologie")?.color).toMatch(
-      /^var\(--tone-/
+      TONE_VARIABLE
     );
   });
   it("le détail donne le nombre et la part, comme la carte Consultations", () => {

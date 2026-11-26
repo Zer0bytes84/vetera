@@ -3,6 +3,8 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { expect, it } from "vitest";
 import { StatusPill, Tag } from "@/components/ui/status-pill";
 
+const TEXT_11PX_CLASS = /text-\[0\.6875rem\]/;
+
 it("chaque tonalité prend la couleur de l'app (vert, rose, ambre, bleu) et garde son texte", () => {
   for (const [tone, cls] of [
     ["positive", "text-positive"],
@@ -41,6 +43,6 @@ it("une autre icône est un trait de lucide, plus épais en mode « bold »", ()
 it("la petite taille reste dans l'échelle de texte de la charte (12 px)", () => {
   const html = renderToStaticMarkup(<StatusPill size="sm">x</StatusPill>);
   expect(html).toContain("text-xs");
-  expect(html).not.toMatch(/text-\[0\.6875rem\]/);
+  expect(html).not.toMatch(TEXT_11PX_CLASS);
   expect(renderToStaticMarkup(<Tag>id</Tag>)).toContain("font-mono");
 });

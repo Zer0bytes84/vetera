@@ -1,6 +1,9 @@
 import { readFileSync } from "node:fs";
 import { expect, it } from "vitest";
 
+const KPI_VIEW_LABEL = /label: "KPI"/;
+const SPARKLINES_VIEW_LABEL = /"Sparklines"\s*}/;
+
 const source = readFileSync(
   "src/modules/dashboard/components/premium-analytics.tsx",
   "utf8"
@@ -12,8 +15,8 @@ it("les deux vues de la rangée « Chiffres clés » portent des noms français"
   expect(source).toContain('label: "Mini-graphiques"');
   expect(source).toContain("aria-label={label}");
   // Le nom des vues n'est plus « KPI » ni « Sparklines » (les identifiants du code, eux, restent).
-  expect(source).not.toMatch(/label: "KPI"/);
-  expect(source).not.toMatch(/"Sparklines"\s*}/);
+  expect(source).not.toMatch(KPI_VIEW_LABEL);
+  expect(source).not.toMatch(SPARKLINES_VIEW_LABEL);
 });
 
 it("la vue Indicateurs montre les barres d'objectif, la vue Mini-graphiques les courbes, jamais les deux", () => {

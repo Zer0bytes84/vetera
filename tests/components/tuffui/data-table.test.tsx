@@ -9,6 +9,9 @@ import {
   toCsv,
 } from "@/components/ui/data-table";
 
+const ENGLISH_TABLE_CONTROLS = /Filter rows|Copy as CSV|Previous page/;
+const TEXT_BELOW_12PX_CLASS = /text-\[0\.(6|7)\d*rem\]|text-\[1[01]px\]/;
+
 interface Row extends DataRow {
   age: number;
   etat: string;
@@ -97,7 +100,7 @@ describe("rendu", () => {
     expect(html).toContain('placeholder="Filtrer les lignes"');
     expect(html).toContain('aria-label="Copier en CSV"');
     expect(html).toContain('aria-label="Télécharger en CSV"');
-    expect(html).not.toMatch(/Filter rows|Copy as CSV|Previous page/);
+    expect(html).not.toMatch(ENGLISH_TABLE_CONTROLS);
   });
   it("pagine : trois lignes sur cinq, pied « 1–3 sur 5 » et « 1 / 2 »", () => {
     expect(html.match(/<tr/g)).toHaveLength(1 + 3);
@@ -127,6 +130,6 @@ describe("rendu", () => {
   });
   it("n'emploie ni le thème TuffUI ni de texte sous 12 px", () => {
     expect(html).not.toContain("--brand");
-    expect(html).not.toMatch(/text-\[0\.(6|7)\d*rem\]|text-\[1[01]px\]/);
+    expect(html).not.toMatch(TEXT_BELOW_12PX_CLASS);
   });
 });

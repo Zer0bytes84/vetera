@@ -6,6 +6,10 @@ import {
   fiveSteps,
 } from "@/components/ui/chart-card";
 
+const TABLE_WRAPPED_IN_DIV = /<div[^>]*>\s*<table/;
+const NON_FINITE_NUMBER = /NaN|Infinity/;
+const FONT_SIZE_BELOW_12 = /font-size="(?:[0-9]|1[01])"/;
+
 const receipts: ChartSeries = {
   id: "r",
   label: "Recettes",
@@ -80,7 +84,7 @@ describe("carte graphique", () => {
   it("le tableau d'accessibilité est dans un <section>, jamais sous un <div> (la feuille de base viderait le panneau)", () => {
     const html = renderToStaticMarkup(<ChartCard {...base} type="line" />);
     expect(html).toContain('<section class="sr-only"><table');
-    expect(html).not.toMatch(/<div[^>]*>\s*<table/);
+    expect(html).not.toMatch(TABLE_WRAPPED_IN_DIV);
     expect(html).toContain('<th scope="col">Date</th>');
   });
   it("le tableau donne chaque point avec le titre long et la valeur formatée", () => {
@@ -154,7 +158,7 @@ describe("carte graphique", () => {
         const html = renderToStaticMarkup(
           <ChartCard data={data} title="t" type={type} />
         );
-        expect(html).not.toMatch(/NaN|Infinity/);
+        expect(html).not.toMatch(NON_FINITE_NUMBER);
       }
     }
   });
@@ -162,7 +166,7 @@ describe("carte graphique", () => {
     const html = renderToStaticMarkup(<ChartCard {...base} type="line" />);
     expect(html).toContain("Flèches gauche et droite");
     expect(html).not.toContain("Use arrow keys");
-    expect(html).not.toMatch(/font-size="(?:[0-9]|1[01])"/);
+    expect(html).not.toMatch(FONT_SIZE_BELOW_12);
   });
   it("la barre d'outils et le pied s'affichent dans le panneau", () => {
     const html = renderToStaticMarkup(

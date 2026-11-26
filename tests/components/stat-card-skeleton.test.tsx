@@ -7,13 +7,18 @@ import {
 import { StatCard } from "@/components/ui/stat-card";
 import { announce } from "@/lib/announce";
 
+const ID_ATTRIBUTE = /id="([^"]+)"/;
+const HIDDEN_SVG = /<svg aria-hidden="true"/;
+const LOADING_ARIA_LABEL =
+  /aria-label="(Lecture des données du cabinet…|Chargement des chiffres…)"/;
+
 /** The stat card and the Loading Skeleton, redrawn by hand after the UI SDK bench (19 November 2026). */
 describe("carte de chiffre", () => {
   it("un groupe nommé par son libellé, la valeur et son unité, le ton métier", () => {
     const html = renderToStaticMarkup(
       <StatCard label="Dépensé" tone="negative" unit="DA" value="3 200" />
     );
-    const labelId = /id="([^"]+)"/.exec(html)![1];
+    const labelId = ID_ATTRIBUTE.exec(html)![1];
     expect(html).toContain(`role="group"`);
     expect(html).toContain(`aria-labelledby="${labelId}"`);
     expect(html).toContain(">Dépensé</p>");
@@ -40,7 +45,7 @@ describe("carte de chiffre", () => {
     expect(html).toContain('<span aria-hidden="true">+12,4 %</span>');
     expect(html).not.toContain("aria-label=");
     expect(html).toContain('data-trend="up"');
-    expect(html).toMatch(/<svg aria-hidden="true"/);
+    expect(html).toMatch(HIDDEN_SVG);
   });
 });
 
@@ -55,9 +60,7 @@ describe("Loading Skeleton", () => {
     const html = renderToStaticMarkup(element);
     expect(html).toContain('role="status"');
     expect(html).toContain('aria-busy="true"');
-    expect(html).toMatch(
-      /aria-label="(Lecture des données du cabinet…|Chargement des chiffres…)"/
-    );
+    expect(html).toMatch(LOADING_ARIA_LABEL);
     const shapes = html.match(/data-slot="loading-skeleton-shape"/g)!.length;
     expect(
       html.match(/<span aria-hidden="true" class="loading-skeleton-shape/g)!

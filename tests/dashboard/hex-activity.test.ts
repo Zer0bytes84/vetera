@@ -9,6 +9,8 @@ import {
   slotDetail,
 } from "../../src/modules/dashboard/model/hex-activity";
 
+const NON_FINITE_NUMBER = /NaN|Infinity/;
+
 // Saturday 7 November 2026, 12:30 : the week began on Monday 2 November.
 const now = new Date(2026, 10, 7, 12, 30);
 const at = (day: number, hour: number, minute = 0, month = 10) =>
@@ -234,7 +236,7 @@ describe("hexagones : quatre vues", () => {
       const v = buildHexActivity(value, [], now);
       expect(v.total).toBe(0);
       expect(v.cells.every((c) => c.count === 0 && c.level === 0)).toBe(true);
-      expect(JSON.stringify(v)).not.toMatch(/NaN|Infinity/);
+      expect(JSON.stringify(v)).not.toMatch(NON_FINITE_NUMBER);
     }
     expect(buildHexActivity("month", [], now).footer).toBe(
       "Rien de prévu d’ici le 30 nov."

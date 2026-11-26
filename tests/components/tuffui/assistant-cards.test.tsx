@@ -7,6 +7,13 @@ import {
   ToolApprovalQueue,
 } from "@/components/ui/tool-approval-queue";
 
+const DISABLED_VALIDATE_NOTE_BUTTON =
+  /<button[^>]*disabled=""[^>]*>[^<]*(<[^>]*>)*[^<]*Valider la note/;
+const DISABLED_VALIDATE_BUTTON = /<button[^>]*disabled=""[^>]*>[^<]*Valider/;
+const PRICE_WORDING = /Total|Subtotal|\$|€/;
+const PERSISTENT_PERMISSION_WORDING = /Always|Toujours|session|risque/i;
+const ENGLISH_PROMPT_WORDING = /asks|Suggested|Something else/;
+
 const request = (
   id: string,
   status?: ApprovalRequest["status"]
@@ -32,9 +39,7 @@ describe("cartes de validation : rien ne s'enregistre sans le vétérinaire", ()
       />
     );
     expect(html).toContain("2 reformulations à examiner");
-    expect(html).toMatch(
-      /<button[^>]*disabled=""[^>]*>[^<]*(<[^>]*>)*[^<]*Valider la note/
-    );
+    expect(html).toMatch(DISABLED_VALIDATE_NOTE_BUTTON);
   });
 
   it("sans blocage et avec une rubrique renseignée, la validation est possible ; sans rubrique, non", () => {
@@ -44,14 +49,14 @@ describe("cartes de validation : rien ne s'enregistre sans le vétérinaire", ()
         data={{ title: "t", items: [{ id: "s", label: "S", filled: true }] }}
       />
     );
-    expect(ok).not.toMatch(/<button[^>]*disabled=""[^>]*>[^<]*Valider/);
+    expect(ok).not.toMatch(DISABLED_VALIDATE_BUTTON);
     const empty = renderToStaticMarkup(
       <ConfirmationCard
         confirmLabel="Valider"
         data={{ title: "t", items: [{ id: "s", label: "S" }] }}
       />
     );
-    expect(empty).toMatch(/<button[^>]*disabled=""[^>]*>[^<]*Valider/);
+    expect(empty).toMatch(DISABLED_VALIDATE_BUTTON);
   });
 
   it("la carte n'affiche ni montant ni total", () => {
@@ -60,7 +65,7 @@ describe("cartes de validation : rien ne s'enregistre sans le vétérinaire", ()
         data={{ title: "t", items: [{ id: "s", label: "S", filled: true }] }}
       />
     );
-    expect(html).not.toMatch(/Total|Subtotal|\$|€/);
+    expect(html).not.toMatch(PRICE_WORDING);
   });
 
   it("la file liste ce qui reste à examiner, sans mode, sans portée durable ni nom technique", () => {
@@ -70,7 +75,7 @@ describe("cartes de validation : rien ne s'enregistre sans le vétérinaire", ()
     expect(html).toContain("à examiner");
     expect(html).toContain("Rubrique a");
     expect(html).toContain("Examinées · 1");
-    expect(html).not.toMatch(/Always|Toujours|session|risque/i);
+    expect(html).not.toMatch(PERSISTENT_PERMISSION_WORDING);
   });
 
   it("une file entièrement examinée le dit", () => {
@@ -97,6 +102,6 @@ describe("cartes de validation : rien ne s'enregistre sans le vétérinaire", ()
     expect(html).toContain("Question de l’assistant");
     expect(html).toContain("Relire ma dictée");
     expect(html).toContain('role="radiogroup"');
-    expect(html).not.toMatch(/asks|Suggested|Something else/);
+    expect(html).not.toMatch(ENGLISH_PROMPT_WORDING);
   });
 });

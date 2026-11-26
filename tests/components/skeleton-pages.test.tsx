@@ -8,6 +8,10 @@ import {
 import { SkeletonRegion } from "@/components/ui/loading-skeleton";
 import { readRememberedRows, rememberRows } from "@/hooks/useRememberedRows";
 
+const FILLER_ROW_122PX =
+  /<tr aria-hidden="true" style="height:122px"><td colSpan="2"><\/td><\/tr>/;
+const INVISIBLE_TBODY = /<tbody class="invisible">/;
+
 /*
  * Listes, tableaux et fiches en lecture (25 novembre 2026) : la place que la liste a prise la dernière fois, au reflet,
  * jamais un compte, un zéro ou un état vide avant que les lignes soient lues.
@@ -115,9 +119,7 @@ describe("tableau en lecture", () => {
         title="Registre"
       />
     );
-    expect(html).toMatch(
-      /<tr aria-hidden="true" style="height:122px"><td colSpan="2"><\/td><\/tr>/
-    );
+    expect(html).toMatch(FILLER_ROW_122PX);
     expect(html).not.toContain("Aucune facture");
   });
 
@@ -131,7 +133,7 @@ describe("tableau en lecture", () => {
         title="Registre"
       />
     );
-    expect(html).toMatch(/<tbody class="invisible">/);
+    expect(html).toMatch(INVISIBLE_TBODY);
   });
 
   it("une fois lu, le tableau est celui d'avant", () => {

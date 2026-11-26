@@ -2,6 +2,9 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { cssText } from "./helpers/code-text";
 
+const INDICATORS_INSET_SHADOW =
+  /patient-record-indicators[^{]*\{[^}]*inset 1px 0 0/;
+
 /**
  * The first rows of widgets, on every page, follow the dashboard's finish, which is the reference: no hairline, no
  * shadow, the contrast of fills alone, a 6 px frame and concentric radii (band 22, cards 16). A shadow rule given to every
@@ -59,9 +62,7 @@ describe("premières rangées de widgets : la finition du Tableau de bord partou
     expect(card).toContain("border-radius: var(--radius-panel) !important");
     expect(card).toContain("background: var(--card-inset) !important");
     expect(card).toContain("box-shadow: none !important");
-    expect(record).not.toMatch(
-      /patient-record-indicators[^{]*\{[^}]*inset 1px 0 0/
-    );
+    expect(record).not.toMatch(INDICATORS_INSET_SHADOW);
   });
 
   it("Flux, journée sans visite : une bande grise à cadre de 6 px, des cartes sans filet", () => {

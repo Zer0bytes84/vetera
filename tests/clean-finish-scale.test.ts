@@ -3,6 +3,12 @@ import postcss from "postcss";
 import { describe, expect, it } from "vitest";
 import { CLEAN_FONT_SETS, normalizeCleanFont } from "../src/lib/theme-store";
 
+const SPACING_PROPERTY = /^(padding|margin|gap|row-gap|column-gap)/;
+const QUIET_INK_TOKEN = /--clean-ink-quiet: #737373;/;
+const CLEAN_FONT_SELECTOR = /data-clean-font/;
+const REMOTE_FONT_SOURCE =
+  /fonts\.googleapis|fonts\.gstatic|use\.typekit|https?:\/\/[^)"']*\.woff2?/;
+
 // Finish of 5 November 2026 (docs/recus/2026-11-05/finition-espacements/):
 // one spacing scale, one radius scale, measured on the running app. These
 // tests keep the finishing block on its scales and the type sets Clean-only.
@@ -33,7 +39,7 @@ describe("thème Clean : finition mesurée", () => {
 
   it("ne pose aucun espacement hors de l'échelle 2 4 6 8 10 12 16 20 24 32 40 48", () => {
     const off: string[] = [];
-    FINISH.walkDecls(/^(padding|margin|gap|row-gap|column-gap)/, (decl) => {
+    FINISH.walkDecls(SPACING_PROPERTY, (decl) => {
       for (const px of pixels(decl.value)) {
         if (!SPACE.has(px)) {
           off.push(`${decl.prop}: ${decl.value}`);
@@ -69,7 +75,7 @@ describe("thème Clean : finition mesurée", () => {
   });
 
   it("donne au gris discret un contraste AA sur la feuille (#737373 sur #fafafa)", () => {
-    expect(CLEAN).toMatch(/--clean-ink-quiet: #737373;/);
+    expect(CLEAN).toMatch(QUIET_INK_TOKEN);
   });
 });
 
@@ -93,7 +99,7 @@ describe("thème Clean : jeux de polices", () => {
   it("ne déclare les jeux que sous la portée Clean, et jamais pour Inter", () => {
     const sets = postcss.parse(CLEAN);
     const selectors: string[] = [];
-    sets.walkRules(/data-clean-font/, (rule) =>
+    sets.walkRules(CLEAN_FONT_SELECTOR, (rule) =>
       selectors.push(...rule.selectors)
     );
     expect(selectors.length).toBeGreaterThan(0);
@@ -105,9 +111,7 @@ describe("thème Clean : jeux de polices", () => {
 
   it("n'appelle aucun service de polices en ligne", () => {
     const index = readFileSync("src/index.css", "utf8");
-    expect(`${index}\n${CLEAN}`).not.toMatch(
-      /fonts\.googleapis|fonts\.gstatic|use\.typekit|https?:\/\/[^)"']*\.woff2?/
-    );
+    expect(`${index}\n${CLEAN}`).not.toMatch(REMOTE_FONT_SOURCE);
     expect(index).toContain('@import "@fontsource-variable/geist-mono"');
     expect(index).toContain('@import "@fontsource-variable/ibm-plex-sans"');
   });

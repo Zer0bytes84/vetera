@@ -10,6 +10,9 @@ import {
 } from "../activation-server/server.mjs";
 import { validateLicenseBuild } from "../scripts/license-build-config.mjs";
 
+const SCRIPT_SRC_SELF = /script-src 'self'/;
+const LOGIN_VIEW_ID = /id="login-view"/;
+
 const admin = "test-administrator-token-only-123456";
 async function fixture(t) {
   const dir = await mkdtemp(join(tmpdir(), "baitari-license-"));
@@ -101,11 +104,8 @@ test("hosted admin page is served with a restrictive CSP and same-origin admin A
   const f = await fixture(t);
   const page = await f.rawRequest("/admin");
   assert.equal(page.status, 200);
-  assert.match(
-    page.headers.get("content-security-policy"),
-    /script-src 'self'/
-  );
-  assert.match(await page.text(), /id="login-view"/);
+  assert.match(page.headers.get("content-security-policy"), SCRIPT_SRC_SELF);
+  assert.match(await page.text(), LOGIN_VIEW_ID);
   assert.equal(
     (
       await f.request("/v1/admin/verify", undefined, admin, {

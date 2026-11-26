@@ -6,6 +6,8 @@ import {
   parseDateValue,
 } from "@/components/ui/date-picker";
 
+const REQUIRED_INPUT = /<input[^>]*required/;
+
 it("lit et écrit un jour civil sans décalage UTC", () => {
   const date = parseDateValue("2026-03-29");
   expect(date?.getDate()).toBe(29);
@@ -24,7 +26,7 @@ it("affiche la date au format français et conserve la validation requise", () =
     />
   );
   expect(html).toContain("14/10/2026");
-  expect(html).toMatch(/<input[^>]*required/);
+  expect(html).toMatch(REQUIRED_INPUT);
   expect(
     renderToStaticMarkup(<DatePicker onChange={() => {}} value="" />)
   ).toContain("Choisir une date");
