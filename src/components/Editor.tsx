@@ -1,7 +1,11 @@
 import { TaskItem, TaskList } from "@tiptap/extension-list";
 import Placeholder from "@tiptap/extension-placeholder";
 import { TableKit } from "@tiptap/extension-table";
-import { EditorContent, useEditor } from "@tiptap/react";
+import {
+  EditorContent,
+  type Editor as TiptapEditor,
+  useEditor,
+} from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import type React from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -44,7 +48,7 @@ interface EditorProps {
     ready: boolean;
     initializing: boolean;
   }) => void;
-  onEditorCreated?: (editor: any) => void;
+  onEditorCreated?: (editor: TiptapEditor | null) => void;
   onUpdate: (content: string) => void;
   readOnly?: boolean;
 }
@@ -241,17 +245,17 @@ const Editor: React.FC<EditorProps> = ({
         });
       },
       {
-        recover: (e: any) => {
+        recover: (e: unknown) => {
           console.error("[AI Generation Error]", e);
 
           let errorMessage = "Erreur IA.";
-          if (e.message?.includes("not initialized")) {
+          if ((e as Error).message?.includes("not initialized")) {
             errorMessage =
               "L'assistant est en cours de préparation. Veuillez attendre quelques secondes.";
-          } else if (e.message?.includes("WebGPU")) {
+          } else if ((e as Error).message?.includes("WebGPU")) {
             errorMessage = "Fonctionnalité non supportée par votre navigateur.";
           } else {
-            errorMessage = `Erreur: ${e.message || "Vérifiez votre connexion."}`;
+            errorMessage = `Erreur: ${(e as Error).message || "Vérifiez votre connexion."}`;
           }
 
           setAiError(errorMessage);

@@ -9,7 +9,10 @@ import { AIModelInstallPrompt } from "@/modules/consultations/components/ai-mode
 import { markVersionSeen } from "@/modules/release-notes/release-seen";
 import { isActivationAdminRoute } from "@/services/activationAdminWindowService";
 import { requireActivationOwner } from "@/services/adminAccess";
-import * as AppSettingsService from "@/services/appSettingsService";
+import {
+  isSetupComplete,
+  markSetupComplete,
+} from "@/services/appSettingsService";
 import { isTauriRuntime } from "@/services/browser-store";
 import { acceptLicenseActivation } from "@/services/licenseRuntime";
 import { createInitialAdmin } from "@/services/sqlite/auth";
@@ -88,7 +91,7 @@ function MainApp() {
       await guard(
         async () => {
           const setupDone = await withTimeout(
-            AppSettingsService.isSetupComplete(),
+            isSetupComplete(),
             SETUP_CHECK_TIMEOUT_MS,
             "La base locale met trop de temps à répondre."
           );
@@ -190,7 +193,7 @@ function MainApp() {
       password: userData.password,
       displayName: userData.name,
     });
-    await AppSettingsService.markSetupComplete();
+    await markSetupComplete();
     // Une installation neuve n'a rien « de neuf » à lire : on retient la version tout de suite.
     markVersionSeen(APPLICATION_VERSION);
     await login(userData.email, userData.password);

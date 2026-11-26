@@ -31,6 +31,16 @@ import { type Stat, StatGrid } from "@/components/ui/stat-grid";
 import { ShortcutTooltip } from "@/design-system/patterns/shortcut-tooltip";
 import type { CareTask } from "@/modules/care-tasks/domain";
 import type { View } from "@/types";
+import type {
+  Appointment,
+  Invoice,
+  Owner,
+  Patient,
+  Product,
+  Task,
+  Transaction,
+  Vaccination,
+} from "@/types/db";
 import { formatNumber } from "@/utils/display-format";
 import type { AlertReminder } from "../model/alert-bars";
 import {
@@ -78,7 +88,7 @@ interface PremiumAnalyticsProps {
   financials?: {
     income: number;
     pending: number;
-    receivables?: any;
+    receivables?: unknown;
   };
   model: ReturnType<typeof buildPremiumAnalytics>;
   /** « À traiter »: the day's anomalies, right under the chart. */
@@ -99,14 +109,14 @@ interface PremiumAnalyticsProps {
   onStartConsultation?: (appointmentId: string) => void;
   period: DashboardPeriod;
   presentation?: {
-    patients: any[];
-    owners: any[];
-    appointments: any[];
-    tasks: any[];
-    products: any[];
-    transactions: any[];
-    vaccinations: any[];
-    invoices: any[];
+    patients: Patient[];
+    owners: Owner[];
+    appointments: Appointment[];
+    tasks: Task[];
+    products: Product[];
+    transactions: Transaction[];
+    vaccinations: Vaccination[];
+    invoices: Invoice[];
   };
   states: { cash: WidgetState; patients: WidgetState; actions: WidgetState };
   today?: ScheduleEntry[];
@@ -238,10 +248,10 @@ export function MiniArea({
   }
   const width = 84;
   const height = 28;
-  const running = values.reduce<number[]>(
-    (sums, value) => [...sums, (sums.at(-1) ?? 0) + value],
-    []
-  );
+  const running: number[] = [];
+  for (const value of values) {
+    running.push((running.at(-1) ?? 0) + value);
+  }
   const max = Math.max(...running, 0);
   const x = (i: number) => (i * width) / (running.length - 1);
   const y = (value: number) =>

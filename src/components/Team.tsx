@@ -315,10 +315,10 @@ const Team: React.FC = () => {
         setPasswordResetTarget(null);
       },
       {
-        recover: (error: any) => {
+        recover: (error: unknown) => {
           console.error(error);
           toast.error(
-            `Erreur lors de la réinitialisation : ${error?.message || "Erreur inconnue"}`
+            `Erreur lors de la réinitialisation : ${(error as Error | undefined)?.message || "Erreur inconnue"}`
           );
         },
         cleanup: () => {

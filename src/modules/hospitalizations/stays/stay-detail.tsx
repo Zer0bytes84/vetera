@@ -47,6 +47,7 @@ export function StayDetail({
 }) {
   const { currentUser } = useAuth();
   const [vitals, setVitals] = useState<VitalSign[]>([]);
+  const latestVitals = vitals.at(-1);
   const [error, setError] = useState<string | null>(null),
     [busy, setBusy] = useState(false),
     [summary, setSummary] = useState(""),
@@ -228,8 +229,8 @@ export function StayDetail({
         <VitalsLatest species={species} vitals={vitals} />
         <VitalsByDay vitals={vitals} />
         <VitalsCurves species={species} vitals={vitals} />
-        {vitals.length > 0 &&
-          vitalAlerts(species, vitals[vitals.length - 1]).map((alert) => (
+        {latestVitals &&
+          vitalAlerts(species, latestVitals).map((alert) => (
             <p
               className="t-13 rounded-xl bg-amber-50 px-3 py-2 text-amber-800 dark:bg-amber-950/30 dark:text-amber-200"
               key={alert}

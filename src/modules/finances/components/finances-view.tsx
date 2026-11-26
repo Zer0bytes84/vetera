@@ -254,12 +254,14 @@ export function FinancesView(props: FinancesViewProps) {
             </Button>
             <Button
               className="h-9 min-w-36 whitespace-nowrap rounded-full px-4"
-              onClick={() =>
-                activeTab === "invoices"
-                  ? (setInvoiceDraft(createInvoiceDraft()),
-                    setIsInvoiceDialogOpen(true))
-                  : openTransactionEditor()
-              }
+              onClick={() => {
+                if (activeTab === "invoices") {
+                  setInvoiceDraft(createInvoiceDraft());
+                  setIsInvoiceDialogOpen(true);
+                } else {
+                  openTransactionEditor();
+                }
+              }}
             >
               <HugeiconsIcon
                 className="size-4"

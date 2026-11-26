@@ -849,9 +849,11 @@ const Parametres: React.FC<ParametresProps> = ({
         setConfirmPassword("");
       },
       {
-        recover: (error: any) => {
+        recover: (error: unknown) => {
           console.error("Password change error:", error);
-          if (error.code === "auth/requires-recent-login") {
+          if (
+            (error as { code?: string }).code === "auth/requires-recent-login"
+          ) {
             setMessage({
               type: "error",
               text: "Par sécurité, veuillez vous reconnecter avant de changer le mot de passe.",
@@ -859,7 +861,7 @@ const Parametres: React.FC<ParametresProps> = ({
           } else {
             setMessage({
               type: "error",
-              text: `Erreur: ${error.message || String(error)}`,
+              text: `Erreur: ${(error as Error).message || String(error)}`,
             });
           }
         },

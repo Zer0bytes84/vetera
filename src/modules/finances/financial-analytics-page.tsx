@@ -1,5 +1,5 @@
 "use client";
-import * as React from "react";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import {
   useAppointmentsRepository,
@@ -41,7 +41,7 @@ export function FinancialAnalyticsV2Page({
   const skeleton = useDelayedSkeleton(loading);
   const locale = getCurrentLocale(i18n.language);
 
-  const metrics = React.useMemo(
+  const metrics = useMemo(
     () =>
       buildDashboardMetrics({
         appointments,

@@ -255,8 +255,6 @@ export function getStatusMeta(status: Patient["status"]) {
   return PATIENT_STATUS_META[status] ?? PATIENT_STATUS_META.sante;
 }
 
-export { getSpeciesGlyph as getSpeciesIcon } from "@/lib/species-icons";
-
 export function getSpeciesComponent(species?: string) {
   const normalized = species?.toLowerCase() ?? "";
 

@@ -229,8 +229,6 @@ export function formatElapsedDuration(ms: number) {
     .join(":");
 }
 
-export { getSpeciesGlyph as getSpeciesIcon } from "@/lib/species-icons";
-
 export function getPatientAge(dateOfBirth?: string) {
   const birthday = normalizeDate(dateOfBirth);
   if (!birthday) {
