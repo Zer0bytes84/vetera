@@ -112,6 +112,7 @@ export function ConsultationProducts({
             <button
               className="underline underline-offset-4"
               onClick={() => setRevision((value) => value + 1)}
+              type="button"
             >
               Réessayer
             </button>

@@ -242,6 +242,7 @@ export function FocusTrendChart({
             onPointerLeave={() => setActive(null)}
             onPointerMove={onMove}
             role="img"
+            // biome-ignore lint/a11y/noNoninteractiveTabindex: courbe focalisable : onKey fait lire chaque point aux flèches, ce tabIndex est son entrée au clavier.
             tabIndex={0}
             width={width}
           >

@@ -97,6 +97,7 @@ export function KpiConsultationsCadence({
         }}
         preserveAspectRatio="none"
         role="img"
+        // biome-ignore lint/a11y/noNoninteractiveTabindex: graphique focalisable : handleKeyNavigation fait lire chaque colonne aux flèches, ce tabIndex est son entrée au clavier.
         tabIndex={0}
         viewBox={`0 0 ${svgWidth} ${svgHeight}`}
       >
@@ -306,6 +307,7 @@ export function KpiIncomeSplineWave({
         }}
         preserveAspectRatio="none"
         role="img"
+        // biome-ignore lint/a11y/noNoninteractiveTabindex: courbe focalisable : handleKeyNavigation fait lire chaque point aux flèches, ce tabIndex est son entrée au clavier.
         tabIndex={0}
         viewBox={`0 0 ${svgWidth} ${svgHeight}`}
       >
@@ -620,7 +622,11 @@ export function KpiReceivablesGauge({
       <div className="kpi-gauge-box">
         {/* Circular Progress Ring */}
         <div className="kpi-gauge-ring-wrap">
-          <svg className="kpi-gauge-ring-svg" viewBox="0 0 32 32">
+          <svg
+            aria-hidden="true"
+            className="kpi-gauge-ring-svg"
+            viewBox="0 0 32 32"
+          >
             {/* Background ring */}
             <circle
               cx={16}

@@ -48,6 +48,7 @@ function InputGroupAddon({
   ...props
 }: React.ComponentProps<"div"> & VariantProps<typeof inputGroupAddonVariants>) {
   return (
+    // biome-ignore lint/a11y/useKeyWithClickEvents: raccourci souris : le clic sur l'addon focalise le champ voisin, lui-même atteignable à la tabulation.
     <div
       className={cn(inputGroupAddonVariants({ align }), className)}
       data-align={align}

@@ -11,12 +11,14 @@ import {
 import { CalendarDays } from "@/lib/icons";
 
 export function StockDatePicker({
+  id,
   value,
   onChange,
   label,
   disabled = false,
   clearable = false,
 }: {
+  id?: string;
   value?: Date;
   onChange: (value?: Date) => void;
   label: string;
@@ -30,6 +32,7 @@ export function StockDatePicker({
         <PopoverTrigger
           aria-label={label}
           disabled={disabled}
+          id={id}
           render={
             <Button
               className="h-11 min-w-0 flex-1 justify-start rounded-xl px-3"

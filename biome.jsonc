@@ -18,6 +18,32 @@
         // Décision C du 25/11 : ne pas réordonner la cascade. Les 117 paires relevées sont sans effet ou volontaires,
         // les deux vraies surcharges mortes (auth-clinic.css, transparence réduite des bannières) sont corrigées.
         "noDescendingSpecificity": "off"
+      },
+      "a11y": {
+        // Contrôles maison qui rendent un vrai input, textarea, select ou button étiquetable (décision C du 25/11).
+        "noLabelWithoutControl": {
+          "level": "error",
+          "options": {
+            "inputComponents": [
+              "Input",
+              "Textarea",
+              "NativeSelect",
+              "DatePicker",
+              "Checkbox",
+              "RadioGroupItem"
+            ]
+          }
+        },
+        // Décision C du 25/11 : rôles ARIA voulus (group, radio, meter…), la balise native changerait le rendu.
+        "useSemanticElements": "off",
+        // Décision C du 25/11 : ne signale que des gestionnaires voulus (poignée de fenêtre, arrêt de propagation, délégation).
+        "noStaticElementInteractions": "off",
+        // Décision C du 25/11 : mêmes motifs voulus sur des éléments non interactifs (graphiques focalisables, grilles).
+        "noNoninteractiveElementInteractions": "off"
+      },
+      "correctness": {
+        // Décision C du 25/11 : images de taille inconnue (data URL, avatars), dimensionnées par les classes.
+        "useImageSize": "off"
       }
     }
   },

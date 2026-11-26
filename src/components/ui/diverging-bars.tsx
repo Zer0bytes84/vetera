@@ -302,6 +302,7 @@ export function DivergingBars({
             onKeyDown={onKeyDown}
             ref={ref}
             role="group"
+            // biome-ignore lint/a11y/noNoninteractiveTabindex: graphique focalisable : onKeyDown fait lire chaque barre aux flèches, ce tabIndex est son entrée au clavier.
             tabIndex={0}
           >
             <svg

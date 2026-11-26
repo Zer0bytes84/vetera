@@ -71,6 +71,7 @@ export function PatientRecordHealth({
         <span
           aria-label={`${completed} informations renseignées sur ${checks.length}`}
           className="rounded-full border border-emerald-200/80 bg-emerald-50 px-2 py-0.5 font-bold text-emerald-700 text-xs dark:border-emerald-800/40 dark:bg-emerald-950/50 dark:text-emerald-300"
+          role="img"
         >
           {completed}/{checks.length}
         </span>

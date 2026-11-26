@@ -245,6 +245,7 @@ export function InvoicesTable({
         const draft = invoice.documentStatus === "draft";
         const issued = invoice.documentStatus === "issued";
         return (
+          // biome-ignore lint/a11y/useKeyWithClickEvents: arrête le clic vers la ligne de facture ; Émettre et les autres boutons enfants ont leur propre clavier.
           <div
             className="flex items-center justify-end gap-1"
             onClick={(event) => event.stopPropagation()}

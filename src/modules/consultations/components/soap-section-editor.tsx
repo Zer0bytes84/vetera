@@ -53,6 +53,7 @@ export function SoapSectionEditor({
   const SectionIcon = SECTION_ICON[sectionKey];
 
   return (
+    // biome-ignore lint/a11y/useKeyWithClickEvents: clic sur la carte qui active la section ; au clavier, le Textarea appelle le même onFocusSection par son onFocus.
     <div
       className={cn(
         "soap-section-editor group relative overflow-hidden rounded-2xl border bg-card p-4 transition-[border-color,box-shadow] duration-200",

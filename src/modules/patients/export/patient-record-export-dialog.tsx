@@ -475,6 +475,7 @@ export function PatientRecordExportDialog({
                 <div
                   aria-label="Pages du dossier"
                   className="patient-export-pagination"
+                  role="navigation"
                 >
                   <Button
                     aria-label="Page précédente"

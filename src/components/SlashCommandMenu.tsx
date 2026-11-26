@@ -89,6 +89,7 @@ const SlashCommandMenu = forwardRef<any, SlashCommandMenuProps>(
         )}
         key={item.title}
         onClick={() => selectItem(globalIndex)}
+        type="button"
       >
         <span className="flex size-7 shrink-0 items-center justify-center rounded-md border border-border bg-background text-base">
           {item.icon}

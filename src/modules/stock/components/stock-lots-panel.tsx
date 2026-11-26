@@ -49,11 +49,13 @@ const dateLabel = (value: string | null) =>
       })
     : "Non renseignée";
 function LotDate({
+  id,
   value,
   onChange,
   label,
   clearable,
 }: {
+  id?: string;
   value?: Date;
   onChange: (value?: Date) => void;
   label: string;
@@ -65,6 +67,7 @@ function LotDate({
       <Popover onOpenChange={setOpen} open={open}>
         <PopoverTrigger
           aria-label={label}
+          id={id}
           render={
             <Button
               className="h-11 min-w-0 flex-1 justify-start rounded-xl px-3"
@@ -289,9 +292,12 @@ function LotForm({
           )}
         </div>
         <div className="space-y-1.5">
-          <label className="text-sm">Péremption</label>
+          <label className="text-sm" htmlFor="lot-expiry">
+            Péremption
+          </label>
           <LotDate
             clearable
+            id="lot-expiry"
             label="Choisir la péremption du lot"
             onChange={(value) => changed(() => setExpiry(value))}
             value={expiry}
@@ -318,9 +324,12 @@ function LotForm({
         </div>
         {mode === "receive" && (
           <div className="min-w-0 space-y-1.5">
-            <label className="text-sm">Réception</label>
+            <label className="text-sm" htmlFor="lot-received">
+              Réception
+            </label>
             <div className="flex min-w-0 gap-2">
               <LotDate
+                id="lot-received"
                 label="Choisir la date de réception"
                 onChange={(value) => {
                   if (value) {

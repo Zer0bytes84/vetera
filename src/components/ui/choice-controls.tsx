@@ -52,6 +52,7 @@ function Field({
     return <>{children}</>;
   }
   return (
+    // biome-ignore lint/a11y/noLabelWithoutControl: Field générique : le contrôle (Checkbox, Radio…) arrive par children, Biome ne peut pas le voir.
     <label
       className={cn(
         "flex cursor-pointer select-none items-start gap-3",

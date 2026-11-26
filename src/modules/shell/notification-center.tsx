@@ -324,15 +324,20 @@ export function NotificationCenter({
     }
   };
 
+  const openLabel = t("notifications.open", { defaultValue: "Notifications" });
+  // Le bouton porte un aria-label, qui remplace son contenu : le nombre doit y être, la pastille est cachée.
+  const triggerLabel =
+    unreadCount > 0
+      ? `${openLabel}, ${unreadCount} non lue${unreadCount > 1 ? "s" : ""}`
+      : openLabel;
+
   return (
     <Popover onOpenChange={setOpen} open={open}>
       {!hideTrigger && (
         <PopoverTrigger
           render={
             <Button
-              aria-label={t("notifications.open", {
-                defaultValue: "Notifications",
-              })}
+              aria-label={triggerLabel}
               className="shell-toolbar-control relative size-9 rounded-full"
               size="icon"
               variant="outline"
@@ -342,7 +347,7 @@ export function NotificationCenter({
           <ToolbarIcon name="notifications" />
           {unreadCount > 0 ? (
             <span
-              aria-label={`${unreadCount} non lues`}
+              aria-hidden="true"
               className={cn(
                 "t-12 absolute -top-1 -right-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full px-1 font-semibold text-white ring-2 ring-background",
                 criticalCount > 0 ? "bg-rose-500" : "bg-amber-500"

@@ -185,6 +185,7 @@ export function AgentQuestion({
         )}
         <LayoutGroup id={id}>
           {status === "pending" ? (
+            // biome-ignore lint/a11y/useAriaPropsSupportedByRole: role vaut group ou radiogroup selon data.multiple, les deux acceptent aria-labelledby ; Biome ne lit pas le rôle calculé.
             <div
               aria-labelledby={`${id}-q`}
               className="grid @md:grid-cols-2 grid-cols-1 gap-1.5"
@@ -405,6 +406,7 @@ function Card({
       {readOnly ? (
         <div className={base}>{content}</div>
       ) : (
+        // biome-ignore lint/a11y/useAriaPropsSupportedByRole: role vaut checkbox ou radio selon la question, les deux acceptent aria-checked ; Biome ne lit pas la variable.
         <button
           aria-checked={checked}
           className={cn(

@@ -81,6 +81,7 @@ export function AnesthesiaSheet({
                 >
                   <span className="sr-only">{t("common.close")}</span>
                   <svg
+                    aria-hidden="true"
                     className="size-5 text-muted-foreground"
                     fill="none"
                     height="15"

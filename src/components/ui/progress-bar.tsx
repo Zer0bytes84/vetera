@@ -56,6 +56,7 @@ export function ProgressBar({
 }: ProgressBarProps) {
   const ratio = Math.min(Math.max(value / max, 0), 1);
   return (
+    // biome-ignore lint/a11y/useAriaPropsSupportedByRole: role vaut meter ou progressbar selon kind, les deux acceptent aria-label ; Biome ne lit pas le rôle conditionnel.
     <div
       aria-label={label}
       aria-valuemax={max}

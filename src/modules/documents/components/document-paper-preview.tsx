@@ -37,6 +37,7 @@ export function DocumentPaperPreview({ dataUrl }: { dataUrl: string | null }) {
     <div
       aria-label="Aperçu avant impression"
       className="document-paper-preview"
+      role="region"
     >
       {error ? (
         <p className="text-destructive" role="alert">

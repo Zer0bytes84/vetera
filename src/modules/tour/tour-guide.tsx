@@ -284,7 +284,6 @@ function TourRunner({ state }: { state: TourState }) {
         className="tour-card"
         data-tour-step={step.id}
         data-tour-ui
-        role="region"
       >
         <Shell>
           <Panel className="tour-card-panel">
@@ -345,7 +344,6 @@ function TourFinishedCard() {
       className="tour-card"
       data-tour-step="done"
       data-tour-ui
-      role="region"
     >
       <Shell>
         <Panel className="tour-card-panel">

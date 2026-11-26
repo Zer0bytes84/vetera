@@ -291,6 +291,7 @@ export function HexDensity({
               onKeyDown={onKeyDown}
               ref={ref}
               role="group"
+              // biome-ignore lint/a11y/noNoninteractiveTabindex: graphique focalisable : onKeyDown fait parcourir les cellules aux flèches, ce tabIndex est son entrée au clavier.
               tabIndex={0}
             >
               <svg
@@ -497,7 +498,13 @@ export function HexDensity({
             >
               Moins
               {STEPS.map((step) => (
-                <svg height="10" key={step} viewBox="-5 -5.5 10 11" width="9">
+                <svg
+                  aria-hidden="true"
+                  height="10"
+                  key={step}
+                  viewBox="-5 -5.5 10 11"
+                  width="9"
+                >
                   <path d={hexPath(5)} fill={tone} fillOpacity={step} />
                 </svg>
               ))}

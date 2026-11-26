@@ -152,9 +152,11 @@ export function AgentComposer({
             aria-label={menu.label}
             className="mb-3 max-h-40 overflow-y-auto rounded-2xl border border-border bg-surface-raised p-1"
             id={`${id}-menu`}
+            // biome-ignore lint/a11y/noNoninteractiveElementToInteractiveRole: ul en listbox, motif admis par ARIA ; le focus reste dans le textarea, qui désigne l'option active par aria-activedescendant.
             role="listbox"
           >
             {items.map((item, i) => (
+              // biome-ignore lint/a11y/useKeyWithClickEvents: option du menu @ : le clavier passe par le textarea (flèches et Entrée dans onKeyDown, option active par aria-activedescendant).
               <li
                 aria-selected={i === active}
                 className="flex cursor-pointer flex-col gap-0.5 rounded-xl px-3 py-2 text-[0.8125rem] aria-selected:bg-foreground/[0.07]"
@@ -163,6 +165,7 @@ export function AgentComposer({
                 onClick={() => menu.onPick(item)}
                 onMouseDown={(event) => event.preventDefault()}
                 onMouseMove={() => menu.onActiveChange(i)}
+                // biome-ignore lint/a11y/noNoninteractiveElementToInteractiveRole: li en option dans le ul listbox ci-dessus, motif admis par ARIA.
                 role="option"
               >
                 <span className="truncate font-medium">{item.label}</span>
@@ -184,6 +187,7 @@ export function AgentComposer({
           <label className="sr-only" htmlFor={`${id}-input`}>
             {label}
           </label>
+          {/* biome-ignore lint/a11y/useAriaPropsSupportedByRole: aria-expanded n'est posé que si menu existe, avec role="combobox" ; Biome ne lit pas ce rôle conditionnel. */}
           <textarea
             aria-activedescendant={menuOpen ? `${id}-opt-${active}` : undefined}
             aria-autocomplete={menu ? "list" : undefined}

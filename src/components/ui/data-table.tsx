@@ -409,6 +409,7 @@ export function DataTable<R extends DataRow>({
                       {...rowProps?.(row)}
                     >
                       {selectable && (
+                        // biome-ignore lint/a11y/useKeyWithClickEvents: cellule de sélection : arrête le clic vers onRowClick ; la TuffCheckbox qu'elle contient a son propre clavier.
                         <td
                           className="px-2 py-2.5"
                           onClick={(e) => e.stopPropagation()}

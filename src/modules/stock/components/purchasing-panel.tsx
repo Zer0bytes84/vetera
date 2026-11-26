@@ -565,10 +565,13 @@ function ReceiptForm({
           />
         </div>
         <div className="space-y-1.5">
-          <label className="text-sm">Date et heure de réception</label>
+          <label className="text-sm" htmlFor="receipt-date">
+            Date et heure de réception
+          </label>
           <div className="flex gap-2">
             <StockDatePicker
               disabled={busy}
+              id="receipt-date"
               label="Date de réception de commande"
               onChange={(value) => {
                 if (value) {
@@ -633,20 +636,26 @@ function ReceiptForm({
               />
             </div>
             <div className="space-y-1.5">
-              <label className="text-sm">Péremption</label>
+              <label className="text-sm" htmlFor={`receive-expiry-${row.id}`}>
+                Péremption
+              </label>
               <StockDatePicker
                 clearable
                 disabled={busy}
+                id={`receive-expiry-${row.id}`}
                 label={`Péremption reçue ${index + 1}`}
                 onChange={(expiry) => update(row.id, { expiry })}
                 value={row.expiry}
               />
             </div>
             <div className="min-w-0 space-y-1.5">
-              <label className="text-sm">Emplacement</label>
+              <label className="text-sm" htmlFor={`receive-location-${row.id}`}>
+                Emplacement
+              </label>
               <SearchableSelect
                 controlClassName="h-11 [&_input]:text-foreground"
                 disabled={busy}
+                id={`receive-location-${row.id}`}
                 label={`Emplacement reçu ${index + 1}`}
                 onValueChange={(location) => update(row.id, { location })}
                 options={inventory.locations

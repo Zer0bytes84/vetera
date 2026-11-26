@@ -413,10 +413,13 @@ function Scanner({ onOpenMovements }: { onOpenMovements?: () => void }) {
                 />
               </div>
               <div className="space-y-1.5">
-                <label className="text-sm">Péremption du lot</label>
+                <label className="text-sm" htmlFor="scan-lot-expiry">
+                  Péremption du lot
+                </label>
                 <StockDatePicker
                   clearable
                   disabled={busy}
+                  id="scan-lot-expiry"
                   label="Péremption du lot scanné"
                   onChange={(value) => changed(() => setExpiry(value))}
                   value={expiry}
@@ -675,10 +678,13 @@ function TransferForm({ onClose }: { onClose: () => void }) {
           />
         </div>
         <div className="min-w-0 space-y-1.5">
-          <label className="text-sm">Depuis</label>
+          <label className="text-sm" htmlFor="transfer-from">
+            Depuis
+          </label>
           <SearchableSelect
             controlClassName="h-11 [&_input]:text-foreground"
             disabled={busy}
+            id="transfer-from"
             label="Emplacement de départ"
             onValueChange={(value) =>
               changed(() => {
@@ -696,10 +702,13 @@ function TransferForm({ onClose }: { onClose: () => void }) {
           />
         </div>
         <div className="min-w-0 space-y-1.5">
-          <label className="text-sm">Vers</label>
+          <label className="text-sm" htmlFor="transfer-to">
+            Vers
+          </label>
           <SearchableSelect
             controlClassName="h-11 [&_input]:text-foreground"
             disabled={busy}
+            id="transfer-to"
             label="Emplacement d’arrivée"
             onValueChange={(value) => changed(() => setTo(value))}
             options={inventory.locations
@@ -709,10 +718,13 @@ function TransferForm({ onClose }: { onClose: () => void }) {
           />
         </div>
         <div className="min-w-0 space-y-1.5">
-          <label className="text-sm">Lot</label>
+          <label className="text-sm" htmlFor="transfer-lot">
+            Lot
+          </label>
           <SearchableSelect
             controlClassName="h-11 [&_input]:text-foreground"
             disabled={busy || !productId}
+            id="transfer-lot"
             label="Lot à transférer"
             onValueChange={(value) => changed(() => setLot(value))}
             options={[

@@ -660,6 +660,7 @@ export function LineMascotArt({
   const pivot = art.earPivot ?? [40, 50, 80, 50];
   return (
     <svg
+      aria-hidden="true"
       className="lm-svg"
       overflow="visible"
       viewBox="0 0 120 120"

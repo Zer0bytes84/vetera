@@ -25,7 +25,7 @@ export function NowBoardView({
   viewControl?: React.ReactNode;
 }) {
   return (
-    <div aria-busy={loading || skeleton} aria-label="Maintenant">
+    <div aria-busy={loading || skeleton} aria-label="Maintenant" role="region">
       {loading || skeleton ? (
         <Panel>
           <div className={`min-h-[240px] p-5 ${skeleton ? "" : "opacity-0"}`}>

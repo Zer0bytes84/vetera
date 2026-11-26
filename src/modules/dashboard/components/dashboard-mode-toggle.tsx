@@ -33,6 +33,7 @@ export function DashboardModeToggle({
       aria-label="Vue du tableau de bord"
       className="dashboard-mode-toggle inline-flex items-center rounded-lg border border-border bg-muted p-0.5"
       data-slot="dashboard-mode-toggle"
+      role="group"
     >
       {modes.map((mode) => {
         const isSelected = value === mode.value;

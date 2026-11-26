@@ -89,6 +89,7 @@ export function KpiMiniChart({
         }}
         preserveAspectRatio="none"
         role="img"
+        // biome-ignore lint/a11y/noNoninteractiveTabindex: mini-courbe focalisable : readingKey fait lire chaque valeur aux flèches, ce tabIndex est son entrée au clavier.
         tabIndex={0}
         viewBox="0 0 240 40"
       >
@@ -218,6 +219,7 @@ export function KpiSegments({
         }
         onPointerLeave={() => setHovered(null)}
         role="img"
+        // biome-ignore lint/a11y/noNoninteractiveTabindex: barre segmentée focalisable : readingKey fait lire chaque segment aux flèches, ce tabIndex est son entrée au clavier.
         tabIndex={0}
       >
         {visible.map((segment, i) => (
