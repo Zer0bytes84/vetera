@@ -14,19 +14,19 @@ import reference from "@/data/vet-knowledge/doses-validees-aissa.json";
 import rcp from "@/data/vet-knowledge/medications-rcp.json";
 
 interface Line {
-  dose: string;
-  voie?: string;
-  frequence?: string;
-  duree?: string;
-  attention?: string;
   attendu:
     | { min: number; max: number; unite: "mg/kg" | "µg/kg" | "mg" }
     | "REFUS";
+  attention?: string;
+  dose: string;
+  duree?: string;
+  frequence?: string;
+  voie?: string;
 }
 interface ReferenceMolecule {
+  especes: Record<string, Line>;
   nom: string;
   noms_commerciaux: string[];
-  especes: Record<string, Line>;
   sources: string[];
 }
 interface CatalogueMolecule {
@@ -304,8 +304,8 @@ export function validatedDose(
 
 /** The dose a prescription line is prefilled with, in the line's own units (mg/kg or mg per animal). */
 export interface ReferenceLineDose {
-  min: number;
   max: number;
+  min: number;
   unit: "mg/kg" | "mg/tot";
 }
 

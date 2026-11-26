@@ -39,58 +39,58 @@ import { cn } from "@/lib/utils";
 export type ChartType = "bar" | "line" | "area" | "donut";
 
 export interface ChartSeries {
-  id: string;
-  label: string;
-  /** One value per label. For a donut, a slice is the sum of its values. */
-  values: number[];
-  /** Any CSS color. Defaults to the palette by position, so a series keeps its color. */
-  color?: string;
   /** Scale the series is read on. Two scales share one grid. Defaults to the left one. */
   axis?: "left" | "right";
-  /** Formats this series' ticks; falls back to the card's `format`. */
-  format?: (value: number) => string;
-  /** Formats its values in the tooltip and the table; falls back to `format`. */
-  valueFormat?: (value: number) => string;
-  /** A hollow marker on each point of a line or area, while the points stay apart. */
-  markers?: boolean;
+  /** Any CSS color. Defaults to the palette by position, so a series keeps its color. */
+  color?: string;
   /** Text after the label in the legend, e.g. a total and its change. */
   detail?: string;
+  /** Formats this series' ticks; falls back to the card's `format`. */
+  format?: (value: number) => string;
+  id: string;
+  label: string;
+  /** A hollow marker on each point of a line or area, while the points stay apart. */
+  markers?: boolean;
+  /** Formats its values in the tooltip and the table; falls back to `format`. */
+  valueFormat?: (value: number) => string;
+  /** One value per label. For a donut, a slice is the sum of its values. */
+  values: number[];
 }
 
 export interface ChartCardProps {
+  className?: string;
   data: { labels: string[]; series: ChartSeries[] };
-  type?: ChartType;
-  title: string;
-  subtitle?: string;
-  /** Headline in the header, e.g. a total. Rolls when it changes. */
-  total?: string;
-  /** Formats values in ticks and the tooltip. */
-  format?: (value: number) => string;
-  /** Stripe the last point (bars) — e.g. a period that isn't over yet. */
-  partialLast?: boolean;
-  onSelect?: (index: number) => void;
-  /** The tooltip's title for each point, when the axis label is too short to name it. */
-  tooltipTitles?: string[];
-  /** A last line in the tooltip, e.g. the same point in the previous period. */
-  tooltipNote?: (index: number) => string | undefined;
-  /** Plot height in px. */
-  height?: number;
-  /** Beside the legend, on its right: a period or a view switch. */
-  toolbar?: ReactNode;
-  /** Under the chart, inside the panel: a forecast, a footer. */
-  footer?: ReactNode;
   /** The donut's centre label when nothing is hovered. */
   donutLabel?: string;
+  /** Under the chart, inside the panel: a forecast, a footer. */
+  footer?: ReactNode;
+  /** Formats values in ticks and the tooltip. */
+  format?: (value: number) => string;
+  /** Plot height in px. */
+  height?: number;
   /**
    * The data is still being read: the headline, the legend and the plot are drawn as Loading Skeleton
    * shapes of the same size, so no « 0 DA » shows before the figures are known and nothing moves when
    * they arrive. The toolbar and the footer stay as they are.
    */
   loading?: boolean;
+  loadingLabel?: string;
   /** While loading, the placeholders stay invisible until this turns true (useDelayedSkeleton): no flash on a fast read. */
   loadingRevealed?: boolean;
-  loadingLabel?: string;
-  className?: string;
+  onSelect?: (index: number) => void;
+  /** Stripe the last point (bars) — e.g. a period that isn't over yet. */
+  partialLast?: boolean;
+  subtitle?: string;
+  title: string;
+  /** Beside the legend, on its right: a period or a view switch. */
+  toolbar?: ReactNode;
+  /** A last line in the tooltip, e.g. the same point in the previous period. */
+  tooltipNote?: (index: number) => string | undefined;
+  /** The tooltip's title for each point, when the axis label is too short to name it. */
+  tooltipTitles?: string[];
+  /** Headline in the header, e.g. a total. Rolls when it changes. */
+  total?: string;
+  type?: ChartType;
 }
 
 // The app's accent tones, in the order a series gets them: blue, green, violet, amber, rose.

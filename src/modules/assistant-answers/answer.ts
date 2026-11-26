@@ -115,15 +115,15 @@ type Data = ReturnType<typeof dashboardPresentationData>;
 interface Scope {
   ids: Set<string> | null;
   label: string;
-  names: string[];
   missing: boolean;
+  names: string[];
 }
 interface Build {
-  text: string;
   data: Data;
   now: Date;
   period: Period | null;
   scope: Scope;
+  text: string;
   understood: (periodText: string | null) => AnswerStep;
 }
 

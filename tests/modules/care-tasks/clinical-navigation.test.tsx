@@ -3,9 +3,9 @@ import { beforeEach, expect, it, vi } from "vitest";
 import type { CareStatus } from "../../../src/modules/care-tasks/domain";
 
 interface Task {
+  heure_prevue: string;
   id: string;
   patient_id: string;
-  heure_prevue: string;
   statut: CareStatus;
 }
 const harness = vi.hoisted(() => ({

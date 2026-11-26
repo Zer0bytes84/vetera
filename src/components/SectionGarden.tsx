@@ -15,10 +15,10 @@ import type { View } from "@/types";
 import "@/modules/dashboard/v2/studio-dashboard.css";
 
 interface Insight {
-  title: string;
-  value: string | number;
   detail: string;
   target: View;
+  title: string;
+  value: string | number;
 }
 export function SectionGarden({
   view,

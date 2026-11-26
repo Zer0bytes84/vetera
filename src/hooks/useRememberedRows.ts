@@ -7,11 +7,11 @@ import { useCallback, useState } from "react";
  */
 
 export interface RememberedRows {
-  rows: number;
-  /** One row's height; with 0 rows, the height of what the list shows when empty. */
-  rowHeight: number;
   /** A table's column widths, head cell by head cell. */
   columns?: number[];
+  /** One row's height; with 0 rows, the height of what the list shows when empty. */
+  rowHeight: number;
+  rows: number;
 }
 
 const PREFIX = "vetera:skeleton-rows:";

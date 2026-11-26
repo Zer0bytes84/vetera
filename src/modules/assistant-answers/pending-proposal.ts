@@ -8,10 +8,10 @@ import type { Turn } from "./clinic-answers";
 import type { Proposal } from "./types";
 
 export interface CardState {
-  status: ConfirmationStatus | "dismissed";
+  doneAt?: string;
   error?: string;
   reference?: string;
-  doneAt?: string;
+  status: ConfirmationStatus | "dismissed";
 }
 
 /** The latest card still waiting for the vet (neither validated nor set aside), with its turn: what the foot of the panel shows. */

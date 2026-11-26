@@ -92,9 +92,9 @@ vi.mock("../../src/services/sqlite/database", () => {
 
 interface Row {
   id: string;
+  name: string;
   patientId: string;
   status: string;
-  name: string;
 }
 
 async function setup(warm = true) {

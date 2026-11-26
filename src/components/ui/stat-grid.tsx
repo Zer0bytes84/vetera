@@ -44,59 +44,59 @@ import { formatNumber } from "@/utils/display-format";
 export type StatTone = "green" | "blue" | "violet" | "amber" | "rose";
 
 export interface Stat {
-  id: string;
-  label: string;
-  /** Preformatted value, e.g. "26 700 DA" or "1 204". Rolls when it changes. */
-  value: string;
-  /** Change vs. the previous period, in percent. */
-  delta?: number;
-  /** Whether a rise is good (revenue) or bad (latency, churn). */
-  higherIsBetter?: boolean;
-  /** Recent values, oldest first, for the sparkline. */
-  trend?: number[];
-  /** Progress toward a target, 0–1, with its label (e.g. "Objectif 60 000 DA"). */
-  goal?: { ratio: number; label: string };
-  hint?: string;
-  /** The badge's text, when a percentage cannot be (a zero base): `delta` is then read only for its sign. */
-  deltaText?: string;
-  /** Icon in a tinted chip before the label, and the tone it takes. */
-  icon?: StatIcon;
-  tone?: StatTone;
-  /** The figure takes the tone: a warning. */
-  emphasize?: boolean;
   /** The name of the card when it is clickable. */
   ariaLabel?: string;
+  /** Change vs. the previous period, in percent. */
+  delta?: number;
+  /** The badge's text, when a percentage cannot be (a zero base): `delta` is then read only for its sign. */
+  deltaText?: string;
+  /** The figure takes the tone: a warning. */
+  emphasize?: boolean;
+  /** Progress toward a target, 0–1, with its label (e.g. "Objectif 60 000 DA"). */
+  goal?: { ratio: number; label: string };
+  /** Whether a rise is good (revenue) or bad (latency, churn). */
+  higherIsBetter?: boolean;
+  hint?: string;
+  /** Icon in a tinted chip before the label, and the tone it takes. */
+  icon?: StatIcon;
+  id: string;
+  label: string;
+  tone?: StatTone;
+  /** Recent values, oldest first, for the sparkline. */
+  trend?: number[];
+  /** Preformatted value, e.g. "26 700 DA" or "1 204". Rolls when it changes. */
+  value: string;
 }
 
 export interface StatGridProps {
-  data: Stat[];
-  title?: string;
-  subtitle?: string;
-  /** The header's icon tile. */
-  icon?: StatIcon;
-  /** On the right of the header: a switch between the widget's views. */
-  toolbar?: ReactNode;
-  /** Controls on the header's own line, between the title and the toolbar (the dashboard's period filters). */
-  lead?: ReactNode;
-  /** Show sparklines when stats carry a trend. */
-  sparklines?: boolean;
-  onSelect?: (stat: Stat) => void;
-  /** Draw the goal bar of the stats that carry a `goal`. */
-  goals?: boolean;
   /** `false`: no badge row at all, for a grid whose cards carry no change (counts of what is to do). */
   badges?: boolean;
+  className?: string;
+  data: Stat[];
+  /** Draw the goal bar of the stats that carry a `goal`. */
+  goals?: boolean;
+  /** The header's icon tile. */
+  icon?: StatIcon;
   /** `row`: every card on one single row, scrolling sideways when the window is too narrow. */
   layout?: "grid" | "row";
+  /** Controls on the header's own line, between the title and the toolbar (the dashboard's period filters). */
+  lead?: ReactNode;
   /**
    * The figures are still being read: each card is drawn as the Cards variant of the Loading Skeleton, row for row
    * (label, figure, badge, line, goal), so nothing moves when they arrive and no figure is shown before it is known
    * (19 November 2026: the dashboard showed « 0 DA » for as long as its journal took to read).
    */
   loading?: boolean;
+  loadingLabel?: string;
   /** While loading, the placeholders stay invisible until this turns true (useDelayedSkeleton): no flash on a fast read. */
   loadingRevealed?: boolean;
-  loadingLabel?: string;
-  className?: string;
+  onSelect?: (stat: Stat) => void;
+  /** Show sparklines when stats carry a trend. */
+  sparklines?: boolean;
+  subtitle?: string;
+  title?: string;
+  /** On the right of the header: a switch between the widget's views. */
+  toolbar?: ReactNode;
 }
 
 export function StatGrid({

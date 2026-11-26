@@ -48,21 +48,21 @@ import "./data-table.css";
 export type DataRow = { id: string } & Record<string, string | number | null>;
 
 export interface DataColumn<R extends DataRow = DataRow> {
-  key: keyof R & string;
-  label: string;
   align?: "left" | "right";
   /** Display text for a cell. Sorting, filtering and CSV use the raw value. */
   format?: (value: R[keyof R], row: R) => ReactNode;
+  /** The header is read by assistive tech only (an actions column). */
+  hideLabel?: boolean;
+  key: keyof R & string;
+  label: string;
+  /** Left out of the CSV (an actions column). */
+  noExport?: boolean;
+  /** Which columns survive a narrow table: 1 always, 2 hides below a 28rem-wide table, 3 below 36rem. */
+  priority?: 1 | 2 | 3;
   sortable?: boolean;
   /** What the column sorts by, when its raw value does not sort itself (a date in mixed formats sorts by its time). */
   sortValue?: (value: R[keyof R], row: R) => number | string;
   width?: string;
-  /** Left out of the CSV (an actions column). */
-  noExport?: boolean;
-  /** The header is read by assistive tech only (an actions column). */
-  hideLabel?: boolean;
-  /** Which columns survive a narrow table: 1 always, 2 hides below a 28rem-wide table, 3 below 36rem. */
-  priority?: 1 | 2 | 3;
 }
 
 const hideBelow = {
@@ -74,51 +74,51 @@ const priorityOf = (c: { priority?: 1 | 2 | 3 }, i: number) =>
   hideBelow[c.priority ?? (i < 2 ? 1 : i < 4 ? 2 : 3)];
 
 export interface DataTableProps<R extends DataRow = DataRow> {
-  data: R[];
-  columns: DataColumn<R>[];
-  title: string;
-  subtitle?: ReactNode;
-  /** Words for the rows: « dossier », « produit ». */
-  noun?: [one: string, many: string];
-  pageSize?: number;
-  searchable?: boolean;
-  searchPlaceholder?: string;
-  /** Beside the filter field. */
-  filters?: ReactNode;
-  /** In the header band, on the right, before the CSV buttons: a page's view switch. */
-  toolbar?: ReactNode;
-  selectable?: boolean;
-  selected?: string[];
-  onSelectedChange?: (ids: string[]) => void;
   /** Bulk actions shown when rows are selected. */
   actions?: (ids: string[]) => ReactNode;
-  onRowClick?: (row: R) => void;
-  /** Name of the downloaded file, without extension. */
-  exportName?: string;
-  /** What the empty table says when there is no data at all. */
-  emptyTitle?: string;
-  emptyDescription?: string;
-  icon?: typeof Table2;
-  /** On the right of the empty state: an action such as « Réinitialiser les filtres ». */
-  emptyAction?: ReactNode;
+  className?: string;
+  columns: DataColumn<R>[];
   /** The element that holds the rows, for a list cursor. */
   containerRef?: React.Ref<HTMLDivElement>;
-  /** Attributes of a row (keyboard access, data attributes). */
-  rowProps?: (row: R) => React.HTMLAttributes<HTMLTableRowElement>;
-  className?: string;
+  data: R[];
+  /** On the right of the empty state: an action such as « Réinitialiser les filtres ». */
+  emptyAction?: ReactNode;
+  emptyDescription?: string;
+  /** What the empty table says when there is no data at all. */
+  emptyTitle?: string;
+  /** Name of the downloaded file, without extension. */
+  exportName?: string;
+  /** Beside the filter field. */
+  filters?: ReactNode;
+  icon?: typeof Table2;
   /**
    * The rows are still being read (first read only): the table keeps its frame, head and controls, and its body holds the
    * place of the rows shown last time (`skeletonKey`), in the Loading Skeleton's sheen. No count, no empty state, until the
    * rows are known.
    */
   loading?: boolean;
+  loadingLabel?: string;
   /** While loading, the placeholders stay invisible until this turns true (useDelayedSkeleton): no flash on a fast read. */
   loadingRevealed?: boolean;
-  loadingLabel?: string;
-  /** Where this table remembers how many rows it showed, and how tall: the place its next skeleton reserves. */
-  skeletonKey?: string;
+  /** Words for the rows: « dossier », « produit ». */
+  noun?: [one: string, many: string];
+  onRowClick?: (row: R) => void;
+  onSelectedChange?: (ids: string[]) => void;
+  pageSize?: number;
+  /** Attributes of a row (keyboard access, data attributes). */
+  rowProps?: (row: R) => React.HTMLAttributes<HTMLTableRowElement>;
+  searchable?: boolean;
+  searchPlaceholder?: string;
+  selectable?: boolean;
+  selected?: string[];
   /** The place reserved before anything is remembered. */
   skeletonFallback?: RememberedRows;
+  /** Where this table remembers how many rows it showed, and how tall: the place its next skeleton reserves. */
+  skeletonKey?: string;
+  subtitle?: ReactNode;
+  title: string;
+  /** In the header band, on the right, before the CSV buttons: a page's view switch. */
+  toolbar?: ReactNode;
 }
 
 export type Sort = { key: string; dir: "asc" | "desc" } | null;

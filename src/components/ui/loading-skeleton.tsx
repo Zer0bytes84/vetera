@@ -14,10 +14,10 @@ import "./loading-skeleton.css";
 
 interface Props {
   busy?: boolean;
-  label: string;
-  doneLabel?: string;
-  className?: string;
   children?: ReactNode;
+  className?: string;
+  doneLabel?: string;
+  label: string;
 }
 
 function useDoneAnnouncement(busy: boolean, doneLabel?: string) {

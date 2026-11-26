@@ -4,8 +4,8 @@ import { runSqliteMigrations } from "@/services/sqlite/migration-runner";
 import { SQLITE_MIGRATIONS } from "@/services/sqlite/migrations";
 
 interface Db {
-  select<T>(sql: string, values?: unknown[]): Promise<T>;
   execute(sql: string, values?: unknown[]): Promise<{ rowsAffected: number }>;
+  select<T>(sql: string, values?: unknown[]): Promise<T>;
 }
 
 const harness = vi.hoisted(() => ({

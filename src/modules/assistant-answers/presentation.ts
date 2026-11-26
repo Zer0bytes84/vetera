@@ -21,9 +21,9 @@ import type {
  * days compare as text.
  */
 interface Bucket {
+  first: string;
   key: string;
   label: string;
-  first: string;
   last: string;
 }
 

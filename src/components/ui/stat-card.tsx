@@ -11,8 +11,8 @@ import "./stat-card.css";
 
 export type StatTone = "positive" | "negative" | "neutral";
 export interface StatDelta {
-  text: string;
   spoken: string;
+  text: string;
   trend: "up" | "down" | "flat";
 }
 

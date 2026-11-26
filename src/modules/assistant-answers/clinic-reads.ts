@@ -37,14 +37,14 @@ type ClinicTable = (typeof CLINIC_TABLES)[number];
 
 /** How the data was read: shown under each answer. */
 export interface ReadReceipt {
-  /** « sqlite » on the desktop, « navigateur » in a browser. */
-  via: "sqlite" | "navigateur";
-  /** Statements that went through the port (selects and the snapshot's BEGIN/COMMIT). */
-  statements: number;
+  at: string;
   /** Changes made by this connection during the read: always 0, or the read is rejected. */
   changes: number;
   rows: number;
-  at: string;
+  /** Statements that went through the port (selects and the snapshot's BEGIN/COMMIT). */
+  statements: number;
+  /** « sqlite » on the desktop, « navigateur » in a browser. */
+  via: "sqlite" | "navigateur";
 }
 
 export class ReadIntegrityError extends Error {
