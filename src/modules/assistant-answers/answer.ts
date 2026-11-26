@@ -1184,7 +1184,7 @@ export function verifyAnswer(answer: Answer): Answer {
   for (const series of answer.chart?.series ?? []) {
     const figure = byId.get(series.tie);
     if (
-      !(figure && figure.tie) ||
+      !figure?.tie ||
       series.points.some(
         (point) => !Number.isInteger(point.value) || point.value < 0
       )

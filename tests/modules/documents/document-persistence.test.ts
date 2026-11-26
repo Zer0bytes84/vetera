@@ -16,7 +16,7 @@ vi.mock("../../../src/services/browser-store", () => ({
   isTauriRuntime: () => true,
 }));
 vi.mock("../../../src/services/sqlite/database", () => ({
-  generateId: () => "document-" + ++fixture.nextId,
+  generateId: () => `document-${++fixture.nextId}`,
   runDbTransaction: async (
     operation: (db: {
       select: (sql: string, params: unknown[]) => Promise<unknown>;

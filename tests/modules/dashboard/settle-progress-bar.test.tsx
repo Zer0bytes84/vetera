@@ -55,8 +55,8 @@ describe("Barre segmentée de trésorerie Premium", () => {
       <SettleProgressBar
         segments={[
           { value: -10, tone: "ink" },
-          { value: Infinity, tone: "blue" },
-          { value: NaN, tone: "amber" },
+          { value: Number.POSITIVE_INFINITY, tone: "blue" },
+          { value: Number.NaN, tone: "amber" },
         ]}
       />
     );

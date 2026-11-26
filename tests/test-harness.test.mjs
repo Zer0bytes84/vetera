@@ -364,7 +364,7 @@ function pageWith({ elements = [], texts = {} } = {}) {
     doc,
     fakeConsole,
     () => new Promise(() => {}),
-    (fn) => 0,
+    (_fn) => 0,
     class {},
     class {},
     FakeEvent,

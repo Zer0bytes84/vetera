@@ -106,7 +106,7 @@ it("dates impossibles, dates absentes et quantités non finies sont refusées", 
   for (const bucket of [
     { ...first, expiryDate: "2026-02-30" },
     { ...first, receivedAt: "inconnue" },
-    { ...first, quantity: Infinity },
+    { ...first, quantity: Number.POSITIVE_INFINITY },
   ]) {
     expect(() =>
       selectFifoAllocations([bucket], { ...input, quantity: 1 })

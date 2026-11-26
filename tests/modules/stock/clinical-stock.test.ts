@@ -197,7 +197,13 @@ it("origine rejouée : même mouvement, conflit de quantité refusé", async () 
   ).toBe(9.9);
 });
 it("quantités absentes, négatives, infinies ou trop précises refusées", async () => {
-  for (const quantity of [0, -1, NaN, Infinity, 0.000_000_1]) {
+  for (const quantity of [
+    0,
+    -1,
+    Number.NaN,
+    Number.POSITIVE_INFINITY,
+    0.000_000_1,
+  ]) {
     expect(() => stockQuantity(quantity)).toThrow(StockError);
     await expect(
       store.create({ ...draft, productQuantity: quantity }, "vet")

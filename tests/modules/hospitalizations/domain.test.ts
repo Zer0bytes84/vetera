@@ -43,7 +43,7 @@ describe("Journées calendaires", () => {
     );
   });
   it("refuse dates invalides et sortie antérieure", () => {
-    expect(() => stayDays(new Date(NaN), new Date())).toThrow();
+    expect(() => stayDays(new Date(Number.NaN), new Date())).toThrow();
     expect(() =>
       stayDays(new Date(2026, 9, 13), new Date(2026, 9, 12))
     ).toThrow();

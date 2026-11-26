@@ -557,7 +557,7 @@ function MaybeShell({
       {children}
     </TabShell>
   ) : (
-    <>{children}</>
+    children
   );
 }
 

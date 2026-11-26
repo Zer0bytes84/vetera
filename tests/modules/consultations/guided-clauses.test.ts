@@ -45,7 +45,7 @@ function draftWithFaithfulModel(answers: LocalSoapNote) {
     ])
   );
   const note = parseGeneratedSoap(
-    "```json\n" + JSON.stringify(template) + "\n```",
+    `\`\`\`json\n${JSON.stringify(template)}\n\`\`\``,
     omitted
   );
   assertFaithfulSoap(note, scaffold);

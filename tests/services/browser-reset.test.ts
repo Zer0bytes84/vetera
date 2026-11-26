@@ -41,7 +41,7 @@ it("keeps a backup and leaves the browser empty after reloading rather than rese
   values.set("auth_token", "old-session");
   values.set("theme-config", "old-preferences");
   await resetLocalData(RESET_CONFIRMATION, "secret");
-  expect(values.get(key + ".before-reset")).toBe(original);
+  expect(values.get(`${key}.before-reset`)).toBe(original);
   expect(getBrowserTable("users")).toHaveLength(0);
   expect(getBrowserSetting("license_activation_token")).toBeNull();
   await seedDemoDataIfNeeded({

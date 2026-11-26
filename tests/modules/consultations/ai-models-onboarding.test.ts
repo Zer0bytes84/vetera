@@ -292,7 +292,7 @@ describe("Installation partagée en arrière-plan", () => {
     const installation = createAIModelInstallation({
       check,
       provision: async () => {
-        throw Error("Accès refusé.");
+        throw new Error("Accès refusé.");
       },
     });
     await installation.start();

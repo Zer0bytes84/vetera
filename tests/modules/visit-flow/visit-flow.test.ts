@@ -330,7 +330,7 @@ describe("journal des transitions", () => {
     await expect(store.setCare("v3", false, "vet", version)).rejects.toThrow(
       /autre poste/
     );
-    expect((await store.events("v3")).slice(-1)[0]).toMatchObject({
+    expect((await store.events("v3")).at(-1)).toMatchObject({
       cause: "care",
       fromStage: "consultation",
       toStage: "care",
@@ -342,7 +342,7 @@ describe("journal des transitions", () => {
     book("v4", "arrived");
     setStatus("v4", "in_progress");
     await flow().attribute("v4", "vet");
-    expect((await flow().events("v4")).slice(-1)[0].actorId).toBe("vet");
+    expect((await flow().events("v4")).at(-1).actorId).toBe("vet");
   });
 });
 
@@ -364,7 +364,7 @@ describe("acte gratuit", () => {
         status: "completed",
       })
     );
-    expect((await flow().events("free")).slice(-1)[0]).toMatchObject({
+    expect((await flow().events("free")).at(-1)).toMatchObject({
       cause: "billing",
       fromStage: "billing",
       toStage: "done",
@@ -404,7 +404,7 @@ describe("annulation", () => {
       status: "waiting",
       stage: "waiting",
     });
-    expect((await store.events("v5")).slice(-1)[0]).toMatchObject({
+    expect((await store.events("v5")).at(-1)).toMatchObject({
       cause: "undo",
       undoesEventId: last!.id,
       actorId: "vet",
@@ -433,7 +433,7 @@ describe("annulation", () => {
 
     const invoice = await bill("v6", 1000);
     await pay(invoice.id, 1000, "pay:v6");
-    const payment = (await store.events("v6")).slice(-1)[0];
+    const payment = (await store.events("v6")).at(-1);
     expect(payment.cause).toBe("billing");
     expect(await store.undoable("v6")).toBeNull();
     await expect(store.undo(payment.id, "vet")).rejects.toThrow(

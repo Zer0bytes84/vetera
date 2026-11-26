@@ -537,9 +537,9 @@ describe("Recherche sémantique locale : index et isolation", () => {
   it("rejects wrong dimensions, nonfinite, empty and damaged vectors", () => {
     for (const v of [
       [],
-      Array(768).fill(0),
-      Array(768).fill(NaN),
-      Array(768).fill(Infinity),
+      new Array(768).fill(0),
+      new Array(768).fill(Number.NaN),
+      new Array(768).fill(Number.POSITIVE_INFINITY),
     ]) {
       expect(() => normalizedEmbedding(v)).toThrow();
     }

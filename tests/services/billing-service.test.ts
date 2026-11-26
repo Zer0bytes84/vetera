@@ -71,7 +71,7 @@ class TestDatabase implements TestBillingDatabase {
   async execute(query: string, bindValues: unknown[] = []): Promise<unknown> {
     if (bindValues.length === 0) {
       this.connection.exec(query);
-      return undefined;
+      return;
     }
     const result = this.connection
       .prepare(query.replace(/\$\d+/g, "?"))

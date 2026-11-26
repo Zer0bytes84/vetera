@@ -525,7 +525,7 @@ const Team: React.FC = () => {
                 const effectiveRole =
                   user.email === "zohir.kh@gmail.com" ? "admin" : user.role;
                 const config =
-                  ROLE_CONFIG[effectiveRole] || ROLE_CONFIG["stagiaire"];
+                  ROLE_CONFIG[effectiveRole] || ROLE_CONFIG.stagiaire;
                 const RoleIcon = config.icon || AcademicCapIcon;
                 const isCurrentUserRow =
                   user.email?.trim().toLowerCase() ===

@@ -218,7 +218,7 @@ describe("patient context and SOAP schema", () => {
       parseGeneratedSoap(JSON.stringify({ ...validNote, medications: [] }))
     ).toThrow("sections SOAP");
     expect(() =>
-      parseGeneratedSoap("<analysis>" + JSON.stringify(validNote))
+      parseGeneratedSoap(`<analysis>${JSON.stringify(validNote)}`)
     ).toThrow("JSON SOAP");
     expect(() =>
       parseGeneratedSoap(
@@ -343,9 +343,9 @@ describe("local audio", () => {
     ]) {
       expect(() => normalizeMicrophoneAudio(input)).toThrow("Aucun son");
     }
-    expect(() => normalizeMicrophoneAudio(new Float32Array([NaN]))).toThrow(
-      "invalide"
-    );
+    expect(() =>
+      normalizeMicrophoneAudio(new Float32Array([Number.NaN]))
+    ).toThrow("invalide");
   });
   it("resamples 44.1 kHz without pitch changes or a duration mismatch", () => {
     const input = Float32Array.from({ length: 44_100 }, (_, i) =>

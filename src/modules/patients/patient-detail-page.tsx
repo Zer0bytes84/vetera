@@ -1464,7 +1464,7 @@ export function PatientDetailPage({
                             }
                           );
 
-                          if (newApt && newApt.id) {
+                          if (newApt?.id) {
                             setPrescriptionAppointmentId(newApt.id);
                             setAutoCreatedAppointmentId(newApt.id);
                             setPrescriptionOpen(true);

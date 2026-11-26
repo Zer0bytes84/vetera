@@ -129,7 +129,7 @@ describe("validated local SOAP generation", () => {
         )
         .mockResolvedValueOnce(JSON.stringify({ subjective: note.subjective }))
         .mockResolvedValueOnce(
-          "```json\n" + JSON.stringify({ plan: note.plan }) + "\n```"
+          `\`\`\`json\n${JSON.stringify({ plan: note.plan })}\n\`\`\``
         );
       expect(await run(generate)).toEqual(note);
       expect(

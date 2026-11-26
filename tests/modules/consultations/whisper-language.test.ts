@@ -25,9 +25,9 @@ describe("local Whisper language detection", () => {
     ).toBe("fr");
   });
   it("rejects malformed detection rather than silently defaulting to English", () => {
-    expect(() => selectWhisperLanguage([NaN, 3], { "<|fr|>": 0 })).toThrow(
-      "langue"
-    );
+    expect(() =>
+      selectWhisperLanguage([Number.NaN, 3], { "<|fr|>": 0 })
+    ).toThrow("langue");
     expect(() => selectWhisperLanguage([1, 2], { bad: 1 })).toThrow("langue");
     expect(() => selectWhisperLanguage([1, 2], { "<|fr|>": 100 })).toThrow(
       "langue"

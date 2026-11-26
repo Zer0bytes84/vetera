@@ -17,7 +17,7 @@ class TestDatabase implements MigrationDatabase {
   async execute(query: string, bindValues: unknown[] = []): Promise<unknown> {
     if (bindValues.length === 0) {
       this.connection.exec(query);
-      return undefined;
+      return;
     }
 
     return this.connection.prepare(query).run(...bindValues);

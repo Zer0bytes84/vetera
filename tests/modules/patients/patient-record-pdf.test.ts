@@ -23,10 +23,9 @@ vi.mock("pdfjs-dist", async () => {
     getDocument: (options: Record<string, unknown>) =>
       actual.getDocument({
         ...options,
-        standardFontDataUrl:
-          resolve("node_modules/pdfjs-dist/standard_fonts") + "/",
-        cMapUrl: resolve("node_modules/pdfjs-dist/cmaps") + "/",
-        wasmUrl: resolve("node_modules/pdfjs-dist/wasm") + "/",
+        standardFontDataUrl: `${resolve("node_modules/pdfjs-dist/standard_fonts")}/`,
+        cMapUrl: `${resolve("node_modules/pdfjs-dist/cmaps")}/`,
+        wasmUrl: `${resolve("node_modules/pdfjs-dist/wasm")}/`,
       }),
   };
 });
@@ -113,8 +112,7 @@ async function withPdf<T>(
 ): Promise<T> {
   const task = getDocument({
     data: bytes.slice(),
-    standardFontDataUrl:
-      resolve("node_modules/pdfjs-dist/standard_fonts") + "/",
+    standardFontDataUrl: `${resolve("node_modules/pdfjs-dist/standard_fonts")}/`,
   });
   try {
     return await run(await task.promise);
@@ -682,8 +680,8 @@ it("intègre une image entière avec son rapport de proportions et les annotatio
         .getImageData(0, 0, canvas.width, canvas.height);
     };
     const panorama = await render(3);
-    let minX = Infinity,
-      minY = Infinity,
+    let minX = Number.POSITIVE_INFINITY,
+      minY = Number.POSITIVE_INFINITY,
       maxX = 0,
       maxY = 0,
       redLeft = false,
@@ -716,9 +714,9 @@ it("intègre une image entière avec son rapport de proportions et les annotatio
     expect(redLeft && redRight).toBe(true);
     const formImage = await render(4);
     let redPixels = 0,
-      redMinX = Infinity,
+      redMinX = Number.POSITIVE_INFINITY,
       redMaxX = 0,
-      redMinY = Infinity,
+      redMinY = Number.POSITIVE_INFINITY,
       redMaxY = 0;
     for (let y = 0; y < formImage.height; y++) {
       for (let x = 0; x < formImage.width; x++) {

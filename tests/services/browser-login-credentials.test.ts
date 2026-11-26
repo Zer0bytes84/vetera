@@ -96,7 +96,7 @@ it.each([
 ])("vérifie les anciens SHA-256 avec les vecteurs de référence (%s)", async (password) => {
   const hash = createHash("sha256").update(password).digest("hex");
   expect(await verifyPassword(password, hash)).toBe(true);
-  expect(await verifyPassword(password + "incorrect", hash)).toBe(false);
+  expect(await verifyPassword(`${password}incorrect`, hash)).toBe(false);
 });
 it("vérifie toujours les mots de passe bcrypt actuels", async () => {
   mock.user.passwordHash = await hashPassword("current-password");

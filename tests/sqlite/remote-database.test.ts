@@ -119,7 +119,7 @@ describe("poste secondaire sur le réseau local", () => {
       if (command === "clinic_network_launch_mode") {
         throw new Error("commande absente");
       }
-      return undefined;
+      return;
     });
     const { getDatabase } = await freshDatabaseModule();
 

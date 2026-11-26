@@ -56,7 +56,7 @@ export function headerFocusesClose(nodes: ReactNode[]) {
 
 export function modalSlotOf(node: ReactNode): ModalSlot | undefined {
   if (!isValidElement(node) || typeof node.type === "string") {
-    return undefined;
+    return;
   }
   return (node.type as { modalSlot?: ModalSlot }).modalSlot;
 }
