@@ -10,6 +10,9 @@
 
 import type { RefusalReason } from "./types";
 
+const RAW_DOSE_UNIT = /[µμ]g|мг|мл|ملغ|جرعة/iu;
+const STARTS_WITH_CANCEL = /^annul/;
+
 export const MAX_QUESTION_LENGTH = 300;
 
 /** Lower case, no accents, words separated by single spaces. « 5mg » stays one word, « mg/kg » keeps its slash. */
@@ -50,7 +53,7 @@ export const isDoseQuestion = (raw: string, normalized: string) =>
   has(normalized, DOSE_WORDS) ||
   has(normalized, DOSE_AMOUNT) ||
   has(normalized, DOSE_FORMS) ||
-  /[µμ]g|мг|мл|ملغ|جرعة/iu.test(raw);
+  RAW_DOSE_UNIT.test(raw);
 
 /* ── Reminders ────────────────────────────────────────────────────────── */
 
@@ -86,7 +89,7 @@ export function isWriteRequest(normalized: string): boolean {
   const reading =
     has(normalized, CANCELLED_NOUN) &&
     !has(normalized, POLITE) &&
-    !/^annul/.test(normalized);
+    !STARTS_WITH_CANCEL.test(normalized);
   return !reading;
 }
 

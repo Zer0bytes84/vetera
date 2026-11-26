@@ -31,6 +31,9 @@ import "./patient-record-export.css";
 import { DatePicker } from "@/components/ui/date-picker";
 import { guard, guardSync } from "@/lib/guard";
 
+const USER_FACING_MESSAGE =
+  /^(?:L[’']|Le |La |Les |Un |Une |Choisissez |Connectez|Votre |Ce |Cet|Sélectionnez |Aucun|Vérifiez|Réduisez|Impossible |Indiquez )/u;
+
 const loadPatientRecordService = () => import("./patient-record-service");
 const loadPatientRecordPdf = () => import("./patient-record-pdf");
 const loadPatientRecordSave = () => import("./patient-record-save");
@@ -69,10 +72,7 @@ const SECTIONS: Array<{
 ];
 
 function userMessage(error: unknown, fallback: string): string {
-  return error instanceof Error &&
-    /^(?:L[’']|Le |La |Les |Un |Une |Choisissez |Connectez|Votre |Ce |Cet|Sélectionnez |Aucun|Vérifiez|Réduisez|Impossible |Indiquez )/u.test(
-      error.message
-    )
+  return error instanceof Error && USER_FACING_MESSAGE.test(error.message)
     ? error.message
     : fallback;
 }

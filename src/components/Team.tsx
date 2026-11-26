@@ -72,6 +72,8 @@ import {
 import Avatar from "./Avatar";
 import { readTeam } from "./team-reading";
 
+const DIRECT_AVATAR_URL = /^(https?:|data:|blob:|\/)/;
+
 const ROLE_CONFIG: Record<
   UserRole | string,
   { label: string; color: string; bg: string; icon: typeof ShieldCheckIcon }
@@ -545,7 +547,7 @@ const Team: React.FC = () => {
                     {/* Top Row: Info */}
                     <div className="flex items-start justify-between">
                       <div className="flex items-center gap-4">
-                        {/^(https?:|data:|blob:|\/)/.test(resolvedAvatar) ? (
+                        {DIRECT_AVATAR_URL.test(resolvedAvatar) ? (
                           <Avatar
                             name={user.displayName}
                             size="lg"

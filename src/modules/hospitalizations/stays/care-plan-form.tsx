@@ -14,6 +14,8 @@ import { StayDateTimeField } from "./stay-date-time-field";
 import type { CarePlan } from "./store";
 import { announceStaysChanged } from "./use-stays";
 
+const TIME_LIST_SEPARATOR = /[,;\s]+/;
+
 function localDate(value?: string) {
   if (!value) {
     return "";
@@ -45,7 +47,7 @@ export function CarePlanForm({
     [note, setNote] = useState(plan?.note || "");
   const [error, setError] = useState<string | null>(null),
     [busy, setBusy] = useState(false);
-  const hours = times.split(/[,;\s]+/).filter(Boolean);
+  const hours = times.split(TIME_LIST_SEPARATOR).filter(Boolean);
   let count = 0,
     validation = "";
   guardSync(

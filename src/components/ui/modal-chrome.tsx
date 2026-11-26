@@ -14,6 +14,9 @@ import {
 import { createPortal } from "react-dom";
 import { XIcon } from "@/lib/icons";
 
+const FOOTER_META_CLASS =
+  /\b(modal-medical-footer-meta|patient-export-footer-hint)\b/;
+
 /*
  * La charte des fenêtres : celle des cartes de l'application (`Shell` / `Panel` de surface.tsx). La fenêtre est le cadre
  * gris (`--card-band`) ; sa première bande porte l'en-tête (tuile d'icône, titre, sous-titre), les actions en pilules à
@@ -137,9 +140,7 @@ function isFooterMeta(node: ReactNode) {
   }
   return (
     typeof node.props.className === "string" &&
-    /\b(modal-medical-footer-meta|patient-export-footer-hint)\b/.test(
-      node.props.className
-    )
+    FOOTER_META_CLASS.test(node.props.className)
   );
 }
 

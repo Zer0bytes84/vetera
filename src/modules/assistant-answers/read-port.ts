@@ -28,20 +28,25 @@ const SNAPSHOT_STATEMENTS = new Set([
   "ROLLBACK",
 ]);
 const leadingComments = /^(?:\s|--[^\n]*\n|\/\*[\s\S]*?\*\/)*/;
+const TRAILING_SEMICOLON = /;\s*$/;
+const READ_KEYWORD = /^(?:SELECT|WITH)\b/i;
+const WRITE_KEYWORD =
+  /\b(?:INSERT|UPDATE|DELETE|REPLACE|DROP|ALTER|CREATE|ATTACH|DETACH|PRAGMA|VACUUM|REINDEX)\b/i;
 
 /** A single statement that starts with SELECT or WITH and writes nothing. */
 export function isReadStatement(query: string): boolean {
-  const body = query.replace(leadingComments, "").trim().replace(/;\s*$/, "");
-  if (!/^(?:SELECT|WITH)\b/i.test(body)) {
+  const body = query
+    .replace(leadingComments, "")
+    .trim()
+    .replace(TRAILING_SEMICOLON, "");
+  if (!READ_KEYWORD.test(body)) {
     return false;
   }
   if (body.includes(";")) {
     return false;
   }
   // A WITH clause may hide a write (WITH x AS (...) DELETE ...).
-  return !/\b(?:INSERT|UPDATE|DELETE|REPLACE|DROP|ALTER|CREATE|ATTACH|DETACH|PRAGMA|VACUUM|REINDEX)\b/i.test(
-    body
-  );
+  return !WRITE_KEYWORD.test(body);
 }
 
 export interface ReadCounter {

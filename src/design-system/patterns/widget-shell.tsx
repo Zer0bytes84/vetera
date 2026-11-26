@@ -1,6 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import { Panel, Shell, ShellHeader } from "@/components/ui/surface";
+import { WHITESPACE_RUN } from "@/lib/patterns";
 import { cn } from "@/lib/utils";
 import { SkeletonBlock } from "../primitives";
 import { ErrorState } from "./error-state";
@@ -39,7 +40,7 @@ export function WidgetShell({
   const busy = pending || showSkeleton;
   // The legacy `frame` / `card` classes drew a square box: the widget is a rounded shell now, as on the dashboard.
   const own = (className ?? "")
-    .split(/\s+/)
+    .split(WHITESPACE_RUN)
     .filter((token) => token && token !== "frame" && token !== "card")
     .join(" ");
   return (

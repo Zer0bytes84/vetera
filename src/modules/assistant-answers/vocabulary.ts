@@ -11,6 +11,8 @@
 
 import { normalize } from "./language";
 
+const WHITESPACE_RUN = /\s+/;
+
 /** Phrases read as a whole, removed before the words are counted. Periods first: they are what parsePeriod reads. */
 const MONTHS =
   "janvier|fevrier|mars|avril|mai|juin|juillet|aout|septembre|octobre|novembre|decembre";
@@ -320,7 +322,7 @@ export function understood(
       ([subject, words]) => subject !== topic && words.has(word)
     );
   const left = rest
-    .split(/\s+/)
+    .split(WHITESPACE_RUN)
     .filter(Boolean)
     .filter(
       (word) =>

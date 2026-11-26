@@ -32,15 +32,15 @@ import "../export/patient-record-export.css";
 import { guard } from "@/lib/guard";
 import { buildHealthCard } from "./health-card-data";
 
+const USER_FACING_MESSAGE =
+  /^(?:L[’']|Le |La |Les |Une |Un |Votre |Connectez|Impossible )/u;
+
 const loadHealthCardPdf = () => import("./health-card-pdf");
 const loadExportPatientRecordSave = () =>
   import("../export/patient-record-save");
 
 function message(error: unknown, fallback: string): string {
-  return error instanceof Error &&
-    /^(?:L[’']|Le |La |Les |Une |Un |Votre |Connectez|Impossible )/u.test(
-      error.message
-    )
+  return error instanceof Error && USER_FACING_MESSAGE.test(error.message)
     ? error.message
     : fallback;
 }

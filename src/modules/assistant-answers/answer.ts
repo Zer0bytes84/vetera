@@ -42,6 +42,21 @@ import type {
 } from "./types";
 import { understood as understoodInFull } from "./vocabulary";
 
+const CASH_INCOME_WORDS =
+  /\b(recette|recettes|encaisse|encaisses|encaissement|encaissements|chiffre d affaires|revenu|revenus|gagne|rentrees)\b/;
+const EXPENSE_WORDS = /\b(depense|depenses|charge|charges)\b/;
+const ABSENCE_WORDS = /\b(absence|absences|absent|absents|absente|absentes)\b/;
+const OVERDUE_WORDS = /\b(retard|depasse|depasses|depassee|depassees)\b/;
+const NEW_PATIENT_WORDS =
+  /\b(nouveau|nouveaux|nouvelle|nouvelles|crees|ouverts|inscrits)\b/;
+const DIGIT = /\d/;
+const PICTOGRAPH = /\p{Extended_Pictographic}/u;
+const LETTER = /\p{L}/u;
+const LATIN_LETTER = /\p{Script=Latin}/u;
+const BUSY_WORD = /charg(?:é|ée|és|ées)(?![\p{L}\p{N}])/iu;
+const RECETTE_WORD = /\brecette\b/;
+const GAGNE_WORD = /\bgagne\b/;
+
 export const STARTER_QUESTIONS = [
   "Recettes des 30 derniers jours",
   "Rendez-vous d’aujourd’hui",
@@ -261,9 +276,9 @@ export function answerQuestion(
   // The normalized text keeps only Latin letters: another script or an emoji would vanish from it, and the rest of the
   // question would look understood (« rendez-vous demain مل »). The tab reads French only, and says so.
   if (
-    /\p{Extended_Pictographic}/u.test(clipped) ||
+    PICTOGRAPH.test(clipped) ||
     [...clipped.normalize("NFKC")].some(
-      (char) => /\p{L}/u.test(char) && !/\p{Script=Latin}/u.test(char)
+      (char) => LETTER.test(char) && !LATIN_LETTER.test(char)
     )
   ) {
     return refuse(
@@ -289,9 +304,7 @@ export function answerQuestion(
     text.replace(THIS_PATIENT, " ")
   );
   // « On est chargé(s) » (busy) is not « les charges »: the accent the vet typed tells them apart, the normalized text cannot.
-  const busy = /charg(?:é|ée|és|ées)(?![\p{L}\p{N}])/iu.test(
-    clipped.normalize("NFC")
-  );
+  const busy = BUSY_WORD.test(clipped.normalize("NFC"));
   const subjectText = busy ? bare.replace(/\bcharges?\b/g, " ") : bare;
   const named: Topic[] = TOPIC_WORDS.filter((entry) =>
     has(subjectText, entry.pattern)
@@ -299,14 +312,13 @@ export function answerQuestion(
   // « Recette » in the singular is the cash journal only with a period (« recette du jour »), never « recette de couscous ».
   const cashWord =
     has(subjectText, EARNINGS) ||
-    (has(subjectText, /\brecette\b/) &&
-      parsePeriod(text, context.now) !== null);
+    (has(subjectText, RECETTE_WORD) && parsePeriod(text, context.now) !== null);
   if (cashWord && !named.includes("cash")) {
     named.unshift("cash");
   }
   // « On a gagné combien de patients » counts patients, not takings: two readings, no answer.
   if (
-    has(subjectText, /\bgagne\b/) &&
+    has(subjectText, GAGNE_WORD) &&
     has(subjectText, PATIENT_WORDS) &&
     !named.includes("patients")
   ) {
@@ -413,11 +425,8 @@ function cash({
   understood,
 }: Build): Built {
   const period = asked ?? lastThirtyDays(now);
-  const wantsIncome = has(
-    text,
-    /\b(recette|recettes|encaisse|encaisses|encaissement|encaissements|chiffre d affaires|revenu|revenus|gagne|rentrees)\b/
-  );
-  const wantsExpense = has(text, /\b(depense|depenses|charge|charges)\b/);
+  const wantsIncome = has(text, CASH_INCOME_WORDS);
+  const wantsExpense = has(text, EXPENSE_WORDS);
   const both = wantsIncome === wantsExpense;
   // The rule of the dashboard's « Trésorerie » figure and of the journal: settled lines only, by the date of the line.
   const settled = data.transactions.filter(
@@ -591,10 +600,7 @@ function appointments({
   scope,
   understood,
 }: Build): Built {
-  const missedOnly = has(
-    text,
-    /\b(absence|absences|absent|absents|absente|absentes)\b/
-  );
+  const missedOnly = has(text, ABSENCE_WORDS);
   const period = asked ?? lastThirtyDays(now);
   const patients = new Map(
     data.patients.map((patient) => [patient.id, patient])
@@ -775,10 +781,7 @@ function tasks({
   understood,
 }: Build): Built {
   const today = startOfDay(now);
-  const lateOnly = has(
-    text,
-    /\b(retard|depasse|depasses|depassee|depassees)\b/
-  );
+  const lateOnly = has(text, OVERDUE_WORDS);
   const patients = new Map(
     data.patients.map((patient) => [patient.id, patient])
   );
@@ -915,11 +918,7 @@ function patients({
   period: asked,
   understood,
 }: Build): Built {
-  const fresh =
-    has(
-      text,
-      /\b(nouveau|nouveaux|nouvelle|nouvelles|crees|ouverts|inscrits)\b/
-    ) || asked !== null;
+  const fresh = has(text, NEW_PATIENT_WORDS) || asked !== null;
   if (fresh) {
     const period = asked ?? lastThirtyDays(now);
     const owners = new Map(data.owners.map((owner) => [owner.id, owner]));
@@ -1115,7 +1114,7 @@ export function verifyAnswer(answer: Answer): Answer {
   }
   for (const [index, template] of answer.templates.entries()) {
     // The default-period note carries « 30 » on purpose: it is a rule of the tab, not a computed figure.
-    if (/\d/.test(template.split(DEFAULT_PERIOD_NOTE).join(""))) {
+    if (DIGIT.test(template.split(DEFAULT_PERIOD_NOTE).join(""))) {
       return fail();
     }
     let written_: string;

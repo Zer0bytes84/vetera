@@ -51,6 +51,7 @@ import {
   StarIcon,
 } from "@/lib/hugeicons";
 import { BookOpen, Check, ChevronDown, Pin, Star } from "@/lib/icons";
+import { WHITESPACE_RUN } from "@/lib/patterns";
 import { AssistantBrandAvatar } from "@/modules/consultations/components/assistant-brand-avatar";
 import {
   dataUrlToBlob,
@@ -675,7 +676,7 @@ const NotesPro: React.FC = () => {
   // Word count
   const wordCount = useMemo(() => {
     const text = content.replace(/<[^>]*>?/gm, "");
-    return text.trim().split(/\s+/).filter(Boolean).length;
+    return text.trim().split(WHITESPACE_RUN).filter(Boolean).length;
   }, [content]);
 
   // The assistant, as a quiet icon beside the « + » of the list. No templates: a page starts blank.

@@ -22,6 +22,7 @@ import {
 } from "@/data/repositories";
 import { parseStockQuantityInput } from "@/domain/stock";
 import { guard } from "@/lib/guard";
+import { TIME_HH_MM } from "@/lib/patterns";
 import { ProductStockFields } from "@/modules/stock/components/product-stock-fields";
 import { ChevronDown } from "./care-icons";
 import { CareTimePicker } from "./care-time-picker";
@@ -60,7 +61,7 @@ export function CareTaskForm({
   const [scheduledDate, setScheduledDate] = useState("");
   const [scheduledTime, setScheduledTime] = useState("");
   const scheduled =
-    scheduledDate && /^([01]\d|2[0-3]):[0-5]\d$/.test(scheduledTime.trim())
+    scheduledDate && TIME_HH_MM.test(scheduledTime.trim())
       ? `${scheduledDate}T${scheduledTime.trim()}`
       : "";
   const [product, setProduct] = useState("");
@@ -84,7 +85,7 @@ export function CareTaskForm({
         if (
           scheduledDate &&
           scheduledTime &&
-          !/^([01]\d|2[0-3]):[0-5]\d$/.test(scheduledTime.trim())
+          !TIME_HH_MM.test(scheduledTime.trim())
         ) {
           setError(
             "Saisissez une heure au format 24 heures, par exemple 12:30."
