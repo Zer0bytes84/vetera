@@ -48,6 +48,34 @@ const eventLabels: Record<string, string> = {
   import: "Import d’une pièce",
 };
 
+function documentStatusNotice(document: PatientDocument) {
+  switch (document.status) {
+    case "annule":
+      return (
+        <p className="text-destructive text-sm">
+          Document annulé : {document.cancellationReason}
+        </p>
+      );
+    case "brouillon":
+      return (
+        <p className="text-muted-foreground text-sm">
+          Relisez l’aperçu avant de finaliser. Le brouillon ne peut pas être
+          imprimé ni exporté.
+        </p>
+      );
+    default:
+      return (
+        <p className="text-muted-foreground text-sm">
+          Document finalisé le{" "}
+          {new Date(
+            document.finalizedAt || document.createdAt
+          ).toLocaleDateString("fr-FR")}
+          . Son contenu est conservé.
+        </p>
+      );
+  }
+}
+
 export function DocumentPreviewDialog({
   documentId,
   onClose,
@@ -228,24 +256,7 @@ export function DocumentPreviewDialog({
           <>
             <div className="document-preview-body">
               <aside className="document-preview-tools">
-                {document.status === "annule" ? (
-                  <p className="text-destructive text-sm">
-                    Document annulé : {document.cancellationReason}
-                  </p>
-                ) : document.status === "brouillon" ? (
-                  <p className="text-muted-foreground text-sm">
-                    Relisez l’aperçu avant de finaliser. Le brouillon ne peut
-                    pas être imprimé ni exporté.
-                  </p>
-                ) : (
-                  <p className="text-muted-foreground text-sm">
-                    Document finalisé le{" "}
-                    {new Date(
-                      document.finalizedAt || document.createdAt
-                    ).toLocaleDateString("fr-FR")}
-                    . Son contenu est conservé.
-                  </p>
-                )}
+                {documentStatusNotice(document)}
                 {document.status === "brouillon" && (
                   <>
                     {editing ? (

@@ -40,6 +40,28 @@ export function recordDate(value?: string | null, withTime = false) {
   });
 }
 
+function sexLabelOf(sex: Patient["sex"]): "Mâle" | "Femelle" | null {
+  switch (sex) {
+    case "M":
+      return "Mâle";
+    case "F":
+      return "Femelle";
+    default:
+      return null;
+  }
+}
+
+function sexSymbolOf(sex: Patient["sex"]): "♂" | "♀" | "" {
+  switch (sex) {
+    case "M":
+      return "♂";
+    case "F":
+      return "♀";
+    default:
+      return "";
+  }
+}
+
 export function PatientIdentity({
   patient,
   owner,
@@ -57,9 +79,8 @@ export function PatientIdentity({
   const ageLabel = age ? formatAgeFr(age) : null;
   const status = getPatientStatusMeta(patient.status);
   const speciesTheme = getSpeciesTheme(patient.species);
-  const sexLabel =
-    patient.sex === "M" ? "Mâle" : patient.sex === "F" ? "Femelle" : null;
-  const sexSymbol = patient.sex === "M" ? "♂" : patient.sex === "F" ? "♀" : "";
+  const sexLabel = sexLabelOf(patient.sex);
+  const sexSymbol = sexSymbolOf(patient.sex);
 
   return (
     <div
@@ -307,6 +328,26 @@ export function OwnerContact({
   );
 }
 
+function nextTabIndex(
+  event: KeyboardEvent<HTMLDivElement>,
+  index: number,
+  tabs: readonly unknown[]
+): number {
+  switch (event.key) {
+    case "Home":
+      return 0;
+    case "End":
+      return tabs.length - 1;
+    default:
+      return (
+        (index +
+          (event.key === "ArrowRight" || event.key === "ArrowDown" ? 1 : -1) +
+          tabs.length) %
+        tabs.length
+      );
+  }
+}
+
 export function handleRecordTabKeys(event: KeyboardEvent<HTMLDivElement>) {
   const keys = [
     "ArrowLeft",
@@ -327,15 +368,7 @@ export function handleRecordTabKeys(event: KeyboardEvent<HTMLDivElement>) {
     return;
   }
   event.preventDefault();
-  const next =
-    event.key === "Home"
-      ? 0
-      : event.key === "End"
-        ? tabs.length - 1
-        : (index +
-            (event.key === "ArrowRight" || event.key === "ArrowDown" ? 1 : -1) +
-            tabs.length) %
-          tabs.length;
+  const next = nextTabIndex(event, index, tabs);
   tabs[next]?.focus();
   tabs[next]?.click();
   tabs[next]?.scrollIntoView({ block: "nearest", inline: "nearest" });

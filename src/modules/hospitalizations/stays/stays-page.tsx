@@ -29,6 +29,17 @@ const labels: Record<StayStatus, string> = {
   sorti: "Sorti",
   annule: "Annulé",
 };
+function locationTypeLabel(type: "box" | "cage" | "chenil"): string {
+  switch (type) {
+    case "box":
+      return "Box";
+    case "cage":
+      return "Cage";
+    default:
+      return "Chenil";
+  }
+}
+
 export default function StaysPage({
   patientId,
   initialStayId,
@@ -192,11 +203,7 @@ export default function StaysPage({
                     <div className="flex items-center justify-between gap-3">
                       <h2 className="t-16 font-medium">{location.name}</h2>
                       <span className="t-12 text-muted-foreground">
-                        {location.type === "box"
-                          ? "Box"
-                          : location.type === "cage"
-                            ? "Cage"
-                            : "Chenil"}
+                        {locationTypeLabel(location.type)}
                       </span>
                     </div>
                     <p className="t-14 mt-4">

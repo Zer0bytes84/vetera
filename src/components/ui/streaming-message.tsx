@@ -57,6 +57,17 @@ const fold = {
   exit: { opacity: 0, height: 0, transition: leave },
 };
 
+function streamingAnnouncement(status: StreamingMessageData["status"]): string {
+  switch (status) {
+    case "done":
+      return "Réponse terminée";
+    case "error":
+      return "Réponse en échec";
+    default:
+      return "";
+  }
+}
+
 export function StreamingMessage({
   data,
   model = "Assistant IA",
@@ -155,11 +166,7 @@ export function StreamingMessage({
           </AnimatePresence>
         </div>
         <p aria-live="polite" className="sr-only" role="status">
-          {status === "done"
-            ? "Réponse terminée"
-            : status === "error"
-              ? "Réponse en échec"
-              : ""}
+          {streamingAnnouncement(status)}
         </p>
       </article>
     </MotionConfig>

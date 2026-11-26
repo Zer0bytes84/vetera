@@ -7,6 +7,19 @@ export interface Box {
   top: number;
 }
 
+function alongDistance(direction: Direction, from: Box, box: Box): number {
+  switch (direction) {
+    case "right":
+      return box.left - from.right;
+    case "left":
+      return from.left - box.right;
+    case "down":
+      return box.top - from.bottom;
+    default:
+      return from.top - box.bottom;
+  }
+}
+
 /**
  * The card an arrow key should reach: the nearest one in that direction on
  * screen, favouring cards in line with the current one. Works the same in
@@ -28,14 +41,7 @@ export function nearestInDirection<T extends { box: Box }>(
     const cx = (box.left + box.right) / 2;
     const cy = (box.top + box.bottom) / 2;
     // Edge distance along the arrow, so touching neighbours count as next.
-    const along =
-      direction === "right"
-        ? box.left - from.right
-        : direction === "left"
-          ? from.left - box.right
-          : direction === "down"
-            ? box.top - from.bottom
-            : from.top - box.bottom;
+    const along = alongDistance(direction, from, box);
     if (along < -4) {
       continue;
     }

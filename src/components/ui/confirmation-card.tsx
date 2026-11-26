@@ -68,6 +68,21 @@ export interface ConfirmationCardProps {
   status?: ConfirmationStatus;
 }
 
+function confirmationAnnouncement(
+  status: ConfirmationStatus,
+  confirmingLabel: string,
+  doneLabel: string
+): string {
+  switch (status) {
+    case "confirming":
+      return confirmingLabel;
+    case "done":
+      return doneLabel;
+    default:
+      return "";
+  }
+}
+
 export function ConfirmationCard({
   data,
   status = "review",
@@ -208,11 +223,7 @@ export function ConfirmationCard({
           )}
         </AnimatePresence>
         <p aria-live="polite" className="sr-only" role="status">
-          {status === "confirming"
-            ? confirmingLabel
-            : status === "done"
-              ? doneLabel
-              : ""}
+          {confirmationAnnouncement(status, confirmingLabel, doneLabel)}
         </p>
       </Shell>
     </MotionConfig>

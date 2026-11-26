@@ -69,6 +69,19 @@ export function PatientPortrait({
     </span>
   );
 }
+function rowToneClass(
+  tone: "positive" | "watch" | "quiet" | undefined
+): string {
+  switch (tone) {
+    case "positive":
+      return "text-[color:var(--premium-green,var(--signal-positive))]";
+    case "watch":
+      return "text-[color:var(--premium-orange,var(--signal-watch))]";
+    default:
+      return "text-ink";
+  }
+}
+
 export function ModuleTotals({
   values,
 }: {
@@ -78,12 +91,16 @@ export function ModuleTotals({
     tone?: "positive" | "watch" | "quiet";
   }[];
 }) {
-  const dotColor = (index: number) =>
-    index === 0
-      ? "finder-dot-blue"
-      : index === 1
-        ? "finder-dot-orange"
-        : "finder-dot-red";
+  const dotColor = (index: number) => {
+    switch (index) {
+      case 0:
+        return "finder-dot-blue";
+      case 1:
+        return "finder-dot-orange";
+      default:
+        return "finder-dot-red";
+    }
+  };
   return (
     <dl className="module-totals-grid flex flex-wrap gap-x-6 gap-y-3 border-hairline border-b pb-4">
       {values.map((row, index) => (
@@ -92,7 +109,7 @@ export function ModuleTotals({
           key={row.label}
         >
           <dd
-            className={`t-18 font-display font-medium tabular-nums ${row.tone === "positive" ? "text-[color:var(--premium-green,var(--signal-positive))]" : row.tone === "watch" ? "text-[color:var(--premium-orange,var(--signal-watch))]" : "text-ink"}`}
+            className={`t-18 font-display font-medium tabular-nums ${rowToneClass(row.tone)}`}
           >
             {row.value}
           </dd>

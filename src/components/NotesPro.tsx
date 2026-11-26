@@ -231,6 +231,17 @@ function PatientPicker({
   );
 }
 
+function deletedEntryName(kind: LibraryEntry["kind"]): string {
+  switch (kind) {
+    case "link":
+      return "ce lien";
+    case "image":
+      return "cette image";
+    default:
+      return "ce fichier";
+  }
+}
+
 const NotesPro: React.FC = () => {
   const { currentUser } = useAuth();
   const {
@@ -512,12 +523,7 @@ const NotesPro: React.FC = () => {
     if (!entry.item) {
       return;
     }
-    const what =
-      entry.kind === "link"
-        ? "ce lien"
-        : entry.kind === "image"
-          ? "cette image"
-          : "ce fichier";
+    const what = deletedEntryName(entry.kind);
     if (!window.confirm(`Supprimer ${what} ?`)) {
       return;
     }

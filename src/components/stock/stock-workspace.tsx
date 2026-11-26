@@ -576,6 +576,23 @@ function MaybeShell({
   );
 }
 
+function movementSourceLabel(source: StockMovement["sourceType"]): string {
+  switch (source) {
+    case "care":
+      return "Soin";
+    case "prescription":
+      return "Ordonnance";
+    case "consultation":
+      return "Consultation";
+    case "transfer":
+      return "Transfert";
+    case "receipt":
+      return "Réception";
+    default:
+      return "Stock";
+  }
+}
+
 export function StockWorkspace({
   actions,
   loading,
@@ -1099,18 +1116,7 @@ export function StockWorkspace({
                             </TableCell>
                             <TableCell className="text-muted-foreground">
                               <span className="block">
-                                {movement.sourceType === "care"
-                                  ? "Soin"
-                                  : movement.sourceType === "prescription"
-                                    ? "Ordonnance"
-                                    : movement.sourceType === "consultation"
-                                      ? "Consultation"
-                                      : movement.sourceType === "transfer"
-                                        ? "Transfert"
-                                        : movement.sourceType === "receipt"
-                                          ? "Réception"
-                                          : "Stock"}{" "}
-                                ·{" "}
+                                {movementSourceLabel(movement.sourceType)} ·{" "}
                                 {movement.sourceLabel ||
                                   movement.reason ||
                                   "Non renseigné"}

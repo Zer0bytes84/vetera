@@ -72,6 +72,19 @@ const parseCost = (value: string) =>
     ? toCentimes(Number(value.replace(",", ".")))
     : Number.NaN;
 
+function supplierFieldType(
+  key: "name" | "phone" | "email" | "address"
+): "email" | "tel" | "text" {
+  switch (key) {
+    case "email":
+      return "email";
+    case "phone":
+      return "tel";
+    default:
+      return "text";
+  }
+}
+
 function SupplierForm({
   supplier,
   onClose,
@@ -142,9 +155,7 @@ function SupplierForm({
                   [key]: event.target.value,
                 }))
               }
-              type={
-                key === "email" ? "email" : key === "phone" ? "tel" : "text"
-              }
+              type={supplierFieldType(key)}
               value={draft[key]}
             />
           </div>

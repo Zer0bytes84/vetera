@@ -280,37 +280,10 @@ export function PatientRecordExportDialog({
     );
   };
   const hasContent = attachments || Object.values(sections).some(Boolean);
-
-  return (
-    <Dialog
-      onOpenChange={(open) => {
-        if (!open) {
-          close();
-        }
-      }}
-      open
-    >
-      <FormDialogContent
-        className={`patient-export-dialog${phase === "preview" ? "patient-export-dialog-preview" : ""}`}
-        size={phase === "preview" ? "xl" : "md"}
-      >
-        <FormDialogHeader
-          compact
-          description={
-            phase === "preview"
-              ? `${artifact?.patientName ?? patientName} · Relisez le document avant de l’enregistrer ou de l’imprimer.`
-              : `${patientName} · Choisissez la période et le contenu du dossier.`
-          }
-          icon={
-            <FileText aria-hidden="true" className="size-5" strokeWidth={1} />
-          }
-          title={
-            phase === "preview"
-              ? "Aperçu du dossier patient"
-              : "Exporter le dossier en PDF"
-          }
-        />
-        {phase === "options" ? (
+  const renderPhase = () => {
+    switch (phase) {
+      case "options":
+        return (
           <form className="contents" onSubmit={(event) => void generate(event)}>
             <FormDialogBody className="patient-export-options">
               <fieldset className="patient-export-period-group">
@@ -424,7 +397,9 @@ export function PatientRecordExportDialog({
               </Button>
             </FormDialogFooter>
           </form>
-        ) : phase === "generating" ? (
+        );
+      case "generating":
+        return (
           <>
             <FormDialogBody
               aria-busy="true"
@@ -460,7 +435,9 @@ export function PatientRecordExportDialog({
               </Button>
             </FormDialogFooter>
           </>
-        ) : (
+        );
+      default:
+        return (
           artifact && (
             <>
               <FormDialogBody className="patient-export-preview-body">
@@ -550,7 +527,40 @@ export function PatientRecordExportDialog({
               </FormDialogFooter>
             </>
           )
-        )}
+        );
+    }
+  };
+
+  return (
+    <Dialog
+      onOpenChange={(open) => {
+        if (!open) {
+          close();
+        }
+      }}
+      open
+    >
+      <FormDialogContent
+        className={`patient-export-dialog${phase === "preview" ? "patient-export-dialog-preview" : ""}`}
+        size={phase === "preview" ? "xl" : "md"}
+      >
+        <FormDialogHeader
+          compact
+          description={
+            phase === "preview"
+              ? `${artifact?.patientName ?? patientName} · Relisez le document avant de l’enregistrer ou de l’imprimer.`
+              : `${patientName} · Choisissez la période et le contenu du dossier.`
+          }
+          icon={
+            <FileText aria-hidden="true" className="size-5" strokeWidth={1} />
+          }
+          title={
+            phase === "preview"
+              ? "Aperçu du dossier patient"
+              : "Exporter le dossier en PDF"
+          }
+        />
+        {renderPhase()}
       </FormDialogContent>
     </Dialog>
   );

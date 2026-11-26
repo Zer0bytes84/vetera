@@ -318,6 +318,32 @@ const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
   },
 ];
 
+function backupDialogTitle(
+  kind: "restore" | "delete" | "import" | undefined
+): string {
+  switch (kind) {
+    case "delete":
+      return "Supprimer cette sauvegarde ?";
+    case "restore":
+      return "Restaurer cette sauvegarde ?";
+    default:
+      return "Importer une base de données ?";
+  }
+}
+
+function backupDialogAction(
+  kind: "restore" | "delete" | "import" | undefined
+): string {
+  switch (kind) {
+    case "delete":
+      return "Supprimer";
+    case "restore":
+      return "Restaurer";
+    default:
+      return "Choisir le fichier";
+  }
+}
+
 // Backup Settings Component
 const BackupSettings: React.FC = () => {
   const [backups, setBackups] = useState<BackupInfo[]>([]);
@@ -575,11 +601,7 @@ const BackupSettings: React.FC = () => {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
-              {pending?.kind === "delete"
-                ? "Supprimer cette sauvegarde ?"
-                : pending?.kind === "restore"
-                  ? "Restaurer cette sauvegarde ?"
-                  : "Importer une base de données ?"}
+              {backupDialogTitle(pending?.kind)}
             </AlertDialogTitle>
             <AlertDialogDescription>
               {pending?.kind === "delete"
@@ -607,11 +629,7 @@ const BackupSettings: React.FC = () => {
               onClick={confirmPending}
               variant={pending?.kind === "delete" ? "destructive" : "default"}
             >
-              {pending?.kind === "delete"
-                ? "Supprimer"
-                : pending?.kind === "restore"
-                  ? "Restaurer"
-                  : "Choisir le fichier"}
+              {backupDialogAction(pending?.kind)}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

@@ -993,6 +993,27 @@ function patients({
   };
 }
 
+function tiedTotal(
+  tie: "rows" | "income" | "expense" | "sum",
+  table: { rows: readonly unknown[] },
+  amounts: number[]
+): number {
+  switch (tie) {
+    case "rows":
+      return table.rows.length;
+    case "income":
+      return amounts
+        .filter((amount) => amount > 0)
+        .reduce((sum, amount) => sum + amount, 0);
+    case "expense":
+      return -amounts
+        .filter((amount) => amount < 0)
+        .reduce((sum, amount) => sum + amount, 0);
+    default:
+      return amounts.reduce((sum, amount) => sum + amount, 0);
+  }
+}
+
 /* ── Verification ─────────────────────────────────────────────────────── */
 
 /**
@@ -1058,18 +1079,7 @@ export function verifyAnswer(answer: Answer): Answer {
     const amounts = table.rows.map((row) =>
       Number(row.amount ?? row.count ?? 0)
     );
-    const expected =
-      figure.tie === "rows"
-        ? table.rows.length
-        : figure.tie === "income"
-          ? amounts
-              .filter((amount) => amount > 0)
-              .reduce((sum, amount) => sum + amount, 0)
-          : figure.tie === "expense"
-            ? -amounts
-                .filter((amount) => amount < 0)
-                .reduce((sum, amount) => sum + amount, 0)
-            : amounts.reduce((sum, amount) => sum + amount, 0);
+    const expected = tiedTotal(figure.tie, table, amounts);
     if (expected !== figure.value) {
       return fail();
     }

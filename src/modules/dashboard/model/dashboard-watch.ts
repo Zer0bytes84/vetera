@@ -230,6 +230,17 @@ const STAY_LABEL: Partial<Record<Hospitalization["status"], string>> = {
   critical: "État critique",
 };
 
+function stayTone(status: Hospitalization["status"]): WatchTone {
+  switch (status) {
+    case "critical":
+      return "critical";
+    case "monitoring":
+      return "warning";
+    default:
+      return "neutral";
+  }
+}
+
 export function buildHospitalizedWatch({
   limit = 4,
   now,
@@ -260,11 +271,7 @@ export function buildHospitalizedWatch({
           .filter(Boolean)
           .join(" · "),
         patientId: stay.patientId,
-        tone: (stay.status === "critical"
-          ? "critical"
-          : stay.status === "monitoring"
-            ? "warning"
-            : "neutral") as WatchTone,
+        tone: stayTone(stay.status),
         order: admitted?.getTime() ?? 0,
       },
     ];

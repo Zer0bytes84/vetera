@@ -91,6 +91,19 @@ function calendarDays(range: AnalyticsRange) {
   );
 }
 
+function periodDays(period: DashboardPeriod): 1 | 7 | 30 | 90 {
+  switch (period) {
+    case "today":
+      return 1;
+    case "7d":
+      return 7;
+    case "30d":
+      return 30;
+    default:
+      return 90;
+  }
+}
+
 export function analyticsRanges(
   period: DashboardPeriod,
   now: Date,
@@ -112,8 +125,7 @@ export function analyticsRanges(
     };
   }
   const to = endOfDay(now);
-  const days =
-    period === "today" ? 1 : period === "7d" ? 7 : period === "30d" ? 30 : 90;
+  const days = periodDays(period);
   const from =
     period === "12m"
       ? new Date(now.getFullYear() - 1, now.getMonth(), now.getDate() + 1)

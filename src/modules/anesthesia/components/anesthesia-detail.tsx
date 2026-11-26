@@ -43,6 +43,17 @@ import { AnesthesiaDrugLogEntryDialog } from "./anesthesia-drug-log-entry-dialog
 import { AnesthesiaMonitoringEntryDialog } from "./anesthesia-monitoring-entry-dialog";
 import { AnesthesiaStatusBadge } from "./anesthesia-status-badge";
 
+function statusIcon(s: AnesthesiaStatus) {
+  switch (s) {
+    case "in_progress":
+      return <Play className="mr-1 inline-block size-3" weight="fill" />;
+    case "completed":
+      return <Stop className="mr-1 inline-block size-3" weight="fill" />;
+    default:
+      return null;
+  }
+}
+
 export function AnesthesiaDetail({
   sheet,
   patient,
@@ -226,11 +237,7 @@ export function AnesthesiaDetail({
                   onClick={() => void handleStatusChange(s)}
                   type="button"
                 >
-                  {s === "in_progress" ? (
-                    <Play className="mr-1 inline-block size-3" weight="fill" />
-                  ) : s === "completed" ? (
-                    <Stop className="mr-1 inline-block size-3" weight="fill" />
-                  ) : null}
+                  {statusIcon(s)}
                   {t(`modules.anesthesia.status.${s}`, s)}
                 </button>
               ))}

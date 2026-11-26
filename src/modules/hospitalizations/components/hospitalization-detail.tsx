@@ -387,6 +387,21 @@ export function HospitalizationDetail({
   );
 }
 
+function vitalToneClass(
+  colorTone: "destructive" | "warning" | "neutral" | "success"
+): string {
+  switch (colorTone) {
+    case "destructive":
+      return "border-rose-500/40 bg-rose-500/5";
+    case "warning":
+      return "border-amber-500/40 bg-amber-500/5";
+    case "success":
+      return "border-emerald-500/40 bg-emerald-500/5";
+    default:
+      return "border-border/40 bg-muted/20";
+  }
+}
+
 function VitalCell({
   icon,
   label,
@@ -401,14 +416,7 @@ function VitalCell({
   tone?: "success" | "warning" | "destructive" | "neutral";
 }) {
   const colorTone = tone ?? (critical ? "destructive" : "neutral");
-  const bgClass =
-    colorTone === "destructive"
-      ? "border-rose-500/40 bg-rose-500/5"
-      : colorTone === "warning"
-        ? "border-amber-500/40 bg-amber-500/5"
-        : colorTone === "success"
-          ? "border-emerald-500/40 bg-emerald-500/5"
-          : "border-border/40 bg-muted/20";
+  const bgClass = vitalToneClass(colorTone);
   return (
     <div className={cn("rounded-lg border p-3", bgClass)}>
       <p className="t-12 flex items-center gap-1 font-mono text-muted-foreground uppercase tracking-[0.06em]">

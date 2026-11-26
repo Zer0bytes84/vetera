@@ -246,6 +246,32 @@ export interface NotificationCenterProps {
   open?: boolean;
 }
 
+function filterLabel(
+  option: NotificationFilter,
+  unreadCount: number,
+  criticalCount: number
+): string {
+  switch (option) {
+    case "all":
+      return "Toutes";
+    case "unread":
+      return `Non lues${unreadCount > 0 ? ` (${unreadCount})` : ""}`;
+    default:
+      return `Critiques${criticalCount > 0 ? ` (${criticalCount})` : ""}`;
+  }
+}
+
+function emptyFilterTitle(filter: NotificationFilter): string {
+  switch (filter) {
+    case "unread":
+      return "Rien de non lu";
+    case "critical":
+      return "Aucune critique";
+    default:
+      return "Aucune notification";
+  }
+}
+
 export function NotificationCenter({
   onNavigate,
   onNavigateToPatient,
@@ -463,12 +489,7 @@ export function NotificationCenter({
           >
             {NOTIFICATION_FILTERS.map((option) => {
               const active = filter === option;
-              const label =
-                option === "all"
-                  ? "Toutes"
-                  : option === "unread"
-                    ? `Non lues${unreadCount > 0 ? ` (${unreadCount})` : ""}`
-                    : `Critiques${criticalCount > 0 ? ` (${criticalCount})` : ""}`;
+              const label = filterLabel(option, unreadCount, criticalCount);
               return (
                 <button
                   aria-pressed={active}
@@ -502,11 +523,7 @@ export function NotificationCenter({
                 strokeWidth={1.5}
               />
               <p className="font-medium text-foreground text-sm">
-                {filter === "unread"
-                  ? "Rien de non lu"
-                  : filter === "critical"
-                    ? "Aucune critique"
-                    : "Aucune notification"}
+                {emptyFilterTitle(filter)}
               </p>
               <p className="mt-1 text-muted-foreground text-xs">
                 {filter === "all"

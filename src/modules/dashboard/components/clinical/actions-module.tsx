@@ -17,6 +17,17 @@ const labels = {
   stock: "Stock",
   appointment: "Relances",
 } as const;
+function alertDotClass(tone: ClinicalAlert["tone"]): string {
+  switch (tone) {
+    case "critical":
+      return "bg-signal-critical";
+    case "warning":
+      return "bg-signal-watch";
+    default:
+      return "bg-secondary";
+  }
+}
+
 export function ActionsModule({
   alerts,
   busyIds,
@@ -103,7 +114,7 @@ export function ActionsModule({
             >
               <span
                 aria-hidden="true"
-                className={`mt-1.5 size-1.5 shrink-0 rounded-full ${alert.tone === "critical" ? "bg-signal-critical" : alert.tone === "warning" ? "bg-signal-watch" : "bg-secondary"}`}
+                className={`mt-1.5 size-1.5 shrink-0 rounded-full ${alertDotClass(alert.tone)}`}
               />
               <button
                 className={`min-w-0 flex-1 rounded text-left ${focusRing}`}

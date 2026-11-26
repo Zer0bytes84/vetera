@@ -101,6 +101,17 @@ const STATUS_TONE: Record<string, StatusTone> = {
   decede: "neutral",
 };
 
+function sexLabelOf(sex: Patient["sex"]): "Mâle" | "Femelle" | null {
+  switch (sex) {
+    case "M":
+      return "Mâle";
+    case "F":
+      return "Femelle";
+    default:
+      return null;
+  }
+}
+
 /**
  * The record's header, on the model of the other pages: one line, the patient's name with its identity in context (species,
  * breed, owner), the ID badge, the status as a pill, and on the right the owner's balance and the main note button. The way
@@ -117,8 +128,7 @@ export function PatientRecordHeader({
   const balance = useOwnerBalance(owner?.id);
   const status = getPatientStatusMeta(patient.status);
   const age = computeAge(patient.dateOfBirth);
-  const sex =
-    patient.sex === "M" ? "Mâle" : patient.sex === "F" ? "Femelle" : null;
+  const sex = sexLabelOf(patient.sex);
   // The patient's line: the allergy first, then the restraint, then who the animal is; then the owner, with their phone and their
   // balance. When one of them is not recorded it says so, discreetly, in the same place.
   const allergyText = patient.allergies?.trim();

@@ -290,6 +290,17 @@ export interface SaveDocumentTemplateInput {
   kind: ManagedDocumentTemplate["kind"];
   name: string;
 }
+function patientSexText(sex: unknown): "Mâle" | "Femelle" | "" {
+  switch (sex) {
+    case "M":
+      return "Mâle";
+    case "F":
+      return "Femelle";
+    default:
+      return "";
+  }
+}
+
 export function createDocumentStore(
   persistence: DocumentPersistence,
   id: () => string,
@@ -751,8 +762,7 @@ export function createDocumentStore(
           "patient.reference": text(patient.reference),
           "patient.espece": text(patient.species),
           "patient.race": text(patient.breed),
-          "patient.sexe":
-            patient.sex === "M" ? "Mâle" : patient.sex === "F" ? "Femelle" : "",
+          "patient.sexe": patientSexText(patient.sex),
           "patient.naissance": dateText(patient.date_of_birth),
           "patient.identification":
             text(patient.chip_number) || text(patient.tattoo_number),

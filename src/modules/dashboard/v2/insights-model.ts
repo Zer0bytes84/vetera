@@ -1,6 +1,17 @@
 import type { Appointment, Transaction } from "@/types/db";
 import { addDays, parseDashboardDate, startOfDay } from "./model";
 
+function hourLabel(i: number): string {
+  switch (i) {
+    case 0:
+      return "Avant 8h";
+    case 11:
+      return "18h et +";
+    default:
+      return `${i + 7}h`;
+  }
+}
+
 export function buildDashboardInsights(
   appointments: Appointment[],
   transactions: Transaction[],
@@ -14,7 +25,7 @@ export function buildDashboardInsights(
     (label) => ({ label, count: 0 })
   );
   const hours = Array.from({ length: 12 }, (_, i) => ({
-    label: i === 0 ? "Avant 8h" : i === 11 ? "18h et +" : `${i + 7}h`,
+    label: hourLabel(i),
     counts: new Array<number>(7).fill(0),
   }));
   const months = Array.from({ length: 12 }, (_, i) => {

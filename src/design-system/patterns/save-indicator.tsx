@@ -4,6 +4,40 @@ import {
   CheckmarkCircle02Icon,
   Refresh01Icon,
 } from "@/lib/hugeicons";
+
+function saveText(state: "saving" | "saved" | "error"): string {
+  switch (state) {
+    case "saving":
+      return "Enregistrement…";
+    case "error":
+      return "Non enregistré";
+    default:
+      return "Enregistré";
+  }
+}
+
+function saveIconClass(state: "saving" | "saved" | "error"): string {
+  switch (state) {
+    case "saving":
+      return "animate-spin motion-reduce:animate-none";
+    case "error":
+      return "text-signal-critical";
+    default:
+      return "text-signal-positive";
+  }
+}
+
+function saveIcon(state: "saving" | "saved" | "error") {
+  switch (state) {
+    case "saving":
+      return Refresh01Icon;
+    case "error":
+      return AlertCircleIcon;
+    default:
+      return CheckmarkCircle02Icon;
+  }
+}
+
 export function SaveIndicator({
   state,
   onRetry,
@@ -14,12 +48,7 @@ export function SaveIndicator({
   if (state === "idle") {
     return <span aria-hidden="true" className="w-[112px]" />;
   }
-  const text =
-    state === "saving"
-      ? "Enregistrement…"
-      : state === "error"
-        ? "Non enregistré"
-        : "Enregistré";
+  const text = saveText(state);
   return (
     <span
       aria-live="polite"
@@ -27,20 +56,8 @@ export function SaveIndicator({
       role="status"
     >
       <HugeiconsIcon
-        className={
-          state === "saving"
-            ? "animate-spin motion-reduce:animate-none"
-            : state === "error"
-              ? "text-signal-critical"
-              : "text-signal-positive"
-        }
-        icon={
-          state === "saving"
-            ? Refresh01Icon
-            : state === "error"
-              ? AlertCircleIcon
-              : CheckmarkCircle02Icon
-        }
+        className={saveIconClass(state)}
+        icon={saveIcon(state)}
         size={13}
         strokeWidth={1.5}
       />

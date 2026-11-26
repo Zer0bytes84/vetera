@@ -421,6 +421,41 @@ function consultationStart(appointmentId: string): string {
   return fallback;
 }
 
+function autosaveNotice(
+  autosaveStatus: "idle" | "saving" | "saved" | "error",
+  lastAutoSavedAt: Date | null
+) {
+  switch (autosaveStatus) {
+    case "saving":
+      return (
+        <span className="inline-flex items-center gap-2">
+          <Spinner className="size-3.5" />
+          Sauvegarde automatique...
+        </span>
+      );
+    case "saved":
+      return (
+        <span>
+          Sauvegardé automatiquement
+          {lastAutoSavedAt
+            ? ` à ${lastAutoSavedAt.toLocaleTimeString("fr-FR", {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}`
+            : ""}
+        </span>
+      );
+    case "error":
+      return (
+        <span className="text-destructive">
+          Sauvegarde automatique à vérifier.
+        </span>
+      );
+    default:
+      return <span>Les changements sont sauvegardés automatiquement.</span>;
+  }
+}
+
 export function ConsultationSessionDialog({
   appointment,
   closeLabel = "Retour aux consultations",
@@ -1166,28 +1201,7 @@ export function ConsultationSessionDialog({
       ) : null}
       <div className="flex flex-col gap-3 border-border border-t py-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-h-5 text-muted-foreground text-sm">
-          {autosaveStatus === "saving" ? (
-            <span className="inline-flex items-center gap-2">
-              <Spinner className="size-3.5" />
-              Sauvegarde automatique...
-            </span>
-          ) : autosaveStatus === "saved" ? (
-            <span>
-              Sauvegardé automatiquement
-              {lastAutoSavedAt
-                ? ` à ${lastAutoSavedAt.toLocaleTimeString("fr-FR", {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}`
-                : ""}
-            </span>
-          ) : autosaveStatus === "error" ? (
-            <span className="text-destructive">
-              Sauvegarde automatique à vérifier.
-            </span>
-          ) : (
-            <span>Les changements sont sauvegardés automatiquement.</span>
-          )}
+          {autosaveNotice(autosaveStatus, lastAutoSavedAt)}
         </div>
         <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
           <Button

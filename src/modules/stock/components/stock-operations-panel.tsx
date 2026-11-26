@@ -544,6 +544,17 @@ function LocationForm({
   );
 }
 
+function transferLot(lot: string) {
+  switch (lot) {
+    case "unassigned":
+      return { lotId: null };
+    case "fifo":
+      return {};
+    default:
+      return { lotId: lot };
+  }
+}
+
 function TransferForm({ onClose }: { onClose: () => void }) {
   const { currentUser } = useAuth();
   const products = useProductsRepository();
@@ -615,11 +626,7 @@ function TransferForm({ onClose }: { onClose: () => void }) {
               toLocationId: to,
               quantity: qty,
               authorId: currentUser.id,
-              ...(lot === "unassigned"
-                ? { lotId: null }
-                : lot === "fifo"
-                  ? {}
-                  : { lotId: lot }),
+              ...transferLot(lot),
             });
             onClose();
           },
@@ -818,6 +825,270 @@ export function StockOperationsPanel({
       </p>
     );
   }
+  const renderView = () => {
+    switch (view) {
+      case "codes":
+        return (
+          <>
+            {mapping && (
+              <BarcodeMappingForm onClose={() => setMapping(false)} />
+            )}
+            <Scanner onOpenMovements={onOpenMovements} />
+            <Table className="table-fixed">
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-[35%]">Code-barres</TableHead>
+                  <TableHead className="w-[45%]">Produit</TableHead>
+                  <TableHead className="w-[20%]">
+                    <span className="sr-only">Actions</span>
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {operations.barcodes.length ? (
+                  operations.barcodes.map((row) => (
+                    <TableRow key={row.id}>
+                      <TableCell className="whitespace-normal break-all font-mono text-xs">
+                        {row.code}
+                      </TableCell>
+                      <TableCell className="whitespace-normal break-words">
+                        {row.product_name}
+                        {row.archived_at && (
+                          <span className="ml-2 text-muted-foreground text-xs">
+                            Archivé
+                          </span>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Button
+                          disabled={busy || !currentUser}
+                          onClick={() =>
+                            void run(() =>
+                              stockOperationsService.removeBarcode(row.id)
+                            )
+                          }
+                          size="sm"
+                          variant="ghost"
+                        >
+                          Retirer
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell
+                      className="h-24 whitespace-normal text-center text-muted-foreground"
+                      colSpan={3}
+                    >
+                      Aucun code associé. Associez le code présent sur
+                      l’emballage à son produit.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </>
+        );
+      case "consumption":
+        return (
+          <>
+            <div className="space-y-1 p-5">
+              <h3 className="font-medium">Consommation sur 30 jours</h3>
+              <p className="text-muted-foreground text-sm">
+                Sorties cliniques et sorties rapides réellement enregistrées. Le
+                seuil proposé couvre 14 jours au même rythme ; il reste à votre
+                choix.
+              </p>
+            </div>
+            <Table className="table-fixed">
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-[30%]">Produit</TableHead>
+                  <TableHead className="w-[20%] text-right">Utilisé</TableHead>
+                  <TableHead className="w-[20%] text-right">
+                    Seuil actuel
+                  </TableHead>
+                  <TableHead className="w-[30%] text-right">
+                    Proposition
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {operations.consumption.length ? (
+                  operations.consumption.map((row) => (
+                    <TableRow key={row.product_id}>
+                      <TableCell className="whitespace-normal break-words font-medium">
+                        {row.product_name}
+                      </TableCell>
+                      <TableCell className="whitespace-normal text-right tabular-nums">
+                        {stockQuantityLabel(row.quantity, row.unit)}
+                      </TableCell>
+                      <TableCell className="whitespace-normal text-right tabular-nums">
+                        {stockQuantityLabel(row.min_stock, row.unit)}
+                      </TableCell>
+                      <TableCell className="whitespace-normal text-right">
+                        <span className="block tabular-nums">
+                          {stockQuantityLabel(row.suggested_minimum, row.unit)}
+                        </span>
+                        <Button
+                          className="dark:text-blue-300 dark:hover:text-blue-200"
+                          disabled={
+                            busy ||
+                            !operations.ready ||
+                            !currentUser ||
+                            row.min_stock === row.suggested_minimum
+                          }
+                          onClick={() =>
+                            void run(() =>
+                              stockOperationsService.applyThreshold(
+                                row.product_id,
+                                row.suggested_minimum
+                              )
+                            )
+                          }
+                          size="sm"
+                          variant="link"
+                        >
+                          {row.min_stock === row.suggested_minimum
+                            ? "Appliqué"
+                            : "Appliquer ce seuil"}
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell
+                      className="h-28 whitespace-normal text-center text-muted-foreground"
+                      colSpan={4}
+                    >
+                      Aucune sortie enregistrée sur cette période.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </>
+        );
+      default:
+        return (
+          <>
+            {locationEdit && (
+              <LocationForm
+                key={locationEdit === "new" ? "new" : locationEdit.id}
+                location={locationEdit === "new" ? undefined : locationEdit}
+                onClose={() => setLocationEdit(null)}
+              />
+            )}
+            {transfer && <TransferForm onClose={() => setTransfer(false)} />}
+            <Table className="table-fixed">
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-[35%]">Emplacement</TableHead>
+                  <TableHead className="w-[30%]">Contenu</TableHead>
+                  <TableHead className="w-[35%]">
+                    <span className="sr-only">Actions</span>
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {inventory.locations.map((row) => {
+                  const count = new Set(
+                    inventory.balances
+                      .filter(
+                        (item) =>
+                          item.locationId === row.id && item.quantity !== 0
+                      )
+                      .map((item) => item.productId)
+                  ).size;
+                  return (
+                    <TableRow key={row.id}>
+                      <TableCell className="whitespace-normal break-words font-medium">
+                        {row.name}
+                        <Badge className="ml-2" variant="outline">
+                          {row.active ? "Actif" : "Désactivé"}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="whitespace-normal text-muted-foreground">
+                        {count} produit{count > 1 ? "s" : ""} en stock
+                      </TableCell>
+                      <TableCell className="whitespace-normal">
+                        <div className="flex flex-wrap justify-end gap-1">
+                          <Button
+                            onClick={() => {
+                              setLocationEdit(row);
+                              setTransfer(false);
+                            }}
+                            size="sm"
+                            variant="ghost"
+                          >
+                            Modifier
+                          </Button>
+                          <Button
+                            disabled={
+                              busy ||
+                              row.id === "stock-main" ||
+                              (row.active === 1 && count > 0)
+                            }
+                            onClick={() =>
+                              void run(() =>
+                                stockOperationsService.location({
+                                  id: row.id,
+                                  name: row.name,
+                                  active: !row.active,
+                                })
+                              )
+                            }
+                            size="sm"
+                            variant="ghost"
+                          >
+                            {row.active ? "Désactiver" : "Réactiver"}
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+            <p className="px-5 py-3 text-muted-foreground text-xs">
+              Un emplacement contenant du stock doit être vidé avant
+              désactivation.
+            </p>
+            <div className="space-y-3 border-border border-t p-5">
+              <h3 className="font-medium">Historique des transferts</h3>
+              {operations.transfers.length ? (
+                operations.transfers.map((row) => (
+                  <div
+                    className="flex flex-wrap justify-between gap-3 border-border border-t pt-3 text-sm"
+                    key={row.id}
+                  >
+                    <div>
+                      <p className="font-medium">
+                        {row.product_name} ·{" "}
+                        {stockQuantityLabel(row.quantity, row.unit)}
+                      </p>
+                      <p className="mt-1 text-muted-foreground text-xs">
+                        {row.source_name} vers {row.target_name}
+                      </p>
+                    </div>
+                    <span className="text-muted-foreground text-xs">
+                      {new Date(row.created_at).toLocaleString("fr-FR")}
+                    </span>
+                  </div>
+                ))
+              ) : (
+                <p className="text-muted-foreground text-sm">
+                  Aucun transfert enregistré.
+                </p>
+              )}
+            </div>
+          </>
+        );
+    }
+  };
+
   return (
     <section aria-label="Opérations de stock" className="min-w-0">
       <div className="flex flex-wrap items-center justify-between gap-3 border-border border-b p-4">
@@ -894,258 +1165,7 @@ export function StockOperationsPanel({
           Chargement des opérations…
         </p>
       )}
-      {view === "codes" ? (
-        <>
-          {mapping && <BarcodeMappingForm onClose={() => setMapping(false)} />}
-          <Scanner onOpenMovements={onOpenMovements} />
-          <Table className="table-fixed">
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-[35%]">Code-barres</TableHead>
-                <TableHead className="w-[45%]">Produit</TableHead>
-                <TableHead className="w-[20%]">
-                  <span className="sr-only">Actions</span>
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {operations.barcodes.length ? (
-                operations.barcodes.map((row) => (
-                  <TableRow key={row.id}>
-                    <TableCell className="whitespace-normal break-all font-mono text-xs">
-                      {row.code}
-                    </TableCell>
-                    <TableCell className="whitespace-normal break-words">
-                      {row.product_name}
-                      {row.archived_at && (
-                        <span className="ml-2 text-muted-foreground text-xs">
-                          Archivé
-                        </span>
-                      )}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Button
-                        disabled={busy || !currentUser}
-                        onClick={() =>
-                          void run(() =>
-                            stockOperationsService.removeBarcode(row.id)
-                          )
-                        }
-                        size="sm"
-                        variant="ghost"
-                      >
-                        Retirer
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell
-                    className="h-24 whitespace-normal text-center text-muted-foreground"
-                    colSpan={3}
-                  >
-                    Aucun code associé. Associez le code présent sur l’emballage
-                    à son produit.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </>
-      ) : view === "consumption" ? (
-        <>
-          <div className="space-y-1 p-5">
-            <h3 className="font-medium">Consommation sur 30 jours</h3>
-            <p className="text-muted-foreground text-sm">
-              Sorties cliniques et sorties rapides réellement enregistrées. Le
-              seuil proposé couvre 14 jours au même rythme ; il reste à votre
-              choix.
-            </p>
-          </div>
-          <Table className="table-fixed">
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-[30%]">Produit</TableHead>
-                <TableHead className="w-[20%] text-right">Utilisé</TableHead>
-                <TableHead className="w-[20%] text-right">
-                  Seuil actuel
-                </TableHead>
-                <TableHead className="w-[30%] text-right">
-                  Proposition
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {operations.consumption.length ? (
-                operations.consumption.map((row) => (
-                  <TableRow key={row.product_id}>
-                    <TableCell className="whitespace-normal break-words font-medium">
-                      {row.product_name}
-                    </TableCell>
-                    <TableCell className="whitespace-normal text-right tabular-nums">
-                      {stockQuantityLabel(row.quantity, row.unit)}
-                    </TableCell>
-                    <TableCell className="whitespace-normal text-right tabular-nums">
-                      {stockQuantityLabel(row.min_stock, row.unit)}
-                    </TableCell>
-                    <TableCell className="whitespace-normal text-right">
-                      <span className="block tabular-nums">
-                        {stockQuantityLabel(row.suggested_minimum, row.unit)}
-                      </span>
-                      <Button
-                        className="dark:text-blue-300 dark:hover:text-blue-200"
-                        disabled={
-                          busy ||
-                          !operations.ready ||
-                          !currentUser ||
-                          row.min_stock === row.suggested_minimum
-                        }
-                        onClick={() =>
-                          void run(() =>
-                            stockOperationsService.applyThreshold(
-                              row.product_id,
-                              row.suggested_minimum
-                            )
-                          )
-                        }
-                        size="sm"
-                        variant="link"
-                      >
-                        {row.min_stock === row.suggested_minimum
-                          ? "Appliqué"
-                          : "Appliquer ce seuil"}
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell
-                    className="h-28 whitespace-normal text-center text-muted-foreground"
-                    colSpan={4}
-                  >
-                    Aucune sortie enregistrée sur cette période.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </>
-      ) : (
-        <>
-          {locationEdit && (
-            <LocationForm
-              key={locationEdit === "new" ? "new" : locationEdit.id}
-              location={locationEdit === "new" ? undefined : locationEdit}
-              onClose={() => setLocationEdit(null)}
-            />
-          )}
-          {transfer && <TransferForm onClose={() => setTransfer(false)} />}
-          <Table className="table-fixed">
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-[35%]">Emplacement</TableHead>
-                <TableHead className="w-[30%]">Contenu</TableHead>
-                <TableHead className="w-[35%]">
-                  <span className="sr-only">Actions</span>
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {inventory.locations.map((row) => {
-                const count = new Set(
-                  inventory.balances
-                    .filter(
-                      (item) =>
-                        item.locationId === row.id && item.quantity !== 0
-                    )
-                    .map((item) => item.productId)
-                ).size;
-                return (
-                  <TableRow key={row.id}>
-                    <TableCell className="whitespace-normal break-words font-medium">
-                      {row.name}
-                      <Badge className="ml-2" variant="outline">
-                        {row.active ? "Actif" : "Désactivé"}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="whitespace-normal text-muted-foreground">
-                      {count} produit{count > 1 ? "s" : ""} en stock
-                    </TableCell>
-                    <TableCell className="whitespace-normal">
-                      <div className="flex flex-wrap justify-end gap-1">
-                        <Button
-                          onClick={() => {
-                            setLocationEdit(row);
-                            setTransfer(false);
-                          }}
-                          size="sm"
-                          variant="ghost"
-                        >
-                          Modifier
-                        </Button>
-                        <Button
-                          disabled={
-                            busy ||
-                            row.id === "stock-main" ||
-                            (row.active === 1 && count > 0)
-                          }
-                          onClick={() =>
-                            void run(() =>
-                              stockOperationsService.location({
-                                id: row.id,
-                                name: row.name,
-                                active: !row.active,
-                              })
-                            )
-                          }
-                          size="sm"
-                          variant="ghost"
-                        >
-                          {row.active ? "Désactiver" : "Réactiver"}
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-          <p className="px-5 py-3 text-muted-foreground text-xs">
-            Un emplacement contenant du stock doit être vidé avant
-            désactivation.
-          </p>
-          <div className="space-y-3 border-border border-t p-5">
-            <h3 className="font-medium">Historique des transferts</h3>
-            {operations.transfers.length ? (
-              operations.transfers.map((row) => (
-                <div
-                  className="flex flex-wrap justify-between gap-3 border-border border-t pt-3 text-sm"
-                  key={row.id}
-                >
-                  <div>
-                    <p className="font-medium">
-                      {row.product_name} ·{" "}
-                      {stockQuantityLabel(row.quantity, row.unit)}
-                    </p>
-                    <p className="mt-1 text-muted-foreground text-xs">
-                      {row.source_name} vers {row.target_name}
-                    </p>
-                  </div>
-                  <span className="text-muted-foreground text-xs">
-                    {new Date(row.created_at).toLocaleString("fr-FR")}
-                  </span>
-                </div>
-              ))
-            ) : (
-              <p className="text-muted-foreground text-sm">
-                Aucun transfert enregistré.
-              </p>
-            )}
-          </div>
-        </>
-      )}
+      {renderView()}
     </section>
   );
 }

@@ -90,12 +90,22 @@ function resolveDefaultIcon(title: string, index: number) {
   return defaultIcons[index % defaultIcons.length] || BanknotesIcon;
 }
 
+function toneSense(tone: SectionCardItem["tone"]): -1 | 0 | 1 {
+  switch (tone) {
+    case "positive":
+      return 1;
+    case "critical":
+      return -1;
+    default:
+      return 0;
+  }
+}
+
 /** What the card's badge says: a variation, a rate, a count, or a status text; and whether it reads as good news. */
 function badgeOf(
   item: SectionCardItem
 ): Pick<Stat, "delta" | "deltaText" | "higherIsBetter"> {
-  const sense =
-    item.tone === "positive" ? 1 : item.tone === "critical" ? -1 : 0;
+  const sense = toneSense(item.tone);
   if (item.change !== undefined && item.change !== null) {
     const kind = item.changeKind ?? "variation";
     if (kind === "count") {

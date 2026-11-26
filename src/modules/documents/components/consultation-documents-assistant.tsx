@@ -117,6 +117,19 @@ function ChatMessage({
   );
 }
 
+function textStateSuffix(
+  textState: "extractible" | "scan" | "image" | undefined
+): string {
+  switch (textState) {
+    case "scan":
+      return " · PDF numérisé";
+    case "image":
+      return " · Image";
+    default:
+      return "";
+  }
+}
+
 export default function ConsultationDocumentsAssistant({
   appointmentId,
   patientId,
@@ -643,11 +656,7 @@ export default function ConsultationDocumentsAssistant({
               {availableManaged.map((document) => (
                 <NativeSelectOption key={document.id} value={document.id}>
                   {document.title}
-                  {document.attachment?.textState === "scan"
-                    ? " · PDF numérisé"
-                    : document.attachment?.textState === "image"
-                      ? " · Image"
-                      : ""}
+                  {textStateSuffix(document.attachment?.textState)}
                 </NativeSelectOption>
               ))}
               {availableFiles.map((file) => (

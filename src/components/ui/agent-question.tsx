@@ -75,6 +75,19 @@ export interface AgentQuestionProps {
 // Cards morph into the summary on screen: a critically damped spring.
 const morph = { type: "spring", duration: 0.35, bounce: 0 } as const;
 
+function answerAnnouncement(
+  status: "pending" | "answered" | "delegated"
+): string {
+  switch (status) {
+    case "answered":
+      return "Réponse envoyée";
+    case "delegated":
+      return "Laissé à l’assistant";
+    default:
+      return "";
+  }
+}
+
 export function AgentQuestion({
   data,
   status: statusProp,
@@ -333,11 +346,7 @@ export function AgentQuestion({
           )}
         </div>
         <p aria-live="polite" className="sr-only" role="status">
-          {status === "answered"
-            ? "Réponse envoyée"
-            : status === "delegated"
-              ? "Laissé à l’assistant"
-              : ""}
+          {answerAnnouncement(status)}
         </p>
       </Shell>
     </MotionConfig>

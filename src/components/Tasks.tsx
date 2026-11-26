@@ -251,6 +251,50 @@ function priorityLabel(priority: Task["priority"]) {
   return "Normal";
 }
 
+function searchableFields(
+  item: ReminderItem,
+  types: ReturnType<typeof usePatientReminders>["types"]
+): (string | null | undefined)[] {
+  switch (item.kind) {
+    case "manual":
+      return [item.task.title, item.task.description, item.patient?.name];
+    case "medical":
+      return [
+        item.patient?.name,
+        item.reminder.note,
+        types.find((type) => type.id === item.reminder.type)?.name,
+      ];
+    default:
+      return [
+        item.reminder.message,
+        item.appointment?.title,
+        item.appointment?.reason,
+        item.patient?.name,
+      ];
+  }
+}
+
+function reminderTitle(
+  item: ReminderItem,
+  types: ReturnType<typeof usePatientReminders>["types"]
+): string {
+  switch (item.kind) {
+    case "manual":
+      return item.task.title;
+    case "medical":
+      return (
+        types.find((type) => type.id === item.reminder.type)?.name ??
+        "Rappel médical"
+      );
+    default:
+      return (
+        item.reminder.message ||
+        item.appointment?.title ||
+        "Rappel de rendez-vous"
+      );
+  }
+}
+
 const Tasks: React.FC = () => {
   const { currentUser } = useAuth();
   const { clearFocus, focus } = useFocus();
@@ -383,23 +427,7 @@ const Tasks: React.FC = () => {
         if (!normalizedQuery) {
           return true;
         }
-        const searchable =
-          item.kind === "manual"
-            ? [item.task.title, item.task.description, item.patient?.name]
-            : item.kind === "medical"
-              ? [
-                  item.patient?.name,
-                  item.reminder.note,
-                  patientRemindersModel.types.find(
-                    (type) => type.id === item.reminder.type
-                  )?.name,
-                ]
-              : [
-                  item.reminder.message,
-                  item.appointment?.title,
-                  item.appointment?.reason,
-                  item.patient?.name,
-                ];
+        const searchable = searchableFields(item, patientRemindersModel.types);
         return searchable.some((value) =>
           value?.toLocaleLowerCase("fr-FR").includes(normalizedQuery)
         );
@@ -781,16 +809,7 @@ const Tasks: React.FC = () => {
       kind: item.kind,
       date: item.date,
       completed: itemIsCompleted(item),
-      title:
-        item.kind === "manual"
-          ? item.task.title
-          : item.kind === "medical"
-            ? (patientRemindersModel.types.find(
-                (type) => type.id === item.reminder.type
-              )?.name ?? "Rappel médical")
-            : item.reminder.message ||
-              item.appointment?.title ||
-              "Rappel de rendez-vous",
+      title: reminderTitle(item, patientRemindersModel.types),
       patientName: item.patient?.name,
     })),
     new Date()
@@ -1210,46 +1229,56 @@ const Tasks: React.FC = () => {
                     <span className="tabular-nums">{group.items.length}</span>
                   </h2>
                 )}
-                {group.items.map((item) =>
-                  item.kind === "manual" ? (
-                    <ManualReminderRow
-                      draft={editDraft}
-                      editing={editingTaskId === item.task.id}
-                      focused={focusedTaskId === item.task.id}
-                      item={item}
-                      key={`task-${item.task.id}`}
-                      onCancelEdit={() => setEditingTaskId(null)}
-                      onDelete={() => deleteTask(item.task.id)}
-                      onDraftChange={setEditDraft}
-                      onEdit={() => startEditing(item.task)}
-                      onPostpone={() => postponeTask(item.task)}
-                      onSave={saveEdit}
-                      onSelect={() => toggleSelected(item.task.id)}
-                      onToggle={() => toggleTask(item.task)}
-                      patients={patients}
-                      pendingDelete={pendingDeleteId === item.task.id}
-                      reminderTypes={patientRemindersModel.types}
-                      saving={saving}
-                      selected={selectedIds.has(item.task.id)}
-                      selecting={selectedIds.size > 0}
-                      view={activeView}
-                    />
-                  ) : item.kind === "automatic" ? (
-                    <AutomaticReminderRow
-                      item={item}
-                      key={`automatic-${item.reminder.id}`}
-                      onDismiss={async () => {
-                        await remindersRepository.dismiss(item.reminder.id);
-                        toast.success("Rappel automatique ignoré");
-                      }}
-                      onSnooze={async () => {
-                        await remindersRepository.snooze(item.reminder.id, 60);
-                        toast.success("Rappel reporté d'une heure");
-                      }}
-                      view={activeView}
-                    />
-                  ) : null
-                )}
+                {group.items.map((item) => {
+                  switch (item.kind) {
+                    case "manual":
+                      return (
+                        <ManualReminderRow
+                          draft={editDraft}
+                          editing={editingTaskId === item.task.id}
+                          focused={focusedTaskId === item.task.id}
+                          item={item}
+                          key={`task-${item.task.id}`}
+                          onCancelEdit={() => setEditingTaskId(null)}
+                          onDelete={() => deleteTask(item.task.id)}
+                          onDraftChange={setEditDraft}
+                          onEdit={() => startEditing(item.task)}
+                          onPostpone={() => postponeTask(item.task)}
+                          onSave={saveEdit}
+                          onSelect={() => toggleSelected(item.task.id)}
+                          onToggle={() => toggleTask(item.task)}
+                          patients={patients}
+                          pendingDelete={pendingDeleteId === item.task.id}
+                          reminderTypes={patientRemindersModel.types}
+                          saving={saving}
+                          selected={selectedIds.has(item.task.id)}
+                          selecting={selectedIds.size > 0}
+                          view={activeView}
+                        />
+                      );
+                    case "automatic":
+                      return (
+                        <AutomaticReminderRow
+                          item={item}
+                          key={`automatic-${item.reminder.id}`}
+                          onDismiss={async () => {
+                            await remindersRepository.dismiss(item.reminder.id);
+                            toast.success("Rappel automatique ignoré");
+                          }}
+                          onSnooze={async () => {
+                            await remindersRepository.snooze(
+                              item.reminder.id,
+                              60
+                            );
+                            toast.success("Rappel reporté d'une heure");
+                          }}
+                          view={activeView}
+                        />
+                      );
+                    default:
+                      return null;
+                  }
+                })}
               </section>
             ))}
             {visibleItems.some((item) => item.kind === "medical") &&
@@ -1684,6 +1713,28 @@ function AutomaticReminderRow({
   );
 }
 
+function quietCopy(view: ReminderView): string {
+  switch (view) {
+    case "today":
+      return "Tout est à jour pour aujourd’hui.";
+    case "upcoming":
+      return "Aucun rappel à venir.";
+    default:
+      return "Aucun rappel terminé pour le moment.";
+  }
+}
+
+function reminderKindLabel(kind: ReminderItem["kind"]): string {
+  switch (kind) {
+    case "medical":
+      return "Médical";
+    case "manual":
+      return "Manuel";
+    default:
+      return "Automatique";
+  }
+}
+
 /**
  * « Rien à traiter » : composé comme la journée vide du Flux, dans le langage des bandes de la page. Le prochain rappel
  * ouvert (sur deux colonnes), où en sont les rappels (sur deux), et les deux gestes qui existent déjà sur la page
@@ -1737,12 +1788,7 @@ function EmptyState({
       </Shell>
     );
   }
-  const copy =
-    view === "today"
-      ? "Tout est à jour pour aujourd’hui."
-      : view === "upcoming"
-        ? "Aucun rappel à venir."
-        : "Aucun rappel terminé pour le moment.";
+  const copy = quietCopy(view);
   const next = quiet.next;
   return (
     <Shell className="reminders-quiet">
@@ -1765,11 +1811,7 @@ function EmptyState({
                 {next.patientName ? <span> · {next.patientName}</span> : null}
               </p>
               <p className="reminders-quiet-meta">
-                {next.kind === "medical"
-                  ? "Médical"
-                  : next.kind === "manual"
-                    ? "Manuel"
-                    : "Automatique"}
+                {reminderKindLabel(next.kind)}
               </p>
             </>
           ) : (

@@ -302,6 +302,17 @@ const patientStatuses: Record<string, string> = {
   decede: "Décédé",
 };
 
+function sexText(sex: "M" | "F"): "Femelle" | "Mâle" | "" {
+  switch (sex) {
+    case "F":
+      return "Femelle";
+    case "M":
+      return "Mâle";
+    default:
+      return "";
+  }
+}
+
 export function assemblePatientRecordSnapshot(
   raw: PatientRecordRawData,
   input: PatientRecordOptions,
@@ -374,10 +385,7 @@ export function assemblePatientRecordSnapshot(
     field("Référence", patient.reference);
     field("Espèce", patient.species);
     field("Race", patient.breed);
-    field(
-      "Sexe",
-      patient.sex === "F" ? "Femelle" : patient.sex === "M" ? "Mâle" : ""
-    );
+    field("Sexe", sexText(patient.sex));
     if (typeof patient.sterilized === "boolean") {
       field("Stérilisation", patient.sterilized ? "Oui" : "Non");
     }

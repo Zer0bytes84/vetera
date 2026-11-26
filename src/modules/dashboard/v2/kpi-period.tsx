@@ -62,15 +62,25 @@ export function kpiWithin(value: string, range: { from: string; to: string }) {
     (!range.to || date <= range.to)
   );
 }
+function bucketStart(
+  period: KpiPeriod,
+  date: Date,
+  range: ReturnType<typeof kpiRange>
+): Date {
+  switch (period) {
+    case "day":
+      return addDays(startOfDay(date), -6);
+    case "all":
+      return startOfYear(date);
+    default:
+      return new Date(`${range.from}T12:00:00`);
+  }
+}
+
 export function kpiBuckets(period: KpiPeriod, date: Date) {
   // Today's value is complemented by seven days of context; other periods use their calendar span.
   const range = kpiRange(period, date);
-  const start =
-    period === "day"
-      ? addDays(startOfDay(date), -6)
-      : period === "all"
-        ? startOfYear(date)
-        : new Date(`${range.from}T12:00:00`);
+  const start = bucketStart(period, date, range);
   const count =
     period === "year" || period === "all"
       ? 12

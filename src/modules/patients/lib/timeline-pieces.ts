@@ -37,6 +37,19 @@ const INVOICE_STATUS: Record<Invoice["documentStatus"], string> = {
   void: "annulée",
 };
 
+function documentPieceKind(
+  kind: PatientDocument["kind"]
+): "prescription" | "result" | "document" {
+  switch (kind) {
+    case "prescription":
+      return "prescription";
+    case "import":
+      return "result";
+    default:
+      return "document";
+  }
+}
+
 /**
  * Every piece of a patient's record, each tied to the visit it came from.
  * A prescription written in the Documents module and the same prescription
@@ -103,12 +116,7 @@ export function collectTimelinePieces({
     pieces.push({
       at: document.finalizedAt || document.createdAt,
       id: `document-${document.id}`,
-      kind:
-        document.kind === "prescription"
-          ? "prescription"
-          : document.kind === "import"
-            ? "result"
-            : "document",
+      kind: documentPieceKind(document.kind),
       label:
         document.kind === "import"
           ? "Document importé"

@@ -8,6 +8,25 @@ import type {
 
 export const abortError = () =>
   new DOMException("Tâche annulée.", "AbortError");
+function createWorker(kind: "whisper" | "soap" | "embedding"): Worker {
+  switch (kind) {
+    case "whisper":
+      return new Worker(
+        new URL("../workers/whisper.worker.ts", import.meta.url),
+        { type: "module" }
+      );
+    case "embedding":
+      return new Worker(
+        new URL("../workers/embedding.worker.ts", import.meta.url),
+        { type: "module" }
+      );
+    default:
+      return new Worker(new URL("../workers/soap.worker.ts", import.meta.url), {
+        type: "module",
+      });
+  }
+}
+
 export class LocalInferenceSession {
   private pending: {
     resolve: (message: WorkerResponse) => void;
@@ -117,23 +136,7 @@ export class LocalInferenceSession {
       if (signal.aborted) {
         throw abortError();
       }
-      const worker =
-        kind === "whisper"
-          ? new Worker(
-              new URL("../workers/whisper.worker.ts", import.meta.url),
-              { type: "module" }
-            )
-          : kind === "embedding"
-            ? new Worker(
-                new URL("../workers/embedding.worker.ts", import.meta.url),
-                { type: "module" }
-              )
-            : new Worker(
-                new URL("../workers/soap.worker.ts", import.meta.url),
-                {
-                  type: "module",
-                }
-              );
+      const worker = createWorker(kind);
       const spawn = () =>
         new Worker(new URL("../workers/soap.worker.ts", import.meta.url), {
           type: "module",

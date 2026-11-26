@@ -669,6 +669,28 @@ function hasAnnotations(page: PDFPage): boolean {
   );
 }
 
+function rotatedOffsetX(angle: number, width: number, height: number): number {
+  switch (angle) {
+    case 180:
+      return width;
+    case 270:
+      return height;
+    default:
+      return 0;
+  }
+}
+
+function rotatedOffsetY(angle: number, width: number, height: number): number {
+  switch (angle) {
+    case 90:
+      return width;
+    case 180:
+      return height;
+    default:
+      return 0;
+  }
+}
+
 async function appendSource(
   layout: Layout,
   section: PatientRecordSection,
@@ -812,10 +834,8 @@ async function appendSource(
           );
           const width = box.width * fitted.ratio,
             height = box.height * fitted.ratio;
-          const x =
-            fitted.x + (angle === 180 ? width : angle === 270 ? height : 0);
-          const y =
-            fitted.y + (angle === 90 ? width : angle === 180 ? height : 0);
+          const x = fitted.x + rotatedOffsetX(angle, width, height);
+          const y = fitted.y + rotatedOffsetY(angle, width, height);
           page.drawPage(embedded, {
             x,
             y,
@@ -921,6 +941,19 @@ async function stamp(
   }
 }
 
+function mimeTypeLabel(
+  mimeType: "application/pdf" | "image/png" | "image/jpeg"
+): "PDF" | "PNG" | "JPEG" {
+  switch (mimeType) {
+    case "application/pdf":
+      return "PDF";
+    case "image/png":
+      return "PNG";
+    default:
+      return "JPEG";
+  }
+}
+
 /** The returned bytes are the single artifact used for preview, save and print. */
 export async function buildPatientRecordPdf(
   snapshot: PatientRecordSnapshot,
@@ -1004,11 +1037,7 @@ export async function buildPatientRecordPdf(
             ? [
                 source.fileName,
                 civilDate(source.createdAt),
-                source.mimeType === "application/pdf"
-                  ? "PDF"
-                  : source.mimeType === "image/png"
-                    ? "PNG"
-                    : "JPEG",
+                mimeTypeLabel(source.mimeType),
               ]
             : [source.title, civilDate(source.createdAt), source.fileName]
         ),
