@@ -27,6 +27,11 @@ export interface InvoicePdfData {
   ownerName: string;
   paidAmount: number;
   patientName: string;
+  /**
+   * The completed payments behind `paidAmount`, oldest first, each with its
+   * method already in words. Their sum must equal `paidAmount`.
+   */
+  payments?: { amount: number; date: Date; method: string }[];
   refundAmount?: number;
   totalAmount: number;
 }
@@ -62,6 +67,15 @@ export function invoiceMoney(amount: number): string {
   return `${(amount / 100).toLocaleString("fr-FR", { minimumFractionDigits: amount % 100 ? 2 : 0, maximumFractionDigits: 2 }).replace(/[\u00a0\u202f]/g, " ")} DA`;
 }
 
+/** "19 nov. 2026", the way the invoice's detail in the app dates a payment. */
+export function invoicePaymentDate(date: Date): string {
+  return date.toLocaleDateString("fr-FR", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+}
+
 export function buildInvoicePdf(
   data: InvoicePdfData,
   settings: InvoiceSettings,
@@ -74,7 +88,20 @@ export function buildInvoicePdf(
     data.creditAmount ?? 0,
     data.refundAmount ?? 0,
     ...data.items.map((item) => item.amount),
+    ...(data.payments ?? []).map((payment) => payment.amount),
   ].forEach(invoiceMoney);
+  if (
+    data.payments &&
+    data.payments.reduce((sum, payment) => sum + payment.amount, 0) !==
+      data.paidAmount
+  ) {
+    throw new Error("Les montants de la facture ne sont pas cohérents.");
+  }
+  if (
+    data.payments?.some((payment) => !Number.isFinite(payment.date.getTime()))
+  ) {
+    throw new Error("Date de règlement invalide.");
+  }
   if (
     data.items.reduce((sum, item) => sum + item.amount, 0) !==
       data.totalAmount ||
@@ -267,6 +294,33 @@ export function buildInvoicePdf(
     doc.setDrawColor("#e4e4e7");
     doc.line(left, y - 2, right, y - 2);
     y += 3;
+  }
+  // The payments one by one, as in the invoice's detail in the app: what "Montant réglé" adds up.
+  const payments = data.payments ?? [];
+  if (payments.length > 0) {
+    y += 5;
+    ensure(8 + Math.min(payments.length, 3) * 7);
+    text("RÈGLEMENTS", left, y, 8, true, "#71717a");
+    y += 7;
+    for (const payment of payments) {
+      ensure(7);
+      text(
+        `${payment.method} · ${invoicePaymentDate(payment.date)}`,
+        left + 4,
+        y,
+        10
+      );
+      text(
+        invoiceMoney(payment.amount),
+        right - 4,
+        y,
+        10,
+        false,
+        "#27272a",
+        "right"
+      );
+      y += 7;
+    }
   }
   y += 8;
   ensure(72);

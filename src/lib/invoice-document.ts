@@ -2,8 +2,30 @@ import {
   DEFAULT_INVOICE_SETTINGS,
   normalizeInvoiceSettings,
 } from "@/services/invoiceSettingsService";
-import type { InvoiceDetail } from "@/types/db";
+import type { InvoiceDetail, TransactionPaymentMethod } from "@/types/db";
 import { type InvoicePdfData, invoiceFileKey } from "./invoice-pdf";
+import { ISO_DATE } from "./patterns";
+
+/** The words of the invoice's detail in Finances, for each payment method. */
+export const INVOICE_PAYMENT_METHOD_LABELS: Record<
+  TransactionPaymentMethod,
+  string
+> = {
+  cash: "Espèces",
+  card: "Carte",
+  bank_transfer: "Virement",
+  check: "Chèque",
+  other: "Autre",
+};
+
+/** A day alone (YYYY-MM-DD) is that local day; a timestamp is read as such. */
+function paymentDate(value: string): Date {
+  if (ISO_DATE.test(value)) {
+    const [year, month, day] = value.split("-").map(Number);
+    return new Date(year, month - 1, day);
+  }
+  return new Date(value);
+}
 
 /** Re-exports use the identity frozen at issue time, not today's settings. */
 export function invoiceDocument(invoice: InvoiceDetail, patientName: string) {
@@ -32,6 +54,14 @@ export function invoiceDocument(invoice: InvoiceDetail, patientName: string) {
     })),
     totalAmount: invoice.grossAmount,
     paidAmount: invoice.completedPaymentAmount,
+    // Cancelled payments are left out, as they are of the amount paid.
+    payments: invoice.payments
+      .filter((payment) => payment.status === "completed")
+      .map((payment) => ({
+        amount: payment.amount,
+        date: paymentDate(payment.paidAt),
+        method: INVOICE_PAYMENT_METHOD_LABELS[payment.method] ?? "Autre",
+      })),
     balanceAmount: invoice.balanceAmount,
     creditAmount: invoice.creditAmount,
     refundAmount: invoice.completedRefundAmount,
