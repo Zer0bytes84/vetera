@@ -386,8 +386,8 @@ export function embeddingFromHex(hex: string) {
   if (!EMBEDDING_HEX.test(hex)) {
     throw new Error("Un extrait de recherche est invalide.");
   }
-  const bytes = Uint8Array.from(hex.match(/../g)!, (value) =>
-      Number.parseInt(value, 16)
+  const bytes = Uint8Array.from({ length: hex.length / 2 }, (_, index) =>
+      Number.parseInt(hex.slice(2 * index, 2 * index + 2), 16)
     ),
     view = new DataView(bytes.buffer);
   return normalizedEmbedding(

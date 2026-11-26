@@ -122,7 +122,7 @@ export function PatientRecordHeader({
   // The patient's line: the allergy first, then the restraint, then who the animal is; then the owner, with their phone and their
   // balance. When one of them is not recorded it says so, discreetly, in the same place.
   const allergyText = patient.allergies?.trim();
-  const allergy = isClinicalSignal(allergyText) ? allergyText! : "";
+  const allergy = isClinicalSignal(allergyText) ? allergyText : "";
   const restraint = patient.restraint?.trim();
   const facts = [
     patient.species,

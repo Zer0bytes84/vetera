@@ -53,8 +53,10 @@ export function FinancialPeriodFilter({
   const [draft, setDraft] = useState<DateRange | undefined>();
   const parse = (value: string) =>
     value ? new Date(`${value}T12:00:00`) : undefined;
-  const display = (value: string) =>
-    format(parse(value)!, "d MMM yyyy", { locale: fr });
+  const display = (value: string) => {
+    const date = parse(value);
+    return date ? format(date, "d MMM yyyy", { locale: fr }) : "";
+  };
   const label =
     from && to
       ? from === to

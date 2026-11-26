@@ -332,7 +332,7 @@ export function createCareStore(
           execute_par:
             to === "en_cours" || to === "fait" ? author : task.execute_par,
           completed_at: to === "fait" ? now : null,
-          motif_annulation: to === "annule" ? reason!.trim() : null,
+          motif_annulation: to === "annule" ? (reason?.trim() ?? null) : null,
         };
         const updated = await db.execute(
           "UPDATE care_tasks SET statut=$1,execute_par=$2,completed_at=$3,motif_annulation=$4,updated_at=$5 WHERE id=$6 AND statut=$7",

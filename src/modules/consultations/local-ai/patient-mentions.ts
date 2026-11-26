@@ -20,8 +20,8 @@ const mentionPattern = () =>
   /(^|[^\p{L}\p{N}_@])@(?:"([^"\n]+)"|([\p{L}\p{N}_][\p{L}\p{N}_'’-]*))/gu;
 export function parsePatientMentions(text: string): PatientMention[] {
   return [...text.matchAll(mentionPattern())].map((match) => ({
-    start: match.index! + match[1].length,
-    end: match.index! + match[0].length,
+    start: match.index + match[1].length,
+    end: match.index + match[0].length,
     name: match[2] ?? match[3],
     key: normalizePatientName(match[2] ?? match[3]),
   }));

@@ -16,6 +16,7 @@ import i18n, { isRtlLanguage } from "@/i18n/config";
 import { initWindowControls } from "@/modules/shell/window-controls";
 import { isActivationAdminRoute } from "@/services/activationAdminWindowService";
 import "@/modules/shell/window-controls.css";
+import { mustExist } from "@/lib/must-exist";
 
 // Windows: our header is the title bar (minimize, maximize, close from tauri-plugin-decorum). Nothing happens elsewhere.
 if (!isActivationAdminRoute()) {
@@ -104,7 +105,9 @@ function AppProviders() {
   return <AuthProvider>{content}</AuthProvider>;
 }
 
-createRoot(document.getElementById("root")!).render(
+createRoot(
+  mustExist(document.getElementById("root"), "élément #root de index.html")
+).render(
   <StrictMode>
     <ErrorBoundary>
       <AppDirectionProvider>

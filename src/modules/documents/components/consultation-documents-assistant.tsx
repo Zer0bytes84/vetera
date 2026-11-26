@@ -664,9 +664,13 @@ export default function ConsultationDocumentsAssistant({
                 className="mt-2 w-fit"
                 disabled={busy || saving}
                 onClick={() => {
+                  const { attachment } = selectedManaged;
+                  if (!attachment) {
+                    return;
+                  }
                   try {
                     void readFile(
-                      attachmentFile(selectedManaged.attachment!),
+                      attachmentFile(attachment),
                       selectedManaged.id
                     );
                   } catch (failure) {

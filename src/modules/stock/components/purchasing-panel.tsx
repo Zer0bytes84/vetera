@@ -1029,15 +1029,18 @@ export function PurchasingPanel({
                     <>
                       <Button
                         disabled={busy || !purchasing.ready || !currentUser}
-                        onClick={() =>
+                        onClick={() => {
+                          if (!currentUser) {
+                            return;
+                          }
                           void run(() =>
                             purchasingService.transition(
                               order.id,
                               "order",
-                              currentUser!.id
+                              currentUser.id
                             )
-                          )
-                        }
+                          );
+                        }}
                       >
                         Confirmer la commande
                       </Button>
@@ -1061,11 +1064,14 @@ export function PurchasingPanel({
                   )}
                   <Button
                     disabled={busy || !supplier}
-                    onClick={() =>
+                    onClick={() => {
+                      if (!supplier) {
+                        return;
+                      }
                       void run(() =>
-                        exportPurchaseOrder(order, supplier!, lines)
-                      )
-                    }
+                        exportPurchaseOrder(order, supplier, lines)
+                      );
+                    }}
                     variant="outline"
                   >
                     Exporter le bon
@@ -1295,17 +1301,20 @@ export function PurchasingPanel({
             <Button
               className="text-red-700 hover:text-red-800 dark:text-red-300 dark:hover:text-red-200"
               disabled={busy || !cancelling || !currentUser}
-              onClick={() =>
+              onClick={() => {
+                if (!(cancelling && currentUser)) {
+                  return;
+                }
                 void run(async () => {
                   await purchasingService.transition(
-                    cancelling!.id,
+                    cancelling.id,
                     "cancel",
-                    currentUser!.id
+                    currentUser.id
                   );
                   setCancelling(null);
                   setReceiving(false);
-                })
-              }
+                });
+              }}
               variant="destructive"
             >
               {busy

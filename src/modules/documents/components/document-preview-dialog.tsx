@@ -326,12 +326,15 @@ export function DocumentPreviewDialog({
                             !pdf ||
                             pdf.version !== document.updatedAt
                           }
-                          onClick={() =>
+                          onClick={() => {
+                            if (!pdf) {
+                              return;
+                            }
                             void perform(async () => {
                               const row = await documentsService.finalize(
                                 document.id,
                                 author,
-                                pdf!.dataUrl,
+                                pdf.dataUrl,
                                 reviewed,
                                 document.updatedAt
                               );
@@ -339,8 +342,8 @@ export function DocumentPreviewDialog({
                               setReviewed(false);
                               onChanged?.();
                               toast.success("Document finalisé.");
-                            })
-                          }
+                            });
+                          }}
                         >
                           <Check strokeWidth={1} /> Finaliser
                         </Button>
@@ -471,7 +474,7 @@ export function DocumentPreviewDialog({
                             void perform(async () => {
                               await documentsService.cancel(
                                 document.id,
-                                reason!,
+                                reason,
                                 author
                               );
                               setDocument(

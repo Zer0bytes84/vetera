@@ -11,6 +11,7 @@ import {
   type StockSelection,
   selectFifoAllocations,
 } from "@/domain/stock-fifo";
+import { mustExist } from "@/lib/must-exist";
 import {
   type StockDatabase,
   type StockProduct,
@@ -225,7 +226,10 @@ export async function applyStockAllocations(
   id: () => string
 ) {
   for (const allocation of allocations) {
-    const bucket = buckets.find((row) => row.id === allocation.balanceId)!;
+    const bucket = mustExist(
+      buckets.find((row) => row.id === allocation.balanceId),
+      `stock ${allocation.balanceId} de l’allocation`
+    );
     await updateBucket(db, bucket, -allocation.quantity, now);
     await recordAllocation(db, movementId, bucket, -allocation.quantity, id);
   }
@@ -596,7 +600,9 @@ export async function registerLotInDatabase(
     );
   }
   const receivedAt =
-    input.mode === "receive" ? stockTimestamp(input.receivedAt!) : null;
+    input.mode === "receive" && input.receivedAt
+      ? stockTimestamp(input.receivedAt)
+      : null;
   const fingerprint = JSON.stringify({
     productId: input.productId,
     lotNumber,
@@ -650,6 +656,12 @@ export async function registerLotInDatabase(
   }
   let result: StockOperationResult;
   if (input.mode === "receive") {
+    if (!receivedAt) {
+      throw new StockError(
+        "SOURCE_CONFLICT",
+        "Choisissez la date de réception du lot."
+      );
+    }
     result = await receiveStockInDatabase(
       db,
       product,
@@ -657,7 +669,7 @@ export async function registerLotInDatabase(
         quantity,
         lotId: lot.id,
         locationId: input.locationId,
-        receivedAt: receivedAt!,
+        receivedAt,
         reason: `Réception du lot ${lotNumber}`,
         sourceId: input.id,
         authorId: input.authorId,
@@ -796,7 +808,10 @@ export async function countStockBucketInDatabase(
   }
   const product = await stockProductInDatabase(db, row.product_id);
   const buckets = await assertInventoryBalance(db, product);
-  const bucket = buckets.find((item) => item.id === input.balanceId)!;
+  const bucket = buckets.find((item) => item.id === input.balanceId);
+  if (!bucket) {
+    throw new StockError("PRODUCT_MISSING", "Ce stock n’existe plus.");
+  }
   const delta = stockBalance(quantity - bucket.quantity);
   const after = stockQuantity(stockBalance(product.quantity + delta), true);
   const movementId = id();

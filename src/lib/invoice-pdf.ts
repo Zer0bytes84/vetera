@@ -4,6 +4,7 @@ import {
   type InvoiceSettings,
 } from "@/services/invoiceSettingsService";
 import { formatPhone } from "@/utils/display-format";
+import { mustExist } from "./must-exist";
 import { savePdf } from "./save-pdf";
 import { isTestDataFolder } from "./test-data-folder";
 
@@ -35,7 +36,7 @@ export function invoiceFileKey(id: string, issuedAt: string): string {
   let hash = 0x81_1c_9d_c5;
   for (const char of `${id}|${issuedAt}`) {
     // biome-ignore lint/suspicious/noBitwiseOperators: FNV-1a, un hachage défini par XOR sur 32 bits ; la clé de fichier des factures déjà exportées en dépend
-    hash ^= char.codePointAt(0)!;
+    hash ^= mustExist(char.codePointAt(0), "point de code d’un caractère");
     // biome-ignore lint/suspicious/noBitwiseOperators: FNV-1a, >>> 0 ramène le produit à un entier non signé de 32 bits, comme le veut l'algorithme
     hash = Math.imul(hash, 0x01_00_01_93) >>> 0;
   }

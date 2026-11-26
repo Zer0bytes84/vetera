@@ -337,6 +337,14 @@ export function createDocumentStore(
     }
     return user;
   }
+  /** With an author, actor throws instead of returning null: TypeScript sees it here. */
+  async function requireActor(db: DocumentDatabase, authorId: string) {
+    const user = await actor(db, authorId);
+    if (!user) {
+      throw new Error("Un utilisateur connecté est requis.");
+    }
+    return user;
+  }
   async function administrator(db: DocumentDatabase, authorId: string) {
     const user = await actor(db, authorId);
     if (user?.role !== "admin") {
@@ -820,7 +828,7 @@ export function createDocumentStore(
       }
       assertText(draft.title, draft.content);
       return persistence.transaction(async (db) => {
-        const user = (await actor(db, authorId))!;
+        const user = await requireActor(db, authorId);
         const source = await clinicalSource(
           db,
           preparation.consultationId,
@@ -916,7 +924,7 @@ export function createDocumentStore(
     ): Promise<PatientDocument> {
       assertText(draft.title, draft.content);
       return persistence.transaction(async (db) => {
-        const user = (await actor(db, authorId))!;
+        const user = await requireActor(db, authorId);
         const document = await get(db, documentId);
         if (document.status !== "brouillon") {
           throw new Error(
@@ -954,7 +962,7 @@ export function createDocumentStore(
         throw new Error("L’aperçu PDF est invalide. Générez-le à nouveau.");
       }
       return persistence.transaction(async (db) => {
-        const user = (await actor(db, authorId))!;
+        const user = await requireActor(db, authorId);
         if (
           !["admin", "vet_principal", "vet_adjoint"].includes(text(user.role))
         ) {
@@ -1005,7 +1013,7 @@ export function createDocumentStore(
         );
       }
       await persistence.transaction(async (db) => {
-        const user = (await actor(db, authorId))!;
+        const user = await requireActor(db, authorId);
         const document = await get(db, documentId);
         if (document.status === "annule") {
           throw new Error("Ce document est déjà annulé.");
@@ -1027,7 +1035,7 @@ export function createDocumentStore(
     },
     newVersion(documentId: string, authorId: string): Promise<PatientDocument> {
       return persistence.transaction(async (db) => {
-        const user = (await actor(db, authorId))!;
+        const user = await requireActor(db, authorId);
         const previous = await get(db, documentId);
         if (previous.status !== "finalise" || previous.kind === "import") {
           throw new Error(
@@ -1098,7 +1106,7 @@ export function createDocumentStore(
         );
       }
       return persistence.transaction(async (db) => {
-        const user = (await actor(db, authorId))!;
+        const user = await requireActor(db, authorId);
         const patient = (await db.list("patients", { id: patientId }))[0];
         if (!patient) {
           throw new Error("Ce patient n’existe plus.");

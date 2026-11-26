@@ -117,8 +117,8 @@ export function buildClinicalTrends(
         month: "short",
       }),
       count: completed.filter((row) => {
-        const date = parseDashboardDate(row.startTime)!;
-        return date >= from && date <= to;
+        const date = parseDashboardDate(row.startTime);
+        return date !== null && date >= from && date <= to;
       }).length,
     };
   });

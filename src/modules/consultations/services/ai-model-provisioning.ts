@@ -1,3 +1,4 @@
+import { mustExist } from "@/lib/must-exist";
 import { isTauriRuntime } from "@/services/browser-store";
 import manifest from "../../../../resources/local-ai/download-manifest.json";
 import { GEMMA4_SUSPENDED } from "../local-ai/generator-choice";
@@ -38,9 +39,10 @@ export const AI_MODELS_CHANGED_EVENT = "baitari:local-ai-models-changed";
 export const AI_SETTINGS_PENDING_KEY = "baitari:pending-ai-settings";
 
 const sizeOf = (id: AIModelId | "generator4" | "whisper-turbo") =>
-  manifest
-    .find((model) => model.id === id)!
-    .files.reduce((bytes, file) => bytes + file.size, 0);
+  mustExist(
+    manifest.find((model) => model.id === id),
+    `modèle ${id} dans le manifeste livré`
+  ).files.reduce((bytes, file) => bytes + file.size, 0);
 const sizeLabel = (bytes: number) =>
   bytes < 1_000_000_000
     ? `${Math.ceil(bytes / 1_000_000)} Mo`

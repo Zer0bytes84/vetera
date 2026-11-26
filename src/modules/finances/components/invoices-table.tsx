@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { StatusPill, type StatusTone } from "@/components/ui/status-pill";
 import { IconButton, QuietButton } from "@/components/ui/tuff-controls";
+import { mustExist } from "@/lib/must-exist";
 import {
   DOCUMENT_STATUS_META,
   formatDate,
@@ -117,7 +118,10 @@ export function InvoicesTable({
       label: "Facture",
       sortable: true,
       format: (_, row) => {
-        const invoice = byId.get(row.id)!;
+        const invoice = mustExist(
+          byId.get(row.id),
+          `facture de la ligne ${row.id}`
+        );
         return (
           <span className="block">
             <span className="block font-medium text-sm tabular-nums">
@@ -135,7 +139,10 @@ export function InvoicesTable({
       label: "Dossier",
       sortable: true,
       format: (_, row) => {
-        const patientName = getInvoicePatientName(byId.get(row.id)!, patients);
+        const patientName = getInvoicePatientName(
+          mustExist(byId.get(row.id), `facture de la ligne ${row.id}`),
+          patients
+        );
         return (
           <span className="block max-w-56">
             <span className="block truncate text-sm">{row.owner}</span>
@@ -154,7 +161,10 @@ export function InvoicesTable({
       sortable: true,
       priority: 1,
       format: (_, row) => {
-        const invoice = byId.get(row.id)!;
+        const invoice = mustExist(
+          byId.get(row.id),
+          `facture de la ligne ${row.id}`
+        );
         return (
           <span className="flex flex-wrap gap-1">
             <StatusPill size="sm" tone={DOCUMENT_TONE[invoice.documentStatus]}>
@@ -179,7 +189,8 @@ export function InvoicesTable({
       format: (value, row) => (
         <span
           className={
-            byId.get(row.id)!.settlementStatus === "overdue"
+            mustExist(byId.get(row.id), `facture de la ligne ${row.id}`)
+              .settlementStatus === "overdue"
               ? "font-medium text-negative"
               : "text-muted-foreground"
           }
@@ -207,7 +218,10 @@ export function InvoicesTable({
       sortable: true,
       priority: 1,
       format: (value, row) => {
-        const invoice = byId.get(row.id)!;
+        const invoice = mustExist(
+          byId.get(row.id),
+          `facture de la ligne ${row.id}`
+        );
         return (
           <span
             className={`font-medium font-sans text-[0.8125rem] ${Number(value) > 0 ? (invoice.settlementStatus === "overdue" ? "text-negative" : "text-warning") : "text-positive"}`}
@@ -224,7 +238,10 @@ export function InvoicesTable({
       noExport: true,
       priority: 1,
       format: (_, row) => {
-        const invoice = byId.get(row.id)!;
+        const invoice = mustExist(
+          byId.get(row.id),
+          `facture de la ligne ${row.id}`
+        );
         const draft = invoice.documentStatus === "draft";
         const issued = invoice.documentStatus === "issued";
         return (
@@ -313,7 +330,9 @@ export function InvoicesTable({
       filters={filters}
       icon={FileText}
       noun={["facture", "factures"]}
-      onRowClick={(row) => onOpen(byId.get(row.id)!)}
+      onRowClick={(row) =>
+        onOpen(mustExist(byId.get(row.id), `facture de la ligne ${row.id}`))
+      }
       pageSize={10}
       rowProps={(row) => ({
         tabIndex: 0,

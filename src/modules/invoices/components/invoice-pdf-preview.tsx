@@ -79,7 +79,7 @@ export function InvoicePdfPreview({
           }
           pdfjs.GlobalWorkerOptions.workerSrc = worker.default;
           const task = pdfjs.getDocument({
-            data: new Uint8Array(result.doc!.output("arraybuffer")),
+            data: new Uint8Array(result.doc.output("arraybuffer")),
             useSystemFonts: true,
           });
           dispose = () => {

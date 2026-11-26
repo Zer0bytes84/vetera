@@ -392,6 +392,8 @@ export function DocumentsLibrary({
           {shown.map((entry) => {
             const KindIcon = KIND_ICONS[entry.kind];
             const folder = patientName(entry.patientId);
+            const entryUrl = entry.item?.url;
+            const entryNote = entry.note;
             return (
               <li
                 className="group relative flex items-center gap-1 bg-[var(--card-band)] pr-2 transition-colors duration-150 hover:bg-foreground/[0.07] has-[[data-list-row][data-current]]:bg-foreground/[0.07]"
@@ -459,20 +461,16 @@ export function DocumentsLibrary({
                     <MoreHorizontal aria-hidden="true" className="size-4" />
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-52">
-                    {entry.kind === "link" && entry.item?.url ? (
+                    {entry.kind === "link" && entryUrl ? (
                       <>
-                        <DropdownMenuItem
-                          onClick={() => onOpenLink(entry.item!.url!)}
-                        >
+                        <DropdownMenuItem onClick={() => onOpenLink(entryUrl)}>
                           <ExternalLink
                             className="mr-2 size-4"
                             strokeWidth={1.5}
                           />
                           Ouvrir le lien
                         </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => onCopyLink(entry.item!.url!)}
-                        >
+                        <DropdownMenuItem onClick={() => onCopyLink(entryUrl)}>
                           <Copy className="mr-2 size-4" strokeWidth={1.5} />
                           Copier l’adresse
                         </DropdownMenuItem>
@@ -490,21 +488,21 @@ export function DocumentsLibrary({
                         Télécharger
                       </DropdownMenuItem>
                     ) : null}
-                    {entry.note ? (
+                    {entryNote ? (
                       <>
                         <DropdownMenuItem
-                          onClick={() => onDuplicate(entry.note!)}
+                          onClick={() => onDuplicate(entryNote)}
                         >
                           <Copy className="mr-2 size-4" strokeWidth={1.5} />
                           Dupliquer la note
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                          onClick={() => onOpenAssistant(entry.note!)}
+                          onClick={() => onOpenAssistant(entryNote)}
                         >
                           <BookOpen className="mr-2 size-4" strokeWidth={1.5} />
                           Ouvrir dans l'assistant
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => onExport(entry.note!)}>
+                        <DropdownMenuItem onClick={() => onExport(entryNote)}>
                           <Download className="mr-2 size-4" strokeWidth={1.5} />
                           Exporter (.md)
                         </DropdownMenuItem>

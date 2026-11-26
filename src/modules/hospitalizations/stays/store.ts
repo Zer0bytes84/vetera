@@ -301,13 +301,18 @@ export function createStayStore(
           throw new Error("Le séjour a changé. Rechargez son détail.");
         }
         if (to === "sorti" || to === "annule") {
-          const cutoff = to === "sorti" ? discharge! : clock().toISOString();
+          const cutoff =
+            to === "sorti"
+              ? (discharge ?? clock().toISOString())
+              : clock().toISOString();
           const tasks = await db.select<{ id: string; statut: string }[]>(
             "SELECT id,statut FROM care_tasks WHERE stay_id=$1 AND heure_prevue >= $2 AND statut IN ('a_faire','en_cours')",
             [stayId, cutoff]
           );
           const reason =
-            to === "sorti" ? "Sortie du patient" : options.reason!.trim();
+            to === "sorti"
+              ? "Sortie du patient"
+              : (options.reason?.trim() ?? "");
           for (const task of tasks) {
             await db.execute(
               "UPDATE care_tasks SET statut='annule',motif_annulation=$1,updated_at=$2 WHERE id=$3",

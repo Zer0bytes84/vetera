@@ -137,8 +137,11 @@ self.onmessage = async ({ data }: MessageEvent<WorkerRequest>) => {
     if (needed > capacity) {
       // Rare: unusually dense text. setOptions releases the converted engine
       // before creating its replacement, so one model stays loaded at a time.
+      if (!loadedUrl) {
+        throw new Error("Aucun modèle chargé.");
+      }
       await model.setOptions({
-        baseOptions: { modelAssetBuffer: await openWeights(loadedUrl!) },
+        baseOptions: { modelAssetBuffer: await openWeights(loadedUrl) },
         maxTokens: needed,
       });
       capacity = needed;

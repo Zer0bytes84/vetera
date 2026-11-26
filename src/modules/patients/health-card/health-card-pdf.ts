@@ -1,7 +1,7 @@
 import { jsPDF } from "jspdf";
 import boldFontUrl from "pdfjs-dist/standard_fonts/LiberationSans-Bold.ttf?url";
 import regularFontUrl from "pdfjs-dist/standard_fonts/LiberationSans-Regular.ttf?url";
-
+import { mustExist } from "@/lib/must-exist";
 import type { InvoiceSettings } from "@/services/invoiceSettingsService";
 import type { PatientRecordPdf } from "../export/patient-record-types";
 import {
@@ -256,20 +256,16 @@ function drawIdentity(page: Page, card: HealthCard): number {
   const { identity, weight } = card;
   const top = 33,
     size = 27;
-  if (identity.photoDataUrl && imageFormat(identity.photoDataUrl)) {
+  const photoFormat = identity.photoDataUrl
+    ? imageFormat(identity.photoDataUrl)
+    : null;
+  if (identity.photoDataUrl && photoFormat) {
     doc.saveGraphicsState();
     doc.roundedRect(M, top, size, size, 7, 7, null);
     doc.clip();
     doc.discardPath();
     try {
-      doc.addImage(
-        identity.photoDataUrl,
-        imageFormat(identity.photoDataUrl)!,
-        M,
-        top,
-        size,
-        size
-      );
+      doc.addImage(identity.photoDataUrl, photoFormat, M, top, size, size);
     } catch {
       /* Photo illisible : l'initiale reste visible dessous. */
     }
@@ -610,7 +606,8 @@ function drawWeight(
     top + 25,
     COL - 10
   );
-  if (points.length < 2) {
+  const last = points.at(-1);
+  if (points.length < 2 || !last) {
     return top + height;
   }
 
@@ -625,9 +622,17 @@ function drawWeight(
   const span = Math.max(max - min, max * 0.04, 0.2);
   min = Math.max(0, min - span * 0.15);
   max += span * 0.15;
-  const times = points.map((p) => parseClinicalDate(p.date)!.getTime());
+  const times = points.map((p) =>
+    mustExist(
+      parseClinicalDate(p.date),
+      `date valide du point de poids ${p.date}`
+    ).getTime()
+  );
   const t0 = times[0],
-    t1 = times.at(-1)!;
+    t1 = times.at(-1);
+  if (t1 === undefined) {
+    return top + height;
+  }
   const px = (t: number) =>
     t1 === t0 ? cx + cw / 2 : cx + ((t - t0) / (t1 - t0)) * cw;
   const py = (kg: number) => cy + ch - ((kg - min) / (max - min)) * ch;
@@ -664,7 +669,7 @@ function drawWeight(
   );
   page.style(6.5, false, MUTED);
   doc.text(civilDate(points[0].date), cx, cy + ch + 4.5);
-  doc.text(civilDate(points.at(-1)!.date), cx + cw, cy + ch + 4.5, {
+  doc.text(civilDate(last.date), cx + cw, cy + ch + 4.5, {
     align: "right",
   });
   return top + height;

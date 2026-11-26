@@ -1,5 +1,6 @@
 import { StockError, stockQuantity, stockQuantityLabel } from "@/domain/stock";
 import type { StockSelection } from "@/domain/stock-fifo";
+import { mustExist } from "@/lib/must-exist";
 import {
   appendInvoiceDraftLinesInDatabase,
   createInvoiceDraftInDatabase,
@@ -176,7 +177,10 @@ export async function consumeConsultationProductInDatabase(
     },
     [stockInvoiceLine(product, quantity, "Consultation")]
   );
-  const invoiceLine = invoice.lines.at(-1)!;
+  const invoiceLine = mustExist(
+    invoice.lines.at(-1),
+    `ligne de la facture ${invoice.id} créée pour cet usage`
+  );
   if (movementId) {
     await db.execute(
       "UPDATE stock_movements SET invoice_id=?,invoice_line_id=? WHERE id=?",
@@ -322,6 +326,7 @@ export async function dispensePrescriptionInDatabase(
     }
   }
   const prepared: {
+    item: (typeof items)[number];
     line: DispensingLineInput;
     product: StockProduct;
     movementId: string | null;
@@ -330,9 +335,16 @@ export async function dispensePrescriptionInDatabase(
   for (const item of items) {
     const line = preparedInput.find(
       (line) => line.prescriptionItemId === item.id
-    )!;
+    );
+    if (!line) {
+      throw new StockError(
+        "SOURCE_CONFLICT",
+        "Vérifiez le produit et la quantité de chaque ligne de l’ordonnance avant de dispenser."
+      );
+    }
     const product = await stockProductInDatabase(db, line.productId);
     prepared.push({
+      item,
       line,
       product,
       movementId: null,
@@ -355,7 +367,7 @@ export async function dispensePrescriptionInDatabase(
         sourceType: "prescription",
         sourceId: rx.id,
         sourceLineId: row.line.prescriptionItemId,
-        sourceLabel: `Ordonnance · ${items.find((item) => item.id === row.line.prescriptionItemId)!.medication_name}`,
+        sourceLabel: `Ordonnance · ${row.item.medication_name}`,
         patientId: rx.patient_id,
         authorId: input.authorId,
         occurredAt: now,

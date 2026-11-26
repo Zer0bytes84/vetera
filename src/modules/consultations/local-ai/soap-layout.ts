@@ -1,3 +1,4 @@
+import { mustExist } from "@/lib/must-exist";
 import { type LocalSoapNote, SOAP_SECTIONS } from "./soap-schema";
 
 const SENTENCE_END_SPACE = /(?<=[.!?])\s+/u;
@@ -59,7 +60,10 @@ const comparable = (text: string) =>
 /** The section without its own heading on the first line (full or short title). */
 export function dropSoapHeading(key: keyof LocalSoapNote, text: string) {
   const lines = text.trim().split("\n");
-  const short = SOAP_SECTIONS.find((section) => section.key === key)!.title;
+  const short = mustExist(
+    SOAP_SECTIONS.find((section) => section.key === key),
+    `rubrique ${key} dans SOAP_SECTIONS`
+  ).title;
   const headings = [SOAP_FULL_HEADINGS[key], short].map(comparable);
   if (headings.includes(comparable(lines[0] ?? ""))) {
     lines.shift();

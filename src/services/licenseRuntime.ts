@@ -201,7 +201,10 @@ async function check(
     /* A legacy installation can migrate online using its existing key. */
   }
   const now = Date.now();
-  const lastSeen = Number.isFinite(stored.lastSeen) ? stored.lastSeen! : 0;
+  const lastSeen =
+    typeof stored.lastSeen === "number" && Number.isFinite(stored.lastSeen)
+      ? stored.lastSeen
+      : 0;
   const timeError = lease ? getLeaseTimeError(lease, now, lastSeen) : null;
   const needsOnline =
     forceOnline ||

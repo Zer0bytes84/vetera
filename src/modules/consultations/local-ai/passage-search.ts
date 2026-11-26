@@ -97,9 +97,10 @@ export function splitPassages(
   let current: string[] = [];
   let length = 0;
   for (const sentence of sentences) {
-    if (current.length && length + sentence.length > size) {
+    const last = current.at(-1);
+    if (last !== undefined && length + sentence.length > size) {
       passages.push(current.join(" "));
-      const overlap = current.at(-1)!;
+      const overlap = last;
       // The overlap is dropped when it would push the passage past the limit.
       current = overlap.length + sentence.length < size ? [overlap] : [];
       length = current.length ? overlap.length + 1 : 0;

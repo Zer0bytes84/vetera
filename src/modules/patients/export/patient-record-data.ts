@@ -654,7 +654,10 @@ export function assemblePatientRecordSnapshot(
       ),
       (entry) => entry.createdAt
     )) {
-      const metadata = clinicalDocument(note)!;
+      const metadata = clinicalDocument(note);
+      if (!metadata) {
+        continue;
+      }
       if (
         !(
           present(metadata.reviewedAt) &&

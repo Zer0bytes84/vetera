@@ -235,7 +235,11 @@ export function HexDensity({
     if (event.key === "Home") {
       next = placed[0].id;
     } else if (event.key === "End") {
-      next = placed.at(-1)!.id;
+      const last = placed.at(-1);
+      if (!last) {
+        return;
+      }
+      next = last.id;
     } else if (event.key in dirs) {
       if (activeCell) {
         // Nearest cell in that direction, preferring the same row or column.

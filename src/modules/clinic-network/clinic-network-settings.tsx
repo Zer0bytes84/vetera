@@ -317,7 +317,11 @@ export function ClinicNetworkSettings() {
                         {host.key}
                       </code>
                       <Button
-                        onClick={() => void copyKey(host.key!)}
+                        onClick={() => {
+                          if (host.key) {
+                            void copyKey(host.key);
+                          }
+                        }}
                         size="sm"
                         type="button"
                         variant="outline"

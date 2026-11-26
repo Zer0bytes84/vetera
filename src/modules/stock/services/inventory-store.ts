@@ -296,6 +296,9 @@ export async function saveCatalogueProductInDatabase(
       );
     }
   } else {
+    if (!existing) {
+      throw new StockError("SOURCE_CONFLICT", "Ce produit n’existe plus.");
+    }
     await db.execute(
       "UPDATE products SET name=?,category=?,sub_category=?,unit=?,min_stock=?,purchase_price_amount=?,sale_price_amount=?,expiry_date=?,stock_tracked=?,archived_at=?,updated_at=? WHERE id=?",
       [
@@ -313,7 +316,7 @@ export async function saveCatalogueProductInDatabase(
         input.id,
       ]
     );
-    if (existing!.quantity !== quantity) {
+    if (existing.quantity !== quantity) {
       await countUnassignedStockInDatabase(
         db,
         await stockProductInDatabase(db, input.id),

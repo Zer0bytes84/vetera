@@ -1,3 +1,4 @@
+import { mustExist } from "@/lib/must-exist";
 import { isOpenInvoice } from "@/modules/dashboard/v2/financial-model";
 import type { Invoice, Transaction } from "@/types/db";
 
@@ -56,7 +57,10 @@ export function receivablesAging(
     const bucket = bucketOf(
       Math.max(0, Math.floor((now.getTime() - issued) / DAY))
     );
-    const row = rows.find((candidate) => candidate.id === bucket.id)!;
+    const row = mustExist(
+      rows.find((candidate) => candidate.id === bucket.id),
+      `ligne de la tranche ${bucket.id}`
+    );
     row.amount += amount;
     row.count += 1;
   };
@@ -66,7 +70,7 @@ export function receivablesAging(
     }
     const net = Math.max(0, invoice.grossAmount - invoice.creditAmount) / 100;
     place(
-      (invoice.issuedAt ?? invoice.createdAt)!,
+      invoice.issuedAt ?? invoice.createdAt,
       Math.min(net, Math.max(0, invoice.balanceAmount) / 100)
     );
   }

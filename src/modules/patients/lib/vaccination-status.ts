@@ -66,7 +66,7 @@ export function getNextDueVaccination(
     return null;
   }
   const upcoming = vaccinations
-    .filter((v) => {
+    .filter((v): v is Vaccination & { nextDueAt: string } => {
       if (!v.nextDueAt) {
         return false;
       }
@@ -75,17 +75,19 @@ export function getNextDueVaccination(
     })
     .sort(
       (a, b) =>
-        new Date(a.nextDueAt!).getTime() - new Date(b.nextDueAt!).getTime()
+        new Date(a.nextDueAt).getTime() - new Date(b.nextDueAt).getTime()
     );
   if (upcoming.length > 0) {
     return upcoming[0];
   }
   // Sinon, la plus récemment dépassée
   const overdue = vaccinations
-    .filter((v) => v.nextDueAt)
+    .filter((v): v is Vaccination & { nextDueAt: string } =>
+      Boolean(v.nextDueAt)
+    )
     .sort(
       (a, b) =>
-        new Date(b.nextDueAt!).getTime() - new Date(a.nextDueAt!).getTime()
+        new Date(b.nextDueAt).getTime() - new Date(a.nextDueAt).getTime()
     );
   return overdue[0] ?? null;
 }

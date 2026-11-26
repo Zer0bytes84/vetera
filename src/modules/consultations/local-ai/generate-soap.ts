@@ -51,9 +51,9 @@ export async function generateValidatedSoap({
       throw new DOMException("Tâche annulée.", "AbortError");
     }
   };
-  const byRubric = async () => {
+  const byRubric = async (parts: readonly SoapRetryPart[]) => {
     const note: LocalSoapNote = { ...EMPTY_SOAP };
-    for (const part of retryParts!) {
+    for (const part of parts) {
       assertActive();
       const raw = await generate(part.prompt, 2, part);
       assertActive();
@@ -69,12 +69,14 @@ export async function generateValidatedSoap({
     assertActive();
     const raw =
       attempt === 2 && retryParts?.length
-        ? null
+        ? retryParts
         : await generate(attempt === 1 ? prompt : retryPrompt, attempt);
     assertActive();
     try {
       const note =
-        raw === null ? await byRubric() : parseGeneratedSoap(raw, omittedKeys);
+        typeof raw === "string"
+          ? parseGeneratedSoap(raw, omittedKeys)
+          : await byRubric(raw);
       validate?.(note);
       return note;
     } catch (error) {

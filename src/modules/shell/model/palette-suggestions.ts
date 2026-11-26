@@ -20,7 +20,8 @@ export function suggestedPatients(
       .filter((patient) => patient.status !== "decede" && patient.lastVisit)
       .sort(
         (a, b) =>
-          (Date.parse(b.lastVisit!) || 0) - (Date.parse(a.lastVisit!) || 0)
+          (Date.parse(b.lastVisit ?? "") || 0) -
+          (Date.parse(a.lastVisit ?? "") || 0)
       )
       .map((patient) => patient.id),
   ];

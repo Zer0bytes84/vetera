@@ -136,12 +136,11 @@ export function AgentQuestion({
       ...(grid.current?.querySelectorAll<HTMLElement>("[data-card]") ?? []),
     ];
     const i = cards.indexOf(document.activeElement as HTMLElement);
-    if (i < 0) {
+    const el = grid.current;
+    if (i < 0 || !el) {
       return;
     }
-    const cols = getComputedStyle(grid.current!).gridTemplateColumns.split(
-      " "
-    ).length;
+    const cols = getComputedStyle(el).gridTemplateColumns.split(" ").length;
     const step = {
       ArrowRight: 1,
       ArrowLeft: -1,

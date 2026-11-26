@@ -494,10 +494,9 @@ export default function LocalConsultationAssistant({
   }, [ai.phase]);
 
   useEffect(() => {
-    if (ai.transcription) {
-      setTranscript((previous) =>
-        previous ? `${previous}\n${ai.transcription}` : ai.transcription!
-      );
+    const text = ai.transcription;
+    if (text) {
+      setTranscript((previous) => (previous ? `${previous}\n${text}` : text));
       setCaret(0);
     }
   }, [ai.transcription]);

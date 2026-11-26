@@ -1,3 +1,4 @@
+import { mustExist } from "@/lib/must-exist";
 import { evidenceTokens } from "./dictation-scaffold";
 import { stripSoapLayout } from "./soap-layout";
 import { containsDosage, type LocalSoapNote } from "./soap-schema";
@@ -288,7 +289,10 @@ function restoreClauses(output: string, pieces: Piece[]) {
     const insert = group.parts.join(" ");
     if (group.opens) {
       // A sentence of its own: after the model's end of the previous sentence.
-      const stop = LEADING_STOPS.exec(after)![0];
+      const stop = mustExist(
+        LEADING_STOPS.exec(after),
+        "correspondance de /^[.!?]*/ (elle accepte la chaîne vide)"
+      )[0];
       text = [head + stop, insert, after.slice(stop.length).trim()]
         .filter(Boolean)
         .join(" ");

@@ -1190,6 +1190,7 @@ export function PatientDetailPage({
                 {PATIENT_RECORD_SECTIONS.map((section) => {
                   const SectionIcon = section.icon;
                   const isSelected = activeTab === section.value;
+                  const sectionCount = sectionCounts[section.value];
                   return (
                     <button
                       aria-controls="record-tab-content"
@@ -1220,12 +1221,12 @@ export function PatientDetailPage({
                       <span className="patient-rail-label">
                         {section.label}
                       </span>
-                      {sectionCounts[section.value] ? (
+                      {sectionCount ? (
                         <span
-                          aria-label={`${sectionCounts[section.value]} élément${sectionCounts[section.value]! > 1 ? "s" : ""}`}
+                          aria-label={`${sectionCount} élément${sectionCount > 1 ? "s" : ""}`}
                           className="patient-rail-count"
                         >
-                          {sectionCounts[section.value]}
+                          {sectionCount}
                         </span>
                       ) : null}
                     </button>

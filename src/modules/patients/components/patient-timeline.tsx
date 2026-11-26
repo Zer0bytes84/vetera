@@ -570,6 +570,7 @@ export function PatientTimeline({
                   // The visit the Synthèse shows in full: its note is not repeated here.
                   const compact = entry.id === `apt-${summarizedVisitId}`;
                   const noReport = entry.summary === NO_REPORT;
+                  const { weightEntry, piece: openPiece } = entry;
                   return (
                     <li
                       className="patient-timeline-event"
@@ -696,20 +697,20 @@ export function PatientTimeline({
                               />
                             </Button>
                           ) : entry.kind === "weight" &&
-                            entry.weightEntry &&
+                            weightEntry &&
                             onEditWeight ? (
                             <Button
                               className="h-7 rounded-full px-3 text-xs"
-                              onClick={() => onEditWeight(entry.weightEntry!)}
+                              onClick={() => onEditWeight(weightEntry)}
                               size="sm"
                               variant="outline"
                             >
                               Modifier
                             </Button>
-                          ) : entry.piece && onOpenPiece ? (
+                          ) : openPiece && onOpenPiece ? (
                             <Button
                               className="h-7 rounded-full px-3 text-xs"
-                              onClick={() => onOpenPiece(entry.piece!)}
+                              onClick={() => onOpenPiece(openPiece)}
                               size="sm"
                               variant="outline"
                             >

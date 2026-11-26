@@ -783,8 +783,8 @@ export function useSQLite<T extends { id: string }>(
     getSnapshot,
     getSnapshot
   ) as unknown as T[];
-  const [loading, setLoading] = useState(
-    () => Boolean(safeTableName) && !tableSnapshotCache.has(safeTableName!)
+  const [loading, setLoading] = useState(() =>
+    safeTableName ? !tableSnapshotCache.has(safeTableName) : false
   );
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);

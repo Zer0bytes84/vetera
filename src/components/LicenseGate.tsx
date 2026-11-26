@@ -37,12 +37,12 @@ export function LicenseGate({ children }: { children: ReactNode }) {
 /** Same verdict, same object: a background recheck that changes nothing renders nothing. */
 function sameAccess(a: LicenseAccess | null, b: LicenseAccess) {
   return (
-    Boolean(a) &&
-    a!.allowed === b.allowed &&
-    a!.message === b.message &&
-    a!.offlineUntil === b.offlineUntil &&
-    a!.expiresAt === b.expiresAt &&
-    a!.email === b.email
+    a !== null &&
+    a.allowed === b.allowed &&
+    a.message === b.message &&
+    a.offlineUntil === b.offlineUntil &&
+    a.expiresAt === b.expiresAt &&
+    a.email === b.email
   );
 }
 

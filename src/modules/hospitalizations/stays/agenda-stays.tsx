@@ -18,26 +18,29 @@ export function AgendaStays({
   const days = mode === "week" ? weekDays : [selectedDate];
   const events = stays
     .filter((stay) => stay.status !== "annule")
-    .flatMap((stay) => [
-      {
-        id: `${stay.id}:admission`,
-        stayId: stay.id,
-        patientId: stay.patient_id,
-        date: stay.admitted_at,
-        label: "Admission",
-      },
-      ...(stay.discharged_at || stay.planned_discharge_at
-        ? [
-            {
-              id: `${stay.id}:sortie`,
-              stayId: stay.id,
-              patientId: stay.patient_id,
-              date: (stay.discharged_at || stay.planned_discharge_at)!,
-              label: stay.discharged_at ? "Sortie" : "Sortie prévue",
-            },
-          ]
-        : []),
-    ])
+    .flatMap((stay) => {
+      const exit = stay.discharged_at || stay.planned_discharge_at;
+      return [
+        {
+          id: `${stay.id}:admission`,
+          stayId: stay.id,
+          patientId: stay.patient_id,
+          date: stay.admitted_at,
+          label: "Admission",
+        },
+        ...(exit
+          ? [
+              {
+                id: `${stay.id}:sortie`,
+                stayId: stay.id,
+                patientId: stay.patient_id,
+                date: exit,
+                label: stay.discharged_at ? "Sortie" : "Sortie prévue",
+              },
+            ]
+          : []),
+      ];
+    })
     .filter((event) =>
       days.some(
         (day) => day.toDateString() === new Date(event.date).toDateString()

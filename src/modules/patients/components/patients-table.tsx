@@ -10,6 +10,7 @@ import { StatusPill, type StatusTone } from "@/components/ui/status-pill";
 import { IconButton, QuietButton } from "@/components/ui/tuff-controls";
 import { PATIENT_STATUS_META } from "@/config/status-meta";
 import { Pencil } from "@/lib/icons";
+import { mustExist } from "@/lib/must-exist";
 import { speciesIcon } from "@/lib/species-icon";
 import {
   formatOwnerName,
@@ -136,7 +137,10 @@ export function PatientsTable({
       label: "Patient",
       sortable: true,
       format: (_, row) => {
-        const { patient } = byId.get(row.id)!;
+        const { patient } = mustExist(
+          byId.get(row.id),
+          `dossier de la ligne ${row.id}`
+        );
         const details = [
           patient.species,
           patient.breed,
@@ -168,7 +172,10 @@ export function PatientsTable({
       label: "Propriétaire",
       sortable: true,
       format: (_, row) => {
-        const { owner } = byId.get(row.id)!;
+        const { owner } = mustExist(
+          byId.get(row.id),
+          `dossier de la ligne ${row.id}`
+        );
         return (
           <span className="flex min-w-0 items-center gap-1">
             <span className="block min-w-0">
@@ -209,7 +216,10 @@ export function PatientsTable({
       label: "Statut",
       sortable: true,
       format: (_, row) => {
-        const { patient } = byId.get(row.id)!;
+        const { patient } = mustExist(
+          byId.get(row.id),
+          `dossier de la ligne ${row.id}`
+        );
         return (
           <StatusPill tone={STATUS_TONE[patient.status] ?? "neutral"}>
             {PATIENT_STATUS_META[patient.status]?.label ?? patient.status}
@@ -257,7 +267,10 @@ export function PatientsTable({
       priority: 1,
       align: "left",
       format: (_, row) => {
-        const { patient } = byId.get(row.id)!;
+        const { patient } = mustExist(
+          byId.get(row.id),
+          `dossier de la ligne ${row.id}`
+        );
         return (
           <div
             className="flex items-center justify-end gap-1"
@@ -307,7 +320,11 @@ export function PatientsTable({
       }
       icon={Users}
       noun={["dossier", "dossiers"]}
-      onRowClick={(row) => onOpen(byId.get(row.id)!.patient)}
+      onRowClick={(row) =>
+        onOpen(
+          mustExist(byId.get(row.id), `dossier de la ligne ${row.id}`).patient
+        )
+      }
       pageSize={10}
       rowProps={(row) => ({
         "aria-label": `Ouvrir le dossier de ${row.patient}`,
@@ -318,7 +335,10 @@ export function PatientsTable({
           }
           if (event.key === "Enter" || event.key === " ") {
             event.preventDefault();
-            onOpen(byId.get(row.id)!.patient);
+            onOpen(
+              mustExist(byId.get(row.id), `dossier de la ligne ${row.id}`)
+                .patient
+            );
           }
         },
         ...({ "data-list-row": "", "data-row-id": row.id } as object),

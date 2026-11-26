@@ -239,7 +239,7 @@ class Layout {
     return this.output.getPageCount() + (this.doc?.getNumberOfPages() ?? 0);
   }
 
-  private current(): jsPDF {
+  current(): jsPDF {
     return (this.doc ??= document(this.fontData));
   }
 
@@ -490,7 +490,7 @@ async function cover(
   sections: PatientRecordSection[]
 ): Promise<void> {
   await layout.page();
-  const doc = layout.doc!;
+  const doc = layout.current();
   layout.y += 9;
   let logoBottom = layout.y;
   if (snapshot.clinic.logoDataUrl) {
@@ -790,7 +790,10 @@ async function appendSource(
           // Give the embedder the actual source origin, including a nonzero
           // MediaBox. Its default origin would crop such pages incorrectly.
           const box = originalPage.getMediaBox();
-          const embedded = vectors.get(originalPage)!;
+          const embedded = vectors.get(originalPage);
+          if (!embedded) {
+            throw new Error("Page vectorielle non préparée.");
+          }
           // Embedding is otherwise deferred until output.save(), where an
           // unsupported stream could no longer be attributed to its file.
           await embedded.embed();

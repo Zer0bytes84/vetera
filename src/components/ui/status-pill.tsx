@@ -130,6 +130,10 @@ export function StatusPill({
   children,
   ...props
 }: StatusPillProps) {
+  const glyph =
+    IconComponent && iconWeight === "fill"
+      ? glyphs.get(IconComponent as LucideIcon)
+      : undefined;
   return (
     <span
       className={cn(
@@ -141,13 +145,8 @@ export function StatusPill({
       )}
       {...props}
     >
-      {IconComponent &&
-      iconWeight === "fill" &&
-      glyphs.has(IconComponent as LucideIcon) ? (
-        <Glyph
-          className={sizes[size].icon}
-          glyph={glyphs.get(IconComponent as LucideIcon)!}
-        />
+      {glyph ? (
+        <Glyph className={sizes[size].icon} glyph={glyph} />
       ) : IconComponent ? (
         <IconComponent
           aria-hidden="true"

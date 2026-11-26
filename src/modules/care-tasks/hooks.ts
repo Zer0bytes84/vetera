@@ -36,13 +36,16 @@ export function subscribeCareTaskCompleted(
 }
 /** Called only after commit. Integration failures never undo a saved care task. */
 export async function notifyCareTaskCompleted(task: CareTask) {
+  if (task.completed_at === null || task.execute_par === null) {
+    return;
+  }
   const event: CareCompletedEvent = {
     taskId: task.id,
     patientId: task.patient_id,
     act: task.label,
     scheduledAt: task.heure_prevue,
-    completedAt: task.completed_at!,
-    executorId: task.execute_par!,
+    completedAt: task.completed_at,
+    executorId: task.execute_par,
     productId: task.produit_id,
   };
   try {
