@@ -1,0 +1,167 @@
+{
+ "base": "http://127.0.0.1:5199",
+ "date": "2026-11-26T18:53:44.152Z",
+ "total": 15,
+ "withEffect": [
+  "img-onerror",
+  "img-majuscules",
+  "iframe-srcdoc",
+  "lien-javascript",
+  "details-ontoggle",
+  "onclick",
+  "formaction",
+  "img-balise-distante",
+  "style-attribut"
+ ],
+ "withoutEffect": [
+  "svg-onload",
+  "balise-script",
+  "input-autofocus",
+  "object-data",
+  "mxss-math",
+  "svg-script"
+ ],
+ "results": [
+  {
+   "name": "img-onerror",
+   "executed": true,
+   "markers": [
+    "img-onerror",
+    "img-onerror"
+   ],
+   "dialogs": [],
+   "popups": [],
+   "previewHtml": "<h1 class=\"font-heading font-medium text-2xl tracking-[-0.035em]\">Note de test img-onerror</h1><p class=\"mt-1 mb-6 text-foreground/70 text-xs\">26 novembre 2026 à 11:00</p><div><p>Texte</p><img src=\"x\" onerror=\"__pwned.push('img-onerror')\"></div>"
+  },
+  {
+   "name": "img-majuscules",
+   "executed": true,
+   "markers": [
+    "img-majuscules",
+    "img-majuscules"
+   ],
+   "dialogs": [],
+   "popups": [],
+   "previewHtml": "<h1 class=\"font-heading font-medium text-2xl tracking-[-0.035em]\">Note de test img-majuscules</h1><p class=\"mt-1 mb-6 text-foreground/70 text-xs\">26 novembre 2026 à 11:00</p><div><img src=\"x\" onerror=\"__pwned.push('img-majuscules')\"></div>"
+  },
+  {
+   "name": "svg-onload",
+   "executed": false,
+   "markers": [],
+   "dialogs": [],
+   "popups": [],
+   "previewHtml": "<h1 class=\"font-heading font-medium text-2xl tracking-[-0.035em]\">Note de test svg-onload</h1><p class=\"mt-1 mb-6 text-foreground/70 text-xs\">26 novembre 2026 à 11:00</p><div><svg onload=\"__pwned.push('svg-onload')\"></svg></div>"
+  },
+  {
+   "name": "iframe-srcdoc",
+   "executed": true,
+   "markers": [
+    "iframe-srcdoc"
+   ],
+   "dialogs": [],
+   "popups": [],
+   "previewHtml": "<h1 class=\"font-heading font-medium text-2xl tracking-[-0.035em]\">Note de test iframe-srcdoc</h1><p class=\"mt-1 mb-6 text-foreground/70 text-xs\">26 novembre 2026 à 11:00</p><div><iframe srcdoc=\"&lt;script&gt;parent.__pwned.push('iframe-srcdoc')&lt;/script&gt;\"></iframe></div>"
+  },
+  {
+   "name": "lien-javascript",
+   "executed": true,
+   "markers": [
+    "lien-javascript"
+   ],
+   "dialogs": [],
+   "popups": [],
+   "previewHtml": "<h1 class=\"font-heading font-medium text-2xl tracking-[-0.035em]\">Note de test lien-javascript</h1><p class=\"mt-1 mb-6 text-foreground/70 text-xs\">26 novembre 2026 à 11:00</p><div><a id=\"poc\" href=\"javascript:__pwned.push('lien-javascript')\">lien</a></div>"
+  },
+  {
+   "name": "balise-script",
+   "executed": false,
+   "markers": [],
+   "dialogs": [],
+   "popups": [],
+   "previewHtml": "<h1 class=\"font-heading font-medium text-2xl tracking-[-0.035em]\">Note de test balise-script</h1><p class=\"mt-1 mb-6 text-foreground/70 text-xs\">26 novembre 2026 à 11:00</p><div><script>__pwned.push('balise-script')</script><p>après</p></div>"
+  },
+  {
+   "name": "input-autofocus",
+   "executed": false,
+   "markers": [],
+   "dialogs": [],
+   "popups": [],
+   "previewHtml": "<h1 class=\"font-heading font-medium text-2xl tracking-[-0.035em]\">Note de test input-autofocus</h1><p class=\"mt-1 mb-6 text-foreground/70 text-xs\">26 novembre 2026 à 11:00</p><div><input autofocus=\"\" onfocus=\"__pwned.push('input-autofocus')\"></div>"
+  },
+  {
+   "name": "details-ontoggle",
+   "executed": true,
+   "markers": [
+    "details-ontoggle",
+    "details-ontoggle"
+   ],
+   "dialogs": [],
+   "popups": [],
+   "previewHtml": "<h1 class=\"font-heading font-medium text-2xl tracking-[-0.035em]\">Note de test details-ontoggle</h1><p class=\"mt-1 mb-6 text-foreground/70 text-xs\">26 novembre 2026 à 11:00</p><div><details open=\"\" ontoggle=\"__pwned.push('details-ontoggle')\"><summary>x</summary></details></div>"
+  },
+  {
+   "name": "object-data",
+   "executed": false,
+   "markers": [],
+   "dialogs": [],
+   "popups": [],
+   "previewHtml": "<h1 class=\"font-heading font-medium text-2xl tracking-[-0.035em]\">Note de test object-data</h1><p class=\"mt-1 mb-6 text-foreground/70 text-xs\">26 novembre 2026 à 11:00</p><div><object data=\"data:text/html,&lt;script&gt;parent.__pwned.push('object-data')&lt;/script&gt;\"></object></div>"
+  },
+  {
+   "name": "onclick",
+   "executed": true,
+   "markers": [
+    "onclick"
+   ],
+   "dialogs": [],
+   "popups": [],
+   "previewHtml": "<h1 class=\"font-heading font-medium text-2xl tracking-[-0.035em]\">Note de test onclick</h1><p class=\"mt-1 mb-6 text-foreground/70 text-xs\">26 novembre 2026 à 11:00</p><div><p id=\"poc\" onclick=\"__pwned.push('onclick')\">cliquez</p></div>"
+  },
+  {
+   "name": "formaction",
+   "executed": true,
+   "markers": [
+    "formaction"
+   ],
+   "dialogs": [],
+   "popups": [],
+   "previewHtml": "<h1 class=\"font-heading font-medium text-2xl tracking-[-0.035em]\">Note de test formaction</h1><p class=\"mt-1 mb-6 text-foreground/70 text-xs\">26 novembre 2026 à 11:00</p><div><form><button id=\"poc\" formaction=\"javascript:__pwned.push('formaction')\">go</button></form></div>"
+  },
+  {
+   "name": "mxss-math",
+   "executed": false,
+   "markers": [],
+   "dialogs": [],
+   "popups": [],
+   "previewHtml": "<h1 class=\"font-heading font-medium text-2xl tracking-[-0.035em]\">Note de test mxss-math</h1><p class=\"mt-1 mb-6 text-foreground/70 text-xs\">26 novembre 2026 à 11:00</p><div><math><mtext><mglyph><style><!--</style><img title=\"--&gt;&lt;img src=1 onerror=__pwned.push('mxss-math')&gt;\"></mglyph><table></table></mtext></math></div>"
+  },
+  {
+   "name": "img-balise-distante",
+   "executed": false,
+   "markers": [],
+   "dialogs": [],
+   "popups": [],
+   "remoteRequests": [
+    "http://127.0.0.1:1/balise.png"
+   ],
+   "previewHtml": "<h1 class=\"font-heading font-medium text-2xl tracking-[-0.035em]\">Note de test img-balise-distante</h1><p class=\"mt-1 mb-6 text-foreground/70 text-xs\">26 novembre 2026 à 11:00</p><div><img src=\"http://127.0.0.1:1/balise.png\"></div>"
+  },
+  {
+   "name": "svg-script",
+   "executed": false,
+   "markers": [],
+   "dialogs": [],
+   "popups": [],
+   "previewHtml": "<h1 class=\"font-heading font-medium text-2xl tracking-[-0.035em]\">Note de test svg-script</h1><p class=\"mt-1 mb-6 text-foreground/70 text-xs\">26 novembre 2026 à 11:00</p><div><svg><script>__pwned.push('svg-script')</script></svg></div>"
+  },
+  {
+   "name": "style-attribut",
+   "executed": false,
+   "markers": [],
+   "dialogs": [],
+   "popups": [],
+   "styleCoversScreen": true,
+   "previewHtml": "<h1 class=\"font-heading font-medium text-2xl tracking-[-0.035em]\">Note de test style-attribut</h1><p class=\"mt-1 mb-6 text-foreground/70 text-xs\">26 novembre 2026 à 11:00</p><div><p style=\"position:fixed;inset:0;background:red;z-index:99999\" id=\"poc\">couvre l'écran</p></div>"
+  }
+ ]
+}
