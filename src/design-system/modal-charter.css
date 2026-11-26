@@ -65,17 +65,16 @@
 :root:root:root [data-chrome] [data-slot="modal-heading"] > * {
   display: flex !important;
   flex-direction: row !important;
-  align-items: center !important;
-  justify-content: flex-start !important;
   gap: 12px !important;
-  min-width: 0;
-  margin: 0 !important;
-  padding: 0 0 0 6px !important;
-  border: 0 !important;
-  background: transparent !important;
-  box-shadow: none !important;
-  text-align: start !important;
   place-items: initial !important;
+  justify-content: flex-start !important;
+  min-width: 0;
+  padding: 0 0 0 6px !important;
+  margin: 0 !important;
+  text-align: start !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
 }
 :root:root:root
   [data-chrome]
