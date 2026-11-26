@@ -19,6 +19,7 @@ import {
   RefreshCw,
   Search,
   Shapes,
+  ShieldCheck,
   Stethoscope,
   Type,
   UserPen,
@@ -51,6 +52,28 @@ export interface ReleaseNote {
 
 /** Les plus récentes en premier. */
 export const RELEASE_NOTES: ReleaseNote[] = [
+  {
+    version: "5.3.1",
+    status: "published",
+    date: "2026-11-26",
+    highlights: [
+      {
+        icon: ShieldCheck,
+        title: "Sécurité renforcée",
+        text: "L'application contrôle désormais tout ce qu'elle affiche : une note reçue d'une sauvegarde ou d'un autre poste ne peut plus y glisser de contenu dangereux.",
+      },
+      {
+        icon: FileText,
+        title: "Pièces jointes encadrées",
+        text: "Seuls les fichiers sûrs s'ouvrent depuis l'application, comme les PDF et les images. Un autre type de fichier affiche un message au lieu de s'ouvrir.",
+      },
+      {
+        icon: Archive,
+        title: "Vos dossiers restent à vous",
+        text: "L'application ne travaille plus que dans ses propres fichiers : vos Documents, votre Bureau et vos Téléchargements sont hors de sa portée.",
+      },
+    ],
+  },
   {
     version: "5.3.0",
     status: "published",
