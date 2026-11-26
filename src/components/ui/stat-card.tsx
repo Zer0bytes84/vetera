@@ -41,9 +41,9 @@ export function StatCard({
       role="group"
     >
       <p className="stat-card-label" id={`${id}-label`}>
-        {tone !== "neutral" ? (
+        {tone === "neutral" ? null : (
           <span aria-hidden="true" className="stat-card-tone" />
-        ) : null}
+        )}
         {label}
       </p>
       <div className="stat-card-row">

@@ -42,7 +42,7 @@ const only = (
     documents: false,
     reminders: false,
     notes: false,
-    ...(section !== "attachments" ? { [section]: true } : {}),
+    ...(section === "attachments" ? {} : { [section]: true }),
   },
   includeAttachments: section === "attachments",
 });

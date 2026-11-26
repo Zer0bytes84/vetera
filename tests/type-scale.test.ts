@@ -25,16 +25,7 @@ it("n’utilise aucune taille de texte libre hors de l’échelle de la charte",
   const offenders: string[] = [];
   for (const path of files("src")) {
     const source = readFileSync(path, "utf8");
-    if (!path.endsWith(".css")) {
-      for (const match of source.matchAll(
-        /text-\[(\d+(?:\.\d+)?)(px|rem)\]/g
-      )) {
-        const px = Number(match[1]) * (match[2] === "rem" ? 16 : 1);
-        if (!ALLOWED.has(px)) {
-          offenders.push(`${path}: ${match[0]}`);
-        }
-      }
-    } else {
+    if (path.endsWith(".css")) {
       // Emoji glyphs in the avatar picker are pictures, not text. So is the
       // glyph in the header's 36 px avatar disc (15 px, validated 2026-11-02).
       const css = source
@@ -45,6 +36,15 @@ it("n’utilise aucune taille de texte libre hors de l’échelle de la charte",
         );
       for (const match of css.matchAll(
         /font-size:\s*(\d+(?:\.\d+)?)(px|rem)/g
+      )) {
+        const px = Number(match[1]) * (match[2] === "rem" ? 16 : 1);
+        if (!ALLOWED.has(px)) {
+          offenders.push(`${path}: ${match[0]}`);
+        }
+      }
+    } else {
+      for (const match of source.matchAll(
+        /text-\[(\d+(?:\.\d+)?)(px|rem)\]/g
       )) {
         const px = Number(match[1]) * (match[2] === "rem" ? 16 : 1);
         if (!ALLOWED.has(px)) {

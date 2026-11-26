@@ -35,13 +35,13 @@ async function fixture(t) {
   });
   const request = async (path, body, token = admin, extra = {}) => {
     const response = await fetch(base + path, {
-      method: body !== undefined ? "POST" : "GET",
+      method: body === undefined ? "GET" : "POST",
       headers: {
         "content-type": "application/json",
         "x-admin-token": token,
         ...extra,
       },
-      body: body !== undefined ? JSON.stringify(body) : undefined,
+      body: body === undefined ? undefined : JSON.stringify(body),
     });
     return { status: response.status, ...(await response.json()) };
   };
