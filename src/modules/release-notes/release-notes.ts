@@ -52,6 +52,33 @@ export interface ReleaseNote {
 /** Les plus récentes en premier. */
 export const RELEASE_NOTES: ReleaseNote[] = [
   {
+    version: "5.3.0",
+    status: "published",
+    date: "2026-11-26",
+    highlights: [
+      {
+        icon: FileText,
+        title: "Factures plus transparentes",
+        text: "Le PDF détaille maintenant chaque règlement (date, moyen de paiement, montant), idéal pour les factures payées en plusieurs fois et pour faire vos comptes.",
+      },
+      {
+        icon: LayoutGrid,
+        title: "Interface plus claire et plus fluide",
+        text: "Fenêtres refaites, tous les champs visibles d'un coup, boutons toujours en haut, un squelette pendant les chargements, et un démarrage allégé.",
+      },
+      {
+        icon: ChartColumn,
+        title: "Finances",
+        text: "Un nouvel onglet Données pour vérifier vos chiffres en détail.",
+      },
+      {
+        icon: Pill,
+        title: "Correction",
+        text: "Certaines doses ne se pré-remplissent plus à tort dans les ordonnances.",
+      },
+    ],
+  },
+  {
     version: "5.2.0",
     status: "published",
     date: "2026-11-19",
