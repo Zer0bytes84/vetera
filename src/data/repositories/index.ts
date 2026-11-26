@@ -10,6 +10,7 @@ import {
   normalizeAppointmentInterval,
 } from "@/domain/clinical/scheduling";
 import { useSQLite } from "@/hooks/useSQLite";
+import { withSanitizedContent } from "@/lib/sanitize-html";
 import { PATIENTS_WITH_REFERENCE_SQL } from "@/modules/patients/reference/reference";
 import { roomsService } from "@/modules/rooms/service";
 import { useStockInventory } from "@/modules/stock/hooks/use-stock-inventory";
@@ -972,10 +973,19 @@ export function useTasksRepository() {
   };
 }
 
+/**
+ * Les notes passent par le filtre HTML des deux côtés : à la lecture, parce qu'une note peut venir d'une restauration,
+ * d'un import ou d'un poste pair sans être passée par l'éditeur ; à l'écriture, pour que la base n'en reçoive pas de
+ * l'application. Le contenu d'une note propre est rendu tel quel (même objet).
+ */
 export function useNotesRepository() {
   const notesStore = useSQLite<Note>("notes");
+  const data = useMemo(
+    () => notesStore.data.map(withSanitizedContent),
+    [notesStore.data]
+  );
 
-  const createEmptyNote = async (userId: string) =>
+  const createEmptyNote = (userId: string) =>
     notesStore.add({
       userId,
       title: "",
@@ -985,6 +995,13 @@ export function useNotesRepository() {
 
   return {
     ...notesStore,
+    data,
+    add: (item: Omit<Note, "id" | "createdAt" | "updatedAt">) =>
+      notesStore.add(withSanitizedContent(item)),
+    update: (id: string, updates: Partial<Note>) =>
+      notesStore.update(id, withSanitizedContent(updates)),
+    set: (id: string, item: Partial<Note>) =>
+      notesStore.set(id, withSanitizedContent(item)),
     createEmptyNote,
   };
 }

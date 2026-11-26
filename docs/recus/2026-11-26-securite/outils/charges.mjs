@@ -3,7 +3,7 @@
 // ouverte et passée en Aperçu, qui injecte le HTML stocké. Chaque charge utile note ce qu'elle exécute dans
 // window.__pwned ; un lien ou un bouton piégé est cliqué, comme le ferait une personne.
 // Usage : node charges.mjs <url du serveur de développement> <fichier de sortie.json> [dossier de captures]
-import { mkdirSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { chromium } from "/media/psf/Home/.dev-browser/node_modules/playwright-core/index.mjs";
 
 const [base, out, shots] = process.argv.slice(2);
@@ -29,6 +29,9 @@ export const PAYLOADS = [
   { name: "style-attribut", html: `<p style="position:fixed;inset:0;background:red;z-index:99999" id="poc">couvre l'écran</p>`, style: true },
 ];
 
+// Une note légitime : la sortie réelle de l'éditeur (titres, styles, liens, listes, tâches, code, tableau fusionné).
+const LEGIT = readFileSync(new URL("../../../../tests/fixtures/note-editor-output.html", import.meta.url), "utf8").trim();
+
 const store = (notes) => JSON.stringify({ tables: {
   users: [{ id: "banc-u1", email: "veto@banc.local", displayName: "Véto Banc", role: "vet_principal", status: "active" }],
   sessions: [{ id: "banc-s1", userId: "banc-u1", token: "banc", expiresAt: "2030-01-01T00:00:00.000Z" }],
@@ -37,7 +40,7 @@ const store = (notes) => JSON.stringify({ tables: {
 
 const browser = await chromium.launch({ executablePath: CHROME, args: ["--no-sandbox"] });
 const results = [];
-for (const payload of PAYLOADS) {
+for (const payload of [...PAYLOADS, { name: "note-legitime", html: LEGIT, faithful: true }].filter((p) => !process.env.ONLY || p.name === process.env.ONLY)) {
   const now = "2026-11-26T10:00:00.000Z";
   const note = { id: "n-poc", userId: "banc-u1", title: "Note de test " + payload.name, content: payload.html, isFavorite: false, isPinned: false, patientId: null, tags: "[]", createdAt: now, updatedAt: now };
   const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, locale: "fr-FR", timezoneId: "Africa/Algiers" });
@@ -49,34 +52,50 @@ for (const payload of PAYLOADS) {
     localStorage.setItem("baitari-guided-tour-v1", JSON.stringify({ dismissed: true }));
   }, [store([note])]);
   const page = await ctx.newPage();
-  const dialogs = [], requests = [], popups = [];
+  const dialogs = [], requests = [], popups = [], initiators = [], details = [];
+  const cdp = await ctx.newCDPSession(page);
+  await cdp.send("Network.enable");
+  cdp.on("Network.requestWillBeSent", (e) => {
+    if (e.request.url.includes("127.0.0.1:1/")) {
+      initiators.push({ url: e.request.url, type: e.initiator.type, stack: (e.initiator.stack?.callFrames ?? []).slice(0, 5).map((f) => `${f.functionName || "(anonyme)"}@${f.url.split("/").slice(-2).join("/")}:${f.lineNumber}`) });
+    }
+  });
   page.on("dialog", (d) => { dialogs.push(d.message()); d.dismiss().catch(() => undefined); });
-  page.on("request", (r) => { if (r.url().includes("127.0.0.1:1/")) requests.push(r.url()); });
+  let phase = "chargement";
+  page.on("request", (r) => { if (r.url().includes("127.0.0.1:1/")) { requests.push(r.url()); details.push({ phase, type: r.resourceType(), frame: r.frame()?.url() ?? null, navigation: r.isNavigationRequest(), serviceWorker: Boolean(r.serviceWorker()) }); } });
   ctx.on("page", (p) => { if (p !== page) popups.push(p.url()); });
   await page.goto(base + "/#/notes", { waitUntil: "domcontentloaded" });
   const row = page.getByText(note.title, { exact: false }).first();
   await row.waitFor({ timeout: 30000 });
+  phase = "liste ouverte";
   await row.click();
+  phase = "note ouverte";
   // « Aperçu » est une entrée du menu « Plus d'actions pour cette note » : c'est le geste d'une personne.
   const preview = page.locator(".document-rich-content");
+  phase = "menu";
   await page.getByRole("button", { name: /Plus d.actions pour cette note/ }).first().click();
   await page.getByRole("menuitem", { name: /Aperçu/ }).first().click();
+  phase = "aperçu";
   await preview.first().waitFor({ timeout: 15000 });
   await page.waitForTimeout(1500);
   if (payload.click) { await page.locator(".document-rich-content " + payload.click).first().click({ timeout: 3000, force: true }).catch(() => undefined); await page.waitForTimeout(500); }
-  const state = await page.evaluate(() => ({
+  const state = await page.evaluate((legit) => ({
     pwned: window.__pwned,
     preview: document.querySelector(".document-rich-content")?.innerHTML ?? null,
     coversScreen: (() => { const el = document.querySelector(".document-rich-content #poc"); if (!el) return null; const r = el.getBoundingClientRect(); return r.width >= innerWidth * 0.9 && r.height >= innerHeight * 0.9; })(),
+    body: document.querySelector(".document-rich-content > div:last-child")?.innerHTML ?? null,
+    // Analyseur inerte : un innerHTML sur un div détaché ferait charger les images de la charge utile.
+    expected: legit.faithful ? new DOMParser().parseFromString(legit.html, "text/html").body.innerHTML : null,
     sameOriginFrames: [...document.querySelectorAll(".document-rich-content iframe")].length,
-  }));
-  results.push({ name: payload.name, executed: state.pwned.length > 0, markers: state.pwned, dialogs, popups, remoteRequests: payload.remote ? requests : undefined, styleCoversScreen: payload.style ? state.coversScreen : undefined, previewHtml: state.preview });
+  }), { faithful: Boolean(payload.faithful), html: payload.html });
+  results.push({ faithful: payload.faithful ? state.body === state.expected : undefined, name: payload.name, executed: state.pwned.length > 0, markers: state.pwned, dialogs, popups, remoteRequests: payload.remote ? requests : undefined, initiators: initiators.length ? initiators : undefined, requestDetails: details.length ? details : undefined, styleCoversScreen: payload.style ? state.coversScreen : undefined, previewHtml: state.preview });
   if (shots) { mkdirSync(shots, { recursive: true }); await page.screenshot({ path: shots + "/" + payload.name + ".png" }); }
   await ctx.close();
 }
 await browser.close();
 // Un effet : du code exécuté, un appel vers un hôte extérieur (suivi, fuite), ou une mise en page qui recouvre l'écran.
-const effect = (r) => r.executed || Boolean(r.remoteRequests?.length) || r.styleCoversScreen === true;
-const summary = { base, date: new Date().toISOString(), total: results.length, withEffect: results.filter(effect).map((r) => r.name), withoutEffect: results.filter((r) => !effect(r)).map((r) => r.name), results };
+const effect = (r) => r.name !== "note-legitime" && r.executed || Boolean(r.remoteRequests?.length) || r.styleCoversScreen === true;
+const legit = results.find((r) => r.name === "note-legitime");
+const summary = { fidelity: { noteLegitimeIdentique: legit?.faithful ?? null }, base, date: new Date().toISOString(), total: results.length - 1, withEffect: results.filter(effect).map((r) => r.name), withoutEffect: results.filter((r) => !effect(r)).map((r) => r.name), results };
 writeFileSync(out, JSON.stringify(summary, null, 1));
-console.log(JSON.stringify({ total: summary.total, withEffect: summary.withEffect, withoutEffect: summary.withoutEffect }, null, 1));
+console.log(JSON.stringify({ total: summary.total, withEffect: summary.withEffect, withoutEffect: summary.withoutEffect, fidelity: summary.fidelity }, null, 1));

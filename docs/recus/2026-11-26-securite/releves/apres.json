@@ -1,0 +1,160 @@
+{
+ "fidelity": {
+  "noteLegitimeIdentique": true
+ },
+ "base": "http://127.0.0.1:5199",
+ "date": "2026-11-26T20:14:59.446Z",
+ "total": 15,
+ "withEffect": [],
+ "withoutEffect": [
+  "img-onerror",
+  "img-majuscules",
+  "svg-onload",
+  "iframe-srcdoc",
+  "lien-javascript",
+  "balise-script",
+  "input-autofocus",
+  "details-ontoggle",
+  "object-data",
+  "onclick",
+  "formaction",
+  "mxss-math",
+  "img-balise-distante",
+  "svg-script",
+  "style-attribut",
+  "note-legitime"
+ ],
+ "results": [
+  {
+   "name": "img-onerror",
+   "executed": false,
+   "markers": [],
+   "dialogs": [],
+   "popups": [],
+   "previewHtml": "<h1 class=\"font-heading font-medium text-2xl tracking-[-0.035em]\">Note de test img-onerror</h1><p class=\"mt-1 mb-6 text-foreground/70 text-xs\">26 novembre 2026 à 11:00</p><div><p>Texte</p></div>"
+  },
+  {
+   "name": "img-majuscules",
+   "executed": false,
+   "markers": [],
+   "dialogs": [],
+   "popups": [],
+   "previewHtml": "<h1 class=\"font-heading font-medium text-2xl tracking-[-0.035em]\">Note de test img-majuscules</h1><p class=\"mt-1 mb-6 text-foreground/70 text-xs\">26 novembre 2026 à 11:00</p><div></div>"
+  },
+  {
+   "name": "svg-onload",
+   "executed": false,
+   "markers": [],
+   "dialogs": [],
+   "popups": [],
+   "previewHtml": "<h1 class=\"font-heading font-medium text-2xl tracking-[-0.035em]\">Note de test svg-onload</h1><p class=\"mt-1 mb-6 text-foreground/70 text-xs\">26 novembre 2026 à 11:00</p><div></div>"
+  },
+  {
+   "name": "iframe-srcdoc",
+   "executed": false,
+   "markers": [],
+   "dialogs": [],
+   "popups": [],
+   "previewHtml": "<h1 class=\"font-heading font-medium text-2xl tracking-[-0.035em]\">Note de test iframe-srcdoc</h1><p class=\"mt-1 mb-6 text-foreground/70 text-xs\">26 novembre 2026 à 11:00</p><div></div>"
+  },
+  {
+   "name": "lien-javascript",
+   "executed": false,
+   "markers": [],
+   "dialogs": [],
+   "popups": [],
+   "previewHtml": "<h1 class=\"font-heading font-medium text-2xl tracking-[-0.035em]\">Note de test lien-javascript</h1><p class=\"mt-1 mb-6 text-foreground/70 text-xs\">26 novembre 2026 à 11:00</p><div><a>lien</a></div>"
+  },
+  {
+   "name": "balise-script",
+   "executed": false,
+   "markers": [],
+   "dialogs": [],
+   "popups": [],
+   "previewHtml": "<h1 class=\"font-heading font-medium text-2xl tracking-[-0.035em]\">Note de test balise-script</h1><p class=\"mt-1 mb-6 text-foreground/70 text-xs\">26 novembre 2026 à 11:00</p><div><p>après</p></div>"
+  },
+  {
+   "name": "input-autofocus",
+   "executed": false,
+   "markers": [],
+   "dialogs": [],
+   "popups": [],
+   "previewHtml": "<h1 class=\"font-heading font-medium text-2xl tracking-[-0.035em]\">Note de test input-autofocus</h1><p class=\"mt-1 mb-6 text-foreground/70 text-xs\">26 novembre 2026 à 11:00</p><div></div>"
+  },
+  {
+   "name": "details-ontoggle",
+   "executed": false,
+   "markers": [],
+   "dialogs": [],
+   "popups": [],
+   "previewHtml": "<h1 class=\"font-heading font-medium text-2xl tracking-[-0.035em]\">Note de test details-ontoggle</h1><p class=\"mt-1 mb-6 text-foreground/70 text-xs\">26 novembre 2026 à 11:00</p><div>x</div>"
+  },
+  {
+   "name": "object-data",
+   "executed": false,
+   "markers": [],
+   "dialogs": [],
+   "popups": [],
+   "previewHtml": "<h1 class=\"font-heading font-medium text-2xl tracking-[-0.035em]\">Note de test object-data</h1><p class=\"mt-1 mb-6 text-foreground/70 text-xs\">26 novembre 2026 à 11:00</p><div></div>"
+  },
+  {
+   "name": "onclick",
+   "executed": false,
+   "markers": [],
+   "dialogs": [],
+   "popups": [],
+   "previewHtml": "<h1 class=\"font-heading font-medium text-2xl tracking-[-0.035em]\">Note de test onclick</h1><p class=\"mt-1 mb-6 text-foreground/70 text-xs\">26 novembre 2026 à 11:00</p><div><p>cliquez</p></div>"
+  },
+  {
+   "name": "formaction",
+   "executed": false,
+   "markers": [],
+   "dialogs": [],
+   "popups": [],
+   "previewHtml": "<h1 class=\"font-heading font-medium text-2xl tracking-[-0.035em]\">Note de test formaction</h1><p class=\"mt-1 mb-6 text-foreground/70 text-xs\">26 novembre 2026 à 11:00</p><div>go</div>"
+  },
+  {
+   "name": "mxss-math",
+   "executed": false,
+   "markers": [],
+   "dialogs": [],
+   "popups": [],
+   "previewHtml": "<h1 class=\"font-heading font-medium text-2xl tracking-[-0.035em]\">Note de test mxss-math</h1><p class=\"mt-1 mb-6 text-foreground/70 text-xs\">26 novembre 2026 à 11:00</p><div></div>"
+  },
+  {
+   "name": "img-balise-distante",
+   "executed": false,
+   "markers": [],
+   "dialogs": [],
+   "popups": [],
+   "remoteRequests": [],
+   "previewHtml": "<h1 class=\"font-heading font-medium text-2xl tracking-[-0.035em]\">Note de test img-balise-distante</h1><p class=\"mt-1 mb-6 text-foreground/70 text-xs\">26 novembre 2026 à 11:00</p><div></div>"
+  },
+  {
+   "name": "svg-script",
+   "executed": false,
+   "markers": [],
+   "dialogs": [],
+   "popups": [],
+   "previewHtml": "<h1 class=\"font-heading font-medium text-2xl tracking-[-0.035em]\">Note de test svg-script</h1><p class=\"mt-1 mb-6 text-foreground/70 text-xs\">26 novembre 2026 à 11:00</p><div></div>"
+  },
+  {
+   "name": "style-attribut",
+   "executed": false,
+   "markers": [],
+   "dialogs": [],
+   "popups": [],
+   "styleCoversScreen": null,
+   "previewHtml": "<h1 class=\"font-heading font-medium text-2xl tracking-[-0.035em]\">Note de test style-attribut</h1><p class=\"mt-1 mb-6 text-foreground/70 text-xs\">26 novembre 2026 à 11:00</p><div><p>couvre l'écran</p></div>"
+  },
+  {
+   "faithful": true,
+   "name": "note-legitime",
+   "executed": false,
+   "markers": [],
+   "dialogs": [],
+   "popups": [],
+   "previewHtml": "<h1 class=\"font-heading font-medium text-2xl tracking-[-0.035em]\">Note de test note-legitime</h1><p class=\"mt-1 mb-6 text-foreground/70 text-xs\">26 novembre 2026 à 11:00</p><div><h1>T1</h1><h2>T2</h2><h3>T3</h3><h4>T4</h4><h5>T5</h5><h6>T6</h6><p>Texte <strong>gras</strong> <em>italique</em> <s>barré</s> <u>souligné</u> <code>code</code> <a target=\"_blank\" rel=\"noopener noreferrer nofollow\" href=\"https://exemple.dz/x?y=1&amp;z=2\">lien</a> <a target=\"_blank\" rel=\"noopener noreferrer nofollow\" href=\"mailto:a@b.dz\">mail</a> <a target=\"_blank\" rel=\"noopener noreferrer nofollow\" href=\"tel:+213550000000\">tel</a><br>saut</p><blockquote><p>citation</p></blockquote><ul><li><p>a</p><ul><li><p>b</p></li></ul></li></ul><ol start=\"3\"><li><p>x</p></li></ol><ul data-type=\"taskList\"><li data-checked=\"true\" data-type=\"taskItem\"><label><input type=\"checkbox\" checked=\"checked\"><span></span></label><div><p>fait</p></div></li><li data-checked=\"false\" data-type=\"taskItem\"><label><input type=\"checkbox\"><span></span></label><div><p>à faire</p></div></li></ul><pre><code class=\"language-js\">let a = 1;</code></pre><pre><code>sans langue</code></pre><hr><table style=\"min-width: 145px;\"><colgroup><col style=\"width: 120px;\"><col style=\"min-width: 25px;\"></colgroup><tbody><tr><th colspan=\"1\" rowspan=\"1\" colwidth=\"120\"><p>H1</p></th><th colspan=\"1\" rowspan=\"1\"><p>H2</p></th></tr><tr><td colspan=\"2\" rowspan=\"1\"><p>fusion</p></td></tr></tbody></table></div>"
+  }
+ ]
+}

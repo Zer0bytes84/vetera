@@ -8,6 +8,7 @@ import type {
 import { Legend, ResponsiveContainer, Tooltip } from "recharts";
 
 import { cn } from "@/lib/utils";
+import { chartColorCss } from "./chart-style";
 
 // Format: { THEME_NAME: CSS_SELECTOR }
 const THEMES = { light: "", dark: ".dark" } as const;
@@ -89,27 +90,15 @@ const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
     return null;
   }
 
+  const css = chartColorCss(id, colorConfig, THEMES);
+  if (!css) {
+    return null;
+  }
+
   return (
     <style
-      // biome-ignore lint/security/noDangerouslySetInnerHtml: feuille de style générée ici depuis la configuration du graphique (couleurs par thème et par série), aucun contenu saisi par l’utilisateur.
-      dangerouslySetInnerHTML={{
-        __html: Object.entries(THEMES)
-          .map(
-            ([theme, prefix]) => `
-${prefix} [data-chart=${id}] {
-${colorConfig
-  .map(([key, itemConfig]) => {
-    const color =
-      itemConfig.theme?.[theme as keyof typeof itemConfig.theme] ??
-      itemConfig.color;
-    return color ? `  --color-${key}: ${color};` : null;
-  })
-  .join("\n")}
-}
-`
-          )
-          .join("\n"),
-      }}
+      // biome-ignore lint/security/noDangerouslySetInnerHtml: feuille de style produite par chartColorCss, qui n'écrit que des identifiants, des clés et des couleurs du format attendu (tests/security/chart-style.test.ts).
+      dangerouslySetInnerHTML={{ __html: css }}
     />
   );
 };

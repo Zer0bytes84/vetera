@@ -53,6 +53,7 @@ import {
 } from "@/lib/hugeicons";
 import { BookOpen, Check, ChevronDown, Pin, Star } from "@/lib/icons";
 import { WHITESPACE_RUN } from "@/lib/patterns";
+import { sanitizeNoteHtml } from "@/lib/sanitize-html";
 import { AssistantBrandAvatar } from "@/modules/consultations/components/assistant-brand-avatar";
 import {
   dataUrlToBlob,
@@ -263,6 +264,9 @@ const NotesPro: React.FC = () => {
   const [isPreviewMode, setIsPreviewMode] = useState(false);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  // Le HTML d'une note ne s'injecte qu'après le filtre à liste blanche : une note peut venir d'une restauration, d'un
+  // import ou d'un poste pair, sans être passée par l'éditeur.
+  const previewHtml = useMemo(() => sanitizeNoteHtml(content), [content]);
   const [isSaving, setIsSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -982,7 +986,8 @@ const NotesPro: React.FC = () => {
                               {formatFullDate(activeNote.updatedAt)}
                             </p>
                             <div
-                              dangerouslySetInnerHTML={{ __html: content }}
+                              // biome-ignore lint/security/noDangerouslySetInnerHtml: previewHtml sort de sanitizeNoteHtml (liste blanche DOMPurify, tests/security)
+                              dangerouslySetInnerHTML={{ __html: previewHtml }}
                             />
                           </div>
                         ) : (
