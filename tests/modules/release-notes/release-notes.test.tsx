@@ -1,6 +1,7 @@
 import { Building2 } from "lucide-react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
+import { mustExist } from "@/lib/must-exist";
 import { SETTINGS_TABS } from "@/lib/settings-navigation";
 import { ReleaseHighlights } from "@/modules/release-notes/release-highlights";
 import {
@@ -128,7 +129,9 @@ describe("le marqueur local", () => {
 describe("la liste des nouveautés et l'archive", () => {
   it("affiche chaque nouveauté avec son titre et son texte", () => {
     const html = renderToStaticMarkup(
-      <ReleaseHighlights note={releaseNoteFor("5.0.5")!} />
+      <ReleaseHighlights
+        note={mustExist(releaseNoteFor("5.0.5"), "note de version 5.0.5")}
+      />
     );
     expect(html).toContain("Paramètres et « Mon cabinet »");
     expect(html).toContain("Une analyse financière plus riche");

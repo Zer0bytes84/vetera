@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { runInNewContext } from "node:vm";
 import { expect, it } from "vitest";
+import { mustExist } from "@/lib/must-exist";
 
 const INLINE_SCRIPT = /<script>([\s\S]*?)<\/script>/;
 
@@ -9,7 +10,7 @@ it("reports repeated startup errors without replacing the app DOM or rendering H
     new URL("../../index.html", import.meta.url),
     "utf8"
   );
-  const script = html.match(INLINE_SCRIPT)![1];
+  const script = mustExist(html.match(INLINE_SCRIPT), "script de démarrage")[1];
   let onError: (event: object) => void = () => undefined;
   const children: any[] = [{ id: "root", preserved: true }];
   const document = {

@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { mustExist } from "@/lib/must-exist";
 import { reviewedSoapContent } from "@/modules/consultations/local-ai/soap-review";
 import type { PatientDocument } from "@/modules/documents/document-domain";
 import {
@@ -470,23 +471,26 @@ describe("Patient record assembly", () => {
     expect(output).toContain("0,42 mL");
     expect(output).toContain("Note clinique non validée");
     expect(output).not.toContain("TEXTE NON SUBSTITUÉ AU PDF");
-    const documents = snapshot.sections.find(
-      (section) => section.id === "documents"
-    )!;
+    const documents = mustExist(
+      snapshot.sections.find((section) => section.id === "documents"),
+      "documents section"
+    );
     expect(
       documents.blocks.some(
         (block) =>
           block.kind === "source" &&
-          block.source.dataUrl === fixture().documents![0].pdfDataUrl
+          block.source.dataUrl ===
+            mustExist(fixture().documents, "fixture documents")[0].pdfDataUrl
       )
     ).toBe(true);
     expect(JSON.stringify(documents)).toContain("Version 2");
     expect(JSON.stringify(documents)).toContain(
       "Texte finalisé réel sans PDF."
     );
-    const annexes = snapshot.sections.find(
-      (section) => section.id === "attachments"
-    )!;
+    const annexes = mustExist(
+      snapshot.sections.find((section) => section.id === "attachments"),
+      "attachments section"
+    );
     expect(
       annexes.blocks.filter((block) => block.kind === "source")
     ).toHaveLength(2);
@@ -510,14 +514,14 @@ describe("Patient record assembly", () => {
   });
   it("renders reminders as a readable table with recorded follow-up dates and no internal identifiers as clinical labels", () => {
     const raw = fixture();
-    raw.reminders![0] = {
-      ...raw.reminders![0],
+    mustExist(raw.reminders, "fixture reminders")[0] = {
+      ...mustExist(raw.reminders, "fixture reminders")[0],
       id: "77996d79-9adb-4cce-8d64-e22377e58939",
       intervalleMois: 12,
       note: "Prévoir le contrôle vaccinal.",
     };
     const unknownType = "e2f9e32d-f9c9-4f24-bd21-69ea20501aad";
-    raw.reminders!.push({
+    mustExist(raw.reminders, "fixture reminders").push({
       id: "r-unknown",
       patientId: "p1",
       type: unknownType,
@@ -554,16 +558,18 @@ describe("Patient record assembly", () => {
     ]);
     const printed = table.rows.flat().join(" ");
     expect(printed).not.toContain(unknownType);
-    expect(printed).not.toContain(raw.reminders![0].id);
+    expect(printed).not.toContain(
+      mustExist(raw.reminders, "fixture reminders")[0].id
+    );
     expect(printed).not.toContain("RAPPEL ANNULÉ");
     expect(printed).not.toContain("AUTRE PATIENT");
   });
   it("preserves clinical authors and dates in printed metadata while keeping internal identifiers out of it", () => {
     const raw = fixture();
-    raw.soaps![0].vetId = "vet";
-    raw.soaps![0].createdAt = "2026-10-01";
-    raw.prescriptions![0].vetId = "vet";
-    raw.documents![0].authorName = "Dr Lina";
+    mustExist(raw.soaps, "fixture SOAP notes")[0].vetId = "vet";
+    mustExist(raw.soaps, "fixture SOAP notes")[0].createdAt = "2026-10-01";
+    mustExist(raw.prescriptions, "fixture prescriptions")[0].vetId = "vet";
+    mustExist(raw.documents, "fixture documents")[0].authorName = "Dr Lina";
     const snapshot = assemblePatientRecordSnapshot(
       raw,
       DEFAULT_PATIENT_RECORD_OPTIONS,
@@ -601,8 +607,10 @@ describe("Patient record assembly", () => {
             block.kind === "source" && block.source.id === "document:d1"
         )
     ).toBe(true);
-    expect(raw.soaps![0].id).toBe("s1");
-    expect(raw.prescriptions![0].appointmentId).toBe("a2");
+    expect(mustExist(raw.soaps, "fixture SOAP notes")[0].id).toBe("s1");
+    expect(
+      mustExist(raw.prescriptions, "fixture prescriptions")[0].appointmentId
+    ).toBe("a2");
   });
   it("separates historical reviewed documents from free notes and keeps the whole team's notes", () => {
     const snapshot = assemblePatientRecordSnapshot(
@@ -691,12 +699,19 @@ describe("Patient record assembly", () => {
   });
   it("fails clearly for a finalized document or managed attachment with no original content", () => {
     const raw = fixture();
-    raw.documents![0].pdfDataUrl = null;
-    raw.documents![0].content = "";
+    mustExist(raw.documents, "fixture documents")[0].pdfDataUrl = null;
+    mustExist(raw.documents, "fixture documents")[0].content = "";
     expect(() =>
       assemblePatientRecordSnapshot(raw, only("documents"), at)
     ).toThrow("Compte-rendu initial");
-    raw.documents = [raw.documents!.find((entry) => entry.kind === "import")!];
+    raw.documents = [
+      mustExist(
+        mustExist(raw.documents, "fixture documents").find(
+          (entry) => entry.kind === "import"
+        ),
+        "imported document"
+      ),
+    ];
     raw.documents[0].attachment = null;
     expect(() =>
       assemblePatientRecordSnapshot(raw, only("attachments"), at)
@@ -704,16 +719,20 @@ describe("Patient record assembly", () => {
   });
   it("identifies unsupported attachments and nonlocal originals instead of silently omitting them", () => {
     const raw = fixture();
-    raw.attachments![0].mimeType = "application/msword";
+    mustExist(raw.attachments, "fixture attachments")[0].mimeType =
+      "application/msword";
     expect(() =>
       assemblePatientRecordSnapshot(raw, only("attachments"), at)
     ).toThrow("Analyse.pdf");
-    raw.attachments![0].mimeType = "application/pdf";
-    raw.attachments![0].dataUrl = "https://example.invalid/Analyse.pdf";
+    mustExist(raw.attachments, "fixture attachments")[0].mimeType =
+      "application/pdf";
+    mustExist(raw.attachments, "fixture attachments")[0].dataUrl =
+      "https://example.invalid/Analyse.pdf";
     expect(() =>
       assemblePatientRecordSnapshot(raw, only("attachments"), at)
     ).toThrow("Analyse.pdf");
-    raw.documents![0].pdfDataUrl = "https://example.invalid/generated.pdf";
+    mustExist(raw.documents, "fixture documents")[0].pdfDataUrl =
+      "https://example.invalid/generated.pdf";
     expect(() =>
       assemblePatientRecordSnapshot(raw, only("documents"), at)
     ).toThrow("Compte-rendu initial");

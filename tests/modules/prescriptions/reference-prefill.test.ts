@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import reference from "@/data/vet-knowledge/doses-validees-aissa.json";
 import rcp from "@/data/vet-knowledge/medications-rcp.json";
+import { mustExist } from "@/lib/must-exist";
 import {
   computeDose,
   formatNumber,
@@ -26,7 +27,11 @@ const ref = reference as unknown as {
   molecules: { nom: string; especes: Record<string, unknown> }[];
 };
 const ids = ref.molecules.map(
-  (molecule) => catalogue.find((item) => item.nom === molecule.nom)!.id
+  (molecule) =>
+    mustExist(
+      catalogue.find((item) => item.nom === molecule.nom),
+      "molécule au catalogue"
+    ).id
 );
 
 /** What the line computes once prefilled: the builder's own calculation (`computeItemDose`). */
@@ -48,7 +53,7 @@ function lineMg(
     return { min, max };
   }
   const computed = computeDose({ min, max, unit, range: min !== max }, weight);
-  return { min: computed.computedMg, max: max * weight! };
+  return { min: computed.computedMg, max: max * mustExist(weight, "poids") };
 }
 
 describe("préremplissage de la ligne depuis la référence validée", () => {
@@ -138,20 +143,23 @@ describe("préremplissage de la ligne depuis la référence validée", () => {
           const line = lineMg(id, sp, weight);
           const label = `${id} ${sp} ${weight}`;
           expect(panel, label).not.toBeNull();
-          if (panel!.kind === "refus") {
+          const panelDose = mustExist(panel, "dose du panneau");
+          if (panelDose.kind === "refus") {
             expect(line, label).toBe("vide");
             continue;
           }
           expect(line, label).not.toBe("vide");
           // Le panneau arrondit à trois décimales, la ligne garde la valeur exacte.
-          const toMg = panel!.unit === "µg" ? 1 / 1000 : 1;
+          const toMg = panelDose.unit === "µg" ? 1 / 1000 : 1;
           const { min, max } = line as { min: number; max: number };
-          expect(Math.abs(min - panel!.min * toMg), label).toBeLessThanOrEqual(
-            5e-4 * toMg + 1e-12
-          );
-          expect(Math.abs(max - panel!.max * toMg), label).toBeLessThanOrEqual(
-            5e-4 * toMg + 1e-12
-          );
+          expect(
+            Math.abs(min - panelDose.min * toMg),
+            label
+          ).toBeLessThanOrEqual(5e-4 * toMg + 1e-12);
+          expect(
+            Math.abs(max - panelDose.max * toMg),
+            label
+          ).toBeLessThanOrEqual(5e-4 * toMg + 1e-12);
         }
       }
     }
@@ -179,7 +187,10 @@ describe("la ligne de la référence suit le poids tant que le vétérinaire ne 
   const line = (weight: number | undefined) => ({
     medicationId: "nitenpyrame",
     referenceDose: true,
-    ...referenceLineFields("nitenpyrame", "chien", weight)!,
+    ...mustExist(
+      referenceLineFields("nitenpyrame", "chien", weight),
+      "champs de la ligne de référence"
+    ),
   });
 
   it("Capstar ajouté avant le poids : vide, rempli à 10 kg, vidé à 12 kg", () => {

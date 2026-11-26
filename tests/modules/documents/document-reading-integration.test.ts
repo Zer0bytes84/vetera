@@ -1,4 +1,5 @@
 import { beforeEach, expect, it, vi } from "vitest";
+import { mustExist } from "@/lib/must-exist";
 import type { LocalModelStatus } from "@/modules/consultations/local-ai/models";
 import type { PatientDocument } from "@/modules/documents/document-domain";
 import { readPatientDocument } from "@/modules/documents/lib/patient-document-reading";
@@ -92,7 +93,7 @@ it("refuse une dose inventée même après le nouvel essai et ferme le moteur lo
 });
 it("signale un scan avant tout appel au moteur et préserve le document original", async () => {
   const document = patientDocument(true);
-  document.attachment!.textState = "scan";
+  mustExist(document.attachment, "pièce jointe du document").textState = "scan";
   const original = JSON.stringify(document);
   await expect(readPatientDocument(document)).rejects.toThrow(
     "sans texte extractible"

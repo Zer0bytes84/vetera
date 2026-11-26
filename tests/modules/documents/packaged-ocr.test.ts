@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { mustExist } from "@/lib/must-exist";
 import { PackagedOcr } from "../../../src/modules/documents/lib/packaged-ocr";
 
 class TestWorker {
@@ -21,7 +22,10 @@ class TestWorker {
     this.terminated = true;
   }
   resolve(data: unknown = {}) {
-    const request = this.messages.at(-1)!;
+    const request = mustExist(
+      this.messages.at(-1),
+      "dernière requête au worker"
+    );
     this.onmessage?.({ data: { ...request, status: "resolve", data } });
   }
 }

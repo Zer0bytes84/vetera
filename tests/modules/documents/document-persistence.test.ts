@@ -23,7 +23,7 @@ vi.mock("../../../src/services/sqlite/database", () => ({
       execute: (sql: string, params: unknown[]) => Promise<unknown>;
     }) => unknown
   ) => {
-    const db = fixture.db!;
+    const db = mustExist(fixture.db, "test database");
     db.exec("BEGIN");
     try {
       const result = await operation({
@@ -39,6 +39,7 @@ vi.mock("../../../src/services/sqlite/database", () => ({
   },
 }));
 
+import { mustExist } from "@/lib/must-exist";
 import {
   type ReviewedDocumentInput,
   saveReviewedDocument,
@@ -111,10 +112,17 @@ describe("Enregistrement local des documents sur SQLite réel isolé", () => {
       saveReviewedDocument({ ...input, reviewed: false })
     ).rejects.toThrow("validez");
     expect(
-      fixture.db!.prepare("SELECT COUNT(*) AS count FROM notes").get()?.count
+      mustExist(fixture.db, "test database")
+        .prepare("SELECT COUNT(*) AS count FROM notes")
+        .get()?.count
     ).toBe(0);
     await saveReviewedDocument(input);
-    const row = fixture.db!.prepare("SELECT * FROM notes").get()!;
+    const row = mustExist(
+      mustExist(fixture.db, "test database")
+        .prepare("SELECT * FROM notes")
+        .get(),
+      "saved note row"
+    );
     expect(row.patient_id).toBe("rex");
     expect(row.user_id).toBe("vet");
     expect(String(row.content)).toContain("Contrôle dans 7 jours.");
@@ -123,14 +131,16 @@ describe("Enregistrement local des documents sur SQLite réel isolé", () => {
     );
   });
   it("rechecks the database inside the transaction when SOAP changes after preview", async () => {
-    fixture
-      .db!.prepare(
+    mustExist(fixture.db, "test database")
+      .prepare(
         "UPDATE consultation_soaps SET plan='Nouvelle observation' WHERE id='soap'"
       )
       .run();
     await expect(saveReviewedDocument(input)).rejects.toThrow("note a changé");
     expect(
-      fixture.db!.prepare("SELECT COUNT(*) AS count FROM notes").get()?.count
+      mustExist(fixture.db, "test database")
+        .prepare("SELECT COUNT(*) AS count FROM notes")
+        .get()?.count
     ).toBe(0);
   });
   it("supports a reviewed reading without silently replacing the SOAP", async () => {
@@ -143,11 +153,14 @@ describe("Enregistrement local des documents sur SQLite réel isolé", () => {
       },
     });
     expect(
-      fixture.db!.prepare("SELECT COUNT(*) AS count FROM notes").get()?.count
+      mustExist(fixture.db, "test database")
+        .prepare("SELECT COUNT(*) AS count FROM notes")
+        .get()?.count
     ).toBe(1);
     expect(
-      fixture.db!.prepare("SELECT objective FROM consultation_soaps").get()
-        ?.objective
+      mustExist(fixture.db, "test database")
+        .prepare("SELECT objective FROM consultation_soaps")
+        .get()?.objective
     ).toBe("");
   });
 });

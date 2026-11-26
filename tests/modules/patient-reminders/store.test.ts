@@ -1,5 +1,6 @@
 import { DatabaseSync } from "node:sqlite";
 import { afterEach, expect, it } from "vitest";
+import { mustExist } from "@/lib/must-exist";
 import type { CareDatabase } from "@/modules/care-tasks/store";
 import { MEDICAL_REMINDERS_MIGRATION_SQL } from "@/modules/patient-reminders/medical-reminders-migration";
 import { PATIENT_REMINDERS_MIGRATION_SQL } from "@/modules/patient-reminders/migration";
@@ -104,16 +105,22 @@ async function saveAndConfirm(
     },
     store
   );
-  return store.createFromProposal(proposal!, "vet");
+  return store.createFromProposal(
+    mustExist(proposal, "proposition de rappel"),
+    "vet"
+  );
 }
 async function propose(
   store: ReturnType<typeof setup>["store"],
   type = "vaccin"
 ) {
-  return (await onMedicalActRecorded(
-    { id: "act", patientId: "p1", type, date: "2026-10-12" },
-    store
-  ))!;
+  return mustExist(
+    await onMedicalActRecorded(
+      { id: "act", patientId: "p1", type, date: "2026-10-12" },
+      store
+    ),
+    "proposition de rappel"
+  );
 }
 
 it("enregistre le vaccin puis propose 12 mois sans créer de rappel silencieux", async () => {
@@ -205,9 +212,12 @@ it("un échec de confirmation conserve l’acte et annule toute écriture partie
   db.exec(
     "CREATE TRIGGER fail_history BEFORE INSERT ON medical_reminder_history BEGIN SELECT RAISE(ABORT,'échec simulé'); END;"
   );
-  await expect(store.createFromProposal(proposal!, "vet")).rejects.toThrow(
-    "échec simulé"
-  );
+  await expect(
+    store.createFromProposal(
+      mustExist(proposal, "proposition de rappel"),
+      "vet"
+    )
+  ).rejects.toThrow("échec simulé");
   expect(await store.list()).toEqual([]);
   expect(
     db.prepare("SELECT next_due_at FROM vaccinations WHERE id='v1'").get()

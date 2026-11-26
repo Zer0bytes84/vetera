@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { mustExist } from "@/lib/must-exist";
 import {
   applyTheme,
   getThemeConfig,
@@ -80,7 +81,14 @@ describe("migration : Premium retombe sur Clean au premier lancement", () => {
     applyTheme(config, true);
     expect(dataset).toMatchObject({ skin: "clean", cleanFont: "geist" });
     expect(dataset.visualStyle).toBeUndefined();
-    expect(JSON.parse(storage.get("theme-config")!)).toEqual({
+    expect(
+      JSON.parse(
+        mustExist(
+          storage.get("theme-config"),
+          "configuration du thème enregistrée"
+        )
+      )
+    ).toEqual({
       cleanFont: "geist",
     });
     for (const [key, value] of Object.entries(NEIGHBOURS)) {
@@ -220,7 +228,14 @@ describe("équipe rouge : tenter de faire échouer le retour sur Clean", () => {
   it("attaque 7 : enregistrer une configuration qui contient encore skin ne le réécrit jamais", () => {
     const { storage } = install({});
     saveThemeConfig({ skin: "premium", cleanFont: "geist" } as never);
-    expect(JSON.parse(storage.get("theme-config")!)).toEqual({
+    expect(
+      JSON.parse(
+        mustExist(
+          storage.get("theme-config"),
+          "configuration du thème enregistrée"
+        )
+      )
+    ).toEqual({
       cleanFont: "geist",
     });
   });

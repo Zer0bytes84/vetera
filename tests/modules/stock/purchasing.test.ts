@@ -1,5 +1,6 @@
 import { DatabaseSync } from "node:sqlite";
 import { afterEach, beforeEach, expect, it } from "vitest";
+import { mustExist } from "@/lib/must-exist";
 import { PURCHASING_MIGRATION_SQL } from "@/modules/stock/purchasing-migration";
 import {
   purchasingSnapshotInDatabase,
@@ -50,11 +51,14 @@ async function confirm() {
   );
 }
 function receipt(qty = 2, product = "p1", receiptId = "receipt") {
-  const line = sqlite
-    .prepare(
-      "SELECT id FROM purchase_order_lines WHERE order_id='order' AND product_id=?"
-    )
-    .get(product)!;
+  const line = mustExist(
+    sqlite
+      .prepare(
+        "SELECT id FROM purchase_order_lines WHERE order_id='order' AND product_id=?"
+      )
+      .get(product),
+    "ligne de commande"
+  );
   return {
     id: receiptId,
     orderId: "order",
@@ -186,7 +190,10 @@ it("réception partielle puis complète : lot, mouvements, coût et historique f
   expect(
     snapshot.lines.find((l) => l.product_id === "p1")?.received_quantity
   ).toBe(2);
-  const movement = sqlite.prepare("SELECT * FROM stock_movements").get()!;
+  const movement = mustExist(
+    sqlite.prepare("SELECT * FROM stock_movements").get(),
+    "mouvement de stock"
+  );
   expect(movement).toMatchObject({
     quantity_delta: 2,
     unit_cost_amount: 1200,

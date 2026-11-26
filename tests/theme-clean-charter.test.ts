@@ -2,6 +2,7 @@ import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import postcss from "postcss";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { mustExist } from "@/lib/must-exist";
 import {
   applyTheme,
   DEFAULT_THEME,
@@ -230,8 +231,9 @@ describe("thème Clean : déclinaison sombre", () => {
   it("redéfinit chaque jeton de couleur avec le même nom, et rien d'autre", () => {
     const colours = [...declarations.keys()].filter(
       (name) =>
-        PAINTED_SURFACE_VALUE.test(declarations.get(name)!) ||
-        DEPTH_TOKEN_NAME.test(name)
+        PAINTED_SURFACE_VALUE.test(
+          mustExist(declarations.get(name), "déclaration du jeton")
+        ) || DEPTH_TOKEN_NAME.test(name)
     );
     for (const name of darkDeclarations.keys()) {
       expect(declarations.has(name)).toBe(true);
@@ -503,9 +505,10 @@ describe("thème Clean : interrupteurs segmentés", () => {
       new RegExp(`${FAMILY.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`)
     );
     expect(track).toHaveLength(1);
-    const base = track
-      .find((rule) => rule.toString().includes("--clean-segment-track"))!
-      .toString();
+    const base = mustExist(
+      track.find((rule) => rule.toString().includes("--clean-segment-track")),
+      "règle de la piste"
+    ).toString();
     expect(base).toContain("height: var(--clean-control)");
     const item = rulesFor(TABS_TRIGGER_CHILD).filter((rule) =>
       rule.selector.includes(".flow-density")

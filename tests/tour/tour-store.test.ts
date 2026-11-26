@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
+import { mustExist } from "@/lib/must-exist";
 import {
   advanceTour,
   closeInvitation,
@@ -115,9 +116,14 @@ describe("tour guidé : le magasin par poste", () => {
       const store = createTourStore(storage);
       expect(storage.getItem(TOUR_STORAGE_KEY)).toBe("{oops");
       store.update((s) => startTour(s, NOW));
-      expect(JSON.parse(storage.getItem(TOUR_STORAGE_KEY)!).status).toBe(
-        "running"
-      );
+      expect(
+        JSON.parse(
+          mustExist(
+            storage.getItem(TOUR_STORAGE_KEY),
+            "état du tour enregistré"
+          )
+        ).status
+      ).toBe("running");
     });
   });
 });

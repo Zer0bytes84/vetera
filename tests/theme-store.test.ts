@@ -1,4 +1,5 @@
 import { afterEach, expect, it, vi } from "vitest";
+import { mustExist } from "@/lib/must-exist";
 import { QUICK_ACTIONS } from "../src/lib/quick-actions";
 import {
   applyTheme,
@@ -44,7 +45,14 @@ it("persiste la police, rien d'autre (pas même un ancien thème), et notifie", 
     cleanFont: "plex",
     accent: "rose",
   } as never);
-  expect(JSON.parse(storage.get("theme-config")!)).toEqual({
+  expect(
+    JSON.parse(
+      mustExist(
+        storage.get("theme-config"),
+        "configuration du thème enregistrée"
+      )
+    )
+  ).toEqual({
     cleanFont: "plex",
   });
   expect(dispatchEvent.mock.calls[0][0].type).toBe(

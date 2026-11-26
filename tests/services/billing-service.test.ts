@@ -49,6 +49,7 @@ vi.mock("@/services/sqlite/database", () => ({
   toSQLiteTimestamp: (date: Date) => date.toISOString(),
 }));
 
+import { mustExist } from "@/lib/must-exist";
 import {
   billCompletedCareTask,
   createInvoiceDraft,
@@ -470,7 +471,10 @@ describe("invoice branding snapshot", () => {
     const persisted = await getInvoice(draft.id);
     expect(persisted?.clinicSnapshot).toMatchObject(clinicSnapshot);
     const { invoiceDocument } = await import("@/lib/invoice-document");
-    const document = invoiceDocument(persisted!, "Milo");
+    const document = invoiceDocument(
+      mustExist(persisted, "facture enregistrée"),
+      "Milo"
+    );
     expect(document.settings.name).toBe("Cabinet Jardin");
     expect(document.settings.logoDataUrl).toBe(clinicSnapshot.logoDataUrl);
     expect(document.data).toMatchObject({

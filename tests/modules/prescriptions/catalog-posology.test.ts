@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-
+import { mustExist } from "@/lib/must-exist";
 import {
   computeDose,
   parseCatalogPosology,
@@ -19,10 +19,14 @@ describe("posologie du catalogue pour pré-remplir une ligne", () => {
       .getAllMedications()
       .find((med) => med.nom === "Méloxicam");
     expect(
-      parseCatalogPosology(meloxicam!.posologies!.chat!.dose)?.posology.min
+      parseCatalogPosology(
+        mustExist(meloxicam, "Méloxicam au catalogue").posologies.chat.dose
+      )?.posology.min
     ).toBe(0.1);
     expect(
-      parseCatalogPosology(meloxicam!.posologies!.chien!.dose)?.posology.min
+      parseCatalogPosology(
+        mustExist(meloxicam, "Méloxicam au catalogue").posologies.chien.dose
+      )?.posology.min
     ).toBe(0.2);
   });
 
@@ -88,14 +92,20 @@ describe("unités de dose", () => {
   });
 
   it("calcule le volume du lactulose à partir des mL/kg", () => {
-    const parsed = parsePosology("0.5 mL/kg")!;
+    const parsed = mustExist(
+      parsePosology("0.5 mL/kg"),
+      "posologie du lactulose"
+    );
     expect(computeDose(parsed, 4).computedMl).toBe(2);
   });
 
   it("lit désormais les posologies du catalogue en mL/kg, UI/kg et mg total", () => {
     const meds = vetKnowledgeService.getAllMedications();
     const dose = (nom: string, espece: string) =>
-      meds.find((med) => med.nom === nom)!.posologies[espece].dose;
+      mustExist(
+        meds.find((med) => med.nom === nom),
+        "médicament du catalogue"
+      ).posologies[espece].dose;
     expect(parsePosology(dose("Lactulose", "chat"))).toMatchObject({
       unit: "mL/kg",
       min: 0.5,
@@ -103,7 +113,10 @@ describe("unités de dose", () => {
     expect(
       parsePosology(dose("Insuline porcine (lente)", "chat"))
     ).toMatchObject({ unit: "UI/kg", min: 0.25, max: 0.5 });
-    const methimazole = parsePosology(dose("Méthimazole", "chat"))!;
+    const methimazole = mustExist(
+      parsePosology(dose("Méthimazole", "chat")),
+      "posologie du méthimazole"
+    );
     expect(methimazole).toMatchObject({ unit: "mg", min: 2.5 });
     expect(prescriptionUnitFor(methimazole.unit)).toBe("mg/tot");
   });

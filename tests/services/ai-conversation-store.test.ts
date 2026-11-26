@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-
+import { mustExist } from "@/lib/must-exist";
 import {
   loadAIAgentState,
   type PersistedAIAgentState,
@@ -92,7 +92,7 @@ describe("AI conversation store", () => {
 
     const raw = storage.read(STORAGE_KEY);
     expect(raw).not.toBeNull();
-    expect(raw!.length).toBeLessThan(1_500_000);
+    expect(mustExist(raw, "état enregistré").length).toBeLessThan(1_500_000);
 
     const restored = loadAIAgentState();
     expect(restored?.conversations[0].messages.length).toBeLessThanOrEqual(40);

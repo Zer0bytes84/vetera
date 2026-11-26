@@ -25,12 +25,13 @@ vi.mock("@/services/sqlite/database", () => ({
   toSQLiteTimestamp: (date: Date) => date.toISOString(),
   runDbRead: async (operation: (db: FlowDatabase) => Promise<unknown>) => {
     await harness.queue;
-    return operation(harness.db!);
+    return operation(mustExist(harness.db, "base de test"));
   },
   runDbTransaction: (operation: (db: FlowDatabase) => Promise<unknown>) =>
     transaction(operation),
 }));
 
+import { mustExist } from "@/lib/must-exist";
 import {
   createInvoiceDraft,
   issueInvoice,
@@ -406,13 +407,15 @@ describe("annulation", () => {
       fromStatus: "waiting",
       toStatus: "in_progress",
     });
-    await expect(store.undo(last!.id, "vet")).resolves.toMatchObject({
+    await expect(
+      store.undo(mustExist(last, "dernier passage annulable").id, "vet")
+    ).resolves.toMatchObject({
       status: "waiting",
       stage: "waiting",
     });
     expect((await store.events("v5")).at(-1)).toMatchObject({
       cause: "undo",
-      undoesEventId: last!.id,
+      undoesEventId: mustExist(last, "dernier passage annulable").id,
       actorId: "vet",
       toStatus: "waiting",
     });
@@ -424,20 +427,20 @@ describe("annulation", () => {
     const store = flow();
     const stale = await store.undoable("v6");
     setStatus("v6", "completed");
-    await expect(store.undo(stale!.id, "vet")).rejects.toThrow(
-      MOVED_SINCE_ERROR
-    );
+    await expect(
+      store.undo(mustExist(stale, "passage annulable").id, "vet")
+    ).rejects.toThrow(MOVED_SINCE_ERROR);
 
     const late = await store.undoable("v6");
     sqlite
       .prepare(
         "UPDATE visit_flow_events SET created_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now', '-11 seconds') WHERE id = ?"
       )
-      .run(late!.id);
+      .run(mustExist(late, "passage annulable").id);
     expect(await store.undoable("v6")).toBeNull();
-    await expect(store.undo(late!.id, "vet")).rejects.toThrow(
-      UNDO_WINDOW_ERROR
-    );
+    await expect(
+      store.undo(mustExist(late, "passage annulable").id, "vet")
+    ).rejects.toThrow(UNDO_WINDOW_ERROR);
 
     const invoice = await bill("v6", 1000);
     await pay(invoice.id, 1000, "pay:v6");

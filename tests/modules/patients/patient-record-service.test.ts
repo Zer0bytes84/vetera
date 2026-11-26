@@ -27,6 +27,7 @@ vi.mock("@/services/browser-store", async (importOriginal) => ({
 }));
 vi.mock("@/services/sqlite/database", () => ({ runDbRead: state.read }));
 
+import { mustExist } from "@/lib/must-exist";
 import { assemblePatientRecordSnapshot } from "@/modules/patients/export/patient-record-data";
 import {
   loadPatientRecord,
@@ -206,7 +207,7 @@ afterEach(() => {
 
 describe("Isolated SQLite patient record reads", () => {
   it("reads all real migrated sources inside one snapshot and leaves every source row unchanged", async () => {
-    const db = state.database!;
+    const db = mustExist(state.database, "test database");
     const before = dump(db);
     const raw = await readPatientRecordSnapshotData(
       adapter(db),
@@ -298,7 +299,9 @@ describe("Isolated SQLite patient record reads", () => {
     expect(state.read).not.toHaveBeenCalled();
   });
   it("rolls back a failed selected-source read and announces missing medical reminder storage", async () => {
-    state.database!.exec("DROP TABLE medical_reminders");
+    mustExist(state.database, "test database").exec(
+      "DROP TABLE medical_reminders"
+    );
     await expect(
       loadPatientRecord("patient", DEFAULT_PATIENT_RECORD_OPTIONS)
     ).rejects.toThrow("rappels médicaux ne sont pas disponibles");
@@ -309,7 +312,7 @@ describe("Isolated SQLite patient record reads", () => {
   });
   it("rolls back cancellation between reads and does not return a partial snapshot", async () => {
     const controller = new AbortController();
-    const db = adapter(state.database!);
+    const db = adapter(mustExist(state.database, "test database"));
     const interrupted: PatientRecordReadDatabase = {
       ...db,
       async select<T>(query: string, values?: unknown[]) {

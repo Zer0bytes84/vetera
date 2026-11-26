@@ -1,5 +1,6 @@
 import { DatabaseSync } from "node:sqlite";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { mustExist } from "@/lib/must-exist";
 import type { CareDatabase } from "../../../src/modules/care-tasks/store";
 import { reviewedSoapContent } from "../../../src/modules/consultations/local-ai/soap-review";
 import type { DocumentAttachment } from "../../../src/modules/documents/document-domain";
@@ -242,9 +243,10 @@ describe("Migration et administration des modèles", () => {
       },
       "admin"
     );
-    const original = (await store.listTemplates()).find(
-      (entry) => entry.id === id
-    )!;
+    const original = mustExist(
+      (await store.listTemplates()).find((entry) => entry.id === id),
+      "modèle créé"
+    );
     const duplicate = await store.saveTemplate(
       { ...original, id: undefined, name: "Copie" },
       "admin"

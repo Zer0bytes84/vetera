@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { mustExist } from "@/lib/must-exist";
 import { type Box, nearestInDirection } from "@/modules/flow-board/spatial-nav";
 
 const box = (left: number, top: number, width = 280, height = 160): Box => ({
@@ -18,7 +19,11 @@ const cards = [
   { id: "attente-2", box: box(0, 370, 230) },
   { id: "soins", box: box(480, 200, 230) },
 ];
-const from = (id: string) => cards.find((card) => card.id === id)!.box;
+const from = (id: string) =>
+  mustExist(
+    cards.find((card) => card.id === id),
+    "carte de départ"
+  ).box;
 const go = (id: string, direction: "up" | "down" | "left" | "right") =>
   nearestInDirection(
     from(id),

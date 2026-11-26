@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import rcpData from "@/data/vet-knowledge/medications-rcp.json";
+import { mustExist } from "@/lib/must-exist";
 import {
   parsePosology,
   prescriptionUnitFor,
@@ -72,7 +73,10 @@ describe("molécules sourcées sur les RCP officiels", () => {
     }
     // Quelques doses reprises du RCP, telles quelles.
     const dose = (id: string, espece: string) =>
-      meds.find((entry) => entry.id === id)!.posologies[espece as "chien"].dose;
+      mustExist(
+        meds.find((entry) => entry.id === id),
+        "médicament du catalogue"
+      ).posologies[espece as "chien"].dose;
     expect(parsePosology(dose("telmisartan", "chat"))).toMatchObject({
       unit: "mg/kg",
       min: 1,
@@ -98,8 +102,13 @@ describe("règles de sécurité sourcées", () => {
     );
     expect(sourced.length).toBe(40);
     for (const rule of sourced) {
-      expect(rule.source!.url, rule.id).toMatch(RCP_URL);
-      expect(rule.source!.label, rule.id).toMatch(RCP_SOURCE_LABEL);
+      expect(mustExist(rule.source, "source de la règle").url, rule.id).toMatch(
+        RCP_URL
+      );
+      expect(
+        mustExist(rule.source, "source de la règle").label,
+        rule.id
+      ).toMatch(RCP_SOURCE_LABEL);
     }
     const groups = new Set(Object.keys(SAFETY_GROUPS));
     for (const rule of INTERACTION_RULES) {
@@ -151,7 +160,10 @@ describe("règles de sécurité sourcées", () => {
       const alerts = checkPrescriptionSafety({ draft: [a, b], patient: null });
       const alert = alerts.find((entry) => entry.ruleId === ruleId);
       expect(alert, ruleId).toBeDefined();
-      expect(alert!.source?.url, ruleId).toMatch(RCP_URL);
+      expect(
+        mustExist(alert, "alerte de la règle").source?.url,
+        ruleId
+      ).toMatch(RCP_URL);
     }
   });
 

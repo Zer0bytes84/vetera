@@ -1,5 +1,6 @@
 import { DatabaseSync } from "node:sqlite";
 import { afterEach, expect, it } from "vitest";
+import { mustExist } from "@/lib/must-exist";
 import { CARE_TASKS_MIGRATION_SQL } from "../../../src/modules/care-tasks/migration";
 import type { CareDatabase } from "../../../src/modules/care-tasks/store";
 import { STAYS_MIGRATION_SQL } from "../../../src/modules/hospitalizations/stays/migration";
@@ -432,12 +433,14 @@ it("modifier un plan remplace seulement les soins futurs à faire et garde les r
   };
   const plan = await store.createPlan(stay.id, draft, "vet");
   const tasks = await store.tasks(stay.id);
-  const finished = tasks.find(
-    (task) => task.heure_prevue >= "2026-10-13T00:00:00Z"
-  )!;
-  const ongoing = tasks.find(
-    (task) => task.heure_prevue > finished.heure_prevue
-  )!;
+  const finished = mustExist(
+    tasks.find((task) => task.heure_prevue >= "2026-10-13T00:00:00Z"),
+    "tâche du 13 octobre"
+  );
+  const ongoing = mustExist(
+    tasks.find((task) => task.heure_prevue > finished.heure_prevue),
+    "tâche suivante"
+  );
   db.prepare(
     "UPDATE care_tasks SET statut='fait',execute_par='vet',completed_at='2026-10-12T12:00:00Z' WHERE id=?"
   ).run(finished.id);
@@ -458,9 +461,10 @@ it("modifier un plan remplace seulement les soins futurs à faire et garde les r
   expect(
     db.prepare("SELECT statut,label FROM care_tasks WHERE id=?").get(ongoing.id)
   ).toEqual({ statut: "en_cours", label: "Surveillance" });
-  const past = tasks.find(
-    (task) => task.heure_prevue < "2026-10-12T12:00:00.000Z"
-  )!;
+  const past = mustExist(
+    tasks.find((task) => task.heure_prevue < "2026-10-12T12:00:00.000Z"),
+    "tâche passée"
+  );
   expect(
     db.prepare("SELECT statut,label FROM care_tasks WHERE id=?").get(past.id)
   ).toEqual({ statut: "a_faire", label: "Surveillance" });

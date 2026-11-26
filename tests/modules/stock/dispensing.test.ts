@@ -12,11 +12,11 @@ vi.mock("@/services/sqlite/database", () => ({
   generateId: () => `dispensing-id-${++harness.nextId}`,
   toSQLiteTimestamp: (date: Date) => date.toISOString(),
   runDbRead: (operation: (db: StockDatabase) => Promise<unknown>) =>
-    operation(harness.db!),
+    operation(mustExist(harness.db, "base de test")),
   runDbTransaction: async (
     operation: (db: StockDatabase) => Promise<unknown>
   ) => {
-    const db = harness.db!;
+    const db = mustExist(harness.db, "base de test");
     await db.execute("BEGIN IMMEDIATE");
     try {
       const result = await operation(db);
@@ -29,6 +29,7 @@ vi.mock("@/services/sqlite/database", () => ({
   },
 }));
 
+import { mustExist } from "@/lib/must-exist";
 import { draftPriceLines } from "@/modules/finances/lib/draft-prices";
 import {
   consumeConsultationProductInDatabase,
@@ -124,7 +125,7 @@ it("consultation : consommation, brouillon et trace dans un seul commit, puis re
   expect(
     connection.prepare("SELECT quantity FROM products").get()?.quantity
   ).toBe(8);
-  const invoice = await getInvoice(saved.invoice_id!);
+  const invoice = await getInvoice(mustExist(saved.invoice_id, "facture liée"));
   expect(invoice).toMatchObject({
     documentStatus: "draft",
     patientId: "patient",
@@ -134,7 +135,10 @@ it("consultation : consommation, brouillon et trace dans un seul commit, puis re
     connection
       .prepare("SELECT invoice_id,invoice_line_id FROM stock_movements")
       .get()
-  ).toEqual({ invoice_id: invoice!.id, invoice_line_id: invoice!.lines[0].id });
+  ).toEqual({
+    invoice_id: mustExist(invoice, "facture").id,
+    invoice_line_id: mustExist(invoice, "facture").lines[0].id,
+  });
   await transaction(() =>
     consumeConsultationProductInDatabase(db, request, id, now)
   );
@@ -166,14 +170,14 @@ it("dispensation : quantité humaine, produit, patient, facture et statut conser
     connection.prepare("SELECT quantity FROM prescription_items").get()
       ?.quantity
   ).toBe("4 comprimés/jour pendant 7 jours");
-  const invoice = await getInvoice(saved.invoice_id!);
+  const invoice = await getInvoice(mustExist(saved.invoice_id, "facture liée"));
   expect(invoice).toMatchObject({
     documentStatus: "draft",
     patientId: "patient",
     appointmentId: "appointment",
     grossAmount: 3000,
   });
-  expect(invoice!.lines[0]).toMatchObject({
+  expect(mustExist(invoice, "facture").lines[0]).toMatchObject({
     productId: "product",
     quantityMilli: 2500,
     unitAmount: 1200,
@@ -185,8 +189,8 @@ it("dispensation : quantité humaine, produit, patient, facture et statut conser
     source_id: "rx",
     source_line_id: "item",
     quantity_delta: -2.5,
-    invoice_id: invoice!.id,
-    invoice_line_id: invoice!.lines[0].id,
+    invoice_id: mustExist(invoice, "facture").id,
+    invoice_line_id: mustExist(invoice, "facture").lines[0].id,
   });
   expect(
     connection.prepare("SELECT * FROM prescription_dispensation_lines").get()
@@ -308,14 +312,17 @@ it("ajoute au brouillon de la consultation et préserve les lignes existantes", 
   );
   expect(saved.invoice_id).toBe(original.id);
   const invoice = await getInvoice(original.id);
-  expect(invoice!.lines[0].id).toBe(original.lines[0].id);
-  expect(invoice!.grossAmount).toBe(7000);
+  expect(mustExist(invoice, "facture").lines[0].id).toBe(original.lines[0].id);
+  expect(mustExist(invoice, "facture").grossAmount).toBe(7000);
 });
 it("modifier le tarif puis émettre conserve la trace et ne consomme pas une seconde fois", async () => {
   const saved = await transaction(() =>
     dispensePrescriptionInDatabase(db, input, id, now)
   );
-  const draft = (await getInvoice(saved.invoice_id!))!;
+  const draft = mustExist(
+    await getInvoice(mustExist(saved.invoice_id, "facture liée")),
+    "facture"
+  );
   const prices = draftPriceLines(draft, { [draft.lines[0].id]: "15,00" });
   const updated = await updateInvoiceDraft({
     invoiceId: draft.id,
@@ -375,9 +382,12 @@ async function identifyLot(
     )
   );
   return String(
-    connection
-      .prepare("SELECT id FROM product_lots WHERE lot_number='LOT-CHOISI'")
-      .get()!.id
+    mustExist(
+      connection
+        .prepare("SELECT id FROM product_lots WHERE lot_number='LOT-CHOISI'")
+        .get(),
+      "lot choisi"
+    ).id
   );
 }
 
@@ -392,9 +402,10 @@ it("lot choisi : allocation, facture et reprise conservent le choix explicite", 
       .prepare("SELECT quantity FROM stock_balances WHERE lot_id=?")
       .get(lotId)?.quantity
   ).toBe(0.5);
-  const line = connection
-    .prepare("SELECT * FROM prescription_dispensation_lines")
-    .get()!;
+  const line = mustExist(
+    connection.prepare("SELECT * FROM prescription_dispensation_lines").get(),
+    "ligne de délivrance"
+  );
   expect(line.selection_json).toBe(JSON.stringify({ lotId }));
   expect(
     connection
@@ -403,9 +414,12 @@ it("lot choisi : allocation, facture et reprise conservent le choix explicite", 
       )
       .all(line.movement_id)
   ).toEqual([{ lot_number_snapshot: "LOT-CHOISI", quantity_delta: -2.5 }]);
-  expect((await getInvoice(saved.invoice_id!))!.lines[0].id).toBe(
-    line.invoice_line_id
-  );
+  expect(
+    mustExist(
+      await getInvoice(mustExist(saved.invoice_id, "facture liée")),
+      "facture"
+    ).lines[0].id
+  ).toBe(line.invoice_line_id);
   expect(
     await transaction(() =>
       dispensePrescriptionInDatabase(db, selected, id, now)
@@ -450,7 +464,10 @@ it("réserve le lot imposé avant une ligne FIFO et garde l’ordre de la factur
     { prescription_item_id: "item", lot_number_snapshot: null },
     { prescription_item_id: "item-2", lot_number_snapshot: "LOT-CHOISI" },
   ]);
-  const detail = (await getInvoice(saved.invoice_id!))!;
+  const detail = mustExist(
+    await getInvoice(mustExist(saved.invoice_id, "facture liée")),
+    "facture"
+  );
   const dispensed = connection
     .prepare(
       "SELECT prescription_item_id,invoice_line_id FROM prescription_dispensation_lines ORDER BY prescription_item_id"
