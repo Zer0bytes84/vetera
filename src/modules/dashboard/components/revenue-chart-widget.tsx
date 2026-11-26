@@ -27,6 +27,8 @@ export function RevenueChartWidget({
   kinds,
   periodControl,
   footer,
+  loading = false,
+  loadingRevealed = true,
 }: {
   points: FocusPoint[];
   /** The period in force, « Du 9 oct. au 7 nov. 2026 ». */
@@ -37,6 +39,10 @@ export function RevenueChartWidget({
   periodControl: ReactNode;
   /** The month's forecast and the card's footer. */
   footer: ReactNode;
+  /** The journal is still being read: the figures are drawn as skeletons, never as « 0 DA ». */
+  loading?: boolean;
+  /** While loading, the skeleton shows only once this turns true (no flash on a fast read). */
+  loadingRevealed?: boolean;
 }) {
   const [view, setView] = useState<ChartType>("line");
   const model = useMemo(() => buildRevenueChart(points), [points]);
@@ -54,6 +60,9 @@ export function RevenueChartWidget({
         footer={footer}
         format={(value) => formatNumber(value)}
         height={280}
+        loading={loading}
+        loadingLabel="Chargement des recettes et de l’activité"
+        loadingRevealed={loadingRevealed}
         subtitle={isDonut ? `${rangeLabel} · consultations par type d’acte` : rangeLabel}
         title="Recettes & activité"
         toolbar={

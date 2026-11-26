@@ -65,6 +65,15 @@ export type ChartCardProps = {
   footer?: ReactNode;
   /** The donut's centre label when nothing is hovered. */
   donutLabel?: string;
+  /**
+   * The data is still being read: the headline, the legend and the plot are drawn as Loading Skeleton
+   * shapes of the same size, so no « 0 DA » shows before the figures are known and nothing moves when
+   * they arrive. The toolbar and the footer stay as they are.
+   */
+  loading?: boolean;
+  /** While loading, the placeholders stay invisible until this turns true (useDelayedSkeleton): no flash on a fast read. */
+  loadingRevealed?: boolean;
+  loadingLabel?: string;
   className?: string;
 };
 
@@ -99,7 +108,8 @@ export function fiveSteps(value: number) {
   return { top: step * STEPS, ticks: Array.from({ length: STEPS + 1 }, (_, i) => Math.round(step * i * 100) / 100) };
 }
 
-function useWidth() {
+/** `paused` while the card draws its skeleton: the plot isn't there yet, so it is measured once it is. */
+function useWidth(paused = false) {
   const ref = useRef<HTMLDivElement>(null);
   // null until measured: the chart draws once at its real width, so entrance
   // animations don't tween from a guessed size.
@@ -111,7 +121,7 @@ function useWidth() {
     const observer = new ResizeObserver(([entry]) => setWidth(entry.contentRect.width));
     observer.observe(el);
     return () => observer.disconnect();
-  }, []);
+  }, [paused]);
   return [ref, width ?? 560, width !== null] as const;
 }
 
@@ -132,11 +142,14 @@ export function ChartCard({
   toolbar,
   footer,
   donutLabel = "Total",
+  loading = false,
+  loadingRevealed = true,
+  loadingLabel = "Chargement du graphique",
   className,
 }: ChartCardProps) {
   const uid = useId().replace(/:/g, "");
   const reduce = useReducedMotion();
-  const [ref, width, measured] = useWidth();
+  const [ref, width, measured] = useWidth(loading);
   const [hidden, setHidden] = useState<string[]>([]);
   const [active, setActive] = useState<number | null>(null);
   const [fromKeyboard, setFromKeyboard] = useState(false);
@@ -235,6 +248,41 @@ export function ChartCard({
         note={tooltipNote?.(activeIndex)}
       />
     );
+
+  if (loading) {
+    const shape = "loading-skeleton-shape";
+    const hide = !loadingRevealed && "invisible";
+    return (
+      <Shell className={cn("max-w-2xl loading-skeleton", className)}>
+        <ShellHeader
+          icon={icons[type]}
+          title={title}
+          subtitle={subtitle}
+          aside={total !== undefined && <span aria-hidden="true" className={cn(shape, "block h-6 w-32 rounded-lg", hide)} />}
+        />
+        <Panel className="p-4">
+          <div className="mb-3 flex flex-wrap items-start justify-between gap-x-3 gap-y-2">
+            <div aria-hidden="true" className={cn("flex min-w-0 flex-wrap gap-1.5", hide)}>
+              {(series.length > 1 ? series : []).map((s) => (
+                <span className={cn(shape, "block h-7 w-36 rounded-full")} key={s.id} />
+              ))}
+            </div>
+            {toolbar && <div className="flex shrink-0 items-center gap-1">{toolbar}</div>}
+          </div>
+          <div
+            aria-busy="true"
+            aria-label={loadingLabel}
+            className={cn("relative", hide)}
+            role="status"
+            style={{ height: donut ? 220 : H }}
+          >
+            <span aria-hidden="true" className={cn(shape, "absolute inset-0 rounded-xl")} />
+          </div>
+          {footer}
+        </Panel>
+      </Shell>
+    );
+  }
 
   return (
     <MotionConfig reducedMotion="user">
