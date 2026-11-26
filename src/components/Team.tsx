@@ -468,6 +468,7 @@ const Team: React.FC = () => {
               {Array.from({ length: Math.max(1, memberSlots.rows) }, (_, i) => (
                 <div
                   className="flex flex-col gap-4 rounded-xl border border-border bg-muted/30 p-5"
+                  // biome-ignore lint/suspicious/noArrayIndexKey: rangées identiques du squelette de chargement, sans état, au nombre fixé par memberSlots.rows
                   key={i}
                   style={{ height: memberSlots.rowHeight }}
                 >

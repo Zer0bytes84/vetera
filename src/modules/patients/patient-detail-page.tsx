@@ -603,7 +603,11 @@ export function PatientDetailPage({
                 ),
               },
               (_, i) => (
-                <div className="loading-skeleton-region-row" key={i}>
+                <div
+                  className="loading-skeleton-region-row"
+                  // biome-ignore lint/suspicious/noArrayIndexKey: rangées identiques du squelette de chargement, sans état, au nombre fixé par la hauteur retenue de la zone (recordSlot.rowHeight)
+                  key={i}
+                >
                   <SkeletonShape className="loading-skeleton-avatar" />
                   <div className="loading-skeleton-lines">
                     <SkeletonShape className="loading-skeleton-line loading-skeleton-l1" />

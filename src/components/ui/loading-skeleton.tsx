@@ -196,7 +196,11 @@ export function SkeletonRegion({
     >
       <span className="sr-only">{label}</span>
       {Array.from({ length: lines }, (_, i) => (
-        <div className="loading-skeleton-region-row" key={i}>
+        <div
+          className="loading-skeleton-region-row"
+          // biome-ignore lint/suspicious/noArrayIndexKey: rangées identiques du squelette de chargement, sans état, au nombre fixé par lines
+          key={i}
+        >
           <Shape className="loading-skeleton-avatar" />
           <div className="loading-skeleton-lines">
             <Shape className="loading-skeleton-line loading-skeleton-l1" />

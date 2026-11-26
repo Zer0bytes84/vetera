@@ -1434,7 +1434,10 @@ export function BillingDialog({
                 <TableBody>
                   {existingInvoice
                     ? existingInvoice.lines.map((line, index) => (
-                        <TableRow key={`${line.desc}-${index}`}>
+                        <TableRow
+                          // biome-ignore lint/suspicious/noArrayIndexKey: lignes d'une facture déjà émise, affichées en lecture seule et jamais réordonnées
+                          key={`${line.desc}-${index}`}
+                        >
                           <TableCell className="pl-8 font-medium">
                             {line.desc}
                           </TableCell>

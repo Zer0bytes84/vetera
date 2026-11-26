@@ -871,6 +871,7 @@ export function StockWorkspace({
                   {Array.from({ length: expirySlots.rows }, (_, i) => (
                     <div
                       className="flex items-center px-5"
+                      // biome-ignore lint/suspicious/noArrayIndexKey: rangées identiques du squelette de chargement, sans état, au nombre fixé par expirySlots.rows
                       key={i}
                       style={{ height: expirySlots.rowHeight }}
                     >
@@ -955,6 +956,7 @@ export function StockWorkspace({
                     (_, i) => (
                       <div
                         className="flex flex-col justify-between rounded-2xl border p-4"
+                        // biome-ignore lint/suspicious/noArrayIndexKey: rangées identiques du squelette de chargement, sans état, au nombre fixé par cardSlots.rows
                         key={i}
                         style={{ height: cardSlots.rowHeight }}
                       >

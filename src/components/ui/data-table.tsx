@@ -511,6 +511,7 @@ export function DataTable<R extends DataRow>({
                     <tr
                       aria-hidden="true"
                       data-zebra={i % 2 === 1 ? "odd" : undefined}
+                      // biome-ignore lint/suspicious/noArrayIndexKey: rangées vides et identiques qui réservent la place des lignes à venir, sans état, au nombre fixé par reserved.rows
                       key={i}
                       style={{ height: reserved.rowHeight }}
                     >

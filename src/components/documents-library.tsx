@@ -406,6 +406,7 @@ export function DocumentsLibrary({
           {Array.from({ length: Math.max(1, listSlots.rows) }, (_, i) => (
             <div
               className="flex items-center gap-3 bg-[var(--card-band)] px-3"
+              // biome-ignore lint/suspicious/noArrayIndexKey: rangées identiques du squelette de chargement, sans état, au nombre fixé par listSlots.rows
               key={i}
               style={{ height: listSlots.rowHeight }}
             >
