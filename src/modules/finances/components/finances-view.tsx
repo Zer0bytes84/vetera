@@ -1,31 +1,8 @@
-import { SearchableSelect } from "@/components/ui/searchable-select";
 import { ReceiptPercentIcon } from "@heroicons/react/20/solid";
-import { ListFilter } from "@/components/ui/list-controls";
-import { invoiceDocument } from "@/lib/invoice-document";
-import { InvoicePdfPreview } from "@/modules/invoices/components/invoice-pdf-preview";
-import { FinancialPeriodFilter } from "@/components/financial-period-filter";
-import {
-  Add01Icon,
-  ChartLineData01Icon,
-  CheckmarkCircle02Icon,
-  Clock01Icon,
-  CreditCardIcon,
-  Edit01Icon,
-  File01Icon,
-  FilterIcon,
-  LockIcon,
-  ReceiptTextIcon,
-  Refresh01Icon,
-  Wallet01Icon,
-} from "@/lib/hugeicons";
 import { HugeiconsIcon } from "@hugeicons/react";
-
+import { FinancialPeriodFilter } from "@/components/financial-period-filter";
 import MotivationalHeader from "@/components/MotivationalHeader";
 import { SectionCards } from "@/components/section-cards";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-
-import { Dialog } from "@/components/ui/dialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -36,6 +13,9 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Dialog } from "@/components/ui/dialog";
 import {
   Empty,
   EmptyDescription,
@@ -56,11 +36,12 @@ import {
   FormDialogHeader,
 } from "@/components/ui/form-dialog";
 import { Input } from "@/components/ui/input";
+import { ListFilter } from "@/components/ui/list-controls";
 import {
   NativeSelect,
   NativeSelectOption,
 } from "@/components/ui/native-select";
-
+import { SearchableSelect } from "@/components/ui/searchable-select";
 import { Spinner } from "@/components/ui/spinner";
 import {
   Table,
@@ -73,43 +54,61 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-
+import {
+  Add01Icon,
+  ChartLineData01Icon,
+  CheckmarkCircle02Icon,
+  Clock01Icon,
+  CreditCardIcon,
+  Edit01Icon,
+  File01Icon,
+  FilterIcon,
+  LockIcon,
+  ReceiptTextIcon,
+  Refresh01Icon,
+  Wallet01Icon,
+} from "@/lib/hugeicons";
+import { invoiceDocument } from "@/lib/invoice-document";
 import { cn } from "@/lib/utils";
-
+import {
+  createInvoiceDraft,
+  createInvoiceLine,
+  DateFilter,
+  documentBadge,
+  type FinanceTab,
+  formatDate,
+  getInvoiceDisplayName,
+  getInvoicePatientName,
+  type InvoiceDocumentFilter,
+  type InvoiceSettlementFilter,
+  PAYMENT_METHOD_LABELS,
+  PAYMENT_METHODS,
+  settlementBadge,
+  type TransactionFilter,
+  type TransactionSort,
+  type TransactionSourceFilter,
+  type TransactionStatusFilter,
+} from "@/modules/finances/components/finances-shared";
+import { InvoicePdfPreview } from "@/modules/invoices/components/invoice-pdf-preview";
 import type { Transaction, TransactionPaymentMethod } from "@/types/db";
 import { formatDZD } from "@/utils/currency";
-import {
-  FinanceTab,
-  TransactionFilter,
-  InvoiceDocumentFilter,
-  InvoiceSettlementFilter,
-  TransactionStatusFilter,
-  TransactionSourceFilter,
-  TransactionSort,
-  PAYMENT_METHODS,
-  PAYMENT_METHOD_LABELS,
-  createInvoiceLine,
-  createInvoiceDraft,
-  formatDate,
-  DateFilter,
-  getInvoiceDisplayName,
-  documentBadge,
-  settlementBadge,
-  getInvoicePatientName,
-} from "@/modules/finances/components/finances-shared";
 import type { FinancesViewProps } from "../hooks/use-finances-page-model";
 import "../finances-premium.css";
-import { DatePicker } from "@/components/ui/date-picker";
-import { useDelayedSkeleton } from "@/hooks/useDelayedSkeleton";
-import { useListCursor } from "@/hooks/useListCursor";
-import { InvoicesTable } from "./invoices-table";
-import { IconButton, QuietButton, SearchField } from "@/components/ui/tuff-controls";
-import { Inset, Panel, Shell, ShellHeader } from "@/components/ui/surface";
-import { StatusPill } from "@/components/ui/status-pill";
-import { RollingNumber } from "@/components/ui/rolling-number";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { EmptyMascot } from "@/components/mascot/empty-mascot";
+import { DatePicker } from "@/components/ui/date-picker";
+import { RollingNumber } from "@/components/ui/rolling-number";
+import { StatusPill } from "@/components/ui/status-pill";
+import { Inset, Panel, Shell, ShellHeader } from "@/components/ui/surface";
+import {
+  IconButton,
+  QuietButton,
+  SearchField,
+} from "@/components/ui/tuff-controls";
+import { useDelayedSkeleton } from "@/hooks/useDelayedSkeleton";
+import { useListCursor } from "@/hooks/useListCursor";
 import { patientDocumentName } from "@/modules/patients/reference/reference";
+import { InvoicesTable } from "./invoices-table";
 
 export function FinancesView(props: FinancesViewProps) {
   const invoicesRef = useListCursor({ storageKey: "invoices" });
@@ -298,25 +297,21 @@ export function FinancesView(props: FinancesViewProps) {
             </Empty>
           ) : (
             <InvoicesTable
-              loading={financeSectionCardsLoading || registerSkeleton}
-              loadingRevealed={registerSkeleton}
-              toolbar={viewToggle}
               busy={isSubmitting}
               detailLoading={isDetailLoading}
               filters={
                 <>
                   <FinancialPeriodFilter
                     from={invoiceFrom}
-                    to={invoiceTo}
                     onChange={(from, to) => {
                       setInvoiceFrom(from);
                       setInvoiceTo(to);
                       setInvoicePage(1);
                     }}
+                    to={invoiceTo}
                   />
                   <ListFilter
                     label="Document"
-                    value={invoiceDocumentFilter}
                     onValueChange={(value) =>
                       setInvoiceDocumentFilter(value as InvoiceDocumentFilter)
                     }
@@ -326,13 +321,13 @@ export function FinancesView(props: FinancesViewProps) {
                       { value: "issued", label: "Émises" },
                       { value: "void", label: "Annulées" },
                     ]}
+                    value={invoiceDocumentFilter}
                   />
                   <ListFilter
                     label="Règlement"
-                    value={invoiceSettlementFilter}
                     onValueChange={(value) =>
                       setInvoiceSettlementFilter(
-                        value as InvoiceSettlementFilter,
+                        value as InvoiceSettlementFilter
                       )
                     }
                     options={[
@@ -343,6 +338,7 @@ export function FinancesView(props: FinancesViewProps) {
                       { value: "overdue", label: "En retard" },
                       { value: "credited", label: "Créditées" },
                     ]}
+                    value={invoiceSettlementFilter}
                   />
                   {(invoiceFilterCount > 0 || invoiceFrom || invoiceTo) && (
                     <QuietButton onClick={resetInvoiceFilters}>
@@ -353,6 +349,8 @@ export function FinancesView(props: FinancesViewProps) {
               }
               invoices={filteredInvoices}
               listRef={invoicesRef}
+              loading={financeSectionCardsLoading || registerSkeleton}
+              loadingRevealed={registerSkeleton}
               onDeleteDraft={requestDeleteInvoiceDraft}
               onEditPrices={(invoice) => void openInvoiceDetail(invoice, true)}
               onIssue={requestIssueInvoice}
@@ -361,6 +359,7 @@ export function FinancesView(props: FinancesViewProps) {
               onVoid={requestVoidInvoice}
               owners={owners}
               patients={patients}
+              toolbar={viewToggle}
             />
           )}
         </TabsContent>
@@ -368,8 +367,8 @@ export function FinancesView(props: FinancesViewProps) {
         <TabsContent className="space-y-5" value="journal">
           <Shell>
             <ShellHeader
-              aside={viewToggle}
               as="h2"
+              aside={viewToggle}
               icon={ReceiptPercentIcon}
               subtitle={
                 <>
@@ -393,7 +392,7 @@ export function FinancesView(props: FinancesViewProps) {
                   multiple={false}
                   onValueChange={(value) =>
                     setJournalFilter(
-                      (value[0] as TransactionFilter | undefined) ?? "all",
+                      (value[0] as TransactionFilter | undefined) ?? "all"
                     )
                   }
                   size="sm"
@@ -407,7 +406,7 @@ export function FinancesView(props: FinancesViewProps) {
                 </ToggleGroup>
                 <Button
                   aria-expanded={journalAdvancedOpen}
-                  className="list-filter-control h-[30px] rounded-full text-xs"
+                  className="h-[30px] list-filter-control rounded-full text-xs"
                   onClick={() => setJournalAdvancedOpen((open) => !open)}
                   variant="outline"
                 >
@@ -424,12 +423,12 @@ export function FinancesView(props: FinancesViewProps) {
                 </Button>
                 <FinancialPeriodFilter
                   from={journalFrom}
-                  to={journalTo}
                   onChange={(from, to) => {
                     setJournalFrom(from);
                     setJournalTo(to);
                     setJournalPage(1);
                   }}
+                  to={journalTo}
                 />
               </div>
               {journalAdvancedOpen ? (
@@ -446,7 +445,6 @@ export function FinancesView(props: FinancesViewProps) {
                   />
                   <ListFilter
                     label="Catégorie"
-                    value={journalCategory}
                     onValueChange={(value) => setJournalCategory(value)}
                     options={[
                       { value: "all", label: "Toutes les catégories" },
@@ -455,13 +453,13 @@ export function FinancesView(props: FinancesViewProps) {
                         label: value,
                       })),
                     ]}
+                    value={journalCategory}
                   />
                   <ListFilter
                     label="Paiement"
-                    value={journalMethod}
                     onValueChange={(value) =>
                       setJournalMethod(
-                        value as TransactionPaymentMethod | "all",
+                        value as TransactionPaymentMethod | "all"
                       )
                     }
                     options={[
@@ -471,10 +469,10 @@ export function FinancesView(props: FinancesViewProps) {
                         label: method.label,
                       })),
                     ]}
+                    value={journalMethod}
                   />
                   <ListFilter
                     label="Statut"
-                    value={journalStatus}
                     onValueChange={(value) =>
                       setJournalStatus(value as TransactionStatusFilter)
                     }
@@ -483,10 +481,10 @@ export function FinancesView(props: FinancesViewProps) {
                       { value: "paid", label: "Payées" },
                       { value: "pending", label: "En attente" },
                     ]}
+                    value={journalStatus}
                   />
                   <ListFilter
                     label="Origine"
-                    value={journalSource}
                     onValueChange={(value) =>
                       setJournalSource(value as TransactionSourceFilter)
                     }
@@ -495,6 +493,7 @@ export function FinancesView(props: FinancesViewProps) {
                       { value: "manual", label: "Saisie manuelle" },
                       { value: "billing", label: "Facturation" },
                     ]}
+                    value={journalSource}
                   />
                   <Input
                     aria-label="Montant minimum"
@@ -522,7 +521,6 @@ export function FinancesView(props: FinancesViewProps) {
                   />
                   <ListFilter
                     label="Trier"
-                    value={journalSort}
                     onValueChange={(value) =>
                       setJournalSort(value as TransactionSort)
                     }
@@ -532,6 +530,7 @@ export function FinancesView(props: FinancesViewProps) {
                       { value: "amount-desc", label: "Montant décroissant" },
                       { value: "amount-asc", label: "Montant croissant" },
                     ]}
+                    value={journalSort}
                   />
                   <div className="flex items-end">
                     <Button
@@ -579,28 +578,34 @@ export function FinancesView(props: FinancesViewProps) {
                     <caption className="sr-only">Journal de trésorerie</caption>
                     <thead>
                       <tr className="text-muted-foreground">
-                        <th className="px-2 py-2 text-left font-medium" scope="col">
+                        <th
+                          className="px-2 py-2 text-left font-medium"
+                          scope="col"
+                        >
                           Opération
                         </th>
                         <th
-                          className="hidden @md:table-cell px-2 py-2 text-left font-medium"
+                          className="@md:table-cell hidden px-2 py-2 text-left font-medium"
                           scope="col"
                         >
                           Catégorie
                         </th>
                         <th
-                          className="hidden @xl:table-cell px-2 py-2 text-left font-medium"
+                          className="@xl:table-cell hidden px-2 py-2 text-left font-medium"
                           scope="col"
                         >
                           Mode
                         </th>
                         <th
-                          className="hidden @xl:table-cell px-2 py-2 text-left font-medium"
+                          className="@xl:table-cell hidden px-2 py-2 text-left font-medium"
                           scope="col"
                         >
                           Origine
                         </th>
-                        <th className="px-2 py-2 text-right font-medium" scope="col">
+                        <th
+                          className="px-2 py-2 text-right font-medium"
+                          scope="col"
+                        >
                           Montant
                         </th>
                         <th className="px-2 py-2 font-medium" scope="col">
@@ -619,7 +624,7 @@ export function FinancesView(props: FinancesViewProps) {
                           >
                             <td className="whitespace-nowrap px-2 py-2.5">
                               <span className="block max-w-56">
-                                <span className="block truncate text-sm font-medium">
+                                <span className="block truncate font-medium text-sm">
                                   {transaction.description}
                                 </span>
                                 <span className="block text-[0.8125rem] text-muted-foreground">
@@ -627,15 +632,15 @@ export function FinancesView(props: FinancesViewProps) {
                                 </span>
                               </span>
                             </td>
-                            <td className="hidden whitespace-nowrap px-2 py-2.5 @md:table-cell">
+                            <td className="@md:table-cell hidden whitespace-nowrap px-2 py-2.5">
                               <StatusPill size="sm" tone="neutral">
                                 {transaction.category}
                               </StatusPill>
                             </td>
-                            <td className="hidden whitespace-nowrap px-2 py-2.5 text-muted-foreground @xl:table-cell">
+                            <td className="@xl:table-cell hidden whitespace-nowrap px-2 py-2.5 text-muted-foreground">
                               {PAYMENT_METHOD_LABELS[transaction.method]}
                             </td>
-                            <td className="hidden whitespace-nowrap px-2 py-2.5 @xl:table-cell">
+                            <td className="@xl:table-cell hidden whitespace-nowrap px-2 py-2.5">
                               {locked ? (
                                 <StatusPill size="sm" tone="brand">
                                   <HugeiconsIcon
@@ -654,8 +659,8 @@ export function FinancesView(props: FinancesViewProps) {
                             <td className="whitespace-nowrap px-2 py-2.5 text-right">
                               <span
                                 className={cn(
-                                  "font-sans text-[0.8125rem] font-medium tabular-nums",
-                                  isIncome ? "text-positive" : "text-negative",
+                                  "font-medium font-sans text-[0.8125rem] tabular-nums",
+                                  isIncome ? "text-positive" : "text-negative"
                                 )}
                               >
                                 {isIncome ? "+" : "-"}
@@ -709,7 +714,7 @@ export function FinancesView(props: FinancesViewProps) {
               )}
             </Panel>
 
-            <footer className="flex items-center justify-between gap-3 py-1.5 pr-1.5 pl-3.5 text-xs text-muted-foreground">
+            <footer className="flex items-center justify-between gap-3 py-1.5 pr-1.5 pl-3.5 text-muted-foreground text-xs">
               <span>
                 {paginatedTransactions.length
                   ? filteredTransactions.indexOf(paginatedTransactions[0]) + 1
@@ -726,7 +731,9 @@ export function FinancesView(props: FinancesViewProps) {
                   disabled={journalPage <= 1}
                   icon={ChevronLeft}
                   label="Page précédente"
-                  onClick={() => setJournalPage((page) => Math.max(1, page - 1))}
+                  onClick={() =>
+                    setJournalPage((page) => Math.max(1, page - 1))
+                  }
                   strokeWidth={3}
                 />
                 <span className="w-14 text-center tabular-nums">
@@ -737,7 +744,9 @@ export function FinancesView(props: FinancesViewProps) {
                   icon={ChevronRight}
                   label="Page suivante"
                   onClick={() =>
-                    setJournalPage((page) => Math.min(journalPageCount, page + 1))
+                    setJournalPage((page) =>
+                      Math.min(journalPageCount, page + 1)
+                    )
                   }
                   strokeWidth={3}
                 />
@@ -762,13 +771,6 @@ export function FinancesView(props: FinancesViewProps) {
                   <SearchableSelect
                     id="invoice-owner"
                     label="Propriétaire de la facture"
-                    placeholder="Rechercher un propriétaire…"
-                    value={invoiceDraft.ownerId}
-                    options={owners.map((owner) => ({
-                      value: owner.id,
-                      label: `${owner.firstName} ${owner.lastName}`,
-                      keywords: owner.phone,
-                    }))}
                     onValueChange={(ownerId) =>
                       setInvoiceDraft((current) => ({
                         ...current,
@@ -776,6 +778,13 @@ export function FinancesView(props: FinancesViewProps) {
                         patientId: "",
                       }))
                     }
+                    options={owners.map((owner) => ({
+                      value: owner.id,
+                      label: `${owner.firstName} ${owner.lastName}`,
+                      keywords: owner.phone,
+                    }))}
+                    placeholder="Rechercher un propriétaire…"
+                    value={invoiceDraft.ownerId}
                   />
                 </Field>
                 <Field>
@@ -854,7 +863,7 @@ export function FinancesView(props: FinancesViewProps) {
                                   ...candidate,
                                   description: event.target.value,
                                 }
-                              : candidate,
+                              : candidate
                           ),
                         }))
                       }
@@ -870,7 +879,7 @@ export function FinancesView(props: FinancesViewProps) {
                           lines: current.lines.map((candidate) =>
                             candidate.id === line.id
                               ? { ...candidate, quantity: event.target.value }
-                              : candidate,
+                              : candidate
                           ),
                         }))
                       }
@@ -887,7 +896,7 @@ export function FinancesView(props: FinancesViewProps) {
                           lines: current.lines.map((candidate) =>
                             candidate.id === line.id
                               ? { ...candidate, unitAmount: event.target.value }
-                              : candidate,
+                              : candidate
                           ),
                         }))
                       }
@@ -903,7 +912,7 @@ export function FinancesView(props: FinancesViewProps) {
                         setInvoiceDraft((current) => ({
                           ...current,
                           lines: current.lines.filter(
-                            (candidate) => candidate.id !== line.id,
+                            (candidate) => candidate.id !== line.id
                           ),
                         }))
                       }
@@ -969,17 +978,17 @@ export function FinancesView(props: FinancesViewProps) {
           {selectedInvoice ? (
             <>
               <FormDialogHeader
-                title={getInvoiceDisplayName(selectedInvoice)}
-                description={`Émise le ${formatDate(selectedInvoice.issuedAt)} · échéance ${formatDate(selectedInvoice.dueAt)}`}
-                icon={
-                  <HugeiconsIcon icon={ReceiptTextIcon} strokeWidth={1.5} />
-                }
                 aside={
                   <div className="flex flex-wrap justify-center gap-2">
                     {documentBadge(selectedInvoice.documentStatus)}
                     {settlementBadge(selectedInvoice.settlementStatus)}
                   </div>
                 }
+                description={`Émise le ${formatDate(selectedInvoice.issuedAt)} · échéance ${formatDate(selectedInvoice.dueAt)}`}
+                icon={
+                  <HugeiconsIcon icon={ReceiptTextIcon} strokeWidth={1.5} />
+                }
+                title={getInvoiceDisplayName(selectedInvoice)}
               />
               <FormDialogBody className="space-y-4">
                 <div className="grid gap-3 sm:grid-cols-3">
@@ -1026,17 +1035,17 @@ export function FinancesView(props: FinancesViewProps) {
                                 <Input
                                   aria-label={`Prix unitaire en DA : ${line.description}`}
                                   className="w-32 text-right tabular-nums"
-                                  inputMode="decimal"
                                   disabled={isSubmitting}
-                                  value={invoicePrices[line.id] ?? ""}
+                                  inputMode="decimal"
                                   onChange={(event) =>
                                     setInvoicePrices((current) => ({
                                       ...current,
                                       [line.id]: event.target.value,
                                     }))
                                   }
+                                  value={invoicePrices[line.id] ?? ""}
                                 />
-                                <span className="text-xs text-muted-foreground">
+                                <span className="text-muted-foreground text-xs">
                                   DA
                                 </span>
                               </div>
@@ -1078,7 +1087,7 @@ export function FinancesView(props: FinancesViewProps) {
                           className={cn(
                             "font-semibold tabular-nums",
                             payment.status === "void" &&
-                              "text-muted-foreground line-through",
+                              "text-muted-foreground line-through"
                           )}
                         >
                           {formatDZD(payment.amount)}
@@ -1104,7 +1113,7 @@ export function FinancesView(props: FinancesViewProps) {
                           </div>
                           <p className="text-muted-foreground text-xs">
                             {formatDate(
-                              creditNote.issuedAt ?? creditNote.createdAt,
+                              creditNote.issuedAt ?? creditNote.createdAt
                             )}
                             {creditNote.reason ? ` · ${creditNote.reason}` : ""}
                           </p>
@@ -1142,7 +1151,7 @@ export function FinancesView(props: FinancesViewProps) {
                           className={cn(
                             "font-semibold text-rose-600 tabular-nums dark:text-rose-300",
                             refund.status === "void" &&
-                              "text-muted-foreground line-through dark:text-muted-foreground",
+                              "text-muted-foreground line-through dark:text-muted-foreground"
                           )}
                         >
                           -{formatDZD(refund.amount)}
@@ -1155,11 +1164,11 @@ export function FinancesView(props: FinancesViewProps) {
               <FormDialogFooter className="empty:hidden">
                 {selectedInvoice.documentStatus === "issued" && (
                   <Button
-                    variant="outline"
                     onClick={() => {
                       setPreviewInvoice(selectedInvoice);
                       setSelectedInvoice(null);
                     }}
+                    variant="outline"
                   >
                     Aperçu / PDF
                   </Button>
@@ -1168,9 +1177,9 @@ export function FinancesView(props: FinancesViewProps) {
                   editingInvoicePrices ? (
                     <>
                       <Button
-                        variant="outline"
                         disabled={isSubmitting}
                         onClick={() => setEditingInvoicePrices(false)}
+                        variant="outline"
                       >
                         Annuler les modifications
                       </Button>
@@ -1184,9 +1193,9 @@ export function FinancesView(props: FinancesViewProps) {
                   ) : (
                     <>
                       <Button
-                        variant="outline"
                         disabled={isSubmitting}
                         onClick={startEditingInvoicePrices}
+                        variant="outline"
                       >
                         Modifier les tarifs
                       </Button>
@@ -1227,7 +1236,7 @@ export function FinancesView(props: FinancesViewProps) {
             description={
               paymentInvoice
                 ? `${getInvoiceDisplayName(paymentInvoice)} · solde ${formatDZD(
-                    paymentInvoice.balanceAmount,
+                    paymentInvoice.balanceAmount
                   )}`
                 : "Facture sélectionnée"
             }
@@ -1307,20 +1316,20 @@ export function FinancesView(props: FinancesViewProps) {
       {previewInvoice &&
         (() => {
           const invoicePatient = patients.find(
-            (patient) => patient.id === previewInvoice.patientId,
+            (patient) => patient.id === previewInvoice.patientId
           );
           const document = invoiceDocument(
             previewInvoice,
             invoicePatient
               ? patientDocumentName(invoicePatient)
               : getInvoicePatientName(previewInvoice, patients) ||
-                  "Patient non renseigné",
+                  "Patient non renseigné"
           );
           return (
             <InvoicePdfPreview
               data={document.data}
-              settings={document.settings}
               onClose={() => setPreviewInvoice(null)}
+              settings={document.settings}
             />
           );
         })()}

@@ -1,14 +1,19 @@
-import Placeholder from "@tiptap/extension-placeholder";
 import { TaskItem, TaskList } from "@tiptap/extension-list";
+import Placeholder from "@tiptap/extension-placeholder";
 import { TableKit } from "@tiptap/extension-table";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import { Columns3, PenLine, Plus, Rows3, Table2, Trash2 } from "@/lib/icons";
 import type React from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   FormDialogBody,
   FormDialogContent,
@@ -16,13 +21,9 @@ import {
   FormDialogHeader,
 } from "@/components/ui/form-dialog";
 import { Input } from "@/components/ui/input";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Spinner } from "@/components/ui/spinner";
+import { guard } from "@/lib/guard";
+import { Columns3, PenLine, Plus, Rows3, Table2, Trash2 } from "@/lib/icons";
 import { assistWithNote } from "@/services/geminiService";
 import {
   isLocalTextLoading,
@@ -31,11 +32,10 @@ import {
 } from "@/services/localTextService";
 import SelectionBubbleMenu from "./SelectionBubbleMenu";
 import SlashCommands, {
+  createSlashCommandsSuggestion,
   getSlashCommandItems,
   type SlashCommandItem,
-  createSlashCommandsSuggestion,
 } from "./SlashCommandsExtension";
-import { guard } from "@/lib/guard";
 
 interface EditorProps {
   content: string;
@@ -50,23 +50,50 @@ interface EditorProps {
 }
 
 /** The blocks a page is built from: the same list under the « + » of an empty line and the « Ajouter » button. */
-const BLOCK_TITLES = ["Titre 1", "Titre 2", "Liste à puces", "Liste numérotée", "Liste à cocher", "Citation", "Séparateur", "Tableau vierge", "Suivi des constantes", "Tableau de traitements"];
+const BLOCK_TITLES = [
+  "Titre 1",
+  "Titre 2",
+  "Liste à puces",
+  "Liste numérotée",
+  "Liste à cocher",
+  "Citation",
+  "Séparateur",
+  "Tableau vierge",
+  "Suivi des constantes",
+  "Tableau de traitements",
+];
 
 /** A « + » at the left of the empty line the cursor is on; it opens the blocks. */
-function InlineBlockMenu({ editor, items, rootRef }: { editor: NonNullable<ReturnType<typeof useEditor>>; items: SlashCommandItem[]; rootRef: React.RefObject<HTMLDivElement | null> }) {
+function InlineBlockMenu({
+  editor,
+  items,
+  rootRef,
+}: {
+  editor: NonNullable<ReturnType<typeof useEditor>>;
+  items: SlashCommandItem[];
+  rootRef: React.RefObject<HTMLDivElement | null>;
+}) {
   const [top, setTop] = useState<number | null>(null);
   const [open, setOpen] = useState(false);
   useEffect(() => {
     const update = () => {
       const root = rootRef.current;
       const { $from, empty } = editor.state.selection;
-      const onEmptyLine = editor.isEditable && editor.isFocused && empty && $from.depth === 1 && $from.parent.type.name === "paragraph" && $from.parent.content.size === 0;
-      if (!root || !onEmptyLine) {
+      const onEmptyLine =
+        editor.isEditable &&
+        editor.isFocused &&
+        empty &&
+        $from.depth === 1 &&
+        $from.parent.type.name === "paragraph" &&
+        $from.parent.content.size === 0;
+      if (!(root && onEmptyLine)) {
         setTop(null);
         return;
       }
       const coords = editor.view.coordsAtPos($from.pos);
-      setTop((coords.top + coords.bottom) / 2 - root.getBoundingClientRect().top - 12);
+      setTop(
+        (coords.top + coords.bottom) / 2 - root.getBoundingClientRect().top - 12
+      );
     };
     editor.on("selectionUpdate", update);
     editor.on("transaction", update);
@@ -79,7 +106,9 @@ function InlineBlockMenu({ editor, items, rootRef }: { editor: NonNullable<Retur
       editor.off("blur", update);
     };
   }, [editor, rootRef]);
-  if (top === null && !open) return null;
+  if (top === null && !open) {
+    return null;
+  }
   return (
     <div className="absolute -left-9 z-10" style={{ top: top ?? 0 }}>
       <DropdownMenu onOpenChange={setOpen} open={open}>
@@ -99,7 +128,10 @@ function InlineBlockMenu({ editor, items, rootRef }: { editor: NonNullable<Retur
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start" className="w-56">
           {items.map((item) => (
-            <DropdownMenuItem key={item.title} onClick={() => item.command(editor)}>
+            <DropdownMenuItem
+              key={item.title}
+              onClick={() => item.command(editor)}
+            >
               {item.title}
             </DropdownMenuItem>
           ))}
@@ -121,7 +153,9 @@ const Editor: React.FC<EditorProps> = ({
   const [writeTopicInput, setWriteTopicInput] = useState("");
   // L'état de départ est celui que la lecture du magasin donnait au montage ; l'abonnement suit ensuite les changements.
   const [aiReady, setAiReady] = useState(() => isLocalTextReady());
-  const [aiInitializing, setAiInitializing] = useState(() => !isLocalTextReady() && isLocalTextLoading());
+  const [aiInitializing, setAiInitializing] = useState(
+    () => !isLocalTextReady() && isLocalTextLoading()
+  );
   const [suggestion, setSuggestion] = useState<{
     html: string;
     text: string;
@@ -140,7 +174,9 @@ const Editor: React.FC<EditorProps> = ({
   // La barre d'outils se range dans l'emplacement de la page hôte dès que le bloc est monté (rappel de ref : même moment que l'ancien effet de mise en page).
   const attachRoot = useCallback((node: HTMLDivElement | null) => {
     rootRef.current = node;
-    if (node) setToolbarSlot(document.getElementById("note-editor-toolbar-slot"));
+    if (node) {
+      setToolbarSlot(document.getElementById("note-editor-toolbar-slot"));
+    }
   }, []);
 
   const handleAiAction = async (instruction: string) => {
@@ -161,64 +197,91 @@ const Editor: React.FC<EditorProps> = ({
       return;
     }
     const selection = editor.state.selection;
-    const selectedText = editor.state.doc.textBetween(selection.from, selection.to, " ");
+    const selectedText = editor.state.doc.textBetween(
+      selection.from,
+      selection.to,
+      " "
+    );
     const documentText = editor.getText().trim();
     const isDraft = instruction.toLowerCase().startsWith("rédige un texte");
-    if (!isDraft && !selectedText && !documentText) {
-      setAiError("Écrivez ou sélectionnez un passage avant d'utiliser cette commande.");
+    if (!(isDraft || selectedText || documentText)) {
+      setAiError(
+        "Écrivez ou sélectionnez un passage avant d'utiliser cette commande."
+      );
       return;
     }
     setAiError("");
     setIsAiLoading(true);
     const originalHtml = editor.getHTML();
 
-    await guard(async () => {
-      const context = selectedText || (isDraft ? "" : documentText);
+    await guard(
+      async () => {
+        const context = selectedText || (isDraft ? "" : documentText);
 
-      const result = await assistWithNote(context, instruction);
-      const previewHtml = result.replace(/<\/(p|h[1-6]|li|div|blockquote)>/gi, "</$1>\n");
-      const preview = new DOMParser().parseFromString(previewHtml, "text/html").body.textContent?.trim() || "";
-      if (!preview) throw new Error("La proposition est vide. Réessayez.");
-      setSuggestion({
-        html: result,
-        text: preview,
-        instruction,
-        originalHtml,
-        from: selection.from,
-        to: selection.to,
-        selected: Boolean(selectedText),
-      });
-    }, {
-      recover: (e: any) => {
-        console.error("[AI Generation Error]", e);
-
-        let errorMessage = "Erreur IA.";
-        if (e.message?.includes("not initialized")) {
-          errorMessage =
-            "L'assistant est en cours de préparation. Veuillez attendre quelques secondes.";
-        } else if (e.message?.includes("WebGPU")) {
-          errorMessage = "Fonctionnalité non supportée par votre navigateur.";
-        } else {
-          errorMessage = `Erreur: ${e.message || "Vérifiez votre connexion."}`;
+        const result = await assistWithNote(context, instruction);
+        const previewHtml = result.replace(
+          /<\/(p|h[1-6]|li|div|blockquote)>/gi,
+          "</$1>\n"
+        );
+        const preview =
+          new DOMParser()
+            .parseFromString(previewHtml, "text/html")
+            .body.textContent?.trim() || "";
+        if (!preview) {
+          throw new Error("La proposition est vide. Réessayez.");
         }
+        setSuggestion({
+          html: result,
+          text: preview,
+          instruction,
+          originalHtml,
+          from: selection.from,
+          to: selection.to,
+          selected: Boolean(selectedText),
+        });
+      },
+      {
+        recover: (e: any) => {
+          console.error("[AI Generation Error]", e);
 
-        setAiError(errorMessage);
-      },
-      cleanup: () => {
-        setIsAiLoading(false);
-      },
-    });
+          let errorMessage = "Erreur IA.";
+          if (e.message?.includes("not initialized")) {
+            errorMessage =
+              "L'assistant est en cours de préparation. Veuillez attendre quelques secondes.";
+          } else if (e.message?.includes("WebGPU")) {
+            errorMessage = "Fonctionnalité non supportée par votre navigateur.";
+          } else {
+            errorMessage = `Erreur: ${e.message || "Vérifiez votre connexion."}`;
+          }
+
+          setAiError(errorMessage);
+        },
+        cleanup: () => {
+          setIsAiLoading(false);
+        },
+      }
+    );
   };
 
   const applySuggestion = (mode: "insert" | "replace") => {
-    if (!editor || !suggestion || editor.getHTML() !== suggestion.originalHtml) {
-      setAiError("Le document a changé depuis la proposition. Relancez la commande pour éviter de remplacer une version récente.");
+    if (
+      !(editor && suggestion) ||
+      editor.getHTML() !== suggestion.originalHtml
+    ) {
+      setAiError(
+        "Le document a changé depuis la proposition. Relancez la commande pour éviter de remplacer une version récente."
+      );
       setSuggestion(null);
       return;
     }
     const chain = editor.chain().focus();
     if (mode === "replace" && suggestion.selected) {
-      chain.insertContentAt({ from: suggestion.from, to: suggestion.to }, suggestion.html).run();
+      chain
+        .insertContentAt(
+          { from: suggestion.from, to: suggestion.to },
+          suggestion.html
+        )
+        .run();
     } else {
       chain.insertContentAt(suggestion.to, suggestion.html).run();
     }
@@ -249,7 +312,13 @@ const Editor: React.FC<EditorProps> = ({
     extensions: [
       StarterKit,
       TaskList,
-      TaskItem.configure({ nested: true, a11y: { checkboxLabel: (_node, checked) => checked ? "Marquer comme à faire" : "Marquer comme terminé" } }),
+      TaskItem.configure({
+        nested: true,
+        a11y: {
+          checkboxLabel: (_node, checked) =>
+            checked ? "Marquer comme à faire" : "Marquer comme terminé",
+        },
+      }),
       TableKit.configure({ table: { resizable: true } }),
       Placeholder.configure({
         placeholder: 'Écrivez ici, ou tapez "/" pour ajouter un bloc…',
@@ -266,7 +335,9 @@ const Editor: React.FC<EditorProps> = ({
   });
 
   useEffect(() => {
-    if (!editor) return;
+    if (!editor) {
+      return;
+    }
     const updateTableSelection = () => setIsInTable(editor.isActive("table"));
     editor.on("selectionUpdate", updateTableSelection);
     editor.on("transaction", updateTableSelection);
@@ -310,34 +381,119 @@ const Editor: React.FC<EditorProps> = ({
     );
   }
 
-  const blockItems = getSlashCommandItems(handleAiAction).filter((item) => BLOCK_TITLES.includes(item.title));
+  const blockItems = getSlashCommandItems(handleAiAction).filter((item) =>
+    BLOCK_TITLES.includes(item.title)
+  );
 
   const toolbarRow = (
-    <div className={toolbarSlot ? "flex items-center gap-2" : "sticky top-0 z-10 mb-5 flex items-center justify-between gap-2 border-foreground/15 border-b bg-card/95 py-2 backdrop-blur-sm"}>
+    <div
+      className={
+        toolbarSlot
+          ? "flex items-center gap-2"
+          : "sticky top-0 z-10 mb-5 flex items-center justify-between gap-2 border-foreground/15 border-b bg-card/95 py-2 backdrop-blur-sm"
+      }
+    >
       <div className="flex items-center gap-1.5">
         <DropdownMenu>
-        <DropdownMenuTrigger render={<Button aria-label="Aide à la rédaction" size="icon-sm" title="Aide à la rédaction" variant="ghost" />}>
-          <PenLine className="size-4" />
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" className="w-64">
-          <DropdownMenuItem onClick={() => handleAiAction("Corrige l'orthographe et la grammaire")}>Corriger le texte</DropdownMenuItem>
-          <DropdownMenuItem onClick={() => handleAiAction("Reformule de manière professionnelle")}>Clarifier et reformuler</DropdownMenuItem>
-          <DropdownMenuItem onClick={() => handleAiAction("Résume en points clés")}>Résumer en points clés</DropdownMenuItem>
-          <DropdownMenuItem onClick={() => handleAiAction("__WRITE_MODE__")}>Proposer un brouillon…</DropdownMenuItem>
-        </DropdownMenuContent>
+          <DropdownMenuTrigger
+            render={
+              <Button
+                aria-label="Aide à la rédaction"
+                size="icon-sm"
+                title="Aide à la rédaction"
+                variant="ghost"
+              />
+            }
+          >
+            <PenLine className="size-4" />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className="w-64">
+            <DropdownMenuItem
+              onClick={() =>
+                handleAiAction("Corrige l'orthographe et la grammaire")
+              }
+            >
+              Corriger le texte
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() =>
+                handleAiAction("Reformule de manière professionnelle")
+              }
+            >
+              Clarifier et reformuler
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => handleAiAction("Résume en points clés")}
+            >
+              Résumer en points clés
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleAiAction("__WRITE_MODE__")}>
+              Proposer un brouillon…
+            </DropdownMenuItem>
+          </DropdownMenuContent>
         </DropdownMenu>
       </div>
       {isInTable ? (
-        <div aria-label="Modifier le tableau" className="flex flex-wrap items-center gap-1 rounded-lg bg-[#f3f7f1] p-1 dark:bg-white/5">
-          <Button className="h-7 gap-1.5 px-2 text-xs" onClick={() => editor.chain().focus().addRowAfter().run()} size="sm" title="Ajouter une ligne sous la cellule" variant="ghost"><Rows3 className="size-3.5" />Ligne <Plus className="size-3" /></Button>
-          <Button className="h-7 gap-1.5 px-2 text-xs" onClick={() => editor.chain().focus().addColumnAfter().run()} size="sm" title="Ajouter une colonne à droite" variant="ghost"><Columns3 className="size-3.5" />Colonne <Plus className="size-3" /></Button>
+        <div
+          aria-label="Modifier le tableau"
+          className="flex flex-wrap items-center gap-1 rounded-lg bg-[#f3f7f1] p-1 dark:bg-white/5"
+        >
+          <Button
+            className="h-7 gap-1.5 px-2 text-xs"
+            onClick={() => editor.chain().focus().addRowAfter().run()}
+            size="sm"
+            title="Ajouter une ligne sous la cellule"
+            variant="ghost"
+          >
+            <Rows3 className="size-3.5" />
+            Ligne <Plus className="size-3" />
+          </Button>
+          <Button
+            className="h-7 gap-1.5 px-2 text-xs"
+            onClick={() => editor.chain().focus().addColumnAfter().run()}
+            size="sm"
+            title="Ajouter une colonne à droite"
+            variant="ghost"
+          >
+            <Columns3 className="size-3.5" />
+            Colonne <Plus className="size-3" />
+          </Button>
           <DropdownMenu>
-            <DropdownMenuTrigger render={<Button aria-label="Autres actions sur le tableau" className="size-7" size="icon-sm" variant="ghost" />}><Table2 className="size-3.5" /></DropdownMenuTrigger>
+            <DropdownMenuTrigger
+              render={
+                <Button
+                  aria-label="Autres actions sur le tableau"
+                  className="size-7"
+                  size="icon-sm"
+                  variant="ghost"
+                />
+              }
+            >
+              <Table2 className="size-3.5" />
+            </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">
-              <DropdownMenuItem onClick={() => editor.chain().focus().toggleHeaderRow().run()}>Basculer l’en-tête</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => editor.chain().focus().deleteRow().run()}>Supprimer cette ligne</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => editor.chain().focus().deleteColumn().run()}>Supprimer cette colonne</DropdownMenuItem>
-              <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => editor.chain().focus().deleteTable().run()}><Trash2 className="mr-2 size-4" />Supprimer le tableau</DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => editor.chain().focus().toggleHeaderRow().run()}
+              >
+                Basculer l’en-tête
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => editor.chain().focus().deleteRow().run()}
+              >
+                Supprimer cette ligne
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => editor.chain().focus().deleteColumn().run()}
+              >
+                Supprimer cette colonne
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="text-destructive focus:text-destructive"
+                onClick={() => editor.chain().focus().deleteTable().run()}
+              >
+                <Trash2 className="mr-2 size-4" />
+                Supprimer le tableau
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -347,8 +503,11 @@ const Editor: React.FC<EditorProps> = ({
 
   return (
     <div className="relative w-full" ref={attachRoot}>
-      {!readOnly && <InlineBlockMenu editor={editor} items={blockItems} rootRef={rootRef} />}
-      {!readOnly && (toolbarSlot ? createPortal(toolbarRow, toolbarSlot) : toolbarRow)}
+      {!readOnly && (
+        <InlineBlockMenu editor={editor} items={blockItems} rootRef={rootRef} />
+      )}
+      {!readOnly &&
+        (toolbarSlot ? createPortal(toolbarRow, toolbarSlot) : toolbarRow)}
       <SelectionBubbleMenu editor={editor} onAiAction={handleAiAction} />
       <EditorContent
         className="tiptap-editor prose prose-neutral dark:prose-invert max-w-none focus:outline-none"
@@ -356,32 +515,60 @@ const Editor: React.FC<EditorProps> = ({
       />
 
       {isAiLoading && (
-        <div role="status" className="mt-4 flex items-center gap-2 text-muted-foreground text-sm">
+        <div
+          className="mt-4 flex items-center gap-2 text-muted-foreground text-sm"
+          role="status"
+        >
           <Spinner className="size-4" /> Préparation d’une proposition…
         </div>
       )}
-      {aiError && <p role="alert" className="mt-4 text-destructive text-sm">{aiError}</p>}
+      {aiError && (
+        <p className="mt-4 text-destructive text-sm" role="alert">
+          {aiError}
+        </p>
+      )}
 
-      <Dialog open={Boolean(suggestion)} onOpenChange={(open) => { if (!open) setSuggestion(null); }}>
+      <Dialog
+        onOpenChange={(open) => {
+          if (!open) {
+            setSuggestion(null);
+          }
+        }}
+        open={Boolean(suggestion)}
+      >
         <FormDialogContent size="md">
           <FormDialogHeader
-            title="Proposition de rédaction"
             description="Relisez le texte avant de décider de l’ajouter à votre document."
             icon={<PenLine strokeWidth={1.8} />}
+            title="Proposition de rédaction"
           />
           <FormDialogBody>
-            <p className="mb-2 text-muted-foreground text-xs">{suggestion?.instruction}</p>
+            <p className="mb-2 text-muted-foreground text-xs">
+              {suggestion?.instruction}
+            </p>
             <div className="max-h-[45vh] overflow-y-auto whitespace-pre-wrap rounded-xl border border-border/70 bg-muted/30 p-5 text-foreground text-sm leading-relaxed">
               {suggestion?.text}
             </div>
-            <p className="mt-3 text-muted-foreground text-xs">Vérifiez les faits cliniques et les données du patient avant utilisation.</p>
+            <p className="mt-3 text-muted-foreground text-xs">
+              Vérifiez les faits cliniques et les données du patient avant
+              utilisation.
+            </p>
           </FormDialogBody>
           <FormDialogFooter>
-            <Button variant="outline" onClick={() => setSuggestion(null)}>Ignorer</Button>
-            <Button variant={suggestion?.selected ? "outline" : "default"} onClick={() => applySuggestion("insert")}>
+            <Button onClick={() => setSuggestion(null)} variant="outline">
+              Ignorer
+            </Button>
+            <Button
+              onClick={() => applySuggestion("insert")}
+              variant={suggestion?.selected ? "outline" : "default"}
+            >
               {suggestion?.selected ? "Insérer après" : "Insérer au curseur"}
             </Button>
-            {suggestion?.selected && <Button onClick={() => applySuggestion("replace")}>Remplacer la sélection</Button>}
+            {suggestion?.selected && (
+              <Button onClick={() => applySuggestion("replace")}>
+                Remplacer la sélection
+              </Button>
+            )}
           </FormDialogFooter>
         </FormDialogContent>
       </Dialog>
@@ -389,9 +576,9 @@ const Editor: React.FC<EditorProps> = ({
       <Dialog onOpenChange={setWriteModalOpen} open={writeModalOpen}>
         <FormDialogContent size="sm">
           <FormDialogHeader
-            title="Que voulez-vous écrire ?"
             description="Décrivez le document souhaité. Vous pourrez relire la proposition avant de l’insérer."
             icon={<PenLine strokeWidth={1.8} />}
+            title="Que voulez-vous écrire ?"
           />
           <FormDialogBody>
             <Input

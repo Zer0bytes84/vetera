@@ -111,16 +111,19 @@ export function SectionGarden({
     parametres: [stock, reminders],
   };
   const cards = pairs[view];
-  if (!cards) return null;
+  if (!cards) {
+    return null;
+  }
   return (
     <SectionCards
-      subtitle="Vue d’ensemble de la rubrique"
       className="mx-4 mb-5 lg:mx-6"
-      loading={loading}
-      items={cards.map(card => ({
+      items={cards.map((card) => ({
         title: card.title,
         value: String(card.value),
-        footerTitle: card.title === "Rendez-vous aujourd’hui" ? "aujourd’hui" : "Repère du cabinet",
+        footerTitle:
+          card.title === "Rendez-vous aujourd’hui"
+            ? "aujourd’hui"
+            : "Repère du cabinet",
         footerDescription: card.detail,
         badge: "Données du cabinet",
         tone: "quiet",
@@ -128,6 +131,8 @@ export function SectionGarden({
         onClick: () => onNavigate(card.target),
         actionLabel: "Ouvrir la rubrique",
       }))}
+      loading={loading}
+      subtitle="Vue d’ensemble de la rubrique"
     />
   );
 }

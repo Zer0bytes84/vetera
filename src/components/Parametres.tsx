@@ -1,14 +1,54 @@
-import { isActivationOwner } from "@/services/adminAccess";
-import { LocalDataResetSettings } from "./local-data-reset-settings";
-import { AboutTeam } from "./about-team";
-import { MascotSettings } from "@/components/mascot/mascot-settings";
-import { DashboardVersionSetting } from "@/modules/dashboard/components/dashboard-version-setting";
-import { ClinicIdentityPanel, InvoiceSettingsPanel } from "@/modules/invoices/components/invoice-settings-panel";
-import DocumentTemplateManager from "@/modules/documents/components/document-template-manager";
-import { PatientRemindersContent } from "@/modules/patient-reminders/patient-reminders-panel";
-import { usePatientReminders } from "@/modules/patient-reminders/use-patient-reminders";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { relaunch } from "@tauri-apps/plugin-process";
+import {
+  Bell,
+  Database,
+  History,
+  IdCard,
+  Info,
+  KeyRound,
+  KeySquare,
+  LayoutDashboard,
+  Palette,
+  PanelLeft,
+  UserRound,
+} from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { LicenseStatusCard } from "@/components/LicenseStatusCard";
+import { MascotSettings } from "@/components/mascot/mascot-settings";
+import {
+  SettingsBody,
+  SettingsFooter,
+  SettingsNotice,
+  SettingsRow,
+  SettingsSection,
+  SettingsStack,
+} from "@/components/settings-section";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { Field, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { SkeletonShape } from "@/components/ui/loading-skeleton";
+import { Segmented } from "@/components/ui/segmented-control";
+import { Spinner } from "@/components/ui/spinner";
 import { UpdateCheckRow } from "@/components/update-check-row";
+import { useAuth } from "@/contexts/AuthContext";
+import { useLayout } from "@/contexts/layout-provider";
+import { useUsersRepository } from "@/data/repositories";
+import { PageHeader } from "@/design-system/patterns/page-header";
+import { useDelayedSkeleton } from "@/hooks/useDelayedSkeleton";
+import { APP_NAME } from "@/lib/brand";
+import { guard } from "@/lib/guard";
 import {
   Building01Icon,
   DatabaseIcon,
@@ -18,53 +58,27 @@ import {
   InformationCircleIcon,
   LaptopIcon,
   Notification01Icon,
+  PencilEdit01Icon,
   ReceiptTextIcon,
   Refresh01Icon,
   Shield01Icon,
   SparklesIcon,
-  PencilEdit01Icon,
   UserCircle02Icon,
   Wifi01Icon,
 } from "@/lib/hugeicons";
-import { HugeiconsIcon } from "@hugeicons/react";
-import {
-  Bell,
-  History,
-  IdCard,
-  Info,
-  KeyRound,
-  LayoutDashboard,
-  Palette,
-  PanelLeft,
-  UserRound,
-  Database,
-  KeySquare,
-} from "lucide-react";
-import { relaunch } from "@tauri-apps/plugin-process";
-import React, { useEffect, useState } from "react";
-import { toast } from "sonner";
-import { Button, buttonVariants } from "@/components/ui/button";
-import { Field, FieldLabel } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import { Segmented } from "@/components/ui/segmented-control";
-import { Spinner } from "@/components/ui/spinner";
-import {
-  SettingsBody,
-  SettingsFooter,
-  SettingsNotice,
-  SettingsRow,
-  SettingsSection,
-  SettingsStack,
-} from "@/components/settings-section";
-import { useAuth } from "@/contexts/AuthContext";
-import { useLayout } from "@/contexts/layout-provider";
-import { startTour } from "@/modules/tour/tour-state";
-import { tourStore } from "@/modules/tour/tour-store";
-import { useUsersRepository } from "@/data/repositories";
-import { SkeletonShape } from "@/components/ui/loading-skeleton";
-import { useDelayedSkeleton } from "@/hooks/useDelayedSkeleton";
-import { APP_NAME } from "@/lib/brand";
 import { writeCachedProfile } from "@/lib/profile-cache";
+import {
+  isSettingsTab,
+  SETTINGS_SECTION_EVENT,
+  SETTINGS_SECTION_KEY,
+  type SettingsTab,
+} from "@/lib/settings-navigation";
+import {
+  getSidebarTone,
+  SIDEBAR_TONES,
+  type SidebarTone,
+  saveSidebarTone,
+} from "@/lib/sidebar-tone";
 import {
   applyTheme,
   CLEAN_FONT_SETS,
@@ -74,8 +88,28 @@ import {
   saveThemeConfig,
   type ThemeConfig,
 } from "@/lib/theme-store";
+import { roleLabel as displayRole } from "@/lib/user-role";
 import { cn } from "@/lib/utils";
+import { ClinicNetworkSettings } from "@/modules/clinic-network/clinic-network-settings";
+import { AIModelSettings } from "@/modules/consultations/components/ai-model-settings";
+import {
+  AI_ONBOARDING_OPEN_EVENT,
+  AI_SETTINGS_PENDING_KEY,
+} from "@/modules/consultations/services/ai-model-provisioning";
+import { DashboardVersionSetting } from "@/modules/dashboard/components/dashboard-version-setting";
+import DocumentTemplateManager from "@/modules/documents/components/document-template-manager";
+import {
+  ClinicIdentityPanel,
+  InvoiceSettingsPanel,
+} from "@/modules/invoices/components/invoice-settings-panel";
+import { PatientRemindersContent } from "@/modules/patient-reminders/patient-reminders-panel";
+import { usePatientReminders } from "@/modules/patient-reminders/use-patient-reminders";
+import { ReleaseNotesArchive } from "@/modules/release-notes/release-notes-archive";
+import { RoomsSettings } from "@/modules/rooms/rooms-settings";
+import { startTour } from "@/modules/tour/tour-state";
+import { tourStore } from "@/modules/tour/tour-store";
 import { openActivationAdminWindow } from "@/services/activationAdminWindowService";
+import { isActivationOwner } from "@/services/adminAccess";
 import {
   type BackupInfo,
   createBackup,
@@ -88,39 +122,13 @@ import {
   restoreBackup,
 } from "@/services/backupService";
 import { isTauriRuntime } from "@/services/browser-store";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import { updatePassword } from "@/services/sqlite/auth";
-import { AIModelSettings } from "@/modules/consultations/components/ai-model-settings";
-import { ClinicNetworkSettings } from "@/modules/clinic-network/clinic-network-settings";
-import { RoomsSettings } from "@/modules/rooms/rooms-settings";
-import { ReleaseNotesArchive } from "@/modules/release-notes/release-notes-archive";
-import {
-  AI_ONBOARDING_OPEN_EVENT,
-  AI_SETTINGS_PENDING_KEY,
-} from "@/modules/consultations/services/ai-model-provisioning";
-import {
-  isSettingsTab,
-  SETTINGS_SECTION_EVENT,
-  SETTINGS_SECTION_KEY,
-  type SettingsTab,
-} from "@/lib/settings-navigation";
 import type { View } from "@/types";
-import Avatar, { PROFILE_AVATAR_EMOJIS } from "./Avatar";
-import Logo from "./Logo";
-import { getSidebarTone, saveSidebarTone, SIDEBAR_TONES, type SidebarTone } from "@/lib/sidebar-tone";
 import { formatPersonName } from "@/utils/display-format";
-import { roleLabel as displayRole } from "@/lib/user-role";
-import { PageHeader } from "@/design-system/patterns/page-header";
-import { guard } from "@/lib/guard";
+import Avatar, { PROFILE_AVATAR_EMOJIS } from "./Avatar";
+import { AboutTeam } from "./about-team";
+import Logo from "./Logo";
+import { LocalDataResetSettings } from "./local-data-reset-settings";
 
 type SettingsNavItem = {
   id: SettingsTab;
@@ -144,14 +152,7 @@ const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
         label: "Profil",
         description: "Identité, avatar et coordonnées",
         icon: UserCircle02Icon,
-        keywords: [
-          "nom",
-          "email",
-          "téléphone",
-          "photo",
-          "avatar",
-          "bio",
-        ],
+        keywords: ["nom", "email", "téléphone", "photo", "avatar", "bio"],
       },
       {
         id: "securite",
@@ -170,7 +171,17 @@ const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
         label: "Mon cabinet",
         description: "Nom, adresse, coordonnées et logo du cabinet",
         icon: Building01Icon,
-        keywords: ["nom", "adresse", "téléphone", "email", "e-mail", "logo", "identité", "clinique", "nif"],
+        keywords: [
+          "nom",
+          "adresse",
+          "téléphone",
+          "email",
+          "e-mail",
+          "logo",
+          "identité",
+          "clinique",
+          "nif",
+        ],
       },
       {
         id: "cabinet",
@@ -184,7 +195,15 @@ const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
         label: "Salles",
         description: "Les espaces où vous recevez les animaux",
         icon: Door01Icon,
-        keywords: ["salle", "consultation", "chirurgie", "bloc", "box", "espace", "agenda"],
+        keywords: [
+          "salle",
+          "consultation",
+          "chirurgie",
+          "bloc",
+          "box",
+          "espace",
+          "agenda",
+        ],
       },
       {
         id: "apparence",
@@ -266,14 +285,29 @@ const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
         label: "Réseau local",
         description: "Partager la base entre les postes du cabinet",
         icon: Wifi01Icon,
-        keywords: ["réseau", "poste", "accueil", "secrétaire", "partage", "synchronisation", "lan"],
+        keywords: [
+          "réseau",
+          "poste",
+          "accueil",
+          "secrétaire",
+          "partage",
+          "synchronisation",
+          "lan",
+        ],
       },
       {
         id: "nouveautes",
         label: "Nouveautés",
         description: "Ce qui a changé à chaque version",
         icon: SparklesIcon,
-        keywords: ["nouveautés", "version", "mise à jour", "quoi de neuf", "notes de version", "changements"],
+        keywords: [
+          "nouveautés",
+          "version",
+          "mise à jour",
+          "quoi de neuf",
+          "notes de version",
+          "changements",
+        ],
       },
       {
         id: "apropos",
@@ -301,21 +335,24 @@ const BackupSettings: React.FC = () => {
 
   // Lecture seule : au montage, `loading` vaut déjà true ; les rechargements le repassent à true via `load`.
   const read = async () => {
-    await guard(async () => {
-      const [items, date] = await Promise.all([
-        listBackups(),
-        getLastBackupDate(),
-      ]);
-      setBackups(items);
-      setLastBackup(date);
-    }, {
-      recover: () => {
-        toast.error("Impossible de lire les sauvegardes.");
+    await guard(
+      async () => {
+        const [items, date] = await Promise.all([
+          listBackups(),
+          getLastBackupDate(),
+        ]);
+        setBackups(items);
+        setLastBackup(date);
       },
-      cleanup: () => {
-        setLoading(false);
-      },
-    });
+      {
+        recover: () => {
+          toast.error("Impossible de lire les sauvegardes.");
+        },
+        cleanup: () => {
+          setLoading(false);
+        },
+      }
+    );
   };
 
   const load = async () => {
@@ -335,42 +372,48 @@ const BackupSettings: React.FC = () => {
   const run = async (
     operation: () => Promise<boolean | BackupInfo | null>,
     success: string,
-    restart = false,
+    restart = false
   ) => {
     setBusy(true);
-    return await guard(async () => {
-      const result = await operation();
-      if (!result) {
-        if (success.startsWith("Sauvegarde"))
-          toast.error("L’opération a échoué. Réessayez.");
-        return;
-      }
-      toast.success(success);
-      if (restart) {
-        try {
-          await relaunch();
-        } catch {
-          window.location.reload();
+    return await guard(
+      async () => {
+        const result = await operation();
+        if (!result) {
+          if (success.startsWith("Sauvegarde")) {
+            toast.error("L’opération a échoué. Réessayez.");
+          }
+          return;
         }
-      } else {
-        await load();
+        toast.success(success);
+        if (restart) {
+          try {
+            await relaunch();
+          } catch {
+            window.location.reload();
+          }
+        } else {
+          await load();
+        }
+      },
+      {
+        recover: (error) => {
+          toast.error(
+            error instanceof Error
+              ? error.message
+              : "L’opération a échoué. Réessayez."
+          );
+        },
+        cleanup: () => {
+          setBusy(false);
+        },
       }
-    }, {
-      recover: (error) => {
-        toast.error(
-          error instanceof Error
-            ? error.message
-            : "L’opération a échoué. Réessayez.",
-        );
-      },
-      cleanup: () => {
-        setBusy(false);
-      },
-    });
+    );
   };
 
   const confirmPending = () => {
-    if (!pending) return;
+    if (!pending) {
+      return;
+    }
     const action = pending;
     const password = passphrase || undefined;
     setPending(null);
@@ -379,7 +422,7 @@ const BackupSettings: React.FC = () => {
       void run(
         () => restoreBackup(action.filename!, password),
         "Sauvegarde restaurée. Redémarrage…",
-        true,
+        true
       );
     } else if (action.kind === "delete" && action.filename) {
       void run(() => deleteBackup(action.filename!), "Sauvegarde supprimée.");
@@ -387,7 +430,7 @@ const BackupSettings: React.FC = () => {
       void run(
         () => importDatabase(password),
         "Base importée. Redémarrage…",
-        true,
+        true
       );
     }
   };
@@ -396,7 +439,8 @@ const BackupSettings: React.FC = () => {
     <SettingsStack>
       {!desktop && (
         <SettingsNotice tone="info">
-          Les sauvegardes de la base sont disponibles dans l’application de bureau.
+          Les sauvegardes de la base sont disponibles dans l’application de
+          bureau.
         </SettingsNotice>
       )}
       <SettingsSection
@@ -405,7 +449,11 @@ const BackupSettings: React.FC = () => {
         title="Sauvegarde"
       >
         <SettingsRow
-          detail={lastBackup ? formatDate(lastBackup) : "Aucune sauvegarde enregistrée"}
+          detail={
+            lastBackup
+              ? formatDate(lastBackup)
+              : "Aucune sauvegarde enregistrée"
+          }
           title="Dernière sauvegarde"
         >
           <Button
@@ -472,7 +520,7 @@ const BackupSettings: React.FC = () => {
             <Spinner />
           </div>
         ) : backups.length === 0 ? (
-          <p className="px-6 py-6 text-sm text-muted-foreground">
+          <p className="px-6 py-6 text-muted-foreground text-sm">
             Votre première copie apparaîtra ici après la sauvegarde.
           </p>
         ) : (
@@ -516,13 +564,13 @@ const BackupSettings: React.FC = () => {
         )}
       </SettingsSection>
       <AlertDialog
-        open={pending !== null}
         onOpenChange={(open) => {
           if (!open) {
             setPending(null);
             setPassphrase("");
           }
         }}
+        open={pending !== null}
       >
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -598,10 +646,14 @@ const Parametres: React.FC<ParametresProps> = ({
   };
 
   const [activeTab, setActiveTab] = useState<SettingsTab>(() => {
-    if (typeof window === "undefined") return "profil";
+    if (typeof window === "undefined") {
+      return "profil";
+    }
     // A section asked for from elsewhere (the account menu's « Mon cabinet ») opens directly.
     const requested = window.sessionStorage.getItem(SETTINGS_SECTION_KEY);
-    if (isSettingsTab(requested)) return requested;
+    if (isSettingsTab(requested)) {
+      return requested;
+    }
     return window.sessionStorage.getItem(AI_SETTINGS_PENDING_KEY) === "true"
       ? "ia"
       : "profil";
@@ -614,11 +666,17 @@ const Parametres: React.FC<ParametresProps> = ({
     const openRequestedSection = () => {
       const requested = window.sessionStorage.getItem(SETTINGS_SECTION_KEY);
       window.sessionStorage.removeItem(SETTINGS_SECTION_KEY);
-      if (isSettingsTab(requested)) setActiveTab(requested);
+      if (isSettingsTab(requested)) {
+        setActiveTab(requested);
+      }
     };
-    if (window.sessionStorage.getItem(SETTINGS_SECTION_KEY)) openRequestedSection();
-    else if (window.sessionStorage.getItem(AI_SETTINGS_PENDING_KEY) === "true")
+    if (window.sessionStorage.getItem(SETTINGS_SECTION_KEY)) {
+      openRequestedSection();
+    } else if (
+      window.sessionStorage.getItem(AI_SETTINGS_PENDING_KEY) === "true"
+    ) {
       openAISettings();
+    }
     window.addEventListener(AI_ONBOARDING_OPEN_EVENT, openAISettings);
     window.addEventListener(SETTINGS_SECTION_EVENT, openRequestedSection);
     return () => {
@@ -628,7 +686,11 @@ const Parametres: React.FC<ParametresProps> = ({
   }, []);
   const { currentUser, refreshCurrentUser } = useAuth();
   const medicalReminders = usePatientReminders();
-  const { data: users, loading: usersLoading, update: updateUserDoc } = useUsersRepository();
+  const {
+    data: users,
+    loading: usersLoading,
+    update: updateUserDoc,
+  } = useUsersRepository();
   // The role comes from the team's list: until it is read (first read only), the line holds its place in the sheen
   // rather than showing the default role (« Stagiaire ») for an instant.
   const roleSkeleton = useDelayedSkeleton(usersLoading);
@@ -646,7 +708,7 @@ const Parametres: React.FC<ParametresProps> = ({
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const [themeConfig, setThemeConfig] = useState<ThemeConfig>(() =>
-    getThemeConfig(),
+    getThemeConfig()
   );
 
   useEffect(() => {
@@ -706,45 +768,48 @@ const Parametres: React.FC<ParametresProps> = ({
     setIsSaving(true);
     setMessage(null);
 
-    return await guard(async () => {
-      const dbUser = users.find(
-        (u) => u.id === currentUser.id || u.email === currentUser.email,
-      );
+    return await guard(
+      async () => {
+        const dbUser = users.find(
+          (u) => u.id === currentUser.id || u.email === currentUser.email
+        );
 
-      if (!dbUser) {
-        setMessage({
-          type: "error",
-          text: "Utilisateur non trouvé dans la base de données.",
+        if (!dbUser) {
+          setMessage({
+            type: "error",
+            text: "Utilisateur non trouvé dans la base de données.",
+          });
+          return;
+        }
+
+        await updateUserDoc(dbUser.id, {
+          displayName,
+          phone,
+          avatarUrl: sanitizeAvatarValue(avatarUrl),
         });
-        return;
+
+        writeCachedProfile(currentUser.email, {
+          displayName,
+          avatarUrl: sanitizeAvatarValue(avatarUrl),
+        });
+
+        await refreshCurrentUser();
+
+        setMessage({ type: "success", text: "Profil mis à jour avec succès." });
+      },
+      {
+        recover: (error) => {
+          console.error("[SETTINGS] Error updating profile:", error);
+          setMessage({
+            type: "error",
+            text: "Une erreur est survenue lors de la mise à jour.",
+          });
+        },
+        cleanup: () => {
+          setIsSaving(false);
+        },
       }
-
-      await updateUserDoc(dbUser.id, {
-        displayName,
-        phone,
-        avatarUrl: sanitizeAvatarValue(avatarUrl),
-      });
-
-      writeCachedProfile(currentUser.email, {
-        displayName,
-        avatarUrl: sanitizeAvatarValue(avatarUrl),
-      });
-
-      await refreshCurrentUser();
-
-      setMessage({ type: "success", text: "Profil mis à jour avec succès." });
-    }, {
-      recover: (error) => {
-        console.error("[SETTINGS] Error updating profile:", error);
-        setMessage({
-          type: "error",
-          text: "Une erreur est survenue lors de la mise à jour.",
-        });
-      },
-      cleanup: () => {
-        setIsSaving(false);
-      },
-    });
+    );
   };
 
   const handleChangePassword = async () => {
@@ -769,34 +834,37 @@ const Parametres: React.FC<ParametresProps> = ({
     setIsSaving(true);
     setMessage(null);
 
-    await guard(async () => {
-      await updatePassword(currentUser.uid, newPassword);
+    await guard(
+      async () => {
+        await updatePassword(currentUser.uid, newPassword);
 
-      setMessage({
-        type: "success",
-        text: "Mot de passe modifié avec succès.",
-      });
-      setNewPassword("");
-      setConfirmPassword("");
-    }, {
-      recover: (error: any) => {
-        console.error("Password change error:", error);
-        if (error.code === "auth/requires-recent-login") {
-          setMessage({
-            type: "error",
-            text: "Par sécurité, veuillez vous reconnecter avant de changer le mot de passe.",
-          });
-        } else {
-          setMessage({
-            type: "error",
-            text: `Erreur: ${error.message || String(error)}`,
-          });
-        }
+        setMessage({
+          type: "success",
+          text: "Mot de passe modifié avec succès.",
+        });
+        setNewPassword("");
+        setConfirmPassword("");
       },
-      cleanup: () => {
-        setIsSaving(false);
-      },
-    });
+      {
+        recover: (error: any) => {
+          console.error("Password change error:", error);
+          if (error.code === "auth/requires-recent-login") {
+            setMessage({
+              type: "error",
+              text: "Par sécurité, veuillez vous reconnecter avant de changer le mot de passe.",
+            });
+          } else {
+            setMessage({
+              type: "error",
+              text: `Erreur: ${error.message || String(error)}`,
+            });
+          }
+        },
+        cleanup: () => {
+          setIsSaving(false);
+        },
+      }
+    );
   };
 
   const roleLabel = displayRole(userDoc?.role, currentUser?.email);
@@ -814,7 +882,9 @@ const Parametres: React.FC<ParametresProps> = ({
         return (
           <SettingsStack>
             {message && (
-              <SettingsNotice tone={message.type}>{message.text}</SettingsNotice>
+              <SettingsNotice tone={message.type}>
+                {message.text}
+              </SettingsNotice>
             )}
             <SettingsSection
               icon={UserRound}
@@ -824,18 +894,23 @@ const Parametres: React.FC<ParametresProps> = ({
               <div className="flex items-center gap-3 p-6">
                 <Avatar name={displayName} size="xl" src={avatarUrl} />
                 <div className="min-w-0">
-                  <p className="truncate text-lg font-medium">
+                  <p className="truncate font-medium text-lg">
                     {formatPersonName(displayName) || "Votre profil"}
                   </p>
-                  <p className="truncate text-sm text-muted-foreground">
+                  <p className="truncate text-muted-foreground text-sm">
                     {currentUser?.email}
                   </p>
                   {usersLoading || roleSkeleton ? (
-                    <p className={cn("loading-skeleton text-xs text-muted-foreground", !roleSkeleton && "invisible")}>
+                    <p
+                      className={cn(
+                        "loading-skeleton text-muted-foreground text-xs",
+                        !roleSkeleton && "invisible"
+                      )}
+                    >
                       <SkeletonShape className="loading-skeleton-inline" />
                     </p>
                   ) : (
-                    <p className="text-xs text-muted-foreground">{roleLabel}</p>
+                    <p className="text-muted-foreground text-xs">{roleLabel}</p>
                   )}
                 </div>
               </div>
@@ -850,8 +925,7 @@ const Parametres: React.FC<ParametresProps> = ({
                         aria-pressed={avatarUrl === value}
                         className={cn(
                           "settings-avatar-choice",
-                          avatarUrl === value &&
-                            "settings-avatar-choice-active",
+                          avatarUrl === value && "settings-avatar-choice-active"
                         )}
                         key={emoji}
                         onClick={() => setAvatarUrl(value)}
@@ -875,7 +949,7 @@ const Parametres: React.FC<ParametresProps> = ({
                   <label
                     className={cn(
                       buttonVariants({ size: "sm", variant: "outline" }),
-                      "cursor-pointer rounded-full",
+                      "cursor-pointer rounded-full"
                     )}
                     htmlFor="profile-photo-upload"
                   >
@@ -901,8 +975,8 @@ const Parametres: React.FC<ParametresProps> = ({
                   <Field className="sm:col-span-2">
                     <FieldLabel htmlFor="settings-name">Nom complet</FieldLabel>
                     <Input
-                      id="settings-name"
                       autoComplete="name"
+                      id="settings-name"
                       onChange={(event) => setDisplayName(event.target.value)}
                       value={displayName}
                     />
@@ -910,8 +984,8 @@ const Parametres: React.FC<ParametresProps> = ({
                   <Field className="sm:col-span-2">
                     <FieldLabel htmlFor="settings-phone">Téléphone</FieldLabel>
                     <Input
-                      id="settings-phone"
                       autoComplete="tel"
+                      id="settings-phone"
                       onChange={(event) => setPhone(event.target.value)}
                       placeholder="Numéro de téléphone"
                       type="tel"
@@ -937,7 +1011,9 @@ const Parametres: React.FC<ParametresProps> = ({
         return <ClinicIdentityPanel />;
       case "cabinet":
         return (
-          <InvoiceSettingsPanel onOpenClinic={() => setActiveTab("mon-cabinet")} />
+          <InvoiceSettingsPanel
+            onOpenClinic={() => setActiveTab("mon-cabinet")}
+          />
         );
       case "apparence":
         return (
@@ -996,7 +1072,9 @@ const Parametres: React.FC<ParametresProps> = ({
                 <Button
                   className="rounded-full"
                   onClick={() => {
-                    tourStore.update((current) => startTour(current, new Date()));
+                    tourStore.update((current) =>
+                      startTour(current, new Date())
+                    );
                     onNavigate?.("dashboard");
                   }}
                   type="button"
@@ -1018,15 +1096,15 @@ const Parametres: React.FC<ParametresProps> = ({
               >
                 <Button
                   className="rounded-full"
-                  variant="outline"
+                  disabled={!onNavigate}
                   onClick={() => {
                     window.sessionStorage.setItem(
                       "baitari:customize-dashboard",
-                      "true",
+                      "true"
                     );
                     onNavigate?.("dashboard");
                   }}
-                  disabled={!onNavigate}
+                  variant="outline"
                 >
                   Réorganiser les widgets
                 </Button>
@@ -1039,7 +1117,9 @@ const Parametres: React.FC<ParametresProps> = ({
         return (
           <SettingsStack>
             {message && (
-              <SettingsNotice tone={message.type}>{message.text}</SettingsNotice>
+              <SettingsNotice tone={message.type}>
+                {message.text}
+              </SettingsNotice>
             )}
             <SettingsSection
               icon={KeyRound}
@@ -1052,8 +1132,8 @@ const Parametres: React.FC<ParametresProps> = ({
                     Nouveau mot de passe
                   </FieldLabel>
                   <Input
-                    id="settings-password"
                     autoComplete="new-password"
+                    id="settings-password"
                     onChange={(e) => setNewPassword(e.target.value)}
                     placeholder="Au moins 6 caractères"
                     type="password"
@@ -1065,8 +1145,8 @@ const Parametres: React.FC<ParametresProps> = ({
                     Confirmer le mot de passe
                   </FieldLabel>
                   <Input
-                    id="settings-confirm"
                     autoComplete="new-password"
+                    id="settings-confirm"
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     placeholder="Saisir à nouveau"
                     type="password"
@@ -1128,8 +1208,8 @@ const Parametres: React.FC<ParametresProps> = ({
               <div className="flex items-center gap-6 p-6">
                 <Logo collapsed size="lg" />
                 <div className="min-w-0">
-                  <p className="text-lg font-medium">{APP_NAME}</p>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="font-medium text-lg">{APP_NAME}</p>
+                  <p className="text-muted-foreground text-sm">
                     Version {getAppVersion()}
                   </p>
                 </div>
@@ -1155,7 +1235,7 @@ const Parametres: React.FC<ParametresProps> = ({
                         toast.error(
                           error instanceof Error
                             ? error.message
-                            : "Impossible d’ouvrir le centre d’activation.",
+                            : "Impossible d’ouvrir le centre d’activation."
                         );
                       });
                     }}
@@ -1187,19 +1267,19 @@ const Parametres: React.FC<ParametresProps> = ({
                   aria-current={activeTab === item.id ? "page" : undefined}
                   className={cn(
                     "settings-nav-item",
-                    activeTab === item.id && "settings-nav-item-active",
+                    activeTab === item.id && "settings-nav-item-active"
                   )}
                   key={item.id}
                   onClick={(event) => {
                     const scrollContainer = event.currentTarget.closest(
-                      '[data-slot="sidebar-inset"]',
+                      '[data-slot="sidebar-inset"]'
                     );
                     setActiveTab(item.id);
                     requestAnimationFrame(() =>
                       scrollContainer?.scrollTo({
                         top: 0,
                         behavior: "instant",
-                      }),
+                      })
                     );
                   }}
                   type="button"
@@ -1231,8 +1311,12 @@ const Parametres: React.FC<ParametresProps> = ({
 /** The sidebar's tone, per user: the theme's own, or always light or dark. */
 function SidebarToneSetting({ userId }: { userId: string | undefined }) {
   // The choice made here, for the user it was made for; another user reads their own.
-  const [chosen, setChosen] = useState<{ userId: string; tone: SidebarTone } | null>(null);
-  const tone = chosen && chosen.userId === userId ? chosen.tone : getSidebarTone(userId);
+  const [chosen, setChosen] = useState<{
+    userId: string;
+    tone: SidebarTone;
+  } | null>(null);
+  const tone =
+    chosen && chosen.userId === userId ? chosen.tone : getSidebarTone(userId);
   return (
     <SettingsRow
       detail="Automatique suit le thème. Claire ou Sombre reste votre choix, quel que soit le thème."
@@ -1241,7 +1325,9 @@ function SidebarToneSetting({ userId }: { userId: string | undefined }) {
       <Segmented<SidebarTone>
         label="Teinte de la barre latérale"
         onValueChange={(next) => {
-          if (!userId) return;
+          if (!userId) {
+            return;
+          }
           setChosen({ userId, tone: next });
           saveSidebarTone(userId, next);
         }}

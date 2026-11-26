@@ -1,7 +1,5 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import type { ComponentProps, ReactNode } from "react";
-import { markFocusesClose, markModalSlot } from "@/components/ui/modal-chrome";
-import { cn } from "@/lib/utils";
 import {
   DialogContent,
   DialogDescription,
@@ -9,6 +7,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { markFocusesClose, markModalSlot } from "@/components/ui/modal-chrome";
+import { cn } from "@/lib/utils";
 
 const formDialogContentVariants = cva(
   "modal-medical-shell grid max-h-[calc(100dvh-2rem)] grid-rows-[auto_minmax(0,1fr)_auto] gap-0 overflow-hidden p-0 sm:max-h-[calc(100dvh-3rem)]",
@@ -86,7 +86,7 @@ function FormDialogBody({ className, ...props }: ComponentProps<"div">) {
   return (
     <div
       className={cn(
-        "modal-medical-body modal-form-fields min-h-0 min-w-0 overflow-x-hidden overflow-y-auto overscroll-contain p-5 sm:p-8",
+        "modal-medical-body modal-form-fields min-h-0 min-w-0 overflow-y-auto overflow-x-hidden overscroll-contain p-5 sm:p-8",
         className
       )}
       {...props}

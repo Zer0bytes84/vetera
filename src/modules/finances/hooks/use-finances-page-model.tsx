@@ -1,14 +1,6 @@
-import { createUuid } from "@/lib/uuid";
-import { useCreationRequest } from "@/modules/shell/model/creation-request";
-import { draftPriceLines, priceInput } from "../lib/draft-prices";
-import { usePage } from "@/hooks/use-page";
-import { getInvoiceSettings } from "@/services/invoiceSettingsService";
-
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-
-import { type SectionCardItem } from "@/components/section-cards";
-
+import type { SectionCardItem } from "@/components/section-cards";
 import { useAuth } from "@/contexts/AuthContext";
 import { useFocus } from "@/contexts/focus-provider";
 import {
@@ -16,9 +8,30 @@ import {
   usePatientsRepository,
   useTransactionsRepository,
 } from "@/data/repositories";
+import { usePage } from "@/hooks/use-page";
+import { guard, guardSync } from "@/lib/guard";
+import { createUuid } from "@/lib/uuid";
+import {
+  createInvoiceDraft,
+  createTransactionDraft,
+  type FinanceTab,
+  type InvoiceDocumentFilter,
+  type InvoiceDraft,
+  type InvoiceSettlementFilter,
+  isDateInRange,
+  PAYMENT_METHOD_LABELS,
+  type PaymentDraft,
+  type TransactionDraft,
+  type TransactionFilter,
+  type TransactionSort,
+  type TransactionSourceFilter,
+  type TransactionStatusFilter,
+} from "@/modules/finances/components/finances-shared";
+import { useCreationRequest } from "@/modules/shell/model/creation-request";
 
 import { type BillingActor, billingService } from "@/services/billingService";
 import { isTauriRuntime } from "@/services/browser-store";
+import { getInvoiceSettings } from "@/services/invoiceSettingsService";
 import type { View } from "@/types";
 import type {
   BillingLineInput,
@@ -28,25 +41,10 @@ import type {
   TransactionPaymentMethod,
 } from "@/types/db";
 import { formatDZD, toCentimes } from "@/utils/currency";
-import {
-  FinanceTab,
-  TransactionFilter,
-  InvoiceDocumentFilter,
-  InvoiceSettlementFilter,
-  TransactionStatusFilter,
-  TransactionSourceFilter,
-  TransactionSort,
-  InvoiceDraft,
-  PaymentDraft,
-  TransactionDraft,
-  PAYMENT_METHOD_LABELS,
-  createInvoiceDraft,
-  createTransactionDraft,
-  isDateInRange,
-} from "@/modules/finances/components/finances-shared";
-import { guard, guardSync } from "@/lib/guard";
+import { draftPriceLines, priceInput } from "../lib/draft-prices";
 
-const DESKTOP_ONLY_INVOICES = "La facturation officielle est disponible dans l’application de bureau.";
+const DESKTOP_ONLY_INVOICES =
+  "La facturation officielle est disponible dans l’application de bureau.";
 
 export function useFinancesPageModel({
   onNavigate,
@@ -71,7 +69,9 @@ export function useFinancesPageModel({
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   // Hors de l'application de bureau, il n'y a rien à charger : l'état de départ est déjà celui que le chargement aurait posé.
   const [invoicesLoading, setInvoicesLoading] = useState(isTauriRuntime);
-  const [invoiceError, setInvoiceError] = useState<string | null>(() => (isTauriRuntime() ? null : DESKTOP_ONLY_INVOICES));
+  const [invoiceError, setInvoiceError] = useState<string | null>(() =>
+    isTauriRuntime() ? null : DESKTOP_ONLY_INVOICES
+  );
   // Whether the invoices were read once: only the first read draws the band's skeleton. A reload after a save keeps
   // the figures it already shows, instead of blanking them every time.
   const [invoicesRead, setInvoicesRead] = useState(false);
@@ -83,9 +83,14 @@ export function useFinancesPageModel({
     null
   );
   const [editingInvoicePrices, setEditingInvoicePrices] = useState(false);
-  const [invoicePrices, setInvoicePrices] = useState<Record<string, string>>({});
+  const [invoicePrices, setInvoicePrices] = useState<Record<string, string>>(
+    {}
+  );
   // Quand la facture se ferme, l'édition des prix repart de zéro (corrigé au rendu, sans effet).
-  if (!selectedInvoice && (editingInvoicePrices || Object.keys(invoicePrices).length > 0)) {
+  if (
+    !selectedInvoice &&
+    (editingInvoicePrices || Object.keys(invoicePrices).length > 0)
+  ) {
     setEditingInvoicePrices(false);
     setInvoicePrices({});
   }
@@ -137,7 +142,7 @@ export function useFinancesPageModel({
     useState<Transaction | null>(null);
   const [isTransactionDialogOpen, setIsTransactionDialogOpen] = useState(false);
 
-  const {focus, clearFocus} = useFocus();
+  const { focus, clearFocus } = useFocus();
   // Le chargement est annoncé dès le rendu qui reçoit la demande, avant que l'effet ne lance la lecture.
   const [announcedFocus, setAnnouncedFocus] = useState<typeof focus>(null);
   if (focus?.kind === "invoice" && announcedFocus !== focus) {
@@ -145,15 +150,41 @@ export function useFinancesPageModel({
     setIsDetailLoading(true);
   }
   useEffect(() => {
-    if (focus?.kind !== "invoice") return;
+    if (focus?.kind !== "invoice") {
+      return;
+    }
     let alive = true;
-    void billingService.getInvoice(focus.id).then(invoice => {
-      if (!alive) return;
-      if (!invoice) {toast.error("Cette facture est introuvable."); return;}
-      setActiveTab("invoices"); setEditingInvoicePrices(false); setInvoicePrices({}); setSelectedInvoice(invoice);
-    }).catch(() => {if (alive) toast.error("Impossible d’ouvrir cette facture. Réessayez depuis la liste.");})
-      .finally(() => {if (alive) {setIsDetailLoading(false); clearFocus();}});
-    return () => {alive = false;};
+    void billingService
+      .getInvoice(focus.id)
+      .then((invoice) => {
+        if (!alive) {
+          return;
+        }
+        if (!invoice) {
+          toast.error("Cette facture est introuvable.");
+          return;
+        }
+        setActiveTab("invoices");
+        setEditingInvoicePrices(false);
+        setInvoicePrices({});
+        setSelectedInvoice(invoice);
+      })
+      .catch(() => {
+        if (alive) {
+          toast.error(
+            "Impossible d’ouvrir cette facture. Réessayez depuis la liste."
+          );
+        }
+      })
+      .finally(() => {
+        if (alive) {
+          setIsDetailLoading(false);
+          clearFocus();
+        }
+      });
+    return () => {
+      alive = false;
+    };
   }, [focus, clearFocus]);
 
   const actor = useMemo<BillingActor>(
@@ -165,18 +196,21 @@ export function useFinancesPageModel({
   );
 
   const fetchInvoices = useCallback(async () => {
-    await guard(async () => {
-      setInvoices(await billingService.listInvoices());
-      setInvoicesRead(true);
-    }, {
-      recover: (error) => {
-        console.error("[Finances] Unable to load invoices", error);
-        setInvoiceError("Impossible de charger les factures locales.");
+    await guard(
+      async () => {
+        setInvoices(await billingService.listInvoices());
+        setInvoicesRead(true);
       },
-      cleanup: () => {
-        setInvoicesLoading(false);
-      },
-    });
+      {
+        recover: (error) => {
+          console.error("[Finances] Unable to load invoices", error);
+          setInvoiceError("Impossible de charger les factures locales.");
+        },
+        cleanup: () => {
+          setInvoicesLoading(false);
+        },
+      }
+    );
   }, []);
 
   const loadInvoices = useCallback(async () => {
@@ -195,73 +229,92 @@ export function useFinancesPageModel({
     setEditingInvoicePrices(false);
     setInvoicePrices({});
     setIsDetailLoading(true);
-    return await guard(async () => {
-      const detail = await billingService.getInvoice(invoice.id);
-      if (!detail) {
-        toast.error("Cette facture est introuvable.");
-        return;
-      }
-      setSelectedInvoice(detail);
-      if (editPrices && detail.documentStatus === "draft") {
-        setInvoicePrices(Object.fromEntries(detail.lines.map((line) => [line.id, priceInput(line.unitAmount)])));
-        setEditingInvoicePrices(true);
-      }
-    }, {
-      recover: (error) => {
-        console.error(error);
-        toast.error("Impossible d’ouvrir cette facture.");
+    return await guard(
+      async () => {
+        const detail = await billingService.getInvoice(invoice.id);
+        if (!detail) {
+          toast.error("Cette facture est introuvable.");
+          return;
+        }
+        setSelectedInvoice(detail);
+        if (editPrices && detail.documentStatus === "draft") {
+          setInvoicePrices(
+            Object.fromEntries(
+              detail.lines.map((line) => [line.id, priceInput(line.unitAmount)])
+            )
+          );
+          setEditingInvoicePrices(true);
+        }
       },
-      cleanup: () => {
-        setIsDetailLoading(false);
-      },
-    });
+      {
+        recover: (error) => {
+          console.error(error);
+          toast.error("Impossible d’ouvrir cette facture.");
+        },
+        cleanup: () => {
+          setIsDetailLoading(false);
+        },
+      }
+    );
   };
 
   useEffect(() => {
-    if (isTauriRuntime()) void fetchInvoices();
+    if (isTauriRuntime()) {
+      void fetchInvoices();
+    }
   }, [fetchInvoices]);
 
   useEffect(() => {
     const consume = () => {
       const raw = sessionStorage.getItem("vetera:pending-invoice");
-      if (!raw) return;
-      return guardSync(() => {
-        const context = JSON.parse(raw) as {
-          ownerId?: string;
-          patientId?: string;
-          appointmentId?: string;
-        };
-        if (context.appointmentId && invoicesLoading) return;
-        if (
-          !context.ownerId ||
-          !owners.some((owner) => owner.id === context.ownerId)
-        )
-          return;
-        sessionStorage.removeItem("vetera:pending-invoice");
-        setActiveTab("invoices");
-        const existing =
-          context.appointmentId &&
-          invoices.find(
-            (invoice) =>
-              invoice.appointmentId === context.appointmentId &&
-              invoice.documentStatus !== "void"
-          );
-        if (existing) {
-          void openInvoiceDetail(existing);
-          return;
-        }
-        setInvoiceDraft({
-          ...createInvoiceDraft(),
-          ownerId: context.ownerId,
-          patientId: context.patientId ?? "",
-          appointmentId: context.appointmentId,
-        });
-        setIsInvoiceDialogOpen(true);
-      }, {
-        recover: () => {
+      if (!raw) {
+        return;
+      }
+      return guardSync(
+        () => {
+          const context = JSON.parse(raw) as {
+            ownerId?: string;
+            patientId?: string;
+            appointmentId?: string;
+          };
+          if (context.appointmentId && invoicesLoading) {
+            return;
+          }
+          if (
+            !(
+              context.ownerId &&
+              owners.some((owner) => owner.id === context.ownerId)
+            )
+          ) {
+            return;
+          }
           sessionStorage.removeItem("vetera:pending-invoice");
+          setActiveTab("invoices");
+          const existing =
+            context.appointmentId &&
+            invoices.find(
+              (invoice) =>
+                invoice.appointmentId === context.appointmentId &&
+                invoice.documentStatus !== "void"
+            );
+          if (existing) {
+            void openInvoiceDetail(existing);
+            return;
+          }
+          setInvoiceDraft({
+            ...createInvoiceDraft(),
+            ownerId: context.ownerId,
+            patientId: context.patientId ?? "",
+            appointmentId: context.appointmentId,
+          });
+          setIsInvoiceDialogOpen(true);
         },
-      });
+        {
+          recover: () => {
+            sessionStorage.removeItem("vetera:pending-invoice");
+          },
+        }
+      );
     };
     consume();
     window.addEventListener("vetera:new-invoice", consume);
@@ -275,24 +328,26 @@ export function useFinancesPageModel({
     setIsInvoiceDialogOpen(true);
   });
 
-  const invoiceStats = useMemo(() => {
-    return invoices.reduce(
-      (stats, invoice) => {
-        if (invoice.documentStatus !== "issued") {
+  const invoiceStats = useMemo(
+    () =>
+      invoices.reduce(
+        (stats, invoice) => {
+          if (invoice.documentStatus !== "issued") {
+            return stats;
+          }
+          stats.gross += invoice.grossAmount;
+          stats.collected +=
+            invoice.completedPaymentAmount - invoice.completedRefundAmount;
+          stats.balance += invoice.balanceAmount;
+          if (invoice.settlementStatus === "overdue") {
+            stats.overdue += invoice.balanceAmount;
+          }
           return stats;
-        }
-        stats.gross += invoice.grossAmount;
-        stats.collected +=
-          invoice.completedPaymentAmount - invoice.completedRefundAmount;
-        stats.balance += invoice.balanceAmount;
-        if (invoice.settlementStatus === "overdue") {
-          stats.overdue += invoice.balanceAmount;
-        }
-        return stats;
-      },
-      { balance: 0, collected: 0, gross: 0, overdue: 0 }
-    );
-  }, [invoices]);
+        },
+        { balance: 0, collected: 0, gross: 0, overdue: 0 }
+      ),
+    [invoices]
+  );
 
   const financeSectionCards = useMemo<SectionCardItem[]>(() => {
     // Without the invoices, no amount is known: never claim "soldé" or "aucun retard". While they are first read, the
@@ -300,18 +355,25 @@ export function useFinancesPageModel({
     if (invoiceError || !invoicesRead) {
       const detail = invoiceError ?? "";
       // The reason is given once, on the first card.
-      return ["Facturé", "Encaissé", "Solde ouvert", "En retard"].map((title, index) => ({
-        title,
-        value: invoiceError ? "Indisponible" : "",
-        tone: "quiet" as const,
-        trend: "neutral" as const,
-        detailRow: index === 0 ? detail : undefined,
-      }));
+      return ["Facturé", "Encaissé", "Solde ouvert", "En retard"].map(
+        (title, index) => ({
+          title,
+          value: invoiceError ? "Indisponible" : "",
+          tone: "quiet" as const,
+          trend: "neutral" as const,
+          detailRow: index === 0 ? detail : undefined,
+        })
+      );
     }
-    const issued = invoices.filter((invoice) => invoice.documentStatus === "issued");
+    const issued = invoices.filter(
+      (invoice) => invoice.documentStatus === "issued"
+    );
     const open = issued.filter((invoice) => invoice.balanceAmount > 0);
-    const late = issued.filter((invoice) => invoice.settlementStatus === "overdue");
-    const plural = (count: number, word: string) => `${count} ${word}${count > 1 ? "s" : ""}`;
+    const late = issued.filter(
+      (invoice) => invoice.settlementStatus === "overdue"
+    );
+    const plural = (count: number, word: string) =>
+      `${count} ${word}${count > 1 ? "s" : ""}`;
     const recoveryRate =
       invoiceStats.gross > 0
         ? Math.round((invoiceStats.collected / invoiceStats.gross) * 100)
@@ -320,14 +382,14 @@ export function useFinancesPageModel({
       {
         title: "Facturé",
         value: formatDZD(invoiceStats.gross),
-        ...(recoveryRate !== null
-          ? {
+        ...(recoveryRate === null
+          ? {}
+          : {
               change: recoveryRate,
               changeKind: "rate" as const,
               changeBase: invoiceStats.gross,
               changeLabel: "déjà encaissés",
-            }
-          : {}),
+            }),
         trend: "neutral",
         detailRow: `${plural(issued.length, "facture")} émise${issued.length > 1 ? "s" : ""} · toutes périodes`,
         footerTitle: "Montant des factures",
@@ -346,7 +408,12 @@ export function useFinancesPageModel({
       {
         title: "Solde ouvert",
         value: formatDZD(invoiceStats.balance),
-        badge: invoiceStats.balance > 0 ? "À recouvrer" : issued.length ? "Soldé" : undefined,
+        badge:
+          invoiceStats.balance > 0
+            ? "À recouvrer"
+            : issued.length
+              ? "Soldé"
+              : undefined,
         tone: invoiceStats.balance > 0 ? "watch" : "positive",
         trend: invoiceStats.balance > 0 ? "down" : "neutral",
         detailRow:
@@ -375,7 +442,7 @@ export function useFinancesPageModel({
       },
     ];
   }, [invoiceError, invoiceStats, invoices, invoicesRead]);
-  const financeSectionCardsLoading = !invoiceError && !invoicesRead;
+  const financeSectionCardsLoading = !(invoiceError || invoicesRead);
 
   const filteredInvoices = useMemo(() => {
     const query = invoiceQuery.trim().toLocaleLowerCase("fr");
@@ -591,7 +658,6 @@ export function useFinancesPageModel({
     setJournalPage(1);
   };
 
-
   const getClinicSnapshot = getInvoiceSettings;
 
   const normalizeInvoiceLines = (): BillingLineInput[] | null => {
@@ -601,8 +667,7 @@ export function useFinancesPageModel({
       const quantity = Number(line.quantity);
       const unitAmount = Number(line.unitAmount);
       if (
-        !description ||
-        !Number.isFinite(quantity) ||
+        !(description && Number.isFinite(quantity)) ||
         quantity <= 0 ||
         !Number.isFinite(unitAmount) ||
         unitAmount <= 0
@@ -637,132 +702,172 @@ export function useFinancesPageModel({
 
     let persistedDraftId = invoiceDraft.createdInvoiceId;
     setIsSubmitting(true);
-    await guard(async () => {
-      const invoiceId = invoiceDraft.createdInvoiceId;
-      const created = invoiceId
-        ? await billingService.getInvoice(invoiceId)
-        : await billingService.createInvoiceDraft({
-            actor,
-            dueAt: invoiceDraft.dueAt ? `${invoiceDraft.dueAt}T23:59:59` : null,
-            lines,
-            notes: invoiceDraft.notes,
-            ownerId: invoiceDraft.ownerId,
-            patientId: invoiceDraft.patientId || null,
-            appointmentId: invoiceDraft.appointmentId || null,
-          });
+    await guard(
+      async () => {
+        const invoiceId = invoiceDraft.createdInvoiceId;
+        const created = invoiceId
+          ? await billingService.getInvoice(invoiceId)
+          : await billingService.createInvoiceDraft({
+              actor,
+              dueAt: invoiceDraft.dueAt
+                ? `${invoiceDraft.dueAt}T23:59:59`
+                : null,
+              lines,
+              notes: invoiceDraft.notes,
+              ownerId: invoiceDraft.ownerId,
+              patientId: invoiceDraft.patientId || null,
+              appointmentId: invoiceDraft.appointmentId || null,
+            });
 
-      if (!created) {
-        throw new Error("Le brouillon de facture est introuvable.");
-      }
-
-      if (!invoiceDraft.createdInvoiceId) {
-        persistedDraftId = created.id;
-        setInvoiceDraft((current) => ({
-          ...current,
-          createdInvoiceId: created.id,
-        }));
-      }
-
-      if (action === "issue") {
-        await billingService.issueInvoice({
-          actor,
-          clinicSnapshot: await getClinicSnapshot(),
-          idempotencyKey: `finance-ui:invoice:${created.id}:issue`,
-          invoiceId: created.id,
-        });
-      }
-
-      toast.success(
-        action === "issue"
-          ? "Facture émise et figée avec succès."
-          : "Brouillon de facture enregistré."
-      );
-      setIsInvoiceDialogOpen(false);
-      setInvoiceDraft(createInvoiceDraft());
-      await loadInvoices();
-    }, {
-      recover: async (error) => {
-        console.error(error);
-        if (action === "issue" && persistedDraftId) {
-          toast.warning(
-            "L’émission a échoué, mais le brouillon a été conservé. Vous pourrez l’émettre depuis le registre."
-          );
-          setIsInvoiceDialogOpen(false);
-          setInvoiceDraft(createInvoiceDraft());
-          await loadInvoices();
-        } else {
-          toast.error(
-            error instanceof Error
-              ? error.message
-              : "Impossible d’enregistrer la facture."
-          );
+        if (!created) {
+          throw new Error("Le brouillon de facture est introuvable.");
         }
+
+        if (!invoiceDraft.createdInvoiceId) {
+          persistedDraftId = created.id;
+          setInvoiceDraft((current) => ({
+            ...current,
+            createdInvoiceId: created.id,
+          }));
+        }
+
+        if (action === "issue") {
+          await billingService.issueInvoice({
+            actor,
+            clinicSnapshot: await getClinicSnapshot(),
+            idempotencyKey: `finance-ui:invoice:${created.id}:issue`,
+            invoiceId: created.id,
+          });
+        }
+
+        toast.success(
+          action === "issue"
+            ? "Facture émise et figée avec succès."
+            : "Brouillon de facture enregistré."
+        );
+        setIsInvoiceDialogOpen(false);
+        setInvoiceDraft(createInvoiceDraft());
+        await loadInvoices();
       },
-      cleanup: () => {
-        setIsSubmitting(false);
-      },
-    });
+      {
+        recover: async (error) => {
+          console.error(error);
+          if (action === "issue" && persistedDraftId) {
+            toast.warning(
+              "L’émission a échoué, mais le brouillon a été conservé. Vous pourrez l’émettre depuis le registre."
+            );
+            setIsInvoiceDialogOpen(false);
+            setInvoiceDraft(createInvoiceDraft());
+            await loadInvoices();
+          } else {
+            toast.error(
+              error instanceof Error
+                ? error.message
+                : "Impossible d’enregistrer la facture."
+            );
+          }
+        },
+        cleanup: () => {
+          setIsSubmitting(false);
+        },
+      }
+    );
   };
 
   const startEditingInvoicePrices = () => {
-    if (!selectedInvoice || selectedInvoice.documentStatus !== "draft" || isSubmitting) return;
-    setInvoicePrices(Object.fromEntries(selectedInvoice.lines.map((line) => [line.id, priceInput(line.unitAmount)])));
+    if (
+      !selectedInvoice ||
+      selectedInvoice.documentStatus !== "draft" ||
+      isSubmitting
+    ) {
+      return;
+    }
+    setInvoicePrices(
+      Object.fromEntries(
+        selectedInvoice.lines.map((line) => [
+          line.id,
+          priceInput(line.unitAmount),
+        ])
+      )
+    );
     setEditingInvoicePrices(true);
   };
   const saveInvoicePrices = async () => {
-    if (!selectedInvoice || isSubmitting) return;
+    if (!selectedInvoice || isSubmitting) {
+      return;
+    }
     setIsSubmitting(true);
-    await guard(async () => {
-      const lines = draftPriceLines(selectedInvoice, invoicePrices);
-      const saved = await billingService.updateInvoiceDraft({ invoiceId: selectedInvoice.id, lines, actor });
-      setSelectedInvoice((current) => current?.id === saved.id ? saved : current);
-      setEditingInvoicePrices(false);
-      toast.success("Tarifs enregistrés. Le total de la facture a été recalculé.");
-      await loadInvoices();
-    }, {
-      recover: (error) => {
-        toast.error(error instanceof Error ? error.message : "Les tarifs n’ont pas pu être enregistrés.");
+    await guard(
+      async () => {
+        const lines = draftPriceLines(selectedInvoice, invoicePrices);
+        const saved = await billingService.updateInvoiceDraft({
+          invoiceId: selectedInvoice.id,
+          lines,
+          actor,
+        });
+        setSelectedInvoice((current) =>
+          current?.id === saved.id ? saved : current
+        );
+        setEditingInvoicePrices(false);
+        toast.success(
+          "Tarifs enregistrés. Le total de la facture a été recalculé."
+        );
+        await loadInvoices();
       },
-      cleanup: () => {
-   setIsSubmitting(false);
-      },
-    });
+      {
+        recover: (error) => {
+          toast.error(
+            error instanceof Error
+              ? error.message
+              : "Les tarifs n’ont pas pu être enregistrés."
+          );
+        },
+        cleanup: () => {
+          setIsSubmitting(false);
+        },
+      }
+    );
   };
 
   const issueExistingInvoice = async (invoice: Invoice) => {
     setIsSubmitting(true);
-    await guard(async () => {
-      await billingService.issueInvoice({
-        actor,
-        clinicSnapshot: await getClinicSnapshot(),
-        idempotencyKey: `finance-ui:invoice:${invoice.id}:issue`,
-        invoiceId: invoice.id,
-      });
-      toast.success("Facture émise. Son contenu est désormais immuable.");
-      await loadInvoices();
-      if (selectedInvoice?.id === invoice.id) {
-        const detail = await billingService.getInvoice(invoice.id);
-        setSelectedInvoice(detail);
+    await guard(
+      async () => {
+        await billingService.issueInvoice({
+          actor,
+          clinicSnapshot: await getClinicSnapshot(),
+          idempotencyKey: `finance-ui:invoice:${invoice.id}:issue`,
+          invoiceId: invoice.id,
+        });
+        toast.success("Facture émise. Son contenu est désormais immuable.");
+        await loadInvoices();
+        if (selectedInvoice?.id === invoice.id) {
+          const detail = await billingService.getInvoice(invoice.id);
+          setSelectedInvoice(detail);
+        }
+      },
+      {
+        recover: (error) => {
+          console.error(error);
+          toast.error(
+            error instanceof Error
+              ? error.message
+              : "Impossible d’émettre la facture."
+          );
+        },
+        cleanup: () => {
+          setIsSubmitting(false);
+        },
       }
-    }, {
-      recover: (error) => {
-        console.error(error);
-        toast.error(
-          error instanceof Error
-            ? error.message
-            : "Impossible d’émettre la facture."
-        );
-      },
-      cleanup: () => {
-        setIsSubmitting(false);
-      },
-    });
+    );
   };
 
   /** I1 : l'émission fige la facture et lui attribue un numéro officiel. */
   const requestIssueInvoice = (invoice: Invoice) => {
     if (editingInvoicePrices && selectedInvoice?.id === invoice.id) {
-      toast.error("Enregistrez ou annulez vos modifications avant d’émettre la facture.");
+      toast.error(
+        "Enregistrez ou annulez vos modifications avant d’émettre la facture."
+      );
       return;
     }
     setIssueConfirmTarget(invoice);
@@ -789,33 +894,36 @@ export function useFinancesPageModel({
       return;
     }
     setIsSubmitting(true);
-    await guard(async () => {
-      await billingService.voidInvoice({
-        actor,
-        invoiceId: voidTarget.id,
-        reason: voidReason.trim(),
-      });
-      toast.success("Facture annulée.");
-      setVoidTarget(null);
-      setVoidReason("");
-      await loadInvoices();
-      if (selectedInvoice?.id === voidTarget.id) {
-        const detail = await billingService.getInvoice(voidTarget.id);
-        setSelectedInvoice(detail);
+    await guard(
+      async () => {
+        await billingService.voidInvoice({
+          actor,
+          invoiceId: voidTarget.id,
+          reason: voidReason.trim(),
+        });
+        toast.success("Facture annulée.");
+        setVoidTarget(null);
+        setVoidReason("");
+        await loadInvoices();
+        if (selectedInvoice?.id === voidTarget.id) {
+          const detail = await billingService.getInvoice(voidTarget.id);
+          setSelectedInvoice(detail);
+        }
+      },
+      {
+        recover: (error) => {
+          console.error(error);
+          toast.error(
+            error instanceof Error
+              ? error.message
+              : "Impossible d’annuler la facture."
+          );
+        },
+        cleanup: () => {
+          setIsSubmitting(false);
+        },
       }
-    }, {
-      recover: (error) => {
-        console.error(error);
-        toast.error(
-          error instanceof Error
-            ? error.message
-            : "Impossible d’annuler la facture."
-        );
-      },
-      cleanup: () => {
-        setIsSubmitting(false);
-      },
-    });
+    );
   };
 
   /** I11 : supprimer un brouillon abandonné (jamais émis). */
@@ -827,27 +935,30 @@ export function useFinancesPageModel({
       return;
     }
     setIsSubmitting(true);
-    await guard(async () => {
-      await billingService.deleteInvoiceDraft({
-        actor,
-        invoiceId: deleteDraftTarget.id,
-      });
-      toast.success("Brouillon de facture supprimé.");
-      setDeleteDraftTarget(null);
-      await loadInvoices();
-    }, {
-      recover: (error) => {
-        console.error(error);
-        toast.error(
-          error instanceof Error
-            ? error.message
-            : "Impossible de supprimer le brouillon."
-        );
+    await guard(
+      async () => {
+        await billingService.deleteInvoiceDraft({
+          actor,
+          invoiceId: deleteDraftTarget.id,
+        });
+        toast.success("Brouillon de facture supprimé.");
+        setDeleteDraftTarget(null);
+        await loadInvoices();
       },
-      cleanup: () => {
-        setIsSubmitting(false);
-      },
-    });
+      {
+        recover: (error) => {
+          console.error(error);
+          toast.error(
+            error instanceof Error
+              ? error.message
+              : "Impossible de supprimer le brouillon."
+          );
+        },
+        cleanup: () => {
+          setIsSubmitting(false);
+        },
+      }
+    );
   };
 
   const openPaymentDialog = (invoice: Invoice) => {
@@ -871,39 +982,44 @@ export function useFinancesPageModel({
     }
     const amountCentimes = toCentimes(amount);
     setIsSubmitting(true);
-    await guard(async () => {
-      await billingService.recordPayment({
-        actor,
-        amount: amountCentimes,
-        idempotencyKey: [
-          "finance-ui",
-          "payment",
-          paymentInvoice.id,
-          paymentOperationId,
-        ].join(":"),
-        invoiceId: paymentInvoice.id,
-        method: paymentDraft.method,
-        reference: paymentDraft.reference,
-      });
-      toast.success("Règlement enregistré dans la facture et le journal.");
-      setPaymentInvoice(null);
-      await loadInvoices();
-      if (selectedInvoice?.id === paymentInvoice.id) {
-        setSelectedInvoice(await billingService.getInvoice(paymentInvoice.id));
+    await guard(
+      async () => {
+        await billingService.recordPayment({
+          actor,
+          amount: amountCentimes,
+          idempotencyKey: [
+            "finance-ui",
+            "payment",
+            paymentInvoice.id,
+            paymentOperationId,
+          ].join(":"),
+          invoiceId: paymentInvoice.id,
+          method: paymentDraft.method,
+          reference: paymentDraft.reference,
+        });
+        toast.success("Règlement enregistré dans la facture et le journal.");
+        setPaymentInvoice(null);
+        await loadInvoices();
+        if (selectedInvoice?.id === paymentInvoice.id) {
+          setSelectedInvoice(
+            await billingService.getInvoice(paymentInvoice.id)
+          );
+        }
+      },
+      {
+        recover: (error) => {
+          console.error(error);
+          toast.error(
+            error instanceof Error
+              ? error.message
+              : "Impossible d’enregistrer le règlement."
+          );
+        },
+        cleanup: () => {
+          setIsSubmitting(false);
+        },
       }
-    }, {
-      recover: (error) => {
-        console.error(error);
-        toast.error(
-          error instanceof Error
-            ? error.message
-            : "Impossible d’enregistrer le règlement."
-        );
-      },
-      cleanup: () => {
-        setIsSubmitting(false);
-      },
-    });
+    );
   };
 
   const openTransactionEditor = (transaction?: Transaction) => {
@@ -933,8 +1049,7 @@ export function useFinancesPageModel({
   const submitTransaction = async () => {
     const amount = Number(transactionDraft.amount);
     if (
-      !transactionDraft.description.trim() ||
-      !Number.isFinite(amount) ||
+      !(transactionDraft.description.trim() && Number.isFinite(amount)) ||
       amount <= 0
     ) {
       toast.error("Ajoutez une description et un montant valide.");
@@ -946,44 +1061,47 @@ export function useFinancesPageModel({
     }
 
     setIsSubmitting(true);
-    await guard(async () => {
-      const payload = {
-        amount: toCentimes(amount),
-        category: transactionDraft.category.trim() || "Autre",
-        date: new Date(`${transactionDraft.date}T12:00:00`).toISOString(),
-        description: transactionDraft.description.trim(),
-        method: transactionDraft.method,
-        status: transactionDraft.status,
-      };
-      if (editingTransaction) {
-        const updated = await updateTransaction(editingTransaction.id, {
-          ...payload,
-          type: transactionDraft.type,
-        });
-        if (!updated) {
-          throw new Error("La base locale a refusé la modification.");
+    await guard(
+      async () => {
+        const payload = {
+          amount: toCentimes(amount),
+          category: transactionDraft.category.trim() || "Autre",
+          date: new Date(`${transactionDraft.date}T12:00:00`).toISOString(),
+          description: transactionDraft.description.trim(),
+          method: transactionDraft.method,
+          status: transactionDraft.status,
+        };
+        if (editingTransaction) {
+          const updated = await updateTransaction(editingTransaction.id, {
+            ...payload,
+            type: transactionDraft.type,
+          });
+          if (!updated) {
+            throw new Error("La base locale a refusé la modification.");
+          }
+        } else if (transactionDraft.type === "income") {
+          await recordIncome(payload);
+        } else {
+          await recordExpense(payload);
         }
-      } else if (transactionDraft.type === "income") {
-        await recordIncome(payload);
-      } else {
-        await recordExpense(payload);
+        toast.success(
+          editingTransaction
+            ? "Écriture mise à jour."
+            : "Écriture ajoutée au journal."
+        );
+        setIsTransactionDialogOpen(false);
+        setEditingTransaction(null);
+      },
+      {
+        recover: (error) => {
+          console.error(error);
+          toast.error("Impossible d’enregistrer cette écriture.");
+        },
+        cleanup: () => {
+          setIsSubmitting(false);
+        },
       }
-      toast.success(
-        editingTransaction
-          ? "Écriture mise à jour."
-          : "Écriture ajoutée au journal."
-      );
-      setIsTransactionDialogOpen(false);
-      setEditingTransaction(null);
-    }, {
-      recover: (error) => {
-        console.error(error);
-        toast.error("Impossible d’enregistrer cette écriture.");
-      },
-      cleanup: () => {
-        setIsSubmitting(false);
-      },
-    });
+    );
   };
 
   const toggleTransactionStatus = async (transaction: Transaction) => {
@@ -991,19 +1109,22 @@ export function useFinancesPageModel({
       toast.info("Le statut d’une écriture générée est verrouillé.");
       return;
     }
-    await guard(async () => {
-      const updated = await updateTransaction(transaction.id, {
-        status: transaction.status === "paid" ? "pending" : "paid",
-      });
-      if (!updated) {
-        throw new Error("La base locale a refusé la modification du statut.");
-      }
-    }, {
-      recover: (error) => {
-        console.error(error);
-        toast.error("Impossible de modifier le statut.");
+    await guard(
+      async () => {
+        const updated = await updateTransaction(transaction.id, {
+          status: transaction.status === "paid" ? "pending" : "paid",
+        });
+        if (!updated) {
+          throw new Error("La base locale a refusé la modification du statut.");
+        }
       },
-    });
+      {
+        recover: (error) => {
+          console.error(error);
+          toast.error("Impossible de modifier le statut.");
+        },
+      }
+    );
   };
   return {
     activeTab,

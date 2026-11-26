@@ -1,32 +1,11 @@
-import { useNow } from "@/hooks/use-now";
-import { formatPhone, formatPersonName } from "@/utils/display-format";
-import {
-  Add01Icon,
-  BirdIcon,
-  Calendar01Icon,
-  CheckmarkCircle02Icon,
-  Edit01Icon,
-  SaveIcon,
-  StethoscopeIcon,
-  WorkHistoryIcon,
-} from "@/lib/hugeicons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Bird, Cat, Dog, PawPrint, Rabbit, UserRound } from "@/lib/icons";
-import React, {
-  useCallback,
-  useMemo,
-  useState,
-} from "react";
+import type React from "react";
+import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
-
-import { computeAge, formatAgeFr } from "../lib";
-
-import { FormDialogHeader } from "@/components/ui/form-dialog";
-import { ModalBandActions } from "@/components/ui/modal-chrome";
-
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { DatePicker } from "@/components/ui/date-picker";
 import {
   Dialog,
   DialogContent,
@@ -48,7 +27,9 @@ import {
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
+import { FormDialogHeader } from "@/components/ui/form-dialog";
 import { Input } from "@/components/ui/input";
+import { ModalBandActions } from "@/components/ui/modal-chrome";
 import {
   NativeSelect,
   NativeSelectOption,
@@ -59,6 +40,19 @@ import {
   APPOINTMENT_STATUS_META,
   PATIENT_STATUS_META,
 } from "@/config/status-meta";
+import { useNow } from "@/hooks/use-now";
+import { guard } from "@/lib/guard";
+import {
+  Add01Icon,
+  BirdIcon,
+  Calendar01Icon,
+  CheckmarkCircle02Icon,
+  Edit01Icon,
+  SaveIcon,
+  StethoscopeIcon,
+  WorkHistoryIcon,
+} from "@/lib/hugeicons";
+import { Bird, Cat, Dog, PawPrint, Rabbit, UserRound } from "@/lib/icons";
 
 import { cn } from "@/lib/utils";
 
@@ -66,12 +60,12 @@ import type {
   Appointment,
   Owner,
   Patient,
-  User,
   Transaction,
+  User,
 } from "@/types/db";
 import { formatDZD } from "@/utils/currency";
-import { DatePicker } from "@/components/ui/date-picker";
-import { guard } from "@/lib/guard";
+import { formatPersonName, formatPhone } from "@/utils/display-format";
+import { computeAge, formatAgeFr } from "../lib";
 
 export const COMMON_SPECIES = [
   "Chien",
@@ -267,31 +261,66 @@ export { getSpeciesGlyph as getSpeciesIcon } from "@/lib/species-icons";
 export function getSpeciesComponent(species?: string) {
   const normalized = species?.toLowerCase() ?? "";
 
-  if (normalized.includes("chien")) return Dog;
-  if (normalized.includes("chat")) return Cat;
-  if (normalized.includes("lapin")) return Rabbit;
-  if (normalized.includes("oiseau")) return Bird;
+  if (normalized.includes("chien")) {
+    return Dog;
+  }
+  if (normalized.includes("chat")) {
+    return Cat;
+  }
+  if (normalized.includes("lapin")) {
+    return Rabbit;
+  }
+  if (normalized.includes("oiseau")) {
+    return Bird;
+  }
   return PawPrint;
 }
 
 /** L'icône de l'espèce, choisie dans un composant stable : le résultat est celui de getSpeciesComponent, sans créer de composant au rendu. */
-export function SpeciesComponentIcon({ species, ...props }: { species?: string } & React.ComponentProps<typeof Dog>) {
+export function SpeciesComponentIcon({
+  species,
+  ...props
+}: { species?: string } & React.ComponentProps<typeof Dog>) {
   const normalized = species?.toLowerCase() ?? "";
-  if (normalized.includes("chien")) return <Dog {...props} />;
-  if (normalized.includes("chat")) return <Cat {...props} />;
-  if (normalized.includes("lapin")) return <Rabbit {...props} />;
-  if (normalized.includes("oiseau")) return <Bird {...props} />;
+  if (normalized.includes("chien")) {
+    return <Dog {...props} />;
+  }
+  if (normalized.includes("chat")) {
+    return <Cat {...props} />;
+  }
+  if (normalized.includes("lapin")) {
+    return <Rabbit {...props} />;
+  }
+  if (normalized.includes("oiseau")) {
+    return <Bird {...props} />;
+  }
   return <PawPrint {...props} />;
 }
 
 /** L'adresse du propriétaire sur une ligne, ou « Non renseignée ». */
-function ownerAddressLabel(owner: { address?: string | null; city?: string | null } | null | undefined): string {
-  return [owner?.address, owner?.city].filter(Boolean).join(", ") || "Non renseignée";
+function ownerAddressLabel(
+  owner: { address?: string | null; city?: string | null } | null | undefined
+): string {
+  return (
+    [owner?.address, owner?.city].filter(Boolean).join(", ") || "Non renseignée"
+  );
 }
 
 /** Le contact secondaire du propriétaire sur une ligne, ou « Non renseigné ». */
-function secondaryContactLabel(owner: { secondaryContactName?: string | null; secondaryContactPhone?: string | null } | null | undefined): string {
-  return [owner?.secondaryContactName, formatPhone(owner?.secondaryContactPhone)].filter(Boolean).join(" · ") || "Non renseigné";
+function secondaryContactLabel(
+  owner:
+    | {
+        secondaryContactName?: string | null;
+        secondaryContactPhone?: string | null;
+      }
+    | null
+    | undefined
+): string {
+  return (
+    [owner?.secondaryContactName, formatPhone(owner?.secondaryContactPhone)]
+      .filter(Boolean)
+      .join(" · ") || "Non renseigné"
+  );
 }
 
 export function getBreedSuggestions(species?: string) {
@@ -331,9 +360,11 @@ export function validatePatientIdentity(input: {
     }
   }
   if (
-    !input.skipOwnerName &&
-    !input.ownerFirstName?.trim() &&
-    !input.ownerLastName?.trim()
+    !(
+      input.skipOwnerName ||
+      input.ownerFirstName?.trim() ||
+      input.ownerLastName?.trim()
+    )
   ) {
     return "Le nom du propriétaire est obligatoire.";
   }
@@ -363,7 +394,7 @@ export function ReadOnlyDetail({
 }) {
   return (
     <dl className="record-detail min-w-0 border-border/60 border-b py-2.5">
-      <dt className="text-xs text-muted-foreground">{label}</dt>
+      <dt className="text-muted-foreground text-xs">{label}</dt>
       <dd className="mt-1 break-words font-medium text-foreground text-sm leading-5">
         {value}
       </dd>
@@ -388,7 +419,7 @@ export function ClinicalNote({
         <span
           className={cn(
             "size-2 rounded-full",
-            tone === "alert" && value ? "bg-rose-500" : "bg-emerald-500",
+            tone === "alert" && value ? "bg-rose-500" : "bg-emerald-500"
           )}
         />
         <p className="font-semibold text-sm">{label}</p>
@@ -396,7 +427,7 @@ export function ClinicalNote({
       <p
         className={cn(
           "mt-2 pl-4 text-sm leading-6",
-          value ? "text-foreground" : "text-muted-foreground",
+          value ? "text-foreground" : "text-muted-foreground"
         )}
       >
         {value || emptyLabel}
@@ -448,7 +479,7 @@ export function PatientDetailsDialog({
 
   const [selectedOwnerId, setSelectedOwnerId] = useState(patient.ownerId);
   const [ownerData, setOwnerData] = useState<Partial<Owner>>(
-    owner ? { ...owner } : {},
+    owner ? { ...owner } : {}
   );
 
   // Onglet demandé : repris à l'ouverture et quand le dossier affiché change (corrigé au rendu, sans effet).
@@ -482,7 +513,9 @@ export function PatientDetailsDialog({
 
   // Charge les champs du propriétaire choisi une seule fois par propriétaire,
   // pas à chaque rechargement de la liste : sinon la saisie en cours est écrasée.
-  const [lastLinkedOwnerId, setLastLinkedOwnerId] = useState<string | null>(null);
+  const [lastLinkedOwnerId, setLastLinkedOwnerId] = useState<string | null>(
+    null
+  );
   if (lastLinkedOwnerId !== selectedOwnerId) {
     const linkedOwner = allOwners.find((entry) => entry.id === selectedOwnerId);
     if (linkedOwner) {
@@ -501,25 +534,25 @@ export function PatientDetailsDialog({
           const rightDate = normalizeDate(right.startTime)?.getTime() ?? 0;
           return rightDate - leftDate;
         }),
-    [appointments, patient.id],
+    [appointments, patient.id]
   );
 
   const currentOwner = useMemo(
     () => allOwners.find((entry) => entry.id === selectedOwnerId),
-    [allOwners, selectedOwnerId],
+    [allOwners, selectedOwnerId]
   );
 
   const ownerFinancialHistory = useMemo(() => {
     const appointmentIds = new Set(
       appointments
         .filter((appointment) => appointment.ownerId === selectedOwnerId)
-        .map((appointment) => appointment.id),
+        .map((appointment) => appointment.id)
     );
     const linkedIncome = transactions.filter(
       (transaction) =>
         transaction.type === "income" &&
         !!transaction.referenceId &&
-        appointmentIds.has(transaction.referenceId),
+        appointmentIds.has(transaction.referenceId)
     );
 
     return {
@@ -535,12 +568,12 @@ export function PatientDetailsDialog({
 
   const usersById = useMemo(
     () => new Map(users.map((entry) => [entry.id, entry])),
-    [users],
+    [users]
   );
 
   const breedSuggestions = useMemo(
     () => getBreedSuggestions(patientData.species),
-    [patientData.species],
+    [patientData.species]
   );
 
   const now = useNow();
@@ -561,7 +594,7 @@ export function PatientDetailsDialog({
           const rightDate = normalizeDate(right.startTime)?.getTime() ?? 0;
           return leftDate - rightDate;
         })[0],
-    [history, now],
+    [history, now]
   );
 
   const handleCancelEdit = () => {
@@ -601,56 +634,59 @@ export function PatientDetailsDialog({
 
     setIsSaving(true);
 
-    return await guard(async () => {
-      const patientUpdated = await onUpdatePatient(patient.id, {
-        ...patientData,
-        ownerId: selectedOwnerId,
-        breed: patientData.breed || undefined,
-        dateOfBirth: patientData.dateOfBirth || undefined,
-        allergies: patientData.allergies || undefined,
-        chronicConditions: patientData.chronicConditions || undefined,
-        generalNotes: patientData.generalNotes || undefined,
-      });
+    return await guard(
+      async () => {
+        const patientUpdated = await onUpdatePatient(patient.id, {
+          ...patientData,
+          ownerId: selectedOwnerId,
+          breed: patientData.breed || undefined,
+          dateOfBirth: patientData.dateOfBirth || undefined,
+          allergies: patientData.allergies || undefined,
+          chronicConditions: patientData.chronicConditions || undefined,
+          generalNotes: patientData.generalNotes || undefined,
+        });
 
-      if (!patientUpdated) {
-        throw new Error("PATIENT_UPDATE_FAILED");
-      }
+        if (!patientUpdated) {
+          throw new Error("PATIENT_UPDATE_FAILED");
+        }
 
-      const ownerUpdated = await onUpdateOwner(selectedOwnerId, {
-        firstName: ownerData.firstName || "",
-        lastName: ownerData.lastName || "",
-        phone: ownerData.phone || "",
-        email: ownerData.email || undefined,
-        address: ownerData.address || undefined,
-        city: ownerData.city || undefined,
-        preferredContact: ownerData.preferredContact,
-        secondaryContactName: ownerData.secondaryContactName || undefined,
-        secondaryContactPhone: ownerData.secondaryContactPhone || undefined,
-        communicationNotes: ownerData.communicationNotes || undefined,
-      });
+        const ownerUpdated = await onUpdateOwner(selectedOwnerId, {
+          firstName: ownerData.firstName || "",
+          lastName: ownerData.lastName || "",
+          phone: ownerData.phone || "",
+          email: ownerData.email || undefined,
+          address: ownerData.address || undefined,
+          city: ownerData.city || undefined,
+          preferredContact: ownerData.preferredContact,
+          secondaryContactName: ownerData.secondaryContactName || undefined,
+          secondaryContactPhone: ownerData.secondaryContactPhone || undefined,
+          communicationNotes: ownerData.communicationNotes || undefined,
+        });
 
-      if (!ownerUpdated) {
-        // Le patient est déjà enregistré : on le dit explicitement au lieu
-        // de laisser croire que rien n'a été sauvegardé. L'édition reste
-        // ouverte pour réessayer la partie propriétaire.
-        toast.error(
-          "Le patient a été enregistré, mais la mise à jour du propriétaire a échoué. Vérifiez puis réessayez.",
-        );
-        return;
-      }
+        if (!ownerUpdated) {
+          // Le patient est déjà enregistré : on le dit explicitement au lieu
+          // de laisser croire que rien n'a été sauvegardé. L'édition reste
+          // ouverte pour réessayer la partie propriétaire.
+          toast.error(
+            "Le patient a été enregistré, mais la mise à jour du propriétaire a échoué. Vérifiez puis réessayez."
+          );
+          return;
+        }
 
-      toast.success("Le dossier patient a été mis à jour.");
-      setIsEditing(false);
-      onSaved?.(patient.id);
-    }, {
-      recover: (error) => {
-        console.error(error);
-        toast.error("Impossible d'enregistrer les modifications.");
+        toast.success("Le dossier patient a été mis à jour.");
+        setIsEditing(false);
+        onSaved?.(patient.id);
       },
-      cleanup: () => {
-        setIsSaving(false);
-      },
-    });
+      {
+        recover: (error) => {
+          console.error(error);
+          toast.error("Impossible d'enregistrer les modifications.");
+        },
+        cleanup: () => {
+          setIsSaving(false);
+        },
+      }
+    );
   }, [
     patient.id,
     patientData,
@@ -666,9 +702,7 @@ export function PatientDetailsDialog({
       <DialogContent className="patient-record-dialog max-w-[min(1180px,calc(100%-1.5rem))] sm:max-w-[min(1180px,calc(100%-2rem))]">
         <DialogHeader icon={<PawPrint strokeWidth={1.5} />}>
           <div className="flex flex-wrap items-center gap-2">
-            <DialogTitle className="truncate">
-              {patient.name}
-            </DialogTitle>
+            <DialogTitle className="truncate">{patient.name}</DialogTitle>
             <PatientStatusBadge status={patientData.status} />
           </div>
           <DialogDescription className="truncate">
@@ -677,136 +711,132 @@ export function PatientDetailsDialog({
             {formatOwnerName(currentOwner)}
           </DialogDescription>
           <ModalBandActions>
-                {isEditing ? (
-                  <>
-                    <Button
-                      disabled={isSaving}
-                      onClick={handleCancelEdit}
-                      size="sm"
-                      variant="ghost"
-                    >
-                      Annuler
-                    </Button>
-                    <Button
-                      disabled={isSaving}
-                      onClick={handleSaveAll}
-                      size="sm"
-                    >
-                      {isSaving ? (
-                        <Spinner className="size-4" />
-                      ) : (
-                        <HugeiconsIcon
-                          data-icon="inline-start"
-                          icon={SaveIcon}
-                          strokeWidth={1.5}
-                        />
-                      )}
-                      Enregistrer
-                    </Button>
-                  </>
-                ) : (
-                  <Button
-                    onClick={() => setIsEditing(true)}
-                    size="sm"
-                    variant="outline"
-                  >
+            {isEditing ? (
+              <>
+                <Button
+                  disabled={isSaving}
+                  onClick={handleCancelEdit}
+                  size="sm"
+                  variant="ghost"
+                >
+                  Annuler
+                </Button>
+                <Button disabled={isSaving} onClick={handleSaveAll} size="sm">
+                  {isSaving ? (
+                    <Spinner className="size-4" />
+                  ) : (
                     <HugeiconsIcon
                       data-icon="inline-start"
-                      icon={Edit01Icon}
+                      icon={SaveIcon}
                       strokeWidth={1.5}
                     />
-                    Modifier
-                  </Button>
-                )}
+                  )}
+                  Enregistrer
+                </Button>
+              </>
+            ) : (
+              <Button
+                onClick={() => setIsEditing(true)}
+                size="sm"
+                variant="outline"
+              >
+                <HugeiconsIcon
+                  data-icon="inline-start"
+                  icon={Edit01Icon}
+                  strokeWidth={1.5}
+                />
+                Modifier
+              </Button>
+            )}
           </ModalBandActions>
         </DialogHeader>
-          <div className="flex flex-col gap-4">
-            <div className="record-summary grid gap-2 sm:grid-cols-3">
-              <div className="flex min-w-0 items-center gap-3 rounded-2xl bg-muted/30 px-3.5 py-3 text-foreground ring-1 ring-border/40 transition-colors dark:bg-muted/15 dark:ring-border/30">
-                <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-sky-500 text-white shadow-sm shadow-sky-500/20">
-                  <HugeiconsIcon icon={Calendar01Icon} strokeWidth={1.5} />
-                </span>
-                <div className="min-w-0">
-                  <p className="font-semibold t-12 text-muted-foreground uppercase tracking-[0.12em]">
-                    Dernière visite
-                  </p>
-                  <p className="mt-0.5 truncate font-semibold text-sm tracking-[-0.02em]">
-                    {formatPatientDate(patient.lastVisit)}
-                  </p>
-                  <p className="truncate text-muted-foreground text-xs">
-                    {
-                      history.filter((entry) => entry.status === "completed")
-                        .length
-                    }{" "}
-                    visite
-                    {history.filter((entry) => entry.status === "completed")
-                      .length > 1
-                      ? "s"
-                      : ""}{" "}
-                    clôturée
-                    {history.filter((entry) => entry.status === "completed")
-                      .length > 1
-                      ? "s"
-                      : ""}
-                  </p>
-                </div>
+        <div className="flex flex-col gap-4">
+          <div className="record-summary grid gap-2 sm:grid-cols-3">
+            <div className="flex min-w-0 items-center gap-3 rounded-2xl bg-muted/30 px-3.5 py-3 text-foreground ring-1 ring-border/40 transition-colors dark:bg-muted/15 dark:ring-border/30">
+              <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-sky-500 text-white shadow-sky-500/20 shadow-sm">
+                <HugeiconsIcon icon={Calendar01Icon} strokeWidth={1.5} />
+              </span>
+              <div className="min-w-0">
+                <p className="t-12 font-semibold text-muted-foreground uppercase tracking-[0.12em]">
+                  Dernière visite
+                </p>
+                <p className="mt-0.5 truncate font-semibold text-sm tracking-[-0.02em]">
+                  {formatPatientDate(patient.lastVisit)}
+                </p>
+                <p className="truncate text-muted-foreground text-xs">
+                  {
+                    history.filter((entry) => entry.status === "completed")
+                      .length
+                  }{" "}
+                  visite
+                  {history.filter((entry) => entry.status === "completed")
+                    .length > 1
+                    ? "s"
+                    : ""}{" "}
+                  clôturée
+                  {history.filter((entry) => entry.status === "completed")
+                    .length > 1
+                    ? "s"
+                    : ""}
+                </p>
               </div>
+            </div>
 
-              <div className="flex min-w-0 items-center gap-3 rounded-2xl bg-muted/30 px-3.5 py-3 text-foreground ring-1 ring-border/40 transition-colors dark:bg-muted/15 dark:ring-border/30">
-                <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-amber-500 text-white shadow-sm shadow-amber-500/20">
-                  <HugeiconsIcon icon={WorkHistoryIcon} strokeWidth={1.5} />
-                </span>
-                <div className="min-w-0">
-                  <p className="font-semibold t-12 text-muted-foreground uppercase tracking-[0.12em]">
-                    Prochain créneau
-                  </p>
-                  <p className="mt-0.5 truncate font-semibold text-sm tracking-[-0.02em]">
-                    {upcomingAppointment
-                      ? formatPatientDateTime(upcomingAppointment.startTime)
-                      : "Aucun rendez-vous"}
-                  </p>
-                  <p className="truncate text-muted-foreground text-xs">
-                    {upcomingAppointment
-                      ? upcomingAppointment.type
-                      : "Aucune venue planifiée"}
-                  </p>
-                </div>
+            <div className="flex min-w-0 items-center gap-3 rounded-2xl bg-muted/30 px-3.5 py-3 text-foreground ring-1 ring-border/40 transition-colors dark:bg-muted/15 dark:ring-border/30">
+              <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-amber-500 text-white shadow-amber-500/20 shadow-sm">
+                <HugeiconsIcon icon={WorkHistoryIcon} strokeWidth={1.5} />
+              </span>
+              <div className="min-w-0">
+                <p className="t-12 font-semibold text-muted-foreground uppercase tracking-[0.12em]">
+                  Prochain créneau
+                </p>
+                <p className="mt-0.5 truncate font-semibold text-sm tracking-[-0.02em]">
+                  {upcomingAppointment
+                    ? formatPatientDateTime(upcomingAppointment.startTime)
+                    : "Aucun rendez-vous"}
+                </p>
+                <p className="truncate text-muted-foreground text-xs">
+                  {upcomingAppointment
+                    ? upcomingAppointment.type
+                    : "Aucune venue planifiée"}
+                </p>
               </div>
+            </div>
 
-              <div
-                data-clinical-alert={Boolean(
-                  patient.allergies || patient.chronicConditions,
-                )}
-                className="flex min-w-0 items-center gap-3 rounded-2xl bg-muted/30 px-3.5 py-3 text-foreground ring-1 ring-border/40 transition-colors dark:bg-muted/15 dark:ring-border/30"
-              >
-                <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-emerald-500 text-white shadow-sm shadow-emerald-500/20">
-                  <HugeiconsIcon icon={StethoscopeIcon} strokeWidth={1.5} />
-                </span>
-                <div className="min-w-0">
-                  <p className="font-semibold t-12 text-muted-foreground uppercase tracking-[0.12em]">
-                    Repère clinique
-                  </p>
-                  <p className="mt-0.5 truncate font-semibold text-sm tracking-[-0.02em]">
-                    {patient.allergies
-                      ? "Allergies à surveiller"
-                      : patient.chronicConditions
-                        ? "Suivi chronique"
-                        : "Aucune alerte renseignée"}
-                  </p>
-                  <p className="whitespace-pre-wrap break-words text-muted-foreground text-xs">
-                    {patient.allergies ||
-                      patient.chronicConditions ||
-                      "Aucune alerte clinique"}
-                  </p>
-                </div>
+            <div
+              className="flex min-w-0 items-center gap-3 rounded-2xl bg-muted/30 px-3.5 py-3 text-foreground ring-1 ring-border/40 transition-colors dark:bg-muted/15 dark:ring-border/30"
+              data-clinical-alert={Boolean(
+                patient.allergies || patient.chronicConditions
+              )}
+            >
+              <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-emerald-500 text-white shadow-emerald-500/20 shadow-sm">
+                <HugeiconsIcon icon={StethoscopeIcon} strokeWidth={1.5} />
+              </span>
+              <div className="min-w-0">
+                <p className="t-12 font-semibold text-muted-foreground uppercase tracking-[0.12em]">
+                  Repère clinique
+                </p>
+                <p className="mt-0.5 truncate font-semibold text-sm tracking-[-0.02em]">
+                  {patient.allergies
+                    ? "Allergies à surveiller"
+                    : patient.chronicConditions
+                      ? "Suivi chronique"
+                      : "Aucune alerte renseignée"}
+                </p>
+                <p className="whitespace-pre-wrap break-words text-muted-foreground text-xs">
+                  {patient.allergies ||
+                    patient.chronicConditions ||
+                    "Aucune alerte clinique"}
+                </p>
               </div>
             </div>
           </div>
+        </div>
 
         <div className="record-workspace min-h-0 overflow-y-auto bg-card">
           <div className="grid min-h-full md:grid-cols-[180px_minmax(0,1fr)]">
             <aside className="border-border/40 border-b bg-card px-4 py-3 md:sticky md:top-0 md:h-full md:border-r md:border-b-0 md:px-4 md:py-5">
-              <p className="mb-2 hidden px-3 font-semibold t-12 text-muted-foreground uppercase tracking-[0.14em] md:block">
+              <p className="t-12 mb-2 hidden px-3 font-semibold text-muted-foreground uppercase tracking-[0.14em] md:block">
                 Dossier patient
               </p>
               <nav
@@ -819,7 +849,7 @@ export function PatientDetailsDialog({
                     "flex h-10 shrink-0 items-center gap-2.5 rounded-xl px-3 font-medium text-sm transition-colors md:w-full",
                     activeTab === "info"
                       ? "bg-sky-500/10 font-semibold text-sky-700 dark:bg-sky-500/20 dark:text-sky-300"
-                      : "text-muted-foreground hover:bg-muted/60 hover:text-foreground",
+                      : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
                   )}
                   onClick={() => setActiveTab("info")}
                   type="button"
@@ -837,7 +867,7 @@ export function PatientDetailsDialog({
                     "flex h-10 shrink-0 items-center gap-2.5 rounded-xl px-3 font-medium text-sm transition-colors md:w-full",
                     activeTab === "medical"
                       ? "bg-emerald-500/10 font-semibold text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300"
-                      : "text-muted-foreground hover:bg-muted/60 hover:text-foreground",
+                      : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
                   )}
                   onClick={() => setActiveTab("medical")}
                   type="button"
@@ -855,7 +885,7 @@ export function PatientDetailsDialog({
                     "flex h-10 shrink-0 items-center gap-2.5 rounded-xl px-3 font-medium text-sm transition-colors md:w-full",
                     activeTab === "history"
                       ? "bg-amber-500/10 font-semibold text-amber-700 dark:bg-amber-500/20 dark:text-amber-300"
-                      : "text-muted-foreground hover:bg-muted/60 hover:text-foreground",
+                      : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
                   )}
                   onClick={() => setActiveTab("history")}
                   type="button"
@@ -870,7 +900,7 @@ export function PatientDetailsDialog({
               </nav>
 
               <div className="mt-5 hidden border-border/60 border-t px-3 pt-4 md:block">
-                <p className="font-semibold t-12 text-muted-foreground uppercase tracking-[0.12em]">
+                <p className="t-12 font-semibold text-muted-foreground uppercase tracking-[0.12em]">
                   Dossier
                 </p>
                 <p className="mt-1 font-mono text-foreground text-xs">
@@ -890,7 +920,7 @@ export function PatientDetailsDialog({
                     <span className="flex size-9 items-center justify-center rounded-xl bg-sky-50 text-sky-600 ring-1 ring-sky-100 dark:bg-sky-950/40 dark:text-sky-300 dark:ring-sky-900">
                       <HugeiconsIcon icon={BirdIcon} strokeWidth={1.5} />
                     </span>
-                    <h2 className="font-semibold t-18 tracking-[-0.03em]">
+                    <h2 className="t-18 font-semibold tracking-[-0.03em]">
                       Identité & contacts
                     </h2>
                   </div>
@@ -1001,7 +1031,7 @@ export function PatientDetailsDialog({
                                       >
                                         {option.label}
                                       </NativeSelectOption>
-                                    ),
+                                    )
                                   )}
                                 </NativeSelect>
                               </Field>
@@ -1259,9 +1289,7 @@ export function PatientDetailsDialog({
                             />
                             <ReadOnlyDetail
                               label="Adresse"
-                              value={
-                                ownerAddressLabel(currentOwner)
-                              }
+                              value={ownerAddressLabel(currentOwner)}
                             />
                             <ReadOnlyDetail
                               label="Contact privilégié"
@@ -1275,9 +1303,7 @@ export function PatientDetailsDialog({
                             />
                             <ReadOnlyDetail
                               label="Contact secondaire"
-                              value={
-                                secondaryContactLabel(currentOwner)
-                              }
+                              value={secondaryContactLabel(currentOwner)}
                             />
                             {currentOwner?.communicationNotes ? (
                               <ReadOnlyDetail
@@ -1299,7 +1325,7 @@ export function PatientDetailsDialog({
                     <span className="flex size-9 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 ring-1 ring-emerald-100 dark:bg-emerald-950/40 dark:text-emerald-300 dark:ring-emerald-900">
                       <HugeiconsIcon icon={StethoscopeIcon} strokeWidth={1.5} />
                     </span>
-                    <h2 className="font-semibold t-18 tracking-[-0.03em]">
+                    <h2 className="t-18 font-semibold tracking-[-0.03em]">
                       Suivi médical
                     </h2>
                   </div>
@@ -1389,7 +1415,7 @@ export function PatientDetailsDialog({
                       <HugeiconsIcon icon={WorkHistoryIcon} strokeWidth={1.5} />
                     </span>
                     <div>
-                      <h2 className="font-semibold t-18 tracking-[-0.03em]">
+                      <h2 className="t-18 font-semibold tracking-[-0.03em]">
                         Historique des visites
                       </h2>
                       <p className="text-muted-foreground text-xs">
@@ -1400,7 +1426,7 @@ export function PatientDetailsDialog({
                   <Card className="rounded-2xl shadow-none" size="sm">
                     <CardContent className="grid gap-0 p-0 sm:grid-cols-3">
                       <div className="px-4 py-3.5 sm:border-border/70 sm:border-r">
-                        <p className="font-semibold t-12 text-muted-foreground uppercase tracking-[0.12em]">
+                        <p className="t-12 font-semibold text-muted-foreground uppercase tracking-[0.12em]">
                           Réglé par le foyer
                         </p>
                         <p className="mt-1 font-semibold text-lg tracking-[-0.03em]">
@@ -1408,7 +1434,7 @@ export function PatientDetailsDialog({
                         </p>
                       </div>
                       <div className="border-border/70 border-t px-4 py-3.5 sm:border-t-0 sm:border-r">
-                        <p className="font-semibold t-12 text-muted-foreground uppercase tracking-[0.12em]">
+                        <p className="t-12 font-semibold text-muted-foreground uppercase tracking-[0.12em]">
                           En attente
                         </p>
                         <p className="mt-1 font-semibold text-lg tracking-[-0.03em]">
@@ -1416,7 +1442,7 @@ export function PatientDetailsDialog({
                         </p>
                       </div>
                       <div className="border-border/70 border-t px-4 py-3.5 sm:border-t-0">
-                        <p className="font-semibold t-12 text-muted-foreground uppercase tracking-[0.12em]">
+                        <p className="t-12 font-semibold text-muted-foreground uppercase tracking-[0.12em]">
                           Écritures liées
                         </p>
                         <p className="mt-1 font-semibold text-lg tracking-[-0.03em]">
@@ -1472,7 +1498,7 @@ export function PatientDetailsDialog({
                                 </p>
                                 <p className="truncate text-muted-foreground text-xs">
                                   {formatPersonName(
-                                    veterinarian?.displayName,
+                                    veterinarian?.displayName
                                   ) || "Non assigné"}
                                 </p>
                               </div>
@@ -1488,7 +1514,7 @@ export function PatientDetailsDialog({
                                 label="Créneau"
                                 value={formatVisitTimeRange(
                                   appointment.startTime,
-                                  appointment.endTime,
+                                  appointment.endTime
                                 )}
                               />
                               <ReadOnlyDetail
@@ -1611,9 +1637,13 @@ export function PatientCreateDialog({
 
   // Charge les champs du propriétaire choisi une seule fois par propriétaire,
   // pas à chaque rechargement de la liste : sinon la saisie en cours est écrasée.
-  const [lastLinkedOwnerId, setLastLinkedOwnerId] = useState<string | null>(null);
+  const [lastLinkedOwnerId, setLastLinkedOwnerId] = useState<string | null>(
+    null
+  );
   if (selectedOwnerId === "new") {
-    if (lastLinkedOwnerId !== null) setLastLinkedOwnerId(null);
+    if (lastLinkedOwnerId !== null) {
+      setLastLinkedOwnerId(null);
+    }
   } else if (lastLinkedOwnerId !== selectedOwnerId) {
     const linkedOwner = owners.find((entry) => entry.id === selectedOwnerId);
     if (linkedOwner) {
@@ -1624,7 +1654,7 @@ export function PatientCreateDialog({
 
   const breedSuggestions = useMemo(
     () => getBreedSuggestions(newPatient.species),
-    [newPatient.species],
+    [newPatient.species]
   );
 
   const handleCreate = useCallback(async () => {
@@ -1656,25 +1686,28 @@ export function PatientCreateDialog({
 
     setIsSubmitting(true);
 
-    await guard(async () => {
-      await onCreate({
-        selectedOwnerId: selectedOwnerId === "new" ? null : selectedOwnerId,
-        owner: selectedOwnerId === "new" ? newOwner : {},
-        patient: newPatient,
-      });
-    }, {
-      recover: (error) => {
-        const message =
-          error instanceof Error
-            ? error.message
-            : "Impossible de créer le dossier patient.";
-        setFormError(message);
-        toast.error(message);
+    await guard(
+      async () => {
+        await onCreate({
+          selectedOwnerId: selectedOwnerId === "new" ? null : selectedOwnerId,
+          owner: selectedOwnerId === "new" ? newOwner : {},
+          patient: newPatient,
+        });
       },
-      cleanup: () => {
-        setIsSubmitting(false);
-      },
-    });
+      {
+        recover: (error) => {
+          const message =
+            error instanceof Error
+              ? error.message
+              : "Impossible de créer le dossier patient.";
+          setFormError(message);
+          toast.error(message);
+        },
+        cleanup: () => {
+          setIsSubmitting(false);
+        },
+      }
+    );
   }, [newPatient, selectedOwnerId, newOwner, onCreate]);
 
   const ownerOptions = useMemo(
@@ -1682,9 +1715,9 @@ export function PatientCreateDialog({
       owners
         .slice()
         .sort((left, right) =>
-          formatOwnerName(left).localeCompare(formatOwnerName(right), "fr"),
+          formatOwnerName(left).localeCompare(formatOwnerName(right), "fr")
         ),
-    [owners],
+    [owners]
   );
 
   const selectedOwner =
@@ -1707,7 +1740,12 @@ export function PatientCreateDialog({
       >
         <FormDialogHeader
           description="Identité de l’animal et coordonnées du propriétaire."
-          icon={<SpeciesComponentIcon species={newPatient.species} strokeWidth={1.5} />}
+          icon={
+            <SpeciesComponentIcon
+              species={newPatient.species}
+              strokeWidth={1.5}
+            />
+          }
           title="Nouveau patient"
         />
 
@@ -1724,7 +1762,7 @@ export function PatientCreateDialog({
                     <UserRound className="size-[18px]" strokeWidth={1.9} />
                   </span>
                   <div>
-                    <h3 className="font-semibold t-16 text-foreground">
+                    <h3 className="t-16 font-semibold text-foreground">
                       Propriétaire
                     </h3>
                     <p className="mt-0.5 text-muted-foreground text-xs">
@@ -1770,7 +1808,7 @@ export function PatientCreateDialog({
                   <div className="rounded-2xl border border-amber-500/20 bg-amber-500/5 p-4 transition-[background-color,color,border-color,box-shadow,opacity,transform]">
                     <div className="flex items-start justify-between gap-3">
                       <div className="space-y-1">
-                        <p className="font-semibold text-sm text-foreground">
+                        <p className="font-semibold text-foreground text-sm">
                           {formatOwnerName(selectedOwner)}
                         </p>
                         <p className="text-muted-foreground text-xs">
@@ -1808,8 +1846,8 @@ export function PatientCreateDialog({
                         <Input
                           aria-invalid={Boolean(
                             formError &&
-                            selectedOwnerId === "new" &&
-                            !newOwner.lastName?.trim(),
+                              selectedOwnerId === "new" &&
+                              !newOwner.lastName?.trim()
                           )}
                           onChange={(event) =>
                             setNewOwner((current) => ({
@@ -1844,8 +1882,8 @@ export function PatientCreateDialog({
                         <Input
                           aria-invalid={Boolean(
                             formError &&
-                            selectedOwnerId === "new" &&
-                            !newOwner.phone?.trim(),
+                              selectedOwnerId === "new" &&
+                              !newOwner.phone?.trim()
                           )}
                           onChange={(event) =>
                             setNewOwner((current) => ({
@@ -1913,10 +1951,14 @@ export function PatientCreateDialog({
                     aria-hidden="true"
                     className="modal-section-icon modal-section-icon-patient"
                   >
-                    <SpeciesComponentIcon species={newPatient.species} className="size-[18px]" strokeWidth={1.9} />
+                    <SpeciesComponentIcon
+                      className="size-[18px]"
+                      species={newPatient.species}
+                      strokeWidth={1.9}
+                    />
                   </span>
                   <div>
-                    <h3 className="font-semibold t-16 text-foreground">
+                    <h3 className="t-16 font-semibold text-foreground">
                       Patient
                     </h3>
                     <p className="mt-0.5 text-muted-foreground text-xs">
@@ -1925,7 +1967,11 @@ export function PatientCreateDialog({
                   </div>
                 </div>
                 <span className="modal-section-state modal-section-state-patient">
-                  <SpeciesComponentIcon species={newPatient.species} className="size-3.5" strokeWidth={1.5} />
+                  <SpeciesComponentIcon
+                    className="size-3.5"
+                    species={newPatient.species}
+                    strokeWidth={1.5}
+                  />
                   {newPatient.species?.trim() || "Animal à identifier"}
                 </span>
               </div>
@@ -1938,7 +1984,7 @@ export function PatientCreateDialog({
                   </FieldLabel>
                   <Input
                     aria-invalid={Boolean(
-                      formError && !newPatient.name?.trim(),
+                      formError && !newPatient.name?.trim()
                     )}
                     autoFocus
                     className="modal-patient-name-input"
@@ -1960,7 +2006,7 @@ export function PatientCreateDialog({
                     </FieldLabel>
                     <Input
                       aria-invalid={Boolean(
-                        formError && !newPatient.species?.trim(),
+                        formError && !newPatient.species?.trim()
                       )}
                       list="new-patient-species-options"
                       onChange={(event) =>
@@ -2033,7 +2079,7 @@ export function PatientCreateDialog({
                           <NativeSelectOption key={value} value={value}>
                             {option.label}
                           </NativeSelectOption>
-                        ),
+                        )
                       )}
                     </NativeSelect>
                   </Field>
@@ -2050,8 +2096,8 @@ export function PatientCreateDialog({
                 {formError}
               </div>
             ) : (
-              <span className="inline-flex items-center gap-2 text-xs text-muted-foreground">
-                <span className="modal-footer-status-icon" aria-hidden="true">
+              <span className="inline-flex items-center gap-2 text-muted-foreground text-xs">
+                <span aria-hidden="true" className="modal-footer-status-icon">
                   <HugeiconsIcon
                     icon={CheckmarkCircle02Icon}
                     size={14}
@@ -2090,7 +2136,7 @@ export function PatientCreateDialog({
                 />
               )}
               <span>Créer le dossier</span>
-              <kbd className="hidden rounded bg-primary-foreground/20 px-1.5 py-0.5 font-mono t-12 sm:inline-block">
+              <kbd className="t-12 hidden rounded bg-primary-foreground/20 px-1.5 py-0.5 font-mono sm:inline-block">
                 ⌘↵
               </kbd>
             </Button>

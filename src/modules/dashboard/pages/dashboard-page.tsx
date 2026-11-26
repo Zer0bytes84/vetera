@@ -1,31 +1,34 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { showInFlux } from "@/modules/flow-board/open-in-flux";
 import { useReducedMotion } from "framer-motion";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import {
   useAppointmentsRepository,
+  useHospitalizationsRepository,
   useOwnersRepository,
   usePatientsRepository,
   useProductsRepository,
   useTasksRepository,
   useTransactionsRepository,
-  useVaccinationsRepository,
-  useHospitalizationsRepository,
   useUsersRepository,
+  useVaccinationsRepository,
 } from "@/data/repositories";
-import { useNowTick } from "@/hooks/useNowTick";
-import { useAlertCare } from "../use-alert-care";
-import type { FreeSlot } from "../model/free-slots";
 import { useDelayedSkeleton } from "@/hooks/useDelayedSkeleton";
+import { useNowTick } from "@/hooks/useNowTick";
 import { usePatientIntentPrefetch } from "@/hooks/usePatientIntentPrefetch";
+import { showInFlux } from "@/modules/flow-board/open-in-flux";
 import { openPatientPeek } from "@/modules/patients/pages/patient-peek";
+import { prepareAppointment } from "@/modules/shell/model/clinical-actions";
+import { TourInvitation } from "@/modules/tour/tour-invitation";
 import type { View } from "@/types";
+import type { ActionFilter } from "../components/clinical/actions-module";
 import {
   ClinicalDashboardView,
   type WidgetState,
 } from "../components/clinical-dashboard-view";
-import { buildClinicalAlerts, buildTodaySchedule } from "../v2/model";
-import { buildFinancialOverview } from "../v2/financial-model";
+import { DashboardModeToggle } from "../components/dashboard-mode-toggle";
+import { PremiumAnalytics } from "../components/premium-analytics";
+import { useDashboardFinancials } from "../hooks/use-dashboard-financials";
+import { useDashboardVersion } from "../hooks/use-dashboard-version";
 import {
   buildClinicalCash,
   buildClinicalFollowUp,
@@ -35,30 +38,36 @@ import {
   buildPatientFollowUpRows,
   type ClinicalCashPeriod,
 } from "../model/clinical-dashboard";
-import { addDays } from "../v2/model";
-import { prepareAppointment } from "@/modules/shell/model/clinical-actions";
-import type { ActionFilter } from "../components/clinical/actions-module";
-import { useDashboardVersion } from "../hooks/use-dashboard-version";
-import { DashboardModeToggle } from "../components/dashboard-mode-toggle";
-import { useDashboardFinancials } from "../hooks/use-dashboard-financials";
-import { TourInvitation } from "@/modules/tour/tour-invitation";
-import { PremiumAnalytics } from "../components/premium-analytics";
-import { buildPremiumAnalytics, dashboardPresentationData, type AnalyticsPeriod, type CustomRange, type DashboardPeriod } from "../model/premium-analytics";
+import type { FreeSlot } from "../model/free-slots";
+import {
+  type AnalyticsPeriod,
+  buildPremiumAnalytics,
+  type CustomRange,
+  type DashboardPeriod,
+  dashboardPresentationData,
+} from "../model/premium-analytics";
+import { useAlertCare } from "../use-alert-care";
+import { buildFinancialOverview } from "../v2/financial-model";
+import { addDays, buildClinicalAlerts, buildTodaySchedule } from "../v2/model";
 import "../components/premium-analytics.css";
-import { DashboardWatch } from "../components/dashboard-watch";
+import { guard } from "@/lib/guard";
+import { useHospitalizationEnabled } from "@/modules/clinique/clinic-services";
 import { OccupancyUnits } from "@/modules/hospitalizations/stays/occupancy-units";
 import { useStays } from "@/modules/hospitalizations/stays/use-stays";
+import { usePatientReminders } from "@/modules/patient-reminders/use-patient-reminders";
+import { DashboardWatch } from "../components/dashboard-watch";
+import { MorningWatch } from "../components/morning-watch";
 import {
   buildHospitalizedWatch,
   buildStockWatch,
   buildUpcomingReminders,
 } from "../model/dashboard-watch";
 import { buildSpeciesSplit } from "../model/dashboard-widgets";
-import { usePatientReminders } from "@/modules/patient-reminders/use-patient-reminders";
-import { useHospitalizationEnabled } from "@/modules/clinique/clinic-services";
-import { MorningWatch } from "../components/morning-watch";
-import { buildMorningWatch, type MorningItem, type MorningStatus } from "../model/morning-watch";
-import { guard } from "@/lib/guard";
+import {
+  buildMorningWatch,
+  type MorningItem,
+  type MorningStatus,
+} from "../model/morning-watch";
 
 export interface DashboardPageProps {
   onNavigate?: (view: View) => void;
@@ -73,9 +82,7 @@ function useWidgetState(
 ): WidgetState {
   return { loading, skeleton: useDelayedSkeleton(loading), error, retry };
 }
-export function DashboardPage({
-  onNavigate,
-}: DashboardPageProps) {
+export function DashboardPage({ onNavigate }: DashboardPageProps) {
   const appointments = useAppointmentsRepository();
   const owners = useOwnersRepository();
   const patients = usePatientsRepository();
@@ -90,21 +97,52 @@ export function DashboardPage({
   const medicalReminders = usePatientReminders();
   const users = useUsersRepository();
   const vets = useMemo(
-    () => users.data.filter((user) => user.status === "active" && (user.role === "vet_principal" || user.role === "vet_adjoint")),
-    [users.data],
+    () =>
+      users.data.filter(
+        (user) =>
+          user.status === "active" &&
+          (user.role === "vet_principal" || user.role === "vet_adjoint")
+      ),
+    [users.data]
   );
-  const [analyticsPeriod, setAnalyticsPeriod] = useState<DashboardPeriod>("30d");
+  const [analyticsPeriod, setAnalyticsPeriod] =
+    useState<DashboardPeriod>("30d");
   const [customRange, setCustomRange] = useState<CustomRange | null>(null);
-  const presentation = useMemo(() => dashboardPresentationData({
-    appointments: appointments.data, owners: owners.data, patients: patients.data,
-    products: products.data, tasks: tasks.data, transactions: transactions.data,
-    vaccinations: vaccinations.data, invoices: invoices.invoices,
-  }), [appointments.data, owners.data, patients.data, products.data, tasks.data, transactions.data, vaccinations.data, invoices.invoices]);
+  const presentation = useMemo(
+    () =>
+      dashboardPresentationData({
+        appointments: appointments.data,
+        owners: owners.data,
+        patients: patients.data,
+        products: products.data,
+        tasks: tasks.data,
+        transactions: transactions.data,
+        vaccinations: vaccinations.data,
+        invoices: invoices.invoices,
+      }),
+    [
+      appointments.data,
+      owners.data,
+      patients.data,
+      products.data,
+      tasks.data,
+      transactions.data,
+      vaccinations.data,
+      invoices.invoices,
+    ]
+  );
   const { version, setVersion } = useDashboardVersion();
   // « Personnaliser » demandé depuis les réglages : la demande est lue au montage ; l'effet l'efface et passe en version clinique.
-  const [isCustomizing, setIsCustomizing] = useState(() => window.sessionStorage.getItem("baitari:customize-dashboard") === "true");
+  const [isCustomizing, setIsCustomizing] = useState(
+    () =>
+      window.sessionStorage.getItem("baitari:customize-dashboard") === "true"
+  );
   useEffect(() => {
-    if (window.sessionStorage.getItem("baitari:customize-dashboard") !== "true") return;
+    if (
+      window.sessionStorage.getItem("baitari:customize-dashboard") !== "true"
+    ) {
+      return;
+    }
     window.sessionStorage.removeItem("baitari:customize-dashboard");
     void setVersion("clinical");
   }, [setVersion]);
@@ -135,7 +173,19 @@ export function DashboardPage({
         stays: stays.data,
         hospitalization,
       }),
-    [now, morningStatus, alertCare.tasks, alertCare.error, presentation.appointments, medicalReminders.reminders, medicalReminders.error, presentation.patients, presentation.invoices, stays.data, hospitalization]
+    [
+      now,
+      morningStatus,
+      alertCare.tasks,
+      alertCare.error,
+      presentation.appointments,
+      medicalReminders.reminders,
+      medicalReminders.error,
+      presentation.patients,
+      presentation.invoices,
+      stays.data,
+      hospitalization,
+    ]
   );
   // « À traiter » counts care, visits, reminders, invoices and stays: no count until every one of them is read.
   const morningLoading =
@@ -148,14 +198,19 @@ export function DashboardPage({
   const morningSkeleton = useDelayedSkeleton(morningLoading);
   const openMorning = (item: MorningItem) => {
     // The Rappels view opens on the medical reminders, as the « À surveiller » row did.
-    if (item.id === "reminders") window.sessionStorage.setItem("baitari:reminders-source", "medical");
+    if (item.id === "reminders") {
+      window.sessionStorage.setItem("baitari:reminders-source", "medical");
+    }
     navigate(item.view);
   };
   const createSlot = (slot: FreeSlot) => {
     prepareAppointment(undefined, slot.startsAt, slot.start, slot.vetId);
     navigate("agenda");
     // The agenda reads the marker when it mounts; the event covers a view that is already mounted.
-    window.setTimeout(() => window.dispatchEvent(new Event("vetera:new-appointment")), 150);
+    window.setTimeout(
+      () => window.dispatchEvent(new Event("vetera:new-appointment")),
+      150
+    );
   };
   const reduced = useReducedMotion();
   const intent = usePatientIntentPrefetch();
@@ -184,19 +239,37 @@ export function DashboardPage({
             referenceDate: selectedDay,
           })
         : today,
-    [presentation.appointments, presentation.owners, presentation.patients, selectedDay, today]
+    [
+      presentation.appointments,
+      presentation.owners,
+      presentation.patients,
+      selectedDay,
+      today,
+    ]
   );
   const context = useMemo(
     () =>
-      buildDayContext(presentation.appointments, presentation.owners, presentation.patients, dayDate),
-    [presentation.appointments, presentation.owners, presentation.patients, dayDate]
+      buildDayContext(
+        presentation.appointments,
+        presentation.owners,
+        presentation.patients,
+        dayDate
+      ),
+    [
+      presentation.appointments,
+      presentation.owners,
+      presentation.patients,
+      dayDate,
+    ]
   );
   const alerts = useMemo(
     () =>
       buildClinicalAlerts({
         appointments: presentation.appointments,
         patients: presentation.patients,
-        products: presentation.products.filter((product) => !product.archivedAt),
+        products: presentation.products.filter(
+          (product) => !product.archivedAt
+        ),
         tasks: presentation.tasks,
         reminders: medicalReminders.reminders,
         reminderTypes: medicalReminders.types,
@@ -288,23 +361,44 @@ export function DashboardPage({
   );
   const navigate = (view: View) => onNavigate?.(view);
   // Visits move on in Flux only: the dashboard shows them there.
-  const showVisit = (id?: string) => (id ? showInFlux(id, navigate) : navigate("flux"));
+  const showVisit = (id?: string) =>
+    id ? showInFlux(id, navigate) : navigate("flux");
   const completeTask = async (id: string) => {
-    const row = presentation.tasks.find(task => task.id === id);
-    if (!row || row.status === "done" || pending.current.has(id)) return;
+    const row = presentation.tasks.find((task) => task.id === id);
+    if (!row || row.status === "done" || pending.current.has(id)) {
+      return;
+    }
     pending.current.add(id);
     setBusyIds([...pending.current]);
-    return await guard(async () => {
-      if (!(await tasks.update(id, { status: "done" }))) return;
-      toast.success("Tâche terminée", { duration: 5000, action: { label: "Annuler", onClick: () => { void tasks.update(id, { status: row.status }); } } });
-    }, {
-      recover: (error) => {
-   toast.error(error instanceof Error ? error.message : "La tâche n’a pas pu être terminée.");
+    return await guard(
+      async () => {
+        if (!(await tasks.update(id, { status: "done" }))) {
+          return;
+        }
+        toast.success("Tâche terminée", {
+          duration: 5000,
+          action: {
+            label: "Annuler",
+            onClick: () => {
+              void tasks.update(id, { status: row.status });
+            },
+          },
+        });
       },
-      cleanup: () => {
-   pending.current.delete(id); setBusyIds([...pending.current]);
-      },
-    });
+      {
+        recover: (error) => {
+          toast.error(
+            error instanceof Error
+              ? error.message
+              : "La tâche n’a pas pu être terminée."
+          );
+        },
+        cleanup: () => {
+          pending.current.delete(id);
+          setBusyIds([...pending.current]);
+        },
+      }
+    );
   };
   const plan = (date?: Date) => {
     prepareAppointment(undefined, date instanceof Date ? date : new Date());
@@ -316,31 +410,51 @@ export function DashboardPage({
   };
   const clinicalView = (
     <ClinicalDashboardView
-      now={buildNowSnapshot(today, presentation.patients, now)}
+      actionFilter={actionFilter}
+      alerts={alerts}
+      busyIds={busyIds}
+      cash={cash}
+      cashPeriod={cashPeriod}
+      context={context}
       day={day}
       dayDate={dayDate}
-      context={context}
-      alerts={alerts}
       followUp={buildClinicalFollowUp(presentation.patients, stays.data)}
+      isCustomizing={isCustomizing}
+      now={buildNowSnapshot(today, presentation.patients, now)}
+      onActionFilter={setActionFilter}
+      onAgenda={() => navigate("agenda")}
+      onCashPeriod={setCashPeriod}
+      onCompleteTask={(id) => {
+        void completeTask(id);
+      }}
+      onCustomizingChange={setIsCustomizing}
+      onFinances={() => navigate("finances")}
+      onFlux={showVisit}
+      onOpenAlert={(alert) =>
+        alert.patientId
+          ? openPatientPeek(alert.patientId)
+          : navigate(alert.source === "stock" ? "stock" : "taches")
+      }
+      onOpenPatient={openPatientPeek}
+      onPatientIntent={intent.onPointerEnter}
+      onPatientIntentCancel={intent.onPointerLeave}
+      onPatients={() => navigate("patients")}
+      onPlan={plan}
+      onReminders={() => navigate("taches")}
+      onShiftDay={(days) => setSelectedDay(addDays(dayDate, days))}
+      onToday={() => setSelectedDay(null)}
+      onTrendsOpen={setTrendsOpen}
+      onTrendsPeriod={setTrendDays}
       patientRows={buildPatientFollowUpRows(
         presentation.patients,
         presentation.owners,
         stays.data
       )}
-      cash={cash}
       pending={cashPending}
-      cashPeriod={cashPeriod}
-      onCashPeriod={setCashPeriod}
       receivables={financials.receivables}
-      trends={buildClinicalTrends(presentation.appointments, now, trendDays)}
-      onTrendsPeriod={setTrendDays}
-      actionFilter={actionFilter}
-      onActionFilter={setActionFilter}
       reducedMotion={Boolean(reduced)}
-      onShiftDay={(days) => setSelectedDay(addDays(dayDate, days))}
-      onToday={() => setSelectedDay(null)}
-      onPlan={plan}
-      onReminders={() => navigate("taches")}
+      // Rows appear with the data: a dashboard opened every morning does not perform an entrance.
+      renderRow={(id, _index, content) => <div key={id}>{content}</div>}
       states={{
         now: nowState,
         day: dayState,
@@ -349,117 +463,126 @@ export function DashboardPage({
         cash: cashState,
         trends: trendsState,
       }}
-      busyIds={busyIds}
-      isCustomizing={isCustomizing}
-      onCustomizingChange={setIsCustomizing}
+      trends={buildClinicalTrends(presentation.appointments, now, trendDays)}
       trendsOpen={trendsOpen}
-      onTrendsOpen={setTrendsOpen}
-      onFlux={showVisit}
-      onOpenPatient={openPatientPeek}
-      onPatientIntent={intent.onPointerEnter}
-      onPatientIntentCancel={intent.onPointerLeave}
-      onCompleteTask={(id) => {
-        void completeTask(id);
-      }}
-      onOpenAlert={(alert) =>
-        alert.patientId
-          ? openPatientPeek(alert.patientId)
-          : navigate(alert.source === "stock" ? "stock" : "taches")
-      }
       viewControl={
-            <DashboardModeToggle
-              value={version}
-              reducedMotion={Boolean(reduced)}
-              onChange={(next) => {
-                setIsCustomizing(false);
-                void setVersion(next);
-              }}
-            />
+        <DashboardModeToggle
+          onChange={(next) => {
+            setIsCustomizing(false);
+            void setVersion(next);
+          }}
+          reducedMotion={Boolean(reduced)}
+          value={version}
+        />
       }
-      onAgenda={() => navigate("agenda")}
-      onPatients={() => navigate("patients")}
-      onFinances={() => navigate("finances")}
-      // Rows appear with the data: a dashboard opened every morning does not perform an entrance.
-      renderRow={(id, _index, content) => <div key={id}>{content}</div>}
     />
   );
-    return (
-      <div className="dashboard-stage flex w-full min-w-0 flex-col gap-6 px-4 pt-4 pb-12 lg:px-6 premium-analytics-dashboard">
-        <TourInvitation />
-        <PremiumAnalytics
-          clinicalView={version === "clinical" ? clinicalView : undefined}
-          morningWatch={<MorningWatch items={morning} loading={morningLoading || morningSkeleton} loadingRevealed={morningSkeleton} now={now} onOpen={openMorning} onStatus={setMorningStatus} status={morningStatus} />}
-          model={buildPremiumAnalytics({ ...presentation, alerts, reminders: medicalReminders.reminders }, analyticsPeriod, now, customRange)}
-          period={analyticsPeriod}
-          onPeriod={(next: AnalyticsPeriod) => setAnalyticsPeriod(next)}
-          customRange={customRange}
-          onCustomRange={(range) => {
-            setCustomRange(range);
-            setAnalyticsPeriod("custom");
-          }}
-          states={{ cash: cashState, patients: nowState, actions: actionsState }}
-          onFinances={() => navigate("finances")}
-          onPatients={() => navigate("patients")}
-          onActions={() => navigate("taches")}
-          onNavigate={navigate}
-          dashboardViewControl={
-            <DashboardModeToggle
-              value={version}
-              reducedMotion={Boolean(reduced)}
-              onChange={(next) => {
-                setIsCustomizing(false);
-                void setVersion(next);
-              }}
-            />
-          }
-          now={now}
-          presentation={presentation}
-          vets={vets}
-          onCreateSlot={createSlot}
-          alertSources={{
-            reminders: medicalReminders.reminders,
-            careTasks: alertCare.tasks,
-            unavailable: [medicalReminders.error ? "rappels" : "", alertCare.error ? "soins" : ""].filter(Boolean),
-          }}
-          watch={
-            <DashboardWatch
-              hospitalized={buildHospitalizedWatch({
-                now,
-                patients: presentation.patients,
-                stays: stays.data,
-              })}
-              hospitalizedCapacity={
-                <OccupancyUnits compact locations={capacity.locations} stays={capacity.stays} />
-              }
-              onOpenPatient={openPatientPeek}
-              onReminders={() => {
-                window.sessionStorage.setItem("baitari:reminders-source", "medical");
-                navigate("taches");
-              }}
-              onRemindersRetry={() => void medicalReminders.refresh()}
-              onStays={() => navigate("soins")}
-              onStock={() => navigate("stock")}
-              reminders={buildUpcomingReminders({
-                now,
-                patients: presentation.patients,
-                reminders: medicalReminders.reminders,
-                types: medicalReminders.types,
-              })}
-              remindersError={medicalReminders.error}
-              remindersLoading={medicalReminders.loading}
-              stock={buildStockWatch({ now, products: presentation.products })}
-              species={patients.loading ? undefined : buildSpeciesSplit(presentation.patients, now)}
-              onPatients={() => navigate("patients")}
-            />
-          }
-          today={today}
-          financials={{
-            income: cash.income,
-            pending: cashPending,
-            receivables: financials.receivables,
-          }}
-          onStartConsultation={showVisit}
-        />
-      </div>
-    );
+  return (
+    <div className="dashboard-stage premium-analytics-dashboard flex w-full min-w-0 flex-col gap-6 px-4 pt-4 pb-12 lg:px-6">
+      <TourInvitation />
+      <PremiumAnalytics
+        alertSources={{
+          reminders: medicalReminders.reminders,
+          careTasks: alertCare.tasks,
+          unavailable: [
+            medicalReminders.error ? "rappels" : "",
+            alertCare.error ? "soins" : "",
+          ].filter(Boolean),
+        }}
+        clinicalView={version === "clinical" ? clinicalView : undefined}
+        customRange={customRange}
+        dashboardViewControl={
+          <DashboardModeToggle
+            onChange={(next) => {
+              setIsCustomizing(false);
+              void setVersion(next);
+            }}
+            reducedMotion={Boolean(reduced)}
+            value={version}
+          />
+        }
+        financials={{
+          income: cash.income,
+          pending: cashPending,
+          receivables: financials.receivables,
+        }}
+        model={buildPremiumAnalytics(
+          { ...presentation, alerts, reminders: medicalReminders.reminders },
+          analyticsPeriod,
+          now,
+          customRange
+        )}
+        morningWatch={
+          <MorningWatch
+            items={morning}
+            loading={morningLoading || morningSkeleton}
+            loadingRevealed={morningSkeleton}
+            now={now}
+            onOpen={openMorning}
+            onStatus={setMorningStatus}
+            status={morningStatus}
+          />
+        }
+        now={now}
+        onActions={() => navigate("taches")}
+        onCreateSlot={createSlot}
+        onCustomRange={(range) => {
+          setCustomRange(range);
+          setAnalyticsPeriod("custom");
+        }}
+        onFinances={() => navigate("finances")}
+        onNavigate={navigate}
+        onPatients={() => navigate("patients")}
+        onPeriod={(next: AnalyticsPeriod) => setAnalyticsPeriod(next)}
+        onStartConsultation={showVisit}
+        period={analyticsPeriod}
+        presentation={presentation}
+        states={{ cash: cashState, patients: nowState, actions: actionsState }}
+        today={today}
+        vets={vets}
+        watch={
+          <DashboardWatch
+            hospitalized={buildHospitalizedWatch({
+              now,
+              patients: presentation.patients,
+              stays: stays.data,
+            })}
+            hospitalizedCapacity={
+              <OccupancyUnits
+                compact
+                locations={capacity.locations}
+                stays={capacity.stays}
+              />
+            }
+            onOpenPatient={openPatientPeek}
+            onPatients={() => navigate("patients")}
+            onReminders={() => {
+              window.sessionStorage.setItem(
+                "baitari:reminders-source",
+                "medical"
+              );
+              navigate("taches");
+            }}
+            onRemindersRetry={() => void medicalReminders.refresh()}
+            onStays={() => navigate("soins")}
+            onStock={() => navigate("stock")}
+            reminders={buildUpcomingReminders({
+              now,
+              patients: presentation.patients,
+              reminders: medicalReminders.reminders,
+              types: medicalReminders.types,
+            })}
+            remindersError={medicalReminders.error}
+            remindersLoading={medicalReminders.loading}
+            species={
+              patients.loading
+                ? undefined
+                : buildSpeciesSplit(presentation.patients, now)
+            }
+            stock={buildStockWatch({ now, products: presentation.products })}
+          />
+        }
+      />
+    </div>
+  );
 }

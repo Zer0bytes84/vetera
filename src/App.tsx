@@ -1,22 +1,20 @@
-import { ActivationOwnerUnlock } from "@/components/activation-owner-unlock";
 import { lazy, Suspense, useEffect, useState } from "react";
-
-import { requireActivationOwner } from "@/services/adminAccess";
-import { useAuth } from "@/contexts/AuthContext";
-import * as AppSettingsService from "@/services/appSettingsService";
-import i18n, { isRtlLanguage } from "@/i18n/config";
-import { acceptLicenseActivation } from "@/services/licenseRuntime";
+import { ActivationOwnerUnlock } from "@/components/activation-owner-unlock";
 import { LicenseGate } from "@/components/LicenseGate";
 import { StartupSplash } from "@/components/startup-splash";
-import { version as APPLICATION_VERSION } from "../package.json";
-import { isTauriRuntime } from "@/services/browser-store";
+import { useAuth } from "@/contexts/AuthContext";
+import i18n, { isRtlLanguage } from "@/i18n/config";
+import { guard } from "@/lib/guard";
+import { AIModelInstallPrompt } from "@/modules/consultations/components/ai-model-install-prompt";
 import { markVersionSeen } from "@/modules/release-notes/release-seen";
+import { isActivationAdminRoute } from "@/services/activationAdminWindowService";
+import { requireActivationOwner } from "@/services/adminAccess";
+import * as AppSettingsService from "@/services/appSettingsService";
+import { isTauriRuntime } from "@/services/browser-store";
+import { acceptLicenseActivation } from "@/services/licenseRuntime";
 import { createInitialAdmin } from "@/services/sqlite/auth";
 import { startAppUpdateCheck } from "@/services/updateService";
-import { isActivationAdminRoute } from "@/services/activationAdminWindowService";
-
-import { AIModelInstallPrompt } from "@/modules/consultations/components/ai-model-install-prompt";
-import { guard } from "@/lib/guard";
+import { version as APPLICATION_VERSION } from "../package.json";
 
 // Loaded only when used, so they stay out of the startup bundle (check:startup).
 const loadDemoData = () => import("@/services/demo-data");
@@ -87,30 +85,33 @@ function MainApp() {
 
   useEffect(() => {
     const checkSetup = async () => {
-      await guard(async () => {
-        const setupDone = await withTimeout(
-          AppSettingsService.isSetupComplete(),
-          SETUP_CHECK_TIMEOUT_MS,
-          "La base locale met trop de temps à répondre."
-        );
-        setNeedsSetup(!setupDone);
-        setStartupError(null);
-      }, {
-        recover: (error) => {
-          console.error("[App] Error checking setup status:", error);
-          // Never open the setup wizard after an uncertain database read. It
-          // could make an existing installation look like a new one.
-          setNeedsSetup(false);
-          setStartupError(
-            error instanceof Error
-              ? error
-              : new Error("Impossible de vérifier la base locale.")
+      await guard(
+        async () => {
+          const setupDone = await withTimeout(
+            AppSettingsService.isSetupComplete(),
+            SETUP_CHECK_TIMEOUT_MS,
+            "La base locale met trop de temps à répondre."
           );
+          setNeedsSetup(!setupDone);
+          setStartupError(null);
         },
-        cleanup: () => {
-          setIsCheckingSetup(false);
-        },
-      });
+        {
+          recover: (error) => {
+            console.error("[App] Error checking setup status:", error);
+            // Never open the setup wizard after an uncertain database read. It
+            // could make an existing installation look like a new one.
+            setNeedsSetup(false);
+            setStartupError(
+              error instanceof Error
+                ? error
+                : new Error("Impossible de vérifier la base locale.")
+            );
+          },
+          cleanup: () => {
+            setIsCheckingSetup(false);
+          },
+        }
+      );
     };
 
     // Never block initial UI boot on maintenance tasks.
@@ -124,10 +125,10 @@ function MainApp() {
               purgeDemoDataInTauriIfNeeded()
             )
             .catch((error) => {
-            if (!isDatabaseLockedError(error)) {
-              console.error("[App] Demo data purge failed:", error);
-            }
-          });
+              if (!isDatabaseLockedError(error)) {
+                console.error("[App] Demo data purge failed:", error);
+              }
+            });
         }, 1500)
       : null;
 
@@ -136,8 +137,8 @@ function MainApp() {
       loadBackupService()
         .then(({ checkAutoBackup }) => checkAutoBackup())
         .catch((error) => {
-        console.error("[App] Auto-backup check failed:", error);
-      });
+          console.error("[App] Auto-backup check failed:", error);
+        });
 
       startAppUpdateCheck().catch((error) => {
         if (!isDatabaseLockedError(error)) {
@@ -164,8 +165,8 @@ function MainApp() {
         seedDemoDataIfNeeded(currentUser ?? null)
       )
       .catch((error) => {
-      console.error("[App] Demo seed failed:", error);
-    });
+        console.error("[App] Demo seed failed:", error);
+      });
   }, [currentUser]);
 
   useEffect(() => {
@@ -183,10 +184,7 @@ function MainApp() {
   }, []);
 
   const handleSetupComplete = async (userData: SetupPayload) => {
-    await acceptLicenseActivation(
-      userData.email,
-      userData.activationToken
-    );
+    await acceptLicenseActivation(userData.email, userData.activationToken);
     await createInitialAdmin({
       email: userData.email,
       password: userData.password,
@@ -241,16 +239,48 @@ function ActivationAdminAccess() {
   const [sessionKey, setSessionKey] = useState("");
   useEffect(() => {
     let active = true;
-    const check = () => { void requireActivationOwner().then(() => { if (active) { setAllowed(true); setSessionKey(localStorage.getItem("auth_token") ?? ""); } }).catch(() => { if (active) setAllowed(false); }); };
+    const check = () => {
+      void requireActivationOwner()
+        .then(() => {
+          if (active) {
+            setAllowed(true);
+            setSessionKey(localStorage.getItem("auth_token") ?? "");
+          }
+        })
+        .catch(() => {
+          if (active) {
+            setAllowed(false);
+          }
+        });
+    };
     check();
     window.addEventListener("storage", check);
     window.addEventListener("focus", check);
     window.addEventListener("sqlite-data-changed", check);
-    return () => { active = false; window.removeEventListener("storage", check); window.removeEventListener("focus", check); window.removeEventListener("sqlite-data-changed", check); };
+    return () => {
+      active = false;
+      window.removeEventListener("storage", check);
+      window.removeEventListener("focus", check);
+      window.removeEventListener("sqlite-data-changed", check);
+    };
   }, []);
-  if (allowed === null) return <AppLoadingState />;
-  if (!allowed) return <main className="flex min-h-dvh flex-col items-center justify-center gap-4 bg-background p-8 text-foreground"><h1 className="t-18 font-medium">Accès réservé au propriétaire</h1><p>Ce compte ne peut pas accéder à la gestion des licences.</p><a href="/">Revenir à Baitari</a></main>;
-  return <ActivationOwnerUnlock key={sessionKey}><ActivationAdminPage /></ActivationOwnerUnlock>;
+  if (allowed === null) {
+    return <AppLoadingState />;
+  }
+  if (!allowed) {
+    return (
+      <main className="flex min-h-dvh flex-col items-center justify-center gap-4 bg-background p-8 text-foreground">
+        <h1 className="t-18 font-medium">Accès réservé au propriétaire</h1>
+        <p>Ce compte ne peut pas accéder à la gestion des licences.</p>
+        <a href="/">Revenir à Baitari</a>
+      </main>
+    );
+  }
+  return (
+    <ActivationOwnerUnlock key={sessionKey}>
+      <ActivationAdminPage />
+    </ActivationOwnerUnlock>
+  );
 }
 
 export function App() {
@@ -278,7 +308,7 @@ function AppStartupRecoveryState({ error }: { error: Error }) {
       <div className="absolute -top-40 left-1/2 size-[32rem] -translate-x-1/2 rounded-full bg-[#d7eee5]/75 blur-3xl" />
       <section className="relative w-full max-w-md rounded-[2rem] border border-white/80 bg-white/80 p-8 text-center shadow-[0_24px_80px_rgba(24,24,27,0.12)] backdrop-blur-xl">
         <div className="mx-auto mb-5 flex size-14 items-center justify-center rounded-2xl bg-amber-100 text-amber-700">
-          <span className="font-semibold text-2xl" aria-hidden="true">
+          <span aria-hidden="true" className="font-semibold text-2xl">
             !
           </span>
         </div>
@@ -286,8 +316,9 @@ function AppStartupRecoveryState({ error }: { error: Error }) {
           Baitari n&apos;a pas pu démarrer
         </h1>
         <p className="mt-3 text-sm text-zinc-600 leading-6">
-          Vos données sont conservées. Si cette base provient d’une version plus récente,
-          installez la dernière version de Baitari. Sinon, réessayez l’initialisation.
+          Vos données sont conservées. Si cette base provient d’une version plus
+          récente, installez la dernière version de Baitari. Sinon, réessayez
+          l’initialisation.
         </p>
         <p className="mt-3 rounded-xl bg-zinc-100 px-3 py-2 text-left text-xs text-zinc-500">
           {error.message}

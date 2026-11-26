@@ -1,18 +1,8 @@
 import { UsersIcon } from "@heroicons/react/20/solid";
-import {
-  Add01Icon,
-  Calendar01Icon,
-  CheckmarkCircle02Icon,
-  StethoscopeIcon,
-} from "@/lib/hugeicons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useState } from "react";
-
 import MotivationalHeader from "@/components/MotivationalHeader";
-import { FormDialogHeader } from "@/components/ui/form-dialog";
-
 import { SectionCards } from "@/components/section-cards";
-
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogFooter } from "@/components/ui/dialog";
 import {
@@ -22,20 +12,24 @@ import {
   EmptyHeader,
   EmptyTitle,
 } from "@/components/ui/empty";
-
+import { FormDialogHeader } from "@/components/ui/form-dialog";
 import { ListFilter } from "@/components/ui/list-controls";
-
 import { PATIENT_STATUS_META } from "@/config/status-meta";
-
-import {
-  PatientDetailsDialog,
-  PatientCreateDialog,
-} from "@/modules/patients/components/patients-shared";
 import { useDelayedSkeleton } from "@/hooks/useDelayedSkeleton";
 import { useListCursor } from "@/hooks/useListCursor";
+import {
+  Add01Icon,
+  Calendar01Icon,
+  CheckmarkCircle02Icon,
+  StethoscopeIcon,
+} from "@/lib/hugeicons";
+import {
+  PatientCreateDialog,
+  PatientDetailsDialog,
+} from "@/modules/patients/components/patients-shared";
 import type { PatientsViewProps } from "../hooks/use-patients-page-model";
-import { PatientsTable } from "./patients-table";
 import { OwnerContactDialog } from "./owner-contact-dialog";
+import { PatientsTable } from "./patients-table";
 import "../patients-list.css";
 
 export function PatientsView(props: PatientsViewProps) {
@@ -80,7 +74,9 @@ export function PatientsView(props: PatientsViewProps) {
   } = props;
   // The owner whose details are being corrected from the list's pencil, read fresh from the owners on every render.
   const [editingOwnerId, setEditingOwnerId] = useState<string | null>(null);
-  const editingOwner = editingOwnerId ? ownersMap.get(editingOwnerId) : undefined;
+  const editingOwner = editingOwnerId
+    ? ownersMap.get(editingOwnerId)
+    : undefined;
   const listRef = useListCursor({ storageKey: "patients" });
   // Reserved at once, revealed after 150 ms and kept 300 ms, as the band above: no flash on a fast read.
   const listSkeleton = useDelayedSkeleton(loadingPatients);
@@ -90,17 +86,17 @@ export function PatientsView(props: PatientsViewProps) {
 
       <SectionCards
         actions={
-            <Button
-              className="h-9 rounded-full px-4"
-              onClick={() => setIsCreateOpen(true)}
-            >
-              <HugeiconsIcon
-                data-icon="inline-start"
-                icon={Add01Icon}
-                strokeWidth={1.5}
-              />
-              Nouveau patient
-            </Button>
+          <Button
+            className="h-9 rounded-full px-4"
+            onClick={() => setIsCreateOpen(true)}
+          >
+            <HugeiconsIcon
+              data-icon="inline-start"
+              icon={Add01Icon}
+              strokeWidth={1.5}
+            />
+            Nouveau patient
+          </Button>
         }
         icon={UsersIcon}
         items={sectionCards}
@@ -132,33 +128,33 @@ export function PatientsView(props: PatientsViewProps) {
             <>
               <ListFilter
                 label="Espèce"
-                value={speciesFilter}
                 onValueChange={setSpeciesFilter}
                 options={[
                   { value: "all", label: "Toutes" },
                   ...speciesOptions.map((value) => ({ value, label: value })),
                 ]}
+                value={speciesFilter}
               />
               <ListFilter
                 label="Statut"
-                value={statusFilter}
                 onValueChange={setStatusFilter}
                 options={[
                   { value: "all", label: "Tous" },
                   ...Object.entries(PATIENT_STATUS_META).map(
-                    ([value, option]) => ({ value, label: option.label }),
+                    ([value, option]) => ({ value, label: option.label })
                   ),
                 ]}
+                value={statusFilter}
               />
               <ListFilter
                 label="Dossiers"
-                value={archiveFilter}
                 onValueChange={setArchiveFilter}
                 options={[
                   { value: "active", label: "Actifs" },
                   { value: "archived", label: "Archivés" },
                   { value: "all", label: "Tous" },
                 ]}
+                value={archiveFilter}
               />
             </>
           }
@@ -178,8 +174,6 @@ export function PatientsView(props: PatientsViewProps) {
 
       {selectedPatient ? (
         <PatientDetailsDialog
-          users={users}
-          transactions={transactions}
           allOwners={hydratedOwners}
           appointments={appointments}
           initialTab={detailsInitialTab}
@@ -198,6 +192,8 @@ export function PatientsView(props: PatientsViewProps) {
           }}
           owner={ownersMap.get(selectedPatient.ownerId)}
           patient={selectedPatient}
+          transactions={transactions}
+          users={users}
         />
       ) : null}
 
@@ -227,11 +223,11 @@ export function PatientsView(props: PatientsViewProps) {
       >
         <DialogContent className="max-w-[min(560px,calc(100%-2rem))] sm:max-w-[560px]">
           <FormDialogHeader
-            title={createdPatientPrompt?.patient.name}
             description="Dossier créé"
             icon={
               <HugeiconsIcon icon={CheckmarkCircle02Icon} strokeWidth={1.5} />
             }
+            title={createdPatientPrompt?.patient.name}
           />
           <DialogFooter>
             <Button

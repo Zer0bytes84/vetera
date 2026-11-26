@@ -17,10 +17,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { SkeletonRegion } from "@/components/ui/loading-skeleton";
 import { Panel } from "@/components/ui/surface";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { usePatientsRepository } from "@/data/repositories";
 import { PageHeader } from "@/design-system/patterns/page-header";
+import { useDelayedSkeleton } from "@/hooks/useDelayedSkeleton";
 import { ACTIVE_STAY_STATUSES, type StayStatus, stayDays } from "./domain";
 import { OccupancyUnits } from "./occupancy-units";
 import { StayDetail } from "./stay-detail";
@@ -29,8 +31,6 @@ import { LocationAvailability } from "./stay-location-controls";
 import { StayRounds } from "./stay-rounds";
 import { StaySection } from "./stay-section";
 import { useStays } from "./use-stays";
-import { SkeletonRegion } from "@/components/ui/loading-skeleton";
-import { useDelayedSkeleton } from "@/hooks/useDelayedSkeleton";
 
 const labels: Record<StayStatus, string> = {
   admis: "Admis",
@@ -125,14 +125,14 @@ export default function StaysPage({
                     : "Chenil"}
               </span>
             </div>
-            <p className="mt-4 t-14">
+            <p className="t-14 mt-4">
               {stay
                 ? patientName(stay.patient_id)
                 : location.active
                   ? "Disponible"
                   : "Désactivé"}
             </p>
-            <p className="mt-1 t-12 text-muted-foreground">
+            <p className="t-12 mt-1 text-muted-foreground">
               {stay
                 ? labels[stay.status]
                 : location.species || "Toutes espèces"}
@@ -197,8 +197,8 @@ export default function StaysPage({
                 <h2 className="t-16 font-medium">
                   {patientName(stay.patient_id)}
                 </h2>
-                <p className="mt-1 t-13 text-muted-foreground">{stay.reason}</p>
-                <p className="mt-2 t-12 text-muted-foreground">
+                <p className="t-13 mt-1 text-muted-foreground">{stay.reason}</p>
+                <p className="t-12 mt-2 text-muted-foreground">
                   Admis le {shortDate(stay.admitted_at)}
                   {ACTIVE_STAY_STATUSES.includes(stay.status) &&
                     (() => {
@@ -224,7 +224,7 @@ export default function StaysPage({
                 >
                   Ouvrir le séjour
                 </Button>
-                <p className="mt-1 t-12 text-muted-foreground">
+                <p className="t-12 mt-1 text-muted-foreground">
                   {locations.find(
                     (location) => location.id === stay.location_id
                   )?.name || "Sans emplacement"}
@@ -233,7 +233,7 @@ export default function StaysPage({
             </article>
           ))
         ) : (
-          <p className="p-8 text-center t-14 text-muted-foreground">
+          <p className="t-14 p-8 text-center text-muted-foreground">
             Aucun séjour enregistré.
           </p>
         )}
@@ -353,7 +353,11 @@ export default function StaysPage({
         open={form !== null}
       >
         <DialogContent className="sm:max-w-lg">
-          <DialogHeader icon={form === "location" ? <MapPinIcon /> : <BuildingOffice2Icon />}>
+          <DialogHeader
+            icon={
+              form === "location" ? <MapPinIcon /> : <BuildingOffice2Icon />
+            }
+          >
             <DialogTitle>
               {form === "location"
                 ? "Nouvel emplacement"

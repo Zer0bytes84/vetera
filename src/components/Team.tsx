@@ -1,17 +1,3 @@
-import { ListSearch } from "@/components/ui/list-controls";
-import { MagnifyingGlassIcon, UsersIcon } from "@heroicons/react/20/solid";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { InitialsAvatar } from "@/design-system/patterns/initials-avatar";
-import {
-  formatNumber,
-  formatPersonName,
-  formatPhone,
-} from "@/utils/display-format";
 import {
   AcademicCapIcon,
   BriefcaseIcon,
@@ -27,6 +13,7 @@ import {
   TrashIcon,
   XMarkIcon,
 } from "@heroicons/react/16/solid";
+import { MagnifyingGlassIcon, UsersIcon } from "@heroicons/react/20/solid";
 import type React from "react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -45,7 +32,12 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
-import { Shell, ShellHeader } from "@/components/ui/surface";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import {
   FormDialogBody,
@@ -54,23 +46,31 @@ import {
   FormDialogHeader,
 } from "@/components/ui/form-dialog";
 import { Input } from "@/components/ui/input";
+import { ListSearch } from "@/components/ui/list-controls";
+import { SkeletonShape } from "@/components/ui/loading-skeleton";
 import {
   NativeSelect,
   NativeSelectOption,
 } from "@/components/ui/native-select";
 import { Spinner } from "@/components/ui/spinner";
+import { Shell, ShellHeader } from "@/components/ui/surface";
 import { TEAM_STATUS_META } from "@/config/status-meta";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUsersRepository } from "@/data/repositories";
-import { cn } from "@/lib/utils";
-import { SkeletonShape } from "@/components/ui/loading-skeleton";
+import { InitialsAvatar } from "@/design-system/patterns/initials-avatar";
 import { useDelayedSkeleton } from "@/hooks/useDelayedSkeleton";
 import { useRememberedRows } from "@/hooks/useRememberedRows";
+import { guard } from "@/lib/guard";
+import { cn } from "@/lib/utils";
 import { hashPassword, updatePassword } from "@/services/sqlite/auth";
 import type { User, UserRole } from "@/types/db";
+import {
+  formatNumber,
+  formatPersonName,
+  formatPhone,
+} from "@/utils/display-format";
 import Avatar from "./Avatar";
 import { readTeam } from "./team-reading";
-import { guard } from "@/lib/guard";
 
 const ROLE_CONFIG: Record<
   UserRole | string,
@@ -113,7 +113,7 @@ function createTemporaryPassword() {
   const randomValues = crypto.getRandomValues(new Uint32Array(7));
   const randomPart = Array.from(
     randomValues,
-    (value) => alphabet[value % alphabet.length],
+    (value) => alphabet[value % alphabet.length]
   ).join("");
   return `Vet${randomPart}!`;
 }
@@ -124,13 +124,13 @@ const Team: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [memberPendingDelete, setMemberPendingDelete] = useState<User | null>(
-    null,
+    null
   );
   const [passwordResetTarget, setPasswordResetTarget] = useState<User | null>(
-    null,
+    null
   );
   const [temporaryPassword, setTemporaryPassword] = useState<string | null>(
-    null,
+    null
   );
 
   // State for password reset feedback
@@ -219,7 +219,7 @@ const Team: React.FC = () => {
     const duplicateUser = users.find(
       (user) =>
         user.email?.trim().toLowerCase() === normalizedEmail &&
-        user.id !== editingId,
+        user.id !== editingId
     );
 
     if (duplicateUser) {
@@ -229,52 +229,55 @@ const Team: React.FC = () => {
 
     setIsSubmitting(true);
 
-    await guard(async () => {
-      if (editingId) {
-        await updateUser(editingId, {
-          displayName: displayName.trim(),
-          email: normalizedEmail,
-          phone: formData.phone || "",
-          role: formData.role as UserRole,
-          status: formData.status as "active" | "inactive",
-          specialty: formData.specialty || "",
-        });
-      } else {
-        const initialPassword = createTemporaryPassword();
-        await addUser({
-          displayName: displayName.trim(),
-          email: normalizedEmail,
-          phone: formData.phone || "",
-          role: formData.role as UserRole,
-          status: "active",
-          specialty: formData.specialty || "",
-          passwordHash: await hashPassword(initialPassword),
-        } as any);
-        setTemporaryPassword(initialPassword);
-      }
-      setIsModalOpen(false);
-      if (editingId) {
-        toast.success("Membre mis à jour.");
-      }
-    }, {
-      recover: (error) => {
-        console.error("[TEAM] Error saving:", error);
-        const message = getErrorMessage(error);
-        if (
-          message.toLowerCase().includes("unique") ||
-          message.toLowerCase().includes("email")
-        ) {
-          toast.error(
-            "Impossible d'ajouter ce membre : cet email est déjà utilisé.",
-          );
+    await guard(
+      async () => {
+        if (editingId) {
+          await updateUser(editingId, {
+            displayName: displayName.trim(),
+            email: normalizedEmail,
+            phone: formData.phone || "",
+            role: formData.role as UserRole,
+            status: formData.status as "active" | "inactive",
+            specialty: formData.specialty || "",
+          });
         } else {
-          toast.error(`Erreur lors de la sauvegarde : ${message}`);
+          const initialPassword = createTemporaryPassword();
+          await addUser({
+            displayName: displayName.trim(),
+            email: normalizedEmail,
+            phone: formData.phone || "",
+            role: formData.role as UserRole,
+            status: "active",
+            specialty: formData.specialty || "",
+            passwordHash: await hashPassword(initialPassword),
+          } as any);
+          setTemporaryPassword(initialPassword);
+        }
+        setIsModalOpen(false);
+        if (editingId) {
+          toast.success("Membre mis à jour.");
         }
       },
-      cleanup: () => {
-        setIsSubmitting(false);
-      },
-    });
+      {
+        recover: (error) => {
+          console.error("[TEAM] Error saving:", error);
+          const message = getErrorMessage(error);
+          if (
+            message.toLowerCase().includes("unique") ||
+            message.toLowerCase().includes("email")
+          ) {
+            toast.error(
+              "Impossible d'ajouter ce membre : cet email est déjà utilisé."
+            );
+          } else {
+            toast.error(`Erreur lors de la sauvegarde : ${message}`);
+          }
+        },
+        cleanup: () => {
+          setIsSubmitting(false);
+        },
+      }
+    );
   };
 
   const handleDelete = async () => {
@@ -295,7 +298,7 @@ const Team: React.FC = () => {
   const handleResetPassword = async (
     email: string,
     _name: string,
-    userId: string,
+    userId: string
   ) => {
     if (!(email && userId)) {
       return;
@@ -303,21 +306,24 @@ const Team: React.FC = () => {
     const temporaryPassword = createTemporaryPassword();
 
     setResetStatus({ loading: true, userId });
-    await guard(async () => {
-      await updatePassword(userId, temporaryPassword);
-      setTemporaryPassword(temporaryPassword);
-      setPasswordResetTarget(null);
-    }, {
-      recover: (error: any) => {
-        console.error(error);
-        toast.error(
-          `Erreur lors de la réinitialisation : ${error?.message || "Erreur inconnue"}`,
-        );
+    await guard(
+      async () => {
+        await updatePassword(userId, temporaryPassword);
+        setTemporaryPassword(temporaryPassword);
+        setPasswordResetTarget(null);
       },
-      cleanup: () => {
-        setResetStatus({ loading: false, userId: null });
-      },
-    });
+      {
+        recover: (error: any) => {
+          console.error(error);
+          toast.error(
+            `Erreur lors de la réinitialisation : ${error?.message || "Erreur inconnue"}`
+          );
+        },
+        cleanup: () => {
+          setResetStatus({ loading: false, userId: null });
+        },
+      }
+    );
   };
 
   const filteredUsers = useMemo(
@@ -327,9 +333,9 @@ const Team: React.FC = () => {
           (u.displayName || "")
             .toLowerCase()
             .includes(searchTerm.toLowerCase()) ||
-          (u.email || "").toLowerCase().includes(searchTerm.toLowerCase()),
+          (u.email || "").toLowerCase().includes(searchTerm.toLowerCase())
       ),
-    [users, searchTerm],
+    [users, searchTerm]
   );
 
   // One short, true line at the foot of every card, read by readTeam with the page's own rules.
@@ -370,11 +376,20 @@ const Team: React.FC = () => {
   // The band's state line reads the team as the dashboard and Rappels read theirs: day, time, then what is true now.
   const team = readTeam(users);
   const readAt = new Date();
-  const readDay = readAt.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" });
+  const readDay = readAt.toLocaleDateString("fr-FR", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+  });
   // The directory holds its cards' place on the first read (revealed after 150 ms, kept 300 ms): no « 0 membre ».
   const directorySkeleton = useDelayedSkeleton(loading);
   const reading = loading || directorySkeleton;
-  const { reserved: memberSlots, measure: measureMembers } = useRememberedRows<HTMLDivElement>("team-cards", { rows: 3, rowHeight: 168 }, "grid");
+  const { reserved: memberSlots, measure: measureMembers } =
+    useRememberedRows<HTMLDivElement>(
+      "team-cards",
+      { rows: 3, rowHeight: 168 },
+      "grid"
+    );
   const bandSubtitle = loading
     ? "Lecture de l’équipe…"
     : `${readDay[0].toLocaleUpperCase("fr-FR")}${readDay.slice(1)} · état à ${readAt.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })} · ${team.state}`;
@@ -403,15 +418,25 @@ const Team: React.FC = () => {
       />
 
       {/* The directory: no section title block, a tool row as on Flux and Rappels (count on the left, search on the right). */}
-      <section aria-label="Annuaire de l’équipe" className="team-directory flex flex-1 flex-col gap-3">
+      <section
+        aria-label="Annuaire de l’équipe"
+        className="team-directory flex flex-1 flex-col gap-3"
+      >
         <div className="team-directory-tools flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
           {reading ? (
-            <p className={cn("loading-skeleton text-muted-foreground t-13", !directorySkeleton && "invisible")}>
+            <p
+              className={cn(
+                "loading-skeleton t-13 text-muted-foreground",
+                !directorySkeleton && "invisible"
+              )}
+            >
               <SkeletonShape className="loading-skeleton-inline" />
             </p>
           ) : (
-            <p className="text-muted-foreground t-13">
-              <span className="font-medium text-foreground tabular-nums">{formatNumber(filteredUsers.length)}</span>{" "}
+            <p className="t-13 text-muted-foreground">
+              <span className="font-medium text-foreground tabular-nums">
+                {formatNumber(filteredUsers.length)}
+              </span>{" "}
               membre{filteredUsers.length > 1 ? "s" : ""}
               {searchTerm ? ` sur ${formatNumber(users.length)}` : ""}
             </p>
@@ -419,9 +444,9 @@ const Team: React.FC = () => {
           <ListSearch
             className="w-full sm:w-56"
             label="Rechercher un membre"
+            onValueChange={setSearchTerm}
             placeholder="Rechercher un membre…"
             value={searchTerm}
-            onValueChange={setSearchTerm}
           />
         </div>
 
@@ -431,7 +456,10 @@ const Team: React.FC = () => {
             <div
               aria-busy="true"
               aria-label="Chargement de l’équipe"
-              className={cn("loading-skeleton grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3", !directorySkeleton && "invisible")}
+              className={cn(
+                "loading-skeleton grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3",
+                !directorySkeleton && "invisible"
+              )}
               data-skeleton-region="team-cards"
               role="status"
             >
@@ -455,19 +483,29 @@ const Team: React.FC = () => {
             // Composed as the Rappels' empty search: the page's band, one true line, and the way out.
             <Shell>
               <ShellHeader
+                as="h2"
                 aside={
                   searchTerm ? (
-                    <Button onClick={() => setSearchTerm("")} size="sm" type="button" variant="outline">
+                    <Button
+                      onClick={() => setSearchTerm("")}
+                      size="sm"
+                      type="button"
+                      variant="outline"
+                    >
                       Effacer la recherche
                     </Button>
                   ) : canManageTeam ? (
-                    <Button onClick={() => handleOpenModal()} size="sm" type="button" variant="outline">
+                    <Button
+                      onClick={() => handleOpenModal()}
+                      size="sm"
+                      type="button"
+                      variant="outline"
+                    >
                       <PlusIcon aria-hidden="true" className="size-4" />
                       Nouveau membre
                     </Button>
                   ) : undefined
                 }
-                as="h2"
                 icon={searchTerm ? MagnifyingGlassIcon : UsersIcon}
                 subtitle={
                   searchTerm
@@ -478,7 +516,11 @@ const Team: React.FC = () => {
               />
             </Shell>
           ) : (
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3" data-skeleton-region="team-cards" ref={measureMembers}>
+            <div
+              className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3"
+              data-skeleton-region="team-cards"
+              ref={measureMembers}
+            >
               {filteredUsers.map((user) => {
                 const effectiveRole =
                   user.email === "zohir.kh@gmail.com" ? "admin" : user.role;
@@ -544,7 +586,10 @@ const Team: React.FC = () => {
                             {isResetting ? (
                               <Spinner className="size-4" />
                             ) : (
-                              <EllipsisHorizontalIcon aria-hidden="true" className="size-4" />
+                              <EllipsisHorizontalIcon
+                                aria-hidden="true"
+                                className="size-4"
+                              />
                             )}
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
@@ -558,7 +603,10 @@ const Team: React.FC = () => {
                             <DropdownMenuItem
                               onClick={() => handleOpenModal(user)}
                             >
-                              <PencilIcon aria-hidden="true" className="size-4" />
+                              <PencilIcon
+                                aria-hidden="true"
+                                className="size-4"
+                              />
                               Modifier le rôle / statut
                             </DropdownMenuItem>
                             {user.email !== "zohir.kh@gmail.com" && (
@@ -566,7 +614,10 @@ const Team: React.FC = () => {
                                 onClick={() => setMemberPendingDelete(user)}
                                 variant="destructive"
                               >
-                                <TrashIcon aria-hidden="true" className="size-4" />
+                                <TrashIcon
+                                  aria-hidden="true"
+                                  className="size-4"
+                                />
                                 Supprimer définitivement
                               </DropdownMenuItem>
                             )}
@@ -581,7 +632,7 @@ const Team: React.FC = () => {
                         className={cn(
                           "gap-1.5 border-transparent",
                           config.bg,
-                          config.color,
+                          config.color
                         )}
                       >
                         <RoleIcon aria-hidden="true" className="size-3" />
@@ -592,13 +643,19 @@ const Team: React.FC = () => {
                     {/* Contact Info */}
                     <div className="mt-auto space-y-2 border-border/50 border-t pt-4">
                       <div className="flex items-center gap-2 text-muted-foreground text-sm">
-                        <EnvelopeIcon aria-hidden="true" className="size-3.5 text-muted-foreground" />
+                        <EnvelopeIcon
+                          aria-hidden="true"
+                          className="size-3.5 text-muted-foreground"
+                        />
                         <span className="truncate">
                           {user.email || "Pas d'email"}
                         </span>
                       </div>
                       <div className="flex items-center gap-2 text-muted-foreground text-sm">
-                        <DevicePhoneMobileIcon aria-hidden="true" className="size-3.5 text-muted-foreground" />
+                        <DevicePhoneMobileIcon
+                          aria-hidden="true"
+                          className="size-3.5 text-muted-foreground"
+                        />
                         <span>
                           {formatPhone(user.phone) || "Non renseigné"}
                         </span>
@@ -609,13 +666,20 @@ const Team: React.FC = () => {
                     <div className="absolute right-5 bottom-5">
                       <Badge
                         className={cn(
-                          "gap-1 t-12",
+                          "t-12 gap-1",
                           TEAM_STATUS_META[
                             user.status === "active" ? "active" : "inactive"
-                          ].className,
+                          ].className
                         )}
                       >
-                        {user.status === "active" ? <CheckCircleIcon aria-hidden="true" className="size-3" /> : <XMarkIcon aria-hidden="true" className="size-3" />}{" "}
+                        {user.status === "active" ? (
+                          <CheckCircleIcon
+                            aria-hidden="true"
+                            className="size-3"
+                          />
+                        ) : (
+                          <XMarkIcon aria-hidden="true" className="size-3" />
+                        )}{" "}
                         {
                           TEAM_STATUS_META[
                             user.status === "active" ? "active" : "inactive"
@@ -684,7 +748,7 @@ const Team: React.FC = () => {
                   void handleResetPassword(
                     passwordResetTarget.email,
                     passwordResetTarget.displayName,
-                    passwordResetTarget.id,
+                    passwordResetTarget.id
                   );
                 }
               }}
@@ -726,7 +790,7 @@ const Team: React.FC = () => {
                 } catch (error) {
                   console.error(error);
                   toast.error(
-                    "La copie a échoué. Sélectionnez le code manuellement.",
+                    "La copie a échoué. Sélectionnez le code manuellement."
                   );
                 }
               }}
@@ -809,7 +873,7 @@ const Team: React.FC = () => {
                     }
                     value={formData.role || ""}
                   >
-                    <NativeSelectOption value="" disabled>
+                    <NativeSelectOption disabled value="">
                       Choisir un rôle
                     </NativeSelectOption>
                     <NativeSelectOption value="vet_principal">

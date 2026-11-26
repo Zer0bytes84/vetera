@@ -1,34 +1,34 @@
-import { careErrorMessage } from "./feedback";
-import { CareTimePicker } from "./care-time-picker";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import {
   Command,
-  CommandInput,
-  CommandList,
   CommandEmpty,
+  CommandInput,
   CommandItem,
+  CommandList,
 } from "@/components/ui/command";
-import { ChevronDown } from "./care-icons";
 import { DatePicker } from "@/components/ui/date-picker";
+import { Input } from "@/components/ui/input";
+import { ModalBandActions } from "@/components/ui/modal-chrome";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { ModalBandActions } from "@/components/ui/modal-chrome";
-import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   usePatientsRepository,
   useProductsRepository,
 } from "@/data/repositories";
-import { CARE_TYPES, type CareSuggestion, type CareType } from "./domain";
-import { careTasksService } from "./service";
-import { announceCareTasksChanged } from "./use-care-tasks";
-import { ProductStockFields } from "@/modules/stock/components/product-stock-fields";
 import { parseStockQuantityInput } from "@/domain/stock";
 import { guard } from "@/lib/guard";
+import { ProductStockFields } from "@/modules/stock/components/product-stock-fields";
+import { ChevronDown } from "./care-icons";
+import { CareTimePicker } from "./care-time-picker";
+import { CARE_TYPES, type CareSuggestion, type CareType } from "./domain";
+import { careErrorMessage } from "./feedback";
+import { careTasksService } from "./service";
+import { announceCareTasksChanged } from "./use-care-tasks";
 export const careTypeLabels: Record<CareType, string> = {
   medicament: "Médicament",
   perfusion: "Perfusion",
@@ -74,7 +74,9 @@ export function CareTaskForm({
       noValidate
       onSubmit={async (e) => {
         e.preventDefault();
-        if (busy) return;
+        if (busy) {
+          return;
+        }
         if (!label.trim()) {
           setError("Indiquez le soin à planifier.");
           return;
@@ -89,7 +91,7 @@ export function CareTaskForm({
           );
           return;
         }
-        if (!patient || !scheduled) {
+        if (!(patient && scheduled)) {
           setError(
             "Choisissez un patient, une date et une heure avant de confirmer le soin."
           );
@@ -103,43 +105,52 @@ export function CareTaskForm({
         }
         setBusy(true);
         setError(null);
-        await guard(async () => {
-          await careTasksService.create(
-            {
-              patientId: patient,
-              label,
-              type,
-              scheduledAt: scheduled,
-              productId: product || null,
-              productQuantity: products.data.find(p => p.id === product)?.stockTracked === false ? 1 : parseStockQuantityInput(productQuantity),
-              note,
+        await guard(
+          async () => {
+            await careTasksService.create(
+              {
+                patientId: patient,
+                label,
+                type,
+                scheduledAt: scheduled,
+                productId: product || null,
+                productQuantity:
+                  products.data.find((p) => p.id === product)?.stockTracked ===
+                  false
+                    ? 1
+                    : parseStockQuantityInput(productQuantity),
+                note,
+              },
+              currentUser?.id ?? ""
+            );
+            announceCareTasksChanged();
+            onSaved(scheduled);
+          },
+          {
+            recover: (e) => {
+              setError(careErrorMessage(e, "create"));
             },
-            currentUser?.id ?? ""
-          );
-          announceCareTasksChanged();
-          onSaved(scheduled);
-        }, {
-          recover: (e) => {
-            setError(careErrorMessage(e, "create"));
-          },
-          cleanup: () => {
-            setBusy(false);
-          },
-        });
+            cleanup: () => {
+              setBusy(false);
+            },
+          }
+        );
       }}
     >
-      <div className="space-y-1.5 t-13">
-        <span className="flex items-center justify-between">Patient <span className="modal-required">requis</span></span>
-        <Popover open={patientPickerOpen} onOpenChange={setPatientPickerOpen}>
+      <div className="t-13 space-y-1.5">
+        <span className="flex items-center justify-between">
+          Patient <span className="modal-required">requis</span>
+        </span>
+        <Popover onOpenChange={setPatientPickerOpen} open={patientPickerOpen}>
           <PopoverTrigger
-            disabled={!!patientId}
             aria-label="Choisir un patient"
+            disabled={!!patientId}
             render={
               <Button
+                className="t-13 h-11 w-full justify-between rounded-xl px-3"
                 data-field="picker"
                 type="button"
                 variant="outline"
-                className="h-11 w-full justify-between rounded-xl px-3 t-13"
               />
             }
           >
@@ -153,9 +164,9 @@ export function CareTaskForm({
             <Command shouldFilter={false}>
               <CommandInput
                 aria-label="Rechercher un patient"
+                onValueChange={setPatientSearch}
                 placeholder="Nom du patient ou espèce…"
                 value={patientSearch}
-                onValueChange={setPatientSearch}
               />
               <CommandList>
                 <CommandEmpty>Aucun patient trouvé.</CommandEmpty>
@@ -176,12 +187,12 @@ export function CareTaskForm({
                   .map((p) => (
                     <CommandItem
                       key={p.id}
-                      value={p.id}
                       onSelect={() => {
                         setPatient(p.id);
                         setPatientPickerOpen(false);
                         setPatientSearch("");
                       }}
+                      value={p.id}
                     >
                       <span>{p.name}</span>
                       <span className="ml-auto text-muted-foreground">
@@ -194,24 +205,26 @@ export function CareTaskForm({
           </PopoverContent>
         </Popover>
       </div>
-      <label className="block space-y-1.5 t-13">
-        <span className="flex items-center justify-between">Soin <span className="modal-required">requis</span></span>
+      <label className="t-13 block space-y-1.5">
+        <span className="flex items-center justify-between">
+          Soin <span className="modal-required">requis</span>
+        </span>
         <Input
-          className="h-11 w-full rounded-xl t-13"
+          className="t-13 h-11 w-full rounded-xl"
+          onChange={(e) => setLabel(e.target.value)}
           placeholder="Ex. pansement, injection, contrôle de plaie"
           required
           value={label}
-          onChange={(e) => setLabel(e.target.value)}
         />
       </label>
       <div className="grid gap-4 sm:grid-cols-[minmax(170px,0.8fr)_minmax(0,1.2fr)]">
-        <label className="block min-w-0 space-y-1.5 t-13">
+        <label className="t-13 block min-w-0 space-y-1.5">
           Type
           <select
             aria-label="Type de soin"
             className={field}
-            value={type}
             onChange={(e) => setType(e.target.value as CareType)}
+            value={type}
           >
             {CARE_TYPES.map((t) => (
               <option key={t} value={t}>
@@ -220,29 +233,41 @@ export function CareTaskForm({
             ))}
           </select>
         </label>
-        <div className="min-w-0 space-y-1.5 t-13">
-          <span className="flex items-center justify-between">Date et heure prévues <span className="modal-required">requis</span></span>
+        <div className="t-13 min-w-0 space-y-1.5">
+          <span className="flex items-center justify-between">
+            Date et heure prévues <span className="modal-required">requis</span>
+          </span>
           <div className="flex gap-2">
             <DatePicker
               aria-label="Choisir la date du soin"
-              className="h-11 flex-1 rounded-xl t-13"
+              className="t-13 h-11 flex-1 rounded-xl"
               onChange={setScheduledDate}
               placeholder="Choisir la date"
               value={scheduledDate}
             />
-            <CareTimePicker value={scheduledTime} onChange={setScheduledTime} />
+            <CareTimePicker onChange={setScheduledTime} value={scheduledTime} />
           </div>
         </div>
       </div>
-      <ProductStockFields products={products.data} productId={product} quantity={productQuantity}
-        onProductChange={id => { setProduct(id); setProductQuantity("1"); }} onQuantityChange={setProductQuantity} disabled={busy} optional />
-      <label className="block space-y-1.5 t-13">
+      <ProductStockFields
+        disabled={busy}
+        onProductChange={(id) => {
+          setProduct(id);
+          setProductQuantity("1");
+        }}
+        onQuantityChange={setProductQuantity}
+        optional
+        productId={product}
+        products={products.data}
+        quantity={productQuantity}
+      />
+      <label className="t-13 block space-y-1.5">
         Note
         <textarea
           className={`${field} h-auto min-h-24 resize-y py-3`}
+          onChange={(e) => setNote(e.target.value)}
           placeholder="Consigne utile pour l’équipe"
           value={note}
-          onChange={(e) => setNote(e.target.value)}
         />
       </label>
       <p className="t-12 text-muted-foreground">
@@ -250,25 +275,25 @@ export function CareTaskForm({
         confirmation.
       </p>
       {error && (
-        <p role="alert" className="t-13 text-destructive">
+        <p className="t-13 text-destructive" role="alert">
           {error}
         </p>
       )}
       <ModalBandActions>
         <Button
+          className="t-13 h-11 w-full rounded-xl"
+          onClick={onCancel}
           type="button"
           variant="outline"
-          onClick={onCancel}
-          className="h-11 w-full rounded-xl t-13"
         >
           Annuler
         </Button>
         <Button
-          type="submit"
+          className="t-13 h-11 w-full rounded-xl"
           disabled={
             busy || !currentUser || !patient || !label.trim() || !scheduled
           }
-          className="h-11 w-full rounded-xl t-13"
+          type="submit"
         >
           {busy ? "Enregistrement…" : "Confirmer le soin"}
         </Button>

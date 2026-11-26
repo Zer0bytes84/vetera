@@ -3,18 +3,21 @@
 "use client";
 
 import {
+  Check,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
   ChevronUp,
-  Check,
   Copy,
   Download,
   SearchX,
   Table2,
 } from "lucide-react";
 import { AnimatePresence, MotionConfig, motion } from "motion/react";
-import { useCallback, useMemo, useState, type ReactNode } from "react";
+import { type ReactNode, useCallback, useMemo, useState } from "react";
+import { SkeletonShape } from "@/components/ui/loading-skeleton";
+import { RollingNumber } from "@/components/ui/rolling-number";
+import { Panel, Shell, ShellHeader } from "@/components/ui/surface";
 import {
   EmptyState,
   IconButton,
@@ -22,10 +25,11 @@ import {
   SearchField,
   TuffCheckbox,
 } from "@/components/ui/tuff-controls";
-import { RollingNumber } from "@/components/ui/rolling-number";
-import { SkeletonShape } from "@/components/ui/loading-skeleton";
-import { rememberRows, useRememberedRows, type RememberedRows } from "@/hooks/useRememberedRows";
-import { Panel, Shell, ShellHeader } from "@/components/ui/surface";
+import {
+  type RememberedRows,
+  rememberRows,
+  useRememberedRows,
+} from "@/hooks/useRememberedRows";
 import { enter, exit } from "@/lib/motion-tokens";
 import { cn } from "@/lib/utils";
 import "./data-table.css";
@@ -143,7 +147,7 @@ export function selectRows<R extends DataRow>(
   data: R[],
   columns: DataColumn<R>[],
   query: string,
-  sort: Sort,
+  sort: Sort
 ): R[] {
   const q = query.trim().toLowerCase();
   const filtered = q
@@ -151,24 +155,29 @@ export function selectRows<R extends DataRow>(
         columns.some((c) =>
           String(row[c.key] ?? "")
             .toLowerCase()
-            .includes(q),
-        ),
+            .includes(q)
+        )
       )
     : data;
-  if (!sort) return filtered;
+  if (!sort) {
+    return filtered;
+  }
   const sign = sort.dir === "asc" ? 1 : -1;
   const column = columns.find((c) => c.key === sort.key);
-  const by = (row: R) => (column?.sortValue ? column.sortValue(row[sort.key as keyof R], row) : row[sort.key]);
+  const by = (row: R) =>
+    column?.sortValue
+      ? column.sortValue(row[sort.key as keyof R], row)
+      : row[sort.key];
   return [...filtered].sort((a, b) => sign * compare(by(a), by(b)));
 }
 
 /** A header's clicks: descending, then ascending, then back to the order of the data. */
 export function nextSort(sort: Sort, key: string): Sort {
-  return sort?.key !== key
-    ? { key, dir: "desc" }
-    : sort.dir === "desc"
+  return sort?.key === key
+    ? sort.dir === "desc"
       ? { key, dir: "asc" }
-      : null;
+      : null
+    : { key, dir: "desc" };
 }
 
 export function DataTable<R extends DataRow>({
@@ -204,34 +213,45 @@ export function DataTable<R extends DataRow>({
   const memoryKey = skeletonKey ?? `table:${title}`;
   const { reserved } = useRememberedRows<HTMLTableElement>(
     memoryKey,
-    skeletonFallback ?? { rows: Math.min(pageSize, 5), rowHeight: 44 },
+    skeletonFallback ?? { rows: Math.min(pageSize, 5), rowHeight: 44 }
   );
   // Once the rows are shown, the table remembers them for its next skeleton: their number, one row's height (or, empty,
   // the height of the empty state) and each column's width, so the head does not move either when the rows arrive.
   const measureTable = useCallback(
     (table: HTMLTableElement | null) => {
-      if (!table || typeof ResizeObserver === "undefined") return;
+      if (!table || typeof ResizeObserver === "undefined") {
+        return;
+      }
       const record = () => {
         const body = table.tBodies[0];
         const head = table.tHead?.rows[0];
-        if (!body || !head) return;
+        if (!(body && head)) {
+          return;
+        }
         const rows = body.rows.length;
         const empty = table.nextElementSibling;
         const rowHeight = rows
           ? body.getBoundingClientRect().height / rows
           : (empty?.getBoundingClientRect().height ?? 0);
-        const columns = [...head.cells].map((cell) => Math.round(cell.getBoundingClientRect().width * 100) / 100);
-        if (rowHeight > 0) rememberRows(memoryKey, { rows, rowHeight, columns });
+        const columns = [...head.cells].map(
+          (cell) => Math.round(cell.getBoundingClientRect().width * 100) / 100
+        );
+        if (rowHeight > 0) {
+          rememberRows(memoryKey, { rows, rowHeight, columns });
+        }
       };
       const observer = new ResizeObserver(record);
       observer.observe(table);
-      if (table.nextElementSibling) observer.observe(table.nextElementSibling);
+      if (table.nextElementSibling) {
+        observer.observe(table.nextElementSibling);
+      }
       return () => observer.disconnect();
     },
-    [memoryKey],
+    [memoryKey]
   );
   const columnWidth = (index: number, fallback?: string) =>
-    loading && reserved.columns?.length === columns.length + (selectable ? 1 : 0)
+    loading &&
+    reserved.columns?.length === columns.length + (selectable ? 1 : 0)
       ? reserved.columns[index]
       : fallback;
   const [query, setQuery] = useState("");
@@ -247,7 +267,7 @@ export function DataTable<R extends DataRow>({
 
   const rows = useMemo(
     () => selectRows(data, columns, query, sort),
-    [data, columns, query, sort],
+    [data, columns, query, sort]
   );
 
   const pages = Math.max(Math.ceil(rows.length / pageSize), 1);
@@ -259,11 +279,11 @@ export function DataTable<R extends DataRow>({
 
   const toggleSort = (key: string) => {
     setSort((s) =>
-      s?.key !== key
-        ? { key, dir: "desc" }
-        : s.dir === "desc"
+      s?.key === key
+        ? s.dir === "desc"
           ? { key, dir: "asc" }
-          : null,
+          : null
+        : { key, dir: "desc" }
     );
     setPage(0);
   };
@@ -301,6 +321,7 @@ export function DataTable<R extends DataRow>({
         data-skeleton-region={memoryKey}
       >
         <ShellHeader
+          as="h2"
           aside={
             <>
               {toolbar}
@@ -317,19 +338,21 @@ export function DataTable<R extends DataRow>({
               />
             </>
           }
-          as="h2"
           icon={HeaderIcon}
           subtitle={
             loading ? (
               <SkeletonShape
-                className={cn("loading-skeleton-inline", !loadingRevealed && "invisible")}
+                className={cn(
+                  "loading-skeleton-inline",
+                  !loadingRevealed && "invisible"
+                )}
               />
             ) : (
-              subtitle ?? (
+              (subtitle ?? (
                 <>
                   <RollingNumber value={rows.length} /> {word}
                 </>
-              )
+              ))
             )
           }
           title={title}
@@ -386,7 +409,11 @@ export function DataTable<R extends DataRow>({
               <thead>
                 <tr className="text-muted-foreground">
                   {selectable && (
-                    <th className="w-9 px-2 py-2" scope="col" style={{ width: columnWidth(0) }}>
+                    <th
+                      className="w-9 px-2 py-2"
+                      scope="col"
+                      style={{ width: columnWidth(0) }}
+                    >
                       <TuffCheckbox
                         aria-label="Sélectionner toutes les lignes de la page"
                         checked={
@@ -396,14 +423,14 @@ export function DataTable<R extends DataRow>({
                           setSelected(
                             allOnPage
                               ? selected.filter(
-                                  (id) => !visible.some((r) => r.id === id),
+                                  (id) => !visible.some((r) => r.id === id)
                                 )
                               : [
                                   ...new Set([
                                     ...selected,
                                     ...visible.map((r) => r.id),
                                   ]),
-                                ],
+                                ]
                           )
                         }
                       />
@@ -424,18 +451,23 @@ export function DataTable<R extends DataRow>({
                         className={cn(
                           "px-2 py-2 font-medium",
                           c.align === "right" ? "text-right" : "text-left",
-                          priorityOf(c, ci),
+                          priorityOf(c, ci)
                         )}
                         key={c.key}
                         scope="col"
-                        style={{ width: columnWidth(ci + (selectable ? 1 : 0), c.width) }}
+                        style={{
+                          width: columnWidth(
+                            ci + (selectable ? 1 : 0),
+                            c.width
+                          ),
+                        }}
                       >
                         {c.sortable ? (
                           <button
                             className={cn(
                               "-mx-1.5 inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 transition-[background-color,color,scale] duration-150 ease-out hover:bg-foreground/[0.06] hover:text-foreground active:scale-[0.97]",
                               dir && "text-foreground",
-                              c.align === "right" && "flex-row-reverse",
+                              c.align === "right" && "flex-row-reverse"
                             )}
                             onClick={() => toggleSort(c.key)}
                             type="button"
@@ -445,7 +477,7 @@ export function DataTable<R extends DataRow>({
                               aria-hidden="true"
                               className={cn(
                                 "size-3 transition-opacity",
-                                dir ? "opacity-100" : "opacity-30",
+                                dir ? "opacity-100" : "opacity-30"
                               )}
                               strokeWidth={3}
                             />
@@ -464,7 +496,10 @@ export function DataTable<R extends DataRow>({
                 <tbody className={cn(!loadingRevealed && "invisible")}>
                   {reserved.rows === 0 ? (
                     // Empty last time: the place of the empty state, without its words.
-                    <tr aria-hidden="true" style={{ height: reserved.rowHeight }}>
+                    <tr
+                      aria-hidden="true"
+                      style={{ height: reserved.rowHeight }}
+                    >
                       <td colSpan={columns.length + (selectable ? 1 : 0)} />
                     </tr>
                   ) : null}
@@ -478,13 +513,21 @@ export function DataTable<R extends DataRow>({
                       {selectable && <td className="w-9 px-2" />}
                       {columns.map((c, ci) => (
                         <td
-                          className={cn("px-2", priorityOf(c, ci), c.align === "right" && "text-right")}
+                          className={cn(
+                            "px-2",
+                            priorityOf(c, ci),
+                            c.align === "right" && "text-right"
+                          )}
                           key={c.key}
                         >
                           <SkeletonShape
                             className={cn(
                               "loading-skeleton-cell",
-                              ci === 0 ? "loading-skeleton-cell-lead" : c.align === "right" ? "loading-skeleton-cell-short" : undefined,
+                              ci === 0
+                                ? "loading-skeleton-cell-lead"
+                                : c.align === "right"
+                                  ? "loading-skeleton-cell-short"
+                                  : undefined
                             )}
                           />
                         </td>
@@ -493,66 +536,66 @@ export function DataTable<R extends DataRow>({
                   ))}
                 </tbody>
               ) : (
-              <tbody>
-                {visible.map((row, i) => {
-                  const isSelected = selected.includes(row.id);
-                  return (
-                    <tr
-                      className={cn(onRowClick && "cursor-pointer")}
-                      data-selected={isSelected || undefined}
-                      data-zebra={i % 2 === 1 ? "odd" : undefined}
-                      key={row.id}
-                      onClick={onRowClick ? () => onRowClick(row) : undefined}
-                      {...rowProps?.(row)}
-                    >
-                      {selectable && (
-                        <td
-                          className="px-2 py-2.5"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <TuffCheckbox
-                            aria-label={`Sélectionner ${String(row[columns[0].key])}`}
-                            checked={isSelected}
-                            onCheckedChange={(on) =>
-                              setSelected(
-                                on
-                                  ? [...selected, row.id]
-                                  : selected.filter((id) => id !== row.id),
-                              )
-                            }
-                          />
-                        </td>
-                      )}
-                      {columns.map((c, ci) => (
-                        <td
-                          className={cn(
-                            "px-2 py-2.5 whitespace-nowrap",
-                            priorityOf(c, ci),
-                            c.align === "right" &&
-                              "text-right font-mono text-xs tabular-nums",
-                          )}
-                          key={c.key}
-                        >
-                          {c.format
-                            ? c.format(row[c.key], row)
-                            : String(row[c.key] ?? "—")}
-                        </td>
-                      ))}
-                    </tr>
-                  );
-                })}
-              </tbody>
+                <tbody>
+                  {visible.map((row, i) => {
+                    const isSelected = selected.includes(row.id);
+                    return (
+                      <tr
+                        className={cn(onRowClick && "cursor-pointer")}
+                        data-selected={isSelected || undefined}
+                        data-zebra={i % 2 === 1 ? "odd" : undefined}
+                        key={row.id}
+                        onClick={onRowClick ? () => onRowClick(row) : undefined}
+                        {...rowProps?.(row)}
+                      >
+                        {selectable && (
+                          <td
+                            className="px-2 py-2.5"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <TuffCheckbox
+                              aria-label={`Sélectionner ${String(row[columns[0].key])}`}
+                              checked={isSelected}
+                              onCheckedChange={(on) =>
+                                setSelected(
+                                  on
+                                    ? [...selected, row.id]
+                                    : selected.filter((id) => id !== row.id)
+                                )
+                              }
+                            />
+                          </td>
+                        )}
+                        {columns.map((c, ci) => (
+                          <td
+                            className={cn(
+                              "whitespace-nowrap px-2 py-2.5",
+                              priorityOf(c, ci),
+                              c.align === "right" &&
+                                "text-right font-mono text-xs tabular-nums"
+                            )}
+                            key={c.key}
+                          >
+                            {c.format
+                              ? c.format(row[c.key], row)
+                              : String(row[c.key] ?? "—")}
+                          </td>
+                        ))}
+                      </tr>
+                    );
+                  })}
+                </tbody>
               )}
             </table>
             {!loading && rows.length === 0 && (
               <EmptyState
+                action={emptyAction}
                 compact
                 description={
                   data.length
                     ? `Rien ne correspond à « ${query} ».`
                     : emptyDescription
                 }
-                action={emptyAction}
                 icon={SearchX}
                 title={
                   data.length
@@ -564,15 +607,19 @@ export function DataTable<R extends DataRow>({
           </div>
         </Panel>
 
-        <footer className="flex items-center justify-between gap-3 py-1.5 pr-1.5 pl-3.5 text-xs text-muted-foreground">
+        <footer className="flex items-center justify-between gap-3 py-1.5 pr-1.5 pl-3.5 text-muted-foreground text-xs">
           {loading ? (
             <SkeletonShape
-              className={cn("loading-skeleton-inline", !loadingRevealed && "invisible")}
+              className={cn(
+                "loading-skeleton-inline",
+                !loadingRevealed && "invisible"
+              )}
             />
           ) : (
             <span>
               {rows.length ? current * pageSize + 1 : 0}–
-              {Math.min((current + 1) * pageSize, rows.length)} sur {rows.length}
+              {Math.min((current + 1) * pageSize, rows.length)} sur{" "}
+              {rows.length}
             </span>
           )}
           <span className="flex items-center gap-1">
@@ -586,7 +633,10 @@ export function DataTable<R extends DataRow>({
             <span className="w-14 text-center tabular-nums">
               {loading ? (
                 <SkeletonShape
-                  className={cn("loading-skeleton-inline loading-skeleton-inline-short", !loadingRevealed && "invisible")}
+                  className={cn(
+                    "loading-skeleton-inline loading-skeleton-inline-short",
+                    !loadingRevealed && "invisible"
+                  )}
                 />
               ) : (
                 <>
@@ -607,8 +657,8 @@ export function DataTable<R extends DataRow>({
           {loading
             ? (loadingLabel ?? `Chargement : ${title}`)
             : copied
-            ? "Copié en CSV"
-            : `${rows.length} ${word}${sort ? `, triés par ${columns.find((c) => c.key === sort.key)?.label ?? sort.key} ${sort.dir === "asc" ? "croissant" : "décroissant"}` : ""}`}
+              ? "Copié en CSV"
+              : `${rows.length} ${word}${sort ? `, triés par ${columns.find((c) => c.key === sort.key)?.label ?? sort.key} ${sort.dir === "asc" ? "croissant" : "décroissant"}` : ""}`}
         </p>
       </Shell>
     </MotionConfig>

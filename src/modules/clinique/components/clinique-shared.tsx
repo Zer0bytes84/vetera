@@ -1,5 +1,44 @@
-import { formatDinars, formatPhone } from "@/utils/display-format";
-import { billingDraft, parseDinars, type DraftLine, type ExistingInvoice } from "@/modules/billing/billing-draft";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { jsPDF } from "jspdf";
+import type React from "react";
+import { useEffect, useEffectEvent, useRef, useState } from "react";
+import { toast } from "sonner";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import {
+  Field,
+  FieldDescription,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
+
+import {
+  FormDialogFooter,
+  FormDialogHeader,
+} from "@/components/ui/form-dialog";
+import { Input } from "@/components/ui/input";
+import {
+  NativeSelect,
+  NativeSelectOption,
+} from "@/components/ui/native-select";
+import { Spinner } from "@/components/ui/spinner";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  CLINIQUE_STATUS_META,
+  getAppointmentTypeMeta,
+  PATIENT_STATUS_META,
+} from "@/config/status-meta";
+import { APP_NAME } from "@/lib/brand";
+import { guard } from "@/lib/guard";
 import {
   Add01Icon,
   AttachmentIcon,
@@ -12,58 +51,21 @@ import {
   HourglassIcon,
   Mail01Icon,
   PrinterIcon,
-  StethoscopeIcon,
+  type StethoscopeIcon,
   TimerIcon,
 } from "@/lib/hugeicons";
-import { HugeiconsIcon } from "@hugeicons/react";
 import { Hospital, Pill, Syringe } from "@/lib/icons";
-import { jsPDF } from "jspdf";
-import React, { useEffect, useEffectEvent, useRef, useState } from "react";
-
-import { toast } from "sonner";
-
-import { FormDialogFooter, FormDialogHeader } from "@/components/ui/form-dialog";
-
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-
-import {
-  Field,
-  FieldDescription,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import {
-  NativeSelect,
-  NativeSelectOption,
-} from "@/components/ui/native-select";
-
-import { Spinner } from "@/components/ui/spinner";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-
-import { Textarea } from "@/components/ui/textarea";
-import { PatientRecordHeader } from "@/modules/patients/components/patient-header";
-import { SoapPanel } from "@/modules/consultations/components/soap-panel";
-import { OPEN_SOAP_ASSISTANT_EVENT } from "@/modules/consultation-workspace/consultation-closure";
-import { ConsultationProducts } from "@/modules/stock/components/consultation-products";
-import {
-  CLINIQUE_STATUS_META,
-  PATIENT_STATUS_META,
-  getAppointmentTypeMeta,
-} from "@/config/status-meta";
-
-import { APP_NAME } from "@/lib/brand";
 import { cn } from "@/lib/utils";
+import {
+  billingDraft,
+  type DraftLine,
+  type ExistingInvoice,
+  parseDinars,
+} from "@/modules/billing/billing-draft";
+import { OPEN_SOAP_ASSISTANT_EVENT } from "@/modules/consultation-workspace/consultation-closure";
+import { SoapPanel } from "@/modules/consultations/components/soap-panel";
+import { PatientRecordHeader } from "@/modules/patients/components/patient-header";
+import { ConsultationProducts } from "@/modules/stock/components/consultation-products";
 
 import type { View } from "@/types";
 import type {
@@ -72,7 +74,7 @@ import type {
   Owner,
   Patient,
 } from "@/types/db";
-import { guard } from "@/lib/guard";
+import { formatDinars, formatPhone } from "@/utils/display-format";
 
 export type CliniqueProps = {
   onNavigate?: (view: View) => void;
@@ -464,13 +466,22 @@ export function ConsultationSessionDialog({
 }) {
   const soapPanelRef = useRef<HTMLDivElement>(null);
   const writeNote = () => {
-    const field = soapPanelRef.current?.querySelector<HTMLTextAreaElement>('[data-soap-section="subjective"] textarea');
+    const field = soapPanelRef.current?.querySelector<HTMLTextAreaElement>(
+      '[data-soap-section="subjective"] textarea'
+    );
     field?.scrollIntoView({ block: "center", behavior: "smooth" });
     field?.focus({ preventScroll: true });
   };
   const dictateNote = () => {
-    soapPanelRef.current?.scrollIntoView({ block: "start", behavior: "smooth" });
-    window.dispatchEvent(new CustomEvent(OPEN_SOAP_ASSISTANT_EVENT, { detail: { appointmentId: appointment.id } }));
+    soapPanelRef.current?.scrollIntoView({
+      block: "start",
+      behavior: "smooth",
+    });
+    window.dispatchEvent(
+      new CustomEvent(OPEN_SOAP_ASSISTANT_EVENT, {
+        detail: { appointmentId: appointment.id },
+      })
+    );
   };
   const [patientNameValue, setPatientNameValue] = useState(patient.name);
   const [patientSpecies, setPatientSpecies] = useState(
@@ -507,7 +518,9 @@ export function ConsultationSessionDialog({
   const saveDraftRef = useRef(onSaveDraft);
   // The latest consultation and patient, read by the reset below without making it depend on them.
   const sourceRef = useRef({ appointment, patient });
-  const [startedAt, setStartedAt] = useState(() => consultationStart(appointment.id));
+  const [startedAt, setStartedAt] = useState(() =>
+    consultationStart(appointment.id)
+  );
   // Une autre consultation : son heure de début est relue (ou posée une fois pour toutes), dès ce rendu.
   const [startedFor, setStartedFor] = useState(appointment.id);
   if (startedFor !== appointment.id) {
@@ -647,50 +660,59 @@ export function ConsultationSessionDialog({
       return;
     }
 
-    await guard(async () => {
-      setIsUploadingDocument(true);
-      await onUploadDocument(file, documentDescription.trim());
-      setDocumentDescription("");
-      toast.success("Document ajouté à la consultation.");
-    }, {
-      recover: (error) => {
-        console.error(error);
-        toast.error("Impossible d'ajouter ce document.");
+    await guard(
+      async () => {
+        setIsUploadingDocument(true);
+        await onUploadDocument(file, documentDescription.trim());
+        setDocumentDescription("");
+        toast.success("Document ajouté à la consultation.");
       },
-      cleanup: () => {
-        setIsUploadingDocument(false);
-      },
-    });
+      {
+        recover: (error) => {
+          console.error(error);
+          toast.error("Impossible d'ajouter ce document.");
+        },
+        cleanup: () => {
+          setIsUploadingDocument(false);
+        },
+      }
+    );
   };
 
   const handleSaveDraftClick = async () => {
     if (isSavingDraft || isCompleting) {
       return;
     }
-    await guard(async () => {
-      setIsSavingDraft(true);
-      await onSaveDraft(buildPayload());
-      setLastAutoSavedAt(new Date());
-      setAutosaveStatus("saved");
-    }, {
-      cleanup: () => {
-        setIsSavingDraft(false);
+    await guard(
+      async () => {
+        setIsSavingDraft(true);
+        await onSaveDraft(buildPayload());
+        setLastAutoSavedAt(new Date());
+        setAutosaveStatus("saved");
       },
-    });
+      {
+        cleanup: () => {
+          setIsSavingDraft(false);
+        },
+      }
+    );
   };
 
   const handleCompleteClick = async () => {
     if (isSavingDraft || isCompleting) {
       return;
     }
-    await guard(async () => {
-      setIsCompleting(true);
-      await onComplete(buildPayload());
-    }, {
-      cleanup: () => {
-        setIsCompleting(false);
+    await guard(
+      async () => {
+        setIsCompleting(true);
+        await onComplete(buildPayload());
       },
-    });
+      {
+        cleanup: () => {
+          setIsCompleting(false);
+        },
+      }
+    );
   };
 
   return (
@@ -698,7 +720,7 @@ export function ConsultationSessionDialog({
       aria-label={`Consultation de ${patientName}`}
       className="flex min-w-0 flex-col gap-6"
     >
-      <header className="flex flex-wrap items-start justify-between gap-4 border-b border-border pb-4">
+      <header className="flex flex-wrap items-start justify-between gap-4 border-border border-b pb-4">
         <div className="flex min-w-0 flex-1 flex-col gap-3">
           {/* The same header as the patient's record: avatar beside the name, ID and status, then the context line. */}
           <PatientRecordHeader owner={owner} patient={patient} />
@@ -759,10 +781,14 @@ export function ConsultationSessionDialog({
           patientId={patient.id}
         />
       </div>
-      <ConsultationProducts key={`products:${appointment.id}`} appointmentId={appointment.id} patientId={patient.id} />
+      <ConsultationProducts
+        appointmentId={appointment.id}
+        key={`products:${appointment.id}`}
+        patientId={patient.id}
+      />
 
       <details className="rounded-xl border border-border bg-card">
-        <summary className="cursor-pointer px-4 py-3 text-sm font-medium">
+        <summary className="cursor-pointer px-4 py-3 font-medium text-sm">
           Informations du patient et dossier de consultation
         </summary>
         <div className="min-w-0 p-4 sm:p-6">
@@ -772,7 +798,7 @@ export function ConsultationSessionDialog({
               {/* Section 1: Résumé du créneau */}
               <div className="flex flex-col gap-4">
                 <div className="border-zinc-100 border-b pb-2 dark:border-zinc-800/80">
-                  <h3 className="font-bold t-12 text-zinc-400 uppercase tracking-wider dark:text-zinc-500">
+                  <h3 className="t-12 font-bold text-zinc-400 uppercase tracking-wider dark:text-zinc-500">
                     Résumé du créneau
                   </h3>
                   <p className="mt-0.5 text-muted-foreground text-xs">
@@ -782,7 +808,7 @@ export function ConsultationSessionDialog({
                 </div>
                 <div className="grid gap-3 sm:grid-cols-2">
                   <div className="rounded-xl border border-zinc-100 bg-zinc-50/50 px-4 py-3 dark:border-zinc-800 dark:bg-zinc-900/30">
-                    <p className="font-semibold t-12 text-muted-foreground uppercase tracking-wider">
+                    <p className="t-12 font-semibold text-muted-foreground uppercase tracking-wider">
                       Patient
                     </p>
                     <p className="mt-1 font-bold text-sm text-zinc-800 dark:text-zinc-200">
@@ -790,7 +816,7 @@ export function ConsultationSessionDialog({
                     </p>
                   </div>
                   <div className="rounded-xl border border-zinc-100 bg-zinc-50/50 px-4 py-3 dark:border-zinc-800 dark:bg-zinc-900/30">
-                    <p className="font-semibold t-12 text-muted-foreground uppercase tracking-wider">
+                    <p className="t-12 font-semibold text-muted-foreground uppercase tracking-wider">
                       Propriétaire
                     </p>
                     <p className="mt-1 font-bold text-sm text-zinc-800 dark:text-zinc-200">
@@ -798,7 +824,7 @@ export function ConsultationSessionDialog({
                     </p>
                   </div>
                   <div className="rounded-xl border border-zinc-100 bg-zinc-50/50 px-4 py-3 dark:border-zinc-800 dark:bg-zinc-900/30">
-                    <p className="font-semibold t-12 text-muted-foreground uppercase tracking-wider">
+                    <p className="t-12 font-semibold text-muted-foreground uppercase tracking-wider">
                       Heure de début
                     </p>
                     <p className="mt-1 font-bold text-sm text-zinc-800 dark:text-zinc-200">
@@ -806,7 +832,7 @@ export function ConsultationSessionDialog({
                     </p>
                   </div>
                   <div className="rounded-xl border border-zinc-100 bg-zinc-50/50 px-4 py-3 dark:border-zinc-800 dark:bg-zinc-900/30">
-                    <p className="font-semibold t-12 text-muted-foreground uppercase tracking-wider">
+                    <p className="t-12 font-semibold text-muted-foreground uppercase tracking-wider">
                       Téléphone
                     </p>
                     <p className="mt-1 font-bold text-sm text-zinc-800 dark:text-zinc-200">
@@ -819,7 +845,7 @@ export function ConsultationSessionDialog({
               {/* Section 2: Historique récent */}
               <div className="flex flex-col gap-4">
                 <div className="border-zinc-100 border-b pb-2 dark:border-zinc-800/80">
-                  <h3 className="font-bold t-12 text-zinc-400 uppercase tracking-wider dark:text-zinc-500">
+                  <h3 className="t-12 font-bold text-zinc-400 uppercase tracking-wider dark:text-zinc-500">
                     Historique récent
                   </h3>
                   <p className="mt-0.5 text-muted-foreground text-xs">
@@ -861,7 +887,7 @@ export function ConsultationSessionDialog({
               {/* Section 3: Mise à jour du patient */}
               <div className="flex flex-col gap-4">
                 <div className="border-zinc-100 border-b pb-2 dark:border-zinc-800/80">
-                  <h3 className="font-bold t-12 text-zinc-400 uppercase tracking-wider dark:text-zinc-500">
+                  <h3 className="t-12 font-bold text-zinc-400 uppercase tracking-wider dark:text-zinc-500">
                     Mise à jour du patient
                   </h3>
                   <p className="mt-0.5 text-muted-foreground text-xs">
@@ -969,7 +995,7 @@ export function ConsultationSessionDialog({
             <div className="flex flex-col gap-6">
               <div className="flex flex-col gap-4">
                 <div className="border-zinc-100 border-b pb-2 dark:border-zinc-800/80">
-                  <h3 className="font-bold t-12 text-zinc-400 uppercase tracking-wider dark:text-zinc-500">
+                  <h3 className="t-12 font-bold text-zinc-400 uppercase tracking-wider dark:text-zinc-500">
                     Conduite de consultation
                   </h3>
                   <p className="mt-0.5 text-muted-foreground text-xs">
@@ -1123,9 +1149,14 @@ export function ConsultationSessionDialog({
           className="consultation-closing-blocker flex flex-col gap-2 rounded-xl border border-amber-500/30 bg-amber-500/8 px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
           role="status"
         >
-          <p className="text-sm text-foreground">{closingBlocker}</p>
+          <p className="text-foreground text-sm">{closingBlocker}</p>
           <div className="flex shrink-0 gap-2">
-            <Button onClick={writeNote} size="sm" type="button" variant="outline">
+            <Button
+              onClick={writeNote}
+              size="sm"
+              type="button"
+              variant="outline"
+            >
               Écrire la note
             </Button>
             <Button onClick={dictateNote} size="sm" type="button">
@@ -1134,7 +1165,7 @@ export function ConsultationSessionDialog({
           </div>
         </div>
       ) : null}
-      <div className="flex flex-col gap-3 border-t border-border py-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-3 border-border border-t py-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-h-5 text-muted-foreground text-sm">
           {autosaveStatus === "saving" ? (
             <span className="inline-flex items-center gap-2">
@@ -1284,14 +1315,17 @@ export function BillingDialog({
     if (!draft.canConfirm) {
       return;
     }
-    await guard(async () => {
-      setIsConfirming(true);
-      await onConfirm(items, draft.received ?? 0);
-    }, {
-      cleanup: () => {
-        setIsConfirming(false);
+    await guard(
+      async () => {
+        setIsConfirming(true);
+        await onConfirm(items, draft.received ?? 0);
       },
-    });
+      {
+        cleanup: () => {
+          setIsConfirming(false);
+        },
+      }
+    );
   };
 
   return (
@@ -1307,7 +1341,7 @@ export function BillingDialog({
           <div className="grid gap-6">
             <div>
               <div className="mb-4 border-zinc-100 border-b pb-3 dark:border-zinc-800/80">
-                <h3 className="font-bold t-12 text-zinc-400 uppercase tracking-wider dark:text-zinc-500">
+                <h3 className="t-12 font-bold text-zinc-400 uppercase tracking-wider dark:text-zinc-500">
                   Résumé avant facturation
                 </h3>
                 <p className="mt-1 text-muted-foreground text-xs">
@@ -1318,7 +1352,7 @@ export function BillingDialog({
 
               <div className="grid gap-3 sm:grid-cols-4">
                 <div className="rounded-xl border border-zinc-100 bg-zinc-50/50 px-4 py-3 dark:border-zinc-800 dark:bg-zinc-900/30">
-                  <p className="font-semibold t-12 text-muted-foreground uppercase tracking-wider">
+                  <p className="t-12 font-semibold text-muted-foreground uppercase tracking-wider">
                     Patient
                   </p>
                   <p className="mt-1.5 font-bold text-sm text-zinc-800 dark:text-zinc-200">
@@ -1326,7 +1360,7 @@ export function BillingDialog({
                   </p>
                 </div>
                 <div className="rounded-xl border border-zinc-100 bg-zinc-50/50 px-4 py-3 dark:border-zinc-800 dark:bg-zinc-900/30">
-                  <p className="font-semibold t-12 text-muted-foreground uppercase tracking-wider">
+                  <p className="t-12 font-semibold text-muted-foreground uppercase tracking-wider">
                     Client
                   </p>
                   <p className="mt-1.5 font-bold text-sm text-zinc-800 dark:text-zinc-200">
@@ -1334,7 +1368,7 @@ export function BillingDialog({
                   </p>
                 </div>
                 <div className="rounded-xl border border-zinc-100 bg-zinc-50/50 px-4 py-3 dark:border-zinc-800 dark:bg-zinc-900/30">
-                  <p className="font-semibold t-12 text-muted-foreground uppercase tracking-wider">
+                  <p className="t-12 font-semibold text-muted-foreground uppercase tracking-wider">
                     Acte
                   </p>
                   <p className="mt-1.5 font-bold text-sm text-zinc-800 dark:text-zinc-200">
@@ -1342,7 +1376,7 @@ export function BillingDialog({
                   </p>
                 </div>
                 <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-4 py-3 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300">
-                  <p className="font-semibold t-12 uppercase tracking-wider">
+                  <p className="t-12 font-semibold uppercase tracking-wider">
                     Total provisoire
                   </p>
                   <p className="mt-1.5 font-extrabold text-base tracking-tight">
@@ -1353,37 +1387,37 @@ export function BillingDialog({
             </div>
 
             {!existingInvoice && (
-            <FieldGroup className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_160px_auto]">
-              <Field>
-                <FieldLabel>Nouvelle ligne</FieldLabel>
-                <Input
-                  onChange={(event) => setNewItemDesc(event.target.value)}
-                  placeholder="Ex. injection, pansement, examen complémentaire…"
-                  value={newItemDesc}
-                />
-              </Field>
-
-              <Field>
-                <FieldLabel>Montant (DA)</FieldLabel>
-                <Input
-                  onChange={(event) => setNewItemAmount(event.target.value)}
-                  placeholder="Ex. 2 500"
-                  type="number"
-                  value={newItemAmount}
-                />
-              </Field>
-
-              <div className="flex items-end">
-                <Button onClick={addItem} type="button">
-                  <HugeiconsIcon
-                    data-icon="inline-start"
-                    icon={Add01Icon}
-                    strokeWidth={1.5}
+              <FieldGroup className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_160px_auto]">
+                <Field>
+                  <FieldLabel>Nouvelle ligne</FieldLabel>
+                  <Input
+                    onChange={(event) => setNewItemDesc(event.target.value)}
+                    placeholder="Ex. injection, pansement, examen complémentaire…"
+                    value={newItemDesc}
                   />
-                  Ajouter
-                </Button>
-              </div>
-            </FieldGroup>
+                </Field>
+
+                <Field>
+                  <FieldLabel>Montant (DA)</FieldLabel>
+                  <Input
+                    onChange={(event) => setNewItemAmount(event.target.value)}
+                    placeholder="Ex. 2 500"
+                    type="number"
+                    value={newItemAmount}
+                  />
+                </Field>
+
+                <div className="flex items-end">
+                  <Button onClick={addItem} type="button">
+                    <HugeiconsIcon
+                      data-icon="inline-start"
+                      icon={Add01Icon}
+                      strokeWidth={1.5}
+                    />
+                    Ajouter
+                  </Button>
+                </div>
+              </FieldGroup>
             )}
 
             <div className="overflow-hidden rounded-lg border">
@@ -1399,58 +1433,68 @@ export function BillingDialog({
                   {existingInvoice
                     ? existingInvoice.lines.map((line, index) => (
                         <TableRow key={`${line.desc}-${index}`}>
-                          <TableCell className="pl-8 font-medium">{line.desc}</TableCell>
-                          <TableCell className="w-[180px] tabular-nums">{formatDinars(line.amountDa)}</TableCell>
-                          <TableCell className="pr-8 text-right text-muted-foreground text-xs">Facturé</TableCell>
+                          <TableCell className="pl-8 font-medium">
+                            {line.desc}
+                          </TableCell>
+                          <TableCell className="w-[180px] tabular-nums">
+                            {formatDinars(line.amountDa)}
+                          </TableCell>
+                          <TableCell className="pr-8 text-right text-muted-foreground text-xs">
+                            Facturé
+                          </TableCell>
                         </TableRow>
                       ))
                     : lines.map((line, index) => (
-                    <TableRow key={index}>
-                      <TableCell className="pl-8">
-                        <Input
-                          className="h-9 border-transparent bg-transparent px-0 font-medium shadow-none focus-visible:border-input focus-visible:bg-background"
-                          onChange={(event) =>
-                            updateItem(index, "desc", event.target.value)
-                          }
-                          value={line.desc}
-                        />
-                      </TableCell>
-                      <TableCell className="w-[180px]">
-                        <div className="flex items-center gap-2">
-                          <Input
-                            aria-invalid={parseDinars(line.amount) === null}
-                            aria-label={`Prix de ${line.desc || "la prestation"}`}
-                            className="h-9"
-                            inputMode="decimal"
-                            min="0"
-                            onChange={(event) =>
-                              updateItem(index, "amount", event.target.value)
-                            }
-                            placeholder="Prix"
-                            type="number"
-                            value={line.amount}
-                          />
-                          <span className="text-muted-foreground text-sm">
-                            DA
-                          </span>
-                        </div>
-                      </TableCell>
-                      <TableCell className="pr-8 text-right">
-                        <Button
-                          disabled={lines.length === 1}
-                          onClick={() => removeItem(index)}
-                          size="icon-sm"
-                          variant="ghost"
-                        >
-                          <HugeiconsIcon
-                            className="size-4"
-                            icon={Delete01Icon}
-                            strokeWidth={1.5}
-                          />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                        <TableRow key={index}>
+                          <TableCell className="pl-8">
+                            <Input
+                              className="h-9 border-transparent bg-transparent px-0 font-medium shadow-none focus-visible:border-input focus-visible:bg-background"
+                              onChange={(event) =>
+                                updateItem(index, "desc", event.target.value)
+                              }
+                              value={line.desc}
+                            />
+                          </TableCell>
+                          <TableCell className="w-[180px]">
+                            <div className="flex items-center gap-2">
+                              <Input
+                                aria-invalid={parseDinars(line.amount) === null}
+                                aria-label={`Prix de ${line.desc || "la prestation"}`}
+                                className="h-9"
+                                inputMode="decimal"
+                                min="0"
+                                onChange={(event) =>
+                                  updateItem(
+                                    index,
+                                    "amount",
+                                    event.target.value
+                                  )
+                                }
+                                placeholder="Prix"
+                                type="number"
+                                value={line.amount}
+                              />
+                              <span className="text-muted-foreground text-sm">
+                                DA
+                              </span>
+                            </div>
+                          </TableCell>
+                          <TableCell className="pr-8 text-right">
+                            <Button
+                              disabled={lines.length === 1}
+                              onClick={() => removeItem(index)}
+                              size="icon-sm"
+                              variant="ghost"
+                            >
+                              <HugeiconsIcon
+                                className="size-4"
+                                icon={Delete01Icon}
+                                strokeWidth={1.5}
+                              />
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
                 </TableBody>
               </Table>
             </div>
@@ -1468,7 +1512,8 @@ export function BillingDialog({
               </div>
               {existingInvoice && (
                 <p className="mt-1 text-muted-foreground text-xs">
-                  Facture de {formatDinars(total)}, dont {formatDinars(total - due)} déjà réglés.
+                  Facture de {formatDinars(total)}, dont{" "}
+                  {formatDinars(total - due)} déjà réglés.
                 </p>
               )}
               {!free && (
@@ -1476,11 +1521,12 @@ export function BillingDialog({
                   <div>
                     <p className="font-medium text-sm">Règlement aujourd’hui</p>
                     <p className="mt-1 text-muted-foreground text-xs">
-                      Saisissez ce que le client paie maintenant. 0 DA crée une créance à recouvrer.
+                      Saisissez ce que le client paie maintenant. 0 DA crée une
+                      créance à recouvrer.
                     </p>
                     {due > 0 && (
                       <button
-                        className="mt-2 t-12 font-medium text-primary underline-offset-2 hover:underline"
+                        className="t-12 mt-2 font-medium text-primary underline-offset-2 hover:underline"
                         onClick={() => setAmountReceived(String(due))}
                         type="button"
                       >
@@ -1505,12 +1551,15 @@ export function BillingDialog({
                   className="mt-3 rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-amber-800 text-sm dark:text-amber-200"
                   role="status"
                 >
-                  Total à 0 DA : aucune facture ne sera émise. La consultation sera clôturée comme acte gratuit.
-                  Pour facturer, indiquez le prix de chaque ligne ci-dessus.
+                  Total à 0 DA : aucune facture ne sera émise. La consultation
+                  sera clôturée comme acte gratuit. Pour facturer, indiquez le
+                  prix de chaque ligne ci-dessus.
                 </p>
               )}
               <div className="mt-3 flex items-center justify-between rounded-xl bg-background/70 px-3 py-2 text-sm">
-                <span className="text-muted-foreground">Reste à recouvrer après ce règlement</span>
+                <span className="text-muted-foreground">
+                  Reste à recouvrer après ce règlement
+                </span>
                 <span
                   className={cn(
                     "font-semibold",
@@ -1539,7 +1588,10 @@ export function BillingDialog({
           </Button>
 
           {draft.problem && (
-            <p className="text-muted-foreground text-sm sm:me-auto sm:ms-4" role="status">
+            <p
+              className="text-muted-foreground text-sm sm:ms-4 sm:me-auto"
+              role="status"
+            >
               {draft.problem}
             </p>
           )}

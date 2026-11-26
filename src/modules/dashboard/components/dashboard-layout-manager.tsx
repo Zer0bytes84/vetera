@@ -1,10 +1,5 @@
 "use client";
 
-import {
-  CheckmarkCircle02Icon,
-  DashboardSquareEditIcon,
-  ResetPasswordIcon,
-} from "@/lib/hugeicons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import type { ReactNode } from "react";
 import {
@@ -19,6 +14,11 @@ import {
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
+import {
+  CheckmarkCircle02Icon,
+  DashboardSquareEditIcon,
+  ResetPasswordIcon,
+} from "@/lib/hugeicons";
 import { getSetting, setSetting } from "@/services/appSettingsService";
 import {
   migrateClassicDashboardOrder,
@@ -34,12 +34,12 @@ export interface DashboardLayoutBlock {
 
 interface DashboardLayoutManagerProps {
   blocks: DashboardLayoutBlock[];
-  isEditing: boolean;
-  onEditingChange: (isEditing: boolean) => void;
-  storageKeyPrefix?: string;
   /** Operational priorities precede any previously saved widget order. */
   firstBlockIds?: string[];
+  isEditing: boolean;
   migrateFromPrefix?: string;
+  onEditingChange: (isEditing: boolean) => void;
+  storageKeyPrefix?: string;
 }
 
 type SaveStatus = "idle" | "saving" | "saved";
@@ -106,14 +106,20 @@ export function DashboardLayoutManager({
 
     getSetting(storageKey)
       .then(async (value) => {
-        if (value || !migrateFromPrefix) return value;
+        if (value || !migrateFromPrefix) {
+          return value;
+        }
         const previous = await getSetting(
           `${migrateFromPrefix}:${currentUser?.id ?? "local"}`
         );
-        if (!previous) return null;
+        if (!previous) {
+          return null;
+        }
         try {
           const oldOrder: unknown = JSON.parse(previous);
-          if (!Array.isArray(oldOrder)) return null;
+          if (!Array.isArray(oldOrder)) {
+            return null;
+          }
           const migrated = migrateClassicDashboardOrder(oldOrder, availableIds);
           const serialized = JSON.stringify(migrated);
           await setSetting(storageKey, serialized);
@@ -235,13 +241,13 @@ export function DashboardLayoutManager({
             </span>
             <div className="min-w-0">
               <p className="font-semibold text-xs">Disposition du tableau</p>
-              <p className="hidden t-12 text-muted-foreground sm:block">
+              <p className="t-12 hidden text-muted-foreground sm:block">
                 Saisissez une poignée puis déplacez le bloc.
               </p>
             </div>
             <span
               aria-live="polite"
-              className="hidden font-medium t-12 text-muted-foreground lg:inline"
+              className="t-12 hidden font-medium text-muted-foreground lg:inline"
             >
               {saveStatus === "saving" ? "Enregistrement…" : null}
               {saveStatus === "saved" ? "Enregistré" : null}

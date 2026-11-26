@@ -1,9 +1,9 @@
 import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
-import { SkeletonBlock } from "../primitives";
 import { Panel, Shell, ShellHeader } from "@/components/ui/surface";
-import { ErrorState } from "./error-state";
 import { cn } from "@/lib/utils";
+import { SkeletonBlock } from "../primitives";
+import { ErrorState } from "./error-state";
 
 export function WidgetShell({
   icon,
@@ -43,13 +43,23 @@ export function WidgetShell({
     .filter((token) => token && token !== "frame" && token !== "card")
     .join(" ");
   return (
-    <Shell aria-busy={busy} aria-label={title} className={cn("flex flex-col", own)}>
-      <ShellHeader aside={actions} as="h2" icon={icon} subtitle={subtitle} title={title} />
+    <Shell
+      aria-busy={busy}
+      aria-label={title}
+      className={cn("flex flex-col", own)}
+    >
+      <ShellHeader
+        as="h2"
+        aside={actions}
+        icon={icon}
+        subtitle={subtitle}
+        title={title}
+      />
       <Panel className={cn("flex-1 p-5", bodyClassName)}>
         {busy ? (
           <div
-            className={cn(skeletonClassName, !showSkeleton && "opacity-0")}
             aria-hidden="true"
+            className={cn(skeletonClassName, !showSkeleton && "opacity-0")}
           >
             {skeleton ?? (
               <>

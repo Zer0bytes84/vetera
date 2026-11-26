@@ -1,3 +1,33 @@
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { ModalBandActions } from "@/components/ui/modal-chrome";
+import {
+  NativeSelect,
+  NativeSelectOption,
+} from "@/components/ui/native-select";
+import { Textarea } from "@/components/ui/textarea";
+import { useAuth } from "@/contexts/AuthContext";
+import {
+  usePrescriptionItemsRepository,
+  usePrescriptionsRepository,
+  useWeightEntriesRepository,
+} from "@/data/repositories";
 import {
   ArrowDown,
   ArrowsDownUp,
@@ -9,42 +39,9 @@ import {
   Trash,
   X,
 } from "@/lib/icons";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
-
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { ModalBandActions } from "@/components/ui/modal-chrome";
-import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  NativeSelect,
-  NativeSelectOption,
-} from "@/components/ui/native-select";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { Textarea } from "@/components/ui/textarea";
-import { useAuth } from "@/contexts/AuthContext";
-import {
-  usePrescriptionItemsRepository,
-  usePrescriptionsRepository,
-  useWeightEntriesRepository,
-} from "@/data/repositories";
 import { cn } from "@/lib/utils";
 import { useAudit } from "@/services/use-audit";
-import { toast } from "sonner";
 import type { Patient, PrescriptionItem } from "@/types/db";
-import type { PrescriptionVet } from "../types";
-
 import {
   computeDose,
   type DoseComputation,
@@ -67,9 +64,12 @@ import {
   instantiateTemplateItems,
   type PrescriptionTemplate,
 } from "../lib/prescription-templates";
-import { followReferenceDose, referenceLineFields } from "../lib/reference-line";
+import {
+  followReferenceDose,
+  referenceLineFields,
+} from "../lib/reference-line";
+import type { PrescriptionVet } from "../types";
 import { DoseCalculatorCard } from "./dose-calculator-card";
-import { ValidatedDosePanel } from "./validated-dose-panel";
 import { MedicationPicker } from "./medication-picker";
 import { PrescriptionPreview } from "./prescription-preview";
 import {
@@ -81,6 +81,7 @@ import {
   PrescriptionTemplatesDialog,
   usePrescriptionTemplates,
 } from "./prescription-templates";
+import { ValidatedDosePanel } from "./validated-dose-panel";
 
 export interface PrescriptionBuilderProps {
   appointmentId: string;
@@ -202,7 +203,8 @@ function medToDraft(
     route: poso?.voie,
     // Schéma complet du catalogue (dose d'entretien, voie…) quand seule la
     // dose de tête a été reprise : rien n'est perdu, le vétérinaire ajuste.
-    instructions: parsed && catalog?.remainder ? `Schéma : ${poso?.dose}` : undefined,
+    instructions:
+      parsed && catalog?.remainder ? `Schéma : ${poso?.dose}` : undefined,
     warnings: med.effetsSecondaires?.join(" · "),
     sortOrder,
   };
@@ -264,7 +266,9 @@ export function PrescriptionBuilder({
 
   // Init : si une prescription existe pour cette consultation, on hydrate
   useEffect(() => {
-    const existing = prescriptionsRepo.forAppointment(appointmentId).find(row => row.status === "draft" || row.status === "signed");
+    const existing = prescriptionsRepo
+      .forAppointment(appointmentId)
+      .find((row) => row.status === "draft" || row.status === "signed");
     if (existing) {
       setWeightKg(existing.weightKg);
       setDiagnosis(existing.diagnosis ?? "");
@@ -314,7 +318,10 @@ export function PrescriptionBuilder({
   const handleAddMedication = useCallback(
     (med: MedicationSearchResult) => {
       setItems((prev) => {
-        const next = [...prev, medToDraft(med, prev.length, speciesKey, weightKg)];
+        const next = [
+          ...prev,
+          medToDraft(med, prev.length, speciesKey, weightKg),
+        ];
         return next;
       });
     },
@@ -454,31 +461,38 @@ export function PrescriptionBuilder({
 
       setItems((prev) => [
         ...prev,
-        ...instantiateTemplateItems(template, prev.length, (item, sortOrder) => {
-          const line: DraftItem = { ...item, id: makeId(), sortOrder };
-          const computation = computeItemDose(line, effectiveWeight);
-          return {
-            ...line,
-            computedDoseMg: computation?.computedMg,
-            computedVolumeMl: computation?.computedMl,
-          };
-        }),
+        ...instantiateTemplateItems(
+          template,
+          prev.length,
+          (item, sortOrder) => {
+            const line: DraftItem = { ...item, id: makeId(), sortOrder };
+            const computation = computeItemDose(line, effectiveWeight);
+            return {
+              ...line,
+              computedDoseMg: computation?.computedMg,
+              computedVolumeMl: computation?.computedMl,
+            };
+          }
+        ),
       ]);
       if (usedLatestWeight) {
         setWeightKg(latestWeight.weightKg);
       }
       // Les champs déjà saisis par le vétérinaire ne sont jamais écrasés.
       if (template.diagnosis) {
-        setDiagnosis((current) => current.trim() ? current : template.diagnosis ?? "");
+        setDiagnosis((current) =>
+          current.trim() ? current : (template.diagnosis ?? "")
+        );
       }
       if (template.generalInstructions) {
         setGeneralInstructions((current) =>
-          current.trim() ? current : template.generalInstructions ?? ""
+          current.trim() ? current : (template.generalInstructions ?? "")
         );
       }
 
       const count = template.items.length;
-      const added = count > 1 ? `${count} médicaments ajoutés` : "1 médicament ajouté";
+      const added =
+        count > 1 ? `${count} médicaments ajoutés` : "1 médicament ajouté";
       const weightNote = effectiveWeight
         ? `Doses calculées pour ${effectiveWeight} kg${usedLatestWeight ? " (dernière pesée)" : ""}.`
         : "Renseignez le poids pour calculer les doses.";
@@ -524,7 +538,9 @@ export function PrescriptionBuilder({
       // Upsert : une seule ordonnance par consultation. On met à jour la
       // ligne existante au lieu d'en empiler une nouvelle à chaque
       // sauvegarde (les anciennes lignes vides polluaient la liste).
-      const existing = prescriptionsRepo.forAppointment(appointmentId).find(row => row.status === "draft" || row.status === "signed");
+      const existing = prescriptionsRepo
+        .forAppointment(appointmentId)
+        .find((row) => row.status === "draft" || row.status === "signed");
       let prescriptionId: string;
       let finalStatus = newStatus;
       if (existing) {
@@ -637,12 +653,12 @@ export function PrescriptionBuilder({
   return (
     <div className={cn("space-y-4", className)}>
       <BuilderHeader
+        onOpenTemplates={() => setTemplatesDialog("manage")}
         onPreview={() => {
           setShowPreview(true);
           onPreviewChange?.(true);
         }}
         onSaveDraft={() => void saveWithFeedback("draft")}
-        onOpenTemplates={() => setTemplatesDialog("manage")}
         onSign={() => setSignConfirmOpen(true)}
         savedAt={savedAt}
         status={status}
@@ -654,7 +670,7 @@ export function PrescriptionBuilder({
           <div className="grid gap-3 sm:grid-cols-2">
             <Card>
               <CardContent className="space-y-2 px-3 py-3">
-                <Label className="font-semibold t-12 text-muted-foreground uppercase tracking-wider">
+                <Label className="t-12 font-semibold text-muted-foreground uppercase tracking-wider">
                   {t("prescriptions.builder.diagnosis")}
                 </Label>
                 <Textarea
@@ -667,7 +683,7 @@ export function PrescriptionBuilder({
             </Card>
             <Card>
               <CardContent className="space-y-2 px-3 py-3">
-                <Label className="font-semibold t-12 text-muted-foreground uppercase tracking-wider">
+                <Label className="t-12 font-semibold text-muted-foreground uppercase tracking-wider">
                   {t("prescriptions.builder.generalInstructions")}
                 </Label>
                 <Textarea
@@ -710,7 +726,6 @@ export function PrescriptionBuilder({
                     canUp={idx > 0}
                     item={it}
                     key={it.id}
-                    speciesKey={speciesKey}
                     onChange={(patch) => updateItem(it.id, patch)}
                     onMoveDown={() => moveItem(it.id, 1)}
                     onMoveUp={() => moveItem(it.id, -1)}
@@ -721,6 +736,7 @@ export function PrescriptionBuilder({
                         (alert.other?.origin === "ordonnance" &&
                           alert.other.key === it.id)
                     )}
+                    speciesKey={speciesKey}
                     weightKg={weightKg}
                   />
                 ))}
@@ -796,8 +812,8 @@ export function PrescriptionBuilder({
             <AlertDialogTitle>Signer l'ordonnance ?</AlertDialogTitle>
             <AlertDialogDescription>
               La signature fige l'ordonnance pour {patient.name} : elle ne
-              pourra plus repasser en brouillon. Vérifiez les médicaments,
-              les doses et les instructions avant de confirmer.
+              pourra plus repasser en brouillon. Vérifiez les médicaments, les
+              doses et les instructions avant de confirmer.
             </AlertDialogDescription>
             {safetyAlerts.length > 0 ? (
               <p
@@ -857,7 +873,7 @@ function BuilderHeader({
       ) : null}
       {status === "signed" ? (
         <Badge
-          className="bg-emerald-500/10 t-12 text-emerald-700 dark:text-emerald-300"
+          className="t-12 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
           variant="secondary"
         >
           {t("prescriptions.builder.signed")}
@@ -896,12 +912,7 @@ function BuilderHeader({
       >
         {t("prescriptions.builder.saveDraft")}
       </Button>
-      <Button
-        className="h-8 gap-1.5"
-        onClick={onSign}
-        size="sm"
-        type="button"
-      >
+      <Button className="h-8 gap-1.5" onClick={onSign} size="sm" type="button">
         {t("prescriptions.builder.sign")}
       </Button>
     </>
@@ -923,7 +934,7 @@ function WeightCard({
     <Card className="border-primary/15 bg-gradient-to-br from-primary/5 via-background to-background">
       <CardContent className="space-y-2 px-3 py-3">
         <Label
-          className="font-semibold t-12 text-muted-foreground uppercase tracking-wider"
+          className="t-12 font-semibold text-muted-foreground uppercase tracking-wider"
           htmlFor="weight-input"
         >
           {t("prescriptions.builder.weightLabel")}
@@ -960,7 +971,7 @@ function PatientInfoCard({ patient }: { patient: Patient }) {
   return (
     <Card>
       <CardContent className="space-y-1 px-3 py-3 text-xs">
-        <p className="font-semibold t-12 text-muted-foreground uppercase tracking-wider">
+        <p className="t-12 font-semibold text-muted-foreground uppercase tracking-wider">
           {patient.name}
         </p>
         <p className="text-muted-foreground">
@@ -1036,16 +1047,18 @@ function ItemRow({
     optionLabel(t, "form", FORM_OPTIONS, item.form ?? "comprime"),
     optionLabel(t, "route", ROUTE_OPTIONS, item.route ?? "PO"),
     item.quantity?.trim() ? item.quantity.trim() : null,
-    item.concentrationMgPerMl != null
-      ? `${item.concentrationMgPerMl} mg/mL`
+    item.concentrationMgPerMl == null
+      ? null
+      : `${item.concentrationMgPerMl} mg/mL`,
+    item.instructions?.trim()
+      ? t("prescriptions.item.instructionsFilled")
       : null,
-    item.instructions?.trim() ? t("prescriptions.item.instructionsFilled") : null,
     item.warnings?.trim() ? t("prescriptions.item.warningsFilled") : null,
   ].filter((part): part is string => Boolean(part));
 
   return (
     <Card className="@container overflow-hidden">
-      <div className="grid gap-0 @3xl:grid-cols-[minmax(0,1fr)_240px]">
+      <div className="grid @3xl:grid-cols-[minmax(0,1fr)_240px] gap-0">
         <div className="space-y-3 px-3 py-3">
           {/* Ligne 1 : nom + actions */}
           <div className="flex items-center justify-between gap-2">
@@ -1058,7 +1071,7 @@ function ItemRow({
                   {item.medicationName}
                 </p>
                 {item.medicationClass ? (
-                  <p className="truncate t-12 text-muted-foreground">
+                  <p className="t-12 truncate text-muted-foreground">
                     {item.medicationClass}
                   </p>
                 ) : null}
@@ -1102,7 +1115,7 @@ function ItemRow({
           </div>
 
           {/* L'essentiel : dose, fréquence, durée */}
-          <div className="grid grid-cols-1 gap-2 @sm:grid-cols-2 @lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,1fr)]">
+          <div className="grid @lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,1fr)] @sm:grid-cols-2 grid-cols-1 gap-2">
             <DoseField item={item} onChange={onChange} />
             <FieldShell label={t("prescriptions.item.frequency")}>
               <Input
@@ -1125,7 +1138,11 @@ function ItemRow({
           </div>
 
           {/* La dose de référence validée (24 molécules relues par Aïssa) : elle informe, la ligne reste au vétérinaire. */}
-          <ValidatedDosePanel medicationId={item.medicationId} species={speciesKey} weightKg={weightKg} />
+          <ValidatedDosePanel
+            medicationId={item.medicationId}
+            species={speciesKey}
+            weightKg={weightKg}
+          />
 
           {/* Le détail, replié par défaut avec un résumé */}
           <div className="rounded-md border border-border/60">
@@ -1136,10 +1153,10 @@ function ItemRow({
               onClick={() => setDetailsOpen((open) => !open)}
               type="button"
             >
-              <span className="shrink-0 font-medium t-12 text-muted-foreground uppercase tracking-wider">
+              <span className="t-12 shrink-0 font-medium text-muted-foreground uppercase tracking-wider">
                 {t("prescriptions.item.details")}
               </span>
-              <span className="min-w-0 flex-1 t-12 text-muted-foreground">
+              <span className="t-12 min-w-0 flex-1 text-muted-foreground">
                 {detailsOpen ? null : detailsSummary.join(" · ")}
               </span>
               <ChevronDown
@@ -1154,7 +1171,7 @@ function ItemRow({
                 className="space-y-2 border-border/60 border-t px-2.5 py-2.5"
                 id={detailsId}
               >
-                <div className="grid grid-cols-1 gap-2 @sm:grid-cols-2">
+                <div className="grid @sm:grid-cols-2 grid-cols-1 gap-2">
                   <FieldShell label={t("prescriptions.item.form")}>
                     <NativeSelect
                       className="h-8 text-xs"
@@ -1221,7 +1238,7 @@ function ItemRow({
                     />
                   </FieldShell>
                 </div>
-                <div className="grid grid-cols-1 gap-2 @sm:grid-cols-2">
+                <div className="grid @sm:grid-cols-2 grid-cols-1 gap-2">
                   <FieldShell label={t("prescriptions.item.instructions")}>
                     <Textarea
                       className="min-h-[60px] resize-none border-0 bg-muted/30 text-xs shadow-none focus-visible:ring-1"
@@ -1249,14 +1266,14 @@ function ItemRow({
         </div>
 
         {/* Colonne droite : dose calculator + état */}
-        <div className="space-y-2 border-border/40 border-t bg-muted/20 px-3 py-3 @3xl:border-t-0 @3xl:border-l">
+        <div className="space-y-2 border-border/40 border-t @3xl:border-t-0 @3xl:border-l bg-muted/20 px-3 py-3">
           <DoseCalculatorCard
             className="bg-background"
             computation={computation}
             concentrationMgPerMl={item.concentrationMgPerMl}
             weightKg={weightKg}
           />
-          <p className="text-center t-12 text-muted-foreground">
+          <p className="t-12 text-center text-muted-foreground">
             <ArrowsDownUp className="mr-1 inline size-3" weight="duotone" />
             {t("prescriptions.calculator.perKg")}
           </p>
@@ -1275,7 +1292,7 @@ function FieldShell({
 }) {
   return (
     <div className="space-y-1">
-      <Label className="font-medium t-12 text-muted-foreground uppercase tracking-wider">
+      <Label className="t-12 font-medium text-muted-foreground uppercase tracking-wider">
         {label}
       </Label>
       {children}

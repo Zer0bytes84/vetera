@@ -1,3 +1,58 @@
+import type React from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
+import Logo from "@/components/Logo";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogMedia,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { DatePicker } from "@/components/ui/date-picker";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
+import { Spinner } from "@/components/ui/spinner";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useTauriDrag } from "@/hooks/use-tauri-drag";
+import { guard } from "@/lib/guard";
 import {
   Ban,
   CalendarDays,
@@ -21,60 +76,6 @@ import {
   Sparkles,
   X,
 } from "@/lib/icons";
-import type React from "react";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { toast } from "sonner";
-
-import Logo from "@/components/Logo";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogMedia,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
-import { Spinner } from "@/components/ui/spinner";
-import { useTauriDrag } from "@/hooks/use-tauri-drag";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { closeActivationAdminWindow } from "@/services/activationAdminWindowService";
 import { isTauriRuntime } from "@/services/browser-store";
@@ -85,20 +86,24 @@ import {
   createActivationLicense,
   createLicenseEmailTemplate,
   getStoredAdminToken,
-  releaseActivationDevice,
   listActivationLicenses,
+  releaseActivationDevice,
   revokeActivationLicense,
   setStoredAdminToken,
   verifyAdminToken,
 } from "@/services/licenseActivationService";
-import { DatePicker } from "@/components/ui/date-picker";
-import { guard } from "@/lib/guard";
 
 type ServerStatus = "checking" | "online" | "offline";
 type StatusFilter = "all" | "active" | "expiring" | "expired" | "revoked";
 type ExpiryPreset = "1m" | "1y" | "2y" | "forever" | "custom";
 
-const ACTIVATION_SERVER_HOST = (() => { try { return new URL(ACTIVATION_SERVER_URL).host; } catch { return "Serveur non configuré"; } })();
+const ACTIVATION_SERVER_HOST = (() => {
+  try {
+    return new URL(ACTIVATION_SERVER_URL).host;
+  } catch {
+    return "Serveur non configuré";
+  }
+})();
 
 const PLAN_LABELS: Record<string, string> = {
   clinic: "Cabinet Pro",
@@ -144,7 +149,11 @@ function isLicenseActive(license: ActivationAdminLicense) {
 
 /** Échue : non révoquée, avec une date de fin passée. Comme `isLicenseActive`, elle lit l'heure au moment du calcul. */
 function isLicenseExpired(license: ActivationAdminLicense) {
-  return Boolean(!license.revokedAt && license.expiresAt && Date.parse(license.expiresAt) < Date.now());
+  return Boolean(
+    !license.revokedAt &&
+      license.expiresAt &&
+      Date.parse(license.expiresAt) < Date.now()
+  );
 }
 
 function isExpiringSoon(license: ActivationAdminLicense) {
@@ -244,7 +253,6 @@ function ServerStatusPill({
 // SUBCOMPONENT: LICENSES TABLE VIEW
 // ---------------------------------------------------------------------------
 interface LicensesTableViewProps {
-  syncMessage: string | null;
   activeCount: number;
   expiringCount: number;
   isLoading: boolean;
@@ -260,6 +268,7 @@ interface LicensesTableViewProps {
   revokedCount: number;
   searchQuery: string;
   statusFilter: StatusFilter;
+  syncMessage: string | null;
 }
 
 function LicensesTableView({
@@ -355,8 +364,15 @@ function LicensesTableView({
         </div>
       )}
 
-      {!isLoading && syncMessage && <div role="status" className="p-8 text-center text-sm text-muted-foreground">{syncMessage}</div>}
-      {!isLoading && !syncMessage && licenses.length === 0 && (
+      {!isLoading && syncMessage && (
+        <div
+          className="p-8 text-center text-muted-foreground text-sm"
+          role="status"
+        >
+          {syncMessage}
+        </div>
+      )}
+      {!(isLoading || syncMessage) && licenses.length === 0 && (
         <div className="flex min-h-56 flex-col items-center justify-center gap-3 p-8 text-center">
           <div className="flex size-12 items-center justify-center rounded-2xl bg-muted/60 text-muted-foreground">
             <Clipboard className="size-6" />
@@ -486,7 +502,7 @@ function LicensesTableView({
                         </Button>
 
                         {isRevoked ? (
-                          <span className="px-2 t-12 text-muted-foreground">
+                          <span className="t-12 px-2 text-muted-foreground">
                             Fermée
                           </span>
                         ) : (
@@ -600,7 +616,10 @@ function GeneratorTabView({
         <CardContent className="p-5">
           <form className="space-y-4" onSubmit={handleFormSubmit}>
             <div className="space-y-1.5">
-              <Label htmlFor="gen-email">Adresse email du cabinet <span className="modal-required">requis</span></Label>
+              <Label htmlFor="gen-email">
+                Adresse email du cabinet{" "}
+                <span className="modal-required">requis</span>
+              </Label>
               <Input
                 autoFocus
                 className="h-9 text-xs"
@@ -635,7 +654,14 @@ function GeneratorTabView({
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-1.5">
                 <Label htmlFor="gen-plan">Formule</Label>
-                <Select onValueChange={(value) => { if (value) setPlan(value); }} value={plan}>
+                <Select
+                  onValueChange={(value) => {
+                    if (value) {
+                      setPlan(value);
+                    }
+                  }}
+                  value={plan}
+                >
                   <SelectTrigger className="h-9 w-full text-xs" id="gen-plan">
                     <SelectValue />
                   </SelectTrigger>
@@ -652,7 +678,14 @@ function GeneratorTabView({
 
               <div className="space-y-1.5">
                 <Label htmlFor="gen-devices">Postes autorisés</Label>
-                <Select onValueChange={(value) => { if (value) setMaxDevices(value); }} value={maxDevices}>
+                <Select
+                  onValueChange={(value) => {
+                    if (value) {
+                      setMaxDevices(value);
+                    }
+                  }}
+                  value={maxDevices}
+                >
                   <SelectTrigger
                     className="h-9 w-full text-xs"
                     id="gen-devices"
@@ -830,7 +863,7 @@ function GeneratorTabView({
                   <Mail className="size-4" />
                   Envoyer la clé par courriel
                 </Button>
-                <p className="text-center t-12 text-muted-foreground">
+                <p className="t-12 text-center text-muted-foreground">
                   Ouvre le client Mail ou copie le texte prêt à l'emploi.
                 </p>
               </div>
@@ -845,7 +878,7 @@ function GeneratorTabView({
             </CardHeader>
             <CardContent className="space-y-3.5 text-muted-foreground text-xs leading-relaxed">
               <div className="flex gap-2.5">
-                <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-primary/10 font-bold t-12 text-primary">
+                <span className="t-12 flex size-5 shrink-0 items-center justify-center rounded-full bg-primary/10 font-bold text-primary">
                   1
                 </span>
                 <p>
@@ -854,7 +887,7 @@ function GeneratorTabView({
                 </p>
               </div>
               <div className="flex gap-2.5">
-                <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-primary/10 font-bold t-12 text-primary">
+                <span className="t-12 flex size-5 shrink-0 items-center justify-center rounded-full bg-primary/10 font-bold text-primary">
                   2
                 </span>
                 <p>
@@ -863,7 +896,7 @@ function GeneratorTabView({
                 </p>
               </div>
               <div className="flex gap-2.5">
-                <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-primary/10 font-bold t-12 text-primary">
+                <span className="t-12 flex size-5 shrink-0 items-center justify-center rounded-full bg-primary/10 font-bold text-primary">
                   3
                 </span>
                 <p>
@@ -875,7 +908,7 @@ function GeneratorTabView({
 
               <Separator className="my-3" />
 
-              <div className="rounded-lg bg-muted/40 p-3 t-12">
+              <div className="t-12 rounded-lg bg-muted/40 p-3">
                 <p className="font-medium text-foreground">
                   🔒 Sécurité cryptographique locale
                 </p>
@@ -897,10 +930,8 @@ function GeneratorTabView({
 // ---------------------------------------------------------------------------
 export default function ActivationAdminPage() {
   const isTauri = isTauriRuntime();
-  const {
-    handleMouseDown: handleWindowMouseDown,
-    ref: windowDragRef,
-  } = useTauriDrag<HTMLElement>();
+  const { handleMouseDown: handleWindowMouseDown, ref: windowDragRef } =
+    useTauriDrag<HTMLElement>();
 
   // Server & auth state
   const [serverStatus, setServerStatus] = useState<ServerStatus>("checking");
@@ -913,8 +944,12 @@ export default function ActivationAdminPage() {
   // Licenses data state
   const [licenses, setLicenses] = useState<ActivationAdminLicense[]>([]);
   // Un jeton enregistré lance la synchronisation dès le montage : l'écran est déjà « en chargement ».
-  const [isLoadingLicenses, setIsLoadingLicenses] = useState(() => getStoredAdminToken().trim() !== "");
-  const [licenseSyncMessage, setLicenseSyncMessage] = useState<string | null>("Renseignez le jeton administrateur pour synchroniser les licences du serveur.");
+  const [isLoadingLicenses, setIsLoadingLicenses] = useState(
+    () => getStoredAdminToken().trim() !== ""
+  );
+  const [licenseSyncMessage, setLicenseSyncMessage] = useState<string | null>(
+    "Renseignez le jeton administrateur pour synchroniser les licences du serveur."
+  );
 
   // Filters & search
   const [searchQuery, setSearchQuery] = useState("");
@@ -957,17 +992,20 @@ export default function ActivationAdminPage() {
   // Heartbeat & Ping check
   const checkServer = useCallback(async () => {
     const start = performance.now();
-    await guard(async () => {
-      await checkActivationServer();
-      const elapsed = Math.round(performance.now() - start);
-      setServerStatus("online");
-      setServerPingMs(elapsed);
-    }, {
-      recover: () => {
-        setServerStatus("offline");
-        setServerPingMs(null);
+    await guard(
+      async () => {
+        await checkActivationServer();
+        const elapsed = Math.round(performance.now() - start);
+        setServerStatus("online");
+        setServerPingMs(elapsed);
       },
-    });
+      {
+        recover: () => {
+          setServerStatus("offline");
+          setServerPingMs(null);
+        },
+      }
+    );
   }, []);
   const pingServer = useCallback(async () => {
     setServerStatus("checking");
@@ -976,9 +1014,9 @@ export default function ActivationAdminPage() {
 
   // Load licenses list (simplified to reduce cognitive complexity)
   // Lecture des licences, sans poser l'état « en chargement » (déjà posé au montage ou par `loadLicenses`).
-  const fetchLicenses = useCallback(
-    async (token: string, silent: boolean) => {
-      await guard(async () => {
+  const fetchLicenses = useCallback(async (token: string, silent: boolean) => {
+    await guard(
+      async () => {
         const next = await listActivationLicenses(token);
         setLicenses(next);
         setLicenseSyncMessage(null);
@@ -986,9 +1024,14 @@ export default function ActivationAdminPage() {
         if (!silent) {
           toast.success(`${next.length} licence(s) synchronisée(s).`);
         }
-      }, {
+      },
+      {
         recover: (err) => {
-          setLicenseSyncMessage(err instanceof Error ? err.message : "La synchronisation a échoué. Réessayez.");
+          setLicenseSyncMessage(
+            err instanceof Error
+              ? err.message
+              : "La synchronisation a échoué. Réessayez."
+          );
           setServerStatus("offline");
           if (!silent) {
             const msg =
@@ -1001,16 +1044,17 @@ export default function ActivationAdminPage() {
         cleanup: () => {
           setIsLoadingLicenses(false);
         },
-      });
-    },
-    []
-  );
+      }
+    );
+  }, []);
 
   const loadLicenses = useCallback(
     async (tokenToUse?: string, silent = false) => {
       const token = (tokenToUse ?? adminToken).trim();
       if (!token) {
-        setLicenseSyncMessage("Renseignez le jeton administrateur pour synchroniser les licences du serveur.");
+        setLicenseSyncMessage(
+          "Renseignez le jeton administrateur pour synchroniser les licences du serveur."
+        );
         if (!silent) {
           toast.error("Veuillez renseigner le jeton administrateur.");
         }
@@ -1029,7 +1073,9 @@ export default function ActivationAdminPage() {
   if (probedToken !== adminToken) {
     setProbedToken(adminToken);
     setServerStatus("checking");
-    if (adminToken.trim()) setIsLoadingLicenses(true);
+    if (adminToken.trim()) {
+      setIsLoadingLicenses(true);
+    }
   }
   useEffect(() => {
     void checkServer();
@@ -1172,47 +1218,57 @@ export default function ActivationAdminPage() {
     }
 
     setIsCreating(true);
-    await guard(async () => {
-      const created = await createActivationLicense(adminToken.trim(), {
-        email: data.email.trim(),
-        plan: data.plan,
-        maxDevices: Number(data.maxDevices),
-        expiresAt: data.expiresAt,
-      });
-
-      const res = {
-        key: created.licenseKey,
-        license: created.license,
-        clinicName: data.clinicName.trim(),
-      };
-      setCreatedResult(res);
-      setLicenses((current) => [created.license, ...current.filter(license => license.id !== created.license.id)]);
-      setLicenseSyncMessage(null);
-      setSearchQuery(""); setStatusFilter("all"); setPlanFilter("all");
-      setServerStatus("online");
-      toast.success("Licence générée avec succès !");
-
-      if (data.autoEmail) {
-        openEmailModalFor({
-          clinicEmail: created.license.email,
-          recipientEmail: created.license.email,
-          clinicName: data.clinicName.trim(),
-          licenseKey: created.licenseKey,
-          plan: created.license.plan,
-          maxDevices: created.license.maxDevices,
-          expiresAt: created.license.expiresAt,
+    await guard(
+      async () => {
+        const created = await createActivationLicense(adminToken.trim(), {
+          email: data.email.trim(),
+          plan: data.plan,
+          maxDevices: Number(data.maxDevices),
+          expiresAt: data.expiresAt,
         });
+
+        const res = {
+          key: created.licenseKey,
+          license: created.license,
+          clinicName: data.clinicName.trim(),
+        };
+        setCreatedResult(res);
+        setLicenses((current) => [
+          created.license,
+          ...current.filter((license) => license.id !== created.license.id),
+        ]);
+        setLicenseSyncMessage(null);
+        setSearchQuery("");
+        setStatusFilter("all");
+        setPlanFilter("all");
+        setServerStatus("online");
+        toast.success("Licence générée avec succès !");
+
+        if (data.autoEmail) {
+          openEmailModalFor({
+            clinicEmail: created.license.email,
+            recipientEmail: created.license.email,
+            clinicName: data.clinicName.trim(),
+            licenseKey: created.licenseKey,
+            plan: created.license.plan,
+            maxDevices: created.license.maxDevices,
+            expiresAt: created.license.expiresAt,
+          });
+        }
+      },
+      {
+        recover: (error) => {
+          toast.error(
+            error instanceof Error
+              ? error.message
+              : "Erreur lors de la création."
+          );
+        },
+        cleanup: () => {
+          setIsCreating(false);
+        },
       }
-    }, {
-      recover: (error) => {
-        toast.error(
-          error instanceof Error ? error.message : "Erreur lors de la création."
-        );
-      },
-      cleanup: () => {
-        setIsCreating(false);
-      },
-    });
+    );
   };
 
   // Revoke license execution
@@ -1221,28 +1277,31 @@ export default function ActivationAdminPage() {
       return;
     }
     setIsRevoking(true);
-    await guard(async () => {
-      const revoked = await revokeActivationLicense(
-        adminToken.trim(),
-        licenseToRevoke.id
-      );
-      setLicenses((current) =>
-        current.map((item) => (item.id === revoked.id ? revoked : item))
-      );
-      toast.success(`Accès révoqué pour ${revoked.email}.`);
-      setLicenseToRevoke(null);
-    }, {
-      recover: (error) => {
-        toast.error(
-          error instanceof Error
-            ? error.message
-            : "Impossible de révoquer cette licence."
+    await guard(
+      async () => {
+        const revoked = await revokeActivationLicense(
+          adminToken.trim(),
+          licenseToRevoke.id
         );
+        setLicenses((current) =>
+          current.map((item) => (item.id === revoked.id ? revoked : item))
+        );
+        toast.success(`Accès révoqué pour ${revoked.email}.`);
+        setLicenseToRevoke(null);
       },
-      cleanup: () => {
-        setIsRevoking(false);
-      },
-    });
+      {
+        recover: (error) => {
+          toast.error(
+            error instanceof Error
+              ? error.message
+              : "Impossible de révoquer cette licence."
+          );
+        },
+        cleanup: () => {
+          setIsRevoking(false);
+        },
+      }
+    );
   };
 
   // Copy helpers
@@ -1315,10 +1374,7 @@ export default function ActivationAdminPage() {
             <span className="font-heading font-semibold text-sm tracking-tight">
               Baitari
             </span>
-            <Badge
-              className="h-5 px-1.5 font-normal t-12"
-              variant="outline"
-            >
+            <Badge className="t-12 h-5 px-1.5 font-normal" variant="outline">
               Centre d'Activation
             </Badge>
           </div>
@@ -1381,7 +1437,7 @@ export default function ActivationAdminPage() {
                   </p>
                   <p className="text-destructive/90 text-xs">
                     Démarrez le serveur avec{" "}
-                    <code className="rounded bg-black/10 px-1 py-0.5 font-mono t-12 dark:bg-white/10">
+                    <code className="t-12 rounded bg-black/10 px-1 py-0.5 font-mono dark:bg-white/10">
                       npm run activation-server
                     </code>{" "}
                     ou vérifiez que le port 8787 est disponible.
@@ -1410,7 +1466,7 @@ export default function ActivationAdminPage() {
                   <p className="mt-1 font-heading font-semibold text-2xl tracking-tight">
                     {stats.active}
                   </p>
-                  <p className="mt-0.5 t-12 text-muted-foreground">
+                  <p className="t-12 mt-0.5 text-muted-foreground">
                     Cabinets validés
                   </p>
                 </div>
@@ -1429,7 +1485,7 @@ export default function ActivationAdminPage() {
                   <p className="mt-1 font-heading font-semibold text-2xl tracking-tight">
                     {stats.devices}
                   </p>
-                  <p className="mt-0.5 t-12 text-muted-foreground">
+                  <p className="t-12 mt-0.5 text-muted-foreground">
                     Appareils déployés
                   </p>
                 </div>
@@ -1446,7 +1502,7 @@ export default function ActivationAdminPage() {
                   <p className="mt-1 font-heading font-semibold text-2xl tracking-tight">
                     {stats.expiring}
                   </p>
-                  <p className="mt-0.5 t-12 text-muted-foreground">
+                  <p className="t-12 mt-0.5 text-muted-foreground">
                     Sous les 30 jours
                   </p>
                 </div>
@@ -1463,7 +1519,7 @@ export default function ActivationAdminPage() {
                   <p className="mt-1 font-heading font-semibold text-2xl tracking-tight">
                     {stats.total}
                   </p>
-                  <p className="mt-0.5 t-12 text-muted-foreground">
+                  <p className="t-12 mt-0.5 text-muted-foreground">
                     Historique local
                   </p>
                 </div>
@@ -1514,7 +1570,6 @@ export default function ActivationAdminPage() {
             {/* TAB 1: LICENSES TABLE */}
             <TabsContent className="mt-4 space-y-4" value="licenses">
               <LicensesTableView
-                syncMessage={licenseSyncMessage}
                 activeCount={stats.active}
                 expiringCount={stats.expiring}
                 isLoading={isLoadingLicenses}
@@ -1538,6 +1593,7 @@ export default function ActivationAdminPage() {
                 revokedCount={stats.revoked}
                 searchQuery={searchQuery}
                 statusFilter={statusFilter}
+                syncMessage={licenseSyncMessage}
               />
             </TabsContent>
 
@@ -1573,7 +1629,8 @@ export default function ActivationAdminPage() {
                       État du serveur d’activation
                     </CardTitle>
                     <CardDescription className="text-xs">
-                      Source des licences affichées : le serveur configuré ci-dessous.
+                      Source des licences affichées : le serveur configuré
+                      ci-dessous.
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4 p-5 text-xs">
@@ -1614,8 +1671,10 @@ export default function ActivationAdminPage() {
                       <span className="text-muted-foreground">
                         Stockage des données
                       </span>
-                      <span className="font-mono t-12">
-                        {ACTIVATION_SERVER_HOST === "127.0.0.1:8787" ? "activation-server/data/licenses.json" : "Stockage du serveur configuré"}
+                      <span className="t-12 font-mono">
+                        {ACTIVATION_SERVER_HOST === "127.0.0.1:8787"
+                          ? "activation-server/data/licenses.json"
+                          : "Stockage du serveur configuré"}
                       </span>
                     </div>
 
@@ -1695,7 +1754,7 @@ export default function ActivationAdminPage() {
                       </Button>
                     </div>
 
-                    <div className="rounded-lg bg-muted/40 p-3 t-12 text-muted-foreground">
+                    <div className="t-12 rounded-lg bg-muted/40 p-3 text-muted-foreground">
                       <p className="font-medium text-foreground">
                         💡 Fichier source :
                       </p>
@@ -1719,9 +1778,7 @@ export default function ActivationAdminPage() {
       <Dialog onOpenChange={setEmailModalOpen} open={emailModalOpen}>
         <DialogContent className="sm:max-w-xl">
           <DialogHeader icon={<Mail />}>
-            <DialogTitle>
-              Transmettre la clé par courriel
-            </DialogTitle>
+            <DialogTitle>Transmettre la clé par courriel</DialogTitle>
             <DialogDescription className="text-xs">
               Envoyez directement les identifiants d'activation et le guide
               d'installation au cabinet.
@@ -1792,7 +1849,7 @@ export default function ActivationAdminPage() {
               <Label className="t-12 text-muted-foreground">
                 Aperçu du message formaté
               </Label>
-              <div className="max-h-48 select-text overflow-y-auto whitespace-pre-wrap rounded-lg border border-border/60 bg-muted/30 p-3 font-mono t-12 text-foreground/90 leading-relaxed">
+              <div className="t-12 max-h-48 select-text overflow-y-auto whitespace-pre-wrap rounded-lg border border-border/60 bg-muted/30 p-3 font-mono text-foreground/90 leading-relaxed">
                 {computedEmailTemplate.body}
               </div>
             </div>
@@ -1838,9 +1895,7 @@ export default function ActivationAdminPage() {
             <AlertDialogMedia>
               <Ban />
             </AlertDialogMedia>
-            <AlertDialogTitle>
-              Révoquer cette licence ?
-            </AlertDialogTitle>
+            <AlertDialogTitle>Révoquer cette licence ?</AlertDialogTitle>
             <AlertDialogDescription className="text-xs">
               L'accès pour le cabinet{" "}
               <strong className="text-foreground">
@@ -1876,9 +1931,7 @@ export default function ActivationAdminPage() {
       >
         <DialogContent className="sm:max-w-md">
           <DialogHeader icon={<Info />}>
-            <DialogTitle>
-              Détails de la licence
-            </DialogTitle>
+            <DialogTitle>Détails de la licence</DialogTitle>
             <DialogDescription className="text-xs">
               Informations techniques enregistrées sur le serveur.
             </DialogDescription>
@@ -1925,7 +1978,7 @@ export default function ActivationAdminPage() {
                   Postes enregistrés (identifiants d’installation)
                 </Label>
                 {detailLicense.devices && detailLicense.devices.length > 0 ? (
-                  <div className="max-h-28 overflow-y-auto rounded-lg border border-border/60 bg-background p-2 font-mono t-12">
+                  <div className="t-12 max-h-28 overflow-y-auto rounded-lg border border-border/60 bg-background p-2 font-mono">
                     {detailLicense.devices.map((dev, idx) => (
                       <div
                         className="flex items-center justify-between border-border/30 border-b py-1 last:border-0"
@@ -1937,20 +1990,43 @@ export default function ActivationAdminPage() {
                         <span className="select-all font-medium text-foreground">
                           {dev}
                         </span>
-                        <Button size="sm" variant="ghost" type="button" onClick={async () => {
-                          if (!window.confirm("Libérer ce poste ? Son accès sera retiré au prochain contrôle en ligne, au plus tard à la fin de son autorisation hors connexion.")) return;
-                          try {
-                            const updated = await releaseActivationDevice(adminToken, detailLicense.id, dev);
-                            setDetailLicense(updated);
-                            await loadLicenses(adminToken, true);
-                            toast.success("Poste libéré.");
-                          } catch (error) { toast.error(error instanceof Error ? error.message : "Impossible de libérer ce poste."); }
-                        }}>Libérer</Button>
+                        <Button
+                          onClick={async () => {
+                            if (
+                              !window.confirm(
+                                "Libérer ce poste ? Son accès sera retiré au prochain contrôle en ligne, au plus tard à la fin de son autorisation hors connexion."
+                              )
+                            ) {
+                              return;
+                            }
+                            try {
+                              const updated = await releaseActivationDevice(
+                                adminToken,
+                                detailLicense.id,
+                                dev
+                              );
+                              setDetailLicense(updated);
+                              await loadLicenses(adminToken, true);
+                              toast.success("Poste libéré.");
+                            } catch (error) {
+                              toast.error(
+                                error instanceof Error
+                                  ? error.message
+                                  : "Impossible de libérer ce poste."
+                              );
+                            }
+                          }}
+                          size="sm"
+                          type="button"
+                          variant="ghost"
+                        >
+                          Libérer
+                        </Button>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <p className="rounded-lg border border-border/60 border-dashed p-2.5 text-center t-12 text-muted-foreground">
+                  <p className="t-12 rounded-lg border border-border/60 border-dashed p-2.5 text-center text-muted-foreground">
                     Aucun appareil n'a encore validé sa première connexion.
                   </p>
                 )}
@@ -1987,9 +2063,7 @@ export default function ActivationAdminPage() {
       <Dialog onOpenChange={setIsSettingsOpen} open={isSettingsOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader icon={<Settings2 />}>
-            <DialogTitle>
-              Configuration du serveur d'activation
-            </DialogTitle>
+            <DialogTitle>Configuration du serveur d'activation</DialogTitle>
             <DialogDescription className="text-xs">
               Renseignez le jeton administrateur pour gérer les licences de vos
               cabinets.

@@ -1,7 +1,5 @@
-import { Hospital } from "@/lib/icons";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-
 import {
   Sheet,
   SheetContent,
@@ -9,6 +7,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { Hospital } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 import type { Hospitalization, Patient } from "@/types/db";
 
@@ -47,7 +46,11 @@ export function HospitalizationSheet({
       }}
       open={open}
     >
-      <SheetContent className={cn("w-full sm:max-w-5xl", className)} focusClose side="right">
+      <SheetContent
+        className={cn("w-full sm:max-w-5xl", className)}
+        focusClose
+        side="right"
+      >
         <SheetHeader icon={<Hospital />}>
           <SheetTitle>
             {t("modules.hospitalizations.title", "Hospitalisation")}

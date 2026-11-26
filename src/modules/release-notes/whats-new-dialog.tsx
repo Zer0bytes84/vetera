@@ -1,12 +1,22 @@
 import { Sparkles } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Panel } from "@/components/ui/surface";
 import { getAppVersion } from "@/services/backupService";
 import { ReleaseHighlights } from "./release-highlights";
 import type { ReleaseNote } from "./release-notes";
-import { markVersionSeen, readLastSeenVersion, releaseNoteToShow } from "./release-seen";
+import {
+  markVersionSeen,
+  readLastSeenVersion,
+  releaseNoteToShow,
+} from "./release-seen";
 import "./whats-new.css";
 
 /** Laisse l'écran d'accueil de l'application se poser avant d'ouvrir la fenêtre. */
@@ -27,36 +37,64 @@ export function WhatsNewGate() {
   useEffect(() => {
     const version = getAppVersion();
     const lastSeen = readLastSeenVersion();
-    if (lastSeen === version) return;
+    if (lastSeen === version) {
+      return;
+    }
     const toShow = releaseNoteToShow(version, lastSeen);
     const timer = window.setTimeout(() => {
       // Sans note pour cette version, on rattrape le marqueur sans rien montrer ; si le stockage refuse, on ne montre rien.
-      if (!markVersionSeen(version) || !toShow) return;
+      if (!(markVersionSeen(version) && toShow)) {
+        return;
+      }
       setNote(toShow);
       setOpen(true);
     }, SHOW_DELAY_MS);
     return () => window.clearTimeout(timer);
   }, []);
 
-  if (!note) return null;
+  if (!note) {
+    return null;
+  }
   return (
     <Dialog modal={false} onOpenChange={setOpen} open={open}>
-      <DialogContent className="whats-new-dialog" initialFocus={close} overlayClassName="hidden">
+      <DialogContent
+        className="whats-new-dialog"
+        initialFocus={close}
+        overlayClassName="hidden"
+      >
         <div className="whats-new-head flex items-center gap-3">
-          <span aria-hidden="true" className="grid size-9 shrink-0 place-items-center rounded-xl bg-foreground/[0.06] text-muted-foreground">
+          <span
+            aria-hidden="true"
+            className="grid size-9 shrink-0 place-items-center rounded-xl bg-foreground/[0.06] text-muted-foreground"
+          >
             <Sparkles className="size-4" />
           </span>
           <div className="min-w-0">
-            <DialogTitle className="text-[1rem] font-medium leading-6">Quoi de neuf dans la version {note.version}</DialogTitle>
-            <DialogDescription className="text-[0.8125rem] leading-5">Ce qui change pour vous au cabinet.</DialogDescription>
+            <DialogTitle className="font-medium text-[1rem] leading-6">
+              Quoi de neuf dans la version {note.version}
+            </DialogTitle>
+            <DialogDescription className="text-[0.8125rem] leading-5">
+              Ce qui change pour vous au cabinet.
+            </DialogDescription>
           </div>
         </div>
         {/* La seule partie qui défile quand l'écran est trop bas : atteignable au clavier, nommée pour un lecteur d'écran. */}
-        <Panel aria-label={`Nouveautés de la version ${note.version}`} className="whats-new-panel" role="region" tabIndex={0}>
+        <Panel
+          aria-label={`Nouveautés de la version ${note.version}`}
+          className="whats-new-panel"
+          role="region"
+          tabIndex={0}
+        >
           <ReleaseHighlights note={note} />
         </Panel>
         <div className="whats-new-foot">
-          <DialogClose render={<Button className="rounded-full px-5" ref={close} type="button" />}>Compris</DialogClose>
+          <DialogClose
+            render={
+              <Button className="rounded-full px-5" ref={close} type="button" />
+            }
+          >
+            Compris
+          </DialogClose>
         </div>
       </DialogContent>
     </Dialog>

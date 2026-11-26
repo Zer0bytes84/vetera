@@ -1,66 +1,165 @@
-import { useEffect, useState } from "react";
 import { BanknotesIcon } from "@heroicons/react/20/solid";
-import { StaySection } from "./stay-section";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
-import { usePatientsRepository, useProductsRepository } from "@/data/repositories";
+import {
+  usePatientsRepository,
+  useProductsRepository,
+} from "@/data/repositories";
 import { emitSQLiteDataChanged } from "@/hooks/useSQLite";
-import { isTauriRuntime } from "@/services/browser-store";
-import { billingService } from "@/services/billingService";
-import { stayDays } from "./domain";
-import { prepareStayInvoice, stayInvoiceInput } from "./billing";
-import { staysService } from "./service";
-import type { Stay } from "./store";
 import { guard } from "@/lib/guard";
+import { billingService } from "@/services/billingService";
+import { isTauriRuntime } from "@/services/browser-store";
+import { prepareStayInvoice, stayInvoiceInput } from "./billing";
+import { stayDays } from "./domain";
+import { staysService } from "./service";
+import { StaySection } from "./stay-section";
+import type { Stay } from "./store";
 
 export function StayBilling({ stay }: { stay: Stay }) {
   const { currentUser } = useAuth();
-  const patients = usePatientsRepository(), products = useProductsRepository();
+  const patients = usePatientsRepository(),
+    products = useProductsRepository();
   const [productId, setProductId] = useState("");
   const [invoiceId, setInvoiceId] = useState<string | null>(null);
   const desktop = isTauriRuntime();
   // Hors de l'application de bureau, il n'y a rien à lire : le chargement ne commence jamais.
-  const [busy, setBusy] = useState(false), [loading, setLoading] = useState(desktop);
+  const [busy, setBusy] = useState(false),
+    [loading, setLoading] = useState(desktop);
   const [error, setError] = useState<string | null>(null);
   useEffect(() => {
-    if (!desktop) return;
+    if (!desktop) {
+      return;
+    }
     let alive = true;
-    void billingService.getInvoice(`stay-invoice:${stay.id}`).then(invoice => { if (alive) setInvoiceId(invoice?.id ?? null); }).catch(() => { if (alive) setError("La facture du séjour n’a pas pu être chargée."); }).finally(() => { if (alive) setLoading(false); });
-    return () => { alive = false; };
+    void billingService
+      .getInvoice(`stay-invoice:${stay.id}`)
+      .then((invoice) => {
+        if (alive) {
+          setInvoiceId(invoice?.id ?? null);
+        }
+      })
+      .catch(() => {
+        if (alive) {
+          setError("La facture du séjour n’a pas pu être chargée.");
+        }
+      })
+      .finally(() => {
+        if (alive) {
+          setLoading(false);
+        }
+      });
+    return () => {
+      alive = false;
+    };
   }, [stay.id, desktop]);
-  const product = products.data.find(item => item.id === productId);
-  const days = stayDays(new Date(stay.admitted_at), new Date(stay.discharged_at!));
-  return <StaySection icon={BanknotesIcon} title="Facturation du séjour">
-    <p className="t-13 text-muted-foreground">{days} journée{days > 1 ? "s" : ""} occupée{days > 1 ? "s" : ""}. Minimum une journée, sortie à minuit exclue. Le brouillon devra être vérifié et émis dans Finances.</p>
-    {!desktop ? <p className="t-13 text-muted-foreground">Facturation indisponible sur le web.</p> : loading ? <p role="status" className="t-13">Chargement de la facture…</p> : invoiceId ? <p className="t-13">La facture de ce séjour est disponible dans Finances.</p> :
-      <form className="space-y-3" onSubmit={async event => {
-        event.preventDefault();
-        const patient = patients.data.find(item => item.id === stay.patient_id);
-        if (!currentUser || !patient || !product || busy) return;
-        setBusy(true); setError(null);
-        await guard(async () => {
-          const current = await staysService.get(stay.id);
-          const invoice = await prepareStayInvoice(stayInvoiceInput(current, patient, product, currentUser.id), billingService);
-          setInvoiceId(invoice.id);
-          emitSQLiteDataChanged("invoices"); emitSQLiteDataChanged("invoice_lines");
-        }, {
-          recover: (cause) => {
-   setError(cause instanceof Error ? cause.message : "Le brouillon n’a pas pu être préparé.");
-          },
-          cleanup: () => {
-   setBusy(false);
-          },
-        });
-      }}>
-        <label className="block space-y-2 t-13">Tarif par journée
-          <select aria-label="Tarif par journée" className="h-11 w-full rounded-xl border border-border bg-background px-3 t-13" value={productId} onChange={event => setProductId(event.target.value)}>
-            <option value="">Choisir un tarif du catalogue</option>
-            {products.data.filter(item => !item.archivedAt).map(item => <option key={item.id} value={item.id}>{item.name} · {(item.salePriceAmount / 100).toLocaleString("fr-FR")} DA</option>)}
-          </select>
-        </label>
-        {product && <p className="t-14 font-medium">Total proposé : {(days * product.salePriceAmount / 100).toLocaleString("fr-FR")} DA</p>}
-        <Button type="submit" className="h-11" disabled={!product || !currentUser || busy}>{busy ? "Préparation…" : "Créer le brouillon de facture"}</Button>
-      </form>}
-    {error && <p role="alert" className="t-13 text-destructive">{error}</p>}
-  </StaySection>;
+  const product = products.data.find((item) => item.id === productId);
+  const days = stayDays(
+    new Date(stay.admitted_at),
+    new Date(stay.discharged_at!)
+  );
+  return (
+    <StaySection icon={BanknotesIcon} title="Facturation du séjour">
+      <p className="t-13 text-muted-foreground">
+        {days} journée{days > 1 ? "s" : ""} occupée{days > 1 ? "s" : ""}.
+        Minimum une journée, sortie à minuit exclue. Le brouillon devra être
+        vérifié et émis dans Finances.
+      </p>
+      {desktop ? (
+        loading ? (
+          <p className="t-13" role="status">
+            Chargement de la facture…
+          </p>
+        ) : invoiceId ? (
+          <p className="t-13">
+            La facture de ce séjour est disponible dans Finances.
+          </p>
+        ) : (
+          <form
+            className="space-y-3"
+            onSubmit={async (event) => {
+              event.preventDefault();
+              const patient = patients.data.find(
+                (item) => item.id === stay.patient_id
+              );
+              if (!(currentUser && patient && product) || busy) {
+                return;
+              }
+              setBusy(true);
+              setError(null);
+              await guard(
+                async () => {
+                  const current = await staysService.get(stay.id);
+                  const invoice = await prepareStayInvoice(
+                    stayInvoiceInput(current, patient, product, currentUser.id),
+                    billingService
+                  );
+                  setInvoiceId(invoice.id);
+                  emitSQLiteDataChanged("invoices");
+                  emitSQLiteDataChanged("invoice_lines");
+                },
+                {
+                  recover: (cause) => {
+                    setError(
+                      cause instanceof Error
+                        ? cause.message
+                        : "Le brouillon n’a pas pu être préparé."
+                    );
+                  },
+                  cleanup: () => {
+                    setBusy(false);
+                  },
+                }
+              );
+            }}
+          >
+            <label className="t-13 block space-y-2">
+              Tarif par journée
+              <select
+                aria-label="Tarif par journée"
+                className="t-13 h-11 w-full rounded-xl border border-border bg-background px-3"
+                onChange={(event) => setProductId(event.target.value)}
+                value={productId}
+              >
+                <option value="">Choisir un tarif du catalogue</option>
+                {products.data
+                  .filter((item) => !item.archivedAt)
+                  .map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {item.name} ·{" "}
+                      {(item.salePriceAmount / 100).toLocaleString("fr-FR")} DA
+                    </option>
+                  ))}
+              </select>
+            </label>
+            {product && (
+              <p className="t-14 font-medium">
+                Total proposé :{" "}
+                {((days * product.salePriceAmount) / 100).toLocaleString(
+                  "fr-FR"
+                )}{" "}
+                DA
+              </p>
+            )}
+            <Button
+              className="h-11"
+              disabled={!(product && currentUser) || busy}
+              type="submit"
+            >
+              {busy ? "Préparation…" : "Créer le brouillon de facture"}
+            </Button>
+          </form>
+        )
+      ) : (
+        <p className="t-13 text-muted-foreground">
+          Facturation indisponible sur le web.
+        </p>
+      )}
+      {error && (
+        <p className="t-13 text-destructive" role="alert">
+          {error}
+        </p>
+      )}
+    </StaySection>
+  );
 }

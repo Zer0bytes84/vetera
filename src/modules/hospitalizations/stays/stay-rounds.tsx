@@ -37,7 +37,7 @@ export function StayRounds({
               <h2 className="t-18 font-medium">
                 {patientName(item.patient_id)}
               </h2>
-              <p className="mt-1 t-13 text-muted-foreground">
+              <p className="t-13 mt-1 text-muted-foreground">
                 {locations.find((location) => location.id === item.location_id)
                   ?.name || "Sans emplacement"}
               </p>
@@ -65,7 +65,7 @@ export function StayRounds({
         </div>
       )}
       {!stays.length && (
-        <Panel className="p-8 text-center t-14 text-muted-foreground">
+        <Panel className="t-14 p-8 text-center text-muted-foreground">
           Aucun patient hospitalisé à visiter.
         </Panel>
       )}

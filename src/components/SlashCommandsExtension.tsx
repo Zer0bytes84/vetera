@@ -266,7 +266,7 @@ export const createSlashCommandsSuggestion = (
           popup?.[0]?.hide();
           return true;
         }
-        return (component?.ref as SlashMenuHandle | null)?.onKeyDown?.(props);
+        return (component?.ref as SlashMenuHandle | null)?.onKeyDown?.(props) ?? false;
       },
 
       onExit() {

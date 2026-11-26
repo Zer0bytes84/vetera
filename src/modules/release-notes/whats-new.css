@@ -3,20 +3,20 @@
 /* `premium-workspace.css` rend tous les dialogues opaques (`background` et `backdrop-filter` en `!important`) : celui-ci est
    la seule fenêtre vitrée, il reprend donc la main avec un sélecteur plus précis, limité à sa classe. */
 :root .whats-new-dialog.whats-new-dialog[data-slot="dialog-content"] {
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 0;
   width: min(480px, calc(100vw - 32px));
   max-width: none;
   /* Jamais plus haute que l'écran (16 px de marge en haut et en bas) : l'en-tête et « Compris » restent visibles, seule
      la liste des nouveautés défile (24 novembre 2026 : la note de la 5.2.0 faisait sortir les deux de l'écran). */
   max-height: calc(100dvh - 32px);
-  grid-template-rows: auto minmax(0, 1fr) auto;
-  gap: 0;
   padding: 6px;
+  background: rgba(255, 255, 255, 0.74) !important;
   border: 0;
   border-radius: 20px;
-  background: rgba(255, 255, 255, 0.74) !important;
+  box-shadow: 0 24px 64px -16px rgba(15, 23, 42, 0.22);
   -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
   backdrop-filter: blur(24px) saturate(180%) !important;
-  box-shadow: 0 24px 64px -16px rgba(15, 23, 42, 0.22);
 }
 :root.dark .whats-new-dialog.whats-new-dialog[data-slot="dialog-content"] {
   background: rgba(14, 16, 22, 0.74) !important;

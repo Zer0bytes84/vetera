@@ -1,7 +1,5 @@
-import { Check, Copy, FloppyDisk, Pencil, Trash, Warning, X } from "@/lib/icons";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -13,6 +11,15 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ModalBandActions } from "@/components/ui/modal-chrome";
+import {
+  Check,
+  Copy,
+  FloppyDisk,
+  Pencil,
+  Trash,
+  Warning,
+  X,
+} from "@/lib/icons";
 import { cn } from "@/lib/utils";
 
 import {
@@ -105,7 +112,9 @@ export function usePrescriptionTemplates() {
 
   const rename = useCallback(
     (id: string, name: string) =>
-      commit(renameTemplate(latest.current, id, name, new Date().toISOString())),
+      commit(
+        renameTemplate(latest.current, id, name, new Date().toISOString())
+      ),
     [commit]
   );
 
@@ -177,7 +186,7 @@ export function PrescriptionTemplateQuickList({
       data-testid="prescription-template-quick-list"
     >
       <div className="flex items-center justify-between gap-2">
-        <p className="font-medium t-12 text-muted-foreground uppercase tracking-wider">
+        <p className="t-12 font-medium text-muted-foreground uppercase tracking-wider">
           Partir d'un modèle
         </p>
         <button
@@ -258,54 +267,67 @@ export function PrescriptionTemplatesDialog({
 
   const handleSave = async () => {
     setBusy(true);
-    await guard(async () => {
-      const result = await state.save({ ...getCurrent(), name });
-      toast.success(
-        result.replaced
-          ? `Modèle « ${result.saved.name} » mis à jour.`
-          : `Modèle « ${result.saved.name} » enregistré.`
-      );
-      setName("");
-    }, {
-      recover: (error) => {
-        toast.error(errorMessage(error, "Impossible d'enregistrer le modèle."));
+    await guard(
+      async () => {
+        const result = await state.save({ ...getCurrent(), name });
+        toast.success(
+          result.replaced
+            ? `Modèle « ${result.saved.name} » mis à jour.`
+            : `Modèle « ${result.saved.name} » enregistré.`
+        );
+        setName("");
       },
-      cleanup: () => {
-        setBusy(false);
-      },
-    });
+      {
+        recover: (error) => {
+          toast.error(
+            errorMessage(error, "Impossible d'enregistrer le modèle.")
+          );
+        },
+        cleanup: () => {
+          setBusy(false);
+        },
+      }
+    );
   };
 
   const handleRename = async (id: string) => {
     setBusy(true);
-    await guard(async () => {
-      await state.rename(id, editingName);
-      setEditingId(null);
-      toast.success("Modèle renommé.");
-    }, {
-      recover: (error) => {
-        toast.error(errorMessage(error, "Impossible de renommer le modèle."));
+    await guard(
+      async () => {
+        await state.rename(id, editingName);
+        setEditingId(null);
+        toast.success("Modèle renommé.");
       },
-      cleanup: () => {
-        setBusy(false);
-      },
-    });
+      {
+        recover: (error) => {
+          toast.error(errorMessage(error, "Impossible de renommer le modèle."));
+        },
+        cleanup: () => {
+          setBusy(false);
+        },
+      }
+    );
   };
 
   const handleRemove = async (template: PrescriptionTemplate) => {
     setBusy(true);
-    await guard(async () => {
-      await state.remove(template.id);
-      setConfirmDeleteId(null);
-      toast.success(`Modèle « ${template.name} » supprimé.`);
-    }, {
-      recover: (error) => {
-        toast.error(errorMessage(error, "Impossible de supprimer le modèle."));
+    await guard(
+      async () => {
+        await state.remove(template.id);
+        setConfirmDeleteId(null);
+        toast.success(`Modèle « ${template.name} » supprimé.`);
       },
-      cleanup: () => {
-        setBusy(false);
-      },
-    });
+      {
+        recover: (error) => {
+          toast.error(
+            errorMessage(error, "Impossible de supprimer le modèle.")
+          );
+        },
+        cleanup: () => {
+          setBusy(false);
+        },
+      }
+    );
   };
 
   return (
@@ -313,9 +335,13 @@ export function PrescriptionTemplatesDialog({
       <DialogContent
         className="rx-template-dialog sm:max-w-lg"
         data-testid="prescription-templates-dialog"
-        forceBackdrop
         focusClose
-        initialFocus={initialMode === "save" && canSaveCurrent && state.ready ? nameInputRef : undefined}
+        forceBackdrop
+        initialFocus={
+          initialMode === "save" && canSaveCurrent && state.ready
+            ? nameInputRef
+            : undefined
+        }
       >
         <DialogHeader icon={<Copy />}>
           <DialogTitle>Modèles d'ordonnance</DialogTitle>
@@ -333,7 +359,7 @@ export function PrescriptionTemplatesDialog({
 
         <section className="space-y-2">
           <Label
-            className="font-medium t-12 text-muted-foreground uppercase tracking-wider"
+            className="t-12 font-medium text-muted-foreground uppercase tracking-wider"
             htmlFor="rx-template-name"
           >
             Enregistrer l'ordonnance actuelle
@@ -349,7 +375,7 @@ export function PrescriptionTemplatesDialog({
           >
             <Input
               className="h-9 text-sm"
-              disabled={!canSaveCurrent || !state.ready}
+              disabled={!(canSaveCurrent && state.ready)}
               id="rx-template-name"
               maxLength={TEMPLATE_NAME_MAX}
               onChange={(event) => setName(event.target.value)}
@@ -360,7 +386,9 @@ export function PrescriptionTemplatesDialog({
             <ModalBandActions>
               <Button
                 className="h-9 shrink-0 gap-1.5"
-                disabled={!canSaveCurrent || !state.ready || !name.trim() || busy}
+                disabled={
+                  !(canSaveCurrent && state.ready && name.trim()) || busy
+                }
                 type="submit"
               >
                 <FloppyDisk className="size-4" weight="duotone" />
@@ -378,7 +406,7 @@ export function PrescriptionTemplatesDialog({
         </section>
 
         <section className="space-y-2">
-          <p className="font-medium t-12 text-muted-foreground uppercase tracking-wider">
+          <p className="t-12 font-medium text-muted-foreground uppercase tracking-wider">
             Modèles enregistrés
           </p>
           {state.templates.length === 0 ? (
@@ -448,14 +476,12 @@ export function PrescriptionTemplatesDialog({
                           <p className="truncate font-medium text-sm">
                             {template.name}
                           </p>
-                          <p className="truncate t-12 text-muted-foreground">
+                          <p className="t-12 truncate text-muted-foreground">
                             {template.items
                               .map((it) => it.medicationName)
                               .join(" · ")}
                           </p>
-                          <TemplateAlertBadge
-                            count={alertCountFor(template)}
-                          />
+                          <TemplateAlertBadge count={alertCountFor(template)} />
                         </div>
                         {confirming ? (
                           <div className="flex shrink-0 items-center gap-1.5">

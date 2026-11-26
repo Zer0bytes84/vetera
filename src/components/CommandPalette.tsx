@@ -40,42 +40,44 @@ import {
   useState,
 } from "react";
 import { useTranslation } from "react-i18next";
-
-import { CommandDialog } from "@/components/ui/command";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { suggestedPatients } from "@/modules/shell/model/palette-suggestions";
-import { Kbd } from "@/components/ui/kbd";
 import { Badge } from "@/components/ui/badge";
+import { CommandDialog } from "@/components/ui/command";
+import { Kbd } from "@/components/ui/kbd";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { getPatientStatusMeta } from "@/config/status-meta";
+import { useFocus } from "@/contexts/focus-provider";
 import {
   useAppointmentsRepository,
-  usePatientsRepository,
   useOwnersRepository,
+  usePatientsRepository,
 } from "@/data/repositories";
-import type { View } from "@/types";
-import type { Appointment, Patient } from "@/types/db";
+import { getSpeciesGlyph } from "@/lib/species-icons";
+import type {
+  SearchSection,
+  SourceType,
+} from "@/modules/consultations/local-ai/embedding-index";
+import {
+  searchAllPatientsClinical,
+  searchAllPatientsFastLexical,
+} from "@/modules/consultations/local-ai/embedding-store";
+import {
+  bestPassage,
+  focusExcerpt,
+} from "@/modules/consultations/local-ai/passage-search";
+import { highlightPassage } from "@/modules/consultations/local-ai/search-highlight";
+import {
+  matchesPatientReference,
+  patientReferenceSearchText,
+} from "@/modules/patients/reference/reference";
 import { parseActionQuery } from "@/modules/shell/model/action-query";
 import {
   prepareAppointment,
   prepareInvoice,
   prepareVaccination,
 } from "@/modules/shell/model/clinical-actions";
-import { useFocus } from "@/contexts/focus-provider";
-import { getSpeciesGlyph } from "@/lib/species-icons";
-import { getPatientStatusMeta } from "@/config/status-meta";
-import {
-  matchesPatientReference,
-  patientReferenceSearchText,
-} from "@/modules/patients/reference/reference";
-import { bestPassage, focusExcerpt } from "@/modules/consultations/local-ai/passage-search";
-import { highlightPassage } from "@/modules/consultations/local-ai/search-highlight";
-import {
-  searchAllPatientsFastLexical,
-  searchAllPatientsClinical,
-} from "@/modules/consultations/local-ai/embedding-store";
-import type {
-  SearchSection,
-  SourceType,
-} from "@/modules/consultations/local-ai/embedding-index";
+import { suggestedPatients } from "@/modules/shell/model/palette-suggestions";
+import type { View } from "@/types";
+import type { Appointment, Patient } from "@/types/db";
 
 const CLINICAL_ALL_SECTIONS: SearchSection[] = [
   "subjective",
@@ -202,7 +204,7 @@ const loadRecents = (): RecentEntry[] => {
         typeof e.id === "string" &&
         typeof e.label === "string" &&
         typeof e.at === "number" &&
-        (e.kind === "patient" || e.kind === "view"),
+        (e.kind === "patient" || e.kind === "view")
     );
   } catch {
     return [];
@@ -249,7 +251,7 @@ export const normalizeSearch = (value: string): string =>
 export const scoreCommandMatch = (
   value: string,
   search: string,
-  keywords?: string[],
+  keywords?: string[]
 ): number => {
   const normalizedSearch = normalizeSearch(search);
   if (!normalizedSearch) {
@@ -266,7 +268,7 @@ export const scoreCommandMatch = (
   const cleanedValue = value.replace(/^[a-z]+:[^\s]+\s*/i, "").trim();
   const normalizedLabel = normalizeSearch(cleanedValue);
   const haystack = normalizeSearch(
-    `${cleanedValue} ${(keywords ?? []).join(" ")}`,
+    `${cleanedValue} ${(keywords ?? []).join(" ")}`
   );
 
   // Exact match on the clean item label
@@ -288,7 +290,7 @@ export const scoreCommandMatch = (
   // Any keyword starts with the query
   if (
     (keywords ?? []).some((kw) =>
-      normalizeSearch(kw).startsWith(normalizedSearch),
+      normalizeSearch(kw).startsWith(normalizedSearch)
     )
   ) {
     return 0.85;
@@ -381,12 +383,17 @@ export default function CommandPalette({
     void (async () => {
       try {
         const instantMatches = await searchAllPatientsFastLexical(
-          { sourceTypes: CLINICAL_ALL_SOURCES, sections: CLINICAL_ALL_SECTIONS },
+          {
+            sourceTypes: CLINICAL_ALL_SOURCES,
+            sections: CLINICAL_ALL_SECTIONS,
+          },
           trimmed,
-          controller.signal,
+          controller.signal
         );
         if (!controller.signal.aborted && instantMatches.length > 0) {
-          setSemanticResults((prev) => (prev.length === 0 ? instantMatches : prev));
+          setSemanticResults((prev) =>
+            prev.length === 0 ? instantMatches : prev
+          );
         }
       } catch {
         // fast lexical lookup error ignored
@@ -399,9 +406,12 @@ export default function CommandPalette({
       void (async () => {
         try {
           const found = await searchAllPatientsClinical(
-            { sourceTypes: CLINICAL_ALL_SOURCES, sections: CLINICAL_ALL_SECTIONS },
+            {
+              sourceTypes: CLINICAL_ALL_SOURCES,
+              sections: CLINICAL_ALL_SECTIONS,
+            },
             trimmed,
-            controller.signal,
+            controller.signal
           );
           if (!controller.signal.aborted) {
             setSemanticResults(found);
@@ -425,9 +435,15 @@ export default function CommandPalette({
     () => [
       {
         id: "dashboard",
-        label: t("commandPalette.nav.dashboard", { defaultValue: "Tableau de bord" }),
-        sub: t("commandPalette.nav.dashboardSub", { defaultValue: "Vue d'ensemble et pilotage" }),
-        category: t("commandPalette.category.pilotage", { defaultValue: "Pilotage" }),
+        label: t("commandPalette.nav.dashboard", {
+          defaultValue: "Tableau de bord",
+        }),
+        sub: t("commandPalette.nav.dashboardSub", {
+          defaultValue: "Vue d'ensemble et pilotage",
+        }),
+        category: t("commandPalette.category.pilotage", {
+          defaultValue: "Pilotage",
+        }),
         keywords: [
           "dashboard",
           "tableau de bord",
@@ -442,8 +458,12 @@ export default function CommandPalette({
       {
         id: "patients",
         label: t("commandPalette.nav.patients", { defaultValue: "Patients" }),
-        sub: t("commandPalette.nav.patientsSub", { defaultValue: "Dossiers médicaux et antécédents" }),
-        category: t("commandPalette.category.parcours", { defaultValue: "Parcours patient" }),
+        sub: t("commandPalette.nav.patientsSub", {
+          defaultValue: "Dossiers médicaux et antécédents",
+        }),
+        category: t("commandPalette.category.parcours", {
+          defaultValue: "Parcours patient",
+        }),
         keywords: [
           "patients",
           "patient",
@@ -458,8 +478,12 @@ export default function CommandPalette({
       {
         id: "agenda",
         label: t("commandPalette.nav.agenda", { defaultValue: "Agenda" }),
-        sub: t("commandPalette.nav.agendaSub", { defaultValue: "Planning et rendez-vous" }),
-        category: t("commandPalette.category.parcours", { defaultValue: "Parcours patient" }),
+        sub: t("commandPalette.nav.agendaSub", {
+          defaultValue: "Planning et rendez-vous",
+        }),
+        category: t("commandPalette.category.parcours", {
+          defaultValue: "Parcours patient",
+        }),
         keywords: [
           "agenda",
           "planning",
@@ -472,8 +496,12 @@ export default function CommandPalette({
       {
         id: "notes",
         label: "Documents",
-        sub: t("commandPalette.nav.notesSub", { defaultValue: "Notes, ordonnances et comptes-rendus" }),
-        category: t("commandPalette.category.parcours", { defaultValue: "Parcours patient" }),
+        sub: t("commandPalette.nav.notesSub", {
+          defaultValue: "Notes, ordonnances et comptes-rendus",
+        }),
+        category: t("commandPalette.category.parcours", {
+          defaultValue: "Parcours patient",
+        }),
         keywords: [
           "documents",
           "document",
@@ -488,9 +516,15 @@ export default function CommandPalette({
       },
       {
         id: "clinique",
-        label: t("commandPalette.nav.clinique", { defaultValue: "Soins & hospitalisation" }),
-        sub: t("commandPalette.nav.cliniqueSub", { defaultValue: "Soins du jour et hospitalisations" }),
-        category: t("commandPalette.category.parcours", { defaultValue: "Parcours patient" }),
+        label: t("commandPalette.nav.clinique", {
+          defaultValue: "Soins & hospitalisation",
+        }),
+        sub: t("commandPalette.nav.cliniqueSub", {
+          defaultValue: "Soins du jour et hospitalisations",
+        }),
+        category: t("commandPalette.category.parcours", {
+          defaultValue: "Parcours patient",
+        }),
         keywords: [
           "clinique",
           "consultations",
@@ -505,8 +539,12 @@ export default function CommandPalette({
       {
         id: "taches",
         label: t("commandPalette.nav.tasks", { defaultValue: "Tâches" }),
-        sub: t("commandPalette.nav.tasksSub", { defaultValue: "To-do list et rappels" }),
-        category: t("commandPalette.category.pilotage", { defaultValue: "Pilotage" }),
+        sub: t("commandPalette.nav.tasksSub", {
+          defaultValue: "To-do list et rappels",
+        }),
+        category: t("commandPalette.category.pilotage", {
+          defaultValue: "Pilotage",
+        }),
         keywords: [
           "taches",
           "tache",
@@ -519,9 +557,15 @@ export default function CommandPalette({
       },
       {
         id: "stock",
-        label: t("commandPalette.nav.stock", { defaultValue: "Stock & Pharma" }),
-        sub: t("commandPalette.nav.stockSub", { defaultValue: "Inventaire et délivrance médicaments" }),
-        category: t("commandPalette.category.exploitation", { defaultValue: "Exploitation" }),
+        label: t("commandPalette.nav.stock", {
+          defaultValue: "Stock & Pharma",
+        }),
+        sub: t("commandPalette.nav.stockSub", {
+          defaultValue: "Inventaire et délivrance médicaments",
+        }),
+        category: t("commandPalette.category.exploitation", {
+          defaultValue: "Exploitation",
+        }),
         keywords: [
           "stock",
           "pharmacie",
@@ -535,8 +579,12 @@ export default function CommandPalette({
       {
         id: "finances",
         label: t("commandPalette.nav.finances", { defaultValue: "Finances" }),
-        sub: t("commandPalette.nav.financesSub", { defaultValue: "Facturation, devis et recettes" }),
-        category: t("commandPalette.category.exploitation", { defaultValue: "Exploitation" }),
+        sub: t("commandPalette.nav.financesSub", {
+          defaultValue: "Facturation, devis et recettes",
+        }),
+        category: t("commandPalette.category.exploitation", {
+          defaultValue: "Exploitation",
+        }),
         keywords: [
           "finances",
           "factures",
@@ -551,8 +599,12 @@ export default function CommandPalette({
       {
         id: "equipe",
         label: t("commandPalette.nav.team", { defaultValue: "Équipe" }),
-        sub: t("commandPalette.nav.teamSub", { defaultValue: "Collaborateurs et plannings" }),
-        category: t("commandPalette.category.exploitation", { defaultValue: "Exploitation" }),
+        sub: t("commandPalette.nav.teamSub", {
+          defaultValue: "Collaborateurs et plannings",
+        }),
+        category: t("commandPalette.category.exploitation", {
+          defaultValue: "Exploitation",
+        }),
         keywords: [
           "equipe",
           "personnel",
@@ -565,8 +617,12 @@ export default function CommandPalette({
       {
         id: "parametres",
         label: t("commandPalette.nav.settings", { defaultValue: "Paramètres" }),
-        sub: t("commandPalette.nav.settingsSub", { defaultValue: "Configuration et préférences" }),
-        category: t("commandPalette.category.configuration", { defaultValue: "Configuration" }),
+        sub: t("commandPalette.nav.settingsSub", {
+          defaultValue: "Configuration et préférences",
+        }),
+        category: t("commandPalette.category.configuration", {
+          defaultValue: "Configuration",
+        }),
         keywords: [
           "parametres",
           "settings",
@@ -578,7 +634,7 @@ export default function CommandPalette({
         ],
       },
     ],
-    [t],
+    [t]
   );
 
   const q = normalizeSearch(query);
@@ -601,36 +657,42 @@ export default function CommandPalette({
   }, [owners]);
 
   const actionPatients = useMemo(() => {
-    if (!intent || intent.kind === "invoice") return [];
+    if (!intent || intent.kind === "invoice") {
+      return [];
+    }
     return patients
       .filter((patient) =>
-        matchesSearch(`${patient.name} ${patient.species}`, intent.entity),
+        matchesSearch(`${patient.name} ${patient.species}`, intent.entity)
       )
       .slice(0, 5);
   }, [intent, patients]);
 
   const actionOwners = useMemo(() => {
-    if (intent?.kind !== "invoice") return [];
+    if (intent?.kind !== "invoice") {
+      return [];
+    }
     const entityClean = intent.entity.replace(
       /^(mme|m|mr|madame|monsieur)\.?\s+/i,
-      "",
+      ""
     );
     return owners
       .filter((owner) =>
-        matchesSearch(`${owner.firstName} ${owner.lastName}`, entityClean),
+        matchesSearch(`${owner.firstName} ${owner.lastName}`, entityClean)
       )
       .slice(0, 5);
   }, [intent, owners]);
 
-  const suggestions = useMemo(() => {
-    return suggestedPatients(patients, appointments, Date.now()).filter(
-      (patient) =>
-        group !== "all" ||
-        !recents.some(
-          (entry) => entry.kind === "patient" && entry.id === patient.id,
-        ),
-    );
-  }, [patients, appointments, group, recents]);
+  const suggestions = useMemo(
+    () =>
+      suggestedPatients(patients, appointments, Date.now()).filter(
+        (patient) =>
+          group !== "all" ||
+          !recents.some(
+            (entry) => entry.kind === "patient" && entry.id === patient.id
+          )
+      ),
+    [patients, appointments, group, recents]
+  );
 
   const showPatients = group === "all" || group === "records";
   const showSemantic = group === "all" || group === "records";
@@ -650,22 +712,28 @@ export default function CommandPalette({
         const tattoo = p.tattooNumber ?? "";
         return matchesSearch(
           `${p.name} ${p.species} ${p.breed ?? ""} ${ownerName} ${chip} ${tattoo} ${patientReferenceSearchText(p.reference)}`,
-          q,
+          q
         );
       })
       .sort((a, b) => {
         // The exact reference typed opens that patient first
         const aReference = matchesPatientReference(a.reference, query);
         const bReference = matchesPatientReference(b.reference, query);
-        if (aReference !== bReference) return aReference ? -1 : 1;
+        if (aReference !== bReference) {
+          return aReference ? -1 : 1;
+        }
 
         // Prioritize startsWith on name
         const aName = normalizeSearch(a.name);
         const bName = normalizeSearch(b.name);
         const aStarts = aName.startsWith(q);
         const bStarts = bName.startsWith(q);
-        if (aStarts && !bStarts) return -1;
-        if (!aStarts && bStarts) return 1;
+        if (aStarts && !bStarts) {
+          return -1;
+        }
+        if (!aStarts && bStarts) {
+          return 1;
+        }
 
         // Secondary: recency of last visit
         const aVisit = a.lastVisit ? Date.parse(a.lastVisit) : 0;
@@ -684,13 +752,13 @@ export default function CommandPalette({
         const patient = patientsById.get(a.patientId);
         return matchesSearch(
           `${a.title} ${a.type} ${a.notes ?? ""} ${patient?.name ?? ""}`,
-          q,
+          q
         );
       })
       .sort(
         (a, b) =>
           Math.abs(new Date(a.startTime).getTime() - Date.now()) -
-          Math.abs(new Date(b.startTime).getTime() - Date.now()),
+          Math.abs(new Date(b.startTime).getTime() - Date.now())
       )
       .slice(0, 5);
   }, [appointments, patientsById, q]);
@@ -707,7 +775,7 @@ export default function CommandPalette({
       onNavigate(action.id);
       onClose();
     },
-    [onNavigate, onClose],
+    [onNavigate, onClose]
   );
 
   const handleSelectPatient = useCallback(
@@ -722,7 +790,7 @@ export default function CommandPalette({
       onNavigateToPatient(patient.id);
       onClose();
     },
-    [onNavigateToPatient, onClose],
+    [onNavigateToPatient, onClose]
   );
 
   const handleSelectAppointment = useCallback(
@@ -741,7 +809,7 @@ export default function CommandPalette({
       onNavigate("agenda");
       onClose();
     },
-    [patientsById, requestFocus, onNavigate, onClose],
+    [patientsById, requestFocus, onNavigate, onClose]
   );
 
   const handleSelectRecent = useCallback(
@@ -754,7 +822,7 @@ export default function CommandPalette({
       }
       onClose();
     },
-    [onNavigateToPatient, onNavigate, onClose],
+    [onNavigateToPatient, onNavigate, onClose]
   );
 
   const fireAction = useCallback(
@@ -765,19 +833,22 @@ export default function CommandPalette({
         window.dispatchEvent(new CustomEvent(event, { detail }));
       }, 120);
     },
-    [onNavigate, onClose],
+    [onNavigate, onClose]
   );
   // With nothing typed, the quick actions lead as tiles; once the user types, every group reads as rows.
   const actionsLayout = q ? "rows" : "tiles";
   // Pages & Navigation is not on the opening screen: it answers a typed query, or the Commandes filter.
-  const showNavigationGroup = showNavigation && (Boolean(q) || group === "commands");
+  const showNavigationGroup =
+    showNavigation && (Boolean(q) || group === "commands");
 
   // The quick actions, one element shown first (tiles, nothing typed) or after the results (rows, once the user types).
   const quickActions = (
     <CommandPrimitive.Group
       className="command-palette-actions"
       data-layout={actionsLayout}
-      heading={t("commandPalette.group.actions", { defaultValue: "Actions rapides" })}
+      heading={t("commandPalette.group.actions", {
+        defaultValue: "Actions rapides",
+      })}
     >
       <CommandPrimitive.Item
         className="command-palette-item"
@@ -797,14 +868,19 @@ export default function CommandPalette({
         value="action:open-assistant Ouvrir l'Assistant IA Dictée SOAP et cas similaires"
       >
         <Glyph icon={SparklesIcon} />
-        <Text sub="Dictée guidée SOAP & recherche clinique" title="Ouvrir l'Assistant IA" />
+        <Text
+          sub="Dictée guidée SOAP & recherche clinique"
+          title="Ouvrir l'Assistant IA"
+        />
         <Kbd className="command-palette-shortcut">⌘J</Kbd>
       </CommandPrimitive.Item>
 
       <CommandPrimitive.Item
         className="command-palette-item"
         keywords={[
-          t("commandPalette.action.newPatient", { defaultValue: "Nouveau patient" }),
+          t("commandPalette.action.newPatient", {
+            defaultValue: "Nouveau patient",
+          }),
           "patient",
           "ajouter",
           "creer",
@@ -814,14 +890,20 @@ export default function CommandPalette({
         value="action:new-patient Nouveau patient Créer un dossier animal"
       >
         <Glyph icon={UserPlusIcon} />
-        <Text title={t("commandPalette.action.newPatient", { defaultValue: "Nouveau patient" })} />
+        <Text
+          title={t("commandPalette.action.newPatient", {
+            defaultValue: "Nouveau patient",
+          })}
+        />
         <Kbd className="command-palette-shortcut">⌘N</Kbd>
       </CommandPrimitive.Item>
 
       <CommandPrimitive.Item
         className="command-palette-item"
         keywords={[
-          t("commandPalette.action.newAppointment", { defaultValue: "Nouveau rendez-vous" }),
+          t("commandPalette.action.newAppointment", {
+            defaultValue: "Nouveau rendez-vous",
+          }),
           "agenda",
           "rdv",
           "programmer",
@@ -830,14 +912,20 @@ export default function CommandPalette({
         value="action:new-appointment Nouveau rendez-vous Programmer une visite"
       >
         <Glyph icon={CalendarDaysIcon} />
-        <Text title={t("commandPalette.action.newAppointment", { defaultValue: "Nouveau rendez-vous" })} />
+        <Text
+          title={t("commandPalette.action.newAppointment", {
+            defaultValue: "Nouveau rendez-vous",
+          })}
+        />
         <Kbd className="command-palette-shortcut">⌘R</Kbd>
       </CommandPrimitive.Item>
 
       <CommandPrimitive.Item
         className="command-palette-item"
         keywords={[
-          t("commandPalette.action.openConsultation", { defaultValue: "Ouvrir une consultation" }),
+          t("commandPalette.action.openConsultation", {
+            defaultValue: "Ouvrir une consultation",
+          }),
           "clinique",
           "soins",
           "soap",
@@ -849,14 +937,20 @@ export default function CommandPalette({
         value="action:open-consultation Nouvelle consultation Ouvrir une consultation"
       >
         <Glyph icon={ClipboardDocumentCheckIcon} />
-        <Text title={t("commandPalette.action.openConsultation", { defaultValue: "Ouvrir une consultation" })} />
+        <Text
+          title={t("commandPalette.action.openConsultation", {
+            defaultValue: "Ouvrir une consultation",
+          })}
+        />
         <Kbd className="command-palette-hint">↵</Kbd>
       </CommandPrimitive.Item>
 
       <CommandPrimitive.Item
         className="command-palette-item"
         keywords={[
-          t("commandPalette.action.newPrescription", { defaultValue: "Nouvelle ordonnance" }),
+          t("commandPalette.action.newPrescription", {
+            defaultValue: "Nouvelle ordonnance",
+          }),
           "ordonnance",
           "prescription",
           "medicaments",
@@ -865,7 +959,11 @@ export default function CommandPalette({
         value="action:new-prescription Nouvelle ordonnance Prescription médicaments"
       >
         <Glyph icon={PencilSquareIcon} />
-        <Text title={t("commandPalette.action.newPrescription", { defaultValue: "Nouvelle ordonnance" })} />
+        <Text
+          title={t("commandPalette.action.newPrescription", {
+            defaultValue: "Nouvelle ordonnance",
+          })}
+        />
       </CommandPrimitive.Item>
 
       <CommandPrimitive.Item
@@ -889,7 +987,9 @@ export default function CommandPalette({
         <CommandPrimitive.Item
           className="command-palette-item"
           keywords={[
-            t("commandPalette.action.newHospitalization", { defaultValue: "Nouvelle hospitalisation" }),
+            t("commandPalette.action.newHospitalization", {
+              defaultValue: "Nouvelle hospitalisation",
+            }),
             "hospitalisation",
             "clinique",
             "box",
@@ -898,14 +998,20 @@ export default function CommandPalette({
           value="action:new-hospitalization Nouvelle hospitalisation Admission box"
         >
           <Glyph icon={BuildingOffice2Icon} />
-          <Text title={t("commandPalette.action.newHospitalization", { defaultValue: "Nouvelle hospitalisation" })} />
+          <Text
+            title={t("commandPalette.action.newHospitalization", {
+              defaultValue: "Nouvelle hospitalisation",
+            })}
+          />
         </CommandPrimitive.Item>
       )}
 
       <CommandPrimitive.Item
         className="command-palette-item"
         keywords={[
-          t("commandPalette.action.newAnesthesia", { defaultValue: "Nouvelle anesthésie" }),
+          t("commandPalette.action.newAnesthesia", {
+            defaultValue: "Nouvelle anesthésie",
+          }),
           "anesthesie",
           "chirurgie",
         ]}
@@ -913,19 +1019,23 @@ export default function CommandPalette({
         value="action:new-anesthesia Nouvelle anesthésie Protocole anesthésique"
       >
         <Glyph icon={MoonIcon} />
-        <Text title={t("commandPalette.action.newAnesthesia", { defaultValue: "Nouvelle anesthésie" })} />
+        <Text
+          title={t("commandPalette.action.newAnesthesia", {
+            defaultValue: "Nouvelle anesthésie",
+          })}
+        />
       </CommandPrimitive.Item>
     </CommandPrimitive.Group>
   );
 
   return (
     <CommandDialog
-      title="Palette de commandes"
-      description="Recherche rapide, navigation et dossiers patients."
       className="command-palette sm:!top-[15%] sm:!-translate-y-0 !max-w-[680px]"
+      description="Recherche rapide, navigation et dossiers patients."
       onOpenChange={(open) => !open && onClose()}
       open={isOpen}
       overlayClassName="data-closed:!animate-none data-open:!animate-none bg-black/40 backdrop-blur-sm dark:bg-black/60"
+      title="Palette de commandes"
     >
       <CommandPrimitive
         className="command-palette-root"
@@ -942,12 +1052,19 @@ export default function CommandPalette({
           onMouseDown={(event) => {
             // The loupe and the field's padding hand the click to the input, as the former input group did.
             const target = event.target as HTMLElement;
-            if (target.closest("input, button, [role='tab']")) return;
+            if (target.closest("input, button, [role='tab']")) {
+              return;
+            }
             event.preventDefault();
-            event.currentTarget.querySelector<HTMLInputElement>("[data-command-palette-input]")?.focus();
+            event.currentTarget
+              .querySelector<HTMLInputElement>("[data-command-palette-input]")
+              ?.focus();
           }}
         >
-          <MagnifyingGlassIcon aria-hidden="true" className="command-palette-field-icon" />
+          <MagnifyingGlassIcon
+            aria-hidden="true"
+            className="command-palette-field-icon"
+          />
           <CommandPrimitive.Input
             aria-label={t("commandPalette.placeholder", {
               defaultValue: "Rechercher ou exécuter une commande…",
@@ -1107,11 +1224,15 @@ export default function CommandPalette({
 
           {/* Récents (quand aucune requête n'est saisie) */}
           {group === "all" && !q && recents.length > 0 && (
-            <CommandPrimitive.Group heading={t("commandPalette.group.recents", { defaultValue: "Récents" })}>
+            <CommandPrimitive.Group
+              heading={t("commandPalette.group.recents", {
+                defaultValue: "Récents",
+              })}
+            >
               {recents
                 .filter(
                   (entry) =>
-                    entry.kind !== "patient" || patientsById.has(entry.id),
+                    entry.kind !== "patient" || patientsById.has(entry.id)
                 )
                 .map((entry) => (
                   <CommandPrimitive.Item
@@ -1124,7 +1245,10 @@ export default function CommandPalette({
                     {entry.kind === "patient" ? (
                       <Glyph icon={UserIcon} />
                     ) : (
-                      <span aria-hidden="true" className="command-palette-glyph">
+                      <span
+                        aria-hidden="true"
+                        className="command-palette-glyph"
+                      >
                         <SidebarIcon view={entry.id as View} />
                       </span>
                     )}
@@ -1172,7 +1296,11 @@ export default function CommandPalette({
 
           {/* Résultats de recherche Patients */}
           {showPatients && matchedPatients.length > 0 && (
-            <CommandPrimitive.Group heading={t("commandPalette.group.patients", { defaultValue: "Dossiers Patients" })}>
+            <CommandPrimitive.Group
+              heading={t("commandPalette.group.patients", {
+                defaultValue: "Dossiers Patients",
+              })}
+            >
               {matchedPatients.map((patient) => {
                 const statusMeta = getPatientStatusMeta(patient.status);
                 const ownerName = ownerById.get(patient.ownerId);
@@ -1206,7 +1334,9 @@ export default function CommandPalette({
                       sub={
                         <>
                           {patient.reference && (
-                            <span className="command-palette-reference">{patient.reference} · </span>
+                            <span className="command-palette-reference">
+                              {patient.reference} ·{" "}
+                            </span>
                           )}
                           {patient.species}
                           {patient.breed && ` · ${patient.breed}`}
@@ -1235,7 +1365,9 @@ export default function CommandPalette({
                 >
                   <Glyph icon={MagnifyingGlassIcon} />
                   <Text
-                    badge={<span className="command-palette-tag">{sug.badge}</span>}
+                    badge={
+                      <span className="command-palette-tag">{sug.badge}</span>
+                    }
                     sub={sug.sub}
                     title={sug.label}
                   />
@@ -1256,8 +1388,13 @@ export default function CommandPalette({
                     disabled
                     value="semantic:loading-indicator"
                   >
-                    <ArrowPathIcon aria-hidden="true" className="command-palette-spinner" />
-                    <span>Recherche clinique dans l’ensemble des dossiers…</span>
+                    <ArrowPathIcon
+                      aria-hidden="true"
+                      className="command-palette-spinner"
+                    />
+                    <span>
+                      Recherche clinique dans l’ensemble des dossiers…
+                    </span>
                   </CommandPrimitive.Item>
                 ) : (
                   semanticResults.map((result) => {
@@ -1293,8 +1430,12 @@ export default function CommandPalette({
                           at: Date.now(),
                         });
                         // A note kept without a visit opens itself in the record.
-                        if (result.sourceType === "document")
-                          sessionStorage.setItem("patient:open-note", result.sourceId);
+                        if (result.sourceType === "document") {
+                          sessionStorage.setItem(
+                            "patient:open-note",
+                            result.sourceId
+                          );
+                        }
                         window.location.hash = `#/patient/${encodeURIComponent(result.patientId)}`;
                         onNavigateToPatient(result.patientId);
                       }
@@ -1313,13 +1454,21 @@ export default function CommandPalette({
                           ? UserIcon
                           : DocumentTextIcon;
 
-                    const passage = focusExcerpt(bestPassage(result.text, query), query);
+                    const passage = focusExcerpt(
+                      bestPassage(result.text, query),
+                      query
+                    );
 
                     return (
                       <CommandPrimitive.Item
                         className="command-palette-item command-palette-passage"
                         key={`semantic:${result.sourceType}:${result.patientId}:${result.sourceId}:${result.section}:${result.chunkIndex}`}
-                        keywords={[query, result.section, sectionLabel, result.text]}
+                        keywords={[
+                          query,
+                          result.section,
+                          sectionLabel,
+                          result.text,
+                        ]}
                         onClick={handleSelectCase}
                         onSelect={handleSelectCase}
                         value={`semantic:${result.sourceType}:${result.patientId}:${result.sourceId}:${result.section}:${result.chunkIndex} ${patientName} ${result.text}`}
@@ -1327,21 +1476,27 @@ export default function CommandPalette({
                         <Glyph icon={itemIcon} />
                         <span className="command-palette-text">
                           <span className="command-palette-excerpt">
-                            {joinAdjacentHits(highlightPassage(passage, query)).map((segment, index) =>
+                            {joinAdjacentHits(
+                              highlightPassage(passage, query)
+                            ).map((segment, index) =>
                               segment.hit ? (
                                 <mark key={index}>{segment.text}</mark>
                               ) : (
                                 <span key={index}>{segment.text}</span>
-                              ),
+                              )
                             )}
                           </span>
                           <span className="command-palette-sub">
-                            <span className="command-palette-source">{patientName}</span>
+                            <span className="command-palette-source">
+                              {patientName}
+                            </span>
                             {" · "}
                             {sectionLabel}
                           </span>
                         </span>
-                        <Hint>{isProduct ? "↵ Voir en stock" : "↵ Ouvrir"}</Hint>
+                        <Hint>
+                          {isProduct ? "↵ Voir en stock" : "↵ Ouvrir"}
+                        </Hint>
                       </CommandPrimitive.Item>
                     );
                   })
@@ -1351,7 +1506,11 @@ export default function CommandPalette({
 
           {/* Résultats Rendez-vous */}
           {showAppointments && matchedAppointments.length > 0 && (
-            <CommandPrimitive.Group heading={t("commandPalette.group.appointments", { defaultValue: "Rendez-vous" })}>
+            <CommandPrimitive.Group
+              heading={t("commandPalette.group.appointments", {
+                defaultValue: "Rendez-vous",
+              })}
+            >
               {matchedAppointments.map((appt) => {
                 const patient = patientsById.get(appt.patientId);
                 return (
@@ -1412,7 +1571,9 @@ export default function CommandPalette({
           </span>
           <span>
             <Kbd>↵</Kbd>
-            {t("commandPalette.footer.select", { defaultValue: "Sélectionner" })}
+            {t("commandPalette.footer.select", {
+              defaultValue: "Sélectionner",
+            })}
           </span>
           <span className="command-palette-footer-close">
             <Kbd>esc</Kbd>
@@ -1439,13 +1600,25 @@ function Glyph({ icon: Icon }: { icon: HeroIcon }) {
 function SpeciesGlyph({ species }: { species: string }) {
   return (
     <span aria-hidden="true" className="command-palette-glyph">
-      <HugeiconsIcon icon={getSpeciesGlyph(species)} size={18} strokeWidth={1.5} />
+      <HugeiconsIcon
+        icon={getSpeciesGlyph(species)}
+        size={18}
+        strokeWidth={1.5}
+      />
     </span>
   );
 }
 
 /** Title (with an optional badge) over a quiet second line. */
-function Text({ title, sub, badge }: { title: ReactNode; sub?: ReactNode; badge?: ReactNode }) {
+function Text({
+  title,
+  sub,
+  badge,
+}: {
+  title: ReactNode;
+  sub?: ReactNode;
+  badge?: ReactNode;
+}) {
   return (
     <span className="command-palette-text">
       <span className="command-palette-title">
@@ -1467,7 +1640,12 @@ function joinAdjacentHits(segments: Array<{ text: string; hit: boolean }>) {
     const segment = segments[i];
     const previous = out.at(-1);
     const next = segments[i + 1];
-    if (!segment.hit && previous?.hit && next?.hit && /^\s+$/.test(segment.text)) {
+    if (
+      !segment.hit &&
+      previous?.hit &&
+      next?.hit &&
+      /^\s+$/.test(segment.text)
+    ) {
       previous.text += segment.text + next.text;
       i++;
     } else if (segment.hit && previous?.hit) {

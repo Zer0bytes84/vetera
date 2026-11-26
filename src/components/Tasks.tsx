@@ -1,27 +1,23 @@
-import { ErrorState } from "@/design-system/patterns/error-state";
-import { BellIcon, CalendarDaysIcon, CheckBadgeIcon, CheckCircleIcon, ClipboardDocumentCheckIcon, ClockIcon, MagnifyingGlassIcon, ShieldExclamationIcon } from "@heroicons/react/20/solid";
-import { ArrowRightIcon, PlusIcon } from "@heroicons/react/16/solid";
-import { SearchableSelect } from "@/components/ui/searchable-select";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { usePatientReminders } from "@/modules/patient-reminders/use-patient-reminders";
-import type {
-  MedicalReminderProposal,
-  PatientReminder,
-  ReminderType,
-} from "@/modules/patient-reminders/store";
 import {
-  addCalendarMonths,
-  isMedicalReminderType,
-  localToday,
-  reminderTypesForSelect,
-} from "@/modules/patient-reminders/domain";
-import { MedicalReminderDialog } from "@/modules/patient-reminders/medical-reminder-dialog";
-import { patientRemindersService } from "@/modules/patient-reminders/service";
-import { announcePatientRemindersChanged } from "@/modules/patient-reminders/use-patient-reminders";
-import { PatientRemindersContent } from "@/modules/patient-reminders/patient-reminders-panel";
-import { ListSearch } from "@/components/ui/list-controls";
-import { formatDisplayText, formatNumber } from "@/utils/display-format";
-import { ArrowUturnLeftIcon, CheckIcon, ChevronDownIcon, PencilIcon, TrashIcon, UserIcon } from "@heroicons/react/16/solid";
+  ArrowRightIcon,
+  ArrowUturnLeftIcon,
+  CheckIcon,
+  ChevronDownIcon,
+  PencilIcon,
+  PlusIcon,
+  TrashIcon,
+  UserIcon,
+} from "@heroicons/react/16/solid";
+import {
+  BellIcon,
+  CalendarDaysIcon,
+  CheckBadgeIcon,
+  CheckCircleIcon,
+  ClipboardDocumentCheckIcon,
+  ClockIcon,
+  MagnifyingGlassIcon,
+  ShieldExclamationIcon,
+} from "@heroicons/react/20/solid";
 import type React from "react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -30,10 +26,17 @@ import { SectionCards } from "@/components/section-cards";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { ListSearch } from "@/components/ui/list-controls";
+import {
+  SkeletonRegion,
+  SkeletonShape,
+} from "@/components/ui/loading-skeleton";
 import {
   NativeSelect,
   NativeSelectOption,
 } from "@/components/ui/native-select";
+import { SearchableSelect } from "@/components/ui/searchable-select";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/contexts/AuthContext";
 import { useFocus } from "@/contexts/focus-provider";
@@ -43,34 +46,53 @@ import {
   useRemindersRepository,
   useTasksRepository,
 } from "@/data/repositories";
-import { cn } from "@/lib/utils";
-import { SkeletonRegion, SkeletonShape } from "@/components/ui/loading-skeleton";
+import { ErrorState } from "@/design-system/patterns/error-state";
 import { useDelayedSkeleton } from "@/hooks/useDelayedSkeleton";
+import { cn } from "@/lib/utils";
+import {
+  addCalendarMonths,
+  isMedicalReminderType,
+  localToday,
+  reminderTypesForSelect,
+} from "@/modules/patient-reminders/domain";
+import { MedicalReminderDialog } from "@/modules/patient-reminders/medical-reminder-dialog";
+import { PatientRemindersContent } from "@/modules/patient-reminders/patient-reminders-panel";
+import { patientRemindersService } from "@/modules/patient-reminders/service";
+import type {
+  MedicalReminderProposal,
+  PatientReminder,
+  ReminderType,
+} from "@/modules/patient-reminders/store";
+import {
+  announcePatientRemindersChanged,
+  usePatientReminders,
+} from "@/modules/patient-reminders/use-patient-reminders";
 import type { Appointment, Patient, Reminder, Task } from "@/types/db";
+import { formatDisplayText, formatNumber } from "@/utils/display-format";
 import "./tasks.css";
-import { buildReminderQuiet, type ReminderQuiet } from "./reminder-quiet";
+import { DatePicker } from "@/components/ui/date-picker";
+import { Kbd } from "@/components/ui/kbd";
 import { Panel, Shell, ShellHeader } from "@/components/ui/surface";
+import { useListCursor } from "@/hooks/useListCursor";
+import { guard } from "@/lib/guard";
+import { AppointmentRelances } from "@/modules/agenda/components/appointment-relances";
 import {
   groupReminders,
   reminderBucket,
   sourceBreakdown,
 } from "./reminder-buckets";
-import { useListCursor } from "@/hooks/useListCursor";
-import { Kbd } from "@/components/ui/kbd";
-import { DatePicker } from "@/components/ui/date-picker";
-import { guard } from "@/lib/guard";
-import { AppointmentRelances } from "@/modules/agenda/components/appointment-relances";
+import { buildReminderQuiet, type ReminderQuiet } from "./reminder-quiet";
 
 type ReminderView = "today" | "upcoming" | "completed";
 type Scope = "mine" | "team";
 type ReminderSource = "all" | "manual" | "medical";
 
 interface TaskDraft {
-  reminderTypeId: string;
   description: string;
   dueDate: string;
   patientId: string;
   priority: Task["priority"];
+  reminderTypeId: string;
   startTime: string;
   title: string;
 }
@@ -91,13 +113,15 @@ interface AutomaticReminderItem {
 }
 
 interface MedicalReminderItem {
-  kind: "medical";
-  reminder: PatientReminder;
-  patient?: Patient;
   date: Date;
+  kind: "medical";
+  patient?: Patient;
+  reminder: PatientReminder;
 }
 type ReminderItem =
-  ManualReminderItem | AutomaticReminderItem | MedicalReminderItem;
+  | ManualReminderItem
+  | AutomaticReminderItem
+  | MedicalReminderItem;
 
 const emptyDraft = (): TaskDraft => ({
   description: "",
@@ -135,7 +159,9 @@ function reminderDate(reminder: Reminder) {
 
 /** A reminder only has an hour when one was entered: never show an invented 12:00. */
 function itemHasTime(item: ReminderItem) {
-  if (item.kind === "manual") return Boolean(item.task.startTime);
+  if (item.kind === "manual") {
+    return Boolean(item.task.startTime);
+  }
   return item.kind === "automatic";
 }
 
@@ -147,8 +173,12 @@ function dateLabel(date: Date | null, view: ReminderView, withTime = true) {
     const key = toDateKey(date);
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
-    if (key === toDateKey(new Date())) return "Aujourd'hui";
-    if (key === toDateKey(tomorrow)) return "Demain";
+    if (key === toDateKey(new Date())) {
+      return "Aujourd'hui";
+    }
+    if (key === toDateKey(tomorrow)) {
+      return "Demain";
+    }
     return date.toLocaleDateString("fr-FR", {
       day: "numeric",
       month: "short",
@@ -193,7 +223,9 @@ function itemIsCompleted(item: ReminderItem) {
   if (item.kind === "manual") {
     return item.task.status === "done";
   }
-  if (item.kind === "medical") return item.reminder.statut !== "en_cours";
+  if (item.kind === "medical") {
+    return item.reminder.statut !== "en_cours";
+  }
   return (
     item.reminder.status === "sent" || item.reminder.status === "dismissed"
   );
@@ -231,10 +263,11 @@ const Tasks: React.FC = () => {
   const patientRemindersModel = usePatientReminders();
   const activeTypes = reminderTypesForSelect(patientRemindersModel.types);
   const [auxiliaryView, setAuxiliaryView] = useState<"calls" | "types" | null>(
-    null,
+    null
   );
   const remindersRepository = useRemindersRepository();
-  const { data: appointments, loading: appointmentsLoading } = useAppointmentsRepository();
+  const { data: appointments, loading: appointmentsLoading } =
+    useAppointmentsRepository();
   const { data: patients, loading: patientsLoading } = usePatientsRepository();
   // The band counts manual, automatic and medical reminders, and names their patients: no figure until all are read.
   const bandLoading =
@@ -273,12 +306,12 @@ const Tasks: React.FC = () => {
 
   const patientsById = useMemo(
     () => new Map(patients.map((patient) => [patient.id, patient])),
-    [patients],
+    [patients]
   );
   const appointmentsById = useMemo(
     () =>
       new Map(appointments.map((appointment) => [appointment.id, appointment])),
-    [appointments],
+    [appointments]
   );
 
   const allItems = useMemo<ReminderItem[]>(() => {
@@ -308,7 +341,7 @@ const Tasks: React.FC = () => {
             : undefined,
           reminder,
         };
-      },
+      }
     );
 
     const medical: MedicalReminderItem[] = patientRemindersModel.reminders.map(
@@ -317,7 +350,7 @@ const Tasks: React.FC = () => {
         reminder,
         patient: patientsById.get(reminder.patient_id),
         date: new Date(`${reminder.echeance}T12:00:00`),
-      }),
+      })
     );
     return [...manual, ...automatic, ...medical];
   }, [
@@ -335,10 +368,10 @@ const Tasks: React.FC = () => {
     const now = new Date();
     const open = allItems.filter((item) => !itemIsCompleted(item));
     const overdue = open.filter(
-      (item) => reminderBucket(item.date, now) === "overdue",
+      (item) => reminderBucket(item.date, now) === "overdue"
     );
     const dueToday = open.filter(
-      (item) => reminderBucket(item.date, now) === "today",
+      (item) => reminderBucket(item.date, now) === "today"
     );
     const upcoming = allItems
       .filter((item) => itemMatchesView(item, "upcoming"))
@@ -360,7 +393,7 @@ const Tasks: React.FC = () => {
         (item) =>
           sourceFilter === "all" ||
           (sourceFilter === "manual" && item.kind === "manual") ||
-          (sourceFilter === "medical" && item.kind === "medical"),
+          (sourceFilter === "medical" && item.kind === "medical")
       )
       .filter((item) => {
         if (!normalizedQuery) {
@@ -374,7 +407,7 @@ const Tasks: React.FC = () => {
                   item.patient?.name,
                   item.reminder.note,
                   patientRemindersModel.types.find(
-                    (type) => type.id === item.reminder.type,
+                    (type) => type.id === item.reminder.type
                   )?.name,
                 ]
               : [
@@ -384,7 +417,7 @@ const Tasks: React.FC = () => {
                   item.patient?.name,
                 ];
         return searchable.some((value) =>
-          value?.toLocaleLowerCase("fr-FR").includes(normalizedQuery),
+          value?.toLocaleLowerCase("fr-FR").includes(normalizedQuery)
         );
       })
       .sort((a, b) => {
@@ -397,7 +430,10 @@ const Tasks: React.FC = () => {
   // Une demande de focus sur une tâche : portée, vue et sélection sont posées dès le rendu qui la reçoit (corrigé au rendu, sans effet) ;
   // le défilement, l'éclairage et la fin de la demande restent dans l'effet.
   const [handledFocus, setHandledFocus] = useState<typeof focus>(null);
-  const focusedTask = focus?.kind === "task" ? tasksRepository.data.find((entry) => entry.id === focus.id) : undefined;
+  const focusedTask =
+    focus?.kind === "task"
+      ? tasksRepository.data.find((entry) => entry.id === focus.id)
+      : undefined;
   if (focus?.kind === "task" && focusedTask && handledFocus !== focus) {
     setHandledFocus(focus);
     setScope("team");
@@ -411,10 +447,10 @@ const Tasks: React.FC = () => {
                 kind: "manual",
                 task: focusedTask,
               },
-              "today",
+              "today"
             )
           ? "today"
-          : "upcoming",
+          : "upcoming"
     );
     setFocusedTaskId(focusedTask.id);
   }
@@ -437,7 +473,7 @@ const Tasks: React.FC = () => {
     }, 120);
     const highlightTimer = window.setTimeout(
       () => setFocusedTaskId(null),
-      2200,
+      2200
     );
     return () => {
       window.clearTimeout(timer);
@@ -451,40 +487,43 @@ const Tasks: React.FC = () => {
       return;
     }
     setSaving(true);
-    return await guard(async () => {
-      const created = await tasksRepository.add({
-        assignedTo: currentUser?.uid,
-        description: draft.description.trim() || undefined,
-        dueDate: draft.dueDate || undefined,
-        endTime: undefined,
-        isReminder: true,
-        reminderTypeId: draft.reminderTypeId || null,
-        patientId: draft.patientId || undefined,
-        priority: draft.priority,
-        startTime: draft.startTime || undefined,
-        status: "todo",
-        title: draft.title.trim(),
-      });
-      if (!created) {
-        toast.error("Le rappel n’a pas pu être ajouté.");
-        return;
+    return await guard(
+      async () => {
+        const created = await tasksRepository.add({
+          assignedTo: currentUser?.uid,
+          description: draft.description.trim() || undefined,
+          dueDate: draft.dueDate || undefined,
+          endTime: undefined,
+          isReminder: true,
+          reminderTypeId: draft.reminderTypeId || null,
+          patientId: draft.patientId || undefined,
+          priority: draft.priority,
+          startTime: draft.startTime || undefined,
+          status: "todo",
+          title: draft.title.trim(),
+        });
+        if (!created) {
+          toast.error("Le rappel n’a pas pu être ajouté.");
+          return;
+        }
+        setDraft(emptyDraft());
+        setShowDetails(false);
+        setAuxiliaryView(null);
+        setActiveView(
+          draft.dueDate > toDateKey(new Date()) ? "upcoming" : "today"
+        );
+        toast.success("Rappel ajouté");
+      },
+      {
+        recover: (error) => {
+          console.error("[Reminders] Unable to create reminder", error);
+          toast.error("Impossible d'ajouter le rappel");
+        },
+        cleanup: () => {
+          setSaving(false);
+        },
       }
-      setDraft(emptyDraft());
-      setShowDetails(false);
-      setAuxiliaryView(null);
-      setActiveView(
-        draft.dueDate > toDateKey(new Date()) ? "upcoming" : "today",
-      );
-      toast.success("Rappel ajouté");
-    }, {
-      recover: (error) => {
-        console.error("[Reminders] Unable to create reminder", error);
-        toast.error("Impossible d'ajouter le rappel");
-      },
-      cleanup: () => {
-        setSaving(false);
-      },
-    });
+    );
   };
 
   const startEditing = (task: Task) => {
@@ -506,34 +545,40 @@ const Tasks: React.FC = () => {
       return;
     }
     setSaving(true);
-    return await guard(async () => {
-      const updated = await tasksRepository.update(editingTaskId, {
-        reminderTypeId: editDraft.reminderTypeId || null,
-        description: editDraft.description.trim() || undefined,
-        dueDate: editDraft.dueDate || undefined,
-        patientId: editDraft.patientId || undefined,
-        priority: editDraft.priority,
-        startTime: editDraft.startTime || undefined,
-        title: editDraft.title.trim(),
-      });
-      if (!updated) return;
-      setEditingTaskId(null);
-      toast.success("Rappel mis à jour");
-    }, {
-      recover: (error) => {
-        console.error("[Reminders] Unable to update reminder", error);
-        toast.error("Impossible de modifier le rappel");
+    return await guard(
+      async () => {
+        const updated = await tasksRepository.update(editingTaskId, {
+          reminderTypeId: editDraft.reminderTypeId || null,
+          description: editDraft.description.trim() || undefined,
+          dueDate: editDraft.dueDate || undefined,
+          patientId: editDraft.patientId || undefined,
+          priority: editDraft.priority,
+          startTime: editDraft.startTime || undefined,
+          title: editDraft.title.trim(),
+        });
+        if (!updated) {
+          return;
+        }
+        setEditingTaskId(null);
+        toast.success("Rappel mis à jour");
       },
-      cleanup: () => {
-        setSaving(false);
-      },
-    });
+      {
+        recover: (error) => {
+          console.error("[Reminders] Unable to update reminder", error);
+          toast.error("Impossible de modifier le rappel");
+        },
+        cleanup: () => {
+          setSaving(false);
+        },
+      }
+    );
   };
 
   const toggleTask = async (task: Task) => {
     const nextStatus = task.status === "done" ? "todo" : "done";
-    if (!(await tasksRepository.update(task.id, { status: nextStatus })))
+    if (!(await tasksRepository.update(task.id, { status: nextStatus }))) {
       return;
+    }
     toast.success(
       nextStatus === "done" ? "Rappel terminé" : "Rappel réouvert",
       {
@@ -544,7 +589,7 @@ const Tasks: React.FC = () => {
             void tasksRepository.update(task.id, { status: task.status });
           },
         },
-      },
+      }
     );
   };
 
@@ -571,17 +616,20 @@ const Tasks: React.FC = () => {
   const toggleSelected = (taskId: string) =>
     setSelectedIds((current) => {
       const next = new Set(current);
-      if (next.has(taskId)) next.delete(taskId);
-      else next.add(taskId);
+      if (next.has(taskId)) {
+        next.delete(taskId);
+      } else {
+        next.add(taskId);
+      }
       return next;
     });
   const selectableIds = new Set(
     visibleItems.flatMap((item) =>
-      item.kind === "manual" ? [item.task.id] : [],
-    ),
+      item.kind === "manual" ? [item.task.id] : []
+    )
   );
   const selectedTasks = tasksRepository.data.filter(
-    (task) => selectedIds.has(task.id) && selectableIds.has(task.id),
+    (task) => selectedIds.has(task.id) && selectableIds.has(task.id)
   );
   const listRef = useListCursor({ storageKey: "reminders" });
   useEffect(() => {
@@ -591,20 +639,24 @@ const Tasks: React.FC = () => {
         event.ctrlKey ||
         event.altKey ||
         event.defaultPrevented
-      )
+      ) {
         return;
+      }
       const target = event.target as HTMLElement | null;
       if (
         target?.closest(
-          "input, textarea, select, [contenteditable='true'], [role='dialog'], [role='menu'], [role='listbox']",
+          "input, textarea, select, [contenteditable='true'], [role='dialog'], [role='menu'], [role='listbox']"
         )
-      )
+      ) {
         return;
+      }
       if (event.key === "x" || event.key === "X") {
         const row = document.querySelector<HTMLElement>(
-          ".reminders-page [data-list-row][data-current][data-task-id]",
+          ".reminders-page [data-list-row][data-current][data-task-id]"
         );
-        if (!row?.dataset.taskId) return;
+        if (!row?.dataset.taskId) {
+          return;
+        }
         event.preventDefault();
         toggleSelected(row.dataset.taskId);
       } else if (event.key === "Escape" && selectedIds.size) {
@@ -616,64 +668,79 @@ const Tasks: React.FC = () => {
   }, [selectedIds.size]);
   const completeSelected = async () => {
     const tasks = selectedTasks.filter((task) => task.status !== "done");
-    if (!tasks.length) return;
+    if (!tasks.length) {
+      return;
+    }
     setSaving(true);
-    return await guard(async () => {
-      const results = await Promise.all(
-        tasks.map((task) =>
-          tasksRepository.update(task.id, { status: "done" }),
-        ),
-      );
-      const done = tasks.filter((_, index) => results[index]);
-      setSelectedIds(new Set());
-      if (!done.length) return;
-      toast.success(
-        `${done.length} rappel${done.length > 1 ? "s" : ""} terminé${done.length > 1 ? "s" : ""}`,
-        {
-          duration: 5000,
-          action: {
-            label: "Annuler",
-            onClick: () => {
-              for (const task of done)
-                void tasksRepository.update(task.id, { status: task.status });
+    return await guard(
+      async () => {
+        const results = await Promise.all(
+          tasks.map((task) =>
+            tasksRepository.update(task.id, { status: "done" })
+          )
+        );
+        const done = tasks.filter((_, index) => results[index]);
+        setSelectedIds(new Set());
+        if (!done.length) {
+          return;
+        }
+        toast.success(
+          `${done.length} rappel${done.length > 1 ? "s" : ""} terminé${done.length > 1 ? "s" : ""}`,
+          {
+            duration: 5000,
+            action: {
+              label: "Annuler",
+              onClick: () => {
+                for (const task of done) {
+                  void tasksRepository.update(task.id, { status: task.status });
+                }
+              },
             },
-          },
-        },
-      );
-    }, {
-      cleanup: () => {
-        setSaving(false);
+          }
+        );
       },
-    });
+      {
+        cleanup: () => {
+          setSaving(false);
+        },
+      }
+    );
   };
   const postponeSelected = async () => {
     const tasks = selectedTasks.filter((task) => task.status !== "done");
-    if (!tasks.length) return;
+    if (!tasks.length) {
+      return;
+    }
     setSaving(true);
-    await guard(async () => {
-      await Promise.all(
-        tasks.map((task) => {
-          const date = parseTaskDate(task) ?? new Date();
-          date.setDate(date.getDate() + 1);
-          return tasksRepository.update(task.id, { dueDate: toDateKey(date) });
-        }),
-      );
-      setSelectedIds(new Set());
-      toast.success(
-        `${tasks.length} rappel${tasks.length > 1 ? "s" : ""} reporté${tasks.length > 1 ? "s" : ""} au lendemain`,
-      );
-    }, {
-      cleanup: () => {
-        setSaving(false);
+    await guard(
+      async () => {
+        await Promise.all(
+          tasks.map((task) => {
+            const date = parseTaskDate(task) ?? new Date();
+            date.setDate(date.getDate() + 1);
+            return tasksRepository.update(task.id, {
+              dueDate: toDateKey(date),
+            });
+          })
+        );
+        setSelectedIds(new Set());
+        toast.success(
+          `${tasks.length} rappel${tasks.length > 1 ? "s" : ""} reporté${tasks.length > 1 ? "s" : ""} au lendemain`
+        );
       },
-    });
+      {
+        cleanup: () => {
+          setSaving(false);
+        },
+      }
+    );
   };
 
   const sourceItems = allItems.filter(
     (item) =>
       sourceFilter === "all" ||
       (sourceFilter === "manual" && item.kind === "manual") ||
-      (sourceFilter === "medical" && item.kind === "medical"),
+      (sourceFilter === "medical" && item.kind === "medical")
   );
   const tabs: Array<{
     count: number;
@@ -701,30 +768,27 @@ const Tasks: React.FC = () => {
   ];
 
   const openMedicalDraft = () => {
-                const type =
-                  patientRemindersModel.types.find(
-                    (entry) => entry.active && entry.id === "vaccin",
-                  ) ??
-                  patientRemindersModel.types.find(
-                    (entry) => entry.active && isMedicalReminderType(entry),
-                  );
-                if (!type) {
-                  toast.error("Activez un type de rappel dans les paramètres.");
-                  return;
-                }
-                setMedicalDraft({
-                  acteSourceId: "",
-                  clientId: null,
-                  dateActe: localToday(),
-                  echeance: addCalendarMonths(
-                    localToday(),
-                    type.interval_months,
-                  ),
-                  intervalleMois: type.interval_months,
-                  patientId: "",
-                  type: type.id,
-                  typeLabel: type.name,
-                });
+    const type =
+      patientRemindersModel.types.find(
+        (entry) => entry.active && entry.id === "vaccin"
+      ) ??
+      patientRemindersModel.types.find(
+        (entry) => entry.active && isMedicalReminderType(entry)
+      );
+    if (!type) {
+      toast.error("Activez un type de rappel dans les paramètres.");
+      return;
+    }
+    setMedicalDraft({
+      acteSourceId: "",
+      clientId: null,
+      dateActe: localToday(),
+      echeance: addCalendarMonths(localToday(), type.interval_months),
+      intervalleMois: type.interval_months,
+      patientId: "",
+      type: type.id,
+      typeLabel: type.name,
+    });
   };
   const quiet = buildReminderQuiet(
     sourceItems.map((item) => ({
@@ -736,50 +800,55 @@ const Tasks: React.FC = () => {
         item.kind === "manual"
           ? item.task.title
           : item.kind === "medical"
-            ? (patientRemindersModel.types.find((type) => type.id === item.reminder.type)?.name ?? "Rappel médical")
-            : (item.reminder.message || item.appointment?.title || "Rappel de rendez-vous"),
+            ? (patientRemindersModel.types.find(
+                (type) => type.id === item.reminder.type
+              )?.name ?? "Rappel médical")
+            : item.reminder.message ||
+              item.appointment?.title ||
+              "Rappel de rendez-vous",
       patientName: item.patient?.name,
     })),
-    new Date(),
+    new Date()
   );
   const readAt = new Date();
-  const readDay = readAt.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" });
+  const readDay = readAt.toLocaleDateString("fr-FR", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+  });
   // While the reminders are read, the line says so instead of « rien à traiter » (as the Équipe band does).
-  const bandSubtitle = bandLoading ? "Lecture des rappels…" : `${readDay[0].toLocaleUpperCase("fr-FR")}${readDay.slice(1)} · état à ${readAt.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })} · ${
-    counts.overdue.length
-      ? `${formatNumber(counts.overdue.length)} en retard`
-      : counts.today
-        ? `${formatNumber(counts.today)} à traiter aujourd’hui`
-        : "rien à traiter"
-  }`;
+  const bandSubtitle = bandLoading
+    ? "Lecture des rappels…"
+    : `${readDay[0].toLocaleUpperCase("fr-FR")}${readDay.slice(1)} · état à ${readAt.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })} · ${
+        counts.overdue.length
+          ? `${formatNumber(counts.overdue.length)} en retard`
+          : counts.today
+            ? `${formatNumber(counts.today)} à traiter aujourd’hui`
+            : "rien à traiter"
+      }`;
 
   return (
     <div
       className={cn(
         "reminders-page dashboard-stage flex w-full min-w-0 flex-col gap-3 px-4 pb-8 lg:px-6",
-        selectedTasks.length > 0 && "pb-24",
+        selectedTasks.length > 0 && "pb-24"
       )}
     >
       <MotivationalHeader
         section="taches"
-        title="Rappels"
         subtitle="actions à suivre"
+        title="Rappels"
       />
 
       <SectionCards
         actions={
-            <Button
-              className="h-9 rounded-full px-4"
-              onClick={openMedicalDraft}
-            >
-              <PlusIcon className="size-4" />
-              Rappel médical
-            </Button>
+          <Button className="h-9 rounded-full px-4" onClick={openMedicalDraft}>
+            <PlusIcon className="size-4" />
+            Rappel médical
+          </Button>
         }
         badges={false}
         icon={ClipboardDocumentCheckIcon}
-        loading={bandLoading}
-        subtitle={bandSubtitle}
         items={[
           {
             title: "En retard",
@@ -816,7 +885,11 @@ const Tasks: React.FC = () => {
             title: "À traiter",
             icon: BellIcon,
             value: formatNumber(counts.today),
-            tone: counts.overdue.length ? "critical" : counts.today ? "watch" : "positive",
+            tone: counts.overdue.length
+              ? "critical"
+              : counts.today
+                ? "watch"
+                : "positive",
             trend: "neutral",
             detailRow: counts.today
               ? `${formatNumber(counts.overdue.length)} en retard · ${formatNumber(counts.dueToday.length)} aujourd’hui`
@@ -845,6 +918,8 @@ const Tasks: React.FC = () => {
             actionLabel: "Voir les prochains rappels",
           },
         ]}
+        loading={bandLoading}
+        subtitle={bandSubtitle}
       />
 
       <form
@@ -854,16 +929,16 @@ const Tasks: React.FC = () => {
         <div className="quick-reminder-fields flex flex-col gap-3 p-3 sm:flex-row sm:items-center">
           <div className="quick-reminder-title min-w-0 flex-1">
             <label
+              className="inline-flex items-center gap-2 font-medium text-foreground text-xs"
               htmlFor="new-reminder-title"
-              className="inline-flex items-center gap-2 text-xs font-medium text-foreground"
             >
               <BellIcon aria-hidden="true" className="size-4 shrink-0" />
               Nouveau rappel
             </label>
             <Input
-              id="new-reminder-title"
               aria-label="Nouveau rappel"
               className="h-8 border-0 bg-transparent px-0 text-sm shadow-none focus-visible:ring-0"
+              id="new-reminder-title"
               onChange={(event) =>
                 setDraft((current) => ({
                   ...current,
@@ -876,41 +951,41 @@ const Tasks: React.FC = () => {
           </div>
           <div className="quick-reminder-type flex min-w-40 flex-col gap-1">
             <label
-              className="text-xs font-medium"
+              className="font-medium text-xs"
               htmlFor="quick-reminder-type"
             >
               Type de rappel
             </label>
             <SearchableSelect
+              disabled={saving}
               id="quick-reminder-type"
               label="Type du nouveau rappel"
-              placeholder="Choisir un type…"
+              onValueChange={(reminderTypeId) =>
+                setDraft((current) => ({ ...current, reminderTypeId }))
+              }
               options={activeTypes.map((type) => ({
                 value: type.id,
                 label: type.name,
               }))}
+              placeholder="Choisir un type…"
               value={draft.reminderTypeId}
-              onValueChange={(reminderTypeId) =>
-                setDraft((current) => ({ ...current, reminderTypeId }))
-              }
-              disabled={saving}
             />
           </div>
           <div className="quick-reminder-date flex w-40 flex-col gap-1">
             <label
-              className="text-xs font-medium"
+              className="font-medium text-xs"
               htmlFor="quick-reminder-date"
             >
               Date du rappel
             </label>
             <DatePicker
-              id="quick-reminder-date"
               aria-label="Date du nouveau rappel"
-              value={draft.dueDate}
+              disabled={saving}
+              id="quick-reminder-date"
               onChange={(value) =>
                 setDraft((current) => ({ ...current, dueDate: value }))
               }
-              disabled={saving}
+              value={draft.dueDate}
             />
           </div>
           <Button
@@ -923,7 +998,7 @@ const Tasks: React.FC = () => {
             <ChevronDownIcon
               className={cn(
                 "size-4 transition-transform",
-                showDetails && "rotate-180",
+                showDetails && "rotate-180"
               )}
             />
           </Button>
@@ -1021,10 +1096,10 @@ const Tasks: React.FC = () => {
         )}
         <div className="reminders-filter-bar flex flex-wrap items-center gap-x-3 gap-y-2">
           <div
+            aria-label="Origine des rappels"
             className="reminder-segments"
             data-tabs-style="segmented"
             role="group"
-            aria-label="Origine des rappels"
           >
             {(
               [
@@ -1034,21 +1109,20 @@ const Tasks: React.FC = () => {
               ] as const
             ).map(([value, label]) => (
               <button
-                key={value}
-                type="button"
-                className="reminder-segment"
                 aria-pressed={sourceFilter === value}
+                className="reminder-segment"
+                key={value}
                 onClick={() => {
                   setSourceFilter(value);
                   setAuxiliaryView(null);
                 }}
+                type="button"
               >
                 {label}
               </button>
             ))}
           </div>
           <Tabs
-            value={auxiliaryView ?? activeView}
             onValueChange={(value) => {
               if (value === "calls") {
                 setAuxiliaryView(value);
@@ -1058,6 +1132,7 @@ const Tasks: React.FC = () => {
                 setActiveView(value as ReminderView);
               }
             }}
+            value={auxiliaryView ?? activeView}
           >
             <TabsList
               aria-label="Vues des rappels"
@@ -1068,7 +1143,12 @@ const Tasks: React.FC = () => {
                 <TabsTrigger key={tab.id} value={tab.id}>
                   {tab.label}
                   {listReading ? (
-                    <span className={cn("loading-skeleton", !listSkeleton && "invisible")}>
+                    <span
+                      className={cn(
+                        "loading-skeleton",
+                        !listSkeleton && "invisible"
+                      )}
+                    >
                       <SkeletonShape className="loading-skeleton-inline loading-skeleton-inline-dot" />
                     </span>
                   ) : (
@@ -1080,7 +1160,7 @@ const Tasks: React.FC = () => {
             </TabsList>
           </Tabs>
           <Button
-            className="h-8 t-13"
+            className="t-13 h-8"
             onClick={() => setAuxiliaryView("types")}
             type="button"
             variant="outline"
@@ -1102,9 +1182,9 @@ const Tasks: React.FC = () => {
             <ListSearch
               className="w-full lg:w-44"
               label="Rechercher dans les rappels"
+              onValueChange={setQuery}
               placeholder="Rechercher…"
               value={query}
-              onValueChange={setQuery}
             />
           </div>
         </div>
@@ -1117,127 +1197,134 @@ const Tasks: React.FC = () => {
           memoryKey={`reminders:${auxiliaryView ?? activeView}:${sourceFilter}`}
           revealed={listSkeleton}
         >
-        {!auxiliaryView && activeView === "today" && sourceFilter === "all" ? (
-          <AppointmentRelances
-            appointments={appointments}
-            patients={patients}
-            query={query}
-          />
-        ) : null}
+          {!auxiliaryView &&
+          activeView === "today" &&
+          sourceFilter === "all" ? (
+            <AppointmentRelances
+              appointments={appointments}
+              patients={patients}
+              query={query}
+            />
+          ) : null}
 
-        {auxiliaryView ? (
-          <PatientRemindersContent
-            key={auxiliaryView}
-            model={patientRemindersModel}
-            view={auxiliaryView}
-            includeManualTypes={auxiliaryView === "types"}
-            embedded
-          />
-        ) : visibleItems.length === 0 ? (
-          <EmptyState
-            onClearQuery={() => setQuery("")}
-            onCompleted={() => setActiveView("completed")}
-            onMedical={openMedicalDraft}
-            onNewReminder={() => document.getElementById("new-reminder-title")?.focus()}
-            onUpcoming={() => setActiveView("upcoming")}
-            query={query}
-            quiet={quiet}
-            view={activeView}
-          />
-        ) : (
-          <div
-            className="clinical-surface divide-y divide-border/70 overflow-hidden"
-            ref={listRef}
-          >
-            {groupReminders(
-              visibleItems.filter((item) => item.kind !== "medical"),
-              (item) => item.date,
-              new Date(),
-            ).map((group) => (
-              <section
-                aria-label={`${group.label} : ${group.items.length}`}
-                className="reminder-group divide-y divide-border/70"
-                data-bucket={group.bucket}
-                key={group.bucket}
-              >
-                {activeView !== "completed" && (
+          {auxiliaryView ? (
+            <PatientRemindersContent
+              embedded
+              includeManualTypes={auxiliaryView === "types"}
+              key={auxiliaryView}
+              model={patientRemindersModel}
+              view={auxiliaryView}
+            />
+          ) : visibleItems.length === 0 ? (
+            <EmptyState
+              onClearQuery={() => setQuery("")}
+              onCompleted={() => setActiveView("completed")}
+              onMedical={openMedicalDraft}
+              onNewReminder={() =>
+                document.getElementById("new-reminder-title")?.focus()
+              }
+              onUpcoming={() => setActiveView("upcoming")}
+              query={query}
+              quiet={quiet}
+              view={activeView}
+            />
+          ) : (
+            <div
+              className="clinical-surface divide-y divide-border/70 overflow-hidden"
+              ref={listRef}
+            >
+              {groupReminders(
+                visibleItems.filter((item) => item.kind !== "medical"),
+                (item) => item.date,
+                new Date()
+              ).map((group) => (
+                <section
+                  aria-label={`${group.label} : ${group.items.length}`}
+                  className="reminder-group divide-y divide-border/70"
+                  data-bucket={group.bucket}
+                  key={group.bucket}
+                >
+                  {activeView !== "completed" && (
+                    <h2 className="reminder-group-head">
+                      {group.label}
+                      <span className="tabular-nums">{group.items.length}</span>
+                    </h2>
+                  )}
+                  {group.items.map((item) =>
+                    item.kind === "manual" ? (
+                      <ManualReminderRow
+                        draft={editDraft}
+                        editing={editingTaskId === item.task.id}
+                        focused={focusedTaskId === item.task.id}
+                        item={item}
+                        key={`task-${item.task.id}`}
+                        onCancelEdit={() => setEditingTaskId(null)}
+                        onDelete={() => deleteTask(item.task.id)}
+                        onDraftChange={setEditDraft}
+                        onEdit={() => startEditing(item.task)}
+                        onPostpone={() => postponeTask(item.task)}
+                        onSave={saveEdit}
+                        onSelect={() => toggleSelected(item.task.id)}
+                        onToggle={() => toggleTask(item.task)}
+                        patients={patients}
+                        pendingDelete={pendingDeleteId === item.task.id}
+                        reminderTypes={patientRemindersModel.types}
+                        saving={saving}
+                        selected={selectedIds.has(item.task.id)}
+                        selecting={selectedIds.size > 0}
+                        view={activeView}
+                      />
+                    ) : item.kind === "automatic" ? (
+                      <AutomaticReminderRow
+                        item={item}
+                        key={`automatic-${item.reminder.id}`}
+                        onDismiss={async () => {
+                          await remindersRepository.dismiss(item.reminder.id);
+                          toast.success("Rappel automatique ignoré");
+                        }}
+                        onSnooze={async () => {
+                          await remindersRepository.snooze(
+                            item.reminder.id,
+                            60
+                          );
+                          toast.success("Rappel reporté d'une heure");
+                        }}
+                        view={activeView}
+                      />
+                    ) : null
+                  )}
+                </section>
+              ))}
+              {visibleItems.some((item) => item.kind === "medical") &&
+                activeView !== "completed" && (
                   <h2 className="reminder-group-head">
-                    {group.label}
-                    <span className="tabular-nums">{group.items.length}</span>
+                    Rappels médicaux
+                    <span className="tabular-nums">
+                      {
+                        visibleItems.filter((item) => item.kind === "medical")
+                          .length
+                      }
+                    </span>
                   </h2>
                 )}
-                {group.items.map((item) =>
-                  item.kind === "manual" ? (
-                    <ManualReminderRow
-                      draft={editDraft}
-                      editing={editingTaskId === item.task.id}
-                      item={item}
-                      focused={focusedTaskId === item.task.id}
-                      key={`task-${item.task.id}`}
-                      onCancelEdit={() => setEditingTaskId(null)}
-                      onDelete={() => deleteTask(item.task.id)}
-                      onDraftChange={setEditDraft}
-                      onEdit={() => startEditing(item.task)}
-                      onPostpone={() => postponeTask(item.task)}
-                      onSave={saveEdit}
-                      onToggle={() => toggleTask(item.task)}
-                      onSelect={() => toggleSelected(item.task.id)}
-                      selected={selectedIds.has(item.task.id)}
-                      selecting={selectedIds.size > 0}
-                      patients={patients}
-                      reminderTypes={patientRemindersModel.types}
-                      pendingDelete={pendingDeleteId === item.task.id}
-                      saving={saving}
-                      view={activeView}
-                    />
-                  ) : item.kind === "automatic" ? (
-                    <AutomaticReminderRow
-                      item={item}
-                      key={`automatic-${item.reminder.id}`}
-                      onDismiss={async () => {
-                        await remindersRepository.dismiss(item.reminder.id);
-                        toast.success("Rappel automatique ignoré");
-                      }}
-                      onSnooze={async () => {
-                        await remindersRepository.snooze(item.reminder.id, 60);
-                        toast.success("Rappel reporté d'une heure");
-                      }}
-                      view={activeView}
-                    />
-                  ) : null,
-                )}
-              </section>
-            ))}
-            {visibleItems.some((item) => item.kind === "medical") &&
-              activeView !== "completed" && (
-                <h2 className="reminder-group-head">
-                  Rappels médicaux
-                  <span className="tabular-nums">
-                    {
-                      visibleItems.filter((item) => item.kind === "medical")
-                        .length
-                    }
-                  </span>
-                </h2>
+              {visibleItems.some((item) => item.kind === "medical") && (
+                <PatientRemindersContent
+                  embedded
+                  key={activeView}
+                  model={{
+                    ...patientRemindersModel,
+                    reminders: visibleItems
+                      .filter(
+                        (item): item is MedicalReminderItem =>
+                          item.kind === "medical"
+                      )
+                      .map((item) => item.reminder),
+                  }}
+                  view={activeView === "completed" ? "completed" : "active"}
+                />
               )}
-            {visibleItems.some((item) => item.kind === "medical") && (
-              <PatientRemindersContent
-                key={activeView}
-                model={{
-                  ...patientRemindersModel,
-                  reminders: visibleItems
-                    .filter(
-                      (item): item is MedicalReminderItem =>
-                        item.kind === "medical",
-                    )
-                    .map((item) => item.reminder),
-                }}
-                view={activeView === "completed" ? "completed" : "active"}
-                embedded
-              />
-            )}
-          </div>
-        )}
+            </div>
+          )}
         </SkeletonRegion>
       </section>
       {selectedTasks.length > 0 && !auxiliaryView && (
@@ -1291,14 +1378,14 @@ const Tasks: React.FC = () => {
           onConfirm={async (proposal) => {
             await patientRemindersService.createFromProposal(
               proposal,
-              currentUser?.id ?? "",
+              currentUser?.id ?? ""
             );
             announcePatientRemindersChanged();
             await patientRemindersModel.refresh();
             setSourceFilter("medical");
             setAuxiliaryView(null);
             setActiveView(
-              proposal.echeance > localToday() ? "upcoming" : "today",
+              proposal.echeance > localToday() ? "upcoming" : "today"
             );
             toast.success("Rappel médical créé");
           }}
@@ -1374,15 +1461,15 @@ function ManualReminderRow({
           <Field label="Type de rappel">
             <SearchableSelect
               label="Type du rappel modifié"
-              placeholder="Sans type"
-              options={reminderTypesForSelect(
-                reminderTypes,
-                draft.reminderTypeId,
-              ).map((type) => ({ value: type.id, label: type.name }))}
-              value={draft.reminderTypeId}
               onValueChange={(reminderTypeId) =>
                 onDraftChange({ ...draft, reminderTypeId })
               }
+              options={reminderTypesForSelect(
+                reminderTypes,
+                draft.reminderTypeId
+              ).map((type) => ({ value: type.id, label: type.name }))}
+              placeholder="Sans type"
+              value={draft.reminderTypeId}
             />
           </Field>
           <div className="sm:col-span-2 lg:col-span-4">
@@ -1477,7 +1564,7 @@ function ManualReminderRow({
       aria-selected={selected}
       className={cn(
         "group flex flex-col gap-3 p-3 transition-shadow sm:flex-row sm:items-center",
-        focused && "relative z-10 ring-2 ring-sky-500/40 ring-inset",
+        focused && "relative z-10 ring-2 ring-sky-500/40 ring-inset"
       )}
       data-list-row=""
       data-row-id={item.task.id}
@@ -1501,7 +1588,7 @@ function ManualReminderRow({
           "flex size-9 shrink-0 items-center justify-center rounded-full border transition-colors",
           completed
             ? "border-emerald-500/25 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
-            : "border-border text-muted-foreground hover:border-emerald-500/40 hover:text-emerald-600",
+            : "border-border text-muted-foreground hover:border-emerald-500/40 hover:text-emerald-600"
         )}
         onClick={onToggle}
         type="button"
@@ -1517,7 +1604,7 @@ function ManualReminderRow({
           <h3
             className={cn(
               "font-semibold text-sm",
-              completed && "text-muted-foreground line-through",
+              completed && "text-muted-foreground line-through"
             )}
           >
             {formatDisplayText(item.task.title)}
@@ -1659,7 +1746,14 @@ function EmptyState({
 }: {
   query: string;
   view: ReminderView;
-  quiet: ReminderQuiet<{ kind: "manual" | "medical" | "automatic"; date: Date | null; completed: boolean; title: string; patientName?: string; item: ReminderItem }>;
+  quiet: ReminderQuiet<{
+    kind: "manual" | "medical" | "automatic";
+    date: Date | null;
+    completed: boolean;
+    title: string;
+    patientName?: string;
+    item: ReminderItem;
+  }>;
   onUpcoming: () => void;
   onCompleted: () => void;
   onNewReminder: () => void;
@@ -1670,12 +1764,17 @@ function EmptyState({
     return (
       <Shell className="reminders-quiet">
         <ShellHeader
+          as="h2"
           aside={
-            <Button onClick={onClearQuery} size="sm" type="button" variant="outline">
+            <Button
+              onClick={onClearQuery}
+              size="sm"
+              type="button"
+              variant="outline"
+            >
               Effacer la recherche
             </Button>
           }
-          as="h2"
           icon={MagnifyingGlassIcon}
           subtitle={`Aucun rappel ne correspond à « ${query} ».`}
           title="Aucun résultat"
@@ -1692,33 +1791,58 @@ function EmptyState({
   const next = quiet.next;
   return (
     <Shell className="reminders-quiet">
-      <ShellHeader as="h2" icon={view === "completed" ? CheckCircleIcon : CheckBadgeIcon} subtitle={copy} title="Rien à traiter" />
+      <ShellHeader
+        as="h2"
+        icon={view === "completed" ? CheckCircleIcon : CheckBadgeIcon}
+        subtitle={copy}
+        title="Rien à traiter"
+      />
       <div className="reminders-quiet-grid">
         <Panel className="reminders-quiet-cell reminders-quiet-wide">
           <h3 className="reminders-quiet-label">Prochain rappel</h3>
           {next ? (
             <>
-              <p className="reminders-quiet-when">{dateLabel(next.date, "upcoming", itemHasTime(next.item))}</p>
+              <p className="reminders-quiet-when">
+                {dateLabel(next.date, "upcoming", itemHasTime(next.item))}
+              </p>
               <p className="reminders-quiet-what">
                 <strong>{next.title}</strong>
                 {next.patientName ? <span> · {next.patientName}</span> : null}
               </p>
-              <p className="reminders-quiet-meta">{next.kind === "medical" ? "Médical" : next.kind === "manual" ? "Manuel" : "Automatique"}</p>
+              <p className="reminders-quiet-meta">
+                {next.kind === "medical"
+                  ? "Médical"
+                  : next.kind === "manual"
+                    ? "Manuel"
+                    : "Automatique"}
+              </p>
             </>
           ) : (
             <p className="reminders-quiet-when">Aucun rappel à venir</p>
           )}
           {view !== "upcoming" && next ? (
-            <Button className="reminders-quiet-link" onClick={onUpcoming} size="sm" type="button" variant="ghost">
+            <Button
+              className="reminders-quiet-link"
+              onClick={onUpcoming}
+              size="sm"
+              type="button"
+              variant="ghost"
+            >
               Voir les rappels à venir
               <ArrowRightIcon aria-hidden="true" className="size-3.5" />
             </Button>
-          ) : view !== "completed" ? (
-            <Button className="reminders-quiet-link" onClick={onCompleted} size="sm" type="button" variant="ghost">
+          ) : view === "completed" ? null : (
+            <Button
+              className="reminders-quiet-link"
+              onClick={onCompleted}
+              size="sm"
+              type="button"
+              variant="ghost"
+            >
               Voir les rappels terminés
               <ArrowRightIcon aria-hidden="true" className="size-3.5" />
             </Button>
-          ) : null}
+          )}
         </Panel>
         <Panel className="reminders-quiet-cell reminders-quiet-wide">
           <h3 className="reminders-quiet-label">Rappels ouverts et terminés</h3>

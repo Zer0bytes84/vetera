@@ -1,7 +1,5 @@
-import { Syringe } from "@/lib/icons";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-
 import {
   Sheet,
   SheetContent,
@@ -9,6 +7,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { Syringe } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 import type { AnesthesiaSheet, Patient } from "@/types/db";
 
@@ -41,7 +40,11 @@ export function AnesthesiaSheet({
       }}
       open={open}
     >
-      <SheetContent className={cn("w-full sm:max-w-5xl", className)} focusClose side="right">
+      <SheetContent
+        className={cn("w-full sm:max-w-5xl", className)}
+        focusClose
+        side="right"
+      >
         <SheetHeader icon={<Syringe />}>
           <SheetTitle>
             {t("modules.anesthesia.title", "Anesthésie")}

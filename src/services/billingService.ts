@@ -1,23 +1,23 @@
 import {
-  BillingDomainError,
   assertCreditWithinRemaining,
   assertPaymentWithinBalance,
   assertPositiveAmount,
   assertRefundWithinAvailable,
+  BillingDomainError,
   calculateInvoiceBalance,
   deriveInvoiceSettlementStatus,
   normalizeBillingLine,
-  remainingCreditableAmount,
   refundablePaymentAmount,
+  remainingCreditableAmount,
   sumBillingLines,
 } from "@/domain/billing";
+import { careCompletionKey, careInvoiceId } from "@/modules/care-tasks/domain";
 import {
   generateId,
   runDbRead,
   runDbTransaction,
   toSQLiteTimestamp,
 } from "@/services/sqlite/database";
-import { careCompletionKey, careInvoiceId } from "@/modules/care-tasks/domain";
 import type {
   BillingClinicSnapshot,
   BillingDocumentStatus,
@@ -43,7 +43,10 @@ export interface BillingDatabase {
 type DatabaseRow = Record<string, unknown>;
 type BillingDocumentKind = "invoice" | "credit_note";
 type IdempotentBillingCommand =
-  "issue-invoice" | "record-payment" | "issue-credit-note" | "record-refund";
+  | "issue-invoice"
+  | "record-payment"
+  | "issue-credit-note"
+  | "record-refund";
 
 interface IdempotencyRecord {
   command: IdempotentBillingCommand;
@@ -420,11 +423,11 @@ function rowToRefund(row: DatabaseRow): Refund {
 async function loadInvoice(
   database: BillingDatabase,
   invoiceId: string,
-  now = new Date(),
+  now = new Date()
 ): Promise<Invoice | null> {
   const rows = await database.select<DatabaseRow[]>(
     `${INVOICE_SELECT} WHERE i.id = ?`,
-    [invoiceId],
+    [invoiceId]
   );
   return rows[0] ? rowToInvoice(rows[0], now) : null;
 }
@@ -506,7 +509,10 @@ async function loadCreditNote(
     "SELECT * FROM credit_note_lines WHERE credit_note_id = ? ORDER BY sort_order, id",
     [creditNoteId]
   );
-  return { ...rowToCreditNote(rows[0]), lines: lineRows.map(rowToCreditNoteLine) };
+  return {
+    ...rowToCreditNote(rows[0]),
+    lines: lineRows.map(rowToCreditNoteLine),
+  };
 }
 
 async function loadPayment(
@@ -538,13 +544,13 @@ function requireId(
     | "PAYMENT_NOT_FOUND"
     | "REFUND_NOT_FOUND"
     | "OWNER_NOT_FOUND"
-    | "APPOINTMENT_NOT_FOUND",
+    | "APPOINTMENT_NOT_FOUND"
 ): string {
   const id = value.trim();
   if (!id) {
     throw new BillingDomainError(
       code,
-      "L'identifiant de facturation est requis.",
+      "L'identifiant de facturation est requis."
     );
   }
   return id;
@@ -581,14 +587,24 @@ function normalizeTimestamp(
   value?: Date | string,
   fallback = new Date()
 ): { date: Date; value: string } {
-  const date = value === undefined ? fallback : value instanceof Date ? value : new Date(value);
+  const date =
+    value === undefined
+      ? fallback
+      : value instanceof Date
+        ? value
+        : new Date(value);
   if (Number.isNaN(date.getTime())) {
-    throw new BillingDomainError("DATE_INVALID", "La date de facturation est invalide.");
+    throw new BillingDomainError(
+      "DATE_INVALID",
+      "La date de facturation est invalide."
+    );
   }
   return { date, value: toSQLiteTimestamp(date) };
 }
 
-function normalizeOptionalTimestamp(value?: Date | string | null): string | null {
+function normalizeOptionalTimestamp(
+  value?: Date | string | null
+): string | null {
   if (value === undefined || value === null) {
     return null;
   }
@@ -605,11 +621,26 @@ function normalizeClinicSnapshot(
       "Le nom de la clinique est obligatoire lors de l'émission."
     );
   }
-  if (snapshot.logoDataUrl && (snapshot.logoDataUrl.length > 1_500_000 || !/^data:image\/(png|jpeg);base64,[a-z0-9+/=]+$/i.test(snapshot.logoDataUrl))) {
-    throw new BillingDomainError("CLINIC_SNAPSHOT_INVALID", "Le logo de la facture est invalide.");
+  if (
+    snapshot.logoDataUrl &&
+    (snapshot.logoDataUrl.length > 1_500_000 ||
+      !/^data:image\/(png|jpeg);base64,[a-z0-9+/=]+$/i.test(
+        snapshot.logoDataUrl
+      ))
+  ) {
+    throw new BillingDomainError(
+      "CLINIC_SNAPSHOT_INVALID",
+      "Le logo de la facture est invalide."
+    );
   }
-  if (snapshot.accent && !["graphite", "forest", "blue"].includes(snapshot.accent)) {
-    throw new BillingDomainError("CLINIC_SNAPSHOT_INVALID", "La couleur de la facture est invalide.");
+  if (
+    snapshot.accent &&
+    !["graphite", "forest", "blue"].includes(snapshot.accent)
+  ) {
+    throw new BillingDomainError(
+      "CLINIC_SNAPSHOT_INVALID",
+      "La couleur de la facture est invalide."
+    );
   }
   return {
     id: normalizeOptionalText(snapshot.id),
@@ -620,7 +651,9 @@ function normalizeClinicSnapshot(
     email: normalizeOptionalText(snapshot.email),
     address: normalizeOptionalText(snapshot.address),
     ...(snapshot.logoDataUrl ? { logoDataUrl: snapshot.logoDataUrl } : {}),
-    ...(typeof snapshot.footer === "string" ? { footer: snapshot.footer.trim().slice(0, 400) } : {}),
+    ...(typeof snapshot.footer === "string"
+      ? { footer: snapshot.footer.trim().slice(0, 400) }
+      : {}),
     ...(snapshot.accent ? { accent: snapshot.accent } : {}),
   };
 }
@@ -788,12 +821,10 @@ function sameCreditNoteLines(
 async function validateCreditNoteLineInvoiceLinks(
   database: BillingDatabase,
   invoiceId: string,
-  lines: readonly NormalizedCreditNoteLine[],
+  lines: readonly NormalizedCreditNoteLine[]
 ): Promise<void> {
   const invoiceLineIds = new Set(
-    lines.flatMap(({ invoiceLineId }) =>
-      invoiceLineId ? [invoiceLineId] : [],
-    ),
+    lines.flatMap(({ invoiceLineId }) => (invoiceLineId ? [invoiceLineId] : []))
   );
 
   for (const invoiceLineId of invoiceLineIds) {
@@ -801,12 +832,12 @@ async function validateCreditNoteLineInvoiceLinks(
       `SELECT id
        FROM invoice_lines
        WHERE id = ? AND invoice_id = ?`,
-      [invoiceLineId, invoiceId],
+      [invoiceLineId, invoiceId]
     );
     if (!rows[0]) {
       throw new BillingDomainError(
         "INVOICE_TOTAL_INVALID",
-        "Chaque ligne d'avoir référencée doit appartenir à la facture concernée.",
+        "Chaque ligne d'avoir référencée doit appartenir à la facture concernée."
       );
     }
   }
@@ -823,12 +854,14 @@ function requireVoidReason(value: string): string {
   return reason;
 }
 
-function assertPaymentMethod(value: TransactionPaymentMethod): TransactionPaymentMethod {
+function assertPaymentMethod(
+  value: TransactionPaymentMethod
+): TransactionPaymentMethod {
   return toPaymentMethod(value);
 }
 
 function hasOwn(input: object, key: string): boolean {
-  return Object.prototype.hasOwnProperty.call(input, key);
+  return Object.hasOwn(input, key);
 }
 
 async function resolveInvoiceRelationships(
@@ -837,7 +870,7 @@ async function resolveInvoiceRelationships(
     appointmentId?: string | null;
     ownerId: string;
     patientId?: string | null;
-  },
+  }
 ): Promise<{
   appointmentId: string | null;
   ownerId: string;
@@ -846,12 +879,12 @@ async function resolveInvoiceRelationships(
   const ownerId = requireId(input.ownerId, "OWNER_NOT_FOUND");
   const ownerRows = await database.select<DatabaseRow[]>(
     "SELECT id FROM owners WHERE id = ?",
-    [ownerId],
+    [ownerId]
   );
   if (!ownerRows[0]) {
     throw new BillingDomainError(
       "OWNER_NOT_FOUND",
-      "Le propriétaire de la facture est introuvable.",
+      "Le propriétaire de la facture est introuvable."
     );
   }
 
@@ -861,18 +894,18 @@ async function resolveInvoiceRelationships(
   if (patientId) {
     const patientRows = await database.select<DatabaseRow[]>(
       "SELECT owner_id FROM patients WHERE id = ?",
-      [patientId],
+      [patientId]
     );
     if (!patientRows[0]) {
       throw new BillingDomainError(
         "PATIENT_NOT_FOUND",
-        "Le patient de la facture est introuvable.",
+        "Le patient de la facture est introuvable."
       );
     }
     if (valueAsString(patientRows[0].owner_id) !== ownerId) {
       throw new BillingDomainError(
         "PATIENT_OWNER_MISMATCH",
-        "Le patient doit appartenir au propriétaire facturé.",
+        "Le patient doit appartenir au propriétaire facturé."
       );
     }
   }
@@ -880,26 +913,26 @@ async function resolveInvoiceRelationships(
   if (appointmentId) {
     const appointmentRows = await database.select<DatabaseRow[]>(
       "SELECT owner_id, patient_id FROM appointments WHERE id = ?",
-      [appointmentId],
+      [appointmentId]
     );
     const appointment = appointmentRows[0];
     if (!appointment) {
       throw new BillingDomainError(
         "APPOINTMENT_NOT_FOUND",
-        "Le rendez-vous de la facture est introuvable.",
+        "Le rendez-vous de la facture est introuvable."
       );
     }
     if (valueAsString(appointment.owner_id) !== ownerId) {
       throw new BillingDomainError(
         "APPOINTMENT_OWNER_MISMATCH",
-        "Le rendez-vous doit appartenir au propriétaire facturé.",
+        "Le rendez-vous doit appartenir au propriétaire facturé."
       );
     }
     const appointmentPatientId = valueAsString(appointment.patient_id);
     if (patientId && patientId !== appointmentPatientId) {
       throw new BillingDomainError(
         "APPOINTMENT_PATIENT_MISMATCH",
-        "Le patient de la facture ne correspond pas au rendez-vous choisi.",
+        "Le patient de la facture ne correspond pas au rendez-vous choisi."
       );
     }
     patientId = patientId ?? appointmentPatientId;
@@ -920,7 +953,10 @@ async function loadOwnerSnapshot(
   );
   const owner = rows[0];
   if (!owner) {
-    throw new BillingDomainError("OWNER_NOT_FOUND", "Le propriétaire de la facture est introuvable.");
+    throw new BillingDomainError(
+      "OWNER_NOT_FOUND",
+      "Le propriétaire de la facture est introuvable."
+    );
   }
   return {
     id: valueAsString(owner.id),
@@ -941,7 +977,7 @@ async function insertAudit(
     entityId: string;
     occurredAt: string;
     payload: Record<string, unknown>;
-  },
+  }
 ): Promise<void> {
   await database.execute(
     `INSERT INTO audit_log (
@@ -957,7 +993,7 @@ async function insertAudit(
       JSON.stringify(input.payload),
       JSON.stringify({ command: input.payload.command }),
       input.occurredAt,
-    ],
+    ]
   );
 }
 
@@ -1039,24 +1075,57 @@ async function insertInvoiceLine(
 async function replaceInvoiceDraftLines(
   database: BillingDatabase,
   invoiceId: string,
-  lines: readonly (ReturnType<typeof normalizeBillingLine> & {id?: string})[],
+  lines: readonly (ReturnType<typeof normalizeBillingLine> & { id?: string })[],
   occurredAt: string
 ): Promise<void> {
-  const oldLines = await database.select<{id: string}[]>("SELECT id FROM invoice_lines WHERE invoice_id=?", [invoiceId]);
-  const oldIds = new Set(oldLines.map(line => line.id));
+  const oldLines = await database.select<{ id: string }[]>(
+    "SELECT id FROM invoice_lines WHERE invoice_id=?",
+    [invoiceId]
+  );
+  const oldIds = new Set(oldLines.map((line) => line.id));
   const kept = new Set<string>();
   for (const line of lines) {
-    if (line.id && (!oldIds.has(line.id) || kept.has(line.id))) throw new Error("Cette ligne n’appartient pas au brouillon ou apparaît deux fois.");
-    if (line.id) kept.add(line.id);
+    if (line.id && (!oldIds.has(line.id) || kept.has(line.id))) {
+      throw new Error(
+        "Cette ligne n’appartient pas au brouillon ou apparaît deux fois."
+      );
+    }
+    if (line.id) {
+      kept.add(line.id);
+    }
   }
   for (const old of oldLines) {
-    if (!kept.has(old.id)) await database.execute("DELETE FROM invoice_lines WHERE id=? AND invoice_id=?", [old.id, invoiceId]);
+    if (!kept.has(old.id)) {
+      await database.execute(
+        "DELETE FROM invoice_lines WHERE id=? AND invoice_id=?",
+        [old.id, invoiceId]
+      );
+    }
   }
   for (const [sortOrder, line] of lines.entries()) {
     if (line.id) {
-      await database.execute(`UPDATE invoice_lines SET product_id=?,description=?,quantity_milli=?,unit_amount=?,discount_bps=?,tax_bps=?,base_amount=?,discount_amount=?,tax_amount=?,gross_amount=?,sort_order=?,updated_at=? WHERE id=? AND invoice_id=?`,
-        [line.productId ?? null, line.description, line.quantityMilli, line.unitAmount, line.discountBps, line.taxBps, line.baseAmount, line.discountAmount, line.taxAmount, line.grossAmount, sortOrder, occurredAt, line.id, invoiceId]);
-    } else await insertInvoiceLine(database, invoiceId, line, sortOrder, occurredAt);
+      await database.execute(
+        "UPDATE invoice_lines SET product_id=?,description=?,quantity_milli=?,unit_amount=?,discount_bps=?,tax_bps=?,base_amount=?,discount_amount=?,tax_amount=?,gross_amount=?,sort_order=?,updated_at=? WHERE id=? AND invoice_id=?",
+        [
+          line.productId ?? null,
+          line.description,
+          line.quantityMilli,
+          line.unitAmount,
+          line.discountBps,
+          line.taxBps,
+          line.baseAmount,
+          line.discountAmount,
+          line.taxAmount,
+          line.grossAmount,
+          sortOrder,
+          occurredAt,
+          line.id,
+          invoiceId,
+        ]
+      );
+    } else {
+      await insertInvoiceLine(database, invoiceId, line, sortOrder, occurredAt);
+    }
   }
 }
 
@@ -1200,7 +1269,10 @@ async function runBillingCommand<T>(
 
 function requireInvoiceDraft(invoice: InvoiceDetail | null): InvoiceDetail {
   if (!invoice) {
-    throw new BillingDomainError("INVOICE_NOT_FOUND", "La facture est introuvable.");
+    throw new BillingDomainError(
+      "INVOICE_NOT_FOUND",
+      "La facture est introuvable."
+    );
   }
   if (invoice.documentStatus !== "draft") {
     throw new BillingDomainError(
@@ -1213,7 +1285,10 @@ function requireInvoiceDraft(invoice: InvoiceDetail | null): InvoiceDetail {
 
 function requireIssuedInvoice(invoice: InvoiceDetail | null): InvoiceDetail {
   if (!invoice) {
-    throw new BillingDomainError("INVOICE_NOT_FOUND", "La facture est introuvable.");
+    throw new BillingDomainError(
+      "INVOICE_NOT_FOUND",
+      "La facture est introuvable."
+    );
   }
   if (invoice.documentStatus !== "issued") {
     throw new BillingDomainError(
@@ -1226,7 +1301,7 @@ function requireIssuedInvoice(invoice: InvoiceDetail | null): InvoiceDetail {
 
 /** Lists invoices with settlement calculated from immutable documents and ledgers. */
 export async function listInvoices(
-  options: ListInvoicesOptions = {},
+  options: ListInvoicesOptions = {}
 ): Promise<Invoice[]> {
   return runDbRead((database) => selectInvoices(database, options));
 }
@@ -1237,7 +1312,7 @@ export async function listInvoices(
  */
 export async function selectInvoices(
   database: { select<T>(query: string, values?: unknown[]): Promise<T> },
-  options: ListInvoicesOptions = {},
+  options: ListInvoicesOptions = {}
 ): Promise<Invoice[]> {
   const clauses: string[] = [];
   const bindValues: unknown[] = [];
@@ -1252,39 +1327,42 @@ export async function selectInvoices(
   const where = clauses.length > 0 ? ` WHERE ${clauses.join(" AND ")}` : "";
   const rows = await database.select<DatabaseRow[]>(
     `${INVOICE_SELECT}${where} ORDER BY COALESCE(i.issued_at, i.created_at) DESC, i.id DESC`,
-    bindValues,
+    bindValues
   );
   const invoices = rows.map((row) => rowToInvoice(row, options.now));
   const filtered = options.settlementStatus
     ? invoices.filter(
-        (invoice) => invoice.settlementStatus === options.settlementStatus,
+        (invoice) => invoice.settlementStatus === options.settlementStatus
       )
     : invoices;
   const limit = options.limit;
-  return typeof limit === "number" &&
-    Number.isSafeInteger(limit) &&
-    limit >= 0
+  return typeof limit === "number" && Number.isSafeInteger(limit) && limit >= 0
     ? filtered.slice(0, limit)
     : filtered;
 }
 
 /** Returns an invoice document with its immutable lines and related ledger records. */
-export async function getInvoice(invoiceId: string): Promise<InvoiceDetail | null> {
+export async function getInvoice(
+  invoiceId: string
+): Promise<InvoiceDetail | null> {
   return runDbRead((database) => loadInvoiceDetail(database, invoiceId));
 }
 
 /** One line of an issued invoice, with what tells its nature apart. */
 export interface IssuedInvoiceLine {
-  invoiceId: string;
-  issuedAt: string;
   /** Line total in centimes, as invoiced (before any credit note). */
   amount: number;
-  productId: string | null;
   appointmentType: string | null;
+  invoiceId: string;
+  issuedAt: string;
+  productId: string | null;
 }
 
 /** Read only: the lines of invoices issued between two dates, voided ones excluded. */
-export async function listIssuedInvoiceLines(range: { from: Date; to: Date }): Promise<IssuedInvoiceLine[]> {
+export async function listIssuedInvoiceLines(range: {
+  from: Date;
+  to: Date;
+}): Promise<IssuedInvoiceLine[]> {
   return runDbRead(async (database) => {
     const rows = await database.select<DatabaseRow[]>(
       `SELECT l.invoice_id, i.issued_at, l.gross_amount, l.product_id, a.type AS appointment_type
@@ -1293,7 +1371,7 @@ export async function listIssuedInvoiceLines(range: { from: Date; to: Date }): P
        LEFT JOIN appointments a ON a.id = i.appointment_id
        WHERE i.document_status = 'issued' AND i.issued_at >= ? AND i.issued_at <= ?
        ORDER BY i.issued_at, l.invoice_id, l.sort_order`,
-      [toSQLiteTimestamp(range.from), toSQLiteTimestamp(range.to)],
+      [toSQLiteTimestamp(range.from), toSQLiteTimestamp(range.to)]
     );
     return rows.map((row) => ({
       invoiceId: valueAsString(row.invoice_id),
@@ -1308,7 +1386,7 @@ export async function listIssuedInvoiceLines(range: { from: Date; to: Date }): P
 /** Used by clinical commands that must create stock and invoice atomically. */
 export async function createInvoiceDraftInDatabase(
   database: BillingDatabase,
-  input: CreateInvoiceDraftInput,
+  input: CreateInvoiceDraftInput
 ): Promise<InvoiceDetail> {
   const occurredAt = normalizeTimestamp().value;
   const invoiceId = input.id?.trim() || generateId();
@@ -1336,7 +1414,7 @@ export async function createInvoiceDraftInDatabase(
       totals.grossAmount,
       occurredAt,
       occurredAt,
-    ],
+    ]
   );
   for (const [sortOrder, line] of lines.entries()) {
     await insertInvoiceLine(database, invoiceId, line, sortOrder, occurredAt);
@@ -1353,42 +1431,78 @@ export async function createInvoiceDraftInDatabase(
   if (!created) {
     throw new BillingDomainError(
       "INVOICE_NOT_FOUND",
-      "La facture créée est introuvable.",
+      "La facture créée est introuvable."
     );
   }
   return created;
 }
 
 export async function createInvoiceDraft(
-  input: CreateInvoiceDraftInput,
+  input: CreateInvoiceDraftInput
 ): Promise<InvoiceDetail> {
   return runBillingCommand((database) =>
-    createInvoiceDraftInDatabase(database, input),
+    createInvoiceDraftInDatabase(database, input)
   );
 }
 
 /** Append clinical lines without replacing any existing financial or stock provenance. */
-export async function appendInvoiceDraftLinesInDatabase(database: BillingDatabase, invoiceId: string, inputs: readonly BillingLineInput[], actor: BillingActor): Promise<InvoiceDetail> {
-  const current = requireInvoiceDraft(await loadInvoiceDetail(database, invoiceId));
+export async function appendInvoiceDraftLinesInDatabase(
+  database: BillingDatabase,
+  invoiceId: string,
+  inputs: readonly BillingLineInput[],
+  actor: BillingActor
+): Promise<InvoiceDetail> {
+  const current = requireInvoiceDraft(
+    await loadInvoiceDetail(database, invoiceId)
+  );
   const now = normalizeTimestamp().value;
   const additions = inputs.map(normalizeBillingLine);
-  const total = sumBillingLines([...current.lines.map(normalizeBillingLine), ...additions]);
-  for (const [index, line] of additions.entries()) await insertInvoiceLine(database, invoiceId, line, current.lines.length + index, now);
-  await database.execute("UPDATE invoices SET subtotal_amount=?,discount_amount=?,tax_amount=?,gross_amount=?,updated_at=? WHERE id=? AND document_status='draft'",
-    [total.baseAmount, total.discountAmount, total.taxAmount, total.grossAmount, now, invoiceId]);
-  await insertAudit(database, {action: "update", actor, entityId: invoiceId, occurredAt: now, payload: {command: "append-clinical-product-lines", lineCount: additions.length}});
+  const total = sumBillingLines([
+    ...current.lines.map(normalizeBillingLine),
+    ...additions,
+  ]);
+  for (const [index, line] of additions.entries()) {
+    await insertInvoiceLine(
+      database,
+      invoiceId,
+      line,
+      current.lines.length + index,
+      now
+    );
+  }
+  await database.execute(
+    "UPDATE invoices SET subtotal_amount=?,discount_amount=?,tax_amount=?,gross_amount=?,updated_at=? WHERE id=? AND document_status='draft'",
+    [
+      total.baseAmount,
+      total.discountAmount,
+      total.taxAmount,
+      total.grossAmount,
+      now,
+      invoiceId,
+    ]
+  );
+  await insertAudit(database, {
+    action: "update",
+    actor,
+    entityId: invoiceId,
+    occurredAt: now,
+    payload: {
+      command: "append-clinical-product-lines",
+      lineCount: additions.length,
+    },
+  });
   return requireInvoiceDraft(await loadInvoiceDetail(database, invoiceId));
 }
 
 /** One durable draft per care validation. Replays never change its price snapshot. */
 export async function billCompletedCareTask(
-  taskId: string,
+  taskId: string
 ): Promise<InvoiceDetail> {
   return runBillingCommand(async (database) => {
     const rows = await database.select<DatabaseRow[]>(
       `SELECT c.*, p.owner_id FROM care_tasks c
        JOIN patients p ON p.id = c.patient_id WHERE c.id = ?`,
-      [taskId],
+      [taskId]
     );
     const task = rows[0];
     if (
@@ -1398,24 +1512,34 @@ export async function billCompletedCareTask(
       !task.execute_par
     ) {
       throw new Error(
-        "Seul un soin effectué peut être ajouté à la facturation.",
+        "Seul un soin effectué peut être ajouté à la facturation."
       );
     }
-    const completionKey = careCompletionKey(taskId, Number(task.completion_revision ?? 0));
-    const invoiceId = careInvoiceId(taskId, Number(task.completion_revision ?? 0));
+    const completionKey = careCompletionKey(
+      taskId,
+      Number(task.completion_revision ?? 0)
+    );
+    const invoiceId = careInvoiceId(
+      taskId,
+      Number(task.completion_revision ?? 0)
+    );
     const existing = await loadInvoiceDetail(database, invoiceId);
-    if (existing) return existing;
+    if (existing) {
+      return existing;
+    }
     const product = task.produit_id
       ? (
           await database.select<DatabaseRow[]>(
             "SELECT sale_price_amount,stock_tracked,unit FROM products WHERE id = ?",
-            [task.produit_id],
+            [task.produit_id]
           )
         )[0]
       : undefined;
     const amount = product ? valueAsAmount(product.sale_price_amount) : 0;
     // Stock is consumed by the care-status transaction, never by issuing an invoice.
-    const quantity = product?.stock_tracked ? Number(task.produit_quantite ?? 1) : 1;
+    const quantity = product?.stock_tracked
+      ? Number(task.produit_quantite ?? 1)
+      : 1;
     const exactMilliQuantity = Number.isSafeInteger(quantity * 1000);
     const invoice = await createInvoiceDraftInDatabase(database, {
       id: invoiceId,
@@ -1425,30 +1549,34 @@ export async function billCompletedCareTask(
       notes: `Soin effectué le ${valueAsString(task.completed_at)}. Exécutant : ${valueAsString(task.execute_par)}.${product ? "" : " Tarif à compléter avant émission."}`,
       lines: [
         {
-          description: exactMilliQuantity ? valueAsString(task.label) : `${valueAsString(task.label)} (${quantity.toLocaleString("fr-FR", {maximumFractionDigits: 6})} ${valueAsString(product?.unit)})`,
+          description: exactMilliQuantity
+            ? valueAsString(task.label)
+            : `${valueAsString(task.label)} (${quantity.toLocaleString("fr-FR", { maximumFractionDigits: 6 })} ${valueAsString(product?.unit)})`,
           productId: valueAsNullableString(task.produit_id),
           quantityMilli: exactMilliQuantity ? quantity * 1000 : 1000,
           // Financial quantities support milli-units. A physical unit remains exact in the stock ledger.
-          unitAmount: exactMilliQuantity ? amount : Math.round(amount * quantity),
+          unitAmount: exactMilliQuantity
+            ? amount
+            : Math.round(amount * quantity),
         },
       ],
     });
     await database.execute(
       "UPDATE stock_movements SET invoice_id=?,invoice_line_id=? WHERE source_type='care' AND source_id=? AND source_line_id=? AND type='usage'",
-      [invoice.id, invoice.lines[0]?.id ?? null, taskId, completionKey],
+      [invoice.id, invoice.lines[0]?.id ?? null, taskId, completionKey]
     );
     return invoice;
   });
 }
 
 export async function updateInvoiceDraft(
-  input: UpdateInvoiceDraftInput,
+  input: UpdateInvoiceDraftInput
 ): Promise<InvoiceDetail> {
   return runBillingCommand(async (database) => {
     const occurredAt = normalizeTimestamp().value;
     const invoiceId = requireId(input.invoiceId, "INVOICE_NOT_FOUND");
     const current = requireInvoiceDraft(
-      await loadInvoiceDetail(database, invoiceId),
+      await loadInvoiceDetail(database, invoiceId)
     );
     const relationships = await resolveInvoiceRelationships(database, {
       ownerId: input.ownerId ?? current.ownerId,
@@ -1460,7 +1588,10 @@ export async function updateInvoiceDraft(
         : current.appointmentId,
     });
     const lines = input.lines
-      ? input.lines.map(line => ({...normalizeBillingLine(line), id: line.id}))
+      ? input.lines.map((line) => ({
+          ...normalizeBillingLine(line),
+          id: line.id,
+        }))
       : current.lines.map((line) =>
           normalizeBillingLine({
             description: line.description,
@@ -1469,7 +1600,7 @@ export async function updateInvoiceDraft(
             unitAmount: line.unitAmount,
             discountBps: line.discountBps,
             taxBps: line.taxBps,
-          }),
+          })
         );
     const totals = sumBillingLines(lines);
     const dueAt = hasOwn(input, "dueAt")
@@ -1501,7 +1632,7 @@ export async function updateInvoiceDraft(
         totals.grossAmount,
         occurredAt,
         invoiceId,
-      ],
+      ]
     );
     if (input.lines !== undefined) {
       await replaceInvoiceDraftLines(database, invoiceId, lines, occurredAt);
@@ -1518,7 +1649,7 @@ export async function updateInvoiceDraft(
     if (!updated) {
       throw new BillingDomainError(
         "INVOICE_NOT_FOUND",
-        "La facture mise à jour est introuvable.",
+        "La facture mise à jour est introuvable."
       );
     }
     return updated;
@@ -1535,7 +1666,7 @@ export interface DeleteInvoiceDraftInput extends BillingCommandContext {
  * une annulation.
  */
 export async function deleteInvoiceDraft(
-  input: DeleteInvoiceDraftInput,
+  input: DeleteInvoiceDraftInput
 ): Promise<boolean> {
   return runBillingCommand(async (database) => {
     const invoiceId = requireId(input.invoiceId, "INVOICE_NOT_FOUND");
@@ -1543,19 +1674,19 @@ export async function deleteInvoiceDraft(
     if (!current) {
       throw new BillingDomainError(
         "INVOICE_NOT_FOUND",
-        "La facture est introuvable.",
+        "La facture est introuvable."
       );
     }
     if (current.documentStatus !== "draft") {
       throw new BillingDomainError(
         "INVOICE_VOID_NOT_ALLOWED",
-        "Seul un brouillon de facture peut être supprimé.",
+        "Seul un brouillon de facture peut être supprimé."
       );
     }
-    await database.execute(`DELETE FROM invoice_lines WHERE invoice_id = ?`, [
+    await database.execute("DELETE FROM invoice_lines WHERE invoice_id = ?", [
       invoiceId,
     ]);
-    await database.execute(`DELETE FROM invoices WHERE id = ?`, [invoiceId]);
+    await database.execute("DELETE FROM invoices WHERE id = ?", [invoiceId]);
     await insertAudit(database, {
       action: "delete",
       actor: input.actor,
@@ -1568,7 +1699,7 @@ export async function deleteInvoiceDraft(
 }
 
 export async function issueInvoice(
-  input: IssueInvoiceInput,
+  input: IssueInvoiceInput
 ): Promise<InvoiceDetail> {
   return runBillingCommand(async (database) => {
     const invoiceId = requireId(input.invoiceId, "INVOICE_NOT_FOUND");
@@ -1580,7 +1711,7 @@ export async function issueInvoice(
       : undefined;
     const idempotencyRecord = await findIdempotencyRecord(
       database,
-      idempotencyKey,
+      idempotencyKey
     );
     if (idempotencyRecord) {
       assertIdempotencyCommand(idempotencyRecord, "issue-invoice");
@@ -1588,7 +1719,7 @@ export async function issueInvoice(
       if (!existing) {
         throw new BillingDomainError(
           "INVOICE_NOT_FOUND",
-          "La facture idempotente est introuvable.",
+          "La facture idempotente est introuvable."
         );
       }
       if (
@@ -1605,24 +1736,24 @@ export async function issueInvoice(
     }
 
     const draft = requireInvoiceDraft(
-      await loadInvoiceDetail(database, invoiceId),
+      await loadInvoiceDetail(database, invoiceId)
     );
     if (draft.lines.length === 0) {
       throw new BillingDomainError(
         "INVOICE_TOTAL_INVALID",
-        "Une facture doit contenir au moins une ligne avant son émission.",
+        "Une facture doit contenir au moins une ligne avant son émission."
       );
     }
     const lines = await updateInvoiceLineCalculations(
       database,
       invoiceId,
       draft.lines,
-      issued.value,
+      issued.value
     );
     const totals = sumBillingLines(lines);
     assertPositiveAmount(
       totals.grossAmount,
-      "Le total d'une facture émise doit être strictement positif.",
+      "Le total d'une facture émise doit être strictement positif."
     );
     const ownerSnapshot = await loadOwnerSnapshot(database, draft.ownerId);
     const dueAt =
@@ -1630,7 +1761,7 @@ export async function issueInvoice(
     const number = await allocateOfficialNumber(
       database,
       "invoice",
-      issued.date,
+      issued.date
     );
 
     await database.execute(
@@ -1653,7 +1784,7 @@ export async function issueInvoice(
         idempotencyKey,
         issued.value,
         invoiceId,
-      ],
+      ]
     );
     await insertAudit(database, {
       action: "update",
@@ -1671,7 +1802,7 @@ export async function issueInvoice(
     if (!result) {
       throw new BillingDomainError(
         "INVOICE_NOT_FOUND",
-        "La facture émise est introuvable.",
+        "La facture émise est introuvable."
       );
     }
     return result;
@@ -1679,7 +1810,7 @@ export async function issueInvoice(
 }
 
 export async function recordPayment(
-  input: RecordPaymentInput,
+  input: RecordPaymentInput
 ): Promise<InvoicePayment> {
   return runBillingCommand(async (database) => {
     const invoiceId = requireId(input.invoiceId, "INVOICE_NOT_FOUND");
@@ -1690,7 +1821,7 @@ export async function recordPayment(
     const reference = normalizeOptionalText(input.reference);
     const idempotencyRecord = await findIdempotencyRecord(
       database,
-      idempotencyKey,
+      idempotencyKey
     );
     if (idempotencyRecord) {
       assertIdempotencyCommand(idempotencyRecord, "record-payment");
@@ -1698,7 +1829,7 @@ export async function recordPayment(
       if (!existing) {
         throw new BillingDomainError(
           "PAYMENT_NOT_FOUND",
-          "Le paiement idempotent est introuvable.",
+          "Le paiement idempotent est introuvable."
         );
       }
       if (
@@ -1714,7 +1845,7 @@ export async function recordPayment(
     }
 
     const invoice = requireIssuedInvoice(
-      await loadInvoiceDetail(database, invoiceId),
+      await loadInvoiceDetail(database, invoiceId)
     );
     assertPaymentWithinBalance(amount, invoice.balanceAmount);
     const paymentId = generateId();
@@ -1745,7 +1876,7 @@ export async function recordPayment(
         idempotencyKey,
         paid.value,
         paid.value,
-      ],
+      ]
     );
     await insertAudit(database, {
       action: "create",
@@ -1764,7 +1895,7 @@ export async function recordPayment(
     if (!payment) {
       throw new BillingDomainError(
         "PAYMENT_NOT_FOUND",
-        "Le paiement créé est introuvable.",
+        "Le paiement créé est introuvable."
       );
     }
     return payment;
@@ -1780,16 +1911,23 @@ export async function issueCreditNote(
     const issued = normalizeTimestamp(input.issuedAt);
     const creditNoteLines = normalizeCreditNoteLines(input.lines);
     const reason = normalizeOptionalText(input.reason);
-    const idempotencyRecord = await findIdempotencyRecord(database, idempotencyKey);
+    const idempotencyRecord = await findIdempotencyRecord(
+      database,
+      idempotencyKey
+    );
     if (idempotencyRecord) {
       assertIdempotencyCommand(idempotencyRecord, "issue-credit-note");
       const existing = await loadCreditNote(database, idempotencyRecord.id);
       if (!existing) {
-        throw new BillingDomainError("INVOICE_NOT_FOUND", "L'avoir idempotent est introuvable.");
+        throw new BillingDomainError(
+          "INVOICE_NOT_FOUND",
+          "L'avoir idempotent est introuvable."
+        );
       }
       if (
         existing.invoiceId !== invoiceId ||
-        (existing.documentStatus !== "issued" && existing.documentStatus !== "void") ||
+        (existing.documentStatus !== "issued" &&
+          existing.documentStatus !== "void") ||
         existing.reason !== reason ||
         !matchesPersistedCommandTimestamp(input.issuedAt, existing.issuedAt) ||
         !sameCreditNoteLines(creditNoteLines, existing.lines ?? [])
@@ -1799,7 +1937,9 @@ export async function issueCreditNote(
       return existing;
     }
 
-    const invoice = requireIssuedInvoice(await loadInvoiceDetail(database, invoiceId));
+    const invoice = requireIssuedInvoice(
+      await loadInvoiceDetail(database, invoiceId)
+    );
     if (creditNoteLines.length === 0) {
       throw new BillingDomainError(
         "INVOICE_TOTAL_INVALID",
@@ -1856,7 +1996,11 @@ export async function issueCreditNote(
         issued.value
       );
     }
-    const number = await allocateOfficialNumber(database, "credit_note", issued.date);
+    const number = await allocateOfficialNumber(
+      database,
+      "credit_note",
+      issued.date
+    );
     await database.execute(
       `UPDATE credit_notes
        SET document_status = 'issued', number = ?, issued_at = ?, updated_at = ?
@@ -1878,7 +2022,10 @@ export async function issueCreditNote(
 
     const credit = await loadCreditNote(database, creditNoteId);
     if (!credit) {
-      throw new BillingDomainError("INVOICE_NOT_FOUND", "L'avoir émis est introuvable.");
+      throw new BillingDomainError(
+        "INVOICE_NOT_FOUND",
+        "L'avoir émis est introuvable."
+      );
     }
     return credit;
   });
@@ -1897,7 +2044,7 @@ export async function recordRefund(input: RecordRefundInput): Promise<Refund> {
         : assertPaymentMethod(input.method);
     const idempotencyRecord = await findIdempotencyRecord(
       database,
-      idempotencyKey,
+      idempotencyKey
     );
     if (idempotencyRecord) {
       assertIdempotencyCommand(idempotencyRecord, "record-refund");
@@ -1905,7 +2052,7 @@ export async function recordRefund(input: RecordRefundInput): Promise<Refund> {
       if (!existing) {
         throw new BillingDomainError(
           "REFUND_NOT_FOUND",
-          "Le remboursement idempotent est introuvable.",
+          "Le remboursement idempotent est introuvable."
         );
       }
       const existingPayment =
@@ -1930,28 +2077,28 @@ export async function recordRefund(input: RecordRefundInput): Promise<Refund> {
     if (!payment) {
       throw new BillingDomainError(
         "PAYMENT_NOT_FOUND",
-        "Le paiement est introuvable.",
+        "Le paiement est introuvable."
       );
     }
     if (payment.status !== "completed") {
       throw new BillingDomainError(
         "PAYMENT_NOT_COMPLETED",
-        "Un remboursement requiert un paiement complété.",
+        "Un remboursement requiert un paiement complété."
       );
     }
     const completedRefundAmount = await countCompletedRefunds(
       database,
-      payment.id,
+      payment.id
     );
     assertRefundWithinAvailable(
       amount,
       refundablePaymentAmount({
         completedPaymentAmount: payment.amount,
         completedRefundAmount,
-      }),
+      })
     );
     const invoice = requireIssuedInvoice(
-      await loadInvoiceDetail(database, payment.invoiceId),
+      await loadInvoiceDetail(database, payment.invoiceId)
     );
     const method = requestedMethod ?? payment.method;
     const refundId = generateId();
@@ -1981,7 +2128,7 @@ export async function recordRefund(input: RecordRefundInput): Promise<Refund> {
         idempotencyKey,
         refunded.value,
         refunded.value,
-      ],
+      ]
     );
     await insertAudit(database, {
       action: "create",
@@ -2000,7 +2147,7 @@ export async function recordRefund(input: RecordRefundInput): Promise<Refund> {
     if (!refund) {
       throw new BillingDomainError(
         "REFUND_NOT_FOUND",
-        "Le remboursement créé est introuvable.",
+        "Le remboursement créé est introuvable."
       );
     }
     return refund;
@@ -2008,7 +2155,7 @@ export async function recordRefund(input: RecordRefundInput): Promise<Refund> {
 }
 
 export async function voidPayment(
-  input: VoidPaymentInput,
+  input: VoidPaymentInput
 ): Promise<InvoicePayment> {
   return runBillingCommand(async (database) => {
     const voided = normalizeTimestamp(input.voidedAt);
@@ -2017,7 +2164,7 @@ export async function voidPayment(
     if (!payment) {
       throw new BillingDomainError(
         "PAYMENT_NOT_FOUND",
-        "Le paiement est introuvable.",
+        "Le paiement est introuvable."
       );
     }
     if (payment.status === "void") {
@@ -2025,12 +2172,12 @@ export async function voidPayment(
     }
     const completedRefundAmount = await countCompletedRefunds(
       database,
-      payment.id,
+      payment.id
     );
     if (completedRefundAmount > 0) {
       throw new BillingDomainError(
         "PAYMENT_HAS_COMPLETED_REFUNDS",
-        "Les remboursements complétés doivent être annulés avant le paiement.",
+        "Les remboursements complétés doivent être annulés avant le paiement."
       );
     }
     await database.execute(
@@ -2042,7 +2189,7 @@ export async function voidPayment(
         normalizeOptionalText(input.reason),
         voided.value,
         payment.id,
-      ],
+      ]
     );
     const journalTransactionId = await insertLockedJournalProjection(database, {
       amount: payment.amount,
@@ -2066,7 +2213,7 @@ export async function voidPayment(
     if (!result) {
       throw new BillingDomainError(
         "PAYMENT_NOT_FOUND",
-        "Le paiement annulé est introuvable.",
+        "Le paiement annulé est introuvable."
       );
     }
     return result;
@@ -2081,7 +2228,7 @@ export async function voidRefund(input: VoidRefundInput): Promise<Refund> {
     if (!refund) {
       throw new BillingDomainError(
         "REFUND_NOT_FOUND",
-        "Le remboursement est introuvable.",
+        "Le remboursement est introuvable."
       );
     }
     if (refund.status === "void") {
@@ -2091,7 +2238,7 @@ export async function voidRefund(input: VoidRefundInput): Promise<Refund> {
     if (!payment) {
       throw new BillingDomainError(
         "PAYMENT_NOT_FOUND",
-        "Le paiement du remboursement est introuvable.",
+        "Le paiement du remboursement est introuvable."
       );
     }
     await database.execute(
@@ -2103,7 +2250,7 @@ export async function voidRefund(input: VoidRefundInput): Promise<Refund> {
         normalizeOptionalText(input.reason),
         voided.value,
         refund.id,
-      ],
+      ]
     );
     const journalTransactionId = await insertLockedJournalProjection(database, {
       amount: refund.amount,
@@ -2127,24 +2274,34 @@ export async function voidRefund(input: VoidRefundInput): Promise<Refund> {
     if (!result) {
       throw new BillingDomainError(
         "REFUND_NOT_FOUND",
-        "Le remboursement annulé est introuvable.",
+        "Le remboursement annulé est introuvable."
       );
     }
     return result;
   });
 }
 
-export async function voidInvoice(input: VoidInvoiceInput): Promise<InvoiceDetail> {
-  return runBillingCommand(database => voidInvoiceInDatabase(database, input));
+export async function voidInvoice(
+  input: VoidInvoiceInput
+): Promise<InvoiceDetail> {
+  return runBillingCommand((database) =>
+    voidInvoiceInDatabase(database, input)
+  );
 }
 
 /** The caller can atomically reverse care, stock and billing in its own transaction. */
-export async function voidInvoiceInDatabase(database: BillingDatabase, input: VoidInvoiceInput): Promise<InvoiceDetail> {
+export async function voidInvoiceInDatabase(
+  database: BillingDatabase,
+  input: VoidInvoiceInput
+): Promise<InvoiceDetail> {
   const voided = normalizeTimestamp(input.voidedAt);
   const invoiceId = requireId(input.invoiceId, "INVOICE_NOT_FOUND");
   const invoice = await loadInvoiceDetail(database, invoiceId);
   if (!invoice) {
-    throw new BillingDomainError("INVOICE_NOT_FOUND", "La facture est introuvable.");
+    throw new BillingDomainError(
+      "INVOICE_NOT_FOUND",
+      "La facture est introuvable."
+    );
   }
   if (invoice.documentStatus === "void") {
     return invoice;
@@ -2163,7 +2320,12 @@ export async function voidInvoiceInDatabase(database: BillingDatabase, input: Vo
     `UPDATE invoices
      SET document_status = 'void', voided_at = ?, void_reason = ?, updated_at = ?
      WHERE id = ?`,
-    [voided.value, normalizeOptionalText(input.reason), voided.value, invoice.id]
+    [
+      voided.value,
+      normalizeOptionalText(input.reason),
+      voided.value,
+      invoice.id,
+    ]
   );
   await insertAudit(database, {
     action: "update",
@@ -2175,7 +2337,10 @@ export async function voidInvoiceInDatabase(database: BillingDatabase, input: Vo
 
   const result = await loadInvoiceDetail(database, invoice.id);
   if (!result) {
-    throw new BillingDomainError("INVOICE_NOT_FOUND", "La facture annulée est introuvable.");
+    throw new BillingDomainError(
+      "INVOICE_NOT_FOUND",
+      "La facture annulée est introuvable."
+    );
   }
   return result;
 }
@@ -2200,7 +2365,10 @@ export async function voidCreditNote(
     const voided = normalizeTimestamp(input.voidedAt);
     const creditNote = await loadCreditNote(database, creditNoteId);
     if (!creditNote) {
-      throw new BillingDomainError("INVOICE_NOT_FOUND", "L'avoir est introuvable.");
+      throw new BillingDomainError(
+        "INVOICE_NOT_FOUND",
+        "L'avoir est introuvable."
+      );
     }
     if (creditNote.documentStatus !== "issued") {
       throw new BillingDomainError(
@@ -2229,9 +2397,15 @@ export async function voidCreditNote(
 
     const result = await loadCreditNote(database, creditNote.id);
     if (!result) {
-      throw new BillingDomainError("INVOICE_NOT_FOUND", "L'avoir annulé est introuvable.");
+      throw new BillingDomainError(
+        "INVOICE_NOT_FOUND",
+        "L'avoir annulé est introuvable."
+      );
     }
-    const settledInvoice = await loadInvoiceDetail(database, creditNote.invoiceId);
+    const settledInvoice = await loadInvoiceDetail(
+      database,
+      creditNote.invoiceId
+    );
     if (!settledInvoice) {
       throw new BillingDomainError(
         "INVOICE_NOT_FOUND",

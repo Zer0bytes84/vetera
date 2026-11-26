@@ -2,9 +2,25 @@
 // Free to use. If it helps you, you can support it: https://ko-fi.com/yurigokoryan
 "use client";
 
-import { ArrowTrendingUpIcon, ChartBarIcon, ChartPieIcon, PresentationChartLineIcon } from "@heroicons/react/20/solid";
-import { AnimatePresence, MotionConfig, motion, useReducedMotion } from "motion/react";
-import { useId, useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import {
+  ArrowTrendingUpIcon,
+  ChartBarIcon,
+  ChartPieIcon,
+  PresentationChartLineIcon,
+} from "@heroicons/react/20/solid";
+import {
+  AnimatePresence,
+  MotionConfig,
+  motion,
+  useReducedMotion,
+} from "motion/react";
+import {
+  type ReactNode,
+  useId,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import { RollingNumber } from "@/components/ui/rolling-number";
 import { Panel, Shell, ShellHeader } from "@/components/ui/surface";
 import { EASE_IN_OUT, EASE_OUT, enter, exit } from "@/lib/motion-tokens";
@@ -85,7 +101,12 @@ const palette = [
   "var(--tone-amber)",
   "var(--tone-rose)",
 ];
-const icons = { bar: ChartBarIcon, line: ArrowTrendingUpIcon, area: PresentationChartLineIcon, donut: ChartPieIcon };
+const icons = {
+  bar: ChartBarIcon,
+  line: ArrowTrendingUpIcon,
+  area: PresentationChartLineIcon,
+  donut: ChartPieIcon,
+};
 const PAD = { top: 8, bottom: 24, left: 40 };
 const STEPS = 5;
 const MAX_MARKERS = 31;
@@ -104,8 +125,15 @@ const compact = (n: number) =>
 export function fiveSteps(value: number) {
   const raw = Math.max(value, STEPS) / STEPS;
   const mag = 10 ** Math.floor(Math.log10(raw));
-  const step = [1, 2, 2.5, 5, 10].map((m) => m * mag).find((s) => s >= raw) ?? raw;
-  return { top: step * STEPS, ticks: Array.from({ length: STEPS + 1 }, (_, i) => Math.round(step * i * 100) / 100) };
+  const step =
+    [1, 2, 2.5, 5, 10].map((m) => m * mag).find((s) => s >= raw) ?? raw;
+  return {
+    top: step * STEPS,
+    ticks: Array.from(
+      { length: STEPS + 1 },
+      (_, i) => Math.round(step * i * 100) / 100
+    ),
+  };
 }
 
 /** `paused` while the card draws its skeleton: the plot isn't there yet, so it is measured once it is. */
@@ -116,9 +144,13 @@ function useWidth(paused = false) {
   const [width, setWidth] = useState<number | null>(null);
   useLayoutEffect(() => {
     const el = ref.current;
-    if (!el) return;
+    if (!el) {
+      return;
+    }
     setWidth(el.getBoundingClientRect().width);
-    const observer = new ResizeObserver(([entry]) => setWidth(entry.contentRect.width));
+    const observer = new ResizeObserver(([entry]) =>
+      setWidth(entry.contentRect.width)
+    );
     observer.observe(el);
     return () => observer.disconnect();
   }, [paused]);
@@ -169,11 +201,15 @@ export function ChartCard({
   const select = (index: number | null, keyboard: boolean) => {
     setFromKeyboard(keyboard);
     setActive(index);
-    if (index !== null) onSelect?.(index);
+    if (index !== null) {
+      onSelect?.(index);
+    }
   };
 
   const onKeyDown = (event: React.KeyboardEvent) => {
-    if (!count) return;
+    if (!count) {
+      return;
+    }
     const keys: Record<string, number> = {
       ArrowRight: (activeIndex ?? -1) + 1,
       ArrowLeft: (activeIndex ?? count) - 1,
@@ -181,7 +217,9 @@ export function ChartCard({
       End: count - 1,
     };
     if (!(event.key in keys)) {
-      if (event.key === "Escape") select(null, true);
+      if (event.key === "Escape") {
+        select(null, true);
+      }
       return;
     }
     event.preventDefault();
@@ -196,7 +234,14 @@ export function ChartCard({
   const innerW = Math.max(width - PAD.left - padRight, 40);
   const innerH = H - PAD.top - PAD.bottom;
   const scaleOf = (axis: "left" | "right") =>
-    fiveSteps(Math.max(0, ...visible.filter((s) => (s.axis ?? "left") === axis).flatMap((s) => s.values)));
+    fiveSteps(
+      Math.max(
+        0,
+        ...visible
+          .filter((s) => (s.axis ?? "left") === axis)
+          .flatMap((s) => s.values)
+      )
+    );
   const scales = { left: scaleOf("left"), right: scaleOf("right") };
   const base = PAD.top + innerH;
   const yFor = (axis: "left" | "right", v: number) =>
@@ -208,10 +253,14 @@ export function ChartCard({
       ? band * (i + 0.5)
       : (innerW * i) / Math.max(data.labels.length - 1, 1));
   const grid = onLeft ? scales.left.ticks : scales.right.ticks;
-  const labelEvery = Math.ceil(data.labels.length / Math.max(Math.floor(innerW / 64), 1));
+  const labelEvery = Math.ceil(
+    data.labels.length / Math.max(Math.floor(innerW / 64), 1)
+  );
   const fmt = (s: { format?: (v: number) => string }) => s.format ?? format;
-  const valueFmt = (s: { format?: (v: number) => string; valueFormat?: (v: number) => string }) =>
-    s.valueFormat ?? s.format ?? format;
+  const valueFmt = (s: {
+    format?: (v: number) => string;
+    valueFormat?: (v: number) => string;
+  }) => s.valueFormat ?? s.format ?? format;
   const leftSeries = visible.find((s) => (s.axis ?? "left") === "left");
   const rightSeries = visible.find((s) => s.axis === "right");
 
@@ -223,12 +272,13 @@ export function ChartCard({
   const tooltip =
     activeIndex === null ? null : donut ? (
       <TooltipRows
-        title={visible[activeIndex]?.label}
         rows={[
           {
             color: visible[activeIndex]?.color,
             label: "Total",
-            value: valueFmt(visible[activeIndex] ?? {})(sum(visible[activeIndex]?.values ?? [])),
+            value: valueFmt(visible[activeIndex] ?? {})(
+              sum(visible[activeIndex]?.values ?? [])
+            ),
           },
           {
             color: visible[activeIndex]?.color,
@@ -236,16 +286,17 @@ export function ChartCard({
             value: `${donutTotal ? Math.round((sum(visible[activeIndex]?.values ?? []) / donutTotal) * 100) : 0} %`,
           },
         ]}
+        title={visible[activeIndex]?.label}
       />
     ) : (
       <TooltipRows
-        title={tooltipTitles?.[activeIndex] ?? data.labels[activeIndex]}
+        note={tooltipNote?.(activeIndex)}
         rows={visible.map((s) => ({
           color: s.color,
           label: s.label,
           value: valueFmt(s)(s.values[activeIndex] ?? 0),
         }))}
-        note={tooltipNote?.(activeIndex)}
+        title={tooltipTitles?.[activeIndex] ?? data.labels[activeIndex]}
       />
     );
 
@@ -253,21 +304,36 @@ export function ChartCard({
     const shape = "loading-skeleton-shape";
     const hide = !loadingRevealed && "invisible";
     return (
-      <Shell className={cn("max-w-2xl loading-skeleton", className)}>
+      <Shell className={cn("loading-skeleton max-w-2xl", className)}>
         <ShellHeader
+          aside={
+            total !== undefined && (
+              <span
+                aria-hidden="true"
+                className={cn(shape, "block h-6 w-32 rounded-lg", hide)}
+              />
+            )
+          }
           icon={icons[type]}
-          title={title}
           subtitle={subtitle}
-          aside={total !== undefined && <span aria-hidden="true" className={cn(shape, "block h-6 w-32 rounded-lg", hide)} />}
+          title={title}
         />
         <Panel className="p-4">
           <div className="mb-3 flex flex-wrap items-start justify-between gap-x-3 gap-y-2">
-            <div aria-hidden="true" className={cn("flex min-w-0 flex-wrap gap-1.5", hide)}>
+            <div
+              aria-hidden="true"
+              className={cn("flex min-w-0 flex-wrap gap-1.5", hide)}
+            >
               {(series.length > 1 ? series : []).map((s) => (
-                <span className={cn(shape, "block h-7 w-36 rounded-full")} key={s.id} />
+                <span
+                  className={cn(shape, "block h-7 w-36 rounded-full")}
+                  key={s.id}
+                />
               ))}
             </div>
-            {toolbar && <div className="flex shrink-0 items-center gap-1">{toolbar}</div>}
+            {toolbar && (
+              <div className="flex shrink-0 items-center gap-1">{toolbar}</div>
+            )}
           </div>
           <div
             aria-busy="true"
@@ -276,7 +342,10 @@ export function ChartCard({
             role="status"
             style={{ height: donut ? 220 : H }}
           >
-            <span aria-hidden="true" className={cn(shape, "absolute inset-0 rounded-xl")} />
+            <span
+              aria-hidden="true"
+              className={cn(shape, "absolute inset-0 rounded-xl")}
+            />
           </div>
           {footer}
         </Panel>
@@ -288,56 +357,66 @@ export function ChartCard({
     <MotionConfig reducedMotion="user">
       <Shell className={cn("max-w-2xl", className)}>
         <ShellHeader
-          icon={icons[type]}
-          title={title}
-          subtitle={subtitle}
           aside={
             total && (
               <RollingNumber
+                className="font-medium text-[1.5rem] leading-none tracking-tight"
                 value={total}
-                className="text-[1.5rem] leading-none font-medium tracking-tight"
               />
             )
           }
+          icon={icons[type]}
+          subtitle={subtitle}
+          title={title}
         />
         <Panel className="p-4">
           {(series.length > 1 || toolbar) && (
             <div className="mb-3 flex flex-wrap items-start justify-between gap-x-3 gap-y-2">
               {series.length > 1 ? (
-                <div role="group" aria-label="Séries" className="flex min-w-0 flex-wrap gap-1.5">
+                <div
+                  aria-label="Séries"
+                  className="flex min-w-0 flex-wrap gap-1.5"
+                  role="group"
+                >
                   {series.map((s) => {
                     const on = !hidden.includes(s.id);
                     return (
                       <button
-                        key={s.id}
-                        type="button"
                         aria-pressed={on}
+                        className={cn(
+                          "inline-flex min-h-7 items-center gap-1.5 rounded-full px-2.5 py-1 text-left text-xs transition-[background-color,color,opacity,scale] duration-150 ease-out active:scale-[0.97]",
+                          on
+                            ? "bg-foreground/[0.06] text-foreground"
+                            : "text-muted-foreground opacity-60 hover:opacity-100"
+                        )}
+                        key={s.id}
                         onClick={() =>
                           setHidden((h) =>
                             on
                               ? visible.length > 1
                                 ? [...h, s.id]
                                 : h
-                              : h.filter((id) => id !== s.id),
+                              : h.filter((id) => id !== s.id)
                           )
                         }
-                        className={cn(
-                          "inline-flex min-h-7 items-center gap-1.5 rounded-full px-2.5 py-1 text-left text-xs transition-[background-color,color,opacity,scale] duration-150 ease-out active:scale-[0.97]",
-                          on
-                            ? "bg-foreground/[0.06] text-foreground"
-                            : "text-muted-foreground opacity-60 hover:opacity-100",
-                        )}
+                        type="button"
                       >
                         <span
                           aria-hidden="true"
                           className="size-2.5 shrink-0 rounded-[3px]"
                           style={{
                             background: on ? s.color : "transparent",
-                            boxShadow: on ? undefined : `inset 0 0 0 1.5px ${s.color}`,
+                            boxShadow: on
+                              ? undefined
+                              : `inset 0 0 0 1.5px ${s.color}`,
                           }}
                         />
                         <span>{s.label}</span>
-                        {s.detail && <span className="text-muted-foreground">{s.detail}</span>}
+                        {s.detail && (
+                          <span className="text-muted-foreground">
+                            {s.detail}
+                          </span>
+                        )}
                       </button>
                     );
                   })}
@@ -345,112 +424,124 @@ export function ChartCard({
               ) : (
                 <span />
               )}
-              {toolbar && <div className="flex shrink-0 items-center gap-1">{toolbar}</div>}
+              {toolbar && (
+                <div className="flex shrink-0 items-center gap-1">
+                  {toolbar}
+                </div>
+              )}
             </div>
           )}
 
           <div
-            ref={ref}
-            tabIndex={0}
-            role="group"
             aria-label={`${title}. Flèches gauche et droite pour lire les valeurs.`}
-            onKeyDown={onKeyDown}
-            onBlur={() => fromKeyboard && setActive(null)}
             className="relative rounded-xl outline-offset-4"
+            onBlur={() => fromKeyboard && setActive(null)}
+            onKeyDown={onKeyDown}
+            ref={ref}
+            role="group"
+            tabIndex={0}
           >
             <svg
-              key={measured ? "measured" : "guess"}
-              visibility={measured ? undefined : "hidden"}
-              role="img"
               aria-label={summary}
-              width={width}
-              height={donut ? 220 : H}
               className="block overflow-visible"
+              height={donut ? 220 : H}
+              key={measured ? "measured" : "guess"}
               onPointerLeave={() => select(null, false)}
+              role="img"
+              visibility={measured ? undefined : "hidden"}
+              width={width}
             >
               <defs>
                 <clipPath id={`${uid}-reveal`}>
                   <motion.rect
-                    x={0}
-                    y={0}
+                    animate={{ width }}
                     height={H}
                     initial={{ width: 0 }}
-                    animate={{ width }}
                     transition={{ duration: 0.8, ease: EASE_OUT }}
+                    x={0}
+                    y={0}
                   />
                 </clipPath>
                 {series.map((s, i) => (
                   <linearGradient
-                    key={s.id}
                     id={`${uid}-fill-${i}`}
+                    key={s.id}
                     x1="0"
-                    y1="0"
                     x2="0"
+                    y1="0"
                     y2="1"
                   >
                     <stop offset="0%" stopColor={s.color} stopOpacity={0.28} />
-                    <stop offset="100%" stopColor={s.color} stopOpacity={0.02} />
+                    <stop
+                      offset="100%"
+                      stopColor={s.color}
+                      stopOpacity={0.02}
+                    />
                   </linearGradient>
                 ))}
                 {series.map((s, i) => (
                   <pattern
-                    key={s.id}
-                    id={`${uid}-stripe-${i}`}
-                    width="7"
                     height="7"
-                    patternUnits="userSpaceOnUse"
+                    id={`${uid}-stripe-${i}`}
+                    key={s.id}
                     patternTransform="rotate(45)"
+                    patternUnits="userSpaceOnUse"
+                    width="7"
                   >
-                    <rect width="7" height="7" fill={s.color} />
-                    <rect width="3" height="7" fill="white" opacity="0.22" />
+                    <rect fill={s.color} height="7" width="7" />
+                    <rect fill="white" height="7" opacity="0.22" width="3" />
                   </pattern>
                 ))}
               </defs>
 
               {donut ? (
                 <Donut
+                  activeIndex={activeIndex}
+                  format={format}
+                  instant={fromKeyboard || !!reduce}
+                  label={donutLabel}
+                  onHover={(i) => select(i, false)}
                   series={visible}
                   width={width}
-                  activeIndex={activeIndex}
-                  instant={fromKeyboard || !!reduce}
-                  onHover={(i) => select(i, false)}
-                  format={format}
-                  label={donutLabel}
                 />
               ) : (
                 <>
                   {grid.map((_, i) => (
-                    <g key={i} className="text-muted-foreground">
+                    <g className="text-muted-foreground" key={i}>
                       <line
+                        stroke="currentColor"
+                        strokeDasharray={i === 0 ? undefined : "3 4"}
+                        strokeOpacity={i === 0 ? 0.18 : 0.14}
                         x1={PAD.left}
                         x2={width - padRight}
                         y1={base - (i / STEPS) * innerH}
                         y2={base - (i / STEPS) * innerH}
-                        stroke="currentColor"
-                        strokeDasharray={i === 0 ? undefined : "3 4"}
-                        strokeOpacity={i === 0 ? 0.18 : 0.14}
                       />
                       {onLeft && leftSeries && (
                         <text
+                          dy="0.32em"
+                          // The series colour mixed with the ink: still its colour, and text-legible on both grounds.
+                          fill={
+                            bothAxes
+                              ? `color-mix(in oklab, ${leftSeries.color} 60%, var(--foreground))`
+                              : "currentColor"
+                          }
+                          fontSize="12"
+                          textAnchor="end"
                           x={PAD.left - 8}
                           y={base - (i / STEPS) * innerH}
-                          dy="0.32em"
-                          textAnchor="end"
-                          fontSize="12"
-                          // The series colour mixed with the ink: still its colour, and text-legible on both grounds.
-                          fill={bothAxes ? `color-mix(in oklab, ${leftSeries.color} 60%, var(--foreground))` : "currentColor"}
                         >
                           {fmt(leftSeries)(scales.left.ticks[i])}
                         </text>
                       )}
                       {onRight && rightSeries && (
                         <text
+                          dy="0.32em"
+                          fill="currentColor"
+                          fontSize="12"
+                          textAnchor="start"
                           x={width - padRight + 8}
                           y={base - (i / STEPS) * innerH}
-                          dy="0.32em"
-                          textAnchor="start"
-                          fontSize="12"
-                          fill="currentColor"
                         >
                           {fmt(rightSeries)(scales.right.ticks[i])}
                         </text>
@@ -460,16 +551,16 @@ export function ChartCard({
                   {data.labels.map((label, i) =>
                     i % labelEvery === 0 ? (
                       <text
+                        className="fill-muted-foreground"
+                        fontSize="12"
                         key={i}
+                        textAnchor={i === 0 ? "start" : "middle"}
                         x={x(i)}
                         y={H - 6}
-                        textAnchor={i === 0 ? "start" : "middle"}
-                        fontSize="12"
-                        className="fill-muted-foreground"
                       >
                         {label}
                       </text>
-                    ) : null,
+                    ) : null
                   )}
 
                   {type === "bar"
@@ -477,7 +568,7 @@ export function ChartCard({
                         const gap = 2;
                         const groupW = Math.min(
                           band * 0.72,
-                          18 * visible.length + gap * (visible.length - 1),
+                          18 * visible.length + gap * (visible.length - 1)
                         );
                         const barW =
                           (groupW - gap * (visible.length - 1)) /
@@ -488,33 +579,40 @@ export function ChartCard({
                           const axis = s.axis ?? "left";
                           return (
                             <motion.rect
-                              key={`${s.id}-${i}`}
-                              x={x(i) - groupW / 2 + j * (barW + gap)}
-                              width={barW}
-                              rx={3}
-                              initial={{ y: base, height: 0 }}
-                              animate={{ y: yFor(axis, v), height: base - yFor(axis, v) }}
-                              transition={{
-                                duration: 0.5,
-                                ease: EASE_OUT,
-                                delay: reduce ? 0 : Math.min(i * 0.03, 0.6),
+                              animate={{
+                                y: yFor(axis, v),
+                                height: base - yFor(axis, v),
                               }}
                               fill={
                                 partialLast && i === data.labels.length - 1
                                   ? `url(#${uid}-stripe-${index})`
                                   : s.color
                               }
+                              initial={{ y: base, height: 0 }}
+                              key={`${s.id}-${i}`}
                               opacity={
-                                activeIndex === null || activeIndex === i ? 1 : 0.4
+                                activeIndex === null || activeIndex === i
+                                  ? 1
+                                  : 0.4
                               }
+                              rx={3}
                               style={{ transition: "opacity 150ms ease-out" }}
+                              transition={{
+                                duration: 0.5,
+                                ease: EASE_OUT,
+                                delay: reduce ? 0 : Math.min(i * 0.03, 0.6),
+                              }}
+                              width={barW}
+                              x={x(i) - groupW / 2 + j * (barW + gap)}
                             />
                           );
                         });
                       })
                     : visible.map((s) => {
                         const axis = s.axis ?? "left";
-                        const points = s.values.map((v, i) => [x(i), yFor(axis, v)] as const);
+                        const points = s.values.map(
+                          (v, i) => [x(i), yFor(axis, v)] as const
+                        );
                         const line = points
                           .map(([px, py], i) => `${i ? "L" : "M"}${px},${py}`)
                           .join("");
@@ -526,35 +624,38 @@ export function ChartCard({
                               // never fades in ahead of the stroke that bounds it.
                               <g clipPath={`url(#${uid}-reveal)`}>
                                 <motion.path
-                                  initial={{ d: area }}
                                   animate={{ d: area }}
-                                  transition={{ duration: 0.4, ease: EASE_IN_OUT }}
                                   fill={`url(#${uid}-fill-${series.findIndex((t) => t.id === s.id)})`}
+                                  initial={{ d: area }}
+                                  transition={{
+                                    duration: 0.4,
+                                    ease: EASE_IN_OUT,
+                                  }}
                                 />
                               </g>
                             )}
                             <motion.path
-                              initial={{ pathLength: 0, d: line }}
                               animate={{ pathLength: 1, d: line }}
+                              fill="none"
+                              initial={{ pathLength: 0, d: line }}
+                              stroke={s.color}
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
                               transition={{
                                 pathLength: { duration: 0.8, ease: EASE_OUT },
                                 d: { duration: 0.4, ease: EASE_IN_OUT },
                               }}
-                              fill="none"
-                              stroke={s.color}
-                              strokeWidth={2}
-                              strokeLinejoin="round"
-                              strokeLinecap="round"
                             />
                             {s.markers &&
                               points.length <= MAX_MARKERS &&
                               points.map(([px, py], i) => (
                                 <circle
-                                  key={i}
                                   cx={px}
                                   cy={py}
-                                  r={2.5}
                                   fill="var(--card-inset)"
+                                  key={i}
+                                  r={2.5}
                                   stroke={s.color}
                                   strokeWidth={1.5}
                                 />
@@ -566,21 +667,24 @@ export function ChartCard({
                   {type !== "bar" && activeIndex !== null && (
                     <g>
                       <line
+                        className="text-foreground"
+                        stroke="currentColor"
+                        strokeOpacity={0.25}
                         x1={x(activeIndex)}
                         x2={x(activeIndex)}
                         y1={PAD.top}
                         y2={base}
-                        stroke="currentColor"
-                        strokeOpacity={0.25}
-                        className="text-foreground"
                       />
                       {visible.map((s) => (
                         <circle
-                          key={s.id}
                           cx={x(activeIndex)}
-                          cy={yFor(s.axis ?? "left", s.values[activeIndex] ?? 0)}
-                          r={4.5}
+                          cy={yFor(
+                            s.axis ?? "left",
+                            s.values[activeIndex] ?? 0
+                          )}
                           fill={s.color}
+                          key={s.id}
+                          r={4.5}
                           stroke="var(--card-inset)"
                           strokeWidth={2}
                         />
@@ -591,22 +695,23 @@ export function ChartCard({
                   {/* Hit areas, wider than the marks. */}
                   {data.labels.map((_, i) => (
                     <rect
+                      fill="transparent"
+                      height={innerH}
                       key={i}
-                      x={
-                        type === "bar"
-                          ? x(i) - band / 2
-                          : x(i) - innerW / Math.max(data.labels.length - 1, 1) / 2
-                      }
-                      y={PAD.top}
+                      onClick={() => select(i, false)}
+                      onPointerEnter={() => select(i, false)}
                       width={
                         type === "bar"
                           ? band
                           : innerW / Math.max(data.labels.length - 1, 1)
                       }
-                      height={innerH}
-                      fill="transparent"
-                      onPointerEnter={() => select(i, false)}
-                      onClick={() => select(i, false)}
+                      x={
+                        type === "bar"
+                          ? x(i) - band / 2
+                          : x(i) -
+                            innerW / Math.max(data.labels.length - 1, 1) / 2
+                      }
+                      y={PAD.top}
                     />
                   ))}
                 </>
@@ -616,16 +721,19 @@ export function ChartCard({
             <AnimatePresence>
               {activeIndex !== null && tooltip && (
                 <motion.div
-                  key="tip"
-                  initial={fromKeyboard ? false : { opacity: 0, scale: 0.97 }}
                   animate={{ opacity: 1, scale: 1, transition: enter }}
-                  exit={{ opacity: 0, transition: exit }}
                   className="pointer-events-none absolute top-0 z-10 min-w-36 rounded-xl bg-[var(--card-raised)] px-3 py-2 text-xs"
+                  exit={{ opacity: 0, transition: exit }}
+                  initial={fromKeyboard ? false : { opacity: 0, scale: 0.97 }}
+                  key="tip"
                   style={
                     donut
                       ? { left: "50%", transform: "translateX(-50%)" }
                       : {
-                          left: Math.min(Math.max(x(activeIndex) - 72, 0), Math.max(width - 200, 0)),
+                          left: Math.min(
+                            Math.max(x(activeIndex) - 72, 0),
+                            Math.max(width - 200, 0)
+                          ),
                           transformOrigin: "top center",
                         }
                   }
@@ -674,7 +782,7 @@ export function ChartCard({
               </tbody>
             </table>
           </section>
-          <p role="status" aria-live="polite" className="sr-only">
+          <p aria-live="polite" className="sr-only" role="status">
             {fromKeyboard && activeIndex !== null
               ? donut
                 ? `${visible[activeIndex]?.label} : ${valueFmt(visible[activeIndex] ?? {})(sum(visible[activeIndex]?.values ?? []))}`
@@ -701,14 +809,19 @@ function TooltipRows({
     <>
       <p className="mb-1 font-medium">{title}</p>
       {rows.map((row) => (
-        <p key={row.label} className="flex items-center gap-2 text-muted-foreground">
+        <p
+          className="flex items-center gap-2 text-muted-foreground"
+          key={row.label}
+        >
           <span
             aria-hidden="true"
             className="size-2 rounded-[2px]"
             style={{ background: row.color }}
           />
           <span className="flex-1">{row.label}</span>
-          <span className="font-mono text-foreground tabular-nums">{row.value}</span>
+          <span className="font-mono text-foreground tabular-nums">
+            {row.value}
+          </span>
         </p>
       ))}
       {note && <p className="mt-1 text-muted-foreground">{note}</p>}
@@ -738,27 +851,27 @@ function Donut({
   const c = 2 * Math.PI * r;
   const gap = series.length > 1 ? 2 : 0;
   const starts = series.map((_, i) =>
-    series.slice(0, i).reduce((n, s) => n + (sum(s.values) / total) * c, 0),
+    series.slice(0, i).reduce((n, s) => n + (sum(s.values) / total) * c, 0)
   );
 
   return (
     <g>
       <text
+        className="fill-muted-foreground"
+        fontSize="12"
+        textAnchor="middle"
         x={width / 2}
         y={104}
-        textAnchor="middle"
-        fontSize="12"
-        className="fill-muted-foreground"
       >
         {activeIndex === null ? label : series[activeIndex]?.label}
       </text>
       <text
-        x={width / 2}
-        y={126}
-        textAnchor="middle"
+        className="fill-foreground tabular-nums"
         fontSize="18"
         fontWeight={500}
-        className="fill-foreground tabular-nums"
+        textAnchor="middle"
+        x={width / 2}
+        y={126}
       >
         {activeIndex === null
           ? format(sum(series.map((s) => sum(s.values))))
@@ -771,21 +884,21 @@ function Donut({
           const start = starts[i];
           return (
             <motion.circle
-              key={s.id}
-              r={r}
-              fill="none"
-              stroke={s.color}
-              strokeWidth={activeIndex === i ? 26 : 22}
-              strokeDashoffset={-start}
-              initial={{ strokeDasharray: `0 ${c}` }}
               animate={{ strokeDasharray: `${length} ${c}` }}
+              fill="none"
+              initial={{ strokeDasharray: `0 ${c}` }}
+              key={s.id}
+              onPointerEnter={() => onHover(i)}
+              r={r}
+              stroke={s.color}
+              strokeDashoffset={-start}
+              strokeWidth={activeIndex === i ? 26 : 22}
+              style={{ transition: "stroke-width 150ms ease-out" }}
               transition={
                 instant
                   ? { duration: 0 }
                   : { duration: 0.6, ease: EASE_OUT, delay: i * 0.06 }
               }
-              style={{ transition: "stroke-width 150ms ease-out" }}
-              onPointerEnter={() => onHover(i)}
             />
           );
         })}

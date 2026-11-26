@@ -1,8 +1,6 @@
-import { Syringe } from "@/lib/icons";
 import { useState } from "react";
 import { flushSync } from "react-dom";
 import { useTranslation } from "react-i18next";
-
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
 import {
@@ -19,6 +17,7 @@ import {
 } from "@/components/ui/native-select";
 import { Textarea } from "@/components/ui/textarea";
 import { useAnesthesiaSheetsRepository } from "@/data/repositories";
+import { Syringe } from "@/lib/icons";
 import type { AnesthesiaSheet, Patient } from "@/types/db";
 
 const ASA_LEVELS: number[] = [1, 2, 3, 4, 5];

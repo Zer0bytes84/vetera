@@ -1,16 +1,4 @@
-import { useState, useId, useEffect } from "react";
-import type {
-  Appointment,
-  Owner,
-  Patient,
-  Vaccination,
-  WeightEntry,
-} from "@/types/db";
-import {
-  ActionButton,
-  EmptyState,
-  SkeletonBlock,
-} from "@/design-system/primitives";
+import { useEffect, useId, useState } from "react";
 import {
   Sheet,
   SheetContent,
@@ -19,42 +7,54 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { Activity, CalendarBlank, Notebook, Syringe } from "@/lib/icons";
 import {
-  isClinicalSignal,
-  OwnerContact,
-  PatientIdentity,
-  recordDate,
-  handleRecordTabKeys,
-} from "./medical-record-summary";
+  ActionButton,
+  EmptyState,
+  SkeletonBlock,
+} from "@/design-system/primitives";
+import { Activity, CalendarBlank, Notebook, Syringe } from "@/lib/icons";
+import type {
+  Appointment,
+  Owner,
+  Patient,
+  Vaccination,
+  WeightEntry,
+} from "@/types/db";
 import {
   getNextDueVaccination,
   getVaccinationStatus,
 } from "../lib/vaccination-status";
+import {
+  handleRecordTabKeys,
+  isClinicalSignal,
+  OwnerContact,
+  PatientIdentity,
+  recordDate,
+} from "./medical-record-summary";
 import { PatientSafetyZone } from "./patient-safety-zone";
 import { RecordBlockHeading } from "./record-block-heading";
 
 export interface PatientPeekViewProps {
-  patient?: Patient;
-  owner?: Owner;
   appointments: Appointment[];
-  vaccinations: Vaccination[];
-  weights: WeightEntry[];
-  loading: boolean;
   error: boolean;
-  onRetry: () => void;
-  onClose: () => void;
-  onOpenFull: () => void;
   /**
    * Opened from a list cursor: non-modal, no backdrop, focus left on the
    * list so the arrows keep moving and the peek follows them.
    */
   follow?: boolean;
-  skeletons: { profile: boolean; history: boolean; followUp: boolean };
-  historyLoading: boolean;
+  followUpError: boolean;
   followUpLoading: boolean;
   historyError: boolean;
-  followUpError: boolean;
+  historyLoading: boolean;
+  loading: boolean;
+  onClose: () => void;
+  onOpenFull: () => void;
+  onRetry: () => void;
+  owner?: Owner;
+  patient?: Patient;
+  skeletons: { profile: boolean; history: boolean; followUp: boolean };
+  vaccinations: Vaccination[];
+  weights: WeightEntry[];
 }
 const VISIT_STATUSES: Record<Appointment["status"], string> = {
   scheduled: "Planifiée",
@@ -89,43 +89,45 @@ export function PatientPeekView({
   const id = useId();
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
-    const interval = window.setInterval(() => setNow(Date.now()), 60000);
+    const interval = window.setInterval(() => setNow(Date.now()), 60_000);
     return () => window.clearInterval(interval);
   }, []);
   const lastWeight = [...weights].sort((a, b) =>
-    b.measuredAt.localeCompare(a.measuredAt),
+    b.measuredAt.localeCompare(a.measuredAt)
   )[0];
   const lastVisit = appointments.find(
     (row) =>
-      row.status === "completed" && new Date(row.startTime).getTime() <= now,
+      row.status === "completed" && new Date(row.startTime).getTime() <= now
   );
   const nextVisit = appointments
     .filter((row) =>
       ["scheduled", "confirmed", "arrived", "waiting", "in_progress"].includes(
-        row.status,
-      ),
+        row.status
+      )
     )
     .sort((a, b) => a.startTime.localeCompare(b.startTime))
     .find(
       (row) =>
         new Date(row.startTime).getTime() >= now ||
-        ["arrived", "waiting", "in_progress"].includes(row.status),
+        ["arrived", "waiting", "in_progress"].includes(row.status)
     );
   const nextVaccine = getNextDueVaccination(vaccinations);
   const pending = loading || skeletons.profile;
   return (
     <Sheet
-      open
       modal={!follow}
       onOpenChange={(open) => {
-        if (!open) onClose();
+        if (!open) {
+          onClose();
+        }
       }}
+      open
     >
       <SheetContent
         className="patient-peek-panel w-full! sm:max-w-[620px]"
         data-peek-follow={follow ? "" : undefined}
-        initialFocus={follow ? false : undefined}
         finalFocus={follow ? false : undefined}
+        initialFocus={follow ? false : undefined}
         showOverlay={!follow}
       >
         <SheetHeader icon={<Notebook />}>
@@ -137,39 +139,29 @@ export function PatientPeekView({
         <div className="min-h-0 flex-1 overflow-y-auto">
           {pending ? (
             <div aria-busy="true" className="space-y-5 p-6">
-              <SkeletonBlock visible={skeletons.profile} className="h-16" />
-              <SkeletonBlock visible={skeletons.profile} className="h-24" />
-              <SkeletonBlock visible={skeletons.profile} className="h-40" />
+              <SkeletonBlock className="h-16" visible={skeletons.profile} />
+              <SkeletonBlock className="h-24" visible={skeletons.profile} />
+              <SkeletonBlock className="h-40" visible={skeletons.profile} />
             </div>
           ) : error ? (
             <EmptyState
-              title="Le dossier n’a pas pu être chargé"
               action={<ActionButton onClick={onRetry}>Réessayer</ActionButton>}
+              title="Le dossier n’a pas pu être chargé"
             />
-          ) : !patient ? (
-            <EmptyState
-              title="Ce patient n’est plus disponible"
-              description="Actualisez la liste pour retrouver les dossiers actuels."
-              action={
-                <ActionButton quiet onClick={onRetry}>
-                  Actualiser
-                </ActionButton>
-              }
-            />
-          ) : (
+          ) : patient ? (
             <>
               <div className="patient-peek-identity px-6 py-6">
-                <PatientIdentity patient={patient} compact />
+                <PatientIdentity compact patient={patient} />
               </div>
               {/* Safety first, as in the record: the allergy in red, the restraint beside it. */}
               <div className="patient-peek-safety">
                 <PatientSafetyZone patient={patient} />
               </div>
               <div
-                className="medical-tabs"
-                role="tablist"
-                onKeyDown={handleRecordTabKeys}
                 aria-label="Aperçu du dossier"
+                className="medical-tabs"
+                onKeyDown={handleRecordTabKeys}
+                role="tablist"
               >
                 {[
                   { value: "summary", label: "Synthèse" },
@@ -177,13 +169,13 @@ export function PatientPeekView({
                   { value: "followup", label: "Suivi préventif" },
                 ].map((item) => (
                   <button
+                    aria-controls={`${id}-content`}
+                    aria-selected={tab === item.value}
+                    id={`${id}-${item.value}`}
                     key={item.value}
+                    onClick={() => setTab(item.value)}
                     role="tab"
                     tabIndex={tab === item.value ? 0 : -1}
-                    id={`${id}-${item.value}`}
-                    aria-selected={tab === item.value}
-                    aria-controls={`${id}-content`}
-                    onClick={() => setTab(item.value)}
                     type="button"
                   >
                     {item.label}
@@ -191,11 +183,11 @@ export function PatientPeekView({
                 ))}
               </div>
               <div
+                aria-labelledby={`${id}-${tab}`}
                 className="medical-peek-content"
                 id={`${id}-content`}
                 role="tabpanel"
                 tabIndex={0}
-                aria-labelledby={`${id}-${tab}`}
               >
                 {tab === "summary" && (
                   <>
@@ -273,11 +265,11 @@ export function PatientPeekView({
                     </RecordBlockHeading>
                     {historyLoading || skeletons.history ? (
                       <SkeletonBlock
-                        visible={skeletons.history}
                         className="h-40"
+                        visible={skeletons.history}
                       />
                     ) : historyError ? (
-                      <ActionButton quiet onClick={onRetry}>
+                      <ActionButton onClick={onRetry} quiet>
                         Réessayer le chargement des visites
                       </ActionButton>
                     ) : appointments.length ? (
@@ -309,11 +301,11 @@ export function PatientPeekView({
                     </RecordBlockHeading>
                     {followUpLoading || skeletons.followUp ? (
                       <SkeletonBlock
-                        visible={skeletons.followUp}
                         className="h-40"
+                        visible={skeletons.followUp}
                       />
                     ) : followUpError ? (
-                      <ActionButton quiet onClick={onRetry}>
+                      <ActionButton onClick={onRetry} quiet>
                         Réessayer le chargement du suivi
                       </ActionButton>
                     ) : (
@@ -339,7 +331,7 @@ export function PatientPeekView({
                         <ul className="medical-visit-list mt-4">
                           {[...vaccinations]
                             .sort((a, b) =>
-                              b.administeredAt.localeCompare(a.administeredAt),
+                              b.administeredAt.localeCompare(a.administeredAt)
                             )
                             .slice(0, 5)
                             .map((row) => (
@@ -367,10 +359,20 @@ export function PatientPeekView({
                 )}
               </div>
             </>
+          ) : (
+            <EmptyState
+              action={
+                <ActionButton onClick={onRetry} quiet>
+                  Actualiser
+                </ActionButton>
+              }
+              description="Actualisez la liste pour retrouver les dossiers actuels."
+              title="Ce patient n’est plus disponible"
+            />
           )}
         </div>
         <SheetFooter>
-          <ActionButton quiet onClick={onClose}>
+          <ActionButton onClick={onClose} quiet>
             Fermer
           </ActionButton>
           <ActionButton

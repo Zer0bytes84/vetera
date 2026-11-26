@@ -1,6 +1,74 @@
-import { formatDisplayText, formatNumber } from "@/utils/display-format";
-import { ListFilter, ListSearch } from "@/components/ui/list-controls";
+import {
+  CheckCircleIcon,
+  ClipboardDocumentCheckIcon,
+  ClockIcon,
+  CubeIcon,
+  WalletIcon,
+} from "@heroicons/react/20/solid";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { EmptyMascot } from "@/components/mascot/empty-mascot";
 import { SectionCards } from "@/components/section-cards";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { CardContent } from "@/components/ui/card";
+import {
+  type DataColumn,
+  type DataRow,
+  DataTable,
+} from "@/components/ui/data-table";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyTitle,
+} from "@/components/ui/empty";
+import { Input } from "@/components/ui/input";
+import { ListFilter, ListSearch } from "@/components/ui/list-controls";
+import { SkeletonShape } from "@/components/ui/loading-skeleton";
+import {
+  NativeSelect,
+  NativeSelectOption,
+} from "@/components/ui/native-select";
+import { Progress } from "@/components/ui/progress";
+import { StatusPill, type StatusTone } from "@/components/ui/status-pill";
+import { Panel, Shell, ShellHeader } from "@/components/ui/surface";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { QuietButton } from "@/components/ui/tuff-controls";
+import {
+  expiryWords,
+  restockNeed,
+  stockAlert,
+  stockExpiry,
+  stockWords,
+  unitCount,
+} from "@/domain/stock-alerts";
+import { usePage } from "@/hooks/use-page";
+import { useDelayedSkeleton } from "@/hooks/useDelayedSkeleton";
+import { useListCursor } from "@/hooks/useListCursor";
+import { rememberRows, useRememberedRows } from "@/hooks/useRememberedRows";
+import { guard } from "@/lib/guard";
 import {
   AlertTriangle,
   Archive,
@@ -16,77 +84,15 @@ import {
   MoreHorizontal,
   RefreshCw,
 } from "@/lib/icons";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { usePage } from "@/hooks/use-page";
-import {
-  DataTable,
-  type DataColumn,
-  type DataRow,
-} from "@/components/ui/data-table";
-import { StatusPill, type StatusTone } from "@/components/ui/status-pill";
-import { QuietButton } from "@/components/ui/tuff-controls";
-import { CheckCircleIcon, ClipboardDocumentCheckIcon, ClockIcon, CubeIcon, WalletIcon } from "@heroicons/react/20/solid";
-import { Panel, Shell, ShellHeader } from "@/components/ui/surface";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { CardContent } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
-import {
-  NativeSelect,
-  NativeSelectOption,
-} from "@/components/ui/native-select";
-import { Progress } from "@/components/ui/progress";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
-import type { Product, StockMovement } from "@/types/db";
-import { formatDZD } from "@/utils/currency";
+import { MovementAllocationDetails } from "@/modules/stock/components/movement-allocation-details";
+import { PurchasingPanel } from "@/modules/stock/components/purchasing-panel";
 import { StockInvoiceLink } from "@/modules/stock/components/stock-invoice-link";
 import { StockLotsPanel } from "@/modules/stock/components/stock-lots-panel";
-import { PurchasingPanel } from "@/modules/stock/components/purchasing-panel";
 import { StockOperationsPanel } from "@/modules/stock/components/stock-operations-panel";
-import { MovementAllocationDetails } from "@/modules/stock/components/movement-allocation-details";
-import {
-  expiryWords,
-  restockNeed,
-  stockAlert,
-  stockExpiry,
-  stockWords,
-  unitCount,
-} from "@/domain/stock-alerts";
-import { useListCursor } from "@/hooks/useListCursor";
-import { useDelayedSkeleton } from "@/hooks/useDelayedSkeleton";
-import { rememberRows, useRememberedRows } from "@/hooks/useRememberedRows";
-import { SkeletonShape } from "@/components/ui/loading-skeleton";
-import { EmptyMascot } from "@/components/mascot/empty-mascot";
-import {
-  Empty,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyTitle,
-} from "@/components/ui/empty";
-import { guard } from "@/lib/guard";
+import type { Product, StockMovement } from "@/types/db";
+import { formatDZD } from "@/utils/currency";
+import { formatDisplayText, formatNumber } from "@/utils/display-format";
 
 type StockFilter = "all" | "healthy" | "low" | "out" | "expiring" | "expired";
 
@@ -98,7 +104,7 @@ interface StockWorkspaceProps {
   onAdjust: (
     product: Product,
     quantity: number,
-    reason: string,
+    reason: string
   ) => Promise<void>;
   onDelete: (product: Product) => void;
   onEdit: (product: Product) => void;
@@ -109,7 +115,9 @@ interface StockWorkspaceProps {
 const PAGE_SIZE = 8;
 
 const formatDate = (value?: string) => {
-  if (!value) return "Non renseignée";
+  if (!value) {
+    return "Non renseignée";
+  }
   return new Intl.DateTimeFormat("fr-DZ", {
     day: "2-digit",
     month: "short",
@@ -117,9 +125,8 @@ const formatDate = (value?: string) => {
   }).format(new Date(`${value.slice(0, 10)}T12:00:00`));
 };
 
-const productStatus = (product: Product): Exclude<StockFilter, "all"> => {
-  return stockAlert(product);
-};
+const productStatus = (product: Product): Exclude<StockFilter, "all"> =>
+  stockAlert(product);
 
 const statusCopy: Record<
   Exclude<StockFilter, "all">,
@@ -157,7 +164,7 @@ function StatusBadge({ product }: { product: Product }) {
     <Badge
       className={cn(
         "rounded-full border-0 px-2.5 font-medium",
-        status.className,
+        status.className
       )}
     >
       {status.label}
@@ -166,14 +173,14 @@ function StatusBadge({ product }: { product: Product }) {
 }
 
 interface StockRow extends DataRow {
-  name: string;
-  state: string;
-  qty: number;
-  min: number;
-  buy: number;
-  sell: number;
-  expiry: string;
   actions: string;
+  buy: number;
+  expiry: string;
+  min: number;
+  name: string;
+  qty: number;
+  sell: number;
+  state: string;
 }
 
 const STATUS_TONE: Record<Exclude<StockFilter, "all">, StatusTone> = {
@@ -230,8 +237,8 @@ function CatalogueTable({
       format: (_, row) => {
         const product = byId.get(row.id)!;
         return (
-          <span className="block max-w-64 min-w-0">
-            <span className="block truncate text-sm font-medium">
+          <span className="block min-w-0 max-w-64">
+            <span className="block truncate font-medium text-sm">
               {row.name}
             </span>
             <span className="block truncate text-[0.8125rem] text-muted-foreground">
@@ -254,7 +261,7 @@ function CatalogueTable({
               {statusCopy[productStatus(product)].label}
             </StatusPill>
             {stockWords(product) && (
-              <span className="mt-1 block whitespace-nowrap text-xs text-muted-foreground">
+              <span className="mt-1 block whitespace-nowrap text-muted-foreground text-xs">
                 {stockWords(product)}
               </span>
             )}
@@ -268,7 +275,7 @@ function CatalogueTable({
       align: "right",
       sortable: true,
       format: (_, row) => (
-        <span className="font-sans text-sm font-medium">
+        <span className="font-medium font-sans text-sm">
           {row.qty}{" "}
           <span className="font-normal text-muted-foreground text-xs">
             {byId.get(row.id)!.unit}
@@ -296,7 +303,7 @@ function CatalogueTable({
       sortable: true,
       priority: 2,
       format: (value) => (
-        <span className="font-sans text-[0.8125rem] font-medium">
+        <span className="font-medium font-sans text-[0.8125rem]">
           {formatDZD(Number(value))}
         </span>
       ),
@@ -372,7 +379,6 @@ function CatalogueTable({
       emptyTitle="Aucun produit dans cette sélection"
       exportName="produits"
       filters={filters}
-      toolbar={toolbar}
       icon={CubeIcon}
       loading={loading}
       loadingLabel="Chargement du catalogue"
@@ -388,6 +394,7 @@ function CatalogueTable({
       skeletonFallback={{ rows: 5, rowHeight: 64 }}
       skeletonKey="stock-catalogue"
       title="Catalogue"
+      toolbar={toolbar}
     />
   );
 }
@@ -403,7 +410,9 @@ function ProductDetail({
   onRestock: (product: Product) => void;
   product: Product | null;
 }) {
-  if (!product) return null;
+  if (!product) {
+    return null;
+  }
   const margin = product.salePriceAmount - product.purchasePriceAmount;
   const target = Math.max(product.minStock * 3, 1);
 
@@ -491,23 +500,23 @@ function ProductDetail({
           </div>
         </div>
         <DialogFooter>
-            <Button
-              onClick={() => {
-                onOpenChange(false);
-                onEdit(product);
-              }}
-              variant="outline"
-            >
-              <Edit3 /> Modifier
-            </Button>
-            <Button
-              onClick={() => {
-                onOpenChange(false);
-                onRestock(product);
-              }}
-            >
-              <RefreshCw /> Réceptionner
-            </Button>
+          <Button
+            onClick={() => {
+              onOpenChange(false);
+              onEdit(product);
+            }}
+            variant="outline"
+          >
+            <Edit3 /> Modifier
+          </Button>
+          <Button
+            onClick={() => {
+              onOpenChange(false);
+              onRestock(product);
+            }}
+          >
+            <RefreshCw /> Réceptionner
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
@@ -526,7 +535,7 @@ function TabShell({
 }) {
   return (
     <Shell>
-      <ShellHeader aside={toolbar} as="h2" icon={CubeIcon} title={title} />
+      <ShellHeader as="h2" aside={toolbar} icon={CubeIcon} title={title} />
       <Panel className="overflow-hidden">{children}</Panel>
     </Shell>
   );
@@ -587,7 +596,7 @@ export function StockWorkspace({
       [
         ...new Set(products.map((product) => product.category).filter(Boolean)),
       ].sort((a, b) => a.localeCompare(b, "fr")),
-    [products],
+    [products]
   );
   const stockValue = products.reduce(
     (sum, product) =>
@@ -595,25 +604,25 @@ export function StockWorkspace({
       (product.stockTracked === false
         ? 0
         : product.quantity * product.purchasePriceAmount),
-    0,
+    0
   );
   const reorder = products.filter((product) => restockNeed(product) > 0);
   const expiries = products
     .filter((product) => ["expired", "expiring"].includes(stockAlert(product)))
     .sort((left, right) =>
-      (stockExpiry(left) ?? "9999").localeCompare(stockExpiry(right) ?? "9999"),
+      (stockExpiry(left) ?? "9999").localeCompare(stockExpiry(right) ?? "9999")
     );
   const reorderWords = reorder
     .slice()
     .sort(
       (left, right) =>
         restockNeed(right) / Math.max(1, right.minStock) -
-        restockNeed(left) / Math.max(1, left.minStock),
+        restockNeed(left) / Math.max(1, left.minStock)
     )
     .slice(0, 2)
     .map(
       (product) =>
-        `${formatDisplayText(product.name)} : ${formatNumber(product.availableQuantity ?? product.quantity)} sur ${formatNumber(product.minStock)}`,
+        `${formatDisplayText(product.name)} : ${formatNumber(product.availableQuantity ?? product.quantity)} sur ${formatNumber(product.minStock)}`
     );
 
   const filtered = useMemo(() => {
@@ -640,23 +649,22 @@ export function StockWorkspace({
   const [page, setPage] = usePage(pages, `${query}|${category}|${status}`);
   const visibleProducts = filtered.slice(
     (page - 1) * PAGE_SIZE,
-    page * PAGE_SIZE,
+    page * PAGE_SIZE
   );
 
   const filterControls = (
     <>
       <ListFilter
         label="Catégorie"
-        value={category}
         onValueChange={setCategory}
         options={[
           { value: "all", label: "Toutes" },
           ...categories.map((value) => ({ value, label: value })),
         ]}
+        value={category}
       />
       <ListFilter
         label="État"
-        value={status}
         onValueChange={(value) => setStatus(value as StockFilter)}
         options={[
           { value: "all", label: "Tous" },
@@ -666,6 +674,7 @@ export function StockWorkspace({
           { value: "expiring", label: "À surveiller" },
           { value: "expired", label: "Expirés" },
         ]}
+        value={status}
       />
       <div className="stock-view-toggle ml-auto flex h-[30px] items-center rounded-full border bg-background p-0.5">
         <Button
@@ -709,10 +718,21 @@ export function StockWorkspace({
   const reading = loading || listSkeleton;
   const showExpiries =
     expiries.length > 0 && status !== "expiring" && status !== "expired";
-  const { reserved: expirySlots, measure: measureExpiries } = useRememberedRows<HTMLUListElement>("stock-expiries", { rows: 0, rowHeight: 41 });
-  const { reserved: cardSlots, measure: measureCards } = useRememberedRows<HTMLDivElement>("stock-cards", { rows: 6, rowHeight: 130 }, "grid");
+  const { reserved: expirySlots, measure: measureExpiries } =
+    useRememberedRows<HTMLUListElement>("stock-expiries", {
+      rows: 0,
+      rowHeight: 41,
+    });
+  const { reserved: cardSlots, measure: measureCards } =
+    useRememberedRows<HTMLDivElement>(
+      "stock-cards",
+      { rows: 6, rowHeight: 130 },
+      "grid"
+    );
   useEffect(() => {
-    if (!reading && !showExpiries && status === "all") rememberRows("stock-expiries", { rows: 0, rowHeight: 41 });
+    if (!(reading || showExpiries) && status === "all") {
+      rememberRows("stock-expiries", { rows: 0, rowHeight: 41 });
+    }
   }, [reading, showExpiries, status]);
 
   return (
@@ -720,8 +740,6 @@ export function StockWorkspace({
       <SectionCards
         actions={actions}
         icon={CubeIcon}
-        loading={loading}
-        subtitle="Stock, seuils et péremptions"
         items={[
           {
             title: "Valeur du stock",
@@ -785,7 +803,7 @@ export function StockWorkspace({
             trend: "neutral",
             detailRow: (() => {
               const tracked = products.filter(
-                (p) => p.stockTracked !== false,
+                (p) => p.stockTracked !== false
               ).length;
               const untracked = products.length - tracked;
               return `${formatNumber(tracked)} avec stock suivi${untracked ? ` · ${formatNumber(untracked)} sans suivi de stock` : ""}`;
@@ -797,9 +815,11 @@ export function StockWorkspace({
             actionLabel: "Voir l'historique des mouvements",
           },
         ]}
+        loading={loading}
+        subtitle="Stock, seuils et péremptions"
       />
 
-      <Tabs value={workspaceTab} onValueChange={setWorkspaceTab}>
+      <Tabs onValueChange={setWorkspaceTab} value={workspaceTab}>
         <TabsContent value="catalogue">
           <MaybeShell
             shell={catalogueInShell}
@@ -811,9 +831,9 @@ export function StockWorkspace({
                 <ListSearch
                   className="w-full sm:w-64"
                   label="Rechercher les produits"
+                  onValueChange={setQuery}
                   placeholder="Nom, catégorie, usage…"
                   value={query}
-                  onValueChange={setQuery}
                 />
                 {filterControls}
               </div>
@@ -823,91 +843,107 @@ export function StockWorkspace({
               {reading && expirySlots.rows > 0 && (
                 <div
                   aria-hidden="true"
-                  className={cn("loading-skeleton mb-3 overflow-hidden rounded-2xl bg-amber-50/60 dark:bg-amber-500/[0.06]", !listSkeleton && "invisible")}
+                  className={cn(
+                    "loading-skeleton mb-3 overflow-hidden rounded-2xl bg-amber-50/60 dark:bg-amber-500/[0.06]",
+                    !listSkeleton && "invisible"
+                  )}
                   data-skeleton-region="stock-expiries"
                 >
                   {Array.from({ length: expirySlots.rows }, (_, i) => (
-                    <div className="flex items-center px-5" key={i} style={{ height: expirySlots.rowHeight }}>
+                    <div
+                      className="flex items-center px-5"
+                      key={i}
+                      style={{ height: expirySlots.rowHeight }}
+                    >
                       <SkeletonShape className="loading-skeleton-cell loading-skeleton-cell-lead" />
                     </div>
                   ))}
                 </div>
               )}
               {!reading && showExpiries && (
-                  <ul
-                    aria-label="Péremptions proches"
-                    data-skeleton-region="stock-expiries"
-                    ref={measureExpiries}
-                    className="mb-3 divide-y overflow-hidden rounded-2xl bg-amber-50/60 text-sm dark:bg-amber-500/[0.06] [&>li]:flex [&>li]:items-center [&>li]:gap-3 [&>li]:px-5 [&>li]:py-2 [&>li]:text-amber-900 dark:[&>li]:text-amber-200 [&>li[data-expired]]:bg-rose-50/70 [&>li[data-expired]]:text-rose-800 dark:[&>li[data-expired]]:bg-rose-500/[0.08] dark:[&>li[data-expired]]:text-rose-200"
-                  >
-                    {expiries.slice(0, 3).map((product) => (
-                      <li
-                        data-expired={
-                          stockAlert(product) === "expired" ? "" : undefined
-                        }
-                        key={product.id}
+                <ul
+                  aria-label="Péremptions proches"
+                  className="mb-3 divide-y overflow-hidden rounded-2xl bg-amber-50/60 text-sm dark:bg-amber-500/[0.06] [&>li[data-expired]]:bg-rose-50/70 [&>li[data-expired]]:text-rose-800 dark:[&>li[data-expired]]:bg-rose-500/[0.08] dark:[&>li[data-expired]]:text-rose-200 [&>li]:flex [&>li]:items-center [&>li]:gap-3 [&>li]:px-5 [&>li]:py-2 [&>li]:text-amber-900 dark:[&>li]:text-amber-200"
+                  data-skeleton-region="stock-expiries"
+                  ref={measureExpiries}
+                >
+                  {expiries.slice(0, 3).map((product) => (
+                    <li
+                      data-expired={
+                        stockAlert(product) === "expired" ? "" : undefined
+                      }
+                      key={product.id}
+                    >
+                      <ClockIcon
+                        aria-hidden="true"
+                        className="size-4 shrink-0"
+                      />
+                      <span className="min-w-0 flex-1">
+                        <strong>{formatDisplayText(product.name)}</strong>
+                        {" · "}
+                        {expiryWords(product)}
+                        {(() => {
+                          const quantity =
+                            stockAlert(product) === "expired"
+                              ? (product.expiredQuantity ?? product.quantity)
+                              : (product.expiringQuantity ?? product.quantity);
+                          return quantity > 0
+                            ? ` · ${unitCount(quantity, product.unit)} à cette échéance`
+                            : "";
+                        })()}
+                      </span>
+                      <Button
+                        onClick={() => setSelected(product)}
+                        size="sm"
+                        type="button"
+                        variant="ghost"
                       >
-                        <ClockIcon
-                          aria-hidden="true"
-                          className="size-4 shrink-0"
-                        />
-                        <span className="min-w-0 flex-1">
-                          <strong>{formatDisplayText(product.name)}</strong>
-                          {" · "}
-                          {expiryWords(product)}
-                          {(() => {
-                            const quantity =
-                              stockAlert(product) === "expired"
-                                ? (product.expiredQuantity ?? product.quantity)
-                                : (product.expiringQuantity ??
-                                  product.quantity);
-                            return quantity > 0
-                              ? ` · ${unitCount(quantity, product.unit)} à cette échéance`
-                              : "";
-                          })()}
-                        </span>
-                        <Button
-                          onClick={() => setSelected(product)}
-                          size="sm"
-                          type="button"
-                          variant="ghost"
-                        >
-                          Voir les lots
-                        </Button>
-                      </li>
-                    ))}
-                    {expiries.length > 3 && (
-                      <li>
-                        <span className="flex-1 text-muted-foreground">
-                          {expiries.length - 3} autre
-                          {expiries.length - 3 > 1 ? "s" : ""} produit
-                          {expiries.length - 3 > 1 ? "s" : ""} à surveiller
-                        </span>
-                        <Button
-                          onClick={() => setStatus("expiring")}
-                          size="sm"
-                          type="button"
-                          variant="ghost"
-                        >
-                          Tout afficher
-                        </Button>
-                      </li>
-                    )}
-                  </ul>
-                )}
+                        Voir les lots
+                      </Button>
+                    </li>
+                  ))}
+                  {expiries.length > 3 && (
+                    <li>
+                      <span className="flex-1 text-muted-foreground">
+                        {expiries.length - 3} autre
+                        {expiries.length - 3 > 1 ? "s" : ""} produit
+                        {expiries.length - 3 > 1 ? "s" : ""} à surveiller
+                      </span>
+                      <Button
+                        onClick={() => setStatus("expiring")}
+                        size="sm"
+                        type="button"
+                        variant="ghost"
+                      >
+                        Tout afficher
+                      </Button>
+                    </li>
+                  )}
+                </ul>
+              )}
               {reading && view === "cards" ? (
                 <div
                   aria-busy="true"
                   aria-label="Chargement du catalogue"
-                  className={cn("loading-skeleton grid gap-3 p-4 sm:grid-cols-2 xl:grid-cols-3", !listSkeleton && "invisible")}
+                  className={cn(
+                    "loading-skeleton grid gap-3 p-4 sm:grid-cols-2 xl:grid-cols-3",
+                    !listSkeleton && "invisible"
+                  )}
                   role="status"
                 >
-                  {Array.from({ length: Math.max(1, cardSlots.rows) }, (_, i) => (
-                    <div className="flex flex-col justify-between rounded-2xl border p-4" key={i} style={{ height: cardSlots.rowHeight }}>
-                      <SkeletonShape className="loading-skeleton-cell loading-skeleton-cell-lead" />
-                      <SkeletonShape className="loading-skeleton-cell" />
-                    </div>
-                  ))}
+                  {Array.from(
+                    { length: Math.max(1, cardSlots.rows) },
+                    (_, i) => (
+                      <div
+                        className="flex flex-col justify-between rounded-2xl border p-4"
+                        key={i}
+                        style={{ height: cardSlots.rowHeight }}
+                      >
+                        <SkeletonShape className="loading-skeleton-cell loading-skeleton-cell-lead" />
+                        <SkeletonShape className="loading-skeleton-cell" />
+                      </div>
+                    )
+                  )}
                 </div>
               ) : view === "cards" && visibleProducts.length === 0 ? (
                 <Empty className="min-h-56 border-0 bg-transparent py-10">
@@ -922,21 +958,24 @@ export function StockWorkspace({
               ) : view === "table" ? (
                 <div className="p-1">
                   <CatalogueTable
+                    filters={filterControls}
+                    listRef={listRef}
                     loading={reading}
                     loadingRevealed={listSkeleton}
-                    filters={filterControls}
-                    toolbar={tabButtons}
-                    listRef={listRef}
                     onDelete={onDelete}
                     onEdit={onEdit}
                     onOpen={setSelected}
                     onOrder={order}
                     onRestock={onRestock}
                     products={filtered}
+                    toolbar={tabButtons}
                   />
                 </div>
               ) : (
-                <div className="grid gap-3 p-4 sm:grid-cols-2 xl:grid-cols-3" ref={measureCards}>
+                <div
+                  className="grid gap-3 p-4 sm:grid-cols-2 xl:grid-cols-3"
+                  ref={measureCards}
+                >
                   {visibleProducts.map((product) => (
                     <button
                       className="rounded-2xl border bg-card p-4 text-left transition hover:-translate-y-0.5 hover:shadow-md"
@@ -1045,7 +1084,7 @@ export function StockWorkspace({
                       .slice(0, 20)
                       .map((movement) => {
                         const product = products.find(
-                          (item) => item.id === movement.productId,
+                          (item) => item.id === movement.productId
                         );
                         const positive = movement.quantityDelta > 0;
                         return (
@@ -1085,14 +1124,14 @@ export function StockWorkspace({
                                   ? "text-muted-foreground"
                                   : positive
                                     ? "text-emerald-700 dark:text-emerald-300"
-                                    : "text-rose-700 dark:text-rose-300",
+                                    : "text-rose-700 dark:text-rose-300"
                               )}
                             >
                               {positive ? "+" : ""}
                               {movement.quantityDelta.toLocaleString("fr-FR", {
                                 maximumFractionDigits: 6,
                               })}
-                              <span className="ml-1 text-xs font-normal text-muted-foreground">
+                              <span className="ml-1 font-normal text-muted-foreground text-xs">
                                 {movement.unitSnapshot ||
                                   product?.unit ||
                                   "unité non renseignée"}
@@ -1102,7 +1141,7 @@ export function StockWorkspace({
                               {movement.quantityAfter.toLocaleString("fr-FR", {
                                 maximumFractionDigits: 6,
                               })}
-                              <span className="ml-1 text-xs text-muted-foreground">
+                              <span className="ml-1 text-muted-foreground text-xs">
                                 {movement.unitSnapshot ||
                                   product?.unit ||
                                   "unité non renseignée"}
@@ -1158,8 +1197,8 @@ export function StockWorkspace({
         <TabsContent value="purchasing">
           <TabShell title="Approvisionnements" toolbar={tabButtons}>
             <PurchasingPanel
-              orderFor={orderFor}
               onOrderOpened={clearOrderFor}
+              orderFor={orderFor}
             />
           </TabShell>
         </TabsContent>
@@ -1201,12 +1240,12 @@ export function StockWorkspace({
                     products.reduce(
                       (sum, product) =>
                         sum + product.quantity * product.salePriceAmount,
-                      0,
-                    ),
+                      0
+                    )
                   )}
                 </p>
               </div>
-              <div className="md:col-span-3 flex flex-col gap-4 rounded-2xl bg-foreground/[0.04] p-6 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex flex-col gap-4 rounded-2xl bg-foreground/[0.04] p-6 sm:flex-row sm:items-center sm:justify-between md:col-span-3">
                 <div className="flex items-start gap-3">
                   <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700">
                     <ClipboardCheck className="size-5" />
@@ -1257,7 +1296,7 @@ export function StockWorkspace({
                 className="w-full"
                 onChange={(event) => {
                   const next = products.find(
-                    (product) => product.id === event.target.value,
+                    (product) => product.id === event.target.value
                   );
                   setInventoryProductId(event.target.value);
                   setCountedQuantity(next?.quantity || 0);
@@ -1297,7 +1336,7 @@ export function StockWorkspace({
                 <strong className="tabular-nums">
                   {countedQuantity -
                     (products.find(
-                      (product) => product.id === inventoryProductId,
+                      (product) => product.id === inventoryProductId
                     )?.quantity || 0)}
                 </strong>
               </div>
@@ -1309,25 +1348,29 @@ export function StockWorkspace({
             </Button>
             <Button
               disabled={
-                !inventoryProductId ||
-                !inventoryReason.trim() ||
+                !(inventoryProductId && inventoryReason.trim()) ||
                 countedQuantity < 0 ||
                 inventorySaving
               }
               onClick={async () => {
                 const product = products.find(
-                  (item) => item.id === inventoryProductId,
+                  (item) => item.id === inventoryProductId
                 );
-                if (!product) return;
+                if (!product) {
+                  return;
+                }
                 setInventorySaving(true);
-                await guard(async () => {
-                  await onAdjust(product, countedQuantity, inventoryReason);
-                  setInventoryOpen(false);
-                }, {
-                  cleanup: () => {
-                    setInventorySaving(false);
+                await guard(
+                  async () => {
+                    await onAdjust(product, countedQuantity, inventoryReason);
+                    setInventoryOpen(false);
                   },
-                });
+                  {
+                    cleanup: () => {
+                      setInventorySaving(false);
+                    },
+                  }
+                );
               }}
             >
               {inventorySaving ? "Enregistrement…" : "Valider le comptage"}

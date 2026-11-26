@@ -1,6 +1,4 @@
-import { Pill } from "@/lib/icons";
 import { useTranslation } from "react-i18next";
-
 import {
   Sheet,
   SheetContent,
@@ -8,6 +6,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { Pill } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 import type { Patient } from "@/types/db";
 import type { PrescriptionVet } from "../types";
@@ -38,7 +37,11 @@ export function PrescriptionSheet({
   const { t } = useTranslation();
   return (
     <Sheet onOpenChange={onOpenChange} open={open}>
-      <SheetContent className={cn("w-full sm:max-w-5xl", className)} focusClose side="right">
+      <SheetContent
+        className={cn("w-full sm:max-w-5xl", className)}
+        focusClose
+        side="right"
+      >
         <SheetHeader icon={<Pill />}>
           <SheetTitle>
             {t("prescriptions.title")}

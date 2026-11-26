@@ -1,31 +1,10 @@
-import { useState } from "react";
-import { CalendarDays } from "lucide-react";
-import { AgendaStays } from "@/modules/hospitalizations/stays/agenda-stays";
-import { PatientDossierSearch } from "./patient-dossier-search";
-import { formatPersonName } from "@/utils/display-format";
-import {
-  Add01Icon,
-  Alert02Icon,
-  ArrowDown01Icon,
-  Calendar01Icon,
-  CheckmarkCircle02Icon,
-  SearchIcon,
-  StethoscopeIcon,
-  UserCircle02Icon,
-} from "@/lib/hugeicons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { fr } from "date-fns/locale";
-
+import { CalendarDays } from "lucide-react";
+import { useState } from "react";
 import { AgendaListView } from "@/components/AgendaListView";
-import {
-  AgendaCalendar,
-  type CalendarView,
-} from "@/modules/agenda/components/agenda-calendar";
-import { AgendaDayLoadCard } from "@/modules/agenda/components/agenda-day-load";
-import { findNextAppointmentAfter } from "@/modules/agenda/components/agenda-day-load-model";
 import MotivationalHeader from "@/components/MotivationalHeader";
 import { SectionCards } from "@/components/section-cards";
-import { isActiveBooking } from "./agenda-slots";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -48,6 +27,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import { DatePicker } from "@/components/ui/date-picker";
 import { Dialog } from "@/components/ui/dialog";
 import {
   Empty,
@@ -71,6 +56,10 @@ import {
 } from "@/components/ui/form-dialog";
 import { Input } from "@/components/ui/input";
 import {
+  SkeletonRegion,
+  SkeletonShape,
+} from "@/components/ui/loading-skeleton";
+import {
   NativeSelect,
   NativeSelectOption,
 } from "@/components/ui/native-select";
@@ -81,48 +70,60 @@ import {
 } from "@/components/ui/popover";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Spinner } from "@/components/ui/spinner";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { APPOINTMENT_STATUS_META } from "@/config/status-meta";
-
-import type { RecurrenceFrequency } from "@/types/db";
+import { useDelayedSkeleton } from "@/hooks/useDelayedSkeleton";
 import {
+  Add01Icon,
+  Alert02Icon,
+  ArrowDown01Icon,
+  Calendar01Icon,
+  CheckmarkCircle02Icon,
+  SearchIcon,
+  StethoscopeIcon,
+  UserCircle02Icon,
+} from "@/lib/hugeicons";
+import { cn } from "@/lib/utils";
+import {
+  AgendaCalendar,
+  type CalendarView,
+} from "@/modules/agenda/components/agenda-calendar";
+import { AgendaDayLoadCard } from "@/modules/agenda/components/agenda-day-load";
+import { findNextAppointmentAfter } from "@/modules/agenda/components/agenda-day-load-model";
+import {
+  AgendaDayView,
+  AgendaWeekView,
   APPOINTMENT_TYPES,
+  AppointmentStatusBadge,
   AppointmentTimePicker,
-  DURATION_OPTIONS,
-  RECURRENCE_FREQUENCIES,
+  AppointmentTypeBadge,
   DAY_OF_WEEK_LABELS,
-  TABLE_SCOPES,
-  TABLE_TABS,
-  ViewMode,
-  TableTab,
-  normalizeDate,
+  DURATION_OPTIONS,
   formatDateInput,
-  parseDateInput,
-  isSameDay,
-  formatTime,
-  formatTimeCompact,
   formatDateLabel,
   formatDuration,
   formatOwnerName,
-  getPatientProfile,
-  normalizeEntityId,
+  formatTime,
+  formatTimeCompact,
   getAgeLabel,
-  AppointmentTypeBadge,
-  AppointmentStatusBadge,
-  AgendaDayView,
-  AgendaWeekView,
+  getPatientProfile,
+  isSameDay,
+  normalizeDate,
+  normalizeEntityId,
+  parseDateInput,
+  RECURRENCE_FREQUENCIES,
+  TABLE_SCOPES,
+  TABLE_TABS,
+  type TableTab,
+  type ViewMode,
 } from "@/modules/agenda/components/agenda-shared";
+import { AgendaStays } from "@/modules/hospitalizations/stays/agenda-stays";
+import type { RecurrenceFrequency } from "@/types/db";
+import { formatPersonName } from "@/utils/display-format";
 import type { AgendaViewProps } from "../hooks/use-agenda-page-model";
-import { DatePicker } from "@/components/ui/date-picker";
-import { SkeletonRegion, SkeletonShape } from "@/components/ui/loading-skeleton";
-import { cn } from "@/lib/utils";
-import { useDelayedSkeleton } from "@/hooks/useDelayedSkeleton";
+import { isActiveBooking } from "./agenda-slots";
+import { PatientDossierSearch } from "./patient-dossier-search";
 
 export function AgendaView(props: AgendaViewProps) {
   const {
@@ -240,10 +241,10 @@ export function AgendaView(props: AgendaViewProps) {
   };
   const dayRows = tableRowsByTab.selection;
   const dayCompleted = dayRows.filter(
-    (row) => row.appointment.status === "completed",
+    (row) => row.appointment.status === "completed"
   ).length;
   const dayUrgent = dayRows.filter(
-    (row) => row.appointment.type === "Urgence",
+    (row) => row.appointment.type === "Urgence"
   ).length;
   const daySummaryLabel =
     dayRows.length === 0
@@ -265,7 +266,7 @@ export function AgendaView(props: AgendaViewProps) {
   // Suite proposée par le panneau de charge quand la journée est libre.
   const nextAppointmentAfterDay = findNextAppointmentAfter(
     appointments,
-    selectedDate,
+    selectedDate
   );
   const selectedAppointmentDate = selectedAppointment
     ? normalizeDate(selectedAppointment.startTime)
@@ -295,10 +296,10 @@ export function AgendaView(props: AgendaViewProps) {
       />
 
       <AgendaCalendar
-        loading={agendaReading}
-        loadingRevealed={agendaSkeleton}
         getAppointmentsForDate={getAppointmentsForDate}
         getPatientName={getPatientName}
+        loading={agendaReading}
+        loadingRevealed={agendaSkeleton}
         monthDays={monthDays}
         onCreateAt={(date, time) => handleOpenCreate(date, time)}
         onSelectAppointment={(appointment) => {
@@ -311,7 +312,7 @@ export function AgendaView(props: AgendaViewProps) {
                 ? "auto"
                 : "smooth",
               block: "nearest",
-            }),
+            })
           );
         }}
         onSelectDate={(date) => {
@@ -335,16 +336,25 @@ export function AgendaView(props: AgendaViewProps) {
             </CardTitle>
             <CardDescription className="text-sm">
               {agendaReading && isDayScope ? (
-                <span className={cn("loading-skeleton", !agendaSkeleton && "invisible")}>
+                <span
+                  className={cn(
+                    "loading-skeleton",
+                    !agendaSkeleton && "invisible"
+                  )}
+                >
                   <SkeletonShape className="loading-skeleton-inline" />
                 </span>
-              ) : !isDayScope
-                ? TABLE_SCOPES(formatDateLabel(selectedDate))[tableTab]
-                : displayMode === "day"
-                  ? `${daySummaryLabel}${dayRows.length > 0 ? ", répartis par vétérinaire" : ""}`
-                  : displayMode === "week"
-                    ? "Rendez-vous de la semaine du jour choisi, jour par jour"
-                    : daySummaryLabel}
+              ) : isDayScope ? (
+                displayMode === "day" ? (
+                  `${daySummaryLabel}${dayRows.length > 0 ? ", répartis par vétérinaire" : ""}`
+                ) : displayMode === "week" ? (
+                  "Rendez-vous de la semaine du jour choisi, jour par jour"
+                ) : (
+                  daySummaryLabel
+                )
+              ) : (
+                TABLE_SCOPES(formatDateLabel(selectedDate))[tableTab]
+              )}
             </CardDescription>
           </CardHeader>
 
@@ -431,7 +441,7 @@ export function AgendaView(props: AgendaViewProps) {
                           <NativeSelectOption key={status} value={status}>
                             {meta.label}
                           </NativeSelectOption>
-                        ),
+                        )
                       )}
                     </NativeSelect>
                     {hasActiveFilters ? (
@@ -460,104 +470,104 @@ export function AgendaView(props: AgendaViewProps) {
                 memoryKey={`agenda-list:${displayMode}:${isDayScope ? "day" : "range"}:${tableTab}`}
                 revealed={agendaSkeleton}
               >
-              {displayMode === "day" && isDayScope ? (
-                <div className="min-w-0 overflow-x-auto pt-4">
-                  <AgendaDayView
-                    appointmentsByVet={appointmentsByVet}
-                    currentTimeLabel={formatTime(currentTime)}
-                    currentTimePosition={currentTimePosition}
-                    getPatientName={getPatientName}
-                    onCreateAt={(vetId, time) =>
-                      handleOpenCreate(selectedDate, time, vetId)
-                    }
-                    onSelectAppointment={selectAppointment}
-                    selectedAppointmentId={selectedAppointmentId}
-                    selectedDate={selectedDate}
-                    vets={vets}
-                  />
-                </div>
-              ) : displayMode === "week" && isDayScope ? (
-                <div className="min-w-0 overflow-x-auto pt-4">
-                  <AgendaWeekView
-                    getAppointmentsForDate={getAppointmentsForDate}
-                    getPatientName={getPatientName}
-                    onSelectAppointment={selectAppointment}
-                    selectedAppointmentId={selectedAppointmentId}
-                    weekDays={weekDays}
-                  />
-                </div>
-              ) : (
-                <AgendaListView
-                  emptyState={
-                    <Empty className="m-5 border border-border/80 border-dashed bg-muted/20 sm:m-6">
-                      <EmptyHeader>
-                        <EmptyMedia variant="icon">
-                          <HugeiconsIcon
-                            icon={
-                              tableTab === "attention"
-                                ? Alert02Icon
-                                : Calendar01Icon
-                            }
-                            strokeWidth={1.5}
-                          />
-                        </EmptyMedia>
-                        <EmptyTitle>
-                          {hasActiveFilters
-                            ? "Aucun rendez-vous ne correspond aux filtres"
-                            : isDayScope
-                              ? "Journée libre"
-                              : "Aucun rendez-vous dans cette liste"}
-                        </EmptyTitle>
-                        <EmptyDescription>
-                          {hasActiveFilters
-                            ? "Modifiez la recherche ou réinitialisez les filtres."
-                            : isDayScope
-                              ? "Aucun rendez-vous ce jour-là. Choisissez un autre jour dans le calendrier ou ajoutez un rendez-vous."
-                              : "Rien à afficher pour le moment."}
-                        </EmptyDescription>
-                      </EmptyHeader>
-                      <EmptyContent className="sm:flex-row">
-                        {hasActiveFilters ? (
-                          <Button onClick={resetFilters} variant="outline">
-                            Réinitialiser les filtres
+                {displayMode === "day" && isDayScope ? (
+                  <div className="min-w-0 overflow-x-auto pt-4">
+                    <AgendaDayView
+                      appointmentsByVet={appointmentsByVet}
+                      currentTimeLabel={formatTime(currentTime)}
+                      currentTimePosition={currentTimePosition}
+                      getPatientName={getPatientName}
+                      onCreateAt={(vetId, time) =>
+                        handleOpenCreate(selectedDate, time, vetId)
+                      }
+                      onSelectAppointment={selectAppointment}
+                      selectedAppointmentId={selectedAppointmentId}
+                      selectedDate={selectedDate}
+                      vets={vets}
+                    />
+                  </div>
+                ) : displayMode === "week" && isDayScope ? (
+                  <div className="min-w-0 overflow-x-auto pt-4">
+                    <AgendaWeekView
+                      getAppointmentsForDate={getAppointmentsForDate}
+                      getPatientName={getPatientName}
+                      onSelectAppointment={selectAppointment}
+                      selectedAppointmentId={selectedAppointmentId}
+                      weekDays={weekDays}
+                    />
+                  </div>
+                ) : (
+                  <AgendaListView
+                    emptyState={
+                      <Empty className="m-5 border border-border/80 border-dashed bg-muted/20 sm:m-6">
+                        <EmptyHeader>
+                          <EmptyMedia variant="icon">
+                            <HugeiconsIcon
+                              icon={
+                                tableTab === "attention"
+                                  ? Alert02Icon
+                                  : Calendar01Icon
+                              }
+                              strokeWidth={1.5}
+                            />
+                          </EmptyMedia>
+                          <EmptyTitle>
+                            {hasActiveFilters
+                              ? "Aucun rendez-vous ne correspond aux filtres"
+                              : isDayScope
+                                ? "Journée libre"
+                                : "Aucun rendez-vous dans cette liste"}
+                          </EmptyTitle>
+                          <EmptyDescription>
+                            {hasActiveFilters
+                              ? "Modifiez la recherche ou réinitialisez les filtres."
+                              : isDayScope
+                                ? "Aucun rendez-vous ce jour-là. Choisissez un autre jour dans le calendrier ou ajoutez un rendez-vous."
+                                : "Rien à afficher pour le moment."}
+                          </EmptyDescription>
+                        </EmptyHeader>
+                        <EmptyContent className="sm:flex-row">
+                          {hasActiveFilters ? (
+                            <Button onClick={resetFilters} variant="outline">
+                              Réinitialiser les filtres
+                            </Button>
+                          ) : null}
+                          <Button
+                            onClick={() => handleOpenCreate(selectedDate)}
+                            variant="outline"
+                          >
+                            <HugeiconsIcon
+                              data-icon="inline-start"
+                              icon={Add01Icon}
+                              strokeWidth={1.5}
+                            />
+                            Nouveau rendez-vous
                           </Button>
-                        ) : null}
-                        <Button
-                          onClick={() => handleOpenCreate(selectedDate)}
-                          variant="outline"
-                        >
-                          <HugeiconsIcon
-                            data-icon="inline-start"
-                            icon={Add01Icon}
-                            strokeWidth={1.5}
-                          />
-                          Nouveau rendez-vous
-                        </Button>
-                      </EmptyContent>
-                    </Empty>
-                  }
-                  formatTime={formatTime}
-                  onDeleteAppointment={deleteAppointment}
-                  onEditAppointment={handleOpenEdit}
-                  onOpenAppointment={openAppointmentInFlux}
-                  onSelectAppointment={(appointment) =>
-                    selectAppointment(appointment)
-                  }
-                  onTransitionStatus={handleAppointmentStatusTransition}
-                  resetKey={`${tableTab}:${selectedDate.toDateString()}:${searchTerm}:${vetFilter}:${statusFilter}`}
-                  rows={tableRowsByTab[tableTab]}
-                  selectedAppointmentId={selectedAppointmentId}
-                  showDate={!isDayScope}
-                />
-              )}
+                        </EmptyContent>
+                      </Empty>
+                    }
+                    formatTime={formatTime}
+                    onDeleteAppointment={deleteAppointment}
+                    onEditAppointment={handleOpenEdit}
+                    onOpenAppointment={openAppointmentInFlux}
+                    onSelectAppointment={(appointment) =>
+                      selectAppointment(appointment)
+                    }
+                    onTransitionStatus={handleAppointmentStatusTransition}
+                    resetKey={`${tableTab}:${selectedDate.toDateString()}:${searchTerm}:${vetFilter}:${statusFilter}`}
+                    rows={tableRowsByTab[tableTab]}
+                    selectedAppointmentId={selectedAppointmentId}
+                    showDate={!isDayScope}
+                  />
+                )}
               </SkeletonRegion>
             </Tabs>
           </CardContent>
         </Card>
 
         <aside
-          className="grid min-w-0 gap-6"
           aria-label="Détail et charge de la journée"
+          className="grid min-w-0 gap-6"
         >
           {selectedAppointment ? (
             <Card className="agenda-side-panel board-frame" id="agenda-detail">
@@ -599,7 +609,7 @@ export function AgendaView(props: AgendaViewProps) {
                           day: "numeric",
                           month: "long",
                           year: "numeric",
-                        },
+                        }
                       )}
                     </span>
                   </div>
@@ -695,32 +705,32 @@ export function AgendaView(props: AgendaViewProps) {
             memoryKey="agenda-day-load"
             revealed={agendaSkeleton}
           >
-          <AgendaDayLoadCard
-            dayLoadSummary={dayLoadSummary}
-            engagedVetsCount={engagedVetsCount}
-            getAppointmentCount={(date) =>
-              getAppointmentsForDate(date).filter(isActiveBooking).length
-            }
-            nextAppointment={
-              nextAppointmentAfterDay
-                ? {
-                    appointment: nextAppointmentAfterDay,
-                    patientName:
-                      patientsById.get(nextAppointmentAfterDay.patientId)
-                        ?.name || nextAppointmentAfterDay.title,
-                  }
-                : null
-            }
-            onSelectDate={(date) => {
-              setSelectedDate(date);
-              setTableTab("selection");
-            }}
-            selectedDate={selectedDate}
-            totalPlannedMinutes={totalPlannedMinutes}
-            typeSummary={typeSummary}
-            urgentOpenCount={urgentOpenCount}
-            weekDays={weekDays}
-          />
+            <AgendaDayLoadCard
+              dayLoadSummary={dayLoadSummary}
+              engagedVetsCount={engagedVetsCount}
+              getAppointmentCount={(date) =>
+                getAppointmentsForDate(date).filter(isActiveBooking).length
+              }
+              nextAppointment={
+                nextAppointmentAfterDay
+                  ? {
+                      appointment: nextAppointmentAfterDay,
+                      patientName:
+                        patientsById.get(nextAppointmentAfterDay.patientId)
+                          ?.name || nextAppointmentAfterDay.title,
+                    }
+                  : null
+              }
+              onSelectDate={(date) => {
+                setSelectedDate(date);
+                setTableTab("selection");
+              }}
+              selectedDate={selectedDate}
+              totalPlannedMinutes={totalPlannedMinutes}
+              typeSummary={typeSummary}
+              urgentOpenCount={urgentOpenCount}
+              weekDays={weekDays}
+            />
           </SkeletonRegion>
         </aside>
       </div>
@@ -773,7 +783,7 @@ export function AgendaView(props: AgendaViewProps) {
                   className="lg:col-span-2"
                   key={isDialogOpen ? "open" : "closed"}
                 >
-                  <CollapsibleTrigger className="group/owner-path inline-flex min-h-9 cursor-pointer items-center gap-1.5 rounded-lg px-2 t-13 font-medium text-[color:var(--ink-soft,#5d5d5d)] outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring">
+                  <CollapsibleTrigger className="group/owner-path t-13 inline-flex min-h-9 cursor-pointer items-center gap-1.5 rounded-lg px-2 font-medium text-[color:var(--ink-soft,#5d5d5d)] outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring">
                     <HugeiconsIcon
                       aria-hidden="true"
                       className="transition-transform group-data-[panel-open]/owner-path:rotate-180"
@@ -991,7 +1001,7 @@ export function AgendaView(props: AgendaViewProps) {
                             />
                             <span>
                               {t(
-                                `scheduling.recurrence.frequencies.${freq.value}`,
+                                `scheduling.recurrence.frequencies.${freq.value}`
                               )}
                             </span>
                           </label>
@@ -1009,7 +1019,7 @@ export function AgendaView(props: AgendaViewProps) {
                         <div className="flex flex-wrap gap-2">
                           {DAY_OF_WEEK_LABELS.map((day) => {
                             const checked = recurrenceDaysOfWeek.includes(
-                              day.value,
+                              day.value
                             );
                             return (
                               <Button
@@ -1018,7 +1028,7 @@ export function AgendaView(props: AgendaViewProps) {
                                   setRecurrenceDaysOfWeek((current) =>
                                     checked
                                       ? current.filter((d) => d !== day.value)
-                                      : [...current, day.value].sort(),
+                                      : [...current, day.value].sort()
                                   );
                                 }}
                                 size="sm"
@@ -1057,7 +1067,7 @@ export function AgendaView(props: AgendaViewProps) {
                           onChange={(event) => {
                             const raw = event.target.value.trim();
                             setRecurrenceMaxOccurrences(
-                              raw === "" ? null : Math.max(1, Number(raw)),
+                              raw === "" ? null : Math.max(1, Number(raw))
                             );
                           }}
                           type="number"
@@ -1069,7 +1079,7 @@ export function AgendaView(props: AgendaViewProps) {
                             {
                               defaultValue:
                                 "Laissez vide pour une récurrence sans limite (jusqu'à la date de fin).",
-                            },
+                            }
                           )}
                         </FieldDescription>
                       </Field>
@@ -1191,7 +1201,7 @@ export function AgendaView(props: AgendaViewProps) {
                   className="h-11 min-w-[120px] justify-center"
                   onClick={() => {
                     const current = appointments.find(
-                      (appointment) => appointment.id === editingAppointmentId,
+                      (appointment) => appointment.id === editingAppointmentId
                     );
                     if (current) {
                       void deleteAppointment(current);
@@ -1236,7 +1246,7 @@ export function AgendaView(props: AgendaViewProps) {
                       ? "Enregistrer"
                       : "Ajouter au planning"}
                   </span>
-                  <kbd className="hidden rounded bg-primary-foreground/20 px-1.5 py-0.5 font-mono t-12 sm:inline-block">
+                  <kbd className="t-12 hidden rounded bg-primary-foreground/20 px-1.5 py-0.5 font-mono sm:inline-block">
                     ⌘↵
                   </kbd>
                 </Button>

@@ -1,7 +1,5 @@
 "use client";
 
-import type { ReactNode } from "react";
-import { StatGrid, type Stat, type StatIcon, type StatTone } from "@/components/ui/stat-grid";
 import {
   BanknotesIcon,
   CalendarDaysIcon,
@@ -15,24 +13,23 @@ import {
   UsersIcon,
   WalletIcon,
 } from "@heroicons/react/20/solid";
+import type { ReactNode } from "react";
+import {
+  type Stat,
+  StatGrid,
+  type StatIcon,
+  type StatTone,
+} from "@/components/ui/stat-grid";
 import { useDelayedSkeleton } from "@/hooks/useDelayedSkeleton";
-import { formatNumber } from "@/utils/display-format";
 import { cn } from "@/lib/utils";
+import { formatNumber } from "@/utils/display-format";
 
 export interface SectionCardItem {
-  onClick?: () => void;
   actionLabel?: string;
   badge?: string;
-  footerDescription?: string;
-  footerTitle?: string;
-  detailRow?: string;
-  icon?: StatIcon;
-  sparkData?: number[];
-  title: string;
-  tone?: "critical" | "positive" | "quiet" | "watch";
-  trend?: "up" | "down" | "neutral";
-  value: string | number;
   change?: number | null;
+  /** Previous value (variation) or denominator (rate). Zero hides the percentage. */
+  changeBase?: number | null;
   /**
    * How `change` reads. "variation" (default): percentage vs a previous value,
    * the only kind with a trend arrow. "rate": a share such as a completion rate.
@@ -40,11 +37,19 @@ export interface SectionCardItem {
    * units vs a previous value (e.g. +2 vs hier), shown with an arrow.
    */
   changeKind?: "variation" | "rate" | "count" | "difference";
-  /** Previous value (variation) or denominator (rate). Zero hides the percentage. */
-  changeBase?: number | null;
   changeLabel?: string;
+  detailRow?: string;
+  footerDescription?: string;
+  footerTitle?: string;
+  icon?: StatIcon;
   /** True when a rise is bad news (overdue items, stock alerts). */
   inverse?: boolean;
+  onClick?: () => void;
+  sparkData?: number[];
+  title: string;
+  tone?: "critical" | "positive" | "quiet" | "watch";
+  trend?: "up" | "down" | "neutral";
+  value: string | number;
 }
 
 /*
@@ -77,27 +82,36 @@ function resolveDefaultIcon(title: string, index: number) {
     return matchedRule[1];
   }
 
-  const defaultIcons = [BanknotesIcon, CalendarDaysIcon, UsersIcon, ClipboardDocumentListIcon];
+  const defaultIcons = [
+    BanknotesIcon,
+    CalendarDaysIcon,
+    UsersIcon,
+    ClipboardDocumentListIcon,
+  ];
   return defaultIcons[index % defaultIcons.length] || BanknotesIcon;
 }
 
 /** What the card's badge says: a variation, a rate, a count, or a status text; and whether it reads as good news. */
 function badgeOf(
-  item: SectionCardItem,
+  item: SectionCardItem
 ): Pick<Stat, "delta" | "deltaText" | "higherIsBetter"> {
   const sense =
     item.tone === "positive" ? 1 : item.tone === "critical" ? -1 : 0;
   if (item.change !== undefined && item.change !== null) {
     const kind = item.changeKind ?? "variation";
-    if (kind === "count")
+    if (kind === "count") {
       return { delta: sense, deltaText: formatNumber(item.change) };
+    }
     // A percentage of nothing says nothing: hide it when the base is zero.
-    if (item.changeBase === 0) return {};
-    if (kind === "rate")
+    if (item.changeBase === 0) {
+      return {};
+    }
+    if (kind === "rate") {
       return {
         delta: 0,
         deltaText: `${formatNumber(item.change, { maximumFractionDigits: 1 })} %`,
       };
+    }
     const unit = kind === "difference" ? "" : " %";
     return {
       delta: item.change,
@@ -106,7 +120,9 @@ function badgeOf(
     };
   }
   // A text badge is a status, never a trend: its colour comes from the tone only.
-  if (item.badge) return { delta: sense, deltaText: item.badge };
+  if (item.badge) {
+    return { delta: sense, deltaText: item.badge };
+  }
   return {};
 }
 
@@ -169,7 +185,7 @@ export function SectionCards({
       className={cn(
         "section-atlas",
         compact && "section-atlas-compact",
-        className,
+        className
       )}
     >
       <StatGrid

@@ -4,7 +4,9 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const stored = new Map<string, string>();
 vi.mock("@/services/appSettingsService", () => ({
   getSetting: vi.fn(async (key: string) => stored.get(key) ?? null),
-  setSetting: vi.fn(async (key: string, value: string) => void stored.set(key, value)),
+  setSetting: vi.fn(
+    async (key: string, value: string) => void stored.set(key, value)
+  ),
 }));
 
 import {
@@ -45,8 +47,19 @@ describe("réglage « Mon cabinet propose l’hospitalisation »", () => {
     const heard: boolean[] = [];
     const target = new EventTarget();
     vi.stubGlobal("window", target);
-    vi.stubGlobal("CustomEvent", class<T> extends Event { detail: T; constructor(type: string, init: { detail: T }) { super(type); this.detail = init.detail; } });
-    target.addEventListener("vetera:clinic-services-changed", (event) => heard.push((event as CustomEvent<boolean>).detail));
+    vi.stubGlobal(
+      "CustomEvent",
+      class<T> extends Event {
+        detail: T;
+        constructor(type: string, init: { detail: T }) {
+          super(type);
+          this.detail = init.detail;
+        }
+      }
+    );
+    target.addEventListener("vetera:clinic-services-changed", (event) =>
+      heard.push((event as CustomEvent<boolean>).detail)
+    );
     await saveHospitalizationEnabled(false);
     expect(stored.get(HOSPITALIZATION_SETTING_KEY)).toBe("false");
     await saveHospitalizationEnabled(true);
@@ -57,11 +70,22 @@ describe("réglage « Mon cabinet propose l’hospitalisation »", () => {
 
   it("applique la même règle à la navigation, à la page Soins et à la palette", () => {
     const sidebar = readFileSync("src/components/app-sidebar.tsx", "utf8");
-    expect(sidebar).toContain("isClinicTabVisible(entry.tab, hospitalizationEnabled)");
-    const workspace = readFileSync("src/modules/clinique/pages/clinical-workspace.tsx", "utf8");
-    expect(workspace).toContain("resolveClinicTab(tab, hospitalizationEnabled)");
-    expect(workspace).toContain("const sectionTabs = hospitalizationEnabled ? tabsList : null;");
+    expect(sidebar).toContain(
+      "isClinicTabVisible(entry.tab, hospitalizationEnabled)"
+    );
+    const workspace = readFileSync(
+      "src/modules/clinique/pages/clinical-workspace.tsx",
+      "utf8"
+    );
+    expect(workspace).toContain(
+      "resolveClinicTab(tab, hospitalizationEnabled)"
+    );
+    expect(workspace).toContain(
+      "const sectionTabs = hospitalizationEnabled ? tabsList : null;"
+    );
     const palette = readFileSync("src/components/CommandPalette.tsx", "utf8");
-    expect(palette).toMatch(/\{hospitalizationEnabled && \(\s*<CommandPrimitive\.Item[\s\S]{0,400}newHospitalization/);
+    expect(palette).toMatch(
+      /\{hospitalizationEnabled && \(\s*<CommandPrimitive\.Item[\s\S]{0,400}newHospitalization/
+    );
   });
 });
