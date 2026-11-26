@@ -111,6 +111,7 @@ export async function openPatientRecordRasterSource(
           const rect = annotation.rect;
           if (
             popup ||
+            // biome-ignore lint/suspicious/noBitwiseOperators: annotationFlags est un champ de bits PDF (2 = Hidden, 32 = NoView, ISO 32000-1, 12.5.3)
             annotation.annotationFlags & (2 | 32) ||
             !rect ||
             rect[2] <= rect[0] ||

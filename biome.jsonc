@@ -12,5 +12,17 @@
       "vite.config.ts"
     ]
   },
+  "overrides": [
+    {
+      // Calcul binaire voulu (décision C du 25/11) : SHA-256 des anciens mots de passe (legacySha256), en-tête binaire
+      // des sauvegardes, bits de version et de variante des UUID v4. Une réécriture arithmétique y casserait un format.
+      "includes": [
+        "src/services/sqlite/auth.ts",
+        "src/services/backupCrypto.ts",
+        "src/lib/uuid.ts"
+      ],
+      "linter": { "rules": { "suspicious": { "noBitwiseOperators": "off" } } }
+    }
+  ],
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json"
 }

@@ -56,6 +56,7 @@ export function useTauriDrag<T extends HTMLElement = HTMLElement>(
           cleanupRef.current = null;
         };
         const move = (event: globalThis.MouseEvent) => {
+          // biome-ignore lint/suspicious/noBitwiseOperators: buttons est un masque de bits (MouseEvent.buttons), le bit 1 est le bouton principal
           if (!(event.buttons & 1)) {
             cleanup();
             return;

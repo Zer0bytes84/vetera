@@ -34,7 +34,9 @@ export interface InvoicePdfData {
 export function invoiceFileKey(id: string, issuedAt: string): string {
   let hash = 0x81_1c_9d_c5;
   for (const char of `${id}|${issuedAt}`) {
+    // biome-ignore lint/suspicious/noBitwiseOperators: FNV-1a, un hachage défini par XOR sur 32 bits ; la clé de fichier des factures déjà exportées en dépend
     hash ^= char.codePointAt(0)!;
+    // biome-ignore lint/suspicious/noBitwiseOperators: FNV-1a, >>> 0 ramène le produit à un entier non signé de 32 bits, comme le veut l'algorithme
     hash = Math.imul(hash, 0x01_00_01_93) >>> 0;
   }
   return hash.toString(36).padStart(7, "0");

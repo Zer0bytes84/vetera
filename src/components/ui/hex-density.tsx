@@ -152,6 +152,7 @@ export function HexDensity({
   // The grid sits in the middle of what the captions leave.
   const left = gutter + Math.max(0, (plotW - (cols + 0.5) * dx) / 2);
   const centre = (cell: { col: number; row: number }) => ({
+    // biome-ignore lint/suspicious/noBitwiseOperators: row & 1 donne la parité de la rangée, qui décale une rangée sur deux de la grille hexagonale
     cx: round(left + dx / 2 + (cell.col + (cell.row & 1) / 2) * dx),
     cy: round(top + r + cell.row * dy),
   });
