@@ -8,7 +8,7 @@
 | | Erreurs | Avertissements |
 |---|---|---|
 | Départ, `3566f1c7`, périmètre de `npm run check` élargi à `tests/` | **2 153** (src 534, tests 1 615, vite.config.ts 4) | 507 |
-| Arrivée | **136** (src 42, tests 94) | 507 (346 `noNestedTernary`, 161 `noExcessiveCognitiveComplexity`, avertissements décidés le 25/11) |
+| Arrivée | **134** (src 40, tests 94) | 507 (346 `noNestedTernary`, 161 `noExcessiveCognitiveComplexity`, avertissements décidés le 25/11) |
 
 Contrôles à l'arrivée : `tsc -p tsconfig.app.json` 0, `tsc -p tsconfig.node.json` 0, `eslint . --max-warnings=0` 0, suite **2 258/2 258**, mêmes tests et mêmes statuts qu'au départ (comparaison test par test des rapports JSON), assemblage Vite réussi.
 
@@ -55,9 +55,13 @@ Les lignes de facture modifiables (`clinique-shared.tsx:1451`), les 3 clés « d
 Mis de côté par l'annexe pour une passe avec essai dans l'app : `noAlert` 3 (dont `activation-admin-page.tsx:1996`, nouveau), `noReactForwardRef` 2 (dont `lib/icons.tsx:163`, nouveau), `noNestedComponentDefinitions` 4.
 Hors périmètre : l'aperçu de `NotesPro.tsx` (2).
 
-### src : la correction changerait le rendu (2 sites, non appliqués)
+### Décidé le 26/11, appliqué
 
-- **`modal-charter.css:65-78`** : `place-items: initial !important`, en dernier, annule le `align-items: center !important` de la même règle depuis sa création. L'en-tête des fenêtres s'aligne donc par étirement, pas au centre. Rétablir le centre change ce que tu vois ; retirer la ligne morte ou trier fige l'état actuel. À toi de dire lequel est voulu (deux remarques liées).
+- **`modal-charter.css:65-78`** : l'en-tête garde l'état validé à l'œil. Le `align-items: center !important`, annulé par le `place-items: initial !important` qui le suit, est retiré ; le centrage n'est pas rétabli ; propriétés triées. css-rendu : styles calculés identiques, ltr et rtl. 136 -> 134.
+- **`presentation.test.ts`** (changement d'heure à minuit) : délai explicite de 20 s pour ce test seul. Témoin : 6 s de travail passent avec, échouent sans.
+
+### src : la correction changerait le rendu (1 site, non appliqué)
+
 - **`stat-grid.tsx:143`** : un `aria-label` de chargement sur un `div` sans rôle. Ajouter un rôle change ce que lit un lecteur d'écran (`status` en ferait une zone annoncée).
 
 ## Écarts et choix à connaître
@@ -70,7 +74,7 @@ Hors périmètre : l'aperçu de `NotesPro.tsx` (2).
 ## Ce qui n'est pas prouvé
 
 - L'app de bureau n'a pas été lancée. Rien n'a été regardé à l'œil.
-- **Durée** : une fois, `presentation.test.ts` (« un pays où l'heure change à minuit… ») a échoué sur le délai de 5 s : 6,6 s sous charge, quand vitest tournait en même temps que tsc et eslint. Seul il prend 0,7 s ; au départ il prenait déjà 4,3 s. Sortie complète gardée (`~/work/mesures-erreurs-decisions/biome-clean/D-presentation-minuit-c1b.txt`). Ensuite, vitest tourne après tsc et eslint, et il n'a plus échoué. C'est un test du travail cloud, au bord de son délai : à décider (délai explicite, comme l'annexe PDF le 25/11).
+- **Durée** : une fois, `presentation.test.ts` (« un pays où l'heure change à minuit… ») a échoué sur le délai de 5 s : 6,6 s sous charge, quand vitest tournait en même temps que tsc et eslint. Seul il prend 0,7 s ; au départ il prenait déjà 4,3 s. Sortie complète gardée (`~/work/mesures-erreurs-decisions/biome-clean/D-presentation-minuit-c1b.txt`). Ensuite, vitest tourne après tsc et eslint, et il n'a plus échoué. Décidé le 26/11 : délai explicite de 20 s pour ce test seul (voir plus haut).
 - Les sites des familles C (`useEffectEvent`, cas vides de `mustExist`) sont établis par lecture du code et par tsc, pas par un test de rendu : la suite n'a pas d'environnement DOM.
 - L'arbre d'accessibilité n'a pas été remesuré dans Chromium pour les rôles repris de 44103d34.
 - Les 216 morceaux « réécrits depuis » n'ont pas tous été comparés un par un : seules les remarques Biome qu'ils laissaient ont été traitées. Un correctif du 25/11 sans remarque Biome associée (un changement de CSS, par exemple) a pu se perdre sans que je le voie.
