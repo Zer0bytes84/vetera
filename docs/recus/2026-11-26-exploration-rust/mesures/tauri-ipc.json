@@ -1,0 +1,56 @@
+{
+  "ua": "Mozilla/5.0 (Linux; Ubuntu; like Android 4.4) AppleWebKit/605.1.15 (KHTML, like ",
+  "invokeVideMs": 1.1,
+  "select1Ms": 1.2,
+  "tables": {
+    "patients": {
+      "rows": 1011,
+      "ms": 68.6
+    },
+    "owners": {
+      "rows": 676,
+      "ms": 30.9
+    },
+    "appointments": {
+      "rows": 5249,
+      "ms": 440.6
+    },
+    "consultation_soaps": {
+      "rows": 5209,
+      "ms": 1618.8
+    },
+    "notes": {
+      "rows": 343,
+      "ms": 40.2
+    },
+    "weight_entries": {
+      "rows": 5197,
+      "ms": 184.8
+    },
+    "invoices": {
+      "rows": 5241,
+      "ms": 345.6
+    }
+  },
+  "tablesTotalMs": 2729.5,
+  "grosDossierCibleMs": 58.8,
+  "grosDossierLignes": 400,
+  "rechercheActuelle": {
+    "patients": 1011,
+    "rows": 20780,
+    "totalMs": 22594.7,
+    "sqlEtIpcMs": 12252.5,
+    "hexMs": 4115.2,
+    "rankMs": 6221.7
+  },
+  "lexicale": {
+    "rows": 20780,
+    "sqlEtIpcMs": 1299.5,
+    "matchMs": 5844.6,
+    "hits": 0
+  },
+  "vecteursEnUneRequete": {
+    "rows": 20780,
+    "sqlEtIpcMs": 11268.4
+  }
+}

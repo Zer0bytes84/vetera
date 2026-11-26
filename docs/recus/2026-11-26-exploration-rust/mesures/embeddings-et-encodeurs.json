@@ -1,0 +1,148 @@
+{
+ "machine": "VM Parallels Linux arm64, 6 cœurs, 3,3 Go (hôte Apple M1 8 Go)",
+ "node": "22.23.4",
+ "ort_node": "1.21.0",
+ "ort_web": "1.22.0-dev",
+ "arctic": [
+  {
+   "e": "native",
+   "t": 4,
+   "dir": "embeddinggemma2",
+   "out": "at new OnnxruntimeSessionHandler (/home/parallels/work/publish-wt/node_modules/onnxruntime-node/dist/backend.js:25:92)\n    at Immediate.<anonymous> (/home/parallels/work/publish-wt/node_modules/onnxruntime-node/dist/backend.js:67:29)\n    at process.processImmediate (node:internal/timers:484:21)\n\nNode.js v22.23.4",
+   "code": 0
+  },
+  {
+   "e": "native",
+   "t": 1,
+   "dir": "embeddinggemma2",
+   "out": "at new OnnxruntimeSessionHandler (/home/parallels/work/publish-wt/node_modules/onnxruntime-node/dist/backend.js:25:92)\n    at Immediate.<anonymous> (/home/parallels/work/publish-wt/node_modules/onnxruntime-node/dist/backend.js:67:29)\n    at process.processImmediate (node:internal/timers:484:21)\n\nNode.js v22.23.4",
+   "code": 0
+  },
+  {
+   "e": "web",
+   "t": 1,
+   "dir": "embeddinggemma2",
+   "out": "^\n11883752\n(Use `node --trace-uncaught ...` to show where the exception was thrown)\n\nNode.js v22.23.4",
+   "code": 0
+  },
+  {
+   "e": "native",
+   "t": 4,
+   "dir": "arctic-embed-l-v2",
+   "out": "{\"model\":\"arctic-embed-l-v2\",\"engine\":\"native\",\"threads\":4,\"tokens\":178,\"loadMs\":2431,\"firstMs\":242,\"medianMs\":173,\"batch20Ms\":2686,\"rssMB\":1276}",
+   "code": 0
+  },
+  {
+   "e": "native",
+   "t": 1,
+   "dir": "arctic-embed-l-v2",
+   "out": "{\"model\":\"arctic-embed-l-v2\",\"engine\":\"native\",\"threads\":1,\"tokens\":178,\"loadMs\":2091,\"firstMs\":521,\"medianMs\":463,\"batch20Ms\":7908,\"rssMB\":1269}",
+   "code": 0
+  },
+  {
+   "e": "web",
+   "t": 1,
+   "dir": "arctic-embed-l-v2",
+   "out": "Terminated                 systemd-run --user --scope -q -p MemoryMax='1600M' -p MemorySwapMax=0 bash -c 'cd /home/parallels/work/rust-wt && node docs/recus/2026-11-26-exploration-rust/outils/bench-embeddings.mjs '\\''/media/psf/Home/Library/Application Support/com.baitari.vetera/local-ai/arctic-embed-l-v2'\\'' onnx/model_quantized.onnx web 1 '\\''query: '\\'' 2>&1 | tail -5'",
+   "code": 143
+  },
+  {
+   "e": "web",
+   "t": 4,
+   "dir": "arctic-embed-l-v2",
+   "out": "Terminated                 systemd-run --user --scope -q -p MemoryMax='1600M' -p MemorySwapMax=0 bash -c 'cd /home/parallels/work/rust-wt && node docs/recus/2026-11-26-exploration-rust/outils/bench-embeddings.mjs '\\''/media/psf/Home/Library/Application Support/com.baitari.vetera/local-ai/arctic-embed-l-v2'\\'' onnx/model_quantized.onnx web 4 '\\''query: '\\'' 2>&1 | tail -5'",
+   "code": 143
+  }
+ ],
+ "gemma2_v4": [
+  {
+   "e": "native",
+   "t": 4,
+   "v4": 1,
+   "out": "code: 'ERR_DLOPEN_FAILED'\n}\n\nNode.js v22.23.4",
+   "code": 0
+  },
+  {
+   "e": "native",
+   "t": 1,
+   "v4": 1,
+   "out": "code: 'ERR_DLOPEN_FAILED'\n}\n\nNode.js v22.23.4",
+   "code": 0
+  },
+  {
+   "e": "web",
+   "t": 1,
+   "v4": 1,
+   "out": "at async InferenceSession.create (/home/parallels/work/publish-wt/node_modules/transformers-v4/node_modules/onnxruntime-web/node_modules/onnxruntime-common/dist/cjs/inference-session-impl.js:187:25)\n    at async file:///home/parallels/work/rust-wt/docs/recus/2026-11-26-exploration-rust/outils/bench-embeddings.mjs:27:17\n\nNode.js v22.23.4",
+   "code": 0
+  },
+  {
+   "e": "web",
+   "t": 4,
+   "v4": 1,
+   "out": "at async InferenceSession.create (/home/parallels/work/publish-wt/node_modules/transformers-v4/node_modules/onnxruntime-web/node_modules/onnxruntime-common/dist/cjs/inference-session-impl.js:187:25)\n    at async file:///home/parallels/work/rust-wt/docs/recus/2026-11-26-exploration-rust/outils/bench-embeddings.mjs:27:17\n\nNode.js v22.23.4",
+   "code": 0
+  },
+  {
+   "e": "web",
+   "t": 1,
+   "v4": 0,
+   "out": "Terminated                 systemd-run --user --scope -q -p MemoryMax='2000M' -p MemorySwapMax=0 bash -c 'cd /home/parallels/work/rust-wt && ORT_V4= node docs/recus/2026-11-26-exploration-rust/outils/bench-embeddings.mjs '\\''/media/psf/Home/Library/Application Support/com.baitari.vetera/local-ai/arctic-embed-l-v2'\\'' onnx/model_quantized.onnx web 1 '\\''query: '\\'' 2>&1 | tail -4'",
+   "code": 143
+  }
+ ],
+ "whisper_encodeur": [
+  {
+   "e": "native",
+   "t": 1,
+   "out": "{\"file\":\"whisper-base-backup-2026-10-08/onnx/encoder_model_quantized.onnx\",\"engine\":\"native\",\"threads\":1,\"loadMs\":208,\"firstMs\":729,\"medianMs\":664,\"rssMB\":279}",
+   "code": 0
+  },
+  {
+   "e": "native",
+   "t": 4,
+   "out": "{\"file\":\"whisper-base-backup-2026-10-08/onnx/encoder_model_quantized.onnx\",\"engine\":\"native\",\"threads\":4,\"loadMs\":89,\"firstMs\":226,\"medianMs\":211,\"rssMB\":292}",
+   "code": 0
+  },
+  {
+   "e": "web",
+   "t": 1,
+   "out": "{\"file\":\"whisper-base-backup-2026-10-08/onnx/encoder_model_quantized.onnx\",\"engine\":\"web\",\"threads\":1,\"loadMs\":358,\"firstMs\":2708,\"medianMs\":2509,\"rssMB\":500}",
+   "code": 0
+  },
+  {
+   "e": "web",
+   "t": 4,
+   "out": "{\"file\":\"whisper-base-backup-2026-10-08/onnx/encoder_model_quantized.onnx\",\"engine\":\"web\",\"threads\":4,\"loadMs\":407,\"firstMs\":1099,\"medianMs\":726,\"rssMB\":445}",
+   "code": 0
+  },
+  {
+   "e": "native",
+   "t": 4,
+   "out": "{\"file\":\"whisper/onnx/encoder_model_quantized.onnx\",\"engine\":\"native\",\"threads\":4,\"loadMs\":1098,\"firstMs\":2660,\"medianMs\":2176,\"rssMB\":1161}",
+   "code": 0
+  },
+  {
+   "e": "web",
+   "t": 4,
+   "out": "{\"file\":\"whisper/onnx/encoder_model_quantized.onnx\",\"engine\":\"web\",\"threads\":4,\"loadMs\":1715,\"firstMs\":9716,\"medianMs\":9136,\"rssMB\":1678}",
+   "code": 0
+  },
+  {
+   "e": "native",
+   "t": 1,
+   "out": "{\"file\":\"whisper/onnx/encoder_model_quantized.onnx\",\"engine\":\"native\",\"threads\":1,\"loadMs\":1362,\"firstMs\":6913,\"medianMs\":6653,\"rssMB\":1150}",
+   "code": 0
+  },
+  {
+   "e": "web",
+   "t": 1,
+   "out": "{\"file\":\"whisper/onnx/encoder_model_quantized.onnx\",\"engine\":\"web\",\"threads\":1,\"loadMs\":1837,\"firstMs\":32372,\"medianMs\":32076,\"rssMB\":1550}",
+   "code": 0
+  }
+ ],
+ "embeddinggemma_fp32_natif": [
+  "{\"model\":\"embeddinggemma\",\"engine\":\"native\",\"threads\":4,\"tokens\":176,\"loadMs\":1518,\"firstMs\":341,\"medianMs\":160,\"batch20Ms\":2961,\"rssMB\":810}",
+  "{\"model\":\"embeddinggemma\",\"engine\":\"native\",\"threads\":1,\"tokens\":176,\"loadMs\":1301,\"firstMs\":791,\"medianMs\":546,\"batch20Ms\":10279,\"rssMB\":776}"
+ ]
+}
