@@ -107,6 +107,7 @@ import {
 } from "@/components/ui/tuff-controls";
 import { useDelayedSkeleton } from "@/hooks/useDelayedSkeleton";
 import { useListCursor } from "@/hooks/useListCursor";
+import { visiblePaymentReference } from "@/modules/finances/payment-reference";
 import { patientDocumentName } from "@/modules/patients/reference/reference";
 import { InvoicesTable } from "./invoices-table";
 
@@ -1079,8 +1080,15 @@ export function FinancesView(props: FinancesViewProps) {
                             ) : null}
                           </div>
                           <p className="text-muted-foreground text-xs">
-                            {formatDate(payment.paidAt)}
-                            {payment.reference ? ` · ${payment.reference}` : ""}
+                            {[
+                              formatDate(payment.paidAt),
+                              visiblePaymentReference(
+                                payment.reference,
+                                selectedInvoice
+                              ),
+                            ]
+                              .filter(Boolean)
+                              .join(" · ")}
                           </p>
                         </div>
                         <p
