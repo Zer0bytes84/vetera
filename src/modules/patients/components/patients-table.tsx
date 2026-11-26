@@ -335,8 +335,6 @@ export function PatientsTable({
         )
       }
       pageSize={10}
-      skeletonFallback={{ rows: 5, rowHeight: 64 }}
-      skeletonKey="patients"
       rowProps={(row) => ({
         "aria-label": `Ouvrir le dossier de ${row.patient}`,
         tabIndex: 0,
@@ -356,6 +354,8 @@ export function PatientsTable({
       })}
       searchPlaceholder="Nom ou propriétaire"
       selectable
+      skeletonFallback={{ rows: 5, rowHeight: 64 }}
+      skeletonKey="patients"
       title="Patients"
     />
   );

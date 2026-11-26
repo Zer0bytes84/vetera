@@ -11,9 +11,9 @@
 import { mapTableRow, tableReadSql } from "@/hooks/useSQLite";
 import { selectInvoices } from "@/services/billingService";
 import {
+  type BrowserTableName,
   getBrowserTable,
   isTauriRuntime,
-  type BrowserTableName,
 } from "@/services/browser-store";
 import { runDbRead } from "@/services/sqlite/database";
 import type { Invoice } from "@/types/db";

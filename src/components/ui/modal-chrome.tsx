@@ -3,13 +3,13 @@ import {
   createContext,
   Fragment,
   isValidElement,
+  type ReactElement,
+  type ReactNode,
   useContext,
   useId,
   useLayoutEffect,
   useRef,
   useState,
-  type ReactElement,
-  type ReactNode,
 } from "react";
 import { createPortal } from "react-dom";
 import { XIcon } from "@/lib/icons";

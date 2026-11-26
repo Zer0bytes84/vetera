@@ -1,26 +1,26 @@
 .stat-card {
   display: flex;
-  min-height: 112px;
   flex-direction: column;
   gap: 10px;
+  min-height: 112px;
   padding: 16px;
-  border-radius: var(--radius-panel);
   background: var(--card-inset);
+  border-radius: var(--radius-panel);
 }
 .stat-card-label {
   display: flex;
-  margin: 0;
-  align-items: center;
   gap: 6px;
-  color: var(--ink-muted, var(--muted-foreground));
+  align-items: center;
+  margin: 0;
   font-size: 13px;
   line-height: 18px;
+  color: var(--ink-muted, var(--muted-foreground));
 }
 /* The tone, seen without a change to colour: a dot before the label (positive takings, negative expenses or absences). */
 .stat-card-tone {
+  flex: none;
   width: 6px;
   height: 6px;
-  flex: none;
   border-radius: 999px;
 }
 .stat-card[data-tone="positive"] .stat-card-tone {
@@ -31,61 +31,61 @@
 }
 .stat-card-row {
   display: flex;
-  min-height: 38px;
+  gap: 12px;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  min-height: 38px;
 }
 .stat-card-value {
   margin: 0;
-  color: var(--ink, var(--foreground));
   font-size: 24px;
   font-weight: 500;
-  letter-spacing: -0.02em;
-  line-height: 32px;
-  overflow-wrap: anywhere;
   font-variant-numeric: tabular-nums;
+  line-height: 32px;
+  color: var(--ink, var(--foreground));
+  letter-spacing: -0.02em;
+  overflow-wrap: anywhere;
 }
 .stat-card-unit {
   margin-inline-start: 4px;
-  color: var(--ink-muted, var(--muted-foreground));
   font-size: 14px;
   font-weight: 450;
+  color: var(--ink-muted, var(--muted-foreground));
   letter-spacing: 0;
 }
 .stat-card-delta {
   display: inline-flex;
-  height: 22px;
-  align-self: flex-start;
-  align-items: center;
   gap: 4px;
+  align-items: center;
+  align-self: flex-start;
+  height: 22px;
   padding: 0 8px;
-  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-muted, var(--muted-foreground));
   background: color-mix(
     in oklab,
     var(--ink, var(--foreground)) 6%,
     transparent
   );
-  color: var(--ink-muted, var(--muted-foreground));
-  font-size: 12px;
-  font-weight: 500;
-  font-variant-numeric: tabular-nums;
+  border-radius: 999px;
 }
 .stat-card[data-tone="positive"] .stat-card-delta {
-  background: color-mix(in oklab, var(--signal-positive) 14%, transparent);
   color: color-mix(
     in oklab,
     var(--signal-positive),
     var(--ink, var(--foreground)) 35%
   );
+  background: color-mix(in oklab, var(--signal-positive) 14%, transparent);
 }
 .stat-card[data-tone="negative"] .stat-card-delta {
-  background: color-mix(in oklab, var(--destructive) 12%, transparent);
   color: color-mix(
     in oklab,
     var(--destructive),
     var(--ink, var(--foreground)) 25%
   );
+  background: color-mix(in oklab, var(--destructive) 12%, transparent);
 }
 .stat-card-delta[data-trend="down"] .stat-card-arrow {
   transform: rotate(90deg);
@@ -98,8 +98,8 @@
 }
 .stat-card-grid {
   display: grid;
-  gap: var(--card-frame);
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--card-frame);
 }
 .stat-card-grid[data-count="1"] {
   grid-template-columns: minmax(0, 1fr);

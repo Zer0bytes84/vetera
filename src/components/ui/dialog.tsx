@@ -1,19 +1,19 @@
 import { Dialog as DialogPrimitive } from "@base-ui/react/dialog";
 import type * as React from "react";
 import { useRef } from "react";
+import { Button } from "@/components/ui/button";
 import {
   firstPanelField,
   flattenChildren,
   headerFocusesClose,
-  markModalSlot,
   ModalBandActions,
   ModalChrome,
   ModalCloseIcon,
+  markModalSlot,
   modalSlotOf,
   splitFooter,
   useInModalChrome,
 } from "@/components/ui/modal-chrome";
-import { Button } from "@/components/ui/button";
 import { XIcon } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 

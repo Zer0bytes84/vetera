@@ -9,8 +9,8 @@
  */
 
 export interface ReadConnection {
-  select<T>(query: string, values?: unknown[]): Promise<T>;
   execute(query: string, values?: unknown[]): Promise<unknown>;
+  select<T>(query: string, values?: unknown[]): Promise<T>;
 }
 
 export class ReadRefused extends Error {

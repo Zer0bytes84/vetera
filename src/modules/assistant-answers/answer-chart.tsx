@@ -55,7 +55,7 @@ export function AnswerChart({ chart: given }: { chart: Chart }) {
   const slot = (W - PAD.left - PAD.right) / Math.max(1, count);
   return (
     <figure className="answer-chart" data-kind={chart.kind}>
-      <div className="answer-chart-legend" aria-hidden="true">
+      <div aria-hidden="true" className="answer-chart-legend">
         {chart.series.map((series) => (
           <span className="answer-chart-pill" key={series.id}>
             <span className="answer-chart-swatch" data-tone={series.tone} />
@@ -134,7 +134,7 @@ export function AnswerChart({ chart: given }: { chart: Chart }) {
               );
             })}
       </svg>
-      <div className="answer-chart-ticks" aria-hidden="true">
+      <div aria-hidden="true" className="answer-chart-ticks">
         {chart.bucket === "espece"
           ? labels.map((point) => <span key={point.key}>{point.label}</span>)
           : ticks.map((index) => (

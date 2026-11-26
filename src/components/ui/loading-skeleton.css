@@ -7,7 +7,6 @@
 }
 .loading-skeleton-shape {
   display: block;
-  border-radius: 999px;
   background:
     linear-gradient(
       100deg,
@@ -17,6 +16,7 @@
     )
     0 0 / 220% 100% no-repeat,
     var(--skeleton-fill);
+  border-radius: 999px;
   animation: loading-skeleton-sheen 1.4s ease-in-out infinite;
 }
 @keyframes loading-skeleton-sheen {
@@ -58,9 +58,9 @@
   align-items: flex-start;
 }
 .loading-skeleton-avatar {
+  flex: none;
   width: 28px;
   height: 28px;
-  flex: none;
 }
 .loading-skeleton-lines {
   display: flex;
@@ -86,21 +86,21 @@
 }
 
 .loading-skeleton-band {
-  border-radius: calc(var(--radius-panel) + var(--card-frame));
-  background: var(--card-band);
   padding: var(--card-frame);
+  background: var(--card-band);
+  border-radius: calc(var(--radius-panel) + var(--card-frame));
 }
 .loading-skeleton-header {
   display: flex;
-  min-height: 56px;
-  align-items: center;
   gap: 12px;
+  align-items: center;
+  min-height: 56px;
   padding: 6px 14px 12px 6px;
 }
 .loading-skeleton-tile {
+  flex: none;
   width: 36px;
   height: 36px;
-  flex: none;
   border-radius: 12px;
 }
 .loading-skeleton-heading {
@@ -119,12 +119,12 @@
 /* The stat card's geometry, line for line (stat-card.css): label 18 px, value row 38 px, chip 22 px, 10 px apart. */
 .loading-skeleton-card {
   display: flex;
-  min-height: 112px;
   flex-direction: column;
   gap: 10px;
+  min-height: 112px;
   padding: 16px;
-  border-radius: var(--radius-panel);
   background: var(--card-inset);
+  border-radius: var(--radius-panel);
 }
 .loading-skeleton-card-label {
   width: 46%;
@@ -133,8 +133,8 @@
 }
 .loading-skeleton-card-row {
   display: flex;
-  min-height: 38px;
   align-items: center;
+  min-height: 38px;
 }
 .loading-skeleton-card-value {
   width: 52%;
@@ -171,26 +171,26 @@
   margin-left: auto;
 }
 .loading-skeleton-avatar-lg {
+  flex: none;
   width: 40px;
   height: 40px;
-  flex: none;
 }
 /* A region being read: the place it took last time, a panel of rows of the sheen, cut where the region ends. */
 .loading-skeleton-region {
   display: flex;
   flex-direction: column;
   gap: 0;
-  overflow: hidden;
-  border-radius: var(--radius-panel);
-  background: var(--card-inset);
   padding: 8px 16px;
+  overflow: hidden;
+  background: var(--card-inset);
+  border-radius: var(--radius-panel);
 }
 .loading-skeleton-region-row {
   display: flex;
-  min-height: 64px;
   flex: none;
-  align-items: center;
   gap: 12px;
+  align-items: center;
+  min-height: 64px;
 }
 .loading-skeleton-inline-dot {
   width: 10px;

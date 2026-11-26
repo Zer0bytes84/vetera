@@ -9,13 +9,13 @@
 :root:root .command-palette[data-slot="dialog-content"] {
   display: block;
   padding: var(--card-frame) !important;
-  border: 0 !important;
-  background: var(--card-band) !important;
-  box-shadow: none !important;
+  overflow: hidden;
   color: var(--foreground);
+  background: var(--card-band) !important;
+  border: 0 !important;
+  box-shadow: none !important;
   -webkit-backdrop-filter: none !important;
   backdrop-filter: none !important;
-  overflow: hidden;
 }
 @layer utilities {
   :root:root .command-palette[data-slot="dialog-content"] {
@@ -25,41 +25,41 @@
 
 .command-palette-root {
   display: flex;
-  max-height: min(720px, calc(100dvh - 4rem));
   flex-direction: column;
   gap: var(--card-frame);
+  max-height: min(720px, calc(100dvh - 4rem));
   container-type: inline-size;
 }
 
 /* ---------- The field ---------- */
 .command-palette-field {
   display: flex;
-  min-height: 56px;
   flex: none;
-  align-items: center;
   gap: 12px;
+  align-items: center;
+  min-height: 56px;
   padding-block: 8px;
   padding-inline: 18px 10px;
-  border-radius: var(--radius-panel);
-  background: var(--card-inset);
   cursor: text;
+  background: var(--card-inset);
+  border-radius: var(--radius-panel);
 }
 .command-palette-field-icon {
+  flex: none;
   width: 20px;
   height: 20px;
-  flex: none;
   color: var(--muted-foreground);
 }
 .command-palette-input {
-  min-width: 0;
   flex: 1;
+  min-width: 0;
   height: 40px;
-  border: 0;
-  background: transparent;
-  color: var(--foreground);
   font-size: 16px;
   font-weight: 450;
+  color: var(--foreground);
   outline: none;
+  background: transparent;
+  border: 0;
 }
 .command-palette-input::placeholder {
   color: color-mix(in oklab, var(--muted-foreground), transparent 15%);
@@ -75,12 +75,12 @@
   .command-palette-filters
   [data-tabs-style="segmented"] {
   display: flex;
+  gap: 2px !important;
   height: 32px !important;
   min-height: 32px !important;
-  gap: 2px !important;
   padding: 0 !important;
-  border: 0 !important;
   background: transparent !important;
+  border: 0 !important;
   box-shadow: none !important;
 }
 :root:root
@@ -91,13 +91,13 @@
   height: 32px !important;
   min-height: 32px !important;
   padding-inline: 10px !important;
-  border: 0 !important;
-  border-radius: 10px !important;
-  background: transparent !important;
-  box-shadow: none !important;
-  color: var(--muted-foreground) !important;
   font-size: 13px !important;
   font-weight: 500 !important;
+  color: var(--muted-foreground) !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 10px !important;
+  box-shadow: none !important;
 }
 :root:root
   .command-palette
@@ -115,22 +115,22 @@
     [aria-selected="true"],
     [data-active]:not([data-active="false"])
   ) {
-  background: var(--card-band) !important;
   color: var(--foreground) !important;
+  background: var(--card-band) !important;
 }
 .command-palette-count {
   margin-inline-start: 6px;
-  color: var(--muted-foreground);
   font-variant-numeric: tabular-nums;
+  color: var(--muted-foreground);
 }
 .command-palette-clear {
   display: grid;
-  width: 32px;
-  height: 32px;
   flex: none;
   place-items: center;
-  border-radius: 10px;
+  width: 32px;
+  height: 32px;
   color: var(--muted-foreground);
+  border-radius: 10px;
   transition:
     background-color 120ms ease,
     color 120ms ease;
@@ -141,8 +141,8 @@
 }
 @media (hover: hover) and (pointer: fine) {
   .command-palette-clear:hover {
-    background: var(--card-band);
     color: var(--foreground);
+    background: var(--card-band);
   }
 }
 .command-palette-clear:focus-visible {
@@ -152,17 +152,17 @@
 
 /* ---------- Keys: a fill, no ring ---------- */
 :root:root .command-palette [data-slot="kbd"] {
-  height: 22px;
   min-width: 22px;
+  height: 22px;
   padding-inline: 6px;
-  border: 0 !important;
-  border-radius: 6px;
-  background: color-mix(in oklab, var(--foreground) 6%, transparent) !important;
-  box-shadow: none !important;
-  color: var(--muted-foreground);
   font-family: inherit;
   font-size: 12px;
   font-weight: 500;
+  color: var(--muted-foreground);
+  background: color-mix(in oklab, var(--foreground) 6%, transparent) !important;
+  border: 0 !important;
+  border-radius: 6px;
+  box-shadow: none !important;
 }
 .command-palette-esc {
   flex: none;
@@ -171,16 +171,16 @@
 
 /* ---------- The results ---------- */
 .command-palette-list {
+  flex: 0 1 auto;
   min-height: 0;
   max-height: min(520px, calc(100dvh - 15rem));
-  flex: 0 1 auto;
   padding: var(--card-frame);
-  border-radius: var(--radius-panel);
-  background: var(--card-inset);
   overflow-y: auto;
   overscroll-behavior: contain;
   scroll-padding-block: var(--card-frame);
   scrollbar-width: none;
+  background: var(--card-inset);
+  border-radius: var(--radius-panel);
 }
 .command-palette-list::-webkit-scrollbar {
   display: none;
@@ -194,10 +194,10 @@
 
 .command-palette [cmdk-group-heading] {
   padding: 10px 10px 6px;
-  color: var(--muted-foreground);
   font-size: 12px;
   font-weight: 600;
   line-height: 16px;
+  color: var(--muted-foreground);
   letter-spacing: 0.01em;
 }
 .command-palette [cmdk-group-items] {
@@ -208,16 +208,16 @@
 /* A row: the icon on a quiet fill, title over a second line, the hint at the end. */
 .command-palette-item {
   display: flex;
-  min-height: 48px;
-  align-items: center;
   gap: 12px;
+  align-items: center;
+  min-height: 48px;
   padding: 8px 10px;
-  border-radius: 10px;
-  color: var(--foreground);
   font-size: 14px;
+  color: var(--foreground);
   cursor: pointer;
-  outline: none;
   user-select: none;
+  outline: none;
+  border-radius: 10px;
 }
 .command-palette-item[data-selected="true"] {
   background: var(--card-band);
@@ -228,35 +228,35 @@
 
 .command-palette-glyph {
   display: grid;
-  width: 32px;
-  height: 32px;
   flex: none;
   place-items: center;
-  border-radius: 8px;
-  background: color-mix(in oklab, var(--foreground) 5%, transparent);
+  width: 32px;
+  height: 32px;
   color: var(--muted-foreground);
+  background: color-mix(in oklab, var(--foreground) 5%, transparent);
+  border-radius: 8px;
 }
 .command-palette-glyph svg {
   width: 18px;
   height: 18px;
 }
 .command-palette-item[data-selected="true"] .command-palette-glyph {
-  background: color-mix(in oklab, var(--foreground) 7%, transparent);
   color: var(--foreground);
+  background: color-mix(in oklab, var(--foreground) 7%, transparent);
 }
 
 .command-palette-text {
   display: flex;
-  min-width: 0;
   flex: 1;
   flex-direction: column;
   gap: 2px;
+  min-width: 0;
 }
 .command-palette-title {
   display: flex;
-  min-width: 0;
-  align-items: center;
   gap: 8px;
+  align-items: center;
+  min-width: 0;
   font-weight: 550;
   line-height: 20px;
 }
@@ -268,39 +268,39 @@
 }
 .command-palette-sub {
   overflow: hidden;
-  color: var(--muted-foreground);
+  text-overflow: ellipsis;
   font-size: 12px;
   line-height: 16px;
-  text-overflow: ellipsis;
+  color: var(--muted-foreground);
   white-space: nowrap;
 }
 .command-palette-reference {
   font-variant-numeric: tabular-nums;
 }
 :root:root .command-palette .command-palette-status {
-  height: 18px;
   flex: none;
+  height: 18px;
   padding-inline: 6px;
-  border: 0 !important;
   font-size: 12px;
   font-weight: 450;
+  border: 0 !important;
 }
 .command-palette-tag {
   flex: none;
   padding: 1px 6px;
-  border-radius: 6px;
-  background: color-mix(in oklab, var(--foreground) 6%, transparent);
-  color: var(--muted-foreground);
   font-size: 12px;
   font-weight: 500;
   line-height: 16px;
+  color: var(--muted-foreground);
+  background: color-mix(in oklab, var(--foreground) 6%, transparent);
+  border-radius: 6px;
 }
 
 .command-palette-hint,
 .command-palette-item > .command-palette-shortcut {
   flex: none;
-  color: var(--muted-foreground);
   font-size: 12px;
+  color: var(--muted-foreground);
   opacity: 0;
 }
 .command-palette-item[data-selected="true"]
@@ -318,32 +318,32 @@
 }
 .command-palette-excerpt {
   display: -webkit-box;
-  overflow: hidden;
-  color: color-mix(in oklab, var(--foreground), transparent 18%);
-  font-size: 14px;
-  line-height: 20px;
   -webkit-box-orient: vertical;
+  overflow: hidden;
   -webkit-line-clamp: 2;
   line-clamp: 2;
+  font-size: 14px;
+  line-height: 20px;
+  color: color-mix(in oklab, var(--foreground), transparent 18%);
 }
 .command-palette-excerpt mark {
   padding-inline: 2px;
-  border-radius: 4px;
-  background: color-mix(in oklab, var(--primary) 12%, transparent);
-  color: var(--foreground);
   font-weight: 600;
+  color: var(--foreground);
+  background: color-mix(in oklab, var(--primary) 12%, transparent);
+  border-radius: 4px;
 }
 .dark .command-palette-excerpt mark {
   background: color-mix(in oklab, var(--primary) 30%, transparent);
 }
 .command-palette-source {
-  color: var(--foreground);
   font-weight: 500;
+  color: var(--foreground);
 }
 
 .command-palette-loading {
-  color: var(--muted-foreground);
   font-size: 13px;
+  color: var(--muted-foreground);
 }
 .command-palette-spinner {
   width: 16px;
@@ -374,11 +374,11 @@
 }
 .command-palette-actions[data-layout="tiles"] .command-palette-item {
   position: relative;
-  min-height: 72px;
   flex-direction: column;
+  gap: 8px;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 8px;
+  min-height: 72px;
   padding: 10px 12px;
   background: color-mix(in oklab, var(--card-band) 70%, var(--card-inset));
 }
@@ -389,9 +389,9 @@
 .command-palette-actions[data-layout="tiles"] .command-palette-glyph {
   width: 20px;
   height: 20px;
-  border-radius: 0;
-  background: transparent !important;
   color: var(--foreground);
+  background: transparent !important;
+  border-radius: 0;
 }
 .command-palette-actions[data-layout="tiles"] .command-palette-glyph svg {
   width: 20px;
@@ -407,8 +407,8 @@
   line-height: 17px;
 }
 .command-palette-actions[data-layout="tiles"] .command-palette-title-text {
-  white-space: normal;
   overflow-wrap: anywhere;
+  white-space: normal;
 }
 .command-palette-actions[data-layout="tiles"] .command-palette-sub {
   display: none;
@@ -430,48 +430,48 @@
 .command-palette-empty {
   display: flex;
   flex-direction: column;
-  align-items: center;
   gap: 6px;
+  align-items: center;
   padding: 36px 24px 32px;
   text-align: center;
 }
 .command-palette-empty-glyph {
   display: grid;
+  place-items: center;
   width: 44px;
   height: 44px;
   margin-bottom: 6px;
-  place-items: center;
-  border-radius: 12px;
-  background: var(--card-band);
   color: var(--muted-foreground);
+  background: var(--card-band);
+  border-radius: 12px;
 }
 .command-palette-empty-glyph svg {
   width: 20px;
   height: 20px;
 }
 .command-palette-empty-title {
-  color: var(--foreground);
   font-size: 14px;
   font-weight: 550;
+  color: var(--foreground);
 }
 .command-palette-empty-hint {
   max-width: 40ch;
-  color: var(--muted-foreground);
   font-size: 13px;
   line-height: 18px;
+  color: var(--muted-foreground);
 }
 .command-palette-empty-action {
   display: inline-flex;
-  height: 36px;
-  align-items: center;
   gap: 8px;
-  margin-top: 10px;
+  align-items: center;
+  height: 36px;
   padding-inline: 14px;
-  border-radius: 999px;
-  background: var(--card-band);
-  color: var(--foreground);
+  margin-top: 10px;
   font-size: 13px;
   font-weight: 500;
+  color: var(--foreground);
+  background: var(--card-band);
+  border-radius: 999px;
   transition: background-color 120ms ease;
 }
 .command-palette-empty-action svg {
@@ -493,20 +493,20 @@
   display: flex;
   flex: none;
   flex-wrap: wrap;
-  align-items: center;
   gap: 4px 16px;
+  align-items: center;
   padding: 2px 12px 4px;
-  color: var(--muted-foreground);
   font-size: 12px;
+  color: var(--muted-foreground);
 }
 .command-palette-footer > span {
   display: inline-flex;
-  align-items: center;
   gap: 6px;
+  align-items: center;
 }
 :root:root .command-palette .command-palette-footer [data-slot="kbd"] {
-  height: 20px;
   min-width: 20px;
+  height: 20px;
   padding-inline: 4px;
 }
 @media (max-width: 639px) {
@@ -522,7 +522,7 @@
     row-gap: 4px;
   }
   .command-palette-filters {
-    order: 3;
     flex-basis: 100%;
+    order: 3;
   }
 }

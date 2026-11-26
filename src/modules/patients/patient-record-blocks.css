@@ -12,11 +12,11 @@ html:root:root:root:root:root .patient-record-page .patient-record-indicators {
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: var(--card-frame) !important;
   padding: 0;
+  overflow: visible !important;
+  background: transparent !important;
   border: 0 !important;
   border-radius: 0 !important;
-  background: transparent !important;
   box-shadow: none !important;
-  overflow: visible !important;
 }
 html:root:root:root:root:root
   .patient-record-page
@@ -31,9 +31,9 @@ html:root:root:root:root:root
   min-width: 0;
   min-height: 0;
   padding: 16px !important;
+  background: var(--card-inset) !important;
   border: 0 !important;
   border-radius: var(--radius-panel) !important;
-  background: var(--card-inset) !important;
   box-shadow: none !important;
 }
 /* A card that opens something answers the pointer by its fill alone, as the dashboard's cards do. */
@@ -76,24 +76,24 @@ html:root:root:root:root:root
 /* The record's header: the name row stays on one line; the context under it wraps rather than being cut. */
 .patient-record-heading .patient-record-context {
   overflow: visible;
-  white-space: normal;
   text-overflow: clip;
+  white-space: normal;
 }
 
 /* The synthesis on one grid: three columns, their headings on the same row, each link at the end of its own heading row. */
 .patient-record-page .patient-clinical-summary {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  align-items: start;
   column-gap: 32px;
+  align-items: start;
 }
 .patient-record-page .patient-clinical-summary .patient-summary-heading-row,
 .patient-record-page .patient-clinical-summary .medical-prevention-header {
   display: flex;
-  min-height: 28px;
+  gap: 8px;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  min-height: 28px;
   margin: 0 0 8px;
 }
 .patient-record-page .patient-clinical-summary .patient-summary-link {
@@ -110,17 +110,17 @@ html:root:root:root:root:root
 .patient-record-page .patient-timeline-side {
   display: flex;
   flex-wrap: wrap;
+  gap: 8px;
   align-items: center;
   justify-content: flex-end;
-  gap: 8px;
 }
 .patient-record-page .patient-timeline-side .patient-timeline-pieces {
   display: flex;
   flex-wrap: wrap;
-  justify-content: flex-end;
   gap: 6px;
-  margin: 0;
+  justify-content: flex-end;
   padding: 0;
+  margin: 0;
   list-style: none;
 }
 .patient-record-page .patient-timeline-context.is-empty {
@@ -135,8 +135,8 @@ html:root:root:root:root:root .patient-record-page
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 6px;
   padding: 0;
-  border: 0;
   background: transparent;
+  border: 0;
   box-shadow: none;
 }
 html:root:root:root:root:root
@@ -146,9 +146,9 @@ html:root:root:root:root:root
   > * {
   min-width: 0;
   padding: 16px;
+  background: var(--card-inset);
   border: 0;
   border-radius: 16px;
-  background: var(--card-inset);
   box-shadow: none;
 }
 /* The completeness card: a white card like the three others (same fill, radius and padding), not text laid on the grey. */
@@ -156,9 +156,9 @@ html:root:root:root:root:root .patient-record-page
   .patient-permanent
   .medical-record-health {
   padding: 16px;
+  background: var(--card-inset);
   border: 0;
   border-radius: 16px;
-  background: var(--card-inset);
   box-shadow: none;
 }
 @media (max-width: 900px) {
@@ -174,11 +174,11 @@ html:root:root:root:root:root .patient-record-page
 html:root:root:root:root:root .patient-record-page
   .patient-register-shell
   > .medical-register {
+  overflow: hidden;
+  background: var(--card-inset);
   border: 0;
   border-radius: 16px;
-  background: var(--card-inset);
   box-shadow: none;
-  overflow: hidden;
 }
 
 /* The two buttons of the record's band share one size; « Actions » has its own colour (indigo, white text, 4.9:1 on light and
@@ -187,17 +187,17 @@ html:root:root:root:root:root .patient-record-actions > button,
 html:root:root:root:root:root
   .patient-record-actions
   > [data-slot="dropdown-menu-trigger"] {
-  height: 32px;
-  min-width: 132px;
   justify-content: center;
+  min-width: 132px;
+  height: 32px;
 }
 html:root:root:root:root:root
   .patient-record-actions
   [data-testid="patient-record-actions"] {
-  border: 0 !important;
+  color: #fff !important;
   background: var(--chart-indigo) !important;
   background-image: none !important;
-  color: #fff !important;
+  border: 0 !important;
   box-shadow: none !important;
 }
 
@@ -214,10 +214,10 @@ html:root:root:root:root:root
   .patient-record-page
   .patient-register-shell
   .medical-tabs-frame {
+  padding: 12px 8px;
+  background: transparent;
   border: 0;
   border-right: 1px solid color-mix(in oklab, var(--foreground) 9%, transparent);
-  background: transparent;
-  padding: 12px 8px;
 }
 html:root:root:root:root:root
   .patient-record-page
@@ -240,15 +240,15 @@ html:root:root:root:root:root
   display: flex;
   flex-direction: column;
   flex-wrap: nowrap;
-  align-items: stretch;
   gap: 2px;
+  align-items: stretch;
   height: auto !important;
   min-height: 0 !important;
   max-height: none !important;
   padding: 0;
-  border: 0;
-  background: transparent;
   overflow: visible !important;
+  background: transparent;
+  border: 0;
 }
 html:root:root:root:root:root
   .patient-record-page
@@ -262,30 +262,30 @@ html:root:root:root:root:root
   .medical-tabs
   > [role="tab"] {
   display: flex;
-  width: 100%;
-  height: 40px;
+  gap: 10px;
   align-items: center;
   justify-content: flex-start;
-  gap: 10px;
+  width: 100%;
+  height: 40px;
   padding: 0 12px;
-  border: 0;
-  border-radius: 12px;
-  background: transparent;
-  box-shadow: none;
-  color: var(--muted-foreground);
   font-size: 13px;
   font-weight: 400;
+  color: var(--muted-foreground);
   text-align: left;
+  background: transparent;
+  border: 0;
+  border-radius: 12px;
+  box-shadow: none;
 }
 html:root:root:root:root:root
   .patient-record-page
   .patient-register-shell
   .medical-tabs
   > [role="tab"][aria-selected="true"] {
+  font-weight: 500;
+  color: var(--foreground) !important;
   background: color-mix(in oklab, var(--foreground) 7%, transparent) !important;
   box-shadow: none !important;
-  color: var(--foreground) !important;
-  font-weight: 500;
 }
 @media (hover: hover) and (pointer: fine) {
   html:root:root:root:root:root
@@ -293,8 +293,8 @@ html:root:root:root:root:root
     .patient-register-shell
     .medical-tabs
     > [role="tab"]:hover {
-    background: color-mix(in oklab, var(--foreground) 5%, transparent);
     color: var(--foreground);
+    background: color-mix(in oklab, var(--foreground) 5%, transparent);
   }
 }
 html:root:root:root:root:root
@@ -342,9 +342,9 @@ html:root:root:root:root:root .patient-record-page
   > *,
 html:root:root:root:root:root .patient-record-page .patient-overview-last {
   padding: 16px;
+  background: var(--card-inset);
   border: 1px solid color-mix(in oklab, var(--foreground) 10%, transparent);
   border-radius: 16px;
-  background: var(--card-inset);
 }
 html:root:root:root:root:root .patient-record-page .patient-clinical-summary {
   column-gap: 12px;
@@ -363,52 +363,52 @@ html:root:root:root:root:root .patient-record-page .patient-timeline-list {
   position: relative;
   display: grid;
   gap: 8px;
-  margin: 0;
   padding: 0 0 0 26px;
+  margin: 0;
   list-style: none;
 }
 html:root:root:root:root:root
   .patient-record-page
   .patient-timeline-list::before {
-  content: "";
   position: absolute;
   top: 6px;
   bottom: 6px;
   left: 7px;
   width: 2px;
-  border-radius: 2px;
+  content: "";
   background: color-mix(in oklab, var(--foreground) 12%, transparent);
+  border-radius: 2px;
 }
 html:root:root:root:root:root .patient-record-page .patient-timeline-event {
   --kind: var(--tone-blue);
   position: relative;
   display: grid;
   grid-template-columns: 104px 150px minmax(0, 1fr) max-content;
-  align-items: center;
   column-gap: 12px;
+  align-items: center;
   min-height: 64px;
-  margin: 0;
   padding: 12px 16px;
+  margin: 0;
+  background: var(--card-inset);
   border: 1px solid color-mix(in oklab, var(--foreground) 10%, transparent);
   border-radius: 16px;
-  background: var(--card-inset);
 }
 html:root:root:root:root:root .patient-record-page .patient-timeline-event > * {
+  min-width: 0;
   padding: 0;
   margin: 0;
-  min-width: 0;
 }
 html:root:root:root:root:root
   .patient-record-page
   .patient-timeline-event::before {
-  content: "";
   position: absolute;
   top: 50%;
   left: -24px;
   width: 10px;
   height: 10px;
-  border-radius: 9999px;
+  content: "";
   background: var(--kind);
+  border-radius: 9999px;
   box-shadow: 0 0 0 3px var(--card-inset);
   transform: translateY(-50%);
 }
@@ -459,26 +459,26 @@ html:root:root:root:root:root
 }
 html:root:root:root:root:root .patient-record-page .patient-timeline-date {
   font-size: 13px;
-  color: var(--muted-foreground);
   font-variant-numeric: tabular-nums;
+  color: var(--muted-foreground);
   white-space: nowrap;
 }
 html:root:root:root:root:root .patient-record-page .patient-timeline-kind {
   display: flex;
-  align-items: center;
   gap: 10px;
+  align-items: center;
 }
 html:root:root:root:root:root .patient-record-page .patient-timeline-marker {
   position: static;
   display: grid;
-  width: 28px;
-  height: 28px;
   flex: 0 0 28px;
   place-items: center;
+  width: 28px;
+  height: 28px;
+  color: var(--kind);
+  background: color-mix(in oklab, var(--kind) 15%, transparent);
   border: 0;
   border-radius: 9999px;
-  background: color-mix(in oklab, var(--kind) 15%, transparent);
-  color: var(--kind);
   box-shadow: none;
 }
 html:root:root:root:root:root .patient-record-page .patient-timeline-title {
@@ -492,9 +492,9 @@ html:root:root:root:root:root .patient-record-page .patient-timeline-body {
 }
 html:root:root:root:root:root .patient-record-page .patient-timeline-body > p {
   display: -webkit-box;
+  -webkit-box-orient: vertical;
   margin: 0;
   overflow: hidden;
-  -webkit-box-orient: vertical;
   -webkit-line-clamp: 1;
   line-clamp: 1;
   font-size: 13px;
@@ -503,9 +503,9 @@ html:root:root:root:root:root .patient-record-page .patient-timeline-body > p {
 html:root:root:root:root:root .patient-record-page .patient-timeline-side {
   display: flex;
   flex-wrap: wrap;
+  gap: 8px;
   align-items: center;
   justify-content: flex-end;
-  gap: 8px;
 }
 @media (max-width: 1100px) {
   html:root:root:root:root:root .patient-record-page .patient-timeline-event {
@@ -538,8 +538,8 @@ html:root:root:root:root:root .patient-record-page .patient-clinical-summary {
     .patient-record-page
     .patient-clinical-summary
     .patient-summary-link::after {
-    content: "→";
     font-size: 14px;
+    content: "→";
   }
 }
 
@@ -556,13 +556,13 @@ html:root:root:root:root:root
   .patient-register-shell
   .patient-rail-chip {
   display: grid;
-  width: 28px;
-  height: 28px;
   flex: 0 0 28px;
   place-items: center;
-  border-radius: 9px;
-  background: color-mix(in oklab, var(--section-tone) 16%, transparent);
+  width: 28px;
+  height: 28px;
   color: var(--section-tone);
+  background: color-mix(in oklab, var(--section-tone) 16%, transparent);
+  border-radius: 9px;
 }
 html:root:root:root:root:root
   .patient-record-page
@@ -575,8 +575,8 @@ html:root:root:root:root:root
   .patient-record-page
   .patient-register-shell
   .patient-rail-label {
-  min-width: 0;
   flex: 1;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -587,19 +587,21 @@ html:root:root:root:root:root
   .patient-rail-count {
   min-width: 20px;
   padding: 0 6px;
-  border-radius: 9999px;
-  background: color-mix(in oklab, var(--section-tone) 14%, transparent);
-  color: var(--foreground);
   font-size: 12px;
   font-variant-numeric: tabular-nums;
   line-height: 20px;
+  color: var(--foreground);
   text-align: center;
+  background: color-mix(in oklab, var(--section-tone) 14%, transparent);
+  border-radius: 9999px;
 }
 html:root:root:root:root:root
   .patient-record-page
   .patient-register-shell
   .medical-tabs
   > [role="tab"][aria-selected="true"] {
+  font-weight: 500;
+  color: var(--foreground) !important;
   background: color-mix(
     in oklab,
     var(--section-tone) 12%,
@@ -607,8 +609,6 @@ html:root:root:root:root:root
   ) !important;
   border: 0 !important;
   box-shadow: none !important;
-  color: var(--foreground) !important;
-  font-weight: 500;
 }
 html:root:root:root:root:root
   .patient-record-page
@@ -646,8 +646,8 @@ html:root:root:root:root:root
     .patient-record-page
     .patient-register-shell
     .medical-tabs {
-    box-shadow: none !important;
     border: 0 !important;
+    box-shadow: none !important;
   }
   :root:root:root:root:root:root:root:root
     .patient-record-page
@@ -659,14 +659,15 @@ html:root:root:root:root:root
     .patient-register-shell
     .medical-tabs
     > [role="tab"]::after {
-    content: none !important;
     display: none !important;
+    content: none !important;
   }
   :root:root:root:root:root:root:root:root
     .patient-record-page
     .patient-register-shell
     .medical-tabs
     > [role="tab"][aria-selected="true"] {
+    color: var(--foreground) !important;
     background: color-mix(
       in oklab,
       var(--section-tone) 13%,
@@ -675,7 +676,6 @@ html:root:root:root:root:root
     border: 0 !important;
     border-radius: 12px !important;
     box-shadow: none !important;
-    color: var(--foreground) !important;
   }
 }
 
@@ -686,9 +686,9 @@ html:root:root:root:root:root
     .patient-permanent
     .medical-record-health {
     padding: 16px !important;
+    background: var(--card-inset) !important;
     border: 0 !important;
     border-radius: 16px !important;
-    background: var(--card-inset) !important;
     box-shadow: none !important;
   }
 }

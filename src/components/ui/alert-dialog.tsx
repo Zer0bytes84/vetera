@@ -4,18 +4,18 @@ import { AlertDialog as AlertDialogPrimitive } from "@base-ui/react/alert-dialog
 import { CircleHelp } from "lucide-react";
 import type * as React from "react";
 import { cloneElement, isValidElement, useRef } from "react";
+import { Button } from "@/components/ui/button";
 import {
   firstPanelField,
   flattenChildren,
-  markModalSlot,
   ModalBandActions,
   ModalChrome,
   ModalCloseIcon,
+  markModalSlot,
   modalSlotOf,
   splitFooter,
   useInModalChrome,
 } from "@/components/ui/modal-chrome";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 function AlertDialog({ ...props }: AlertDialogPrimitive.Root.Props) {

@@ -15,9 +15,9 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { DragDropVerticalIcon } from "@/lib/hugeicons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useCallback, useState } from "react";
+import { DragDropVerticalIcon } from "@/lib/hugeicons";
 import { cn } from "@/lib/utils";
 import type { DashboardLayoutBlock } from "./dashboard-layout-manager";
 

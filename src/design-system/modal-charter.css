@@ -14,18 +14,18 @@
   display: flex !important;
   flex-direction: column !important;
   gap: 0 !important;
+  max-height: calc(100dvh - 32px) !important;
   padding: var(--card-frame) !important;
-  border: 0 !important;
-  border-radius: var(--modal-radius) !important;
+  container-type: inline-size;
+  overflow: hidden !important;
+  color: var(--foreground);
   outline: none !important;
   background: var(--card-band) !important;
+  border: 0 !important;
+  border-radius: var(--modal-radius) !important;
   box-shadow: none !important;
   -webkit-backdrop-filter: none !important;
   backdrop-filter: none !important;
-  max-height: calc(100dvh - 32px) !important;
-  overflow: hidden !important;
-  container-type: inline-size;
-  color: var(--foreground);
 }
 
 /* Panneau latéral : il flotte à 8 px des bords, comme les fenêtres, au lieu de coller au bord de l'écran. */
@@ -55,9 +55,9 @@
   display: grid;
   flex: none;
   grid-template-columns: minmax(0, 1fr) auto auto;
-  align-items: center;
-  column-gap: 10px;
   row-gap: 10px;
+  column-gap: 10px;
+  align-items: center;
   padding: 6px 6px 12px 6px;
 }
 
@@ -82,15 +82,15 @@
   [data-slot="modal-heading"]
   > :not(:has([data-slot="modal-icon"], [data-slot="alert-dialog-media"])) {
   flex-direction: column !important;
-  align-items: flex-start !important;
   gap: 4px !important;
+  align-items: flex-start !important;
   padding-left: 8px !important;
 }
 [data-chrome] [data-slot="modal-heading-text"] {
   display: flex;
-  min-width: 0;
   flex-direction: column;
   gap: 4px;
+  min-width: 0;
 }
 :root:root:root
   [data-chrome]
@@ -102,10 +102,10 @@
   width: 36px !important;
   height: 36px !important;
   margin: 0 !important;
+  color: var(--muted-foreground);
+  background: color-mix(in oklch, var(--foreground) 6%, transparent) !important;
   border: 0 !important;
   border-radius: 12px !important;
-  background: color-mix(in oklch, var(--foreground) 6%, transparent) !important;
-  color: var(--muted-foreground);
   box-shadow: none !important;
 }
 :root:root:root
@@ -116,8 +116,8 @@
   height: 16px !important;
 }
 [data-chrome] [data-slot="modal-heading"] :is([data-slot$="-title"]) {
-  overflow-wrap: anywhere;
   text-wrap: balance;
+  overflow-wrap: anywhere;
 }
 [data-chrome] [data-slot="modal-heading"] .modal-form-heading-aside {
   margin-top: 4px;
@@ -127,9 +127,9 @@
 [data-chrome] [data-slot="modal-actions"] {
   display: flex;
   flex-wrap: wrap;
+  gap: 8px;
   align-items: center;
   justify-content: flex-end;
-  gap: 8px;
 }
 [data-chrome] [data-slot="modal-actions"]:not(:has(button, a, input)) {
   display: none;
@@ -153,10 +153,10 @@
   height: 36px !important;
   min-height: 36px !important;
   padding-inline: 16px !important;
+  font-size: 13px !important;
   border: 0 !important;
   border-radius: 999px !important;
   box-shadow: none !important;
-  font-size: 13px !important;
 }
 :root:root:root
   [data-chrome]
@@ -168,8 +168,8 @@
     [data-slot="alert-dialog-cancel"],
     [class*="bg-frame"]
   ):not([class*="bg-destructive"], [class*="bg-red"], [class*="bg-emerald"]) {
-  background: var(--card-inset) !important;
   color: var(--foreground) !important;
+  background: var(--card-inset) !important;
 }
 @media (hover: hover) and (pointer: fine) {
   :root:root:root
@@ -205,24 +205,24 @@
 [data-chrome] [data-slot="modal-close"] {
   display: inline-flex;
   flex: none;
-  align-self: start;
   align-items: center;
+  align-self: start;
   justify-content: center;
   width: 36px;
   height: 36px;
-  border: 0;
-  border-radius: 999px;
-  background: transparent;
   color: var(--muted-foreground);
   cursor: pointer;
+  background: transparent;
+  border: 0;
+  border-radius: 999px;
   transition:
     background-color 120ms var(--ease-out),
     color 120ms var(--ease-out);
 }
 @media (hover: hover) and (pointer: fine) {
   [data-chrome] [data-slot="modal-close"]:hover {
-    background: color-mix(in oklch, var(--foreground) 6%, transparent);
     color: var(--foreground);
+    background: color-mix(in oklch, var(--foreground) 6%, transparent);
   }
 }
 [data-chrome] [data-slot="modal-close"]:focus-visible {
@@ -253,11 +253,11 @@
   gap: 16px;
   min-height: 0;
   padding: 20px;
-  border-radius: var(--radius-panel);
-  background: var(--card-inset) !important;
   overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: contain;
+  background: var(--card-inset) !important;
+  border-radius: var(--radius-panel);
 }
 /* Un corps de formulaire garde ses marges ; le panneau seul défile. */
 :root:root:root
@@ -276,11 +276,11 @@
 :root:root:root [data-chrome] [data-slot="modal-footer-meta"] {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
   gap: 12px;
+  align-items: center;
   padding: 0;
-  color: var(--muted-foreground);
   font-size: 13px;
+  color: var(--muted-foreground);
 }
 :root:root:root
   [data-chrome]

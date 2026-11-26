@@ -95,9 +95,6 @@ export function MorningWatch({
         goals={false}
         icon={ExclamationCircleIcon}
         layout="row"
-        loading={loading}
-        loadingLabel="Chargement de « À traiter »"
-        loadingRevealed={loadingRevealed}
         lead={
           <div
             aria-label="Statut des anomalies"
@@ -119,6 +116,9 @@ export function MorningWatch({
             ))}
           </div>
         }
+        loading={loading}
+        loadingLabel="Chargement de « À traiter »"
+        loadingRevealed={loadingRevealed}
         onSelect={(stat) => {
           const item = items.find((entry) => entry.id === stat.id);
           if (item) {
