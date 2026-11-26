@@ -58,10 +58,10 @@ const render = (reminders: PatientReminder[]) =>
           types,
           error: null,
           loading: false,
-          refresh: async () => {},
+          refresh: async () => undefined,
         } as never
       }
-      onAll={() => {}}
+      onAll={() => undefined}
       patients={[{ id: "p1", name: "Mocha" }]}
       today="2026-10-17"
     />
@@ -106,10 +106,10 @@ it("masque le badge d’état tant qu’une erreur de chargement est affichée",
           types,
           error: "Les rappels patients n’ont pas pu être chargés.",
           loading: false,
-          refresh: async () => {},
+          refresh: async () => undefined,
         } as never
       }
-      onAll={() => {}}
+      onAll={() => undefined}
       patients={[]}
       today="2026-10-17"
     />

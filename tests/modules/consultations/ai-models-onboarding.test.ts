@@ -372,7 +372,7 @@ describe("Carte de la nouvelle version dans les Paramètres", () => {
         busy: false,
         enabled: false,
         fellBack: false,
-        onEnable: () => {},
+        onEnable: () => undefined,
         ...props,
       })
     ).replace(/<[^>]*>/g, " ");
@@ -403,7 +403,7 @@ describe("Carte de la nouvelle version dans les Paramètres", () => {
         busy: false,
         enabled: true,
         fellBack: false,
-        onEnable: () => {},
+        onEnable: () => undefined,
       })
     );
     expect(html).toContain("Temporairement indisponible");

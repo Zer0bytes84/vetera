@@ -371,7 +371,7 @@ function pageWith({ elements = [], texts = {} } = {}) {
     win,
     doc,
     fakeConsole,
-    () => new Promise(() => {}),
+    () => new Promise(() => undefined),
     (_fn) => 0,
     class {},
     class {},

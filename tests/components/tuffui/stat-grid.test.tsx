@@ -83,7 +83,9 @@ it("devient cliquable (bouton) seulement avec onSelect", () => {
     "<button"
   );
   expect(
-    renderToStaticMarkup(<StatGrid data={[stat()]} onSelect={() => {}} />)
+    renderToStaticMarkup(
+      <StatGrid data={[stat()]} onSelect={() => undefined} />
+    )
   ).toContain('type="button"');
 });
 

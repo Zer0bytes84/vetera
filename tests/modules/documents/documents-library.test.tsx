@@ -275,20 +275,20 @@ describe("la page rendue", () => {
     patientActive: false,
     patientPicker: null,
     patientName: folder,
-    onFilter: () => {},
-    onCreateDocument: () => {},
-    onAddFiles: () => {},
-    onAddLink: () => {},
-    onOpenDocument: () => {},
-    onOpenAssistant: () => {},
-    onDuplicate: () => {},
-    onExport: () => {},
-    onOpenLink: () => {},
-    onCopyLink: () => {},
-    onDownload: () => {},
-    onToggleFavorite: () => {},
-    onTogglePin: () => {},
-    onDelete: () => {},
+    onFilter: () => undefined,
+    onCreateDocument: () => undefined,
+    onAddFiles: () => undefined,
+    onAddLink: () => undefined,
+    onOpenDocument: () => undefined,
+    onOpenAssistant: () => undefined,
+    onDuplicate: () => undefined,
+    onExport: () => undefined,
+    onOpenLink: () => undefined,
+    onCopyLink: () => undefined,
+    onDownload: () => undefined,
+    onToggleFavorite: () => undefined,
+    onTogglePin: () => undefined,
+    onDelete: () => undefined,
   };
   it("a le titre, le petit +, la loupe et les cinq pilules, sans cadre ni bande", () => {
     const html = renderToStaticMarkup(
@@ -350,11 +350,11 @@ describe("la page rendue", () => {
 
 describe("le menu « / » de l'éditeur", () => {
   it("ne contient plus aucun modèle de note", () => {
-    const items = getSlashCommandItems(() => {});
+    const items = getSlashCommandItems(() => undefined);
     expect(items.some((i) => i.group === "template")).toBe(false);
   });
   it("propose des blocs d'emblée", () => {
-    const first = createSlashCommandsSuggestion(() => {})
+    const first = createSlashCommandsSuggestion(() => undefined)
       .items({ query: "" })
       .map((i) => i.title);
     expect(first).toEqual(

@@ -10,12 +10,18 @@ it("reports repeated startup errors without replacing the app DOM or rendering H
     "utf8"
   );
   const script = html.match(INLINE_SCRIPT)![1];
-  let onError: (event: object) => void = () => {};
+  let onError: (event: object) => void = () => undefined;
   const children: any[] = [{ id: "root", preserved: true }];
   const document = {
     body: { appendChild: (node: object) => children.push(node) },
     getElementById: (id: string) => children.find((node) => node.id === id),
-    createElement: () => ({ style: {}, setAttribute() {}, textContent: "" }),
+    createElement: () => ({
+      style: {},
+      setAttribute() {
+        // The fake element keeps no attribute.
+      },
+      textContent: "",
+    }),
   };
   runInNewContext(script, {
     document,

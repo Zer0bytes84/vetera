@@ -22,7 +22,7 @@ vi.mock("@/modules/documents/hooks/use-managed-documents", () => ({
     templates: harness.templates,
     loading: harness.loading,
     error: harness.error,
-    refresh: async () => {},
+    refresh: async () => undefined,
   }),
 }));
 vi.mock("@/modules/documents/document-service", () => ({

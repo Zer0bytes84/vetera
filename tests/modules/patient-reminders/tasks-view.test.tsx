@@ -29,7 +29,7 @@ vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key, i18n: { language: "fr" } }),
 }));
 vi.mock("@/contexts/focus-provider", () => ({
-  useFocus: () => ({ focus: null, clearFocus: () => {} }),
+  useFocus: () => ({ focus: null, clearFocus: () => undefined }),
 }));
 vi.mock("@/data/repositories", () => ({
   useTasksRepository: () => ({ data: harness.tasks }),
@@ -45,9 +45,9 @@ vi.mock("@/modules/patient-reminders/use-patient-reminders", () => ({
     types: harness.types,
     error: harness.error,
     loading: false,
-    refresh: async () => {},
+    refresh: async () => undefined,
   }),
-  announcePatientRemindersChanged: () => {},
+  announcePatientRemindersChanged: () => undefined,
 }));
 
 import Tasks from "@/components/Tasks";
@@ -160,7 +160,7 @@ it("conserve l’administration des types historiques utilisés par les rappels 
         types,
         error: null,
         loading: false,
-        refresh: async () => {},
+        refresh: async () => undefined,
       }}
       view="types"
     />

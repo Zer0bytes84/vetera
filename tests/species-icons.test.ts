@@ -7,7 +7,7 @@ import { getSpeciesGlyph } from "../src/lib/species-icons";
 const DUPLICATE_KEY_WARNING = /unique.*key|same key/i;
 
 it("renders every species icon without React key warnings", () => {
-  const error = vi.spyOn(console, "error").mockImplementation(() => {});
+  const error = vi.spyOn(console, "error").mockImplementation(() => undefined);
   try {
     for (const species of [
       "Chien",

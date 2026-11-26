@@ -59,7 +59,7 @@ it.each([
     "Quel dosage a été prescrit ?",
     models,
     new AbortController().signal,
-    () => {}
+    () => undefined
   );
   expect(result.answer.extraits).toEqual([
     { page, texte: "24 mg, voie orale." },
@@ -84,7 +84,7 @@ it("refuse une dose inventée même après le nouvel essai et ferme le moteur lo
       "Dosage ?",
       models,
       new AbortController().signal,
-      () => {}
+      () => undefined
     )
   ).rejects.toThrow("ne correspond pas exactement");
   expect(engine.request).toHaveBeenCalledTimes(2);

@@ -10,7 +10,7 @@ const setSetting = vi.fn(async (key: string, value: string) => {
   settings.set(key, value);
 });
 const getSetting = vi.fn(async (key: string) => settings.get(key) ?? "");
-const relaunch = vi.fn(async () => {});
+const relaunch = vi.fn(async () => undefined);
 
 vi.mock("@tauri-apps/plugin-updater", () => ({
   check: (...args: unknown[]) => check(...args),

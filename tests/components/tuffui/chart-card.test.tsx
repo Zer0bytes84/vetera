@@ -125,7 +125,9 @@ describe("carte graphique", () => {
     expect(donut).toContain("Total");
   });
   it("deux étiquettes identiques (« 12 oct. » à un an d'écart) ne produisent aucun avertissement de clé", () => {
-    const errors = vi.spyOn(console, "error").mockImplementation(() => {});
+    const errors = vi
+      .spyOn(console, "error")
+      .mockImplementation(() => undefined);
     renderToStaticMarkup(
       <ChartCard
         data={{

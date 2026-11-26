@@ -569,7 +569,11 @@ describe("Recherche sémantique locale : index et isolation", () => {
     expect(await readPatientSearchRows(adapter(), scope, "sections")).toEqual(
       []
     );
-    await indexPatientDocuments("rex", new AbortController().signal, () => {});
+    await indexPatientDocuments(
+      "rex",
+      new AbortController().signal,
+      () => undefined
+    );
     expect(await readPatientSearchRows(adapter(), scope, "sections")).toEqual(
       []
     );
@@ -590,28 +594,36 @@ describe("Recherche sémantique locale : index et isolation", () => {
     );
     const models = { embeddingReady: true, root: "local" } as never;
     const signal = new AbortController().signal;
-    await embedTexts(models, ["boiterie"], signal, () => {}, true);
+    await embedTexts(models, ["boiterie"], signal, () => undefined, true);
     const created = fixture.creates;
-    await embedTexts(models, ["grasset"], signal, () => {}, true);
+    await embedTexts(models, ["grasset"], signal, () => undefined, true);
     expect(fixture.creates).toBe(created);
     expect(fixture.leases).toBe(0);
     fixture.failEmbedding = true;
     await expect(
-      embedTexts(models, ["toux"], signal, () => {}, true)
+      embedTexts(models, ["toux"], signal, () => undefined, true)
     ).rejects.toThrow();
     fixture.failEmbedding = false;
-    await embedTexts(models, ["toux"], signal, () => {}, true);
+    await embedTexts(models, ["toux"], signal, () => undefined, true);
     expect(fixture.creates).toBe(created + 1);
     expect(fixture.leases).toBe(0);
   });
   it("does not re-embed unchanged indexed sources", async () => {
     // 4 section rows (current index) + 4 passage rows (index built in parallel).
     expect(
-      await indexPatientDocuments("rex", new AbortController().signal, () => {})
+      await indexPatientDocuments(
+        "rex",
+        new AbortController().signal,
+        () => undefined
+      )
     ).toBe(8);
     const count = fixture.embeds;
     expect(
-      await indexPatientDocuments("rex", new AbortController().signal, () => {})
+      await indexPatientDocuments(
+        "rex",
+        new AbortController().signal,
+        () => undefined
+      )
     ).toBe(0);
     expect(fixture.embeds).toBe(count);
   });
@@ -625,7 +637,7 @@ describe("Recherche sémantique locale : index et isolation", () => {
       await indexPatientDocuments(
         "rex",
         new AbortController().signal,
-        () => {}
+        () => undefined
       );
       const counts = fixture
         .db!.prepare(
@@ -672,7 +684,11 @@ describe("Recherche sémantique locale : index et isolation", () => {
     }
   });
   it("A2 : tient l’index EmbeddingGemma 2 à jour seulement si son modèle est installé, avec son propre modèle", async () => {
-    await indexPatientDocuments("rex", new AbortController().signal, () => {});
+    await indexPatientDocuments(
+      "rex",
+      new AbortController().signal,
+      () => undefined
+    );
     expect(fixture.models.every((model) => model === "embeddinggemma")).toBe(
       true
     );
@@ -683,7 +699,11 @@ describe("Recherche sémantique locale : index et isolation", () => {
     ).toBe(0);
     fixture.embedding2 = true;
     fixture.models = [];
-    await indexPatientDocuments("rex", new AbortController().signal, () => {});
+    await indexPatientDocuments(
+      "rex",
+      new AbortController().signal,
+      () => undefined
+    );
     expect(fixture.models).toEqual(["embeddinggemma2"]);
     expect(
       fixture
@@ -698,7 +718,11 @@ describe("Recherche sémantique locale : index et isolation", () => {
     ).toBe(4);
   });
   it("A2 : l’index arctic, tronqué à 768 dimensions, n’existe que si arctic est installé", async () => {
-    await indexPatientDocuments("rex", new AbortController().signal, () => {});
+    await indexPatientDocuments(
+      "rex",
+      new AbortController().signal,
+      () => undefined
+    );
     expect(
       fixture
         .db!.prepare("SELECT COUNT(*) AS n FROM embeddings WHERE model_key=?")
@@ -706,7 +730,11 @@ describe("Recherche sémantique locale : index et isolation", () => {
     ).toBe(0);
     fixture.arctic = true;
     fixture.models = [];
-    await indexPatientDocuments("rex", new AbortController().signal, () => {});
+    await indexPatientDocuments(
+      "rex",
+      new AbortController().signal,
+      () => undefined
+    );
     expect(fixture.models).toEqual(["arctic"]);
     const rows = fixture
       .db!.prepare(
@@ -764,7 +792,11 @@ describe("Recherche sémantique locale : index et isolation", () => {
         plan: "",
       })
     );
-    await indexPatientDocuments("rex", new AbortController().signal, () => {});
+    await indexPatientDocuments(
+      "rex",
+      new AbortController().signal,
+      () => undefined
+    );
     const passages = await readPatientSearchRows(adapter(), scope, "passages");
     expect(passages.length).toBeGreaterThan(3);
     expect(
@@ -805,7 +837,11 @@ describe("Recherche sémantique locale : index et isolation", () => {
     expect(await readPatientSearchRows(adapter(), scope, "sections")).toEqual(
       []
     );
-    await indexPatientDocuments("rex", new AbortController().signal, () => {});
+    await indexPatientDocuments(
+      "rex",
+      new AbortController().signal,
+      () => undefined
+    );
     expect(await detectSearchOrphans(adapter(), "rex")).toEqual([]);
   });
   it("rolls back an index replacement if insertion fails", async () => {

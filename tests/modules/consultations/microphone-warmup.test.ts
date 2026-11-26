@@ -140,7 +140,7 @@ vi.mock("@/modules/consultations/local-ai/audio-capture", () => ({
       },
     };
   },
-  createLevelMeter: () => ({ read: () => 0, close: () => {} }),
+  createLevelMeter: () => ({ read: () => 0, close: () => undefined }),
   captureAudio: async (
     _stream: unknown,
     _signal: unknown,
@@ -156,16 +156,19 @@ vi.mock("@/modules/consultations/local-ai/audio-capture", () => ({
     for (let seconds = CHUNK; seconds <= 4.5; seconds += CHUNK) {
       options.onLevel?.(rms(seconds < 3.4 ? -62 : -43), seconds);
     }
-    return { stop: () => new Float32Array(16_000), cancel: () => {} };
+    return { stop: () => new Float32Array(16_000), cancel: () => undefined };
   },
 }));
 vi.mock("@/modules/consultations/local-ai/whisper-session", () => ({
   takeWhisperSession: async () => ({
     loaded: true,
-    session: { close: () => {}, request: async () => ({ type: "ready" }) },
+    session: {
+      close: () => undefined,
+      request: async () => ({ type: "ready" }),
+    },
   }),
-  parkWhisperSession: () => {},
-  releaseWhisperSession: () => {},
+  parkWhisperSession: () => undefined,
+  releaseWhisperSession: () => undefined,
 }));
 
 import { useLocalConsultationAi } from "@/modules/consultations/hooks/use-local-consultation-ai";

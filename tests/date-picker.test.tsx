@@ -20,7 +20,7 @@ it("affiche la date au format français et conserve la validation requise", () =
   const html = renderToStaticMarkup(
     <DatePicker
       aria-label="Date du rappel"
-      onChange={() => {}}
+      onChange={() => undefined}
       required
       value="2026-10-14"
     />
@@ -28,6 +28,6 @@ it("affiche la date au format français et conserve la validation requise", () =
   expect(html).toContain("14/10/2026");
   expect(html).toMatch(REQUIRED_INPUT);
   expect(
-    renderToStaticMarkup(<DatePicker onChange={() => {}} value="" />)
+    renderToStaticMarkup(<DatePicker onChange={() => undefined} value="" />)
   ).toContain("Choisir une date");
 });

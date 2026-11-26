@@ -291,7 +291,9 @@ describe("offline runtime and exclusive model lease", () => {
       .mockResolvedValue({ url: "asset://localhost/models/config.json" });
     vi.stubGlobal("fetch", fetch);
     class XHR {
-      open() {}
+      open() {
+        // The fake opens nothing.
+      }
     }
     vi.stubGlobal("XMLHttpRequest", XHR);
     enforceOfflineWorker(roots);

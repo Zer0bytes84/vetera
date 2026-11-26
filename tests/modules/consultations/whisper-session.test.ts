@@ -30,11 +30,15 @@ describe("dictée : modèle gardé entre deux rubriques", () => {
 
   it("la première dictée charge le modèle, la suivante reprend la même session sans recharger", async () => {
     const { takeWhisperSession, parkWhisperSession } = await load();
-    const first = await takeWhisperSession("medium#4", signal, () => {});
+    const first = await takeWhisperSession("medium#4", signal, () => undefined);
     expect(first.loaded).toBe(false);
     parkWhisperSession(first.session as never, "medium#4");
     expect(created[0].park).toHaveBeenCalledOnce();
-    const second = await takeWhisperSession("medium#4", signal, () => {});
+    const second = await takeWhisperSession(
+      "medium#4",
+      signal,
+      () => undefined
+    );
     expect(second.loaded).toBe(true);
     expect(second.session).toBe(first.session);
     expect(created).toHaveLength(1);
@@ -42,9 +46,9 @@ describe("dictée : modèle gardé entre deux rubriques", () => {
 
   it("un autre modèle ou d'autres threads ferment la session gardée", async () => {
     const { takeWhisperSession, parkWhisperSession } = await load();
-    const first = await takeWhisperSession("medium#4", signal, () => {});
+    const first = await takeWhisperSession("medium#4", signal, () => undefined);
     parkWhisperSession(first.session as never, "medium#4");
-    const other = await takeWhisperSession("small#4", signal, () => {});
+    const other = await takeWhisperSession("small#4", signal, () => undefined);
     expect(other.loaded).toBe(false);
     expect(created[0].close).toHaveBeenCalled();
   });
@@ -52,12 +56,12 @@ describe("dictée : modèle gardé entre deux rubriques", () => {
   it("la fermeture de l'assistant libère le modèle gardé", async () => {
     const { takeWhisperSession, parkWhisperSession, releaseWhisperSession } =
       await load();
-    const first = await takeWhisperSession("medium#4", signal, () => {});
+    const first = await takeWhisperSession("medium#4", signal, () => undefined);
     parkWhisperSession(first.session as never, "medium#4");
     releaseWhisperSession();
     expect(created[0].close).toHaveBeenCalled();
     expect(
-      (await takeWhisperSession("medium#4", signal, () => {})).loaded
+      (await takeWhisperSession("medium#4", signal, () => undefined)).loaded
     ).toBe(false);
   });
 });

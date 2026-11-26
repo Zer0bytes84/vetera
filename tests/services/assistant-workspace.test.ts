@@ -105,7 +105,10 @@ describe("assistant documents", () => {
   });
   it("stops waiting immediately without requiring the model download to finish", async () => {
     const controller = new AbortController();
-    const waiting = waitForAssistant(new Promise(() => {}), controller.signal);
+    const waiting = waitForAssistant(
+      new Promise(() => undefined),
+      controller.signal
+    );
     controller.abort();
     await expect(waiting).rejects.toMatchObject({ name: "AbortError" });
   });

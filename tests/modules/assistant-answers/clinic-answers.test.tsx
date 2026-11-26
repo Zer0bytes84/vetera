@@ -24,9 +24,9 @@ const view = (
   renderToStaticMarkup(
     <AnswerView
       card={card}
-      onAsk={() => {}}
-      onCancel={() => {}}
-      onConfirm={() => {}}
+      onAsk={() => undefined}
+      onCancel={() => undefined}
+      onConfirm={() => undefined}
       turn={turn(question)}
     />
   );
@@ -137,8 +137,8 @@ describe("la version courte de la carte, au pied du panneau", () => {
     )!;
     const html = renderToStaticMarkup(
       <ProposalDock
-        onConfirm={() => {}}
-        onShow={() => {}}
+        onConfirm={() => undefined}
+        onShow={() => undefined}
         proposal={waiting.proposal}
       />
     );
@@ -158,8 +158,8 @@ describe("la version courte de la carte, au pied du panneau", () => {
     const saving = renderToStaticMarkup(
       <ProposalDock
         card={{ status: "confirming" }}
-        onConfirm={() => {}}
-        onShow={() => {}}
+        onConfirm={() => undefined}
+        onShow={() => undefined}
         proposal={proposal}
       />
     );
@@ -168,8 +168,8 @@ describe("la version courte de la carte, au pied du panneau", () => {
     const failed = renderToStaticMarkup(
       <ProposalDock
         card={{ status: "review", error: "L’enregistrement a échoué." }}
-        onConfirm={() => {}}
-        onShow={() => {}}
+        onConfirm={() => undefined}
+        onShow={() => undefined}
         proposal={proposal}
       />
     );

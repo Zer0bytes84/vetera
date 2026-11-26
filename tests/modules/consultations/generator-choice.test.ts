@@ -84,7 +84,7 @@ const engine = vi.hoisted(() => ({
   loads: [] as string[],
 }));
 vi.mock("@/modules/consultations/local-ai/offline-policy", () => ({
-  enforceOfflineWorker: () => {},
+  enforceOfflineWorker: () => undefined,
 }));
 vi.mock("@mediapipe/tasks-genai", () => ({
   FilesetResolver: { forGenAiTasks: async () => ({}) },
@@ -100,12 +100,12 @@ vi.mock("@mediapipe/tasks-genai", () => ({
       }
       return {
         sizeInTokens: (text: string) => Math.ceil(text.length / 4),
-        setOptions: async () => {},
+        setOptions: async () => undefined,
         generateResponse: async (prompt: string) => {
           engine.prompts.push(prompt);
           return '{"subjective":"","objective":"","assessment":"","plan":""}';
         },
-        close: () => {},
+        close: () => undefined,
       };
     },
   },

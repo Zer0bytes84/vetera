@@ -19,8 +19,8 @@ vi.mock("@/modules/care-tasks/use-care-tasks", () => ({
 vi.mock("@/contexts/focus-provider", () => ({
   useFocus: () => ({
     focus: harness.focus,
-    clearFocus: () => {},
-    registerHandler: () => {},
+    clearFocus: () => undefined,
+    registerHandler: () => undefined,
   }),
 }));
 vi.mock("@/modules/care-tasks/care-page", () => ({ default: () => null }));
@@ -34,7 +34,7 @@ vi.mock("@/modules/patient-reminders/medical-reminders-widget", () => ({
 import ClinicalWorkspace from "../../../src/modules/clinique/pages/clinical-workspace";
 
 const render = () =>
-  renderToStaticMarkup(<ClinicalWorkspace onNavigate={() => {}} />);
+  renderToStaticMarkup(<ClinicalWorkspace onNavigate={() => undefined} />);
 const task = (
   id: string,
   statut: CareStatus,

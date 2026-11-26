@@ -91,7 +91,7 @@ describe("B2 · états du panneau de dictée", () => {
   it("une autorisation du micro sans réponse se termine par un message clair", async () => {
     vi.useFakeTimers();
     vi.stubGlobal("navigator", {
-      mediaDevices: { getUserMedia: () => new Promise(() => {}) },
+      mediaDevices: { getUserMedia: () => new Promise(() => undefined) },
     });
     const waiting = prepareMicrophone(new AbortController().signal, {
       permissionTimeoutMs: 30_000,
@@ -105,7 +105,7 @@ describe("B2 · états du panneau de dictée", () => {
   });
 
   it("Annuler sort de l’attente, et un micro accordé trop tard est refermé", async () => {
-    let grant: (stream: unknown) => void = () => {};
+    let grant: (stream: unknown) => void = () => undefined;
     const stop = vi.fn();
     vi.stubGlobal("navigator", {
       mediaDevices: {
@@ -123,7 +123,9 @@ describe("B2 · états du panneau de dictée", () => {
 
   it("l’attente du micro propose toujours Annuler", () => {
     const html = renderToStaticMarkup(
-      React.createElement(MicrophonePermissionWait, { onCancel: () => {} })
+      React.createElement(MicrophonePermissionWait, {
+        onCancel: () => undefined,
+      })
     );
     expect(html).toContain("Autorisation du microphone…");
     expect(html).toContain("Annuler");

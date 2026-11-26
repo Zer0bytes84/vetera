@@ -25,7 +25,7 @@ const pdfFixture = vi.hoisted(() => ({
   pageCount: 1,
   text: "Prescription du patient Rex. Amoxicilline 50 mg matin et soir pendant 5 jours.",
   image: false,
-  destroyed: vi.fn(async () => {}),
+  destroyed: vi.fn(async () => undefined),
   readImage: vi.fn(async () => ({
     name: "photo.png",
     pages: [
@@ -56,7 +56,9 @@ vi.mock("pdfjs-dist", () => ({
           items: [{ str: pdfFixture.text, hasEOL: true }],
         }),
         getOperatorList: async () => ({ fnArray: pdfFixture.image ? [1] : [] }),
-        cleanup() {},
+        cleanup() {
+          // The fake holds no resource.
+        },
       }),
     }),
     destroy: pdfFixture.destroyed,
