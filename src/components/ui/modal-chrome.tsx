@@ -164,7 +164,7 @@ export function ModalBandActions({ children }: { children: ReactNode }) {
   useLayoutEffect(() => {
     const form = anchor.current?.closest("form");
     const box = group.current;
-    if (!form || !box) {
+    if (!(form && box)) {
       return;
     }
     if (!form.id) {

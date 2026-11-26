@@ -77,7 +77,7 @@ vi.mock("../../../src/modules/consultations/local-ai/inference-client", () => ({
         parked: false,
         isClosed: false,
         close() {
-          if (!this.parked && !this.isClosed) {
+          if (!(this.parked || this.isClosed)) {
             fixture.leases--;
           }
           this.isClosed = true;

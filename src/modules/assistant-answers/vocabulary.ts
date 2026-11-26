@@ -324,7 +324,7 @@ export function understood(
     .filter(Boolean)
     .filter(
       (word) =>
-        foreign(word) || (!SUBJECT_WORDS.has(word) && !NEUTRAL_WORDS.has(word))
+        foreign(word) || !(SUBJECT_WORDS.has(word) || NEUTRAL_WORDS.has(word))
     );
   return left.length
     ? { ok: false, reason: "words", words: [...new Set(left)] }

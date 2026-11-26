@@ -25,7 +25,7 @@ const oldDue = (
     assistantOpen ||
     saveStatus === "saving" ||
     saveStatus === "error" ||
-    (!hasNote(payload) && !lastSaved) ||
+    !(hasNote(payload) || lastSaved) ||
     same(lastSaved, payload)
   );
 

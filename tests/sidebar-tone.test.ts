@@ -98,8 +98,12 @@ describe("barre latérale : charte", () => {
       // ".dark *" (scrollbars) keeps its universal subject and excludes the light sidebar instead.
       .filter(
         (selector) =>
-          !selector.startsWith(`.dark${GUARD}`) &&
-          !selector.startsWith('.dark *:where(:not([data-sidebar-tone="light"]')
+          !(
+            selector.startsWith(`.dark${GUARD}`) ||
+            selector.startsWith(
+              '.dark *:where(:not([data-sidebar-tone="light"]'
+            )
+          )
       );
     expect(unguarded).toEqual([]);
   });

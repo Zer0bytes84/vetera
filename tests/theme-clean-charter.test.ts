@@ -368,7 +368,7 @@ describe("polices par thème", () => {
   );
   const cleanTokens = new Map<string, string>();
   root.walkRules((rule) => {
-    if (!rule.selectors.includes(SCOPE) || !rule.selectors.includes(DARK)) {
+    if (!(rule.selectors.includes(SCOPE) && rule.selectors.includes(DARK))) {
       return;
     }
     rule.walkDecls((decl) =>
