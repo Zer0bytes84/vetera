@@ -636,7 +636,8 @@
   text-transform: uppercase;
   letter-spacing: 0.14em;
 }
-.dark .auth-clinic .auth-clinic-step-label {
+/* :root:root.dark, so that the dark colour outranks the :root:root rule above (0,5,0 against 0,4,0). */
+:root:root.dark .auth-clinic .auth-clinic-step-label {
   color: #8fd6f7;
 }
 .auth-steps {

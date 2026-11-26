@@ -12,6 +12,15 @@
       "vite.config.ts"
     ]
   },
+  "linter": {
+    "rules": {
+      "style": {
+        // Décision C du 25/11 : ne pas réordonner la cascade. Les 117 paires relevées sont sans effet ou volontaires,
+        // les deux vraies surcharges mortes (auth-clinic.css, transparence réduite des bannières) sont corrigées.
+        "noDescendingSpecificity": "off"
+      }
+    }
+  },
   "overrides": [
     {
       // Calcul binaire voulu (décision C du 25/11) : SHA-256 des anciens mots de passe (legacySha256), en-tête binaire

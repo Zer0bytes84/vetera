@@ -1709,13 +1709,17 @@ button:focus-visible,
     background: rgb(9 7 16 / 0.9);
   }
 
-  .modal-banner-glass {
+  /* The illustrated banners give their glass a translucent background with a more specific selector: name them too,
+     or the preference never reaches them. */
+  .modal-banner-glass,
+  .modal-banner-illustrated .modal-banner-glass {
     background: #fbf0fb;
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }
 
-  .dark .modal-banner-glass {
+  .dark .modal-banner-glass,
+  .dark .modal-banner-illustrated .modal-banner-glass {
     background: #423447;
   }
 
