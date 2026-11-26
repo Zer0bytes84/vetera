@@ -1,5 +1,14 @@
 import { isTauri } from "@tauri-apps/api/core";
-import * as React from "react";
+import type React from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useState,
+} from "react";
 import {
   applyTheme as applyAppearance,
   getThemeConfig,
@@ -27,9 +36,9 @@ interface ThemeProviderState {
 const COLOR_SCHEME_QUERY = "(prefers-color-scheme: dark)";
 const THEME_VALUES: Theme[] = ["dark", "light", "system"];
 
-const ThemeProviderContext = React.createContext<
-  ThemeProviderState | undefined
->(undefined);
+const ThemeProviderContext = createContext<ThemeProviderState | undefined>(
+  undefined
+);
 
 function isTheme(value: string | null): value is Theme {
   if (value === null) {
@@ -92,7 +101,7 @@ export function ThemeProvider({
   disableTransitionOnChange = true,
   ...props
 }: ThemeProviderProps) {
-  const [theme, setThemeState] = React.useState<Theme>(() => {
+  const [theme, setThemeState] = useState<Theme>(() => {
     // Before reading the mode: an existing install keeps its own (see theme-store).
     migrateToCleanOnly();
     const storedTheme = localStorage.getItem(storageKey);
@@ -102,10 +111,10 @@ export function ThemeProvider({
 
     return defaultTheme;
   });
-  const [systemTheme, setSystemTheme] = React.useState(getSystemTheme);
+  const [systemTheme, setSystemTheme] = useState(getSystemTheme);
   const resolvedTheme = theme === "system" ? systemTheme : theme;
 
-  const setTheme = React.useCallback(
+  const setTheme = useCallback(
     (nextTheme: Theme) => {
       localStorage.setItem(storageKey, nextTheme);
       setThemeState(nextTheme);
@@ -113,7 +122,7 @@ export function ThemeProvider({
     [storageKey]
   );
 
-  const applyTheme = React.useCallback(
+  const applyTheme = useCallback(
     (nextTheme: ResolvedTheme) => {
       const root = document.documentElement;
       const restoreTransitions = disableTransitionOnChange
@@ -132,11 +141,11 @@ export function ThemeProvider({
     [disableTransitionOnChange]
   );
 
-  React.useLayoutEffect(() => {
+  useLayoutEffect(() => {
     applyTheme(resolvedTheme);
   }, [resolvedTheme, applyTheme]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!isTauri()) {
       return;
     }
@@ -156,7 +165,7 @@ export function ThemeProvider({
     };
   }, [resolvedTheme]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const mediaQuery = window.matchMedia(COLOR_SCHEME_QUERY);
     const handleChange = () => {
       setSystemTheme(mediaQuery.matches ? "dark" : "light");
@@ -170,7 +179,7 @@ export function ThemeProvider({
     };
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.repeat) {
         return;
@@ -210,7 +219,7 @@ export function ThemeProvider({
     };
   }, [storageKey]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const handleStorageChange = (event: StorageEvent) => {
       if (event.storageArea !== localStorage) {
         return;
@@ -235,7 +244,7 @@ export function ThemeProvider({
     };
   }, [defaultTheme, storageKey]);
 
-  const value = React.useMemo(
+  const value = useMemo(
     () => ({
       theme,
       resolvedTheme,
@@ -252,7 +261,7 @@ export function ThemeProvider({
 }
 
 export const useTheme = () => {
-  const context = React.useContext(ThemeProviderContext);
+  const context = useContext(ThemeProviderContext);
 
   if (context === undefined) {
     throw new Error("useTheme must be used within a ThemeProvider");

@@ -200,7 +200,11 @@ function measureMargins(doc: jsPDF, snapshot: PatientRecordSnapshot): Margins {
 }
 
 class Progress {
-  constructor(readonly options: PatientRecordGenerationOptions) {}
+  readonly options: PatientRecordGenerationOptions;
+
+  constructor(options: PatientRecordGenerationOptions) {
+    this.options = options;
+  }
 
   async report(
     stage: PatientRecordProgress["stage"],
@@ -221,17 +225,25 @@ class Progress {
 
 /** Measured, flowing jsPDF content. Source pages are inserted only after flush. */
 class Layout {
+  readonly output: PDFDocument;
+  readonly fontData: [string, string];
+  readonly margins: Margins;
+  readonly progress: Progress;
   doc: jsPDF | undefined;
   y: number;
   sectionTitle = "";
   private pageHasContent = false;
 
   constructor(
-    readonly output: PDFDocument,
-    readonly fontData: [string, string],
-    readonly margins: Margins,
-    readonly progress: Progress
+    output: PDFDocument,
+    fontData: [string, string],
+    margins: Margins,
+    progress: Progress
   ) {
+    this.output = output;
+    this.fontData = fontData;
+    this.margins = margins;
+    this.progress = progress;
     this.y = margins.top;
   }
 
@@ -240,7 +252,8 @@ class Layout {
   }
 
   current(): jsPDF {
-    return (this.doc ??= document(this.fontData));
+    this.doc ??= document(this.fontData);
+    return this.doc;
   }
 
   async page(continuation = false): Promise<void> {

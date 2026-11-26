@@ -1,11 +1,17 @@
-import { Extension } from "@tiptap/core";
+import { type Editor, Extension, type Range } from "@tiptap/core";
 import { ReactRenderer } from "@tiptap/react";
-import Suggestion, { type SuggestionOptions } from "@tiptap/suggestion";
+import Suggestion, {
+  type SuggestionKeyDownProps,
+  type SuggestionOptions,
+} from "@tiptap/suggestion";
 import tippy, { type Instance } from "tippy.js";
 import { insertDocumentTable } from "./document-table-presets";
-import SlashCommandMenu, { type SlashCommandItem } from "./SlashCommandMenu";
+import SlashCommandMenu, {
+  type SlashCommandItem,
+  type SlashMenuHandle,
+} from "./SlashCommandMenu";
 
-export type { SlashCommandItem };
+export type { SlashCommandItem } from "./SlashCommandMenu";
 
 const SlashCommands = Extension.create({
   name: "slashCommands",
@@ -15,7 +21,15 @@ const SlashCommands = Extension.create({
       // Widened to the suggestion plugin's options: `configure` also passes `items` and `render`.
       suggestion: {
         char: "/",
-        command: ({ editor, range, props }: any) => {
+        command: ({
+          editor,
+          range,
+          props,
+        }: {
+          editor: Editor;
+          range: Range;
+          props: SlashCommandItem;
+        }) => {
           editor.chain().focus().deleteRange(range).run();
           props.command(editor);
         },
@@ -247,12 +261,12 @@ export const createSlashCommandsSuggestion = (
         });
       },
 
-      onKeyDown(props: any) {
+      onKeyDown(props: SuggestionKeyDownProps) {
         if (props.event.key === "Escape") {
           popup?.[0]?.hide();
           return true;
         }
-        return (component?.ref as any)?.onKeyDown?.(props);
+        return (component?.ref as SlashMenuHandle | null)?.onKeyDown?.(props);
       },
 
       onExit() {

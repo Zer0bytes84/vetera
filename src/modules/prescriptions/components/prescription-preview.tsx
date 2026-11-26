@@ -14,7 +14,7 @@ import type { PrescriptionVet, PreviewItem } from "../types";
 
 import { PrescriptionPrintLayout } from "./prescription-print-layout";
 
-export type { PreviewItem };
+export type { PreviewItem } from "../types";
 
 export interface PrescriptionPreviewProps {
   diagnosis: string;

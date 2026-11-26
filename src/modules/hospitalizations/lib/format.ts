@@ -130,5 +130,9 @@ export function vitalIsCritical(
       return value < 8 || value > 60;
     case "spo2":
       return value < 92;
+    default: {
+      const unhandled: never = kind;
+      return unhandled;
+    }
   }
 }

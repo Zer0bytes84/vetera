@@ -379,7 +379,9 @@ function CopyAction({
       onClick={async () => {
         try {
           await navigator.clipboard.writeText(content);
-        } catch {}
+        } catch {
+          // Presse-papiers refusé : le bouton passe quand même à « copié », comme avant.
+        }
         setCopied(true);
         onCopy?.(content);
       }}

@@ -30,7 +30,7 @@ export async function verifyLicenseLease(
   try {
     const parts = token.split(".");
     if (parts.length !== 2 || token.length > 8000 || !publicKeyBase64) {
-      throw new Error();
+      throw new Error("Jeton de bail mal formé");
     }
     const key = await crypto.subtle.importKey(
       "spki",
@@ -46,7 +46,7 @@ export async function verifyLicenseLease(
       new TextEncoder().encode(parts[0])
     );
     if (!valid) {
-      throw new Error();
+      throw new Error("Signature du bail invalide");
     }
     const lease = JSON.parse(
       new TextDecoder().decode(decodeBase64(parts[0]))
@@ -68,7 +68,7 @@ export async function verifyLicenseLease(
           lease.leaseUntil > lease.expiresAt)) ||
       (lease.plan === "trial" && lease.expiresAt === null)
     ) {
-      throw new Error();
+      throw new Error("Contenu du bail invalide");
     }
     return lease;
   } catch {

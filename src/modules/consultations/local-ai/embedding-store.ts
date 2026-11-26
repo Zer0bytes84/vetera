@@ -17,7 +17,6 @@ import {
   embeddingToHex,
   MIN_SEARCH_SCORE,
   managedDocumentSearchChunks,
-  matchesSearchTerms,
   normalizedEmbedding,
   patientSearchChunks,
   productSearchChunks,
@@ -47,6 +46,7 @@ import {
 } from "./passage-search";
 import { getActiveSearchGeneration } from "./search-generation";
 import { isSoapReviewed } from "./soap-review";
+import { matchesSearchTerms } from "./veterinary-lexicon";
 import type { LocalAiProgress, SearchModel } from "./worker-protocol";
 
 /** Rows of the given index generation for one source. */
@@ -370,7 +370,9 @@ export async function indexReviewedSource(
   source: ConsultationSoap | Note,
   type: DocumentType = "consultation",
   signal = new AbortController().signal,
-  onProgress: (event: LocalAiProgress) => void = () => {}
+  onProgress: (event: LocalAiProgress) => void = () => {
+    // Sans suivi demandé, la progression n’est pas signalée.
+  }
 ) {
   const chunks =
     type === "consultation"
@@ -651,7 +653,9 @@ export async function searchPatientDocuments(
   scope: SearchScope,
   query: string,
   signal = new AbortController().signal,
-  onProgress: (event: LocalAiProgress) => void = () => {}
+  onProgress: (event: LocalAiProgress) => void = () => {
+    // Sans suivi demandé, la progression n’est pas signalée.
+  }
 ) {
   assertSearchScope(scope);
   if (!query.trim()) {
@@ -791,7 +795,9 @@ async function searchPatientPassages(
 /** Explicit cross-patient mode. Each source remains indexed and read in its own scope. */
 export async function indexAllPatientsDocuments(
   signal: AbortSignal,
-  onProgress: (event: LocalAiProgress) => void = () => {}
+  onProgress: (event: LocalAiProgress) => void = () => {
+    // Sans suivi demandé, la progression n’est pas signalée.
+  }
 ) {
   const patients = await runDbRead((db) =>
     db.select<Array<{ id: string }>>("SELECT id FROM patients ORDER BY id")
@@ -809,7 +815,9 @@ export async function searchAllPatientsDocuments(
   filters: Pick<SearchScope, "sourceTypes" | "sections">,
   query: string,
   signal = new AbortController().signal,
-  onProgress: (event: LocalAiProgress) => void = () => {}
+  onProgress: (event: LocalAiProgress) => void = () => {
+    // Sans suivi demandé, la progression n’est pas signalée.
+  }
 ) {
   assertSearchScope({ patientId: "explicit-all-patients", ...filters });
   if (!query.trim()) {
@@ -1288,7 +1296,9 @@ export async function searchAllPatientsClinical(
   filters: Pick<SearchScope, "sourceTypes" | "sections">,
   query: string,
   signal = new AbortController().signal,
-  onProgress: (event: LocalAiProgress) => void = () => {}
+  onProgress: (event: LocalAiProgress) => void = () => {
+    // Sans suivi demandé, la progression n’est pas signalée.
+  }
 ): Promise<
   Array<
     SearchChunk & {

@@ -50,11 +50,14 @@ export interface FlowPersistence {
 }
 
 export class VisitFlowError extends Error {
+  readonly code: "not_found" | "stale" | "not_undoable" | "expired";
+
   constructor(
-    readonly code: "not_found" | "stale" | "not_undoable" | "expired",
+    code: "not_found" | "stale" | "not_undoable" | "expired",
     message: string
   ) {
     super(message);
+    this.code = code;
     this.name = "VisitFlowError";
   }
 }

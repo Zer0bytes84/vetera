@@ -65,6 +65,7 @@ import {
   usePatientsRepository,
 } from "@/data/repositories";
 import type { Note, Patient } from "@/types/db";
+import type { Editor as TiptapEditor } from "@tiptap/react";
 import { guard } from "@/lib/guard";
 import { WHITESPACE_RUN } from "@/lib/patterns";
 
@@ -73,14 +74,14 @@ const DocumentsWorkspace = lazy(
 );
 
 // Utils
-const normalizeDate = (dateInput: any): Date =>
+const normalizeDate = (dateInput: Date | string | null | undefined): Date =>
   dateInput
     ? dateInput instanceof Date
       ? dateInput
       : new Date(dateInput)
     : new Date();
 
-const formatFullDate = (dateInput: any) => {
+const formatFullDate = (dateInput: Date | string | null | undefined) => {
   if (!dateInput) {
     return "";
   }
@@ -286,7 +287,9 @@ const NotesPro: React.FC = () => {
   const requestedNoteIdRef = useRef<string | null>(
     sessionStorage.getItem("documents:open-note")
   );
-  const [editorInstance, setEditorInstance] = useState<any>(null);
+  const [editorInstance, setEditorInstance] = useState<TiptapEditor | null>(
+    null
+  );
   const [aiStatus, setAiStatus] = useState({
     loading: false,
     ready: false,
@@ -496,7 +499,7 @@ const NotesPro: React.FC = () => {
   // Toggle pin
   const togglePin = async (note: Note, e?: React.MouseEvent) => {
     e?.stopPropagation();
-    await updateNote(note.id, { isPinned: !(note as any).isPinned } as any);
+    await updateNote(note.id, { isPinned: !note.isPinned });
   };
 
   // The library's rows are notes or items: each action goes to the right table.
@@ -877,9 +880,7 @@ const NotesPro: React.FC = () => {
                             icon={Bookmark01Icon}
                             strokeWidth={1.5}
                           />
-                          {(activeNote as any).isPinned
-                            ? "Désépingler"
-                            : "Épingler"}
+                          {activeNote.isPinned ? "Désépingler" : "Épingler"}
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           onClick={() => toggleFavorite(activeNote)}
@@ -1022,7 +1023,7 @@ const NotesPro: React.FC = () => {
                                   </p>
                                 </>
                               )}
-                              {(activeNote as any).isPinned && (
+                              {activeNote.isPinned && (
                                 <>
                                   <span className="text-foreground/50">·</span>
                                   <span className="flex items-center gap-1 font-medium text-amber-700 text-xs dark:text-amber-300">

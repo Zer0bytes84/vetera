@@ -13,10 +13,10 @@ import {
   embeddingToHex,
   normalizedEmbedding,
   rankPatientChunks,
-  matchesSearchTerms,
   soapSearchChunks,
   type SearchScope,
 } from "../../../src/modules/consultations/local-ai/embedding-index";
+import { matchesSearchTerms } from "../../../src/modules/consultations/local-ai/veterinary-lexicon";
 import type { ConsultationSoap, Note } from "../../../src/types/db";
 import {
   PASSAGE_CHARACTERS,

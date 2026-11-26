@@ -861,7 +861,7 @@ function assertPaymentMethod(
 }
 
 function hasOwn(input: object, key: string): boolean {
-  return Object.prototype.hasOwnProperty.call(input, key);
+  return Object.hasOwn(input, key);
 }
 
 async function resolveInvoiceRelationships(

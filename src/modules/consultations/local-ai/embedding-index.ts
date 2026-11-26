@@ -394,7 +394,6 @@ export function embeddingFromHex(hex: string) {
     Array.from({ length: 768 }, (_, index) => view.getFloat32(index * 4, true))
   );
 }
-export { matchesSearchTerms } from "./veterinary-lexicon";
 
 import {
   matchesExactSearchTerms,

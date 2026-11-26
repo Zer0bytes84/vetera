@@ -104,7 +104,9 @@ export function UserMessage({
     }
   };
   const copy = () => {
-    navigator.clipboard?.writeText(content).catch(() => {});
+    navigator.clipboard?.writeText(content).catch(() => {
+      // Copie refusée par le presse-papiers : rien à signaler à l’utilisateur.
+    });
     onCopy?.(content);
     setCopied(true);
   };

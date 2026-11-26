@@ -10,7 +10,12 @@ import {
 import { guard } from "@/lib/guard";
 import { writeCachedProfile } from "@/lib/profile-cache";
 import { bootstrapScheduler, stopScheduler } from "@/services/backupScheduler";
-import * as AuthService from "@/services/sqlite/auth";
+import {
+  login as authLogin,
+  logout as authLogout,
+  register as authRegister,
+  getCurrentUser as getCurrentAuthUser,
+} from "@/services/sqlite/auth";
 
 const loadServicesAuditService = () => import("@/services/auditService");
 
@@ -110,11 +115,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           }
           const user = isInitialLoad
             ? await withTimeout(
-                AuthService.getCurrentUser(),
+                getCurrentAuthUser(),
                 INITIAL_AUTH_TIMEOUT_MS,
                 "Auth initialization timed out"
               )
-            : await AuthService.getCurrentUser();
+            : await getCurrentAuthUser();
           if (user) {
             setCurrentUser({
               id: user.id,
@@ -136,12 +141,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           setError(null);
         },
         {
-          recover: (error: any) => {
+          recover: (error: unknown) => {
             if (isTransientDbError(error)) {
               setError(null);
             } else {
               console.error("Error refreshing user:", error);
-              setError(error.message || "Failed to refresh user");
+              setError((error as Error).message || "Failed to refresh user");
             }
             // Never null out the user on a transient error after bootstrap.
           },
@@ -179,9 +184,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           void bootstrapScheduler();
         },
         {
-          recover: (error: any) => {
+          recover: (error: unknown) => {
             console.error("Error loading user:", error);
-            setError(error.message || "Failed to load user");
+            setError((error as Error).message || "Failed to load user");
           },
           cleanup: () => {
             hasInitializedRef.current = true;
@@ -230,7 +235,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const login = async (email: string, password: string) => {
     await guard(
       async () => {
-        const user = await AuthService.login({ email, password });
+        const user = await authLogin({ email, password });
         setCurrentUser({
           id: user.id,
           uid: user.id,
@@ -257,8 +262,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         }
       },
       {
-        recover: (err: any) => {
-          setError(err.message);
+        recover: (err: unknown) => {
+          setError((err as Error).message);
           throw err;
         },
       }
@@ -270,7 +275,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     password: string,
     displayName: string
   ): Promise<AuthUser> => {
-    const user = await AuthService.register({ email, password, displayName });
+    const user = await authRegister({ email, password, displayName });
     setCurrentUser({
       id: user.id,
       uid: user.id,
@@ -295,7 +300,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const logout = async () => {
     const current = currentUserRef.current;
-    await AuthService.logout();
+    await authLogout();
     setCurrentUser(null);
     if (current) {
       try {

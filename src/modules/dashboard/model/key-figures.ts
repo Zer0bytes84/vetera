@@ -93,10 +93,10 @@ export function buildKeyFigures(
   settlement: number | null
 ): KeyFigure[] {
   const { cash, actions, appointments, trend } = model;
-  const running = trend.income.reduce<number[]>(
-    (sums, value) => [...sums, (sums.at(-1) ?? 0) + value],
-    []
-  );
+  const running: number[] = [];
+  for (const value of trend.income) {
+    running.push((running.at(-1) ?? 0) + value);
+  }
   const owed = Math.round(receivables.total * 100);
   const late = receivables.overdueInvoices;
   const entries = receivables.pendingEntries;

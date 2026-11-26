@@ -4,6 +4,8 @@ import type { ReadingProgress } from "./document-reading";
 // Tesseract 7's packaged worker protocol. Own the Worker before initialization
 // so cancellation or a failed language load can always terminate it.
 export class PackagedOcr {
+  private readonly root: string;
+  private readonly signal: AbortSignal;
   private readonly worker: Worker;
   private pending: {
     resolve: (value: Record<string, unknown>) => void;
@@ -16,10 +18,12 @@ export class PackagedOcr {
   private page = 1;
   private readonly onAbort = () => this.close();
   constructor(
-    private readonly root: string,
-    private readonly signal: AbortSignal,
+    root: string,
+    signal: AbortSignal,
     onProgress: (event: ReadingProgress) => void
   ) {
+    this.root = root;
+    this.signal = signal;
     if (signal.aborted) {
       throw abortError();
     }

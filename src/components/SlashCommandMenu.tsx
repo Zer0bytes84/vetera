@@ -1,9 +1,10 @@
+import type { Editor } from "@tiptap/react";
 import type React from "react";
 import { forwardRef, useImperativeHandle, useState } from "react";
 import { cn } from "@/lib/utils";
 
 export interface SlashCommandItem {
-  command: (editor: any) => void;
+  command: (editor: Editor) => void;
   description: string;
   group?: string;
   icon: React.ReactNode;
@@ -16,7 +17,11 @@ interface SlashCommandMenuProps {
   items: SlashCommandItem[];
 }
 
-const SlashCommandMenu = forwardRef<any, SlashCommandMenuProps>(
+export interface SlashMenuHandle {
+  onKeyDown: (props: { event: KeyboardEvent }) => boolean;
+}
+
+const SlashCommandMenu = forwardRef<SlashMenuHandle, SlashCommandMenuProps>(
   ({ items, command }, ref) => {
     const [selectedIndex, setSelectedIndex] = useState(0);
     const [prevItems, setPrevItems] = useState(items);

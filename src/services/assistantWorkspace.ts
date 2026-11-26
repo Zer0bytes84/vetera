@@ -85,7 +85,9 @@ export function waitForAssistant<T>(
     const abort = () =>
       reject(new DOMException("Demande arrêtée", "AbortError"));
     if (signal.aborted) {
-      promise.catch(() => {});
+      promise.catch(() => {
+        // Demande déjà arrêtée : son échec éventuel est attendu et ignoré.
+      });
       abort();
       return;
     }

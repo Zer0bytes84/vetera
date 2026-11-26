@@ -20,13 +20,13 @@ import {
 import {
   documentSearchChunks,
   managedDocumentSearchChunks,
-  matchesSearchTerms,
   MIN_SEARCH_SCORE,
   rankPatientChunks,
   soapSearchChunks,
   type SearchChunk,
   type SearchScope,
 } from "@/modules/consultations/local-ai/embedding-index";
+import { matchesSearchTerms } from "@/modules/consultations/local-ai/veterinary-lexicon";
 import {
   mergeLexicalFirst,
   passageChunks,

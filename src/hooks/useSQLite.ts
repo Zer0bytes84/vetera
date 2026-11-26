@@ -489,8 +489,9 @@ async function updateRow<T extends { id: string }>(
   if (!safeTableName) {
     throw new Error(`Table non autorisée: ${tableName}`);
   }
-  const patch = stripUndefinedEntries(updates as Record<string, unknown>);
-  delete patch.id;
+  const { id: _omittedId, ...patch } = stripUndefinedEntries(
+    updates as Record<string, unknown>
+  );
   if (!Object.keys(patch).length) {
     return true;
   }
@@ -770,7 +771,9 @@ export function useSQLite<T extends { id: string }>(
     (listener: () => void) =>
       safeTableName
         ? tableSnapshotCache.subscribe(safeTableName, listener)
-        : () => {},
+        : () => {
+            // Pas de table autorisée : aucun abonnement à défaire.
+          },
     [safeTableName]
   );
   const getSnapshot = useCallback(

@@ -273,7 +273,7 @@ export function RadioGroup({
         '[role="radio"]:not(:disabled)'
       ) ?? []),
     ];
-    const at = radios.findIndex((r) => r === document.activeElement);
+    const at = radios.indexOf(document.activeElement as HTMLButtonElement);
     const next = radios[(at + step + radios.length) % radios.length];
     next?.focus();
     next?.click();

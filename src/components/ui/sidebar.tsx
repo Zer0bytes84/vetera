@@ -3,7 +3,16 @@
 import { mergeProps } from "@base-ui/react/merge-props";
 import { useRender } from "@base-ui/react/use-render";
 import { cva, type VariantProps } from "class-variance-authority";
-import * as React from "react";
+import type React from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -51,10 +60,10 @@ interface SidebarContextProps {
   toggleSidebar: () => void;
 }
 
-const SidebarContext = React.createContext<SidebarContextProps | null>(null);
+const SidebarContext = createContext<SidebarContextProps | null>(null);
 
 function useSidebar() {
-  const context = React.useContext(SidebarContext);
+  const context = useContext(SidebarContext);
   if (!context) {
     throw new Error("useSidebar must be used within a SidebarProvider.");
   }
@@ -76,9 +85,9 @@ function SidebarProvider({
   onOpenChange?: (open: boolean) => void;
 }) {
   const isMobile = useIsMobile();
-  const [openMobile, setOpenMobile] = React.useState(false);
-  const [isResizing, setIsResizing] = React.useState(false);
-  const [sidebarWidth, setSidebarWidthState] = React.useState(() => {
+  const [openMobile, setOpenMobile] = useState(false);
+  const [isResizing, setIsResizing] = useState(false);
+  const [sidebarWidth, setSidebarWidthState] = useState(() => {
     if (typeof window === "undefined") {
       return SIDEBAR_DEFAULT_WIDTH;
     }
@@ -99,9 +108,9 @@ function SidebarProvider({
 
   // This is the internal state of the sidebar.
   // We use openProp and setOpenProp for control from outside the component.
-  const [_open, _setOpen] = React.useState(defaultOpen);
+  const [_open, _setOpen] = useState(defaultOpen);
   const open = openProp ?? _open;
-  const setOpen = React.useCallback(
+  const setOpen = useCallback(
     (value: boolean | ((value: boolean) => boolean)) => {
       const openState = typeof value === "function" ? value(open) : value;
       if (setOpenProp) {
@@ -117,23 +126,23 @@ function SidebarProvider({
   );
 
   // Helper to toggle the sidebar.
-  const toggleSidebar = React.useCallback(
+  const toggleSidebar = useCallback(
     () =>
       isMobile ? setOpenMobile((open) => !open) : setOpen((open) => !open),
     [isMobile, setOpen]
   );
 
-  const setSidebarWidth = React.useCallback((width: number) => {
+  const setSidebarWidth = useCallback((width: number) => {
     setSidebarWidthState(
       Math.min(SIDEBAR_MAX_WIDTH, Math.max(SIDEBAR_MIN_WIDTH, width))
     );
   }, []);
 
-  const resetSidebarWidth = React.useCallback(() => {
+  const resetSidebarWidth = useCallback(() => {
     setSidebarWidthState(SIDEBAR_DEFAULT_WIDTH);
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     window.localStorage.setItem(
       SIDEBAR_WIDTH_STORAGE_KEY,
       String(Math.round(sidebarWidth))
@@ -141,7 +150,7 @@ function SidebarProvider({
   }, [sidebarWidth]);
 
   // Adds a keyboard shortcut to toggle the sidebar.
-  React.useEffect(() => {
+  useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (
         event.key === SIDEBAR_KEYBOARD_SHORTCUT &&
@@ -160,7 +169,7 @@ function SidebarProvider({
   // This makes it easier to style the sidebar with Tailwind classes.
   const state = open ? "expanded" : "collapsed";
 
-  const contextValue = React.useMemo<SidebarContextProps>(
+  const contextValue = useMemo<SidebarContextProps>(
     () => ({
       state,
       open,
@@ -338,7 +347,7 @@ function SidebarRail({
     setSidebarWidth,
     toggleSidebar,
   } = useSidebar();
-  const dragState = React.useRef({
+  const dragState = useRef({
     collapsedByDrag: !open,
     dragged: false,
     pointerId: -1,
@@ -346,7 +355,7 @@ function SidebarRail({
     startX: 0,
   });
 
-  React.useEffect(
+  useEffect(
     () => () => {
       document.body.style.cursor = "";
       document.body.style.userSelect = "";
@@ -776,9 +785,7 @@ function SidebarMenuSkeleton({
   showIcon?: boolean;
 }) {
   // Random width between 50 to 90%.
-  const [width] = React.useState(
-    () => `${Math.floor(Math.random() * 40) + 50}%`
-  );
+  const [width] = useState(() => `${Math.floor(Math.random() * 40) + 50}%`);
 
   return (
     <div

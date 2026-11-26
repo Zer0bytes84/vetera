@@ -199,7 +199,12 @@ export function createLevelMeter(
   stream: MediaStream
 ) {
   if (!audio || typeof audio.createAnalyser !== "function") {
-    return { read: () => 0, close: () => {} };
+    return {
+      read: () => 0,
+      close: () => {
+        // Sans analyseur audio, il n’y a rien à fermer.
+      },
+    };
   }
   const source = audio.createMediaStreamSource(stream);
   const analyser = audio.createAnalyser();

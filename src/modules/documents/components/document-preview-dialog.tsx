@@ -253,272 +253,264 @@ export function DocumentPreviewDialog({
           </p>
         )}
         {document && (
-          <>
-            <div className="document-preview-body">
-              <aside className="document-preview-tools">
-                {documentStatusNotice(document)}
-                {document.status === "brouillon" && (
-                  <>
-                    {editing ? (
-                      <div className="space-y-3">
-                        <label className="block space-y-1 text-sm">
-                          Titre
-                          <Input
-                            maxLength={160}
-                            onChange={(event) => setTitle(event.target.value)}
-                            value={title}
-                          />
-                        </label>
-                        <label className="block space-y-1 text-sm">
-                          Contenu
-                          <Textarea
-                            className="document-content-editor"
-                            maxLength={60_000}
-                            onChange={(event) => setText(event.target.value)}
-                            value={text}
-                          />
-                        </label>
-                        <div className="flex flex-wrap gap-2">
-                          <Button
-                            disabled={busy || !title.trim() || !text.trim()}
-                            onClick={() =>
-                              void perform(async () => {
-                                const row = await documentsService.updateDraft(
-                                  document.id,
-                                  { title, content: text },
-                                  author,
-                                  document.updatedAt
-                                );
-                                setDocument(row);
-                                setEditing(false);
-                                setReviewed(false);
-                                onChanged?.();
-                              })
-                            }
-                          >
-                            <Save strokeWidth={1} /> Enregistrer
-                          </Button>
-                          <Button
-                            disabled={busy}
-                            onClick={() => {
-                              setTitle(document.title);
-                              setText(document.content);
-                              setEditing(false);
-                            }}
-                            variant="outline"
-                          >
-                            Abandonner
-                          </Button>
-                        </div>
-                      </div>
-                    ) : (
-                      <>
-                        <Button
-                          disabled={busy}
-                          onClick={() => setEditing(true)}
-                          variant="outline"
-                        >
-                          <Pencil strokeWidth={1} /> Modifier le brouillon
-                        </Button>
-                        <label className="flex items-start gap-3 text-sm leading-6">
-                          <Checkbox
-                            checked={reviewed}
-                            className="mt-1"
-                            onCheckedChange={(value) =>
-                              setReviewed(value === true)
-                            }
-                          />
-                          J’ai relu le document et je valide son contenu.
-                        </label>
-                        <Button
-                          disabled={
-                            busy ||
-                            !reviewed ||
-                            !pdf ||
-                            pdf.version !== document.updatedAt
-                          }
-                          onClick={() => {
-                            if (!pdf) {
-                              return;
-                            }
-                            void perform(async () => {
-                              const row = await documentsService.finalize(
-                                document.id,
-                                author,
-                                pdf.dataUrl,
-                                reviewed,
-                                document.updatedAt
-                              );
-                              setDocument(row);
-                              setReviewed(false);
-                              onChanged?.();
-                              toast.success("Document finalisé.");
-                            });
-                          }}
-                        >
-                          <Check strokeWidth={1} /> Finaliser
-                        </Button>
-                      </>
-                    )}
-                  </>
-                )}
-                {document.status === "finalise" && (
-                  <>
-                    <Button
-                      disabled={busy}
-                      onClick={() =>
-                        void perform(async () => {
-                          await printManagedDocument(document);
-                        })
-                      }
-                    >
-                      <Printer strokeWidth={1} /> Imprimer
-                    </Button>
-                    <Button
-                      disabled={busy}
-                      onClick={() =>
-                        void perform(async () => {
-                          if (await exportManagedDocument(document)) {
-                            toast.success("PDF enregistré.");
-                          }
-                        })
-                      }
-                      variant="outline"
-                    >
-                      <Download strokeWidth={1} /> Exporter en PDF
-                    </Button>
-                    {!document.attachment && (
+          <div className="document-preview-body">
+            <aside className="document-preview-tools">
+              {documentStatusNotice(document)}
+              {document.status === "brouillon" &&
+                (editing ? (
+                  <div className="space-y-3">
+                    <label className="block space-y-1 text-sm">
+                      Titre
+                      <Input
+                        maxLength={160}
+                        onChange={(event) => setTitle(event.target.value)}
+                        value={title}
+                      />
+                    </label>
+                    <label className="block space-y-1 text-sm">
+                      Contenu
+                      <Textarea
+                        className="document-content-editor"
+                        maxLength={60_000}
+                        onChange={(event) => setText(event.target.value)}
+                        value={text}
+                      />
+                    </label>
+                    <div className="flex flex-wrap gap-2">
                       <Button
-                        disabled={busy}
+                        disabled={busy || !title.trim() || !text.trim()}
                         onClick={() =>
                           void perform(async () => {
-                            const row = await documentsService.newVersion(
+                            const row = await documentsService.updateDraft(
                               document.id,
-                              author
+                              { title, content: text },
+                              author,
+                              document.updatedAt
                             );
                             setDocument(row);
-                            setTitle(row.title);
-                            setText(row.content);
-                            setEditing(true);
+                            setEditing(false);
                             setReviewed(false);
-                            setEvents(null);
                             onChanged?.();
                           })
                         }
+                      >
+                        <Save strokeWidth={1} /> Enregistrer
+                      </Button>
+                      <Button
+                        disabled={busy}
+                        onClick={() => {
+                          setTitle(document.title);
+                          setText(document.content);
+                          setEditing(false);
+                        }}
                         variant="outline"
                       >
-                        <Pencil strokeWidth={1} /> Nouvelle version
+                        Abandonner
                       </Button>
-                    )}
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <Button
+                      disabled={busy}
+                      onClick={() => setEditing(true)}
+                      variant="outline"
+                    >
+                      <Pencil strokeWidth={1} /> Modifier le brouillon
+                    </Button>
+                    <label className="flex items-start gap-3 text-sm leading-6">
+                      <Checkbox
+                        checked={reviewed}
+                        className="mt-1"
+                        onCheckedChange={(value) => setReviewed(value === true)}
+                      />
+                      J’ai relu le document et je valide son contenu.
+                    </label>
+                    <Button
+                      disabled={
+                        busy ||
+                        !reviewed ||
+                        !pdf ||
+                        pdf.version !== document.updatedAt
+                      }
+                      onClick={() => {
+                        if (!pdf) {
+                          return;
+                        }
+                        void perform(async () => {
+                          const row = await documentsService.finalize(
+                            document.id,
+                            author,
+                            pdf.dataUrl,
+                            reviewed,
+                            document.updatedAt
+                          );
+                          setDocument(row);
+                          setReviewed(false);
+                          onChanged?.();
+                          toast.success("Document finalisé.");
+                        });
+                      }}
+                    >
+                      <Check strokeWidth={1} /> Finaliser
+                    </Button>
                   </>
-                )}
-                {document.attachment && (
-                  <Button
-                    disabled={busy}
-                    onClick={() => void perform(downloadOriginal)}
-                    variant="outline"
-                  >
-                    <Download strokeWidth={1} /> Télécharger l’original
-                  </Button>
-                )}
-                {document.attachment?.textState === "scan" && (
-                  <p className="text-muted-foreground text-sm">
-                    PDF scanné : aucun texte extractible. L’assistant ne peut
-                    pas citer son contenu sans reconnaissance locale explicite.
-                  </p>
-                )}
-                <div className="space-y-3 border-border border-t pt-4">
+                ))}
+              {document.status === "finalise" && (
+                <>
                   <Button
                     disabled={busy}
                     onClick={() =>
                       void perform(async () => {
-                        setEvents(
-                          events
-                            ? null
-                            : await documentsService.history(document.id)
-                        );
+                        await printManagedDocument(document);
                       })
                     }
-                    variant="ghost"
                   >
-                    <History strokeWidth={1} /> Historique
+                    <Printer strokeWidth={1} /> Imprimer
                   </Button>
-                  {events && (
-                    <ol className="document-event-list">
-                      {events.map((entry) => (
-                        <li key={entry.id}>
-                          <span>
-                            {eventLabels[entry.action] ||
-                              "Événement du document"}
-                          </span>
-                          <small>
-                            {entry.authorName} ·{" "}
-                            {new Date(entry.createdAt).toLocaleString("fr-FR")}
-                          </small>
-                          {entry.reason && <p>{entry.reason}</p>}
-                        </li>
-                      ))}
-                    </ol>
+                  <Button
+                    disabled={busy}
+                    onClick={() =>
+                      void perform(async () => {
+                        if (await exportManagedDocument(document)) {
+                          toast.success("PDF enregistré.");
+                        }
+                      })
+                    }
+                    variant="outline"
+                  >
+                    <Download strokeWidth={1} /> Exporter en PDF
+                  </Button>
+                  {!document.attachment && (
+                    <Button
+                      disabled={busy}
+                      onClick={() =>
+                        void perform(async () => {
+                          const row = await documentsService.newVersion(
+                            document.id,
+                            author
+                          );
+                          setDocument(row);
+                          setTitle(row.title);
+                          setText(row.content);
+                          setEditing(true);
+                          setReviewed(false);
+                          setEvents(null);
+                          onChanged?.();
+                        })
+                      }
+                      variant="outline"
+                    >
+                      <Pencil strokeWidth={1} /> Nouvelle version
+                    </Button>
                   )}
-                  {document.status !== "annule" &&
-                    (reason === null ? (
+                </>
+              )}
+              {document.attachment && (
+                <Button
+                  disabled={busy}
+                  onClick={() => void perform(downloadOriginal)}
+                  variant="outline"
+                >
+                  <Download strokeWidth={1} /> Télécharger l’original
+                </Button>
+              )}
+              {document.attachment?.textState === "scan" && (
+                <p className="text-muted-foreground text-sm">
+                  PDF scanné : aucun texte extractible. L’assistant ne peut pas
+                  citer son contenu sans reconnaissance locale explicite.
+                </p>
+              )}
+              <div className="space-y-3 border-border border-t pt-4">
+                <Button
+                  disabled={busy}
+                  onClick={() =>
+                    void perform(async () => {
+                      setEvents(
+                        events
+                          ? null
+                          : await documentsService.history(document.id)
+                      );
+                    })
+                  }
+                  variant="ghost"
+                >
+                  <History strokeWidth={1} /> Historique
+                </Button>
+                {events && (
+                  <ol className="document-event-list">
+                    {events.map((entry) => (
+                      <li key={entry.id}>
+                        <span>
+                          {eventLabels[entry.action] || "Événement du document"}
+                        </span>
+                        <small>
+                          {entry.authorName} ·{" "}
+                          {new Date(entry.createdAt).toLocaleString("fr-FR")}
+                        </small>
+                        {entry.reason && <p>{entry.reason}</p>}
+                      </li>
+                    ))}
+                  </ol>
+                )}
+                {document.status !== "annule" &&
+                  (reason === null ? (
+                    <Button
+                      disabled={busy}
+                      onClick={() => setReason("")}
+                      variant="ghost"
+                    >
+                      Annuler le document
+                    </Button>
+                  ) : (
+                    <div className="space-y-2">
+                      <label className="block text-sm">
+                        Motif de l’annulation
+                        <Textarea
+                          maxLength={1000}
+                          onChange={(event) => setReason(event.target.value)}
+                          value={reason}
+                        />
+                      </label>
+                      <Button
+                        disabled={busy || !reason.trim()}
+                        onClick={() =>
+                          void perform(async () => {
+                            await documentsService.cancel(
+                              document.id,
+                              reason,
+                              author
+                            );
+                            setDocument(
+                              await documentsService.get(document.id)
+                            );
+                            setReason(null);
+                            setEvents(null);
+                            onChanged?.();
+                          })
+                        }
+                        variant="destructive"
+                      >
+                        Confirmer l’annulation
+                      </Button>
                       <Button
                         disabled={busy}
-                        onClick={() => setReason("")}
+                        onClick={() => setReason(null)}
                         variant="ghost"
                       >
-                        Annuler le document
+                        Conserver
                       </Button>
-                    ) : (
-                      <div className="space-y-2">
-                        <label className="block text-sm">
-                          Motif de l’annulation
-                          <Textarea
-                            maxLength={1000}
-                            onChange={(event) => setReason(event.target.value)}
-                            value={reason}
-                          />
-                        </label>
-                        <Button
-                          disabled={busy || !reason.trim()}
-                          onClick={() =>
-                            void perform(async () => {
-                              await documentsService.cancel(
-                                document.id,
-                                reason,
-                                author
-                              );
-                              setDocument(
-                                await documentsService.get(document.id)
-                              );
-                              setReason(null);
-                              setEvents(null);
-                              onChanged?.();
-                            })
-                          }
-                          variant="destructive"
-                        >
-                          Confirmer l’annulation
-                        </Button>
-                        <Button
-                          disabled={busy}
-                          onClick={() => setReason(null)}
-                          variant="ghost"
-                        >
-                          Conserver
-                        </Button>
-                      </div>
-                    ))}
-                </div>
-                {busy && (
-                  <p className="text-muted-foreground text-sm" role="status">
-                    En cours…
-                  </p>
-                )}
-              </aside>
-              <DocumentPaperPreview dataUrl={pdf?.dataUrl ?? null} />
-            </div>
-          </>
+                    </div>
+                  ))}
+              </div>
+              {busy && (
+                <p className="text-muted-foreground text-sm" role="status">
+                  En cours…
+                </p>
+              )}
+            </aside>
+            <DocumentPaperPreview dataUrl={pdf?.dataUrl ?? null} />
+          </div>
         )}
         {!(document || error) && (
           <p className="p-6 text-muted-foreground text-sm" role="status">

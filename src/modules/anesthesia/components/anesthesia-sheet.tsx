@@ -11,7 +11,10 @@ import {
 } from "@/components/ui/sheet";
 import { Syringe } from "@/lib/icons";
 import { cn } from "@/lib/utils";
-import type { AnesthesiaSheet, Patient } from "@/types/db";
+import type {
+  AnesthesiaSheet as AnesthesiaSheetRow,
+  Patient,
+} from "@/types/db";
 
 import { AnesthesiaDetail } from "./anesthesia-detail";
 import { AnesthesiaList } from "./anesthesia-list";
@@ -30,7 +33,7 @@ export function AnesthesiaSheet({
   patient,
 }: AnesthesiaSheetProps) {
   const { t } = useTranslation();
-  const [selected, setSelected] = useState<AnesthesiaSheet | null>(null);
+  const [selected, setSelected] = useState<AnesthesiaSheetRow | null>(null);
 
   return (
     <Sheet

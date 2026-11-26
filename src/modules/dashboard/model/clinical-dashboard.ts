@@ -56,11 +56,13 @@ export function estimateQueue(
   });
 }
 export function buildNowSnapshot(
-  today: ScheduleEntry[],
+  scheduled: ScheduleEntry[],
   patients: Patient[],
   now: Date
 ): NowSnapshot {
-  today = today.filter((row) => row.appointment.status !== "cancelled");
+  const today = scheduled.filter(
+    (row) => row.appointment.status !== "cancelled"
+  );
   const waiting = today.filter((row) =>
     ["arrived", "waiting"].includes(row.appointment.status)
   );

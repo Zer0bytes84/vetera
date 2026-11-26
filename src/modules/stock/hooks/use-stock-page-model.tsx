@@ -217,7 +217,7 @@ export function useStockPageModel() {
                 description: `Stock initial: ${formData.name} (x${formData.quantity})`,
                 method: "cash",
                 status: expenseStatus,
-              } as any);
+              });
             } catch (txError) {
               console.error(
                 "Failed to add initial stock transaction:",

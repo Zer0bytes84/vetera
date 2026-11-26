@@ -312,10 +312,10 @@ const Team: React.FC = () => {
         setPasswordResetTarget(null);
       },
       {
-        recover: (error: any) => {
+        recover: (error: unknown) => {
           console.error(error);
           toast.error(
-            `Erreur lors de la réinitialisation : ${error?.message || "Erreur inconnue"}`
+            `Erreur lors de la réinitialisation : ${(error as Error | undefined)?.message || "Erreur inconnue"}`
           );
         },
         cleanup: () => {
@@ -476,7 +476,7 @@ const Team: React.FC = () => {
                 const effectiveRole =
                   user.email === "zohir.kh@gmail.com" ? "admin" : user.role;
                 const config =
-                  ROLE_CONFIG[effectiveRole] || ROLE_CONFIG["stagiaire"];
+                  ROLE_CONFIG[effectiveRole] || ROLE_CONFIG.stagiaire;
                 const RoleIcon = config.icon || AcademicCapIcon;
                 const isCurrentUserRow =
                   user.email?.trim().toLowerCase() ===

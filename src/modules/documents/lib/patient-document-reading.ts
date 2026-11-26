@@ -50,7 +50,9 @@ export function attachmentFile(attachment: DocumentAttachment): File {
 export async function preparePatientAttachment(
   file: File,
   signal?: AbortSignal,
-  onProgress: (progress: ReadingProgress) => void = () => {}
+  onProgress: (progress: ReadingProgress) => void = () => {
+    // Sans suivi demandé, la progression de la lecture n’est pas signalée.
+  }
 ): Promise<DocumentAttachment> {
   assertReadableFile(file);
   if (!IMPORT_TYPES.includes(file.type as (typeof IMPORT_TYPES)[number])) {
@@ -213,7 +215,10 @@ export async function readPatientDocument(
     source = await readLocalDocument(
       attachmentFile(document.attachment),
       options.signal ?? new AbortController().signal,
-      options.onProgress ?? (() => {})
+      options.onProgress ??
+        (() => {
+          // Sans suivi demandé, la progression de la lecture n’est pas signalée.
+        })
     );
     source.sourceId = document.id;
   } else {

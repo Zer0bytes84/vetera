@@ -40,9 +40,7 @@ export const parseToolArguments = (raw: string): Record<string, string> => {
   const args: Record<string, string> = {};
   const argumentPattern =
     /([A-Za-z_][\w-]*)\s*=\s*(?:"((?:\\.|[^"])*)"|'((?:\\.|[^'])*)'|([^\s,]+))/g;
-  let match: RegExpExecArray | null;
-
-  while ((match = argumentPattern.exec(normalized)) !== null) {
+  for (const match of normalized.matchAll(argumentPattern)) {
     const [, key, doubleQuoted, singleQuoted, unquoted] = match;
     const value = doubleQuoted ?? singleQuoted ?? unquoted ?? "";
     args[key] = doubleQuoted || singleQuoted ? decodeQuotedValue(value) : value;

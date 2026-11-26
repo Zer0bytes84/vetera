@@ -1,4 +1,5 @@
 // Keep icon imports modular. The package's production barrel bundles the full catalog.
+// biome-ignore lint/performance/noBarrelFile: ce relais est voulu, il importe chaque icône par son propre fichier pour ne pas tirer le catalogue entier du paquet.
 export { default as Activity01Icon } from "@hugeicons/core-free-icons/Activity01Icon";
 export { default as Activity02Icon } from "@hugeicons/core-free-icons/Activity02Icon";
 export { default as Activity03Icon } from "@hugeicons/core-free-icons/Activity03Icon";

@@ -104,7 +104,9 @@ export function getMascotPreferences(): MascotPreferences {
       cachedRaw = raw;
       cachedPreferences = parseMascotPreferences(raw);
     }
-  } catch {}
+  } catch {
+    // Stockage local illisible : on garde les dernières préférences connues.
+  }
   return cachedPreferences;
 }
 

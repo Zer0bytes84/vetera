@@ -183,7 +183,9 @@ export function PatientDocumentSearch({
           setReady(!!models.embeddingReady);
         }
       })
-      .catch(() => {});
+      .catch(() => {
+        // État des modèles illisible : la recherche reste marquée « pas prête ».
+      });
     return () => {
       alive = false;
       active.current?.abort();

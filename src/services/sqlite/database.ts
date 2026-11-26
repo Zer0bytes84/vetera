@@ -365,7 +365,7 @@ async function repairRelationalIntegrity(database: Database): Promise<void> {
  * Génère un ID unique (UUID v4 simplifié)
  */
 export function generateId(): string {
-  return Date.now().toString(36) + Math.random().toString(36).substring(2);
+  return Date.now().toString(36) + Math.random().toString(36).slice(2);
 }
 
 /**
@@ -373,7 +373,7 @@ export function generateId(): string {
  */
 export function toSQLiteTimestamp(date: Date | string): string {
   const d = typeof date === "string" ? new Date(date) : date;
-  return d.toISOString().replace("T", " ").substring(0, 19);
+  return d.toISOString().replace("T", " ").slice(0, 19);
 }
 
 /**

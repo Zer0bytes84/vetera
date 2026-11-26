@@ -189,7 +189,7 @@ async function check(
     };
   }
   const deviceId = await getDeviceId();
-  let lease;
+  let lease: Awaited<ReturnType<typeof verifyLicenseLease>> | undefined;
   try {
     lease = await verifyLicenseLease(
       stored.activationToken,

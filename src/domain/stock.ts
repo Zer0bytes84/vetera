@@ -7,11 +7,11 @@ export type StockErrorCode =
   | "SOURCE_CONFLICT";
 
 export class StockError extends Error {
-  constructor(
-    readonly code: StockErrorCode,
-    message: string
-  ) {
+  readonly code: StockErrorCode;
+
+  constructor(code: StockErrorCode, message: string) {
     super(message);
+    this.code = code;
     this.name = "StockError";
   }
 }

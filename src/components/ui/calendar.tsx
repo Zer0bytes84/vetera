@@ -4,7 +4,8 @@ import {
   ChevronRightIcon,
 } from "@heroicons/react/16/solid";
 import { fr } from "date-fns/locale";
-import * as React from "react";
+import type React from "react";
+import { useEffect, useRef } from "react";
 import {
   type DayButton,
   DayPicker,
@@ -206,8 +207,8 @@ function CalendarDayButton({
 }: React.ComponentProps<typeof DayButton> & { locale?: Partial<Locale> }) {
   const defaultClassNames = getDefaultClassNames();
 
-  const ref = React.useRef<HTMLButtonElement>(null);
-  React.useEffect(() => {
+  const ref = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
     if (modifiers.focused) {
       ref.current?.focus();
     }

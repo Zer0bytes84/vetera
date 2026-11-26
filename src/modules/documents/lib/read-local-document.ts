@@ -13,7 +13,7 @@ import { PackagedOcr } from "./packaged-ocr";
 const EXPECTED_READ_ERROR =
   /20 pages|trop grand|dépasse|Aucun texte|autre modèle|n’a pas répondu/;
 
-export type { ReadingProgress };
+export type { ReadingProgress } from "./document-reading";
 
 const checkAbort = (signal: AbortSignal) => {
   if (signal.aborted) {

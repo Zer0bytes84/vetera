@@ -28,6 +28,11 @@ function createWorker(kind: "whisper" | "soap" | "embedding"): Worker {
 }
 
 export class LocalInferenceSession {
+  private worker: Worker;
+  private release: () => void;
+  private signal: AbortSignal;
+  private onProgress: (event: LocalAiProgress) => void;
+  private readonly spawn: () => Worker;
   private pending: {
     resolve: (message: WorkerResponse) => void;
     reject: (error: Error) => void;
@@ -41,12 +46,17 @@ export class LocalInferenceSession {
   private readonly unavailable = new Set<string>();
   private lastRequest: WorkerRequest | null = null;
   private constructor(
-    private worker: Worker,
-    private release: () => void,
-    private signal: AbortSignal,
-    private onProgress: (event: LocalAiProgress) => void,
-    private readonly spawn: () => Worker = () => worker
+    worker: Worker,
+    release: () => void,
+    signal: AbortSignal,
+    onProgress: (event: LocalAiProgress) => void,
+    spawn: () => Worker = () => worker
   ) {
+    this.worker = worker;
+    this.release = release;
+    this.signal = signal;
+    this.onProgress = onProgress;
+    this.spawn = spawn;
     this.attach(worker);
     signal.addEventListener("abort", this.onAbort, { once: true });
   }

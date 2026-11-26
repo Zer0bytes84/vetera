@@ -4,20 +4,20 @@ import type { TourStepId } from "./tour-state";
  * Les quatre étapes du circuit du premier patient, et rien d'autre. Les textes sont courts : une consigne pour agir, puis ce qu'il reste à faire une fois sur l'écran.
  */
 export interface TourStepCopy {
-  /** Un écran plus avant dans le geste (la consultation ouverte) : sa consigne remplace `then`. */
+  /** Un écran plus avant dans le geste (la consultation ouverte) : sa consigne remplace `next`. */
   deeper?: {
     hashes: readonly string[];
     text: (patientName: string | null) => string;
   };
   id: TourStepId;
+  /** Une fois l'écran ouvert : ce qui fait réellement avancer l'étape. */
+  next: (patientName: string | null) => string;
   /** Avant le geste d'ouverture (le « + », ou l'Agenda). */
   open: (patientName: string | null) => string;
-  /** La consigne quand le geste est à moitié fait (déduit des données) : elle remplace `open` et `then`. */
+  /** La consigne quand le geste est à moitié fait (déduit des données) : elle remplace `open` et `next`. */
   partial?: (patientName: string | null) => string;
   /** Le libellé de l'entrée du menu « + » à montrer, ou celui de l'entrée de la barre latérale. */
   target: { menuLabel: string } | { sidebarLabel: string };
-  /** Une fois l'écran ouvert : ce qui fait réellement avancer l'étape. */
-  then: (patientName: string | null) => string;
   title: string;
 }
 
@@ -29,14 +29,14 @@ export const TOUR_STEPS: readonly TourStepCopy[] = [
     id: "patient",
     title: "Créez le dossier de votre premier patient",
     open: () => "Cliquez sur « + » en haut de l’écran, puis sur « Patient ».",
-    then: () => "Renseignez l’animal et son propriétaire, puis enregistrez.",
+    next: () => "Renseignez l’animal et son propriétaire, puis enregistrez.",
     target: { menuLabel: "Patient" },
   },
   {
     id: "appointment",
     title: "Donnez-lui un rendez-vous",
     open: () => "Cliquez sur « + », puis sur « Rendez-vous ».",
-    then: (name) =>
+    next: (name) =>
       `Choisissez ${forPatient(name)}, la date et l’heure, puis enregistrez.`,
     target: { menuLabel: "Rendez-vous" },
   },
@@ -44,7 +44,7 @@ export const TOUR_STEPS: readonly TourStepCopy[] = [
     id: "consultation",
     title: "Faites la consultation",
     open: () => "Ouvrez l’Agenda dans la barre de gauche.",
-    then: (name) =>
+    next: (name) =>
       `Repérez le rendez-vous de ${forPatient(name)}, ouvrez son menu « ⋯ » puis cliquez sur « Ouvrir ».`,
     target: { sidebarLabel: "Agenda" },
     deeper: {
@@ -57,7 +57,7 @@ export const TOUR_STEPS: readonly TourStepCopy[] = [
     id: "invoice",
     title: "Facturez et encaissez",
     open: () => "Cliquez sur « + », puis sur « Facture ».",
-    then: () =>
+    next: () =>
       "Ajoutez les actes, émettez la facture, puis enregistrez le paiement.",
     target: { menuLabel: "Facture" },
     partial: () =>

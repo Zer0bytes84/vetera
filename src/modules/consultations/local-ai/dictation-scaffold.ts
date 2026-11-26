@@ -26,16 +26,17 @@ const marker =
 // The app's own section headings ("S · Motif et antécédents", "O · …"), written
 // by the guided dictation and still present once line breaks are gone. They are
 // explicit labels: the section changes and the heading itself is not an observation.
-const escape = (text: string) => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+const escapeRegExp = (text: string) =>
+  text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 const heading = new RegExp(
-  `(?<![\\p{L}\\p{N}])([SOAP])\\s*·(?:\\s*(?:${SOAP_SECTIONS.map(({ title }) => escape(title.slice(title.indexOf("·") + 1).trim())).join("|")})(?![\\p{L}\\p{N}]))?`,
+  `(?<![\\p{L}\\p{N}])([SOAP])\\s*·(?:\\s*(?:${SOAP_SECTIONS.map(({ title }) => escapeRegExp(title.slice(title.indexOf("·") + 1).trim())).join("|")})(?![\\p{L}\\p{N}]))?`,
   "gu"
 );
 const headingSection: Record<string, keyof LocalSoapNote> = Object.fromEntries(
   SOAP_SECTIONS.map(({ key, title }) => [title[0], key])
 );
-const sectionFor = (label: string): keyof LocalSoapNote => {
-  label = label.trim().replace(LEADING_NEGATION, "");
+const sectionFor = (rawLabel: string): keyof LocalSoapNote => {
+  const label = rawLabel.trim().replace(LEADING_NEGATION, "");
   if (OBJECTIVE_LABEL.test(label)) {
     return "objective";
   }

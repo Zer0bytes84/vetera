@@ -279,7 +279,9 @@ export function useLocalConsultationAi({
             holdMicrophone && !held.current?.settled
               ? createWarmupDetector()
               : null;
-          let settle = () => {};
+          let settle = () => {
+            // Remplacé aussitôt par le resolve de la promesse ci-dessous.
+          };
           const settled = new Promise<void>((resolve) => {
             settle = resolve;
           });

@@ -112,6 +112,10 @@ export function evaluateVitals(reading: VitalReading): ClinicalAlert[] {
         return HR_RANGE[species];
       case "rr":
         return RR_RANGE[species];
+      default: {
+        const unhandled: never = key;
+        return unhandled;
+      }
     }
   };
 

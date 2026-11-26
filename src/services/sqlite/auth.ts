@@ -112,6 +112,7 @@ function legacySha256(value: string): string {
 
   const workingHash = hash.slice(0, 8);
   for (let j = 0; j < words[lengthProperty]; ) {
+    // biome-ignore lint/suspicious/noAssignInExpressions: SHA-256 écrit à la main (empreintes des anciens comptes) : l’avance de 16 mots dans la découpe est voulue, une réécriture risquerait de changer l’empreinte.
     const w = words.slice(j, (j += 16));
     const oldHash = workingHash.slice();
     for (let i = 0; i < 64; i += 1) {
@@ -124,6 +125,7 @@ function legacySha256(value: string): string {
         (rightRotate(e, 6) ^ rightRotate(e, 11) ^ rightRotate(e, 25)) +
         ((e & workingHash[5]) ^ (~e & workingHash[6])) +
         k[i] +
+        // biome-ignore lint/suspicious/noAssignInExpressions: SHA-256 écrit à la main : le mot w[i] du message étendu est calculé et rangé dans la même expression, on ne réécrit pas ce code de hachage.
         (w[i] =
           i < 16
             ? w[i] | 0

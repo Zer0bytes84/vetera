@@ -18,11 +18,24 @@ import {
   inventoryService,
 } from "@/modules/stock/services/inventory-service";
 import { summarizeInventory } from "@/modules/stock/services/inventory-store";
-import * as AppSettingsService from "@/services/appSettingsService";
+import {
+  getLicenseInfo,
+  getSetting,
+  isSetupComplete,
+  markSetupComplete,
+  saveLicenseInfo,
+  setSetting,
+} from "@/services/appSettingsService";
 import { billingService } from "@/services/billingService";
 import { getBrowserTable, isTauriRuntime } from "@/services/browser-store";
 import { getInvoiceSettings } from "@/services/invoiceSettingsService";
-import * as AuthService from "@/services/sqlite/auth";
+import {
+  getCurrentUser,
+  login,
+  logout,
+  register,
+  updatePassword,
+} from "@/services/sqlite/auth";
 import {
   generateId,
   runDbRead,
@@ -107,20 +120,20 @@ const rowToPatient = (row: Record<string, unknown>): Patient => ({
 });
 
 export const authRepository = {
-  getCurrentUser: AuthService.getCurrentUser,
-  login: AuthService.login,
-  logout: AuthService.logout,
-  register: AuthService.register,
-  updatePassword: AuthService.updatePassword,
+  getCurrentUser,
+  login,
+  logout,
+  register,
+  updatePassword,
 };
 
 export const appSettingsRepository = {
-  getSetting: AppSettingsService.getSetting,
-  setSetting: AppSettingsService.setSetting,
-  isSetupComplete: AppSettingsService.isSetupComplete,
-  markSetupComplete: AppSettingsService.markSetupComplete,
-  getLicenseInfo: AppSettingsService.getLicenseInfo,
-  saveLicenseInfo: AppSettingsService.saveLicenseInfo,
+  getSetting,
+  setSetting,
+  isSetupComplete,
+  markSetupComplete,
+  getLicenseInfo,
+  saveLicenseInfo,
 };
 
 // Les comparateurs et la date du jour vivent hors des hooks : le compilateur React ne traduit pas `??` dans le test d'un ternaire.

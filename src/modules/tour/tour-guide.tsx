@@ -306,7 +306,7 @@ function TourRunner({ state }: { state: TourState }) {
                 : inDeeperScreen(step, hash) && step.deeper
                   ? step.deeper.text(patientName)
                   : opened
-                    ? step.then(patientName)
+                    ? step.next(patientName)
                     : step.open(patientName)}
             </p>
             <div className="tour-card-actions">

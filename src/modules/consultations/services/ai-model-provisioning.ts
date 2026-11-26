@@ -187,7 +187,9 @@ export async function provisionNewAssistant(
     throw new Error("Opération annulée");
   }
   const cancel = () => {
-    void cancelLocalModelDownload().catch(() => {});
+    void cancelLocalModelDownload().catch(() => {
+      // L’annulation est au mieux : un échec ici ne change rien pour l’appelant.
+    });
   };
   options?.signal?.addEventListener("abort", cancel, { once: true });
   try {
@@ -218,7 +220,9 @@ export async function provisionAllAIModels(
     throw new Error("Opération annulée");
   }
   const cancel = () => {
-    void cancelLocalModelDownload().catch(() => {});
+    void cancelLocalModelDownload().catch(() => {
+      // L’annulation est au mieux : un échec ici ne change rien pour l’appelant.
+    });
   };
   options?.signal?.addEventListener("abort", cancel, { once: true });
   try {

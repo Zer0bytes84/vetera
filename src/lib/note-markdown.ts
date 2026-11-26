@@ -4,14 +4,14 @@ const LIST_ITEM_LINE = /^(?:([-*+])\s+|\d+[.)]\s+)(.+)$/;
 
 /** Convert the small Markdown subset used by note drafts to safe editor HTML. */
 export function noteMarkdownToHTML(text: string): string {
-  const escape = (value: string) =>
+  const escapeHtml = (value: string) =>
     value
       .replace(/&/g, "&amp;")
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;");
   const inline = (value: string) =>
-    escape(value)
+    escapeHtml(value)
       .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
       .replace(/\*(.+?)\*/g, "<em>$1</em>");
   const blocks: string[] = [];

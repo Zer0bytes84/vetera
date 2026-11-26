@@ -103,5 +103,3 @@ export function Mascot({
     </Popover>
   );
 }
-
-export { MascotAvatar, type MascotMood } from "./mascot-avatar";

@@ -108,7 +108,11 @@ export function healthCardFilename(name: string, generatedAt: string): string {
 }
 
 class Page {
-  constructor(readonly doc: jsPDF) {}
+  readonly doc: jsPDF;
+
+  constructor(doc: jsPDF) {
+    this.doc = doc;
+  }
 
   style(size: number, bold = false, color = INK) {
     this.doc.setFont(FONT, bold ? "bold" : "normal");
@@ -136,6 +140,7 @@ class Page {
     width: number,
     align: "left" | "right" | "center" = "left"
   ) {
+    // biome-ignore lint/suspicious/noFocusedTests: fit est la méthode de troncature de la classe Page (PDF du carnet), pas un test focalisé.
     this.doc.text(this.fit(text, width), x, y, {
       align,
       baseline: "alphabetic",
@@ -157,6 +162,7 @@ class Page {
     ) as string[];
     const shown = lines.slice(0, max);
     if (lines.length > max) {
+      // biome-ignore lint/suspicious/noFocusedTests: this.fit tronque la dernière ligne du carnet de santé, ce n’est pas le fit() de Vitest.
       shown[max - 1] = this.fit(
         `${shown[max - 1]} ${lines.slice(max).join(" ")}`,
         width

@@ -165,8 +165,13 @@ latinEntities.forEach((name, index) => {
 /** Inert conversion: no DOM insertion, scripts, image fetches or remote resources. */
 export function patientRecordPlainText(html: string): string {
   return html
-    .replace(/<!--[^]*?-->/g, "")
     .replace(
+      // biome-ignore lint/correctness/noEmptyCharacterClassInRegex: [^] est l’idiome « tout caractère, retours à la ligne compris » pour un commentaire HTML sur plusieurs lignes, pas une classe vide.
+      /<!--[^]*?-->/g,
+      ""
+    )
+    .replace(
+      // biome-ignore lint/correctness/noEmptyCharacterClassInRegex: [^] prend tout le contenu de la balise, retours à la ligne compris, jusqu’à sa fermeture ; ce n’est pas une classe vide.
       /<(script|style|template|iframe|object|svg|math)\b[^>]*>[^]*?<\/\1\s*>/gi,
       ""
     )

@@ -297,7 +297,7 @@ class VetKnowledgeService {
   /**
    * Liste publique des médicaments (lecture seule, pour catalog/cascades)
    */
-  public getAllMedications(): readonly Medication[] {
+  getAllMedications(): readonly Medication[] {
     return this.medications;
   }
 

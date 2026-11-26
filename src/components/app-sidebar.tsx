@@ -6,7 +6,8 @@ import {
 } from "@/modules/shell/components/account-menu";
 import { SidebarIcon } from "@/modules/shell/components/sidebar-icon";
 import "@/modules/shell/premium-sidebar.css";
-import * as React from "react";
+import type React from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { navigationSections } from "@/app/config/navigation";
 import { prefetchView } from "@/app/config/view-registry";
@@ -65,10 +66,10 @@ export function AppSidebar({
 }: AppSidebarProps) {
   const { t } = useTranslation();
   const { state } = useSidebar();
-  const navigationRef = React.useRef<HTMLDivElement>(null);
+  const navigationRef = useRef<HTMLDivElement>(null);
   const isCollapsed = state === "collapsed";
   // biome-ignore lint/correctness/useExhaustiveDependencies: currentView et isCollapsed ne sont pas lus, mais un changement de vue ou de largeur doit ramener l'élément actif dans la zone visible de la navigation.
-  React.useEffect(() => {
+  useEffect(() => {
     const navigation = navigationRef.current;
     if (!navigation) {
       return;
@@ -98,15 +99,15 @@ export function AppSidebar({
   }, [currentView, isCollapsed]);
 
   // The section shown inside Soins & hospitalisation, reported by the workspace.
-  const [clinicTab, setClinicTab] = React.useState<ClinicTab>("soins");
-  React.useEffect(() => {
+  const [clinicTab, setClinicTab] = useState<ClinicTab>("soins");
+  useEffect(() => {
     const onTab = (event: Event) =>
       setClinicTab((event as CustomEvent<ClinicTab>).detail);
     window.addEventListener(CLINIC_TAB_EVENT, onTab);
     return () => window.removeEventListener(CLINIC_TAB_EVENT, onTab);
   }, []);
   // Sub-pages unfold with their page; a toggle overrides that until the next visit.
-  const [toggled, setToggled] = React.useState<{
+  const [toggled, setToggled] = useState<{
     view: View;
     open: Partial<Record<View, boolean>>;
   }>({ view: currentView, open: {} });

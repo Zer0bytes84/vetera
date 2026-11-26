@@ -8,7 +8,7 @@ import { mustExist } from "./must-exist";
 import { savePdf } from "./save-pdf";
 import { isTestDataFolder } from "./test-data-folder";
 
-export type { InvoiceSettings };
+export type { InvoiceSettings } from "@/services/invoiceSettingsService";
 
 /** All monetary fields use integer centimes, never display-unit amounts. */
 export interface InvoicePdfData {
