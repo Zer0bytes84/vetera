@@ -1,4 +1,7 @@
+import { ISO_DATE } from "@/lib/patterns";
 import { StockError } from "./stock";
+
+const SQLITE_TIMESTAMP = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}(?:\.\d+)?$/;
 
 export function stockDay(value: Date = new Date()): string {
   if (!Number.isFinite(value.getTime())) {
@@ -16,8 +19,7 @@ export function stockDate(value: string | null | undefined): string | null {
   }
   if (
     !(
-      /^\d{4}-\d{2}-\d{2}$/.test(value) &&
-      Number.isFinite(Date.parse(`${value}T12:00:00Z`))
+      ISO_DATE.test(value) && Number.isFinite(Date.parse(`${value}T12:00:00Z`))
     ) ||
     new Date(`${value}T12:00:00Z`).toISOString().slice(0, 10) !== value
   ) {
@@ -31,9 +33,7 @@ export function stockDate(value: string | null | undefined): string | null {
 
 /** Existing SQLite timestamps are UTC even when their suffix is omitted. */
 export function stockTimestamp(value: string): string {
-  const normalized = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}(?:\.\d+)?$/.test(
-    value
-  )
+  const normalized = SQLITE_TIMESTAMP.test(value)
     ? `${value.replace(" ", "T")}Z`
     : value;
   if (!Number.isFinite(Date.parse(normalized))) {

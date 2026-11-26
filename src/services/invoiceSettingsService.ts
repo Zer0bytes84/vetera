@@ -1,6 +1,8 @@
 import { APP_NAME } from "@/lib/brand";
 import { getSetting, setSettings } from "./appSettingsService";
 
+const LOGO_DATA_URL = /^data:image\/(png|jpeg);base64,[a-z0-9+/=]+$/i;
+
 export const INVOICE_ACCENTS = {
   graphite: { label: "Graphite", color: "#27272a" },
   forest: { label: "Forêt", color: "#285c4a" },
@@ -44,7 +46,7 @@ export function normalizeInvoiceSettings(
     logoDataUrl:
       typeof value.logoDataUrl === "string" &&
       value.logoDataUrl.length <= 1_500_000 &&
-      /^data:image\/(png|jpeg);base64,[a-z0-9+/=]+$/i.test(value.logoDataUrl)
+      LOGO_DATA_URL.test(value.logoDataUrl)
         ? value.logoDataUrl
         : "",
     footer: text(value.footer, 400),

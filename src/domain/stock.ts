@@ -1,3 +1,5 @@
+const DECIMAL_QUANTITY = /^\d+(?:[.,]\d{0,6})?$/;
+
 export type StockErrorCode =
   | "PRODUCT_MISSING"
   | "INVALID_QUANTITY"
@@ -39,7 +41,7 @@ export function stockBalance(value: number): number {
 
 export function parseStockQuantityInput(value: string): number {
   const text = value.trim().replace(/[\s\u00a0\u202f]/g, "");
-  return /^\d+(?:[.,]\d{0,6})?$/.test(text)
+  return DECIMAL_QUANTITY.test(text)
     ? Number(text.replace(",", "."))
     : Number.NaN;
 }

@@ -35,6 +35,8 @@ import type {
   TransactionSourceType,
 } from "@/types/db";
 
+const LOGO_DATA_URL = /^data:image\/(png|jpeg);base64,[a-z0-9+/=]+$/i;
+
 export interface BillingDatabase {
   execute(query: string, bindValues?: unknown[]): Promise<unknown>;
   select<T>(query: string, bindValues?: unknown[]): Promise<T>;
@@ -624,9 +626,7 @@ function normalizeClinicSnapshot(
   if (
     snapshot.logoDataUrl &&
     (snapshot.logoDataUrl.length > 1_500_000 ||
-      !/^data:image\/(png|jpeg);base64,[a-z0-9+/=]+$/i.test(
-        snapshot.logoDataUrl
-      ))
+      !LOGO_DATA_URL.test(snapshot.logoDataUrl))
   ) {
     throw new BillingDomainError(
       "CLINIC_SNAPSHOT_INVALID",

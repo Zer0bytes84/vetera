@@ -2,6 +2,17 @@ import { evidenceTokens } from "./dictation-scaffold";
 import { stripSoapLayout } from "./soap-layout";
 import { containsDosage, type LocalSoapNote } from "./soap-schema";
 
+const TREATMENT_INTENT =
+  /\b(?:besoin|antibiotiques?|mettre|donn\p{L}*|administr\p{L}*|traitement|prescri)/iu;
+const CLINICAL_ACT_PHRASE = /\bje\s+lui\s+fais\b/iu;
+const HOME_PRESCRIPTION_PHRASE = /\bvous\s+lui\s+donnez\b/iu;
+const CLAUSE_BREAK = /(?<=[,;])\s+/u;
+const TRAILING_CLAUSE_PUNCTUATION = /[,;]$/u;
+const LEADING_STOPS = /^[.!?]*/u;
+const LEADING_PUNCTUATION = /^\s*[.,;:!?]/u;
+const TRAILING_PUNCTUATION = /[.,;:!?]+$/u;
+const ENDS_WITH_PUNCTUATION = /[.!?,;]$/u;
+
 // Decimal doses (2.5 mg) are not sentence boundaries.
 const sentences = (text: string) =>
   text
@@ -52,10 +63,7 @@ export function analyzeTreatmentDictation(
     const kind: TreatmentKind = avoidance.test(text)
       ? "avoidance"
       : negation.test(text) &&
-          (treatment.test(text) ||
-            /\b(?:besoin|antibiotiques?|mettre|donn\p{L}*|administr\p{L}*|traitement|prescri)/iu.test(
-              text
-            ))
+          (treatment.test(text) || TREATMENT_INTENT.test(text))
         ? "negated"
         : history.test(text)
           ? "history"
@@ -69,9 +77,9 @@ export function analyzeTreatmentDictation(
       kind,
       setting:
         kind === "treatment"
-          ? /\bje\s+lui\s+fais\b/iu.test(text)
+          ? CLINICAL_ACT_PHRASE.test(text)
             ? "acte-clinique"
-            : /\bvous\s+lui\s+donnez\b/iu.test(text)
+            : HOME_PRESCRIPTION_PHRASE.test(text)
               ? "ordonnance-maison"
               : null
           : null,
@@ -213,7 +221,7 @@ export function mergeGuidedProtected(
 }
 // A clause ends on a comma or semicolon followed by a space (38,5 stays whole).
 const clauses = (sentence: string) =>
-  sentence.split(/(?<=[,;])\s+/u).filter((part) => part.trim());
+  sentence.split(CLAUSE_BREAK).filter((part) => part.trim());
 // Same words, numbers and signs as the fidelity check (evidenceTokens), counted
 // on the text as written so that positions can be found again in it.
 const EVIDENCE = /[+\-−]?\d+(?:[.,]\d+)?|\p{L}+|[<>≤≥=%/]/gu;
@@ -243,9 +251,10 @@ function modelText(pieces: Piece[]) {
   return groups
     .filter((parts) => parts.length)
     .map((parts) =>
-      [...parts.slice(0, -1), (parts.at(-1) ?? "").replace(/[,;]$/u, ".")].join(
-        " "
-      )
+      [
+        ...parts.slice(0, -1),
+        (parts.at(-1) ?? "").replace(TRAILING_CLAUSE_PUNCTUATION, "."),
+      ].join(" ")
     )
     .join(" ");
 }
@@ -279,20 +288,22 @@ function restoreClauses(output: string, pieces: Piece[]) {
     const insert = group.parts.join(" ");
     if (group.opens) {
       // A sentence of its own: after the model's end of the previous sentence.
-      const stop = /^[.!?]*/u.exec(after)![0];
+      const stop = LEADING_STOPS.exec(after)![0];
       text = [head + stop, insert, after.slice(stop.length).trim()]
         .filter(Boolean)
         .join(" ");
-    } else if (/^\s*[.,;:!?]/u.test(after)) {
+    } else if (LEADING_PUNCTUATION.test(after)) {
       // Inside a sentence: the model's own punctuation follows the clauses.
       text =
         head +
         (head ? ", " : "") +
-        insert.replace(/[.,;:!?]+$/u, "") +
+        insert.replace(TRAILING_PUNCTUATION, "") +
         after.trimStart();
     } else {
       const rest = after.trim();
-      const tail = rest ? (/[.!?,;]$/u.test(insert) ? " " : ", ") + rest : "";
+      const tail = rest
+        ? (ENDS_WITH_PUNCTUATION.test(insert) ? " " : ", ") + rest
+        : "";
       text = head + (head ? ", " : "") + insert + tail;
     }
   }

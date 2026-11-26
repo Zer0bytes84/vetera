@@ -1,5 +1,8 @@
 import { z } from "zod";
 
+const OPENING_CODE_FENCE = /^```(?:json)?\s*/i;
+const CLOSING_CODE_FENCE = /\s*```$/;
+
 export const SOAP_SECTIONS = [
   { key: "subjective", title: "S · Motif et antécédents" },
   { key: "objective", title: "O · Examen clinique" },
@@ -67,8 +70,8 @@ export function parseGeneratedSoap(
   // A single JSON object (optionally fenced), never a best-effort coercion.
   const text = raw
     .trim()
-    .replace(/^```(?:json)?\s*/i, "")
-    .replace(/\s*```$/, "");
+    .replace(OPENING_CODE_FENCE, "")
+    .replace(CLOSING_CODE_FENCE, "");
   let parsed: unknown;
   try {
     parsed = JSON.parse(text);

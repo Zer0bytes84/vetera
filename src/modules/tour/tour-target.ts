@@ -1,5 +1,7 @@
 import type { TourStepCopy } from "./tour-steps";
 
+const HASH_ROUTE_PREFIX = /^#\/?/;
+
 function visible(element: Element | null | undefined): element is HTMLElement {
   if (!(element instanceof HTMLElement)) {
     return false;
@@ -75,7 +77,7 @@ export function restartedGesture(event: Event): boolean {
   );
 }
 
-const route = (hash: string) => hash.replace(/^#\/?/, "");
+const route = (hash: string) => hash.replace(HASH_ROUTE_PREFIX, "");
 
 /** Étape de la barre latérale : l'utilisateur est-il arrivé à l'écran visé, ou plus avant dans le geste ? */
 export function sidebarOpened(step: TourStepCopy, hash: string): boolean {

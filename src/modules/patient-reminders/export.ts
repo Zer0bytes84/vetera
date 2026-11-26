@@ -1,3 +1,5 @@
+const FORMULA_TRIGGER = /^[=+@-]/;
+
 export interface CallRow {
   dueDate: string;
   owner: string;
@@ -7,7 +9,7 @@ export interface CallRow {
 }
 export function callsCsv(rows: CallRow[]): string {
   const cell = (value: string) =>
-    `"${value.replace(/^[=+@-]/, " '$&").replaceAll('"', '""')}"`;
+    `"${value.replace(FORMULA_TRIGGER, " '$&").replaceAll('"', '""')}"`;
   return (
     "\uFEFF" +
     [

@@ -3,8 +3,12 @@
  * des vraies données (rappels médicaux, stock, hospitalisations).
  * Fonctions pures, sans accès aux dépôts.
  */
+
+import { ISO_DATE_PREFIX, WHITESPACE } from "@/lib/patterns";
 import type { Hospitalization, Patient, Product } from "@/types/db";
 import { parseDashboardDate, startOfDay } from "../v2/model";
+
+const PLURAL_ENDING = /[sx]$/i;
 
 export type WatchTone = "critical" | "warning" | "neutral";
 
@@ -40,7 +44,7 @@ function shortDate(date: Date): string {
 
 /** "2026-10-18" → minuit local, sans décalage de fuseau. */
 function dateOnly(value: string): Date | null {
-  const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(value);
+  const match = ISO_DATE_PREFIX.exec(value);
   if (!match) {
     return parseDashboardDate(value);
   }
@@ -142,7 +146,10 @@ export function buildUpcomingReminders({
 /** "3 dose" reads "3 doses": units are stored singular; a plural form is kept. */
 export function quantityLabel(quantity: number, unit: string) {
   const plural =
-    Math.abs(quantity) > 1 && unit && !/[sx]$/i.test(unit) && !/\s/.test(unit);
+    Math.abs(quantity) > 1 &&
+    unit &&
+    !PLURAL_ENDING.test(unit) &&
+    !WHITESPACE.test(unit);
   return `${quantity} ${plural ? `${unit}s` : unit}`.trim();
 }
 

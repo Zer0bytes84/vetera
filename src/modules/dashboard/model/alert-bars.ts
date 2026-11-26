@@ -1,3 +1,4 @@
+import { ISO_DATE_PREFIX } from "@/lib/patterns";
 import { type CareTask, careDisplayStatus } from "@/modules/care-tasks/domain";
 import type { Appointment, Invoice, Patient, Product } from "@/types/db";
 import { isOpenInvoice } from "../v2/financial-model";
@@ -48,7 +49,7 @@ const DAY_MS = 86_400_000;
 
 /** "2026-10-18" is midnight local, with no time-zone shift. */
 function dateOnly(value: string): Date | null {
-  const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(value);
+  const match = ISO_DATE_PREFIX.exec(value);
   if (!match) {
     return parseDashboardDate(value);
   }

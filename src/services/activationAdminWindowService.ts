@@ -5,6 +5,9 @@ import { requireActivationOwner } from "./adminAccess";
 
 import { isTauriRuntime } from "./browser-store";
 
+const HASH_ROUTE_PREFIX = /^#\/?/;
+const URL_HASH = /#.*/;
+
 export const ACTIVATION_ADMIN_ROUTE = "activation-admin";
 export const ACTIVATION_ADMIN_WINDOW_LABEL = "activation-admin";
 
@@ -13,7 +16,10 @@ export function isActivationAdminRoute() {
     return false;
   }
 
-  return window.location.hash.replace(/^#\/?/, "") === ACTIVATION_ADMIN_ROUTE;
+  return (
+    window.location.hash.replace(HASH_ROUTE_PREFIX, "") ===
+    ACTIVATION_ADMIN_ROUTE
+  );
 }
 
 function activationAdminUrl() {
@@ -21,7 +27,7 @@ function activationAdminUrl() {
     return `#/${ACTIVATION_ADMIN_ROUTE}`;
   }
 
-  return `${window.location.href.replace(/#.*/, "")}#/${ACTIVATION_ADMIN_ROUTE}`;
+  return `${window.location.href.replace(URL_HASH, "")}#/${ACTIVATION_ADMIN_ROUTE}`;
 }
 
 export async function openActivationAdminWindow() {

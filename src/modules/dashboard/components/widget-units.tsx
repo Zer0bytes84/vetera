@@ -17,6 +17,8 @@ import { shares } from "../model/dashboard-widgets";
 import { formatCentimes } from "../v2/model";
 import "./widget-units.css";
 
+const OPTIONAL_FINAL_PERIOD = /\.?$/;
+
 /** One category line: mark, name, count, share, aligned to the right. */
 export interface CategoryRow {
   key: string;
@@ -147,7 +149,7 @@ export function forecastSentence(forecast: MonthForecast): string {
   // "30 oct." already ends with its own full stop.
   if (forecast.crossing) {
     return `À ce rythme, ${end} et dépasse ${previous} vers le ${shortDay(forecast.crossing)}`.replace(
-      /\.?$/,
+      OPTIONAL_FINAL_PERIOD,
       "."
     );
   }

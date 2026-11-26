@@ -23,6 +23,9 @@ import { Button, IconButton } from "@/components/ui/action-button";
 import { EASE_OUT } from "@/lib/motion-tokens";
 import { cn } from "@/lib/utils";
 
+const INLINE_CODE_OR_BOLD = /(`[^`]*(?:`|$)|\*\*[^*]*(?:\*\*|$))/;
+const PARAGRAPH_BREAK = /\n{2,}/;
+
 export interface StreamingMessageData {
   content: string;
   error?: string;
@@ -233,7 +236,7 @@ interface Segment {
 // so markdown markers never flash on screen.
 function parseInline(paragraph: string): Segment[] {
   return paragraph
-    .split(/(`[^`]*(?:`|$)|\*\*[^*]*(?:\*\*|$))/)
+    .split(INLINE_CODE_OR_BOLD)
     .filter((part) => part && part !== "`" && part !== "**")
     .map((part) =>
       part.startsWith("`")
@@ -248,7 +251,7 @@ const tokenize = (segment: string) => segment.match(/\S+\s*|\s+/g) ?? [];
 
 function countWords(text: string) {
   return text
-    .split(/\n{2,}/)
+    .split(PARAGRAPH_BREAK)
     .flatMap(parseInline)
     .reduce((sum, segment) => sum + tokenize(segment.text).length, 0);
 }
@@ -268,7 +271,7 @@ function Content({
   streaming: boolean;
   settled: number;
 }) {
-  const paragraphs = text.split(/\n{2,}/);
+  const paragraphs = text.split(PARAGRAPH_BREAK);
   const nextIndex = counter();
 
   return (

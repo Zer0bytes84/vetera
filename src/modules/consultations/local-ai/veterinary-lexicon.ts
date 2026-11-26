@@ -5,6 +5,13 @@
  * 100% offline, local-only dictionary calibrated for French veterinary practice.
  */
 
+import { WHITESPACE_RUN } from "@/lib/patterns";
+
+const NOUN_ADJECTIVE_SUFFIX =
+  /(?:ations?|itions?|ements?|ances?|ences?|iennes?|iens?|iques?|aires?|ales?|aux|euses?|eux|ables?|ibles?|istes?|ismes?|ites?|oses?|ies?)$/u;
+const VERB_SUFFIX =
+  /(?:assions|assent|erions|eraient|eront|erait|eras|erez|aient|antes?|ants?|ait|ais|ees?|es?|er|ez|e|s)$/u;
+
 export function normalizeLexical(text: string): string {
   return text
     .toLocaleLowerCase("fr-FR")
@@ -96,14 +103,8 @@ export function stemFrenchWord(raw: string): string {
 
   // Standard French medical and grammatical suffix stripping (longest match first)
   const stripped = word
-    .replace(
-      /(?:ations?|itions?|ements?|ances?|ences?|iennes?|iens?|iques?|aires?|ales?|aux|euses?|eux|ables?|ibles?|istes?|ismes?|ites?|oses?|ies?)$/u,
-      ""
-    )
-    .replace(
-      /(?:assions|assent|erions|eraient|eront|erait|eras|erez|aient|antes?|ants?|ait|ais|ees?|es?|er|ez|e|s)$/u,
-      ""
-    );
+    .replace(NOUN_ADJECTIVE_SUFFIX, "")
+    .replace(VERB_SUFFIX, "");
 
   return stripped.length >= 3 ? stripped : word;
 }
@@ -392,7 +393,7 @@ const STOP_WORDS = new Set([
  */
 export function expandSearchQuery(query: string): QueryExpansion {
   const normalized = normalizeLexical(query);
-  const words = normalized.split(/\s+/).filter(Boolean);
+  const words = normalized.split(WHITESPACE_RUN).filter(Boolean);
   const terms = words.filter((w) => !STOP_WORDS.has(w) && w.length >= 2);
   const stems = terms.map(stemFrenchWord);
   const phrases = new Set<string>();
@@ -520,7 +521,7 @@ export function matchesSearchTerms(query: string, text: string): boolean {
   }
 
   const expansion = expandSearchQuery(query);
-  const textWords = normText.split(/\s+/).filter(Boolean);
+  const textWords = normText.split(WHITESPACE_RUN).filter(Boolean);
   const textWordSet = new Set(textWords);
   const textStemSet = new Set(textWords.map(stemFrenchWord));
 
@@ -617,8 +618,8 @@ export function matchesExactSearchTerms(query: string, text: string): boolean {
     return false;
   }
   const terms = normalizeLexical(query)
-    .split(/\s+/)
+    .split(WHITESPACE_RUN)
     .filter((term) => term && !STOP_WORDS.has(term));
-  const words = new Set(normalizeLexical(text).split(/\s+/));
+  const words = new Set(normalizeLexical(text).split(WHITESPACE_RUN));
   return terms.length > 0 && terms.every((term) => words.has(term));
 }

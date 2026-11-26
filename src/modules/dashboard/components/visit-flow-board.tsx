@@ -18,6 +18,8 @@ import type { NowSnapshot } from "../model/clinical-dashboard";
 import { formatTime } from "../v2/model";
 import "./clinical/clinical-workspace.css";
 
+const NO_ALLERGY = /^(aucun(?:e)?(?: connue)?|néant|non|ras)$/i;
+
 /**
  * A read-only summary of the day's care: who is next, the waiting room and
  * the day's progress. Visits move on in Flux, which this summary opens.
@@ -35,9 +37,7 @@ export function VisitFlowBoard({
   const reduced = useReducedMotion();
   const { next, waiting, queue, startsIn, allergies, today, at } = snapshot;
   const nextRoom = useRoomLabel()(next?.appointment.room);
-  const hasAllergy =
-    allergies &&
-    !/^(aucun(?:e)?(?: connue)?|néant|non|ras)$/i.test(allergies.trim());
+  const hasAllergy = allergies && !NO_ALLERGY.test(allergies.trim());
   const completed = today.filter(
     (row) => row.appointment.status === "completed"
   ).length;

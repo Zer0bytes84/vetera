@@ -28,6 +28,8 @@ import { enter, exit } from "@/lib/motion-tokens";
 import { cn } from "@/lib/utils";
 import "./data-table.css";
 
+const CSV_SPECIAL_CHARACTER = /[",\n;]/;
+
 /*
  * Adapted for Baitari from TuffUI's Data Table, which is drawn as theirs is: a shell with its header (icon, title, row count,
  * the CSV button), a panel with the filter field, the selection bar that slides in, a table of rounded, zebra rows with
@@ -109,7 +111,9 @@ const compare = (a: unknown, b: unknown) =>
 
 const csvCell = (v: unknown) => {
   const text = String(v ?? "");
-  return /[",\n;]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
+  return CSV_SPECIAL_CHARACTER.test(text)
+    ? `"${text.replace(/"/g, '""')}"`
+    : text;
 };
 
 /** The CSV of rows: header line, then one line per row, in the columns' order. */

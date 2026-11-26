@@ -1,3 +1,4 @@
+import { ISO_DATE } from "@/lib/patterns";
 import type { CareTask, CareType } from "@/modules/care-tasks/domain";
 import type { CareDatabase, CarePersistence } from "@/modules/care-tasks/store";
 import {
@@ -354,10 +355,7 @@ export function createStayStore(
       authorRequired(author);
       const parsed = new Date(`${dueDate}T12:00:00Z`);
       if (
-        !(
-          /^\d{4}-\d{2}-\d{2}$/.test(dueDate) &&
-          Number.isFinite(parsed.getTime())
-        ) ||
+        !(ISO_DATE.test(dueDate) && Number.isFinite(parsed.getTime())) ||
         parsed.toISOString().slice(0, 10) !== dueDate
       ) {
         throw new Error("Choisissez une date de contrôle valide.");

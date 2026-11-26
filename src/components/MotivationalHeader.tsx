@@ -11,6 +11,8 @@ import { PageHeader } from "@/design-system/patterns/page-header";
 import { ShortcutTooltip } from "@/design-system/patterns/shortcut-tooltip";
 import { prepareAppointment } from "@/modules/shell/model/clinical-actions";
 
+const TRAILING_WAVE_EMOJI = /\s*👋\s*$/;
+
 interface MotivationalHeaderProps {
   dashboardViewControl?: React.ReactNode;
   isCustomizing?: boolean;
@@ -151,7 +153,7 @@ const MotivationalHeader: React.FC<MotivationalHeaderProps> = ({
   const resolvedSubtitle = subtitle || headerCopy.subtitle;
 
   const renderTitle = (titleText: string) => {
-    const cleanTitle = titleText.replace(/\s*👋\s*$/, "");
+    const cleanTitle = titleText.replace(TRAILING_WAVE_EMOJI, "");
     return (
       <div className="space-y-1">
         <PageDate />

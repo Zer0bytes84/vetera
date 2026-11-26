@@ -18,6 +18,9 @@ import {
 } from "../v2/model";
 import { buildVisitKinds } from "./dashboard-widgets";
 
+const ISO_DATE_PARTS = /^(\d{4})-(\d{2})-(\d{2})$/;
+const TEST_OBJECT_MARKER = /\bTEST[\s_-]+ZO\b/i;
+
 export const ANALYTICS_PERIODS = [
   { value: "today", label: "Aujourd’hui", ariaLabel: "Aujourd’hui" },
   { value: "7d", label: "7J", ariaLabel: "7 jours" },
@@ -42,7 +45,7 @@ export interface CustomRange {
 export const MAX_CUSTOM_DAYS = 731;
 
 function parseDay(value: string): Date | null {
-  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+  const match = ISO_DATE_PARTS.exec(value);
   if (!match) {
     return null;
   }
@@ -211,7 +214,7 @@ export function metricChange(value: number, previous: number) {
   return ((value - previous) / Math.abs(previous)) * 100;
 }
 
-const isTestObject = (value?: string) => /\bTEST[\s_-]+ZO\b/i.test(value ?? "");
+const isTestObject = (value?: string) => TEST_OBJECT_MARKER.test(value ?? "");
 
 /** A dashboard read projection only. Records and financial audit trails remain intact. */
 export function dashboardPresentationData(data: {

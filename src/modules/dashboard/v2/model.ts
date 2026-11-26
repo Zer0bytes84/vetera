@@ -1,3 +1,4 @@
+import { ISO_DATE } from "@/lib/patterns";
 import type {
   Appointment,
   Owner,
@@ -8,6 +9,8 @@ import type {
 } from "@/types/db";
 import { formatDinars } from "@/utils/display-format";
 
+const VACCINE_LABEL_REGEX = /\b(vaccin\w*|immunisation)\b/;
+
 const SQLITE_TIMESTAMP_REGEX = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/;
 
 export function parseDashboardDate(value?: string): Date | null {
@@ -17,7 +20,7 @@ export function parseDashboardDate(value?: string): Date | null {
 
   // Calendar dates (journal/vaccine due dates) have no timezone. Parsing them
   // as UTC midnight shifts them to the previous day west of Greenwich.
-  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+  if (ISO_DATE.test(value)) {
     const [year, month, day] = value.split("-").map(Number);
     const date = new Date(year, month - 1, day);
     return date.getFullYear() === year &&
@@ -245,7 +248,7 @@ export function buildClinicalAlerts({
           .toLocaleLowerCase("fr-FR")
       )
       .join(" ");
-    return /\b(vaccin\w*|immunisation)\b/.test(label);
+    return VACCINE_LABEL_REGEX.test(label);
   };
   const vaccineAlerts = reminders.flatMap<ClinicalAlert>((reminder) => {
     if (reminder.statut !== "en_cours" || !isVaccineType(reminder.type)) {

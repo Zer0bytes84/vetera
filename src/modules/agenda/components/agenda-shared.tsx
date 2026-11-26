@@ -34,6 +34,9 @@ import {
   personInitials,
 } from "./agenda-slots";
 
+const TYPED_HOUR_MINUTES = /^(\d{1,2})(?:[:h.]?(\d{2})?)?$/;
+const TYPED_COMPACT_TIME = /^(\d{1,2})(\d{2})$/;
+
 export const APPOINTMENT_TYPES: Appointment["type"][] = [
   "Consultation",
   "Vaccin",
@@ -127,8 +130,7 @@ export function parseTypedTime(text: string): string | null {
     return null;
   }
   const match =
-    /^(\d{1,2})(?:[:h.]?(\d{2})?)?$/.exec(clean) ??
-    /^(\d{1,2})(\d{2})$/.exec(clean);
+    TYPED_HOUR_MINUTES.exec(clean) ?? TYPED_COMPACT_TIME.exec(clean);
   if (!match) {
     return null;
   }

@@ -1,3 +1,7 @@
+import { WHITESPACE } from "@/lib/patterns";
+
+const TOOL_NAME = /^([A-Za-z][A-Za-z0-9_]*)/;
+
 export interface ToolCall {
   args: Record<string, string>;
   name: string;
@@ -54,18 +58,18 @@ export const extractToolCall = (text: string): ToolCall | null => {
   }
 
   let cursor = markerStart + "[TOOL:".length;
-  while (/\s/.test(text[cursor] ?? "")) {
+  while (WHITESPACE.test(text[cursor] ?? "")) {
     cursor += 1;
   }
 
-  const nameMatch = text.slice(cursor).match(/^([A-Za-z][A-Za-z0-9_]*)/);
+  const nameMatch = text.slice(cursor).match(TOOL_NAME);
   if (!nameMatch) {
     return null;
   }
 
   const name = nameMatch[1];
   cursor += name.length;
-  while (/\s/.test(text[cursor] ?? "")) {
+  while (WHITESPACE.test(text[cursor] ?? "")) {
     cursor += 1;
   }
   if (text[cursor] !== "(") {

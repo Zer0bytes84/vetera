@@ -66,6 +66,7 @@ import {
 } from "@/data/repositories";
 import type { Note, Patient } from "@/types/db";
 import { guard } from "@/lib/guard";
+import { WHITESPACE_RUN } from "@/lib/patterns";
 
 const DocumentsWorkspace = lazy(
   () => import("@/modules/documents/components/documents-workspace")
@@ -674,7 +675,7 @@ const NotesPro: React.FC = () => {
   // Word count
   const wordCount = useMemo(() => {
     const text = content.replace(/<[^>]*>?/gm, "");
-    return text.trim().split(/\s+/).filter(Boolean).length;
+    return text.trim().split(WHITESPACE_RUN).filter(Boolean).length;
   }, [content]);
 
   // The assistant, as a quiet icon beside the « + » of the list. No templates: a page starts blank.

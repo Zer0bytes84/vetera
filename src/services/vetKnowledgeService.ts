@@ -5,6 +5,7 @@
  * vétérinaires locale (médicaments, maladies, espèces, urgences).
  */
 
+import { WHITESPACE_RUN } from "@/lib/patterns";
 import diseasesData from "../data/vet-knowledge/diseases.json";
 import emergenciesData from "../data/vet-knowledge/emergencies.json";
 // Import des données JSON (Vite gère l'import JSON)
@@ -114,7 +115,7 @@ function calculateRelevance(
 ): { score: number; matchedTerms: string[] } {
   const normalizedText = normalizeString(text);
   const queryTerms = normalizeString(query)
-    .split(/\s+/)
+    .split(WHITESPACE_RUN)
     .filter((t) => t.length > 2);
 
   let score = 0;

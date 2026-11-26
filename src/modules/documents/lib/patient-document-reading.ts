@@ -9,6 +9,9 @@ import {
 } from "./document-reading";
 import { readLocalDocument } from "./read-local-document";
 
+const BASE64_DATA_URL = /^data:([^;,]+);base64,([\s\S]+)$/;
+const CAPACITY_ERROR_MESSAGE = /dépasse|capacité|tronqué|ignorée/;
+
 const IMPORT_TYPES = ["application/pdf", "image/jpeg", "image/png"] as const;
 export const SCANNED_DOCUMENT_MESSAGE =
   "Ce PDF contient une page numérisée sans texte extractible. L’assistant ne peut pas la lire automatiquement. Le fichier reste consultable et téléchargeable.";
@@ -33,7 +36,7 @@ export function fileAsDataUrl(file: Blob): Promise<string> {
 }
 
 export function attachmentFile(attachment: DocumentAttachment): File {
-  const match = /^data:([^;,]+);base64,([\s\S]+)$/.exec(attachment.dataUrl);
+  const match = BASE64_DATA_URL.exec(attachment.dataUrl);
   if (!match || match[1] !== attachment.mimeType) {
     throw new Error("Le fichier local est invalide.");
   }
@@ -159,10 +162,7 @@ export async function preparePatientAttachment(
     };
   } catch (error) {
     checkAbort(signal);
-    if (
-      error instanceof Error &&
-      /dépasse|capacité|tronqué|ignorée/.test(error.message)
-    ) {
+    if (error instanceof Error && CAPACITY_ERROR_MESSAGE.test(error.message)) {
       throw error;
     }
     throw new Error(

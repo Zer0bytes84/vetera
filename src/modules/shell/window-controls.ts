@@ -1,6 +1,8 @@
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { isTauriRuntime } from "@/services/browser-store";
 
+const WINDOWS_USER_AGENT = /Windows/i;
+
 /*
  * Windows: the application's header is the title bar. The native bar is removed by tauri-plugin-decorum (Rust side, Windows
  * only), which fills the `#window-controls` element of index.html with three buttons:
@@ -26,7 +28,7 @@ export function windowControlsActive() {
 }
 
 function isWindowsDesktop() {
-  return isTauriRuntime() && /Windows/i.test(navigator.userAgent);
+  return isTauriRuntime() && WINDOWS_USER_AGENT.test(navigator.userAgent);
 }
 
 /** In development only, `localStorage["baitari:window-controls-preview"] = "1"` draws the bar in a browser, with inert buttons. */

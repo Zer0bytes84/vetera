@@ -50,6 +50,7 @@ import {
   VaccineIcon,
   WalletIcon,
 } from "@/lib/hugeicons";
+import { WHITESPACE_RUN } from "@/lib/patterns";
 import { getSpeciesGlyph } from "@/lib/species-icons";
 import { useHospitalizationEnabled } from "@/modules/clinique/clinic-services";
 import { openAssistant } from "@/modules/consultations/assistant-events";
@@ -79,6 +80,9 @@ import {
 import { suggestedPatients } from "@/modules/shell/model/palette-suggestions";
 import type { View } from "@/types";
 import type { Appointment, Patient } from "@/types/db";
+
+const LEADING_SCOPE_TOKEN = /^[a-z]+:[^\s]+\s*/i;
+const LEADING_CIVILITY = /^(mme|m|mr|madame|monsieur)\.?\s+/i;
 
 const CLINICAL_ALL_SECTIONS: SearchSection[] = [
   "subjective",
@@ -228,7 +232,7 @@ export const scoreCommandMatch = (
     return 1;
   }
 
-  const cleanedValue = value.replace(/^[a-z]+:[^\s]+\s*/i, "").trim();
+  const cleanedValue = value.replace(LEADING_SCOPE_TOKEN, "").trim();
   const normalizedLabel = normalizeSearch(cleanedValue);
   const haystack = normalizeSearch(
     `${cleanedValue} ${(keywords ?? []).join(" ")}`
@@ -245,7 +249,7 @@ export const scoreCommandMatch = (
   }
 
   // Any word in the label starts with the query
-  const labelWords = normalizedLabel.split(/\s+/).filter(Boolean);
+  const labelWords = normalizedLabel.split(WHITESPACE_RUN).filter(Boolean);
   if (labelWords.some((word) => word.startsWith(normalizedSearch))) {
     return 0.9;
   }
@@ -270,14 +274,14 @@ export const scoreCommandMatch = (
   }
 
   // Multi-word token match across the full haystack
-  const tokens = normalizedSearch.split(/\s+/).filter(Boolean);
+  const tokens = normalizedSearch.split(WHITESPACE_RUN).filter(Boolean);
   const matchedTokens = tokens.filter((token) => haystack.includes(token));
   return matchedTokens.length === tokens.length && tokens.length > 0 ? 0.65 : 0;
 };
 
 export const matchesSearch = (value: string, search: string): boolean => {
   const normalizedValue = normalizeSearch(value);
-  const tokens = normalizeSearch(search).split(/\s+/).filter(Boolean);
+  const tokens = normalizeSearch(search).split(WHITESPACE_RUN).filter(Boolean);
   return tokens.every((token) => normalizedValue.includes(token));
 };
 
@@ -644,10 +648,7 @@ export default function CommandPalette({
     if (intent?.kind !== "invoice") {
       return [];
     }
-    const entityClean = intent.entity.replace(
-      /^(mme|m|mr|madame|monsieur)\.?\s+/i,
-      ""
-    );
+    const entityClean = intent.entity.replace(LEADING_CIVILITY, "");
     return owners
       .filter((owner) =>
         matchesSearch(`${owner.firstName} ${owner.lastName}`, entityClean)

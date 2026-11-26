@@ -2,6 +2,8 @@ import { z } from "zod";
 import type { LocalSoapNote } from "@/modules/consultations/local-ai/soap-schema";
 import type { Appointment, Owner, Patient } from "@/types/db";
 
+const PARAGRAPH_BREAK = /\n\n+/;
+
 export const DOCUMENT_KINDS = {
   prescription: "Ordonnance",
   certificate: "Certificat",
@@ -119,6 +121,6 @@ export const escapeHtml = (text: string) =>
     .replace(/'/g, "&#39;");
 export const documentToHtml = (text: string) =>
   text
-    .split(/\n\n+/)
+    .split(PARAGRAPH_BREAK)
     .map((part) => `<p>${escapeHtml(part).replace(/\n/g, "<br>")}</p>`)
     .join("");

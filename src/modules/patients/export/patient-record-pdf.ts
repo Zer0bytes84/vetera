@@ -9,6 +9,7 @@ import {
 } from "pdf-lib";
 import boldFontUrl from "pdfjs-dist/standard_fonts/LiberationSans-Bold.ttf?url";
 import regularFontUrl from "pdfjs-dist/standard_fonts/LiberationSans-Regular.ttf?url";
+import { ISO_DATE_PREFIX } from "@/lib/patterns";
 import { openPatientRecordRasterSource } from "./patient-record-pdf-source";
 import type {
   PatientRecordBlock,
@@ -19,6 +20,13 @@ import type {
   PatientRecordSnapshot,
   PatientRecordSource,
 } from "./patient-record-types";
+
+const URL_SCHEME = /^[a-z][a-z\d+.-]*:/i;
+const BASE64_DATA_URL =
+  /^data:([^;,]+)(?:;[a-z\d_-]+=[^;,\r\n]*)*;base64,([a-z\d+/]*={0,2})$/i;
+const IMAGE_DATA_URL_PREFIX = /^data:(image\/(?:png|jpeg));base64,/i;
+const ENCRYPTION_ERROR = /encrypt|password/i;
+const USER_FACING_MESSAGE = /^(Le |La |Les |L’|Une |Les |L’apparence)/;
 
 const WIDTH = 210,
   HEIGHT = 297,
@@ -61,7 +69,7 @@ function localAsset(url: string): void {
     );
   }
   if (
-    /^[a-z][a-z\d+.-]*:/i.test(url) &&
+    URL_SCHEME.test(url) &&
     (typeof window === "undefined" ||
       new URL(url).origin !== window.location.origin)
   ) {
@@ -119,15 +127,13 @@ function lines(doc: jsPDF, text: string, width = BODY_WIDTH): string[] {
 }
 
 function civilDate(value?: string): string {
-  const match = value?.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  const match = value?.match(ISO_DATE_PREFIX);
   return match ? `${match[3]}/${match[2]}/${match[1]}` : value || "";
 }
 
 function dataBytes(value: string, mimeType: string): Uint8Array {
   // No URL, object URL, file URL or external resource is dereferenced here.
-  const match = value.match(
-    /^data:([^;,]+)(?:;[a-z\d_-]+=[^;,\r\n]*)*;base64,([a-z\d+/]*={0,2})$/i
-  );
+  const match = value.match(BASE64_DATA_URL);
   if (
     !match ||
     match[1].toLowerCase() !== mimeType ||
@@ -489,7 +495,7 @@ async function cover(
   let logoBottom = layout.y;
   if (snapshot.clinic.logoDataUrl) {
     const logoType = snapshot.clinic.logoDataUrl
-      .match(/^data:(image\/(?:png|jpeg));base64,/i)?.[1]
+      .match(IMAGE_DATA_URL_PREFIX)?.[1]
       ?.toLowerCase();
     if (!logoType) {
       throw new Error(
@@ -832,9 +838,9 @@ async function appendSource(
       throw new DOMException("Génération annulée", "AbortError");
     }
     const message = error instanceof Error ? error.message : "";
-    const detail = /encrypt|password/i.test(message)
+    const detail = ENCRYPTION_ERROR.test(message)
       ? "Le PDF est protégé par un mot de passe."
-      : /^(Le |La |Les |L’|Une |Les |L’apparence)/.test(message)
+      : USER_FACING_MESSAGE.test(message)
         ? message
         : "Le fichier est corrompu ou utilise un format non pris en charge.";
     throw new Error(

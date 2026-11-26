@@ -1,6 +1,8 @@
 // Passage index (phase A1): sources are split into short passages, ranked by
 // vector score, with the veterinary lexicon as a score bonus instead of an
 // absolute priority. The section index (v2) stays available for rollback.
+
+import { WHITESPACE_RUN } from "@/lib/patterns";
 import {
   assertSearchScope,
   EMBEDDING_MODEL_KEY,
@@ -15,6 +17,9 @@ import {
   matchesSearchTerms,
 } from "./veterinary-lexicon";
 import type { SearchModel } from "./worker-protocol";
+
+const PASSAGE_BREAK = /(?<=[.!?;:])\s+|\n+/u;
+const SENTENCE_END_SPACE = /(?<=[.!?;:])\s+/u;
 
 export type SearchGeneration =
   | "sections"
@@ -67,7 +72,7 @@ export function splitPassages(
   size = PASSAGE_CHARACTERS
 ): string[] {
   const sentences = text
-    .split(/(?<=[.!?;:])\s+|\n+/u)
+    .split(PASSAGE_BREAK)
     .map((sentence) => sentence.trim())
     .filter(Boolean)
     .flatMap((sentence) => {
@@ -76,7 +81,7 @@ export function splitPassages(
       }
       const pieces: string[] = [];
       let current = "";
-      for (const word of sentence.split(/\s+/)) {
+      for (const word of sentence.split(WHITESPACE_RUN)) {
         if (current && current.length + word.length + 1 > size) {
           pieces.push(current);
           current = "";
@@ -142,7 +147,7 @@ export function bestPassage(
  */
 export function focusExcerpt(text: string, query: string, lead = 90) {
   let offset = 0;
-  for (const sentence of text.split(/(?<=[.!?;:])\s+/u)) {
+  for (const sentence of text.split(SENTENCE_END_SPACE)) {
     const start = text.indexOf(sentence, offset);
     if (matchesSearchTerms(query, sentence)) {
       return start > lead ? `… ${text.slice(start)}` : text;

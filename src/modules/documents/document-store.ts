@@ -1,3 +1,4 @@
+import { ISO_DATE } from "@/lib/patterns";
 import type { CarePersistence } from "@/modules/care-tasks/store";
 import {
   isSoapReviewed,
@@ -26,6 +27,10 @@ import {
   renderDocumentVariables,
   validateDocumentTemplate,
 } from "./document-variables";
+
+const SQL_COLUMN_NAME = /^[a-z][a-z_]*$/;
+const PDF_DATA_URL =
+  /^data:application\/pdf(?:;filename=[^;,]+)?;base64,JVBERi0[a-zA-Z0-9+/=\r\n]*$/;
 
 export type DocumentRow = Record<string, unknown>;
 const TABLES = [
@@ -66,7 +71,7 @@ export function sqliteDocumentPersistence(
     const check = (table: string, columns: string[]) => {
       if (
         !(TABLES as readonly string[]).includes(table) ||
-        columns.some((column) => !/^[a-z][a-z_]*$/.test(column))
+        columns.some((column) => !SQL_COLUMN_NAME.test(column))
       ) {
         throw new Error("Requête documentaire invalide.");
       }
@@ -186,9 +191,7 @@ const dateText = (value: unknown) => {
     return "";
   }
   const raw = text(value);
-  const date = new Date(
-    /^\d{4}-\d{2}-\d{2}$/.test(raw) ? `${raw}T12:00:00` : raw
-  );
+  const date = new Date(ISO_DATE.test(raw) ? `${raw}T12:00:00` : raw);
   return Number.isFinite(date.getTime())
     ? date.toLocaleDateString("fr-FR")
     : "";
@@ -937,12 +940,7 @@ export function createDocumentStore(
       if (!reviewed) {
         throw new Error("Relisez l’aperçu avant de finaliser le document.");
       }
-      if (
-        !/^data:application\/pdf(?:;filename=[^;,]+)?;base64,JVBERi0[a-zA-Z0-9+/=\r\n]*$/.test(
-          pdfDataUrl
-        ) ||
-        pdfDataUrl.length > 32_000_000
-      ) {
+      if (!PDF_DATA_URL.test(pdfDataUrl) || pdfDataUrl.length > 32_000_000) {
         throw new Error("L’aperçu PDF est invalide. Générez-le à nouveau.");
       }
       return persistence.transaction(async (db) => {

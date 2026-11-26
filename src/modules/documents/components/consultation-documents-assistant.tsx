@@ -72,9 +72,11 @@ import {
   saveReviewedDocument,
 } from "../lib/save-reviewed-document";
 
+const BASE64_DATA_URL = /^data:([^;,]+);base64,([\s\S]+)$/;
+
 type Draft = Pick<ReviewedDocumentInput, "title" | "text" | "source">;
 function fileFromAttachment(document: ConsultationDocument): File {
-  const match = /^data:([^;,]+);base64,([\s\S]+)$/.exec(document.dataUrl);
+  const match = BASE64_DATA_URL.exec(document.dataUrl);
   if (!match || match[1] !== document.mimeType) {
     throw new Error("Ce fichier local est invalide.");
   }

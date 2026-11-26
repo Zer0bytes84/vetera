@@ -30,6 +30,7 @@ import {
 import { stockDay } from "@/domain/stock-date";
 import { guard } from "@/lib/guard";
 import { CalendarDays, Plus } from "@/lib/icons";
+import { TIME_HH_MM } from "@/lib/patterns";
 import { CareTimePicker } from "@/modules/care-tasks/care-time-picker";
 import { isTauriRuntime } from "@/services/browser-store";
 import { generateId } from "@/services/sqlite/database";
@@ -171,8 +172,7 @@ function LotForm({
             if (
               mode === "receive" &&
               (!(
-                /^([01]\d|2[0-3]):[0-5]\d$/.test(time) &&
-                Number.isFinite(receivedAt.getTime())
+                TIME_HH_MM.test(time) && Number.isFinite(receivedAt.getTime())
               ) ||
                 stockDay(receivedAt) !== stockDay(received) ||
                 `${String(receivedAt.getHours()).padStart(2, "0")}:${String(receivedAt.getMinutes()).padStart(2, "0")}` !==

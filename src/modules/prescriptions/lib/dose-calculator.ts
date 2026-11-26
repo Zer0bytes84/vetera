@@ -20,6 +20,9 @@
 
 import type { PrescriptionDosageUnit } from "@/types/db";
 
+const DIGIT = /\d/;
+const TRAILING_ZEROS = /\.?0+$/;
+
 export type DoseUnit = PrescriptionDosageUnit | string;
 
 export interface ParsedPosology {
@@ -172,7 +175,7 @@ export function parseCatalogPosology(input: string): CatalogPosology | null {
   );
   if (
     !posology ||
-    (/\d/.test(remainder) && !loadingThenMaintenance.test(remainder))
+    (DIGIT.test(remainder) && !loadingThenMaintenance.test(remainder))
   ) {
     return null;
   }
@@ -264,5 +267,5 @@ export function formatNumber(value: number): string {
     return "0";
   }
   const fixed = value.toFixed(2);
-  return fixed.replace(/\.?0+$/, "");
+  return fixed.replace(TRAILING_ZEROS, "");
 }

@@ -1,5 +1,7 @@
 import type { Owner, Patient } from "@/types/db";
 
+const EMAIL_ADDRESS = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 export type OwnerDraft = Omit<Owner, "id" | "createdAt" | "updatedAt">;
 export type PatientDraft = Omit<
   Patient,
@@ -50,7 +52,7 @@ function normalizeEmail(value?: string): string | undefined {
   if (!normalized) {
     return;
   }
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalized)) {
+  if (!EMAIL_ADDRESS.test(normalized)) {
     throw new ClinicalValidationError(
       "OWNER_EMAIL_INVALID",
       "L'adresse email du propriétaire n'est pas valide."

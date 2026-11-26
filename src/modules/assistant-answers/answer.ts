@@ -40,6 +40,15 @@ import type {
   Topic,
 } from "./types";
 
+const CASH_INCOME_WORDS =
+  /\b(recette|recettes|encaisse|encaisses|encaissement|encaissements|chiffre d affaires|revenu|revenus|gagne|rentrees)\b/;
+const EXPENSE_WORDS = /\b(depense|depenses|charge|charges)\b/;
+const ABSENCE_WORDS = /\b(absence|absences|absent|absents|absente|absentes)\b/;
+const OVERDUE_WORDS = /\b(retard|depasse|depasses|depassee|depassees)\b/;
+const NEW_PATIENT_WORDS =
+  /\b(nouveau|nouveaux|nouvelle|nouvelles|crees|ouverts|inscrits)\b/;
+const DIGIT = /\d/;
+
 export const STARTER_QUESTIONS = [
   "Recettes des 30 derniers jours",
   "Rendez-vous d’aujourd’hui",
@@ -337,11 +346,8 @@ function cash({
   understood,
 }: Build): Answer {
   const period = asked ?? lastThirtyDays(now);
-  const wantsIncome = has(
-    text,
-    /\b(recette|recettes|encaisse|encaisses|encaissement|encaissements|chiffre d affaires|revenu|revenus|gagne|rentrees)\b/
-  );
-  const wantsExpense = has(text, /\b(depense|depenses|charge|charges)\b/);
+  const wantsIncome = has(text, CASH_INCOME_WORDS);
+  const wantsExpense = has(text, EXPENSE_WORDS);
   const both = wantsIncome === wantsExpense;
   // The rule of the dashboard's « Trésorerie » figure and of the journal: settled lines only, by the date of the line.
   const settled = data.transactions.filter(
@@ -515,10 +521,7 @@ function appointments({
   scope,
   understood,
 }: Build): Answer {
-  const missedOnly = has(
-    text,
-    /\b(absence|absences|absent|absents|absente|absentes)\b/
-  );
+  const missedOnly = has(text, ABSENCE_WORDS);
   const period = asked ?? lastThirtyDays(now);
   const patients = new Map(
     data.patients.map((patient) => [patient.id, patient])
@@ -689,10 +692,7 @@ function tasks({
   understood,
 }: Build): Answer {
   const today = startOfDay(now);
-  const lateOnly = has(
-    text,
-    /\b(retard|depasse|depasses|depassee|depassees)\b/
-  );
+  const lateOnly = has(text, OVERDUE_WORDS);
   const patients = new Map(
     data.patients.map((patient) => [patient.id, patient])
   );
@@ -829,11 +829,7 @@ function patients({
   period: asked,
   understood,
 }: Build): Answer {
-  const fresh =
-    has(
-      text,
-      /\b(nouveau|nouveaux|nouvelle|nouvelles|crees|ouverts|inscrits)\b/
-    ) || asked !== null;
+  const fresh = has(text, NEW_PATIENT_WORDS) || asked !== null;
   if (fresh) {
     const period = asked ?? lastThirtyDays(now);
     const owners = new Map(data.owners.map((owner) => [owner.id, owner]));
@@ -1029,7 +1025,7 @@ export function verifyAnswer(answer: Answer): Answer {
   }
   for (const [index, template] of answer.templates.entries()) {
     // The default-period note carries « 30 » on purpose: it is a rule of the tab, not a computed figure.
-    if (/\d/.test(template.split(DEFAULT_PERIOD_NOTE).join(""))) {
+    if (DIGIT.test(template.split(DEFAULT_PERIOD_NOTE).join(""))) {
       return fail();
     }
     let written_: string;

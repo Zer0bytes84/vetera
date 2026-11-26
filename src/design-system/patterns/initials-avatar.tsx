@@ -1,3 +1,4 @@
+import { WHITESPACE_RUN } from "@/lib/patterns";
 import { cn } from "@/lib/utils";
 import { firstNameOf } from "@/utils/display-format";
 
@@ -5,7 +6,7 @@ import { firstNameOf } from "@/utils/display-format";
 export function personInitials(name?: string | null) {
   // Titles (Dr, Pr, Mme…) are not part of the initials: "Dr Lina Ait Salem" gives "LS".
   const words = (name ?? "")
-    .split(/\s+/)
+    .split(WHITESPACE_RUN)
     .filter(Boolean)
     .filter((word) => firstNameOf(word) !== "");
   if (words.length === 0) {

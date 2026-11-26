@@ -1,5 +1,7 @@
 import type { SqliteMigration } from "./migrations";
 
+const MIGRATION_VERSION = /^\d{3}$/;
+
 export interface MigrationDatabase {
   execute(query: string, bindValues?: unknown[]): Promise<unknown>;
   select<T>(query: string, bindValues?: unknown[]): Promise<T>;
@@ -68,7 +70,7 @@ function validateMigrationRegistry(
   let previousVersion = -1;
 
   for (const migration of migrations) {
-    if (!/^\d{3}$/.test(migration.version)) {
+    if (!MIGRATION_VERSION.test(migration.version)) {
       throw new Error(`Invalid migration version: ${migration.version}`);
     }
     if (versions.has(migration.version)) {

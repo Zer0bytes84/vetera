@@ -8,6 +8,8 @@ import type {
   WorkerResponse,
 } from "../local-ai/worker-protocol";
 
+const NO_SPEECH_ERROR = /Aucune parole|langue n’a pas/;
+
 let transcriber: AutomaticSpeechRecognitionPipeline | null = null;
 const send = (message: WorkerResponse) => self.postMessage(message);
 self.onmessage = async ({ data }: MessageEvent<WorkerRequest>) => {
@@ -164,8 +166,7 @@ self.onmessage = async ({ data }: MessageEvent<WorkerRequest>) => {
     await transcriber?.dispose().catch(() => undefined);
     transcriber = null;
     const message =
-      error instanceof Error &&
-      /Aucune parole|langue n’a pas/.test(error.message)
+      error instanceof Error && NO_SPEECH_ERROR.test(error.message)
         ? error.message
         : data.type === "load-whisper"
           ? "La dictée n’a pas pu être chargée. Vérifiez les fichiers installés sur cet ordinateur."

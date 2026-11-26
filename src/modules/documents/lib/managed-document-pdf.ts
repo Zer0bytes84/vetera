@@ -9,6 +9,8 @@ import {
   type PatientDocument,
 } from "../document-domain";
 
+const PDF_DATA_URL_PREFIX = /^data:application\/pdf(?:;[^,]*)?;base64,/;
+
 let fonts: Promise<[string, string]> | undefined;
 function base64(bytes: Uint8Array): string {
   let value = "";
@@ -18,7 +20,7 @@ function base64(bytes: Uint8Array): string {
   return btoa(value);
 }
 export function pdfBytes(dataUrl: string): Uint8Array {
-  if (!/^data:application\/pdf(?:;[^,]*)?;base64,/.test(dataUrl)) {
+  if (!PDF_DATA_URL_PREFIX.test(dataUrl)) {
     throw new Error("Le fichier PDF enregistré est illisible.");
   }
   const binary = atob(dataUrl.slice(dataUrl.indexOf(",") + 1));

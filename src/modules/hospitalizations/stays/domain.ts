@@ -1,3 +1,5 @@
+import { TIME_HH_MM } from "@/lib/patterns";
+
 export const STAY_STATUSES = [
   "admis",
   "en_cours",
@@ -71,10 +73,7 @@ export function carePlanOccurrences(
   if (end < start) {
     throw new Error("La fin du plan ne peut pas précéder son début.");
   }
-  if (
-    !times.length ||
-    times.some((time) => !/^([01]\d|2[0-3]):[0-5]\d$/.test(time))
-  ) {
+  if (!times.length || times.some((time) => !TIME_HH_MM.test(time))) {
     throw new Error("Choisissez des horaires valides pour les soins.");
   }
   const result: string[] = [];

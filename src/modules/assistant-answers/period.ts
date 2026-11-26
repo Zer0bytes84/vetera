@@ -13,6 +13,23 @@ import {
 import { has } from "./language";
 import type { Period } from "./types";
 
+const DAY_BEFORE_YESTERDAY = /\bavant hier\b/;
+const TODAY = /\b(aujourd hui|ce jour|du jour)\b/;
+const YESTERDAY = /\bhier\b/;
+const TOMORROW = /\bdemain\b/;
+const LAST_WEEK = /\bsemaine (derniere|passee|precedente)\b/;
+const NEXT_WEEK = /\bsemaine prochaine\b/;
+const THIS_WEEK = /\b(cette|la) semaine\b/;
+const LAST_MONTH = /\bmois (dernier|passe|precedent)\b/;
+const NEXT_MONTH = /\bmois prochain\b/;
+const THIS_MONTH = /\b(ce|du) mois\b/;
+const LAST_YEAR = /\b(annee|an) (derniere|dernier|passee|passe|precedente)\b/;
+const THIS_YEAR = /\b(cette annee|cet an)\b/;
+const LAST_N = /\b(\d{1,4}) (?:derniers|dernieres) (jours|semaines|mois)\b/;
+const SINCE_N = /\bdepuis (\d{1,4}) (jours|semaines|mois)\b/;
+const NEXT_N = /\b(\d{1,4}) (?:prochains|prochaines) (jours|semaines)\b/;
+const YEAR_ONLY = /\b(?:en|de|annee) (20\d{2})\b/;
+
 const MONTHS = [
   "janvier",
   "fevrier",
@@ -61,25 +78,25 @@ const mondayOf = (date: Date) =>
 export function parsePeriod(text: string, now: Date): Period | null {
   const year = now.getFullYear();
   const month = now.getMonth();
-  if (has(text, /\bavant hier\b/)) {
+  if (has(text, DAY_BEFORE_YESTERDAY)) {
     return span(addDays(now, -2), addDays(now, -2));
   }
-  if (has(text, /\b(aujourd hui|ce jour|du jour)\b/)) {
+  if (has(text, TODAY)) {
     return span(now, now);
   }
-  if (has(text, /\bhier\b/)) {
+  if (has(text, YESTERDAY)) {
     return span(addDays(now, -1), addDays(now, -1));
   }
-  if (has(text, /\bdemain\b/)) {
+  if (has(text, TOMORROW)) {
     return span(addDays(now, 1), addDays(now, 1));
   }
-  if (has(text, /\bsemaine (derniere|passee|precedente)\b/)) {
+  if (has(text, LAST_WEEK)) {
     return span(addDays(mondayOf(now), -7), addDays(mondayOf(now), -1));
   }
-  if (has(text, /\bsemaine prochaine\b/)) {
+  if (has(text, NEXT_WEEK)) {
     return span(addDays(mondayOf(now), 7), addDays(mondayOf(now), 13));
   }
-  if (has(text, /\b(cette|la) semaine\b/)) {
+  if (has(text, THIS_WEEK)) {
     return span(mondayOf(now), addDays(mondayOf(now), 6));
   }
 
@@ -96,25 +113,23 @@ export function parsePeriod(text: string, now: Date): Period | null {
         : year;
     return span(new Date(inYear, index, 1), new Date(inYear, index + 1, 0));
   }
-  if (has(text, /\bmois (dernier|passe|precedent)\b/)) {
+  if (has(text, LAST_MONTH)) {
     return span(new Date(year, month - 1, 1), new Date(year, month, 0));
   }
-  if (has(text, /\bmois prochain\b/)) {
+  if (has(text, NEXT_MONTH)) {
     return span(new Date(year, month + 1, 1), new Date(year, month + 2, 0));
   }
-  if (has(text, /\b(ce|du) mois\b/)) {
+  if (has(text, THIS_MONTH)) {
     return span(new Date(year, month, 1), new Date(year, month + 1, 0));
   }
-  if (has(text, /\b(annee|an) (derniere|dernier|passee|passe|precedente)\b/)) {
+  if (has(text, LAST_YEAR)) {
     return span(new Date(year - 1, 0, 1), new Date(year - 1, 11, 31));
   }
-  if (has(text, /\b(cette annee|cet an)\b/)) {
+  if (has(text, THIS_YEAR)) {
     return span(new Date(year, 0, 1), new Date(year, 11, 31));
   }
 
-  const last =
-    /\b(\d{1,4}) (?:derniers|dernieres) (jours|semaines|mois)\b/.exec(text) ??
-    /\bdepuis (\d{1,4}) (jours|semaines|mois)\b/.exec(text);
+  const last = LAST_N.exec(text) ?? SINCE_N.exec(text);
   if (last) {
     const count = Math.min(Number(last[1]), MAX_COUNT);
     if (count < 1) {
@@ -129,9 +144,7 @@ export function parsePeriod(text: string, now: Date): Period | null {
     const days = last[2] === "jours" ? count : count * 7;
     return span(addDays(now, 1 - Math.min(days, MAX_CUSTOM_DAYS)), now);
   }
-  const next = /\b(\d{1,4}) (?:prochains|prochaines) (jours|semaines)\b/.exec(
-    text
-  );
+  const next = NEXT_N.exec(text);
   if (next) {
     const count = Math.min(Number(next[1]), MAX_COUNT);
     if (count < 1) {
@@ -145,7 +158,7 @@ export function parsePeriod(text: string, now: Date): Period | null {
       )
     );
   }
-  const yearOnly = /\b(?:en|de|annee) (20\d{2})\b/.exec(text);
+  const yearOnly = YEAR_ONLY.exec(text);
   if (yearOnly) {
     return span(
       new Date(Number(yearOnly[1]), 0, 1),

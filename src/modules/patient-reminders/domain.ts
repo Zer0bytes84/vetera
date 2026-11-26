@@ -1,3 +1,10 @@
+import { ISO_DATE } from "@/lib/patterns";
+
+const VACCINATION_ACT = /\b(vaccin\w*|immunisation)\b/;
+const DEWORMING_ACT = /\b(vermifug\w*|deparasitage interne)\b/;
+const DENTAL_ACT = /\b(detartrage|soins? dentaires?|bilan dentaire)\b/;
+const ANNUAL_CHECKUP_ACT = /\b(controle annuel|bilan annuel|visite annuelle)\b/;
+
 export type MedicalReminderStatus = "en_cours" | "termine" | "annule";
 
 const LEGACY_REMINDER_TYPES = new Map([
@@ -50,16 +57,16 @@ export function medicalReminderTypeForAct(label: string): string | null {
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .toLocaleLowerCase("fr-FR");
-  if (/\b(vaccin\w*|immunisation)\b/.test(normalized)) {
+  if (VACCINATION_ACT.test(normalized)) {
     return "vaccin";
   }
-  if (/\b(vermifug\w*|deparasitage interne)\b/.test(normalized)) {
+  if (DEWORMING_ACT.test(normalized)) {
     return "vermifuge";
   }
-  if (/\b(detartrage|soins? dentaires?|bilan dentaire)\b/.test(normalized)) {
+  if (DENTAL_ACT.test(normalized)) {
     return "soin_dentaire";
   }
-  if (/\b(controle annuel|bilan annuel|visite annuelle)\b/.test(normalized)) {
+  if (ANNUAL_CHECKUP_ACT.test(normalized)) {
     return "controle_annuel";
   }
   return null;
@@ -68,7 +75,7 @@ export function medicalReminderTypeForAct(label: string): string | null {
 export function assertDateOnly(value: string): void {
   const date = new Date(`${value}T12:00:00Z`);
   if (
-    !(/^\d{4}-\d{2}-\d{2}$/.test(value) && Number.isFinite(date.getTime())) ||
+    !(ISO_DATE.test(value) && Number.isFinite(date.getTime())) ||
     date.toISOString().slice(0, 10) !== value
   ) {
     throw new Error("Choisissez une date valide.");

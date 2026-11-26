@@ -1,3 +1,4 @@
+import { ISO_DATE_PREFIX } from "@/lib/patterns";
 import { type CareTask, careDisplayStatus } from "@/modules/care-tasks/domain";
 import type { View } from "@/types";
 import type {
@@ -55,7 +56,7 @@ const plural = (n: number, one: string, many = `${one}s`) =>
   `${formatNumber(n)} ${n > 1 ? many : one}`;
 
 function dateOnly(value: string): Date | null {
-  const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(value);
+  const match = ISO_DATE_PREFIX.exec(value);
   if (!match) {
     return parseDashboardDate(value);
   }

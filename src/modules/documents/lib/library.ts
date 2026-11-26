@@ -1,5 +1,13 @@
+import { WHITESPACE, WHITESPACE_RUN } from "@/lib/patterns";
 import type { LibraryItem, Note } from "@/types/db";
 import { formatDisplayText } from "@/utils/display-format";
+
+const URL_SCHEME = /^[a-z][a-z0-9+.-]*:/i;
+const HOST_AND_PORT = /^[^/?#:]+:\d+(?:[/?#]|$)/;
+const MAILTO_ADDRESS = /^mailto:[^@\s]+@[^@\s]+\.[^@\s]+/i;
+const WWW_PREFIX = /^www\./;
+const DATA_URL = /^data:([^;,]*)(;base64)?,(.*)$/s;
+const LEADING_DOTS = /^\.+/;
 
 /**
  * The Documents page lists three kinds of things side by side: the notes (« Document »), and the files, images and links
@@ -111,7 +119,7 @@ export function matchesQuery(entry: LibraryEntry, query: string) {
   const words = query
     .trim()
     .toLocaleLowerCase("fr")
-    .split(/\s+/)
+    .split(WHITESPACE_RUN)
     .filter(Boolean);
   if (!words.length) {
     return true;
@@ -143,12 +151,12 @@ export function countByKind(
  */
 export function normalizeLinkUrl(input: string): string | null {
   const text = input.trim();
-  if (!text || /\s/.test(text)) {
+  if (!text || WHITESPACE.test(text)) {
     return null;
   }
-  const hasScheme = /^[a-z][a-z0-9+.-]*:/i.test(text);
+  const hasScheme = URL_SCHEME.test(text);
   // « localhost:3000 » and « exemple.dz:8080 » look like a scheme but are a host and a port.
-  const hostAndPort = /^[^/?#:]+:\d+(?:[/?#]|$)/.test(text);
+  const hostAndPort = HOST_AND_PORT.test(text);
   const candidate = hasScheme && !hostAndPort ? text : `https://${text}`;
   let url: URL;
   try {
@@ -157,9 +165,7 @@ export function normalizeLinkUrl(input: string): string | null {
     return null;
   }
   if (url.protocol === "mailto:") {
-    return /^mailto:[^@\s]+@[^@\s]+\.[^@\s]+/i.test(candidate)
-      ? url.href
-      : null;
+    return MAILTO_ADDRESS.test(candidate) ? url.href : null;
   }
   if (url.protocol !== "http:" && url.protocol !== "https:") {
     return null;
@@ -177,7 +183,7 @@ export function linkTitle(url: string) {
     if (parsed.protocol === "mailto:") {
       return parsed.pathname;
     }
-    return parsed.hostname.replace(/^www\./, "");
+    return parsed.hostname.replace(WWW_PREFIX, "");
   } catch {
     return url;
   }
@@ -247,7 +253,7 @@ export const formatSize = (bytes?: number | null) => {
 
 /** Bytes of a data URL back into a Blob, to hand a kept file to the person who asks for it. */
 export function dataUrlToBlob(dataUrl: string): Blob | null {
-  const match = /^data:([^;,]*)(;base64)?,(.*)$/s.exec(dataUrl);
+  const match = DATA_URL.exec(dataUrl);
   if (!match) {
     return null;
   }
@@ -270,5 +276,5 @@ export const safeFileName = (name: string) =>
     .split("")
     .map((ch) => (ch.charCodeAt(0) < 32 ? "_" : ch))
     .join("")
-    .replace(/^\.+/, "")
+    .replace(LEADING_DOTS, "")
     .trim() || "fichier";

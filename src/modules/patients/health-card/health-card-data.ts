@@ -6,6 +6,7 @@
  * traitement). Une donnée absente reste absente et le carnet le dit.
  */
 
+import { ISO_DATE } from "@/lib/patterns";
 import {
   durationToDays,
   isTreatmentActive,
@@ -20,6 +21,10 @@ import type {
   Vaccination,
   WeightEntry,
 } from "@/types/db";
+
+const CLINICAL_LIST_SEPARATOR = /[\n;,•]+/;
+const IMAGE_DATA_URL = /^data:image\/(png|jpe?g);base64,[a-z0-9+/=]+$/i;
+const TRAILING_ZEROS = /\.?0+$/;
 
 const DAY_MS = 86_400_000;
 /** Un rappel est « à prévoir » dans les 30 jours. */
@@ -125,7 +130,7 @@ export function parseClinicalDate(
   if (!value) {
     return null;
   }
-  const parsed = /^\d{4}-\d{2}-\d{2}$/.test(value)
+  const parsed = ISO_DATE.test(value)
     ? new Date(`${value}T00:00:00`)
     : new Date(value);
   return Number.isNaN(parsed.getTime()) ? null : parsed;
@@ -192,16 +197,14 @@ export function ageLabel(
 /** Liste libre (« Pénicillines, AINS ; poulet ») découpée en éléments. */
 export function splitClinicalList(value: string | null | undefined): string[] {
   return (value ?? "")
-    .split(/[\n;,•]+/)
+    .split(CLINICAL_LIST_SEPARATOR)
     .map((part) => part.replace(/\s+/g, " ").trim())
     .filter(Boolean);
 }
 
 function photo(value: string | undefined): string | undefined {
   // Seules les images locales embarquées sont reprises : aucun accès réseau.
-  return value && /^data:image\/(png|jpe?g);base64,[a-z0-9+/=]+$/i.test(value)
-    ? value
-    : undefined;
+  return value && IMAGE_DATA_URL.test(value) ? value : undefined;
 }
 
 function vaccineKey(vaccination: Vaccination): string {
@@ -315,10 +318,7 @@ function doseLabel(item: PrescriptionItem): string | undefined {
   const format = (value: number) =>
     Number.isInteger(value)
       ? String(value)
-      : value
-          .toFixed(2)
-          .replace(/\.?0+$/, "")
-          .replace(".", ",");
+      : value.toFixed(2).replace(TRAILING_ZEROS, "").replace(".", ",");
   if (item.computedDoseMg != null && item.computedDoseMg > 0) {
     const ml =
       item.computedVolumeMl != null && item.computedVolumeMl > 0

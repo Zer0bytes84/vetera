@@ -1,4 +1,8 @@
+import { ISO_DATE } from "@/lib/patterns";
 import type { Appointment, Patient } from "@/types/db";
+
+const LIST_SEPARATOR = /[,;\n]/;
+const TRAILING_PERIOD = /\.$/;
 
 const DAY_MS = 86_400_000;
 /** A patient not seen for this long is due a follow-up call. */
@@ -9,7 +13,7 @@ function time(value: string | undefined) {
     return null;
   }
   // Calendar dates (YYYY-MM-DD) are read in local time, as everywhere else.
-  const parsed = /^\d{4}-\d{2}-\d{2}$/.test(value)
+  const parsed = ISO_DATE.test(value)
     ? new Date(`${value}T00:00:00`).getTime()
     : new Date(value).getTime();
   return Number.isFinite(parsed) ? parsed : null;
@@ -44,8 +48,8 @@ export function clinicalFlags(
 ): ClinicalFlag[] {
   const split = (text: string | undefined) =>
     (text ?? "")
-      .split(/[,;\n]/)
-      .map((item) => item.trim().replace(/\.$/, ""))
+      .split(LIST_SEPARATOR)
+      .map((item) => item.trim().replace(TRAILING_PERIOD, ""))
       .filter((item) => item && !NOTHING_TO_REPORT.test(item));
   const seen = new Set<string>();
   const flags: ClinicalFlag[] = [];

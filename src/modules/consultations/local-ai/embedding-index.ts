@@ -2,6 +2,8 @@ import type { PatientDocument } from "@/modules/documents/document-domain";
 import type { ConsultationSoap, Note } from "@/types/db";
 import { isSoapReviewed, soapSourceKey } from "./soap-review";
 import { SOAP_SECTIONS } from "./soap-schema";
+
+const EMBEDDING_HEX = /^[a-fA-F0-9]{6144}$/;
 export const EMBEDDING_MODEL_KEY =
   "embeddinggemma-300m-onnx-fp32-wasm-768-sections-v2";
 export const MIN_SEARCH_SCORE = 0.3;
@@ -381,7 +383,7 @@ export function embeddingToHex(vector: number[]) {
   ).join("");
 }
 export function embeddingFromHex(hex: string) {
-  if (!/^[a-fA-F0-9]{6144}$/.test(hex)) {
+  if (!EMBEDDING_HEX.test(hex)) {
     throw new Error("Un extrait de recherche est invalide.");
   }
   const bytes = Uint8Array.from(hex.match(/../g)!, (value) =>

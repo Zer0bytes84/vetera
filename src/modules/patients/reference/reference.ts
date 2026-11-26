@@ -1,3 +1,5 @@
+const REFERENCE_QUERY = /^\s*(?:(id)[\s-]*)?(\d+)\s*$/i;
+
 /** « ID-0011 »: the prefix, a dash, the number padded to four digits at least. */
 export function formatPatientReference(sequenceNumber: number) {
   return `ID-${String(sequenceNumber).padStart(4, "0")}`;
@@ -9,7 +11,7 @@ export function formatPatientReference(sequenceNumber: number) {
  * so that a phone or chip fragment such as « 11 » is not taken for one.
  */
 export function patientReferenceNumber(query: string) {
-  const match = /^\s*(?:(id)[\s-]*)?(\d+)\s*$/i.exec(query);
+  const match = REFERENCE_QUERY.exec(query);
   if (!match || (!match[1] && match[2].length < 4)) {
     return null;
   }

@@ -6,6 +6,8 @@ import { invoke } from "@tauri-apps/api/core";
 import { isTauriRuntime } from "@/services/browser-store";
 import type { DictationLanguage } from "./whisper-language";
 
+const MACOS_PLATFORM = /Macintosh|Mac OS X/;
+
 export interface NativeDictationStatus {
   cheminAttendu: string;
   disponible: boolean;
@@ -30,7 +32,7 @@ export interface NativeDictationResult {
 export function nativeDictationEnabled(
   platform = globalThis.navigator?.userAgent ?? ""
 ) {
-  return isTauriRuntime() && /Macintosh|Mac OS X/.test(platform);
+  return isTauriRuntime() && MACOS_PLATFORM.test(platform);
 }
 
 export async function nativeDictationStatus(): Promise<NativeDictationStatus> {

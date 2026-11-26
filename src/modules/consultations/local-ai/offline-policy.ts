@@ -1,3 +1,5 @@
+const PARENT_DIRECTORY_SEGMENT = /(?:^|\/)\.\.(?:\/|$)/;
+
 export function assertLocalUrl(value: string, roots: string[]) {
   if (!roots.some((root) => value.startsWith(root))) {
     throw new Error(
@@ -10,7 +12,7 @@ export function assertLocalUrl(value: string, roots: string[]) {
     url.username ||
     url.password ||
     !roots.some((root) => url.href.startsWith(new URL(root).href)) ||
-    /(?:^|\/)\.\.(?:\/|$)/.test(
+    PARENT_DIRECTORY_SEGMENT.test(
       decodeURIComponent(value.split("?")[0].split("#")[0])
     )
   ) {

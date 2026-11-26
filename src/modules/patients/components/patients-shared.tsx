@@ -53,9 +53,8 @@ import {
   WorkHistoryIcon,
 } from "@/lib/hugeicons";
 import { Bird, Cat, Dog, PawPrint, Rabbit, UserRound } from "@/lib/icons";
-
+import { ISO_DATE } from "@/lib/patterns";
 import { cn } from "@/lib/utils";
-
 import type {
   Appointment,
   Owner,
@@ -149,7 +148,7 @@ export function normalizeDate(value?: string | Date | null) {
   }
   // Dates calendrier (YYYY-MM-DD) sans fuseau : les parser en heure locale
   // pour éviter le décalage d'un jour vers l'ouest de Greenwich.
-  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+  if (ISO_DATE.test(value)) {
     const [year, month, day] = value.split("-").map(Number);
     const date = new Date(year, month - 1, day);
     return date.getFullYear() === year &&

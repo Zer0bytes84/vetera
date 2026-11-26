@@ -35,6 +35,7 @@ import { restockNeed } from "@/domain/stock-alerts";
 import { stockDay } from "@/domain/stock-date";
 import { guard } from "@/lib/guard";
 import { ArrowLeft, Plus } from "@/lib/icons";
+import { TIME_HH_MM } from "@/lib/patterns";
 import { CareTimePicker } from "@/modules/care-tasks/care-time-picker";
 import { isTauriRuntime } from "@/services/browser-store";
 import { generateId } from "@/services/sqlite/database";
@@ -51,6 +52,8 @@ import type {
 } from "../services/purchasing-store";
 import { StockDatePicker } from "./stock-date-picker";
 
+const COST_TEXT = /^\d+(?:[,.]\d{1,2})?$/;
+
 const labels: Record<PurchaseOrder["status"], string> = {
   draft: "Brouillon",
   ordered: "Commandée",
@@ -65,7 +68,7 @@ const failure = (error: unknown) =>
     ? error.message
     : "L’opération n’a pas pu être enregistrée. Réessayez.";
 const parseCost = (value: string) =>
-  /^\d+(?:[,.]\d{1,2})?$/.test(value.trim())
+  COST_TEXT.test(value.trim())
     ? toCentimes(Number(value.replace(",", ".")))
     : Number.NaN;
 
@@ -500,8 +503,7 @@ function ReceiptForm({
             const receivedAt = new Date(`${stockDay(date)}T${time}:00`);
             if (
               !(
-                /^([01]\d|2[0-3]):[0-5]\d$/.test(time) &&
-                Number.isFinite(receivedAt.getTime())
+                TIME_HH_MM.test(time) && Number.isFinite(receivedAt.getTime())
               ) ||
               stockDay(receivedAt) !== stockDay(date) ||
               `${String(receivedAt.getHours()).padStart(2, "0")}:${String(receivedAt.getMinutes()).padStart(2, "0")}` !==

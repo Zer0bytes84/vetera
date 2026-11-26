@@ -33,6 +33,8 @@ import type {
   PatientRecordSnapshot,
 } from "./patient-record-types";
 
+const SQL_COLUMN_NAME = /^[a-z][a-z_]*$/;
+
 type Row = Record<string, unknown>;
 export interface PatientRecordReadDatabase {
   execute(query: string, values?: unknown[]): Promise<unknown>;
@@ -329,7 +331,7 @@ export async function readPatientRecordSnapshotData(
           const columns = Object.keys(filters);
           if (
             !TABLES.has(table) ||
-            columns.some((column) => !/^[a-z][a-z_]*$/.test(column))
+            columns.some((column) => !SQL_COLUMN_NAME.test(column))
           ) {
             throw new Error("La lecture du dossier patient est invalide.");
           }

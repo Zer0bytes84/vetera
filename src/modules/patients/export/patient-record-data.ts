@@ -27,6 +27,13 @@ import type {
   PatientRecordSource,
 } from "./patient-record-types";
 
+const LINE_BREAK_TAG = /^(br|hr)$/i;
+const BLOCK_TAG =
+  /^(p|div|li|ul|ol|h[1-6]|blockquote|pre|tr|table|section|article)$/i;
+const TABLE_CELL_TAG = /^(td|th)$/i;
+const BASE64_MARKER = /;base64$/i;
+const BASE64_PAYLOAD = /^[a-z\d+/=\r\n]+$/i;
+
 /** Storage DTOs only. No React hooks, model output or derived medicine doses. */
 export interface PatientRecordMedicalReminder {
   completedAt?: string | null;
@@ -166,17 +173,13 @@ export function patientRecordPlainText(html: string): string {
     .replace(
       /<\/?([a-z][a-z\d:-]*)(?:\s+(?:"[^"]*"|'[^']*'|[^'">])*)?\s*\/?>/gi,
       (tag, name: string) => {
-        if (/^(br|hr)$/i.test(name)) {
+        if (LINE_BREAK_TAG.test(name)) {
           return "\n";
         }
-        if (
-          /^(p|div|li|ul|ol|h[1-6]|blockquote|pre|tr|table|section|article)$/i.test(
-            name
-          )
-        ) {
+        if (BLOCK_TAG.test(name)) {
           return "\n";
         }
-        if (/^(td|th)$/i.test(name) && tag.startsWith("</")) {
+        if (TABLE_CELL_TAG.test(name) && tag.startsWith("</")) {
           return "\t";
         }
         return "";
@@ -272,8 +275,8 @@ function sourceBlock(source: PatientRecordSource): PatientRecordBlock {
   if (
     comma < 0 ||
     !source.dataUrl.startsWith(`${prefix};`) ||
-    !/;base64$/i.test(source.dataUrl.slice(prefix.length, comma)) ||
-    !/^[a-z\d+/=\r\n]+$/i.test(source.dataUrl.slice(comma + 1))
+    !BASE64_MARKER.test(source.dataUrl.slice(prefix.length, comma)) ||
+    !BASE64_PAYLOAD.test(source.dataUrl.slice(comma + 1))
   ) {
     throw new Error(
       `L’original de la pièce « ${source.fileName || source.title} » est absent ou illisible.`

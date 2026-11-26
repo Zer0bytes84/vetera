@@ -9,6 +9,9 @@ import {
 } from "./sqlite/migration-runner";
 import { SQLITE_MIGRATIONS } from "./sqlite/migrations";
 
+const TRANSACTION_STATEMENT =
+  /^(BEGIN IMMEDIATE TRANSACTION|COMMIT|ROLLBACK)$/i;
+
 export const RESET_CONFIRMATION = "RÉINITIALISER";
 const quote = (name: string) => `"${name.replaceAll('"', '""')}"`;
 
@@ -31,7 +34,7 @@ export async function resetSqliteSchema(db: MigrationDatabase) {
       const nested: MigrationDatabase = {
         select: (query, values) => db.select(query, values),
         execute: (query, values) =>
-          /^(BEGIN IMMEDIATE TRANSACTION|COMMIT|ROLLBACK)$/i.test(query.trim())
+          TRANSACTION_STATEMENT.test(query.trim())
             ? Promise.resolve(undefined)
             : db.execute(query, values),
       };

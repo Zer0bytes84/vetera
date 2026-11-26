@@ -3,6 +3,8 @@ import { stockDate, stockDay, stockTimestamp } from "@/domain/stock-date";
 import { receiveStockInDatabase, registerLotInDatabase } from "./lot-store";
 import { type StockDatabase, stockProductInDatabase } from "./stock-database";
 
+const EMAIL_ADDRESS = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 export interface StockSupplier {
   address: string;
   archived_at: string | null;
@@ -165,7 +167,7 @@ export async function saveSupplierInDatabase(
   );
   const phone = text(input.phone ?? old?.phone ?? "", "Le téléphone", 60);
   const email = text(input.email ?? old?.email ?? "", "L’adresse e-mail", 200);
-  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+  if (email && !EMAIL_ADDRESS.test(email)) {
     fail("Vérifiez l’adresse e-mail du fournisseur.");
   }
   const archived =

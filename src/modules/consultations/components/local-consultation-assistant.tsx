@@ -112,6 +112,8 @@ import {
 import { cn } from "@/lib/utils";
 import type { SearchSection } from "../local-ai/embedding-index";
 
+const PARAGRAPH_BREAK = /\n{2,}/;
+
 type AssistantTab = "dictation" | "soap" | "search" | "data";
 
 interface Props {
@@ -835,7 +837,9 @@ export default function LocalConsultationAssistant({
     }
   };
   // The note's own warnings (treatments kept word for word, avoidance alerts) travel with the card that confirms it.
-  const noteWarnings = notice ? notice.split(/\n{2,}/).filter(Boolean) : [];
+  const noteWarnings = notice
+    ? notice.split(PARAGRAPH_BREAK).filter(Boolean)
+    : [];
 
   // The guided dictation reads like a conversation: the current question and
   // its field sit at the bottom, so the list opens there and follows each

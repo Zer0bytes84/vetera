@@ -1,4 +1,9 @@
 /** Display-only formatting. Repository values and contact links stay intact. */
+
+import { WHITESPACE_RUN } from "@/lib/patterns";
+
+const PHONE_TEXT = /^\+?[\d\s().-]+$/;
+
 // Calling-code identifiers from libphonenumber-js metadata, checked 2026-10-08.
 // https://github.com/catamphetamine/libphonenumber-js
 const callingCodes = new Set(
@@ -25,7 +30,7 @@ export function formatDinars(value: number, maximumFractionDigits = 2) {
 /** Group the national number by pairs without guessing a country. */
 export function formatPhone(value?: string | null) {
   const text = value?.trim() || "";
-  if (!(text && /^\+?[\d\s().-]+$/.test(text))) {
+  if (!(text && PHONE_TEXT.test(text))) {
     return text;
   }
   const digits = text.replace(/\D/g, "");
@@ -99,7 +104,7 @@ const PERSON_TITLES = /^(dr|pr|mme|mlle|m|me|mr)\.?$/i;
 
 /** First name for a greeting: titles (Dr, Pr, Mme…) are skipped, "Dr Lina Ait Salem" gives "Lina". */
 export function firstNameOf(name?: string | null, fallback = "") {
-  const words = (name ?? "").split(/\s+/).filter(Boolean);
+  const words = (name ?? "").split(WHITESPACE_RUN).filter(Boolean);
   const first = words.find((word) => !PERSON_TITLES.test(word));
   return first ?? fallback;
 }

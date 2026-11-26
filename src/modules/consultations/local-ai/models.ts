@@ -3,6 +3,8 @@ import { isTauriRuntime } from "@/services/browser-store";
 import type { AIProvisioningProgress } from "../services/ai-model-provisioning";
 import { generatorCandidates } from "./generator-choice";
 
+const TRAILING_SLASH = /\/$/;
+
 export interface LocalModelStatus {
   /** arctic-embed-l-v2 (A2 candidate). */
   arcticReady?: boolean;
@@ -90,7 +92,7 @@ export function getLocalModelUrls(status: LocalModelStatus) {
   if (!status.root) {
     throw new Error("Importez d’abord les modèles locaux depuis le disque.");
   }
-  const modelRoot = `${convertFileSrc(status.root).replace(/\/$/, "")}/`;
+  const modelRoot = `${convertFileSrc(status.root).replace(TRAILING_SLASH, "")}/`;
   return {
     modelRoot,
     modelUrl: `${modelRoot}generator/gemma3.task`,

@@ -13,6 +13,10 @@ import {
   type VaccineStatus,
 } from "./health-card-data";
 
+const ABSOLUTE_URL = /^(?:[a-z][a-z\d+.-]*:)?\/\//i;
+const TRAILING_ZEROS = /\.?0+$/;
+const IMAGE_DATA_URL_PREFIX = /^data:image\/(png|jpe?g);base64,/i;
+
 /**
  * Carnet de santé : une page A4, lisible en trente secondes. Hiérarchie
  * inspirée des carnets de santé humains et d'Apple Santé : identité, ce qui
@@ -58,7 +62,7 @@ async function fonts(): Promise<[string, string]> {
   fontPromise ??= Promise.all(
     [regularFontUrl, boldFontUrl].map(async (url) => {
       if (
-        /^(?:[a-z][a-z\d+.-]*:)?\/\//i.test(url) &&
+        ABSOLUTE_URL.test(url) &&
         new URL(url, window.location.href).origin !== window.location.origin
       ) {
         throw new Error(
@@ -90,10 +94,7 @@ export function civilDate(value: string | undefined): string {
 }
 
 export function kgText(value: number): string {
-  return value
-    .toFixed(2)
-    .replace(/\.?0+$/, "")
-    .replace(".", ",");
+  return value.toFixed(2).replace(TRAILING_ZEROS, "").replace(".", ",");
 }
 
 export function healthCardFilename(name: string, generatedAt: string): string {
@@ -212,7 +213,7 @@ class Page {
 }
 
 function imageFormat(dataUrl: string): "PNG" | "JPEG" | null {
-  const match = dataUrl.match(/^data:image\/(png|jpe?g);base64,/i);
+  const match = dataUrl.match(IMAGE_DATA_URL_PREFIX);
   return match ? (match[1].toLowerCase() === "png" ? "PNG" : "JPEG") : null;
 }
 

@@ -10,6 +10,11 @@ import { localAiRuntimePlugin } from "./scripts/local-ai-runtime-plugin.mjs";
 // @ts-expect-error Development-only test harness, a Node helper (see docs/TEST-HARNESS.md).
 import { testHarnessPlugin } from "./scripts/test-harness-plugin.mjs";
 
+const HUGEICONS_CORE_FREE = /^@hugeicons\/core-free-icons$/;
+const PDF_VENDOR_MODULES = /node_modules[\\/](jspdf|html2canvas)/;
+const CHARTS_VENDOR_MODULES =
+  /node_modules[\\/](recharts|d3-[^\\/]+|victory-vendor|es-toolkit|@reduxjs[\\/]toolkit|react-redux|redux|redux-thunk|reselect|immer|decimal\.js-light|internmap|eventemitter3|use-sync-external-store)[\\/]/;
+
 // Cross-origin isolation (SharedArrayBuffer) lets the local search engine run
 // on several threads. Production gets the same headers from tauri.conf.json.
 export const CROSS_ORIGIN_ISOLATION_HEADERS = {
@@ -85,7 +90,7 @@ export default defineConfig(({ command, mode }) => ({
   resolve: {
     alias: [
       {
-        find: /^@hugeicons\/core-free-icons$/,
+        find: HUGEICONS_CORE_FREE,
         replacement: path.resolve(
           import.meta.dirname,
           "./src/lib/hugeicons.ts"
@@ -121,7 +126,7 @@ export default defineConfig(({ command, mode }) => ({
           groups: [
             {
               name: "vendor-pdf",
-              test: /node_modules[\\/](jspdf|html2canvas)/,
+              test: PDF_VENDOR_MODULES,
               includeDependenciesRecursively: false,
             },
             {
@@ -131,7 +136,7 @@ export default defineConfig(({ command, mode }) => ({
               // shared chunk first, and recharts calls es-toolkit's `get` before it exists
               // (« require_get is not a function »). The whole stack stays in one chunk, with no cycle.
               name: "vendor-charts",
-              test: /node_modules[\\/](recharts|d3-[^\\/]+|victory-vendor|es-toolkit|@reduxjs[\\/]toolkit|react-redux|redux|redux-thunk|reselect|immer|decimal\.js-light|internmap|eventemitter3|use-sync-external-store)[\\/]/,
+              test: CHARTS_VENDOR_MODULES,
               includeDependenciesRecursively: false,
             },
           ],

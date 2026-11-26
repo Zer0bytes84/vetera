@@ -1,3 +1,4 @@
+import { ISO_DATE } from "@/lib/patterns";
 import type { InvoiceSettings } from "@/services/invoiceSettingsService";
 
 export const DOCUMENT_TYPES = {
@@ -92,7 +93,7 @@ export interface PrepareDocumentOptions {
 
 /** Date displayed by the clinic, including documents recorded around midnight. */
 export function documentLocalDay(value: string): string {
-  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+  if (ISO_DATE.test(value)) {
     return value;
   }
   const date = new Date(value);

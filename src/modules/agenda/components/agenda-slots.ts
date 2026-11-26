@@ -1,3 +1,4 @@
+import { WHITESPACE_RUN } from "@/lib/patterns";
 import type { Appointment } from "@/types/db";
 
 /** A booking that still holds its slot: cancelled and missed visits free it. */
@@ -10,7 +11,7 @@ const TITLES = /^(dr|pr|mme|mlle|m)\.?$/i;
 /** "Dr Lina Ait Salem" gives "LA": the title is not a name. */
 export function personInitials(name?: string | null) {
   const words = (name ?? "")
-    .split(/\s+/)
+    .split(WHITESPACE_RUN)
     .filter((word) => word && !TITLES.test(word));
   const initials = words
     .slice(0, 2)

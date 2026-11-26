@@ -10,6 +10,9 @@ import {
 } from "./document-reading";
 import { PackagedOcr } from "./packaged-ocr";
 
+const EXPECTED_READ_ERROR =
+  /20 pages|trop grand|dépasse|Aucun texte|autre modèle|n’a pas répondu/;
+
 export type { ReadingProgress };
 
 const checkAbort = (signal: AbortSignal) => {
@@ -193,11 +196,7 @@ export async function readLocalDocument(
       throw abortError();
     }
     const known = error instanceof Error ? error.message : "";
-    if (
-      /20 pages|trop grand|dépasse|Aucun texte|autre modèle|n’a pas répondu/.test(
-        known
-      )
-    ) {
+    if (EXPECTED_READ_ERROR.test(known)) {
       throw error;
     }
     throw new Error(

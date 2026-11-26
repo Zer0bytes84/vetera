@@ -1,3 +1,4 @@
+import { WHITESPACE_RUN } from "@/lib/patterns";
 import { vaccinationBannerEntries } from "@/modules/patients/lib/vaccination-banner";
 import {
   VISIT_FLOW_STAGES,
@@ -150,7 +151,7 @@ const fold = (text: string) =>
 /** Every word of the query must appear somewhere on the card. */
 export function matchesQuery(card: FlowCard, query: string | undefined) {
   const words = fold(query ?? "")
-    .split(/\s+/)
+    .split(WHITESPACE_RUN)
     .filter(Boolean);
   if (words.length === 0) {
     return true;

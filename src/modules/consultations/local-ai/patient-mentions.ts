@@ -1,5 +1,8 @@
 import type { Patient } from "@/types/db";
 
+const MENTION_BEFORE_CARET = /(?:^|\s)@([\p{L}\p{N}_'’-]*)$/u;
+const MENTION_TOKEN = /^[\p{L}\p{N}_'’-]+$/u;
+
 export const normalizePatientName = (name: string) =>
   name
     .normalize("NFD")
@@ -69,7 +72,7 @@ export function assertMentionsForPatient(
   return mentions;
 }
 export function autocompleteMention(text: string, caret: number) {
-  const match = /(?:^|\s)@([\p{L}\p{N}_'’-]*)$/u.exec(text.slice(0, caret));
+  const match = MENTION_BEFORE_CARET.exec(text.slice(0, caret));
   return match
     ? { start: caret - match[1].length - 1, end: caret, query: match[1] }
     : null;
@@ -79,7 +82,7 @@ export function insertPatientMention(
   range: { start: number; end: number },
   name: string
 ) {
-  const token = /^[\p{L}\p{N}_'’-]+$/u.test(name)
+  const token = MENTION_TOKEN.test(name)
     ? `@${name}`
     : `@"${name.replaceAll('"', "")}"`;
   const value = `${text.slice(0, range.start)}${token} ${text.slice(range.end)}`;

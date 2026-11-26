@@ -4,10 +4,12 @@ import type { LocalSoapNote } from "./soap-schema";
 import { containsDosage, SOAP_SECTIONS } from "./soap-schema";
 import { prepareModelDictation } from "./treatment-routing";
 
+const SENTENCE_BREAK = /[.!?]\s+|\n/;
+
 export const MAX_TRANSCRIPT_LENGTH = 6000;
 const excerpt = (text?: string | null, limit = 480) =>
   (text ?? "")
-    .split(/[.!?]\s+|\n/)
+    .split(SENTENCE_BREAK)
     .filter((sentence) => !containsDosage(sentence))
     .join(" ")
     .slice(0, limit);

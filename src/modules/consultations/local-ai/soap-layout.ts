@@ -1,5 +1,7 @@
 import { type LocalSoapNote, SOAP_SECTIONS } from "./soap-schema";
 
+const SENTENCE_END_SPACE = /(?<=[.!?])\s+/u;
+
 /**
  * Layout of a SOAP note: full section headings, one bullet per observation and
  * a numbered plan. This is a canvas around the dictated words, never clinical
@@ -20,7 +22,7 @@ const LIST_MARKER = /^[ \t]*(?:[-•–*]|\d{1,2}[.)])[ \t]+/u;
 const items = (text: string) =>
   text
     .split("\n")
-    .flatMap((line) => line.replace(LIST_MARKER, "").split(/(?<=[.!?])\s+/u))
+    .flatMap((line) => line.replace(LIST_MARKER, "").split(SENTENCE_END_SPACE))
     .map((item) => item.trim())
     .filter(Boolean);
 

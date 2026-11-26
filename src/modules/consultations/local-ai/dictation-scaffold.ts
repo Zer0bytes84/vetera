@@ -7,6 +7,17 @@ import {
   SOAP_SECTIONS,
 } from "./soap-schema";
 
+const LEADING_NEGATION = /^ne\s+(?:pas\s+)?/iu;
+const OBJECTIVE_LABEL = /^(?:objectif|examen|à)/iu;
+const ASSESSMENT_LABEL = /^(?:évaluation|analyse|diagnostic)/iu;
+const PLAN_LABEL = /^(?:plan|prévoir|prévu|contrôle|nécessite|besoin)/iu;
+const SUBJECT_FRAGMENT =
+  /^(?:le|la|l[’'])\s+(?:patient(?:e)?|animal|chat(?:te)?|chien(?:ne)?)\s+(?:a|ont|est|sont|présente|présentent)\s*$/iu;
+const MENTION_PREFIX_WORD = /\b(?:pour|patient)\s+$/iu;
+const LEADING_MENTION_PUNCTUATION = /^\s*[,;:]?\s*/u;
+const LEADING_PUNCTUATION = /^[,;:]\s*/;
+const SENTENCE_BREAK = /(?<=[.!?])\s+|\n+/u;
+
 // Only explicit section labels and stated care intentions are recognized here.
 // Unlabelled observations stay in S for the veterinarian to classify at review.
 // No diagnosis, finding or prescription is inferred from the patient history.
@@ -24,24 +35,21 @@ const headingSection: Record<string, keyof LocalSoapNote> = Object.fromEntries(
   SOAP_SECTIONS.map(({ key, title }) => [title[0], key])
 );
 const sectionFor = (label: string): keyof LocalSoapNote => {
-  label = label.trim().replace(/^ne\s+(?:pas\s+)?/iu, "");
-  if (/^(?:objectif|examen|à)/iu.test(label)) {
+  label = label.trim().replace(LEADING_NEGATION, "");
+  if (OBJECTIVE_LABEL.test(label)) {
     return "objective";
   }
-  if (/^(?:évaluation|analyse|diagnostic)/iu.test(label)) {
+  if (ASSESSMENT_LABEL.test(label)) {
     return "assessment";
   }
-  if (/^(?:plan|prévoir|prévu|contrôle|nécessite|besoin)/iu.test(label)) {
+  if (PLAN_LABEL.test(label)) {
     return "plan";
   }
   return "subjective";
 };
 // « Le patient a », « la patiente est » : un fragment sujet + auxiliaire sans
 // observation propre rejoint le segment de plan au lieu de rester seul en S.
-const isSubjectFragment = (text: string) =>
-  /^(?:le|la|l[’'])\s+(?:patient(?:e)?|animal|chat(?:te)?|chien(?:ne)?)\s+(?:a|ont|est|sont|présente|présentent)\s*$/iu.test(
-    text.trim()
-  );
+const isSubjectFragment = (text: string) => SUBJECT_FRAGMENT.test(text.trim());
 
 export function buildDictationScaffold(transcript: string): LocalSoapNote {
   // Mentions have already been checked against the open patient by the caller.
@@ -50,18 +58,16 @@ export function buildDictationScaffold(transcript: string): LocalSoapNote {
   // Use the exact same parser as patient resolution; email addresses are not
   // mentions, and apostrophes or quoted compound names must be removed whole.
   for (const mention of parsePatientMentions(transcript).reverse()) {
-    const prefix = /\b(?:pour|patient)\s+$/iu.exec(
-      text.slice(0, mention.start)
-    );
+    const prefix = MENTION_PREFIX_WORD.exec(text.slice(0, mention.start));
     const start = prefix?.index ?? mention.start;
     text =
       text.slice(0, start) +
-      text.slice(mention.end).replace(/^\s*[,;:]?\s*/u, "");
+      text.slice(mention.end).replace(LEADING_MENTION_PUNCTUATION, "");
   }
   const result = { ...EMPTY_SOAP };
   let current: keyof LocalSoapNote = "subjective";
   const append = (part: string) => {
-    const value = part.trim().replace(/^[,;:]\s*/, "");
+    const value = part.trim().replace(LEADING_PUNCTUATION, "");
     if (!value) {
       return;
     }
@@ -84,7 +90,7 @@ export function buildDictationScaffold(transcript: string): LocalSoapNote {
   segments.push({ section, text: text.slice(start) });
   for (const segment of segments) {
     current = segment.section;
-    for (const sentence of segment.text.split(/(?<=[.!?])\s+|\n+/u)) {
+    for (const sentence of segment.text.split(SENTENCE_BREAK)) {
       let offset = 0;
       // A new RegExp per sentence avoids state shared across concurrent calls.
       for (const match of sentence.matchAll(new RegExp(marker))) {
@@ -120,7 +126,7 @@ export function removeDosageSentences(transcript: string): {
 } {
   const kept: string[] = [];
   const dosageSentences: string[] = [];
-  for (const sentence of transcript.split(/(?<=[.!?])\s+|\n+/u)) {
+  for (const sentence of transcript.split(SENTENCE_BREAK)) {
     if (!sentence.trim()) {
       continue;
     }

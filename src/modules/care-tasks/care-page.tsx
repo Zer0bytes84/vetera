@@ -60,6 +60,8 @@ import {
   useCareTasks,
 } from "./use-care-tasks";
 
+const ISO_DATE_PARTS = /^(\d{4})-(\d{2})-(\d{2})$/;
+
 const labels: Record<CareDisplayStatus, string> = {
   a_faire: "À faire",
   en_cours: "En cours",
@@ -159,7 +161,7 @@ export default function CarePage({
       return null;
     }
     sessionStorage.removeItem(CARE_LIST_DAY_KEY);
-    const match = day.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    const match = day.match(ISO_DATE_PARTS);
     if (!match) {
       return null;
     }

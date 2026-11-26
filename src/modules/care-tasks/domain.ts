@@ -1,3 +1,10 @@
+const PLAN_SENTENCE_BREAK = /\n+|(?<=[.!?])\s+/u;
+const FLUID_THERAPY_TASK = /perfusion|fluidoth[eé]rapie/iu;
+const DISCHARGE_TASK = /sortie|retour [àa] domicile/iu;
+const MONITORING_TASK = /contr[oô]le|surveill|temp[eé]rature|pes[eé]e/iu;
+const MEDICATION_TASK =
+  /m[eé]dicament|antibiotique|administr|traitement|injection/iu;
+
 export const CARE_TYPES = [
   "medicament",
   "perfusion",
@@ -84,20 +91,18 @@ export interface CareSuggestion {
 /** Deterministic, verbatim candidates. Scheduling and confirmation remain human. */
 export function suggestCareTasksFromPlan(plan: string): CareSuggestion[] {
   return plan
-    .split(/\n+|(?<=[.!?])\s+/u)
+    .split(PLAN_SENTENCE_BREAK)
     .map((s) => s.trim())
     .filter(Boolean)
     .map((label) => ({
       label,
-      type: /perfusion|fluidoth[eé]rapie/iu.test(label)
+      type: FLUID_THERAPY_TASK.test(label)
         ? "perfusion"
-        : /sortie|retour [àa] domicile/iu.test(label)
+        : DISCHARGE_TASK.test(label)
           ? "sortie"
-          : /contr[oô]le|surveill|temp[eé]rature|pes[eé]e/iu.test(label)
+          : MONITORING_TASK.test(label)
             ? "controle"
-            : /m[eé]dicament|antibiotique|administr|traitement|injection/iu.test(
-                  label
-                )
+            : MEDICATION_TASK.test(label)
               ? "medicament"
               : "autre",
       note: "",

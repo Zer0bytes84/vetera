@@ -6,6 +6,8 @@ import { APP_NAME } from "@/lib/brand";
 import { getSetting, setSetting } from "@/services/appSettingsService";
 import { isTauriRuntime } from "@/services/browser-store";
 
+const PLATFORM_NOT_IN_FEED = /None of the fallback platforms/i;
+
 const DISMISSED_VERSION_KEY = "updates.dismissed_version";
 const LAST_CHECKED_AT_KEY = "updates.last_checked_at";
 
@@ -100,7 +102,7 @@ function notifyAboutUpdate(update: Update) {
  */
 export function isPlatformNotInFeedError(error: unknown) {
   const text = error instanceof Error ? error.message : String(error);
-  return /None of the fallback platforms/i.test(text);
+  return PLATFORM_NOT_IN_FEED.test(text);
 }
 
 export async function checkForAppUpdates(options?: {

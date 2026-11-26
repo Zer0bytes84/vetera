@@ -1,15 +1,11 @@
+import { TIME_HH_MM } from "@/lib/patterns";
+
 /** Selected local calendar day and 24-hour time, serialized as the actual instant. */
 export function admissionDateTime(
   day: Date | undefined,
   time: string
 ): string | null {
-  if (
-    !(
-      day &&
-      Number.isFinite(day.getTime()) &&
-      /^([01]\d|2[0-3]):[0-5]\d$/.test(time)
-    )
-  ) {
+  if (!(day && Number.isFinite(day.getTime()) && TIME_HH_MM.test(time))) {
     return null;
   }
   const [hours, minutes] = time.split(":").map(Number);

@@ -22,6 +22,13 @@ import {
   type SafetyGroupId,
 } from "./prescription-safety-rules";
 
+const FINDING_SEPARATOR = /[,;\n/]+|\s+et\s+/i;
+const LONG_TERM_DURATION =
+  /\b(a vie|long cours|au long|chronique|permanent|continu|illimite|nouvel ordre)/;
+const DURATION_AMOUNT =
+  /(\d+(?:\.\d+)?)(?:\s*(?:-|a|au)\s*(\d+(?:\.\d+)?))?\s*(jours?|j|semaines?|sem|mois|ans?|heures?|h)\b/;
+const SINGLE_DOSE = /\b(dose unique|injection unique|une fois|unique)\b/;
+
 export type SafetyAlertLevel = "interaction" | "contraindication";
 
 export interface SafetyMedication {
@@ -135,7 +142,7 @@ function sameMolecule(a: SafetyMedication, b: SafetyMedication): boolean {
 /** Découpe un champ libre du dossier en mentions (« A, B ; C »). */
 function splitFindings(value: string | null | undefined): string[] {
   return (value ?? "")
-    .split(/[,;\n/]+|\s+et\s+/i)
+    .split(FINDING_SEPARATOR)
     .map((part) => part.trim())
     .filter((part) => part.length > 0);
 }
@@ -313,16 +320,10 @@ export function durationToDays(
   if (!text) {
     return null;
   }
-  if (
-    /\b(a vie|long cours|au long|chronique|permanent|continu|illimite|nouvel ordre)/.test(
-      text
-    )
-  ) {
+  if (LONG_TERM_DURATION.test(text)) {
     return Number.POSITIVE_INFINITY;
   }
-  const match = text.match(
-    /(\d+(?:\.\d+)?)(?:\s*(?:-|a|au)\s*(\d+(?:\.\d+)?))?\s*(jours?|j|semaines?|sem|mois|ans?|heures?|h)\b/
-  );
+  const match = text.match(DURATION_AMOUNT);
   if (match) {
     const toNumber = (raw: string) => Number.parseFloat(raw);
     const amount = Math.max(
@@ -344,7 +345,7 @@ export function durationToDays(
     }
     return amount;
   }
-  if (/\b(dose unique|injection unique|une fois|unique)\b/.test(text)) {
+  if (SINGLE_DOSE.test(text)) {
     return 1;
   }
   return null;

@@ -1,3 +1,5 @@
+const VALUE_WITH_UNIT = /^(.*?)[\s\u00a0\u202f]*(DA|%)$/;
+
 /**
  * Courbe lissée monotone (Fritsch-Carlson) : passe par chaque point sans
  * dépasser les valeurs voisines, donc jamais sous zéro ni au-dessus d'un pic.
@@ -62,6 +64,6 @@ export function monotonePath(points: readonly ChartPoint[]): string {
 
 /** Sépare un montant formaté de son unité : « 13 900 DA » → ["13 900", "DA"]. */
 export function splitUnit(formatted: string): [value: string, unit: string] {
-  const match = /^(.*?)[\s\u00a0\u202f]*(DA|%)$/.exec(formatted.trim());
+  const match = VALUE_WITH_UNIT.exec(formatted.trim());
   return match ? [match[1], match[2]] : [formatted, ""];
 }

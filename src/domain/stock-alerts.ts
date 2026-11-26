@@ -1,5 +1,8 @@
+import { WHITESPACE } from "@/lib/patterns";
 import { stockBalance } from "./stock";
 import { stockDay } from "./stock-date";
+
+const PLURAL_ENDING = /[sx]$/i;
 
 interface StockAlertProduct {
   availableQuantity?: number;
@@ -60,8 +63,8 @@ export function unitCount(quantity: number, unit: string) {
   const plural =
     Math.abs(quantity) > 1 &&
     !!unit &&
-    !/[sx]$/i.test(unit) &&
-    !/\s/.test(unit);
+    !PLURAL_ENDING.test(unit) &&
+    !WHITESPACE.test(unit);
   return `${quantity.toLocaleString("fr-FR", { maximumFractionDigits: 6 })} ${plural ? `${unit}s` : unit}`.trim();
 }
 /** Stock in words for a product that needs attention, empty when all is well. */

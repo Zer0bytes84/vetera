@@ -1,3 +1,4 @@
+import { ISO_DATE } from "@/lib/patterns";
 import type {
   MedicalReminder,
   ReminderType,
@@ -18,7 +19,7 @@ export interface PreventionCountdown {
 const DAY_MS = 86_400_000;
 
 function localDay(value: string) {
-  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+  if (ISO_DATE.test(value)) {
     return value;
   }
   const date = new Date(value);

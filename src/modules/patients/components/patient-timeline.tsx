@@ -31,6 +31,7 @@ import {
   Syringe,
   TrendUp,
 } from "@/lib/icons";
+import { ISO_DATE_PREFIX } from "@/lib/patterns";
 import { cn } from "@/lib/utils";
 import { isSoapReviewed } from "@/modules/consultations/local-ai/soap-review";
 import {
@@ -54,6 +55,9 @@ import {
   type TimelinePiece,
   type TimelinePieceKind,
 } from "../lib/timeline-pieces";
+
+const APPOINTMENT_ID_PREFIX = /^apt-/;
+const NOTE_ID_PREFIX = /^note-/;
 
 const loadServicesBillingService = () => import("@/services/billingService");
 
@@ -166,7 +170,7 @@ const TYPE_LABEL: Record<Appointment["type"], string> = {
 
 function formatDateParts(iso: string, includeTime: boolean) {
   if (!includeTime) {
-    const civilDate = iso.match(/^(\d{4})-(\d{2})-(\d{2})/);
+    const civilDate = iso.match(ISO_DATE_PREFIX);
     if (civilDate) {
       const [, year, month, day] = civilDate;
       const date = new Date(
@@ -667,7 +671,7 @@ export function PatientTimeline({
                               className="h-7 gap-1 rounded-full px-3 text-xs"
                               onClick={() =>
                                 onJumpToAppointment(
-                                  entry.id.replace(/^apt-/, "")
+                                  entry.id.replace(APPOINTMENT_ID_PREFIX, "")
                                 )
                               }
                               size="sm"
@@ -680,7 +684,7 @@ export function PatientTimeline({
                             <Button
                               className="h-7 gap-1 rounded-full px-3 text-xs"
                               onClick={() =>
-                                onOpenNote(entry.id.replace(/^note-/, ""))
+                                onOpenNote(entry.id.replace(NOTE_ID_PREFIX, ""))
                               }
                               size="sm"
                               variant="outline"

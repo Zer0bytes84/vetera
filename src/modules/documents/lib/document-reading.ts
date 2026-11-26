@@ -1,5 +1,9 @@
 import { z } from "zod";
 
+const OPENING_CODE_FENCE = /^```(?:json)?\s*/i;
+const CLOSING_CODE_FENCE = /\s*```$/;
+const BLANK_LINE = /\n\s*\n/;
+
 export interface DocumentPage {
   confidence?: number;
   method: "text" | "ocr";
@@ -61,8 +65,8 @@ export function parseDocumentAnswer(
   try {
     const candidate = text
       .trim()
-      .replace(/^```(?:json)?\s*/i, "")
-      .replace(/\s*```$/, "");
+      .replace(OPENING_CODE_FENCE, "")
+      .replace(CLOSING_CODE_FENCE, "");
     const answer = readingSchema.parse(JSON.parse(candidate));
     for (const quote of answer.extraits) {
       const page = source.pages.find((entry) => entry.number === quote.page);
@@ -95,7 +99,7 @@ export function createDocumentReadingPrompt(
   );
   const passages = source.pages.flatMap((page) =>
     page.text
-      .split(/\n\s*\n/)
+      .split(BLANK_LINE)
       .filter((part) => part.trim())
       .flatMap((part) => {
         // Bound each extract without discarding the full text visible to the vet.

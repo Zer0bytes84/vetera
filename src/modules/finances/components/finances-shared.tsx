@@ -9,9 +9,9 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar01Icon } from "@/lib/hugeicons";
+import { ISO_DATE } from "@/lib/patterns";
 import { cn } from "@/lib/utils";
 import { createUuid } from "@/lib/uuid";
-
 import type {
   BillingDocumentStatus,
   Invoice,
@@ -171,9 +171,7 @@ export function formatDate(value?: string | null) {
   if (!value) {
     return "Non définie";
   }
-  const date = /^\d{4}-\d{2}-\d{2}$/.test(value)
-    ? parseDateInput(value)
-    : new Date(value);
+  const date = ISO_DATE.test(value) ? parseDateInput(value) : new Date(value);
   if (!date) {
     return "Date invalide";
   }

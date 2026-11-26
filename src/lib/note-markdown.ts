@@ -1,3 +1,7 @@
+const BOLD_WRAPPED_HEADING = /^\*\*#{1,6}[\s\u00a0]/;
+const HEADING_LINE = /^(#{1,6})[\s\u00a0]+(.+?)(?:\s+#+)?$/;
+const LIST_ITEM_LINE = /^(?:([-*+])\s+|\d+[.)]\s+)(.+)$/;
+
 /** Convert the small Markdown subset used by note drafts to safe editor HTML. */
 export function noteMarkdownToHTML(text: string): string {
   const escape = (value: string) =>
@@ -22,11 +26,11 @@ export function noteMarkdownToHTML(text: string): string {
   for (const raw of text.replace(/\r\n?/g, "\n").split("\n")) {
     let line = raw.trim();
     // Small local models sometimes put the Markdown marker inside bold text.
-    if (/^\*\*#{1,6}[\s\u00a0]/.test(line) && line.endsWith("**")) {
+    if (BOLD_WRAPPED_HEADING.test(line) && line.endsWith("**")) {
       line = line.slice(2, -2).trim();
     }
-    const heading = /^(#{1,6})[\s\u00a0]+(.+?)(?:\s+#+)?$/.exec(line);
-    const item = /^(?:([-*+])\s+|\d+[.)]\s+)(.+)$/.exec(line);
+    const heading = HEADING_LINE.exec(line);
+    const item = LIST_ITEM_LINE.exec(line);
     if (heading) {
       closeList();
       // The editor exposes three heading levels; deeper Markdown stays readable.

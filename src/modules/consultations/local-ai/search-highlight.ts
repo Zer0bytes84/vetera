@@ -4,6 +4,9 @@ import {
   stemFrenchWord,
 } from "./veterinary-lexicon";
 
+const WORD_PART = /([\p{L}\p{N}]+(?:-[\p{L}\p{N}]+)*)/u;
+const LETTER_OR_DIGIT = /[\p{L}\p{N}]/u;
+
 export interface HighlightSegment {
   hit: boolean;
   text: string;
@@ -35,13 +38,13 @@ export function highlightPassage(
   const stems = new Set(expansion.stems.filter((stem) => stem.length >= 3));
   const segments: HighlightSegment[] = [];
   // Elisions (d’, l’) are separators: « d’antibiotique » highlights « antibiotique ».
-  for (const part of text.split(/([\p{L}\p{N}]+(?:-[\p{L}\p{N}]+)*)/u)) {
+  for (const part of text.split(WORD_PART)) {
     if (!part) {
       continue;
     }
     const normalized = normalizeLexical(part);
     const hit =
-      /[\p{L}\p{N}]/u.test(part) &&
+      LETTER_OR_DIGIT.test(part) &&
       normalized.length >= 3 &&
       (words.has(normalized) ||
         (normalized.length >= 4 && stems.has(stemFrenchWord(normalized))));

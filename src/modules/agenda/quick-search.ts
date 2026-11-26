@@ -3,6 +3,9 @@
  * in the dossier, in any order. Selecting a dossier writes "patient + owner"
  * into the field, and species or breed sit between those words in the index.
  */
+
+import { WHITESPACE_RUN } from "@/lib/patterns";
+
 /**
  * Text written into the quick search when a dossier is selected: the
  * patient's name and the owner's real names only. A placeholder such as
@@ -19,7 +22,11 @@ export function selectedDossierSearchLabel(
 }
 
 export function matchesEveryWord(searchIndex: string, query: string) {
-  const words = query.trim().toLowerCase().split(/\s+/).filter(Boolean);
+  const words = query
+    .trim()
+    .toLowerCase()
+    .split(WHITESPACE_RUN)
+    .filter(Boolean);
   if (!words.length) {
     return false;
   }

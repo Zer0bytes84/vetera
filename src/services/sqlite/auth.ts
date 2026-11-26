@@ -10,6 +10,8 @@ import {
 import { getBrowserPasswordHash } from "../browserCredentials";
 import { generateId, runDbOperation, runDbRead } from "./database";
 
+const LEGACY_SHA256_HASH = /^[a-f0-9]{64}$/i;
+
 export interface LoginCredentials {
   email: string;
   password: string;
@@ -181,7 +183,7 @@ export async function verifyPassword(
     return bcrypt.compare(password, hash);
   }
 
-  if (/^[a-f0-9]{64}$/i.test(hash)) {
+  if (LEGACY_SHA256_HASH.test(hash)) {
     return legacySha256(password) === hash.toLowerCase();
   }
 
