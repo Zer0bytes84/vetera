@@ -181,6 +181,7 @@ export function createStayStore(
       );
       return locationId;
     },
+    // biome-ignore lint/suspicious/useAwait: authorRequired lève sur un auteur vide avant la transaction ; async garde ce refus en rejet
     async setLocationActive(
       locationId: string,
       active: boolean,
@@ -212,6 +213,7 @@ export function createStayStore(
         );
       });
     },
+    // biome-ignore lint/suspicious/useAwait: authorRequired, le contrôle patient et motif et iso(admittedAt) lèvent avant la transaction ; async garde ces refus en rejet
     async admit(
       draft: {
         patientId: string;
@@ -255,7 +257,7 @@ export function createStayStore(
         return get(db, stayId);
       });
     },
-    async transition(
+    transition(
       stayId: string,
       to: StayStatus,
       author: string,
@@ -351,6 +353,7 @@ export function createStayStore(
         return task ?? null;
       });
     },
+    // biome-ignore lint/suspicious/useAwait: authorRequired et le contrôle de la date de suivi lèvent avant la transaction ; hospitalizations/store.test.ts attend un rejet
     async scheduleFollowUp(stayId: string, dueDate: string, author: string) {
       authorRequired(author);
       const parsed = new Date(`${dueDate}T12:00:00Z`);
@@ -480,6 +483,7 @@ export function createStayStore(
       });
       return vitalId;
     },
+    // biome-ignore lint/suspicious/useAwait: authorRequired lève sur un auteur vide avant la transaction ; async garde ce refus en rejet
     async regeneratePlan(planId: string, author: string) {
       authorRequired(author);
       return persistence.transaction(async (db) => {
@@ -569,6 +573,7 @@ export function createStayStore(
         )
       );
     },
+    // biome-ignore lint/suspicious/useAwait: authorRequired, le libellé vide, iso et carePlanOccurrences lèvent avant la transaction ; async garde ces refus en rejet
     async updatePlan(planId: string, draft: CarePlanDraft, author: string) {
       authorRequired(author);
       if (!draft.label.trim()) {
@@ -684,6 +689,7 @@ export function createStayStore(
         return added;
       });
     },
+    // biome-ignore lint/suspicious/useAwait: authorRequired, le libellé vide, iso, carePlanOccurrences et une période sans horaire lèvent avant la transaction ; async garde ces refus en rejet
     async createPlan(stayId: string, draft: CarePlanDraft, author: string) {
       authorRequired(author);
       if (!draft.label.trim()) {
@@ -763,6 +769,7 @@ export function createStayStore(
         return planId;
       });
     },
+    // biome-ignore lint/suspicious/useAwait: authorRequired et le motif vide lèvent avant la transaction ; async garde ces refus en rejet
     async transfer(
       stayId: string,
       locationId: string,

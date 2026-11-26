@@ -64,7 +64,7 @@ export const clinicalStockService = {
       )
     );
   },
-  async dispensation(prescriptionId: string) {
+  dispensation(prescriptionId: string) {
     return runDbRead(
       async (db) =>
         (

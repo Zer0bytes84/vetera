@@ -8,6 +8,7 @@ import type {
   StockSupplier,
 } from "./purchasing-store";
 
+// biome-ignore lint/suspicious/useAwait: jsPDF compose le bon de commande de façon synchrone avant savePdf ; async garde une erreur de composition en rejet pour run() du panneau d’achats
 export async function exportPurchaseOrder(
   order: PurchaseOrder,
   supplier: StockSupplier,

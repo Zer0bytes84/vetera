@@ -606,6 +606,7 @@ function buildDemoNotes(baseDate: Date, currentUser: CurrentUser): Note[] {
   ];
 }
 
+// biome-ignore lint/suspicious/useAwait: App.tsx fait .catch sur le résultat ; sans async la sortie anticipée rendrait undefined (tsc TS2339)
 export async function seedDemoDataIfNeeded(currentUser: CurrentUser | null) {
   if (
     !currentUser ||
@@ -678,6 +679,7 @@ export async function seedDemoDataIfNeeded(currentUser: CurrentUser | null) {
   ].forEach(emitTableChanged);
 }
 
+// biome-ignore lint/suspicious/useAwait: App.tsx fait .catch sur le résultat ; sans async la sortie hors Tauri rendrait undefined (tsc TS2532)
 export async function purgeDemoDataInTauriIfNeeded() {
   if (!isTauriRuntime()) {
     return;

@@ -659,6 +659,7 @@ export async function importDatabaseFromFile(
  * Decode backup bytes: detect encrypted container, decrypt if needed, fall
  * back to a raw SQLite blob. Throws on integrity / format failure.
  */
+// biome-ignore lint/suspicious/useAwait: rend des octets déjà en clair dans plusieurs branches (la signature Promise<Uint8Array> exige async, tsc TS2739) et parseContainer ou le mot de passe manquant lèvent ; async garde ces erreurs en rejet
 async function decodeBackupBytes(
   bytes: Uint8Array,
   passphrase?: string

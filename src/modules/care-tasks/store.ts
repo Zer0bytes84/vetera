@@ -145,6 +145,7 @@ export function createCareStore(
       });
       return task;
     },
+    // biome-ignore lint/suspicious/useAwait: lève sur un auteur vide et stockQuantity lève sur une quantité invalide, avant persistence.transaction ; async garde ces refus en rejet
     async updateProductUsage(
       taskId: string,
       productId: string | null,
@@ -204,6 +205,7 @@ export function createCareStore(
         };
       });
     },
+    // biome-ignore lint/suspicious/useAwait: lève sur un auteur ou un motif vide avant la transaction ; completion-rollback.test.ts attend ce refus en rejet (.rejects)
     async undoCompletion(
       taskId: string,
       author: string,

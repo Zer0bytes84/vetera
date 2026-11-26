@@ -141,6 +141,7 @@ export function useUsersRepository() {
 export function useOwnersRepository() {
   const store = useSQLite<Owner>("owners");
 
+  // biome-ignore lint/suspicious/useAwait: lève « Propriétaire introuvable » avant store.update ; async garde ce refus en rejet pour les appelants qui attendent la promesse
   const update = async (id: string, patch: Partial<Owner>) => {
     const current = store.data.find((owner) => owner.id === id);
     if (!current) {
@@ -647,6 +648,7 @@ export function usePatientsRepository() {
     };
   };
 
+  // biome-ignore lint/suspicious/useAwait: lève « Patient introuvable » avant patientsStore.update ; async garde ce refus en rejet pour les appelants qui attendent la promesse
   const update = async (id: string, patch: Partial<Patient>) => {
     const current = patientsStore.data.find((patient) => patient.id === id);
     if (!current) {

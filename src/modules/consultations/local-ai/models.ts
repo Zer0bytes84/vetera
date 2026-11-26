@@ -25,11 +25,13 @@ export const EMPTY_MODEL_STATUS: LocalModelStatus = {
   whisperReady: false,
   generatorReady: false,
 };
+// biome-ignore lint/suspicious/useAwait: hors Tauri rend l'objet EMPTY_MODEL_STATUS, pas une promesse ; la signature Promise<LocalModelStatus> exige async (tsc TS2739 sans)
 export async function getLocalModels(): Promise<LocalModelStatus> {
   return isTauriRuntime()
     ? invoke("local_ai_model_status")
     : EMPTY_MODEL_STATUS;
 }
+// biome-ignore lint/suspicious/useAwait: lève hors de l'application de bureau avant invoke ; async garde ce refus en rejet
 export async function downloadLocalModels(
   onProgress?: (progress: AIProvisioningProgress) => void,
   accessToken?: string,

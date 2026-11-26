@@ -162,6 +162,7 @@ export function runDbTransaction<T>(
 /**
  * Obtient ou crée la connexion à la base de données SQLite
  */
+// biome-ignore lint/suspicious/useAwait: rend la connexion en cache telle quelle ; la signature Promise<Database> exige async (tsc TS2739 sans)
 export async function getDatabase(): Promise<Database> {
   if (db) {
     return db;

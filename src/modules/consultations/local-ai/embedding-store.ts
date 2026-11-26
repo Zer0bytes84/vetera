@@ -326,6 +326,7 @@ let idleEmbedding: {
   modelRoot: string;
   timer: ReturnType<typeof setTimeout>;
 } | null = null;
+// biome-ignore lint/suspicious/useAwait: relance l'erreur de idle.session.resume et rend tantôt la session en cache, tantôt LocalInferenceSession.create ; async garde l'erreur en rejet et une promesse dans les deux cas
 async function takeEmbeddingSession(
   modelRoot: string,
   signal: AbortSignal,
@@ -397,6 +398,7 @@ export async function indexReviewedSource(
     );
   }
 }
+// biome-ignore lint/suspicious/useAwait: lève « Le patient est requis » avant db.select ; async garde ce refus en rejet
 export async function detectSearchOrphans(
   db: SearchDatabase,
   patientId: string
@@ -906,6 +908,7 @@ export async function searchAllPatientsDocuments(
  * Executes in ~1ms directly against SQLite using French morphological stems,
  * brand/DCI bidirectional mappings, and acronym expansions.
  */
+// biome-ignore lint/suspicious/useAwait: assertSearchScope lève avant runDbRead et une requête vide rend [] ; async garde le refus en rejet et une promesse dans les deux cas
 export async function searchAllPatientsFastLexical(
   filters: Pick<SearchScope, "sourceTypes" | "sections">,
   query: string,

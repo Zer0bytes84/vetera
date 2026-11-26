@@ -168,6 +168,7 @@ export async function hashPassword(password: string): Promise<string> {
   return bcrypt.hash(password, salt);
 }
 
+// biome-ignore lint/suspicious/useAwait: rend false ou une comparaison SHA-256 synchrone dans plusieurs branches ; la signature Promise<boolean> exige async (tsc TS2322 sans)
 export async function verifyPassword(
   password: string,
   hash: unknown

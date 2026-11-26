@@ -133,7 +133,7 @@ if (typeof window !== "undefined") {
   );
 }
 
-const readTauriTable = async (tableName: string, force = false) => {
+const readTauriTable = (tableName: string, force = false) => {
   const generation = getTableCacheGeneration(tableName);
   const cached = tableRowsCache.get(tableName);
 

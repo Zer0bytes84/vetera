@@ -103,6 +103,7 @@ export class LocalInferenceSession {
     this.lastRequest = message;
     this.worker.postMessage(request, transfer);
   }
+  // biome-ignore lint/suspicious/useAwait: lève abortError sur un signal déjà annulé, reserveClinicalModel lève si une tâche locale tourne et new Worker peut lever ; async garde ces erreurs en rejet
   static async create(
     kind: "whisper" | "soap" | "embedding",
     signal: AbortSignal,

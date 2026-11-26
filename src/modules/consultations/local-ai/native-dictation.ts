@@ -35,7 +35,7 @@ export function nativeDictationEnabled(
   return isTauriRuntime() && MACOS_PLATFORM.test(platform);
 }
 
-export async function nativeDictationStatus(): Promise<NativeDictationStatus> {
+export function nativeDictationStatus(): Promise<NativeDictationStatus> {
   return invoke<NativeDictationStatus>("dictee_status");
 }
 
@@ -55,7 +55,7 @@ export function encodePcmBase64(pcm: Float32Array) {
   return btoa(binaire);
 }
 
-export async function transcribeNatively(
+export function transcribeNatively(
   pcm: Float32Array,
   language: DictationLanguage = "fr"
 ): Promise<NativeDictationResult> {

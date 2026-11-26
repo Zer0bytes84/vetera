@@ -77,6 +77,7 @@ export function sqliteDocumentPersistence(
       }
     };
     return {
+      // biome-ignore lint/suspicious/useAwait: check() lève « Requête documentaire invalide » avant db.select ; async garde ce refus en rejet
       async list(table, filters = {}) {
         const keys = Object.keys(filters);
         check(table, keys);
@@ -138,6 +139,7 @@ export function browserDocumentDatabase(
       Object.entries(row).map(([key, value]) => [camel(key), value])
     );
   return {
+    // biome-ignore lint/suspicious/useAwait: magasin navigateur : rend un tableau filtré alors que DocumentDatabase.list exige une promesse (tsc TS2322 sans async)
     async list(table, filters = {}) {
       return tables[table]
         .map(normalize)
@@ -145,12 +147,14 @@ export function browserDocumentDatabase(
           Object.entries(filters).every(([key, value]) => row[key] === value)
         );
     },
+    // biome-ignore lint/suspicious/useAwait: DocumentDatabase.insert exige Promise<void> et le corps lève « Cet élément existe déjà » ; async garde ce doublon en rejet
     async insert(table, row) {
       if (row.id && tables[table].some((entry) => entry.id === row.id)) {
         throw new Error("Cet élément existe déjà.");
       }
       tables[table].push(toBrowser(row));
     },
+    // biome-ignore lint/suspicious/useAwait: DocumentDatabase.update exige Promise<void> et le corps lève « Cet élément n’existe plus » ; async garde l'erreur en rejet
     async update(table, id, row) {
       const index = tables[table].findIndex((entry) => entry.id === id);
       if (index < 0) {
@@ -158,6 +162,7 @@ export function browserDocumentDatabase(
       }
       tables[table][index] = { ...tables[table][index], ...toBrowser(row) };
     },
+    // biome-ignore lint/suspicious/useAwait: magasin navigateur : corps synchrone alors que DocumentDatabase.remove exige Promise<void> (tsc TS2322 sans async)
     async remove(table, id) {
       tables[table] = tables[table].filter((row) => row.id !== id);
     },
@@ -609,7 +614,7 @@ export function createDocumentStore(
   }
 
   return {
-    async listTemplates(): Promise<ManagedDocumentTemplate[]> {
+    listTemplates(): Promise<ManagedDocumentTemplate[]> {
       return persistence.transaction(async (db) => {
         await actor(db);
         await ensureTemplates(db);
@@ -618,6 +623,7 @@ export function createDocumentStore(
         );
       });
     },
+    // biome-ignore lint/suspicious/useAwait: lève sur un nom ou un type de modèle invalide et validateDocumentTemplate lève sur le corps, avant la transaction ; async garde ces refus en rejet
     async saveTemplate(
       input: SaveDocumentTemplateInput,
       authorId: string
@@ -690,6 +696,7 @@ export function createDocumentStore(
         await db.remove("document_templates", templateId);
       });
     },
+    // biome-ignore lint/suspicious/useAwait: lève sur un destinataire ou un motif trop long avant la transaction ; managed-documents.test.ts attend ce refus en rejet
     async prepare(
       consultationId: string,
       patientId: string,
@@ -801,6 +808,7 @@ export function createDocumentStore(
         };
       });
     },
+    // biome-ignore lint/suspicious/useAwait: lève si le document n’est pas relu et assertText lève sur le titre ou le contenu, avant la transaction ; managed-documents.test.ts attend un rejet
     async createDraft(
       preparation: DocumentPreparation,
       draft: { title: string; content: string },
@@ -880,7 +888,7 @@ export function createDocumentStore(
         return document;
       });
     },
-    async list(patientId?: string): Promise<PatientDocument[]> {
+    list(patientId?: string): Promise<PatientDocument[]> {
       return persistence.read(async (db) => {
         await actor(db);
         return (
@@ -893,12 +901,13 @@ export function createDocumentStore(
           );
       });
     },
-    async get(documentId: string): Promise<PatientDocument> {
+    get(documentId: string): Promise<PatientDocument> {
       return persistence.read(async (db) => {
         await actor(db);
         return get(db, documentId);
       });
     },
+    // biome-ignore lint/suspicious/useAwait: assertText lève sur un titre ou un contenu invalide avant la transaction ; async garde ce refus en rejet
     async updateDraft(
       documentId: string,
       draft: { title: string; content: string },
@@ -930,6 +939,7 @@ export function createDocumentStore(
         return next;
       });
     },
+    // biome-ignore lint/suspicious/useAwait: lève si l’aperçu n’est pas relu ou si le PDF est invalide, avant la transaction ; managed-documents.test.ts attend un rejet
     async finalize(
       documentId: string,
       authorId: string,
@@ -1015,10 +1025,7 @@ export function createDocumentStore(
         );
       });
     },
-    async newVersion(
-      documentId: string,
-      authorId: string
-    ): Promise<PatientDocument> {
+    newVersion(documentId: string, authorId: string): Promise<PatientDocument> {
       return persistence.transaction(async (db) => {
         const user = (await actor(db, authorId))!;
         const previous = await get(db, documentId);
@@ -1052,6 +1059,7 @@ export function createDocumentStore(
         return next;
       });
     },
+    // biome-ignore lint/suspicious/useAwait: lève sur un type, un nom ou une taille de pièce invalide avant la transaction ; managed-documents.test.ts attend un rejet
     async importAttachment(
       patientId: string,
       attachment: DocumentAttachment,
@@ -1132,7 +1140,7 @@ export function createDocumentStore(
         return document;
       });
     },
-    async history(documentId: string): Promise<DocumentEvent[]> {
+    history(documentId: string): Promise<DocumentEvent[]> {
       return persistence.read(async (db) => {
         await actor(db);
         await get(db, documentId);

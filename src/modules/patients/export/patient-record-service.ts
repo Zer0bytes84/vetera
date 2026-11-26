@@ -327,6 +327,7 @@ export async function readPatientRecordSnapshotData(
   try {
     const raw = await readRecord(
       {
+        // biome-ignore lint/suspicious/useAwait: lève sur une table ou une colonne inconnue avant db.select ; async garde ce refus en rejet
         async list(table, filters = {}) {
           const columns = Object.keys(filters);
           if (
@@ -364,6 +365,7 @@ export async function readPatientRecordSnapshotData(
   }
 }
 
+// biome-ignore lint/suspicious/useAwait: lève si la section des rappels est demandée dans le navigateur avant toute lecture ; async garde ce refus en rejet
 async function browserSnapshotData(
   patientId: string,
   options: PatientRecordOptions,
@@ -414,6 +416,7 @@ async function browserSnapshotData(
   }
   return readRecord(
     {
+      // biome-ignore lint/suspicious/useAwait: lecteur navigateur : l’interface exige Promise<Row[]>, le corps rend un tableau et lève si la source manque ; async garde l’erreur en rejet
       async list(table, filters = {}) {
         const rows = tables.get(table);
         if (!rows) {

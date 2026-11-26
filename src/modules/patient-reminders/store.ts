@@ -129,7 +129,7 @@ export function createPatientReminderStore(
     );
   }
 
-  async function listTypes(db: CareDatabase) {
+  function listTypes(db: CareDatabase) {
     return db.select<ReminderType[]>(
       `SELECT id, code,
         COALESCE(libelle, name) AS name,
@@ -141,6 +141,7 @@ export function createPatientReminderStore(
   }
 
   return {
+    // biome-ignore lint/suspicious/useAwait: requireAuthor, assertDateOnly et le contrôle patient et vaccin lèvent avant la transaction ; async garde ces refus en rejet
     async saveVaccination(draft: VaccineReminderDraft, author: string) {
       requireAuthor(author);
       assertDateOnly(draft.administeredDate);
@@ -230,6 +231,7 @@ export function createPatientReminderStore(
       });
     },
 
+    // biome-ignore lint/suspicious/useAwait: assertDateOnly et le contrôle de l’acte incomplet lèvent avant persistence.read ; async garde ces refus en rejet
     async proposeForAct(
       act: MedicalAct
     ): Promise<MedicalReminderProposal | null> {
@@ -268,6 +270,7 @@ export function createPatientReminderStore(
       });
     },
 
+    // biome-ignore lint/suspicious/useAwait: requireAuthor, assertDateOnly et les contrôles d’intervalle et d’échéance lèvent avant la transaction ; patient-reminders/store.test.ts attend un rejet
     async createFromProposal(
       proposal: MedicalReminderProposal,
       author: string
@@ -386,6 +389,7 @@ export function createPatientReminderStore(
       );
     },
 
+    // biome-ignore lint/suspicious/useAwait: requireAuthor lève sur un auteur vide avant la transaction ; async garde ce refus en rejet
     async transition(
       reminderId: string,
       to: MedicalReminderStatus,
@@ -424,6 +428,7 @@ export function createPatientReminderStore(
       });
     },
 
+    // biome-ignore lint/suspicious/useAwait: requireAuthor, assertDateOnly et le motif vide lèvent avant la transaction ; patient-reminders/store.test.ts attend un rejet
     async postpone(
       reminderId: string,
       dueDate: string,
@@ -461,7 +466,7 @@ export function createPatientReminderStore(
       });
     },
 
-    async nextProposal(reminderId: string): Promise<MedicalReminderProposal> {
+    nextProposal(reminderId: string): Promise<MedicalReminderProposal> {
       return persistence.read(async (db) => {
         const reminder = await get(db, reminderId);
         if (reminder.statut !== "termine") {
@@ -485,6 +490,7 @@ export function createPatientReminderStore(
       });
     },
 
+    // biome-ignore lint/suspicious/useAwait: requireAuthor et le contrôle du nom et de l’intervalle lèvent avant la transaction ; async garde ces refus en rejet
     async saveType(
       draft: {
         active: boolean;

@@ -162,7 +162,7 @@ async function licenseRequest(
   return payload;
 }
 
-export async function activateLicense(
+export function activateLicense(
   email: string,
   key: string,
   timeoutMs?: number

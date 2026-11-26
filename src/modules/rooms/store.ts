@@ -116,6 +116,7 @@ export function createRoomStore(
       });
     },
 
+    // biome-ignore lint/suspicious/useAwait: cleanRoomName lève sur un nom vide ou trop long avant la transaction ; rooms.test.ts attend ce refus en rejet
     async create(name: string): Promise<Room> {
       const clean = cleanRoomName(name);
       return persistence.transaction(async (db) => {
@@ -133,6 +134,7 @@ export function createRoomStore(
       });
     },
 
+    // biome-ignore lint/suspicious/useAwait: cleanRoomName lève sur un nom vide ou trop long avant la transaction ; async garde ce refus en rejet
     async rename(roomId: string, name: string): Promise<Room> {
       const clean = cleanRoomName(name);
       return persistence.transaction(async (db) => {

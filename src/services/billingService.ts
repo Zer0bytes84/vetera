@@ -1258,7 +1258,7 @@ async function countCompletedRefunds(
   return valueAsAmount(rows[0]?.amount);
 }
 
-async function runBillingCommand<T>(
+function runBillingCommand<T>(
   operation: (database: BillingDatabase) => Promise<T>
 ): Promise<T> {
   return runDbTransaction(
@@ -1300,7 +1300,7 @@ function requireIssuedInvoice(invoice: InvoiceDetail | null): InvoiceDetail {
 }
 
 /** Lists invoices with settlement calculated from immutable documents and ledgers. */
-export async function listInvoices(
+export function listInvoices(
   options: ListInvoicesOptions = {}
 ): Promise<Invoice[]> {
   return runDbRead(async (database) => {
@@ -1335,9 +1335,7 @@ export async function listInvoices(
 }
 
 /** Returns an invoice document with its immutable lines and related ledger records. */
-export async function getInvoice(
-  invoiceId: string
-): Promise<InvoiceDetail | null> {
+export function getInvoice(invoiceId: string): Promise<InvoiceDetail | null> {
   return runDbRead((database) => loadInvoiceDetail(database, invoiceId));
 }
 
@@ -1352,7 +1350,7 @@ export interface IssuedInvoiceLine {
 }
 
 /** Read only: the lines of invoices issued between two dates, voided ones excluded. */
-export async function listIssuedInvoiceLines(range: {
+export function listIssuedInvoiceLines(range: {
   from: Date;
   to: Date;
 }): Promise<IssuedInvoiceLine[]> {
@@ -1430,7 +1428,7 @@ export async function createInvoiceDraftInDatabase(
   return created;
 }
 
-export async function createInvoiceDraft(
+export function createInvoiceDraft(
   input: CreateInvoiceDraftInput
 ): Promise<InvoiceDetail> {
   return runBillingCommand((database) =>
@@ -1488,9 +1486,7 @@ export async function appendInvoiceDraftLinesInDatabase(
 }
 
 /** One durable draft per care validation. Replays never change its price snapshot. */
-export async function billCompletedCareTask(
-  taskId: string
-): Promise<InvoiceDetail> {
+export function billCompletedCareTask(taskId: string): Promise<InvoiceDetail> {
   return runBillingCommand(async (database) => {
     const rows = await database.select<DatabaseRow[]>(
       `SELECT c.*, p.owner_id FROM care_tasks c
@@ -1562,7 +1558,7 @@ export async function billCompletedCareTask(
   });
 }
 
-export async function updateInvoiceDraft(
+export function updateInvoiceDraft(
   input: UpdateInvoiceDraftInput
 ): Promise<InvoiceDetail> {
   return runBillingCommand(async (database) => {
@@ -1658,7 +1654,7 @@ export interface DeleteInvoiceDraftInput extends BillingCommandContext {
  * Les factures émises/annulées sont immuables : utilisez un avoir ou
  * une annulation.
  */
-export async function deleteInvoiceDraft(
+export function deleteInvoiceDraft(
   input: DeleteInvoiceDraftInput
 ): Promise<boolean> {
   return runBillingCommand(async (database) => {
@@ -1691,9 +1687,7 @@ export async function deleteInvoiceDraft(
   });
 }
 
-export async function issueInvoice(
-  input: IssueInvoiceInput
-): Promise<InvoiceDetail> {
+export function issueInvoice(input: IssueInvoiceInput): Promise<InvoiceDetail> {
   return runBillingCommand(async (database) => {
     const invoiceId = requireId(input.invoiceId, "INVOICE_NOT_FOUND");
     const idempotencyKey = normalizeIdempotencyKey(input.idempotencyKey);
@@ -1802,7 +1796,7 @@ export async function issueInvoice(
   });
 }
 
-export async function recordPayment(
+export function recordPayment(
   input: RecordPaymentInput
 ): Promise<InvoicePayment> {
   return runBillingCommand(async (database) => {
@@ -1895,7 +1889,7 @@ export async function recordPayment(
   });
 }
 
-export async function issueCreditNote(
+export function issueCreditNote(
   input: IssueCreditNoteInput
 ): Promise<CreditNote> {
   return runBillingCommand(async (database) => {
@@ -2024,7 +2018,7 @@ export async function issueCreditNote(
   });
 }
 
-export async function recordRefund(input: RecordRefundInput): Promise<Refund> {
+export function recordRefund(input: RecordRefundInput): Promise<Refund> {
   return runBillingCommand(async (database) => {
     const paymentId = requireId(input.paymentId, "PAYMENT_NOT_FOUND");
     const idempotencyKey = normalizeIdempotencyKey(input.idempotencyKey);
@@ -2147,9 +2141,7 @@ export async function recordRefund(input: RecordRefundInput): Promise<Refund> {
   });
 }
 
-export async function voidPayment(
-  input: VoidPaymentInput
-): Promise<InvoicePayment> {
+export function voidPayment(input: VoidPaymentInput): Promise<InvoicePayment> {
   return runBillingCommand(async (database) => {
     const voided = normalizeTimestamp(input.voidedAt);
     const paymentId = requireId(input.paymentId, "PAYMENT_NOT_FOUND");
@@ -2213,7 +2205,7 @@ export async function voidPayment(
   });
 }
 
-export async function voidRefund(input: VoidRefundInput): Promise<Refund> {
+export function voidRefund(input: VoidRefundInput): Promise<Refund> {
   return runBillingCommand(async (database) => {
     const voided = normalizeTimestamp(input.voidedAt);
     const refundId = requireId(input.refundId, "REFUND_NOT_FOUND");
@@ -2274,9 +2266,7 @@ export async function voidRefund(input: VoidRefundInput): Promise<Refund> {
   });
 }
 
-export async function voidInvoice(
-  input: VoidInvoiceInput
-): Promise<InvoiceDetail> {
+export function voidInvoice(input: VoidInvoiceInput): Promise<InvoiceDetail> {
   return runBillingCommand((database) =>
     voidInvoiceInDatabase(database, input)
   );
@@ -2343,7 +2333,7 @@ export async function voidInvoiceInDatabase(
  * Invoice settlement is derived from issued credits, so reloading the invoice
  * in this same transaction recalculates the post-void settlement state.
  */
-export async function voidCreditNote(
+export function voidCreditNote(
   input: VoidCreditNoteInput
 ): Promise<CreditNote> {
   return runBillingCommand(async (database) => {
