@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { billingDraft, parseDinars } from "@/modules/billing/billing-draft";
 
+const MISSING_SERVICE_PRICE = /prix de chaque prestation/;
+const AMOUNT_PAID_TODAY = /montant réglé aujourd'hui/;
+const EXCEEDS_BALANCE_3500_DA = /dépasse le reste dû \(3\s?500 DA\)/;
+const BALANCE_DUE = /reste dû/;
+
 const line = (desc: string, amount: string) => ({ desc, amount });
 
 describe("fenêtre de facturation", () => {
@@ -12,11 +17,11 @@ describe("fenêtre de facturation", () => {
       received: null,
       free: false,
     });
-    expect(empty.problem).toMatch(/prix de chaque prestation/);
+    expect(empty.problem).toMatch(MISSING_SERVICE_PRICE);
 
     const priced = billingDraft([line("Consultation - Contrôle", "3500")], "");
     expect(priced).toMatchObject({ canConfirm: false, total: 3500, due: 3500 });
-    expect(priced.problem).toMatch(/montant réglé aujourd'hui/);
+    expect(priced.problem).toMatch(AMOUNT_PAID_TODAY);
   });
 
   it("envoie exactement le prix et le règlement saisis", () => {
@@ -44,7 +49,7 @@ describe("fenêtre de facturation", () => {
     });
     expect(
       billingDraft([line("Consultation", "3500")], "5000").problem
-    ).toMatch(/dépasse le reste dû \(3\s?500 DA\)/);
+    ).toMatch(EXCEEDS_BALANCE_3500_DA);
   });
 
   it("traite un total saisi à 0 comme acte gratuit, sans règlement", () => {
@@ -74,7 +79,7 @@ describe("fenêtre de facturation", () => {
       received: 2000,
       balanceAfter: 0,
     });
-    expect(billingDraft([], "2500", existing).problem).toMatch(/reste dû/);
+    expect(billingDraft([], "2500", existing).problem).toMatch(BALANCE_DUE);
   });
 
   it("lit les montants comme une personne les tape", () => {

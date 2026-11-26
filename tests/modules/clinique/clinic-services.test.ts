@@ -1,6 +1,9 @@
 import { readFileSync } from "node:fs";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+const HOSPITALIZATION_COMMAND_GATED =
+  /\{hospitalizationEnabled && \(\s*<CommandPrimitive\.Item[\s\S]{0,400}newHospitalization/;
+
 const stored = new Map<string, string>();
 vi.mock("@/services/appSettingsService", () => ({
   getSetting: vi.fn(async (key: string) => stored.get(key) ?? null),
@@ -84,8 +87,6 @@ describe("réglage « Mon cabinet propose l’hospitalisation »", () => {
       "const sectionTabs = hospitalizationEnabled ? tabsList : null;"
     );
     const palette = readFileSync("src/components/CommandPalette.tsx", "utf8");
-    expect(palette).toMatch(
-      /\{hospitalizationEnabled && \(\s*<CommandPrimitive\.Item[\s\S]{0,400}newHospitalization/
-    );
+    expect(palette).toMatch(HOSPITALIZATION_COMMAND_GATED);
   });
 });

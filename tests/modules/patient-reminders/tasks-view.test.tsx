@@ -6,6 +6,11 @@ import type {
 } from "@/modules/patient-reminders/store";
 import type { Patient, Reminder, Task } from "@/types/db";
 
+const TO_DO_COUNT_4 = /À traiter[\s\S]*?<span class="sr-only">4<\/span>/;
+const TO_DO_COUNT_2 = /À traiter[\s\S]*?<span class="sr-only">2<\/span>/;
+const NEW_REMINDER_DATE_14_10_2026 =
+  /aria-label="Date du nouveau rappel"[^>]*>[^]*?14\/10\/2026/;
+
 const harness = vi.hoisted(() => ({
   tasks: [] as Task[],
   appointmentsReminders: [] as Reminder[],
@@ -90,7 +95,7 @@ afterEach(() => vi.useRealTimers());
 it("affiche les quatre rappels à traiter même en l’absence de rappels médicaux", () => {
   harness.tasks = [task("1"), task("2"), task("3"), task("4")];
   const html = render();
-  expect(html).toMatch(/À traiter[\s\S]*?<span class="sr-only">4<\/span>/);
+  expect(html).toMatch(TO_DO_COUNT_4);
   for (const id of ["1", "2", "3", "4"]) {
     expect(html).toContain(`data-task-id="${id}"`);
   }
@@ -109,7 +114,7 @@ it("compte et affiche les mêmes échéances médicales et manuelles, sans inclu
     medical("termine", "2026-10-12", "termine"),
   ];
   const html = render();
-  expect(html).toMatch(/À traiter[\s\S]*?<span class="sr-only">2<\/span>/);
+  expect(html).toMatch(TO_DO_COUNT_2);
   expect(html).toContain('data-task-id="manuel"');
   expect(html).toContain('data-medical-reminder-id="du"');
   expect(html).toContain("Patient test");
@@ -124,9 +129,7 @@ it("propose le type et une date préremplie dans le formulaire rapide", () => {
   const html = render();
   expect(html).toContain('aria-label="Type du nouveau rappel"');
   // French calendar field (no native English picker), prefilled with the civil day.
-  expect(html).toMatch(
-    /aria-label="Date du nouveau rappel"[^>]*>[^]*?14\/10\/2026/
-  );
+  expect(html).toMatch(NEW_REMINDER_DATE_14_10_2026);
 });
 
 it("signale un échec de chargement des rappels patients au lieu de le masquer derrière la liste manuelle", () => {

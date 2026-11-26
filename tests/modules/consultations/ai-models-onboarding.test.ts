@@ -29,6 +29,11 @@ import {
 import * as runtime from "@/services/browser-store";
 import { tagsWith } from "../../helpers/code-text";
 
+const ENGINE_NAMES = /Whisper|Gemma|MediaPipe|ONNX/;
+const NEW_ASSISTANT_TECH_TERMS = /Gemma|MediaPipe|LiteRT|E2B/;
+const TECH_TERMS = /Gemma|E2B|MediaPipe|LiteRT/;
+const DISABLED_CONTROL = /aria-disabled="true"|\sdisabled[\s=>]/;
+
 const missing = {
   root: "/local-models",
   whisperReady: false,
@@ -211,7 +216,7 @@ it("présente la gestion des outils sur ordinateur sans nom technique ni écran 
   expect(text).toContain("Assistant IA");
   expect(text).toContain("Recherche clinique");
   expect(text).toContain("Télécharger les outils IA");
-  expect(text).not.toMatch(/Whisper|Gemma|MediaPipe|ONNX/);
+  expect(text).not.toMatch(ENGINE_NAMES);
   expect(html).not.toContain('role="dialog"');
 });
 
@@ -352,7 +357,7 @@ describe("Nouvelle version de l’assistant (phase B)", () => {
     });
     expect(NEW_ASSISTANT.name).toBe("Nouvelle version de l’Assistant IA");
     expect(`${NEW_ASSISTANT.name} ${NEW_ASSISTANT.description}`).not.toMatch(
-      /Gemma|MediaPipe|LiteRT|E2B/
+      NEW_ASSISTANT_TECH_TERMS
     );
     expect(NEW_ASSISTANT.sizeLabel).toBe("2 Go");
   });
@@ -379,7 +384,7 @@ describe("Carte de la nouvelle version dans les Paramètres", () => {
   it("donne l’interrupteur une fois installée, sans nom technique", () => {
     const text = card({ suspended: false });
     expect(text).toContain("Utiliser la nouvelle version");
-    expect(text).not.toMatch(/Gemma|E2B|MediaPipe|LiteRT/);
+    expect(text).not.toMatch(TECH_TERMS);
     expect(text).not.toContain("a pris le relais");
   });
   it("indique sans erreur que l’assistant actuel a pris le relais", () => {
@@ -403,7 +408,7 @@ describe("Carte de la nouvelle version dans les Paramètres", () => {
     );
     expect(html).toContain("Temporairement indisponible");
     const [toggle] = tagsWith(html, 'role="switch"');
-    expect(toggle).toMatch(/aria-disabled="true"|\sdisabled[\s=>]/);
+    expect(toggle).toMatch(DISABLED_CONTROL);
     expect(toggle).toContain('aria-checked="false"');
     expect(html).toContain("Utiliser la nouvelle version");
   });

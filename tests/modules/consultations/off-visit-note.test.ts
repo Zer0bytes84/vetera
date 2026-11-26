@@ -6,6 +6,10 @@ import {
   readOffVisitNote,
 } from "@/modules/consultations/off-visit-note";
 
+const VISIT_TABLES = /appointments|saveAppointment|consultation_soaps/;
+const NOTES_LIST_QUERY =
+  /FROM notes n\s+LEFT JOIN patients p ON p\.id = n\.patient_id\s+ORDER BY n\.updated_at DESC/;
+
 const input = {
   patientId: "patient-1",
   userId: "vet-1",
@@ -96,9 +100,7 @@ describe("note hors visite", () => {
       "src/modules/consultations/off-visit-note.ts",
       "utf8"
     );
-    expect(source).not.toMatch(
-      /appointments|saveAppointment|consultation_soaps/
-    );
+    expect(source).not.toMatch(VISIT_TABLES);
     expect(source).toContain("INSERT INTO notes");
   });
 
@@ -107,8 +109,6 @@ describe("note hors visite", () => {
       "src/modules/consultations/local-ai/embedding-store.ts",
       "utf8"
     );
-    expect(store).toMatch(
-      /FROM notes n\s+LEFT JOIN patients p ON p\.id = n\.patient_id\s+ORDER BY n\.updated_at DESC/
-    );
+    expect(store).toMatch(NOTES_LIST_QUERY);
   });
 });

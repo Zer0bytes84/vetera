@@ -23,6 +23,10 @@ import {
 } from "@/modules/documents/lib/library";
 import type { LibraryItem, Note } from "@/types/db";
 
+const SCAN_PDF_5_MB = /scan\.pdf.*5 Mo/;
+const PATH_SEPARATOR = /[\\/]/;
+const MODEL_WORD = /modèle/i;
+
 const note = (over: Partial<Note> = {}): Note => ({
   id: "n1",
   userId: "u1",
@@ -222,7 +226,7 @@ describe("les fichiers et les images", () => {
       "file"
     );
     expect(big).toMatchObject({ ok: false });
-    expect(big.ok ? "" : big.reason).toMatch(/scan\.pdf.*5 Mo/);
+    expect(big.ok ? "" : big.reason).toMatch(SCAN_PDF_5_MB);
     expect(
       judgeFile(file("pile.pdf", MAX_FILE_BYTES, "application/pdf"), "file").ok
     ).toBe(true);
@@ -244,7 +248,7 @@ describe("les fichiers et les images", () => {
     });
   });
   it("assainit un nom de fichier", () => {
-    expect(safeFileName("../../etc/passwd")).not.toMatch(/[\\/]/);
+    expect(safeFileName("../../etc/passwd")).not.toMatch(PATH_SEPARATOR);
     expect(safeFileName('a:b*c?"d<e>f|g.pdf')).toBe("a_b_c__d_e_f_g.pdf");
     expect(safeFileName("...")).toBe("fichier");
     expect(safeFileName("   ")).toBe("fichier");
@@ -330,7 +334,7 @@ describe("la page rendue", () => {
       <DocumentsLibrary {...base} entries={[]} />
     );
     expect(html).toContain("Rien ici pour l’instant");
-    expect(html).not.toMatch(/modèle/i);
+    expect(html).not.toMatch(MODEL_WORD);
   });
   it("un filtre sans élément le dit", () => {
     const html = renderToStaticMarkup(

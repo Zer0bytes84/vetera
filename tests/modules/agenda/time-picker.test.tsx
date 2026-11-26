@@ -22,6 +22,8 @@ import {
   parseTypedTime,
 } from "@/modules/agenda/components/agenda-shared";
 
+const AM_PM_MARKER = /\b(AM|PM)\b/;
+
 describe("saisie de l'heure", () => {
   it.each([
     ["9", "09:00"],
@@ -85,7 +87,7 @@ describe("sélecteur d'horaire", () => {
     expect(html).toContain("→ 14:50");
     expect(html).toContain(">20<");
     expect(html).toContain(":55");
-    expect(html).not.toMatch(/\b(AM|PM)\b/);
+    expect(html).not.toMatch(AM_PM_MARKER);
     expect(html).toContain('aria-pressed="true"');
   });
 

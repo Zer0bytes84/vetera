@@ -1,5 +1,7 @@
 import postcss from "postcss";
 
+const WHITESPACE_RUN = /\s+/;
+
 /**
  * The text of a JavaScript or TypeScript source without its line layout. A formatter may split a call, an argument list,
  * a JSX element or a member chain over several lines, or add a trailing comma. `codeText` undoes only that, on the
@@ -33,13 +35,13 @@ export function selectorText(selector: string): string {
 /** Every `className="…"` of a source, each as its set of classes: the order of the classes is not the test's business. */
 export function classNames(source: string): Set<string>[] {
   return [...source.matchAll(/className="([^"]*)"/g)].map(
-    (match) => new Set(match[1].split(/\s+/).filter(Boolean))
+    (match) => new Set(match[1].split(WHITESPACE_RUN).filter(Boolean))
   );
 }
 
 /** True when one `className="…"` of the source holds exactly these classes, in any order. */
 export function hasClassName(source: string, classes: string): boolean {
-  const wanted = classes.split(/\s+/).filter(Boolean);
+  const wanted = classes.split(WHITESPACE_RUN).filter(Boolean);
   return classNames(source).some(
     (found) =>
       found.size === wanted.length && wanted.every((name) => found.has(name))

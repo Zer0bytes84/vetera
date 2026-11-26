@@ -12,6 +12,15 @@ import {
   SCANNED_DOCUMENT_MESSAGE,
 } from "../../../src/modules/documents/lib/patient-document-reading";
 
+const NOT_EXACT_MATCH_ERROR = /correspond pas exactement/;
+const FINALIZE_FIRST_ERROR = /Finalisez/;
+const CANCELLED_ERROR = /annulé/;
+const NOT_OWNED_ERROR = /n’appartient pas/;
+const EXPLICIT_CONSENT_ERROR = /explicitement/;
+const CAPACITY_ERROR = /capacité/;
+const PAGE_LIMIT_ERROR = /20 pages/;
+const TRUNCATED_ERROR = /tronqué/;
+
 const pdfFixture = vi.hoisted(() => ({
   pageCount: 1,
   text: "Prescription du patient Rex. Amoxicilline 50 mg matin et soir pendant 5 jours.",
@@ -148,7 +157,7 @@ describe("Lecture locale des documents du patient", () => {
         '{"extraits":[{"page":2,"texte":"Créatinine normale."}]}',
         source
       )
-    ).toThrow(/correspond pas exactement/);
+    ).toThrow(NOT_EXACT_MATCH_ERROR);
   });
   it("signale un PDF scanné et ne lance aucune reconnaissance ni réponse inventée", async () => {
     await expect(
@@ -166,13 +175,13 @@ describe("Lecture locale des documents du patient", () => {
   it("exclut les brouillons, les documents annulés et ceux d’un autre patient", async () => {
     await expect(
       readPatientDocument(document({ status: "brouillon" }))
-    ).rejects.toThrow(/Finalisez/);
+    ).rejects.toThrow(FINALIZE_FIRST_ERROR);
     await expect(
       readPatientDocument(document({ status: "annule" }))
-    ).rejects.toThrow(/annulé/);
+    ).rejects.toThrow(CANCELLED_ERROR);
     await expect(
       readPatientDocument(document(), { patientId: "milo" })
-    ).rejects.toThrow(/n’appartient pas/);
+    ).rejects.toThrow(NOT_OWNED_ERROR);
   });
   it("requiert une action explicite avant la reconnaissance d’une image locale", async () => {
     const image = document({
@@ -184,7 +193,9 @@ describe("Lecture locale des documents du patient", () => {
         pages: [],
       }),
     });
-    await expect(readPatientDocument(image)).rejects.toThrow(/explicitement/);
+    await expect(readPatientDocument(image)).rejects.toThrow(
+      EXPLICIT_CONSENT_ERROR
+    );
     expect(pdfFixture.readImage).not.toHaveBeenCalled();
     const source = await readPatientDocument(image, { allowImageOcr: true });
     expect(source.sourceId).toBe(image.id);
@@ -193,7 +204,7 @@ describe("Lecture locale des documents du patient", () => {
   it("refuse une source trop longue au lieu de la tronquer", async () => {
     await expect(
       readPatientDocument(document({ content: "a".repeat(60_001) }))
-    ).rejects.toThrow(/capacité/);
+    ).rejects.toThrow(CAPACITY_ERROR);
   });
 });
 
@@ -249,14 +260,14 @@ describe("Import PDF sans appel distant ni OCR silencieuse", () => {
       preparePatientAttachment(
         new File(["%PDF-test"], "long.pdf", { type: "application/pdf" })
       )
-    ).rejects.toThrow(/20 pages/);
+    ).rejects.toThrow(PAGE_LIMIT_ERROR);
     pdfFixture.pageCount = 1;
     pdfFixture.text = "a".repeat(60_001);
     await expect(
       preparePatientAttachment(
         new File(["%PDF-test"], "long.pdf", { type: "application/pdf" })
       )
-    ).rejects.toThrow(/tronqué/);
+    ).rejects.toThrow(TRUNCATED_ERROR);
   });
   it("refuse les pièces non prises en charge avant toute lecture", async () => {
     await expect(

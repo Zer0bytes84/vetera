@@ -4,6 +4,11 @@ import postcss from "postcss";
 import { describe, expect, it } from "vitest";
 import { nextCursorIndex } from "@/hooks/useListCursor";
 
+const SOURCE_OR_CSS_FILE = /\.(tsx?|css)$/;
+const TRANSITION_ALL = /transition-all\b|transition:\s*all\b/;
+const CSS_FILE = /\.css$/;
+const HOVER_MEDIA_QUERY = /hover/;
+
 const files = (dir: string, ext: RegExp): string[] =>
   readdirSync(dir).flatMap((name) => {
     const path = join(dir, name);
@@ -23,15 +28,15 @@ describe("charte d'interaction", () => {
   });
 
   it("n'anime jamais toutes les propriétés", () => {
-    const offenders = files("src", /\.(tsx?|css)$/).filter((file) =>
-      /transition-all\b|transition:\s*all\b/.test(readFileSync(file, "utf8"))
+    const offenders = files("src", SOURCE_OR_CSS_FILE).filter((file) =>
+      TRANSITION_ALL.test(readFileSync(file, "utf8"))
     );
     expect(offenders).toEqual([]);
   });
 
   it("réserve les survols CSS aux pointeurs fins", () => {
     const loose: string[] = [];
-    for (const file of files("src", /\.css$/)) {
+    for (const file of files("src", CSS_FILE)) {
       postcss.parse(readFileSync(file, "utf8")).walkRules((rule) => {
         if (!rule.selector.includes(":hover")) {
           return;
@@ -39,7 +44,7 @@ describe("charte d'interaction", () => {
         for (let parent = rule.parent; parent; parent = parent.parent) {
           if (
             parent.type === "atrule" &&
-            /hover/.test((parent as postcss.AtRule).params)
+            HOVER_MEDIA_QUERY.test((parent as postcss.AtRule).params)
           ) {
             return;
           }

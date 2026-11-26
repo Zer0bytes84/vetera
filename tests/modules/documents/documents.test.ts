@@ -25,6 +25,9 @@ import type {
   Patient,
 } from "../../../src/types/db";
 
+const CLINICAL_CONCLUSION_WORDING =
+  /normal|bonne santé|apte|mg\/kg|Valable 3 mois/i;
+
 const patient = {
   id: "rex",
   name: "Rex",
@@ -102,9 +105,7 @@ describe("Documents issus de la note validée", () => {
     });
     expect(rendered).toContain("Rex");
     expect(rendered).not.toContain("{{");
-    expect(rendered).not.toMatch(
-      /normal|bonne santé|apte|mg\/kg|Valable 3 mois/i
-    );
+    expect(rendered).not.toMatch(CLINICAL_CONCLUSION_WORDING);
     if (template.kind === "report") {
       expect(rendered).toContain("Examen et observations\n\n");
     }

@@ -2,6 +2,12 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { beforeEach, expect, it, vi } from "vitest";
 import type { ManagedDocumentTemplate } from "@/modules/documents/document-domain";
 
+const DELETE_EXISTING_REPORT_BUTTON =
+  /<button\b[^>]*aria-label="Supprimer Compte-rendu existant"[^>]*>/;
+const DELETE_REFERRAL_LETTER_BUTTON =
+  /<button\b[^>]*aria-label="Supprimer Lettre de référence"[^>]*>/;
+const NEW_TEMPLATE_BUTTON = /<button\b[^>]*>[\s\S]*?Nouveau modèle<\/button>/;
+
 const harness = vi.hoisted(() => ({
   role: "admin",
   templates: [] as ManagedDocumentTemplate[],
@@ -59,12 +65,8 @@ it("préserve les modèles existants et expose la lettre de référence dans la 
 
 it("bloque la suppression d’un modèle utilisé tout en laissant sa désactivation disponible", () => {
   const html = render();
-  const usedDelete = html.match(
-    /<button\b[^>]*aria-label="Supprimer Compte-rendu existant"[^>]*>/
-  )?.[0];
-  const unusedDelete = html.match(
-    /<button\b[^>]*aria-label="Supprimer Lettre de référence"[^>]*>/
-  )?.[0];
+  const usedDelete = html.match(DELETE_EXISTING_REPORT_BUTTON)?.[0];
+  const unusedDelete = html.match(DELETE_REFERRAL_LETTER_BUTTON)?.[0];
   expect(usedDelete).toContain(' disabled=""');
   expect(unusedDelete).toBeDefined();
   expect(unusedDelete).not.toContain(' disabled=""');
@@ -99,8 +101,6 @@ it("annonce le chargement et empêche de créer avant la disponibilité des mod�
   const html = render();
   expect(html).toContain("Chargement des modèles…");
   expect(html).toContain('role="status"');
-  const createButton = html.match(
-    /<button\b[^>]*>[\s\S]*?Nouveau modèle<\/button>/
-  )?.[0];
+  const createButton = html.match(NEW_TEMPLATE_BUTTON)?.[0];
   expect(createButton).toContain(' disabled=""');
 });

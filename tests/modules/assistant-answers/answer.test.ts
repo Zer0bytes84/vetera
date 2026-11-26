@@ -18,6 +18,13 @@ import {
 import { formatDinars } from "@/utils/display-format";
 import { appointment, clinic, line, NOW, patient, task } from "./fixtures";
 
+const PENDING_LINE_NOT_COUNTED = /1 ligne en attente n’est pas comptée/;
+const STATUS_BREAKDOWN = /1 terminé, 0 annulé, 1 absence/;
+const NOTHING_SAVED_NOTICE = /Rien n’est enregistré/;
+const UNSPECIFIED_PERIOD = /Période non précisée/;
+const DIGIT = /\d/;
+const UNREADABLE_PERIOD = /Je ne lis pas cette période/;
+
 const ask = (question: string, extra = {}, patientId?: string) =>
   answerQuestion(question, clinic(extra), { now: NOW, patientId });
 const money = (centimes: number) => formatDinars(centimes / 100, 2);
@@ -37,23 +44,21 @@ describe("catalogue fermé : quatre sujets, chiffres calculés", () => {
     expect(figure("expense")).toBe(312_575);
     expect(figure("net")).toBe(1_637_475);
     expect(answer.text).toContain(money(1_950_050));
-    expect(answer.notes.join(" ")).toMatch(
-      /1 ligne en attente n’est pas comptée/
-    );
+    expect(answer.notes.join(" ")).toMatch(PENDING_LINE_NOT_COUNTED);
     expect(answer.table?.rows).toHaveLength(3);
   });
 
   it("rendez-vous : tous les rendez-vous d'un patient connu, quel que soit leur état", () => {
     const answer = asAnswer(ask("Rendez-vous de cette semaine"));
     expect(answer.figures.find((entry) => entry.id === "rows")?.value).toBe(3);
-    expect(answer.text).toMatch(/1 terminé, 0 annulé, 1 absence/);
+    expect(answer.text).toMatch(STATUS_BREAKDOWN);
   });
 
   it("absences : une carte propose une tâche par absence, rien n'est écrit", () => {
     const answer = asAnswer(ask("Absences des 30 derniers jours"));
     expect(answer.proposal?.tasks).toHaveLength(1);
     expect(answer.proposal?.tasks[0].title).toContain("Rex");
-    expect(answer.proposal?.subtitle).toMatch(/Rien n’est enregistré/);
+    expect(answer.proposal?.subtitle).toMatch(NOTHING_SAVED_NOTICE);
   });
 
   it("tâches : non terminées, avec celles en retard et sans échéance", () => {
@@ -84,10 +89,10 @@ describe("catalogue fermé : quatre sujets, chiffres calculés", () => {
 
   it("la période est toujours dite, y compris par défaut", () => {
     expect(asAnswer(ask("Recettes")).notes.join(" ")).toMatch(
-      /Période non précisée/
+      UNSPECIFIED_PERIOD
     );
     expect(asAnswer(ask("Recettes de ce mois")).notes.join(" ")).not.toMatch(
-      /Période non précisée/
+      UNSPECIFIED_PERIOD
     );
   });
 });
@@ -245,7 +250,7 @@ describe("garde des doses : refusée avant toute lecture", () => {
       now: NOW,
     });
     expect(answer.kind).toBe("refusal");
-    expect(answer.text).not.toMatch(/\d/);
+    expect(answer.text).not.toMatch(DIGIT);
   });
 
   it("ne refuse pas à tort les questions de lecture", () => {
@@ -311,7 +316,7 @@ describe("autres refus et attaques", () => {
     ]) {
       const answer = ask(question);
       expect(answer.kind, question).toBe("refusal");
-      expect(answer.text).not.toMatch(/\d/);
+      expect(answer.text).not.toMatch(DIGIT);
     }
   });
 
@@ -532,7 +537,7 @@ describe("équipe rouge : afficher un chiffre faux ou sans source malgré les ga
       expect(answer.kind === "refusal" && answer.reason, String(amount)).toBe(
         "unverifiable"
       );
-      expect(answer.text).not.toMatch(/\d/);
+      expect(answer.text).not.toMatch(DIGIT);
     }
   });
 
@@ -547,7 +552,7 @@ describe("équipe rouge : afficher un chiffre faux ou sans source malgré les ga
 
   it("une phrase retouchée après coup, même d'un seul chiffre, est rejetée", () => {
     const base = asAnswer(ask("Recettes de ce mois"));
-    const changed = base.text.replace(/\d/, (digit) =>
+    const changed = base.text.replace(DIGIT, (digit) =>
       String((Number(digit) + 1) % 10)
     );
     expect(changed).not.toBe(base.text);
@@ -620,9 +625,7 @@ describe("une période que le catalogue ne lit pas est refusée, pas approchée"
   ])("« %s »", (question) => {
     const answer = ask(question);
     expect(answer.kind, question).toBe("refusal");
-    expect(answer.kind === "refusal" && answer.text).toMatch(
-      /Je ne lis pas cette période/
-    );
+    expect(answer.kind === "refusal" && answer.text).toMatch(UNREADABLE_PERIOD);
   });
 
   it("un nom de patient qui ressemble à un jour ne refuse pas à tort", () => {

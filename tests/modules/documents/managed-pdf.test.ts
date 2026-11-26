@@ -10,6 +10,8 @@ import {
 } from "@/modules/documents/lib/managed-document-pdf";
 import { DEFAULT_INVOICE_SETTINGS } from "@/services/invoiceSettingsService";
 
+const PDF_HEADER = /^%PDF-1\./;
+
 afterEach(() => vi.unstubAllGlobals());
 it("produit des pages A4 avec police locale intégrée et pied clinique sans couper un texte long", async () => {
   vi.stubGlobal(
@@ -45,7 +47,7 @@ it("produit des pages A4 avec police locale intégrée et pied clinique sans cou
   expect(pdf.internal.pageSize.getWidth()).toBeCloseTo(210);
   expect(pdf.internal.pageSize.getHeight()).toBeCloseTo(297);
   const data = pdfBytes(pdf.output("datauristring"));
-  expect(new TextDecoder().decode(data.slice(0, 8))).toMatch(/^%PDF-1\./);
+  expect(new TextDecoder().decode(data.slice(0, 8))).toMatch(PDF_HEADER);
   expect(pdf.getFontList().BaitariDocument).toEqual(
     expect.arrayContaining(["normal", "bold"])
   );

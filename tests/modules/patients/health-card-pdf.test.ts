@@ -15,16 +15,19 @@ import {
 } from "@/modules/patients/health-card/health-card-pdf";
 import { DEFAULT_INVOICE_SETTINGS } from "@/services/invoiceSettingsService";
 
+const QUERY_STRING = /\?.*$/;
+const LEADING_SLASH = /^\//;
+
 // Les polices locales sont lues sur le disque, comme l'application les sert.
 beforeAll(() => {
   vi.stubGlobal("window", {
     location: { href: "http://localhost/", origin: "http://localhost" },
   });
   vi.stubGlobal("fetch", async (url: string) => {
-    const clean = decodeURIComponent(url.replace(/\?.*$/, ""));
+    const clean = decodeURIComponent(url.replace(QUERY_STRING, ""));
     const file = clean.startsWith("/@fs")
       ? clean.slice(4)
-      : join(process.cwd(), clean.replace(/^\//, ""));
+      : join(process.cwd(), clean.replace(LEADING_SLASH, ""));
     const bytes = readFileSync(file);
     return {
       ok: true,

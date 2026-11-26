@@ -23,6 +23,10 @@ import {
 import type { ConsultationSoap } from "@/types/db";
 import { codeText } from "../../helpers/code-text";
 
+const COMPLETE_BUTTON_DISABLED_WHEN_BLOCKED =
+  /disabled=\{isSavingDraft \|\| isCompleting \|\| Boolean\(closingBlocker\)\}/;
+const CLOSING_BLOCKER_FIELD = /[{,] closingBlocker[,}]/;
+
 const read = (path: string) => readFileSync(path, "utf8");
 const sections = {
   subjective: "Se gratte l’oreille droite.",
@@ -56,9 +60,7 @@ describe("B1 · clôturer et facturer exige une note validée", () => {
 
   it("le bouton et la clôture posent la même question, et le message mène à la note", () => {
     const dialog = read("src/modules/clinique/components/clinique-shared.tsx");
-    expect(dialog).toMatch(
-      /disabled=\{isSavingDraft \|\| isCompleting \|\| Boolean\(closingBlocker\)\}/
-    );
+    expect(dialog).toMatch(COMPLETE_BUTTON_DISABLED_WHEN_BLOCKED);
     expect(dialog).toContain("Écrire la note");
     expect(dialog).toContain("Dicter la note");
     expect(dialog).toContain("OPEN_SOAP_ASSISTANT_EVENT");
@@ -70,7 +72,7 @@ describe("B1 · clôturer et facturer exige une note validée", () => {
         "const blocker = closureBlocker(soapsRepo.forAppointment(activeConsultation.id)); if (blocker) { toast.error(blocker); return;"
       )
     );
-    expect(session).toMatch(/[{,] closingBlocker[,}]/);
+    expect(session).toMatch(CLOSING_BLOCKER_FIELD);
     expect(
       read("src/modules/consultation-workspace/consultation-workspace.tsx")
     ).toContain("closingBlocker={closingBlocker}");

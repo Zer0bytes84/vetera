@@ -13,6 +13,9 @@ import {
   splitPassages,
 } from "@/modules/consultations/local-ai/passage-search";
 
+const ENDS_WITH_PERIOD = /\.$/;
+const SENTENCE_BREAK = /(?<=\.)\s+/;
+
 const sentence = (n: number) =>
   `Phrase ${n} décrivant l’examen clinique du patient avec suffisamment de détails pour remplir le passage.`;
 const scope: SearchScope = {
@@ -54,10 +57,10 @@ describe("découpage en extraits", () => {
     expect(passages.length).toBeGreaterThan(3);
     for (const passage of passages) {
       expect(passage.length).toBeLessThanOrEqual(PASSAGE_CHARACTERS + 1);
-      expect(passage).toMatch(/\.$/);
+      expect(passage).toMatch(ENDS_WITH_PERIOD);
     }
     for (let i = 1; i < passages.length; i++) {
-      const previousLast = passages[i - 1].split(/(?<=\.)\s+/).at(-1)!;
+      const previousLast = passages[i - 1].split(SENTENCE_BREAK).at(-1)!;
       expect(passages[i].startsWith(previousLast)).toBe(true);
     }
   });

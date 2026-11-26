@@ -2,6 +2,8 @@ import { describe, expect, it, vi } from "vitest";
 import { generateValidatedSoap } from "@/modules/consultations/local-ai/generate-soap";
 import { SoapFormatError } from "@/modules/consultations/local-ai/soap-schema";
 
+const SHORT_DICTATION_ERROR = /courte|Corrigez la dictée/;
+
 const note = {
   subjective: "Toux depuis hier.",
   objective: "",
@@ -53,7 +55,7 @@ describe("validated local SOAP generation", () => {
     const { run } = setup(generate);
     await expect(run()).rejects.toThrow(SoapFormatError);
     expect(generate).toHaveBeenCalledTimes(2);
-    await expect(run()).rejects.not.toThrow(/courte|Corrigez la dictée/);
+    await expect(run()).rejects.not.toThrow(SHORT_DICTATION_ERROR);
   });
   it("does not retry a dosage rejection", async () => {
     const generate = vi

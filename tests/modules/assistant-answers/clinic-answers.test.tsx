@@ -9,6 +9,10 @@ import {
 import { pendingProposal } from "@/modules/assistant-answers/pending-proposal";
 import { clinic, NOW } from "./fixtures";
 
+const TWO_OF_FIVE = /2 sur 5/;
+const TABLE_TAG = /<table/;
+const MODEL_NAME = /gemma|whisper|mediapipe|llama|modèle|gpt/i;
+
 const turn = (question: string): Turn => {
   const answer = answerQuestion(question, clinic(), { now: NOW });
   return { id: "t", question, at: NOW.toISOString(), durationMs: 3, answer };
@@ -44,7 +48,7 @@ describe("l'écran de l'onglet Données", () => {
   it("chaque réponse a sa provenance affichée : table, lignes retenues sur lues, filtre", () => {
     const html = view("Recettes des 30 derniers jours");
     expect(html).toContain("Journal de caisse");
-    expect(html).toMatch(/2 sur 5/);
+    expect(html).toMatch(TWO_OF_FIVE);
     expect(html).toContain("Encaissements réglés");
   });
 
@@ -74,7 +78,7 @@ describe("l'écran de l'onglet Données", () => {
     expect(html).toContain("aucune dose");
     expect(html).not.toContain("Ce que j’ai lu");
     expect(html).not.toContain("Valider et créer");
-    expect(html).not.toMatch(/<table/);
+    expect(html).not.toMatch(TABLE_TAG);
   });
 
   it("aucun nom de modèle n'apparaît dans l'écran", () => {
@@ -85,9 +89,7 @@ describe("l'écran de l'onglet Données", () => {
       "Combien de patients ?",
       "dose de Rex",
     ]) {
-      expect(view(question)).not.toMatch(
-        /gemma|whisper|mediapipe|llama|modèle|gpt/i
-      );
+      expect(view(question)).not.toMatch(MODEL_NAME);
     }
   });
 

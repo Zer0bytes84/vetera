@@ -5,6 +5,11 @@ import type {
   ReminderType,
 } from "@/modules/patient-reminders/store";
 
+const OVERDUE_COUNT_1 = /En retard<\/dt><dd[^>]*>1</;
+const TODAY_COUNT_1 = /Aujourd’hui<\/dt><dd[^>]*>1</;
+const UPCOMING_COUNT_4 = /À venir<\/dt><dd[^>]*>4</;
+const OVERDUE_OR_TODAY = /en retard|aujourd/i;
+
 vi.mock("@/data/repositories", () => ({
   usePatientsRepository: () => ({ data: [] }),
 }));
@@ -75,15 +80,15 @@ it("sépare des compteurs libellés et une liste d’échéances nommée", () =>
   expect(html).toContain("Situation");
   expect(html).toContain("Prochaines échéances");
   // Every counter has its own label: late, today and the total still to come.
-  expect(html).toMatch(/En retard<\/dt><dd[^>]*>1</);
-  expect(html).toMatch(/Aujourd’hui<\/dt><dd[^>]*>1</);
-  expect(html).toMatch(/À venir<\/dt><dd[^>]*>4</);
+  expect(html).toMatch(OVERDUE_COUNT_1);
+  expect(html).toMatch(TODAY_COUNT_1);
+  expect(html).toMatch(UPCOMING_COUNT_4);
   // The labelled list holds only dated reminders, three at most, never counters.
   const list = html.slice(html.indexOf("<ul"), html.indexOf("</ul>"));
   expect(list.match(/<li/g)).toHaveLength(3);
   expect(list).toContain("Mocha");
   expect(list).toContain("Vaccination annuelle");
-  expect(list).not.toMatch(/en retard|aujourd/i);
+  expect(list).not.toMatch(OVERDUE_OR_TODAY);
 });
 
 it("garde la zone d’échéances libellée quand aucun rappel futur n’existe", () => {

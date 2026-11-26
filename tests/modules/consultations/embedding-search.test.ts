@@ -26,6 +26,9 @@ import { runSqliteMigrations } from "../../../src/services/sqlite/migration-runn
 import { SQLITE_MIGRATIONS } from "../../../src/services/sqlite/migrations";
 import type { ConsultationSoap, Note } from "../../../src/types/db";
 
+const INCOMPATIBLE_ERROR = /incompatible/;
+const SINGLE_ONLY_ERROR = /seul/;
+
 const fixture = vi.hoisted(() => ({
   db: null as DatabaseSync | null,
   nextId: 0,
@@ -487,7 +490,7 @@ describe("Recherche sémantique locale : index et isolation", () => {
       fixture
         .db!.prepare("UPDATE embeddings SET patient_id='mocha' WHERE id=?")
         .run(row.id)
-    ).toThrow(/incompatible/);
+    ).toThrow(INCOMPATIBLE_ERROR);
   });
   it("rejects cross-patient batches before writing", async () => {
     const chunks = soapSearchChunks(soap());
@@ -498,7 +501,7 @@ describe("Recherche sémantique locale : index et isolation", () => {
         chunks,
         chunks.map(() => vector())
       )
-    ).rejects.toThrow(/seul/);
+    ).rejects.toThrow(SINGLE_ONLY_ERROR);
     expect(
       fixture.db!.prepare("SELECT COUNT(*) AS n FROM embeddings").get()!.n
     ).toBe(0);

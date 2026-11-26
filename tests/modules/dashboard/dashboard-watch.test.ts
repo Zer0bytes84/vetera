@@ -6,6 +6,11 @@ import {
 } from "@/modules/dashboard/model/dashboard-watch";
 import type { Hospitalization, Product } from "@/types/db";
 
+const OVERDUE_OCT_12 = /^En retard · 12 oct/;
+const DUE_OCT_25 = /^Le 25 oct/;
+const EXPIRES_NOV_30 = /^Périme le 30 nov/;
+const BELOW_THRESHOLD_EXPIRES_OCT_30 = /^Sous le seuil de 5 · Périme le 30 oct/;
+
 const now = new Date(2026, 9, 18, 10, 0);
 const patients = [
   { id: "p1", name: "Milo", status: "sante" as const },
@@ -53,9 +58,9 @@ describe("rappels à venir", () => {
       ["Milo", "Vaccin CHPL", "warning"],
       ["Milo", "Vermifuge", "neutral"],
     ]);
-    expect(list.rows[0].meta).toMatch(/^En retard · 12 oct/);
+    expect(list.rows[0].meta).toMatch(OVERDUE_OCT_12);
     expect(list.rows[1].meta).toBe("Aujourd’hui");
-    expect(list.rows[2].meta).toMatch(/^Le 25 oct/);
+    expect(list.rows[2].meta).toMatch(DUE_OCT_25);
     expect(list.rows[0].patientId).toBe("p2");
   });
 
@@ -131,7 +136,7 @@ describe("stock à surveiller", () => {
     );
     expect(list.rows.find((r) => r.title === "Bas")?.meta).toBe("3 doses");
     expect(list.rows.find((r) => r.title === "Bientôt")?.detail).toMatch(
-      /^Périme le 30 nov/
+      EXPIRES_NOV_30
     );
   });
 
@@ -147,9 +152,7 @@ describe("stock à surveiller", () => {
         }),
       ],
     });
-    expect(list.rows[0].detail).toMatch(
-      /^Sous le seuil de 5 · Périme le 30 oct/
-    );
+    expect(list.rows[0].detail).toMatch(BELOW_THRESHOLD_EXPIRES_OCT_30);
     expect(list.rows[0].meta).toBe("2 boîtes");
   });
 });

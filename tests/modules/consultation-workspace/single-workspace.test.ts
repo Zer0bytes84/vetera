@@ -2,6 +2,9 @@ import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { expect, it } from "vitest";
 
+const TS_FILE = /\.tsx?$/;
+const CLINIC_REDIRECT = /assign\("#\/clinique"\)|pending-clinical-tab/;
+
 function files(dir: string, out: string[] = []): string[] {
   for (const name of readdirSync(dir)) {
     const path = join(dir, name);
@@ -9,7 +12,7 @@ function files(dir: string, out: string[] = []): string[] {
       files(path, out);
     }
     // The expectations below are forward-slash literals: normalise join()'s Windows separators.
-    else if (/\.tsx?$/.test(name)) {
+    else if (TS_FILE.test(name)) {
       out.push(path.replace(/\\/g, "/"));
     }
   }
@@ -48,8 +51,6 @@ it("fait passer toute demande d'ouverture de visite par Flux", () => {
     .filter(({ text }) => text.includes("vetera:pending-consultation-start"))
     .map(({ path }) => path);
   expect(requesters).toEqual(["src/modules/flow-board/open-in-flux.ts"]);
-  const toClinique = sources.filter(({ text }) =>
-    /assign\("#\/clinique"\)|pending-clinical-tab/.test(text)
-  );
+  const toClinique = sources.filter(({ text }) => CLINIC_REDIRECT.test(text));
   expect(toClinique.map(({ path }) => path)).toEqual([]);
 });
