@@ -5,23 +5,7 @@
     <link rel="icon" type="image/svg+xml" href="/baitari-mark.svg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Baitari</title>
-    <script>
-    "use strict";
-    window.addEventListener("error", (e) => {
-      // Preserve React's mounted DOM and render error messages as plain text.
-      // A diagnostic must never recreate the application or interpret HTML.
-      if (!document.body) return;
-      let diagnostic = document.getElementById("startup-error");
-      if (!diagnostic) {
-        diagnostic = document.createElement("div");
-        diagnostic.id = "startup-error";
-        diagnostic.setAttribute("role", "alert");
-        diagnostic.style.cssText = "color:red;z-index:9999;position:fixed;top:0;left:0;background:white;padding:20px;";
-        document.body.appendChild(diagnostic);
-      }
-      diagnostic.textContent = e.message + "\n" + e.filename + ":" + e.lineno;
-    });
-    </script>
+    <script src="/startup-diagnostic.js"></script>
   </head>
   <body>
     <!-- Windows: tauri-plugin-decorum puts the window controls here (src/modules/shell/window-controls.ts). Hidden elsewhere. -->

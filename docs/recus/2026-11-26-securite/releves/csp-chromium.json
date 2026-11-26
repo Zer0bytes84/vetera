@@ -1,0 +1,142 @@
+{
+ "base": "http://127.0.0.1:5300",
+ "date": "2026-11-26T20:27:39.536Z",
+ "routes": [
+  {
+   "route": "dashboard",
+   "violations": 1,
+   "text": "bAItari ESPACE DE TRAVAIL Tableau de bord Patients Agenda Flux Rappels CLINIQUE "
+  },
+  {
+   "route": "patients",
+   "violations": 1,
+   "text": "bAItari ESPACE DE TRAVAIL Tableau de bord Patients Agenda Flux Rappels CLINIQUE "
+  },
+  {
+   "route": "agenda",
+   "violations": 1,
+   "text": "bAItari ESPACE DE TRAVAIL Tableau de bord Patients Agenda Flux Rappels CLINIQUE "
+  },
+  {
+   "route": "flux",
+   "violations": 1,
+   "text": "bAItari ESPACE DE TRAVAIL Tableau de bord Patients Agenda Flux Rappels CLINIQUE "
+  },
+  {
+   "route": "soins",
+   "violations": 1,
+   "text": "bAItari ESPACE DE TRAVAIL Tableau de bord Patients Agenda Flux Rappels CLINIQUE "
+  },
+  {
+   "route": "taches",
+   "violations": 1,
+   "text": "bAItari ESPACE DE TRAVAIL Tableau de bord Patients Agenda Flux Rappels CLINIQUE "
+  },
+  {
+   "route": "notes",
+   "violations": 1,
+   "text": "bAItari ESPACE DE TRAVAIL Tableau de bord Patients Agenda Flux Rappels CLINIQUE "
+  },
+  {
+   "route": "stock",
+   "violations": 1,
+   "text": "bAItari ESPACE DE TRAVAIL Tableau de bord Patients Agenda Flux Rappels CLINIQUE "
+  },
+  {
+   "route": "finances",
+   "violations": 1,
+   "text": "bAItari ESPACE DE TRAVAIL Tableau de bord Patients Agenda Flux Rappels CLINIQUE "
+  },
+  {
+   "route": "finances_analytics",
+   "violations": 1,
+   "text": "bAItari ESPACE DE TRAVAIL Tableau de bord Patients Agenda Flux Rappels CLINIQUE "
+  },
+  {
+   "route": "equipe",
+   "violations": 1,
+   "text": "bAItari ESPACE DE TRAVAIL Tableau de bord Patients Agenda Flux Rappels CLINIQUE "
+  },
+  {
+   "route": "parametres",
+   "violations": 1,
+   "text": "bAItari ESPACE DE TRAVAIL Tableau de bord Patients Agenda Flux Rappels CLINIQUE "
+  },
+  {
+   "route": "clinique",
+   "violations": 1,
+   "text": "bAItari ESPACE DE TRAVAIL Tableau de bord Patients Agenda Flux Rappels CLINIQUE "
+  }
+ ],
+ "probes": {
+  "evalBlocked": true,
+  "newFunctionBlocked": true,
+  "inlineScriptBlocked": true,
+  "inlineHandlerBlocked": true,
+  "wasmCompiles": true,
+  "blobWorker": true,
+  "httpFetchBlocked": true,
+  "dataFetch": "bloqué (connect-src n'a pas data:)",
+  "pwned": null
+ },
+ "violations": [
+  {
+   "directive": "script-src",
+   "blocked": "eval",
+   "source": "assets/schemas-DYi8E0wy.js",
+   "line": 1,
+   "sample": ""
+  },
+  {
+   "directive": "script-src",
+   "blocked": "eval",
+   "source": "127.0.0.1:5300/__probe.js",
+   "line": 1,
+   "sample": ""
+  },
+  {
+   "directive": "script-src",
+   "blocked": "eval",
+   "source": "127.0.0.1:5300/__probe.js",
+   "line": 1,
+   "sample": ""
+  },
+  {
+   "directive": "script-src-elem",
+   "blocked": "inline",
+   "source": "",
+   "line": 7,
+   "sample": ""
+  },
+  {
+   "directive": "script-src-attr",
+   "blocked": "inline",
+   "source": "",
+   "line": 9,
+   "sample": ""
+  },
+  {
+   "directive": "connect-src",
+   "blocked": "http://127.0.0.1:1/x",
+   "source": "",
+   "line": 14,
+   "sample": ""
+  },
+  {
+   "directive": "connect-src",
+   "blocked": "data",
+   "source": "",
+   "line": 15,
+   "sample": ""
+  }
+ ],
+ "consoleCsp": [
+  "Executing inline script violates the following Content Security Policy directive 'script-src 'self' 'wasm-unsafe-eval''. Either the 'unsafe-inline' keyword, a hash ('sha256-SlHSUXvpUrZZqHBPWfdJaR/1l5NR39l5yPTcF2NGT3I='), or a nonce ('nonce-...') is required to",
+  "Executing inline event handler violates the following Content Security Policy directive 'script-src 'self' 'wasm-unsafe-eval''. Either the 'unsafe-inline' keyword, a hash ('sha256-...'), or a nonce ('nonce-...') is required to enable inline execution. Note tha",
+  "Connecting to 'http://127.0.0.1:1/x' violates the following Content Security Policy directive: \"connect-src 'self' ipc: http://ipc.localhost asset: http://asset.localhost https://asset.localhost https:\". The action has been blocked.",
+  "Fetch API cannot load http://127.0.0.1:1/x. Refused to connect because it violates the document's Content Security Policy.",
+  "Connecting to 'data:text/plain,ok' violates the following Content Security Policy directive: \"connect-src 'self' ipc: http://ipc.localhost asset: http://asset.localhost https://asset.localhost https:\". The action has been blocked.",
+  "Fetch API cannot load data:text/plain,ok. Refused to connect because it violates the document's Content Security Policy."
+ ],
+ "errors": []
+}

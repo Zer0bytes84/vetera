@@ -3,14 +3,24 @@ import { runInNewContext } from "node:vm";
 import { expect, it } from "vitest";
 import { mustExist } from "@/lib/must-exist";
 
-const INLINE_SCRIPT = /<script>([\s\S]*?)<\/script>/;
+const STARTUP_SCRIPT = /<script src="([^"]+)"><\/script>/;
+const INLINE_SCRIPT = /<script(?![^>]*\bsrc=)[^>]*>/;
 
 it("reports repeated startup errors without replacing the app DOM or rendering HTML", () => {
   const html = readFileSync(
     new URL("../../index.html", import.meta.url),
     "utf8"
   );
-  const script = mustExist(html.match(INLINE_SCRIPT), "script de démarrage")[1];
+  // La politique de sécurité n'autorise aucun script inline : le diagnostic est un fichier de public/.
+  expect(html).not.toMatch(INLINE_SCRIPT);
+  const source = mustExist(
+    html.match(STARTUP_SCRIPT),
+    "script de démarrage"
+  )[1];
+  const script = readFileSync(
+    new URL(`../../public${source}`, import.meta.url),
+    "utf8"
+  );
   let onError: (event: object) => void = () => undefined;
   const children: any[] = [{ id: "root", preserved: true }];
   const document = {

@@ -1,0 +1,148 @@
+{
+ "build": "tauri build --debug --no-bundle, Linux arm64, WebKitGTK, branche fix/securite-2026-11-26 + sonde d'essai",
+ "politiqueVue": "frame-src 'self'; font-src 'self' data:; base-uri 'self'; img-src 'self' data: blob: asset: http://asset.localhost https://asset.localhost; default-src 'self'; form-action 'self'; report-uri http://127.0.0.1:5400/csp; connect-src 'self' ipc: http://ipc.localhost asset: http://asset.localhost https://asset.localhost https: http://127.0.0.1:5400; script-src 'self' 'wasm-unsafe-eval'; media-src 'self' blob:; object-src 'none'; style-src 'self' 'unsafe-inline'; worker-src 'self' blob:",
+ "hachagesAjoutesParTauri": 208,
+ "ua": "Mozilla/5.0 (Linux; Ubuntu; like Android 4.4) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/60.5 Mobile Safari/605.1.15",
+ "href": "tauri://localhost",
+ "globals": {
+  "tauriGlobal": "undefined",
+  "internals": "object"
+ },
+ "csp": {
+  "eval": {
+   "eval": true,
+   "fn": true
+  },
+  "inlineScriptBlocked": true,
+  "inlineHandlerBlocked": true,
+  "wasm": true,
+  "blobWorker": true,
+  "httpFetchBlocked": true
+ },
+ "ipc": {
+  "dirs": {
+   "appData": true,
+   "home": true
+  },
+  "appdata_mkdir": "OK null",
+  "appdata_write": "OK null",
+  "appdata_read": "OK sonde",
+  "appdata_exists": "OK true",
+  "appdata_remove": "OK null",
+  "home_exists": "REFUSE forbidden path: /home/parallels, (hors périmètre)",
+  "home_read_dir": "REFUSE fs.read_dir not allowed (commande non permise)",
+  "home_mkdir": "REFUSE forbidden path: /home/parallels/zz-sonde-interdite, (hors périmètre)",
+  "desktop_exists": "REFUSE forbidden path: /home/parallels/Desktop, (hors périmètre)",
+  "desktop_read_dir": "REFUSE fs.read_dir not allowed (commande non permise)",
+  "desktop_mkdir": "REFUSE forbidden path: /home/parallels/Desktop/zz-sonde-interdite, (hors périmètre)",
+  "download_exists": "REFUSE forbidden path: /home/parallels/Downloads, (hors périmètre)",
+  "download_read_dir": "REFUSE fs.read_dir not allowed (commande non permise)",
+  "download_mkdir": "REFUSE forbidden path: /home/parallels/Downloads/zz-sonde-interdite, (hors périmètre)",
+  "document_exists": "REFUSE forbidden path: /home/parallels/Documents, (hors périmètre)",
+  "document_read_dir": "REFUSE fs.read_dir not allowed (commande non permise)",
+  "document_mkdir": "REFUSE forbidden path: /home/parallels/Documents/zz-sonde-interdite, (hors périmètre)",
+  "copy_file": "REFUSE fs.copy_file not allowed (commande non permise)",
+  "dialog_ask": "non appelé (ouvrirait une boîte)",
+  "sql_load": "REFUSE sql.load not allowed (commande non permise)",
+  "sql_select": "OK [{\"ok\":1}]",
+  "custom_command": "REFUSE invalid args `candidate` for command `license_installation_id`: command license_installation_id missing required key candid"
+ },
+ "routes": [
+  {
+   "route": "dashboard",
+   "violationsCumulees": 6,
+   "erreurs": 0,
+   "racineRendue": true
+  },
+  {
+   "route": "patients",
+   "violationsCumulees": 6,
+   "erreurs": 0,
+   "racineRendue": true
+  },
+  {
+   "route": "agenda",
+   "violationsCumulees": 6,
+   "erreurs": 0,
+   "racineRendue": true
+  },
+  {
+   "route": "flux",
+   "violationsCumulees": 6,
+   "erreurs": 0,
+   "racineRendue": true
+  },
+  {
+   "route": "soins",
+   "violationsCumulees": 6,
+   "erreurs": 0,
+   "racineRendue": true
+  },
+  {
+   "route": "taches",
+   "violationsCumulees": 6,
+   "erreurs": 0,
+   "racineRendue": true
+  },
+  {
+   "route": "notes",
+   "violationsCumulees": 6,
+   "erreurs": 0,
+   "racineRendue": true
+  },
+  {
+   "route": "stock",
+   "violationsCumulees": 6,
+   "erreurs": 0,
+   "racineRendue": true
+  },
+  {
+   "route": "finances",
+   "violationsCumulees": 6,
+   "erreurs": 0,
+   "racineRendue": true
+  },
+  {
+   "route": "finances_analytics",
+   "violationsCumulees": 6,
+   "erreurs": 0,
+   "racineRendue": true
+  },
+  {
+   "route": "equipe",
+   "violationsCumulees": 6,
+   "erreurs": 0,
+   "racineRendue": true
+  },
+  {
+   "route": "parametres",
+   "violationsCumulees": 6,
+   "erreurs": 0,
+   "racineRendue": true
+  },
+  {
+   "route": "clinique",
+   "violationsCumulees": 6,
+   "erreurs": 0,
+   "racineRendue": true
+  }
+ ],
+ "note": {
+  "rowFound": false,
+  "menuFound": true,
+  "previewItemFound": true,
+  "previewShown": true,
+  "pwned": [],
+  "previewHtml": "<div><p>Texte <strong>gras</strong></p><a>lien</a><p>clic</p></div>"
+ },
+ "violationsDeLApplication": [
+  {
+   "directive": "script-src",
+   "blocked": "eval",
+   "source": "assets/schemas-DYi8E0wy.js",
+   "line": 1
+  }
+ ],
+ "nViolationsTotales": 6,
+ "erreursConsole": []
+}

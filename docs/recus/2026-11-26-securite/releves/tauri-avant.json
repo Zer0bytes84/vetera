@@ -1,0 +1,143 @@
+{
+ "build": "tauri build --debug --no-bundle, Linux arm64, WebKitGTK, master 54e874c0 + sonde d'essai",
+ "politiqueVue": "aucune (csp: null)",
+ "ua": "Mozilla/5.0 (Linux; Ubuntu; like Android 4.4) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/60.5 Mobile Safari/605.1.15",
+ "href": "tauri://localhost",
+ "globals": {
+  "tauriGlobal": "object",
+  "internals": "object"
+ },
+ "csp": {
+  "eval": {
+   "eval": false,
+   "fn": false
+  },
+  "inlineScriptBlocked": false,
+  "inlineHandlerBlocked": false,
+  "wasm": true,
+  "blobWorker": true,
+  "httpFetchBlocked": true
+ },
+ "ipc": {
+  "dirs": {
+   "appData": true,
+   "home": true
+  },
+  "appdata_mkdir": "OK null",
+  "appdata_write": "OK null",
+  "appdata_read": "OK sonde",
+  "appdata_exists": "OK true",
+  "appdata_remove": "OK null",
+  "home_exists": "REFUSE forbidden path: /home/parallels, (hors périmètre)",
+  "home_read_dir": "REFUSE forbidden path: /home/parallels, (hors périmètre)",
+  "home_mkdir": "OK null",
+  "desktop_exists": "OK true",
+  "desktop_read_dir": "OK [{\"name\":\"Bureau-Mac\",\"isDirectory\":false,\"isFile\":false,\"isSymlink\":t",
+  "desktop_mkdir": "OK null",
+  "download_exists": "OK true",
+  "download_read_dir": "OK [{\"name\":\"Anthropic Mono-fontiko\",\"isDirectory\":true,\"isFile\":false,\"i",
+  "download_mkdir": "OK null",
+  "document_exists": "OK true",
+  "document_read_dir": "OK [{\"name\":\"Linear craft\",\"isDirectory\":true,\"isFile\":false,\"isSymlink\":",
+  "document_mkdir": "OK null",
+  "copy_file": "REFUSE failed to copy file from path: /home/parallels/.local/share/com.baitari.vetera/a, to path: /home/parallels/.local/share/com",
+  "dialog_ask": "non appelé (ouvrirait une boîte)",
+  "sql_load": "OK sqlite:zz-sonde-interdite.db",
+  "sql_select": "OK [{\"ok\":1}]",
+  "custom_command": "REFUSE invalid args `candidate` for command `license_installation_id`: command license_installation_id missing required key candid"
+ },
+ "routes": [
+  {
+   "route": "dashboard",
+   "violationsCumulees": 0,
+   "erreurs": 0,
+   "racineRendue": true
+  },
+  {
+   "route": "patients",
+   "violationsCumulees": 0,
+   "erreurs": 0,
+   "racineRendue": true
+  },
+  {
+   "route": "agenda",
+   "violationsCumulees": 0,
+   "erreurs": 0,
+   "racineRendue": true
+  },
+  {
+   "route": "flux",
+   "violationsCumulees": 0,
+   "erreurs": 0,
+   "racineRendue": true
+  },
+  {
+   "route": "soins",
+   "violationsCumulees": 0,
+   "erreurs": 0,
+   "racineRendue": true
+  },
+  {
+   "route": "taches",
+   "violationsCumulees": 0,
+   "erreurs": 0,
+   "racineRendue": true
+  },
+  {
+   "route": "notes",
+   "violationsCumulees": 0,
+   "erreurs": 0,
+   "racineRendue": true
+  },
+  {
+   "route": "stock",
+   "violationsCumulees": 0,
+   "erreurs": 0,
+   "racineRendue": true
+  },
+  {
+   "route": "finances",
+   "violationsCumulees": 0,
+   "erreurs": 0,
+   "racineRendue": true
+  },
+  {
+   "route": "finances_analytics",
+   "violationsCumulees": 0,
+   "erreurs": 0,
+   "racineRendue": true
+  },
+  {
+   "route": "equipe",
+   "violationsCumulees": 0,
+   "erreurs": 0,
+   "racineRendue": true
+  },
+  {
+   "route": "parametres",
+   "violationsCumulees": 0,
+   "erreurs": 0,
+   "racineRendue": true
+  },
+  {
+   "route": "clinique",
+   "violationsCumulees": 0,
+   "erreurs": 0,
+   "racineRendue": true
+  }
+ ],
+ "note": {
+  "rowFound": false,
+  "menuFound": true,
+  "previewItemFound": true,
+  "previewShown": true,
+  "pwned": [
+   1,
+   1
+  ],
+  "previewHtml": "<div><p>Texte <strong>gras</strong></p><img src=\"x\" onerror=\"window.__pwned.push(1)\"><a id=\"zz\" href=\"javascript:window.__pwned.push(2)\">lien</a><p onclick=\"window.__pwned.push(3)\">clic</p></div>"
+ },
+ "violationsDeLApplication": [],
+ "nViolationsTotales": 0,
+ "erreursConsole": []
+}
