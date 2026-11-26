@@ -173,10 +173,8 @@ export function PatientDocumentsList({
   const handleOpen = (doc: ConsultationDocument) => {
     if (onOpenDocument) {
       onOpenDocument(doc);
-    } else {
-      if (!openAttachment(doc.dataUrl)) {
-        toast.error(ATTACHMENT_REFUSED_MESSAGE);
-      }
+    } else if (!openAttachment(doc.dataUrl)) {
+      toast.error(ATTACHMENT_REFUSED_MESSAGE);
     }
   };
 

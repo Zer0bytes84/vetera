@@ -97,7 +97,9 @@ const cache = new Map<string, string>();
  * DOMPurify a besoin d'un DOM. Sans lui (rendu côté serveur, test sous Node), il rend le HTML tel quel, en silence :
  * ici l'absence de DOM refuse tout, le texte est rendu échappé, jamais interprété.
  */
-const purifier = typeof window === "undefined" ? null : DOMPurify(window);
+const candidate = typeof window === "undefined" ? null : DOMPurify(window);
+// Un window sans DOM complet (rendu côté serveur, simulation partielle dans un test) donne un DOMPurify sans méthodes.
+const purifier = candidate?.isSupported ? candidate : null;
 
 purifier?.addHook("uponSanitizeAttribute", (node, data) => {
   const rule =
