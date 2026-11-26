@@ -28,7 +28,9 @@ describe("sanitizeAssistantOutput", () => {
 
   it("keeps readable final content", () => {
     expect(
-      sanitizeAssistantOutput("**Résumé**\n\n- Chien stable\n- Contrôle dans 7 jours")
+      sanitizeAssistantOutput(
+        "**Résumé**\n\n- Chien stable\n- Contrôle dans 7 jours"
+      )
     ).toContain("Résumé");
   });
 
@@ -59,18 +61,20 @@ describe("sanitizeAssistantOutput", () => {
 
 describe("getAssistantErrorMessage", () => {
   it("explains when WebGPU is unavailable", () => {
-    expect(getAssistantErrorMessage(new Error("WebGPU is not available"))).toContain(
-      "WebGPU"
-    );
+    expect(
+      getAssistantErrorMessage(new Error("WebGPU is not available"))
+    ).toContain("WebGPU");
   });
 
   it("explains a model download failure", () => {
-    expect(getAssistantErrorMessage(new Error("Failed to fetch model"))).toContain(
-      "connexion Internet"
-    );
+    expect(
+      getAssistantErrorMessage(new Error("Failed to fetch model"))
+    ).toContain("connexion Internet");
   });
 
   it("recommends the light model when memory is insufficient", () => {
-    expect(getAssistantErrorMessage(new Error("Out of memory"))).toContain("Vénus");
+    expect(getAssistantErrorMessage(new Error("Out of memory"))).toContain(
+      "Vénus"
+    );
   });
 });

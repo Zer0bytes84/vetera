@@ -1,6 +1,13 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
-import { DataTable, nextSort, selectRows, toCsv, type DataColumn, type DataRow } from "@/components/ui/data-table";
+import {
+  DataTable,
+  nextSort,
+  selectRows,
+  toCsv,
+  type DataColumn,
+  type DataRow,
+} from "@/components/ui/data-table";
 
 interface Row extends DataRow {
   nom: string;
@@ -23,22 +30,47 @@ const columns: DataColumn<Row>[] = [
 describe("tri, filtre, export du Data Table", () => {
   it("le clic sur un en-tête trie d'abord décroissant, puis croissant, puis revient à l'ordre des données", () => {
     expect(nextSort(null, "age")).toEqual({ key: "age", dir: "desc" });
-    expect(nextSort({ key: "age", dir: "desc" }, "age")).toEqual({ key: "age", dir: "asc" });
+    expect(nextSort({ key: "age", dir: "desc" }, "age")).toEqual({
+      key: "age",
+      dir: "asc",
+    });
     expect(nextSort({ key: "age", dir: "asc" }, "age")).toBeNull();
-    expect(nextSort({ key: "age", dir: "asc" }, "nom")).toEqual({ key: "nom", dir: "desc" });
+    expect(nextSort({ key: "age", dir: "asc" }, "nom")).toEqual({
+      key: "nom",
+      dir: "desc",
+    });
   });
   it("trie les nombres comme des nombres et le texte à la française (É près de E)", () => {
-    expect(selectRows(data, columns, "", { key: "age", dir: "desc" }).map((r) => r.age)).toEqual([12, 8, 7, 5, 4]);
-    expect(selectRows(data, columns, "", { key: "nom", dir: "asc" }).map((r) => r.nom)).toEqual(["Écaille", "Milo, le gros", "Nala", "Rex", "Simba"]);
+    expect(
+      selectRows(data, columns, "", { key: "age", dir: "desc" }).map(
+        (r) => r.age
+      )
+    ).toEqual([12, 8, 7, 5, 4]);
+    expect(
+      selectRows(data, columns, "", { key: "nom", dir: "asc" }).map(
+        (r) => r.nom
+      )
+    ).toEqual(["Écaille", "Milo, le gros", "Nala", "Rex", "Simba"]);
   });
   it("le filtre cherche dans toutes les colonnes, sans tenir compte de la casse, et garde l'ordre", () => {
-    expect(selectRows(data, columns, "bonne", null).map((r) => r.id)).toEqual(["1", "3", "5"]);
-    expect(selectRows(data, columns, " HOSPIT ", null).map((r) => r.id)).toEqual(["2"]);
-    expect(selectRows(data, columns, "12", null).map((r) => r.id)).toEqual(["4"]);
+    expect(selectRows(data, columns, "bonne", null).map((r) => r.id)).toEqual([
+      "1",
+      "3",
+      "5",
+    ]);
+    expect(
+      selectRows(data, columns, " HOSPIT ", null).map((r) => r.id)
+    ).toEqual(["2"]);
+    expect(selectRows(data, columns, "12", null).map((r) => r.id)).toEqual([
+      "4",
+    ]);
     expect(selectRows(data, columns, "zzz", null)).toEqual([]);
   });
   it("le CSV porte l'en-tête et toutes les lignes, et protège virgules et guillemets", () => {
-    const csv = toCsv(columns, [...data, { id: "6", nom: 'Max "Mini"', age: 1, etat: "" }]);
+    const csv = toCsv(columns, [
+      ...data,
+      { id: "6", nom: 'Max "Mini"', age: 1, etat: "" },
+    ]);
     const lines = csv.split("\n");
     expect(lines[0]).toBe("Patient,Âge,État");
     expect(lines[5]).toBe('"Milo, le gros",4,Bonne santé');
@@ -48,7 +80,16 @@ describe("tri, filtre, export du Data Table", () => {
 });
 
 describe("rendu", () => {
-  const html = renderToStaticMarkup(<DataTable columns={columns} data={data} noun={["patient", "patients"]} pageSize={3} title="Liste" selectable />);
+  const html = renderToStaticMarkup(
+    <DataTable
+      columns={columns}
+      data={data}
+      noun={["patient", "patients"]}
+      pageSize={3}
+      title="Liste"
+      selectable
+    />
+  );
   it("donne le titre, le nombre de lignes, le filtre et les deux boutons CSV, en français", () => {
     expect(html).toContain("Liste");
     expect(html).toContain('<span class="sr-only">5</span>');
@@ -65,11 +106,21 @@ describe("rendu", () => {
   });
   it("une colonne triable a son bouton, et la case de sélection générale est là", () => {
     expect(html.match(/aria-sort/g) ?? []).toHaveLength(0);
-    expect(html).toContain('aria-label="Sélectionner toutes les lignes de la page"');
+    expect(html).toContain(
+      'aria-label="Sélectionner toutes les lignes de la page"'
+    );
     expect(html).toContain('role="checkbox"');
   });
   it("sans donnée : un état vide qui le dit, aucune ligne", () => {
-    const empty = renderToStaticMarkup(<DataTable columns={columns} data={[]} emptyDescription="Aucun dossier." emptyTitle="Aucun patient" title="Liste" />);
+    const empty = renderToStaticMarkup(
+      <DataTable
+        columns={columns}
+        data={[]}
+        emptyDescription="Aucun dossier."
+        emptyTitle="Aucun patient"
+        title="Liste"
+      />
+    );
     expect(empty).toContain("Aucun patient");
     expect(empty).toContain("Aucun dossier.");
     expect(empty).toContain("0–0 sur 0");

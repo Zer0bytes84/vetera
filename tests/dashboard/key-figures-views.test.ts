@@ -1,7 +1,10 @@
 import { readFileSync } from "node:fs";
 import { expect, it } from "vitest";
 
-const source = readFileSync("src/modules/dashboard/components/premium-analytics.tsx", "utf8");
+const source = readFileSync(
+  "src/modules/dashboard/components/premium-analytics.tsx",
+  "utf8"
+);
 
 it("les deux vues de la rangée « Chiffres clés » portent des noms français", () => {
   // Deux icônes (jauge, courbe) : le nom français est l'étiquette annoncée et l'infobulle.

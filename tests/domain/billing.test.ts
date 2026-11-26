@@ -118,7 +118,9 @@ describe("billing settlement ledger", () => {
       completedRefundAmount: 0,
     };
 
-    expect(deriveInvoiceSettlementStatus("issued", base, null, now)).toBe("open");
+    expect(deriveInvoiceSettlementStatus("issued", base, null, now)).toBe(
+      "open"
+    );
     expect(
       deriveInvoiceSettlementStatus(
         "issued",

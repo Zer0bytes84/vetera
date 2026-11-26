@@ -6,7 +6,12 @@ const series = [
   { id: "a", label: "Terminés", values: [2, 0, 1], color: "var(--tone-blue)" },
   { id: "b", label: "À venir", values: [1, 0, 0], color: "var(--foreground)" },
 ];
-const base = { labels: ["Lun", "Mar", "Mer"], series, title: "Cette semaine", center: { value: "4", caption: "consultations" } };
+const base = {
+  labels: ["Lun", "Mar", "Mer"],
+  series,
+  title: "Cette semaine",
+  center: { value: "4", caption: "consultations" },
+};
 
 describe("points exacts", () => {
   it("un point par rendez-vous tant que le plus chargé n'en a pas plus de 24", () => {
@@ -35,7 +40,9 @@ describe("cercle de points", () => {
     expect(html).not.toContain("1 point =");
   });
   it("au-delà de 24, dit combien vaut un point", () => {
-    const big = renderToStaticMarkup(<RadialDots {...base} series={[{ ...series[0], values: [50, 0, 0] }]} />);
+    const big = renderToStaticMarkup(
+      <RadialDots {...base} series={[{ ...series[0], values: [50, 0, 0] }]} />
+    );
     expect(big).toContain("1 point = 3 rendez-vous");
   });
   it("aucun thème TuffUI ni anglais", () => {

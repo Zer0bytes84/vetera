@@ -4,42 +4,102 @@ import { renderToStaticMarkup } from "react-dom/server";
 import * as runtime from "@/services/browser-store";
 import * as models from "@/modules/consultations/local-ai/models";
 import {
-  AI_MODELS_CATALOG, AI_ONBOARDING_OPEN_EVENT,
-  AI_SETTINGS_PENDING_KEY, TOTAL_AI_MODELS_BYTES,
-  hasCompletedAIOnboarding, hasDismissedAIOnboarding, provisionAllAIModels,
-  resetAIOnboarding, setAIOnboardingCompleted, setAIOnboardingDismissed,
-  shouldShowAIOnboarding, triggerOpenAIOnboarding,
-  dismissNewAssistantOffer, NEW_ASSISTANT, provisionNewAssistant, shouldOfferNewAssistant,
+  AI_MODELS_CATALOG,
+  AI_ONBOARDING_OPEN_EVENT,
+  AI_SETTINGS_PENDING_KEY,
+  TOTAL_AI_MODELS_BYTES,
+  hasCompletedAIOnboarding,
+  hasDismissedAIOnboarding,
+  provisionAllAIModels,
+  resetAIOnboarding,
+  setAIOnboardingCompleted,
+  setAIOnboardingDismissed,
+  shouldShowAIOnboarding,
+  triggerOpenAIOnboarding,
+  dismissNewAssistantOffer,
+  NEW_ASSISTANT,
+  provisionNewAssistant,
+  shouldOfferNewAssistant,
   type AIProvisioningProgress,
 } from "@/modules/consultations/services/ai-model-provisioning";
 import { createAIModelInstallation } from "@/modules/consultations/services/ai-model-installation";
-import { AIModelSettings, NewAssistantCard } from "@/modules/consultations/components/ai-model-settings";
+import {
+  AIModelSettings,
+  NewAssistantCard,
+} from "@/modules/consultations/components/ai-model-settings";
 import { tagsWith } from "../../helpers/code-text";
 
-const missing = {root: "/local-models", whisperReady: false, generatorReady: false, embeddingReady: false};
-const ready = {...missing, whisperReady: true, generatorReady: true, embeddingReady: true};
+const missing = {
+  root: "/local-models",
+  whisperReady: false,
+  generatorReady: false,
+  embeddingReady: false,
+};
+const ready = {
+  ...missing,
+  whisperReady: true,
+  generatorReady: true,
+  embeddingReady: true,
+};
 const progress: AIProvisioningProgress = {
-  step: "whisper", stepMessage: "Téléchargement : Dictée vocale…", currentModelId: "whisper",
-  totalBytes: TOTAL_AI_MODELS_BYTES, downloadedBytes: 1234, percentage: 0,
-  speedMbps: 1, secondsRemaining: 12, models: {whisper: "downloading", generator: "pending", embeddinggemma: "pending"},
+  step: "whisper",
+  stepMessage: "Téléchargement : Dictée vocale…",
+  currentModelId: "whisper",
+  totalBytes: TOTAL_AI_MODELS_BYTES,
+  downloadedBytes: 1234,
+  percentage: 0,
+  speedMbps: 1,
+  secondsRemaining: 12,
+  models: {
+    whisper: "downloading",
+    generator: "pending",
+    embeddinggemma: "pending",
+  },
 };
 function storage(): Storage {
   const values = new Map<string, string>();
-  return {getItem: key => values.get(key) ?? null, setItem: (key, value) => {values.set(key, value);}, removeItem: key => {values.delete(key);}, clear: () => values.clear(), key: index => [...values.keys()][index] ?? null, get length() {return values.size;}};
+  return {
+    getItem: (key) => values.get(key) ?? null,
+    setItem: (key, value) => {
+      values.set(key, value);
+    },
+    removeItem: (key) => {
+      values.delete(key);
+    },
+    clear: () => values.clear(),
+    key: (index) => [...values.keys()][index] ?? null,
+    get length() {
+      return values.size;
+    },
+  };
 }
 let disk: Storage;
 beforeEach(() => {
   vi.restoreAllMocks();
   disk = storage();
-  vi.stubGlobal("window", {localStorage: disk, sessionStorage: storage(), location: {hash: "#/dashboard"}, dispatchEvent: vi.fn()});
+  vi.stubGlobal("window", {
+    localStorage: disk,
+    sessionStorage: storage(),
+    location: { hash: "#/dashboard" },
+    dispatchEvent: vi.fn(),
+  });
   vi.spyOn(runtime, "isTauriRuntime").mockReturnValue(true);
   vi.spyOn(models, "getLocalModels").mockResolvedValue(missing);
 });
-afterEach(() => {vi.restoreAllMocks(); vi.unstubAllGlobals();});
+afterEach(() => {
+  vi.restoreAllMocks();
+  vi.unstubAllGlobals();
+});
 
 it("affiche uniquement trois libellés métier, avec les tailles réelles des fichiers à télécharger", () => {
-  expect(AI_MODELS_CATALOG.map(model => model.name)).toEqual(["Dictée vocale", "Assistant IA", "Recherche clinique"]);
-  expect(AI_MODELS_CATALOG.reduce((bytes, model) => bytes + model.sizeBytes, 0)).toBe(TOTAL_AI_MODELS_BYTES);
+  expect(AI_MODELS_CATALOG.map((model) => model.name)).toEqual([
+    "Dictée vocale",
+    "Assistant IA",
+    "Recherche clinique",
+  ]);
+  expect(
+    AI_MODELS_CATALOG.reduce((bytes, model) => bytes + model.sizeBytes, 0)
+  ).toBe(TOTAL_AI_MODELS_BYTES);
   expect(TOTAL_AI_MODELS_BYTES).toBe(2_215_021_763);
 });
 
@@ -59,7 +119,9 @@ it("n’impose rien sur le web et ne tente aucun appel natif, même avec un anci
   expect(await shouldShowAIOnboarding()).toBe(false);
   expect(models.getLocalModels).not.toHaveBeenCalled();
   const download = vi.spyOn(models, "downloadLocalModels");
-  await expect(provisionAllAIModels()).rejects.toThrow("version web reste utilisable");
+  await expect(provisionAllAIModels()).rejects.toThrow(
+    "version web reste utilisable"
+  );
   expect(download).not.toHaveBeenCalled();
 });
 
@@ -79,11 +141,16 @@ it("ouvre la bonne section des paramètres sans modal", () => {
   triggerOpenAIOnboarding();
   expect(window.location.hash).toBe("#/parametres");
   expect(window.sessionStorage.getItem(AI_SETTINGS_PENDING_KEY)).toBe("true");
-  expect(window.dispatchEvent).toHaveBeenCalledWith(expect.objectContaining({type: AI_ONBOARDING_OPEN_EVENT}));
+  expect(window.dispatchEvent).toHaveBeenCalledWith(
+    expect.objectContaining({ type: AI_ONBOARDING_OPEN_EVENT })
+  );
 });
 
 it("transmet la progression native et ne marque l’installation complète qu’après vérification", async () => {
-  vi.spyOn(models, "downloadLocalModels").mockImplementation(async notify => {notify?.(progress); return ready;});
+  vi.spyOn(models, "downloadLocalModels").mockImplementation(async (notify) => {
+    notify?.(progress);
+    return ready;
+  });
   vi.mocked(models.getLocalModels).mockResolvedValue(ready);
   const notify = vi.fn();
   expect(await provisionAllAIModels(notify)).toEqual(ready);
@@ -94,30 +161,44 @@ it("transmet la progression native et ne marque l’installation complète qu’
 
 it("refuse une fausse réussite si les fichiers manquent encore après le téléchargement", async () => {
   vi.spyOn(models, "downloadLocalModels").mockResolvedValue(ready);
-  await expect(provisionAllAIModels()).rejects.toThrow("n’a pas pu être vérifiée");
+  await expect(provisionAllAIModels()).rejects.toThrow(
+    "n’a pas pu être vérifiée"
+  );
   expect(hasCompletedAIOnboarding()).toBe(false);
 });
 
 it("propage l’accès refusé et n’enregistre jamais la clé de téléchargement", async () => {
-  const error = {code: "access_required", message: "Le fournisseur doit autoriser cet outil."};
-  const download = vi.spyOn(models, "downloadLocalModels").mockRejectedValue(error);
-  await expect(provisionAllAIModels(undefined, {accessToken: "test-ephemeral-key"})).rejects.toEqual(error);
+  const error = {
+    code: "access_required",
+    message: "Le fournisseur doit autoriser cet outil.",
+  };
+  const download = vi
+    .spyOn(models, "downloadLocalModels")
+    .mockRejectedValue(error);
+  await expect(
+    provisionAllAIModels(undefined, { accessToken: "test-ephemeral-key" })
+  ).rejects.toEqual(error);
   expect(download).toHaveBeenCalledWith(undefined, "test-ephemeral-key");
   expect(hasCompletedAIOnboarding()).toBe(false);
-  for (let index = 0; index < disk.length; index++) expect(disk.getItem(disk.key(index)!)).not.toContain("test-ephemeral-key");
+  for (let index = 0; index < disk.length; index++)
+    expect(disk.getItem(disk.key(index)!)).not.toContain("test-ephemeral-key");
 });
 
 it("annule avant de télécharger lorsque le signal est déjà arrêté", async () => {
   const signal = AbortSignal.abort();
   const download = vi.spyOn(models, "downloadLocalModels");
-  await expect(provisionAllAIModels(undefined, {signal})).rejects.toThrow("Opération annulée");
+  await expect(provisionAllAIModels(undefined, { signal })).rejects.toThrow(
+    "Opération annulée"
+  );
   expect(download).not.toHaveBeenCalled();
 });
 
 it("laisse le contenu des paramètres utilisable sur le web avec une explication claire", () => {
   vi.mocked(runtime.isTauriRuntime).mockReturnValue(false);
   const html = renderToStaticMarkup(createElement(AIModelSettings));
-  expect(html).toContain("continuer à utiliser la version web sans les installer");
+  expect(html).toContain(
+    "continuer à utiliser la version web sans les installer"
+  );
   expect(html).not.toContain('role="dialog"');
   expect(html).not.toContain("Télécharger les outils IA");
 });
@@ -136,45 +217,90 @@ it("présente la gestion des outils sur ordinateur sans nom technique ni écran 
 describe("Installation partagée en arrière-plan", () => {
   it("continue après la fermeture d’une vue et fusionne les doubles clics", async () => {
     let finish!: (value: typeof ready) => void;
-    const provision = vi.fn(() => new Promise<typeof ready>(resolve => {finish = resolve;}));
-    const installation = createAIModelInstallation({check: async () => missing, provision});
+    const provision = vi.fn(
+      () =>
+        new Promise<typeof ready>((resolve) => {
+          finish = resolve;
+        })
+    );
+    const installation = createAIModelInstallation({
+      check: async () => missing,
+      provision,
+    });
     const listener = vi.fn();
     const unsubscribe = installation.subscribe(listener);
     const first = installation.start();
     expect(installation.start()).toBe(first);
     expect(provision).toHaveBeenCalledOnce();
-    unsubscribe(); finish(ready); await first;
+    unsubscribe();
+    finish(ready);
+    await first;
     expect(installation.getSnapshot().running).toBe(false);
     expect(installation.getSnapshot().status).toEqual(ready);
   });
 
   it("conserve les outils partiellement installés après échec et permet un vrai réessai", async () => {
-    const partial = {...missing, whisperReady: true, embeddingReady: true};
-    const provision = vi.fn().mockRejectedValueOnce({code: "network", message: "Connexion interrompue."}).mockResolvedValueOnce(ready);
-    const installation = createAIModelInstallation({check: async () => partial, provision});
+    const partial = { ...missing, whisperReady: true, embeddingReady: true };
+    const provision = vi
+      .fn()
+      .mockRejectedValueOnce({
+        code: "network",
+        message: "Connexion interrompue.",
+      })
+      .mockResolvedValueOnce(ready);
+    const installation = createAIModelInstallation({
+      check: async () => partial,
+      provision,
+    });
     await installation.start();
-    expect(installation.getSnapshot()).toMatchObject({running: false, error: "Connexion interrompue.", status: partial});
+    expect(installation.getSnapshot()).toMatchObject({
+      running: false,
+      error: "Connexion interrompue.",
+      status: partial,
+    });
     await installation.start();
     expect(provision).toHaveBeenCalledTimes(2);
-    expect(installation.getSnapshot()).toMatchObject({running: false, error: null, status: ready});
+    expect(installation.getSnapshot()).toMatchObject({
+      running: false,
+      error: null,
+      status: ready,
+    });
   });
 
   it("empêche un ancien contrôle de statut de remplacer une installation fraîchement terminée", async () => {
     let checked!: (value: typeof missing) => void;
-    const installation = createAIModelInstallation({check: () => new Promise(resolve => {checked = resolve;}), provision: async () => ready});
+    const installation = createAIModelInstallation({
+      check: () =>
+        new Promise((resolve) => {
+          checked = resolve;
+        }),
+      provision: async () => ready,
+    });
     const checking = installation.refresh();
     await installation.start();
-    checked(missing); await checking;
+    checked(missing);
+    await checking;
     expect(installation.getSnapshot().status).toEqual(ready);
   });
 
   it("retire l’erreur si un import manuel complète ensuite l’installation", async () => {
-    const check = vi.fn().mockResolvedValueOnce(missing).mockResolvedValueOnce(ready);
-    const installation = createAIModelInstallation({check, provision: async () => {throw Error("Accès refusé.");}});
+    const check = vi
+      .fn()
+      .mockResolvedValueOnce(missing)
+      .mockResolvedValueOnce(ready);
+    const installation = createAIModelInstallation({
+      check,
+      provision: async () => {
+        throw Error("Accès refusé.");
+      },
+    });
     await installation.start();
     expect(installation.getSnapshot().error).toBe("Accès refusé.");
     await installation.refresh();
-    expect(installation.getSnapshot()).toMatchObject({error: null, status: ready});
+    expect(installation.getSnapshot()).toMatchObject({
+      error: null,
+      status: ready,
+    });
   });
 });
 
@@ -182,7 +308,9 @@ describe("Nouvelle version de l’assistant (phase B)", () => {
   it("n’est proposée qu’une fois les outils de base installés, et respecte Plus tard", () => {
     expect(shouldOfferNewAssistant(missing, false)).toBe(false);
     expect(shouldOfferNewAssistant(ready, false)).toBe(true);
-    expect(shouldOfferNewAssistant({...ready, generator4Ready: true}, false)).toBe(false);
+    expect(
+      shouldOfferNewAssistant({ ...ready, generator4Ready: true }, false)
+    ).toBe(false);
     dismissNewAssistantOffer();
     expect(shouldOfferNewAssistant(ready, false)).toBe(false);
   });
@@ -190,44 +318,88 @@ describe("Nouvelle version de l’assistant (phase B)", () => {
     expect(shouldOfferNewAssistant(ready)).toBe(false);
   });
   it("ne télécharge qu’elle, sans toucher aux outils de base, et vérifie le disque", async () => {
-    const download = vi.spyOn(models, "downloadLocalModels").mockResolvedValue({...ready, generator4Ready: true});
-    vi.mocked(models.getLocalModels).mockResolvedValue({...ready, generator4Ready: true});
+    const download = vi
+      .spyOn(models, "downloadLocalModels")
+      .mockResolvedValue({ ...ready, generator4Ready: true });
+    vi.mocked(models.getLocalModels).mockResolvedValue({
+      ...ready,
+      generator4Ready: true,
+    });
     expect((await provisionNewAssistant()).generator4Ready).toBe(true);
     expect(download).toHaveBeenCalledWith(undefined, undefined, ["generator4"]);
     vi.mocked(models.getLocalModels).mockResolvedValue(ready);
-    await expect(provisionNewAssistant()).rejects.toThrow("L’assistant actuel reste disponible");
+    await expect(provisionNewAssistant()).rejects.toThrow(
+      "L’assistant actuel reste disponible"
+    );
   });
   it("s’installe en arrière-plan sous son propre nom, sans nom technique", async () => {
-    const provisionNew = vi.fn(async () => ({...ready, generator4Ready: true}));
-    const installation = createAIModelInstallation({check: async () => ready, provision: async () => ready, provisionNewAssistant: provisionNew});
+    const provisionNew = vi.fn(async () => ({
+      ...ready,
+      generator4Ready: true,
+    }));
+    const installation = createAIModelInstallation({
+      check: async () => ready,
+      provision: async () => ready,
+      provisionNewAssistant: provisionNew,
+    });
     await installation.startNewAssistant();
-    expect(installation.getSnapshot()).toMatchObject({running: false, error: null, target: "generator4", status: {generator4Ready: true}});
+    expect(installation.getSnapshot()).toMatchObject({
+      running: false,
+      error: null,
+      target: "generator4",
+      status: { generator4Ready: true },
+    });
     expect(NEW_ASSISTANT.name).toBe("Nouvelle version de l’Assistant IA");
-    expect(`${NEW_ASSISTANT.name} ${NEW_ASSISTANT.description}`).not.toMatch(/Gemma|MediaPipe|LiteRT|E2B/);
+    expect(`${NEW_ASSISTANT.name} ${NEW_ASSISTANT.description}`).not.toMatch(
+      /Gemma|MediaPipe|LiteRT|E2B/
+    );
     expect(NEW_ASSISTANT.sizeLabel).toBe("2 Go");
   });
 });
 
 describe("Carte de la nouvelle version dans les Paramètres", () => {
   const card = (props: Partial<Parameters<typeof NewAssistantCard>[0]>) =>
-    renderToStaticMarkup(createElement(NewAssistantCard, {installed: true, downloading: false, busy: false, enabled: false, fellBack: false, onEnable: () => {}, ...props})).replace(/<[^>]*>/g, " ");
+    renderToStaticMarkup(
+      createElement(NewAssistantCard, {
+        installed: true,
+        downloading: false,
+        busy: false,
+        enabled: false,
+        fellBack: false,
+        onEnable: () => {},
+        ...props,
+      })
+    ).replace(/<[^>]*>/g, " ");
   it("propose le téléchargement tant qu’elle n’est pas installée", () => {
-    const text = card({installed: false});
+    const text = card({ installed: false });
     expect(text).toContain("Télécharger (2 Go)");
     expect(text).not.toContain("Utiliser la nouvelle version");
   });
   it("donne l’interrupteur une fois installée, sans nom technique", () => {
-    const text = card({suspended: false});
+    const text = card({ suspended: false });
     expect(text).toContain("Utiliser la nouvelle version");
     expect(text).not.toMatch(/Gemma|E2B|MediaPipe|LiteRT/);
     expect(text).not.toContain("a pris le relais");
   });
   it("indique sans erreur que l’assistant actuel a pris le relais", () => {
-    expect(card({enabled: true, fellBack: true, suspended: false})).toContain("l’assistant actuel a pris le relais");
-    expect(card({enabled: false, fellBack: true, suspended: false})).not.toContain("a pris le relais");
+    expect(card({ enabled: true, fellBack: true, suspended: false })).toContain(
+      "l’assistant actuel a pris le relais"
+    );
+    expect(
+      card({ enabled: false, fellBack: true, suspended: false })
+    ).not.toContain("a pris le relais");
   });
   it("suspendue : interrupteur grisé, non coché, mention « Temporairement indisponible »", () => {
-    const html = renderToStaticMarkup(createElement(NewAssistantCard, {installed: true, downloading: false, busy: false, enabled: true, fellBack: false, onEnable: () => {}}));
+    const html = renderToStaticMarkup(
+      createElement(NewAssistantCard, {
+        installed: true,
+        downloading: false,
+        busy: false,
+        enabled: true,
+        fellBack: false,
+        onEnable: () => {},
+      })
+    );
     expect(html).toContain("Temporairement indisponible");
     const [toggle] = tagsWith(html, 'role="switch"');
     expect(toggle).toMatch(/aria-disabled="true"|\sdisabled[\s=>]/);

@@ -29,9 +29,24 @@ describe("bench scoring of a SOAP draft", () => {
   it("compares sections with the note kept by the veterinarian", () => {
     const score = scoreSoapDraft(
       "Boiterie. Douleur au grasset droit.",
-      { subjective: "Boiterie. Douleur au grasset droit.", objective: "", assessment: "", plan: "" },
-      { subjective: "Boiterie. Douleur au grasset droit.", objective: "", assessment: "", plan: "" },
-      { subjective: "Boiterie.", objective: "Douleur au grasset droit.", assessment: "", plan: "" },
+      {
+        subjective: "Boiterie. Douleur au grasset droit.",
+        objective: "",
+        assessment: "",
+        plan: "",
+      },
+      {
+        subjective: "Boiterie. Douleur au grasset droit.",
+        objective: "",
+        assessment: "",
+        plan: "",
+      },
+      {
+        subjective: "Boiterie.",
+        objective: "Douleur au grasset droit.",
+        assessment: "",
+        plan: "",
+      },
       containsDosage
     );
     expect(score.fidelity).toBe(1);
@@ -41,7 +56,12 @@ describe("bench scoring of a SOAP draft", () => {
     const score = scoreSoapDraft(
       "Douleur au grasset droit.",
       { ...scaffold, assessment: "", subjective: "" },
-      { ...scaffold, subjective: "", assessment: "", plan: "Méloxicam 0,1 mg/kg une fois par jour." },
+      {
+        ...scaffold,
+        subjective: "",
+        assessment: "",
+        plan: "Méloxicam 0,1 mg/kg une fois par jour.",
+      },
       null,
       containsDosage
     );

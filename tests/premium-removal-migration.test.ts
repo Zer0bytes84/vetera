@@ -1,5 +1,10 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { applyTheme, getThemeConfig, normalizeCleanFont, saveThemeConfig } from "../src/lib/theme-store";
+import {
+  applyTheme,
+  getThemeConfig,
+  normalizeCleanFont,
+  saveThemeConfig,
+} from "../src/lib/theme-store";
 
 // Premium removal (11 November 2026, docs/recus/2026-11-11-suppression-premium/):
 // a stored theme-config that still says "premium" must fall back to Clean on
@@ -7,15 +12,34 @@ import { applyTheme, getThemeConfig, normalizeCleanFont, saveThemeConfig } from 
 // attacks on that promise are the second half of this file.
 afterEach(() => vi.unstubAllGlobals());
 
-function install(stored: Record<string, string>, options: { throwing?: boolean } = {}) {
+function install(
+  stored: Record<string, string>,
+  options: { throwing?: boolean } = {}
+) {
   const storage = new Map(Object.entries(stored));
   const values = new Map<string, string>();
   const dataset: Record<string, string> = {};
-  const boom = () => { throw new Error("storage unavailable"); };
-  vi.stubGlobal("document", { documentElement: { dataset, style: { setProperty: (key: string, value: string) => values.set(key, value) } } });
-  vi.stubGlobal("localStorage", options.throwing
-    ? { getItem: boom, setItem: boom, removeItem: boom }
-    : { getItem: (key: string) => storage.get(key) ?? null, setItem: (key: string, value: string) => storage.set(key, value), removeItem: (key: string) => storage.delete(key) });
+  const boom = () => {
+    throw new Error("storage unavailable");
+  };
+  vi.stubGlobal("document", {
+    documentElement: {
+      dataset,
+      style: {
+        setProperty: (key: string, value: string) => values.set(key, value),
+      },
+    },
+  });
+  vi.stubGlobal(
+    "localStorage",
+    options.throwing
+      ? { getItem: boom, setItem: boom, removeItem: boom }
+      : {
+          getItem: (key: string) => storage.get(key) ?? null,
+          setItem: (key: string, value: string) => storage.set(key, value),
+          removeItem: (key: string) => storage.delete(key),
+        }
+  );
   vi.stubGlobal("window", { dispatchEvent: () => true });
   return { storage, values, dataset };
 }
@@ -30,8 +54,12 @@ const NEIGHBOURS = {
 
 describe("migration : Premium retombe sur Clean au premier lancement", () => {
   it("skin premium + police Geist + barre sombre donne Clean + Geist + barre sombre, sans erreur", () => {
-    const errors = vi.spyOn(console, "error").mockImplementation(() => undefined);
-    const warnings = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+    const errors = vi
+      .spyOn(console, "error")
+      .mockImplementation(() => undefined);
+    const warnings = vi
+      .spyOn(console, "warn")
+      .mockImplementation(() => undefined);
     const { storage, dataset } = install({
       "baitari-premium-default-v1": "true",
       "baitari-clean-default-v1": "true",
@@ -44,14 +72,21 @@ describe("migration : Premium retombe sur Clean au premier lancement", () => {
     applyTheme(config, true);
     expect(dataset).toMatchObject({ skin: "clean", cleanFont: "geist" });
     expect(dataset.visualStyle).toBeUndefined();
-    expect(JSON.parse(storage.get("theme-config")!)).toEqual({ cleanFont: "geist" });
-    for (const [key, value] of Object.entries(NEIGHBOURS)) expect(storage.get(key), key).toBe(value);
+    expect(JSON.parse(storage.get("theme-config")!)).toEqual({
+      cleanFont: "geist",
+    });
+    for (const [key, value] of Object.entries(NEIGHBOURS))
+      expect(storage.get(key), key).toBe(value);
     expect(errors).not.toHaveBeenCalled();
     expect(warnings).not.toHaveBeenCalled();
   });
 
   it("un testeur Premium sans police enregistrée retombe sur Inter", () => {
-    const { dataset } = install({ "baitari-clean-default-v1": "true", "theme-config": JSON.stringify({ skin: "premium" }), theme: "light" });
+    const { dataset } = install({
+      "baitari-clean-default-v1": "true",
+      "theme-config": JSON.stringify({ skin: "premium" }),
+      theme: "light",
+    });
     applyTheme(getThemeConfig(), false);
     expect(dataset).toMatchObject({ skin: "clean", cleanFont: "inter" });
   });
@@ -67,7 +102,10 @@ describe("migration : Premium retombe sur Clean au premier lancement", () => {
   });
 
   it("garde une installation d'avant le défaut clair en mode sombre, une seule fois", () => {
-    const { storage } = install({ "baitari-premium-default-v1": "true", "theme-config": JSON.stringify({ skin: "premium" }) });
+    const { storage } = install({
+      "baitari-premium-default-v1": "true",
+      "theme-config": JSON.stringify({ skin: "premium" }),
+    });
     getThemeConfig();
     expect(storage.get("theme")).toBe("dark");
     storage.delete("theme");
@@ -78,7 +116,10 @@ describe("migration : Premium retombe sur Clean au premier lancement", () => {
 
 describe("équipe rouge : tenter de faire échouer le retour sur Clean", () => {
   it("attaque 1 : ancien réglage « premium » retapé à la main après la migration", () => {
-    const { storage, dataset } = install({ "baitari-clean-only-v1": "true", "theme-config": '{"skin":"premium","cleanFont":"plex"}' });
+    const { storage, dataset } = install({
+      "baitari-clean-only-v1": "true",
+      "theme-config": '{"skin":"premium","cleanFont":"plex"}',
+    });
     const config = getThemeConfig();
     expect(config).toEqual({ cleanFont: "plex" });
     expect(storage.get("theme-config")).toBe('{"cleanFont":"plex"}');
@@ -95,10 +136,16 @@ describe("équipe rouge : tenter de faire échouer le retour sur Clean", () => {
     ["nombre", "42"],
     ["skin d'un autre type", '{"skin":{"x":1},"cleanFont":7}'],
     ["casse inattendue", '{"skin":"PREMIUM"}'],
-    ["clés inconnues", '{"visualStyle":"premium","skin":"neon","accent":"rose"}'],
+    [
+      "clés inconnues",
+      '{"visualStyle":"premium","skin":"neon","accent":"rose"}',
+    ],
     ["__proto__ piégé", '{"__proto__":{"skin":"premium","cleanFont":"geist"}}'],
   ])("attaque 2 : préférence corrompue ou inconnue (%s) donne des défauts sans erreur", (_name, raw) => {
-    const { dataset } = install({ "baitari-clean-only-v1": "true", "theme-config": raw });
+    const { dataset } = install({
+      "baitari-clean-only-v1": "true",
+      "theme-config": raw,
+    });
     expect(() => getThemeConfig()).not.toThrow();
     const config = getThemeConfig();
     expect(config.cleanFont).toBeUndefined();
@@ -107,20 +154,40 @@ describe("équipe rouge : tenter de faire échouer le retour sur Clean", () => {
     expect(dataset).toMatchObject({ skin: "clean", cleanFont: "inter" });
   });
 
-  it.each(["constructor", "toString", "__proto__", "hasOwnProperty"])("attaque 3 : la police « %s » (nom hérité du prototype) n'est pas une police", (name) => {
+  it.each([
+    "constructor",
+    "toString",
+    "__proto__",
+    "hasOwnProperty",
+  ])("attaque 3 : la police « %s » (nom hérité du prototype) n'est pas une police", (name) => {
     expect(normalizeCleanFont(name)).toBe("inter");
-    const { dataset } = install({ "baitari-clean-only-v1": "true", "theme-config": JSON.stringify({ cleanFont: name }) });
+    const { dataset } = install({
+      "baitari-clean-only-v1": "true",
+      "theme-config": JSON.stringify({ cleanFont: name }),
+    });
     expect(getThemeConfig()).toEqual({});
     applyTheme(getThemeConfig(), false);
     expect(dataset.cleanFont).toBe("inter");
   });
 
   it("attaque 4 : la bascule clair/sombre répétée ne dérive pas", () => {
-    const { dataset, values } = install({ "theme-config": '{"cleanFont":"plex"}' });
+    const { dataset, values } = install({
+      "theme-config": '{"cleanFont":"plex"}',
+    });
     const config = getThemeConfig();
     for (let i = 0; i < 200; i++) applyTheme(config, i % 2 === 1);
-    expect(dataset).toMatchObject({ skin: "clean", cleanFont: "plex", chromeStyle: "liquid-glass", headerPattern: "opaline" });
-    expect(Object.keys(dataset).sort()).toEqual(["chromeStyle", "cleanFont", "headerPattern", "skin"]);
+    expect(dataset).toMatchObject({
+      skin: "clean",
+      cleanFont: "plex",
+      chromeStyle: "liquid-glass",
+      headerPattern: "opaline",
+    });
+    expect(Object.keys(dataset).sort()).toEqual([
+      "chromeStyle",
+      "cleanFont",
+      "headerPattern",
+      "skin",
+    ]);
     expect(values.get("--primary")).toBe("#3b1fe5"); // the last call, i = 199, is dark
     expect(getThemeConfig()).toEqual({ cleanFont: "plex" });
   });
@@ -142,11 +209,18 @@ describe("équipe rouge : tenter de faire échouer le retour sur Clean", () => {
   it("attaque 7 : enregistrer une configuration qui contient encore skin ne le réécrit jamais", () => {
     const { storage } = install({});
     saveThemeConfig({ skin: "premium", cleanFont: "geist" } as never);
-    expect(JSON.parse(storage.get("theme-config")!)).toEqual({ cleanFont: "geist" });
+    expect(JSON.parse(storage.get("theme-config")!)).toEqual({
+      cleanFont: "geist",
+    });
   });
 
   it("attaque 8 : un ancien marqueur Premium seul ne ressuscite rien", () => {
-    const { storage, dataset } = install({ "baitari-premium-default-v1": "true", "baitari-clean-default-v1": "true", "baitari-clean-default-v2": "true", theme: "light" });
+    const { storage, dataset } = install({
+      "baitari-premium-default-v1": "true",
+      "baitari-clean-default-v1": "true",
+      "baitari-clean-default-v2": "true",
+      theme: "light",
+    });
     const config = getThemeConfig();
     applyTheme(config, false);
     expect(config).toEqual({});
@@ -160,26 +234,44 @@ describe("garde : plus rien de Premium qui change le rendu", () => {
   const sources = async () => {
     const { readFileSync, readdirSync, statSync } = await import("node:fs");
     const { join } = await import("node:path");
-    const walk = (dir: string): string[] => readdirSync(dir).flatMap((name) => {
-      const path = join(dir, name);
-      return statSync(path).isDirectory() ? walk(path) : /\.(css|tsx?|html)$/.test(name) ? [path] : [];
-    });
-    return walk("src").map((path) => ({ path, text: readFileSync(path, "utf8") }));
+    const walk = (dir: string): string[] =>
+      readdirSync(dir).flatMap((name) => {
+        const path = join(dir, name);
+        return statSync(path).isDirectory()
+          ? walk(path)
+          : /\.(css|tsx?|html)$/.test(name)
+            ? [path]
+            : [];
+      });
+    return walk("src").map((path) => ({
+      path,
+      text: readFileSync(path, "utf8"),
+    }));
   };
   it.each([
     ["l'attribut data-visual-style", /data-visual-style|dataset\.visualStyle/],
-    ["une peau « premium »", /data-skin="premium"|skin:\s*"premium"|skin\s*===\s*"premium"/],
+    [
+      "une peau « premium »",
+      /data-skin="premium"|skin:\s*"premium"|skin\s*===\s*"premium"/,
+    ],
     ["le hook useIsPremium", /useIsPremium|use-is-premium/],
     ["le module theme-skin", /theme-skin/],
-    ["un sélecteur réservé à une peau autre que Clean", /:not\(\[data-skin="clean"\]\)/],
+    [
+      "un sélecteur réservé à une peau autre que Clean",
+      /:not\(\[data-skin="clean"\]\)/,
+    ],
   ])("%s n'apparaît nulle part dans src", async (_name, pattern) => {
-    const found = (await sources()).filter(({ text }) => pattern.test(text)).map(({ path }) => path);
+    const found = (await sources())
+      .filter(({ text }) => pattern.test(text))
+      .map(({ path }) => path);
     expect(found).toEqual([]);
   });
 
   it("toute règle CSS qui nomme data-skin vise Clean", async () => {
     const values = new Set<string>();
-    for (const { text } of await sources()) for (const match of text.matchAll(/data-skin="([^"]*)"/g)) values.add(match[1]);
+    for (const { text } of await sources())
+      for (const match of text.matchAll(/data-skin="([^"]*)"/g))
+        values.add(match[1]);
     expect([...values]).toEqual(["clean"]);
   });
 });

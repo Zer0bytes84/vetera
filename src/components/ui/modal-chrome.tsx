@@ -28,7 +28,10 @@ import { XIcon } from "@/lib/icons";
 export type ModalSlot = "header" | "footer";
 
 /** Marque un composant comme en-tête ou pied de fenêtre, pour que le contenu le range dans la bande. */
-export function markModalSlot<T extends object>(component: T, slot: ModalSlot): T {
+export function markModalSlot<T extends object>(
+  component: T,
+  slot: ModalSlot
+): T {
   (component as { modalSlot?: ModalSlot }).modalSlot = slot;
   return component;
 }
@@ -43,7 +46,12 @@ export function markFocusesClose<T extends object>(component: T): T {
 }
 
 export function headerFocusesClose(nodes: ReactNode[]) {
-  return nodes.some((node) => isValidElement(node) && typeof node.type !== "string" && (node.type as { focusesClose?: boolean }).focusesClose === true);
+  return nodes.some(
+    (node) =>
+      isValidElement(node) &&
+      typeof node.type !== "string" &&
+      (node.type as { focusesClose?: boolean }).focusesClose === true
+  );
 }
 
 export function modalSlotOf(node: ReactNode): ModalSlot | undefined {
@@ -55,9 +63,16 @@ export function modalSlotOf(node: ReactNode): ModalSlot | undefined {
 export function flattenChildren(children: ReactNode): ReactNode[] {
   const out: ReactNode[] = [];
   Children.forEach(children, (child) => {
-    if (isValidElement<{ children?: ReactNode }>(child) && child.type === Fragment) {
+    if (
+      isValidElement<{ children?: ReactNode }>(child) &&
+      child.type === Fragment
+    ) {
       out.push(...flattenChildren(child.props.children));
-    } else if (child !== null && child !== undefined && typeof child !== "boolean") {
+    } else if (
+      child !== null &&
+      child !== undefined &&
+      typeof child !== "boolean"
+    ) {
       out.push(child);
     }
   });
@@ -65,7 +80,9 @@ export function flattenChildren(children: ReactNode): ReactNode[] {
   return Children.toArray(out);
 }
 
-const ModalActionsContext = createContext<HTMLElement | null | undefined>(undefined);
+const ModalActionsContext = createContext<HTMLElement | null | undefined>(
+  undefined
+);
 
 /** La première bande et le panneau. `header` est l'en-tête, `children` le contenu du panneau. */
 export function ModalChrome({
@@ -105,16 +122,23 @@ export function useInModalChrome() {
 /** Une mention de pied (texte, erreur, aide) reste sous le contenu ; tout le reste est une action. */
 function isFooterMeta(node: ReactNode) {
   if (typeof node === "string" || typeof node === "number") return true;
-  if (!isValidElement<{ className?: unknown; "data-footer"?: unknown }>(node)) return false;
+  if (!isValidElement<{ className?: unknown; "data-footer"?: unknown }>(node))
+    return false;
   if (node.type === "p" || node.type === "span") return true;
   if (node.props["data-footer"] === "meta") return true;
-  return typeof node.props.className === "string" && /\b(modal-medical-footer-meta|patient-export-footer-hint)\b/.test(node.props.className);
+  return (
+    typeof node.props.className === "string" &&
+    /\b(modal-medical-footer-meta|patient-export-footer-hint)\b/.test(
+      node.props.className
+    )
+  );
 }
 
 export function splitFooter(children: ReactNode) {
   const meta: ReactNode[] = [];
   const actions: ReactNode[] = [];
-  for (const child of flattenChildren(children)) (isFooterMeta(child) ? meta : actions).push(child);
+  for (const child of flattenChildren(children))
+    (isFooterMeta(child) ? meta : actions).push(child);
   return { actions, meta };
 }
 
@@ -131,10 +155,14 @@ export function ModalBandActions({ children }: { children: ReactNode }) {
     const form = anchor.current?.closest("form");
     const box = group.current;
     if (!form || !box) return;
-    if (!form.id) form.id = `modal-form-${generatedId.replace(/[^a-zA-Z0-9_-]/g, "")}`;
+    if (!form.id)
+      form.id = `modal-form-${generatedId.replace(/[^a-zA-Z0-9_-]/g, "")}`;
     const link = () => {
-      for (const control of box.querySelectorAll("button, input, select, textarea")) {
-        if (!control.hasAttribute("form")) control.setAttribute("form", form.id);
+      for (const control of box.querySelectorAll(
+        "button, input, select, textarea"
+      )) {
+        if (!control.hasAttribute("form"))
+          control.setAttribute("form", form.id);
       }
     };
     link();
@@ -168,7 +196,8 @@ export function firstPanelField(panel: HTMLElement | null): HTMLElement | null {
     'input:not([type="hidden"]):not([disabled]), textarea:not([disabled]), select:not([disabled]), button:not([disabled]), a[href], [tabindex]:not([tabindex="-1"]), [contenteditable="true"]'
   );
   for (const el of candidates) {
-    if (el.closest("[hidden], [inert]") || !el.getClientRects().length) continue;
+    if (el.closest("[hidden], [inert]") || !el.getClientRects().length)
+      continue;
     return el;
   }
   return null;

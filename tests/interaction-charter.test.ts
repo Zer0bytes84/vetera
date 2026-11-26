@@ -7,7 +7,11 @@ import { nextCursorIndex } from "@/hooks/useListCursor";
 const files = (dir: string, ext: RegExp): string[] =>
   readdirSync(dir).flatMap((name) => {
     const path = join(dir, name);
-    return statSync(path).isDirectory() ? files(path, ext) : ext.test(name) ? [path] : [];
+    return statSync(path).isDirectory()
+      ? files(path, ext)
+      : ext.test(name)
+        ? [path]
+        : [];
   });
 
 describe("charte d'interaction", () => {
@@ -31,7 +35,11 @@ describe("charte d'interaction", () => {
       postcss.parse(readFileSync(file, "utf8")).walkRules((rule) => {
         if (!rule.selector.includes(":hover")) return;
         for (let parent = rule.parent; parent; parent = parent.parent) {
-          if (parent.type === "atrule" && /hover/.test((parent as postcss.AtRule).params)) return;
+          if (
+            parent.type === "atrule" &&
+            /hover/.test((parent as postcss.AtRule).params)
+          )
+            return;
         }
         loose.push(`${file}: ${rule.selector.slice(0, 60)}`);
       });
@@ -41,10 +49,17 @@ describe("charte d'interaction", () => {
 
   it("ouvre menus et palette sans animation", () => {
     const css = readFileSync("src/design-system/interaction.css", "utf8");
-    for (const slot of ["dropdown-menu-content", "popover-content", "select-content", "context-menu-content"]) {
+    for (const slot of [
+      "dropdown-menu-content",
+      "popover-content",
+      "select-content",
+      "context-menu-content",
+    ]) {
       expect(css).toContain(`[data-slot="${slot}"]`);
     }
-    expect(css).toContain('[data-slot="dialog-content"]:has([data-slot="command"])');
+    expect(css).toContain(
+      '[data-slot="dialog-content"]:has([data-slot="command"])'
+    );
   });
 });
 

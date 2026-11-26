@@ -128,10 +128,15 @@ describe("clinical dashboard decisions", () => {
         visit("absent", "2026-10-03 10:00:00", "no_show"),
         visit("cancelled", "2026-10-03 11:00:00", "cancelled"),
       ],
-      patients: [patient], owners: [], referenceDate: now,
+      patients: [patient],
+      owners: [],
+      referenceDate: now,
     });
     const result = buildNowSnapshot(schedule, [patient], now);
-    expect(result.today.map(row => row.appointment.id)).toEqual(["done", "absent"]);
+    expect(result.today.map((row) => row.appointment.id)).toEqual([
+      "done",
+      "absent",
+    ]);
     expect(result.next).toBeUndefined();
     expect(result.waiting).toEqual([]);
     expect(result.startsIn).toBeNull();
@@ -197,9 +202,17 @@ describe("clinical dashboard decisions", () => {
       cash("year-start", "2026-01-01", 600),
       cash("unpaid", "2026-10-04", 700, "income", "pending"),
     ];
-    expect(buildClinicalCash(transactions, sunday, "week")).toMatchObject({income: 500, count: 2});
-    expect(buildClinicalCash(transactions, sunday, "year")).toMatchObject({income: 1200, count: 4});
-    expect(buildClinicalCash(transactions, new Date(2026, 9, 5, 12), "week").income).toBe(400);
+    expect(buildClinicalCash(transactions, sunday, "week")).toMatchObject({
+      income: 500,
+      count: 2,
+    });
+    expect(buildClinicalCash(transactions, sunday, "year")).toMatchObject({
+      income: 1200,
+      count: 4,
+    });
+    expect(
+      buildClinicalCash(transactions, new Date(2026, 9, 5, 12), "week").income
+    ).toBe(400);
   });
 
   it("counts each completed visit once across weekly trend buckets", () => {
@@ -231,16 +244,23 @@ describe("clinical dashboard decisions", () => {
       });
     // Renewed: the previous reminder is closed, the new one falls beyond the window.
     expect(
-      alerts([reminder("old", "2025-10-01", "termine"), reminder("renewed", "2027-09-30")])
+      alerts([
+        reminder("old", "2025-10-01", "termine"),
+        reminder("renewed", "2027-09-30"),
+      ])
     ).toEqual([]);
     // Still open and overdue: it alerts, from the reminder's due date.
     expect(alerts([reminder("old", "2025-10-01")])[0]).toMatchObject({
       source: "vaccine",
       patientId: "milo",
     });
-    expect(alerts([reminder("old", "2025-10-01")])[0].detail).toContain("dépassé");
+    expect(alerts([reminder("old", "2025-10-01")])[0].detail).toContain(
+      "dépassé"
+    );
     // A non-vaccine reminder never becomes a vaccine alert.
-    expect(alerts([reminder("deworm", "2025-10-01", "en_cours", "antiparasitaire")])).toEqual([]);
+    expect(
+      alerts([reminder("deworm", "2025-10-01", "en_cours", "antiparasitaire")])
+    ).toEqual([]);
   });
 });
 

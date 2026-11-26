@@ -10,7 +10,7 @@ describe("Palette de commandes (CMD+K) - Recherche & Scoring", () => {
   it("normalise correctement les accents et la casse en français", () => {
     expect(normalizeSearch("Éléphant")).toBe("elephant");
     expect(normalizeSearch("Médicament Anti-inflammatoire")).toBe(
-      "medicament anti-inflammatoire",
+      "medicament anti-inflammatoire"
     );
     expect(normalizeSearch("  PARAMÈTRES  ")).toBe("parametres");
   });
@@ -31,7 +31,7 @@ describe("Palette de commandes (CMD+K) - Recherche & Scoring", () => {
   it("reconnaît les mots dans un label multi-termes avec un score élevé (0.9)", () => {
     const wordPrefixScore = scoreCommandMatch(
       "navigation:notes Documents et mémos",
-      "memos",
+      "memos"
     );
     expect(wordPrefixScore).toBe(0.9);
   });
@@ -40,7 +40,7 @@ describe("Palette de commandes (CMD+K) - Recherche & Scoring", () => {
     const keywordScore = scoreCommandMatch(
       "navigation:notes Documents",
       "ordonnance",
-      ["ordonnances", "rapports", "pdf"],
+      ["ordonnances", "rapports", "pdf"]
     );
     expect(keywordScore).toBe(0.85);
   });
@@ -48,22 +48,24 @@ describe("Palette de commandes (CMD+K) - Recherche & Scoring", () => {
   it("gère les recherches multi-mots avec tokens (0.65)", () => {
     const score = scoreCommandMatch(
       "patient:123 Rex Chien Berger Allemand",
-      "rex berger",
+      "rex berger"
     );
     expect(score).toBe(0.65);
   });
 
   it("renvoie 0 pour les termes sans correspondance", () => {
     expect(scoreCommandMatch("patient:123 Rex", "chat")).toBe(0);
-    expect(scoreCommandMatch("navigation:dashboard Tableau de bord", "agenda")).toBe(0);
+    expect(
+      scoreCommandMatch("navigation:dashboard Tableau de bord", "agenda")
+    ).toBe(0);
   });
 
   it("matchesSearch effectue une recherche accent-insensible tous tokens", () => {
-    expect(matchesSearch("Rex Chien Berger Allemand Dupont", "rex berger")).toBe(
-      true,
-    );
+    expect(
+      matchesSearch("Rex Chien Berger Allemand Dupont", "rex berger")
+    ).toBe(true);
     expect(matchesSearch("Félix Chat Européen Martin", "felix martin")).toBe(
-      true,
+      true
     );
     expect(matchesSearch("Médor Chien", "chat")).toBe(false);
   });
@@ -124,7 +126,7 @@ describe("Palette de commandes (CMD+K) - Intégration Recherche Sémantique", ()
     const score = scoreCommandMatch(
       "semantic:patient-1 Rex Cause bactérienne confirmée",
       "bactérie",
-      ["bactérie", "objective", "Examen clinique"],
+      ["bactérie", "objective", "Examen clinique"]
     );
     expect(score).toBe(1.0);
   });
@@ -133,7 +135,7 @@ describe("Palette de commandes (CMD+K) - Intégration Recherche Sémantique", ()
     // L'utilisateur cherche "Metacam", le moteur sémantique trouve le chunk "méloxicam 1.5mg"
     const score = scoreCommandMatch(
       "semantic:patient-2:soap-1:plan:0 Luna Prescription de méloxicam 1.5mg par voie orale",
-      "Metacam",
+      "Metacam"
     );
     expect(score).toBe(1.0);
   });
@@ -141,7 +143,7 @@ describe("Palette de commandes (CMD+K) - Intégration Recherche Sémantique", ()
   it("garantit qu'une variation morphologique (ex: vaccin <-> vaccination) n'est jamais masquée par cmdk", () => {
     const score = scoreCommandMatch(
       "semantic:patient-3:soap-2:subjective:0 Mocha pour le vaccin c'est tous les 3 mois",
-      "vaccination",
+      "vaccination"
     );
     expect(score).toBe(1.0);
   });
@@ -156,21 +158,21 @@ describe("Palette de commandes (CMD+K) - Intégration Recherche Sémantique", ()
     // 1. Produit
     const prodScore = scoreCommandMatch(
       "semantic:product::prod-1:product:0 Pharmacie & Stock Produit : Vaccin Rabique",
-      "vaccin",
+      "vaccin"
     );
     expect(prodScore).toBe(1.0);
 
     // 2. Consultation
     const apptScore = scoreCommandMatch(
       "semantic:consultation:rex:appt-1:consultation:0 Rex Consultation Vaccin : Rappel annuel",
-      "vaccin",
+      "vaccin"
     );
     expect(apptScore).toBe(1.0);
 
     // 3. Fiche Patient
     const patientScore = scoreCommandMatch(
       "semantic:patient:rex:rex:patient:0 Rex Patient : Rex — Affections chroniques : IRC",
-      "IRC",
+      "IRC"
     );
     expect(patientScore).toBe(1.0);
   });

@@ -100,7 +100,10 @@ test("hosted admin page is served with a restrictive CSP and same-origin admin A
   const f = await fixture(t);
   const page = await f.rawRequest("/admin");
   assert.equal(page.status, 200);
-  assert.match(page.headers.get("content-security-policy"), /script-src 'self'/);
+  assert.match(
+    page.headers.get("content-security-policy"),
+    /script-src 'self'/
+  );
   assert.match(await page.text(), /id="login-view"/);
   assert.equal(
     (

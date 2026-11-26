@@ -72,10 +72,20 @@ function AlertDialogContent({
   for (const header of headers) {
     if (!isValidElement<React.ComponentProps<"div">>(header)) continue;
     const inner = flattenChildren(header.props.children);
-    explanation.push(...inner.filter((child) => isValidElement(child) && child.type === AlertDialogDescription));
-    const heading = inner.filter((child) => !(isValidElement(child) && child.type === AlertDialogDescription));
+    explanation.push(
+      ...inner.filter(
+        (child) =>
+          isValidElement(child) && child.type === AlertDialogDescription
+      )
+    );
+    const heading = inner.filter(
+      (child) =>
+        !(isValidElement(child) && child.type === AlertDialogDescription)
+    );
     // Sans illustration fournie, la question porte la même tuile que les autres en-têtes.
-    const hasMedia = heading.some((child) => isValidElement(child) && child.type === AlertDialogMedia);
+    const hasMedia = heading.some(
+      (child) => isValidElement(child) && child.type === AlertDialogMedia
+    );
     band.push(
       cloneElement(
         header,
@@ -97,19 +107,26 @@ function AlertDialogContent({
       <AlertDialogPrimitive.Popup
         className={cn(
           "group/alert-dialog-content data-open:fade-in-0 data-open:zoom-in-95 data-closed:fade-out-0 data-closed:zoom-out-95 fixed start-1/2 top-1/2 z-50 grid w-full -translate-x-1/2 -translate-y-1/2 gap-4 rounded-xl bg-popover p-4 text-popover-foreground outline-none ring-1 ring-foreground/10 duration-[220ms] ease-[var(--ease-out)] data-[size=default]:max-w-xs data-[size=sm]:max-w-xs data-closed:animate-out data-open:animate-in data-[size=default]:sm:max-w-sm rtl:translate-x-1/2",
-          chrome && "data-[size=default]:max-w-[calc(100%-2rem)] data-[size=default]:sm:max-w-[440px]",
+          chrome &&
+            "data-[size=default]:max-w-[calc(100%-2rem)] data-[size=default]:sm:max-w-[440px]",
           className
         )}
         data-chrome={chrome ? "" : undefined}
         data-size={size}
         data-slot="alert-dialog-content"
-        initialFocus={initialFocus ?? (chrome ? () => firstPanelField(panel.current) ?? true : undefined)}
+        initialFocus={
+          initialFocus ??
+          (chrome ? () => firstPanelField(panel.current) ?? true : undefined)
+        }
         {...props}
       >
         {chrome ? (
           <ModalChrome
             close={
-              <AlertDialogPrimitive.Close aria-label="Fermer" data-slot="modal-close">
+              <AlertDialogPrimitive.Close
+                aria-label="Fermer"
+                data-slot="modal-close"
+              >
                 <ModalCloseIcon />
               </AlertDialogPrimitive.Close>
             }

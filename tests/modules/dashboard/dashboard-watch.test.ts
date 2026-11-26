@@ -18,7 +18,13 @@ describe("rappels à venir", () => {
     { id: "vac", name: "Vaccin CHPL" },
     { id: "verm", name: "Vermifuge" },
   ];
-  const reminder = (id: string, patient_id: string, echeance: string, statut = "en_cours", type = "vac") => ({
+  const reminder = (
+    id: string,
+    patient_id: string,
+    echeance: string,
+    statut = "en_cours",
+    type = "vac"
+  ) => ({
     id,
     patient_id,
     echeance,
@@ -54,14 +60,24 @@ describe("rappels à venir", () => {
   });
 
   it("limite l'affichage sans perdre le total", () => {
-    const reminders = Array.from({ length: 6 }, (_, i) => reminder(`r${i}`, "p1", `2026-10-2${i}`));
-    const list = buildUpcomingReminders({ now, patients, types, reminders, limit: 4 });
+    const reminders = Array.from({ length: 6 }, (_, i) =>
+      reminder(`r${i}`, "p1", `2026-10-2${i}`)
+    );
+    const list = buildUpcomingReminders({
+      now,
+      patients,
+      types,
+      reminders,
+      limit: 4,
+    });
     expect(list.rows).toHaveLength(4);
     expect(list.total).toBe(6);
   });
 
   it("renvoie une liste vide sans rappel", () => {
-    expect(buildUpcomingReminders({ now, patients, types, reminders: [] })).toEqual({
+    expect(
+      buildUpcomingReminders({ now, patients, types, reminders: [] })
+    ).toEqual({
       rows: [],
       total: 0,
       critical: 0,
@@ -92,7 +108,12 @@ describe("stock à surveiller", () => {
         product({ id: "out", name: "Rupture", quantity: 0 }),
         product({ id: "soon", name: "Bientôt", expiryDate: "2026-11-30" }),
         product({ id: "gone", name: "Périmé", expiryDate: "2026-10-01" }),
-        product({ id: "arch", name: "Archivé", quantity: 0, archivedAt: "2026-01-01" }),
+        product({
+          id: "arch",
+          name: "Archivé",
+          quantity: 0,
+          archivedAt: "2026-01-01",
+        }),
         product({ id: "svc", name: "Acte", quantity: 0, stockTracked: false }),
       ],
       limit: 10,
@@ -105,19 +126,30 @@ describe("stock à surveiller", () => {
       ["Bientôt", "warning"],
       ["Bas", "warning"],
     ]);
-    expect(list.rows.find((r) => r.title === "Bas")?.detail).toBe("Sous le seuil de 5");
+    expect(list.rows.find((r) => r.title === "Bas")?.detail).toBe(
+      "Sous le seuil de 5"
+    );
     expect(list.rows.find((r) => r.title === "Bas")?.meta).toBe("3 doses");
-    expect(list.rows.find((r) => r.title === "Bientôt")?.detail).toMatch(/^Périme le 30 nov/);
+    expect(list.rows.find((r) => r.title === "Bientôt")?.detail).toMatch(
+      /^Périme le 30 nov/
+    );
   });
 
   it("préfère la quantité disponible et la péremption des lots quand elles existent", () => {
     const list = buildStockWatch({
       now,
       products: [
-        product({ quantity: 20, availableQuantity: 2, nearestExpiryDate: "2026-10-30", expiryDate: "2028-01-01" }),
+        product({
+          quantity: 20,
+          availableQuantity: 2,
+          nearestExpiryDate: "2026-10-30",
+          expiryDate: "2028-01-01",
+        }),
       ],
     });
-    expect(list.rows[0].detail).toMatch(/^Sous le seuil de 5 · Périme le 30 oct/);
+    expect(list.rows[0].detail).toMatch(
+      /^Sous le seuil de 5 · Périme le 30 oct/
+    );
     expect(list.rows[0].meta).toBe("2 boîtes");
   });
 });
@@ -139,8 +171,18 @@ describe("hospitalisés", () => {
       now,
       patients,
       stays: [
-        stay({ id: "a", patientId: "p1", cage: "3", diagnosis: "Gastro-entérite" }),
-        stay({ id: "b", patientId: "p2", status: "critical", admissionDate: "2026-10-18T07:00:00" }),
+        stay({
+          id: "a",
+          patientId: "p1",
+          cage: "3",
+          diagnosis: "Gastro-entérite",
+        }),
+        stay({
+          id: "b",
+          patientId: "p2",
+          status: "critical",
+          admissionDate: "2026-10-18T07:00:00",
+        }),
         stay({ id: "c", status: "discharged" }),
       ],
     });

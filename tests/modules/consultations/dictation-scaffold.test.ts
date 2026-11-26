@@ -12,8 +12,8 @@ describe("extractive dictation scaffold", () => {
   it("preserves the short unstructured dictation without inventing exam or diagnosis", () => {
     expect(
       buildDictationScaffold(
-        "Le patient a des allergies nécessite un soin intensif avec des antibiotiques pendant une période de 7 jours.",
-      ),
+        "Le patient a des allergies nécessite un soin intensif avec des antibiotiques pendant une période de 7 jours."
+      )
     ).toEqual({
       subjective: "Le patient a des allergies",
       objective: "",
@@ -24,8 +24,8 @@ describe("extractive dictation scaffold", () => {
   it("uses explicit French labels, preserves measurements and keeps care as a plan", () => {
     expect(
       buildDictationScaffold(
-        "Pour @Rex, toux depuis hier. À l’examen, température 38,5 degrés et auscultation normale. Évaluation, toux à surveiller. Prévoir un contrôle dans sept jours.",
-      ),
+        "Pour @Rex, toux depuis hier. À l’examen, température 38,5 degrés et auscultation normale. Évaluation, toux à surveiller. Prévoir un contrôle dans sept jours."
+      )
     ).toEqual({
       subjective: "toux depuis hier.",
       objective: "température 38,5 degrés et auscultation normale.",
@@ -36,8 +36,8 @@ describe("extractive dictation scaffold", () => {
   it("keeps unlabelled observations for human classification and supports quoted names", () => {
     expect(
       buildDictationScaffold(
-        'Pour @"Rex Junior", il respire mal et semble fatigué.',
-      ),
+        'Pour @"Rex Junior", il respire mal et semble fatigué.'
+      )
     ).toEqual({
       subjective: "il respire mal et semble fatigué.",
       objective: "",
@@ -48,19 +48,19 @@ describe("extractive dictation scaffold", () => {
   it("removes the full resolved mention including apostrophes", () => {
     expect(
       buildDictationScaffold("Pour @D’Artagnan, vomissements depuis hier.")
-        .subjective,
+        .subjective
     ).toBe("vomissements depuis hier.");
   });
   it("preserves email addresses that are not patient mentions", () => {
     expect(
-      buildDictationScaffold("Contact : sarah@exemple.fr.").subjective,
+      buildDictationScaffold("Contact : sarah@exemple.fr.").subjective
     ).toBe("Contact : sarah@exemple.fr.");
   });
   it("excludes dosage segments from the scaffold instead of throwing", () => {
     expect(
       buildDictationScaffold(
-        "Examen: température 39 degrés, administrer 5 mg/kg.",
-      ),
+        "Examen: température 39 degrés, administrer 5 mg/kg."
+      )
     ).toEqual({
       subjective: "",
       objective: "",
@@ -71,8 +71,8 @@ describe("extractive dictation scaffold", () => {
   it("classifies a treatment need as a plan and keeps the sentence whole", () => {
     expect(
       buildDictationScaffold(
-        "Le patient a besoin d'un traitement antibiotique.",
-      ),
+        "Le patient a besoin d'un traitement antibiotique."
+      )
     ).toEqual({
       subjective: "",
       objective: "",
@@ -83,15 +83,15 @@ describe("extractive dictation scaffold", () => {
   it("removes dosage sentences for the model input and flags them", () => {
     expect(
       removeDosageSentences(
-        "Toux depuis hier. Administrer 5 mg/kg deux fois par jour. À revoir dans une semaine.",
-      ),
+        "Toux depuis hier. Administrer 5 mg/kg deux fois par jour. À revoir dans une semaine."
+      )
     ).toEqual({
       text: "Toux depuis hier. À revoir dans une semaine.",
       dosageDetected: true,
       dosageSentences: ["Administrer 5 mg/kg deux fois par jour."],
     });
     expect(
-      removeDosageSentences("Toux depuis hier. À revoir dans une semaine."),
+      removeDosageSentences("Toux depuis hier. À revoir dans une semaine.")
     ).toEqual({
       text: "Toux depuis hier. À revoir dans une semaine.",
       dosageDetected: false,
@@ -108,7 +108,7 @@ describe("extractive dictation scaffold", () => {
     expect(
       mergeDosageIntoPlan(note, [
         "Le patient a besoin d'un traitement antibiotique pendant 7 jours.",
-      ]),
+      ])
     ).toEqual({
       ...note,
       plan: "Le patient a besoin d'un traitement antibiotique pendant 7 jours.",
@@ -118,8 +118,8 @@ describe("extractive dictation scaffold", () => {
   it("recognizes explicit plural labels and keeps ordinary exam controls in O", () => {
     expect(
       buildDictationScaffold(
-        "Examen clinique : contrôle radiographique normal. Évaluations, surveillance nécessaire. Plan de soins : contrôle dans une semaine.",
-      ),
+        "Examen clinique : contrôle radiographique normal. Évaluations, surveillance nécessaire. Plan de soins : contrôle dans une semaine."
+      )
     ).toEqual({
       subjective: "",
       objective: "contrôle radiographique normal.",
@@ -129,15 +129,15 @@ describe("extractive dictation scaffold", () => {
   });
   it("preserves negated intentions and does not extract a control from a sentence", () => {
     expect(
-      buildDictationScaffold("Ne pas prévoir un contrôle cette semaine.").plan,
+      buildDictationScaffold("Ne pas prévoir un contrôle cette semaine.").plan
     ).toBe("Ne pas prévoir un contrôle cette semaine.");
     expect(
       buildDictationScaffold("Le patient ne nécessite pas de soins intensifs.")
-        .plan,
+        .plan
     ).toBe("ne nécessite pas de soins intensifs.");
     expect(
       buildDictationScaffold("La propriétaire ne veut pas prévoir un contrôle.")
-        .subjective,
+        .subjective
     ).toBe("La propriétaire ne veut pas prévoir un contrôle.");
   });
 });
@@ -157,8 +157,8 @@ describe("dictation fidelity boundary", () => {
           subjective: "toux depuis hier",
           objective: "TEMPERATURE 38.5 degrés",
         },
-        source,
-      ),
+        source
+      )
     ).not.toThrow();
   });
   it.each([
@@ -170,8 +170,8 @@ describe("dictation fidelity boundary", () => {
     expect(() =>
       assertFaithfulSoap(
         { ...source, objective: generated },
-        { ...source, objective: dictated },
-      ),
+        { ...source, objective: dictated }
+      )
     ).toThrow(SoapFidelityError);
   });
   it.each([
@@ -190,7 +190,7 @@ describe("dictation fidelity boundary", () => {
     const generate = vi
       .fn()
       .mockResolvedValueOnce(
-        JSON.stringify({ ...source, assessment: "Allergie" }),
+        JSON.stringify({ ...source, assessment: "Allergie" })
       )
       .mockResolvedValueOnce(JSON.stringify(source));
     const onRetry = vi.fn();
@@ -202,7 +202,7 @@ describe("dictation fidelity boundary", () => {
         generate,
         onRetry,
         validate: (note) => assertFaithfulSoap(note, source),
-      }),
+      })
     ).toEqual(source);
     expect(generate).toHaveBeenCalledTimes(2);
     expect(onRetry).toHaveBeenCalledWith(expect.any(SoapFidelityError));
@@ -211,7 +211,9 @@ describe("dictation fidelity boundary", () => {
 
 describe("intitulés S · O · A · P de l'app (option D)", () => {
   it("retrouve les rubriques d'une dictée guidée conservée, intitulés retirés", async () => {
-    const { guidedTranscript } = await import("@/modules/consultations/local-ai/guided-soap");
+    const { guidedTranscript } = await import(
+      "@/modules/consultations/local-ai/guided-soap"
+    );
     const answers = {
       subjective: "Fièvre et vomissements depuis hier.",
       objective: "Température 39,6, abdomen souple.",
@@ -225,14 +227,30 @@ describe("intitulés S · O · A · P de l'app (option D)", () => {
     expect(buildDictationScaffold(trace.replace(/\s+/g, " "))).toEqual(answers);
   });
   it("reconnaît la lettre seule et ignore un « A » ordinaire", () => {
-    expect(buildDictationScaffold("Toux. O · Auscultation normale. P · Contrôle demain.")).toEqual({
-      subjective: "Toux.", objective: "Auscultation normale.", assessment: "", plan: "Contrôle demain.",
+    expect(
+      buildDictationScaffold(
+        "Toux. O · Auscultation normale. P · Contrôle demain."
+      )
+    ).toEqual({
+      subjective: "Toux.",
+      objective: "Auscultation normale.",
+      assessment: "",
+      plan: "Contrôle demain.",
     });
-    expect(buildDictationScaffold("Vitamine A et fièvre.").subjective).toBe("Vitamine A et fièvre.");
+    expect(buildDictationScaffold("Vitamine A et fièvre.").subjective).toBe(
+      "Vitamine A et fièvre."
+    );
   });
   it("ne change aucun garde-fou : posologie écartée, fait déplacé refusé", () => {
-    const scaffold = buildDictationScaffold("S · Motif et antécédents Toux. P · Plan de soins Amoxicilline 20 mg/kg deux fois par jour. Contrôle dans sept jours.");
+    const scaffold = buildDictationScaffold(
+      "S · Motif et antécédents Toux. P · Plan de soins Amoxicilline 20 mg/kg deux fois par jour. Contrôle dans sept jours."
+    );
     expect(scaffold.plan).toBe("Contrôle dans sept jours.");
-    expect(() => assertFaithfulSoap({ ...scaffold, subjective: "", objective: "Toux." }, scaffold)).toThrow(SoapFidelityError);
+    expect(() =>
+      assertFaithfulSoap(
+        { ...scaffold, subjective: "", objective: "Toux." },
+        scaffold
+      )
+    ).toThrow(SoapFidelityError);
   });
 });

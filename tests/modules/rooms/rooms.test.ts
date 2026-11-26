@@ -2,7 +2,11 @@ import { DatabaseSync } from "node:sqlite";
 import { afterEach, describe, expect, it } from "vitest";
 import { SQLITE_MIGRATIONS } from "@/services/sqlite/migrations";
 import { runSqliteMigrations } from "@/services/sqlite/migration-runner";
-import { createRoomStore, roomLabel, type RoomDatabase } from "@/modules/rooms/store";
+import {
+  createRoomStore,
+  roomLabel,
+  type RoomDatabase,
+} from "@/modules/rooms/store";
 
 const databases: DatabaseSync[] = [];
 afterEach(() => {
@@ -22,7 +26,11 @@ function open() {
         db.exec(sql);
         return { rowsAffected: 0 };
       }
-      return { rowsAffected: Number(db.prepare(sql).run(...(args as (string | number | null)[])).changes) };
+      return {
+        rowsAffected: Number(
+          db.prepare(sql).run(...(args as (string | number | null)[])).changes
+        ),
+      };
     },
   };
   return { db, adapter };
@@ -55,7 +63,9 @@ describe("migration des salles", () => {
     const { adapter } = open();
     await runSqliteMigrations(adapter, SQLITE_MIGRATIONS);
     const rooms = await store(adapter).list();
-    expect(rooms.map(({ id, name }) => ({ id, name }))).toEqual([{ id: "consult-1", name: "Salle de consultation" }]);
+    expect(rooms.map(({ id, name }) => ({ id, name }))).toEqual([
+      { id: "consult-1", name: "Salle de consultation" },
+    ]);
   });
 
   it("garde la salle de chaque rendez-vous existant, sans inventer celles qui ne servent pas", async () => {
@@ -65,17 +75,23 @@ describe("migration des salles", () => {
     await runSqliteMigrations(adapter, SQLITE_MIGRATIONS);
 
     const rooms = await store(adapter).list();
-    expect(rooms.map(({ id, name, appointmentCount }) => ({ id, name, appointmentCount }))).toEqual([
+    expect(
+      rooms.map(({ id, name, appointmentCount }) => ({
+        id,
+        name,
+        appointmentCount,
+      }))
+    ).toEqual([
       { id: "consult-1", name: "Salle de consultation", appointmentCount: 2 },
       { id: "surgery", name: "Chirurgie", appointmentCount: 1 },
     ]);
     // Appointments are untouched.
-    expect(db.prepare("SELECT room FROM appointments ORDER BY id").all().map((row) => row.room)).toEqual([
-      "consult-1",
-      "consult-1",
-      "surgery",
-      null,
-    ]);
+    expect(
+      db
+        .prepare("SELECT room FROM appointments ORDER BY id")
+        .all()
+        .map((row) => row.room)
+    ).toEqual(["consult-1", "consult-1", "surgery", null]);
   });
 
   it("ajoute consult-2 seulement quand des rendez-vous l'utilisent, et nomme alors les deux", async () => {
@@ -105,11 +121,17 @@ describe("gestion des salles", () => {
     const { db, rooms } = await clinic(["consult-1", "surgery"]);
     await expect(rooms.remove("surgery")).resolves.toBe("archived");
     const list = await rooms.list();
-    expect(list.find((room) => room.id === "surgery")?.archivedAt).toBe("2026-10-19T10:00:00.000Z");
+    expect(list.find((room) => room.id === "surgery")?.archivedAt).toBe(
+      "2026-10-19T10:00:00.000Z"
+    );
     expect(roomLabel("surgery", list)).toBe("Chirurgie");
-    expect(db.prepare("SELECT room FROM appointments WHERE id = 'a1'").get()?.room).toBe("surgery");
+    expect(
+      db.prepare("SELECT room FROM appointments WHERE id = 'a1'").get()?.room
+    ).toBe("surgery");
     // Even a direct DELETE cannot orphan the appointments.
-    expect(() => db.exec("DELETE FROM rooms WHERE id = 'surgery'")).toThrow(/archivez-la/);
+    expect(() => db.exec("DELETE FROM rooms WHERE id = 'surgery'")).toThrow(
+      /archivez-la/
+    );
   });
 
   it("supprime une salle jamais utilisée", async () => {
@@ -122,8 +144,12 @@ describe("gestion des salles", () => {
 
   it("garde toujours au moins une salle active", async () => {
     const { rooms } = await clinic();
-    await expect(rooms.archive("consult-1")).rejects.toThrow(/au moins une salle active/);
-    await expect(rooms.remove("consult-1")).rejects.toThrow(/au moins une salle active/);
+    await expect(rooms.archive("consult-1")).rejects.toThrow(
+      /au moins une salle active/
+    );
+    await expect(rooms.remove("consult-1")).rejects.toThrow(
+      /au moins une salle active/
+    );
     const box = await rooms.create("Box");
     await rooms.archive("consult-1");
     expect(await rooms.defaultRoomId()).toBe(box.id);
@@ -131,12 +157,18 @@ describe("gestion des salles", () => {
 
   it("refuse deux salles actives du même nom, et libère le nom d'une salle archivée", async () => {
     const { rooms } = await clinic(["surgery"]);
-    await expect(rooms.create("chirurgie")).rejects.toThrow(/porte déjà ce nom/);
+    await expect(rooms.create("chirurgie")).rejects.toThrow(
+      /porte déjà ce nom/
+    );
     await rooms.archive("surgery");
     const second = await rooms.create("Chirurgie");
     await expect(rooms.restore("surgery")).rejects.toThrow(/porte déjà ce nom/);
-    await expect(rooms.rename(second.id, "Bloc opératoire")).resolves.toMatchObject({ name: "Bloc opératoire" });
-    await expect(rooms.restore("surgery")).resolves.toMatchObject({ archivedAt: null });
+    await expect(
+      rooms.rename(second.id, "Bloc opératoire")
+    ).resolves.toMatchObject({ name: "Bloc opératoire" });
+    await expect(rooms.restore("surgery")).resolves.toMatchObject({
+      archivedAt: null,
+    });
   });
 
   it("refuse un nom vide ou trop long", async () => {
@@ -149,7 +181,10 @@ describe("gestion des salles", () => {
     const { rooms } = await clinic();
     const box = await rooms.create("Box");
     await rooms.reorder([box.id, "consult-1"]);
-    expect((await rooms.list()).map((room) => room.id)).toEqual([box.id, "consult-1"]);
+    expect((await rooms.list()).map((room) => room.id)).toEqual([
+      box.id,
+      "consult-1",
+    ]);
     expect(await rooms.defaultRoomId()).toBe(box.id);
   });
 });

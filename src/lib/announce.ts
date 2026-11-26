@@ -16,7 +16,10 @@ export function announce(text: string, doc: Document = document) {
   }
   region.textContent = "";
   const target = region;
-  (doc.defaultView?.requestAnimationFrame ?? ((callback: () => void) => setTimeout(callback, 0)))(() => {
+  (
+    doc.defaultView?.requestAnimationFrame ??
+    ((callback: () => void) => setTimeout(callback, 0))
+  )(() => {
     target.textContent = text;
   });
 }

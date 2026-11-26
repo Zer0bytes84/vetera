@@ -27,7 +27,9 @@ const end = new Date("2026-10-14T00:00:00Z");
 beforeEach(() => {
   vi.clearAllMocks();
   harness.select.mockImplementation((sql: string) =>
-    Promise.resolve(sql.includes("LEFT JOIN invoices") ? [{ id: "done" }] : savedRows),
+    Promise.resolve(
+      sql.includes("LEFT JOIN invoices") ? [{ id: "done" }] : savedRows
+    )
   );
   harness.bill.mockResolvedValue({ id: "care-invoice:done" });
 });
@@ -48,7 +50,11 @@ it("garde tous les soins visibles si leur facturation échoue puis retente à la
 
 it("la panne d’un soin n’empêche pas la reprise des autres facturations", async () => {
   harness.select.mockImplementation((sql: string) =>
-    Promise.resolve(sql.includes("LEFT JOIN invoices") ? [{ id: "done" }, { id: "another" }] : savedRows),
+    Promise.resolve(
+      sql.includes("LEFT JOIN invoices")
+        ? [{ id: "done" }, { id: "another" }]
+        : savedRows
+    )
   );
   harness.bill.mockRejectedValueOnce(new Error("Échec du premier soin"));
   await expect(careTasksService.list(start, end)).resolves.toEqual(savedRows);

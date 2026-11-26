@@ -58,7 +58,11 @@ const options = (now = "2026-10-18T10:00:00.000Z") => ({
 function otite(): PrescriptionTemplate {
   return upsertTemplate(
     [],
-    { name: "Otite standard", items: [metacam, clamoxyl], diagnosis: "Otite externe" },
+    {
+      name: "Otite standard",
+      items: [metacam, clamoxyl],
+      diagnosis: "Otite externe",
+    },
     options()
   ).saved;
 }
@@ -99,16 +103,20 @@ describe("enregistrer un modèle", () => {
   });
 
   it("refuse un nom vide ou une ordonnance sans médicament", () => {
-    expect(() => upsertTemplate([], { name: "  ", items: [metacam] }, options())).toThrow(
-      "nom"
-    );
-    expect(() => upsertTemplate([], { name: "Vide", items: [] }, options())).toThrow(
-      "au moins un médicament"
-    );
+    expect(() =>
+      upsertTemplate([], { name: "  ", items: [metacam] }, options())
+    ).toThrow("nom");
+    expect(() =>
+      upsertTemplate([], { name: "Vide", items: [] }, options())
+    ).toThrow("au moins un médicament");
   });
 
   it("remplace le modèle du même nom (casse et accents ignorés) en gardant son identifiant", () => {
-    const first = upsertTemplate([], { name: "Gastro-entérite", items: [metacam] }, options());
+    const first = upsertTemplate(
+      [],
+      { name: "Gastro-entérite", items: [metacam] },
+      options()
+    );
     const second = upsertTemplate(
       first.templates,
       { name: "GASTRO-ENTERITE", items: [clamoxyl] },
@@ -119,26 +127,51 @@ describe("enregistrer un modèle", () => {
     expect(second.saved.id).toBe(first.saved.id);
     expect(second.saved.createdAt).toBe("2026-10-18T10:00:00.000Z");
     expect(second.saved.updatedAt).toBe("2026-10-19T08:00:00.000Z");
-    expect(second.saved.items.map((it) => it.medicationName)).toEqual(["Clamoxyl"]);
+    expect(second.saved.items.map((it) => it.medicationName)).toEqual([
+      "Clamoxyl",
+    ]);
   });
 });
 
 describe("gérer les modèles", () => {
   it("renomme, refuse un doublon de nom, supprime", () => {
-    const a = upsertTemplate([], { name: "Otite standard", items: [metacam] }, options());
-    const b = upsertTemplate(a.templates, { name: "Post-chirurgie", items: [metacam] }, options());
-    const renamed = renameTemplate(b.templates, a.saved.id, "Otite externe", "2026-10-20T00:00:00.000Z");
+    const a = upsertTemplate(
+      [],
+      { name: "Otite standard", items: [metacam] },
+      options()
+    );
+    const b = upsertTemplate(
+      a.templates,
+      { name: "Post-chirurgie", items: [metacam] },
+      options()
+    );
+    const renamed = renameTemplate(
+      b.templates,
+      a.saved.id,
+      "Otite externe",
+      "2026-10-20T00:00:00.000Z"
+    );
     expect(findTemplateByName(renamed, "otite externe")?.id).toBe(a.saved.id);
-    expect(() => renameTemplate(renamed, a.saved.id, "post-chirurgie", "x")).toThrow("déjà ce nom");
-    expect(() => renameTemplate(renamed, "inconnu", "Autre", "x")).toThrow("n'existe plus");
-    expect(removeTemplate(renamed, a.saved.id).map((tpl) => tpl.name)).toEqual(["Post-chirurgie"]);
+    expect(() =>
+      renameTemplate(renamed, a.saved.id, "post-chirurgie", "x")
+    ).toThrow("déjà ce nom");
+    expect(() => renameTemplate(renamed, "inconnu", "Autre", "x")).toThrow(
+      "n'existe plus"
+    );
+    expect(removeTemplate(renamed, a.saved.id).map((tpl) => tpl.name)).toEqual([
+      "Post-chirurgie",
+    ]);
   });
 
   it("trie par ordre alphabétique français", () => {
     const names = ["Post-chirurgie", "Écorchure", "abcès", "Gastro-entérite"];
     let templates: PrescriptionTemplate[] = [];
     for (const name of names) {
-      templates = upsertTemplate(templates, { name, items: [metacam] }, options()).templates;
+      templates = upsertTemplate(
+        templates,
+        { name, items: [metacam] },
+        options()
+      ).templates;
     }
     expect(sortTemplates(templates).map((tpl) => tpl.name)).toEqual([
       "abcès",
@@ -154,11 +187,22 @@ describe("appliquer un modèle", () => {
     const template = otite();
     const lines = instantiateTemplateItems(template, 2, (item, sortOrder) => {
       const computation = computeDose(
-        { unit: item.dosageUnit, min: item.dosagePerKg, max: item.dosagePerKg, range: false },
+        {
+          unit: item.dosageUnit,
+          min: item.dosagePerKg,
+          max: item.dosagePerKg,
+          range: false,
+        },
         4.2,
         item.concentrationMgPerMl
       );
-      return { ...item, id: `line_${sortOrder}`, sortOrder, mg: computation.computedMg, ml: computation.computedMl };
+      return {
+        ...item,
+        id: `line_${sortOrder}`,
+        sortOrder,
+        mg: computation.computedMg,
+        ml: computation.computedMl,
+      };
     });
     expect(lines.map((line) => line.sortOrder)).toEqual([2, 3]);
     expect(lines[0].mg).toBeCloseTo(0.42);
@@ -170,14 +214,19 @@ describe("appliquer un modèle", () => {
     const template = otite();
     const alerts = checkTemplateSafety({
       draft: [],
-      patient: { allergies: "Pénicillines", chronicConditions: "Insuffisance renale debutante" },
+      patient: {
+        allergies: "Pénicillines",
+        chronicConditions: "Insuffisance renale debutante",
+      },
       template,
     });
     expect(alerts.map((alert) => [alert.medicationName, alert.level])).toEqual([
       ["Metacam", "contraindication"],
       ["Clamoxyl", "contraindication"],
     ]);
-    expect(checkTemplateSafety({ draft: [], patient: {}, template })).toEqual([]);
+    expect(checkTemplateSafety({ draft: [], patient: {}, template })).toEqual(
+      []
+    );
   });
 
   it("signale les interactions avec l'ordonnance en cours et les traitements actifs", () => {
@@ -188,15 +237,28 @@ describe("appliquer un modèle", () => {
       template,
     });
     expect(withDraft).toHaveLength(1);
-    expect(withDraft[0]).toMatchObject({ level: "interaction", medicationName: "Metacam" });
+    expect(withDraft[0]).toMatchObject({
+      level: "interaction",
+      medicationName: "Metacam",
+    });
 
     const withActive = checkTemplateSafety({
-      active: [{ key: "a1", name: "Rimadyl", aliases: ["Carprofène"], className: "AINS", prescribedOn: "2026-10-15" }],
+      active: [
+        {
+          key: "a1",
+          name: "Rimadyl",
+          aliases: ["Carprofène"],
+          className: "AINS",
+          prescribedOn: "2026-10-15",
+        },
+      ],
       draft: [],
       patient: null,
       template,
     });
-    expect(withActive.some((alert) => alert.other?.origin === "traitement")).toBe(true);
+    expect(
+      withActive.some((alert) => alert.other?.origin === "traitement")
+    ).toBe(true);
   });
 });
 
@@ -223,7 +285,11 @@ describe("stockage local", () => {
     const raw = JSON.stringify([
       { id: "x", name: "", items: [metacam] },
       { id: "y", name: "Sans ligne", items: [] },
-      { id: "z", name: "Valide", items: [{ ...metacam, dosageUnit: "g/kg" }, { medicationName: "" }] },
+      {
+        id: "z",
+        name: "Valide",
+        items: [{ ...metacam, dosageUnit: "g/kg" }, { medicationName: "" }],
+      },
       null,
     ]);
     const parsed = parseTemplates(raw);

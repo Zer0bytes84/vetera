@@ -61,11 +61,19 @@
   font-weight: 450;
   outline: none;
 }
-.command-palette-input::placeholder { color: color-mix(in oklab, var(--muted-foreground), transparent 15%); }
+.command-palette-input::placeholder {
+  color: color-mix(in oklab, var(--muted-foreground), transparent 15%);
+}
 
 /* The three filters: words on the field, the chosen one on the band's grey. */
-.command-palette-filters { flex: none; cursor: default; }
-:root:root .command-palette .command-palette-filters [data-tabs-style="segmented"] {
+.command-palette-filters {
+  flex: none;
+  cursor: default;
+}
+:root:root
+  .command-palette
+  .command-palette-filters
+  [data-tabs-style="segmented"] {
   display: flex;
   height: 32px !important;
   min-height: 32px !important;
@@ -75,7 +83,11 @@
   background: transparent !important;
   box-shadow: none !important;
 }
-:root:root .command-palette .command-palette-filters [data-tabs-style="segmented"] > [data-slot="tabs-trigger"] {
+:root:root
+  .command-palette
+  .command-palette-filters
+  [data-tabs-style="segmented"]
+  > [data-slot="tabs-trigger"] {
   height: 32px !important;
   min-height: 32px !important;
   padding-inline: 10px !important;
@@ -87,8 +99,22 @@
   font-size: 13px !important;
   font-weight: 500 !important;
 }
-:root:root .command-palette .command-palette-filters [data-tabs-style="segmented"] > [data-slot="tabs-trigger"]::after { display: none !important; }
-:root:root .command-palette .command-palette-filters [data-tabs-style="segmented"] > [data-slot="tabs-trigger"]:is([data-state="active"], [aria-selected="true"], [data-active]:not([data-active="false"])) {
+:root:root
+  .command-palette
+  .command-palette-filters
+  [data-tabs-style="segmented"]
+  > [data-slot="tabs-trigger"]::after {
+  display: none !important;
+}
+:root:root
+  .command-palette
+  .command-palette-filters
+  [data-tabs-style="segmented"]
+  > [data-slot="tabs-trigger"]:is(
+    [data-state="active"],
+    [aria-selected="true"],
+    [data-active]:not([data-active="false"])
+  ) {
   background: var(--card-band) !important;
   color: var(--foreground) !important;
 }
@@ -105,13 +131,24 @@
   place-items: center;
   border-radius: 10px;
   color: var(--muted-foreground);
-  transition: background-color 120ms ease, color 120ms ease;
+  transition:
+    background-color 120ms ease,
+    color 120ms ease;
 }
-.command-palette-clear svg { width: 18px; height: 18px; }
+.command-palette-clear svg {
+  width: 18px;
+  height: 18px;
+}
 @media (hover: hover) and (pointer: fine) {
-  .command-palette-clear:hover { background: var(--card-band); color: var(--foreground); }
+  .command-palette-clear:hover {
+    background: var(--card-band);
+    color: var(--foreground);
+  }
 }
-.command-palette-clear:focus-visible { outline: 2px solid var(--ring); outline-offset: 1px; }
+.command-palette-clear:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 1px;
+}
 
 /* ---------- Keys: a fill, no ring ---------- */
 :root:root .command-palette [data-slot="kbd"] {
@@ -127,7 +164,10 @@
   font-size: 12px;
   font-weight: 500;
 }
-.command-palette-esc { flex: none; margin-inline-end: 6px; }
+.command-palette-esc {
+  flex: none;
+  margin-inline-end: 6px;
+}
 
 /* ---------- The results ---------- */
 .command-palette-list {
@@ -142,9 +182,15 @@
   scroll-padding-block: var(--card-frame);
   scrollbar-width: none;
 }
-.command-palette-list::-webkit-scrollbar { display: none; }
+.command-palette-list::-webkit-scrollbar {
+  display: none;
+}
 /* cmdk's list measures its height on an inner sizer: no transition, the panel follows the results at once. */
-.command-palette-list > [cmdk-list-sizer] { display: flex; flex-direction: column; gap: 4px; }
+.command-palette-list > [cmdk-list-sizer] {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
 
 .command-palette [cmdk-group-heading] {
   padding: 10px 10px 6px;
@@ -154,7 +200,10 @@
   line-height: 16px;
   letter-spacing: 0.01em;
 }
-.command-palette [cmdk-group-items] { display: flex; flex-direction: column; }
+.command-palette [cmdk-group-items] {
+  display: flex;
+  flex-direction: column;
+}
 
 /* A row: the icon on a quiet fill, title over a second line, the hint at the end. */
 .command-palette-item {
@@ -170,8 +219,12 @@
   outline: none;
   user-select: none;
 }
-.command-palette-item[data-selected="true"] { background: var(--card-band); }
-.command-palette-item[data-disabled="true"] { cursor: default; }
+.command-palette-item[data-selected="true"] {
+  background: var(--card-band);
+}
+.command-palette-item[data-disabled="true"] {
+  cursor: default;
+}
 
 .command-palette-glyph {
   display: grid;
@@ -183,7 +236,10 @@
   background: color-mix(in oklab, var(--foreground) 5%, transparent);
   color: var(--muted-foreground);
 }
-.command-palette-glyph svg { width: 18px; height: 18px; }
+.command-palette-glyph svg {
+  width: 18px;
+  height: 18px;
+}
 .command-palette-item[data-selected="true"] .command-palette-glyph {
   background: color-mix(in oklab, var(--foreground) 7%, transparent);
   color: var(--foreground);
@@ -204,7 +260,12 @@
   font-weight: 550;
   line-height: 20px;
 }
-.command-palette-title-text { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.command-palette-title-text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 .command-palette-sub {
   overflow: hidden;
   color: var(--muted-foreground);
@@ -213,7 +274,9 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.command-palette-reference { font-variant-numeric: tabular-nums; }
+.command-palette-reference {
+  font-variant-numeric: tabular-nums;
+}
 :root:root .command-palette .command-palette-status {
   height: 18px;
   flex: none;
@@ -240,12 +303,19 @@
   font-size: 12px;
   opacity: 0;
 }
-.command-palette-item[data-selected="true"] > :is(.command-palette-hint, .command-palette-shortcut) { opacity: 1; }
+.command-palette-item[data-selected="true"]
+  > :is(.command-palette-hint, .command-palette-shortcut) {
+  opacity: 1;
+}
 
 /* The passage found leads: the excerpt in ink on two lines, the words found marked by a fill, the record and its
    section quiet below. */
-.command-palette-passage { align-items: flex-start; }
-.command-palette-passage .command-palette-glyph { margin-top: 2px; }
+.command-palette-passage {
+  align-items: flex-start;
+}
+.command-palette-passage .command-palette-glyph {
+  margin-top: 2px;
+}
 .command-palette-excerpt {
   display: -webkit-box;
   overflow: hidden;
@@ -263,13 +333,33 @@
   color: var(--foreground);
   font-weight: 600;
 }
-.dark .command-palette-excerpt mark { background: color-mix(in oklab, var(--primary) 30%, transparent); }
-.command-palette-source { color: var(--foreground); font-weight: 500; }
+.dark .command-palette-excerpt mark {
+  background: color-mix(in oklab, var(--primary) 30%, transparent);
+}
+.command-palette-source {
+  color: var(--foreground);
+  font-weight: 500;
+}
 
-.command-palette-loading { color: var(--muted-foreground); font-size: 13px; }
-.command-palette-spinner { width: 16px; height: 16px; animation: command-palette-spin 900ms linear infinite; }
-@keyframes command-palette-spin { to { transform: rotate(360deg); } }
-@media (prefers-reduced-motion: reduce) { .command-palette-spinner { animation: none; } }
+.command-palette-loading {
+  color: var(--muted-foreground);
+  font-size: 13px;
+}
+.command-palette-spinner {
+  width: 16px;
+  height: 16px;
+  animation: command-palette-spin 900ms linear infinite;
+}
+@keyframes command-palette-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .command-palette-spinner {
+    animation: none;
+  }
+}
 
 /* ---------- Quick actions as tiles (nothing typed) ---------- */
 .command-palette-actions[data-layout="tiles"] [cmdk-group-items] {
@@ -278,7 +368,9 @@
   gap: var(--card-frame);
 }
 @container (max-width: 560px) {
-  .command-palette-actions[data-layout="tiles"] [cmdk-group-items] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .command-palette-actions[data-layout="tiles"] [cmdk-group-items] {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 .command-palette-actions[data-layout="tiles"] .command-palette-item {
   position: relative;
@@ -290,7 +382,8 @@
   padding: 10px 12px;
   background: color-mix(in oklab, var(--card-band) 70%, var(--card-inset));
 }
-.command-palette-actions[data-layout="tiles"] .command-palette-item[data-selected="true"] {
+.command-palette-actions[data-layout="tiles"]
+  .command-palette-item[data-selected="true"] {
   background: color-mix(in oklab, var(--card-band), var(--foreground) 4%);
 }
 .command-palette-actions[data-layout="tiles"] .command-palette-glyph {
@@ -300,17 +393,38 @@
   background: transparent !important;
   color: var(--foreground);
 }
-.command-palette-actions[data-layout="tiles"] .command-palette-glyph svg { width: 20px; height: 20px; }
-.command-palette-actions[data-layout="tiles"] .command-palette-text { flex: none; width: 100%; }
-.command-palette-actions[data-layout="tiles"] .command-palette-title { font-size: 13px; font-weight: 550; line-height: 17px; }
-.command-palette-actions[data-layout="tiles"] .command-palette-title-text { white-space: normal; overflow-wrap: anywhere; }
-.command-palette-actions[data-layout="tiles"] .command-palette-sub { display: none; }
-.command-palette-actions[data-layout="tiles"] .command-palette-item > :is(.command-palette-shortcut, .command-palette-hint) {
+.command-palette-actions[data-layout="tiles"] .command-palette-glyph svg {
+  width: 20px;
+  height: 20px;
+}
+.command-palette-actions[data-layout="tiles"] .command-palette-text {
+  flex: none;
+  width: 100%;
+}
+.command-palette-actions[data-layout="tiles"] .command-palette-title {
+  font-size: 13px;
+  font-weight: 550;
+  line-height: 17px;
+}
+.command-palette-actions[data-layout="tiles"] .command-palette-title-text {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.command-palette-actions[data-layout="tiles"] .command-palette-sub {
+  display: none;
+}
+.command-palette-actions[data-layout="tiles"]
+  .command-palette-item
+  > :is(.command-palette-shortcut, .command-palette-hint) {
   position: absolute;
   inset-block-start: 10px;
   inset-inline-end: 10px;
 }
-.command-palette-actions[data-layout="tiles"] .command-palette-item > .command-palette-shortcut { opacity: 1; }
+.command-palette-actions[data-layout="tiles"]
+  .command-palette-item
+  > .command-palette-shortcut {
+  opacity: 1;
+}
 
 /* ---------- Nothing found ---------- */
 .command-palette-empty {
@@ -331,9 +445,21 @@
   background: var(--card-band);
   color: var(--muted-foreground);
 }
-.command-palette-empty-glyph svg { width: 20px; height: 20px; }
-.command-palette-empty-title { color: var(--foreground); font-size: 14px; font-weight: 550; }
-.command-palette-empty-hint { max-width: 40ch; color: var(--muted-foreground); font-size: 13px; line-height: 18px; }
+.command-palette-empty-glyph svg {
+  width: 20px;
+  height: 20px;
+}
+.command-palette-empty-title {
+  color: var(--foreground);
+  font-size: 14px;
+  font-weight: 550;
+}
+.command-palette-empty-hint {
+  max-width: 40ch;
+  color: var(--muted-foreground);
+  font-size: 13px;
+  line-height: 18px;
+}
 .command-palette-empty-action {
   display: inline-flex;
   height: 36px;
@@ -348,11 +474,19 @@
   font-weight: 500;
   transition: background-color 120ms ease;
 }
-.command-palette-empty-action svg { width: 16px; height: 16px; }
-@media (hover: hover) and (pointer: fine) {
-  .command-palette-empty-action:hover { background: color-mix(in oklab, var(--card-band), var(--foreground) 5%); }
+.command-palette-empty-action svg {
+  width: 16px;
+  height: 16px;
 }
-.command-palette-empty-action:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+@media (hover: hover) and (pointer: fine) {
+  .command-palette-empty-action:hover {
+    background: color-mix(in oklab, var(--card-band), var(--foreground) 5%);
+  }
+}
+.command-palette-empty-action:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
 
 /* ---------- Footer, on the band ---------- */
 .command-palette-footer {
@@ -365,12 +499,30 @@
   color: var(--muted-foreground);
   font-size: 12px;
 }
-.command-palette-footer > span { display: inline-flex; align-items: center; gap: 6px; }
-:root:root .command-palette .command-palette-footer [data-slot="kbd"] { height: 20px; min-width: 20px; padding-inline: 4px; }
-@media (max-width: 639px) { .command-palette-footer-close { display: none !important; } }
+.command-palette-footer > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+:root:root .command-palette .command-palette-footer [data-slot="kbd"] {
+  height: 20px;
+  min-width: 20px;
+  padding-inline: 4px;
+}
+@media (max-width: 639px) {
+  .command-palette-footer-close {
+    display: none !important;
+  }
+}
 
 /* Narrow sheet: the filters go under the field. */
 @container (max-width: 520px) {
-  .command-palette-field { flex-wrap: wrap; row-gap: 4px; }
-  .command-palette-filters { order: 3; flex-basis: 100%; }
+  .command-palette-field {
+    flex-wrap: wrap;
+    row-gap: 4px;
+  }
+  .command-palette-filters {
+    order: 3;
+    flex-basis: 100%;
+  }
 }

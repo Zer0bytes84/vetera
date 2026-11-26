@@ -107,7 +107,10 @@ describe("license access lifecycle", () => {
     mock.verify.mockRejectedValue(new Error("unsigned"));
     mock.activate.mockRejectedValue(new Error("offline"));
     expect((await checkLicenseAccess()).allowed).toBe(false);
-    expect(mock.activate.mock.calls[0].slice(0, 2)).toEqual([lease.email, "legacy"]);
+    expect(mock.activate.mock.calls[0].slice(0, 2)).toEqual([
+      lease.email,
+      "legacy",
+    ]);
   });
   it("renews online and clears denial only after a verified response", async () => {
     mock.state.denied = "expired";
@@ -149,12 +152,24 @@ describe("background rechecks after the startup check", () => {
     mock.renew.mockClear();
     mock.save.mockClear();
     expect(recheckLicenseInBackground("visibility", now + 60_000)).toBeNull();
-    expect(recheckLicenseInBackground("interval", now + LICENSE_LOCAL_RECHECK_MS - 1)).toBeNull();
+    expect(
+      recheckLicenseInBackground("interval", now + LICENSE_LOCAL_RECHECK_MS - 1)
+    ).toBeNull();
     at(LICENSE_LOCAL_RECHECK_MS);
-    expect((await recheckLicenseInBackground("interval", now + LICENSE_LOCAL_RECHECK_MS))?.allowed).toBe(true);
+    expect(
+      (
+        await recheckLicenseInBackground(
+          "interval",
+          now + LICENSE_LOCAL_RECHECK_MS
+        )
+      )?.allowed
+    ).toBe(true);
     expect(mock.renew).not.toHaveBeenCalled();
     at(LICENSE_ONLINE_RECHECK_MS);
-    await recheckLicenseInBackground("visibility", now + LICENSE_ONLINE_RECHECK_MS);
+    await recheckLicenseInBackground(
+      "visibility",
+      now + LICENSE_ONLINE_RECHECK_MS
+    );
     expect(mock.renew).toHaveBeenCalledTimes(1);
     expect(mock.renew.mock.calls[0][2]).toBe(LICENSE_BACKGROUND_TIMEOUT_MS);
   });
@@ -162,9 +177,14 @@ describe("background rechecks after the startup check", () => {
   it("applies a revocation at the next server recheck", async () => {
     mock.renew.mockResolvedValue({ activationToken: "new" });
     await checkLicenseAccess(true);
-    mock.renew.mockRejectedValue(new LicenseActivationError("Révoquée", 403, "REVOKED"));
+    mock.renew.mockRejectedValue(
+      new LicenseActivationError("Révoquée", 403, "REVOKED")
+    );
     at(LICENSE_ONLINE_RECHECK_MS);
-    const result = await recheckLicenseInBackground("interval", now + LICENSE_ONLINE_RECHECK_MS);
+    const result = await recheckLicenseInBackground(
+      "interval",
+      now + LICENSE_ONLINE_RECHECK_MS
+    );
     expect(result?.allowed).toBe(false);
     expect(result?.message).toBe("Révoquée");
     expect(getCachedLicenseAccess()).toBeNull();
@@ -178,7 +198,10 @@ describe("background rechecks after the startup check", () => {
     at(LICENSE_LOCAL_RECHECK_MS);
     expect((await checkLicenseAccess()).allowed).toBe(false);
     // A background recheck that cannot run decides nothing: the access holds.
-    const kept = await recheckLicenseInBackground("interval", now + LICENSE_LOCAL_RECHECK_MS);
+    const kept = await recheckLicenseInBackground(
+      "interval",
+      now + LICENSE_LOCAL_RECHECK_MS
+    );
     expect(kept?.allowed).toBe(true);
     // Past the signed lease, nothing is kept.
     at(lease.leaseUntil);
@@ -188,13 +211,21 @@ describe("background rechecks after the startup check", () => {
 
   it("stays offline (banner, reconnection retry) until the server answers again", async () => {
     mock.renew.mockRejectedValue(new Error("offline"));
-    expect((await checkLicenseAccess(true)).offlineUntil).toBe(lease.leaseUntil);
+    expect((await checkLicenseAccess(true)).offlineUntil).toBe(
+      lease.leaseUntil
+    );
     at(LICENSE_LOCAL_RECHECK_MS);
-    const local = await recheckLicenseInBackground("interval", now + LICENSE_LOCAL_RECHECK_MS);
+    const local = await recheckLicenseInBackground(
+      "interval",
+      now + LICENSE_LOCAL_RECHECK_MS
+    );
     expect(local?.offlineUntil).toBe(lease.leaseUntil);
     mock.renew.mockResolvedValue({ activationToken: "new" });
     at(LICENSE_LOCAL_RECHECK_MS + 1000);
-    const back = await recheckLicenseInBackground("online", now + LICENSE_LOCAL_RECHECK_MS + 1000);
+    const back = await recheckLicenseInBackground(
+      "online",
+      now + LICENSE_LOCAL_RECHECK_MS + 1000
+    );
     expect(back?.offlineUntil).toBeUndefined();
     expect(mock.renew).toHaveBeenCalledTimes(2);
   });

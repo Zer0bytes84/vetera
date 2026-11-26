@@ -49,7 +49,9 @@ describe("weight change between the last two weighings", () => {
   });
 
   it("shows nothing with a single weighing or a negligible change", () => {
-    expect(describeWeightChange([entry("a", 5, "2026-08-02T00:00:00.000Z")]).kind).toBe("none");
+    expect(
+      describeWeightChange([entry("a", 5, "2026-08-02T00:00:00.000Z")]).kind
+    ).toBe("none");
     expect(
       describeWeightChange([
         entry("a", 5, "2026-08-01T00:00:00.000Z"),
@@ -61,7 +63,12 @@ describe("weight change between the last two weighings", () => {
   it("orders same-day weighings by the time they were recorded", () => {
     const sorted = sortWeightEntries([
       entry("later", 6, "2026-08-02T00:00:00.000Z", "2026-08-02T10:00:00.000Z"),
-      entry("earlier", 5, "2026-08-02T00:00:00.000Z", "2026-08-02T08:00:00.000Z"),
+      entry(
+        "earlier",
+        5,
+        "2026-08-02T00:00:00.000Z",
+        "2026-08-02T08:00:00.000Z"
+      ),
     ]);
     expect(sorted.map((item) => item.id)).toEqual(["earlier", "later"]);
   });

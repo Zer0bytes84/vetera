@@ -33,24 +33,37 @@ function open() {
 }
 
 const references = (db: DatabaseSync) =>
-  db.prepare("SELECT patient_id, reference FROM patient_references ORDER BY sequence_number").all();
+  db
+    .prepare(
+      "SELECT patient_id, reference FROM patient_references ORDER BY sequence_number"
+    )
+    .all();
 const addPatient = (db: DatabaseSync, id: string, createdAt?: string) =>
   db
-    .prepare("INSERT INTO patients(id, owner_id, name, species, created_at) VALUES (?, 'o1', ?, 'Chien', COALESCE(?, CURRENT_TIMESTAMP))")
+    .prepare(
+      "INSERT INTO patients(id, owner_id, name, species, created_at) VALUES (?, 'o1', ?, 'Chien', COALESCE(?, CURRENT_TIMESTAMP))"
+    )
     .run(id, id, createdAt ?? null);
 
 describe("références patient", () => {
   it("attribue les références des patients existants une fois, dans l'ordre de création", async () => {
     const { db, adapter } = open();
-    await runSqliteMigrations(adapter, SQLITE_MIGRATIONS.filter(({ version }) => version < "041"));
-    db.exec("INSERT INTO owners(id, first_name, last_name, phone) VALUES ('o1', 'Amina', 'Haddad', '')");
+    await runSqliteMigrations(
+      adapter,
+      SQLITE_MIGRATIONS.filter(({ version }) => version < "041")
+    );
+    db.exec(
+      "INSERT INTO owners(id, first_name, last_name, phone) VALUES ('o1', 'Amina', 'Haddad', '')"
+    );
     // Inserted out of order: the creation date decides, then the insertion order.
     addPatient(db, "troisieme", "2026-05-01 10:00:00");
     addPatient(db, "premier", "2026-04-01 10:00:00");
     addPatient(db, "deuxieme-a", "2026-04-15 10:00:00");
     addPatient(db, "deuxieme-b", "2026-04-15 10:00:00");
 
-    await expect(runSqliteMigrations(adapter, SQLITE_MIGRATIONS)).resolves.toEqual(["041", "042", "043", "044", "045"]);
+    await expect(
+      runSqliteMigrations(adapter, SQLITE_MIGRATIONS)
+    ).resolves.toEqual(["041", "042", "043", "044", "045"]);
 
     expect(references(db)).toEqual([
       { patient_id: "premier", reference: "ID-0001" },
@@ -58,15 +71,21 @@ describe("références patient", () => {
       { patient_id: "deuxieme-b", reference: "ID-0003" },
       { patient_id: "troisieme", reference: "ID-0004" },
     ]);
-    expect(db.prepare("SELECT last_number FROM patient_reference_counter").get()).toEqual({ last_number: 4 });
-    await expect(runSqliteMigrations(adapter, SQLITE_MIGRATIONS)).resolves.toEqual([]);
+    expect(
+      db.prepare("SELECT last_number FROM patient_reference_counter").get()
+    ).toEqual({ last_number: 4 });
+    await expect(
+      runSqliteMigrations(adapter, SQLITE_MIGRATIONS)
+    ).resolves.toEqual([]);
     expect(references(db)).toHaveLength(4);
   });
 
   it("attribue la suivante à la création et ne réutilise jamais un numéro supprimé", async () => {
     const { db, adapter } = open();
     await runSqliteMigrations(adapter, SQLITE_MIGRATIONS);
-    db.exec("INSERT INTO owners(id, first_name, last_name, phone) VALUES ('o1', 'Amina', 'Haddad', '')");
+    db.exec(
+      "INSERT INTO owners(id, first_name, last_name, phone) VALUES ('o1', 'Amina', 'Haddad', '')"
+    );
     addPatient(db, "rex");
     addPatient(db, "mia");
     db.exec("DELETE FROM patients WHERE id = 'mia'");
@@ -77,7 +96,11 @@ describe("références patient", () => {
       { patient_id: "mia", reference: "ID-0002" },
       { patient_id: "zou", reference: "ID-0003" },
     ]);
-    expect(db.prepare(`${PATIENTS_WITH_REFERENCE_SQL} WHERE patients.id = ?`).get("zou")).toMatchObject({
+    expect(
+      db
+        .prepare(`${PATIENTS_WITH_REFERENCE_SQL} WHERE patients.id = ?`)
+        .get("zou")
+    ).toMatchObject({
       name: "zou",
       reference: "ID-0003",
     });
@@ -86,20 +109,36 @@ describe("références patient", () => {
   it("refuse toute modification, suppression ou numéro hors compteur", async () => {
     const { db, adapter } = open();
     await runSqliteMigrations(adapter, SQLITE_MIGRATIONS);
-    db.exec("INSERT INTO owners(id, first_name, last_name, phone) VALUES ('o1', 'Amina', 'Haddad', '')");
+    db.exec(
+      "INSERT INTO owners(id, first_name, last_name, phone) VALUES ('o1', 'Amina', 'Haddad', '')"
+    );
     addPatient(db, "rex");
 
-    expect(() => db.exec("UPDATE patient_references SET reference = 'ID-0009'")).toThrow("ne se modifie pas");
-    expect(() => db.exec("DELETE FROM patient_references")).toThrow("ne se supprime pas");
-    expect(() => db.exec("UPDATE patient_reference_counter SET last_number = 0")).toThrow("d'un pas");
-    expect(() => db.exec("DELETE FROM patient_reference_counter")).toThrow("ne se supprime pas");
     expect(() =>
-      db.exec("INSERT INTO patient_references(patient_id, sequence_number, reference) VALUES ('x', 7, 'ID-0007')")
+      db.exec("UPDATE patient_references SET reference = 'ID-0009'")
+    ).toThrow("ne se modifie pas");
+    expect(() => db.exec("DELETE FROM patient_references")).toThrow(
+      "ne se supprime pas"
+    );
+    expect(() =>
+      db.exec("UPDATE patient_reference_counter SET last_number = 0")
+    ).toThrow("d'un pas");
+    expect(() => db.exec("DELETE FROM patient_reference_counter")).toThrow(
+      "ne se supprime pas"
+    );
+    expect(() =>
+      db.exec(
+        "INSERT INTO patient_references(patient_id, sequence_number, reference) VALUES ('x', 7, 'ID-0007')"
+      )
     ).toThrow("vient toujours du compteur");
     expect(() =>
-      db.exec("INSERT INTO patient_references(patient_id, sequence_number, reference) VALUES ('x', 1, 'ID-0001')")
+      db.exec(
+        "INSERT INTO patient_references(patient_id, sequence_number, reference) VALUES ('x', 1, 'ID-0001')"
+      )
     ).toThrow(/UNIQUE/);
-    expect(references(db)).toEqual([{ patient_id: "rex", reference: "ID-0001" }]);
+    expect(references(db)).toEqual([
+      { patient_id: "rex", reference: "ID-0001" },
+    ]);
   });
 
   it("garde le format au-delà de quatre chiffres", () => {
@@ -108,7 +147,14 @@ describe("références patient", () => {
   });
 
   it("reconnaît la référence tapée telle quelle", () => {
-    for (const typed of ["0011", "ID-0011", "ID0011", "id-0011", " id 0011 ", "ID-11"]) {
+    for (const typed of [
+      "0011",
+      "ID-0011",
+      "ID0011",
+      "id-0011",
+      " id 0011 ",
+      "ID-11",
+    ]) {
       expect(matchesPatientReference("ID-0011", typed)).toBe(true);
     }
     for (const typed of ["11", "0012", "Rex", "ID-", ""]) {
@@ -116,19 +162,31 @@ describe("références patient", () => {
     }
     expect(patientReferenceNumber("0011")).toBe(11);
     const index = patientReferenceSearchText("ID-0011").toLowerCase();
-    for (const typed of ["0011", "id-0011", "id0011"]) expect(index).toContain(typed);
+    for (const typed of ["0011", "id-0011", "id0011"])
+      expect(index).toContain(typed);
   });
 });
 
 describe("contention", () => {
   it("ajoute la colonne sans toucher aux patients existants", async () => {
     const { db, adapter } = open();
-    await runSqliteMigrations(adapter, SQLITE_MIGRATIONS.filter(({ version }) => version < "042"));
-    db.exec("INSERT INTO owners(id, first_name, last_name, phone) VALUES ('o1', 'Amina', 'Haddad', '')");
+    await runSqliteMigrations(
+      adapter,
+      SQLITE_MIGRATIONS.filter(({ version }) => version < "042")
+    );
+    db.exec(
+      "INSERT INTO owners(id, first_name, last_name, phone) VALUES ('o1', 'Amina', 'Haddad', '')"
+    );
     addPatient(db, "rex");
-    await expect(runSqliteMigrations(adapter, SQLITE_MIGRATIONS)).resolves.toEqual(["042", "043", "044", "045"]);
+    await expect(
+      runSqliteMigrations(adapter, SQLITE_MIGRATIONS)
+    ).resolves.toEqual(["042", "043", "044", "045"]);
     db.exec("UPDATE patients SET restraint = 'Muselière' WHERE id = 'rex'");
-    expect(db.prepare(`${PATIENTS_WITH_REFERENCE_SQL} WHERE patients.id = 'rex'`).get()).toMatchObject({
+    expect(
+      db
+        .prepare(`${PATIENTS_WITH_REFERENCE_SQL} WHERE patients.id = 'rex'`)
+        .get()
+    ).toMatchObject({
       name: "rex",
       reference: "ID-0001",
       restraint: "Muselière",

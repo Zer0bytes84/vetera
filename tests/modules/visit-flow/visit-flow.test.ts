@@ -2,11 +2,18 @@ import { DatabaseSync } from "node:sqlite";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { runSqliteMigrations } from "@/services/sqlite/migration-runner";
 import { SQLITE_MIGRATIONS } from "@/services/sqlite/migrations";
-import { createVisitFlowStore, type FlowDatabase } from "@/modules/visit-flow/store";
+import {
+  createVisitFlowStore,
+  type FlowDatabase,
+} from "@/modules/visit-flow/store";
 import { visitFlowStage } from "@/modules/visit-flow/domain";
 import type { AppointmentStatus } from "@/types/db";
 
-const harness = vi.hoisted(() => ({ db: null as FlowDatabase | null, serial: 0, queue: Promise.resolve() }));
+const harness = vi.hoisted(() => ({
+  db: null as FlowDatabase | null,
+  serial: 0,
+  queue: Promise.resolve(),
+}));
 vi.mock("@/services/sqlite/database", () => ({
   generateId: () => `billing-${++harness.serial}`,
   toSQLiteTimestamp: (date: Date) => date.toISOString(),
@@ -14,14 +21,21 @@ vi.mock("@/services/sqlite/database", () => ({
     await harness.queue;
     return operation(harness.db!);
   },
-  runDbTransaction: (operation: (db: FlowDatabase) => Promise<unknown>) => transaction(operation),
+  runDbTransaction: (operation: (db: FlowDatabase) => Promise<unknown>) =>
+    transaction(operation),
 }));
-import { createInvoiceDraft, issueInvoice, recordPayment } from "@/services/billingService";
+import {
+  createInvoiceDraft,
+  issueInvoice,
+  recordPayment,
+} from "@/services/billingService";
 
 let sqlite: DatabaseSync;
 let db: FlowDatabase;
 
-function transaction<T>(operation: (db: FlowDatabase) => Promise<T>): Promise<T> {
+function transaction<T>(
+  operation: (db: FlowDatabase) => Promise<T>
+): Promise<T> {
   const result = harness.queue.then(async () => {
     sqlite.exec("BEGIN IMMEDIATE");
     try {
@@ -47,14 +61,21 @@ async function open(migrations = SQLITE_MIGRATIONS) {
   sqlite = new DatabaseSync(":memory:");
   db = {
     async select<T>(sql: string, args: unknown[] = []) {
-      return sqlite.prepare(sql).all(...(args as (string | number | null)[])) as T;
+      return sqlite
+        .prepare(sql)
+        .all(...(args as (string | number | null)[])) as T;
     },
     async execute(sql: string, args: unknown[] = []) {
       if (!args.length) {
         sqlite.exec(sql);
         return { rowsAffected: 0 };
       }
-      return { rowsAffected: Number(sqlite.prepare(sql).run(...(args as (string | number | null)[])).changes) };
+      return {
+        rowsAffected: Number(
+          sqlite.prepare(sql).run(...(args as (string | number | null)[]))
+            .changes
+        ),
+      };
     },
   };
   harness.db = db;
@@ -77,21 +98,29 @@ function book(id: string, status: AppointmentStatus = "scheduled") {
 }
 
 const setStatus = (id: string, status: AppointmentStatus) =>
-  sqlite.prepare("UPDATE appointments SET status = ? WHERE id = ?").run(status, id);
+  sqlite
+    .prepare("UPDATE appointments SET status = ? WHERE id = ?")
+    .run(status, id);
 
 const stage = (id: string) =>
-  sqlite.prepare("SELECT stage FROM visit_flow_stages WHERE appointment_id = ?").get(id)?.stage ?? null;
+  sqlite
+    .prepare("SELECT stage FROM visit_flow_stages WHERE appointment_id = ?")
+    .get(id)?.stage ?? null;
 
 const journal = (id: string) =>
   sqlite
-    .prepare("SELECT from_stage, to_stage, from_status, to_status, cause, version FROM visit_flow_events WHERE appointment_id = ? ORDER BY id")
+    .prepare(
+      "SELECT from_stage, to_stage, from_status, to_status, cause, version FROM visit_flow_events WHERE appointment_id = ? ORDER BY id"
+    )
     .all(id);
 
 async function bill(appointmentId: string, amount: number) {
   const draft = await createInvoiceDraft({
     actor: { id: "vet" },
     appointmentId,
-    lines: [{ description: "Consultation", quantityMilli: 1000, unitAmount: amount }],
+    lines: [
+      { description: "Consultation", quantityMilli: 1000, unitAmount: amount },
+    ],
     ownerId: "owner",
     patientId: "rex",
   });
@@ -105,7 +134,14 @@ async function bill(appointmentId: string, amount: number) {
 }
 
 const pay = (invoiceId: string, amount: number, key: string) =>
-  recordPayment({ actor: { id: "vet" }, amount, idempotencyKey: key, invoiceId, method: "cash", paidAt: "2026-10-19T10:21:00.000Z" });
+  recordPayment({
+    actor: { id: "vet" },
+    amount,
+    idempotencyKey: key,
+    invoiceId,
+    method: "cash",
+    paidAt: "2026-10-19T10:21:00.000Z",
+  });
 
 afterEach(() => {
   sqlite.close();
@@ -119,16 +155,28 @@ describe("mise à niveau", () => {
     book("a2", "in_progress");
     book("a3", "cancelled");
     const tables = sqlite
-      .prepare("SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%' AND name <> 'migrations'")
+      .prepare(
+        "SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%' AND name <> 'migrations'"
+      )
       .all()
       .map((row) => String(row.name));
-    const snapshot = () => Object.fromEntries(tables.map((t) => [t, sqlite.prepare(`SELECT * FROM "${t}" ORDER BY rowid`).all()]));
+    const snapshot = () =>
+      Object.fromEntries(
+        tables.map((t) => [
+          t,
+          sqlite.prepare(`SELECT * FROM "${t}" ORDER BY rowid`).all(),
+        ])
+      );
     const before = snapshot();
     await runSqliteMigrations(db, SQLITE_MIGRATIONS);
     // Migration 042 adds the empty restraint column to patients, nothing else.
     expect(snapshot()).toEqual({
       ...before,
-      patients: before.patients.map((row) => ({ ...row, restraint: null, archived_at: null })),
+      patients: before.patients.map((row) => ({
+        ...row,
+        restraint: null,
+        archived_at: null,
+      })),
     });
   });
 
@@ -140,14 +188,22 @@ describe("mise à niveau", () => {
     book("prevue", "scheduled");
     book("annulee", "cancelled");
     await runSqliteMigrations(db, SQLITE_MIGRATIONS);
-    expect(sqlite.prepare("SELECT appointment_id, stage, version FROM visit_flow ORDER BY appointment_id").all()).toEqual([
+    expect(
+      sqlite
+        .prepare(
+          "SELECT appointment_id, stage, version FROM visit_flow ORDER BY appointment_id"
+        )
+        .all()
+    ).toEqual([
       { appointment_id: "annulee", stage: null, version: 0 },
       { appointment_id: "arrive", stage: "waiting", version: 0 },
       { appointment_id: "finie", stage: "billing", version: 0 },
       { appointment_id: "ouverte", stage: "consultation", version: 0 },
       { appointment_id: "prevue", stage: null, version: 0 },
     ]);
-    expect(sqlite.prepare("SELECT COUNT(*) AS n FROM visit_flow_events").get()?.n).toBe(0);
+    expect(
+      sqlite.prepare("SELECT COUNT(*) AS n FROM visit_flow_events").get()?.n
+    ).toBe(0);
   });
 });
 
@@ -155,16 +211,33 @@ describe("correspondance statut et étape", () => {
   beforeEach(() => open());
 
   it("la vue SQL et la fonction TypeScript donnent la même étape pour chaque statut", async () => {
-    const statuses: AppointmentStatus[] = ["scheduled", "confirmed", "arrived", "waiting", "in_progress", "completed", "cancelled", "no_show"];
+    const statuses: AppointmentStatus[] = [
+      "scheduled",
+      "confirmed",
+      "arrived",
+      "waiting",
+      "in_progress",
+      "completed",
+      "cancelled",
+      "no_show",
+    ];
     for (const status of statuses) {
       book(status, status);
-      expect(stage(status), status).toBe(visitFlowStage({ care: false, settled: false, status }));
+      expect(stage(status), status).toBe(
+        visitFlowStage({ care: false, settled: false, status })
+      );
     }
-    sqlite.exec("UPDATE visit_flow SET care = 1 WHERE appointment_id = 'in_progress'");
-    expect(stage("in_progress")).toBe(visitFlowStage({ care: true, settled: false, status: "in_progress" }));
+    sqlite.exec(
+      "UPDATE visit_flow SET care = 1 WHERE appointment_id = 'in_progress'"
+    );
+    expect(stage("in_progress")).toBe(
+      visitFlowStage({ care: true, settled: false, status: "in_progress" })
+    );
     const invoice = await bill("completed", 2500);
     await pay(invoice.id, 2500, "pay:full");
-    expect(stage("completed")).toBe(visitFlowStage({ care: false, settled: true, status: "completed" }));
+    expect(stage("completed")).toBe(
+      visitFlowStage({ care: false, settled: true, status: "completed" })
+    );
   });
 });
 
@@ -178,13 +251,51 @@ describe("journal des transitions", () => {
     setStatus("v1", "in_progress");
     setStatus("v1", "completed");
     expect(journal("v1")).toEqual([
-      { from_stage: null, to_stage: null, from_status: null, to_status: "scheduled", cause: "status", version: 1 },
-      { from_stage: null, to_stage: "waiting", from_status: "scheduled", to_status: "arrived", cause: "status", version: 2 },
-      { from_stage: "waiting", to_stage: "waiting", from_status: "arrived", to_status: "waiting", cause: "status", version: 3 },
-      { from_stage: "waiting", to_stage: "consultation", from_status: "waiting", to_status: "in_progress", cause: "status", version: 4 },
-      { from_stage: "consultation", to_stage: "billing", from_status: "in_progress", to_status: "completed", cause: "status", version: 5 },
+      {
+        from_stage: null,
+        to_stage: null,
+        from_status: null,
+        to_status: "scheduled",
+        cause: "status",
+        version: 1,
+      },
+      {
+        from_stage: null,
+        to_stage: "waiting",
+        from_status: "scheduled",
+        to_status: "arrived",
+        cause: "status",
+        version: 2,
+      },
+      {
+        from_stage: "waiting",
+        to_stage: "waiting",
+        from_status: "arrived",
+        to_status: "waiting",
+        cause: "status",
+        version: 3,
+      },
+      {
+        from_stage: "waiting",
+        to_stage: "consultation",
+        from_status: "waiting",
+        to_status: "in_progress",
+        cause: "status",
+        version: 4,
+      },
+      {
+        from_stage: "consultation",
+        to_stage: "billing",
+        from_status: "in_progress",
+        to_status: "completed",
+        cause: "status",
+        version: 5,
+      },
     ]);
-    expect(await flow().state("v1")).toMatchObject({ stage: "billing", version: 5 });
+    expect(await flow().state("v1")).toMatchObject({
+      stage: "billing",
+      version: 5,
+    });
   });
 
   it("passe à Terminé quand la facture est entièrement encaissée, pas avant", async () => {
@@ -197,7 +308,14 @@ describe("journal des transitions", () => {
     await pay(invoice.id, 3000, "pay:rest");
     expect(stage("v2")).toBe("done");
     expect(journal("v2").slice(-1)).toEqual([
-      { from_stage: "billing", to_stage: "done", from_status: "completed", to_status: "completed", cause: "billing", version: 3 },
+      {
+        from_stage: "billing",
+        to_stage: "done",
+        from_status: "completed",
+        to_status: "completed",
+        cause: "billing",
+        version: 3,
+      },
     ]);
   });
 
@@ -205,9 +323,18 @@ describe("journal des transitions", () => {
     book("v3", "in_progress");
     const store = flow();
     const { version } = await store.state("v3");
-    await expect(store.setCare("v3", true, "vet", version)).resolves.toMatchObject({ stage: "care" });
-    await expect(store.setCare("v3", false, "vet", version)).rejects.toThrow(/autre poste/);
-    expect((await store.events("v3")).slice(-1)[0]).toMatchObject({ cause: "care", fromStage: "consultation", toStage: "care", actorId: "vet" });
+    await expect(
+      store.setCare("v3", true, "vet", version)
+    ).resolves.toMatchObject({ stage: "care" });
+    await expect(store.setCare("v3", false, "vet", version)).rejects.toThrow(
+      /autre poste/
+    );
+    expect((await store.events("v3")).slice(-1)[0]).toMatchObject({
+      cause: "care",
+      fromStage: "consultation",
+      toStage: "care",
+      actorId: "vet",
+    });
   });
 
   it("note qui a fait la transition", async () => {
@@ -225,15 +352,37 @@ describe("acte gratuit", () => {
     book("free", "in_progress");
     setStatus("free", "completed");
     expect(stage("free")).toBe("billing");
-    await expect(flow().markNoCharge("free", "vet")).resolves.toMatchObject({ stage: "done" });
-    expect(stage("free")).toBe(visitFlowStage({ care: false, noCharge: true, settled: false, status: "completed" }));
-    expect((await flow().events("free")).slice(-1)[0]).toMatchObject({ cause: "billing", fromStage: "billing", toStage: "done", actorId: "vet" });
-    expect(sqlite.prepare("SELECT COUNT(*) AS n FROM invoices WHERE appointment_id = 'free'").get()?.n).toBe(0);
+    await expect(flow().markNoCharge("free", "vet")).resolves.toMatchObject({
+      stage: "done",
+    });
+    expect(stage("free")).toBe(
+      visitFlowStage({
+        care: false,
+        noCharge: true,
+        settled: false,
+        status: "completed",
+      })
+    );
+    expect((await flow().events("free")).slice(-1)[0]).toMatchObject({
+      cause: "billing",
+      fromStage: "billing",
+      toStage: "done",
+      actorId: "vet",
+    });
+    expect(
+      sqlite
+        .prepare(
+          "SELECT COUNT(*) AS n FROM invoices WHERE appointment_id = 'free'"
+        )
+        .get()?.n
+    ).toBe(0);
   });
 
   it("refuse de marquer sans frais une visite encore ouverte", async () => {
     book("open", "in_progress");
-    await expect(flow().markNoCharge("open", "vet")).rejects.toThrow(/clôturée/);
+    await expect(flow().markNoCharge("open", "vet")).rejects.toThrow(
+      /clôturée/
+    );
     expect(stage("open")).toBe("consultation");
   });
 });
@@ -246,8 +395,14 @@ describe("annulation", () => {
     setStatus("v5", "in_progress");
     const store = flow();
     const last = await store.undoable("v5");
-    expect(last).toMatchObject({ fromStatus: "waiting", toStatus: "in_progress" });
-    await expect(store.undo(last!.id, "vet")).resolves.toMatchObject({ status: "waiting", stage: "waiting" });
+    expect(last).toMatchObject({
+      fromStatus: "waiting",
+      toStatus: "in_progress",
+    });
+    await expect(store.undo(last!.id, "vet")).resolves.toMatchObject({
+      status: "waiting",
+      stage: "waiting",
+    });
     expect((await store.events("v5")).slice(-1)[0]).toMatchObject({
       cause: "undo",
       undoesEventId: last!.id,
@@ -262,10 +417,16 @@ describe("annulation", () => {
     const store = flow();
     const stale = await store.undoable("v6");
     setStatus("v6", "completed");
-    await expect(store.undo(stale!.id, "vet")).rejects.toThrow(/a bougé depuis/);
+    await expect(store.undo(stale!.id, "vet")).rejects.toThrow(
+      /a bougé depuis/
+    );
 
     const late = await store.undoable("v6");
-    sqlite.prepare("UPDATE visit_flow_events SET created_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now', '-11 seconds') WHERE id = ?").run(late!.id);
+    sqlite
+      .prepare(
+        "UPDATE visit_flow_events SET created_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now', '-11 seconds') WHERE id = ?"
+      )
+      .run(late!.id);
     expect(await store.undoable("v6")).toBeNull();
     await expect(store.undo(late!.id, "vet")).rejects.toThrow(/10 secondes/);
 
@@ -274,7 +435,9 @@ describe("annulation", () => {
     const payment = (await store.events("v6")).slice(-1)[0];
     expect(payment.cause).toBe("billing");
     expect(await store.undoable("v6")).toBeNull();
-    await expect(store.undo(payment.id, "vet")).rejects.toThrow(/ne s'annule pas/);
+    await expect(store.undo(payment.id, "vet")).rejects.toThrow(
+      /ne s'annule pas/
+    );
     expect(stage("v6")).toBe("done");
   });
 });

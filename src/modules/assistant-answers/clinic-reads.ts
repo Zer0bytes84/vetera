@@ -10,13 +10,29 @@
 
 import { mapTableRow, tableReadSql } from "@/hooks/useSQLite";
 import { selectInvoices } from "@/services/billingService";
-import { getBrowserTable, isTauriRuntime, type BrowserTableName } from "@/services/browser-store";
+import {
+  getBrowserTable,
+  isTauriRuntime,
+  type BrowserTableName,
+} from "@/services/browser-store";
 import { runDbRead } from "@/services/sqlite/database";
 import type { Invoice } from "@/types/db";
-import { guardReadConnection, type ReadConnection, type ReadCounter } from "./read-port";
+import {
+  guardReadConnection,
+  type ReadConnection,
+  type ReadCounter,
+} from "./read-port";
 import type { ClinicData } from "./types";
 
-export const CLINIC_TABLES = ["patients", "owners", "appointments", "tasks", "transactions", "vaccinations", "products"] as const;
+export const CLINIC_TABLES = [
+  "patients",
+  "owners",
+  "appointments",
+  "tasks",
+  "transactions",
+  "vaccinations",
+  "products",
+] as const;
 type ClinicTable = (typeof CLINIC_TABLES)[number];
 
 /** How the data was read: shown under each answer. */
@@ -33,7 +49,9 @@ export type ReadReceipt = {
 
 export class ReadIntegrityError extends Error {
   constructor(changes: number) {
-    super(`La base a changé pendant la lecture (${changes} modification${changes > 1 ? "s" : ""}) : je ne réponds pas sur une lecture incohérente.`);
+    super(
+      `La base a changé pendant la lecture (${changes} modification${changes > 1 ? "s" : ""}) : je ne réponds pas sur une lecture incohérente.`
+    );
     this.name = "ReadIntegrityError";
   }
 }
@@ -41,20 +59,29 @@ export class ReadIntegrityError extends Error {
 type RunRead = <T>(operation: (db: ReadConnection) => Promise<T>) => Promise<T>;
 
 /** Reads every table of the catalogue through the guarded connection, in one snapshot. */
-export async function readClinicTables(connection: ReadConnection, counter: ReadCounter) {
+export async function readClinicTables(
+  connection: ReadConnection,
+  counter: ReadCounter
+) {
   // A retried read (a locked base, a reopened connection) counts its own statements only.
   counter.statements = 0;
   const db = guardReadConnection(connection, counter);
   await db.execute("BEGIN DEFERRED TRANSACTION");
   try {
-    const [{ changes: before }] = await db.select<{ changes: number }[]>("SELECT total_changes() AS changes");
+    const [{ changes: before }] = await db.select<{ changes: number }[]>(
+      "SELECT total_changes() AS changes"
+    );
     const tables = {} as Record<ClinicTable, Record<string, unknown>[]>;
     for (const table of CLINIC_TABLES) {
-      const rows = await db.select<Record<string, unknown>[]>(tableReadSql(table));
+      const rows = await db.select<Record<string, unknown>[]>(
+        tableReadSql(table)
+      );
       tables[table] = (rows ?? []).map((row) => mapTableRow(table, row));
     }
     const invoices = await selectInvoices(db, { documentStatus: "issued" });
-    const [{ changes: after }] = await db.select<{ changes: number }[]>("SELECT total_changes() AS changes");
+    const [{ changes: after }] = await db.select<{ changes: number }[]>(
+      "SELECT total_changes() AS changes"
+    );
     await db.execute("COMMIT");
     return { tables, invoices, changes: Number(after) - Number(before) };
   } catch (error) {
@@ -63,21 +90,53 @@ export async function readClinicTables(connection: ReadConnection, counter: Read
   }
 }
 
-export async function readClinicData(options: { runRead?: RunRead; browser?: boolean; now?: Date } = {}): Promise<{ data: ClinicData; receipt: ReadReceipt }> {
+export async function readClinicData(
+  options: { runRead?: RunRead; browser?: boolean; now?: Date } = {}
+): Promise<{ data: ClinicData; receipt: ReadReceipt }> {
   const at = (options.now ?? new Date()).toISOString();
   const browser = options.browser ?? !isTauriRuntime();
   if (browser) {
-    const tables = Object.fromEntries(CLINIC_TABLES.map((table) => [table, structuredClone(getBrowserTable(table as BrowserTableName))])) as unknown as Record<ClinicTable, unknown[]>;
-    const rows = CLINIC_TABLES.reduce((sum, table) => sum + tables[table].length, 0);
-    return { data: { ...(tables as unknown as Omit<ClinicData, "invoices">), invoices: [] }, receipt: { via: "navigateur", statements: 0, changes: 0, rows, at } };
+    const tables = Object.fromEntries(
+      CLINIC_TABLES.map((table) => [
+        table,
+        structuredClone(getBrowserTable(table as BrowserTableName)),
+      ])
+    ) as unknown as Record<ClinicTable, unknown[]>;
+    const rows = CLINIC_TABLES.reduce(
+      (sum, table) => sum + tables[table].length,
+      0
+    );
+    return {
+      data: {
+        ...(tables as unknown as Omit<ClinicData, "invoices">),
+        invoices: [],
+      },
+      receipt: { via: "navigateur", statements: 0, changes: 0, rows, at },
+    };
   }
   const counter: ReadCounter = { statements: 0 };
-  const run: RunRead = options.runRead ?? ((operation) => runDbRead((db) => operation(db as unknown as ReadConnection)));
-  const { tables, invoices, changes } = await run((db) => readClinicTables(db, counter));
+  const run: RunRead =
+    options.runRead ??
+    ((operation) =>
+      runDbRead((db) => operation(db as unknown as ReadConnection)));
+  const { tables, invoices, changes } = await run((db) =>
+    readClinicTables(db, counter)
+  );
   if (changes !== 0) throw new ReadIntegrityError(changes);
-  const rows = CLINIC_TABLES.reduce((sum, table) => sum + tables[table].length, 0) + invoices.length;
+  const rows =
+    CLINIC_TABLES.reduce((sum, table) => sum + tables[table].length, 0) +
+    invoices.length;
   return {
-    data: { ...(tables as unknown as Omit<ClinicData, "invoices">), invoices: invoices as Invoice[] },
-    receipt: { via: "sqlite", statements: counter.statements, changes, rows, at },
+    data: {
+      ...(tables as unknown as Omit<ClinicData, "invoices">),
+      invoices: invoices as Invoice[],
+    },
+    receipt: {
+      via: "sqlite",
+      statements: counter.statements,
+      changes,
+      rows,
+      at,
+    },
   };
 }

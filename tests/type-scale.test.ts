@@ -6,7 +6,8 @@ import { expect, it } from "vitest";
 // of the Linear scale, measured and adopted on 2026-11-11). Printed A4
 // layouts and the first-run screens keep their own sizes on purpose.
 const ALLOWED = new Set([12, 13, 14, 15, 16, 18, 24]);
-const EXEMPT = /print-layout|SetupWizard|setup-wizard\.css|welcome-artwork\.css/;
+const EXEMPT =
+  /print-layout|SetupWizard|setup-wizard\.css|welcome-artwork\.css/;
 
 function files(dir: string, out: string[] = []): string[] {
   for (const name of readdirSync(dir)) {
@@ -22,7 +23,9 @@ it("n’utilise aucune taille de texte libre hors de l’échelle de la charte",
   for (const path of files("src")) {
     const source = readFileSync(path, "utf8");
     if (!path.endsWith(".css")) {
-      for (const match of source.matchAll(/text-\[(\d+(?:\.\d+)?)(px|rem)\]/g)) {
+      for (const match of source.matchAll(
+        /text-\[(\d+(?:\.\d+)?)(px|rem)\]/g
+      )) {
         const px = Number(match[1]) * (match[2] === "rem" ? 16 : 1);
         if (!ALLOWED.has(px)) offenders.push(`${path}: ${match[0]}`);
       }
@@ -31,8 +34,13 @@ it("n’utilise aucune taille de texte libre hors de l’échelle de la charte",
       // glyph in the header's 36 px avatar disc (15 px, validated 2026-11-02).
       const css = source
         .replace(/\.settings-avatar-choice\s*\{[^}]*\}/g, "")
-        .replace(/\.shell-account-trigger \.shell-account-avatar\s*\{[^}]*\}/g, "");
-      for (const match of css.matchAll(/font-size:\s*(\d+(?:\.\d+)?)(px|rem)/g)) {
+        .replace(
+          /\.shell-account-trigger \.shell-account-avatar\s*\{[^}]*\}/g,
+          ""
+        );
+      for (const match of css.matchAll(
+        /font-size:\s*(\d+(?:\.\d+)?)(px|rem)/g
+      )) {
         const px = Number(match[1]) * (match[2] === "rem" ? 16 : 1);
         if (!ALLOWED.has(px)) offenders.push(`${path}: ${match[0]}`);
       }

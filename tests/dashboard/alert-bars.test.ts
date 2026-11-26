@@ -1,12 +1,36 @@
 import { describe, expect, it } from "vitest";
-import { alertWindow, buildAlertBars } from "../../src/modules/dashboard/model/alert-bars";
+import {
+  alertWindow,
+  buildAlertBars,
+} from "../../src/modules/dashboard/model/alert-bars";
 
 // Lundi 9 novembre 2026, 10:00 : la fenêtre va du 3 au 16 novembre.
 const now = new Date(2026, 10, 9, 10, 0);
-const at = (day: number, h = 9, month = 10) => new Date(2026, month, day, h).toISOString();
-const base = { now, reminders: [], careTasks: [], products: [], patients: [], invoices: [], appointments: [] };
-const invoice = (over: Record<string, unknown>) => ({ documentStatus: "issued", issuedAt: "2026-10-01", createdAt: "2026-10-01", dueAt: null, grossAmount: 10000, creditAmount: 0, balanceAmount: 10000, settlementStatus: "unpaid", ...over }) as never;
-const product = (over: Record<string, unknown>) => ({ quantity: 10, minStock: 2, ...over }) as never;
+const at = (day: number, h = 9, month = 10) =>
+  new Date(2026, month, day, h).toISOString();
+const base = {
+  now,
+  reminders: [],
+  careTasks: [],
+  products: [],
+  patients: [],
+  invoices: [],
+  appointments: [],
+};
+const invoice = (over: Record<string, unknown>) =>
+  ({
+    documentStatus: "issued",
+    issuedAt: "2026-10-01",
+    createdAt: "2026-10-01",
+    dueAt: null,
+    grossAmount: 10000,
+    creditAmount: 0,
+    balanceAmount: 10000,
+    settlementStatus: "unpaid",
+    ...over,
+  }) as never;
+const product = (over: Record<string, unknown>) =>
+  ({ quantity: 10, minStock: 2, ...over }) as never;
 
 describe("fenêtre", () => {
   it("six jours avant, sept jours après, aujourd'hui en septième colonne", () => {
@@ -36,7 +60,14 @@ describe("rappels", () => {
     { id: "f", patient_id: "p1", statut: "en_cours", echeance: "2026-10-01" }, // en retard, avant la fenêtre
     { id: "g", patient_id: "p1", statut: "en_cours", echeance: "2026-11-09" }, // aujourd'hui : pas en retard
   ];
-  const r = buildAlertBars({ ...base, reminders, patients: [{ id: "p1", status: "actif" }, { id: "p2", status: "decede" }] as never });
+  const r = buildAlertBars({
+    ...base,
+    reminders,
+    patients: [
+      { id: "p1", status: "actif" },
+      { id: "p2", status: "decede" },
+    ] as never,
+  });
   it("empile par jour d'échéance, sans les finis, les décédés ni ce qui est hors fenêtre", () => {
     expect(r.values.reminders[9]).toBe(1); // le 12
     expect(r.values.reminders[2]).toBe(1); // le 5
@@ -80,12 +111,27 @@ describe("soins", () => {
 
 describe("stock", () => {
   it("une rupture et un stock sous le seuil comptent aujourd'hui, pas en retard", () => {
-    const r = buildAlertBars({ ...base, products: [product({ quantity: 0 }), product({ quantity: 2 }), product({ quantity: 3 })] });
+    const r = buildAlertBars({
+      ...base,
+      products: [
+        product({ quantity: 0 }),
+        product({ quantity: 2 }),
+        product({ quantity: 3 }),
+      ],
+    });
     expect(r.values.stock[6]).toBe(2);
     expect(r.late[6]).toBe(0);
   });
   it("une péremption tombe à sa date, en retard si elle est passée", () => {
-    const r = buildAlertBars({ ...base, products: [product({ expiryDate: "2026-11-13" }), product({ expiryDate: "2026-11-04" }), product({ expiryDate: "2026-12-30" }), product({ nearestExpiryDate: "2026-11-10", expiryDate: "2026-12-30" })] });
+    const r = buildAlertBars({
+      ...base,
+      products: [
+        product({ expiryDate: "2026-11-13" }),
+        product({ expiryDate: "2026-11-04" }),
+        product({ expiryDate: "2026-12-30" }),
+        product({ nearestExpiryDate: "2026-11-10", expiryDate: "2026-12-30" }),
+      ],
+    });
     expect(r.values.stock[10]).toBe(1); // le 13
     expect(r.values.stock[7]).toBe(1); // le 10 (lot le plus proche)
     expect(r.values.stock[1]).toBe(1); // le 4
@@ -93,16 +139,29 @@ describe("stock", () => {
     expect(r.open).toBe(3);
   });
   it("un lot périmé sans date connue est en retard aujourd'hui ; un produit archivé ou non suivi est ignoré", () => {
-    const r = buildAlertBars({ ...base, products: [product({ expiredQuantity: 4 }), product({ quantity: 0, archivedAt: "2026-01-01" }), product({ quantity: 0, stockTracked: false })] });
+    const r = buildAlertBars({
+      ...base,
+      products: [
+        product({ expiredQuantity: 4 }),
+        product({ quantity: 0, archivedAt: "2026-01-01" }),
+        product({ quantity: 0, stockTracked: false }),
+      ],
+    });
     expect(r.values.stock[6]).toBe(1);
     expect(r.late[6]).toBe(1);
   });
   it("une rupture avec une péremption proche compte deux alertes distinctes", () => {
-    const r = buildAlertBars({ ...base, products: [product({ quantity: 0, expiryDate: "2026-11-12" })] });
+    const r = buildAlertBars({
+      ...base,
+      products: [product({ quantity: 0, expiryDate: "2026-11-12" })],
+    });
     expect(r.open).toBe(2);
   });
   it("la quantité disponible l'emporte sur la quantité totale", () => {
-    const r = buildAlertBars({ ...base, products: [product({ quantity: 50, availableQuantity: 1 })] });
+    const r = buildAlertBars({
+      ...base,
+      products: [product({ quantity: 50, availableQuantity: 1 })],
+    });
     expect(r.values.stock[6]).toBe(1);
   });
 });
@@ -112,7 +171,11 @@ describe("créances", () => {
     invoice({ dueAt: "2026-11-12" }), // impayée, échéance à venir
     invoice({ dueAt: "2026-11-05", settlementStatus: "overdue" }), // en retard
     invoice({ dueAt: "2026-10-01", settlementStatus: "overdue" }), // en retard, avant la fenêtre
-    invoice({ dueAt: "2026-11-12", balanceAmount: 0, settlementStatus: "paid" }), // réglée
+    invoice({
+      dueAt: "2026-11-12",
+      balanceAmount: 0,
+      settlementStatus: "paid",
+    }), // réglée
     invoice({ dueAt: "2026-11-12", documentStatus: "draft" }), // brouillon
     invoice({ dueAt: "2026-11-12", documentStatus: "void" }), // annulée
     invoice({ dueAt: "2026-11-12", creditAmount: 10000 }), // soldée par un avoir
@@ -127,7 +190,13 @@ describe("créances", () => {
     expect(r.values.receivables.reduce((n, v) => n + v, 0)).toBe(3);
   });
   it("une facture sans échéance, même en retard, compte aujourd'hui et pend sous la ligne si l'app la dit en retard", () => {
-    const x = buildAlertBars({ ...base, invoices: [invoice({ dueAt: null, settlementStatus: "overdue" }), invoice({ dueAt: null })] });
+    const x = buildAlertBars({
+      ...base,
+      invoices: [
+        invoice({ dueAt: null, settlementStatus: "overdue" }),
+        invoice({ dueAt: null }),
+      ],
+    });
     expect(x.values.receivables[6]).toBe(2);
     expect(x.late[6]).toBe(1);
   });
@@ -141,18 +210,28 @@ describe("créances", () => {
     expect(r.lateAll).toBe(2);
   });
   it("une facture impayée dont l'échéance est passée mais que l'app ne dit pas en retard ne l'est pas", () => {
-    const quiet = buildAlertBars({ ...base, invoices: [invoice({ dueAt: "2026-11-05", settlementStatus: "unpaid" })] });
+    const quiet = buildAlertBars({
+      ...base,
+      invoices: [invoice({ dueAt: "2026-11-05", settlementStatus: "unpaid" })],
+    });
     expect(quiet.values.receivables[2]).toBe(1);
     expect(quiet.lateAll).toBe(0);
   });
 });
 
 describe("rendez-vous non traités", () => {
-  const appt = (day: number, h: number, status: string, minutes = 30, month = 10) => ({
-    startTime: new Date(2026, month, day, h).toISOString(),
-    endTime: new Date(2026, month, day, h, minutes).toISOString(),
-    status,
-  }) as never;
+  const appt = (
+    day: number,
+    h: number,
+    status: string,
+    minutes = 30,
+    month = 10
+  ) =>
+    ({
+      startTime: new Date(2026, month, day, h).toISOString(),
+      endTime: new Date(2026, month, day, h, minutes).toISOString(),
+      status,
+    }) as never;
   const r = buildAlertBars({
     ...base,
     appointments: [
@@ -192,16 +271,30 @@ describe("rendez-vous non traités", () => {
 describe("colonne « Avant » : rien d'ouvert n'est laissé de côté", () => {
   const r = buildAlertBars({
     ...base,
-    reminders: [{ id: "a", patient_id: "p", statut: "en_cours", echeance: "2026-10-01" }, { id: "b", patient_id: "p", statut: "en_cours", echeance: "2026-11-12" }],
-    careTasks: [{ statut: "a_faire", heure_prevue: at(1, 9, 10) }, { statut: "a_faire", heure_prevue: at(12, 9) }] as never,
+    reminders: [
+      { id: "a", patient_id: "p", statut: "en_cours", echeance: "2026-10-01" },
+      { id: "b", patient_id: "p", statut: "en_cours", echeance: "2026-11-12" },
+    ],
+    careTasks: [
+      { statut: "a_faire", heure_prevue: at(1, 9, 10) },
+      { statut: "a_faire", heure_prevue: at(12, 9) },
+    ] as never,
     products: [product({ expiryDate: "2026-10-20" })],
-    invoices: [invoice({ dueAt: "2026-10-05", settlementStatus: "overdue" }), invoice({ dueAt: "2026-10-06" })],
+    invoices: [
+      invoice({ dueAt: "2026-10-05", settlementStatus: "overdue" }),
+      invoice({ dueAt: "2026-10-06" }),
+    ],
   });
   it("rassemble ce qui est daté avant la fenêtre, par catégorie, en première colonne", () => {
     expect(r.chart.labels[0]).toBe("Avant");
     expect(r.chart.titles[0]).toBe("Avant le 3 novembre");
     expect(r.chart.labels).toHaveLength(15);
-    expect([r.chart.values.reminders[0], r.chart.values.care[0], r.chart.values.stock[0], r.chart.values.receivables[0]]).toEqual([1, 1, 1, 2]);
+    expect([
+      r.chart.values.reminders[0],
+      r.chart.values.care[0],
+      r.chart.values.stock[0],
+      r.chart.values.receivables[0],
+    ]).toEqual([1, 1, 1, 2]);
   });
   it("les retards de cette colonne pendent sous la ligne, les jours suivants gardent les leurs", () => {
     expect(r.chart.late[0]).toBe(r.olderLate);
@@ -221,13 +314,23 @@ describe("totaux", () => {
   it("la pile du jour est la somme des trois catégories, et le total est la somme des jours", () => {
     const r = buildAlertBars({
       ...base,
-      reminders: [{ id: "a", patient_id: "p", statut: "en_cours", echeance: "2026-11-12" }],
+      reminders: [
+        {
+          id: "a",
+          patient_id: "p",
+          statut: "en_cours",
+          echeance: "2026-11-12",
+        },
+      ],
       careTasks: [{ statut: "a_faire", heure_prevue: at(12, 14) }] as never,
       products: [product({ expiryDate: "2026-11-12" })],
     });
     expect(r.total[9]).toBe(3);
     expect(r.open).toBe(3);
-    expect(buildAlertBars({ ...base, invoices: [invoice({ dueAt: "2026-11-12" })] }).total[9]).toBe(1);
+    expect(
+      buildAlertBars({ ...base, invoices: [invoice({ dueAt: "2026-11-12" })] })
+        .total[9]
+    ).toBe(1);
     expect(r.lateAll).toBe(0);
   });
 });

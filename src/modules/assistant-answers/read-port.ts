@@ -15,12 +15,18 @@ export interface ReadConnection {
 
 export class ReadRefused extends Error {
   constructor(statement: string) {
-    super(`Écriture refusée par la porte de lecture : ${statement.slice(0, 40)}`);
+    super(
+      `Écriture refusée par la porte de lecture : ${statement.slice(0, 40)}`
+    );
     this.name = "ReadRefused";
   }
 }
 
-const SNAPSHOT_STATEMENTS = new Set(["BEGIN DEFERRED TRANSACTION", "COMMIT", "ROLLBACK"]);
+const SNAPSHOT_STATEMENTS = new Set([
+  "BEGIN DEFERRED TRANSACTION",
+  "COMMIT",
+  "ROLLBACK",
+]);
 const leadingComments = /^(?:\s|--[^\n]*\n|\/\*[\s\S]*?\*\/)*/;
 
 /** A single statement that starts with SELECT or WITH and writes nothing. */
@@ -29,7 +35,9 @@ export function isReadStatement(query: string): boolean {
   if (!/^(?:SELECT|WITH)\b/i.test(body)) return false;
   if (body.includes(";")) return false;
   // A WITH clause may hide a write (WITH x AS (...) DELETE ...).
-  return !/\b(?:INSERT|UPDATE|DELETE|REPLACE|DROP|ALTER|CREATE|ATTACH|DETACH|PRAGMA|VACUUM|REINDEX)\b/i.test(body);
+  return !/\b(?:INSERT|UPDATE|DELETE|REPLACE|DROP|ALTER|CREATE|ATTACH|DETACH|PRAGMA|VACUUM|REINDEX)\b/i.test(
+    body
+  );
 }
 
 export interface ReadCounter {
@@ -37,7 +45,10 @@ export interface ReadCounter {
 }
 
 /** Wraps a connection so that only reads go through; counts what went through. */
-export function guardReadConnection(connection: ReadConnection, counter?: ReadCounter): ReadConnection {
+export function guardReadConnection(
+  connection: ReadConnection,
+  counter?: ReadCounter
+): ReadConnection {
   return {
     select<T>(query: string, values: unknown[] = []) {
       if (!isReadStatement(query)) throw new ReadRefused(query);
@@ -45,7 +56,8 @@ export function guardReadConnection(connection: ReadConnection, counter?: ReadCo
       return connection.select<T>(query, values);
     },
     execute(query: string, values: unknown[] = []) {
-      if (!SNAPSHOT_STATEMENTS.has(query.trim()) || values.length) throw new ReadRefused(query);
+      if (!SNAPSHOT_STATEMENTS.has(query.trim()) || values.length)
+        throw new ReadRefused(query);
       if (counter) counter.statements += 1;
       return connection.execute(query, values);
     },

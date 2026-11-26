@@ -4,11 +4,35 @@ import { RevenueChartWidget } from "../../src/modules/dashboard/components/reven
 import type { FocusPoint } from "../../src/modules/dashboard/components/focus-trend-chart";
 
 const points: FocusPoint[] = [
-  { label: "1 oct.", long: "jeu. 1 octobre 2026", receipts: 12000, visits: 2, previousReceipts: 6000, previousVisits: 1 },
-  { label: "2 oct.", long: "ven. 2 octobre 2026", receipts: 14700, visits: 4, previousReceipts: 0, previousVisits: 0 },
+  {
+    label: "1 oct.",
+    long: "jeu. 1 octobre 2026",
+    receipts: 12000,
+    visits: 2,
+    previousReceipts: 6000,
+    previousVisits: 1,
+  },
+  {
+    label: "2 oct.",
+    long: "ven. 2 octobre 2026",
+    receipts: 14700,
+    visits: 4,
+    previousReceipts: 0,
+    previousVisits: 0,
+  },
 ];
-const render = (kinds = [{ key: "consultation", name: "Consultation", count: 6, share: 100 }]) =>
-  renderToStaticMarkup(<RevenueChartWidget footer={<p>prévision et pied</p>} kinds={kinds} periodControl={<button>période</button>} points={points} rangeLabel="Du 1 au 2 oct. 2026" />);
+const render = (
+  kinds = [{ key: "consultation", name: "Consultation", count: 6, share: 100 }]
+) =>
+  renderToStaticMarkup(
+    <RevenueChartWidget
+      footer={<p>prévision et pied</p>}
+      kinds={kinds}
+      periodControl={<button>période</button>}
+      points={points}
+      rangeLabel="Du 1 au 2 oct. 2026"
+    />
+  );
 
 it("l'en-tête : titre, contexte de la période, total des recettes de la période à droite", () => {
   const html = render();
@@ -27,7 +51,13 @@ it("la vue par défaut est la courbe fusionnée : recettes et consultations", ()
 });
 it("propose courbe, barres, aires et la répartition par type d'acte, sur les mêmes données", () => {
   const html = render();
-  for (const label of ["Courbe", "Barres", "Aires", "Répartition des consultations par type d’acte"]) expect(html).toContain(`aria-label="${label}"`);
+  for (const label of [
+    "Courbe",
+    "Barres",
+    "Aires",
+    "Répartition des consultations par type d’acte",
+  ])
+    expect(html).toContain(`aria-label="${label}"`);
   expect(html.match(/aria-pressed="false"/g)?.length).toBeGreaterThanOrEqual(3);
 });
 it("garde le sélecteur de période et le pied (prévision du mois, lien Finances)", () => {
@@ -47,10 +77,19 @@ it("pendant la lecture du journal : un squelette, jamais « 0 DA », et la barre
     { label: "Fin", long: "Fin de période", receipts: 0, visits: 0 },
   ];
   const html = renderToStaticMarkup(
-    <RevenueChartWidget footer={<p>pied</p>} kinds={[]} loading periodControl={<button>période</button>} points={empty} rangeLabel="Du 1 au 2 oct. 2026" />
+    <RevenueChartWidget
+      footer={<p>pied</p>}
+      kinds={[]}
+      loading
+      periodControl={<button>période</button>}
+      points={empty}
+      rangeLabel="Du 1 au 2 oct. 2026"
+    />
   );
   expect(html).not.toContain("DA");
-  expect(html).toContain('aria-label="Chargement des recettes et de l’activité"');
+  expect(html).toContain(
+    'aria-label="Chargement des recettes et de l’activité"'
+  );
   expect(html).toContain('aria-busy="true"');
   expect(html).toContain("loading-skeleton-shape");
   expect(html).toContain("Recettes &amp; activité");
@@ -59,7 +98,15 @@ it("pendant la lecture du journal : un squelette, jamais « 0 DA », et la barre
 });
 it("squelette pas encore révélé (lecture rapide) : les formes restent invisibles", () => {
   const html = renderToStaticMarkup(
-    <RevenueChartWidget footer={null} kinds={[]} loading loadingRevealed={false} periodControl={null} points={points} rangeLabel="x" />
+    <RevenueChartWidget
+      footer={null}
+      kinds={[]}
+      loading
+      loadingRevealed={false}
+      periodControl={null}
+      points={points}
+      rangeLabel="x"
+    />
   );
   expect(html).toContain("invisible");
   expect(html).not.toContain("DA<");

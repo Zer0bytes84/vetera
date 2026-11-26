@@ -7,9 +7,7 @@ import {
 } from "../../src/domain/clinical/scheduling";
 import type { Appointment } from "../../src/types/db";
 
-const appointment = (
-  overrides: Partial<Appointment> = {}
-): Appointment => ({
+const appointment = (overrides: Partial<Appointment> = {}): Appointment => ({
   id: "appointment-1",
   patientId: "patient-1",
   ownerId: "owner-1",
@@ -26,11 +24,21 @@ const appointment = (
 
 describe("appointment scheduling rules", () => {
   it("supports the professional arrival workflow", () => {
-    expect(() => assertAppointmentStatusTransition("scheduled", "confirmed")).not.toThrow();
-    expect(() => assertAppointmentStatusTransition("confirmed", "arrived")).not.toThrow();
-    expect(() => assertAppointmentStatusTransition("arrived", "waiting")).not.toThrow();
-    expect(() => assertAppointmentStatusTransition("waiting", "in_progress")).not.toThrow();
-    expect(() => assertAppointmentStatusTransition("in_progress", "completed")).not.toThrow();
+    expect(() =>
+      assertAppointmentStatusTransition("scheduled", "confirmed")
+    ).not.toThrow();
+    expect(() =>
+      assertAppointmentStatusTransition("confirmed", "arrived")
+    ).not.toThrow();
+    expect(() =>
+      assertAppointmentStatusTransition("arrived", "waiting")
+    ).not.toThrow();
+    expect(() =>
+      assertAppointmentStatusTransition("waiting", "in_progress")
+    ).not.toThrow();
+    expect(() =>
+      assertAppointmentStatusTransition("in_progress", "completed")
+    ).not.toThrow();
   });
 
   it("prevents reopening a completed consultation", () => {
@@ -55,10 +63,7 @@ describe("appointment scheduling rules", () => {
       [appointment()]
     );
 
-    expect(conflicts.map(({ kind }) => kind)).toEqual([
-      "veterinarian",
-      "room",
-    ]);
+    expect(conflicts.map(({ kind }) => kind)).toEqual(["veterinarian", "room"]);
   });
 
   it("ignores terminal appointments when checking availability", () => {

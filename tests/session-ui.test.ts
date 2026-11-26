@@ -44,7 +44,7 @@ describe("barre latérale", () => {
   it("pose le compte dans le footer, façon Catalyst, sans bouton Paramètres séparé", () => {
     const footer = sidebar.slice(
       sidebar.indexOf("<SidebarFooter"),
-      sidebar.indexOf("</SidebarFooter>"),
+      sidebar.indexOf("</SidebarFooter>")
     );
     expect(footer).toContain("AccountSidebarFooter");
     expect(footer).not.toContain('aria-label="Paramètres"');

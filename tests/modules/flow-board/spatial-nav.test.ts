@@ -20,7 +20,11 @@ const cards = [
 ];
 const from = (id: string) => cards.find((card) => card.id === id)!.box;
 const go = (id: string, direction: "up" | "down" | "left" | "right") =>
-  nearestInDirection(from(id), cards.filter((card) => card.id !== id), direction)?.id ?? null;
+  nearestInDirection(
+    from(id),
+    cards.filter((card) => card.id !== id),
+    direction
+  )?.id ?? null;
 
 describe("flèches du tableau", () => {
   it("parcourt la grille des prévus de gauche à droite", () => {

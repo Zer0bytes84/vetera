@@ -1,8 +1,17 @@
 import { describe, expect, it } from "vitest";
-import { careDaySummary, careDoses, careTimeline } from "@/modules/care-tasks/care-day";
+import {
+  careDaySummary,
+  careDoses,
+  careTimeline,
+} from "@/modules/care-tasks/care-day";
 import type { CareTask } from "@/modules/care-tasks/domain";
 
-const task = (id: string, at: string, statut: CareTask["statut"], patient_id = "p1") => ({
+const task = (
+  id: string,
+  at: string,
+  statut: CareTask["statut"],
+  patient_id = "p1"
+) => ({
   id,
   patient_id,
   statut,
@@ -20,7 +29,13 @@ const day = [
 describe("careDaySummary", () => {
   it("leaves cancelled care out of what is planned", () => {
     const summary = careDaySummary(day, now);
-    expect(summary).toMatchObject({ planned: 4, done: 1, pending: 3, inProgress: 1, cancelled: 1 });
+    expect(summary).toMatchObject({
+      planned: 4,
+      done: 1,
+      pending: 3,
+      inProgress: 1,
+      cancelled: 1,
+    });
     expect(summary.overdue.map((t) => t.id)).toEqual(["b"]);
     expect(summary.next?.id).toBe("c");
   });
@@ -30,16 +45,31 @@ describe("careDaySummary with care carried from earlier days", () => {
   it("counts earlier undone care as late and to finish, never as planned today", () => {
     const carried = task("old", "08:00", "a_faire", "p1");
     const earlier = { ...carried, heure_prevue: "2026-10-14T12:30:00" };
-    const summary = careDaySummary([earlier, ...day], now, new Date("2026-10-21T00:00:00"));
-    expect(summary).toMatchObject({ planned: 4, pending: 4, carried: 1, cancelled: 1 });
+    const summary = careDaySummary(
+      [earlier, ...day],
+      now,
+      new Date("2026-10-21T00:00:00")
+    );
+    expect(summary).toMatchObject({
+      planned: 4,
+      pending: 4,
+      carried: 1,
+      cancelled: 1,
+    });
     expect(summary.overdue.map((t) => t.id)).toEqual(["old", "b"]);
   });
 });
 
 describe("careDoses", () => {
   it("counts done out of planned for one animal", () => {
-    expect(careDoses(day.filter((t) => t.patient_id === "p1"))).toEqual({ done: 1, total: 3 });
-    expect(careDoses(day.filter((t) => t.patient_id === "p2"))).toEqual({ done: 0, total: 1 });
+    expect(careDoses(day.filter((t) => t.patient_id === "p1"))).toEqual({
+      done: 1,
+      total: 3,
+    });
+    expect(careDoses(day.filter((t) => t.patient_id === "p2"))).toEqual({
+      done: 0,
+      total: 1,
+    });
   });
 });
 

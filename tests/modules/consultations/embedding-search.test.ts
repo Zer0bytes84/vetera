@@ -41,7 +41,12 @@ const fixture = vi.hoisted(() => ({
 const vector = (index = 0) =>
   Array.from({ length: 768 }, (_, i) => (i === index ? 1 : 0));
 vi.mock("../../../src/modules/consultations/local-ai/models", () => ({
-  getLocalModels: async () => ({ embeddingReady: true, embedding2Ready: fixture.embedding2, arcticReady: fixture.arctic, root: "local" }),
+  getLocalModels: async () => ({
+    embeddingReady: true,
+    embedding2Ready: fixture.embedding2,
+    arcticReady: fixture.arctic,
+    root: "local",
+  }),
   getLocalModelUrls: () => ({ modelRoot: "local/", runtimeRoot: "runtime/" }),
 }));
 vi.mock("../../../src/modules/consultations/local-ai/inference-client", () => ({
@@ -58,7 +63,11 @@ vi.mock("../../../src/modules/consultations/local-ai/inference-client", () => ({
           return {
             type: "embedded",
             // arctic answers in 1 024 dimensions, with a tail that truncation must drop.
-            vectors: message.texts.map(() => (message.model === "arctic" ? [...vector(), ...Array.from({ length: 256 }, () => 3)] : vector())),
+            vectors: message.texts.map(() =>
+              message.model === "arctic"
+                ? [...vector(), ...Array.from({ length: 256 }, () => 3)]
+                : vector()
+            ),
           };
         },
         // Parking hands the lease back; the next search resumes it.
@@ -212,41 +221,109 @@ afterEach(() => {
   rmSync(directory, { recursive: true, force: true });
 });
 describe("Lecture des nouveaux documents sans copie dans les anciennes notes", () => {
-  function insertDocument(id: string, patientId = "rex", state = "finalise", textState?: string) {
-    const attachment = textState ? JSON.stringify({ name: "laboratoire.pdf", mimeType: "application/pdf", size: 20, dataUrl: "data:application/pdf;base64,JVBERi0=", textState, pages: [{ page: 2, text: "Amoxicilline 50 mg matin et soir." }] }) : null;
-    fixture.db!.prepare("INSERT INTO documents(id,patient_id,patient_name,type_document,titre,contenu_genere,statut,clinic_snapshot,values_snapshot,created_at,updated_at,created_by,author_name,finalized_at,attachment_json) VALUES(?,?,?,'import',?,'Amoxicilline 50 mg matin et soir.',?,'{}','{}','2026-10-17T09:00:00Z','2026-10-17T09:00:00Z','vet','Dr Test',?,?)")
-      .run(id, patientId, patientId, id, state, state === "finalise" ? "2026-10-17T09:00:00Z" : null, attachment);
+  function insertDocument(
+    id: string,
+    patientId = "rex",
+    state = "finalise",
+    textState?: string
+  ) {
+    const attachment = textState
+      ? JSON.stringify({
+          name: "laboratoire.pdf",
+          mimeType: "application/pdf",
+          size: 20,
+          dataUrl: "data:application/pdf;base64,JVBERi0=",
+          textState,
+          pages: [{ page: 2, text: "Amoxicilline 50 mg matin et soir." }],
+        })
+      : null;
+    fixture
+      .db!.prepare(
+        "INSERT INTO documents(id,patient_id,patient_name,type_document,titre,contenu_genere,statut,clinic_snapshot,values_snapshot,created_at,updated_at,created_by,author_name,finalized_at,attachment_json) VALUES(?,?,?,'import',?,'Amoxicilline 50 mg matin et soir.',?,'{}','{}','2026-10-17T09:00:00Z','2026-10-17T09:00:00Z','vet','Dr Test',?,?)"
+      )
+      .run(
+        id,
+        patientId,
+        patientId,
+        id,
+        state,
+        state === "finalise" ? "2026-10-17T09:00:00Z" : null,
+        attachment
+      );
   }
-  const documentScope: SearchScope = { patientId: "rex", sourceTypes: ["document"], sections: ["document"] };
+  const documentScope: SearchScope = {
+    patientId: "rex",
+    sourceTypes: ["document"],
+    sections: ["document"],
+  };
   it("retrouve le document finalisé et le PDF extractible du patient courant sans modèle ni insertion d’une note", async () => {
-    insertDocument("generated"); insertDocument("pdf", "rex", "finalise", "extractible"); insertDocument("other-patient", "mocha");
+    insertDocument("generated");
+    insertDocument("pdf", "rex", "finalise", "extractible");
+    insertDocument("other-patient", "mocha");
     fixture.failEmbedding = true;
     const found = await searchPatientDocuments(documentScope, "Amoxicilline");
-    expect(found.map(row => row.sourceId).sort()).toEqual(["patient-document:generated", "patient-document:pdf"]);
-    expect(found.every(row => row.patientId === "rex")).toBe(true);
-    expect(found.find(row => row.sourceId.endsWith(":pdf"))?.text).toContain("Page 2");
-    expect(fixture.db!.prepare("SELECT COUNT(*) AS count FROM notes").get()).toEqual({ count: 0 });
+    expect(found.map((row) => row.sourceId).sort()).toEqual([
+      "patient-document:generated",
+      "patient-document:pdf",
+    ]);
+    expect(found.every((row) => row.patientId === "rex")).toBe(true);
+    expect(found.find((row) => row.sourceId.endsWith(":pdf"))?.text).toContain(
+      "Page 2"
+    );
+    expect(
+      fixture.db!.prepare("SELECT COUNT(*) AS count FROM notes").get()
+    ).toEqual({ count: 0 });
   });
   it("exclut immédiatement les documents annulés, les brouillons, les scans et les images", async () => {
-    insertDocument("cancelled"); insertDocument("draft", "rex", "brouillon"); insertDocument("scan", "rex", "finalise", "scan"); insertDocument("image", "rex", "finalise", "image");
-    fixture.db!.exec("UPDATE documents SET statut='annule',motif_annulation='Erreur de patient' WHERE id='cancelled'");
-    expect(await readPatientLexicalMatches(adapter(), documentScope, "Amoxicilline")).toEqual([]);
+    insertDocument("cancelled");
+    insertDocument("draft", "rex", "brouillon");
+    insertDocument("scan", "rex", "finalise", "scan");
+    insertDocument("image", "rex", "finalise", "image");
+    fixture.db!.exec(
+      "UPDATE documents SET statut='annule',motif_annulation='Erreur de patient' WHERE id='cancelled'"
+    );
+    expect(
+      await readPatientLexicalMatches(adapter(), documentScope, "Amoxicilline")
+    ).toEqual([]);
   });
   it("conserve l’identité de chaque patient uniquement dans le mode global explicite", async () => {
-    insertDocument("rex-document"); insertDocument("mocha-document", "mocha");
-    const matches = await searchAllPatientsFastLexical({ sourceTypes: ["document"], sections: ["document"] }, "Amoxicilline");
-    expect(matches.map(row => row.patientId).sort()).toEqual(["mocha", "rex"]);
-    expect(matches.every(row => row.patientName)).toBe(true);
+    insertDocument("rex-document");
+    insertDocument("mocha-document", "mocha");
+    const matches = await searchAllPatientsFastLexical(
+      { sourceTypes: ["document"], sections: ["document"] },
+      "Amoxicilline"
+    );
+    expect(matches.map((row) => row.patientId).sort()).toEqual([
+      "mocha",
+      "rex",
+    ]);
+    expect(matches.every((row) => row.patientName)).toBe(true);
   });
 });
 describe("Recherche sémantique locale : index et isolation", () => {
   it("retrouve bactérie dans une rubrique bactérienne sans abaisser le seuil sémantique", () => {
-    const chunk = soapSearchChunks(soap()).find(row => row.section === "assessment")!;
+    const chunk = soapSearchChunks(soap()).find(
+      (row) => row.section === "assessment"
+    )!;
     const withScore = (score: number) => {
-      const result = vector(); result[0] = score; result[1] = Math.sqrt(1 - score * score); return result;
+      const result = vector();
+      result[0] = score;
+      result[1] = Math.sqrt(1 - score * score);
+      return result;
     };
-    const rows = [{ ...chunk, text: "Perte de poids\n\nCause bactérienne", vector: withScore(0.284146) },
-      { ...chunk, sourceId: "viral", text: "Cause virale", vector: withScore(0.189) }];
+    const rows = [
+      {
+        ...chunk,
+        text: "Perte de poids\n\nCause bactérienne",
+        vector: withScore(0.284146),
+      },
+      {
+        ...chunk,
+        sourceId: "viral",
+        text: "Cause virale",
+        vector: withScore(0.189),
+      },
+    ];
     expect(rankPatientChunks(rows, vector(), scope)).toEqual([]);
     const found = rankPatientChunks(rows, vector(), scope, 5, 0.6, "bactérie");
     expect(found).toHaveLength(1);
@@ -256,29 +333,72 @@ describe("Recherche sémantique locale : index et isolation", () => {
   it("ne confond pas variantes textuelles avec des synonymes ni préfixes arbitraires", () => {
     expect(matchesSearchTerms("bactérie", "Cause bactérienne")).toBe(true);
     expect(matchesSearchTerms("bactéries", "Cause bactérienne")).toBe(true);
-    expect(matchesSearchTerms("bactérie résistance", "Cause bactérienne")).toBe(false);
+    expect(matchesSearchTerms("bactérie résistance", "Cause bactérienne")).toBe(
+      false
+    );
     expect(matchesSearchTerms("bact", "Cause bactérienne")).toBe(false);
     expect(matchesSearchTerms("bactérie", "Cause virale")).toBe(false);
   });
   it("autorise tous les patients uniquement via la recherche explicite et conserve leur identité", async () => {
-    const found = await searchAllPatientsDocuments({sourceTypes:["soap"],sections:["assessment"]}, "Infection");
-    expect(found.map(row => row.patientId).sort()).toEqual(["mocha", "rex"]);
-    expect(found.every(row => row.patientName === row.patientId && row.section === "assessment")).toBe(true);
+    const found = await searchAllPatientsDocuments(
+      { sourceTypes: ["soap"], sections: ["assessment"] },
+      "Infection"
+    );
+    expect(found.map((row) => row.patientId).sort()).toEqual(["mocha", "rex"]);
+    expect(
+      found.every(
+        (row) =>
+          row.patientName === row.patientId && row.section === "assessment"
+      )
+    ).toBe(true);
     const own = await searchPatientDocuments(scope, "Infection");
-    expect(own.map(row => row.patientId)).toEqual(["rex"]);
+    expect(own.map((row) => row.patientId)).toEqual(["rex"]);
   });
   it("garde les filtres source et rubrique dans le mode tous les patients", async () => {
-    expect(await searchAllPatientsDocuments({sourceTypes:["document"],sections:["document"]}, "Infection")).toEqual([]);
-    expect(await searchAllPatientsDocuments({sourceTypes:["soap"],sections:["plan"]}, "Contrôle")).toHaveLength(2);
-    await expect(searchAllPatientsDocuments({sourceTypes:[],sections:["plan"]}, "Contrôle")).rejects.toThrow();
+    expect(
+      await searchAllPatientsDocuments(
+        { sourceTypes: ["document"], sections: ["document"] },
+        "Infection"
+      )
+    ).toEqual([]);
+    expect(
+      await searchAllPatientsDocuments(
+        { sourceTypes: ["soap"], sections: ["plan"] },
+        "Contrôle"
+      )
+    ).toHaveLength(2);
+    await expect(
+      searchAllPatientsDocuments(
+        { sourceTypes: [], sections: ["plan"] },
+        "Contrôle"
+      )
+    ).rejects.toThrow();
   });
   it("ne permet pas au mode global de rechercher une note non validée", async () => {
-    fixture.db!.prepare("UPDATE consultation_soaps SET ai_draft='{}' WHERE patient_id='mocha'").run();
-    expect((await searchAllPatientsDocuments({sourceTypes:["soap"],sections:["assessment"]}, "Infection")).map(row => row.patientId)).toEqual(["rex"]);
+    fixture
+      .db!.prepare(
+        "UPDATE consultation_soaps SET ai_draft='{}' WHERE patient_id='mocha'"
+      )
+      .run();
+    expect(
+      (
+        await searchAllPatientsDocuments(
+          { sourceTypes: ["soap"], sections: ["assessment"] },
+          "Infection"
+        )
+      ).map((row) => row.patientId)
+    ).toEqual(["rex"]);
   });
   it("respecte l’annulation avant l’indexation globale", async () => {
-    const controller = new AbortController(); controller.abort();
-    await expect(searchAllPatientsDocuments({sourceTypes:["soap"],sections:["assessment"]}, "Infection", controller.signal)).rejects.toThrow("Tâche annulée");
+    const controller = new AbortController();
+    controller.abort();
+    await expect(
+      searchAllPatientsDocuments(
+        { sourceTypes: ["soap"], sections: ["assessment"] },
+        "Infection",
+        controller.signal
+      )
+    ).rejects.toThrow("Tâche annulée");
     expect(fixture.embeds).toBe(0);
   });
   it("keeps complete semantic sections, even beyond the former character limit", () => {
@@ -331,10 +451,14 @@ describe("Recherche sémantique locale : index et isolation", () => {
     expect(rows[0].patientId).toBe("rex");
     expect(rows[0].section).toBe("assessment");
     expect(
-      await readPatientSearchRows(adapter(), {
-        ...scope,
-        sourceTypes: ["document"],
-      }, "sections")
+      await readPatientSearchRows(
+        adapter(),
+        {
+          ...scope,
+          sourceTypes: ["document"],
+        },
+        "sections"
+      )
     ).toEqual([]);
   });
   it("defends patient and section scope even if a database adapter returns excess rows", () => {
@@ -429,9 +553,13 @@ describe("Recherche sémantique locale : index et isolation", () => {
     fixture.db!.exec(
       "UPDATE consultation_soaps SET assessment='Nouvelle évaluation' WHERE id='soap-rex'"
     );
-    expect(await readPatientSearchRows(adapter(), scope, "sections")).toEqual([]);
+    expect(await readPatientSearchRows(adapter(), scope, "sections")).toEqual(
+      []
+    );
     await indexPatientDocuments("rex", new AbortController().signal, () => {});
-    expect(await readPatientSearchRows(adapter(), scope, "sections")).toEqual([]);
+    expect(await readPatientSearchRows(adapter(), scope, "sections")).toEqual(
+      []
+    );
     const changed = { ...soap(), assessment: "Nouvelle évaluation" };
     fixture
       .db!.prepare(
@@ -481,61 +609,115 @@ describe("Recherche sémantique locale : index et isolation", () => {
       setItem: (key: string, value: string) => void store.set(key, value),
     });
     try {
-      await indexPatientDocuments("rex", new AbortController().signal, () => {});
+      await indexPatientDocuments(
+        "rex",
+        new AbortController().signal,
+        () => {}
+      );
       const counts = fixture
-        .db!.prepare("SELECT model_key AS key, COUNT(*) AS n FROM embeddings GROUP BY model_key ORDER BY model_key")
+        .db!.prepare(
+          "SELECT model_key AS key, COUNT(*) AS n FROM embeddings GROUP BY model_key ORDER BY model_key"
+        )
         .all() as Array<{ key: string; n: number }>;
       expect(counts).toEqual(
         expect.arrayContaining([
           { key: EMBEDDING_MODEL_KEY, n: 4 },
           { key: PASSAGE_MODEL_KEY, n: 4 },
-        ]),
+        ])
       );
       expect(counts).toHaveLength(2);
       // Depuis la bascule A1, la recherche lit l’index par extraits par défaut.
-      expect((await readPatientSearchRows(adapter(), scope))[0]).toMatchObject({ text: "Infection respiratoire." });
-      expect(await readPatientSearchRows(adapter(), scope, "sections")).toHaveLength(1);
+      expect((await readPatientSearchRows(adapter(), scope))[0]).toMatchObject({
+        text: "Infection respiratoire.",
+      });
+      expect(
+        await readPatientSearchRows(adapter(), scope, "sections")
+      ).toHaveLength(1);
       store.set("baitari.search.generation", "passages");
       const results = await searchPatientDocuments(scope, "infection");
-      expect(results[0]).toMatchObject({ sourceId: "soap-rex", text: "Infection respiratoire." });
+      expect(results[0]).toMatchObject({
+        sourceId: "soap-rex",
+        text: "Infection respiratoire.",
+      });
       // Réécrire l’index par extraits ne touche pas à l’index par rubriques.
       const chunks = passageChunks(soapSearchChunks(soap()));
-      await persistSearchChunks(adapter(), chunks, chunks.map(() => vector()), "passages");
+      await persistSearchChunks(
+        adapter(),
+        chunks,
+        chunks.map(() => vector()),
+        "passages"
+      );
       store.set("baitari.search.generation", "sections");
-      expect(await readPatientSearchRows(adapter(), scope, "sections")).toHaveLength(1);
-      expect(await readPatientSearchRows(adapter(), scope, "passages")).toHaveLength(1);
+      expect(
+        await readPatientSearchRows(adapter(), scope, "sections")
+      ).toHaveLength(1);
+      expect(
+        await readPatientSearchRows(adapter(), scope, "passages")
+      ).toHaveLength(1);
     } finally {
       vi.unstubAllGlobals();
     }
   });
   it("A2 : tient l’index EmbeddingGemma 2 à jour seulement si son modèle est installé, avec son propre modèle", async () => {
     await indexPatientDocuments("rex", new AbortController().signal, () => {});
-    expect(fixture.models.every((model) => model === "embeddinggemma")).toBe(true);
-    expect(fixture.db!.prepare("SELECT COUNT(*) AS n FROM embeddings WHERE model_key=?").get(PASSAGE_V2_MODEL_KEY)!.n).toBe(0);
+    expect(fixture.models.every((model) => model === "embeddinggemma")).toBe(
+      true
+    );
+    expect(
+      fixture
+        .db!.prepare("SELECT COUNT(*) AS n FROM embeddings WHERE model_key=?")
+        .get(PASSAGE_V2_MODEL_KEY)!.n
+    ).toBe(0);
     fixture.embedding2 = true;
     fixture.models = [];
     await indexPatientDocuments("rex", new AbortController().signal, () => {});
     expect(fixture.models).toEqual(["embeddinggemma2"]);
-    expect(fixture.db!.prepare("SELECT COUNT(*) AS n FROM embeddings WHERE model_key=?").get(PASSAGE_V2_MODEL_KEY)!.n).toBe(4);
+    expect(
+      fixture
+        .db!.prepare("SELECT COUNT(*) AS n FROM embeddings WHERE model_key=?")
+        .get(PASSAGE_V2_MODEL_KEY)!.n
+    ).toBe(4);
     // The v1 indexes are untouched by the v2 one.
-    expect(fixture.db!.prepare("SELECT COUNT(*) AS n FROM embeddings WHERE model_key=?").get(PASSAGE_MODEL_KEY)!.n).toBe(4);
+    expect(
+      fixture
+        .db!.prepare("SELECT COUNT(*) AS n FROM embeddings WHERE model_key=?")
+        .get(PASSAGE_MODEL_KEY)!.n
+    ).toBe(4);
   });
   it("A2 : l’index arctic, tronqué à 768 dimensions, n’existe que si arctic est installé", async () => {
     await indexPatientDocuments("rex", new AbortController().signal, () => {});
-    expect(fixture.db!.prepare("SELECT COUNT(*) AS n FROM embeddings WHERE model_key=?").get(PASSAGE_ARCTIC_MODEL_KEY)!.n).toBe(0);
+    expect(
+      fixture
+        .db!.prepare("SELECT COUNT(*) AS n FROM embeddings WHERE model_key=?")
+        .get(PASSAGE_ARCTIC_MODEL_KEY)!.n
+    ).toBe(0);
     fixture.arctic = true;
     fixture.models = [];
     await indexPatientDocuments("rex", new AbortController().signal, () => {});
     expect(fixture.models).toEqual(["arctic"]);
-    const rows = fixture.db!.prepare("SELECT embedding AS vector FROM embeddings WHERE model_key=?").all(PASSAGE_ARCTIC_MODEL_KEY) as { vector: Uint8Array }[];
+    const rows = fixture
+      .db!.prepare(
+        "SELECT embedding AS vector FROM embeddings WHERE model_key=?"
+      )
+      .all(PASSAGE_ARCTIC_MODEL_KEY) as { vector: Uint8Array }[];
     expect(rows).toHaveLength(4);
     expect(rows.every((row) => row.vector.byteLength === 3072)).toBe(true);
-    const stored = new Float32Array(rows[0].vector.buffer, rows[0].vector.byteOffset, 768);
+    const stored = new Float32Array(
+      rows[0].vector.buffer,
+      rows[0].vector.byteOffset,
+      768
+    );
     expect(stored[0]).toBeCloseTo(1);
-    expect(fixture.db!.prepare("SELECT COUNT(*) AS n FROM embeddings WHERE model_key=?").get(PASSAGE_MODEL_KEY)!.n).toBe(4);
+    expect(
+      fixture
+        .db!.prepare("SELECT COUNT(*) AS n FROM embeddings WHERE model_key=?")
+        .get(PASSAGE_MODEL_KEY)!.n
+    ).toBe(4);
   });
   it("A2 : la recherche v2 interroge EmbeddingGemma 2, et revient à la v1 tant que la v2 manque", async () => {
-    const store = new Map<string, string>([["baitari.search.generation", "passages2"]]);
+    const store = new Map<string, string>([
+      ["baitari.search.generation", "passages2"],
+    ]);
     vi.stubGlobal("localStorage", {
       getItem: (key: string) => store.get(key) ?? null,
       setItem: (key: string, value: string) => void store.set(key, value),
@@ -547,28 +729,51 @@ describe("Recherche sémantique locale : index et isolation", () => {
       fixture.models = [];
       const results = await searchPatientDocuments(scope, "infection");
       expect(fixture.models.at(-1)).toBe("embeddinggemma2");
-      expect(results[0]).toMatchObject({ sourceId: "soap-rex", text: "Infection respiratoire." });
+      expect(results[0]).toMatchObject({
+        sourceId: "soap-rex",
+        text: "Infection respiratoire.",
+      });
     } finally {
       vi.unstubAllGlobals();
     }
   });
   it("découpe une section longue en extraits indexés au lieu de la refuser", async () => {
-    const long = Array.from({ length: 80 }, (_, i) => `Observation ${i} du suivi rénal et digestif détaillée.`).join(" ");
+    const long = Array.from(
+      { length: 80 },
+      (_, i) => `Observation ${i} du suivi rénal et digestif détaillée.`
+    ).join(" ");
     fixture.db!.exec("DELETE FROM consultation_soaps WHERE id='soap-rex'");
-    insertSoap(soap("rex", "soap-rex", { subjective: "Suivi.", objective: "", assessment: long, plan: "" }));
+    insertSoap(
+      soap("rex", "soap-rex", {
+        subjective: "Suivi.",
+        objective: "",
+        assessment: long,
+        plan: "",
+      })
+    );
     await indexPatientDocuments("rex", new AbortController().signal, () => {});
     const passages = await readPatientSearchRows(adapter(), scope, "passages");
     expect(passages.length).toBeGreaterThan(3);
-    expect(Math.max(...passages.map((row) => row.text.length))).toBeLessThanOrEqual(PASSAGE_CHARACTERS + 1);
-    expect(passages.map((row) => row.chunkIndex)).toEqual(passages.map((_, i) => i));
+    expect(
+      Math.max(...passages.map((row) => row.text.length))
+    ).toBeLessThanOrEqual(PASSAGE_CHARACTERS + 1);
+    expect(passages.map((row) => row.chunkIndex)).toEqual(
+      passages.map((_, i) => i)
+    );
   });
   it("deletes embeddings with the source and leaves the other patient intact", async () => {
     await persist();
     await persist(soap("mocha", "soap-mocha"));
     fixture.db!.exec("DELETE FROM consultation_soaps WHERE id='soap-rex'");
-    expect(await readPatientSearchRows(adapter(), scope, "sections")).toEqual([]);
+    expect(await readPatientSearchRows(adapter(), scope, "sections")).toEqual(
+      []
+    );
     expect(
-      await readPatientSearchRows(adapter(), { ...scope, patientId: "mocha" }, "sections")
+      await readPatientSearchRows(
+        adapter(),
+        { ...scope, patientId: "mocha" },
+        "sections"
+      )
     ).toHaveLength(1);
   });
   it("cascades through patient deletion", async () => {
@@ -584,7 +789,9 @@ describe("Recherche sémantique locale : index et isolation", () => {
       "PRAGMA foreign_keys=OFF; DELETE FROM consultation_soaps WHERE id='soap-rex'"
     );
     expect(await detectSearchOrphans(adapter(), "rex")).toHaveLength(4);
-    expect(await readPatientSearchRows(adapter(), scope, "sections")).toEqual([]);
+    expect(await readPatientSearchRows(adapter(), scope, "sections")).toEqual(
+      []
+    );
     await indexPatientDocuments("rex", new AbortController().signal, () => {});
     expect(await detectSearchOrphans(adapter(), "rex")).toEqual([]);
   });
@@ -597,7 +804,9 @@ describe("Recherche sémantique locale : index et isolation", () => {
     } catch {
       fixture.db!.exec("ROLLBACK");
     }
-    expect(await readPatientSearchRows(adapter(), scope, "sections")).toHaveLength(1);
+    expect(
+      await readPatientSearchRows(adapter(), scope, "sections")
+    ).toHaveLength(1);
   });
   it("indexes validated patient-linked protocols separately from clinical notes", async () => {
     const note = {
@@ -615,13 +824,19 @@ describe("Recherche sémantique locale : index et isolation", () => {
       .run(note.id, note.content, note.tags, note.patientId);
     const chunks = documentSearchChunks(note, "Suivi validé", "protocol");
     await persistSearchChunks(adapter(), chunks, [vector()]);
-    expect(await readPatientSearchRows(adapter(), scope, "sections")).toEqual([]);
+    expect(await readPatientSearchRows(adapter(), scope, "sections")).toEqual(
+      []
+    );
     expect(
-      await readPatientSearchRows(adapter(), {
-        patientId: "rex",
-        sourceTypes: ["protocol"],
-        sections: ["protocol"],
-      }, "sections")
+      await readPatientSearchRows(
+        adapter(),
+        {
+          patientId: "rex",
+          sourceTypes: ["protocol"],
+          sections: ["protocol"],
+        },
+        "sections"
+      )
     ).toHaveLength(1);
     fixture.db!.exec("DELETE FROM notes WHERE id='protocol'");
     expect(
@@ -665,28 +880,53 @@ describe("Recherche sémantique locale : index et isolation", () => {
     ).toBe(true);
   });
   it("assure le mapping bi-directionnel obligatoire marque <-> DCI", () => {
-    expect(matchesSearchTerms("Metacam", "Prescription de méloxicam 1.5 mg")).toBe(true);
+    expect(
+      matchesSearchTerms("Metacam", "Prescription de méloxicam 1.5 mg")
+    ).toBe(true);
     expect(matchesSearchTerms("méloxicam", "Metacam buvable 10ml")).toBe(true);
     expect(
-      matchesSearchTerms("Synulox", "Traitement amoxicilline-acide clavulanique")
+      matchesSearchTerms(
+        "Synulox",
+        "Traitement amoxicilline-acide clavulanique"
+      )
     ).toBe(true);
     expect(
-      matchesSearchTerms("amoxicilline-acide clavulanique", "Synulox 50 mg comprimés")
+      matchesSearchTerms(
+        "amoxicilline-acide clavulanique",
+        "Synulox 50 mg comprimés"
+      )
     ).toBe(true);
     expect(
-      matchesSearchTerms("Clavaseptin", "Prescription amoxicilline-acide clavulanique")
+      matchesSearchTerms(
+        "Clavaseptin",
+        "Prescription amoxicilline-acide clavulanique"
+      )
     ).toBe(true);
-    expect(matchesSearchTerms("Convenia", "Injection SC de céfovécine")).toBe(true);
-    expect(matchesSearchTerms("céfovécine", "Convenia injectable longue action")).toBe(true);
-    expect(matchesSearchTerms("Cerenia", "Administration de maropitant 1 mg/kg")).toBe(true);
-    expect(matchesSearchTerms("maropitant", "Cerenia comprimés anti-vomitif")).toBe(true);
+    expect(matchesSearchTerms("Convenia", "Injection SC de céfovécine")).toBe(
+      true
+    );
+    expect(
+      matchesSearchTerms("céfovécine", "Convenia injectable longue action")
+    ).toBe(true);
+    expect(
+      matchesSearchTerms("Cerenia", "Administration de maropitant 1 mg/kg")
+    ).toBe(true);
+    expect(
+      matchesSearchTerms("maropitant", "Cerenia comprimés anti-vomitif")
+    ).toBe(true);
   });
   it("assure l’expansion bi-directionnelle des acronymes vétérinaires (IRC, AINS)", () => {
     expect(
-      matchesSearchTerms("IRC", "Suivi pour insuffisance rénale chronique stade 2")
+      matchesSearchTerms(
+        "IRC",
+        "Suivi pour insuffisance rénale chronique stade 2"
+      )
     ).toBe(true);
     expect(
-      matchesSearchTerms("insuffisance rénale chronique", "Bilan annuel IRC féline")
+      matchesSearchTerms(
+        "insuffisance rénale chronique",
+        "Bilan annuel IRC féline"
+      )
     ).toBe(true);
     expect(
       matchesSearchTerms("AINS", "Arrêt de l'anti-inflammatoire non stéroïdien")
@@ -696,9 +936,9 @@ describe("Recherche sémantique locale : index et isolation", () => {
     expect(
       matchesSearchTerms("vomissement", "Le chat a vomi deux fois ce matin")
     ).toBe(true);
-    expect(
-      matchesSearchTerms("fièvre", "Hyperthermie modérée à 39.8°C")
-    ).toBe(true);
+    expect(matchesSearchTerms("fièvre", "Hyperthermie modérée à 39.8°C")).toBe(
+      true
+    );
     expect(
       matchesSearchTerms("diarrhée", "Épisode de selles liquides depuis hier")
     ).toBe(true);
@@ -781,8 +1021,10 @@ describe("Recherche sémantique locale : index et isolation", () => {
       )
       .run();
     const realSoap = soap("rex", "soap-rex-clinical", {
-      subjective: "Donc pour les antibiotiques ça sera pour 5 jours et pour le vaccin c'est tous les 3 mois. Fier et vomissement du patient",
-      objective: "Microbes. L'examen clinique a montré que le patient avait une fièvre aiguë.",
+      subjective:
+        "Donc pour les antibiotiques ça sera pour 5 jours et pour le vaccin c'est tous les 3 mois. Fier et vomissement du patient",
+      objective:
+        "Microbes. L'examen clinique a montré que le patient avait une fièvre aiguë.",
       assessment: "Perte de poids. Cause bactérienne. Suspicion IRC.",
       plan: "Traitement par Metacam (méloxicam) et Synulox (amoxicilline-acide clavulanique).",
     });
@@ -844,25 +1086,39 @@ describe("Recherche sémantique locale : index et isolation", () => {
       { patientId: "mocha", sourceTypes: ["soap"], sections: ["subjective"] },
       "Vaccination"
     );
-    expect(resMocha.filter(r => r.patientId === "rex")).toHaveLength(0);
+    expect(resMocha.filter((r) => r.patientId === "rex")).toHaveLength(0);
   });
 
   it("indexe et retrouve les données à travers l'ensemble des 6 domaines cliniques (patients, consultations, SOAP, documents, protocoles, produits)", async () => {
     // 1. Ajouter un produit (Vaccin rage, antibiotique Synulox)
-    fixture.db!
-      .prepare(
+    fixture
+      .db!.prepare(
         "INSERT INTO products (id, name, category, sub_category, quantity, unit, min_stock, purchase_price_amount, sale_price_amount) VALUES (?, ?, ?, ?, ?, ?, 0, 100, 200)"
       )
-      .run("prod-vaccin", "Vaccin Rabique Canin", "Pharmacie", "Vaccin", 15, "flacon");
-    fixture.db!
-      .prepare(
+      .run(
+        "prod-vaccin",
+        "Vaccin Rabique Canin",
+        "Pharmacie",
+        "Vaccin",
+        15,
+        "flacon"
+      );
+    fixture
+      .db!.prepare(
         "INSERT INTO products (id, name, category, sub_category, quantity, unit, min_stock, purchase_price_amount, sale_price_amount) VALUES (?, ?, ?, ?, ?, ?, 0, 150, 300)"
       )
-      .run("prod-synulox", "Synulox 250mg", "Pharmacie", "Antibiotique", 20, "boîte");
+      .run(
+        "prod-synulox",
+        "Synulox 250mg",
+        "Pharmacie",
+        "Antibiotique",
+        20,
+        "boîte"
+      );
 
     // 2. Ajouter une consultation (appointment) de type Vaccin
-    fixture.db!
-      .prepare(
+    fixture
+      .db!.prepare(
         "INSERT INTO appointments (id, patient_id, owner_id, vet_id, title, start_time, end_time, status, type, reason, diagnosis, treatment, notes) VALUES (?, ?, 'owner', 'vet', ?, '2026-10-10 14:00:00', '2026-10-10 14:30:00', 'completed', 'Vaccin', ?, ?, ?, ?)"
       )
       .run(
@@ -876,8 +1132,8 @@ describe("Recherche sémantique locale : index et isolation", () => {
       );
 
     // 3. Ajouter une note document et protocole
-    fixture.db!
-      .prepare(
+    fixture
+      .db!.prepare(
         "INSERT INTO notes (id, user_id, title, content, patient_id, tags) VALUES (?, 'vet', ?, ?, ?, ?)"
       )
       .run(
@@ -885,12 +1141,17 @@ describe("Recherche sémantique locale : index et isolation", () => {
         "Protocole Vaccinal Chiot",
         "Protocole vaccinal complet: primo-vaccination à 8 semaines puis rappel.",
         "rex",
-        JSON.stringify({ clinicalDocument: { type: "protocol", reviewedAt: "2026-10-10T10:00:00Z" } })
+        JSON.stringify({
+          clinicalDocument: {
+            type: "protocol",
+            reviewedAt: "2026-10-10T10:00:00Z",
+          },
+        })
       );
 
     // 4. Mettre à jour les informations du patient rex (IRC dans affections chroniques)
-    fixture.db!
-      .prepare(
+    fixture
+      .db!.prepare(
         "UPDATE patients SET chronic_conditions = 'Insuffisance rénale chronique (IRC)' WHERE id = 'rex'"
       )
       .run();
@@ -926,35 +1187,57 @@ describe("Recherche sémantique locale : index et isolation", () => {
     expect(sourceTypesVaccin).toContain("protocol");
 
     // B) Recherche "Synulox" : trouve le produit et le plan SOAP
-    const resultsSynulox = await searchAllPatientsClinical(allFilters, "Synulox");
+    const resultsSynulox = await searchAllPatientsClinical(
+      allFilters,
+      "Synulox"
+    );
     expect(resultsSynulox.length).toBeGreaterThanOrEqual(1);
-    expect(resultsSynulox.some((r) => r.sourceType === "product" && r.text.includes("Synulox"))).toBe(true);
+    expect(
+      resultsSynulox.some(
+        (r) => r.sourceType === "product" && r.text.includes("Synulox")
+      )
+    ).toBe(true);
 
     // C) Recherche "IRC" : trouve la fiche patient de Rex (et son assessment SOAP)
     const resultsIRC = await searchAllPatientsClinical(allFilters, "IRC");
     expect(resultsIRC.length).toBeGreaterThanOrEqual(1);
-    expect(resultsIRC.some((r) => r.patientId === "rex" && r.sourceType === "patient")).toBe(true);
+    expect(
+      resultsIRC.some(
+        (r) => r.patientId === "rex" && r.sourceType === "patient"
+      )
+    ).toBe(true);
   });
 });
-
-
-
-
 
 describe("recherche clinique exacte dans les sources validées", () => {
   it("retrouve bactérie sans modèle et garde le patient et la rubrique", async () => {
     const fields = { ...soap(), assessment: "Cause bactérienne" };
     const updated = soap("rex", "soap-rex", fields);
-    fixture.db!.prepare("UPDATE consultation_soaps SET assessment=?,content=? WHERE id=?")
+    fixture
+      .db!.prepare(
+        "UPDATE consultation_soaps SET assessment=?,content=? WHERE id=?"
+      )
       .run(updated.assessment, updated.content, updated.id);
     fixture.failEmbedding = true;
     const results = await searchPatientDocuments(scope, "bactérie");
     expect(results).toHaveLength(1);
-    expect(results[0]).toMatchObject({ patientId: "rex", section: "assessment", text: "Cause bactérienne", match: "text" });
-    expect(await searchPatientDocuments({ ...scope, sections: ["plan"] }, "bactérie").catch(() => [])).toEqual([]);
+    expect(results[0]).toMatchObject({
+      patientId: "rex",
+      section: "assessment",
+      text: "Cause bactérienne",
+      match: "text",
+    });
+    expect(
+      await searchPatientDocuments(
+        { ...scope, sections: ["plan"] },
+        "bactérie"
+      ).catch(() => [])
+    ).toEqual([]);
   });
   it("ne restitue pas une note modifiée sans nouvelle validation", async () => {
-    fixture.db!.exec("UPDATE consultation_soaps SET assessment='Cause bactérienne' WHERE id='soap-rex'");
+    fixture.db!.exec(
+      "UPDATE consultation_soaps SET assessment='Cause bactérienne' WHERE id='soap-rex'"
+    );
     fixture.failEmbedding = true;
     expect(await searchPatientDocuments(scope, "bactérie")).toEqual([]);
   });

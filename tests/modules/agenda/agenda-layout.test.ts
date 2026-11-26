@@ -1,9 +1,21 @@
 import { describe, expect, it } from "vitest";
-import { clock, fitHourPx, layoutDayEvents, MIN_BLOCK_MINUTES, slotAt, visibleHours } from "../../../src/modules/agenda/model/agenda-layout";
+import {
+  clock,
+  fitHourPx,
+  layoutDayEvents,
+  MIN_BLOCK_MINUTES,
+  slotAt,
+  visibleHours,
+} from "../../../src/modules/agenda/model/agenda-layout";
 
 const day = new Date(2026, 10, 7);
-const at = (h: number, m = 0, offset = 0) => new Date(2026, 10, 7 + offset, h, m).toISOString();
-const ev = (id: string, start: string, end?: string | null) => ({ id, startTime: start, endTime: end });
+const at = (h: number, m = 0, offset = 0) =>
+  new Date(2026, 10, 7 + offset, h, m).toISOString();
+const ev = (id: string, start: string, end?: string | null) => ({
+  id,
+  startTime: start,
+  endTime: end,
+});
 
 describe("placement des rendez-vous d'une journée", () => {
   it("place un rendez-vous seul sur toute la largeur", () => {
@@ -11,7 +23,14 @@ describe("placement des rendez-vous d'une journée", () => {
     expect([a.start, a.end, a.column, a.columns]).toEqual([570, 615, 0, 1]);
   });
   it("met côte à côte deux rendez-vous qui se chevauchent et rend la largeur après", () => {
-    const placed = layoutDayEvents([ev("a", at(9), at(10)), ev("b", at(9, 30), at(10, 30)), ev("c", at(11), at(12))], day);
+    const placed = layoutDayEvents(
+      [
+        ev("a", at(9), at(10)),
+        ev("b", at(9, 30), at(10, 30)),
+        ev("c", at(11), at(12)),
+      ],
+      day
+    );
     const byId = Object.fromEntries(placed.map((p) => [p.item.id, p]));
     expect([byId.a.column, byId.a.columns]).toEqual([0, 2]);
     expect([byId.b.column, byId.b.columns]).toEqual([1, 2]);
@@ -19,20 +38,28 @@ describe("placement des rendez-vous d'une journée", () => {
   });
   it("réutilise une colonne libérée dans un même groupe de chevauchements", () => {
     // a 9-12 ; b 9-10 ; c 10-11 : c passe sous b, dans la colonne 1, et le groupe garde 2 colonnes.
-    const placed = layoutDayEvents([ev("a", at(9), at(12)), ev("b", at(9), at(10)), ev("c", at(10), at(11))], day);
+    const placed = layoutDayEvents(
+      [ev("a", at(9), at(12)), ev("b", at(9), at(10)), ev("c", at(10), at(11))],
+      day
+    );
     const byId = Object.fromEntries(placed.map((p) => [p.item.id, p]));
     expect([byId.b.column, byId.c.column]).toEqual([1, 1]);
     expect(placed.every((p) => p.columns === 2)).toBe(true);
   });
   it("traite vingt rendez-vous simultanés sans en perdre ni les superposer", () => {
-    const many = Array.from({ length: 20 }, (_, i) => ev(`r${i}`, at(9), at(10)));
+    const many = Array.from({ length: 20 }, (_, i) =>
+      ev(`r${i}`, at(9), at(10))
+    );
     const placed = layoutDayEvents(many, day);
     expect(placed).toHaveLength(20);
     expect(new Set(placed.map((p) => p.column)).size).toBe(20);
     expect(placed.every((p) => p.columns === 20)).toBe(true);
   });
   it("des rendez-vous bout à bout ne se chevauchent pas", () => {
-    const placed = layoutDayEvents([ev("a", at(9), at(10)), ev("b", at(10), at(11))], day);
+    const placed = layoutDayEvents(
+      [ev("a", at(9), at(10)), ev("b", at(10), at(11))],
+      day
+    );
     expect(placed.map((p) => p.columns)).toEqual([1, 1]);
   });
   it("donne un bloc minimal à une durée nulle, absente ou inversée", () => {
@@ -43,7 +70,10 @@ describe("placement des rendez-vous d'une journée", () => {
   });
   it("groupe selon la place réellement occupée : un bloc court dessiné sur son voisin se place à côté", () => {
     // 14:00 pendant 5 min et 14:25 : bout à bout avec 20 min de bloc minimal, mais recouverts à l'écran avec 28 min.
-    const near = [ev("dora", at(14), at(14, 5)), ev("autre", at(14, 25), at(15))];
+    const near = [
+      ev("dora", at(14), at(14, 5)),
+      ev("autre", at(14, 25), at(15)),
+    ];
     expect(layoutDayEvents(near, day).map((p) => p.columns)).toEqual([1, 1]);
     const placed = layoutDayEvents(near, day, 28);
     expect(placed.map((p) => p.columns)).toEqual([2, 2]);
@@ -58,12 +88,33 @@ describe("placement des rendez-vous d'une journée", () => {
   });
   it("ignore un début illisible ou un rendez-vous d'un autre jour", () => {
     expect(layoutDayEvents([ev("x", "pas une date", at(10))], day)).toEqual([]);
-    expect(layoutDayEvents([ev("y", at(9, 0, 1), at(10, 0, 1))], day)).toEqual([]);
+    expect(layoutDayEvents([ev("y", at(9, 0, 1), at(10, 0, 1))], day)).toEqual(
+      []
+    );
     expect(layoutDayEvents([], day)).toEqual([]);
   });
   it("garde les journées de 23 et 25 heures au changement d'heure à l'intérieur de 0–1440", () => {
     for (const d of [new Date(2026, 2, 29), new Date(2026, 9, 25)]) {
-      const placed = layoutDayEvents([ev("a", new Date(d.getFullYear(), d.getMonth(), d.getDate(), 12).toISOString(), new Date(d.getFullYear(), d.getMonth(), d.getDate(), 13).toISOString())], d);
+      const placed = layoutDayEvents(
+        [
+          ev(
+            "a",
+            new Date(
+              d.getFullYear(),
+              d.getMonth(),
+              d.getDate(),
+              12
+            ).toISOString(),
+            new Date(
+              d.getFullYear(),
+              d.getMonth(),
+              d.getDate(),
+              13
+            ).toISOString()
+          ),
+        ],
+        d
+      );
       expect(placed[0].start).toBe(720);
       expect(placed[0].end).toBe(780);
     }
@@ -73,11 +124,21 @@ describe("placement des rendez-vous d'une journée", () => {
 describe("heures affichées et créneau cliqué", () => {
   it("affiche la journée de travail par défaut et s'étire pour ne rien cacher", () => {
     expect(visibleHours([])).toEqual({ from: 7, to: 20 });
-    expect(visibleHours([{ start: 5 * 60 + 30, end: 6 * 60 }, { start: 21 * 60, end: 22 * 60 + 10 }])).toEqual({ from: 5, to: 23 });
-    expect(visibleHours([{ start: 23 * 60, end: 1440 }])).toEqual({ from: 7, to: 24 });
+    expect(
+      visibleHours([
+        { start: 5 * 60 + 30, end: 6 * 60 },
+        { start: 21 * 60, end: 22 * 60 + 10 },
+      ])
+    ).toEqual({ from: 5, to: 23 });
+    expect(visibleHours([{ start: 23 * 60, end: 1440 }])).toEqual({
+      from: 7,
+      to: 24,
+    });
   });
   it("écrit les minutes en heures, 24:00 compris", () => {
-    expect([clock(0), clock(570), clock(1440), clock(2000), clock(-5)]).toEqual(["00:00", "09:30", "24:00", "24:00", "00:00"]);
+    expect([clock(0), clock(570), clock(1440), clock(2000), clock(-5)]).toEqual(
+      ["00:00", "09:30", "24:00", "24:00", "00:00"]
+    );
   });
   it("arrondit le clic au créneau en dessous et le garde sur la grille", () => {
     expect(slotAt(0, 56, 7, 20)).toBe(420);
@@ -89,11 +150,18 @@ describe("heures affichées et créneau cliqué", () => {
 
 describe("tous les rendez-vous tiennent dans la grille", () => {
   it("couvre de 6 h à 20 h quand les rendez-vous vont de 6 h à 20 h", () => {
-    const placed = layoutDayEvents([ev("tot", at(6), at(6, 30)), ev("tard", at(19, 30), at(20))], day);
+    const placed = layoutDayEvents(
+      [ev("tot", at(6), at(6, 30)), ev("tard", at(19, 30), at(20))],
+      day
+    );
     expect(visibleHours(placed)).toEqual({ from: 6, to: 20 });
   });
   it("garde chaque rendez-vous, même le plus tôt ou le plus tard, entre les heures affichées", () => {
-    const items = [ev("a", at(4, 15), at(4, 20)), ev("b", at(23, 50), at(23, 55)), ev("c", at(12), at(13))];
+    const items = [
+      ev("a", at(4, 15), at(4, 20)),
+      ev("b", at(23, 50), at(23, 55)),
+      ev("c", at(12), at(13)),
+    ];
     const placed = layoutDayEvents(items, day);
     const { from, to } = visibleHours(placed);
     for (const p of placed) {
@@ -109,13 +177,26 @@ describe("tous les rendez-vous tiennent dans la grille", () => {
   });
 });
 
-import { layoutTimeGrid, ROW_PX } from "../../../src/modules/agenda/model/agenda-layout";
+import {
+  layoutTimeGrid,
+  ROW_PX,
+} from "../../../src/modules/agenda/model/agenda-layout";
 
 describe("axe du temps élastique : l'heure s'étend pour tout montrer", () => {
   const opts = { fromHour: 7, toHour: 20, hourPx: 52 };
   const crowd = (n: number, startMin = 0, spacing = 5, dur = 5) =>
-    Array.from({ length: n }, (_, i) => ev(`r${i}`, at(13, startMin + i * spacing), at(13, startMin + i * spacing + dur)));
-  const grid = (items: ReturnType<typeof ev>[][]) => layoutTimeGrid(items.map((d) => layoutDayEvents(d, day, 28)), opts);
+    Array.from({ length: n }, (_, i) =>
+      ev(
+        `r${i}`,
+        at(13, startMin + i * spacing),
+        at(13, startMin + i * spacing + dur)
+      )
+    );
+  const grid = (items: ReturnType<typeof ev>[][]) =>
+    layoutTimeGrid(
+      items.map((d) => layoutDayEvents(d, day, 28)),
+      opts
+    );
 
   it("garde l'heure à sa hauteur de base quand rien ne la surcharge", () => {
     const g = grid([[ev("a", at(9), at(10)), ev("b", at(13), at(14))]]);
@@ -126,23 +207,32 @@ describe("axe du temps élastique : l'heure s'étend pour tout montrer", () => {
     const g = grid([crowd(10)]);
     const blocks = g.days[0];
     expect(blocks).toHaveLength(10);
-    expect(blocks.every((b) => b.stacked && b.columns === 1 && b.height >= 24)).toBe(true);
+    expect(
+      blocks.every((b) => b.stacked && b.columns === 1 && b.height >= 24)
+    ).toBe(true);
     const tops = blocks.map((b) => b.top).sort((a, b) => a - b);
-    for (let i = 1; i < tops.length; i += 1) expect(tops[i] - tops[i - 1]).toBeGreaterThanOrEqual(ROW_PX);
+    for (let i = 1; i < tops.length; i += 1)
+      expect(tops[i] - tops[i - 1]).toBeGreaterThanOrEqual(ROW_PX);
     // Chaque bloc reste dans la grille.
-    expect(Math.max(...blocks.map((b) => b.top + b.height))).toBeLessThanOrEqual(g.total);
+    expect(
+      Math.max(...blocks.map((b) => b.top + b.height))
+    ).toBeLessThanOrEqual(g.total);
     // L'heure grandit, les autres non.
     expect(g.heights[13 - 7]).toBeGreaterThan(52);
     expect(g.heights[9 - 7]).toBe(52);
   });
   it("tient pour six, huit ou dix rendez-vous simultanés, sans rien perdre", () => {
     for (const n of [6, 8, 10, 25]) {
-      const same = Array.from({ length: n }, (_, i) => ev(`s${i}`, at(13), at(14)));
+      const same = Array.from({ length: n }, (_, i) =>
+        ev(`s${i}`, at(13), at(14))
+      );
       const g = grid([same]);
       expect(g.days[0]).toHaveLength(n);
       const tops = g.days[0].map((b) => b.top).sort((a, b) => a - b);
       expect(new Set(tops).size).toBe(n);
-      expect(g.yAt(14 * 60) - g.yAt(13 * 60)).toBeGreaterThanOrEqual(n * ROW_PX - 1);
+      expect(g.yAt(14 * 60) - g.yAt(13 * 60)).toBeGreaterThanOrEqual(
+        n * ROW_PX - 1
+      );
     }
   });
   it("garde le côte à côte pour deux rendez-vous qui se chevauchent", () => {
@@ -164,10 +254,18 @@ describe("axe du temps élastique : l'heure s'étend pour tout montrer", () => {
     expect(after.top).toBeGreaterThan(g.yAt(14 * 60) - 1);
   });
   it("empile deux salves de rendez-vous dans la même heure", () => {
-    const g = grid([[...crowd(8, 0, 2, 2), ...Array.from({ length: 8 }, (_, i) => ev(`t${i}`, at(13, 30 + i * 2), at(13, 30 + i * 2 + 2)))]]);
+    const g = grid([
+      [
+        ...crowd(8, 0, 2, 2),
+        ...Array.from({ length: 8 }, (_, i) =>
+          ev(`t${i}`, at(13, 30 + i * 2), at(13, 30 + i * 2 + 2))
+        ),
+      ],
+    ]);
     const tops = g.days[0].map((b) => b.top).sort((a, b) => a - b);
     expect(new Set(tops).size).toBe(16);
-    for (let i = 1; i < tops.length; i += 1) expect(tops[i] - tops[i - 1]).toBeGreaterThanOrEqual(ROW_PX);
+    for (let i = 1; i < tops.length; i += 1)
+      expect(tops[i] - tops[i - 1]).toBeGreaterThanOrEqual(ROW_PX);
   });
   it("retrouve la minute sous un clic, grille élastique comprise", () => {
     const g = grid([crowd(10)]);

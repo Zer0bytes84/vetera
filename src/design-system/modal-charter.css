@@ -32,15 +32,21 @@
 :root:root:root [data-chrome][data-chrome][data-slot="sheet-content"] {
   max-height: none !important;
 }
-:root:root:root [data-chrome][data-chrome][data-slot="sheet-content"]:is([data-side="right"], [data-side="left"]) {
+:root:root:root
+  [data-chrome][data-chrome][data-slot="sheet-content"]:is(
+    [data-side="right"],
+    [data-side="left"]
+  ) {
   top: 8px !important;
   bottom: 8px !important;
   height: auto !important;
 }
-:root:root:root [data-chrome][data-chrome][data-slot="sheet-content"][data-side="right"] {
+:root:root:root
+  [data-chrome][data-chrome][data-slot="sheet-content"][data-side="right"] {
   right: 8px !important;
 }
-:root:root:root [data-chrome][data-chrome][data-slot="sheet-content"][data-side="left"] {
+:root:root:root
+  [data-chrome][data-chrome][data-slot="sheet-content"][data-side="left"] {
   left: 8px !important;
 }
 
@@ -71,7 +77,10 @@
   text-align: start !important;
   place-items: initial !important;
 }
-:root:root:root [data-chrome] [data-slot="modal-heading"] > :not(:has([data-slot="modal-icon"], [data-slot="alert-dialog-media"])) {
+:root:root:root
+  [data-chrome]
+  [data-slot="modal-heading"]
+  > :not(:has([data-slot="modal-icon"], [data-slot="alert-dialog-media"])) {
   flex-direction: column !important;
   align-items: flex-start !important;
   gap: 4px !important;
@@ -83,7 +92,9 @@
   flex-direction: column;
   gap: 4px;
 }
-:root:root:root [data-chrome] :is([data-slot="modal-icon"], [data-slot="alert-dialog-media"]) {
+:root:root:root
+  [data-chrome]
+  :is([data-slot="modal-icon"], [data-slot="alert-dialog-media"]) {
   display: flex !important;
   flex: none;
   align-items: center;
@@ -97,7 +108,10 @@
   color: var(--muted-foreground);
   box-shadow: none !important;
 }
-:root:root:root [data-chrome] :is([data-slot="modal-icon"], [data-slot="alert-dialog-media"]) svg {
+:root:root:root
+  [data-chrome]
+  :is([data-slot="modal-icon"], [data-slot="alert-dialog-media"])
+  svg {
   width: 16px !important;
   height: 16px !important;
 }
@@ -121,10 +135,19 @@
   display: none;
 }
 [data-chrome] [data-slot="modal-actions-group"],
-[data-chrome] [data-slot="modal-actions-group"] div:not([data-slot]):has(button) {
+[data-chrome]
+  [data-slot="modal-actions-group"]
+  div:not([data-slot]):has(button) {
   display: contents !important;
 }
-:root:root:root [data-chrome] [data-slot="modal-actions"] :is(button, a[href]):not([data-slot="modal-close"], [role="switch"], [role="checkbox"]) {
+:root:root:root
+  [data-chrome]
+  [data-slot="modal-actions"]
+  :is(button, a[href]):not(
+    [data-slot="modal-close"],
+    [role="switch"],
+    [role="checkbox"]
+  ) {
   width: auto !important;
   min-width: 0 !important;
   height: 36px !important;
@@ -135,16 +158,45 @@
   box-shadow: none !important;
   font-size: 13px !important;
 }
-:root:root:root [data-chrome] [data-slot="modal-actions"] :is(button, a[href]):is([data-variant="outline"], [data-variant="secondary"], [data-variant="ghost"], [data-slot="alert-dialog-cancel"], [class*="bg-frame"]):not([class*="bg-destructive"], [class*="bg-red"], [class*="bg-emerald"]) {
+:root:root:root
+  [data-chrome]
+  [data-slot="modal-actions"]
+  :is(button, a[href]):is(
+    [data-variant="outline"],
+    [data-variant="secondary"],
+    [data-variant="ghost"],
+    [data-slot="alert-dialog-cancel"],
+    [class*="bg-frame"]
+  ):not([class*="bg-destructive"], [class*="bg-red"], [class*="bg-emerald"]) {
   background: var(--card-inset) !important;
   color: var(--foreground) !important;
 }
 @media (hover: hover) and (pointer: fine) {
-  :root:root:root [data-chrome] [data-slot="modal-actions"] :is(button, a[href]):is([data-variant="outline"], [data-variant="secondary"], [data-variant="ghost"], [data-slot="alert-dialog-cancel"], [class*="bg-frame"]):not([class*="bg-destructive"], [class*="bg-red"], [class*="bg-emerald"]):hover:not(:disabled) {
-    background: color-mix(in oklch, var(--card-inset) 80%, var(--foreground) 6%) !important;
+  :root:root:root
+    [data-chrome]
+    [data-slot="modal-actions"]
+    :is(button, a[href]):is(
+      [data-variant="outline"],
+      [data-variant="secondary"],
+      [data-variant="ghost"],
+      [data-slot="alert-dialog-cancel"],
+      [class*="bg-frame"]
+    ):not(
+      [class*="bg-destructive"],
+      [class*="bg-red"],
+      [class*="bg-emerald"]
+    ):hover:not(:disabled) {
+    background: color-mix(
+      in oklch,
+      var(--card-inset) 80%,
+      var(--foreground) 6%
+    ) !important;
   }
 }
-:root:root:root [data-chrome] [data-slot="modal-actions"] :is(button, a)[data-size^="icon"] {
+:root:root:root
+  [data-chrome]
+  [data-slot="modal-actions"]
+  :is(button, a)[data-size^="icon"] {
   width: 36px !important;
   padding-inline: 0 !important;
 }
@@ -163,7 +215,9 @@
   background: transparent;
   color: var(--muted-foreground);
   cursor: pointer;
-  transition: background-color 120ms var(--ease-out), color 120ms var(--ease-out);
+  transition:
+    background-color 120ms var(--ease-out),
+    color 120ms var(--ease-out);
 }
 @media (hover: hover) and (pointer: fine) {
   [data-chrome] [data-slot="modal-close"]:hover {
@@ -206,7 +260,9 @@
   overscroll-behavior: contain;
 }
 /* Un corps de formulaire garde ses marges ; le panneau seul défile. */
-:root:root:root [data-chrome] > [data-slot="modal-panel"]:has(.modal-medical-body) {
+:root:root:root
+  [data-chrome]
+  > [data-slot="modal-panel"]:has(.modal-medical-body) {
   gap: 0;
   padding: 0;
 }
@@ -226,12 +282,17 @@
   color: var(--muted-foreground);
   font-size: 13px;
 }
-:root:root:root [data-chrome] [data-slot="modal-panel"]:has(.modal-medical-body) [data-slot="modal-footer-meta"] {
+:root:root:root
+  [data-chrome]
+  [data-slot="modal-panel"]:has(.modal-medical-body)
+  [data-slot="modal-footer-meta"] {
   padding: 0 32px 24px;
 }
 
 /* Plus de trait ni d'ombre hérités des anciennes coques de fenêtre. */
-:root:root:root [data-chrome] :is(.modal-medical-header, .modal-medical-body, .modal-medical-footer) {
+:root:root:root
+  [data-chrome]
+  :is(.modal-medical-header, .modal-medical-body, .modal-medical-footer) {
   border: 0 !important;
   box-shadow: none !important;
   -webkit-backdrop-filter: none !important;
@@ -244,13 +305,17 @@
   --tw-shadow: 0 0 #0000 !important;
   --tw-inset-shadow: 0 0 #0000 !important;
 }
-:root:root:root [data-chrome] :is(.modal-section-icon, .modal-footer-status-icon) {
+:root:root:root
+  [data-chrome]
+  :is(.modal-section-icon, .modal-footer-status-icon) {
   border-color: transparent !important;
   box-shadow: none !important;
 }
 
 /* Aperçu de document : le panneau porte les deux volets (outils, page), chacun défile seul. */
-:root:root:root [data-chrome] > [data-slot="modal-panel"]:has(> .document-preview-body) {
+:root:root:root
+  [data-chrome]
+  > [data-slot="modal-panel"]:has(> .document-preview-body) {
   gap: 0;
   padding: 0;
   overflow: hidden;
@@ -266,20 +331,36 @@
 }
 
 /* Une fenêtre sans contenu (une question, ses actions) n'a pas de panneau vide. */
-:root:root:root [data-chrome] > [data-slot="modal-panel"]:not(:has(> :not([hidden]))) {
+:root:root:root
+  [data-chrome]
+  > [data-slot="modal-panel"]:not(:has(> :not([hidden]))) {
   display: none;
 }
-:root:root:root [data-chrome]:not(:has(> [data-slot="modal-panel"]:has(> :not([hidden])))) > [data-slot="modal-band"] {
+:root:root:root
+  [data-chrome]:not(:has(> [data-slot="modal-panel"]:has(> :not([hidden]))))
+  > [data-slot="modal-band"] {
   padding-bottom: 6px;
 }
 
 /* Les boutons pleins et les curseurs d'interrupteur perdent l'ombre de 1 px que leur donne le thème : le
    contraste du fond suffit. L'anneau de focus (`:focus-visible`) reste. */
-:root:root:root:root:root [data-chrome][data-chrome] :is(.crm-primary-control, [data-variant="default"], [data-slot="switch-thumb"]):not(:focus-visible) {
+:root:root:root:root:root
+  [data-chrome][data-chrome]
+  :is(
+    .crm-primary-control,
+    [data-variant="default"],
+    [data-slot="switch-thumb"]
+  ):not(:focus-visible) {
   box-shadow: none !important;
 }
 
 /* L'action principale (bouton plein) se range toujours à droite des actions secondaires. */
-[data-chrome] [data-slot="modal-actions"] :is(button, a[href]):is([data-variant="default"], [data-variant="destructive"], [data-slot="alert-dialog-action"]) {
+[data-chrome]
+  [data-slot="modal-actions"]
+  :is(button, a[href]):is(
+    [data-variant="default"],
+    [data-variant="destructive"],
+    [data-slot="alert-dialog-action"]
+  ) {
   order: 2;
 }

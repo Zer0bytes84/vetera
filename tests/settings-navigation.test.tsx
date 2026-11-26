@@ -25,23 +25,32 @@ describe("ouverture d'une section de Paramètres depuis ailleurs (menu de l'avat
     const store = new Map<string, string>();
     const events: CustomEvent[] = [];
     vi.stubGlobal("window", {
-      sessionStorage: { getItem: (key: string) => store.get(key) ?? null, setItem: (key: string, value: string) => store.set(key, value) },
+      sessionStorage: {
+        getItem: (key: string) => store.get(key) ?? null,
+        setItem: (key: string, value: string) => store.set(key, value),
+      },
       dispatchEvent: (event: CustomEvent) => (events.push(event), true),
     });
     requestSettingsSection("mon-cabinet");
     expect(store.get(SETTINGS_SECTION_KEY)).toBe("mon-cabinet");
-    expect(events.map((event) => [event.type, event.detail])).toEqual([[SETTINGS_SECTION_EVENT, "mon-cabinet"]]);
+    expect(events.map((event) => [event.type, event.detail])).toEqual([
+      [SETTINGS_SECTION_EVENT, "mon-cabinet"],
+    ]);
   });
 });
 
 describe("une section de Paramètres", () => {
   it("porte son icône, son titre et son sous-titre dans la bande grise, ses lignes dans le panneau blanc", () => {
     const html = renderToStaticMarkup(
-      <SettingsSection icon={Building2} subtitle="Coordonnées du cabinet" title="Identité du cabinet">
+      <SettingsSection
+        icon={Building2}
+        subtitle="Coordonnées du cabinet"
+        title="Identité du cabinet"
+      >
         <SettingsRow detail="Un détail" title="Un réglage">
           <button type="button">Agir</button>
         </SettingsRow>
-      </SettingsSection>,
+      </SettingsSection>
     );
     expect(html).toContain("rounded-[20px]");
     expect(html).toContain("rounded-2xl");
@@ -54,8 +63,12 @@ describe("une section de Paramètres", () => {
   });
 
   it("une ligne dont le titre est l'étiquette du contrôle le relie par htmlFor", () => {
-    const html = renderToStaticMarkup(<SettingsRow htmlFor="x" title="Donner vie">{null}</SettingsRow>);
-    expect(html).toContain('<label');
+    const html = renderToStaticMarkup(
+      <SettingsRow htmlFor="x" title="Donner vie">
+        {null}
+      </SettingsRow>
+    );
+    expect(html).toContain("<label");
     expect(html).toContain('for="x"');
   });
 });

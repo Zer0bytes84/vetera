@@ -1,10 +1,57 @@
 /* The chart of an answer: on a white panel, its legend in pills, three dates under it, no grid but the base line. */
-.answer-chart { display: flex; margin: 0; flex-direction: column; gap: 10px; }
-.answer-chart-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
-.answer-chart-pill { display: inline-flex; height: 24px; align-items: center; gap: 6px; padding: 0 10px; border-radius: 999px; background: var(--card-band); color: var(--ink, var(--foreground)); font-size: 12px; font-weight: 500; }
-.answer-chart-swatch { width: 8px; height: 8px; border-radius: 3px; background: var(--chart-blue); }
-.answer-chart-swatch[data-tone="expense"] { background: var(--chart-teal); }
-.answer-chart-max { margin-inline-start: auto; color: var(--ink-muted, var(--muted-foreground)); font-size: 12px; font-variant-numeric: tabular-nums; }
-.answer-chart-plot { display: block; width: 100%; height: 150px; overflow: visible; }
-.answer-chart-ticks { display: flex; justify-content: space-between; gap: 8px; color: var(--ink-muted, var(--muted-foreground)); font-size: 12px; font-variant-numeric: tabular-nums; }
-.answer-chart[data-kind="bars"] .answer-chart-ticks:has(> :nth-child(4)) { justify-content: space-around; }
+.answer-chart {
+  display: flex;
+  margin: 0;
+  flex-direction: column;
+  gap: 10px;
+}
+.answer-chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+.answer-chart-pill {
+  display: inline-flex;
+  height: 24px;
+  align-items: center;
+  gap: 6px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: var(--card-band);
+  color: var(--ink, var(--foreground));
+  font-size: 12px;
+  font-weight: 500;
+}
+.answer-chart-swatch {
+  width: 8px;
+  height: 8px;
+  border-radius: 3px;
+  background: var(--chart-blue);
+}
+.answer-chart-swatch[data-tone="expense"] {
+  background: var(--chart-teal);
+}
+.answer-chart-max {
+  margin-inline-start: auto;
+  color: var(--ink-muted, var(--muted-foreground));
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+.answer-chart-plot {
+  display: block;
+  width: 100%;
+  height: 150px;
+  overflow: visible;
+}
+.answer-chart-ticks {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--ink-muted, var(--muted-foreground));
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+.answer-chart[data-kind="bars"] .answer-chart-ticks:has(> :nth-child(4)) {
+  justify-content: space-around;
+}

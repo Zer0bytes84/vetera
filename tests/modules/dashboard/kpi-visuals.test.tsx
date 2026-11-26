@@ -32,7 +32,15 @@ describe("KPI visual components", () => {
       const html = renderToStaticMarkup(
         <KpiIncomeSplineWave
           values={[10000, 15000, 20000, 18000, 25000, 30000, 37500]}
-          labels={["1 oct.", "2 oct.", "3 oct.", "4 oct.", "5 oct.", "6 oct.", "7 oct."]}
+          labels={[
+            "1 oct.",
+            "2 oct.",
+            "3 oct.",
+            "4 oct.",
+            "5 oct.",
+            "6 oct.",
+            "7 oct.",
+          ]}
           change={18}
         />
       );

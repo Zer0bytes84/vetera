@@ -19,7 +19,10 @@ function createMemoryStorage() {
   };
 }
 
-function createState(messageCount = 2, content = "Message clinique") : PersistedAIAgentState {
+function createState(
+  messageCount = 2,
+  content = "Message clinique"
+): PersistedAIAgentState {
   const messages = Array.from({ length: messageCount }, (_, index) => ({
     content,
     id: `message-${index}`,
@@ -93,7 +96,9 @@ describe("AI conversation store", () => {
 
     const restored = loadAIAgentState();
     expect(restored?.conversations[0].messages.length).toBeLessThanOrEqual(40);
-    expect(restored?.conversations[0].messages[0].content.length).toBeLessThanOrEqual(8_000);
+    expect(
+      restored?.conversations[0].messages[0].content.length
+    ).toBeLessThanOrEqual(8_000);
   });
 
   it("drops an oversized cache instead of parsing it on startup", () => {

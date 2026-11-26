@@ -13,19 +13,29 @@ const SIDEBAR = readFileSync("src/components/app-sidebar.tsx", "utf8");
 
 describe("recherche dans l'entête", () => {
   it("est un bouton qui ouvre la palette, annoncé avec ⌘K / Ctrl+K", () => {
-    const markup = renderToStaticMarkup(createElement(HeaderSearch, { onOpen: () => undefined, open: false }));
+    const markup = renderToStaticMarkup(
+      createElement(HeaderSearch, { onOpen: () => undefined, open: false })
+    );
     expect(markup).toContain('class="shell-header-search-field"');
     expect(markup).toContain('aria-haspopup="dialog"');
     expect(markup).toContain('aria-keyshortcuts="Meta+K Control+K"');
     expect(markup).toContain('aria-expanded="false"');
     expect(markup).toContain("Rechercher un patient, une page…");
-    expect(markup).toMatch(/<kbd class="shell-header-search-key">(⌘K|Ctrl K)<\/kbd>/);
-    const open = renderToStaticMarkup(createElement(HeaderSearch, { onOpen: () => undefined, open: true }));
+    expect(markup).toMatch(
+      /<kbd class="shell-header-search-key">(⌘K|Ctrl K)<\/kbd>/
+    );
+    const open = renderToStaticMarkup(
+      createElement(HeaderSearch, { onOpen: () => undefined, open: true })
+    );
     expect(open).toContain('aria-expanded="true"');
   });
 
   it("ouvre exactement la palette d'avant : même état, même raccourci", () => {
-    expect(SHELL).toContain(codeText("<HeaderSearch onOpen={() => setPaletteOpen(true)} open={paletteOpen} />"));
+    expect(SHELL).toContain(
+      codeText(
+        "<HeaderSearch onOpen={() => setPaletteOpen(true)} open={paletteOpen} />"
+      )
+    );
     // The ⌘K / Ctrl+K handler and the palette itself are untouched.
     expect(SHELL).toContain(codeText("setPaletteOpen((current) => !current)"));
     expect(SHELL).toContain(codeText("onClose={() => setPaletteOpen(false)}"));
@@ -41,16 +51,23 @@ describe("recherche dans l'entête", () => {
     expect(search).toBeGreaterThan(crumb);
     expect(tools).toBeGreaterThan(search);
     // Un séparateur fin entre la recherche et les outils.
-    expect(SHELL.slice(search, tools)).toContain('className="shell-header-divider"');
+    expect(SHELL.slice(search, tools)).toContain(
+      'className="shell-header-divider"'
+    );
   });
 
   it("n'a plus de champ dans la barre latérale", () => {
-    expect(SIDEBAR).not.toMatch(/onSearch|Ouvrir la palette de commandes|SearchIcon/);
+    expect(SIDEBAR).not.toMatch(
+      /onSearch|Ouvrir la palette de commandes|SearchIcon/
+    );
     expect(SHELL).not.toContain("onSearch=");
   });
 
   it("garde le bouton de la barre latérale : même action, même raccourci, un séparateur après", () => {
-    const toggle = readFileSync("src/modules/shell/components/header-sidebar-toggle.tsx", "utf8");
+    const toggle = readFileSync(
+      "src/modules/shell/components/header-sidebar-toggle.tsx",
+      "utf8"
+    );
     expect(toggle).toContain("onClick={toggleSidebar}");
     expect(toggle).toContain('shortcut="⌘ B"');
     // Le séparateur est posé par l'entête, entre le bouton et le fil d'Ariane.

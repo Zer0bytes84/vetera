@@ -50,11 +50,14 @@ describe("dictée : modèle gardé entre deux rubriques", () => {
   });
 
   it("la fermeture de l'assistant libère le modèle gardé", async () => {
-    const { takeWhisperSession, parkWhisperSession, releaseWhisperSession } = await load();
+    const { takeWhisperSession, parkWhisperSession, releaseWhisperSession } =
+      await load();
     const first = await takeWhisperSession("medium#4", signal, () => {});
     parkWhisperSession(first.session as never, "medium#4");
     releaseWhisperSession();
     expect(created[0].close).toHaveBeenCalled();
-    expect((await takeWhisperSession("medium#4", signal, () => {})).loaded).toBe(false);
+    expect(
+      (await takeWhisperSession("medium#4", signal, () => {})).loaded
+    ).toBe(false);
   });
 });

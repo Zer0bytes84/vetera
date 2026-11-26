@@ -1,21 +1,104 @@
 /* The reference dose of a line: an inset panel on the card, set apart by its fill alone; no line, no shadow.
    Its lines are divs: the Clean skin greys every p without a text- class, which flattened the title and the dose. */
-.validated-dose { display: flex; flex-direction: column; gap: 10px; padding: 12px 14px; border-radius: 12px; background: color-mix(in oklab, var(--foreground) 4%, transparent); }
-.validated-dose-header { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; }
-.validated-dose-icon { width: 18px; height: 18px; flex: none; color: color-mix(in oklab, var(--signal-positive), var(--foreground) 35%); }
-.validated-dose[data-kind="refus"] .validated-dose-icon { color: color-mix(in oklab, var(--destructive), var(--foreground) 15%); }
-.validated-dose-title { margin: 0; color: var(--foreground); font-size: 13px; font-weight: 600; }
+.validated-dose {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: color-mix(in oklab, var(--foreground) 4%, transparent);
+}
+.validated-dose-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 8px;
+}
+.validated-dose-icon {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  color: color-mix(in oklab, var(--signal-positive), var(--foreground) 35%);
+}
+.validated-dose[data-kind="refus"] .validated-dose-icon {
+  color: color-mix(in oklab, var(--destructive), var(--foreground) 15%);
+}
+.validated-dose-title {
+  margin: 0;
+  color: var(--foreground);
+  font-size: 13px;
+  font-weight: 600;
+}
 /* The panel's grey is a shade darker than --muted-foreground: on its 4 % fill, the plain grey falls to 4,4:1. */
-.validated-dose { --validated-dose-muted: color-mix(in oklab, var(--muted-foreground), var(--foreground) 22%); }
-.validated-dose-by { margin: 0 0 0 auto; color: var(--validated-dose-muted); font-size: 12px; }
-.validated-dose-amount { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; }
-.validated-dose-value { margin: 0; color: var(--foreground); font-size: 18px; font-weight: 600; font-variant-numeric: tabular-nums; }
-.validated-dose-calcul, .validated-dose-quote, .validated-dose-source { margin: 0; color: var(--validated-dose-muted); font-size: 12px; }
-.validated-dose-reason { margin: 0; color: var(--foreground); font-size: 13px; }
-.validated-dose-facts { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 0; }
-.validated-dose-facts div { display: flex; gap: 6px; font-size: 12px; }
-.validated-dose-facts dt { color: var(--validated-dose-muted); }
-.validated-dose-facts dd { margin: 0; color: var(--foreground); }
-.validated-dose-warning { padding: 8px 10px; border-radius: 8px; background: color-mix(in oklab, var(--destructive) 8%, transparent); }
-.validated-dose-warning-label { margin: 0 0 2px; color: color-mix(in oklab, var(--destructive), var(--foreground) 30%); font-size: 12px; font-weight: 600; }
-.validated-dose-warning-text { margin: 0; color: var(--foreground); font-size: 13px; line-height: 18px; }
+.validated-dose {
+  --validated-dose-muted: color-mix(
+    in oklab,
+    var(--muted-foreground),
+    var(--foreground) 22%
+  );
+}
+.validated-dose-by {
+  margin: 0 0 0 auto;
+  color: var(--validated-dose-muted);
+  font-size: 12px;
+}
+.validated-dose-amount {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+}
+.validated-dose-value {
+  margin: 0;
+  color: var(--foreground);
+  font-size: 18px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.validated-dose-calcul,
+.validated-dose-quote,
+.validated-dose-source {
+  margin: 0;
+  color: var(--validated-dose-muted);
+  font-size: 12px;
+}
+.validated-dose-reason {
+  margin: 0;
+  color: var(--foreground);
+  font-size: 13px;
+}
+.validated-dose-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  margin: 0;
+}
+.validated-dose-facts div {
+  display: flex;
+  gap: 6px;
+  font-size: 12px;
+}
+.validated-dose-facts dt {
+  color: var(--validated-dose-muted);
+}
+.validated-dose-facts dd {
+  margin: 0;
+  color: var(--foreground);
+}
+.validated-dose-warning {
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: color-mix(in oklab, var(--destructive) 8%, transparent);
+}
+.validated-dose-warning-label {
+  margin: 0 0 2px;
+  color: color-mix(in oklab, var(--destructive), var(--foreground) 30%);
+  font-size: 12px;
+  font-weight: 600;
+}
+.validated-dose-warning-text {
+  margin: 0;
+  color: var(--foreground);
+  font-size: 13px;
+  line-height: 18px;
+}

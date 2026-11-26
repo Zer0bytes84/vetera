@@ -36,7 +36,7 @@ const setup = () => {
   const ocr = new PackagedOcr(
     "http://localhost/local-ai-runtime/ocr/",
     controller.signal,
-    vi.fn(),
+    vi.fn()
   );
   return { ocr, controller, worker: TestWorker.instances[0] };
 };

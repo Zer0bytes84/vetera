@@ -2,7 +2,10 @@ import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import type { Patient, Reminder, Task } from "@/types/db";
-import type { PatientReminder, ReminderType } from "@/modules/patient-reminders/store";
+import type {
+  PatientReminder,
+  ReminderType,
+} from "@/modules/patient-reminders/store";
 
 const harness = vi.hoisted(() => ({
   tasks: [] as Task[],
@@ -14,7 +17,9 @@ const harness = vi.hoisted(() => ({
 }));
 
 vi.mock("@/contexts/AuthContext", () => ({
-  useAuth: () => ({ currentUser: { id: "vet", uid: "vet", displayName: "Vétérinaire" } }),
+  useAuth: () => ({
+    currentUser: { id: "vet", uid: "vet", displayName: "Vétérinaire" },
+  }),
 }));
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key, i18n: { language: "fr" } }),
@@ -32,8 +37,11 @@ vi.mock("@/data/repositories", () => ({
 }));
 vi.mock("@/modules/patient-reminders/use-patient-reminders", () => ({
   usePatientReminders: () => ({
-    reminders: harness.medicalReminders, types: harness.types,
-    error: harness.error, loading: false, refresh: async () => {},
+    reminders: harness.medicalReminders,
+    types: harness.types,
+    error: harness.error,
+    loading: false,
+    refresh: async () => {},
   }),
   announcePatientRemindersChanged: () => {},
 }));
@@ -42,12 +50,31 @@ import Tasks from "@/components/Tasks";
 import { PatientRemindersContent } from "@/modules/patient-reminders/patient-reminders-panel";
 
 const render = () => renderToStaticMarkup(<Tasks />);
-const task = (id: string, dueDate = "2026-10-14", status: Task["status"] = "todo") => ({
-  id, title: `Rappel ${id}`, dueDate, status, priority: "medium", assignedTo: "vet",
-} as Task);
-const medical = (id: string, echeance: string, statut: PatientReminder["statut"] = "en_cours") => ({
-  id, patient_id: "patient", type: "vaccin", echeance, statut,
-} as PatientReminder);
+const task = (
+  id: string,
+  dueDate = "2026-10-14",
+  status: Task["status"] = "todo"
+) =>
+  ({
+    id,
+    title: `Rappel ${id}`,
+    dueDate,
+    status,
+    priority: "medium",
+    assignedTo: "vet",
+  }) as Task;
+const medical = (
+  id: string,
+  echeance: string,
+  statut: PatientReminder["statut"] = "en_cours"
+) =>
+  ({
+    id,
+    patient_id: "patient",
+    type: "vaccin",
+    echeance,
+    statut,
+  }) as PatientReminder;
 
 beforeEach(() => {
   vi.useFakeTimers();
@@ -65,13 +92,22 @@ it("affiche les quatre rappels à traiter même en l’absence de rappels médic
   harness.tasks = [task("1"), task("2"), task("3"), task("4")];
   const html = render();
   expect(html).toMatch(/À traiter[\s\S]*?<span class="sr-only">4<\/span>/);
-  for (const id of ["1", "2", "3", "4"]) expect(html).toContain(`data-task-id="${id}"`);
+  for (const id of ["1", "2", "3", "4"])
+    expect(html).toContain(`data-task-id="${id}"`);
   expect(html).not.toContain("Aucun rappel dans cette vue.");
 });
 
 it("compte et affiche les mêmes échéances médicales et manuelles, sans inclure les futures ou terminées", () => {
-  harness.tasks = [task("manuel"), task("futur", "2026-10-15"), task("termine", "2026-10-14", "done")];
-  harness.medicalReminders = [medical("du", "2026-10-13"), medical("futur", "2026-10-15"), medical("termine", "2026-10-12", "termine")];
+  harness.tasks = [
+    task("manuel"),
+    task("futur", "2026-10-15"),
+    task("termine", "2026-10-14", "done"),
+  ];
+  harness.medicalReminders = [
+    medical("du", "2026-10-13"),
+    medical("futur", "2026-10-15"),
+    medical("termine", "2026-10-12", "termine"),
+  ];
   const html = render();
   expect(html).toMatch(/À traiter[\s\S]*?<span class="sr-only">2<\/span>/);
   expect(html).toContain('data-task-id="manuel"');
@@ -88,7 +124,9 @@ it("propose le type et une date préremplie dans le formulaire rapide", () => {
   const html = render();
   expect(html).toContain('aria-label="Type du nouveau rappel"');
   // French calendar field (no native English picker), prefilled with the civil day.
-  expect(html).toMatch(/aria-label="Date du nouveau rappel"[^>]*>[^]*?14\/10\/2026/);
+  expect(html).toMatch(
+    /aria-label="Date du nouveau rappel"[^>]*>[^]*?14\/10\/2026/
+  );
 });
 
 it("signale un échec de chargement des rappels patients au lieu de le masquer derrière la liste manuelle", () => {
@@ -102,10 +140,28 @@ it("signale un échec de chargement des rappels patients au lieu de le masquer d
 
 it("conserve l’administration des types historiques utilisés par les rappels manuels", () => {
   const types = [
-    { id: "vaccination", name: "Vaccination manuelle", active: 1, interval_months: 12 },
+    {
+      id: "vaccination",
+      name: "Vaccination manuelle",
+      active: 1,
+      interval_months: 12,
+    },
     { id: "vaccin", name: "Vaccin", active: 1, interval_months: 12 },
   ] as ReminderType[];
-  const html = renderToStaticMarkup(<PatientRemindersContent embedded includeManualTypes view="types" model={{ reminders: [], types, error: null, loading: false, refresh: async () => {} }} />);
+  const html = renderToStaticMarkup(
+    <PatientRemindersContent
+      embedded
+      includeManualTypes
+      view="types"
+      model={{
+        reminders: [],
+        types,
+        error: null,
+        loading: false,
+        refresh: async () => {},
+      }}
+    />
+  );
   expect(html).toContain("Vaccination manuelle");
   expect(html).toContain("Vaccin");
   expect((html.match(/>Modifier<\/button>/g) ?? []).length).toBe(2);

@@ -36,9 +36,13 @@ const DOSAGE_INK = "#09090b";
 describe("dashboard uses the charter tokens", () => {
   it.each(CSS_FILES)("%s has no hard-coded colour", (file) => {
     const css = stripComments(readFileSync(file, "utf8"));
-    const found = css.match(/#[0-9a-fA-F]{3,8}\b|rgba?\(|hsla?\(|oklch\(/g) ?? [];
+    const found =
+      css.match(/#[0-9a-fA-F]{3,8}\b|rgba?\(|hsla?\(|oklch\(/g) ?? [];
     if (file.endsWith("premium-analytics.css")) {
-      expect(found.map((colour) => colour.toLowerCase())).toEqual([DOSAGE_INK, DOSAGE_INK]);
+      expect(found.map((colour) => colour.toLowerCase())).toEqual([
+        DOSAGE_INK,
+        DOSAGE_INK,
+      ]);
     } else {
       expect(found).toEqual([]);
     }

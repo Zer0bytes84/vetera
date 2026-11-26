@@ -84,13 +84,25 @@ function DialogContent({
         )}
         data-chrome={chrome ? "" : undefined}
         data-slot="dialog-content"
-        initialFocus={initialFocus ?? (chrome ? () => (focusesClose ? close.current : firstPanelField(panel.current)) ?? true : undefined)}
+        initialFocus={
+          initialFocus ??
+          (chrome
+            ? () =>
+                (focusesClose
+                  ? close.current
+                  : firstPanelField(panel.current)) ?? true
+            : undefined)
+        }
         {...props}
       >
         {chrome ? (
           <ModalChrome
             close={
-              <DialogPrimitive.Close aria-label="Fermer" data-slot="modal-close" ref={close}>
+              <DialogPrimitive.Close
+                aria-label="Fermer"
+                data-slot="modal-close"
+                ref={close}
+              >
                 <ModalCloseIcon />
               </DialogPrimitive.Close>
             }

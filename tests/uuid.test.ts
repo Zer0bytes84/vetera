@@ -9,10 +9,15 @@ it("utilise l’UUID natif quand il est disponible", () => {
   expect(randomUUID).toHaveBeenCalledOnce();
 });
 it("génère des UUID v4 uniques sans randomUUID, avec une source cryptographique", () => {
-  vi.stubGlobal("crypto", { getRandomValues: webcrypto.getRandomValues.bind(webcrypto) });
+  vi.stubGlobal("crypto", {
+    getRandomValues: webcrypto.getRandomValues.bind(webcrypto),
+  });
   const ids = Array.from({ length: 1000 }, createUuid);
   expect(new Set(ids).size).toBe(ids.length);
-  for (const id of ids) expect(id).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);
+  for (const id of ids)
+    expect(id).toMatch(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/
+    );
 });
 it("refuse de remplacer l’aléatoire sécurisé par Math.random", () => {
   vi.stubGlobal("crypto", undefined);

@@ -1,7 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { renderToStaticMarkup } from "react-dom/server";
 import { createElement } from "react";
-import { FocusTrendChart, scaleTop, seriesChange } from "../../src/modules/dashboard/components/focus-trend-chart";
+import {
+  FocusTrendChart,
+  scaleTop,
+  seriesChange,
+} from "../../src/modules/dashboard/components/focus-trend-chart";
 
 describe("graphique fusionné recettes et consultations", () => {
   it("donne cinq pas égaux jusqu'à un sommet rond, même pour une série vide ou minuscule", () => {
@@ -19,7 +23,9 @@ describe("graphique fusionné recettes et consultations", () => {
     expect(seriesChange(5, 4, false)).toBeNull();
   });
   it("affiche les deux chiffres de tête sans bouton de bascule, et reste vide sans erreur sans données", () => {
-    const html = renderToStaticMarkup(createElement(FocusTrendChart, { points: [] }));
+    const html = renderToStaticMarkup(
+      createElement(FocusTrendChart, { points: [] })
+    );
     expect(html).toContain("Recettes encaissées");
     expect(html).toContain("Consultations");
     expect(html).not.toContain("Série affichée");
@@ -27,10 +33,26 @@ describe("graphique fusionné recettes et consultations", () => {
   });
   it("totalise les deux séries et compare chacune à sa période précédente", () => {
     const points = [
-      { label: "1 oct.", long: "1 octobre", receipts: 100, visits: 1, previousReceipts: 50, previousVisits: 2 },
-      { label: "2 oct.", long: "2 octobre", receipts: 300, visits: 3, previousReceipts: 50, previousVisits: 2 },
+      {
+        label: "1 oct.",
+        long: "1 octobre",
+        receipts: 100,
+        visits: 1,
+        previousReceipts: 50,
+        previousVisits: 2,
+      },
+      {
+        label: "2 oct.",
+        long: "2 octobre",
+        receipts: 300,
+        visits: 3,
+        previousReceipts: 50,
+        previousVisits: 2,
+      },
     ];
-    const html = renderToStaticMarkup(createElement(FocusTrendChart, { points }));
+    const html = renderToStaticMarkup(
+      createElement(FocusTrendChart, { points })
+    );
     // Recettes : 400 contre 100 ; consultations : 4 contre 4.
     expect(html).toContain("<b>+300 %</b>");
     expect(html).toContain("<b>0 %</b>");

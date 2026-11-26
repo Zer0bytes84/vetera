@@ -3,8 +3,11 @@ import { buildFreeDictationDraft } from "../../../src/modules/consultations/loca
 
 describe("brouillon de dictée libre sans modèle", () => {
   it("conserve le traitement dicté avec sa durée mot pour mot en Plan", () => {
-    const treatment = "Nala a besoin d’un traitement antibiotique pendant 7 jours.";
-    const note = buildFreeDictationDraft(`Nala tousse depuis hier. Examen : température 38,5 °C. Évaluation : cause bactérienne. ${treatment}`);
+    const treatment =
+      "Nala a besoin d’un traitement antibiotique pendant 7 jours.";
+    const note = buildFreeDictationDraft(
+      `Nala tousse depuis hier. Examen : température 38,5 °C. Évaluation : cause bactérienne. ${treatment}`
+    );
     expect(note.plan).toBe(treatment);
     expect(note.assessment).toContain("cause bactérienne");
     expect(note.objective).toContain("38,5 °C");

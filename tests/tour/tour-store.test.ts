@@ -1,10 +1,22 @@
 import { describe, expect, it, vi } from "vitest";
-import { advanceTour, closeInvitation, FRESH_TOUR_STATE, showInvitation, startTour, TOUR_STORAGE_KEY } from "../../src/modules/tour/tour-state";
+import {
+  advanceTour,
+  closeInvitation,
+  FRESH_TOUR_STATE,
+  showInvitation,
+  startTour,
+  TOUR_STORAGE_KEY,
+} from "../../src/modules/tour/tour-state";
 import { createTourStore } from "../../src/modules/tour/tour-store";
 
 function memory(initial: Record<string, string> = {}) {
   const data = new Map(Object.entries(initial));
-  return { data, getItem: (k: string) => data.get(k) ?? null, setItem: (k: string, v: string) => void data.set(k, v), removeItem: (k: string) => void data.delete(k) };
+  return {
+    data,
+    getItem: (k: string) => data.get(k) ?? null,
+    setItem: (k: string, v: string) => void data.set(k, v),
+    removeItem: (k: string) => void data.delete(k),
+  };
 }
 const NOW = new Date("2026-11-12T10:00:00.000Z");
 
@@ -34,7 +46,11 @@ describe("tour guidé : le magasin par poste", () => {
     expect(createTourStore(storage).get().invitation).toBe("closed");
     store.update((s) => startTour(s, NOW));
     store.update((s) => advanceTour(s, { patientId: "p1" }));
-    expect(createTourStore(storage).get()).toMatchObject({ status: "running", step: 1, patientId: "p1" });
+    expect(createTourStore(storage).get()).toMatchObject({
+      status: "running",
+      step: 1,
+      patientId: "p1",
+    });
   });
 
   it("une transition sans effet n'écrit rien et ne prévient personne", () => {
@@ -50,7 +66,10 @@ describe("tour guidé : le magasin par poste", () => {
   it("une autre fenêtre change le tour : reload() le suit", () => {
     const storage = memory();
     const store = createTourStore(storage);
-    storage.setItem(TOUR_STORAGE_KEY, JSON.stringify({ ...startTour(FRESH_TOUR_STATE, NOW), step: 2 }));
+    storage.setItem(
+      TOUR_STORAGE_KEY,
+      JSON.stringify({ ...startTour(FRESH_TOUR_STATE, NOW), step: 2 })
+    );
     store.reload();
     expect(store.get()).toMatchObject({ status: "running", step: 2 });
   });
@@ -65,8 +84,14 @@ describe("tour guidé : le magasin par poste", () => {
 
   describe("équipe rouge : le stockage se dérobe", () => {
     it("lecture impossible : fermée, non inscriptible, aucune exception", () => {
-      const boom = () => { throw new Error("denied"); };
-      const store = createTourStore({ getItem: boom, setItem: boom, removeItem: boom });
+      const boom = () => {
+        throw new Error("denied");
+      };
+      const store = createTourStore({
+        getItem: boom,
+        setItem: boom,
+        removeItem: boom,
+      });
       expect(store.get().invitation).toBe("closed");
       expect(store.isWritable()).toBe(false);
       expect(() => store.update((s) => startTour(s, NOW))).not.toThrow();
@@ -74,7 +99,9 @@ describe("tour guidé : le magasin par poste", () => {
     });
     it("écriture impossible (quota) : pas d'invitation, mais le tour lancé à la main marche en mémoire", () => {
       const storage = memory();
-      storage.setItem = () => { throw new Error("quota"); };
+      storage.setItem = () => {
+        throw new Error("quota");
+      };
       const store = createTourStore(storage);
       expect(store.isWritable()).toBe(false);
       store.update((s) => startTour(s, NOW));
@@ -88,7 +115,9 @@ describe("tour guidé : le magasin par poste", () => {
       const store = createTourStore(storage);
       expect(storage.getItem(TOUR_STORAGE_KEY)).toBe("{oops");
       store.update((s) => startTour(s, NOW));
-      expect(JSON.parse(storage.getItem(TOUR_STORAGE_KEY)!).status).toBe("running");
+      expect(JSON.parse(storage.getItem(TOUR_STORAGE_KEY)!).status).toBe(
+        "running"
+      );
     });
   });
 });

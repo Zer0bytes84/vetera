@@ -7,7 +7,10 @@ const fixture = vi.hoisted(() => ({
   finishLoad: () => {},
 }));
 vi.mock("@/modules/consultations/local-ai/models", () => ({
-  getLocalModelUrls: () => ({ modelRoot: "local:", runtimeRoot: "local:runtime" }),
+  getLocalModelUrls: () => ({
+    modelRoot: "local:",
+    runtimeRoot: "local:runtime",
+  }),
 }));
 vi.mock("@/modules/consultations/local-ai/audio-capture", () => ({
   prepareMicrophone: async () => ({ stream: {}, audio: {}, close: () => {} }),
@@ -39,7 +42,8 @@ vi.mock("@/modules/consultations/local-ai/whisper-session", () => ({
 import { useLocalConsultationAi } from "@/modules/consultations/hooks/use-local-consultation-ai";
 
 function setup() {
-  const observe = vi.fn<(ai: ReturnType<typeof useLocalConsultationAi>) => void>();
+  const observe =
+    vi.fn<(ai: ReturnType<typeof useLocalConsultationAi>) => void>();
   function Probe() {
     observe(useLocalConsultationAi());
     return null;

@@ -18,8 +18,12 @@ it("place chaque roue sur son chiffre (translateY de -10 % par unité)", () => {
 });
 
 it("groupe les nombres à la française, et accepte un format fourni", () => {
-  expect(renderToStaticMarkup(<RollingNumber value={1234} />)).toMatch(/sr-only">1\s234</);
-  expect(renderToStaticMarkup(<RollingNumber format={(n) => `${n} %`} value={7} />)).toContain("sr-only\">7 %");
+  expect(renderToStaticMarkup(<RollingNumber value={1234} />)).toMatch(
+    /sr-only">1\s234</
+  );
+  expect(
+    renderToStaticMarkup(<RollingNumber format={(n) => `${n} %`} value={7} />)
+  ).toContain('sr-only">7 %');
 });
 
 it("un texte sans chiffre ne dessine aucune roue", () => {

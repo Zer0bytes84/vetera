@@ -81,13 +81,24 @@ function SheetContent({
         data-chrome={chrome ? "" : undefined}
         data-side={side}
         data-slot="sheet-content"
-        initialFocus={initialFocus ?? (chrome ? () => (focusClose ? close.current : firstPanelField(panel.current)) ?? true : undefined)}
+        initialFocus={
+          initialFocus ??
+          (chrome
+            ? () =>
+                (focusClose ? close.current : firstPanelField(panel.current)) ??
+                true
+            : undefined)
+        }
         {...props}
       >
         {chrome ? (
           <ModalChrome
             close={
-              <SheetPrimitive.Close aria-label="Fermer" data-slot="modal-close" ref={close}>
+              <SheetPrimitive.Close
+                aria-label="Fermer"
+                data-slot="modal-close"
+                ref={close}
+              >
                 <ModalCloseIcon />
               </SheetPrimitive.Close>
             }

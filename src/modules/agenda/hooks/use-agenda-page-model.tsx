@@ -204,7 +204,8 @@ export function useAgendaPageModel(onNavigate?: (view: View) => void) {
   const { data: owners } = useOwnersRepository();
   const { data: users, loading: loadingUsers } = useUsersRepository();
   // The band counts the day's visits and names their patients and vets: no figure until all three are read.
-  const sectionCardsLoading = loadingAppointments || loadingPatients || loadingUsers;
+  const sectionCardsLoading =
+    loadingAppointments || loadingPatients || loadingUsers;
   const audit = useAudit();
 
   useEffect(() => {

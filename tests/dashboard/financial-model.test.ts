@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { buildFinancialOverview, collectionProgress, settlementRate } from "../../src/modules/dashboard/v2/financial-model";
+import {
+  buildFinancialOverview,
+  collectionProgress,
+  settlementRate,
+} from "../../src/modules/dashboard/v2/financial-model";
 import type { Invoice, Transaction } from "../../src/types/db";
 const range = { from: "2026-01-01", to: "2026-12-31" };
 const invoice = (id: string, overrides: Partial<Invoice> = {}) =>
@@ -101,18 +105,45 @@ describe("financial overview", () => {
 
 describe("collection goal meter", () => {
   it("keeps a visible unfilled segment even for a very small overdue balance", () => {
-    const overview = buildFinancialOverview([invoice("late", { settlementStatus: "overdue", grossAmount: 10000000, creditAmount: 0, balanceAmount: 100, completedPaymentAmount: 9999900 })], [], range, "all");
+    const overview = buildFinancialOverview(
+      [
+        invoice("late", {
+          settlementStatus: "overdue",
+          grossAmount: 10000000,
+          creditAmount: 0,
+          balanceAmount: 100,
+          completedPaymentAmount: 9999900,
+        }),
+      ],
+      [],
+      range,
+      "all"
+    );
     const category = overview.categories[0];
     expect(overview.receivables[0].detail).toBe("Échéance dépassée");
-    expect(collectionProgress(category.totalValue, category.safeValue)).toEqual({ percentage: 99, filledSegments: 39 });
+    expect(collectionProgress(category.totalValue, category.safeValue)).toEqual(
+      { percentage: 99, filledSegments: 39 }
+    );
   });
   it("fills every segment only when fully paid", () => {
-    expect(collectionProgress(100, 100)).toEqual({ percentage: 100, filledSegments: 40 });
-    expect(collectionProgress(100, 70)).toEqual({ percentage: 70, filledSegments: 28 });
+    expect(collectionProgress(100, 100)).toEqual({
+      percentage: 100,
+      filledSegments: 40,
+    });
+    expect(collectionProgress(100, 70)).toEqual({
+      percentage: 70,
+      filledSegments: 28,
+    });
   });
   it("does not show progress for empty or completely unpaid receipts", () => {
-    expect(collectionProgress(0, 0)).toEqual({ percentage: null, filledSegments: 0 });
-    expect(collectionProgress(100, 0)).toEqual({ percentage: 0, filledSegments: 0 });
+    expect(collectionProgress(0, 0)).toEqual({
+      percentage: null,
+      filledSegments: 0,
+    });
+    expect(collectionProgress(100, 0)).toEqual({
+      percentage: 0,
+      filledSegments: 0,
+    });
   });
 });
 
@@ -121,18 +152,46 @@ describe("taux de règlement", () => {
     // 80 facturés nets (100 − 20 d'avoir), 30 restent dus : 50 réglés, soit 62,5 %.
     expect(settlementRate([invoice("a")])).toBe(62.5);
     // Le statut de paiement est le règlement, jamais le statut du document.
-    expect(settlementRate([invoice("b", { creditAmount: 0, balanceAmount: 0, settlementStatus: "paid" })])).toBe(100);
+    expect(
+      settlementRate([
+        invoice("b", {
+          creditAmount: 0,
+          balanceAmount: 0,
+          settlementStatus: "paid",
+        }),
+      ])
+    ).toBe(100);
   });
 
   it("n'affiche jamais 100 % tant qu'un solde reste dû, et rien sans facture", () => {
-    expect(settlementRate([invoice("c", { grossAmount: 1_000_000, creditAmount: 0, balanceAmount: 100 })])).toBe(99.9);
+    expect(
+      settlementRate([
+        invoice("c", {
+          grossAmount: 1_000_000,
+          creditAmount: 0,
+          balanceAmount: 100,
+        }),
+      ])
+    ).toBe(99.9);
     expect(settlementRate([])).toBeNull();
-    expect(settlementRate([invoice("d", { documentStatus: "void" })])).toBeNull();
+    expect(
+      settlementRate([invoice("d", { documentStatus: "void" })])
+    ).toBeNull();
   });
 
   it("retrouve le recalcul indépendant de la base du 22 octobre : 496 000 DA facturés, 3 000 DA dus", () => {
-    const paid = Array.from({ length: 40 }, (_, i) => invoice(`p${i}`, { grossAmount: 1_222_500, creditAmount: 0, balanceAmount: 0 }));
-    const open = invoice("INV-2026-000013", { grossAmount: 700_000, creditAmount: 0, balanceAmount: 300_000 });
+    const paid = Array.from({ length: 40 }, (_, i) =>
+      invoice(`p${i}`, {
+        grossAmount: 1_222_500,
+        creditAmount: 0,
+        balanceAmount: 0,
+      })
+    );
+    const open = invoice("INV-2026-000013", {
+      grossAmount: 700_000,
+      creditAmount: 0,
+      balanceAmount: 300_000,
+    });
     expect(settlementRate([...paid, open])).toBe(99.4);
   });
 });

@@ -54,24 +54,39 @@ describe("mascot preferences & assets", () => {
     expect(new Set(MASCOT_CHOICES).size).toBe(15);
     for (const animal of MASCOT_CHOICES) {
       expect(MASCOT_ANIMALS).toContain(animal);
-      expect(LINE_ANIMALS[lineAnimalOf(animal)].label).toBe(MASCOT_ASSETS[animal].label);
+      expect(LINE_ANIMALS[lineAnimalOf(animal)].label).toBe(
+        MASCOT_ASSETS[animal].label
+      );
     }
   });
 
   it("ajoute la chouette, l'âne et le furet après les douze, sans rien remplacer", () => {
     expect(MASCOT_CHOICES.slice(-3)).toEqual(["chouette", "ane", "furet"]);
     expect(MASCOT_CHOICES.slice(0, 3)).toEqual(["chien", "chat", "lapin"]);
-    expect(["Chouette", "Âne", "Furet"]).toEqual(MASCOT_CHOICES.slice(-3).map((animal) => MASCOT_ASSETS[animal].label));
+    expect(["Chouette", "Âne", "Furet"]).toEqual(
+      MASCOT_CHOICES.slice(-3).map((animal) => MASCOT_ASSETS[animal].label)
+    );
     expect(DEFAULT_MASCOT_PREFERENCES.animal).toBe("chien");
   });
 
   it("relit les noms des versions précédentes comme l'un des compagnons", () => {
-    expect(LEGACY_VECTOR_MASCOTS).toEqual(["dog", "cat", "rabbit", "fox", "panda", "bear"]);
+    expect(LEGACY_VECTOR_MASCOTS).toEqual([
+      "dog",
+      "cat",
+      "rabbit",
+      "fox",
+      "panda",
+      "bear",
+    ]);
     for (const animal of LEGACY_VECTOR_MASCOTS) {
       expect(MASCOT_ANIMALS).toContain(animal);
       expect(MASCOT_CHOICES).toContain(lineAnimalOf(animal));
     }
-    store["baitari:mascot:v1"] = JSON.stringify({ mode: "mascot", animal: "dog", animated: true });
+    store["baitari:mascot:v1"] = JSON.stringify({
+      mode: "mascot",
+      animal: "dog",
+      animated: true,
+    });
     expect(getMascotPreferences().animal).toBe("chien");
   });
 

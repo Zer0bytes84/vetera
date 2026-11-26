@@ -12,7 +12,10 @@ const now = new Date("2026-10-21T10:00:00");
 describe("clinicalFlags", () => {
   it("splits free text and keeps allergies first", () => {
     expect(
-      clinicalFlags({ allergies: "Pénicilline; poulet", chronicConditions: "Arthrose legere." })
+      clinicalFlags({
+        allergies: "Pénicilline; poulet",
+        chronicConditions: "Arthrose legere.",
+      })
     ).toEqual([
       { kind: "allergy", label: "Pénicilline" },
       { kind: "allergy", label: "poulet" },
@@ -21,7 +24,9 @@ describe("clinicalFlags", () => {
   });
 
   it("ignores what people type when there is nothing", () => {
-    expect(clinicalFlags({ allergies: "Aucune", chronicConditions: "RAS, néant" })).toEqual([]);
+    expect(
+      clinicalFlags({ allergies: "Aucune", chronicConditions: "RAS, néant" })
+    ).toEqual([]);
     expect(clinicalFlags({})).toEqual([]);
   });
 });
@@ -31,30 +36,70 @@ describe("isUpcomingVisit", () => {
     ({ status, startTime }) as Appointment;
 
   it("counts confirmed visits as well as booked ones", () => {
-    expect(isUpcomingVisit(visit("confirmed", "2026-10-22T08:00:00"), now)).toBe(true);
-    expect(isUpcomingVisit(visit("scheduled", "2026-10-22T08:00:00"), now)).toBe(true);
+    expect(
+      isUpcomingVisit(visit("confirmed", "2026-10-22T08:00:00"), now)
+    ).toBe(true);
+    expect(
+      isUpcomingVisit(visit("scheduled", "2026-10-22T08:00:00"), now)
+    ).toBe(true);
   });
 
   it("ignores past, started and cancelled visits", () => {
-    expect(isUpcomingVisit(visit("scheduled", "2026-10-20T08:00:00"), now)).toBe(false);
-    expect(isUpcomingVisit(visit("arrived", "2026-10-22T08:00:00"), now)).toBe(false);
-    expect(isUpcomingVisit(visit("cancelled", "2026-10-22T08:00:00"), now)).toBe(false);
+    expect(
+      isUpcomingVisit(visit("scheduled", "2026-10-20T08:00:00"), now)
+    ).toBe(false);
+    expect(isUpcomingVisit(visit("arrived", "2026-10-22T08:00:00"), now)).toBe(
+      false
+    );
+    expect(
+      isUpcomingVisit(visit("cancelled", "2026-10-22T08:00:00"), now)
+    ).toBe(false);
   });
 });
 
 describe("isVisitOverdue", () => {
   it("is due after 90 days without a visit", () => {
-    expect(isVisitOverdue({ status: "sante", createdAt: "2025-01-01" }, "2026-07-01", now)).toBe(true);
-    expect(isVisitOverdue({ status: "sante", createdAt: "2025-01-01" }, "2026-09-01", now)).toBe(false);
+    expect(
+      isVisitOverdue(
+        { status: "sante", createdAt: "2025-01-01" },
+        "2026-07-01",
+        now
+      )
+    ).toBe(true);
+    expect(
+      isVisitOverdue(
+        { status: "sante", createdAt: "2025-01-01" },
+        "2026-09-01",
+        now
+      )
+    ).toBe(false);
   });
 
   it("counts a record without visits from its creation", () => {
-    expect(isVisitOverdue({ status: "sante", createdAt: "2026-10-20" }, undefined, now)).toBe(false);
-    expect(isVisitOverdue({ status: "sante", createdAt: "2026-01-20" }, undefined, now)).toBe(true);
+    expect(
+      isVisitOverdue(
+        { status: "sante", createdAt: "2026-10-20" },
+        undefined,
+        now
+      )
+    ).toBe(false);
+    expect(
+      isVisitOverdue(
+        { status: "sante", createdAt: "2026-01-20" },
+        undefined,
+        now
+      )
+    ).toBe(true);
   });
 
   it("never asks to call back about a deceased patient", () => {
-    expect(isVisitOverdue({ status: "decede", createdAt: "2020-01-01" }, "2021-01-01", now)).toBe(false);
+    expect(
+      isVisitOverdue(
+        { status: "decede", createdAt: "2020-01-01" },
+        "2021-01-01",
+        now
+      )
+    ).toBe(false);
   });
 });
 

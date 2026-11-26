@@ -83,16 +83,16 @@ describe("Documents issus de la note validée", () => {
       isSoapReviewed({
         ...soap,
         content: '{"localAi":{"reviewedAt":"yesterday"}}',
-      }),
+      })
     ).toBe(false);
   });
   it("preserves extensible metadata on review", () => {
     expect(
-      JSON.parse(reviewedSoapContent(fields, '{"weight":12}', "vet")).weight,
+      JSON.parse(reviewedSoapContent(fields, '{"weight":12}', "vet")).weight
     ).toBe(12);
   });
   it.each(
-    DEFAULT_DOCUMENT_TEMPLATES,
+    DEFAULT_DOCUMENT_TEMPLATES
   )("renders $kind without inventing absent data", (template) => {
     const rendered = renderClinicalDocument(template, {
       patient,
@@ -103,7 +103,7 @@ describe("Documents issus de la note validée", () => {
     expect(rendered).toContain("Rex");
     expect(rendered).not.toContain("{{");
     expect(rendered).not.toMatch(
-      /normal|bonne santé|apte|mg\/kg|Valable 3 mois/i,
+      /normal|bonne santé|apte|mg\/kg|Valable 3 mois/i
     );
     if (template.kind === "report")
       expect(rendered).toContain("Examen et observations\n\n");
@@ -116,7 +116,7 @@ describe("Documents issus de la note validée", () => {
         appointment,
         soap: { ...soap, plan },
         vetName: "Dr Test",
-      }),
+      })
     ).toContain(plan);
   });
   it("rejects invalid fields and malformed templates", () => {
@@ -125,29 +125,29 @@ describe("Documents issus de la note validée", () => {
         name: "Test",
         kind: "report",
         body: "{{dose.calculee}}",
-      }),
+      })
     ).toThrow("Champ inconnu");
     expect(() =>
-      validateTemplate({ name: "Test", kind: "report", body: "{{soap.s}" }),
+      validateTemplate({ name: "Test", kind: "report", body: "{{soap.s}" })
     ).toThrow("mal fermé");
   });
   it("escapes HTML from documents and patient names", () => {
     expect(documentToHtml('<script>alert("x")</script>\nDeuxième ligne')).toBe(
-      "<p>&lt;script&gt;alert(&quot;x&quot;)&lt;/script&gt;<br>Deuxième ligne</p>",
+      "<p>&lt;script&gt;alert(&quot;x&quot;)&lt;/script&gt;<br>Deuxième ligne</p>"
     );
   });
   it("blocks saving before review, for another patient or after source modification", () => {
     expect(() =>
-      assertDocumentSource({ ...input, reviewed: false }, appointment, soap),
+      assertDocumentSource({ ...input, reviewed: false }, appointment, soap)
     ).toThrow("validez");
     expect(() =>
-      assertDocumentSource(input, { patientId: "other" }, soap),
+      assertDocumentSource(input, { patientId: "other" }, soap)
     ).toThrow("patient");
     expect(() =>
       assertDocumentSource(input, appointment, {
         ...soap,
         objective: "Température 39",
-      }),
+      })
     ).toThrow("changé");
     expect(() => assertDocumentSource(input, appointment, soap)).not.toThrow();
   });
@@ -155,43 +155,43 @@ describe("Documents issus de la note validée", () => {
 describe("Lecture locale des documents", () => {
   it("accepts only bounded PDFs and supported images", () => {
     expect(() =>
-      assertReadableFile({ size: 100, type: "application/pdf" }),
+      assertReadableFile({ size: 100, type: "application/pdf" })
     ).not.toThrow();
     expect(() =>
-      assertReadableFile({ size: 13 * 1024 * 1024, type: "image/jpeg" }),
+      assertReadableFile({ size: 13 * 1024 * 1024, type: "image/jpeg" })
     ).toThrow("12 Mo");
     expect(() => assertReadableFile({ size: 100, type: "text/html" })).toThrow(
-      "Utilisez",
+      "Utilisez"
     );
   });
   it("validates quotes and page numbers against the document", () => {
     const result = parseDocumentAnswer(
       '{"extraits":[{"page":1,"texte":"Créatinine : 1,8 mg/dL"}]}',
-      source,
+      source
     );
     expect(result.extraits[0].texte).toContain("1,8");
     expect(() =>
       parseDocumentAnswer(
         '{"extraits":[{"page":2,"texte":"Créatinine : 1,8 mg/dL"}]}',
-        source,
-      ),
+        source
+      )
     ).toThrow("exactement");
     expect(() =>
       parseDocumentAnswer(
         '{"extraits":[{"page":1,"texte":"Créatinine : 18 mg/dL"}]}',
-        source,
-      ),
+        source
+      )
     ).toThrow("exactement");
     expect(() =>
       parseDocumentAnswer(
         '{"extraits":[{"page":1,"texte":"Insuffisance rénale"}]}',
-        source,
-      ),
+        source
+      )
     ).toThrow("exactement");
   });
   it("rejects diagnoses, invented recommendations and non-JSON results", () => {
     expect(() =>
-      parseDocumentAnswer('{"extraits":[],"diagnostic":"Maladie"}', source),
+      parseDocumentAnswer('{"extraits":[],"diagnostic":"Maladie"}', source)
     ).toThrow();
     expect(() => parseDocumentAnswer("Administrer 5 mg/kg", source)).toThrow();
   });
@@ -200,17 +200,17 @@ describe("Lecture locale des documents", () => {
       "Patient : Rex\n\nCréatinine > 1,8 mg/dL\n\nValeurs < 1,5 mg/dL";
     const result = createDocumentReadingPrompt(
       { ...source, pages: [{ ...source.pages[0], text }] },
-      "Créatinine ?",
+      "Créatinine ?"
     );
     expect(result.partial).toBe(false);
     const data = JSON.parse(
-      result.prompt.split("DONNÉES :\n")[1].split("\n<end_of_turn>")[0],
+      result.prompt.split("DONNÉES :\n")[1].split("\n<end_of_turn>")[0]
     );
     expect(
-      data.passages.map((part: { texte: string }) => part.texte).join("\n"),
+      data.passages.map((part: { texte: string }) => part.texte).join("\n")
     ).toContain("Créatinine > 1,8 mg/dL");
     expect(
-      data.passages.map((part: { texte: string }) => part.texte).join("\n"),
+      data.passages.map((part: { texte: string }) => part.texte).join("\n")
     ).toContain("Valeurs < 1,5 mg/dL");
   });
   it("treats the source as data and signals limited retrieval on long documents", () => {

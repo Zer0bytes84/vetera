@@ -16,11 +16,14 @@ describe("Paramètres > À propos : la vérification manuelle des mises à jour"
   });
 
   it("le bouton demande une vérification à l'initiative de l'utilisateur, et la ligne est dans la section À propos", () => {
-    expect(readFileSync("src/components/update-check-row.tsx", "utf8")).toContain(
-      "checkForAppUpdates({ userInitiated: true })"
-    );
+    expect(
+      readFileSync("src/components/update-check-row.tsx", "utf8")
+    ).toContain("checkForAppUpdates({ userInitiated: true })");
     const settings = readFileSync("src/components/Parametres.tsx", "utf8");
-    const about = settings.slice(settings.indexOf('case "apropos":'), settings.indexOf("<AboutTeam />"));
+    const about = settings.slice(
+      settings.indexOf('case "apropos":'),
+      settings.indexOf("<AboutTeam />")
+    );
     expect(about).toContain("<UpdateCheckRow />");
   });
 });

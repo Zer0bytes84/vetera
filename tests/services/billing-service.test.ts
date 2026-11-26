@@ -18,7 +18,7 @@ const billingHarness = vi.hoisted(() => ({
 vi.mock("@/services/sqlite/database", () => ({
   generateId: () => `billing-test-${++billingHarness.nextId}`,
   runDbRead: async (
-    operation: (database: TestBillingDatabase) => Promise<unknown>,
+    operation: (database: TestBillingDatabase) => Promise<unknown>
   ) => {
     if (!billingHarness.database) {
       throw new Error("Billing test database is not initialized");
@@ -26,7 +26,7 @@ vi.mock("@/services/sqlite/database", () => ({
     return operation(billingHarness.database);
   },
   runDbTransaction: async (
-    operation: (database: TestBillingDatabase) => Promise<unknown>,
+    operation: (database: TestBillingDatabase) => Promise<unknown>
   ) => {
     const database = billingHarness.database;
     if (!database) {
@@ -73,12 +73,16 @@ class TestDatabase implements TestBillingDatabase {
       this.connection.exec(query);
       return undefined;
     }
-    const result = this.connection.prepare(query.replace(/\$\d+/g, "?")).run(...bindValues);
+    const result = this.connection
+      .prepare(query.replace(/\$\d+/g, "?"))
+      .run(...bindValues);
     return { rowsAffected: Number(result.changes) };
   }
 
   async select<T>(query: string, bindValues: unknown[] = []): Promise<T> {
-    return this.connection.prepare(query.replace(/\$\d+/g, "?")).all(...bindValues) as T;
+    return this.connection
+      .prepare(query.replace(/\$\d+/g, "?"))
+      .all(...bindValues) as T;
   }
 
   close(): void {
@@ -192,7 +196,9 @@ describe("billing service idempotency", () => {
       (await recordPayment({ ...paymentInput, reference: "Receipt 42" })).id
     ).toBe(payment.id);
     expect(billingAuditCount("record-payment")).toBe(1);
-    await expect(recordPayment({ ...paymentInput, amount: 4_999 })).rejects.toMatchObject({
+    await expect(
+      recordPayment({ ...paymentInput, amount: 4_999 })
+    ).rejects.toMatchObject({
       code: "IDEMPOTENCY_KEY_CONFLICT",
     });
 
@@ -216,7 +222,9 @@ describe("billing service idempotency", () => {
     const credit = await issueCreditNote(creditInput);
     expect(
       database.connection
-        .prepare("SELECT product_id FROM credit_note_lines WHERE credit_note_id = ?")
+        .prepare(
+          "SELECT product_id FROM credit_note_lines WHERE credit_note_id = ?"
+        )
         .get(credit.id)
     ).toEqual({ product_id: "catalogue-product-a" });
     expect(
@@ -224,7 +232,9 @@ describe("billing service idempotency", () => {
         await issueCreditNote({
           ...creditInput,
           reason: "Goodwill adjustment",
-          lines: [{ ...creditInput.lines[0], description: " Goodwill adjustment " }],
+          lines: [
+            { ...creditInput.lines[0], description: " Goodwill adjustment " },
+          ],
         })
       ).id
     ).toBe(credit.id);
@@ -251,16 +261,23 @@ describe("billing service idempotency", () => {
       (await recordRefund({ ...refundInput, reason: "Customer request" })).id
     ).toBe(refund.id);
     expect(billingAuditCount("record-refund")).toBe(1);
-    await expect(recordRefund({ ...refundInput, amount: 999 })).rejects.toMatchObject({
+    await expect(
+      recordRefund({ ...refundInput, amount: 999 })
+    ).rejects.toMatchObject({
       code: "IDEMPOTENCY_KEY_CONFLICT",
     });
     await expect(
-      recordRefund({ ...refundInput, idempotencyKey: paymentInput.idempotencyKey })
+      recordRefund({
+        ...refundInput,
+        idempotencyKey: paymentInput.idempotencyKey,
+      })
     ).rejects.toMatchObject({ code: "IDEMPOTENCY_KEY_CONFLICT" });
 
     expect(
       database.connection
-        .prepare("SELECT COUNT(*) AS count FROM audit_log WHERE entity = 'billing'")
+        .prepare(
+          "SELECT COUNT(*) AS count FROM audit_log WHERE entity = 'billing'"
+        )
         .get()
     ).toEqual({ count: 6 });
   });
@@ -268,7 +285,8 @@ describe("billing service idempotency", () => {
 
 describe("billing void replay", () => {
   it("returns prior voids without appending duplicate audits", async () => {
-    const { invoice: paymentInvoice } = await createIssuedInvoice("invoice-payment");
+    const { invoice: paymentInvoice } =
+      await createIssuedInvoice("invoice-payment");
     const payment = await recordPayment({
       invoiceId: paymentInvoice.id,
       idempotencyKey: "payment-to-void",
@@ -284,10 +302,14 @@ describe("billing void replay", () => {
     const voidedPayment = await voidPayment(voidPaymentInput);
     const paymentAuditsBeforeReplay = billingAuditCount("void-payment");
     const replayedPayment = await voidPayment(voidPaymentInput);
-    expect(replayedPayment).toMatchObject({ id: voidedPayment.id, status: "void" });
+    expect(replayedPayment).toMatchObject({
+      id: voidedPayment.id,
+      status: "void",
+    });
     expect(billingAuditCount("void-payment")).toBe(paymentAuditsBeforeReplay);
 
-    const { invoice: refundInvoice } = await createIssuedInvoice("invoice-refund");
+    const { invoice: refundInvoice } =
+      await createIssuedInvoice("invoice-refund");
     const refundablePayment = await recordPayment({
       invoiceId: refundInvoice.id,
       idempotencyKey: "payment-to-refund",
@@ -309,10 +331,14 @@ describe("billing void replay", () => {
     const voidedRefund = await voidRefund(voidRefundInput);
     const refundAuditsBeforeReplay = billingAuditCount("void-refund");
     const replayedRefund = await voidRefund(voidRefundInput);
-    expect(replayedRefund).toMatchObject({ id: voidedRefund.id, status: "void" });
+    expect(replayedRefund).toMatchObject({
+      id: voidedRefund.id,
+      status: "void",
+    });
     expect(billingAuditCount("void-refund")).toBe(refundAuditsBeforeReplay);
 
-    const { invoice: voidableInvoice } = await createIssuedInvoice("invoice-to-void");
+    const { invoice: voidableInvoice } =
+      await createIssuedInvoice("invoice-to-void");
     const voidInvoiceInput = {
       invoiceId: voidableInvoice.id,
       reason: "Invoice correction",
@@ -347,10 +373,14 @@ describe("credit-note voiding", () => {
           },
         ],
       })
-    ).rejects.toThrow("Chaque ligne d'avoir référencée doit appartenir à la facture concernée.");
+    ).rejects.toThrow(
+      "Chaque ligne d'avoir référencée doit appartenir à la facture concernée."
+    );
     expect(
       database.connection
-        .prepare("SELECT COUNT(*) AS count FROM credit_notes WHERE idempotency_key = ?")
+        .prepare(
+          "SELECT COUNT(*) AS count FROM credit_notes WHERE idempotency_key = ?"
+        )
         .get("credit-cross-invoice")
     ).toEqual({ count: 0 });
 
@@ -406,32 +436,86 @@ describe("credit-note voiding", () => {
 
 describe("invoice branding snapshot", () => {
   it("preserves logo, footer and accent on the issued invoice and PDF mapping", async () => {
-    const draft = await createInvoiceDraft({ id: "brand-1", ownerId: "owner-1", lines: [{ description: "Consultation", quantityMilli: 1000, unitAmount: 200000, discountBps: 0, taxBps: 0 }] });
-    const clinicSnapshot = { name: "Cabinet Jardin", address: "Alger", logoDataUrl: "data:image/png;base64,aGVsbG8=", footer: "Merci", accent: "forest" as const };
-    await issueInvoice({ invoiceId: draft.id, idempotencyKey: "brand-issue", clinicSnapshot });
-    await recordPayment({ invoiceId: draft.id, idempotencyKey: "brand-pay", amount: 50000, method: "cash" });
+    const draft = await createInvoiceDraft({
+      id: "brand-1",
+      ownerId: "owner-1",
+      lines: [
+        {
+          description: "Consultation",
+          quantityMilli: 1000,
+          unitAmount: 200000,
+          discountBps: 0,
+          taxBps: 0,
+        },
+      ],
+    });
+    const clinicSnapshot = {
+      name: "Cabinet Jardin",
+      address: "Alger",
+      logoDataUrl: "data:image/png;base64,aGVsbG8=",
+      footer: "Merci",
+      accent: "forest" as const,
+    };
+    await issueInvoice({
+      invoiceId: draft.id,
+      idempotencyKey: "brand-issue",
+      clinicSnapshot,
+    });
+    await recordPayment({
+      invoiceId: draft.id,
+      idempotencyKey: "brand-pay",
+      amount: 50000,
+      method: "cash",
+    });
     const persisted = await getInvoice(draft.id);
     expect(persisted?.clinicSnapshot).toMatchObject(clinicSnapshot);
     const { invoiceDocument } = await import("@/lib/invoice-document");
     const document = invoiceDocument(persisted!, "Milo");
     expect(document.settings.name).toBe("Cabinet Jardin");
     expect(document.settings.logoDataUrl).toBe(clinicSnapshot.logoDataUrl);
-    expect(document.data).toMatchObject({ totalAmount: 200000, paidAmount: 50000, balanceAmount: 150000 });
+    expect(document.data).toMatchObject({
+      totalAmount: 200000,
+      paidAmount: 50000,
+      balanceAmount: 150000,
+    });
   });
   it("rejects a remote logo before issuing an invoice", async () => {
-    const draft = await createInvoiceDraft({ id: "brand-invalid", ownerId: "owner-1", lines: [{ description: "Consultation", quantityMilli: 1000, unitAmount: 200000, discountBps: 0, taxBps: 0 }] });
-    await expect(issueInvoice({ invoiceId: draft.id, idempotencyKey: "invalid-brand", clinicSnapshot: { name: "Cabinet", logoDataUrl: "https://example.com/logo.png" } })).rejects.toMatchObject({ code: "CLINIC_SNAPSHOT_INVALID" });
+    const draft = await createInvoiceDraft({
+      id: "brand-invalid",
+      ownerId: "owner-1",
+      lines: [
+        {
+          description: "Consultation",
+          quantityMilli: 1000,
+          unitAmount: 200000,
+          discountBps: 0,
+          taxBps: 0,
+        },
+      ],
+    });
+    await expect(
+      issueInvoice({
+        invoiceId: draft.id,
+        idempotencyKey: "invalid-brand",
+        clinicSnapshot: {
+          name: "Cabinet",
+          logoDataUrl: "https://example.com/logo.png",
+        },
+      })
+    ).rejects.toMatchObject({ code: "CLINIC_SNAPSHOT_INVALID" });
     expect((await getInvoice(draft.id))?.documentStatus).toBe("draft");
   });
 });
 
 it("séjour sorti vers contrôle et brouillon de journées utilise les tables existantes sans double facture", async () => {
-  const { createStayStore } =
-    await import("@/modules/hospitalizations/stays/store");
-  const { prepareStayInvoice, stayInvoiceInput } =
-    await import("@/modules/hospitalizations/stays/billing");
+  const { createStayStore } = await import(
+    "@/modules/hospitalizations/stays/store"
+  );
+  const { prepareStayInvoice, stayInvoiceInput } = await import(
+    "@/modules/hospitalizations/stays/billing"
+  );
   await database.execute(
-    "INSERT INTO patients(id,owner_id,name,species) VALUES('stay-patient','owner-1','Patient test','chien')",
+    "INSERT INTO patients(id,owner_id,name,species) VALUES('stay-patient','owner-1','Patient test','chien')"
   );
   const adapter = {
     select: <T>(query: string, args: unknown[] = []) =>
@@ -439,7 +523,7 @@ it("séjour sorti vers contrôle et brouillon de journées utilise les tables ex
     execute: async (query: string, args: unknown[] = []) => ({
       rowsAffected: Number(
         database.connection.prepare(query.replace(/\$\d+/g, "?")).run(...args)
-          .changes,
+          .changes
       ),
     }),
   };
@@ -459,7 +543,7 @@ it("séjour sorti vers contrôle et brouillon de journées utilise les tables ex
       },
     },
     () => `stay-test-${++billingHarness.nextId}`,
-    () => new Date("2026-08-03T12:00:00Z"),
+    () => new Date("2026-08-03T12:00:00Z")
   );
   const stay = await store.admit(
     {
@@ -467,7 +551,7 @@ it("séjour sorti vers contrôle et brouillon de journées utilise les tables ex
       admittedAt: new Date(2026, 7, 1, 10).toISOString(),
       reason: "Observation",
     },
-    "vet",
+    "vet"
   );
   await store.transition(stay.id, "en_cours", "vet");
   await store.transition(stay.id, "sortie_prevue", "vet", {
@@ -492,7 +576,7 @@ it("séjour sorti vers contrôle et brouillon de journées utilise les tables ex
       purchasePriceAmount: 0,
       unit: "jour",
     },
-    "vet",
+    "vet"
   );
   const first = await prepareStayInvoice(input, {
     getInvoice,
@@ -511,27 +595,27 @@ it("séjour sorti vers contrôle et brouillon de journées utilise les tables ex
   expect(
     database.connection
       .prepare("SELECT patient_id FROM tasks WHERE id=?")
-      .get(`stay-follow-up:${stay.id}`),
+      .get(`stay-follow-up:${stay.id}`)
   ).toEqual({ patient_id: "stay-patient" });
   expect(
-    database.connection.prepare("SELECT count(*) AS n FROM payments").get(),
+    database.connection.prepare("SELECT count(*) AS n FROM payments").get()
   ).toEqual({ n: 0 });
 });
 
 async function seedCompletedCare(
   id = "care-1",
-  productId: string | null = "care-product",
+  productId: string | null = "care-product"
 ) {
   await database.execute(
-    "INSERT OR IGNORE INTO patients(id,owner_id,name,species) VALUES('care-patient','owner-1','Patient test','chien')",
+    "INSERT OR IGNORE INTO patients(id,owner_id,name,species) VALUES('care-patient','owner-1','Patient test','chien')"
   );
   await database.execute(
-    "INSERT OR IGNORE INTO products(id,name,category,unit,purchase_price_amount,sale_price_amount,quantity,created_at) VALUES('care-product','Soin','Service','acte',0,4500,9,'2026-01-01 00:00:00')",
+    "INSERT OR IGNORE INTO products(id,name,category,unit,purchase_price_amount,sale_price_amount,quantity,created_at) VALUES('care-product','Soin','Service','acte',0,4500,9,'2026-01-01 00:00:00')"
   );
   await database.execute(
     `INSERT INTO care_tasks(id,patient_id,label,type,heure_prevue,statut,execute_par,produit_id,completed_at,created_at,updated_at)
     VALUES(?,'care-patient','Injection','medicament','2026-08-01T10:00:00Z','fait','vet',?,'2026-08-01T10:05:00Z','2026-08-01','2026-08-01')`,
-    [id, productId],
+    [id, productId]
   );
 }
 
@@ -556,10 +640,10 @@ describe("facturation automatique des soins", () => {
     expect(
       database.connection
         .prepare("SELECT quantity FROM products WHERE id='care-product'")
-        .get()?.quantity,
+        .get()?.quantity
     ).toBe(9);
     await database.execute(
-      "UPDATE products SET sale_price_amount=9000 WHERE id='care-product'",
+      "UPDATE products SET sale_price_amount=9000 WHERE id='care-product'"
     );
     expect((await billCompletedCareTask("care-1")).grossAmount).toBe(4500);
     expect(billingAuditCount("create-invoice-draft")).toBe(1);
@@ -573,26 +657,25 @@ describe("facturation automatique des soins", () => {
     expect(invoice.lines).toHaveLength(1);
     expect(invoice.grossAmount).toBe(0);
     expect(
-      database.connection.prepare("SELECT COUNT(*) AS n FROM invoices").get()
-        ?.n,
+      database.connection.prepare("SELECT COUNT(*) AS n FROM invoices").get()?.n
     ).toBe(2);
   });
   it("refuse un soin non effectué et reprend après rollback d’une erreur de ligne", async () => {
     await seedCompletedCare();
     await database.execute(
-      "UPDATE care_tasks SET statut='a_faire' WHERE id='care-1'",
+      "UPDATE care_tasks SET statut='a_faire' WHERE id='care-1'"
     );
     await expect(billCompletedCareTask("care-1")).rejects.toThrow(
-      "Seul un soin effectué",
+      "Seul un soin effectué"
     );
     await database.execute(
-      "UPDATE care_tasks SET statut='fait' WHERE id='care-1'",
+      "UPDATE care_tasks SET statut='fait' WHERE id='care-1'"
     );
     await database.execute(
-      "CREATE TRIGGER fail_care_line BEFORE INSERT ON invoice_lines BEGIN SELECT RAISE(ABORT, 'line failure'); END",
+      "CREATE TRIGGER fail_care_line BEFORE INSERT ON invoice_lines BEGIN SELECT RAISE(ABORT, 'line failure'); END"
     );
     await expect(billCompletedCareTask("care-1")).rejects.toThrow(
-      "line failure",
+      "line failure"
     );
     expect(await getInvoice("care-invoice:care-1")).toBeNull();
     await database.execute("DROP TRIGGER fail_care_line");
@@ -600,11 +683,12 @@ describe("facturation automatique des soins", () => {
   });
 });
 
-
 it("consomme l’événement réel après commit et reprend un soin non facturé au rechargement", async () => {
   const { careTasksService } = await import("@/modules/care-tasks/service");
   await seedCompletedCare();
-  await database.execute("UPDATE care_tasks SET statut='a_faire', completed_at=NULL, execute_par=NULL WHERE id='care-1'");
+  await database.execute(
+    "UPDATE care_tasks SET statut='a_faire', completed_at=NULL, execute_par=NULL WHERE id='care-1'"
+  );
   await careTasksService.transition("care-1", "fait", "vet");
   expect((await getInvoice("care-invoice:care-1"))?.lines).toHaveLength(1);
   await seedCompletedCare("care-retry");
@@ -612,19 +696,34 @@ it("consomme l’événement réel après commit et reprend un soin non facturé
   expect((await getInvoice("care-invoice:care-retry"))?.grossAmount).toBe(4500);
 });
 
-
 it("modifie le tarif d’un brouillon de soin à zéro, persiste son total puis le fige à l’émission", async () => {
-  const { draftPriceLines } = await import("@/modules/finances/lib/draft-prices");
+  const { draftPriceLines } = await import(
+    "@/modules/finances/lib/draft-prices"
+  );
   await seedCompletedCare("care-zero", null);
   const draft = await billCompletedCareTask("care-zero");
   const lines = draftPriceLines(draft, { [draft.lines[0].id]: "1750,50" });
-  const saved = await updateInvoiceDraft({ invoiceId: draft.id, lines, actor: { userId: "vet" } });
+  const saved = await updateInvoiceDraft({
+    invoiceId: draft.id,
+    lines,
+    actor: { userId: "vet" },
+  });
   expect(saved.grossAmount).toBe(175050);
-  expect(saved.lines[0]).toMatchObject({ quantityMilli: 1000, unitAmount: 175050, description: "Injection" });
+  expect(saved.lines[0]).toMatchObject({
+    quantityMilli: 1000,
+    unitAmount: 175050,
+    description: "Injection",
+  });
   expect((await getInvoice(draft.id))?.grossAmount).toBe(175050);
   expect((await billCompletedCareTask("care-zero")).grossAmount).toBe(175050);
-  await issueInvoice({ invoiceId: draft.id, clinicSnapshot: CLINIC, idempotencyKey: "issue-care-edited" });
-  await expect(updateInvoiceDraft({ invoiceId: draft.id, lines })).rejects.toMatchObject({ code: "INVOICE_NOT_DRAFT" });
+  await issueInvoice({
+    invoiceId: draft.id,
+    clinicSnapshot: CLINIC,
+    idempotencyKey: "issue-care-edited",
+  });
+  await expect(
+    updateInvoiceDraft({ invoiceId: draft.id, lines })
+  ).rejects.toMatchObject({ code: "INVOICE_NOT_DRAFT" });
 });
 
 it("reprend après minuit la facturation d’un soin de la veille sans le déplacer dans la journée courante", async () => {
@@ -632,60 +731,130 @@ it("reprend après minuit la facturation d’un soin de la veille sans le dépla
   await seedCompletedCare("care-yesterday");
   await database.execute(`CREATE TRIGGER fail_yesterday_billing BEFORE INSERT ON invoice_lines
     BEGIN SELECT RAISE(ABORT, 'billing interrupted'); END;`);
-  await expect(billCompletedCareTask("care-yesterday")).rejects.toThrow("billing interrupted");
+  await expect(billCompletedCareTask("care-yesterday")).rejects.toThrow(
+    "billing interrupted"
+  );
   expect(await getInvoice("care-invoice:care-yesterday")).toBeNull();
   await database.execute("DROP TRIGGER fail_yesterday_billing");
   vi.setSystemTime(new Date("2026-08-02T00:01:00.000Z"));
   const start = new Date("2026-08-02T00:00:00.000Z");
   const end = new Date("2026-08-03T00:00:00.000Z");
   expect(await careTasksService.list(start, end)).toEqual([]);
-  expect((await getInvoice("care-invoice:care-yesterday"))?.grossAmount).toBe(4500);
+  expect((await getInvoice("care-invoice:care-yesterday"))?.grossAmount).toBe(
+    4500
+  );
   await careTasksService.list(start, end);
-  expect(database.connection.prepare("SELECT count(*) AS n FROM invoices WHERE id=?")
-    .get("care-invoice:care-yesterday")).toEqual({ n: 1 });
+  expect(
+    database.connection
+      .prepare("SELECT count(*) AS n FROM invoices WHERE id=?")
+      .get("care-invoice:care-yesterday")
+  ).toEqual({ n: 1 });
 });
 
 it("reprend la facturation de la nouvelle validation sans réutiliser la facture annulée", async () => {
-  const {careTasksService} = await import("@/modules/care-tasks/service");
+  const { careTasksService } = await import("@/modules/care-tasks/service");
   await seedCompletedCare("care-revalidated");
   const previous = await billCompletedCareTask("care-revalidated");
-  await voidInvoice({invoiceId: previous.id, reason: "Validation annulée"});
-  await database.execute("UPDATE care_tasks SET completion_revision=1 WHERE id='care-revalidated'");
+  await voidInvoice({ invoiceId: previous.id, reason: "Validation annulée" });
+  await database.execute(
+    "UPDATE care_tasks SET completion_revision=1 WHERE id='care-revalidated'"
+  );
   await careTasksService.list(new Date("2026-08-01"), new Date("2026-08-02"));
-  expect((await getInvoice("care-invoice:care-revalidated:validation:1"))?.documentStatus).toBe("draft");
+  expect(
+    (await getInvoice("care-invoice:care-revalidated:validation:1"))
+      ?.documentStatus
+  ).toBe("draft");
   expect((await getInvoice(previous.id))?.documentStatus).toBe("void");
   await careTasksService.list(new Date("2026-08-01"), new Date("2026-08-02"));
-  expect(database.connection.prepare("SELECT COUNT(*) AS n FROM invoices WHERE document_status='draft'").get()?.n).toBe(1);
+  expect(
+    database.connection
+      .prepare(
+        "SELECT COUNT(*) AS n FROM invoices WHERE document_status='draft'"
+      )
+      .get()?.n
+  ).toBe(1);
 });
 
 describe("lignes des factures émises", () => {
   it("lit les lignes émises de la période avec ce qui les classe, brouillons et annulées exclus", async () => {
     const { lineNature } = await import("@/modules/finances/invoice-natures");
-    await database.execute("INSERT INTO patients(id,owner_id,name,species) VALUES('nature-patient','owner-1','Rex','chien')");
     await database.execute(
-      "INSERT INTO products(id,name,category,unit,quantity,sale_price_amount,purchase_price_amount,created_at) VALUES ('nature-product','Vaccin','Vaccins','dose',10,500,0,'2026-01-01 00:00:00')",
+      "INSERT INTO patients(id,owner_id,name,species) VALUES('nature-patient','owner-1','Rex','chien')"
     );
-    const surgery = await createInvoiceDraft({ id: "nature-surgery", ownerId: "owner-1", lines: [
-      { description: "Ostéosynthèse", quantityMilli: 1000, unitAmount: 300000, discountBps: 0, taxBps: 0 },
-      { description: "Vaccin", productId: "nature-product", quantityMilli: 1000, unitAmount: 500, discountBps: 0, taxBps: 0 },
-    ] });
+    await database.execute(
+      "INSERT INTO products(id,name,category,unit,quantity,sale_price_amount,purchase_price_amount,created_at) VALUES ('nature-product','Vaccin','Vaccins','dose',10,500,0,'2026-01-01 00:00:00')"
+    );
+    const surgery = await createInvoiceDraft({
+      id: "nature-surgery",
+      ownerId: "owner-1",
+      lines: [
+        {
+          description: "Ostéosynthèse",
+          quantityMilli: 1000,
+          unitAmount: 300000,
+          discountBps: 0,
+          taxBps: 0,
+        },
+        {
+          description: "Vaccin",
+          productId: "nature-product",
+          quantityMilli: 1000,
+          unitAmount: 500,
+          discountBps: 0,
+          taxBps: 0,
+        },
+      ],
+    });
     // The appointment only carries its type here; its vet is not under test.
     await database.execute("PRAGMA foreign_keys = OFF");
     await database.execute(
-      "INSERT INTO appointments(id,patient_id,owner_id,vet_id,title,start_time,end_time,type) VALUES ('nature-appt','nature-patient','owner-1','vet','Chirurgie','2026-08-01 08:00:00','2026-08-01 09:00:00','Chirurgie')",
+      "INSERT INTO appointments(id,patient_id,owner_id,vet_id,title,start_time,end_time,type) VALUES ('nature-appt','nature-patient','owner-1','vet','Chirurgie','2026-08-01 08:00:00','2026-08-01 09:00:00','Chirurgie')"
     );
     await database.execute("PRAGMA foreign_keys = ON");
-    await database.execute("UPDATE invoices SET appointment_id = 'nature-appt' WHERE id = ?", [surgery.id]);
-    await issueInvoice({ invoiceId: surgery.id, idempotencyKey: "nature-issue", clinicSnapshot: CLINIC, issuedAt: "2026-08-01T10:00:00.000Z" });
-    await createInvoiceDraft({ id: "nature-draft", ownerId: "owner-1", lines: [
-      { description: "Brouillon", quantityMilli: 1000, unitAmount: 999, discountBps: 0, taxBps: 0 },
-    ] });
+    await database.execute(
+      "UPDATE invoices SET appointment_id = 'nature-appt' WHERE id = ?",
+      [surgery.id]
+    );
+    await issueInvoice({
+      invoiceId: surgery.id,
+      idempotencyKey: "nature-issue",
+      clinicSnapshot: CLINIC,
+      issuedAt: "2026-08-01T10:00:00.000Z",
+    });
+    await createInvoiceDraft({
+      id: "nature-draft",
+      ownerId: "owner-1",
+      lines: [
+        {
+          description: "Brouillon",
+          quantityMilli: 1000,
+          unitAmount: 999,
+          discountBps: 0,
+          taxBps: 0,
+        },
+      ],
+    });
 
-    const lines = await listIssuedInvoiceLines({ from: new Date("2026-07-31T00:00:00Z"), to: new Date("2026-08-02T00:00:00Z") });
-    expect(lines.map((line) => [line.amount, line.productId, line.appointmentType, lineNature(line)])).toEqual([
+    const lines = await listIssuedInvoiceLines({
+      from: new Date("2026-07-31T00:00:00Z"),
+      to: new Date("2026-08-02T00:00:00Z"),
+    });
+    expect(
+      lines.map((line) => [
+        line.amount,
+        line.productId,
+        line.appointmentType,
+        lineNature(line),
+      ])
+    ).toEqual([
       [300000, null, "Chirurgie", "chirurgie"],
       [500, "nature-product", "Chirurgie", "produits"],
     ]);
-    expect(await listIssuedInvoiceLines({ from: new Date("2026-08-02T00:00:00Z"), to: new Date("2026-08-03T00:00:00Z") })).toEqual([]);
+    expect(
+      await listIssuedInvoiceLines({
+        from: new Date("2026-08-02T00:00:00Z"),
+        to: new Date("2026-08-03T00:00:00Z"),
+      })
+    ).toEqual([]);
   });
 });

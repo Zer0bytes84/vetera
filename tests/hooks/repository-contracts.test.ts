@@ -18,7 +18,10 @@ import * as repositories from "../../src/data/repositories";
 
 function readHook<T>(factory: () => T): T {
   let result!: T;
-  function Probe() {result = factory(); return null;}
+  function Probe() {
+    result = factory();
+    return null;
+  }
   renderToStaticMarkup(createElement(Probe));
   return result;
 }
@@ -45,9 +48,9 @@ describe("repository public contracts", () => {
     expect(typeof repositories.usePatientsRepository().createWithOwner).toBe(
       "function"
     );
-    expect(typeof readHook(repositories.useProductsRepository).restockProduct).toBe(
-      "function"
-    );
+    expect(
+      typeof readHook(repositories.useProductsRepository).restockProduct
+    ).toBe("function");
     expect(typeof repositories.useTransactionsRepository().recordIncome).toBe(
       "function"
     );

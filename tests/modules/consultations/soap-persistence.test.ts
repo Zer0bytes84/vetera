@@ -156,12 +156,24 @@ describe("SOAP validé : dépôt et hook réels vers SQLite sur disque", () => {
   it("remplace la section validée en SQLite et conserve les autres après réouverture", async () => {
     const read = await setup();
     await read().upsertForAppointment("visit", "rex", approved);
-    const note = assembleGuidedNote(fields, { ...EMPTY_SOAP, assessment: "Cause bactérienne" });
-    const patch = { ...approved, ...note, content: reviewedSoapContent(note, approved.content, "vet") };
+    const note = assembleGuidedNote(fields, {
+      ...EMPTY_SOAP,
+      assessment: "Cause bactérienne",
+    });
+    const patch = {
+      ...approved,
+      ...note,
+      content: reviewedSoapContent(note, approved.content, "vet"),
+    };
     await read().upsertForAppointment("visit", "rex", patch);
     await read().upsertForAppointment("visit", "rex", patch);
-    fixture.db!.close(); fixture.db = new DatabaseSync(file);
-    const rows = fixture.db.prepare("SELECT assessment,subjective,objective,plan FROM consultation_soaps").all();
+    fixture.db!.close();
+    fixture.db = new DatabaseSync(file);
+    const rows = fixture.db
+      .prepare(
+        "SELECT assessment,subjective,objective,plan FROM consultation_soaps"
+      )
+      .all();
     expect(rows).toEqual([{ ...fields, assessment: "Cause bactérienne" }]);
   });
   it("ne confirme pas une écriture échouée et conserve la note précédente", async () => {

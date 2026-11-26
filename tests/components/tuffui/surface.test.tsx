@@ -1,7 +1,13 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { expect, it } from "vitest";
 import { Calendar } from "lucide-react";
-import { IconTile, Inset, Panel, Shell, ShellHeader } from "@/components/ui/surface";
+import {
+  IconTile,
+  Inset,
+  Panel,
+  Shell,
+  ShellHeader,
+} from "@/components/ui/surface";
 
 it("Shell, Panel et Inset s'emboîtent : bande grise de la Chart Card, panneau de l'app", () => {
   const html = renderToStaticMarkup(
@@ -9,7 +15,7 @@ it("Shell, Panel et Inset s'emboîtent : bande grise de la Chart Card, panneau d
       <Panel>
         <Inset>contenu</Inset>
       </Panel>
-    </Shell>,
+    </Shell>
   );
   expect(html).toContain("bg-[var(--card-band)]");
   expect(html).toContain("bg-[var(--card-inset)]");
@@ -19,7 +25,12 @@ it("Shell, Panel et Inset s'emboîtent : bande grise de la Chart Card, panneau d
 
 it("ShellHeader rend le titre, le sous-titre, l'icône lucide et la partie droite", () => {
   const html = renderToStaticMarkup(
-    <ShellHeader aside={<span>droite</span>} icon={Calendar} subtitle="Sous-titre" title="Titre" />,
+    <ShellHeader
+      aside={<span>droite</span>}
+      icon={Calendar}
+      subtitle="Sous-titre"
+      title="Titre"
+    />
   );
   expect(html).toContain("<h3");
   expect(html).toContain("Titre");

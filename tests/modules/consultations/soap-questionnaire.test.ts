@@ -13,7 +13,12 @@ import {
 describe("SOAP Questionnaire Config", () => {
   it("contient exactement 4 étapes ordonnées S - O - A - P", () => {
     expect(SOAP_QUESTIONNAIRE_STEPS).toHaveLength(4);
-    expect(SOAP_QUESTIONNAIRE_STEPS.map((s) => s.letter)).toEqual(["S", "O", "A", "P"]);
+    expect(SOAP_QUESTIONNAIRE_STEPS.map((s) => s.letter)).toEqual([
+      "S",
+      "O",
+      "A",
+      "P",
+    ]);
     expect(SOAP_QUESTIONNAIRE_STEPS.map((s) => s.key)).toEqual([
       "subjective",
       "objective",
@@ -41,13 +46,17 @@ describe("SOAP Questionnaire Config", () => {
 
   it("couvre les termes vétérinaires majeurs (vaccination, gastro, AINS, IRC)", () => {
     const subjective = SOAP_QUESTIONNAIRE_STEPS.find((s) => s.letter === "S")!;
-    expect(subjective.options.some((o) => o.label.includes("Vaccination"))).toBe(true);
+    expect(
+      subjective.options.some((o) => o.label.includes("Vaccination"))
+    ).toBe(true);
 
     const objective = SOAP_QUESTIONNAIRE_STEPS.find((s) => s.letter === "O")!;
     expect(objective.options.some((o) => o.label.includes("BEG"))).toBe(true);
 
     const assessment = SOAP_QUESTIONNAIRE_STEPS.find((s) => s.letter === "A")!;
-    expect(assessment.options.some((o) => o.textToInsert.includes("IRC"))).toBe(true);
+    expect(assessment.options.some((o) => o.textToInsert.includes("IRC"))).toBe(
+      true
+    );
 
     const plan = SOAP_QUESTIONNAIRE_STEPS.find((s) => s.letter === "P")!;
     expect(plan.options.some((o) => o.label.includes("AINS"))).toBe(true);

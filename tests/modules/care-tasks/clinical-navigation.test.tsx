@@ -3,25 +3,48 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { beforeEach, expect, it, vi } from "vitest";
 import type { CareStatus } from "../../../src/modules/care-tasks/domain";
 
-type Task = { id: string; patient_id: string; heure_prevue: string; statut: CareStatus };
+type Task = {
+  id: string;
+  patient_id: string;
+  heure_prevue: string;
+  statut: CareStatus;
+};
 const harness = vi.hoisted(() => ({
   tasks: [] as Task[],
   now: new Date("2026-10-13T12:00:00Z"),
   focus: null as { kind: "care_patient"; id: string } | null,
 }));
-vi.mock("@/modules/care-tasks/use-care-tasks", () => ({ useCareTasks: () => harness }));
+vi.mock("@/modules/care-tasks/use-care-tasks", () => ({
+  useCareTasks: () => harness,
+}));
 vi.mock("@/contexts/focus-provider", () => ({
-  useFocus: () => ({ focus: harness.focus, clearFocus: () => {}, registerHandler: () => {} }),
+  useFocus: () => ({
+    focus: harness.focus,
+    clearFocus: () => {},
+    registerHandler: () => {},
+  }),
 }));
 vi.mock("@/modules/care-tasks/care-page", () => ({ default: () => null }));
-vi.mock("@/modules/hospitalizations/stays/stays-page", () => ({ default: () => null }));
-vi.mock("@/modules/patient-reminders/medical-reminders-widget", () => ({ MedicalRemindersModule: () => null }));
+vi.mock("@/modules/hospitalizations/stays/stays-page", () => ({
+  default: () => null,
+}));
+vi.mock("@/modules/patient-reminders/medical-reminders-widget", () => ({
+  MedicalRemindersModule: () => null,
+}));
 
 import ClinicalWorkspace from "../../../src/modules/clinique/pages/clinical-workspace";
-const render = () => renderToStaticMarkup(<ClinicalWorkspace onNavigate={() => {}} />);
-const task = (id: string, statut: CareStatus, heure_prevue: string, patient_id = "patient-a"): Task =>
-  ({ id, patient_id, statut, heure_prevue });
-beforeEach(() => { harness.tasks = []; harness.focus = null; });
+const render = () =>
+  renderToStaticMarkup(<ClinicalWorkspace onNavigate={() => {}} />);
+const task = (
+  id: string,
+  statut: CareStatus,
+  heure_prevue: string,
+  patient_id = "patient-a"
+): Task => ({ id, patient_id, statut, heure_prevue });
+beforeEach(() => {
+  harness.tasks = [];
+  harness.focus = null;
+});
 
 it("signale dans la navigation les soins réellement en retard et ignore les futurs et terminaux", () => {
   harness.tasks = [

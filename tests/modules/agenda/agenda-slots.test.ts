@@ -12,7 +12,13 @@ const visit = (
   status: Appointment["status"] = "scheduled",
   type: Appointment["type"] = "Consultation",
   vetId = "v1"
-) => ({ startTime: `2026-10-21T${start}:00`, endTime: `2026-10-21T${end}:00`, status, type, vetId });
+) => ({
+  startTime: `2026-10-21T${start}:00`,
+  endTime: `2026-10-21T${end}:00`,
+  status,
+  type,
+  vetId,
+});
 
 describe("personInitials", () => {
   it("skips the title", () => {
@@ -26,7 +32,10 @@ describe("freeSlotStarts", () => {
   const day = new Date("2026-10-21T00:00:00");
   it("leaves out booked and past half hours, not cancelled ones", () => {
     const free = freeSlotStarts({
-      appointments: [visit("09:30", "10:00"), visit("10:00", "10:30", "cancelled")],
+      appointments: [
+        visit("09:30", "10:00"),
+        visit("10:00", "10:30", "cancelled"),
+      ],
       day,
       startHour: 9,
       endHour: 10,
@@ -38,7 +47,13 @@ describe("freeSlotStarts", () => {
 
   it("offers nothing on a day already over", () => {
     expect(
-      freeSlotStarts({ appointments: [], day, startHour: 9, endHour: 10, now: new Date("2026-10-22T08:00:00") })
+      freeSlotStarts({
+        appointments: [],
+        day,
+        startHour: 9,
+        endHour: 10,
+        now: new Date("2026-10-22T08:00:00"),
+      })
     ).toEqual([]);
   });
 });

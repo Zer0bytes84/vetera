@@ -4,7 +4,12 @@ import { estimateQueue } from "@/modules/dashboard/model/clinical-dashboard";
 import type { ScheduleEntry } from "@/modules/dashboard/v2/model";
 
 const at = (time: string) => new Date(`2026-10-21T${time}:00`);
-const entry = (id: string, status: Appointment["status"], start: string, end: string): ScheduleEntry => ({
+const entry = (
+  id: string,
+  status: Appointment["status"],
+  start: string,
+  end: string
+): ScheduleEntry => ({
   appointment: { id, status } as Appointment,
   start: at(start),
   end: at(end),
@@ -19,7 +24,13 @@ describe("estimation de la salle d'attente", () => {
     const nala = entry("Nala", "waiting", "10:30", "11:00");
     const rex = entry("Rex", "arrived", "10:45", "11:00");
     const queue = estimateQueue([current, nala, rex], [nala, rex], at("10:40"));
-    expect(queue.map((row) => [row.entry.patientName, row.position, row.estimatedAt.toTimeString().slice(0, 5)])).toEqual([
+    expect(
+      queue.map((row) => [
+        row.entry.patientName,
+        row.position,
+        row.estimatedAt.toTimeString().slice(0, 5),
+      ])
+    ).toEqual([
       ["Nala", 1, "11:00"],
       ["Rex", 2, "11:30"],
     ]);

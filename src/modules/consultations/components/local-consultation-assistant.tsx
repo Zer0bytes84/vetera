@@ -969,10 +969,20 @@ export default function LocalConsultationAssistant({
       onKeyDown={(event) => {
         // Échap closes the panel, through the same check as the close button (an unsaved note asks first). A menu, a
         // list or a dialog open inside the panel keeps Échap for itself.
-        if (event.key !== "Escape" || event.defaultPrevented || event.nativeEvent.isComposing) return;
+        if (
+          event.key !== "Escape" ||
+          event.defaultPrevented ||
+          event.nativeEvent.isComposing
+        )
+          return;
         const target = event.target as HTMLElement;
         // In a text field, Échap belongs to the field (an answer being written, a dictation): the panel stays.
-        if (target.closest("input, textarea, [contenteditable='true'], [role='dialog'], [role='alertdialog'], [role='listbox'], [role='menu'], [data-slot='select-content']")) return;
+        if (
+          target.closest(
+            "input, textarea, [contenteditable='true'], [role='dialog'], [role='alertdialog'], [role='listbox'], [role='menu'], [data-slot='select-content']"
+          )
+        )
+          return;
         event.preventDefault();
         requestClose();
       }}

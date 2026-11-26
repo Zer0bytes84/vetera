@@ -1,5 +1,9 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { applyTheme, getThemeConfig, REMOVED_DISPLAY_KEYS } from "../src/lib/theme-store";
+import {
+  applyTheme,
+  getThemeConfig,
+  REMOVED_DISPLAY_KEYS,
+} from "../src/lib/theme-store";
 
 // Removal of the decorative display settings (5 November 2026,
 // docs/recus/2026-11-05/nettoyage-parametres/): an install that stored values
@@ -11,7 +15,14 @@ function install(stored: Record<string, string>) {
   const storage = new Map(Object.entries(stored));
   const values = new Map<string, string>();
   const dataset: Record<string, string> = {};
-  vi.stubGlobal("document", { documentElement: { dataset, style: { setProperty: (key: string, value: string) => values.set(key, value) } } });
+  vi.stubGlobal("document", {
+    documentElement: {
+      dataset,
+      style: {
+        setProperty: (key: string, value: string) => values.set(key, value),
+      },
+    },
+  });
   vi.stubGlobal("localStorage", {
     getItem: (key: string) => storage.get(key) ?? null,
     setItem: (key: string, value: string) => storage.set(key, value),
@@ -28,7 +39,7 @@ const TESTER = {
   "baitari-crm-geist-trial-v1": "true",
   "baitari-neutral-controls-v1": "true",
   "baitari-blue-system-polish-v1": "true",
-  "baitari_original_header_restored_v2": "true",
+  baitari_original_header_restored_v2: "true",
   theme: "dark",
   "theme-config": JSON.stringify({
     visualStyle: "classic",
@@ -53,17 +64,32 @@ describe("paramètres d'affichage retirés : migration", () => {
     const { storage, values, dataset } = install(TESTER);
     const config = getThemeConfig();
     expect(config).toEqual({ cleanFont: "plex" });
-    expect(JSON.parse(storage.get("theme-config")!)).toEqual({ cleanFont: "plex" });
-    for (const key of REMOVED_DISPLAY_KEYS) expect(storage.has(key), key).toBe(false);
+    expect(JSON.parse(storage.get("theme-config")!)).toEqual({
+      cleanFont: "plex",
+    });
+    for (const key of REMOVED_DISPLAY_KEYS)
+      expect(storage.has(key), key).toBe(false);
     // Kept: the mode, the collapse behaviour, the sidebar tone. The retired markers give way to one.
     expect(storage.get("theme")).toBe("dark");
-    expect(storage.get("baitari-sidebar-tone")).toBe(JSON.stringify({ "user-1": "light" }));
+    expect(storage.get("baitari-sidebar-tone")).toBe(
+      JSON.stringify({ "user-1": "light" })
+    );
     expect(storage.get("layout_collapsible_v7")).toBe("offcanvas");
     expect(storage.get("baitari-clean-only-v1")).toBe("true");
-    for (const retired of ["baitari-premium-default-v1", "baitari-clean-default-v1", "baitari-clean-default-v2"]) expect(storage.has(retired), retired).toBe(false);
+    for (const retired of [
+      "baitari-premium-default-v1",
+      "baitari-clean-default-v1",
+      "baitari-clean-default-v2",
+    ])
+      expect(storage.has(retired), retired).toBe(false);
 
     applyTheme(config, true);
-    expect(dataset).toMatchObject({ skin: "clean", chromeStyle: "liquid-glass", cleanFont: "plex", headerPattern: "opaline" });
+    expect(dataset).toMatchObject({
+      skin: "clean",
+      chromeStyle: "liquid-glass",
+      cleanFont: "plex",
+      headerPattern: "opaline",
+    });
     expect(dataset.visualStyle).toBeUndefined();
     expect(dataset.radius).toBeUndefined();
     expect(dataset.density).toBeUndefined();
@@ -80,13 +106,25 @@ describe("paramètres d'affichage retirés : migration", () => {
   });
 
   it("supporte une configuration illisible ou des valeurs inconnues sans erreur", () => {
-    const broken = install({ "baitari-premium-default-v1": "true", "baitari-clean-default-v1": "true", "theme-config": "{oops" });
+    const broken = install({
+      "baitari-premium-default-v1": "true",
+      "baitari-clean-default-v1": "true",
+      "theme-config": "{oops",
+    });
     expect(() => getThemeConfig()).not.toThrow();
     expect(getThemeConfig()).toEqual({});
     // Unreadable: ignored, never rewritten (nothing readable to keep).
     expect(broken.storage.get("theme-config")).toBe("{oops");
     vi.unstubAllGlobals();
-    install({ "baitari-premium-default-v1": "true", "baitari-clean-default-v1": "true", "theme-config": JSON.stringify({ skin: "neon", cleanFont: "comic", accent: 42 }) });
+    install({
+      "baitari-premium-default-v1": "true",
+      "baitari-clean-default-v1": "true",
+      "theme-config": JSON.stringify({
+        skin: "neon",
+        cleanFont: "comic",
+        accent: 42,
+      }),
+    });
     expect(getThemeConfig()).toEqual({});
   });
 
@@ -106,12 +144,31 @@ describe("paramètres d'affichage retirés : migration", () => {
     expect(existsSync("src/lib/sidebar-tone.ts")).toBe(true);
     expect(existsSync("src/components/ThemeSelector.tsx")).toBe(false);
     const settings = readFileSync("src/components/Parametres.tsx", "utf8");
-    for (const gone of ["Couleur d’accent", "Liquid Glass", "Style Premium", "Premium clair", "Premium sombre", "Clean clair", "Clean sombre", "Présentation de la barre latérale", "Contraste du verre"]) {
+    for (const gone of [
+      "Couleur d’accent",
+      "Liquid Glass",
+      "Style Premium",
+      "Premium clair",
+      "Premium sombre",
+      "Clean clair",
+      "Clean sombre",
+      "Présentation de la barre latérale",
+      "Contraste du verre",
+    ]) {
       expect(settings, gone).not.toContain(gone);
     }
-    const css = ["src/index.css", "src/design-system/premium.css", "src/design-system/clean.css", "src/modules/shell/premium-sidebar.css"].map((file) => readFileSync(file, "utf8")).join("\n");
+    const css = [
+      "src/index.css",
+      "src/design-system/premium.css",
+      "src/design-system/clean.css",
+      "src/modules/shell/premium-sidebar.css",
+    ]
+      .map((file) => readFileSync(file, "utf8"))
+      .join("\n");
     expect(settings).toContain("Teinte de la barre latérale");
     expect(css).toContain('[data-sidebar-tone="light"]');
-    expect(css).not.toMatch(/data-variant="(glass|minimal|inset|floating)"|data-header-pattern="(aurora|tide|spectrum|topography|quiet)"|data-density="/);
+    expect(css).not.toMatch(
+      /data-variant="(glass|minimal|inset|floating)"|data-header-pattern="(aurora|tide|spectrum|topography|quiet)"|data-density="/
+    );
   });
 });

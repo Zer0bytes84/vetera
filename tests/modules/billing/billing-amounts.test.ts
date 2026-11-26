@@ -8,7 +8,11 @@ type Db = {
   execute(sql: string, values?: unknown[]): Promise<{ rowsAffected: number }>;
 };
 
-const harness = vi.hoisted(() => ({ db: null as Db | null, serial: 0, queue: Promise.resolve() as Promise<unknown> }));
+const harness = vi.hoisted(() => ({
+  db: null as Db | null,
+  serial: 0,
+  queue: Promise.resolve() as Promise<unknown>,
+}));
 vi.mock("@/services/sqlite/database", () => ({
   generateId: () => `billing-${++harness.serial}`,
   toSQLiteTimestamp: (date: Date) => date.toISOString(),
@@ -16,18 +20,39 @@ vi.mock("@/services/sqlite/database", () => ({
     await harness.queue;
     return operation(harness.db!);
   },
-  runDbTransaction: (operation: (db: Db) => Promise<unknown>) => transaction(operation),
-  runDbOperation: (operation: (db: Db) => Promise<unknown>) => transaction(operation),
+  runDbTransaction: (operation: (db: Db) => Promise<unknown>) =>
+    transaction(operation),
+  runDbOperation: (operation: (db: Db) => Promise<unknown>) =>
+    transaction(operation),
 }));
-vi.mock("@/services/browser-store", () => ({ isTauriRuntime: () => true, getBrowserTable: () => [] }));
-vi.mock("@/services/invoiceSettingsService", () => ({ getInvoiceSettings: async () => ({ name: "Cabinet de test" }) }));
+vi.mock("@/services/browser-store", () => ({
+  isTauriRuntime: () => true,
+  getBrowserTable: () => [],
+}));
+vi.mock("@/services/invoiceSettingsService", () => ({
+  getInvoiceSettings: async () => ({ name: "Cabinet de test" }),
+}));
 vi.mock("@/hooks/useSQLite", () => ({
   useSQLite: (table: string) => ({
-    data: table === "appointments" ? [{ id: "visit", patientId: "rex", ownerId: "owner", title: "Rex", status: "completed" }] : [],
+    data:
+      table === "appointments"
+        ? [
+            {
+              id: "visit",
+              patientId: "rex",
+              ownerId: "owner",
+              title: "Rex",
+              status: "completed",
+            },
+          ]
+        : [],
     add: vi.fn(),
     update: async (id: string, patch: Record<string, unknown>) => {
       if (table === "appointments" && patch.status) {
-        harness.db!.execute("UPDATE appointments SET status = ? WHERE id = ?", [patch.status, id]);
+        harness.db!.execute("UPDATE appointments SET status = ? WHERE id = ?", [
+          patch.status,
+          id,
+        ]);
       }
       return true;
     },
@@ -64,14 +89,21 @@ beforeEach(async () => {
   harness.queue = Promise.resolve();
   harness.db = {
     async select<T>(sql: string, args: unknown[] = []) {
-      return sqlite.prepare(sql).all(...(args as (string | number | null)[])) as T;
+      return sqlite
+        .prepare(sql)
+        .all(...(args as (string | number | null)[])) as T;
     },
     async execute(sql: string, args: unknown[] = []) {
       if (!args.length) {
         sqlite.exec(sql);
         return { rowsAffected: 0 };
       }
-      return { rowsAffected: Number(sqlite.prepare(sql).run(...(args as (string | number | null)[])).changes) };
+      return {
+        rowsAffected: Number(
+          sqlite.prepare(sql).run(...(args as (string | number | null)[]))
+            .changes
+        ),
+      };
     },
   };
   await runSqliteMigrations(harness.db, SQLITE_MIGRATIONS);
@@ -89,10 +121,24 @@ afterEach(() => {
 });
 
 const invoice = () =>
-  sqlite.prepare("SELECT gross_amount AS gross, document_status AS status FROM invoices WHERE appointment_id = 'visit'").get();
+  sqlite
+    .prepare(
+      "SELECT gross_amount AS gross, document_status AS status FROM invoices WHERE appointment_id = 'visit'"
+    )
+    .get();
 const payments = () =>
-  sqlite.prepare("SELECT amount FROM payments WHERE invoice_id = 'appointment-invoice-visit' AND status = 'completed' ORDER BY created_at").all().map((row) => Number(row.amount));
-const stage = () => sqlite.prepare("SELECT stage FROM visit_flow_stages WHERE appointment_id = 'visit'").get()?.stage;
+  sqlite
+    .prepare(
+      "SELECT amount FROM payments WHERE invoice_id = 'appointment-invoice-visit' AND status = 'completed' ORDER BY created_at"
+    )
+    .all()
+    .map((row) => Number(row.amount));
+const stage = () =>
+  sqlite
+    .prepare(
+      "SELECT stage FROM visit_flow_stages WHERE appointment_id = 'visit'"
+    )
+    .get()?.stage;
 
 describe("montants de la facturation", () => {
   it("facture exactement le prix saisi et n'encaisse que le règlement saisi", async () => {
@@ -104,7 +150,11 @@ describe("montants de la facturation", () => {
       "4000"
     );
     expect(draft.canConfirm).toBe(true);
-    await useAppointmentsRepository().completeWithBilling({ appointmentId: "visit", items: draft.items, amountReceivedDa: draft.received! });
+    await useAppointmentsRepository().completeWithBilling({
+      appointmentId: "visit",
+      items: draft.items,
+      amountReceivedDa: draft.received!,
+    });
 
     expect(invoice()).toEqual({ gross: 470000, status: "issued" });
     expect(payments()).toEqual([400000]);
@@ -114,13 +164,26 @@ describe("montants de la facturation", () => {
   it("encaisse ensuite le seul reste dû, depuis la facture existante, et termine la visite", async () => {
     const repository = useAppointmentsRepository();
     const first = billingDraft([{ desc: "Consultation", amount: "5000" }], "0");
-    await repository.completeWithBilling({ appointmentId: "visit", items: first.items, amountReceivedDa: first.received! });
+    await repository.completeWithBilling({
+      appointmentId: "visit",
+      items: first.items,
+      amountReceivedDa: first.received!,
+    });
     expect(payments()).toEqual([]);
 
-    const existing = { number: "INV", grossDa: 5000, balanceDa: 5000, lines: [{ desc: "Consultation", amountDa: 5000 }] };
+    const existing = {
+      number: "INV",
+      grossDa: 5000,
+      balanceDa: 5000,
+      lines: [{ desc: "Consultation", amountDa: 5000 }],
+    };
     const rest = billingDraft([], "5000", existing);
     expect(rest).toMatchObject({ canConfirm: true, total: 5000, due: 5000 });
-    await repository.completeWithBilling({ appointmentId: "visit", items: rest.items, amountReceivedDa: rest.received! });
+    await repository.completeWithBilling({
+      appointmentId: "visit",
+      items: rest.items,
+      amountReceivedDa: rest.received!,
+    });
 
     expect(invoice()).toEqual({ gross: 500000, status: "issued" });
     expect(payments()).toEqual([500000]);
@@ -128,7 +191,10 @@ describe("montants de la facturation", () => {
   });
 
   it("ne peut plus partir d'un montant supposé : sans saisie, rien n'est envoyé", () => {
-    const untouched = billingDraft([{ desc: "Consultation - Contrôle", amount: "" }], "");
+    const untouched = billingDraft(
+      [{ desc: "Consultation - Contrôle", amount: "" }],
+      ""
+    );
     expect(untouched.canConfirm).toBe(false);
     expect(invoice()).toBeUndefined();
   });

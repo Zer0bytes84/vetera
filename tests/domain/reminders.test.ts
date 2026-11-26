@@ -9,18 +9,18 @@ describe("clinical reminder planning", () => {
   const now = new Date("2026-08-01T10:00:00.000Z");
 
   it("keeps only reminder offsets that are still actionable", () => {
-    expect(
-      getFutureReminderSchedules("2026-08-01T10:40:00.000Z", now)
-    ).toEqual([
-      {
-        minutesBefore: 15,
-        scheduledFor: "2026-08-01T10:25:00.000Z",
-      },
-      {
-        minutesBefore: 30,
-        scheduledFor: "2026-08-01T10:10:00.000Z",
-      },
-    ]);
+    expect(getFutureReminderSchedules("2026-08-01T10:40:00.000Z", now)).toEqual(
+      [
+        {
+          minutesBefore: 15,
+          scheduledFor: "2026-08-01T10:25:00.000Z",
+        },
+        {
+          minutesBefore: 30,
+          scheduledFor: "2026-08-01T10:10:00.000Z",
+        },
+      ]
+    );
   });
 
   it("does not schedule reminders for terminal appointments", () => {

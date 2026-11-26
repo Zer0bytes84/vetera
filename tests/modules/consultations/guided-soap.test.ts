@@ -27,7 +27,7 @@ describe("dictée guidée SOAP", () => {
       assembleGuidedNote(EMPTY_SOAP, {
         ...EMPTY_SOAP,
         objective: "Auscultation normale.",
-      }),
+      })
     ).toEqual({ ...EMPTY_SOAP, objective: "Auscultation normale." });
   });
   it("remplace la rubrique renseignée et préserve les autres", () => {
@@ -40,7 +40,7 @@ describe("dictée guidée SOAP", () => {
       assembleGuidedNote(existing, {
         ...EMPTY_SOAP,
         plan: "Vaccin à prévoir.",
-      }),
+      })
     ).toEqual({ ...existing, plan: "Vaccin à prévoir." });
     expect(existing.plan).toBe("Suivi existant.");
   });
@@ -58,22 +58,29 @@ describe("dictée guidée SOAP", () => {
     expect(() =>
       assembleGuidedNote(
         { ...EMPTY_SOAP, plan: "x".repeat(5990) },
-        { ...EMPTY_SOAP, plan: "y".repeat(6001) },
-      ),
+        { ...EMPTY_SOAP, plan: "y".repeat(6001) }
+      )
     ).toThrow();
   });
   it("ne duplique jamais une rubrique après deux validations identiques", () => {
     const answers = { ...EMPTY_SOAP, assessment: "Cause bactérienne" };
     const first = assembleGuidedNote(
       { ...EMPTY_SOAP, assessment: "Perte de poids" },
-      answers,
+      answers
     );
     expect(assembleGuidedNote(first, answers)).toEqual(first);
     expect(first.assessment).toBe("Cause bactérienne");
   });
   it("ne réintroduit pas une ancienne rubrique après extraction de traitement puis génération", () => {
-    const existing = { ...EMPTY_SOAP, subjective: "Ancien motif", objective: "Examen existant" };
-    const answers = { ...EMPTY_SOAP, subjective: "Il a besoin de Synulox pendant 5 jours." };
+    const existing = {
+      ...EMPTY_SOAP,
+      subjective: "Ancien motif",
+      objective: "Examen existant",
+    };
+    const answers = {
+      ...EMPTY_SOAP,
+      subjective: "Il a besoin de Synulox pendant 5 jours.",
+    };
     const source = assembleGuidedNote(EMPTY_SOAP, answers);
     const note = assembleGuidedNote(existing, source, answers);
     expect(note.subjective).toBe("");
@@ -86,7 +93,7 @@ describe("dictée guidée SOAP", () => {
         ...EMPTY_SOAP,
         subjective: " Toux. ",
         plan: "Vaccin.",
-      }),
+      })
     ).toBe("S · Motif et antécédents\nToux.\n\nP · Plan de soins\nVaccin.");
   });
 });

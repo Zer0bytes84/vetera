@@ -37,7 +37,14 @@ describe("saisie de l'heure", () => {
     expect(parseTypedTime(typed)).toBe(expected);
   });
 
-  it.each(["", "25", "9h75", "abc", "2400", "12:5"])("refuse « %s »", (typed) => {
+  it.each([
+    "",
+    "25",
+    "9h75",
+    "abc",
+    "2400",
+    "12:5",
+  ])("refuse « %s »", (typed) => {
     expect(parseTypedTime(typed)).toBeNull();
   });
 });
@@ -61,7 +68,14 @@ describe("créneaux occupés", () => {
 });
 
 const markup = (busy: BusySlot[] = [], value = "09:00") =>
-  renderToStaticMarkup(<AppointmentTimePicker busy={busy} durationMinutes={15} onChange={() => undefined} value={value} />);
+  renderToStaticMarkup(
+    <AppointmentTimePicker
+      busy={busy}
+      durationMinutes={15}
+      onChange={() => undefined}
+      value={value}
+    />
+  );
 
 describe("sélecteur d'horaire", () => {
   it("affiche l'heure, la fin et les minutes en 24 heures, sans AM ni PM", () => {
@@ -82,7 +96,9 @@ describe("sélecteur d'horaire", () => {
   });
 
   it("annonce un créneau libre quand rien ne chevauche", () => {
-    expect(markup([{ start: 10 * 60, end: 10 * 60 + 30, label: "Rex" }])).toContain("Créneau libre");
+    expect(
+      markup([{ start: 10 * 60, end: 10 * 60 + 30, label: "Rex" }])
+    ).toContain("Créneau libre");
     expect(markup()).toContain("Aucun autre rendez-vous ce jour");
   });
 });

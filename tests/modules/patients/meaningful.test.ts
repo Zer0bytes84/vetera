@@ -4,7 +4,25 @@ import { visitReason } from "@/modules/patients/lib/visit-reason";
 
 describe("champs de texte du dossier : jamais « Na » devant un vétérinaire", () => {
   it("vide les valeurs de remplissage, quelle que soit leur écriture", () => {
-    for (const filler of ["Na", "na", "NA", "N/A", "n.a.", "N.A", "nd", "N/D", "néant", "Néant.", "-", "—", "…", "null", "  na  ", "Aucun", "?"]) {
+    for (const filler of [
+      "Na",
+      "na",
+      "NA",
+      "N/A",
+      "n.a.",
+      "N.A",
+      "nd",
+      "N/D",
+      "néant",
+      "Néant.",
+      "-",
+      "—",
+      "…",
+      "null",
+      "  na  ",
+      "Aucun",
+      "?",
+    ]) {
       expect(meaningful(filler), filler).toBe("");
     }
     expect(meaningful(undefined)).toBe("");

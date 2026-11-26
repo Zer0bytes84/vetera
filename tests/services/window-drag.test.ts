@@ -8,20 +8,29 @@ const native = vi.hoisted(() => ({
   zoom: vi.fn().mockResolvedValue(undefined),
 }));
 vi.mock("@tauri-apps/api/window", () => ({
-  getCurrentWindow: () => ({ startDragging: native.drag, toggleMaximize: native.zoom }),
+  getCurrentWindow: () => ({
+    startDragging: native.drag,
+    toggleMaximize: native.zoom,
+  }),
 }));
-vi.mock("@/services/browser-store", () => ({ isTauriRuntime: () => native.enabled }));
+vi.mock("@/services/browser-store", () => ({
+  isTauriRuntime: () => native.enabled,
+}));
 // Exercise the gesture lifecycle with native EventTargets; no renderer needed.
 vi.mock("react", () => ({
   useRef: (current: unknown) => ({ current }),
   useCallback: (callback: unknown) => callback,
   useEffect: () => undefined,
 }));
-const press = (detail = 1, blocked = false) => ({
-  button: 0, detail, screenX: 100, screenY: 100,
-  target: { closest: () => blocked ? {} : null },
-  preventDefault: vi.fn(),
-}) as unknown as ReactMouseEvent;
+const press = (detail = 1, blocked = false) =>
+  ({
+    button: 0,
+    detail,
+    screenX: 100,
+    screenY: 100,
+    target: { closest: () => (blocked ? {} : null) },
+    preventDefault: vi.fn(),
+  }) as unknown as ReactMouseEvent;
 function move(x: number, buttons = 1) {
   const event = new Event("mousemove");
   Object.assign(event, { screenX: x, screenY: 100, buttons });

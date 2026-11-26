@@ -50,7 +50,8 @@ const context = {
 } as unknown as LocalPatientContext;
 const models = { root: "local", whisperReady: true, generatorReady: true };
 function setup() {
-  const observe = vi.fn<(ai: ReturnType<typeof useLocalConsultationAi>) => void>();
+  const observe =
+    vi.fn<(ai: ReturnType<typeof useLocalConsultationAi>) => void>();
   function Probe() {
     const ai = useLocalConsultationAi();
     observe(ai);
@@ -110,13 +111,24 @@ describe("frontière du modèle local pour les traitements", () => {
     expect(fixture.closes).toBe(1);
   });
   it("conserve les rubriques choisies et protège le traitement avant l’appel guidé", async () => {
-    const selected = { subjective: "Le propriétaire parle d’un vaccin.", objective: "Évaluation : température 39 °C.", assessment: "Examen évoquant une infection.", plan: "On va mettre sous Metacam pendant sept jours." };
-    const draft = await setup().generate(models, Object.values(selected).join("\n"), context, selected);
+    const selected = {
+      subjective: "Le propriétaire parle d’un vaccin.",
+      objective: "Évaluation : température 39 °C.",
+      assessment: "Examen évoquant une infection.",
+      plan: "On va mettre sous Metacam pendant sept jours.",
+    };
+    const draft = await setup().generate(
+      models,
+      Object.values(selected).join("\n"),
+      context,
+      selected
+    );
     expect(draft).toEqual(selected);
     expect(JSON.stringify(fixture.requests)).not.toContain("Metacam");
     // Le plan, vidé par la protection du traitement, n'est pas envoyé du tout.
     const { plan: _plan, ...sent } = selected;
-    expect(JSON.parse(String(fixture.requests[0].responseTemplate))).toEqual(sent);
+    expect(JSON.parse(String(fixture.requests[0].responseTemplate))).toEqual(
+      sent
+    );
   });
-
 });

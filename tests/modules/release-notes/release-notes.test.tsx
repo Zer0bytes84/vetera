@@ -3,13 +3,26 @@ import { describe, expect, it } from "vitest";
 import { Building2 } from "lucide-react";
 import { SETTINGS_TABS } from "@/lib/settings-navigation";
 import { ReleaseHighlights } from "@/modules/release-notes/release-highlights";
-import { publishedReleaseNotes, RELEASE_NOTES, releaseNoteFor, type ReleaseNote } from "@/modules/release-notes/release-notes";
-import { LAST_SEEN_VERSION_KEY, markVersionSeen, readLastSeenVersion, releaseNoteToShow } from "@/modules/release-notes/release-seen";
+import {
+  publishedReleaseNotes,
+  RELEASE_NOTES,
+  releaseNoteFor,
+  type ReleaseNote,
+} from "@/modules/release-notes/release-notes";
+import {
+  LAST_SEEN_VERSION_KEY,
+  markVersionSeen,
+  readLastSeenVersion,
+  releaseNoteToShow,
+} from "@/modules/release-notes/release-seen";
 import { getAppVersion } from "@/services/backupService";
 
 const memory = () => {
   const store = new Map<string, string>();
-  return { getItem: (k: string) => store.get(k) ?? null, setItem: (k: string, v: string) => void store.set(k, v) };
+  return {
+    getItem: (k: string) => store.get(k) ?? null,
+    setItem: (k: string, v: string) => void store.set(k, v),
+  };
 };
 const note = (version: string, status: ReleaseNote["status"]): ReleaseNote => ({
   version,
@@ -39,14 +52,19 @@ describe("notes de version", () => {
     for (const n of publishedReleaseNotes()) {
       expect(n.highlights.length).toBeGreaterThanOrEqual(3);
       expect(n.highlights.length).toBeLessThanOrEqual(4);
-      for (const h of n.highlights) expect(`${h.title} ${h.text}`).not.toMatch(/\b(API|SQLite|React|CSS|composant|token|jeton|bug|refactor)/i);
+      for (const h of n.highlights)
+        expect(`${h.title} ${h.text}`).not.toMatch(
+          /\b(API|SQLite|React|CSS|composant|token|jeton|bug|refactor)/i
+        );
     }
   });
 
   it("ne montre ni n'archive jamais un brouillon", () => {
     for (const draft of RELEASE_NOTES.filter((n) => n.status === "draft")) {
       expect(releaseNoteFor(draft.version)).toBeNull();
-      expect(publishedReleaseNotes().map((n) => n.version)).not.toContain(draft.version);
+      expect(publishedReleaseNotes().map((n) => n.version)).not.toContain(
+        draft.version
+      );
     }
     expect(releaseNoteFor("0.0.0")).toBeNull();
   });
@@ -57,7 +75,11 @@ describe("notes de version", () => {
 });
 
 describe("quand la fenêtre s'affiche", () => {
-  const notes = [note("5.0.6", "published"), note("5.0.5", "published"), note("5.0.7", "draft")];
+  const notes = [
+    note("5.0.6", "published"),
+    note("5.0.5", "published"),
+    note("5.0.7", "draft"),
+  ];
 
   it("au premier lancement après une mise à jour : marqueur d'une version plus ancienne ou absent (installation d'avant la fonction)", () => {
     expect(releaseNoteToShow("5.0.6", "5.0.5", notes)?.version).toBe("5.0.6");
@@ -90,7 +112,12 @@ describe("le marqueur local", () => {
   });
 
   it("si le stockage refuse d'écrire, on ne peut pas s'en souvenir : la fenêtre ne doit pas s'ouvrir", () => {
-    const refusing = { getItem: () => null, setItem: () => { throw new Error("quota"); } };
+    const refusing = {
+      getItem: () => null,
+      setItem: () => {
+        throw new Error("quota");
+      },
+    };
     expect(markVersionSeen("5.0.5", refusing)).toBe(false);
     expect(markVersionSeen("5.0.5", null)).toBe(false);
   });
@@ -98,7 +125,9 @@ describe("le marqueur local", () => {
 
 describe("la liste des nouveautés et l'archive", () => {
   it("affiche chaque nouveauté avec son titre et son texte", () => {
-    const html = renderToStaticMarkup(<ReleaseHighlights note={releaseNoteFor("5.0.5")!} />);
+    const html = renderToStaticMarkup(
+      <ReleaseHighlights note={releaseNoteFor("5.0.5")!} />
+    );
     expect(html).toContain("Paramètres et « Mon cabinet »");
     expect(html).toContain("Une analyse financière plus riche");
   });
