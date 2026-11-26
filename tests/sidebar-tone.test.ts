@@ -10,6 +10,11 @@ import {
 } from "../src/lib/sidebar-tone";
 import { selectorText } from "./helpers/code-text";
 
+const SIDEBARISH_SELECTOR = /sidebar|nav-link|apple-sidebar-glow/;
+const DARK_SELECTOR = /^\.dark[\s:]/;
+const CLEAN_DARK_ROOT_SELECTOR = /^:root\.dark\[data-skin="clean"\]/;
+const SIDEBAR_OR_NAV_LINK = /sidebar|nav-link/;
+
 const GUARD = ':where(:not([data-sidebar-tone="light"]))';
 const css = (path: string) => postcss.parse(readFileSync(path, "utf8"));
 const selectors = (path: string) => {
@@ -90,10 +95,10 @@ describe("barre latérale : charte", () => {
   });
 
   it("chaque règle .dark de la barre latérale porte la garde", () => {
-    const sidebarish = /sidebar|nav-link|apple-sidebar-glow/;
+    const sidebarish = SIDEBARISH_SELECTOR;
     const unguarded = selectors("src/index.css")
       .filter(
-        (selector) => /^\.dark[\s:]/.test(selector) && sidebarish.test(selector)
+        (selector) => DARK_SELECTOR.test(selector) && sidebarish.test(selector)
       )
       // ".dark *" (scrollbars) keeps its universal subject and excludes the light sidebar instead.
       .filter(
@@ -115,8 +120,8 @@ describe("barre latérale : charte", () => {
     ]) {
       const darkSidebar = selectors(path).filter(
         (selector) =>
-          /^:root\.dark\[data-skin="clean"\]/.test(selector) &&
-          /sidebar|nav-link/.test(selector) &&
+          CLEAN_DARK_ROOT_SELECTOR.test(selector) &&
+          SIDEBAR_OR_NAV_LINK.test(selector) &&
           // The active-pill rules scoped to a light-pinned bar are the light case itself, not dark rules leaking onto it.
           // The light scope is looked for outside the guard, which names it too.
           !selector

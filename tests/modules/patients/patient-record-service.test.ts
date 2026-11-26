@@ -9,6 +9,8 @@ import {
 import { runSqliteMigrations } from "@/services/sqlite/migration-runner";
 import { SQLITE_MIGRATIONS } from "@/services/sqlite/migrations";
 
+const READ_OR_TRANSACTION_STATEMENT = /^(SELECT|BEGIN|COMMIT)/;
+
 const state = vi.hoisted(() => ({
   native: true,
   database: null as DatabaseSync | null,
@@ -246,7 +248,9 @@ describe("Isolated SQLite patient record reads", () => {
     expect(state.statements[0]).toBe("BEGIN DEFERRED TRANSACTION");
     expect(state.statements.at(-1)).toBe("COMMIT");
     expect(
-      state.statements.filter((query) => !/^(SELECT|BEGIN|COMMIT)/.test(query))
+      state.statements.filter(
+        (query) => !READ_OR_TRANSACTION_STATEMENT.test(query)
+      )
     ).toEqual([]);
   });
   it("checks fresh authentication before and after the single queued read", async () => {

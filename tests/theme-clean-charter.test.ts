@@ -9,6 +9,78 @@ import {
 } from "../src/lib/theme-store";
 import { classNames, hasClassName, selectorText } from "./helpers/code-text";
 
+const SIDEBAR_MENU_BUTTON = /sidebar-menu-button"\]$/;
+const TABLE_CELLS = /:is\(th, td\)/;
+const ICON_STROKE_TOKEN = /stroke-width: var\(--clean-icon-stroke\)/;
+const SIDEBAR_ICON_SVGS =
+  /\.app-sidebar \.sidebar-nav-icon svg, \.app-sidebar \.premium-shortcut-icon\)$/;
+const NAV_ICON_WIDTH =
+  /sidebar-nav-icon svg[\s\S]*?width: var\(--clean-nav-icon\) !important/;
+const SIDEBAR_MENU_BUTTON_SVG = /sidebar-menu-button"\] svg$/;
+const ACTIVE_ITEM_SVG = /\[data-active\]:not\(\[data-active="false"\]\) svg$/;
+const DISABLED_PSEUDO = /:disabled/;
+const ARIA_DISABLED = /aria-disabled/;
+const PAINTED_SURFACE_VALUE =
+  /^#|rgb\(|color-mix|shadow|var\(--clean-surface\)/;
+const DEPTH_TOKEN_NAME =
+  /shadow|glass-(top|bottom|edge|rule|drop)|segment-(track|active)/;
+const PURE_BLACK = /#000(000)?\b|rgb\(0 0 0/;
+const DARK_SCOPED_SELECTOR = /:not\(\.dark\)|\.dark /;
+const DARK_BLOCK_SELECTOR = /\.dark,$|\.dark,\s/;
+const SIDEBAR_FRAME = /sidebar-wrapper"\]$|sidebar-inset"\]$/;
+const HAIRLINE_SHADOW_008 = /0\.5px rgb\(0 0 0 \/ 0\.08\).*0\.04\)/;
+const SHELL_SCROLL_PANEL = /shell-scroll-panel/;
+const SIDEBAR_INSET = /sidebar-inset/;
+const CLEAN_ROOT_TOKENS = /^:root\[data-skin="clean"\],/;
+const SIDEBAR_CONTAINER_AFTER = /sidebar-container"\]::after/;
+const APP_SIDEBAR_CONTAINER =
+  /\.app-sidebar, \[data-slot="sidebar-container"\]/;
+const INTER_OPSZ_WOFF2 = /inter-latin(-ext)?-opsz-normal\.woff2/;
+const INTER_FONT_VALUE = /Inter Variable|var\(--app-font-(sans|heading)\)/;
+const LEGACY_FONT = /Geist|Space Grotesk/;
+const INTER_CLEAN_STACK = /^"Inter Clean", "Inter Variable"/;
+const KPI_VALUE = /\.kpiValue/;
+const TABLE_SELECTOR = /table/;
+const HAIRLINE_SHADOW_01 = /0\.5px rgb\(0 0 0 \/ 0\.1\)/;
+const TABS_TRIGGER_CHILD = /> :is\(\[data-slot="tabs-trigger"\]/;
+const PRESSED_OR_CURRENT =
+  /\[aria-pressed="true"\][^)]*\[aria-current="page"\]\)$/;
+const MODE_TOGGLE_PSEUDO = /dashboard-mode-toggle[^,]*::(after|before)/;
+const CLEAN_MODE_TOGGLE_BUTTON =
+  /^:root\[data-skin="clean"\] \.dashboard-mode-toggle > button$/;
+const ORANGE_TONE_SVG = /data-tone="orange"\] svg/;
+const OPEN_EMERGENCIES_KPI = /data-kpi="Urgences ouvertes"\]/;
+const FOLLOW_UPS_KPI = /data-kpi="Relances à prévoir"\]/;
+const OVERDUE_KPI = /data-kpi="En retard"\]/;
+const CLINICAL_TAB_SVG = /value="clinical"\] svg/;
+const CLEAN_ROOT_IS = /^:root\[data-skin="clean"\] :is\(/;
+const IS_DIRECT_CHILDREN = /\) > \*$/;
+const PAGE_HEADER_ICON = /\[data-slot="page-header"\] \.premium-page-icon$/;
+const HERO_TITLE = /\.heroTitle$/;
+const FONT_SIZE_25PX_OR_MORE = /font-size: (2[5-9]|[3-9]\d)px/;
+const CLEAN_HIDDEN_SELECTOR = /\[data-clean-hidden\]$/;
+const CSS_FILE = /\.css$/;
+const CLEAN_HIDDEN_ATTRIBUTE = /data-clean-hidden/;
+const KPI_DELTA_CHIP = /\.kpiSub \.delta > span:not/;
+const PREVIOUS_PERIOD_WORDING = /la période précédente/;
+const FOCUS_PREVIOUS = /focusPrevious/;
+const MINI_BARS_ELEMENT = /<MiniBars /;
+const MINI_AREA_ELEMENT = /<MiniArea /;
+const RUNNING_TREND = /trend: running/;
+const APPOINTMENTS_TREND = /trend: trend\.appointments/;
+const ACTIONS_TREND = /trend: trend\.actions/;
+const RECEIVABLES_TREND = /trend: trend\.receivables/;
+const OCCUPANCY_UNITS = /stay-occupancy-units > span,/;
+const FINANCE_OVERVIEW = /\.finance-overview/;
+const APP_HEADER = /\[data-slot="app-header"\]$/;
+const CARD_MORE_LINK = /\.card \.moreLink$/;
+const CARD_MORE_LINK_REVEALED = /\.card:is\(:hover, :focus-within\) \.moreLink/;
+const HIDDEN_MORE_LINK_RULE = /\.moreLink[^{]*\{[^}]*opacity:\s*0[;\s]/;
+const TS_FILE = /\.tsx?$/;
+const THEME_OWNER_FILES =
+  /lib\/theme-store\.ts$|lib\/sidebar-tone\.ts$|components\/app-theme-picker\.tsx$|components\/Parametres\.tsx$/;
+const SKIN_CHECK = /dataset\.skin|data-skin|skin\s*===|"clean"/;
+
 const CLEAN = readFileSync("src/design-system/clean.css", "utf8");
 const SCOPE = ':root[data-skin="clean"]';
 const DARK = ':root[data-skin="clean"].dark';
@@ -78,15 +150,13 @@ describe("thème Clean : jetons", () => {
     expect(declarations.get("--clean-nav-item")).toBe("34px");
     // The token stays at 34 px for the subpage links and the Premium rows; the
     // menu buttons themselves were tightened to a fixed 30 px, validated by eye.
-    const nav = rulesFor(/sidebar-menu-button"\]$/).flatMap(
-      (rule) => rule.nodes
-    );
+    const nav = rulesFor(SIDEBAR_MENU_BUTTON).flatMap((rule) => rule.nodes);
     expect(
       nav.some(
         (n) => n.type === "decl" && n.prop === "height" && n.value === "30px"
       )
     ).toBe(true);
-    const table = rulesFor(/:is\(th, td\)/).flatMap((rule) => rule.nodes);
+    const table = rulesFor(TABLE_CELLS).flatMap((rule) => rule.nodes);
     expect(
       table.some(
         (n) =>
@@ -100,11 +170,9 @@ describe("thème Clean : jetons", () => {
   it("dessine les icônes de navigation en trait de 1,5 et 16 px", () => {
     expect(declarations.get("--clean-icon-stroke")).toBe("1.5px");
     expect(declarations.get("--clean-nav-icon")).toBe("16px");
-    expect(CLEAN).toMatch(/stroke-width: var\(--clean-icon-stroke\)/);
+    expect(CLEAN).toMatch(ICON_STROKE_TOKEN);
     // premium-sidebar.css pins the sidebar strokes at 1 !important; Clean must answer in kind.
-    const pinned = rulesFor(
-      /\.app-sidebar \.sidebar-nav-icon svg, \.app-sidebar \.premium-shortcut-icon\)$/
-    ).flatMap((rule) => rule.nodes);
+    const pinned = rulesFor(SIDEBAR_ICON_SVGS).flatMap((rule) => rule.nodes);
     // The declaration that wins: the last stroke-width of the rule.
     const strokes = pinned.filter(
       (n): n is postcss.Declaration =>
@@ -112,13 +180,11 @@ describe("thème Clean : jetons", () => {
     );
     expect(strokes.at(-1)?.value).toBe("var(--clean-icon-stroke)");
     expect(strokes.at(-1)?.important).toBe(true);
-    expect(CLEAN).toMatch(
-      /sidebar-nav-icon svg[\s\S]*?width: var\(--clean-nav-icon\) !important/
-    );
+    expect(CLEAN).toMatch(NAV_ICON_WIDTH);
   });
 
   it("donne aux icônes de navigation au repos le gris de leur libellé, l'actif en gris fort", () => {
-    const rest = rulesFor(/sidebar-menu-button"\] svg$/).flatMap(
+    const rest = rulesFor(SIDEBAR_MENU_BUTTON_SVG).flatMap(
       (rule) => rule.nodes
     );
     expect(
@@ -129,9 +195,7 @@ describe("thème Clean : jetons", () => {
           n.value === "var(--clean-ink)"
       )
     ).toBe(true);
-    const active = rulesFor(
-      /\[data-active\]:not\(\[data-active="false"\]\) svg$/
-    ).flatMap((rule) => rule.nodes);
+    const active = rulesFor(ACTIVE_ITEM_SVG).flatMap((rule) => rule.nodes);
     expect(
       active.some(
         (n) =>
@@ -156,8 +220,8 @@ describe("thème Clean : jetons", () => {
   it("réserve le quatrième gris au texte et aux icônes désactivés", () => {
     const uses = CLEAN.split("var(--clean-ink-disabled)").length - 1;
     expect(uses).toBe(2);
-    for (const rule of rulesFor(/:disabled/)) {
-      expect(rule.selector).toMatch(/aria-disabled/);
+    for (const rule of rulesFor(DISABLED_PSEUDO)) {
+      expect(rule.selector).toMatch(ARIA_DISABLED);
     }
   });
 });
@@ -166,12 +230,8 @@ describe("thème Clean : déclinaison sombre", () => {
   it("redéfinit chaque jeton de couleur avec le même nom, et rien d'autre", () => {
     const colours = [...declarations.keys()].filter(
       (name) =>
-        /^#|rgb\(|color-mix|shadow|var\(--clean-surface\)/.test(
-          declarations.get(name)!
-        ) ||
-        /shadow|glass-(top|bottom|edge|rule|drop)|segment-(track|active)/.test(
-          name
-        )
+        PAINTED_SURFACE_VALUE.test(declarations.get(name)!) ||
+        DEPTH_TOKEN_NAME.test(name)
     );
     for (const name of darkDeclarations.keys()) {
       expect(declarations.has(name)).toBe(true);
@@ -192,7 +252,7 @@ describe("thème Clean : déclinaison sombre", () => {
 
   it("garde des noirs teintés, sans noir pur ni ombre portée", () => {
     for (const [name, value] of darkDeclarations) {
-      expect(value, name).not.toMatch(/#000(000)?\b|rgb\(0 0 0/);
+      expect(value, name).not.toMatch(PURE_BLACK);
     }
     expect(darkDeclarations.get("--clean-frame")).toBe("#0c0d0f");
     expect(darkDeclarations.get("--clean-sheet")).toBe("#111214");
@@ -204,7 +264,7 @@ describe("thème Clean : déclinaison sombre", () => {
     const modeOnly: string[] = [];
     root.walkRules((rule) => {
       for (const selector of rule.selectors) {
-        if (/:not\(\.dark\)|\.dark /.test(selector)) {
+        if (DARK_SCOPED_SELECTOR.test(selector)) {
           modeOnly.push(selector);
         }
       }
@@ -214,7 +274,7 @@ describe("thème Clean : déclinaison sombre", () => {
 });
 
 describe("thème Clean : sidebar sombre dans les deux déclinaisons", () => {
-  const darkBlock = rulesFor(/\.dark,$|\.dark,\s/).find(
+  const darkBlock = rulesFor(DARK_BLOCK_SELECTOR).find(
     (rule) =>
       rule.selectors.includes(DARK) &&
       rule.toString().includes("--clean-frame: #0c0d0f")
@@ -287,7 +347,7 @@ describe("thème Clean : sidebar sombre dans les deux déclinaisons", () => {
       darkDeclarations.get("--clean-frame")
     );
     expect(darkDeclarations.get("--clean-chrome")).toBe("var(--clean-frame)");
-    const frame = rulesFor(/sidebar-wrapper"\]$|sidebar-inset"\]$/)
+    const frame = rulesFor(SIDEBAR_FRAME)
       .map((rule) => rule.toString())
       .join("");
     expect(frame).toContain("var(--clean-chrome)");
@@ -301,14 +361,14 @@ describe("thème Clean : feuille posée sur le cadre", () => {
     expect(declarations.get("--clean-sheet-radius")).toBe("12px");
     expect(declarations.get("--clean-card-radius")).toBe("10px");
     expect(declarations.get("--clean-sheet-shadow")).toMatch(
-      /0\.5px rgb\(0 0 0 \/ 0\.08\).*0\.04\)/
+      HAIRLINE_SHADOW_008
     );
-    const panel = rulesFor(/shell-scroll-panel/)
+    const panel = rulesFor(SHELL_SCROLL_PANEL)
       .map((rule) => rule.toString())
       .join("");
     expect(panel).toContain("var(--clean-sheet-radius)");
     expect(panel).toContain("var(--clean-sheet-shadow)");
-    const inset = rulesFor(/sidebar-inset/)
+    const inset = rulesFor(SIDEBAR_INSET)
       .map((rule) => rule.toString())
       .join("");
     expect(inset).toContain("var(--clean-sheet-inset)");
@@ -317,7 +377,7 @@ describe("thème Clean : feuille posée sur le cadre", () => {
   it("peint la bande au-dessus de l'en-tête du gris du cadre, malgré l'utilitaire en couche", () => {
     const layered: string[] = [];
     root.walkAtRules("layer", (layer) => {
-      layer.walkRules(/sidebar-inset/, (rule) => {
+      layer.walkRules(SIDEBAR_INSET, (rule) => {
         layered.push(rule.toString());
       });
     });
@@ -329,20 +389,20 @@ describe("thème Clean : feuille posée sur le cadre", () => {
   });
 
   it("aligne les champs de page sur les 32 px des contrôles voisins", () => {
-    const tokens = rulesFor(/^:root\[data-skin="clean"\],/)
+    const tokens = rulesFor(CLEAN_ROOT_TOKENS)
       .map((rule) => rule.toString())
       .join("");
     expect(tokens).toContain("--field-height: var(--clean-control)");
   });
 
   it("pose la navigation sur le cadre, sans séparateur ni boîte", () => {
-    const sidebar = rulesFor(/sidebar-container"\]::after/);
+    const sidebar = rulesFor(SIDEBAR_CONTAINER_AFTER);
     expect(
       sidebar.some((rule) => rule.toString().includes("display: none"))
     ).toBe(true);
-    expect(
-      rulesFor(/\.app-sidebar, \[data-slot="sidebar-container"\]/)[0].toString()
-    ).toContain("var(--clean-frame)");
+    expect(rulesFor(APP_SIDEBAR_CONTAINER)[0].toString()).toContain(
+      "var(--clean-frame)"
+    );
   });
 
   it("charge Inter avec son axe optique sous un nom propre à Clean", () => {
@@ -353,7 +413,7 @@ describe("thème Clean : feuille posée sur le cadre", () => {
     expect(faces).toHaveLength(2);
     for (const face of faces) {
       expect(face).toContain('font-family: "Inter Clean"');
-      expect(face).toMatch(/inter-latin(-ext)?-opsz-normal\.woff2/);
+      expect(face).toMatch(INTER_OPSZ_WOFF2);
     }
   });
 });
@@ -387,17 +447,13 @@ describe("polices par thème", () => {
       "--font-sans",
       "--font-heading",
     ]) {
-      expect(baseTokens.get(token), token).toMatch(
-        /Inter Variable|var\(--app-font-(sans|heading)\)/
-      );
-      expect(baseTokens.get(token), token).not.toMatch(/Geist|Space Grotesk/);
+      expect(baseTokens.get(token), token).toMatch(INTER_FONT_VALUE);
+      expect(baseTokens.get(token), token).not.toMatch(LEGACY_FONT);
     }
   });
 
   it("passe Clean sur Inter pour l'interface, le corps et les titres", () => {
-    expect(declarations.get("--clean-font-ui")).toMatch(
-      /^"Inter Clean", "Inter Variable"/
-    );
+    expect(declarations.get("--clean-font-ui")).toMatch(INTER_CLEAN_STACK);
     expect(declarations.get("--clean-font-heading")).toBe(
       "var(--clean-font-ui)"
     );
@@ -418,11 +474,11 @@ describe("polices par thème", () => {
   it("resserre l'interlettrage des titres et aligne les chiffres", () => {
     expect(declarations.get("--clean-tracking-title")).toBe("-0.022em");
     expect(declarations.get("--clean-tracking-heading")).toBe("-0.015em");
-    const tabular = rulesFor(/\.kpiValue/);
+    const tabular = rulesFor(KPI_VALUE);
     expect(
       tabular.some(
         (rule) =>
-          /table/.test(rule.selector) &&
+          TABLE_SELECTOR.test(rule.selector) &&
           rule.toString().includes("tabular-nums")
       )
     ).toBe(true);
@@ -438,7 +494,7 @@ describe("thème Clean : interrupteurs segmentés", () => {
     expect(declarations.get("--clean-segment-item")).toBe("28px");
     expect(declarations.get("--clean-segment-radius")).toBe("6px");
     expect(declarations.get("--clean-segment-active-shadow")).toMatch(
-      /0\.5px rgb\(0 0 0 \/ 0\.1\)/
+      HAIRLINE_SHADOW_01
     );
   });
 
@@ -451,17 +507,15 @@ describe("thème Clean : interrupteurs segmentés", () => {
       .find((rule) => rule.toString().includes("--clean-segment-track"))!
       .toString();
     expect(base).toContain("height: var(--clean-control)");
-    const item = rulesFor(/> :is\(\[data-slot="tabs-trigger"\]/).filter(
-      (rule) => rule.selector.includes(".flow-density")
+    const item = rulesFor(TABS_TRIGGER_CHILD).filter((rule) =>
+      rule.selector.includes(".flow-density")
     );
     expect(
       item.some((rule) =>
         rule.toString().includes("height: var(--clean-segment-item)")
       )
     ).toBe(true);
-    const chosen = rulesFor(
-      /\[aria-pressed="true"\][^)]*\[aria-current="page"\]\)$/
-    );
+    const chosen = rulesFor(PRESSED_OR_CURRENT);
     expect(chosen).toHaveLength(1);
     expect(chosen[0].toString()).toContain(
       "var(--clean-segment-active-shadow)"
@@ -470,12 +524,8 @@ describe("thème Clean : interrupteurs segmentés", () => {
   });
 
   it("montre la vue du tableau de bord en icônes seules, items carrés, sans texte ajouté", () => {
-    expect(rulesFor(/dashboard-mode-toggle[^,]*::(after|before)/)).toHaveLength(
-      0
-    );
-    const items = rulesFor(
-      /^:root\[data-skin="clean"\] \.dashboard-mode-toggle > button$/
-    );
+    expect(rulesFor(MODE_TOGGLE_PSEUDO)).toHaveLength(0);
+    const items = rulesFor(CLEAN_MODE_TOGGLE_BUTTON);
     expect(items).toHaveLength(1);
     expect(items[0].toString()).toContain("width: var(--clean-segment-item)");
     expect(items[0].toString()).toContain("padding-inline: 0");
@@ -487,11 +537,11 @@ describe("thème Clean : interrupteurs segmentés", () => {
 
 describe("thème Clean : icônes", () => {
   const SUBSTITUTIONS: [target: RegExp, icon: string][] = [
-    [/data-tone="orange"\] svg/, "syringe"],
-    [/data-kpi="Urgences ouvertes"\]/, "siren"],
-    [/data-kpi="Relances à prévoir"\]/, "calendar-clock"],
-    [/data-kpi="En retard"\]/, "clock-alert"],
-    [/value="clinical"\] svg/, "calendar-heart"],
+    [ORANGE_TONE_SVG, "syringe"],
+    [OPEN_EMERGENCIES_KPI, "siren"],
+    [FOLLOW_UPS_KPI, "calendar-clock"],
+    [OVERDUE_KPI, "clock-alert"],
+    [CLINICAL_TAB_SVG, "calendar-heart"],
   ];
 
   it("liste chaque substitution, une icône Lucide par sens, et rien d'autre", () => {
@@ -511,19 +561,19 @@ describe("thème Clean : icônes", () => {
   });
 
   it("dessine la substitution à la place de l'icône d'origine, dans sa couleur et sa boîte", () => {
-    const paint = rulesFor(/^:root\[data-skin="clean"\] :is\(/).find((rule) =>
+    const paint = rulesFor(CLEAN_ROOT_IS).find((rule) =>
       rule.toString().includes("mask: var(--clean-icon)")
     );
     expect(paint?.toString()).toContain("background: currentColor");
     expect(
-      rulesFor(/\) > \*$/).some((rule) =>
+      rulesFor(IS_DIRECT_CHILDREN).some((rule) =>
         rule.toString().includes("display: none")
       )
     ).toBe(true);
   });
 
   it("pose l'icône de page sur la ligne du titre", () => {
-    const tile = rulesFor(/\[data-slot="page-header"\] \.premium-page-icon$/)
+    const tile = rulesFor(PAGE_HEADER_ICON)
       .map((rule) => rule.toString())
       .join("");
     expect(tile).toContain("height: 28px");
@@ -532,12 +582,12 @@ describe("thème Clean : icônes", () => {
 
 describe("thème Clean : titre d'accueil", () => {
   it("reste au plafond de 24 px, en graisse 500 pour compenser l'œil d'Inter", () => {
-    const hero = rulesFor(/\.heroTitle$/)
+    const hero = rulesFor(HERO_TITLE)
       .map((rule) => rule.toString())
       .join("");
     expect(hero).toContain("font-size: 24px !important");
     expect(hero).toContain("font-weight: 500 !important");
-    expect(hero).not.toMatch(/font-size: (2[5-9]|[3-9]\d)px/);
+    expect(hero).not.toMatch(FONT_SIZE_25PX_OR_MORE);
   });
 });
 
@@ -547,18 +597,20 @@ describe("thème Clean : widgets", () => {
   it("seul Clean masque ce qu'il remplace, et plus aucun élément n'est réservé à une peau", () => {
     expect(INDEX).not.toContain("data-clean-only");
     expect(
-      rulesFor(/\[data-clean-hidden\]$/).some((rule) =>
+      rulesFor(CLEAN_HIDDEN_SELECTOR).some((rule) =>
         rule.toString().includes("display: none !important")
       )
     ).toBe(true);
-    const elsewhere = files("src", /\.css$/)
+    const elsewhere = files("src", CSS_FILE)
       .filter((file) => !file.endsWith("clean.css"))
-      .filter((file) => /data-clean-hidden/.test(readFileSync(file, "utf8")));
+      .filter((file) =>
+        CLEAN_HIDDEN_ATTRIBUTE.test(readFileSync(file, "utf8"))
+      );
     expect(elsewhere).toEqual([]);
   });
 
   it("porte la comparaison sous le chiffre et la période précédente en pointillé", () => {
-    const chip = rulesFor(/\.kpiSub \.delta > span:not/)
+    const chip = rulesFor(KPI_DELTA_CHIP)
       .map((rule) => rule.toString())
       .join("");
     expect(chip).toContain("border-radius: 999px");
@@ -568,8 +620,8 @@ describe("thème Clean : widgets", () => {
       "src/modules/dashboard/components/focus-trend-chart.tsx",
       "utf8"
     );
-    expect(chart).toMatch(/la période précédente/);
-    expect(chart).not.toMatch(/focusPrevious/);
+    expect(chart).toMatch(PREVIOUS_PERIOD_WORDING);
+    expect(chart).not.toMatch(FOCUS_PREVIOUS);
   });
 
   it("donne à chaque carte de la première rangée sa propre courbe, jamais la même forme deux fois", () => {
@@ -580,18 +632,18 @@ describe("thème Clean : widgets", () => {
     // 31 October: Trésorerie and Consultations drew the same cumulative area (Clean), and three cards the same
     // bars (Premium). Since the Stat Grid: a curve only where a card has its own series, never a copy.
     expect(source).toContain("<StatGrid");
-    expect(source).not.toMatch(/<MiniBars /);
-    expect(source).not.toMatch(/<MiniArea /);
+    expect(source).not.toMatch(MINI_BARS_ELEMENT);
+    expect(source).not.toMatch(MINI_AREA_ELEMENT);
     const figures = readFileSync(
       "src/modules/dashboard/model/key-figures.ts",
       "utf8"
     );
     // Four different series, one per card: receipts as a running total, appointments and actions as a count
     // per day, what is still to collect as its level at each date.
-    expect(figures).toMatch(/trend: running/);
-    expect(figures).toMatch(/trend: trend\.appointments/);
-    expect(figures).toMatch(/trend: trend\.actions/);
-    expect(figures).toMatch(/trend: trend\.receivables/);
+    expect(figures).toMatch(RUNNING_TREND);
+    expect(figures).toMatch(APPOINTMENTS_TREND);
+    expect(figures).toMatch(ACTIONS_TREND);
+    expect(figures).toMatch(RECEIVABLES_TREND);
     expect(figures.match(/trend:/g)).toHaveLength(4);
     // One template on rows of fixed height, so label, figure with its curve, badge, line and goal bar fall on
     // the same lines from one card to the next, whatever the text.
@@ -623,19 +675,19 @@ describe("thème Clean : widgets", () => {
   });
 
   it("dessine la capacité en unités avec les jetons Clean, et laisse la vue d'ensemble des finances à la carte de graphique commune", () => {
-    const units = rulesFor(/stay-occupancy-units > span,/)
+    const units = rulesFor(OCCUPANCY_UNITS)
       .map((rule) => rule.toString())
       .join("");
     expect(units).toContain("var(--clean-segment-track)");
     // The overview is the shared chart card (grey band, white panel) and carries no Clean-only rule of its own.
-    expect(rulesFor(/\.finance-overview/)).toHaveLength(0);
+    expect(rulesFor(FINANCE_OVERVIEW)).toHaveLength(0);
   });
 });
 
 describe("thème Clean : en-tête en verre", () => {
   it("floute l'en-tête au défilement avec un seul jeton", () => {
     expect(declarations.get("--clean-glass-blur")).toBe("20px");
-    const header = rulesFor(/\[data-slot="app-header"\]$/)
+    const header = rulesFor(APP_HEADER)
       .map((rule) => rule.toString())
       .join("");
     expect(header).toContain("blur(var(--clean-glass-blur))");
@@ -644,25 +696,21 @@ describe("thème Clean : en-tête en verre", () => {
 
 describe("thème Clean : commandes de widget au survol", () => {
   it("masque les liens de carte au repos et les révèle au survol ou au focus, pointeur fin seulement", () => {
-    const hidden = rulesFor(/\.card \.moreLink$/);
+    const hidden = rulesFor(CARD_MORE_LINK);
     expect(hidden).toHaveLength(1);
     expect(hidden[0].toString()).toContain("opacity: 0");
     expect((hidden[0].parent as postcss.AtRule).params).toBe(
       "(hover: hover) and (pointer: fine)"
     );
-    const shown = rulesFor(/\.card:is\(:hover, :focus-within\) \.moreLink/);
+    const shown = rulesFor(CARD_MORE_LINK_REVEALED);
     expect(shown).toHaveLength(1);
     expect(shown[0].toString()).toContain("opacity: 1");
   });
 
   it("ne masque les liens de carte dans aucun autre thème", () => {
-    const elsewhere = files("src", /\.css$/)
+    const elsewhere = files("src", CSS_FILE)
       .filter((file) => !file.endsWith("clean.css"))
-      .filter((file) =>
-        /\.moreLink[^{]*\{[^}]*opacity:\s*0[;\s]/.test(
-          readFileSync(file, "utf8")
-        )
-      );
+      .filter((file) => HIDDEN_MORE_LINK_RULE.test(readFileSync(file, "utf8")));
     expect(elsewhere).toEqual([]);
   });
 });
@@ -681,18 +729,9 @@ describe("thème Clean : pureté", () => {
   });
 
   it("ne forke aucun composant : aucun code ne teste le thème Clean", () => {
-    const forks = files("src", /\.tsx?$/)
-      .filter(
-        (file) =>
-          !/lib\/theme-store\.ts$|lib\/sidebar-tone\.ts$|components\/app-theme-picker\.tsx$|components\/Parametres\.tsx$/.test(
-            file
-          )
-      )
-      .filter((file) =>
-        /dataset\.skin|data-skin|skin\s*===|"clean"/.test(
-          readFileSync(file, "utf8")
-        )
-      );
+    const forks = files("src", TS_FILE)
+      .filter((file) => !THEME_OWNER_FILES.test(file))
+      .filter((file) => SKIN_CHECK.test(readFileSync(file, "utf8")));
     expect(forks).toEqual([]);
   });
 });

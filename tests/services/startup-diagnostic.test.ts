@@ -2,12 +2,14 @@ import { readFileSync } from "node:fs";
 import { runInNewContext } from "node:vm";
 import { expect, it } from "vitest";
 
+const INLINE_SCRIPT = /<script>([\s\S]*?)<\/script>/;
+
 it("reports repeated startup errors without replacing the app DOM or rendering HTML", () => {
   const html = readFileSync(
     new URL("../../index.html", import.meta.url),
     "utf8"
   );
-  const script = html.match(/<script>([\s\S]*?)<\/script>/)![1];
+  const script = html.match(INLINE_SCRIPT)![1];
   let onError: (event: object) => void = () => {};
   const children: any[] = [{ id: "root", preserved: true }];
   const document = {

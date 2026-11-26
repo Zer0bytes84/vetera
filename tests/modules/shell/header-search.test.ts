@@ -5,6 +5,10 @@ import { describe, expect, it } from "vitest";
 import { HeaderSearch } from "@/modules/shell/components/header-search";
 import { codeText } from "../../helpers/code-text";
 
+const SEARCH_SHORTCUT_KEY =
+  /<kbd class="shell-header-search-key">(⌘K|Ctrl K)<\/kbd>/;
+const SEARCH_TRIGGER = /onSearch|Ouvrir la palette de commandes|SearchIcon/;
+
 // The search moved from the sidebar to the header on 5 November 2026
 // (docs/recus/2026-11-05/recherche-entete/). Only the container changed: the
 // field opens the same command palette, with the same shortcut and engine.
@@ -21,9 +25,7 @@ describe("recherche dans l'entête", () => {
     expect(markup).toContain('aria-keyshortcuts="Meta+K Control+K"');
     expect(markup).toContain('aria-expanded="false"');
     expect(markup).toContain("Rechercher un patient, une page…");
-    expect(markup).toMatch(
-      /<kbd class="shell-header-search-key">(⌘K|Ctrl K)<\/kbd>/
-    );
+    expect(markup).toMatch(SEARCH_SHORTCUT_KEY);
     const open = renderToStaticMarkup(
       createElement(HeaderSearch, { onOpen: () => undefined, open: true })
     );
@@ -57,9 +59,7 @@ describe("recherche dans l'entête", () => {
   });
 
   it("n'a plus de champ dans la barre latérale", () => {
-    expect(SIDEBAR).not.toMatch(
-      /onSearch|Ouvrir la palette de commandes|SearchIcon/
-    );
+    expect(SIDEBAR).not.toMatch(SEARCH_TRIGGER);
     expect(SHELL).not.toContain("onSearch=");
   });
 

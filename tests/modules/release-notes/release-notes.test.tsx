@@ -17,6 +17,9 @@ import {
 } from "@/modules/release-notes/release-seen";
 import { getAppVersion } from "@/services/backupService";
 
+const TECHNICAL_JARGON =
+  /\b(API|SQLite|React|CSS|composant|token|jeton|bug|refactor)/i;
+
 const memory = () => {
   const store = new Map<string, string>();
   return {
@@ -53,9 +56,7 @@ describe("notes de version", () => {
       expect(n.highlights.length).toBeGreaterThanOrEqual(3);
       expect(n.highlights.length).toBeLessThanOrEqual(4);
       for (const h of n.highlights) {
-        expect(`${h.title} ${h.text}`).not.toMatch(
-          /\b(API|SQLite|React|CSS|composant|token|jeton|bug|refactor)/i
-        );
+        expect(`${h.title} ${h.text}`).not.toMatch(TECHNICAL_JARGON);
       }
     }
   });

@@ -11,6 +11,13 @@ import {
   type SqliteMigration,
 } from "../../src/services/sqlite/migrations";
 
+const LOCKED_JOURNAL_IMMUTABLE =
+  /Locked billing journal transactions are immutable/;
+const DETERMINISTIC_ROUNDING_ERROR = /deterministic rounding/;
+const CREDITED_INVOICE_MISMATCH = /must belong to the credited invoice/;
+const IMMUTABLE_ERROR = /immutable/;
+const CANNOT_BE_DELETED_ERROR = /cannot be deleted/;
+
 class TestDatabase implements MigrationDatabase {
   readonly connection = new DatabaseSync(":memory:");
 
@@ -562,7 +569,7 @@ describe("runSqliteMigrations", () => {
           "UPDATE transactions SET amount = 1 WHERE id = 'matched-income'"
         )
         .run()
-    ).toThrow(/Locked billing journal transactions are immutable/);
+    ).toThrow(LOCKED_JOURNAL_IMMUTABLE);
 
     await expect(
       runSqliteMigrations(database, SQLITE_MIGRATIONS)
@@ -609,7 +616,7 @@ describe("runSqliteMigrations", () => {
           )`
         )
         .run()
-    ).toThrow(/deterministic rounding/);
+    ).toThrow(DETERMINISTIC_ROUNDING_ERROR);
     expect(() =>
       database.connection
         .prepare(
@@ -791,7 +798,7 @@ describe("runSqliteMigrations", () => {
           )`
         )
         .run()
-    ).toThrow(/must belong to the credited invoice/);
+    ).toThrow(CREDITED_INVOICE_MISMATCH);
   });
 
   it("allows only a reasoned issued-credit void and rejects cross-invoice credit lines", async () => {
@@ -862,7 +869,7 @@ describe("runSqliteMigrations", () => {
           "UPDATE credit_notes SET reason = 'tampered' WHERE id = 'credit-a'"
         )
         .run()
-    ).toThrow(/immutable/);
+    ).toThrow(IMMUTABLE_ERROR);
     expect(() =>
       database.connection
         .prepare(
@@ -872,7 +879,7 @@ describe("runSqliteMigrations", () => {
            WHERE id = 'credit-a'`
         )
         .run()
-    ).toThrow(/immutable/);
+    ).toThrow(IMMUTABLE_ERROR);
     expect(() =>
       database.connection
         .prepare(
@@ -903,7 +910,7 @@ describe("runSqliteMigrations", () => {
           "UPDATE credit_notes SET gross_amount = 99 WHERE id = 'credit-a'"
         )
         .run()
-    ).toThrow(/immutable/);
+    ).toThrow(IMMUTABLE_ERROR);
 
     await database.execute(
       `INSERT INTO credit_notes (
@@ -924,7 +931,7 @@ describe("runSqliteMigrations", () => {
           )`
         )
         .run()
-    ).toThrow(/must belong to the credited invoice/);
+    ).toThrow(CREDITED_INVOICE_MISMATCH);
   });
 
   it("preserves issued accounting history when linked clinical/catalogue rows are removed", async () => {
@@ -1012,7 +1019,7 @@ describe("runSqliteMigrations", () => {
       database.connection
         .prepare("DELETE FROM invoices WHERE id = 'invoice-1'")
         .run()
-    ).toThrow(/cannot be deleted/);
+    ).toThrow(CANNOT_BE_DELETED_ERROR);
   });
 
   it("opens schemas 031 through 035 and preserves existing clinic rows", async () => {

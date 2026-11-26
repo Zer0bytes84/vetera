@@ -10,6 +10,8 @@ import {
 import { runSqliteMigrations } from "@/services/sqlite/migration-runner";
 import { SQLITE_MIGRATIONS } from "@/services/sqlite/migrations";
 
+const UNIQUE_CONSTRAINT = /UNIQUE/;
+
 const databases: DatabaseSync[] = [];
 afterEach(() => {
   for (const db of databases) {
@@ -139,7 +141,7 @@ describe("références patient", () => {
       db.exec(
         "INSERT INTO patient_references(patient_id, sequence_number, reference) VALUES ('x', 1, 'ID-0001')"
       )
-    ).toThrow(/UNIQUE/);
+    ).toThrow(UNIQUE_CONSTRAINT);
     expect(references(db)).toEqual([
       { patient_id: "rex", reference: "ID-0001" },
     ]);

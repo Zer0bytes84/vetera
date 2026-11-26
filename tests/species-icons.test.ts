@@ -4,6 +4,8 @@ import { renderToString } from "react-dom/server";
 import { expect, it, vi } from "vitest";
 import { getSpeciesGlyph } from "../src/lib/species-icons";
 
+const DUPLICATE_KEY_WARNING = /unique.*key|same key/i;
+
 it("renders every species icon without React key warnings", () => {
   const error = vi.spyOn(console, "error").mockImplementation(() => {});
   try {
@@ -26,7 +28,7 @@ it("renders every species icon without React key warnings", () => {
     }
     const keyWarnings = error.mock.calls.filter((args) =>
       args.some(
-        (arg) => typeof arg === "string" && /unique.*key|same key/i.test(arg)
+        (arg) => typeof arg === "string" && DUPLICATE_KEY_WARNING.test(arg)
       )
     );
     expect(keyWarnings).toEqual([]);

@@ -8,6 +8,12 @@ import {
 import { runSqliteMigrations } from "@/services/sqlite/migration-runner";
 import { SQLITE_MIGRATIONS } from "@/services/sqlite/migrations";
 
+const ARCHIVE_INSTEAD_ERROR = /archivez-la/;
+const LAST_ACTIVE_ROOM_ERROR = /au moins une salle active/;
+const DUPLICATE_NAME_ERROR = /porte déjà ce nom/;
+const NAME_REQUIRED_ERROR = /Donnez un nom/;
+const NAME_TOO_LONG_ERROR = /40 caractères/;
+
 const databases: DatabaseSync[] = [];
 afterEach(() => {
   for (const db of databases) {
@@ -134,7 +140,7 @@ describe("gestion des salles", () => {
     ).toBe("surgery");
     // Even a direct DELETE cannot orphan the appointments.
     expect(() => db.exec("DELETE FROM rooms WHERE id = 'surgery'")).toThrow(
-      /archivez-la/
+      ARCHIVE_INSTEAD_ERROR
     );
   });
 
@@ -149,10 +155,10 @@ describe("gestion des salles", () => {
   it("garde toujours au moins une salle active", async () => {
     const { rooms } = await clinic();
     await expect(rooms.archive("consult-1")).rejects.toThrow(
-      /au moins une salle active/
+      LAST_ACTIVE_ROOM_ERROR
     );
     await expect(rooms.remove("consult-1")).rejects.toThrow(
-      /au moins une salle active/
+      LAST_ACTIVE_ROOM_ERROR
     );
     const box = await rooms.create("Box");
     await rooms.archive("consult-1");
@@ -162,11 +168,13 @@ describe("gestion des salles", () => {
   it("refuse deux salles actives du même nom, et libère le nom d'une salle archivée", async () => {
     const { rooms } = await clinic(["surgery"]);
     await expect(rooms.create("chirurgie")).rejects.toThrow(
-      /porte déjà ce nom/
+      DUPLICATE_NAME_ERROR
     );
     await rooms.archive("surgery");
     const second = await rooms.create("Chirurgie");
-    await expect(rooms.restore("surgery")).rejects.toThrow(/porte déjà ce nom/);
+    await expect(rooms.restore("surgery")).rejects.toThrow(
+      DUPLICATE_NAME_ERROR
+    );
     await expect(
       rooms.rename(second.id, "Bloc opératoire")
     ).resolves.toMatchObject({ name: "Bloc opératoire" });
@@ -177,8 +185,10 @@ describe("gestion des salles", () => {
 
   it("refuse un nom vide ou trop long", async () => {
     const { rooms } = await clinic();
-    await expect(rooms.create("   ")).rejects.toThrow(/Donnez un nom/);
-    await expect(rooms.create("x".repeat(41))).rejects.toThrow(/40 caractères/);
+    await expect(rooms.create("   ")).rejects.toThrow(NAME_REQUIRED_ERROR);
+    await expect(rooms.create("x".repeat(41))).rejects.toThrow(
+      NAME_TOO_LONG_ERROR
+    );
   });
 
   it("enregistre l'ordre choisi", async () => {

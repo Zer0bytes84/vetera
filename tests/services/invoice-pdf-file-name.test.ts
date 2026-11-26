@@ -9,6 +9,8 @@ import {
 } from "@/lib/invoice-pdf";
 import { DEFAULT_INVOICE_SETTINGS } from "@/services/invoiceSettingsService";
 
+const SEVEN_CHAR_SUFFIX = /^[0-9a-z]{7}$/;
+
 const data: InvoicePdfData = {
   number: "INV-2026-000017",
   date: new Date("2026-10-27T17:34:05Z"),
@@ -32,7 +34,7 @@ const testCopy = invoiceFileKey(
 
 describe("invoice PDF file names", () => {
   it("adds a short fingerprint of the invoice, stable across exports", () => {
-    expect(real).toMatch(/^[0-9a-z]{7}$/);
+    expect(real).toMatch(SEVEN_CHAR_SUFFIX);
     expect(
       invoiceFileKey(
         "appointment-invoice-mvqwrp8aczmfrb93ygh",

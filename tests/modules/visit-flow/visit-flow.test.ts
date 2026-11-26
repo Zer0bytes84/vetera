@@ -9,6 +9,12 @@ import { runSqliteMigrations } from "@/services/sqlite/migration-runner";
 import { SQLITE_MIGRATIONS } from "@/services/sqlite/migrations";
 import type { AppointmentStatus } from "@/types/db";
 
+const OTHER_WORKSTATION_ERROR = /autre poste/;
+const CLOSED_ERROR = /clôturée/;
+const MOVED_SINCE_ERROR = /a bougé depuis/;
+const UNDO_WINDOW_ERROR = /10 secondes/;
+const NOT_UNDOABLE_ERROR = /ne s'annule pas/;
+
 const harness = vi.hoisted(() => ({
   db: null as FlowDatabase | null,
   serial: 0,
@@ -328,7 +334,7 @@ describe("journal des transitions", () => {
       store.setCare("v3", true, "vet", version)
     ).resolves.toMatchObject({ stage: "care" });
     await expect(store.setCare("v3", false, "vet", version)).rejects.toThrow(
-      /autre poste/
+      OTHER_WORKSTATION_ERROR
     );
     expect((await store.events("v3")).at(-1)).toMatchObject({
       cause: "care",
@@ -382,7 +388,7 @@ describe("acte gratuit", () => {
   it("refuse de marquer sans frais une visite encore ouverte", async () => {
     book("open", "in_progress");
     await expect(flow().markNoCharge("open", "vet")).rejects.toThrow(
-      /clôturée/
+      CLOSED_ERROR
     );
     expect(stage("open")).toBe("consultation");
   });
@@ -419,7 +425,7 @@ describe("annulation", () => {
     const stale = await store.undoable("v6");
     setStatus("v6", "completed");
     await expect(store.undo(stale!.id, "vet")).rejects.toThrow(
-      /a bougé depuis/
+      MOVED_SINCE_ERROR
     );
 
     const late = await store.undoable("v6");
@@ -429,7 +435,9 @@ describe("annulation", () => {
       )
       .run(late!.id);
     expect(await store.undoable("v6")).toBeNull();
-    await expect(store.undo(late!.id, "vet")).rejects.toThrow(/10 secondes/);
+    await expect(store.undo(late!.id, "vet")).rejects.toThrow(
+      UNDO_WINDOW_ERROR
+    );
 
     const invoice = await bill("v6", 1000);
     await pay(invoice.id, 1000, "pay:v6");
@@ -437,7 +445,7 @@ describe("annulation", () => {
     expect(payment.cause).toBe("billing");
     expect(await store.undoable("v6")).toBeNull();
     await expect(store.undo(payment.id, "vet")).rejects.toThrow(
-      /ne s'annule pas/
+      NOT_UNDOABLE_ERROR
     );
     expect(stage("v6")).toBe("done");
   });

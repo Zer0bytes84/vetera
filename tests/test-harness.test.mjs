@@ -20,6 +20,14 @@ import {
   testHarnessPlugin,
 } from "../scripts/test-harness-plugin.mjs";
 
+const TEST_HARNESS_FLAG = /BAITARI_TEST_HARNESS/;
+const HEX_TOKEN_48 = /^[0-9a-f]{48}$/;
+const DELETE_LABEL = /^Supprimer$/;
+const OPEN_LABEL = /Ouvrir/;
+const MORE_ACTIONS_LABEL = /^Plus d’actions$/;
+const REMOVE_LINK_LABEL = /^Supprimer le lien$/;
+const NOT_FOUND_ERROR = /introuvable/;
+
 const folder = () => mkdtempSync(path.join(tmpdir(), "harness-"));
 
 function request({
@@ -87,7 +95,7 @@ describe("le pilote de test : quand il existe", () => {
   it("la configuration de Vite ne l'ajoute qu'à partir de la commande, jamais en dur", () => {
     const config = readFileSync("vite.config.ts", "utf8");
     expect(config).toContain("...testHarnessPlugin(command)");
-    expect(config).not.toMatch(/BAITARI_TEST_HARNESS/);
+    expect(config).not.toMatch(TEST_HARNESS_FLAG);
   });
 
   it("ne vit que dans le serveur de développement (apply: serve)", () => {
@@ -104,7 +112,7 @@ describe("le pilote de test : qui peut lui parler", () => {
   it("tire un jeton neuf à chaque démarrage, lisible par son propriétaire seul", () => {
     const a = createHarnessState(path.join(folder(), "a"));
     const b = createHarnessState(path.join(folder(), "b"));
-    expect(a.token).toMatch(/^[0-9a-f]{48}$/);
+    expect(a.token).toMatch(HEX_TOKEN_48);
     expect(a.token).not.toBe(b.token);
     expect(statSync(path.join(a.dir, "token")).mode & 0o777).toBe(0o600);
     expect(readFileSync(path.join(a.dir, "token"), "utf8")).toBe(a.token);
@@ -390,12 +398,10 @@ describe("le pilote de test : les aides, exécutées pour de bon", () => {
     const ouvrir = element("[role='menuitem']", "Ouvrir le lien");
     const icone = element("button", "", "Plus d’actions");
     const { H } = pageWith({ elements: [ouvrir, supprimer, icone] });
-    expect(H.byText("[role='menuitem']", /^Supprimer$/)).toBe(supprimer);
-    expect(H.byText("[role='menuitem']", /Ouvrir/)).toBe(ouvrir);
-    expect(H.byText("button", /^Plus d’actions$/)).toBe(icone);
-    expect(
-      H.byText("[role='menuitem']", /^Supprimer le lien$/)
-    ).toBeUndefined();
+    expect(H.byText("[role='menuitem']", DELETE_LABEL)).toBe(supprimer);
+    expect(H.byText("[role='menuitem']", OPEN_LABEL)).toBe(ouvrir);
+    expect(H.byText("button", MORE_ACTIONS_LABEL)).toBe(icone);
+    expect(H.byText("[role='menuitem']", REMOVE_LINK_LABEL)).toBeUndefined();
   });
 
   it("press envoie toute la séquence d'un vrai clic, dans l'ordre", () => {
@@ -413,8 +419,8 @@ describe("le pilote de test : les aides, exécutées pour de bon", () => {
 
   it("press et setVal disent clairement qu'un élément manque", () => {
     const { H } = pageWith();
-    expect(() => H.press(undefined)).toThrow(/introuvable/);
-    expect(() => H.setVal(null, "x")).toThrow(/introuvable/);
+    expect(() => H.press(undefined)).toThrow(NOT_FOUND_ERROR);
+    expect(() => H.setVal(null, "x")).toThrow(NOT_FOUND_ERROR);
   });
 
   it("garde les erreurs et avertissements de console sans les avaler, les exceptions et les rejets aussi", () => {

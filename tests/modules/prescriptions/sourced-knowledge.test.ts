@@ -16,6 +16,11 @@ import {
 } from "@/modules/prescriptions/lib/prescription-safety-rules";
 import { vetKnowledgeService } from "@/services/vetKnowledgeService";
 
+const RCP_INDEX_SOURCE_LABEL = /^RCP .+ \(ANMV, Index des RCP\)$/;
+const RCP_SECTION_3 = /^3\.\d/;
+const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
+const RCP_SOURCE_LABEL = /^RCP .+ \(ANMV\)$/;
+
 const RCP_URL =
   /^https:\/\/www\.ircp\.anmv\.anses\.fr\/rcp\.aspx\?NomMedicament=\S+$/;
 const meds = rcpData.rcpMedications;
@@ -33,11 +38,9 @@ describe("molécules sourcées sur les RCP officiels", () => {
       expect(entry.sources.length, entry.id).toBeGreaterThan(0);
       for (const source of entry.sources) {
         expect(source.url, entry.id).toMatch(RCP_URL);
-        expect(source.titre, entry.id).toMatch(
-          /^RCP .+ \(ANMV, Index des RCP\)$/
-        );
-        expect(source.sections, entry.id).toMatch(/^3\.\d/);
-        expect(source.consulteLe, entry.id).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+        expect(source.titre, entry.id).toMatch(RCP_INDEX_SOURCE_LABEL);
+        expect(source.sections, entry.id).toMatch(RCP_SECTION_3);
+        expect(source.consulteLe, entry.id).toMatch(ISO_DATE);
       }
     }
   });
@@ -96,7 +99,7 @@ describe("règles de sécurité sourcées", () => {
     expect(sourced.length).toBe(40);
     for (const rule of sourced) {
       expect(rule.source!.url, rule.id).toMatch(RCP_URL);
-      expect(rule.source!.label, rule.id).toMatch(/^RCP .+ \(ANMV\)$/);
+      expect(rule.source!.label, rule.id).toMatch(RCP_SOURCE_LABEL);
     }
     const groups = new Set(Object.keys(SAFETY_GROUPS));
     for (const rule of INTERACTION_RULES) {

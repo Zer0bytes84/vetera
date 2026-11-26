@@ -2,6 +2,8 @@ import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { expect, it } from "vitest";
 
+const SOURCE_OR_CSS_FILE = /\.(tsx?|css)$/;
+
 // Charte: 12 / 13 / 14 / 15 / 16 / 18 / 24 px (15 px: the page description
 // of the Linear scale, measured and adopted on 2026-11-11). Printed A4
 // layouts and the first-run screens keep their own sizes on purpose.
@@ -14,7 +16,7 @@ function files(dir: string, out: string[] = []): string[] {
     const path = join(dir, name);
     if (statSync(path).isDirectory()) {
       files(path, out);
-    } else if (/\.(tsx?|css)$/.test(name) && !EXEMPT.test(path)) {
+    } else if (SOURCE_OR_CSS_FILE.test(name) && !EXEMPT.test(path)) {
       out.push(path);
     }
   }

@@ -11,6 +11,9 @@ import {
 } from "@/modules/prescriptions/lib/prescription-safety";
 import type { Prescription, PrescriptionItem } from "@/types/db";
 
+const ULCERATION_REASON = /ulcération/;
+const ALREADY_ONGOING_REASON = /déjà en cours/;
+
 const metacam: SafetyMedication = {
   key: "d1",
   name: "Metacam",
@@ -71,7 +74,7 @@ describe("interactions médicamenteuses", () => {
       medicationName: "Dermipred",
       other: { key: "d1", name: "Metacam", origin: "ordonnance" },
     });
-    expect(alerts[0].reason).toMatch(/ulcération/);
+    expect(alerts[0].reason).toMatch(ULCERATION_REASON);
   });
 
   it("signale deux AINS différents, dont un traitement en cours", () => {
@@ -99,7 +102,7 @@ describe("interactions médicamenteuses", () => {
       active: [{ key: "a1", name: "méloxicam" }],
     });
     expect(alerts.map((a) => a.ruleId)).toEqual(["doublon"]);
-    expect(alerts[0].reason).toMatch(/déjà en cours/);
+    expect(alerts[0].reason).toMatch(ALREADY_ONGOING_REASON);
   });
 
   it("ne signale rien pour des médicaments compatibles", () => {

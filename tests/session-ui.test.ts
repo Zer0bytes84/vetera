@@ -6,6 +6,9 @@ import {
   takePendingClinicTab,
 } from "../src/modules/clinique/clinic-tab-events";
 
+const FLOATING_QUICK_ACTIONS = /position:\s*absolute|quick-actions-fab/;
+const SIDEBAR_FOOTER_ACCOUNT = /NavUser|SidebarSeparator/;
+
 const read = (path: string) => readFileSync(path, "utf8");
 
 afterEach(() => vi.unstubAllGlobals());
@@ -34,7 +37,7 @@ describe("actions rapides", () => {
     const shell = read("src/modules/shell/app-shell.tsx");
     expect(shell).not.toContain("QuickActionsFab");
     expect(shell.match(/<HeaderQuickActions/g)).toHaveLength(1); // une seule fois, jamais selon la page
-    expect(css).not.toMatch(/position:\s*absolute|quick-actions-fab/);
+    expect(css).not.toMatch(FLOATING_QUICK_ACTIONS);
     expect(menu).toContain('aria-label="Actions rapides"');
   });
 });
@@ -49,7 +52,7 @@ describe("barre latérale", () => {
     );
     expect(footer).toContain("AccountSidebarFooter");
     expect(footer).not.toContain('aria-label="Paramètres"');
-    expect(footer).not.toMatch(/NavUser|SidebarSeparator/);
+    expect(footer).not.toMatch(SIDEBAR_FOOTER_ACCOUNT);
   });
 
   it("ne range plus les raccourcis dans la barre : ils vivent dans le « + » de l'entête", () => {

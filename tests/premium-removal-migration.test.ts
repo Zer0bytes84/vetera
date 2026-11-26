@@ -6,6 +6,14 @@ import {
   saveThemeConfig,
 } from "../src/lib/theme-store";
 
+const SOURCE_FILE = /\.(css|tsx?|html)$/;
+const VISUAL_STYLE_ATTRIBUTE = /data-visual-style|dataset\.visualStyle/;
+const PREMIUM_SKIN =
+  /data-skin="premium"|skin:\s*"premium"|skin\s*===\s*"premium"/;
+const USE_IS_PREMIUM_HOOK = /useIsPremium|use-is-premium/;
+const THEME_SKIN_MODULE = /theme-skin/;
+const NOT_CLEAN_SKIN_SELECTOR = /:not\(\[data-skin="clean"\]\)/;
+
 // Premium removal (11 November 2026, docs/recus/2026-11-11-suppression-premium/):
 // a stored theme-config that still says "premium" must fall back to Clean on
 // the first launch, keep everything else, and never throw. The red team's
@@ -242,7 +250,7 @@ describe("garde : plus rien de Premium qui change le rendu", () => {
         const path = join(dir, name);
         return statSync(path).isDirectory()
           ? walk(path)
-          : /\.(css|tsx?|html)$/.test(name)
+          : SOURCE_FILE.test(name)
             ? [path]
             : [];
       });
@@ -252,16 +260,13 @@ describe("garde : plus rien de Premium qui change le rendu", () => {
     }));
   };
   it.each([
-    ["l'attribut data-visual-style", /data-visual-style|dataset\.visualStyle/],
-    [
-      "une peau « premium »",
-      /data-skin="premium"|skin:\s*"premium"|skin\s*===\s*"premium"/,
-    ],
-    ["le hook useIsPremium", /useIsPremium|use-is-premium/],
-    ["le module theme-skin", /theme-skin/],
+    ["l'attribut data-visual-style", VISUAL_STYLE_ATTRIBUTE],
+    ["une peau « premium »", PREMIUM_SKIN],
+    ["le hook useIsPremium", USE_IS_PREMIUM_HOOK],
+    ["le module theme-skin", THEME_SKIN_MODULE],
     [
       "un sélecteur réservé à une peau autre que Clean",
-      /:not\(\[data-skin="clean"\]\)/,
+      NOT_CLEAN_SKIN_SELECTOR,
     ],
   ])("%s n'apparaît nulle part dans src", async (_name, pattern) => {
     const found = (await sources())

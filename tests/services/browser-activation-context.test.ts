@@ -1,6 +1,8 @@
 import { webcrypto } from "node:crypto";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 
+const UUID_TEXT = /^[0-9a-f-]{36}$/;
+
 vi.mock("@/services/browser-store", () => ({ isTauriRuntime: () => false }));
 beforeEach(() => {
   vi.resetModules();
@@ -22,7 +24,7 @@ it("conserve l’identité du poste même sans randomUUID", async () => {
   });
   const { getDeviceId } = await import("@/services/licenseActivationService");
   const first = await getDeviceId();
-  expect(first).toMatch(/^[0-9a-f-]{36}$/);
+  expect(first).toMatch(UUID_TEXT);
   expect(await getDeviceId()).toBe(first);
   expect(localStorage.getItem("baitari-license-installation-v2")).toBe(first);
 });

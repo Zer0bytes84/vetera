@@ -2,6 +2,8 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { ValidatedDosePanel } from "@/modules/prescriptions/components/validated-dose-panel";
 
+const NO_REFERENCE_DOSE_LABEL = /aria-label="Pas de dose de référence : [^"]+"/;
+
 /** The prescription line's reference dose: the dose and the reference's warning word for word, or why there is none. */
 describe("panneau de la dose de référence validée", () => {
   it("la dose pour le poids, son calcul, la voie, la fréquence, la durée, la mise en garde mot pour mot, la validation, la source", () => {
@@ -78,7 +80,7 @@ describe("corrections de l'équipe rouge (19 novembre)", () => {
         weightKg={12}
       />
     );
-    expect(html).toMatch(/aria-label="Pas de dose de référence : [^"]+"/);
+    expect(html).toMatch(NO_REFERENCE_DOSE_LABEL);
     expect(html).not.toContain('aria-label="Dose de référence validée');
     expect(html).toContain("ne vient pas de cette référence");
   });

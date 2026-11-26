@@ -13,6 +13,9 @@ import type {
 } from "@/modules/patients/export/patient-record-types";
 import { DEFAULT_INVOICE_SETTINGS } from "@/services/invoiceSettingsService";
 
+const LIBERATION_SANS_FONT = /LiberationSans-(Regular|Bold)\.ttf/;
+const LONG_CONTENT_MARKER = /LongueObservation|Observation_|Dose_/;
+
 // The production fallback uses the browser's canvas and app-local worker/font
 // URLs. This test runs the same PDF.js renderer with its native Node canvas and
 // filesystem resources, so annotation appearance is exercised without a DOM.
@@ -42,7 +45,7 @@ beforeEach(() => {
   vi.stubGlobal(
     "fetch",
     vi.fn(async (url: string) => {
-      if (!/LiberationSans-(Regular|Bold)\.ttf/.test(url)) {
+      if (!LIBERATION_SANS_FONT.test(url)) {
         throw new Error(`Unexpected resource: ${url}`);
       }
       const font = await readFile(
@@ -278,10 +281,7 @@ it("scinde une ligne de tableau extrême, répète ses colonnes et conserve les 
     for (let index = 2; index <= pdf.numPages; index++) {
       const content = await (await pdf.getPage(index)).getTextContent();
       for (const item of content.items) {
-        if (
-          "str" in item &&
-          /LongueObservation|Observation_|Dose_/.test(item.str)
-        ) {
+        if ("str" in item && LONG_CONTENT_MARKER.test(item.str)) {
           // PDF coordinates increase from the bottom. Reserved header/footer
           // strips are checked on actual emitted text, not layout internals.
           expect(item.transform[5]).toBeGreaterThan(105);

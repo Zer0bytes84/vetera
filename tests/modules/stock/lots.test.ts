@@ -24,6 +24,8 @@ import { STOCK_LOTS_MIGRATION_SQL } from "@/modules/stock/stock-lots-migration";
 import { runSqliteMigrations } from "@/services/sqlite/migration-runner";
 import { SQLITE_MIGRATIONS } from "@/services/sqlite/migrations";
 
+const FOREIGN_KEY_CONSTRAINT = /FOREIGN KEY/;
+
 let connection: DatabaseSync;
 let db: StockDatabase;
 let serial: number;
@@ -136,7 +138,7 @@ it("un produit avec stock ou trace de lot s’archive sans effacer les quantité
     .all();
   expect(() =>
     connection.exec("DELETE FROM products WHERE id='product'")
-  ).toThrow(/FOREIGN KEY/);
+  ).toThrow(FOREIGN_KEY_CONSTRAINT);
   await transaction(() =>
     saveCatalogueProductInDatabase(
       db,
