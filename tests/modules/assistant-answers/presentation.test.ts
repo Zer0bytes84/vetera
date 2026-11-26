@@ -273,6 +273,7 @@ describe("tranche 1 : cartes, graphiques, tableaux", () => {
     }
   });
 
+  // Délai explicite (décision du 26/11) : une année entière de questions, 0,7 s seul mais plus de 5 s quand la machine est chargée.
   it("un pays où l'heure change à minuit (Beyrouth, Santiago, Le Caire) : aucune réponse refusée sur toute une année", () => {
     // Run with TZ=Asia/Beirut, America/Santiago… to cross their changes: « today » walks the year, the rows sit at the
     // start of each local day, the moment a midnight change skips.
@@ -306,7 +307,7 @@ describe("tranche 1 : cartes, graphiques, tableaux", () => {
       }
     }
     expect(refused).toEqual([]);
-  });
+  }, 20_000);
 
   it("au-delà de huit espèces, le graphique garde les sept premières et additionne le reste, total inchangé", () => {
     const species = [
