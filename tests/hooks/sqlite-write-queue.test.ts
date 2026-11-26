@@ -63,6 +63,7 @@ vi.mock("../../src/services/sqlite/database", () => {
         });
       } else if (sql.startsWith("INSERT")) {
         const fields = mustExist(
+          // biome-ignore lint/performance/useTopLevelRegex: fabrique de vi.mock, remontée au-dessus du module ; une constante du module n'y est pas encore définie
           sql.match(/\(([^)]+)\)/),
           "INSERT columns"
         )[1].split(", ");

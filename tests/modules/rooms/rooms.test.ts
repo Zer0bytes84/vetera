@@ -54,7 +54,9 @@ function seedClinic(db: DatabaseSync, rooms: Array<string | null>) {
     `INSERT INTO appointments(id, patient_id, owner_id, vet_id, title, start_time, end_time, type, room)
      VALUES (?, 'p1', 'o1', 'vet', 'Rex', '2026-10-19 10:00', '2026-10-19 10:15', 'Consultation', ?)`
   );
-  rooms.forEach((room, index) => insert.run(`a${index}`, room));
+  for (const [index, room] of rooms.entries()) {
+    insert.run(`a${index}`, room);
+  }
 }
 
 function store(adapter: RoomDatabase) {

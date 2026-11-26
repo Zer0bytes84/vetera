@@ -12,7 +12,9 @@ class TestWorker {
     payload: Record<string, unknown>;
   }[] = [];
   terminated = false;
-  constructor(readonly url: string) {
+  readonly url: string;
+  constructor(url: string) {
+    this.url = url;
     TestWorker.instances.push(this);
   }
   postMessage(message: (typeof this.messages)[number]) {

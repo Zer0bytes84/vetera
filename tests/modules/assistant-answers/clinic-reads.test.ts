@@ -85,7 +85,7 @@ beforeEach(async () => {
 });
 
 describe("porte de lecture de l'onglet Données", () => {
-  it("ne laisse passer qu'un SELECT ou un WITH, et refuse toute écriture avant SQLite", async () => {
+  it("ne laisse passer qu'un SELECT ou un WITH, et refuse toute écriture avant SQLite", () => {
     expect(isReadStatement("SELECT total_changes() AS changes")).toBe(true);
     for (const write of [
       "INSERT INTO patients(id) VALUES('x')",

@@ -124,7 +124,7 @@ async function withPdf<T>(
   }
 }
 
-async function textPages(bytes: Uint8Array): Promise<string[]> {
+function textPages(bytes: Uint8Array): Promise<string[]> {
   return withPdf(bytes, async (pdf) => {
     const result: string[] = [];
     for (let index = 1; index <= pdf.numPages; index++) {
@@ -219,10 +219,10 @@ it("produit un vrai dossier A4 Unicode avec identité, période et mentions rép
     expect(page).toContain("Généré le 17/10/2026");
   });
   const parsed = await PDFDocument.load(result.bytes);
-  parsed.getPages().forEach((page) => {
+  for (const page of parsed.getPages()) {
     expect(page.getWidth()).toBeCloseTo(595.28, 1);
     expect(page.getHeight()).toBeCloseTo(841.89, 1);
-  });
+  }
   expect(JSON.stringify(input)).toBe(unchanged);
   expect(result).toMatchObject({
     filename: input.filename,
@@ -270,9 +270,9 @@ it("scinde une ligne de tableau extrême, répète ses colonnes et conserve les 
   );
   const pages = await textPages(result.bytes);
   expect(pages.length).toBeGreaterThan(5);
-  pages
-    .slice(1)
-    .forEach((page) => expect(page).toContain("Observations enregistrées"));
+  for (const page of pages.slice(1)) {
+    expect(page).toContain("Observations enregistrées");
+  }
   const text = pages.join(" ");
   expect(text).toContain("LongueObservation179");
   expect(text).toContain("Fin de ligne longue");

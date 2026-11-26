@@ -29,7 +29,10 @@ describe("ouverture d'une section de Paramètres depuis ailleurs (menu de l'avat
         getItem: (key: string) => store.get(key) ?? null,
         setItem: (key: string, value: string) => store.set(key, value),
       },
-      dispatchEvent: (event: CustomEvent) => (events.push(event), true),
+      dispatchEvent: (event: CustomEvent) => {
+        events.push(event);
+        return true;
+      },
     });
     requestSettingsSection("mon-cabinet");
     expect(store.get(SETTINGS_SECTION_KEY)).toBe("mon-cabinet");

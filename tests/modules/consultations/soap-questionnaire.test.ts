@@ -6,10 +6,7 @@ import {
   openAssistant,
   toggleAssistant,
 } from "@/modules/consultations/assistant-events";
-import {
-  SOAP_QUESTIONNAIRE_STEPS,
-  type SoapQuestionnaireStep,
-} from "@/modules/consultations/local-ai/soap-questionnaire-config";
+import { SOAP_QUESTIONNAIRE_STEPS } from "@/modules/consultations/local-ai/soap-questionnaire-config";
 
 describe("SOAP Questionnaire Config", () => {
   it("contient exactement 4 étapes ordonnées S - O - A - P", () => {
@@ -29,7 +26,7 @@ describe("SOAP Questionnaire Config", () => {
   });
 
   it("définit des questions et options cohérentes pour chaque étape", () => {
-    SOAP_QUESTIONNAIRE_STEPS.forEach((step: SoapQuestionnaireStep) => {
+    for (const step of SOAP_QUESTIONNAIRE_STEPS) {
       expect(step.question.length).toBeGreaterThan(10);
       expect(step.subtitle.length).toBeGreaterThan(10);
       expect(step.options.length).toBe(8);
@@ -37,12 +34,12 @@ describe("SOAP Questionnaire Config", () => {
       const shortcuts = step.options.map((o) => o.shortcut);
       expect(new Set(shortcuts).size).toBe(step.options.length);
 
-      step.options.forEach((opt) => {
+      for (const opt of step.options) {
         expect(opt.id).toBeTruthy();
         expect(opt.label).toBeTruthy();
         expect(opt.textToInsert.length).toBeGreaterThan(5);
-      });
-    });
+      }
+    }
   });
 
   it("couvre les termes vétérinaires majeurs (vaccination, gastro, AINS, IRC)", () => {

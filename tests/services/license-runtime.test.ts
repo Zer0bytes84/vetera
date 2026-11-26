@@ -25,12 +25,12 @@ vi.mock("@/services/licenseActivationService", () => ({
   renewLicenseActivation: mock.renew,
   activateLicense: mock.activate,
   LicenseActivationError: class extends Error {
-    constructor(
-      message: string,
-      public status = 0,
-      public code = ""
-    ) {
+    status: number;
+    code: string;
+    constructor(message: string, status = 0, code = "") {
       super(message);
+      this.status = status;
+      this.code = code;
     }
   },
 }));

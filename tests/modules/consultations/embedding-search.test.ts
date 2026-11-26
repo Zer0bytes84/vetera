@@ -184,7 +184,7 @@ function insertSoap(note: ConsultationSoap) {
       note.content
     );
 }
-async function persist(note = soap()) {
+function persist(note = soap()) {
   const chunks = soapSearchChunks(note);
   return persistSearchChunks(
     adapter(),

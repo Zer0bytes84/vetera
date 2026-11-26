@@ -114,6 +114,7 @@ describe("le pilote de test : qui peut lui parler", () => {
     const b = createHarnessState(path.join(folder(), "b"));
     expect(a.token).toMatch(HEX_TOKEN_48);
     expect(a.token).not.toBe(b.token);
+    // biome-ignore lint/suspicious/noBitwiseOperators: le masque lit les bits de permission du fichier
     expect(statSync(path.join(a.dir, "token")).mode & 0o777).toBe(0o600);
     expect(readFileSync(path.join(a.dir, "token"), "utf8")).toBe(a.token);
   });
@@ -285,7 +286,7 @@ describe("le pilote de test : la file de tâches", () => {
     expect(existsSync(path.join(state.results, "7.json"))).toBe(false);
   });
 
-  it("note que la fenêtre répond, sans réécrire le fichier à chaque interrogation", async () => {
+  it("note que la fenêtre répond, sans réécrire le fichier à chaque interrogation", () => {
     const state = createHarnessState(path.join(folder(), "h"));
     const res = response();
     handleHarnessRequest(request({ token: state.token }), res, state, 10_000);
@@ -334,7 +335,8 @@ function pageWith({ elements = [], texts = {} } = {}) {
   const dispatched = [];
   const win = {
     addEventListener: (name, fn) => {
-      (listeners[name] ??= []).push(fn);
+      listeners[name] ??= [];
+      listeners[name].push(fn);
     },
     __TAURI_INTERNALS__: undefined,
   };

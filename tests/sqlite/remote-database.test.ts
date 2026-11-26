@@ -20,7 +20,7 @@ vi.mock("@tauri-apps/plugin-sql", () => {
   return { default: Database };
 });
 
-async function freshDatabaseModule() {
+function freshDatabaseModule() {
   vi.resetModules();
   return import("@/services/sqlite/database");
 }

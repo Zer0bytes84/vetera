@@ -9,7 +9,7 @@ import type { Patient, Reminder, Task } from "@/types/db";
 const TO_DO_COUNT_4 = /À traiter[\s\S]*?<span class="sr-only">4<\/span>/;
 const TO_DO_COUNT_2 = /À traiter[\s\S]*?<span class="sr-only">2<\/span>/;
 const NEW_REMINDER_DATE_14_10_2026 =
-  /aria-label="Date du nouveau rappel"[^>]*>[^]*?14\/10\/2026/;
+  /aria-label="Date du nouveau rappel"[^>]*>[\s\S]*?14\/10\/2026/;
 
 const harness = vi.hoisted(() => ({
   tasks: [] as Task[],

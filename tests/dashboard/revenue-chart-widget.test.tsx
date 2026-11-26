@@ -32,7 +32,7 @@ const render = (
     <RevenueChartWidget
       footer={<p>prévision et pied</p>}
       kinds={kinds}
-      periodControl={<button>période</button>}
+      periodControl={<button type="button">période</button>}
       points={points}
       rangeLabel="Du 1 au 2 oct. 2026"
     />
@@ -86,7 +86,7 @@ it("pendant la lecture du journal : un squelette, jamais « 0 DA », et la barre
       footer={<p>pied</p>}
       kinds={[]}
       loading
-      periodControl={<button>période</button>}
+      periodControl={<button type="button">période</button>}
       points={empty}
       rangeLabel="Du 1 au 2 oct. 2026"
     />

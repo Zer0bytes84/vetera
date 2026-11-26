@@ -175,7 +175,7 @@ describe("carte graphique", () => {
       <ChartCard
         {...base}
         footer={<p>pied</p>}
-        toolbar={<button>outil</button>}
+        toolbar={<button type="button">outil</button>}
         type="line"
       />
     );

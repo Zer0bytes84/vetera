@@ -19,9 +19,9 @@ beforeEach(() => {
   store.values.clear();
   store.save.mockReset();
   store.save.mockImplementation(async (values: Record<string, string>) => {
-    Object.entries(values).forEach(([key, value]) =>
-      store.values.set(key, value)
-    );
+    for (const [key, value] of Object.entries(values)) {
+      store.values.set(key, value);
+    }
   });
 });
 describe("cabinet invoice settings", () => {

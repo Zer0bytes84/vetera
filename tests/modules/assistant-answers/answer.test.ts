@@ -101,8 +101,11 @@ describe("catalogue fermé : quatre sujets, chiffres calculés", () => {
 /** Un jeu de lignes déterministe : dates locales, montants entiers en centimes, trois statuts, deux types. */
 function ledger(count: number) {
   let seed = 20_261_112;
-  const next = () =>
-    (seed = (seed * 1_103_515_245 + 12_345) & 0x7f_ff_ff_ff) / 0x7f_ff_ff_ff;
+  const next = () => {
+    // biome-ignore lint/suspicious/noBitwiseOperators: générateur congruentiel, le masque garde 31 bits comme le tirage d'origine
+    seed = (seed * 1_103_515_245 + 12_345) & 0x7f_ff_ff_ff;
+    return seed / 0x7f_ff_ff_ff;
+  };
   return Array.from({ length: count }, (_, index) => {
     const day = Math.floor(next() * 80) - 60; // de -60 à +19 jours autour de NOW
     const date = new Date(
