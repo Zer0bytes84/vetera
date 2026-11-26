@@ -644,28 +644,30 @@ export async function seedDemoDataIfNeeded(currentUser: CurrentUser | null) {
 
   const now = new Date();
 
-  buildDemoUsers(currentUser).forEach((user) =>
-    setBrowserRow("users", user.id, user)
-  );
-  buildDemoOwners(now).forEach((owner) =>
-    setBrowserRow("owners", owner.id, owner)
-  );
-  buildDemoPatients(now).forEach((patient) =>
-    setBrowserRow("patients", patient.id, patient)
-  );
-  buildDemoProducts(now).forEach((product) =>
-    setBrowserRow("products", product.id, product)
-  );
-  buildDemoAppointments(now).forEach((appointment) =>
-    setBrowserRow("appointments", appointment.id, appointment)
-  );
-  buildDemoTransactions(now).forEach((transaction) =>
-    setBrowserRow("transactions", transaction.id, transaction)
-  );
-  buildDemoTasks(now).forEach((task) => setBrowserRow("tasks", task.id, task));
-  buildDemoNotes(now, currentUser).forEach((note) =>
-    setBrowserRow("notes", note.id, note)
-  );
+  for (const user of buildDemoUsers(currentUser)) {
+    setBrowserRow("users", user.id, user);
+  }
+  for (const owner of buildDemoOwners(now)) {
+    setBrowserRow("owners", owner.id, owner);
+  }
+  for (const patient of buildDemoPatients(now)) {
+    setBrowserRow("patients", patient.id, patient);
+  }
+  for (const product of buildDemoProducts(now)) {
+    setBrowserRow("products", product.id, product);
+  }
+  for (const appointment of buildDemoAppointments(now)) {
+    setBrowserRow("appointments", appointment.id, appointment);
+  }
+  for (const transaction of buildDemoTransactions(now)) {
+    setBrowserRow("transactions", transaction.id, transaction);
+  }
+  for (const task of buildDemoTasks(now)) {
+    setBrowserRow("tasks", task.id, task);
+  }
+  for (const note of buildDemoNotes(now, currentUser)) {
+    setBrowserRow("notes", note.id, note);
+  }
 
   [
     "users",

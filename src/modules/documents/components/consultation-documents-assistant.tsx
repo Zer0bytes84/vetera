@@ -86,12 +86,14 @@ function fileFromAttachment(document: ConsultationDocument): File {
 }
 function noteText(note: Note): string {
   const parsed = new DOMParser().parseFromString(note.content, "text/html");
-  parsed
-    .querySelectorAll("script,style,iframe,object,link")
-    .forEach((element) => element.remove());
-  parsed
-    .querySelectorAll("p,h1,h2,h3,li,br")
-    .forEach((element) => element.append("\n"));
+  for (const element of parsed.querySelectorAll(
+    "script,style,iframe,object,link"
+  )) {
+    element.remove();
+  }
+  for (const element of parsed.querySelectorAll("p,h1,h2,h3,li,br")) {
+    element.append("\n");
+  }
   return parsed.body.textContent?.trim() ?? "";
 }
 function ChatMessage({

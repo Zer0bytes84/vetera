@@ -18,7 +18,9 @@ const listeners = new Set<(event: ProgressReport) => void>();
 let progress: ProgressReport = { progress: 0, text: "Prêt", status: "idle" };
 const report = (event: ProgressReport) => {
   progress = event;
-  listeners.forEach((listener) => listener(event));
+  for (const listener of listeners) {
+    listener(event);
+  }
 };
 export const subscribeToProgress = (
   listener: (event: ProgressReport) => void

@@ -326,7 +326,7 @@ export function buildDashboardMetrics({
     const end = endOfDay(day);
 
     const categoryValues: Record<string, number> = {};
-    categoryNames.forEach((catName) => {
+    for (const catName of categoryNames) {
       const total = paidIncome
         .filter((item) => {
           const date = safeDate(item.date);
@@ -337,7 +337,7 @@ export function buildDashboardMetrics({
         })
         .reduce((sum, item) => sum + item.amount, 0);
       categoryValues[catName] = total / 100;
-    });
+    }
 
     return {
       date: day,

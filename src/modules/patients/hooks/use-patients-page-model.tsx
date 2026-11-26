@@ -79,10 +79,12 @@ export function usePatientsPageModel({ onNavigateToPatient }: PatientsProps) {
     // A just-created owner is kept until the store has it; once it does, the store's row wins, so a correction made
     // after the creation shows at once.
     const merged = new Map<string, Owner>();
-    Object.values(recentOwnersById).forEach((owner) =>
-      merged.set(owner.id, owner)
-    );
-    owners.forEach((owner) => merged.set(owner.id, owner));
+    for (const owner of Object.values(recentOwnersById)) {
+      merged.set(owner.id, owner);
+    }
+    for (const owner of owners) {
+      merged.set(owner.id, owner);
+    }
     return Array.from(merged.values());
   }, [owners, recentOwnersById]);
 
@@ -94,11 +96,11 @@ export function usePatientsPageModel({ onNavigateToPatient }: PatientsProps) {
   const appointmentsByPatient = useMemo(() => {
     const grouped = new Map<string, Appointment[]>();
 
-    appointments.forEach((appointment) => {
+    for (const appointment of appointments) {
       const current = grouped.get(appointment.patientId) ?? [];
       current.push(appointment);
       grouped.set(appointment.patientId, current);
-    });
+    }
 
     return grouped;
   }, [appointments]);

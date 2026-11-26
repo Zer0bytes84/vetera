@@ -131,7 +131,9 @@ export async function prepareMicrophone(
         .then(
           (granted) => {
             if (settled) {
-              granted.getTracks().forEach((track) => track.stop());
+              for (const track of granted.getTracks()) {
+                track.stop();
+              }
             } else {
               settle(() => resolve(granted));
             }
@@ -155,12 +157,16 @@ export async function prepareMicrophone(
     );
   }
   if (signal.aborted) {
-    stream.getTracks().forEach((track) => track.stop());
+    for (const track of stream.getTracks()) {
+      track.stop();
+    }
     closeAudio();
     throw abortError();
   }
   const stop = () => {
-    stream.getTracks().forEach((track) => track.stop());
+    for (const track of stream.getTracks()) {
+      track.stop();
+    }
     closeAudio();
   };
   signal.addEventListener("abort", stop, { once: true });
@@ -252,7 +258,9 @@ export async function captureAudio(
     if (keepOpen) {
       return;
     }
-    stream.getTracks().forEach((track) => track.stop());
+    for (const track of stream.getTracks()) {
+      track.stop();
+    }
     if (audio.state !== "closed") {
       void audio.close().catch(() => undefined);
     }
@@ -303,10 +311,10 @@ export async function captureAudio(
         cleanup();
         const pcm = new Float32Array(count);
         let offset = 0;
-        buffers.forEach((buffer) => {
+        for (const buffer of buffers) {
           pcm.set(buffer, offset);
           offset += buffer.length;
-        });
+        }
         buffers.length = 0;
         if (pcm.length < audio.sampleRate * 0.4) {
           throw new Error(

@@ -294,14 +294,18 @@ export function buildHexActivity(
     if (view === "quarter") {
       columnCaptions.push({ at: offset, text: month.label });
     }
-    month.weeks.forEach((week, row) =>
-      week.forEach(
-        (day, col) => day && cells.push(dayCell(day, offset + col, row))
-      )
-    );
+    month.weeks.forEach((week, row) => {
+      week.forEach((day, col) => {
+        if (day) {
+          cells.push(dayCell(day, offset + col, row));
+        }
+      });
+    });
   });
   if (view === "month") {
-    WEEKDAY_SHORT.forEach((text, at) => columnCaptions.push({ at, text }));
+    WEEKDAY_SHORT.forEach((text, at) => {
+      columnCaptions.push({ at, text });
+    });
   }
   const figures = periodFigures(map);
   return {

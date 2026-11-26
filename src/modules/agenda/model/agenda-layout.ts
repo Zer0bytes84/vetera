@@ -310,7 +310,7 @@ export function layoutTimeGrid<T extends TimedItem>(
         const ordered = [...group].sort(
           (a, b) => a.start - b.start || a.item.id.localeCompare(b.item.id)
         );
-        ordered.forEach((event, i) =>
+        ordered.forEach((event, i) => {
           out.push({
             item: event.item,
             start: event.start,
@@ -320,8 +320,8 @@ export function layoutTimeGrid<T extends TimedItem>(
             column: 0,
             columns: 1,
             stacked: true,
-          })
-        );
+          });
+        });
       } else {
         for (const event of group) {
           const top = yAt(event.start);

@@ -16,7 +16,9 @@ const subscribe = (listener: () => void) => {
 };
 function publish(version: DashboardVersion) {
   localStorage.setItem(KEY, version);
-  listeners.forEach((listener) => listener());
+  for (const listener of listeners) {
+    listener();
+  }
 }
 export function useDashboardVersion() {
   const version = useSyncExternalStore(

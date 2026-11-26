@@ -141,9 +141,9 @@ export function buildInvoicePdf(
     doc.setFontSize(15);
     doc.setFont("helvetica", "bold");
     const nameLines = doc.splitTextToSize(settings.name, 105 - (nameX - left));
-    nameLines.forEach((line: string, index: number) =>
-      text(line, nameX, 23 + index * 6, 15, true, accent)
-    );
+    nameLines.forEach((line: string, index: number) => {
+      text(line, nameX, 23 + index * 6, 15, true, accent);
+    });
     let infoY = 23 + nameLines.length * 6;
     const identity = [
       settings.address,
@@ -152,19 +152,19 @@ export function buildInvoicePdf(
     ].filter(Boolean);
     doc.setFontSize(9);
     doc.setFont("helvetica", "normal");
-    identity.forEach((value) => {
+    for (const value of identity) {
       const lines: string[] = doc.splitTextToSize(value, 105 - (nameX - left));
-      lines.forEach((line) => {
+      for (const line of lines) {
         text(line, nameX, infoY, 9, false, "#52525b");
         infoY += 4.5;
-      });
-    });
+      }
+    }
     text("FACTURE", right, 23, 18, true, accent, "right");
     doc.setFontSize(9);
     const numberLines: string[] = doc.splitTextToSize(data.number, 55);
-    numberLines.forEach((line, index) =>
-      text(line, right, 30 + index * 4, 9, false, "#52525b", "right")
-    );
+    numberLines.forEach((line, index) => {
+      text(line, right, 30 + index * 4, 9, false, "#52525b", "right");
+    });
     text(
       data.date.toLocaleDateString("fr-FR"),
       right,
@@ -218,11 +218,11 @@ export function buildInvoicePdf(
     data.ownerName || "Propriétaire",
     170
   );
-  ownerLines.forEach((line) => {
+  for (const line of ownerLines) {
     ensure(6);
     text(line, left, y, 11, true);
     y += 6;
-  });
+  }
   doc.setFontSize(9);
   doc.setFont("helvetica", "normal");
   const clientLines: string[] = doc.splitTextToSize(
@@ -231,15 +231,15 @@ export function buildInvoicePdf(
       .join("\n"),
     170
   );
-  clientLines.forEach((line) => {
+  for (const line of clientLines) {
     ensure(5);
     text(line, left, y, 9, false, "#52525b");
     y += 5;
-  });
+  }
   y += 10;
   ensure(20);
   tableHeader();
-  data.items.forEach((item) => {
+  for (const item of data.items) {
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
     const lines: string[] = doc.splitTextToSize(
@@ -267,7 +267,7 @@ export function buildInvoicePdf(
     doc.setDrawColor("#e4e4e7");
     doc.line(left, y - 2, right, y - 2);
     y += 3;
-  });
+  }
   y += 8;
   ensure(72);
   text("Total de la facture", 110, y, 11, true);
@@ -346,9 +346,9 @@ export function buildInvoicePdf(
     doc.line(left, footerTop, right, footerTop);
     doc.setFontSize(8);
     doc.setFont("helvetica", "normal");
-    footer.forEach((line, i) =>
-      text(line, left, footerTop + 6 + i * 3.5, 8, false, "#71717a")
-    );
+    footer.forEach((line, i) => {
+      text(line, left, footerTop + 6 + i * 3.5, 8, false, "#71717a");
+    });
     text(
       `${page} / ${pages}`,
       right,

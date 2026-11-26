@@ -64,7 +64,11 @@ export function createTourStore(storage: Storage | null): TourStore {
   let shownThisSession = false;
   let finished = false;
   const listeners = new Set<() => void>();
-  const notify = () => listeners.forEach((listener) => listener());
+  const notify = () => {
+    for (const listener of listeners) {
+      listener();
+    }
+  };
   return {
     get: () => state,
     subscribe(listener) {

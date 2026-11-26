@@ -37,7 +37,9 @@ export function createAIModelInstallation(dependencies: Dependencies) {
   let statusRequest = 0;
   const update = (patch: Partial<AIInstallationState>) => {
     state = { ...state, ...patch };
-    listeners.forEach((listener) => listener());
+    for (const listener of listeners) {
+      listener();
+    }
   };
   const refresh = async () => {
     const request = ++statusRequest;

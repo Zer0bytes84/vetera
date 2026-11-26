@@ -162,7 +162,9 @@ class Page {
         width
       );
     }
-    shown.forEach((line, index) => this.doc.text(line, x, y + index * leading));
+    shown.forEach((line, index) => {
+      this.doc.text(line, x, y + index * leading);
+    });
     return shown.length;
   }
 
@@ -659,14 +661,14 @@ function drawWeight(
     );
   }
   page.fill(WEIGHT);
-  points.forEach((point, index) =>
+  points.forEach((point, index) => {
     doc.circle(
       px(times[index]),
       py(point.kg),
       index === points.length - 1 ? 1.1 : 0.65,
       "F"
-    )
-  );
+    );
+  });
   page.style(6.5, false, MUTED);
   doc.text(civilDate(points[0].date), cx, cy + ch + 4.5);
   doc.text(civilDate(last.date), cx + cw, cy + ch + 4.5, {

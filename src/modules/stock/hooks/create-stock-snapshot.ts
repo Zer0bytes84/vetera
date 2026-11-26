@@ -15,7 +15,11 @@ export function createStockSnapshotHook<T>(
   let generation = 0;
   let pending: Promise<void> | null = null;
   const listeners = new Set<() => void>();
-  const notify = () => listeners.forEach((listener) => listener());
+  const notify = () => {
+    for (const listener of listeners) {
+      listener();
+    }
+  };
   function refresh() {
     if (!isTauriRuntime() || pending) {
       return pending;

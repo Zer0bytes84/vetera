@@ -325,17 +325,17 @@ export function useAgendaPageModel(onNavigate?: (view: View) => void) {
   const appointmentsByDate = useMemo(() => {
     const map = new Map<string, Appointment[]>();
 
-    appointments.forEach((appointment) => {
+    for (const appointment of appointments) {
       const start = normalizeDate(appointment.startTime);
       if (!start) {
-        return;
+        continue;
       }
 
       const key = formatDateInput(start);
       const current = map.get(key) ?? [];
       current.push(appointment);
       map.set(key, current);
-    });
+    }
 
     map.forEach((value, key) => {
       map.set(
@@ -363,11 +363,11 @@ export function useAgendaPageModel(onNavigate?: (view: View) => void) {
 
   const appointmentsByVet = useMemo(() => {
     const map = new Map<string, Appointment[]>();
-    dailyAppointments.forEach((appointment) => {
+    for (const appointment of dailyAppointments) {
       const current = map.get(appointment.vetId) ?? [];
       current.push(appointment);
       map.set(appointment.vetId, current);
-    });
+    }
     return map;
   }, [dailyAppointments]);
 

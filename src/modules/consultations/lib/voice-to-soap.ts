@@ -148,11 +148,11 @@ function groundedRatio(source: Set<string>, value: string) {
     return 1;
   }
   let grounded = 0;
-  tokens.forEach((token) => {
+  for (const token of tokens) {
     if (source.has(token)) {
       grounded += 1;
     }
-  });
+  }
   return grounded / tokens.size;
 }
 

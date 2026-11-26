@@ -380,13 +380,13 @@ class Layout {
       }
       style(doc, bold ? 8.5 : 9, bold);
       cells.forEach((cell, index) => {
-        cell.forEach((line, offset) =>
+        cell.forEach((line, offset) => {
           doc.text(
             line,
             x + padding,
             this.y + padding + lineHeight * 0.78 + offset * lineHeight
-          )
-        );
+          );
+        });
         x += widths[index];
       });
       doc.setDrawColor(RULE);
@@ -760,10 +760,10 @@ async function appendSource(
             if (expandsCrop) {
               // Keep the same whole-MediaBox policy as vector source pages.
               // This is an in-memory copy; the stored original never changes.
-              originals.forEach((sourcePage) => {
+              for (const sourcePage of originals) {
                 const box = sourcePage.getMediaBox();
                 sourcePage.setCropBox(box.x, box.y, box.width, box.height);
-              });
+              }
               rasterBytes = await original.save({
                 updateFieldAppearances: false,
                 objectsPerTick: 20,
@@ -868,13 +868,13 @@ async function stamp(
     style(overlay, 7.5, false, MUTED);
     overlay.text("DOSSIER PATIENT", LEFT, 11.5);
     style(overlay, 9, true);
-    margins.patient.forEach((line, row) =>
-      overlay.text(line, LEFT, 17 + row * 4.1)
-    );
+    margins.patient.forEach((line, row) => {
+      overlay.text(line, LEFT, 17 + row * 4.1);
+    });
     style(overlay, 8.5, false, MUTED);
-    margins.clinic.forEach((line, row) =>
-      overlay.text(line, RIGHT, 12 + row * 4, { align: "right" })
-    );
+    margins.clinic.forEach((line, row) => {
+      overlay.text(line, RIGHT, 12 + row * 4, { align: "right" });
+    });
     overlay.text(
       `Page ${index + 1} / ${total}`,
       RIGHT,
@@ -886,9 +886,9 @@ async function stamp(
     overlay.line(LEFT, margins.headerBottom, RIGHT, margins.headerBottom);
     overlay.line(LEFT, margins.footerTop, RIGHT, margins.footerTop);
     style(overlay, 7.5, false, MUTED);
-    margins.legal.forEach((line, row) =>
-      overlay.text(line, LEFT, margins.footerTop + 5 + row * 3.5)
-    );
+    margins.legal.forEach((line, row) => {
+      overlay.text(line, LEFT, margins.footerTop + 5 + row * 3.5);
+    });
     overlay.text(
       `Généré le ${civilDate(snapshot.exportDay)}`,
       LEFT,

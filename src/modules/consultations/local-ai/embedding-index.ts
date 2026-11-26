@@ -375,9 +375,9 @@ export function normalizedEmbedding(vector: number[]) {
 export function embeddingToHex(vector: number[]) {
   const buffer = new ArrayBuffer(3072),
     view = new DataView(buffer);
-  normalizedEmbedding(vector).forEach((value, index) =>
-    view.setFloat32(index * 4, value, true)
-  );
+  normalizedEmbedding(vector).forEach((value, index) => {
+    view.setFloat32(index * 4, value, true);
+  });
   return Array.from(new Uint8Array(buffer), (value) =>
     value.toString(16).padStart(2, "0")
   ).join("");

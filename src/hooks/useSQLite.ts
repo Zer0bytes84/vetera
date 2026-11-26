@@ -213,9 +213,9 @@ const mapKeys = (
   mapper: (key: string) => string
 ) => {
   const mapped: Record<string, unknown> = {};
-  Object.keys(obj).forEach((key) => {
+  for (const key of Object.keys(obj)) {
     mapped[mapper(key)] = obj[key];
-  });
+  }
   return mapped;
 };
 
@@ -302,12 +302,12 @@ const normalizeBooleanFields = (
   }
 
   const next = { ...row };
-  booleanFields.forEach((field) => {
+  for (const field of booleanFields) {
     const current = next[field];
     if (current === 0 || current === 1) {
       next[field] = current === 1;
     }
-  });
+  }
   return next;
 };
 
@@ -327,7 +327,9 @@ export const subscribeSQLiteWrites = (listener: () => void) => {
 };
 function updateWriteStatus(patch: Partial<SQLiteWriteStatus>) {
   writeStatus = { ...writeStatus, ...patch };
-  writeListeners.forEach((listener) => listener());
+  for (const listener of writeListeners) {
+    listener();
+  }
 }
 
 /** Relit la ligne ecrite. Hors du hook : le `try` porte une expression conditionnelle que le compilateur React ne traduit pas. */

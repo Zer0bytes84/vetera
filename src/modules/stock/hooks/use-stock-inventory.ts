@@ -18,7 +18,11 @@ let state = empty;
 let generation = 0;
 let pending: Promise<void> | null = null;
 const subscribers = new Set<() => void>();
-const notify = () => subscribers.forEach((listener) => listener());
+const notify = () => {
+  for (const listener of subscribers) {
+    listener();
+  }
+};
 
 function refresh() {
   if (!isTauriRuntime() || pending) {

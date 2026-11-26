@@ -106,23 +106,23 @@ export async function buildManagedDocumentPdf(
       width - (x - left)
     );
     let infoY = 24;
-    names.forEach((line) => {
+    for (const line of names) {
       doc.text(line, x, infoY);
       infoY += 6;
-    });
+    }
     normal(9, false, "#5d5d5d");
     const identity = [
       source.clinic.address,
       [source.clinic.phone, source.clinic.email].filter(Boolean).join(" · "),
       source.clinic.registrationNumber,
     ].filter(Boolean);
-    identity.forEach((value) => {
+    for (const value of identity) {
       const lines: string[] = doc.splitTextToSize(value, width - (x - left));
-      lines.forEach((line) => {
+      for (const line of lines) {
         doc.text(line, x, infoY);
         infoY += 4.5;
-      });
-    });
+      }
+    }
     y = Math.max(49, infoY + 4);
     if (source.patientReference) {
       normal(9, true, "#292929");
@@ -141,10 +141,10 @@ export async function buildManagedDocumentPdf(
     } else {
       normal(16, true);
       const titles: string[] = doc.splitTextToSize(source.title, width);
-      titles.forEach((line) => {
+      for (const line of titles) {
         doc.text(line, left, y);
         y += 7;
-      });
+      }
       y += 4;
     }
   };
@@ -172,9 +172,9 @@ export async function buildManagedDocumentPdf(
     doc.setDrawColor("#dedede");
     doc.line(left, footerTop, right, footerTop);
     normal(8, false, "#5d5d5d");
-    footer.forEach((line, index) =>
-      doc.text(line, left, footerTop + 6 + index * 3.8)
-    );
+    footer.forEach((line, index) => {
+      doc.text(line, left, footerTop + 6 + index * 3.8);
+    });
     doc.text(`${page} / ${count}`, right, footerTop + 6, { align: "right" });
   }
   return doc;

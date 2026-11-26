@@ -40,7 +40,11 @@ export function resolveClinicTab(
 let enabled = true;
 let loaded: Promise<void> | null = null;
 const listeners = new Set<() => void>();
-const emit = () => listeners.forEach((listener) => listener());
+const emit = () => {
+  for (const listener of listeners) {
+    listener();
+  }
+};
 
 function load() {
   loaded ??= getSetting(HOSPITALIZATION_SETTING_KEY)

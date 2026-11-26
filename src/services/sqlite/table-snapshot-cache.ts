@@ -58,7 +58,9 @@ export class TableSnapshotCache<R extends { id: string }> {
       }
     }
     entry.visible = rows;
-    entry.listeners.forEach((listener) => listener());
+    for (const listener of entry.listeners) {
+      listener();
+    }
   }
   replace(table: string, rows: R[], generation?: number) {
     const entry = this.entry(table);
