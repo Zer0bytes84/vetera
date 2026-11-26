@@ -187,6 +187,7 @@ export function PatientPeekView({
                 className="medical-peek-content"
                 id={`${id}-content`}
                 role="tabpanel"
+                // biome-ignore lint/a11y/noNoninteractiveTabindex: tabpanel focalisable, motif APG quand le panneau ne commence pas par un contrôle.
                 tabIndex={0}
               >
                 {tab === "summary" && (

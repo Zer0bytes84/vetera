@@ -133,7 +133,7 @@ if (typeof window !== "undefined") {
   );
 }
 
-const readTauriTable = async (tableName: string, force = false) => {
+const readTauriTable = (tableName: string, force = false) => {
   const generation = getTableCacheGeneration(tableName);
   const cached = tableRowsCache.get(tableName);
 
@@ -209,9 +209,9 @@ const mapKeys = (
   mapper: (key: string) => string
 ) => {
   const mapped: Record<string, unknown> = {};
-  Object.keys(obj).forEach((key) => {
+  for (const key of Object.keys(obj)) {
     mapped[mapper(key)] = obj[key];
-  });
+  }
   return mapped;
 };
 
@@ -312,12 +312,12 @@ const normalizeBooleanFields = (
   }
 
   const next = { ...row };
-  booleanFields.forEach((field) => {
+  for (const field of booleanFields) {
     const current = next[field];
     if (current === 0 || current === 1) {
       next[field] = current === 1;
     }
-  });
+  }
   return next;
 };
 
@@ -337,7 +337,9 @@ export const subscribeSQLiteWrites = (listener: () => void) => {
 };
 function updateWriteStatus(patch: Partial<SQLiteWriteStatus>) {
   writeStatus = { ...writeStatus, ...patch };
-  writeListeners.forEach((listener) => listener());
+  for (const listener of writeListeners) {
+    listener();
+  }
 }
 
 /** Relit la ligne ecrite. Hors du hook : le `try` porte une expression conditionnelle que le compilateur React ne traduit pas. */
@@ -497,8 +499,9 @@ async function updateRow<T extends { id: string }>(
   if (!safeTableName) {
     throw new Error(`Table non autorisée: ${tableName}`);
   }
-  const patch = stripUndefinedEntries(updates as Record<string, unknown>);
-  delete patch.id;
+  const { id: _omittedId, ...patch } = stripUndefinedEntries(
+    updates as Record<string, unknown>
+  );
   if (!Object.keys(patch).length) {
     return true;
   }
@@ -775,7 +778,9 @@ export function useSQLite<T extends { id: string }>(
     (listener: () => void) =>
       safeTableName
         ? tableSnapshotCache.subscribe(safeTableName, listener)
-        : () => {},
+        : () => {
+            // Pas de table autorisée : aucun abonnement à défaire.
+          },
     [safeTableName]
   );
   const getSnapshot = useCallback(
@@ -790,8 +795,8 @@ export function useSQLite<T extends { id: string }>(
     getSnapshot,
     getSnapshot
   ) as unknown as T[];
-  const [loading, setLoading] = useState(
-    () => Boolean(safeTableName) && !tableSnapshotCache.has(safeTableName!)
+  const [loading, setLoading] = useState(() =>
+    safeTableName ? !tableSnapshotCache.has(safeTableName) : false
   );
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
