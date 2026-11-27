@@ -13,11 +13,13 @@ import {
   consultationSearchChunks,
   type DocumentType,
   documentSearchChunks,
+  embeddingBytesFromHex,
   embeddingFromHex,
   embeddingToHex,
   MIN_SEARCH_SCORE,
   managedDocumentSearchChunks,
   normalizedEmbedding,
+  passageCosine,
   patientSearchChunks,
   productSearchChunks,
   rankPatientChunks,
@@ -46,7 +48,10 @@ import {
 } from "./passage-search";
 import { getActiveSearchGeneration } from "./search-generation";
 import { isSoapReviewed } from "./soap-review";
-import { matchesSearchTerms } from "./veterinary-lexicon";
+import {
+  matchesExactSearchTerms,
+  matchesSearchTerms,
+} from "./veterinary-lexicon";
 import type { LocalAiProgress, SearchModel } from "./worker-protocol";
 
 /** Rows of the given index generation for one source. */
@@ -811,6 +816,115 @@ export async function indexAllPatientsDocuments(
   }
   return count;
 }
+/**
+ * La recherche par passages dans tous les dossiers, une fois la question vectorisée. Une seule requête lit les extraits
+ * de toute la clinique (au lieu d'une par patient), les vecteurs sont décodés en tableaux typés et le cosinus y est
+ * calculé au bit près comme rankPassages le ferait. Le classement reste celui de rankPassages, patient par patient,
+ * puis le même tri global. Seules les lignes qui peuvent être retenues lui sont passées : sous le plus bas des deux
+ * seuils, une ligne ne l'est que si elle contient les termes exacts de la question (matchesExactSearchTerms).
+ */
+export async function rankAllPatientsPassages(
+  db: SearchDatabase,
+  filters: Pick<SearchScope, "sourceTypes" | "sections">,
+  query: string,
+  vector: number[],
+  generation: Exclude<SearchGeneration, "sections">
+) {
+  assertSearchScope({ patientId: "explicit-all-patients", ...filters });
+  const calibration = MODEL_CALIBRATION[GENERATION_MODEL[generation]];
+  const rows = await db.select<
+    Array<SearchChunk & { embedding: string; patientName: string }>
+  >(
+    "SELECT e.patient_id AS patientId,p.name AS patientName,e.source_id AS sourceId,e.source_type AS sourceType,e.document_type AS documentType,e.section,e.chunk_index AS chunkIndex,e.chunk_text AS text,e.source_key AS sourceKey,hex(e.embedding) AS embedding FROM embeddings e JOIN patients p ON p.id=e.patient_id WHERE e.model_key=? AND e.source_type IN (" +
+      filters.sourceTypes.map(() => "?").join(",") +
+      ") AND e.section IN (" +
+      filters.sections.map(() => "?").join(",") +
+      ") AND ((e.source_type='soap' AND EXISTS(SELECT 1 FROM consultation_soaps s WHERE s.id=e.source_id AND s.patient_id=e.patient_id)) OR (e.source_type!='soap' AND EXISTS(SELECT 1 FROM notes n WHERE n.id=e.source_id AND n.patient_id=e.patient_id))) ORDER BY e.patient_id,e.source_id,e.chunk_index",
+    [SEARCH_INDEX_KEYS[generation], ...filters.sourceTypes, ...filters.sections]
+  );
+  const lexicalOnly =
+    filters.sourceTypes.includes("document") &&
+    filters.sections.includes("document")
+      ? await managedPatientChunks(db)
+      : [];
+  const queryNorm = Math.hypot(...vector);
+  const unitQuery = Float64Array.from(vector, (value) => value / queryNorm);
+  const floor = Math.min(calibration.minimum, calibration.lexicalFloor);
+  const byPatient = new Map<
+    string,
+    {
+      lexicalOnly: SearchChunk[];
+      name: string;
+      rows: Array<SearchChunk & { cosine: number; embedding: string }>;
+    }
+  >();
+  const patientEntry = (patientId: string, name: string) => {
+    let entry = byPatient.get(patientId);
+    if (!entry) {
+      entry = { lexicalOnly: [], name, rows: [] };
+      byPatient.set(patientId, entry);
+    }
+    return entry;
+  };
+  for (const { patientName, ...row } of rows) {
+    if (
+      !(
+        filters.sourceTypes.includes(row.sourceType) &&
+        filters.sections.includes(row.section)
+      )
+    ) {
+      continue;
+    }
+    const raw = embeddingBytesFromHex(row.embedding);
+    if (!raw) {
+      continue;
+    }
+    const cosine = passageCosine(raw, unitQuery);
+    if (cosine < floor && !matchesExactSearchTerms(query, row.text)) {
+      continue;
+    }
+    patientEntry(row.patientId, patientName).rows.push({ ...row, cosine });
+  }
+  if (lexicalOnly.length) {
+    const names = new Map(
+      (
+        await db.select<Array<{ id: string; name: string }>>(
+          "SELECT id,name FROM patients"
+        )
+      ).map((patient) => [patient.id, patient.name])
+    );
+    for (const chunk of lexicalOnly) {
+      const name = names.get(chunk.patientId);
+      if (name !== undefined) {
+        patientEntry(chunk.patientId, name).lexicalOnly.push(chunk);
+      }
+    }
+  }
+  const ranked: Array<
+    ReturnType<typeof rankPassages>[number] & { patientName: string }
+  > = [];
+  for (const [patientId, entry] of byPatient) {
+    ranked.push(
+      ...rankPassages(
+        entry.rows,
+        vector,
+        { patientId, ...filters },
+        query,
+        5,
+        entry.lexicalOnly,
+        calibration
+      ).map((row) => ({ ...row, patientName: entry.name }))
+    );
+  }
+  return ranked
+    .sort(
+      (a, b) =>
+        b.score - a.score ||
+        a.patientId.localeCompare(b.patientId) ||
+        a.sourceId.localeCompare(b.sourceId)
+    )
+    .slice(0, 5);
+}
 export async function searchAllPatientsDocuments(
   filters: Pick<SearchScope, "sourceTypes" | "sections">,
   query: string,
@@ -824,11 +938,6 @@ export async function searchAllPatientsDocuments(
     throw new Error("Écrivez ce que vous souhaitez retrouver.");
   }
   await indexAllPatientsDocuments(signal, onProgress);
-  const patients = await runDbRead((db) =>
-    db.select<Array<{ id: string; name: string }>>(
-      "SELECT id,name FROM patients ORDER BY id"
-    )
-  );
   const models = await getLocalModels();
   const generation = effectiveGeneration(models);
   const [vector] = await embedTexts(
@@ -840,43 +949,23 @@ export async function searchAllPatientsDocuments(
     GENERATION_MODEL[generation]
   );
   if (generation !== "sections") {
-    const ranked: Array<
-      Awaited<ReturnType<typeof rankPassages>>[number] & { patientName: string }
-    > = [];
-    for (const patient of patients) {
-      if (signal.aborted) {
-        throw new DOMException("Tâche annulée.", "AbortError");
-      }
-      const scope = { patientId: patient.id, ...filters };
-      const rows = await runDbRead((db) =>
-        readPatientSearchRows(db, scope, generation)
-      );
-      const lexicalOnly =
-        filters.sourceTypes.includes("document") &&
-        filters.sections.includes("document")
-          ? await runDbRead((db) => managedPatientChunks(db, patient.id))
-          : [];
-      ranked.push(
-        ...rankPassages(
-          rows,
-          vector,
-          scope,
-          query,
-          5,
-          lexicalOnly,
-          MODEL_CALIBRATION[GENERATION_MODEL[generation]]
-        ).map((row) => ({ ...row, patientName: patient.name }))
-      );
+    if (signal.aborted) {
+      throw new DOMException("Tâche annulée.", "AbortError");
     }
-    return ranked
-      .sort(
-        (a, b) =>
-          b.score - a.score ||
-          a.patientId.localeCompare(b.patientId) ||
-          a.sourceId.localeCompare(b.sourceId)
-      )
-      .slice(0, 5);
+    const ranked = await runDbRead((db) =>
+      rankAllPatientsPassages(db, filters, query, vector, generation)
+    );
+    if (signal.aborted) {
+      throw new DOMException("Tâche annulée.", "AbortError");
+    }
+    return ranked;
   }
+  // Section index (v2, rollback only): unchanged, one read per patient.
+  const patients = await runDbRead((db) =>
+    db.select<Array<{ id: string; name: string }>>(
+      "SELECT id,name FROM patients ORDER BY id"
+    )
+  );
   const found = [] as Awaited<ReturnType<typeof searchPatientSections>>;
   for (const patient of patients) {
     if (signal.aborted) {

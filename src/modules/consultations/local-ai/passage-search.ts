@@ -203,7 +203,13 @@ export type RankedPassage<T extends SearchChunk> = T & {
  * constraints stay exact. An exact clinical term is never dropped for a low
  * cosine, and lexical-only sources (no vector) are merged at LEXICAL_ONLY_SCORE.
  */
-export function rankPassages<T extends SearchChunk & { vector: number[] }>(
+/**
+ * A row carries either its vector or its cosine with the query, already computed elsewhere (the all-patients search
+ * computes it over typed arrays, a native index can compute it too). Everything after the cosine is the same.
+ */
+export function rankPassages<
+  T extends SearchChunk & { vector?: number[]; cosine?: number },
+>(
   rows: T[],
   query: number[] | null,
   scope: SearchScope,
@@ -226,10 +232,11 @@ export function rankPassages<T extends SearchChunk & { vector: number[] }>(
     }
     const lexical = matchesSearchTerms(queryText, row.text);
     const cosine = unit
-      ? unitVector(row.vector).reduce(
+      ? (row.cosine ??
+        unitVector(row.vector ?? []).reduce(
           (sum, value, i) => sum + value * unit[i],
           0
-        )
+        ))
       : lexical
         ? calibration.minimum
         : 0;
@@ -241,8 +248,9 @@ export function rankPassages<T extends SearchChunk & { vector: number[] }>(
     if (!eligible) {
       continue;
     }
-    const { vector: _vector, ...chunk } = row;
+    const { vector: _vector, cosine: _cosine, ...chunk } = row;
     void _vector;
+    void _cosine;
     scored.push({
       ...chunk,
       score: cosine + (lexical ? calibration.bonus : 0),
