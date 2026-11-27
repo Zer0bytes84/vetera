@@ -612,6 +612,101 @@ export function matchesSearchTerms(query: string, text: string): boolean {
   });
 }
 
+/**
+ * Dedicated roots of stemFrenchWord read backwards: for a root, the word beginnings that lead to it besides the root
+ * itself. Every other stem is a prefix of its word (suffix stripping, or the word kept whole).
+ */
+const DEDICATED_ROOT_ALIASES: Record<string, string[]> = {
+  boit: ["claudic"],
+  abatt: ["letharg"],
+  inappet: ["anorex"],
+  fievre: ["febril", "hypertherm"],
+  prurit: ["demange", "gratt"],
+  toux: ["touss"],
+  dyspne: ["polypne"],
+};
+/** Every word whose stem is `stem` begins with one of these. */
+export function stemPrefixes(stem: string): string[] {
+  return [stem, ...(DEDICATED_ROOT_ALIASES[stem] ?? [])];
+}
+
+/** The words of a text as the lexicon compares them; the lexical index stores exactly these. */
+export function lexicalWords(text: string): string {
+  return normalizeLexical(text);
+}
+
+const ftsWords = (phrase: string) =>
+  normalizeLexical(phrase).split(WHITESPACE_RUN).filter(Boolean);
+/** One word or a phrase of consecutive words; normalized words are [a-z0-9] only, so quoting is enough. */
+const ftsPhrase = (phrase: string) => {
+  const words = ftsWords(phrase);
+  return words.length ? `"${words.join(" ")}"` : null;
+};
+const ftsAny = (alternatives: Array<string | null>) => {
+  const unique = [...new Set(alternatives.filter((a): a is string => !!a))];
+  return unique.length ? `(${unique.join(" OR ")})` : null;
+};
+
+/**
+ * The query expansion of matchesSearchTerms, written as an FTS5 MATCH expression over the lexical index (whose tokens
+ * are lexicalWords of each passage). It accepts every passage matchesSearchTerms accepts, and possibly more: the
+ * expression selects candidates, matchesSearchTerms still decides. Null when no passage can match.
+ */
+export function lexicalMatchExpression(query: string): string | null {
+  const normQuery = normalizeLexical(query);
+  if (!normQuery) {
+    return null;
+  }
+  const expansion = expandSearchQuery(query);
+  const parts: Array<string | null> = [ftsPhrase(normQuery)];
+  const isSingleConceptPhrase =
+    ACRONYMS_RAW[normQuery] ||
+    EXPANSION_TO_ACRONYMS[normQuery] ||
+    BRAND_TO_DCI_RAW[normQuery] ||
+    DCI_TO_BRANDS[normQuery];
+  if (isSingleConceptPhrase) {
+    parts.push(...expansion.phrases.map(ftsPhrase));
+  }
+  if (expansion.terms.length) {
+    const perTerm = expansion.terms.map((term, i) => {
+      if (term.length < 4) {
+        return ftsPhrase(term);
+      }
+      const stem = expansion.stems[i];
+      const synonyms = (CLINICAL_SYNONYMS_RAW[term] ?? []).flatMap((syn) => {
+        const normSyn = normalizeLexical(syn);
+        return normSyn.includes(" ")
+          ? [ftsPhrase(normSyn)]
+          : [
+              ftsPhrase(normSyn),
+              ...stemPrefixes(stemFrenchWord(normSyn)).map((p) => `"${p}"*`),
+            ];
+      });
+      return ftsAny([
+        ftsPhrase(term),
+        ...(stem ? stemPrefixes(stem).map((p) => `"${p}"*`) : []),
+        ...(ACRONYMS_RAW[term] ?? []).map(ftsPhrase),
+        ...(EXPANSION_TO_ACRONYMS[term] ?? []).map(ftsPhrase),
+        ...(BRAND_TO_DCI_RAW[term] ?? []).map(ftsPhrase),
+        ...(DCI_TO_BRANDS[term] ?? []).map(ftsPhrase),
+        ...synonyms,
+      ]);
+    });
+    if (perTerm.every(Boolean)) {
+      parts.push(`(${perTerm.join(" AND ")})`);
+    }
+  }
+  return ftsAny(parts);
+}
+
+/** matchesExactSearchTerms as an FTS5 expression: every literal term as a word. Null when nothing can match. */
+export function exactTermsExpression(query: string): string | null {
+  const terms = normalizeLexical(query)
+    .split(WHITESPACE_RUN)
+    .filter((term) => term && !STOP_WORDS.has(term));
+  return terms.length ? terms.map((term) => `"${term}"`).join(" AND ") : null;
+}
+
 /** Literal terms form an independent retrieval channel; synonyms remain calibrated. */
 export function matchesExactSearchTerms(query: string, text: string): boolean {
   if (!matchesNumericConstraints(query, text)) {

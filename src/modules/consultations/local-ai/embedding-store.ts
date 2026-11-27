@@ -30,6 +30,7 @@ import {
   soapSearchChunks,
 } from "./embedding-index";
 import { LocalInferenceSession } from "./inference-client";
+import { syncLexicalIndex } from "./lexical-index";
 import {
   getLocalModels,
   getLocalModelUrls,
@@ -49,6 +50,8 @@ import {
 import { getActiveSearchGeneration } from "./search-generation";
 import { isSoapReviewed } from "./soap-review";
 import {
+  exactTermsExpression,
+  lexicalMatchExpression,
   matchesExactSearchTerms,
   matchesSearchTerms,
 } from "./veterinary-lexicon";
@@ -816,6 +819,10 @@ export async function indexAllPatientsDocuments(
   }
   return count;
 }
+/** Brings the word index up to date before a search; false when it cannot be used (the search then reads every passage). */
+function prepareLexicalIndex() {
+  return runDbTransaction((db) => syncLexicalIndex(db)).catch(() => false);
+}
 /**
  * La recherche par passages dans tous les dossiers, une fois la question vectorisée. Une seule requête lit les extraits
  * de toute la clinique (au lieu d'une par patient), les vecteurs sont décodés en tableaux typés et le cosinus y est
@@ -828,18 +835,25 @@ export async function rankAllPatientsPassages(
   filters: Pick<SearchScope, "sourceTypes" | "sections">,
   query: string,
   vector: number[],
-  generation: Exclude<SearchGeneration, "sections">
+  generation: Exclude<SearchGeneration, "sections">,
+  lexicalIndex = false
 ) {
   assertSearchScope({ patientId: "explicit-all-patients", ...filters });
   const calibration = MODEL_CALIBRATION[GENERATION_MODEL[generation]];
   const rows = await db.select<
-    Array<SearchChunk & { embedding: string; patientName: string }>
+    Array<
+      SearchChunk & {
+        embedding: string;
+        lexicalRow: number;
+        patientName: string;
+      }
+    >
   >(
-    "SELECT e.patient_id AS patientId,p.name AS patientName,e.source_id AS sourceId,e.source_type AS sourceType,e.document_type AS documentType,e.section,e.chunk_index AS chunkIndex,e.chunk_text AS text,e.source_key AS sourceKey,hex(e.embedding) AS embedding FROM embeddings e JOIN patients p ON p.id=e.patient_id WHERE e.model_key=? AND e.source_type IN (" +
+    "SELECT e.rowid AS lexicalRow,e.patient_id AS patientId,p.name AS patientName,e.source_id AS sourceId,e.source_type AS sourceType,e.document_type AS documentType,e.section,e.chunk_index AS chunkIndex,e.chunk_text AS text,e.source_key AS sourceKey,hex(e.embedding) AS embedding FROM embeddings e JOIN patients p ON p.id=e.patient_id WHERE e.model_key=? AND e.source_type IN (" +
       filters.sourceTypes.map(() => "?").join(",") +
       ") AND e.section IN (" +
       filters.sections.map(() => "?").join(",") +
-      ") AND ((e.source_type='soap' AND EXISTS(SELECT 1 FROM consultation_soaps s WHERE s.id=e.source_id AND s.patient_id=e.patient_id)) OR (e.source_type!='soap' AND EXISTS(SELECT 1 FROM notes n WHERE n.id=e.source_id AND n.patient_id=e.patient_id))) ORDER BY e.patient_id,e.source_id,e.chunk_index",
+      ") AND ((e.source_type='soap' AND EXISTS(SELECT 1 FROM consultation_soaps s WHERE s.id=e.source_id AND s.patient_id=e.patient_id)) OR (e.source_type!='soap' AND EXISTS(SELECT 1 FROM notes n WHERE n.id=e.source_id AND n.patient_id=e.patient_id))) ORDER BY e.patient_id,e.source_id,e.chunk_index,e.source_type,e.section,e.rowid",
     [SEARCH_INDEX_KEYS[generation], ...filters.sourceTypes, ...filters.sections]
   );
   const lexicalOnly =
@@ -850,6 +864,24 @@ export async function rankAllPatientsPassages(
   const queryNorm = Math.hypot(...vector);
   const unitQuery = Float64Array.from(vector, (value) => value / queryNorm);
   const floor = Math.min(calibration.minimum, calibration.lexicalFloor);
+  // Below the floor a passage counts only with the literal terms of the question: the word index names the passages
+  // that hold them all, matchesExactSearchTerms still decides. Without the index every such passage is checked.
+  const exactExpression = lexicalIndex
+    ? exactTermsExpression(query)
+    : undefined;
+  const withLiteralTerms =
+    exactExpression === undefined
+      ? null
+      : new Set(
+          exactExpression === null
+            ? []
+            : (
+                await db.select<Array<{ id: number }>>(
+                  "SELECT rowid AS id FROM embeddings_lexical WHERE embeddings_lexical MATCH ?",
+                  [exactExpression]
+                )
+              ).map((row) => row.id)
+        );
   const byPatient = new Map<
     string,
     {
@@ -866,7 +898,7 @@ export async function rankAllPatientsPassages(
     }
     return entry;
   };
-  for (const { patientName, ...row } of rows) {
+  for (const { patientName, lexicalRow, ...row } of rows) {
     if (
       !(
         filters.sourceTypes.includes(row.sourceType) &&
@@ -880,7 +912,13 @@ export async function rankAllPatientsPassages(
       continue;
     }
     const cosine = passageCosine(raw, unitQuery);
-    if (cosine < floor && !matchesExactSearchTerms(query, row.text)) {
+    if (
+      cosine < floor &&
+      !(
+        (withLiteralTerms === null || withLiteralTerms.has(lexicalRow)) &&
+        matchesExactSearchTerms(query, row.text)
+      )
+    ) {
       continue;
     }
     patientEntry(row.patientId, patientName).rows.push({ ...row, cosine });
@@ -952,8 +990,16 @@ export async function searchAllPatientsDocuments(
     if (signal.aborted) {
       throw new DOMException("Tâche annulée.", "AbortError");
     }
+    const lexicalIndex = await prepareLexicalIndex();
     const ranked = await runDbRead((db) =>
-      rankAllPatientsPassages(db, filters, query, vector, generation)
+      rankAllPatientsPassages(
+        db,
+        filters,
+        query,
+        vector,
+        generation,
+        lexicalIndex
+      )
     );
     if (signal.aborted) {
       throw new DOMException("Tâche annulée.", "AbortError");
@@ -1005,7 +1051,19 @@ export async function searchAllPatientsDocuments(
  * Executes in ~1ms directly against SQLite using French morphological stems,
  * brand/DCI bidirectional mappings, and acronym expansions.
  */
-// biome-ignore lint/suspicious/useAwait: assertSearchScope lève avant runDbRead et une requête vide rend [] ; async garde le refus en rejet et une promesse dans les deux cas
+/** How many results the all-patients word search returns. */
+const RESULT_LIMIT = 15;
+interface LexicalPassageRow {
+  chunkIndex: number;
+  documentType: DocumentType;
+  patientId: string;
+  patientName: string;
+  section: SearchSection;
+  sourceId: string;
+  sourceKey: string;
+  sourceType: SourceType;
+  text: string;
+}
 export async function searchAllPatientsFastLexical(
   filters: Pick<SearchScope, "sourceTypes" | "sections">,
   query: string,
@@ -1016,6 +1074,7 @@ export async function searchAllPatientsFastLexical(
   if (!trimmed) {
     return [];
   }
+  const lexicalIndex = await prepareLexicalIndex();
 
   return runDbRead(async (db) => {
     const matches: Array<
@@ -1027,17 +1086,47 @@ export async function searchAllPatientsFastLexical(
     > = [];
     const seen = new Set<string>();
 
+    const onePerSource = getActiveSearchGeneration() !== "sections";
+    const matchedSources = new Set<string>();
     const addMatch = (
       item: SearchChunk & { patientName: string; score: number }
     ) => {
       const key = `${item.sourceType}:${item.patientId}:${item.sourceId}:${item.section}:${item.chunkIndex}`;
       if (!seen.has(key)) {
         seen.add(key);
+        matchedSources.add(`${item.sourceType}:${item.sourceId}`);
         matches.push({
           ...item,
           match: "text",
         });
       }
+    };
+    // The answer keeps the first RESULT_LIMIT sources (one passage each) or, with the section index, the first
+    // RESULT_LIMIT matches. Once they are found, nothing read afterwards can change it.
+    const resultSettled = () =>
+      onePerSource
+        ? matchedSources.size >= RESULT_LIMIT
+        : matches.length >= RESULT_LIMIT;
+    const settledResult = () => {
+      if (onePerSource) {
+        // One result per source, showing the passage that contains the term.
+        const sources = new Set<string>();
+        return matches
+          .filter((match) => {
+            const source = `${match.sourceType}:${match.sourceId}`;
+            if (sources.has(source)) {
+              return false;
+            }
+            sources.add(source);
+            return true;
+          })
+          .map((match) => ({
+            ...match,
+            text: bestPassage(match.text, trimmed),
+          }))
+          .slice(0, RESULT_LIMIT);
+      }
+      return matches.slice(0, RESULT_LIMIT);
     };
 
     const allowedSources = new Set(filters.sourceTypes);
@@ -1074,20 +1163,7 @@ export async function searchAllPatientsFastLexical(
 
     if (embeddingTypes.length > 0 && embeddingSections.length > 0) {
       try {
-        const rows = await db.select<
-          Array<{
-            patientId: string;
-            patientName: string;
-            sourceId: string;
-            sourceType: SourceType;
-            documentType: DocumentType;
-            section: SearchSection;
-            chunkIndex: number;
-            text: string;
-            sourceKey: string;
-          }>
-        >(
-          `SELECT
+        const passagesSql = `SELECT
             e.patient_id AS patientId,
             p.name AS patientName,
             e.source_id AS sourceId,
@@ -1104,20 +1180,79 @@ export async function searchAllPatientsFastLexical(
             AND e.section IN (${embeddingSections.map(() => "?").join(",")})
             AND ((e.source_type = 'soap' AND EXISTS(SELECT 1 FROM consultation_soaps s WHERE s.id = e.source_id AND s.patient_id = e.patient_id))
               OR (e.source_type != 'soap' AND EXISTS(SELECT 1 FROM notes n WHERE n.id = e.source_id AND n.patient_id = e.patient_id)))
-          ORDER BY e.patient_id, e.source_id, e.chunk_index`,
-          [
-            SEARCH_INDEX_KEYS[effectiveGeneration(await getLocalModels())],
-            ...embeddingTypes,
-            ...embeddingSections,
-          ]
+          ORDER BY e.patient_id, e.source_id, e.chunk_index, e.source_type, e.section, e.rowid`;
+        const params = [
+          SEARCH_INDEX_KEYS[effectiveGeneration(await getLocalModels())],
+          ...embeddingTypes,
+          ...embeddingSections,
+        ];
+        // The order is written out to the last column: before, the ties (sections of one passage) came out in the order
+        // of whichever index the planner picked; this is that order (idx_embeddings_v2_scope), now independent of the plan.
+        // With the word index, only the passages its expansion of the query selects are read; matchesSearchTerms
+        // below still decides, so the matches are the same. Without it (or if it fails), every passage is read.
+        const expression = lexicalIndex
+          ? lexicalMatchExpression(trimmed)
+          : undefined;
+        // Passages are read page by page, in order, and reading stops once the answer is settled (resultSettled): later
+        // matches could only come after the first RESULT_LIMIT sources, which is all the search returns.
+        let useIndex = expression !== undefined;
+        const indexedSql = passagesSql.replace(
+          "ORDER BY e.patient_id",
+          "AND e.rowid IN (SELECT rowid FROM embeddings_lexical WHERE embeddings_lexical MATCH ?) ORDER BY e.patient_id"
         );
-
-        if (!signal.aborted) {
+        const readPage = async (
+          offset: number,
+          size: number
+        ): Promise<{ restarted: boolean; rows: LexicalPassageRow[] }> => {
+          if (useIndex) {
+            try {
+              return {
+                restarted: false,
+                rows: await db.select<LexicalPassageRow[]>(
+                  `${indexedSql} LIMIT ? OFFSET ?`,
+                  [...params, expression, size, offset]
+                ),
+              };
+            } catch {
+              // The index failed: every passage is read from the start; addMatch ignores those already matched.
+              useIndex = false;
+              return {
+                restarted: true,
+                rows: await db.select<LexicalPassageRow[]>(
+                  `${passagesSql} LIMIT ? OFFSET ?`,
+                  [...params, size, 0]
+                ),
+              };
+            }
+          }
+          return {
+            restarted: false,
+            rows: await db.select<LexicalPassageRow[]>(
+              `${passagesSql} LIMIT ? OFFSET ?`,
+              [...params, size, offset]
+            ),
+          };
+        };
+        let offset = 0;
+        let size = 200;
+        while (expression !== null && !signal.aborted && !resultSettled()) {
+          const { restarted, rows } = await readPage(offset, size);
+          if (restarted) {
+            offset = 0;
+          }
           for (const row of rows) {
             if (matchesSearchTerms(trimmed, row.text)) {
               addMatch({ ...row, score: 0.95 });
+              if (resultSettled()) {
+                break;
+              }
             }
           }
+          if (rows.length < size) {
+            break;
+          }
+          offset += rows.length;
+          size = Math.min(size * 2, 3200);
         }
       } catch {
         /* proceed to direct table queries */
@@ -1126,6 +1261,9 @@ export async function searchAllPatientsFastLexical(
 
     if (signal.aborted) {
       return [];
+    }
+    if (resultSettled()) {
+      return settledResult();
     }
 
     // 2. Direct SOAP Notes query (covers active/newly reviewed SOAP notes)
@@ -1357,22 +1495,7 @@ export async function searchAllPatientsFastLexical(
       }
     }
 
-    if (getActiveSearchGeneration() !== "sections") {
-      // One result per source, showing the passage that contains the term.
-      const seen = new Set<string>();
-      return matches
-        .filter((match) => {
-          const source = `${match.sourceType}:${match.sourceId}`;
-          if (seen.has(source)) {
-            return false;
-          }
-          seen.add(source);
-          return true;
-        })
-        .map((match) => ({ ...match, text: bestPassage(match.text, trimmed) }))
-        .slice(0, 15);
-    }
-    return matches.slice(0, 15);
+    return settledResult();
   });
 }
 

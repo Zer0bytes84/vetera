@@ -1,6 +1,7 @@
 // Temps d'une recherche sémantique « tous patients », de la lecture en base au classement (embedding de la question exclu).
 // Mode "actuel" : la boucle de searchAllPatientsDocuments (une lecture par patient, vecteurs en hex, rankPassages).
 // Mode "repare" : rankAllPatientsPassages (une requête, vecteurs décodés en Float32Array, produit scalaire typé).
+// Mode "repare-index" : le même, termes exacts lus dans l'index lexical (phase 1.3 ; base migrée, index rempli).
 // node --no-warnings --experimental-strip-types --import ./alias-loader.mjs bench-semantique.mjs <base> <actuel|repare> [questions]
 import { performance } from "node:perf_hooks";
 import { makeQuestions, ms, openSearchDb } from "./commun-semantique.mjs";
@@ -21,7 +22,7 @@ async function actuel(question) {
   }
   return ranked.sort((a, b) => b.score - a.score || a.patientId.localeCompare(b.patientId) || a.sourceId.localeCompare(b.sourceId)).slice(0, 5);
 }
-const repare = (question) => store.rankAllPatientsPassages(adapter, filters, question.text, question.vector, generation);
+const repare = (question) => store.rankAllPatientsPassages(adapter, filters, question.text, question.vector, generation, mode === "repare-index");
 const run = mode === "actuel" ? actuel : repare;
 const times = [];
 let last = null;

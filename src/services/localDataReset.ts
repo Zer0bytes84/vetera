@@ -22,11 +22,12 @@ export async function resetSqliteSchema(db: MigrationDatabase) {
     await db.execute("BEGIN IMMEDIATE TRANSACTION");
     try {
       const objects = await db.select<Array<{ name: string; type: string }>>(
-        "SELECT name, type FROM sqlite_master WHERE type IN ('view', 'table') AND name NOT LIKE 'sqlite_%' ORDER BY CASE type WHEN 'view' THEN 0 ELSE 1 END"
+        "SELECT name, type FROM sqlite_master WHERE type IN ('view', 'table') AND name NOT LIKE 'sqlite_%' ORDER BY CASE WHEN type = 'view' THEN 0 WHEN sql LIKE 'CREATE VIRTUAL TABLE%' THEN 1 ELSE 2 END"
       );
+      // A virtual table (the FTS5 word index) drops its own shadow tables with it: those are gone when their turn comes.
       for (const object of objects) {
         await db.execute(
-          `DROP ${object.type === "view" ? "VIEW" : "TABLE"} ${quote(object.name)}`
+          `DROP ${object.type === "view" ? "VIEW" : "TABLE"} IF EXISTS ${quote(object.name)}`
         );
       }
       // Migration transactions belong to this outer reset. Any failure restores

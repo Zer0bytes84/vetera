@@ -123,7 +123,7 @@ describe("local reset safety", () => {
         mock.operation.mock.invocationCallOrder[0]
       );
       expect(sql.prepare("SELECT COUNT(*) AS n FROM migrations").get()?.n).toBe(
-        45
+        46
       );
       expect(
         sql

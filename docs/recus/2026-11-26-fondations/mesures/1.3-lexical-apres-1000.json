@@ -1,0 +1,20 @@
+{
+ "base": "clinique-1000-fts.db",
+ "questions": 153,
+ "premierMs": 2313.8,
+ "premierEcritures": 208,
+ "medianMs": 100.9,
+ "p95Ms": 141.4,
+ "resultats": 1491,
+ "sansResultat": 52,
+ "MBmedian": 0.21127,
+ "identiques": 153,
+ "surensemble": {
+  "extraits": 20780,
+  "acceptes": 1253785,
+  "candidats": 1325660,
+  "manques": 0,
+  "exactsAcceptes": 888619,
+  "exactsManques": 0
+ }
+}

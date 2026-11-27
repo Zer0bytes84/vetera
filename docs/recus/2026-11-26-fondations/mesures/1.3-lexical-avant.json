@@ -1,0 +1,25 @@
+{
+ "1000": {
+  "base": "clinique-1000.db",
+  "questions": 153,
+  "premierMs": 3084.9,
+  "premierEcritures": 0,
+  "medianMs": 1990,
+  "p95Ms": 2144.4,
+  "resultats": 1491,
+  "sansResultat": 52,
+  "MBmedian": 21.486835
+ },
+ "3000": {
+  "base": "clinique-3000.db",
+  "questions": 153,
+  "premierMs": 9063.5,
+  "premierEcritures": 0,
+  "medianMs": 6990.2,
+  "p95Ms": 9243.9,
+  "resultats": 1501,
+  "sansResultat": 52,
+  "MBmedian": 62.1304
+ },
+ "note": "searchAllPatientsFastLexical avant la phase 1.3 (commit 53075d0d), machine au repos, banc vitest (lexical.banc.ts), aller-retour JSON compris, IPC réel non compté."
+}

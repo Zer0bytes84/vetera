@@ -1,0 +1,20 @@
+{
+ "base": "clinique-3000-fts.db",
+ "questions": 153,
+ "premierMs": 8334.4,
+ "premierEcritures": 608,
+ "medianMs": 293.8,
+ "p95Ms": 525.3,
+ "resultats": 1501,
+ "sansResultat": 52,
+ "MBmedian": 0.210807,
+ "identiques": 153,
+ "surensemble": {
+  "extraits": 60780,
+  "acceptes": 3670958,
+  "candidats": 3881641,
+  "manques": 0,
+  "exactsAcceptes": 2603131,
+  "exactsManques": 0
+ }
+}

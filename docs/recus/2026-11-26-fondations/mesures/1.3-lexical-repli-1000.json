@@ -1,0 +1,20 @@
+{
+ "base": "sans-index-1000.db",
+ "questions": 153,
+ "premierMs": 30.4,
+ "premierEcritures": 0,
+ "medianMs": 7.9,
+ "p95Ms": 1965.6,
+ "resultats": 1491,
+ "sansResultat": 52,
+ "MBmedian": 0.204658,
+ "identiques": 153,
+ "surensemble": {
+  "extraits": 20780,
+  "acceptes": 0,
+  "candidats": 0,
+  "manques": 0,
+  "exactsAcceptes": 0,
+  "exactsManques": 0
+ }
+}

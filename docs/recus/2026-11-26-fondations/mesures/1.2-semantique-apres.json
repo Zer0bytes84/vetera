@@ -1,0 +1,145 @@
+{
+ "1000": {
+  "base": "clinique-1000.db",
+  "mode": "repare",
+  "questions": 5,
+  "medianMs": 2557.1,
+  "premierMs": 1583.8,
+  "runs": [
+   {
+    "totalMs": 1583.8,
+    "selects": 2,
+    "MB": 148.94,
+    "sqlMs": 508,
+    "jsonMs": 347
+   },
+   {
+    "totalMs": 3139.9,
+    "selects": 2,
+    "MB": 148.94,
+    "sqlMs": 320,
+    "jsonMs": 300
+   },
+   {
+    "totalMs": 2557.1,
+    "selects": 2,
+    "MB": 148.94,
+    "sqlMs": 1402,
+    "jsonMs": 388
+   },
+   {
+    "totalMs": 1902.2,
+    "selects": 2,
+    "MB": 148.94,
+    "sqlMs": 809,
+    "jsonMs": 316
+   },
+   {
+    "totalMs": 3345.2,
+    "selects": 2,
+    "MB": 148.94,
+    "sqlMs": 629,
+    "jsonMs": 524
+   }
+  ],
+  "dernier": [
+   [
+    "dab6c73d-8fef-f87b-79d5-4e9f78460474",
+    "6acb68d9-d3c5-7d28-0512-99936e932916",
+    0.8229714930968608
+   ],
+   [
+    "a0ff3498-02f4-298f-6ffa-d35606905ba5",
+    "e2fc1cd0-44c2-7db2-40f8-48acb3c727b6",
+    0.1879453257378232
+   ],
+   [
+    "edfc1ab2-c198-6cfb-65cf-9236bdce8c96",
+    "d0240682-7ca4-c3ba-c388-b51f5359d51b",
+    0.18440734646829543
+   ],
+   [
+    "80777ac5-6605-de3c-15c7-bc834336ffe5",
+    "a6f27dfa-94c2-5d9a-6749-d081e37e0e66",
+    0.18212480398808306
+   ],
+   [
+    "1046e3df-ddfe-f849-4c48-5cfc9a0270da",
+    "d6e2962f-364a-2215-67f9-836aa40cf9a4",
+    0.18077701900189447
+   ]
+  ]
+ },
+ "3000": {
+  "base": "clinique-3000.db",
+  "mode": "repare",
+  "questions": 5,
+  "medianMs": 8391.1,
+  "premierMs": 5594.1,
+  "runs": [
+   {
+    "totalMs": 5594.1,
+    "selects": 2,
+    "MB": 435.74,
+    "sqlMs": 1713,
+    "jsonMs": 1517
+   },
+   {
+    "totalMs": 13790,
+    "selects": 2,
+    "MB": 435.74,
+    "sqlMs": 4528,
+    "jsonMs": 1953
+   },
+   {
+    "totalMs": 8391.1,
+    "selects": 2,
+    "MB": 435.74,
+    "sqlMs": 4150,
+    "jsonMs": 1865
+   },
+   {
+    "totalMs": 7736,
+    "selects": 2,
+    "MB": 435.74,
+    "sqlMs": 4073,
+    "jsonMs": 1219
+   },
+   {
+    "totalMs": 12849.1,
+    "selects": 2,
+    "MB": 435.74,
+    "sqlMs": 4248,
+    "jsonMs": 1279
+   }
+  ],
+  "dernier": [
+   [
+    "69ac030e-0958-06df-03d9-f8c35c922fa4",
+    "7133b5db-3d17-5e68-65ab-4940a4b468c3",
+    0.804922641937147
+   ],
+   [
+    "d1cbc092-9383-f86d-b3ed-d6edb0894de4",
+    "8d2aca56-f42b-5b73-9cb9-29ecc54e1ed5",
+    0.18597621200445275
+   ],
+   [
+    "be332380-b7aa-53b6-e900-b66f6083bf88",
+    "c3e1334b-5b8c-b7c0-94ae-4b0898aa8320",
+    0.1847970222449528
+   ],
+   [
+    "d77845ac-791f-496d-28f9-3876f433b071",
+    "03c90473-d6c0-2f2a-7530-59ef7d31873a",
+    0.17419514329206678
+   ],
+   [
+    "2f4a7614-68a3-96fc-166c-058999e7c87f",
+    "ccc8ff97-e00a-62e0-cbf5-92f1826af10e",
+    0.1740654484119846
+   ]
+  ]
+ },
+ "note": "Chemin réparé (rankAllPatientsPassages, sans index lexical), banc Node, aller-retour JSON compris, IPC réel non compté. Embedding de la question exclu. Machine au repos."
+}

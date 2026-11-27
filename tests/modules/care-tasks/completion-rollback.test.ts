@@ -523,6 +523,7 @@ it("la mise à niveau conserve les soins validés existants et initialise leur r
       "043",
       "044",
       "045",
+      "046",
     ]);
     expect(old.prepare("SELECT * FROM care_tasks").get()).toEqual({
       ...original,
