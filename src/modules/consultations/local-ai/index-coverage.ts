@@ -13,7 +13,11 @@ import {
   recordIndexingOutcome,
   updateIndexCoverage,
 } from "./index-coverage-state";
-import { syncSoapLexicalIndex } from "./lexical-index";
+import {
+  syncAppointmentLexicalIndex,
+  syncPatientLexicalIndex,
+  syncSoapLexicalIndex,
+} from "./lexical-index";
 import { isClinicalModelReserved } from "./model-lease";
 import { getLocalModels } from "./models";
 
@@ -65,6 +69,12 @@ export function runIndexCatchUp(): Promise<void> {
 async function catchUpPass() {
   // The bar's SOAP word index is filled here too, so the first search after an update does not pay for it.
   await runDbTransaction((db) => syncSoapLexicalIndex(db)).catch(() => false);
+  await runDbTransaction((db) => syncAppointmentLexicalIndex(db)).catch(
+    () => false
+  );
+  await runDbTransaction((db) => syncPatientLexicalIndex(db)).catch(
+    () => false
+  );
   const models = await getLocalModels();
   if (!models.embeddingReady) {
     updateIndexCoverage({ status: "unavailable" });

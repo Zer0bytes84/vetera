@@ -240,9 +240,17 @@ export const SQLITE_MIGRATIONS: readonly SqliteMigration[] = [
     name: "soap-lexical-index",
     sql: SOAP_LEXICAL_INDEX_MIGRATION_SQL,
   },
+  {
+    // Word indexes of the consultation records and patient profiles (FTS5), so the bar reads every record without
+    // its former 100-row caps (record-lexical-migration.ts).
+    version: "049",
+    name: "record-lexical-index",
+    sql: RECORD_LEXICAL_INDEX_MIGRATION_SQL,
+  },
 ] as const;
 
 import { SEARCH_LEXICAL_INDEX_MIGRATION_SQL } from "@/modules/consultations/local-ai/lexical-index-migration";
+import { RECORD_LEXICAL_INDEX_MIGRATION_SQL } from "@/modules/consultations/local-ai/record-lexical-migration";
 import { SOAP_LEXICAL_INDEX_MIGRATION_SQL } from "@/modules/consultations/local-ai/soap-lexical-migration";
 import { VECTOR_INDEX_STATE_MIGRATION_SQL } from "@/modules/consultations/local-ai/vector-index-migration";
 import {

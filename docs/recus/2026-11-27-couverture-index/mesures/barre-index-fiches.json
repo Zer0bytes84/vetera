@@ -1,0 +1,97 @@
+{
+ "note": "Barre, 153 questions, cliniques synthétiques (1 000 patients / 5 195 rendez-vous ; 3 000 / 15 195), Node, Mac M1 8 Go. Paires en alternance dans le même état de la machine : version 5fb711f7 (LIMIT 100 sur les fiches de consultation et les fiches patients) puis version avec les index des fiches (migration 049) et le contrôle des index seulement quand leur compteur a bougé.",
+ "paires": {
+  "1000-1": {
+   "avecLimit100": {
+    "med": 107.1,
+    "p95": 156,
+    "over300": 5
+   },
+   "avecIndex": {
+    "med": 63.5,
+    "p95": 96,
+    "over300": 5
+   },
+   "comparaison": {
+    "identical": 152,
+    "differ": 1,
+    "lostTotal": 0,
+    "gainedByType": {
+     "consultation": 1,
+     "patient": 1
+    }
+   }
+  },
+  "1000-2": {
+   "avecLimit100": {
+    "med": 107.4,
+    "p95": 136.3,
+    "over300": 5
+   },
+   "avecIndex": {
+    "med": 63.7,
+    "p95": 128.6,
+    "over300": 5
+   },
+   "comparaison": {
+    "identical": 152,
+    "differ": 1,
+    "lostTotal": 0,
+    "gainedByType": {
+     "consultation": 1,
+     "patient": 1
+    }
+   }
+  },
+  "3000-1": {
+   "avecLimit100": {
+    "med": 319.4,
+    "p95": 1219.7,
+    "over300": 110
+   },
+   "avecIndex": {
+    "med": 188.3,
+    "p95": 1020.4,
+    "over300": 32
+   },
+   "comparaison": {
+    "identical": 153,
+    "differ": 0,
+    "lostTotal": 0,
+    "gainedByType": {}
+   }
+  },
+  "3000-2": {
+   "avecLimit100": {
+    "med": 339.2,
+    "p95": 1773.6,
+    "over300": 125
+   },
+   "avecIndex": {
+    "med": 188.5,
+    "p95": 1464.8,
+    "over300": 28
+   },
+   "comparaison": {
+    "identical": 153,
+    "differ": 0,
+    "lostTotal": 0,
+    "gainedByType": {}
+   }
+  }
+ },
+ "questionQuiGagne1000": "IRC : 5 résultats avant, 7 après (+1 fiche de consultation, +1 fiche patient), aucun perdu",
+ "premiereVersionSansCompteur": {
+  "3000": {
+   "medianeMs": [
+    329,
+    349.5
+   ],
+   "p95Ms": [
+    839.5,
+    1720.2
+   ]
+  },
+  "cause": "NOT EXISTS de contrôle des index à chaque recherche (~37 ms sur 15 195 rendez-vous, ~42 ms sur les notes)"
+ }
+}

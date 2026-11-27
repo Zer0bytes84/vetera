@@ -138,7 +138,61 @@ Le retrait seul (commit `3e3579e9`) gardait les résultats identiques, mais il f
 - **Portes :** suite complète 2 454 tests verts, typecheck et lint à 0, biome sans hausse, démarrage 283,5 ko gzip.
 - **Non vu dans la vraie fenêtre :** l'affichage de la liste avec ces nouvelles sources.
 
-**À signaler, non touché :** dans la barre, les blocs consultations et fiches patients gardent leur `LIMIT 100`. À 1 000 patients et plus, une fiche ancienne ou un patient hors des 100 lus n'y remontent pas. Dans un dossier, l'assistant les retrouve désormais. Tous dossiers, ni l'un ni l'autre.
+**À signaler à ce moment-là :** dans la barre, les blocs consultations et fiches patients gardaient leur `LIMIT 100`. C'est corrigé plus bas (migration 049).
+
+## Barre : fiches de consultation et fiches patients sans plafond (migration 049)
+
+**Défaut.** La barre lisait les 100 rendez-vous les plus récents de toute la clinique, et 100 patients sans ordre. Au-delà, elle ne voyait rien, sans le signaler. À l'échelle de l'hôpital, des fiches étaient perdues à coup sûr.
+
+**Correctif :** la recette de la migration 048.
+- **Index :** `appointment_lexical` et `patient_lexical` (FTS5), une entrée par fiche sous son `rowid`. Ses mots sont `lexicalWords` du texte que la barre compare (`consultationSearchChunks`, `patientSearchChunks`). Le texte d'un rendez-vous ne contient pas le nom du patient : renommer un patient ne touche pas ces entrées.
+- **Déclencheurs :** ajout, modification des champs cherchés, suppression, et insertion sous un `rowid` réattribué (cas `INSERT OR REPLACE`).
+- **Remplissage :** `syncAppointmentLexicalIndex` et `syncPatientLexicalIndex`, en arrière-plan au début de chaque passe du rattrapage, donc au lancement qui suit la mise à jour, et avant une recherche si le rattrapage n'est pas encore passé.
+- **Lecture** (`readRecordPages`), pour les deux blocs :
+  - présélection par l'index, et `matchesSearchTerms` qui décide toujours ;
+  - lecture par pages, avec arrêt dès que les 15 sources sont acquises ;
+  - ordre d'origine écrit en entier : `ORDER BY a.start_time DESC, a.rowid DESC` pour les rendez-vous (le parcours inverse de `idx_appointments_start_time`), `ORDER BY rowid` pour les patients. Les deux ordres ont été vérifiés identiques à l'ordre plafonné, en SQL, sur les bases de 1 000 et 3 000 patients et sur la copie de la base réelle. Le `+rowid` garde ce plan : pas de tri.
+- **Contrôle des index seulement quand quelque chose a changé.** La première version vérifiait les index à chaque recherche (`NOT EXISTS` sur chaque ligne). À 3 000 patients, cela coûtait environ 37 ms sur les rendez-vous et 42 ms sur les notes ; médiane +20 à +32 ms, p95 doublé.
+  - La 049 ajoute donc `record_index_state` : un compteur, incrémenté par des déclencheurs à chaque écriture sur les rendez-vous, les patients et les notes SOAP, et un jeton aléatoire propre à chaque base.
+  - La barre ne revérifie un index que si le couple (jeton, compteur) a bougé depuis sa dernière vérification réussie. Le compteur est lu avant la vérification : une écriture pendant celle-ci impose la suivante.
+  - Même règle pour l'index des passages (046), avec le compteur de la 047. C'est un changement voulu : il retire de chaque frappe un contrôle qui coûtait le plus cher (environ 310 ms à froid sur 121 560 passages).
+  - Sans compteur (base plus ancienne), chaque recherche vérifie comme avant.
+
+**Résultats.** Paires mesurées en alternance avec la version `5fb711f7` :
+
+| | 1 000 patients | 3 000 patients |
+|---|---|---|
+| Résultats | 152 identiques, 1 qui gagne (« IRC » : +1 fiche de consultation, +1 fiche patient), 0 perdu | 153/153 identiques |
+| Médiane | 107 → **64 ms** | 319–339 → **188 ms** |
+| p95 | 136–156 → **96–129 ms** | 1,2–1,8 → **1,0–1,5 s** |
+| Questions au-delà de 300 ms | 5 → 5 | 110–125 → **28–32** |
+
+La barre ne trouve rien de moins sur le banc : la seule différence est un gain. Elle est aussi plus rapide qu'avant, grâce au contrôle des index sauté quand rien n'a changé.
+
+**Mode tous dossiers de l'assistant :** il hérite du correctif. `searchAllPatientsClinical` reprend les résultats de `searchAllPatientsFastLexical`, et le test le vérifie : la fiche ancienne y est trouvée.
+
+**Tests** (`tests/modules/consultations/record-lexical-index.test.ts`, 5 cas) :
+- plus de 100 rendez-vous, et la fiche cherchée est la plus ancienne : absente des 100 lus avant, trouvée après, par la barre et par l'assistant ;
+- plus de 100 patients, et le patient cherché est hors des 100 : absent avant, trouvé après ;
+- une fiche ajoutée ou modifiée après une recherche est trouvée à la suivante (le cache ne la masque pas) ;
+- les déclencheurs suivent une fiche modifiée, supprimée, remplacée, puis un `rowid` réattribué ;
+- l'ordre d'origine est gardé, ex æquo compris.
+
+**Défauts réintroduits.** Chacun fait échouer son test :
+- l'ancien code, avec ses deux `LIMIT 100`, fait échouer les 2 tests « plus de 100 » ;
+- sans le compteur sur l'insertion d'un rendez-vous, le test du cache échoue ;
+- sans le déclencheur d'insertion, le test du `rowid` réattribué échoue.
+
+**Portes :**
+- suite complète 2 459 tests verts ;
+- typecheck et lint à 0 ;
+- biome sans aucune règle en hausse ;
+- démarrage 283,8 ko gzip (283,5 avant : le SQL de la migration est chargé au démarrage).
+
+**Limites :**
+- Les questions sans réponse lisent maintenant toutes leurs fiches candidates. Le plafond de 100 en bornait le coût, au prix des fiches perdues.
+- Un poste client dont le poste principal changerait de base en cours de session est protégé par le jeton. Une restauration de sauvegarde de la même base sur le poste principal, pendant qu'un client tourne, pourrait retomber sur le même couple (jeton, compteur) ; c'est improbable, et la prochaine écriture le corrige. Sur un poste seul, une restauration ou une remise à zéro relance l'app, ce qui vide le cache.
+- Le bloc des documents de la barre garde son `LIMIT 1000` (avec `ORDER BY`).
 
 ## Ce qui n'est pas prouvé
 

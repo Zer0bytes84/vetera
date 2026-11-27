@@ -35,7 +35,12 @@ import {
   recordSearchIssue,
 } from "./index-coverage-state";
 import { LocalInferenceSession } from "./inference-client";
-import { syncLexicalIndex, syncSoapLexicalIndex } from "./lexical-index";
+import {
+  syncAppointmentLexicalIndex,
+  syncLexicalIndex,
+  syncPatientLexicalIndex,
+  syncSoapLexicalIndex,
+} from "./lexical-index";
 import {
   getLocalModels,
   getLocalModelUrls,
@@ -1237,6 +1242,94 @@ export async function indexAllPatientsDocuments(
   }
   return { indexed, failures };
 }
+/**
+ * Reads the rows of a bar block page by page, in the given order, and stops once the answer is settled (later rows
+ * could only add sources after the first RESULT_LIMIT). With a word index, only the rows its expansion of the query
+ * selects are read; the unary + keeps the plan of the order, so a page needs no sort. If the index fails, every row
+ * is read from the start (addMatch ignores those already matched). A null expression: no row can match.
+ */
+async function readRecordPages<T>(
+  db: SearchDatabase,
+  options: {
+    baseSql: string;
+    order: string;
+    rowid: string;
+    table: "appointment_lexical" | "patient_lexical" | null;
+    expression: string | null;
+    settled: () => boolean;
+    signal: AbortSignal;
+    onRows: (rows: T[]) => void;
+  }
+) {
+  if (options.expression === null) {
+    return;
+  }
+  let useIndex = options.table !== null;
+  const read = async (offset: number, size: number) => {
+    if (useIndex) {
+      try {
+        return {
+          restarted: false,
+          rows: await db.select<T[]>(
+            `${options.baseSql} WHERE +${options.rowid} IN (SELECT rowid FROM ${options.table} WHERE ${options.table} MATCH ?) ${options.order} LIMIT ? OFFSET ?`,
+            [options.expression, size, offset]
+          ),
+        };
+      } catch {
+        useIndex = false;
+        return {
+          restarted: true,
+          rows: await db.select<T[]>(
+            `${options.baseSql} ${options.order} LIMIT ? OFFSET ?`,
+            [size, 0]
+          ),
+        };
+      }
+    }
+    return {
+      restarted: false,
+      rows: await db.select<T[]>(
+        `${options.baseSql} ${options.order} LIMIT ? OFFSET ?`,
+        [size, offset]
+      ),
+    };
+  };
+  let offset = 0;
+  let size = 200;
+  while (!(options.signal.aborted || options.settled())) {
+    const { restarted, rows } = await read(offset, size);
+    if (restarted) {
+      offset = 0;
+    }
+    options.onRows(rows);
+    if (rows.length < size) {
+      break;
+    }
+    offset += rows.length;
+    size = Math.min(size * 2, 3200);
+  }
+}
+/** Brings the consultation-record and patient-profile word indexes up to date; false for one that cannot be used. */
+async function prepareRecordLexicalIndexes(
+  filters: Pick<SearchScope, "sourceTypes">
+) {
+  return {
+    appointments: filters.sourceTypes.includes("consultation")
+      ? await syncWhenChanged(
+          "appointments",
+          "record_index_state",
+          syncAppointmentLexicalIndex
+        )
+      : false,
+    patients: filters.sourceTypes.includes("patient")
+      ? await syncWhenChanged(
+          "patients",
+          "record_index_state",
+          syncPatientLexicalIndex
+        )
+      : false,
+  };
+}
 /** The generation counter of the passages (migration 047), or null when it cannot be read. */
 async function readPassageGeneration(db: SearchDatabase) {
   try {
@@ -1248,13 +1341,55 @@ async function readPassageGeneration(db: SearchDatabase) {
     return null;
   }
 }
+/**
+ * The bar's word indexes are checked (a NOT EXISTS over every row) only when their counter moved since the last check
+ * that succeeded: the passages' counter (migration 047) for the passage index, record_index_state (migration 049) for
+ * the SOAP, consultation-record and patient indexes. Without a counter (older database), every search checks.
+ */
+const syncedAt = new Map<string, string>();
+async function readCounter(table: "search_index_state" | "record_index_state") {
+  try {
+    const [row] = await runDbRead((db) =>
+      db.select<Array<{ generation: number; token: string }>>(
+        `SELECT c.generation AS generation, r.token AS token FROM ${table} c, record_index_state r WHERE c.id = 1 AND r.id = 1`
+      )
+    );
+    return typeof row?.generation === "number" && row.token
+      ? `${row.token}:${row.generation}`
+      : null;
+  } catch {
+    return null;
+  }
+}
+async function syncWhenChanged(
+  name: string,
+  counter: "search_index_state" | "record_index_state",
+  fill: (db: SearchDatabase) => Promise<boolean>
+) {
+  // Read before the check: a write during it moves the counter, and the next search checks again.
+  const generation = await readCounter(counter);
+  if (generation !== null && syncedAt.get(name) === generation) {
+    return true;
+  }
+  const usable = await runDbTransaction((db) => fill(db)).catch(() => false);
+  if (usable && generation !== null) {
+    syncedAt.set(name, generation);
+  } else {
+    syncedAt.delete(name);
+  }
+  return usable;
+}
+/** Tests only: forget which indexes were checked. */
+export function resetLexicalIndexChecks() {
+  syncedAt.clear();
+}
 /** Brings the SOAP word index up to date before the bar reads the notes; false when it cannot be used. */
 function prepareSoapLexicalIndex() {
-  return runDbTransaction((db) => syncSoapLexicalIndex(db)).catch(() => false);
+  return syncWhenChanged("soap", "record_index_state", syncSoapLexicalIndex);
 }
 /** Brings the word index up to date before a search; false when it cannot be used (the search then reads every passage). */
 function prepareLexicalIndex() {
-  return runDbTransaction((db) => syncLexicalIndex(db)).catch(() => false);
+  return syncWhenChanged("passages", "search_index_state", syncLexicalIndex);
 }
 type PassageCandidate = SearchChunk & {
   cosine: number;
@@ -1707,6 +1842,7 @@ export async function searchAllPatientsFastLexical(
   const soapIndex = filters.sourceTypes.includes("soap")
     ? await prepareSoapLexicalIndex()
     : false;
+  const recordIndexes = await prepareRecordLexicalIndexes(filters);
 
   return runDbRead(async (db) => {
     const matches: Array<
@@ -2049,38 +2185,48 @@ export async function searchAllPatientsFastLexical(
       return [];
     }
 
-    // 3. Consultations & Appointments (title, type, reason, diagnosis, treatment, notes)
+    // 3. Consultations & Appointments (title, type, reason, diagnosis, treatment, notes). Every record is read, most
+    // recent first: the former cap of 100 lost the older ones. Through the word index (migration 049) when it can,
+    // page by page, until the answer is settled; matchesSearchTerms still decides. The order is the one the planner
+    // gave the capped query (idx_appointments_start_time scanned backwards), written out to the last column.
     if (allowedSources.has("consultation")) {
       try {
-        const appts = await db.select<
-          Array<{
-            id: string;
-            patientId: string;
-            patientName: string;
-            title: string;
-            type: string;
-            reason: string | null;
-            diagnosis: string | null;
-            treatment: string | null;
-            notes: string | null;
-          }>
-        >(
-          `SELECT a.id, a.patient_id AS patientId, p.name AS patientName,
+        await readRecordPages<{
+          id: string;
+          patientId: string;
+          patientName: string;
+          title: string;
+          type: string;
+          reason: string | null;
+          diagnosis: string | null;
+          treatment: string | null;
+          notes: string | null;
+        }>(db, {
+          baseSql: `SELECT a.id, a.patient_id AS patientId, p.name AS patientName,
                   a.title, a.type, a.reason, a.diagnosis, a.treatment, a.notes
            FROM appointments a
-           JOIN patients p ON p.id = a.patient_id
-           ORDER BY a.start_time DESC
-           LIMIT 100`
-        );
-
-        for (const a of appts) {
-          const chunks = consultationSearchChunks(a, a.patientName);
-          for (const chunk of chunks) {
-            if (matchesSearchTerms(trimmed, chunk.text)) {
-              addMatch({ ...chunk, patientName: a.patientName, score: 0.95 });
+           JOIN patients p ON p.id = a.patient_id`,
+          order: "ORDER BY a.start_time DESC, a.rowid DESC",
+          rowid: "a.rowid",
+          table: recordIndexes.appointments ? "appointment_lexical" : null,
+          expression: lexicalMatchExpression(trimmed),
+          settled: resultSettled,
+          signal,
+          onRows: (appts) => {
+            for (const a of appts) {
+              const chunks = consultationSearchChunks(a, a.patientName);
+              for (const chunk of chunks) {
+                if (matchesSearchTerms(trimmed, chunk.text)) {
+                  addMatch({
+                    ...chunk,
+                    patientName: a.patientName,
+                    score: 0.95,
+                  });
+                }
+              }
             }
-          }
-        }
+          },
+        });
       } catch {
         /* table query ignored on error */
       }
@@ -2131,34 +2277,39 @@ export async function searchAllPatientsFastLexical(
       return [];
     }
 
-    // 5. Patient profiles (signalement, allergies, chronic conditions, medical notes)
+    // 5. Patient profiles (signalement, allergies, chronic conditions, medical notes). Every patient is read, in rowid
+    // order (the order the capped query came in), through the word index when it can (migration 049).
     if (allowedSources.has("patient")) {
       try {
-        const pts = await db.select<
-          Array<{
-            id: string;
-            name: string;
-            species: string;
-            breed: string | null;
-            chip_number: string | null;
-            allergies: string | null;
-            chronic_conditions: string | null;
-            general_notes: string | null;
-          }>
-        >(
-          `SELECT id, name, species, breed, chip_number, allergies, chronic_conditions, general_notes
-           FROM patients
-           LIMIT 100`
-        );
-
-        for (const p of pts) {
-          const chunks = patientSearchChunks(p);
-          for (const chunk of chunks) {
-            if (matchesSearchTerms(trimmed, chunk.text)) {
-              addMatch({ ...chunk, patientName: p.name, score: 0.95 });
+        await readRecordPages<{
+          id: string;
+          name: string;
+          species: string;
+          breed: string | null;
+          chip_number: string | null;
+          allergies: string | null;
+          chronic_conditions: string | null;
+          general_notes: string | null;
+        }>(db, {
+          baseSql: `SELECT id, name, species, breed, chip_number, allergies, chronic_conditions, general_notes
+           FROM patients`,
+          order: "ORDER BY rowid",
+          rowid: "rowid",
+          table: recordIndexes.patients ? "patient_lexical" : null,
+          expression: lexicalMatchExpression(trimmed),
+          settled: resultSettled,
+          signal,
+          onRows: (pts) => {
+            for (const p of pts) {
+              const chunks = patientSearchChunks(p);
+              for (const chunk of chunks) {
+                if (matchesSearchTerms(trimmed, chunk.text)) {
+                  addMatch({ ...chunk, patientName: p.name, score: 0.95 });
+                }
+              }
             }
-          }
-        }
+          },
+        });
       } catch {
         /* table query ignored on error */
       }
