@@ -5,6 +5,7 @@ import {
   CalendarCheck,
   ChartColumn,
   FileText,
+  FolderSearch,
   LayoutDashboard,
   LayoutGrid,
   type LucideIcon,
@@ -52,6 +53,33 @@ export interface ReleaseNote {
 
 /** Les plus récentes en premier. */
 export const RELEASE_NOTES: ReleaseNote[] = [
+  {
+    version: "5.4.0",
+    status: "published",
+    date: "2026-11-27",
+    highlights: [
+      {
+        icon: Search,
+        title: "Une recherche qui retrouve tout, et bien plus vite",
+        text: "La barre de recherche retrouve toutes vos consultations, fiches patients et notes, même les plus anciennes, et répond bien plus vite, même avec des milliers de dossiers.",
+      },
+      {
+        icon: Stethoscope,
+        title: "Des cas similaires dans tous vos dossiers",
+        text: "L'assistant retrouve les cas proches parmi les notes validées de tous vos patients, y compris celles écrites avant cette version.",
+      },
+      {
+        icon: RefreshCw,
+        title: "Une préparation qui se fait toute seule",
+        text: "Chaque note validée est prise en compte aussitôt, et vos dossiers existants sont préparés en arrière-plan, sans gêner la dictée ni vos recherches.",
+      },
+      {
+        icon: FolderSearch,
+        title: "Où vous cherchez, d'un coup d'œil",
+        text: "Dans l'assistant, vous voyez tout de suite si vous cherchez dans le dossier ouvert ou dans tous les dossiers, et un clic suffit pour élargir la recherche.",
+      },
+    ],
+  },
   {
     version: "5.3.1",
     status: "published",
