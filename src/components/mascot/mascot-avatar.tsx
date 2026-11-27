@@ -1,3 +1,4 @@
+import { useMascotPreferences } from "@/hooks/use-mascot-preferences";
 import type { MascotAnimal } from "@/lib/mascot-preferences";
 import { cn } from "@/lib/utils";
 import { COLOR_MASCOTS, USE_COLOR_MASCOTS } from "./color-mascots";
@@ -37,18 +38,25 @@ export function MascotAvatar({
   mood = "idle",
   overflow = false,
 }: MascotAvatarProps) {
-  // The colour portrait (USE_COLOR_MASCOTS; the line drawings stay as a fallback). Its life is CSS only, in
-  // transform (mascot.css): a slow breath where it is well seen, a pulse while the assistant thinks, a hop when happy;
-  // small sizes (buttons, messages) stay still, and nothing moves when the system asks for reduced motion.
+  // The colour portrait (USE_COLOR_MASCOTS; the line drawings stay as a fallback). Its life is in transform only
+  // (mascot.css, mascot-motion.ts): where it is well seen, a breath with a sway and an occasional blink
+  // (data-life), a lean on hover and a hop on click (data-motion); a pulse while the assistant thinks, a hop when
+  // happy. Small sizes (buttons, messages) stay still; « Animations discrètes » off stills it all, and so does a
+  // system that asks for reduced motion.
+  const motionAllowed = useMascotPreferences().animated;
   if (USE_COLOR_MASCOTS) {
     const key = lineAnimalOf(animal);
+    const lively = size >= LIVELY_SIZE;
     return (
       <span
         aria-hidden="true"
         className={cn("mascot-color", className)}
         data-animal={key}
-        data-life={animated && size >= LIVELY_SIZE ? "on" : undefined}
-        data-mood={animated && mood !== "idle" ? mood : undefined}
+        data-life={animated && motionAllowed && lively ? "on" : undefined}
+        data-mood={
+          animated && motionAllowed && mood !== "idle" ? mood : undefined
+        }
+        data-motion={motionAllowed && lively ? "on" : undefined}
         style={{ width: size, height: size }}
       >
         <span className="mascot-color-body">

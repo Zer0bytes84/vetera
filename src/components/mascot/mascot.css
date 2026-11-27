@@ -400,8 +400,9 @@
   fill: color-mix(in srgb, var(--pet-ink) 9%, transparent);
 }
 
-/* Compagnons en couleurs (images). Toute leur vie est en transform : rien ne bouge la mise en page, tout reste sur le
-   compositeur. À peine perceptible : une clinique, pas un dessin animé. */
+/* Compagnons en couleurs (images). Trois couches, pour que les mouvements s'additionnent sans se gêner :
+   l'enveloppe (.mascot-color) porte le survol et la réaction au clic (mascot-motion.ts), le corps la respiration,
+   l'image le clignement. Toute leur vie est en transform : rien ne bouge la mise en page. */
 .mascot-color {
   display: inline-flex;
   flex-shrink: 0;
@@ -421,32 +422,62 @@
   width: 100%;
   height: 100%;
   object-fit: contain;
+  transform-origin: 50% 80%;
   user-select: none;
   -webkit-user-drag: none;
 }
 
-/* La vie douce, là où il est bien visible : une respiration lente, un souffle de balancement vertical. */
+/* Respiration visible, avec un léger balancement : on la voit sans avoir à la fixer. */
 .mascot-color[data-life="on"] .mascot-color-body {
-  animation: mascot-breathe 4.2s ease-in-out infinite;
+  animation: mascot-breathe 4.4s ease-in-out infinite;
 }
 @keyframes mascot-breathe {
   0%,
   100% {
-    transform: translateY(0) scale(1);
+    transform: translateY(0) rotate(0deg) scale(1);
+  }
+  25% {
+    transform: translateY(-1px) rotate(1.2deg) scale(1.02);
   }
   50% {
-    transform: translateY(-0.6px) scale(1.02);
+    transform: translateY(-2px) rotate(0deg) scale(1.04);
+  }
+  75% {
+    transform: translateY(-1px) rotate(-1.2deg) scale(1.02);
+  }
+}
+
+/* Un clignement : un micro-écrasement vertical d'environ 120 ms, trois fois sur un cycle de 34,6 s, à 9,8 s, 22,9 s
+   et 33,4 s, soit des intervalles irréguliers de 13,1 s, 10,5 s et 11 s. */
+.mascot-color[data-life="on"] .mascot-color-body > img {
+  animation: mascot-blink 34.6s linear infinite;
+}
+@keyframes mascot-blink {
+  0%,
+  28.32%,
+  28.67%,
+  66.18%,
+  66.53%,
+  96.53%,
+  96.88%,
+  100% {
+    transform: scaleY(1);
+  }
+  28.5%,
+  66.35%,
+  96.71% {
+    transform: scaleY(0.96);
   }
 }
 
 /* À l'ouverture de l'app, le compagnon de la barre latérale apparaît d'un petit pop, puis respire. */
-.sidebar-mascot.mascot-color .mascot-color-body {
+.sidebar-mascot.mascot-color[data-motion="on"] .mascot-color-body {
   animation: mascot-pop 560ms cubic-bezier(0.34, 1.56, 0.64, 1) 160ms both;
 }
 .sidebar-mascot.mascot-color[data-life="on"] .mascot-color-body {
   animation:
     mascot-pop 560ms cubic-bezier(0.34, 1.56, 0.64, 1) 160ms both,
-    mascot-breathe 4.2s ease-in-out 900ms infinite;
+    mascot-breathe 4.4s ease-in-out 900ms infinite;
 }
 @keyframes mascot-pop {
   0% {
@@ -487,28 +518,20 @@
   }
 }
 
-/* Au survol, il se penche un peu vers vous ; à l'appui, il se tasse. Barre latérale et sélecteur. */
+/* Au survol, il s'incline et s'approche un peu. Barre latérale, sélecteur, aperçu des réglages. */
 @media (hover: hover) and (pointer: fine) {
-  .sidebar-mascot-circle:hover .mascot-color,
-  .mascot-choice:hover .mascot-color,
-  .mascot-settings-preview:hover .mascot-color {
-    transform: translateY(-2px) rotate(-4deg) scale(1.04);
+  .sidebar-mascot-circle:hover .mascot-color[data-motion="on"],
+  .mascot-choice:hover .mascot-color[data-motion="on"],
+  .mascot-settings-preview:hover .mascot-color[data-motion="on"] {
+    transform: translateY(-1.5px) rotate(-3deg) scale(1.03);
   }
-}
-.sidebar-mascot-circle:active .mascot-color,
-.mascot-choice:active .mascot-color {
-  transform: scale(0.95);
-  transition-duration: 90ms;
-}
-/* Choisi dans le sélecteur : un mini saut joyeux. */
-.mascot-choice[data-selected="true"] .mascot-color-body {
-  animation: mascot-hop 620ms cubic-bezier(0.34, 1.4, 0.64, 1) both;
 }
 
 /* Le système demande le calme : rien ne bouge. */
 @media (prefers-reduced-motion: reduce) {
   .mascot-color,
-  .mascot-color .mascot-color-body {
+  .mascot-color .mascot-color-body,
+  .mascot-color .mascot-color-body > img {
     transform: none !important;
     transition: none !important;
     animation: none !important;

@@ -13,6 +13,7 @@ import { useMascotPreferences } from "@/hooks/use-mascot-preferences";
 import { saveMascotPreferences } from "@/lib/mascot-preferences";
 import { MascotAvatar } from "./mascot-avatar";
 import { MascotChoices } from "./mascot-choices";
+import { playMascotReaction } from "./mascot-motion";
 
 export function SidebarBrand({
   collapsed,
@@ -34,6 +35,9 @@ export function SidebarBrand({
           aria-label="Changer de compagnon"
           className="sidebar-mascot-circle mascot-greeting-target"
           data-sidebar-brand={withMascot ? "mascot" : "logo"}
+          onClick={(event) => {
+            playMascotReaction(event.currentTarget);
+          }}
           title="Choisir mon compagnon"
         >
           {withMascot ? (

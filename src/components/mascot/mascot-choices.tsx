@@ -7,6 +7,7 @@ import {
 } from "@/lib/mascot-preferences";
 import { MASCOT_ASSETS, MASCOT_CHOICES } from "./mascot-assets";
 import { MascotAvatar } from "./mascot-avatar";
+import { playMascotReaction } from "./mascot-motion";
 
 export function MascotChoices({
   compact = false,
@@ -45,7 +46,10 @@ export function MascotChoices({
               className="mascot-choice mascot-greeting-target"
               data-selected={selected ? "true" : "false"}
               key={animal}
-              onClick={() => choose({ mode: "mascot", animal })}
+              onClick={(event) => {
+                playMascotReaction(event.currentTarget);
+                choose({ mode: "mascot", animal });
+              }}
               type="button"
             >
               {/* Still portraits: fifteen faces following the pointer would be a crowd. */}

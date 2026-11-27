@@ -62,7 +62,7 @@ export const RELEASE_NOTES: ReleaseNote[] = [
       {
         icon: PawPrint,
         title: "Votre compagnon arrive en couleurs",
-        text: "Les quinze compagnons passent en couleurs, avec une vie discrète : ils respirent doucement, se penchent vers vous au survol et font un petit saut quand vous les choisissez.",
+        text: "Les quinze compagnons passent en couleurs et prennent vie : ils respirent, clignent de temps en temps, se penchent vers vous au survol et réagissent d'un petit saut quand vous cliquez dessus.",
       },
       {
         icon: MessageSquareText,

@@ -19,26 +19,44 @@ Reçu du 27 novembre 2026, branche `essai/mascottes-couleurs-2026-11-27` (partie
 
 **Transparence.** Les PNG d'origine n'en ont pas : chaque compagnon est posé sur un carré blanc. Les copies du projet ont donc été détourées : le blanc relié aux bords devient transparent, avec un bord adouci. Le disque crème et le liseré du cadre restent intacts. Vérifié sur fond clair et sur une barre sombre (`.dark`), dans le navigateur, avec les vrais styles : pas de carré blanc, et les oreilles qui dépassent du cadre restent nettes. À confirmer à l'œil sur la build finale, barre claire et sombre.
 
-### Une vie discrète (CSS seulement, `mascot.css`)
+### Une vie visible, mais mesurée (`mascot.css`, `mascot-motion.ts`)
+
+Amendée le 27 novembre après le premier essai à l'œil : la première version (respiration à 1,02 et 0,6 px) passait inaperçue, et son répertoire était trop pauvre.
+
+**Trois couches**, pour que les mouvements s'additionnent sans se gêner :
+- l'enveloppe porte le survol et la réaction au clic ;
+- le corps porte la respiration ;
+- l'image porte le clignement.
 
 | Moment | Où | Comment |
 |---|---|---|
-| Respiration lente | là où le compagnon est bien visible (≥ 34 px) : barre latérale, aperçu des réglages, en-tête du panneau de l'assistant | échelle de 1 à 1,02 et 0,6 px de montée, cycle de 4,2 s |
+| Respiration avec balancement | là où le compagnon est bien visible (≥ 34 px) : barre latérale, aperçu des réglages, en-tête du panneau de l'assistant | échelle jusqu'à 1,04, 2 px de montée, ±1,2°, cycle de 4,4 s |
+| Clignement | mêmes endroits | micro-écrasement vertical à 0,96, environ 120 ms. Trois fois par cycle de 34,6 s, à des intervalles irréguliers de 13,1 s, 10,5 s et 11 s |
 | Petit pop à l'ouverture | compagnon de la barre latérale | de 0,82 à 1, en 0,56 s, une fois, puis la respiration |
-| Se penche vers vous | survol, sur la barre latérale, le sélecteur et l'aperçu | inclinaison de -4°, 2 px de montée, échelle 1,04 |
-| Se tasse à l'appui | barre latérale, sélecteur | échelle 0,95 |
-| Mini saut joyeux | compagnon choisi dans le sélecteur ; humeur « content » | un saut de 9 % de sa taille, une fois |
+| S'incline et s'approche | survol, sur la barre latérale, le sélecteur et l'aperçu | -3°, 1,5 px de montée, échelle 1,03 |
+| Réaction au clic | clic sur la marque de la barre latérale et sur un compagnon du sélecteur | saut et hochement : -12 % de hauteur, -3° puis +2°, en 520 ms, une fois par clic |
 | Pulsation de réflexion | avatar de l'assistant pendant qu'il réfléchit | échelle 1,045, 1,6 s |
+| Petit saut de contentement | humeur « content » | une fois |
 
-- **Restent calmes :** les petites tailles, c'est-à-dire les boutons (18 à 24 px) et les messages (28 px sans humeur).
-- **Réglage « Animations discrètes » éteint :** plus de respiration, de pop ni de pulsation. Le retour au survol et à l'appui reste : c'est une réponse au geste, pas une animation de fond.
-- **Le saut du compagnon choisi** se rejoue chaque fois qu'on ouvre le sélecteur, puisque le choix est affiché à l'ouverture.
+**La réaction au clic** se rejoue à chaque clic, ce que le CSS seul ne sait pas faire. C'est donc une Web Animation, lancée par le clic lui-même : rien ne s'exécute au démarrage. Le saut qui se rejouait à chaque ouverture du sélecteur est retiré : la réaction ne vient plus que du clic.
 
-**Garde-fous vérifiés :**
-- **Transform seulement :** dans le navigateur, toutes les animations actives ne touchent que `transform`. Rien ne bouge la mise en page, tout reste sur le compositeur.
-- **`prefers-reduced-motion` :** quand le système demande le calme, aucune animation ne tourne (0 dans le navigateur) et les transitions sont coupées.
-- **Fluidité :** avec 30 compagnons qui respirent en même temps, plus un qui réfléchit, la page tient 60 images par seconde (intervalle médian 16,7 ms, p95 17,5 ms, maximum 17,6 ms). L'app en anime au plus trois à la fois.
-- **Budget de démarrage :** les animations n'y ajoutent rien. Mesuré avec les animations en place, avant le bump : 284,2 ko gzip, comme la 5.4.0. Les animations sont du CSS dans la feuille déjà chargée des mascottes. Les images sont des fichiers à part, chargées quand un compagnon s'affiche, hors du JavaScript de démarrage.
+**Restent calmes :**
+- les petites tailles, c'est-à-dire les boutons (18 à 24 px) et les messages (28 px sans humeur) ;
+- le sélecteur ne respire pas, pour ne pas faire bouger quinze visages à la fois : survol et clic seulement.
+
+**L'interrupteur « Animations discrètes » éteint coupe tout :** respiration, clignement, pop, pulsation, survol et réaction au clic. Mesuré dans le navigateur : aucune animation de compagnon ne reste. Seules restent les transitions de survol des boutons eux-mêmes, qui existaient déjà.
+
+**Garde-fous vérifiés dans le navigateur** (Chromium, vrais styles, marque de barre latérale et sélecteur réels) :
+- **Transform seulement :** toutes les animations actives, CSS et Web Animation, ne touchent que `transform`. Rien ne bouge la mise en page.
+- **Amplitudes lues sur les animations :**
+  - respiration : `translateY(-2px) scale(1.04)` au sommet, `rotate(±1.2deg)` aux quarts ;
+  - survol : `matrix(1.0286, -0.0539, 0.0539, 1.0286, 0, -1.5)`, soit -3° et 1,03 ;
+  - clic : une animation de 520 ms sur l'enveloppe, une seule, dans la barre comme dans le sélecteur ;
+  - clignement : `scaleY(0.96)` à 9,86 s, 22,96 s et 33,46 s, et 1 entre les deux.
+- **`prefers-reduced-motion` :** 0 animation, même après un clic.
+- **Fluidité :** 60 images par seconde (intervalle médian 16,7 ms, p95 17,6 ms) avec la marque qui respire, le sélecteur et l'avatar qui réfléchit.
+- **Test** `tests/components/mascot-motion.test.ts` (3 cas) : la réaction au clic joue une fois, en transform seulement, et jamais sans `data-motion` (interrupteur éteint ou petite taille) ni quand le système demande le calme.
+- **Budget de démarrage :** voir les portes. Les animations sont du CSS dans la feuille des mascottes, déjà chargée, plus une fonction appelée au clic.
 
 ## 2. Le réglage « Réduire la barre latérale » (Paramètres, Apparence)
 
@@ -72,10 +90,10 @@ Reçu du 27 novembre 2026, branche `essai/mascottes-couleurs-2026-11-27` (partie
 
 ## Portes
 
-- Suite complète verte : 2 462 tests, dont celui des notes de version : trois nouveautés, sans vocabulaire technique.
+- Suite complète verte : 2 465 tests, dont celui des notes de version (trois nouveautés, sans vocabulaire technique) et celui de la réaction au clic des compagnons.
 - 13 tests de licence.
 - Typecheck et lint à 0, biome sans aucune règle en hausse.
-- Build et `check:startup` : 284,7 ko gzip sur 300. La 5.4.0 était à 284,2 ; les +0,5 ko viennent du texte de la note de version et de la règle de la barre latérale.
+- Build et `check:startup` : 284,7 ko gzip sur 300. La 5.4.0 était à 284,2 ; les +0,5 ko viennent du texte de la note de version et de la règle de la barre latérale. L'animation amendée n'ajoute rien (284,7 avant et après).
 
 ## Non prouvé
 
