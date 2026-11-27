@@ -136,12 +136,13 @@ export class LocalInferenceSession {
   static async create(
     kind: "whisper" | "soap" | "embedding",
     signal: AbortSignal,
-    onProgress: (event: LocalAiProgress) => void
+    onProgress: (event: LocalAiProgress) => void,
+    onPreempt?: () => void
   ) {
     if (signal.aborted) {
       throw abortError();
     }
-    const release = reserveClinicalModel();
+    const release = reserveClinicalModel(onPreempt);
     try {
       if (signal.aborted) {
         throw abortError();
@@ -218,7 +219,11 @@ export class LocalInferenceSession {
     this.unpark = parkIdleModel(() => this.close());
   }
   /** Takes the lease again for a parked session; throws if another task holds it. */
-  resume(signal: AbortSignal, onProgress: (event: LocalAiProgress) => void) {
+  resume(
+    signal: AbortSignal,
+    onProgress: (event: LocalAiProgress) => void,
+    onPreempt?: () => void
+  ) {
     if (this.closed || !this.unpark) {
       throw new Error("Session locale fermée.");
     }
@@ -228,7 +233,7 @@ export class LocalInferenceSession {
     this.unpark();
     this.unpark = null;
     try {
-      this.release = reserveClinicalModel();
+      this.release = reserveClinicalModel(onPreempt);
     } catch (error) {
       this.close();
       throw error;
