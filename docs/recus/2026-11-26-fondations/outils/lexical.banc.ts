@@ -3,9 +3,10 @@
 // LEXICAL_MODE=verify : rejoue les mêmes questions et exige une sortie identique (mêmes lignes, même ordre, mêmes champs).
 // LEXICAL_BASE=<base> LEXICAL_OUT=<json> LEXICAL_MODE=record|verify npx vitest run --config docs/recus/2026-11-26-fondations/outils/vitest.banc.config.ts lexical
 import { readFileSync, writeFileSync } from "node:fs";
-import { DatabaseSync } from "node:sqlite";
 import { performance } from "node:perf_hooks";
+import { DatabaseSync } from "node:sqlite";
 import { expect, it, vi } from "vitest";
+import { LEXICAL_QUERIES } from "./lexical-questions";
 
 const fixture = vi.hoisted(() => ({
   db: null as unknown as DatabaseSync,
@@ -73,164 +74,6 @@ const FILTERS = {
   ],
 } as const;
 
-// Questions : mots de la clinique, formes fléchies, racines dédiées et leurs alias, marques et DCI, sigles, synonymes,
-// nombres et unités, accents, majuscules, ligatures, mots vides, et des questions sans réponse.
-export const LEXICAL_QUERIES = [
-  "boiterie",
-  "boiteries",
-  "boiter",
-  "claudication",
-  "vomissements",
-  "vomir",
-  "vomissement",
-  "diarrhée",
-  "diarrhee",
-  "prurit",
-  "démangeaisons",
-  "grattage",
-  "otite",
-  "otites externes",
-  "otite externe",
-  "dermatite",
-  "dermatologique",
-  "toux",
-  "tousse",
-  "fièvre",
-  "fébrile",
-  "hyperthermie",
-  "abattement",
-  "léthargie",
-  "abattu",
-  "anorexie",
-  "inappétence",
-  "polyurie polydipsie",
-  "PUPD",
-  "PU PD",
-  "amaigrissement",
-  "douleur abdominale",
-  "palpation",
-  "souffle cardiaque",
-  "tachycardie",
-  "déshydratation",
-  "déshydraté",
-  "vaccination",
-  "vacciner",
-  "vaccin rappel",
-  "CHPPiRL",
-  "rage",
-  "antiparasitaire",
-  "méloxicam",
-  "meloxicam",
-  "Metacam",
-  "Loxicom",
-  "amoxicilline",
-  "amoxicilline acide clavulanique",
-  "Synulox",
-  "Clavaseptin",
-  "prednisolone",
-  "corticoïdes",
-  "radiographie",
-  "radio",
-  "échographie",
-  "échographie abdominale",
-  "hémogramme",
-  "biochimie",
-  "créatinine",
-  "urée",
-  "créatinine urée",
-  "ALAT",
-  "glycémie",
-  "insuffisance rénale chronique",
-  "IRC",
-  "insuffisance rénale",
-  "rénal",
-  "hyperthyroïdie",
-  "diabète",
-  "diabète sucré",
-  "arthrose",
-  "arthrite",
-  "luxation",
-  "luxation rotule",
-  "rotule",
-  "gale",
-  "démodécie",
-  "plaie",
-  "suture",
-  "castration",
-  "castré",
-  "stérilisation",
-  "stérilisée",
-  "détartrage",
-  "extraction dentaire",
-  "dentaire",
-  "contrôle",
-  "contrôle dans dix jours",
-  "dix jours",
-  "10 jours",
-  "créatinine 2",
-  "méloxicam 0,1 mg/kg",
-  "0,1 mg/kg",
-  "mg",
-  "kg",
-  "Convenia",
-  "céfovécine",
-  "Cerenia",
-  "maropitant",
-  "œdème",
-  "oedeme",
-  "cœur",
-  "œil",
-  "BOITERIE",
-  "Vomissements",
-  "le",
-  "la les des",
-  "a",
-  "de la",
-  "x",
-  "zzz",
-  "chat qui ne mange plus",
-  "chien fatigué",
-  "insuffisance cardiaque",
-  "fracture du fémur",
-  "épilepsie",
-  "cystite",
-  "conjonctivite",
-  "infection",
-  "infectieux",
-  "bactérie",
-  "bactérienne",
-  "antibiotique",
-  "antibiotiques",
-  "inflammation",
-  "inflammatoire",
-  "allergie",
-  "allergique",
-  "respiratoire",
-  "dyspnée",
-  "polypnée",
-  "digestif",
-  "digestive",
-  "Animal12",
-  "croisé",
-  "chien",
-  "chat",
-  "Alger",
-  "Compte rendu",
-  "consultation",
-  "boiterie méloxicam",
-  "otite prurit",
-  "vomissements diarrhée",
-  "toux fièvre abattement",
-  "plaie suture contrôle",
-  "abdominale douleur",
-  "rotule luxation",
-  "AINS",
-  "anti-inflammatoire",
-  "anti inflammatoire",
-  "l'otite",
-  "d’otite",
-];
-
 const base = process.env.LEXICAL_BASE ?? "";
 const out = process.env.LEXICAL_OUT ?? "";
 const mode = process.env.LEXICAL_MODE ?? "record";
@@ -290,14 +133,15 @@ it(`lexical search ${mode} on ${base.split("/").pop()}`, async () => {
   for (const [index, run] of runs.entries()) {
     const expected = reference.runs[index];
     expect(expected.query).toBe(run.query);
-    if (JSON.stringify(expected.results) === JSON.stringify(run.results))
+    if (JSON.stringify(expected.results) === JSON.stringify(run.results)) {
       identical++;
-    else
+    } else {
       differences.push({
         query: run.query,
         expected: expected.results.length,
         got: run.results.length,
       });
+    }
   }
   // Sur-ensemble, vérifié directement sur toute la clinique : chaque extrait que le lexique accepte est un candidat de l'index.
   const lexicon = await import(
@@ -340,11 +184,15 @@ it(`lexical search ${mode} on ${base.split("/").pop()}`, async () => {
     for (const passage of passages) {
       if (lexicon.matchesSearchTerms(query, passage.text)) {
         accepted++;
-        if (!selected.has(passage.id)) missed++;
+        if (!selected.has(passage.id)) {
+          missed++;
+        }
       }
       if (lexicon.matchesExactSearchTerms(query, passage.text)) {
         exactAccepted++;
-        if (!exact.has(passage.id)) exactMissed++;
+        if (!exact.has(passage.id)) {
+          exactMissed++;
+        }
       }
     }
   }

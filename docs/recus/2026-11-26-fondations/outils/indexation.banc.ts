@@ -90,76 +90,126 @@ vi.mock("@/modules/consultations/local-ai/inference-client", () => ({
   },
 }));
 
-it("indexation de chaque patient", async () => {
-  const base = process.env.REPRO_BASE;
-  if (!base) {
-    throw new Error("REPRO_BASE manquant");
-  }
-  fixture.db = new DatabaseSync(base);
-  const { indexPatientDocuments, indexAllPatientsDocuments } = await import(
-    "@/modules/consultations/local-ai/embedding-store"
-  );
-  const patients = fixture.db
-    .prepare("SELECT id, name FROM patients ORDER BY id")
-    .all() as Array<{ id: string; name: string }>;
-  const count = () =>
-    (
+it.runIf(process.env.REPRO_MODE === "rattrapage")(
+  "rattrapage en arrière-plan sur la copie",
+  async () => {
+    const base = process.env.REPRO_BASE;
+    if (!base) {
+      throw new Error("REPRO_BASE manquant");
+    }
+    fixture.db = new DatabaseSync(base);
+    const { runIndexCatchUp } = await import(
+      "@/modules/consultations/local-ai/index-coverage"
+    );
+    const { getIndexCoverage } = await import(
+      "@/modules/consultations/local-ai/index-coverage-state"
+    );
+    const before = (
       fixture.db.prepare("SELECT COUNT(*) AS n FROM embeddings").get() as {
         n: number;
       }
     ).n;
-  const before = count();
-  let all: unknown;
-  try {
-    all = {
-      indexed: await indexAllPatientsDocuments(new AbortController().signal),
-    };
-  } catch (error) {
-    all = {
-      error: String((error as Error).message),
-      stack: String((error as Error).stack)
-        .split("\n")
-        .slice(0, 8),
-    };
+    await runIndexCatchUp();
+    const first = getIndexCoverage();
+    await runIndexCatchUp();
+    writeFileSync(
+      process.env.REPRO_OUT ?? "/dev/stdout",
+      JSON.stringify(
+        {
+          before,
+          after: (
+            fixture.db
+              .prepare("SELECT COUNT(*) AS n FROM embeddings")
+              .get() as {
+              n: number;
+            }
+          ).n,
+          premierePasse: first,
+          secondePasse: getIndexCoverage(),
+          embeds: fixture.embeds.length,
+        },
+        null,
+        1
+      )
+    );
+    fixture.db.close();
+    expect(first.status).toBe("complete");
   }
-  const afterAll = count();
-  const each: unknown[] = [];
-  for (const p of patients) {
-    const start = count();
-    try {
-      const n = await indexPatientDocuments(
-        p.id,
-        new AbortController().signal,
-        () => {
-          // Progression non suivie.
+);
+
+it.skipIf(process.env.REPRO_MODE === "rattrapage")(
+  "indexation de chaque patient",
+  async () => {
+    const base = process.env.REPRO_BASE;
+    if (!base) {
+      throw new Error("REPRO_BASE manquant");
+    }
+    fixture.db = new DatabaseSync(base);
+    const { indexPatientDocuments, indexAllPatientsDocuments } = await import(
+      "@/modules/consultations/local-ai/embedding-store"
+    );
+    const patients = fixture.db
+      .prepare("SELECT id, name FROM patients ORDER BY id")
+      .all() as Array<{ id: string; name: string }>;
+    const count = () =>
+      (
+        fixture.db.prepare("SELECT COUNT(*) AS n FROM embeddings").get() as {
+          n: number;
         }
-      );
-      each.push({ patient: p.name, indexed: n, rows: count() - start });
+      ).n;
+    const before = count();
+    let all: unknown;
+    try {
+      all = {
+        indexed: await indexAllPatientsDocuments(new AbortController().signal),
+      };
     } catch (error) {
-      each.push({
-        patient: p.name,
+      all = {
         error: String((error as Error).message),
         stack: String((error as Error).stack)
           .split("\n")
           .slice(0, 8),
-      });
+      };
     }
+    const afterAll = count();
+    const each: unknown[] = [];
+    for (const p of patients) {
+      const start = count();
+      try {
+        const n = await indexPatientDocuments(
+          p.id,
+          new AbortController().signal,
+          () => {
+            // Progression non suivie.
+          }
+        );
+        each.push({ patient: p.name, indexed: n, rows: count() - start });
+      } catch (error) {
+        each.push({
+          patient: p.name,
+          error: String((error as Error).message),
+          stack: String((error as Error).stack)
+            .split("\n")
+            .slice(0, 8),
+        });
+      }
+    }
+    writeFileSync(
+      process.env.REPRO_OUT ?? "/dev/stdout",
+      JSON.stringify(
+        {
+          before,
+          all,
+          afterAll,
+          each,
+          after: count(),
+          embeds: fixture.embeds.length,
+        },
+        null,
+        1
+      )
+    );
+    fixture.db.close();
+    expect(true).toBe(true);
   }
-  writeFileSync(
-    process.env.REPRO_OUT ?? "/dev/stdout",
-    JSON.stringify(
-      {
-        before,
-        all,
-        afterAll,
-        each,
-        after: count(),
-        embeds: fixture.embeds.length,
-      },
-      null,
-      1
-    )
-  );
-  fixture.db.close();
-  expect(true).toBe(true);
-});
+);

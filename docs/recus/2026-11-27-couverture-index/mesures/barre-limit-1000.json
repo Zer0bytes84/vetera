@@ -1,0 +1,25 @@
+{
+ "note": "searchAllPatientsFastLexical, 153 questions, clinique synthétique de 1 000 patients (5 195 notes SOAP), Node, Mac M1 8 Go. avant = avec LIMIT 100, apres = sans.",
+ "comparaison": {
+  "n": 153,
+  "identical": 153,
+  "differ": 0,
+  "lostTotal": 0,
+  "lostByType": {},
+  "gainedByType": {},
+  "sample": [],
+  "ms": {
+   "avantMed": 100.9,
+   "apresMed": 103.3,
+   "avantP95": 134.7,
+   "apresP95": 1696.4,
+   "avantMax": 2278.4,
+   "apresMax": 3547.7
+  }
+ },
+ "questionsAuDessusDe300ms": {
+  "avant": 5,
+  "apres": 55,
+  "apresSansResultat": 49
+ }
+}
