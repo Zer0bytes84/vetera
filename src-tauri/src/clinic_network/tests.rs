@@ -308,3 +308,43 @@ fn mdns_announces_the_main_workstation() {
         "{hosts:?}"
     );
 }
+
+/// The semantic search of a secondary workstation runs on the main workstation and gives the main workstation's
+/// own answer (same rows, same cosines).
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn secondary_workstation_runs_the_vector_search_on_the_host() {
+    use crate::vector_search::{VectorIndex, VectorQuery};
+    let clinic = Clinic::new().await;
+    clinic
+        .local
+        .execute(
+            "CREATE TABLE embeddings (id TEXT PRIMARY KEY, model_key TEXT NOT NULL, embedding BLOB NOT NULL);
+             CREATE TABLE search_index_state (id INTEGER PRIMARY KEY, generation INTEGER NOT NULL DEFAULT 0);
+             INSERT INTO search_index_state (id, generation) VALUES (1, 0);",
+        )
+        .await
+        .unwrap();
+    for i in 0..4usize {
+        let vector: Vec<u8> = (0..768).flat_map(|j| (if j == i { 1f32 } else { 0.01f32 }).to_le_bytes()).collect();
+        sqlx::query("INSERT INTO embeddings (id, model_key, embedding) VALUES (?, 'm', ?)")
+            .bind(format!("e{i}"))
+            .bind(vector)
+            .execute(&clinic.local)
+            .await
+            .unwrap();
+    }
+    let server = clinic.host(clinic.config(), 0).await;
+    let remote = client(&server, KEY);
+    let unit: Vec<f64> = (0..768).map(|j| if j == 2 { 1.0 } else { 0.0 }).collect();
+    let query = VectorQuery { model_key: "m".into(), unit_query: unit, floor: 0.5, extra_rows: vec![1] };
+    let reply = remote.vectors(query.clone()).await.unwrap();
+    let mut connection = clinic.local.acquire().await.unwrap();
+    let local = VectorIndex::default().search(&mut connection, &query).await.unwrap();
+    assert_eq!(reply.rows, local.rows);
+    // JSON between the workstations: serde_json (without float_roundtrip) may read the last bit differently.
+    for (remote_cosine, local_cosine) in reply.cosines.iter().zip(&local.cosines) {
+        assert!((remote_cosine - local_cosine).abs() < 1e-12);
+    }
+    assert_eq!(reply.rows, vec![1, 3]);
+    server.stop().await;
+}

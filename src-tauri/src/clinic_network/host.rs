@@ -32,6 +32,8 @@ pub struct HostConfig {
     pub idle: Duration,
     pub key: String,
     pub workstation_name: String,
+    /// The vector index this workstation also uses for its own searches.
+    pub vectors: Arc<crate::vector_search::VectorIndex>,
 }
 
 impl HostConfig {
@@ -43,6 +45,7 @@ impl HostConfig {
             idle: Duration::from_secs(120),
             key,
             workstation_name,
+            vectors: Arc::new(crate::vector_search::VectorIndex::default()),
         }
     }
 }
@@ -93,6 +96,7 @@ impl HostServer {
             .route("/v1/hello", post(hello))
             .route("/v1/query", post(query))
             .route("/v1/close", post(close))
+            .route("/v1/vectors", post(vectors))
             // Consultation documents can be stored inline; keep room for them.
             .layer(DefaultBodyLimit::max(64 * 1024 * 1024))
             .with_state(shared.clone());
@@ -342,6 +346,32 @@ async fn query(
             Json(ErrorReply { code: "sql".into(), message, in_transaction }),
         )),
     }
+}
+
+/// The semantic search of a secondary workstation, run here on the session's own connection.
+async fn vectors(
+    State(shared): State<Arc<Shared>>,
+    ConnectInfo(peer): ConnectInfo<SocketAddr>,
+    headers: HeaderMap,
+    Json(request): Json<VectorsRequest>,
+) -> Reply<crate::vector_search::VectorReply> {
+    check_peer(&peer)?;
+    check_key(&shared, &headers)?;
+    let session = shared
+        .sessions
+        .lock()
+        .unwrap()
+        .get(&request.session_id)
+        .cloned()
+        .ok_or_else(|| refuse(StatusCode::NOT_FOUND, "session", "Session inconnue du poste principal."))?;
+    let mut connection = session.connection.lock().await;
+    session.touch();
+    let outcome = shared.config.vectors.search(&mut connection, &request.query).await;
+    session.touch();
+    drop(connection);
+    outcome.map(Json).map_err(|message| {
+        (StatusCode::UNPROCESSABLE_ENTITY, Json(ErrorReply { code: "vectors".into(), message, in_transaction: false }))
+    })
 }
 
 async fn close(

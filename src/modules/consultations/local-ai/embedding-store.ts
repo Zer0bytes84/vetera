@@ -37,6 +37,12 @@ import {
   type LocalModelStatus,
 } from "./models";
 import {
+  type NativeVectorQuery,
+  type NativeVectorReply,
+  nativeVectorSearchEnabled,
+  searchVectorsNatively,
+} from "./native-vector-search";
+import {
   bestPassage,
   GENERATION_MODEL,
   indexedGenerations,
@@ -823,44 +829,34 @@ export async function indexAllPatientsDocuments(
 function prepareLexicalIndex() {
   return runDbTransaction((db) => syncLexicalIndex(db)).catch(() => false);
 }
-/**
- * La recherche par passages dans tous les dossiers, une fois la question vectorisée. Une seule requête lit les extraits
- * de toute la clinique (au lieu d'une par patient), les vecteurs sont décodés en tableaux typés et le cosinus y est
- * calculé au bit près comme rankPassages le ferait. Le classement reste celui de rankPassages, patient par patient,
- * puis le même tri global. Seules les lignes qui peuvent être retenues lui sont passées : sous le plus bas des deux
- * seuils, une ligne ne l'est que si elle contient les termes exacts de la question (matchesExactSearchTerms).
- */
-export async function rankAllPatientsPassages(
+type PassageCandidate = SearchChunk & {
+  cosine: number;
+  embedding?: string;
+  patientName: string;
+};
+
+const PASSAGE_SCOPE_SQL = (
+  filters: Pick<SearchScope, "sourceTypes" | "sections">
+) =>
+  "FROM embeddings e JOIN patients p ON p.id=e.patient_id WHERE e.model_key=? AND e.source_type IN (" +
+  filters.sourceTypes.map(() => "?").join(",") +
+  ") AND e.section IN (" +
+  filters.sections.map(() => "?").join(",") +
+  ") AND ((e.source_type='soap' AND EXISTS(SELECT 1 FROM consultation_soaps s WHERE s.id=e.source_id AND s.patient_id=e.patient_id)) OR (e.source_type!='soap' AND EXISTS(SELECT 1 FROM notes n WHERE n.id=e.source_id AND n.patient_id=e.patient_id)))";
+const PASSAGE_ORDER_SQL =
+  " ORDER BY e.patient_id,e.source_id,e.chunk_index,e.source_type,e.section,e.rowid";
+const PASSAGE_COLUMNS_SQL =
+  "SELECT e.rowid AS lexicalRow,e.patient_id AS patientId,p.name AS patientName,e.source_id AS sourceId,e.source_type AS sourceType,e.document_type AS documentType,e.section,e.chunk_index AS chunkIndex,e.chunk_text AS text,e.source_key AS sourceKey";
+
+/** What both ways of computing the cosine share: the question, its floor and the passages with the literal terms. */
+async function passageSearchSetup(
   db: SearchDatabase,
-  filters: Pick<SearchScope, "sourceTypes" | "sections">,
   query: string,
   vector: number[],
   generation: Exclude<SearchGeneration, "sections">,
-  lexicalIndex = false
+  lexicalIndex: boolean
 ) {
-  assertSearchScope({ patientId: "explicit-all-patients", ...filters });
   const calibration = MODEL_CALIBRATION[GENERATION_MODEL[generation]];
-  const rows = await db.select<
-    Array<
-      SearchChunk & {
-        embedding: string;
-        lexicalRow: number;
-        patientName: string;
-      }
-    >
-  >(
-    "SELECT e.rowid AS lexicalRow,e.patient_id AS patientId,p.name AS patientName,e.source_id AS sourceId,e.source_type AS sourceType,e.document_type AS documentType,e.section,e.chunk_index AS chunkIndex,e.chunk_text AS text,e.source_key AS sourceKey,hex(e.embedding) AS embedding FROM embeddings e JOIN patients p ON p.id=e.patient_id WHERE e.model_key=? AND e.source_type IN (" +
-      filters.sourceTypes.map(() => "?").join(",") +
-      ") AND e.section IN (" +
-      filters.sections.map(() => "?").join(",") +
-      ") AND ((e.source_type='soap' AND EXISTS(SELECT 1 FROM consultation_soaps s WHERE s.id=e.source_id AND s.patient_id=e.patient_id)) OR (e.source_type!='soap' AND EXISTS(SELECT 1 FROM notes n WHERE n.id=e.source_id AND n.patient_id=e.patient_id))) ORDER BY e.patient_id,e.source_id,e.chunk_index,e.source_type,e.section,e.rowid",
-    [SEARCH_INDEX_KEYS[generation], ...filters.sourceTypes, ...filters.sections]
-  );
-  const lexicalOnly =
-    filters.sourceTypes.includes("document") &&
-    filters.sections.includes("document")
-      ? await managedPatientChunks(db)
-      : [];
   const queryNorm = Math.hypot(...vector);
   const unitQuery = Float64Array.from(vector, (value) => value / queryNorm);
   const floor = Math.min(calibration.minimum, calibration.lexicalFloor);
@@ -882,12 +878,34 @@ export async function rankAllPatientsPassages(
                 )
               ).map((row) => row.id)
         );
+  /** Whether a passage can be kept at all: above the floor, or holding the literal terms of the question. */
+  const eligible = (cosine: number, lexicalRow: number, text: string) =>
+    cosine >= floor ||
+    ((withLiteralTerms === null || withLiteralTerms.has(lexicalRow)) &&
+      matchesExactSearchTerms(query, text));
+  return { calibration, eligible, floor, unitQuery, withLiteralTerms };
+}
+
+/** rankPassages patient by patient on the candidates (in passage order), then the global sort of the search. */
+async function rankPassageCandidates(
+  db: SearchDatabase,
+  filters: Pick<SearchScope, "sourceTypes" | "sections">,
+  query: string,
+  vector: number[],
+  calibration: (typeof MODEL_CALIBRATION)[keyof typeof MODEL_CALIBRATION],
+  candidates: PassageCandidate[]
+) {
+  const lexicalOnly =
+    filters.sourceTypes.includes("document") &&
+    filters.sections.includes("document")
+      ? await managedPatientChunks(db)
+      : [];
   const byPatient = new Map<
     string,
     {
       lexicalOnly: SearchChunk[];
       name: string;
-      rows: Array<SearchChunk & { cosine: number; embedding: string }>;
+      rows: Array<SearchChunk & { cosine: number; embedding?: string }>;
     }
   >();
   const patientEntry = (patientId: string, name: string) => {
@@ -898,30 +916,8 @@ export async function rankAllPatientsPassages(
     }
     return entry;
   };
-  for (const { patientName, lexicalRow, ...row } of rows) {
-    if (
-      !(
-        filters.sourceTypes.includes(row.sourceType) &&
-        filters.sections.includes(row.section)
-      )
-    ) {
-      continue;
-    }
-    const raw = embeddingBytesFromHex(row.embedding);
-    if (!raw) {
-      continue;
-    }
-    const cosine = passageCosine(raw, unitQuery);
-    if (
-      cosine < floor &&
-      !(
-        (withLiteralTerms === null || withLiteralTerms.has(lexicalRow)) &&
-        matchesExactSearchTerms(query, row.text)
-      )
-    ) {
-      continue;
-    }
-    patientEntry(row.patientId, patientName).rows.push({ ...row, cosine });
+  for (const { patientName, ...row } of candidates) {
+    patientEntry(row.patientId, patientName).rows.push(row);
   }
   if (lexicalOnly.length) {
     const names = new Map(
@@ -963,6 +959,197 @@ export async function rankAllPatientsPassages(
     )
     .slice(0, 5);
 }
+
+/**
+ * La recherche par passages dans tous les dossiers, une fois la question vectorisée. Une seule requête lit les extraits
+ * de toute la clinique (au lieu d'une par patient), les vecteurs sont décodés en tableaux typés et le cosinus y est
+ * calculé au bit près comme rankPassages le ferait. Le classement reste celui de rankPassages, patient par patient,
+ * puis le même tri global. Seules les lignes qui peuvent être retenues lui sont passées : sous le plus bas des deux
+ * seuils, une ligne ne l'est que si elle contient les termes exacts de la question (matchesExactSearchTerms).
+ */
+export async function rankAllPatientsPassages(
+  db: SearchDatabase,
+  filters: Pick<SearchScope, "sourceTypes" | "sections">,
+  query: string,
+  vector: number[],
+  generation: Exclude<SearchGeneration, "sections">,
+  lexicalIndex = false
+) {
+  assertSearchScope({ patientId: "explicit-all-patients", ...filters });
+  const rows = await db.select<
+    Array<
+      SearchChunk & {
+        embedding: string;
+        lexicalRow: number;
+        patientName: string;
+      }
+    >
+  >(
+    `${PASSAGE_COLUMNS_SQL},hex(e.embedding) AS embedding ${PASSAGE_SCOPE_SQL(filters)}${PASSAGE_ORDER_SQL}`,
+    [SEARCH_INDEX_KEYS[generation], ...filters.sourceTypes, ...filters.sections]
+  );
+  const { calibration, eligible, unitQuery } = await passageSearchSetup(
+    db,
+    query,
+    vector,
+    generation,
+    lexicalIndex
+  );
+  const candidates: PassageCandidate[] = [];
+  for (const { lexicalRow, ...row } of rows) {
+    if (
+      !(
+        filters.sourceTypes.includes(row.sourceType) &&
+        filters.sections.includes(row.section)
+      )
+    ) {
+      continue;
+    }
+    const raw = embeddingBytesFromHex(row.embedding);
+    if (!raw) {
+      continue;
+    }
+    const cosine = passageCosine(raw, unitQuery);
+    if (eligible(cosine, lexicalRow, row.text)) {
+      candidates.push({ ...row, cosine });
+    }
+  }
+  return rankPassageCandidates(
+    db,
+    filters,
+    query,
+    vector,
+    calibration,
+    candidates
+  );
+}
+
+/** Passage order, as PASSAGE_ORDER_SQL sorts (ids and section names are plain ASCII, compared like SQLite does). */
+const byPassageOrder = (
+  a: PassageCandidate & { lexicalRow: number },
+  b: PassageCandidate & { lexicalRow: number }
+) => {
+  for (const key of [
+    "patientId",
+    "sourceId",
+    "chunkIndex",
+    "sourceType",
+    "section",
+    "lexicalRow",
+  ] as const) {
+    if (a[key] !== b[key]) {
+      return a[key] < b[key] ? -1 : 1;
+    }
+  }
+  return 0;
+};
+/** Passages with the literal terms are read by decreasing cosine, this many at a time. */
+const LITERAL_BATCH = 200;
+
+/**
+ * The same search with the cosines computed by Rust (recherche_vecteurs), which keeps the vectors in memory: only the
+ * question goes in, only rowids and cosines come out. The texts of those passages are then read and ranked as
+ * rankAllPatientsPassages does.
+ *
+ * A passage below the floor counts only with the literal terms of the question and then scores cosine + bonus. Those
+ * passages are read by decreasing cosine, and reading stops once the fifth result reaches what the next one could
+ * score at most: nothing read afterwards could enter the answer. Rejects when Rust cannot answer; the caller then
+ * falls back on rankAllPatientsPassages.
+ */
+export async function rankAllPatientsPassagesNatively(
+  db: SearchDatabase,
+  filters: Pick<SearchScope, "sourceTypes" | "sections">,
+  query: string,
+  vector: number[],
+  generation: Exclude<SearchGeneration, "sections">,
+  native: (
+    request: NativeVectorQuery
+  ) => Promise<NativeVectorReply> = searchVectorsNatively
+) {
+  assertSearchScope({ patientId: "explicit-all-patients", ...filters });
+  const setup = await passageSearchSetup(db, query, vector, generation, false);
+  const ask = (extraRows: number[]) =>
+    native({
+      modelKey: SEARCH_INDEX_KEYS[generation],
+      unitQuery: Array.from(setup.unitQuery),
+      floor: setup.floor,
+      extraRows,
+    });
+  const candidates: Array<PassageCandidate & { lexicalRow: number }> = [];
+  const read = async (
+    cosines: Map<number, number>,
+    keep: (cosine: number, text: string) => boolean
+  ) => {
+    if (!cosines.size) {
+      return;
+    }
+    const rows = await db.select<
+      Array<SearchChunk & { lexicalRow: number; patientName: string }>
+    >(
+      `${PASSAGE_COLUMNS_SQL} ${PASSAGE_SCOPE_SQL(filters)} AND e.rowid IN (SELECT value FROM json_each(?))${PASSAGE_ORDER_SQL}`,
+      [
+        SEARCH_INDEX_KEYS[generation],
+        ...filters.sourceTypes,
+        ...filters.sections,
+        JSON.stringify([...cosines.keys()]),
+      ]
+    );
+    for (const row of rows) {
+      const cosine = cosines.get(row.lexicalRow);
+      if (cosine !== undefined && keep(cosine, row.text)) {
+        candidates.push({ ...row, cosine });
+      }
+    }
+  };
+  const rank = () =>
+    rankPassageCandidates(
+      db,
+      filters,
+      query,
+      vector,
+      setup.calibration,
+      [...candidates]
+        .sort(byPassageOrder)
+        .map(({ lexicalRow: _row, ...row }) => row)
+    );
+  // Above the floor.
+  const above = await ask([]);
+  await read(
+    new Map(above.rows.map((row, i) => [row, above.cosines[i]])),
+    (cosine) => cosine >= setup.floor
+  );
+  let ranked = await rank();
+  const settled = (bestRemaining: number) =>
+    ranked.length === 5 &&
+    ranked[4].score >= bestRemaining + setup.calibration.bonus;
+  if (settled(setup.floor)) {
+    return ranked;
+  }
+  // Below the floor, with the literal terms (named by the word index), best cosines first.
+  const literal = await passageSearchSetup(db, query, vector, generation, true);
+  const belowRows = [...(literal.withLiteralTerms ?? [])];
+  if (!belowRows.length) {
+    return ranked;
+  }
+  const below = await ask(belowRows);
+  const pending = below.rows
+    .map((row, i) => ({ row, cosine: below.cosines[i] }))
+    .filter(({ cosine }) => cosine < setup.floor)
+    .sort((a, b) => b.cosine - a.cosine || a.row - b.row);
+  for (let start = 0; start < pending.length; start += LITERAL_BATCH) {
+    const batch = pending.slice(start, start + LITERAL_BATCH);
+    await read(
+      new Map(batch.map(({ row, cosine }) => [row, cosine])),
+      (_cosine, text) => matchesExactSearchTerms(query, text)
+    );
+    ranked = await rank();
+    const next = pending[start + LITERAL_BATCH];
+    if (next === undefined || settled(next.cosine)) {
+      return ranked;
+    }
+  }
+  return ranked;
+}
 export async function searchAllPatientsDocuments(
   filters: Pick<SearchScope, "sourceTypes" | "sections">,
   query: string,
@@ -991,16 +1178,31 @@ export async function searchAllPatientsDocuments(
       throw new DOMException("Tâche annulée.", "AbortError");
     }
     const lexicalIndex = await prepareLexicalIndex();
-    const ranked = await runDbRead((db) =>
-      rankAllPatientsPassages(
+    // Native search behind its switch; any refusal (older main workstation, no word index, Rust error) falls back on
+    // the TypeScript search, which gives the same answer.
+    const ranked = await runDbRead(async (db) => {
+      if (lexicalIndex && nativeVectorSearchEnabled()) {
+        try {
+          return await rankAllPatientsPassagesNatively(
+            db,
+            filters,
+            query,
+            vector,
+            generation
+          );
+        } catch {
+          /* fall back below */
+        }
+      }
+      return rankAllPatientsPassages(
         db,
         filters,
         query,
         vector,
         generation,
         lexicalIndex
-      )
-    );
+      );
+    });
     if (signal.aborted) {
       throw new DOMException("Tâche annulée.", "AbortError");
     }

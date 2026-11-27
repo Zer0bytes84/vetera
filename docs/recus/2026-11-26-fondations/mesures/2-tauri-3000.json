@@ -1,0 +1,104 @@
+{
+ "note": "Vraie fenêtre Tauri (WKWebView), Rust en release, Mac M1 8 Go, clinique synthétique de 3 000 patients.",
+ "temps": {
+  "patients": 3000,
+  "partie": "temps",
+  "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko)",
+  "invokeVideMs": 0.2,
+  "select1Ms": 0.3,
+  "fiche": {
+   "grosDossier": {
+    "avantMs": 517,
+    "avantLignes": 51519,
+    "apresMs": 52.6,
+    "apresLignes": 5621
+   },
+   "dossierCourant": {
+    "avantMs": 572.8,
+    "avantLignes": 51519,
+    "apresMs": 42.7,
+    "apresLignes": 5017
+   }
+  },
+  "actuelMs": 18672.1,
+  "repare": {
+   "runs": [
+    5729.8,
+    15362.8,
+    5915.5,
+    9976.8,
+    8581.4
+   ],
+   "medianMs": 8581.4
+  },
+  "premierRust": {
+   "loaded": false,
+   "loadMs": 0,
+   "searchMs": 482.4,
+   "indexed": 60780,
+   "lignes": 1
+  },
+  "premierAppelMs": 717.9,
+  "natifChaud": {
+   "questions": 40,
+   "medianMs": 212.5,
+   "p95Ms": 238.3,
+   "maxMs": 242.3,
+   "invokeMedianMs": 56.4,
+   "rustMedianMs": 44.3,
+   "lignesMedian": 4,
+   "lignesMax": 42230
+  },
+  "commandeSeule": {
+   "medianMs": 53.9,
+   "p95Ms": 61.1
+  },
+  "lexical": {
+   "runs": [
+    2365.7,
+    454.2,
+    313.7,
+    309.9,
+    9067.5,
+    305.1,
+    11439.6,
+    350.8,
+    311.7,
+    295.1
+   ],
+   "medianMs": 350.8
+  }
+ },
+ "froid": {
+  "patients": 3000,
+  "partie": "froid",
+  "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko)",
+  "premierAppelMs": 974.1,
+  "rust": {
+   "loaded": true,
+   "loadMs": 834.9,
+   "searchMs": 53.3,
+   "indexed": 60780
+  },
+  "rssAvantKo": 110784,
+  "rssApresKo": 253456,
+  "deltaMo": "139.3"
+ },
+ "egaliteReference": {
+  "patients": 3000,
+  "partie": "reference",
+  "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko)",
+  "questions": 200,
+  "identiques": 200,
+  "ecartScoreMax": 2.9976021664879227e-15,
+  "differences": []
+ },
+ "egaliteDirecte": {
+  "patients": 3000,
+  "partie": "directe",
+  "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko)",
+  "questions": 40,
+  "identiques": 40,
+  "ecartScoreMax": 2.220446049250313e-16
+ }
+}

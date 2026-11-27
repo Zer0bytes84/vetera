@@ -69,7 +69,7 @@ describe("références patient", () => {
 
     await expect(
       runSqliteMigrations(adapter, SQLITE_MIGRATIONS)
-    ).resolves.toEqual(["041", "042", "043", "044", "045", "046"]);
+    ).resolves.toEqual(["041", "042", "043", "044", "045", "046", "047"]);
 
     expect(references(db)).toEqual([
       { patient_id: "premier", reference: "ID-0001" },
@@ -187,7 +187,7 @@ describe("contention", () => {
     addPatient(db, "rex");
     await expect(
       runSqliteMigrations(adapter, SQLITE_MIGRATIONS)
-    ).resolves.toEqual(["042", "043", "044", "045", "046"]);
+    ).resolves.toEqual(["042", "043", "044", "045", "046", "047"]);
     db.exec("UPDATE patients SET restraint = 'Muselière' WHERE id = 'rex'");
     expect(
       db

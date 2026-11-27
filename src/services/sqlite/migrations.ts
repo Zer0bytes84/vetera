@@ -227,9 +227,16 @@ export const SQLITE_MIGRATIONS: readonly SqliteMigration[] = [
     name: "search-lexical-index",
     sql: SEARCH_LEXICAL_INDEX_MIGRATION_SQL,
   },
+  {
+    // Generation counter the native vector index reads to know its vectors are stale (vector-index-migration.ts).
+    version: "047",
+    name: "search-vector-index-state",
+    sql: VECTOR_INDEX_STATE_MIGRATION_SQL,
+  },
 ] as const;
 
 import { SEARCH_LEXICAL_INDEX_MIGRATION_SQL } from "@/modules/consultations/local-ai/lexical-index-migration";
+import { VECTOR_INDEX_STATE_MIGRATION_SQL } from "@/modules/consultations/local-ai/vector-index-migration";
 import {
   LIBRARY_MIGRATION_SQL,
   NOTE_PIN_MIGRATION_SQL,

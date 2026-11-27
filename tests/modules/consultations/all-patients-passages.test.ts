@@ -8,8 +8,14 @@ import {
 } from "../../../src/modules/consultations/local-ai/embedding-index";
 import {
   rankAllPatientsPassages,
+  rankAllPatientsPassagesNatively,
   readPatientSearchRows,
 } from "../../../src/modules/consultations/local-ai/embedding-store";
+import { syncLexicalIndex } from "../../../src/modules/consultations/local-ai/lexical-index";
+import type {
+  NativeVectorQuery,
+  NativeVectorReply,
+} from "../../../src/modules/consultations/local-ai/native-vector-search";
 import {
   MODEL_CALIBRATION,
   PASSAGE_MODEL_KEY,
@@ -49,7 +55,8 @@ let db: DatabaseSync;
 const adapter = {
   select: <T>(sql: string, params: unknown[] = []) =>
     Promise.resolve(db.prepare(sql).all(...(params as never[])) as T),
-  execute: () => Promise.reject(new Error("lecture seule")),
+  execute: (sql: string, params: unknown[] = []) =>
+    Promise.resolve(db.prepare(sql).run(...(params as never[]))),
 };
 
 const TEXTS = [
@@ -271,5 +278,111 @@ describe("all-patients passage search in one read", () => {
       "passages"
     );
     expect(selects).toBe(1);
+  });
+});
+
+/** What recherche_vecteurs does, written in JS over the same table: rows above the floor, plus the extra rows. */
+function fakeNative(request: NativeVectorQuery): Promise<NativeVectorReply> {
+  const rows: number[] = [];
+  const cosines: number[] = [];
+  const extra = new Set(request.extraRows);
+  const unit = Float64Array.from(request.unitQuery);
+  for (const row of db
+    .prepare(
+      "SELECT rowid AS id, hex(embedding) AS hex FROM embeddings WHERE model_key = ? ORDER BY rowid"
+    )
+    .all(request.modelKey) as Array<{ id: number; hex: string }>) {
+    const raw = embeddingBytesFromHex(row.hex);
+    if (!raw) {
+      continue;
+    }
+    const cosine = passageCosine(raw, unit);
+    if (cosine >= request.floor || extra.has(row.id)) {
+      rows.push(row.id);
+      cosines.push(cosine);
+    }
+  }
+  return Promise.resolve({
+    rows,
+    cosines,
+    indexed: rows.length,
+    loaded: false,
+    loadMs: 0,
+    searchMs: 0,
+  });
+}
+
+describe("all-patients passage search with native cosines", () => {
+  it("does not read the passages below the floor when the answer is already out of their reach", async () => {
+    await syncLexicalIndex(adapter as never);
+    const calls: number[] = [];
+    const counting = (request: NativeVectorQuery) => {
+      calls.push(request.extraRows.length);
+      return fakeNative(request);
+    };
+    const expected = await rankAllPatientsPassages(
+      adapter,
+      filters,
+      "boiterie",
+      target,
+      "passages",
+      true
+    );
+    const got = await rankAllPatientsPassagesNatively(
+      adapter,
+      filters,
+      "boiterie",
+      target,
+      "passages",
+      counting
+    );
+    expect(got.map(({ score, sourceId }) => [sourceId, score])).toEqual(
+      expected.map(({ score, sourceId }) => [sourceId, score])
+    );
+    expect(calls).toEqual([0]);
+  });
+
+  it("returns exactly what the TypeScript search returns", async () => {
+    await syncLexicalIndex(adapter as never);
+    const drop = (rows: Record<string, unknown>[]) =>
+      rows.map(({ embedding: _embedding, ...row }) => row);
+    for (const [query, vector] of [
+      ["boiterie méloxicam", target],
+      ["otite", near(target, 1)],
+      ["créatinine 2", target],
+      ["vomissements déshydratation", randomVector()],
+      ["chat qui ne mange plus", randomVector()],
+    ] as const) {
+      const expected = await rankAllPatientsPassages(
+        adapter,
+        filters,
+        query,
+        [...vector],
+        "passages",
+        true
+      );
+      const got = await rankAllPatientsPassagesNatively(
+        adapter,
+        filters,
+        query,
+        [...vector],
+        "passages",
+        fakeNative
+      );
+      expect(drop(got)).toEqual(drop(expected));
+    }
+  });
+
+  it("rejects when Rust cannot answer, so the caller can fall back", async () => {
+    await expect(
+      rankAllPatientsPassagesNatively(
+        adapter,
+        filters,
+        "otite",
+        target,
+        "passages",
+        () => Promise.reject(new Error("no host route"))
+      )
+    ).rejects.toThrow("no host route");
   });
 });
