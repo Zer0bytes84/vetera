@@ -399,14 +399,11 @@ export function embeddingBytesFromHex(hex: string): Float32Array | null {
   }
   const bytes = new Uint8Array(3072);
   for (let index = 0; index < 3072; index++) {
-    const high = HEX_DIGIT[hex.charCodeAt(2 * index) & 255];
-    const low = HEX_DIGIT[hex.charCodeAt(2 * index + 1) & 255];
-    if (
-      high === 255 ||
-      low === 255 ||
-      hex.charCodeAt(2 * index) > 255 ||
-      hex.charCodeAt(2 * index + 1) > 255
-    ) {
+    const highCode = hex.charCodeAt(2 * index);
+    const lowCode = hex.charCodeAt(2 * index + 1);
+    const high = highCode < 256 ? HEX_DIGIT[highCode] : 255;
+    const low = lowCode < 256 ? HEX_DIGIT[lowCode] : 255;
+    if (high === 255 || low === 255) {
       return null;
     }
     bytes[index] = high * 16 + low;

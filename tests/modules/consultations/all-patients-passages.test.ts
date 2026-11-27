@@ -129,7 +129,9 @@ async function perPatientLoop(query: string, vector: number[]) {
   const patients = db
     .prepare("SELECT id,name FROM patients ORDER BY id")
     .all() as Array<{ id: string; name: string }>;
-  const ranked = [];
+  const ranked: Array<
+    ReturnType<typeof rankPassages>[number] & { patientName: string }
+  > = [];
   for (const patient of patients) {
     const scope = { patientId: patient.id, ...filters };
     const rows = await readPatientSearchRows(adapter, scope, "passages");
