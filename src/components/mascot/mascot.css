@@ -399,3 +399,19 @@
 .sidebar-mascot .lm-frame {
   fill: color-mix(in srgb, var(--pet-ink) 9%, transparent);
 }
+
+/* Essai : compagnons en couleurs (images), à la place des dessins au trait. */
+.mascot-color {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+}
+.mascot-color > img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  user-select: none;
+  -webkit-user-drag: none;
+}

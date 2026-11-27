@@ -1,4 +1,6 @@
 import type { MascotAnimal } from "@/lib/mascot-preferences";
+import { cn } from "@/lib/utils";
+import { COLOR_MASCOTS, USE_COLOR_MASCOTS } from "./color-mascots";
 import { LineMascot } from "./line-mascot";
 import { lineAnimalOf } from "./mascot-assets";
 // The sidebar brand, the choices and the settings panel are styled here.
@@ -32,6 +34,26 @@ export function MascotAvatar({
   mood = "idle",
   overflow = false,
 }: MascotAvatarProps) {
+  // Essai : l'image en couleurs, immobile (regard, clignements et humeurs ne s'appliquent qu'aux dessins au trait).
+  if (USE_COLOR_MASCOTS) {
+    return (
+      <span
+        aria-hidden="true"
+        className={cn("mascot-color", className)}
+        data-animal={lineAnimalOf(animal)}
+        style={{ width: size, height: size }}
+      >
+        <img
+          alt=""
+          decoding="async"
+          draggable={false}
+          height={size}
+          src={COLOR_MASCOTS[lineAnimalOf(animal)]}
+          width={size}
+        />
+      </span>
+    );
+  }
   return (
     <LineMascot
       animal={lineAnimalOf(animal)}
