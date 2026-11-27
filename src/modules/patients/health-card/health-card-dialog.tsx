@@ -59,12 +59,14 @@ export function HealthCardDialog({
   patient: Patient;
 }) {
   const { currentUser } = useAuth();
-  const appointments = useAppointmentsRepository();
-  const hospitalizations = useHospitalizationsRepository();
-  const prescriptions = usePrescriptionsRepository();
+  const appointments = useAppointmentsRepository({ patientId: patient.id });
+  const hospitalizations = useHospitalizationsRepository({
+    patientId: patient.id,
+  });
+  const prescriptions = usePrescriptionsRepository({ patientId: patient.id });
   const items = usePrescriptionItemsRepository();
-  const vaccinations = useVaccinationsRepository();
-  const weights = useWeightEntriesRepository();
+  const vaccinations = useVaccinationsRepository({ patientId: patient.id });
+  const weights = useWeightEntriesRepository({ patientId: patient.id });
 
   const [artifact, setArtifact] = useState<PatientRecordPdf | null>(null);
   const [error, setError] = useState("");

@@ -36,6 +36,14 @@ export class TableSnapshotCache<R extends { id: string }> {
   has(table: string) {
     return this.entry(table).base !== undefined;
   }
+  /** Ni abonné ni écriture en cours : l'entrée peut être oubliée sans rien perdre de visible. */
+  isIdle(table: string) {
+    const entry = this.tables.get(table);
+    return !entry || (entry.listeners.size === 0 && entry.layers.size === 0);
+  }
+  drop(table: string) {
+    this.tables.delete(table);
+  }
   generation(table: string) {
     return this.entry(table).generation;
   }

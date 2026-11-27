@@ -61,7 +61,7 @@ export function HospitalizationDetail({
   className?: string;
 }) {
   const { t } = useTranslation();
-  const repo = useHospitalizationsRepository();
+  const repo = useHospitalizationsRepository({ patientId: patient.id });
   const vitalsRepo = useHospitalizationVitalsRepository();
   const [vitalsOpen, setVitalsOpen] = useState(false);
 

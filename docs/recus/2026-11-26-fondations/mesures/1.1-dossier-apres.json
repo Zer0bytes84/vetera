@@ -1,0 +1,344 @@
+{
+ "1000": {
+  "base": "clinique-1000.db",
+  "mode": "patient",
+  "patients": 1000,
+  "grosDossier": {
+   "patientId": "zz-gros",
+   "medianMs": 18,
+   "rows": 2287,
+   "MB": 1.9,
+   "per": {
+    "patients": {
+     "rows": 1000,
+     "kB": 775,
+     "ms": 9.2
+    },
+    "owners": {
+     "rows": 666,
+     "kB": 234,
+     "ms": 3.7
+    },
+    "users": {
+     "rows": 1,
+     "kB": 0,
+     "ms": 0
+    },
+    "transactions": {
+     "rows": 0,
+     "kB": 0,
+     "ms": 0
+    },
+    "appointments": {
+     "rows": 200,
+     "kB": 180,
+     "ms": 1.4
+    },
+    "prescriptions": {
+     "rows": 0,
+     "kB": 0,
+     "ms": 0
+    },
+    "prescription_items": {
+     "rows": 0,
+     "kB": 0,
+     "ms": 0
+    },
+    "vaccinations": {
+     "rows": 0,
+     "kB": 0,
+     "ms": 0
+    },
+    "weight_entries": {
+     "rows": 200,
+     "kB": 47,
+     "ms": 0.7
+    },
+    "consultation_soaps": {
+     "rows": 200,
+     "kB": 628,
+     "ms": 2.7
+    },
+    "notes": {
+     "rows": 20,
+     "kB": 33,
+     "ms": 0.2
+    },
+    "tasks": {
+     "rows": 0,
+     "kB": 0,
+     "ms": 0
+    },
+    "hospitalizations": {
+     "rows": 0,
+     "kB": 0,
+     "ms": 0
+    },
+    "anesthesia_sheets": {
+     "rows": 0,
+     "kB": 0,
+     "ms": 0
+    },
+    "consultation_documents": {
+     "rows": 0,
+     "kB": 0,
+     "ms": 0
+    }
+   }
+  },
+  "dossierCourant": {
+   "patientId": "0022994c-cdad-7736-7a27-2eb30f6924f3",
+   "medianMs": 12.5,
+   "rows": 1682,
+   "MB": 1.03,
+   "per": {
+    "patients": {
+     "rows": 1000,
+     "kB": 775,
+     "ms": 8.5
+    },
+    "owners": {
+     "rows": 666,
+     "kB": 234,
+     "ms": 3.8
+    },
+    "users": {
+     "rows": 1,
+     "kB": 0,
+     "ms": 0
+    },
+    "transactions": {
+     "rows": 0,
+     "kB": 0,
+     "ms": 0
+    },
+    "appointments": {
+     "rows": 5,
+     "kB": 5,
+     "ms": 0.1
+    },
+    "prescriptions": {
+     "rows": 0,
+     "kB": 0,
+     "ms": 0
+    },
+    "prescription_items": {
+     "rows": 0,
+     "kB": 0,
+     "ms": 0
+    },
+    "vaccinations": {
+     "rows": 0,
+     "kB": 0,
+     "ms": 0
+    },
+    "weight_entries": {
+     "rows": 5,
+     "kB": 1,
+     "ms": 0
+    },
+    "consultation_soaps": {
+     "rows": 5,
+     "kB": 17,
+     "ms": 0.1
+    },
+    "notes": {
+     "rows": 0,
+     "kB": 0,
+     "ms": 0
+    },
+    "tasks": {
+     "rows": 0,
+     "kB": 0,
+     "ms": 0
+    },
+    "hospitalizations": {
+     "rows": 0,
+     "kB": 0,
+     "ms": 0
+    },
+    "anesthesia_sheets": {
+     "rows": 0,
+     "kB": 0,
+     "ms": 0
+    },
+    "consultation_documents": {
+     "rows": 0,
+     "kB": 0,
+     "ms": 0
+    }
+   }
+  }
+ },
+ "3000": {
+  "base": "clinique-3000.db",
+  "mode": "patient",
+  "patients": 3000,
+  "grosDossier": {
+   "patientId": "zz-gros",
+   "medianMs": 44.2,
+   "rows": 5621,
+   "MB": 3.93,
+   "per": {
+    "patients": {
+     "rows": 3000,
+     "kB": 2328,
+     "ms": 35
+    },
+    "owners": {
+     "rows": 2000,
+     "kB": 707,
+     "ms": 11.2
+    },
+    "users": {
+     "rows": 1,
+     "kB": 0,
+     "ms": 0.1
+    },
+    "transactions": {
+     "rows": 0,
+     "kB": 0,
+     "ms": 0
+    },
+    "appointments": {
+     "rows": 200,
+     "kB": 180,
+     "ms": 1.5
+    },
+    "prescriptions": {
+     "rows": 0,
+     "kB": 0,
+     "ms": 0
+    },
+    "prescription_items": {
+     "rows": 0,
+     "kB": 0,
+     "ms": 0
+    },
+    "vaccinations": {
+     "rows": 0,
+     "kB": 0,
+     "ms": 0
+    },
+    "weight_entries": {
+     "rows": 200,
+     "kB": 47,
+     "ms": 0.7
+    },
+    "consultation_soaps": {
+     "rows": 200,
+     "kB": 640,
+     "ms": 3.4
+    },
+    "notes": {
+     "rows": 20,
+     "kB": 33,
+     "ms": 0.3
+    },
+    "tasks": {
+     "rows": 0,
+     "kB": 0,
+     "ms": 0
+    },
+    "hospitalizations": {
+     "rows": 0,
+     "kB": 0,
+     "ms": 0
+    },
+    "anesthesia_sheets": {
+     "rows": 0,
+     "kB": 0,
+     "ms": 0
+    },
+    "consultation_documents": {
+     "rows": 0,
+     "kB": 0,
+     "ms": 0
+    }
+   }
+  },
+  "dossierCourant": {
+   "patientId": "00059b9d-a87d-21ff-f1fa-7e6afa236dbb",
+   "medianMs": 38.5,
+   "rows": 5017,
+   "MB": 3.06,
+   "per": {
+    "patients": {
+     "rows": 3000,
+     "kB": 2328,
+     "ms": 28
+    },
+    "owners": {
+     "rows": 2000,
+     "kB": 707,
+     "ms": 10.8
+    },
+    "users": {
+     "rows": 1,
+     "kB": 0,
+     "ms": 0.1
+    },
+    "transactions": {
+     "rows": 0,
+     "kB": 0,
+     "ms": 0
+    },
+    "appointments": {
+     "rows": 5,
+     "kB": 5,
+     "ms": 0.1
+    },
+    "prescriptions": {
+     "rows": 0,
+     "kB": 0,
+     "ms": 0
+    },
+    "prescription_items": {
+     "rows": 0,
+     "kB": 0,
+     "ms": 0
+    },
+    "vaccinations": {
+     "rows": 0,
+     "kB": 0,
+     "ms": 0
+    },
+    "weight_entries": {
+     "rows": 5,
+     "kB": 1,
+     "ms": 0
+    },
+    "consultation_soaps": {
+     "rows": 5,
+     "kB": 17,
+     "ms": 0.1
+    },
+    "notes": {
+     "rows": 1,
+     "kB": 2,
+     "ms": 0
+    },
+    "tasks": {
+     "rows": 0,
+     "kB": 0,
+     "ms": 0
+    },
+    "hospitalizations": {
+     "rows": 0,
+     "kB": 0,
+     "ms": 0
+    },
+    "anesthesia_sheets": {
+     "rows": 0,
+     "kB": 0,
+     "ms": 0
+    },
+    "consultation_documents": {
+     "rows": 0,
+     "kB": 0,
+     "ms": 0
+    }
+   }
+  }
+ }
+}

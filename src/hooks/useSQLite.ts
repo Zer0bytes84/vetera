@@ -2,6 +2,7 @@ import {
   useCallback,
   useEffect,
   useId,
+  useMemo,
   useState,
   useSyncExternalStore,
 } from "react";
@@ -16,6 +17,12 @@ import {
   setBrowserRow,
   updateBrowserRow,
 } from "@/services/browser-store";
+import {
+  type CacheTarget,
+  cacheTarget,
+  patientScopedReadSql,
+  rowInTarget,
+} from "@/services/sqlite/patient-scope";
 import { tablesAffectedByDelete } from "@/services/sqlite/related-tables";
 import {
   type CachedRow,
@@ -97,12 +104,52 @@ const pendingTableReads = new Map<
 const tableSnapshotCache = new TableSnapshotCache<CachedRow>();
 const EMPTY_ROWS: CachedRow[] = [];
 
-const getTableCacheGeneration = (tableName: string) =>
-  tableSnapshotCache.generation(tableName);
+// Lectures par patient vivantes, par table. Les plus anciennes sans abonné sont oubliées au-delà de cette limite :
+// rouvrir un dossier récent reste instantané, et la mémoire ne grandit pas avec chaque dossier parcouru.
+const RECENT_PATIENT_SCOPES = 8;
+const patientScopesByTable = new Map<string, Map<string, CacheTarget>>();
 
+const scopedTargets = (tableName: string) =>
+  patientScopesByTable.get(tableName)?.values() ?? [];
+
+const registerTarget = (target: CacheTarget) => {
+  if (target.patientId === undefined) {
+    return;
+  }
+  let scopes = patientScopesByTable.get(target.table);
+  if (!scopes) {
+    scopes = new Map();
+    patientScopesByTable.set(target.table, scopes);
+  }
+  scopes.delete(target.key);
+  scopes.set(target.key, target);
+  for (const [key] of scopes) {
+    if (scopes.size <= RECENT_PATIENT_SCOPES) {
+      break;
+    }
+    if (key !== target.key && tableSnapshotCache.isIdle(key)) {
+      scopes.delete(key);
+      tableSnapshotCache.drop(key);
+      tableRowsCache.delete(key);
+      pendingTableReads.delete(key);
+    }
+  }
+};
+
+const getTableCacheGeneration = (key: string) =>
+  tableSnapshotCache.generation(key);
+
+const invalidateCacheKey = (key: string) => {
+  tableSnapshotCache.invalidate(key);
+  tableRowsCache.delete(key);
+};
+
+/** Une table a changé : sa lecture entière et chacune de ses lectures par patient sont périmées. */
 const invalidateTableRows = (tableName: string) => {
-  tableSnapshotCache.invalidate(tableName);
-  tableRowsCache.delete(tableName);
+  invalidateCacheKey(tableName);
+  for (const target of scopedTargets(tableName)) {
+    invalidateCacheKey(target.key);
+  }
 };
 
 interface SQLiteChangedDetail {
@@ -133,9 +180,10 @@ if (typeof window !== "undefined") {
   );
 }
 
-const readTauriTable = (tableName: string, force = false) => {
-  const generation = getTableCacheGeneration(tableName);
-  const cached = tableRowsCache.get(tableName);
+const readTauriTable = (target: CacheTarget, force = false) => {
+  const { key, patientId, table } = target;
+  const generation = getTableCacheGeneration(key);
+  const cached = tableRowsCache.get(key);
 
   if (
     !force &&
@@ -145,18 +193,22 @@ const readTauriTable = (tableName: string, force = false) => {
     return cached.rows;
   }
 
-  const pending = pendingTableReads.get(tableName);
+  const pending = pendingTableReads.get(key);
   if (pending?.generation === generation) {
     return pending.promise;
   }
 
   const promise = runDbRead((db) =>
-    db.select<Record<string, unknown>[]>(tableReadSql(tableName))
+    patientId === undefined
+      ? db.select<Record<string, unknown>[]>(tableReadSql(table))
+      : db.select<Record<string, unknown>[]>(patientScopedReadSql(table), [
+          patientId,
+        ])
   )
     .then((rows) => {
       const normalizedRows = rows ?? [];
-      if (getTableCacheGeneration(tableName) === generation) {
-        tableRowsCache.set(tableName, {
+      if (getTableCacheGeneration(key) === generation) {
+        tableRowsCache.set(key, {
           expiresAt: Date.now() + TABLE_CACHE_TTL_MS,
           generation,
           rows: normalizedRows,
@@ -165,14 +217,22 @@ const readTauriTable = (tableName: string, force = false) => {
       return normalizedRows;
     })
     .finally(() => {
-      const current = pendingTableReads.get(tableName);
+      const current = pendingTableReads.get(key);
       if (current?.generation === generation) {
-        pendingTableReads.delete(tableName);
+        pendingTableReads.delete(key);
       }
     });
 
-  pendingTableReads.set(tableName, { generation, promise });
+  pendingTableReads.set(key, { generation, promise });
   return promise;
+};
+
+/** Les lignes d'une lecture hors Tauri : la table du magasin du navigateur, filtrée par patient s'il y a lieu. */
+const browserRows = (target: CacheTarget) => {
+  const rows = getBrowserTable(target.table as BrowserTableName) as CachedRow[];
+  return target.patientId === undefined
+    ? rows
+    : rows.filter((row) => rowInTarget(target, row));
 };
 
 export const emitSQLiteDataChanged = (
@@ -368,6 +428,7 @@ async function readAuthoritativeRow(
 async function reloadTable(
   ops: {
     safeTableName: string | null;
+    target: CacheTarget;
     tableName: string;
     setError: (message: string | null) => void;
     setLoading: (value: boolean) => void;
@@ -375,15 +436,21 @@ async function reloadTable(
   },
   force = false
 ): Promise<void> {
-  const { safeTableName, tableName, setError, setLoading, setIsRefreshing } =
-    ops;
+  const {
+    safeTableName,
+    target,
+    tableName,
+    setError,
+    setLoading,
+    setIsRefreshing,
+  } = ops;
   try {
     if (!safeTableName) {
       throw new Error(`Table non autorisée: ${tableName}`);
     }
     setError(null);
-    setIsRefreshing(tableSnapshotCache.has(safeTableName));
-    await loadTableSnapshot(safeTableName, force);
+    setIsRefreshing(tableSnapshotCache.has(target.key));
+    await loadTableSnapshot(target, force);
   } catch (err) {
     const message = err instanceof Error ? err.message : "Lecture impossible";
     setError(message);
@@ -415,6 +482,8 @@ interface TableOps<T extends { id: string }> {
   safeTableName: string | null;
   sourceId: string;
   tableName: string;
+  /** La lecture du hook : la table entière, ou les lignes d'un patient. */
+  target: CacheTarget;
   write: <R>(
     id: string,
     apply: (rows: CachedRow[]) => CachedRow[],
@@ -495,6 +564,7 @@ async function updateRow<T extends { id: string }>(
     loadData,
     write,
     authoritativeRow,
+    target,
   } = ops;
   if (!safeTableName) {
     throw new Error(`Table non autorisée: ${tableName}`);
@@ -515,8 +585,10 @@ async function updateRow<T extends { id: string }>(
     publishPatchedTable(safeTableName, sourceId, id);
     return updated;
   }
+  const known = (key: string) =>
+    tableSnapshotCache.getRows(key)?.find((row) => row.id === id);
   const fallback = {
-    ...tableSnapshotCache.getRows(safeTableName)?.find((row) => row.id === id),
+    ...(known(target.key) ?? known(safeTableName)),
     ...patch,
     id,
   } as CachedRow;
@@ -680,18 +752,20 @@ async function runTableWrite<R>({
   if (!safeTableName) {
     throw new Error(`Table non autorisée: ${tableName}`);
   }
-  const token = tableSnapshotCache.begin(safeTableName, id, apply);
+  const tokens = beginTableLayers(safeTableName, id, apply);
   setError(null);
   updateWriteStatus({ pending: writeStatus.pending + 1, error: null });
   try {
     const result = await runDbOperation(operation);
-    tableSnapshotCache.commit(safeTableName, token, result.row);
+    commitTableLayers(tokens, result.row);
     publishPatchedTable(safeTableName, sourceId, id);
     updateWriteStatus({ savedAt: Date.now() });
     return result.value;
   } catch (err) {
-    tableSnapshotCache.rollback(safeTableName, token);
-    tableRowsCache.delete(safeTableName);
+    for (const { target, token } of tokens) {
+      tableSnapshotCache.rollback(target.key, token);
+      tableRowsCache.delete(target.key);
+    }
     const message = err instanceof Error ? err.message : "Écriture impossible";
     setError(message);
     updateWriteStatus({ error: message });
@@ -710,23 +784,61 @@ async function runTableWrite<R>({
   }
 }
 
-async function loadTableSnapshot(table: string, force = false) {
+/**
+ * Une écriture optimiste se pose sur chaque lecture de la table : la table entière et chaque lecture par patient,
+ * où seules restent les lignes de ce patient. Tous les écrans voient ainsi la même écriture, au même moment.
+ */
+function beginTableLayers(
+  table: string,
+  id: string,
+  apply: (rows: CachedRow[]) => CachedRow[]
+) {
+  const tokens = [
+    {
+      target: cacheTarget(table),
+      token: tableSnapshotCache.begin(table, id, apply),
+    },
+  ];
+  for (const target of scopedTargets(table)) {
+    tokens.push({
+      target,
+      token: tableSnapshotCache.begin(target.key, id, (rows) =>
+        apply(rows).filter((row) => rowInTarget(target, row))
+      ),
+    });
+  }
+  return tokens;
+}
+
+function commitTableLayers(
+  tokens: { target: CacheTarget; token: number }[],
+  row: CachedRow | null | undefined
+) {
+  for (const { target, token } of tokens) {
+    // La ligne confirmée n'entre dans une lecture par patient que si elle est bien à ce patient ; sinon elle en sort.
+    const confirmed =
+      row && target.patientId !== undefined && !rowInTarget(target, row)
+        ? null
+        : row;
+    tableSnapshotCache.commit(target.key, token, confirmed);
+  }
+}
+
+async function loadTableSnapshot(target: CacheTarget, force = false) {
+  registerTarget(target);
   if (!isTauriRuntime()) {
-    tableSnapshotCache.replace(
-      table,
-      getBrowserTable(table as BrowserTableName) as CachedRow[]
-    );
+    tableSnapshotCache.replace(target.key, browserRows(target));
     return;
   }
-  const generation = getTableCacheGeneration(table);
-  const rows = await readTauriTable(table, force);
+  const generation = getTableCacheGeneration(target.key);
+  const rows = await readTauriTable(target, force);
   const applied = tableSnapshotCache.replace(
-    table,
-    rows.map((row) => mapTableRow(table, row) as CachedRow),
+    target.key,
+    rows.map((row) => mapTableRow(target.table, row) as CachedRow),
     generation
   );
-  if (!(applied || tableSnapshotCache.has(table))) {
-    await loadTableSnapshot(table, true);
+  if (!(applied || tableSnapshotCache.has(target.key))) {
+    await loadTableSnapshot(target, true);
   }
 }
 
@@ -735,20 +847,30 @@ export async function prefetchSQLiteTables(tables: string[]) {
   await Promise.allSettled(
     tables
       .filter((table) => ALLOWED_TABLES.has(table))
-      .map((table) => loadTableSnapshot(table))
+      .map((table) => loadTableSnapshot(cacheTarget(table)))
   );
 }
 
 function publishPatchedTable(table: string, sourceId: string, rowId?: string) {
-  const rows = tableSnapshotCache.getConfirmedRows(table);
-  // Pending optimistic layers must never become the confirmed read-cache:
-  // another subscriber can revalidate while a later write is still in flight.
-  if (rows) {
-    tableRowsCache.set(table, {
-      expiresAt: Date.now() + TABLE_CACHE_TTL_MS,
-      generation: getTableCacheGeneration(table),
-      rows: rows.map((row) => mapKeys(row, toSnakeCase)),
-    });
+  const targets = [cacheTarget(table), ...scopedTargets(table)];
+  for (const target of targets) {
+    if (!isTauriRuntime()) {
+      // Hors Tauri, l'écrivain n'a relu que sa propre lecture : les autres lectures de la table sont relues du magasin.
+      if (tableSnapshotCache.has(target.key)) {
+        tableSnapshotCache.replace(target.key, browserRows(target));
+      }
+      continue;
+    }
+    const rows = tableSnapshotCache.getConfirmedRows(target.key);
+    // Pending optimistic layers must never become the confirmed read-cache:
+    // another subscriber can revalidate while a later write is still in flight.
+    if (rows) {
+      tableRowsCache.set(target.key, {
+        expiresAt: Date.now() + TABLE_CACHE_TTL_MS,
+        generation: getTableCacheGeneration(target.key),
+        rows: rows.map((row) => mapKeys(row, toSnakeCase)),
+      });
+    }
   }
   emitSQLiteDataChanged(table, true, sourceId);
   if (rowId) {
@@ -760,35 +882,41 @@ function publishPatchedTable(table: string, sourceId: string, rowId?: string) {
   }
 }
 
+export interface UseSQLiteOptions {
+  /** Les lignes de ce seul patient (`WHERE patient_id = ?`), pour les tables qui en portent la colonne. */
+  patientId?: string;
+}
+
 export function useSQLite<T extends { id: string }>(
-  tableName: string
+  tableName: string,
+  options?: UseSQLiteOptions
 ): UseSQLiteResult<T> {
   const safeTableName = ALLOWED_TABLES.has(tableName) ? tableName : null;
-  if (
-    safeTableName &&
-    !isTauriRuntime() &&
-    !tableSnapshotCache.has(safeTableName)
-  ) {
-    tableSnapshotCache.replace(
-      safeTableName,
-      getBrowserTable(safeTableName as BrowserTableName) as CachedRow[]
-    );
+  const patientId = options?.patientId;
+  const target = useMemo(
+    () => cacheTarget(tableName, patientId),
+    [tableName, patientId]
+  );
+  const cacheKey = target.key;
+  if (safeTableName && !isTauriRuntime() && !tableSnapshotCache.has(cacheKey)) {
+    registerTarget(target);
+    tableSnapshotCache.replace(cacheKey, browserRows(target));
   }
   const subscribe = useCallback(
     (listener: () => void) =>
       safeTableName
-        ? tableSnapshotCache.subscribe(safeTableName, listener)
+        ? tableSnapshotCache.subscribe(cacheKey, listener)
         : () => {
             // Pas de table autorisée : aucun abonnement à défaire.
           },
-    [safeTableName]
+    [safeTableName, cacheKey]
   );
   const getSnapshot = useCallback(
     () =>
       safeTableName
-        ? (tableSnapshotCache.getRows(safeTableName) ?? EMPTY_ROWS)
+        ? (tableSnapshotCache.getRows(cacheKey) ?? EMPTY_ROWS)
         : EMPTY_ROWS,
-    [safeTableName]
+    [safeTableName, cacheKey]
   );
   const data = useSyncExternalStore(
     subscribe,
@@ -796,7 +924,7 @@ export function useSQLite<T extends { id: string }>(
     getSnapshot
   ) as unknown as T[];
   const [loading, setLoading] = useState(() =>
-    safeTableName ? !tableSnapshotCache.has(safeTableName) : false
+    safeTableName ? !tableSnapshotCache.has(cacheKey) : false
   );
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -805,10 +933,17 @@ export function useSQLite<T extends { id: string }>(
   const loadData = useCallback(
     (force = false) =>
       reloadTable(
-        { safeTableName, tableName, setError, setLoading, setIsRefreshing },
+        {
+          safeTableName,
+          target,
+          tableName,
+          setError,
+          setLoading,
+          setIsRefreshing,
+        },
         force
       ),
-    [safeTableName, tableName]
+    [safeTableName, target, tableName]
   );
 
   useEffect(() => {
@@ -827,14 +962,14 @@ export function useSQLite<T extends { id: string }>(
         return;
       }
       // Optimistic/confirmed patches already reached every subscriber synchronously.
-      if (detail.cacheFresh && tableSnapshotCache.has(tableName)) {
+      if (detail.cacheFresh && tableSnapshotCache.has(cacheKey)) {
         return;
       }
       void loadData();
     };
     window.addEventListener(DATA_CHANGED_EVENT, changed);
     return () => window.removeEventListener(DATA_CHANGED_EVENT, changed);
-  }, [loadData, sourceId, tableName]);
+  }, [loadData, sourceId, tableName, cacheKey]);
 
   const write = useCallback(
     <R>(
@@ -878,10 +1013,19 @@ export function useSQLite<T extends { id: string }>(
           loadData,
           write,
           authoritativeRow,
+          target,
         },
         item
       ),
-    [authoritativeRow, loadData, safeTableName, sourceId, tableName, write]
+    [
+      authoritativeRow,
+      loadData,
+      safeTableName,
+      sourceId,
+      tableName,
+      target,
+      write,
+    ]
   );
 
   const update = useCallback(
@@ -894,11 +1038,20 @@ export function useSQLite<T extends { id: string }>(
           loadData,
           write,
           authoritativeRow,
+          target,
         },
         id,
         updates
       ),
-    [authoritativeRow, loadData, safeTableName, sourceId, tableName, write]
+    [
+      authoritativeRow,
+      loadData,
+      safeTableName,
+      sourceId,
+      tableName,
+      target,
+      write,
+    ]
   );
 
   const remove = useCallback(
@@ -911,10 +1064,19 @@ export function useSQLite<T extends { id: string }>(
           loadData,
           write,
           authoritativeRow,
+          target,
         },
         id
       ),
-    [authoritativeRow, loadData, safeTableName, sourceId, tableName, write]
+    [
+      authoritativeRow,
+      loadData,
+      safeTableName,
+      sourceId,
+      tableName,
+      target,
+      write,
+    ]
   );
 
   const set = useCallback(
@@ -927,6 +1089,7 @@ export function useSQLite<T extends { id: string }>(
           loadData,
           write,
           authoritativeRow,
+          target,
         },
         update,
         id,
@@ -938,6 +1101,7 @@ export function useSQLite<T extends { id: string }>(
       safeTableName,
       sourceId,
       tableName,
+      target,
       update,
       write,
     ]
@@ -945,10 +1109,10 @@ export function useSQLite<T extends { id: string }>(
 
   const refresh = useCallback(async () => {
     if (safeTableName) {
-      invalidateTableRows(safeTableName);
+      invalidateCacheKey(cacheKey);
     }
     await loadData(true);
-  }, [loadData, safeTableName]);
+  }, [loadData, safeTableName, cacheKey]);
 
   return {
     data,

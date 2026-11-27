@@ -61,7 +61,7 @@ export function VaccinationList({
   patientId,
 }: VaccinationListProps) {
   const { t } = useTranslation();
-  const repo = useVaccinationsRepository();
+  const repo = useVaccinationsRepository({ patientId });
   const [deleteTarget, setDeleteTarget] = useState<Vaccination | null>(null);
 
   const entries = repo.forPatient(patientId);

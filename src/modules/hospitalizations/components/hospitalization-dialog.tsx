@@ -56,7 +56,7 @@ export function HospitalizationDialog({
   onCreated?: (h: Hospitalization) => void;
 }) {
   const { t } = useTranslation();
-  const repo = useHospitalizationsRepository();
+  const repo = useHospitalizationsRepository({ patientId: patient.id });
   const initial = defaultState();
   const [reason, setReason] = useState(initial.reason);
   const [diagnosis, setDiagnosis] = useState(initial.diagnosis);

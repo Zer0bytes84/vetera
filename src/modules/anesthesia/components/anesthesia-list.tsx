@@ -36,7 +36,7 @@ export function AnesthesiaList({
   className?: string;
 }) {
   const { t } = useTranslation();
-  const repo = useAnesthesiaSheetsRepository();
+  const repo = useAnesthesiaSheetsRepository({ patientId: patient.id });
   const [filter, setFilter] = useReactState<AnesthesiaStatusFilter>("active");
   const [dialogOpen, setDialogOpen] = useReactState(false);
   const all = repo.forPatient(patient.id);

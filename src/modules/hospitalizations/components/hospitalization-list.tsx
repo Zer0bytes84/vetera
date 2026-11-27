@@ -44,7 +44,7 @@ export function HospitalizationList({
   className?: string;
 }) {
   const { t } = useTranslation();
-  const repo = useHospitalizationsRepository();
+  const repo = useHospitalizationsRepository({ patientId: patient.id });
   const [filter, setFilter] = useState<HospitalizationStatusFilter>("active");
   const [dialogOpen, setDialogOpen] = useState(false);
   const now = useNowTick();

@@ -68,7 +68,7 @@ export function AnesthesiaDetail({
   className?: string;
 }) {
   const { t } = useTranslation();
-  const repo = useAnesthesiaSheetsRepository();
+  const repo = useAnesthesiaSheetsRepository({ patientId: patient.id });
   const drugRepo = useAnesthesiaDrugLogRepository();
   const monRepo = useAnesthesiaMonitoringRepository();
   const [drugOpen, setDrugOpen] = useState(false);
