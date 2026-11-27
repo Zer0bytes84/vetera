@@ -400,18 +400,117 @@
   fill: color-mix(in srgb, var(--pet-ink) 9%, transparent);
 }
 
-/* Essai : compagnons en couleurs (images), à la place des dessins au trait. */
+/* Compagnons en couleurs (images). Toute leur vie est en transform : rien ne bouge la mise en page, tout reste sur le
+   compositeur. À peine perceptible : une clinique, pas un dessin animé. */
 .mascot-color {
   display: inline-flex;
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
   line-height: 0;
+  transform-origin: 50% 85%;
+  transition: transform 260ms cubic-bezier(0.34, 1.4, 0.64, 1);
 }
-.mascot-color > img {
+.mascot-color-body {
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform-origin: 50% 85%;
+}
+.mascot-color-body > img {
   width: 100%;
   height: 100%;
   object-fit: contain;
   user-select: none;
   -webkit-user-drag: none;
+}
+
+/* La vie douce, là où il est bien visible : une respiration lente, un souffle de balancement vertical. */
+.mascot-color[data-life="on"] .mascot-color-body {
+  animation: mascot-breathe 4.2s ease-in-out infinite;
+}
+@keyframes mascot-breathe {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-0.6px) scale(1.02);
+  }
+}
+
+/* À l'ouverture de l'app, le compagnon de la barre latérale apparaît d'un petit pop, puis respire. */
+.sidebar-mascot.mascot-color .mascot-color-body {
+  animation: mascot-pop 560ms cubic-bezier(0.34, 1.56, 0.64, 1) 160ms both;
+}
+.sidebar-mascot.mascot-color[data-life="on"] .mascot-color-body {
+  animation:
+    mascot-pop 560ms cubic-bezier(0.34, 1.56, 0.64, 1) 160ms both,
+    mascot-breathe 4.2s ease-in-out 900ms infinite;
+}
+@keyframes mascot-pop {
+  0% {
+    transform: scale(0.82);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* L'assistant réfléchit : une pulsation douce, comme une attention. */
+.mascot-color[data-mood="thinking"] .mascot-color-body {
+  animation: mascot-think 1.6s ease-in-out infinite;
+}
+@keyframes mascot-think {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.045) rotate(-1.5deg);
+  }
+}
+/* Content : un petit saut, une fois. */
+.mascot-color[data-mood="happy"] .mascot-color-body {
+  animation: mascot-hop 620ms cubic-bezier(0.34, 1.4, 0.64, 1) both;
+}
+@keyframes mascot-hop {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  40% {
+    transform: translateY(-9%) scale(1.03);
+  }
+  70% {
+    transform: translateY(0) scale(0.99, 1.01);
+  }
+}
+
+/* Au survol, il se penche un peu vers vous ; à l'appui, il se tasse. Barre latérale et sélecteur. */
+@media (hover: hover) and (pointer: fine) {
+  .sidebar-mascot-circle:hover .mascot-color,
+  .mascot-choice:hover .mascot-color,
+  .mascot-settings-preview:hover .mascot-color {
+    transform: translateY(-2px) rotate(-4deg) scale(1.04);
+  }
+}
+.sidebar-mascot-circle:active .mascot-color,
+.mascot-choice:active .mascot-color {
+  transform: scale(0.95);
+  transition-duration: 90ms;
+}
+/* Choisi dans le sélecteur : un mini saut joyeux. */
+.mascot-choice[data-selected="true"] .mascot-color-body {
+  animation: mascot-hop 620ms cubic-bezier(0.34, 1.4, 0.64, 1) both;
+}
+
+/* Le système demande le calme : rien ne bouge. */
+@media (prefers-reduced-motion: reduce) {
+  .mascot-color,
+  .mascot-color .mascot-color-body {
+    transform: none !important;
+    transition: none !important;
+    animation: none !important;
+  }
 }

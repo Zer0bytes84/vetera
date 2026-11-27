@@ -13,6 +13,7 @@ import {
   MessageSquareText,
   Palette,
   PanelLeft,
+  PawPrint,
   Pencil,
   Phone,
   Pill,
@@ -53,6 +54,28 @@ export interface ReleaseNote {
 
 /** Les plus récentes en premier. */
 export const RELEASE_NOTES: ReleaseNote[] = [
+  {
+    version: "5.4.1",
+    status: "published",
+    date: "2026-11-27",
+    highlights: [
+      {
+        icon: PawPrint,
+        title: "Votre compagnon arrive en couleurs",
+        text: "Les quinze compagnons passent en couleurs, avec une vie discrète : ils respirent doucement, se penchent vers vous au survol et font un petit saut quand vous les choisissez.",
+      },
+      {
+        icon: MessageSquareText,
+        title: "Un assistant qui montre qu'il réfléchit",
+        text: "Pendant qu'il prépare sa réponse, le compagnon de l'assistant s'anime doucement. Si votre Mac demande de réduire les animations, tout reste immobile.",
+      },
+      {
+        icon: PanelLeft,
+        title: "Réglage de la barre latérale corrigé",
+        text: "Dans Paramètres, Apparence, le choix Icônes, Masquée ou Jamais s'applique tout de suite, et Jamais garde bien la barre ouverte.",
+      },
+    ],
+  },
   {
     version: "5.4.0",
     status: "published",

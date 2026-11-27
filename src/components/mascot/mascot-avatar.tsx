@@ -8,6 +8,9 @@ import "./mascot.css";
 
 export type MascotMood = "idle" | "happy" | "thinking";
 
+/** From this size the colour companion breathes: the sidebar brand, the settings preview, the assistant's header. */
+const LIVELY_SIZE = 34;
+
 export interface MascotAvatarProps {
   animal: MascotAnimal;
   animated?: boolean;
@@ -34,23 +37,30 @@ export function MascotAvatar({
   mood = "idle",
   overflow = false,
 }: MascotAvatarProps) {
-  // Essai : l'image en couleurs, immobile (regard, clignements et humeurs ne s'appliquent qu'aux dessins au trait).
+  // The colour portrait (USE_COLOR_MASCOTS; the line drawings stay as a fallback). Its life is CSS only, in
+  // transform (mascot.css): a slow breath where it is well seen, a pulse while the assistant thinks, a hop when happy;
+  // small sizes (buttons, messages) stay still, and nothing moves when the system asks for reduced motion.
   if (USE_COLOR_MASCOTS) {
+    const key = lineAnimalOf(animal);
     return (
       <span
         aria-hidden="true"
         className={cn("mascot-color", className)}
-        data-animal={lineAnimalOf(animal)}
+        data-animal={key}
+        data-life={animated && size >= LIVELY_SIZE ? "on" : undefined}
+        data-mood={animated && mood !== "idle" ? mood : undefined}
         style={{ width: size, height: size }}
       >
-        <img
-          alt=""
-          decoding="async"
-          draggable={false}
-          height={size}
-          src={COLOR_MASCOTS[lineAnimalOf(animal)]}
-          width={size}
-        />
+        <span className="mascot-color-body">
+          <img
+            alt=""
+            decoding="async"
+            draggable={false}
+            height={size}
+            src={COLOR_MASCOTS[key]}
+            width={size}
+          />
+        </span>
       </span>
     );
   }
