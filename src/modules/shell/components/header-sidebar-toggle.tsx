@@ -1,4 +1,5 @@
 import { useSidebar } from "@/components/ui/sidebar";
+import { useLayout } from "@/contexts/layout-provider";
 import { ShortcutTooltip } from "@/design-system/patterns/shortcut-tooltip";
 
 /**
@@ -42,6 +43,11 @@ function SidebarGlyph({ open }: { open: boolean }) {
  */
 export function HeaderSidebarToggle() {
   const { state, isMobile, toggleSidebar } = useSidebar();
+  const { collapsible } = useLayout();
+  // « Jamais » : the sidebar never folds, a button to fold it would do nothing.
+  if (!isMobile && collapsible === "none") {
+    return null;
+  }
   const collapsed = isMobile || state === "collapsed";
   const label = isMobile
     ? "Menu"

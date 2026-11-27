@@ -1,5 +1,6 @@
 // biome-ignore-all assist/source/organizeImports: ranger ces imports déplace une feuille CSS vers un autre morceau (A2, CSS_CHANGE, décision du 25/11) ; l'ordre actuel est celui que l'app affiche
 import { useRowSaveFlash } from "@/hooks/useRowSaveFlash";
+import { SidebarCollapseRule } from "./sidebar-collapse-rule";
 import { startIndexCoverageSoon } from "@/modules/consultations/local-ai/index-on-validation";
 import { MedicalActReminderPrompt } from "@/modules/patient-reminders/medical-act-reminder-prompt";
 import { ThemeControl } from "./components/theme-control";
@@ -621,6 +622,7 @@ function AppShellInner() {
         } as React.CSSProperties
       }
     >
+      <SidebarCollapseRule />
       <WhatsNewGate />
       <TourGuide />
       {consultationPickerOpen && (
