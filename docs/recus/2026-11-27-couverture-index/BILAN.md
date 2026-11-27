@@ -117,6 +117,29 @@ Le retrait seul (commit `3e3579e9`) gardait les résultats identiques, mais il f
 - Suite complète 2 453 tests verts, typecheck et lint à 0, biome sans hausse, démarrage 283,5 ko gzip.
 - **Non vu dans la vraie fenêtre :** le sélecteur, le message et le bouton. Il n'y a pas de test d'interface dans le projet (pas de testing-library) ; la logique est testée, l'affichage non.
 
+## Ajout : fiches de consultation et fiche du patient dans le périmètre « Ce dossier »
+
+**But :** l'assistant ne manque pas ce que la barre trouve, pour la même question, dans le même dossier.
+
+**Ce qui change :**
+- **Dans un dossier,** la liste « trouvés par mots » lit maintenant aussi toutes les fiches de consultation (rendez-vous) du patient et sa fiche (signalement, allergies, affections chroniques, notes). C'est la nouvelle fonction `patientRecordMatches`, appelée par `readPatientUnreviewedMatches`.
+- **Mêmes textes que la barre :** `consultationSearchChunks` et `patientSearchChunks`, avec la même décision `matchesSearchTerms`. La barre lit les 100 rendez-vous les plus récents de toute la clinique et 100 patients pris sans ordre. L'assistant lit, lui, **toutes** les fiches du dossier : il couvre au moins ce que la barre y trouve.
+- **Montrées pour ce qu'elles sont.** Chaque résultat porte « fiche de consultation » ou « fiche du patient », dans la liste à part « … trouvés par mots, hors recherche par le sens ». Le sous-titre explique que les notes non validées y entreront une fois validées, et que les fiches n'y entrent pas.
+- **Pas dans la recherche par le sens.** Ces fiches n'ont ni validation ni passages ; les y faire entrer demanderait de les indexer, donc une règle de validation à décider. Elles entrent par les mots seulement.
+- **Périmètre tous dossiers : inchangé.** Il montrait déjà les résultats de la barre, fiches comprises.
+- **Chemin par le sens : inchangé,** sauf un défaut corrigé en passant. Avec la source « Consultations » ou « Fiches patients » choisie dans un dossier, la recherche par le sens recevait une liste de sources vide et échouait (« Choisissez un patient, une source et une rubrique »). Elle est maintenant sautée, et seule la recherche par mots répond.
+
+**Preuves :**
+- **Test, cas de Nika en synthèse** (`index-coverage.test.ts`) : une note validée sur autre chose, une fiche de consultation « Boitement de l'antérieur gauche », une fiche patient « Boiterie intermittente ».
+  - « Boitement » dans le dossier fait remonter la fiche de consultation et la fiche du patient.
+  - Toute source que la barre trouve dans ce dossier est présente dans la réponse de l'assistant (recherche par le sens et liste par mots réunies).
+- **Défaut réintroduit :** sans la lecture des fiches, le test échoue.
+- **Copie de la base réelle**, en lecture seule (`outils/perimetre.banc.ts`) : pour « Boitement » dans le dossier de Nika, la barre trouve `consultation:mw9hfek6ztdga9ebgw`, et l'assistant la rend maintenant (« fiche de consultation »). Aucune source manquante.
+- **Portes :** suite complète 2 454 tests verts, typecheck et lint à 0, biome sans hausse, démarrage 283,5 ko gzip.
+- **Non vu dans la vraie fenêtre :** l'affichage de la liste avec ces nouvelles sources.
+
+**À signaler, non touché :** dans la barre, les blocs consultations et fiches patients gardent leur `LIMIT 100`. À 1 000 patients et plus, une fiche ancienne ou un patient hors des 100 lus n'y remontent pas. Dans un dossier, l'assistant les retrouve désormais. Tous dossiers, ni l'un ni l'autre.
+
 ## Ce qui n'est pas prouvé
 
 - **L'erreur réelle de l'app sur ta base** : on la verra dans l'assistant au prochain essai.

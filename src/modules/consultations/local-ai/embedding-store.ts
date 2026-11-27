@@ -791,7 +791,76 @@ export async function readPatientUnreviewedMatches(
     )
       ? await unreviewedNoteMatches(db, scope, query)
       : []),
+    ...(await patientRecordMatches(db, scope, query)),
   ];
+}
+/**
+ * The patient's consultation records (appointments) and profile, read with the same texts as the bar
+ * (consultationSearchChunks, patientSearchChunks) but limited to this patient, all of them: the assistant does not
+ * miss in a record what the bar finds there for the same question. They carry no validation and no passage, so they
+ * enter by words only, shown for what they are.
+ */
+async function patientRecordMatches(
+  db: SearchDatabase,
+  scope: SearchScope,
+  query: string
+) {
+  const found: UnreviewedMatch[] = [];
+  const wanted = (type: "consultation" | "patient") =>
+    scope.sourceTypes.includes(type) && scope.sections.includes(type);
+  if (wanted("consultation")) {
+    const appointments = await db.select<
+      Array<{
+        id: string;
+        patientId: string;
+        patientName: string;
+        title: string;
+        type: string;
+        reason: string | null;
+        diagnosis: string | null;
+        treatment: string | null;
+        notes: string | null;
+      }>
+    >(
+      "SELECT a.id, a.patient_id AS patientId, p.name AS patientName, a.title, a.type, a.reason, a.diagnosis, a.treatment, a.notes FROM appointments a JOIN patients p ON p.id = a.patient_id WHERE a.patient_id = ? ORDER BY a.start_time DESC",
+      [scope.patientId]
+    );
+    for (const appointment of appointments) {
+      for (const chunk of consultationSearchChunks(
+        appointment,
+        appointment.patientName
+      )) {
+        if (matchesSearchTerms(query, chunk.text)) {
+          found.push({ ...chunk, reason: "fiche de consultation" });
+        }
+      }
+    }
+  }
+  if (wanted("patient")) {
+    const patients = await db.select<
+      Array<{
+        id: string;
+        name: string;
+        species: string;
+        breed: string | null;
+        chip_number: string | null;
+        allergies: string | null;
+        chronic_conditions: string | null;
+        general_notes: string | null;
+      }>
+    >(
+      "SELECT id, name, species, breed, chip_number, allergies, chronic_conditions, general_notes FROM patients WHERE id = ?",
+      [scope.patientId]
+    );
+    for (const patient of patients) {
+      for (const chunk of patientSearchChunks(patient)) {
+        if (matchesSearchTerms(query, chunk.text)) {
+          found.push({ ...chunk, reason: "fiche du patient" });
+        }
+      }
+    }
+  }
+  return found;
 }
 type UnreviewedMatch = SearchChunk & { reason: string };
 async function unreviewedSoapMatches(

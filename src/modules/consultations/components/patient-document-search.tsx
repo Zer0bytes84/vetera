@@ -160,11 +160,11 @@ function plural(count: number, word: string) {
 function searchOutcome(found: number, notValidated: number) {
   if (found) {
     return notValidated
-      ? `${plural(found, "passage")} trouvé${found > 1 ? "s" : ""}, et ${notValidated} dans des notes non validées.`
+      ? `${plural(found, "passage")} trouvé${found > 1 ? "s" : ""}, et ${notValidated} par mots hors recherche par le sens.`
       : `${plural(found, "passage")} trouvé${found > 1 ? "s" : ""}`;
   }
   if (notValidated) {
-    return `Aucun passage validé proche ; ${plural(notValidated, "passage")} dans des notes non validées, ci-dessous.`;
+    return `Aucun passage validé proche ; ${plural(notValidated, "passage")} trouvé${notValidated > 1 ? "s" : ""} par mots, ci-dessous.`;
   }
   const coverage = getIndexCoverage();
   if (
@@ -438,38 +438,9 @@ export function PatientDocumentSearch({
             sourceTypes: targetSources,
             sections: targetSections,
           };
-          const found = allRecords
-            ? await searchAllPatientsClinical(
-                filters,
-                searchQuery,
-                controller.signal,
-                (event) => setMessage(event.message)
-              )
-            : await searchPatientDocuments(
-                {
-                  patientId,
-                  sourceTypes: targetSources.filter((t) =>
-                    ["soap", "document", "protocol"].includes(t)
-                  ) as SourceType[],
-                  sections: targetSections.filter((s) =>
-                    [
-                      "subjective",
-                      "objective",
-                      "assessment",
-                      "plan",
-                      "document",
-                      "protocol",
-                    ].includes(s)
-                  ) as SearchSection[],
-                },
-                searchQuery,
-                controller.signal,
-                (event) => setMessage(event.message)
-              );
-
-          // The assistant does not find less than the bar: what the bar finds by words in notes and documents that
-          // are not validated is shown too, apart and labelled, since those have no passage to rank.
-          const patientScope = allRecords
+          // In one record: the semantic search reads the validated notes and documents; the word list below reads, in
+          // the same record, everything the bar reads there (notes not validated, consultation records, profile).
+          const semanticScope = allRecords
             ? null
             : {
                 patientId,
@@ -487,9 +458,59 @@ export function PatientDocumentSearch({
                   ].includes(s)
                 ) as SearchSection[],
               };
-          const notValidated = patientScope
-            ? await findPatientUnreviewedMatches(patientScope, searchQuery)
-            : [];
+          let found: SearchResult[] = [];
+          if (!semanticScope) {
+            found = await searchAllPatientsClinical(
+              filters,
+              searchQuery,
+              controller.signal,
+              (event) => setMessage(event.message)
+            );
+          } else if (
+            semanticScope.sourceTypes.length &&
+            semanticScope.sections.length
+          ) {
+            found = await searchPatientDocuments(
+              semanticScope,
+              searchQuery,
+              controller.signal,
+              (event) => setMessage(event.message)
+            );
+          }
+
+          // The assistant does not find less than the bar: what the bar finds by words in this record (notes and
+          // documents not validated, consultation records, the patient's profile) is shown too, apart and labelled,
+          // since those have no passage to rank.
+          const patientScope = allRecords
+            ? null
+            : {
+                patientId,
+                sourceTypes: targetSources.filter((t) =>
+                  [
+                    "soap",
+                    "document",
+                    "protocol",
+                    "consultation",
+                    "patient",
+                  ].includes(t)
+                ) as SourceType[],
+                sections: targetSections.filter((s) =>
+                  [
+                    "subjective",
+                    "objective",
+                    "assessment",
+                    "plan",
+                    "document",
+                    "protocol",
+                    "consultation",
+                    "patient",
+                  ].includes(s)
+                ) as SearchSection[],
+              };
+          const notValidated =
+            patientScope?.sourceTypes.length && patientScope.sections.length
+              ? await findPatientUnreviewedMatches(patientScope, searchQuery)
+              : [];
           const unreviewedIds = patientScope
             ? new Set<string>()
             : await findUnreviewedSources(found);
@@ -985,7 +1006,7 @@ export function PatientDocumentSearch({
 
         {unreviewed.length > 0 && (
           <SourceList
-            heading={`${plural(unreviewed.length, "passage")} dans des notes non validées`}
+            heading={`${plural(unreviewed.length, "passage")} trouvé${unreviewed.length > 1 ? "s" : ""} par mots, hors recherche par le sens`}
             sources={unreviewed.map((match) => {
               const uniqueKey = `unreviewed-${match.sourceType}-${match.sourceId}-${match.section}`;
               const passage = bestPassage(match.text, searchedQuery);
@@ -1009,7 +1030,7 @@ export function PatientDocumentSearch({
                 ),
               };
             })}
-            subtitle="Trouvés par leurs mots, comme dans la barre de recherche. Validées, ces notes entreront aussi dans la recherche par le sens."
+            subtitle="Trouvés par leurs mots, comme dans la barre de recherche : notes non validées (validées, elles entreront aussi dans la recherche par le sens), fiches de consultation et fiche du patient, qui n'y entrent pas."
           />
         )}
       </div>

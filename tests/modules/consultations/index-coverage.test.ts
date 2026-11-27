@@ -638,3 +638,90 @@ describe("Cas similaires limité à un dossier : une réponse vide nomme le pér
     );
   });
 });
+
+describe("Dans un dossier, l'assistant ne manque pas ce que la barre y trouve", () => {
+  it("cas de Nika : « Boitement » fait remonter sa fiche de consultation et sa fiche patient", async () => {
+    addPatient("nika", "Nika");
+    addPatient("dora", "Dora");
+    // Nika: a validated note about something else, a consultation record and a profile that mention lameness.
+    addSoap("nika", "validated", {
+      subjective: "Toux sèche.",
+      objective: "Auscultation normale.",
+      assessment: "Trachéite.",
+      plan: "Contrôle.",
+    });
+    db()
+      .prepare(
+        "INSERT INTO appointments(id,patient_id,owner_id,vet_id,title,start_time,end_time,status,type,reason,diagnosis) VALUES('rdv-nika','nika','owner','vet','Consultation','2026-11-09 18:00:00','2026-11-09 18:30:00','completed','Consultation','Boitement de l’antérieur gauche','Entorse probable')"
+      )
+      .run();
+    db()
+      .prepare(
+        "UPDATE patients SET chronic_conditions='Boiterie intermittente' WHERE id='nika'"
+      )
+      .run();
+    addSoap("dora", "validated");
+    await runIndexCatchUp();
+    fixture.distantQueries = true;
+    const filters = {
+      sourceTypes: ["soap", "document", "protocol", "consultation", "patient"],
+      sections: [
+        "subjective",
+        "objective",
+        "assessment",
+        "plan",
+        "document",
+        "protocol",
+        "consultation",
+        "patient",
+      ],
+    } as const;
+    const scope = {
+      patientId: "nika",
+      sourceTypes: [...filters.sourceTypes],
+      sections: [...filters.sections],
+    };
+
+    const words = await findPatientUnreviewedMatches(scope, "Boitement");
+    expect(words.map(({ sourceId, reason }) => [sourceId, reason])).toEqual([
+      ["rdv-nika", "fiche de consultation"],
+      ["nika", "fiche du patient"],
+    ]);
+    // Everything the bar finds in Nika's record for the same question, the assistant has.
+    const bar = await searchAllPatientsFastLexical(
+      {
+        sourceTypes: [...filters.sourceTypes],
+        sections: [...filters.sections],
+      },
+      "Boitement"
+    );
+    const inRecord = bar.filter(({ patientId }) => patientId === "nika");
+    expect(inRecord.map(({ sourceId }) => sourceId)).toContain("rdv-nika");
+    const semantic = await searchPatientDocuments(
+      {
+        ...scope,
+        sourceTypes: ["soap", "document", "protocol"],
+        sections: [
+          "subjective",
+          "objective",
+          "assessment",
+          "plan",
+          "document",
+          "protocol",
+        ],
+      },
+      "Boitement"
+    );
+    const assistant = new Set(
+      [...semantic, ...words].map(
+        ({ sourceType, sourceId }) => `${sourceType}:${sourceId}`
+      )
+    );
+    for (const { sourceType, sourceId } of inRecord) {
+      expect(
+        assistant.has(`${sourceType}:${sourceId}`),
+        `${sourceType}:${sourceId}`
+      ).toBe(true);
+    }
+  });
+});
