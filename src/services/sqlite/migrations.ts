@@ -233,9 +233,17 @@ export const SQLITE_MIGRATIONS: readonly SqliteMigration[] = [
     name: "search-vector-index-state",
     sql: VECTOR_INDEX_STATE_MIGRATION_SQL,
   },
+  {
+    // Word index of the SOAP sections (FTS5), so the bar reads only the notes that may contain the query's words
+    // (soap-lexical-migration.ts); the app fills it and these triggers drop the entries of a changed note.
+    version: "048",
+    name: "soap-lexical-index",
+    sql: SOAP_LEXICAL_INDEX_MIGRATION_SQL,
+  },
 ] as const;
 
 import { SEARCH_LEXICAL_INDEX_MIGRATION_SQL } from "@/modules/consultations/local-ai/lexical-index-migration";
+import { SOAP_LEXICAL_INDEX_MIGRATION_SQL } from "@/modules/consultations/local-ai/soap-lexical-migration";
 import { VECTOR_INDEX_STATE_MIGRATION_SQL } from "@/modules/consultations/local-ai/vector-index-migration";
 import {
   LIBRARY_MIGRATION_SQL,

@@ -61,6 +61,7 @@ it("migre les rappels patients et leur historique tout en conservant les rappels
     "045",
     "046",
     "047",
+    "048",
   ]);
   expect(db.prepare("SELECT * FROM tasks").all()).toEqual(before);
   expect(
@@ -153,6 +154,7 @@ it("ouvre une base en migration 036 sans rejouer les rappels et conserve ses don
     "045",
     "046",
     "047",
+    "048",
   ]);
 
   for (const [index, table] of tables.entries()) {
@@ -169,7 +171,7 @@ it("ouvre une base en migration 036 sans rejouer les rappels et conserve ses don
       expected
     );
   }
-  expect(db.prepare("PRAGMA user_version").get()?.user_version).toBe(47);
+  expect(db.prepare("PRAGMA user_version").get()?.user_version).toBe(48);
   expect(
     db
       .prepare(
@@ -226,5 +228,6 @@ it("annule sans perte une migration interrompue et la rejoue au démarrage suiva
     "045",
     "046",
     "047",
+    "048",
   ]);
 });

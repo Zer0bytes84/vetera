@@ -35,7 +35,7 @@ import {
   recordSearchIssue,
 } from "./index-coverage-state";
 import { LocalInferenceSession } from "./inference-client";
-import { syncLexicalIndex } from "./lexical-index";
+import { syncLexicalIndex, syncSoapLexicalIndex } from "./lexical-index";
 import {
   getLocalModels,
   getLocalModelUrls,
@@ -1141,6 +1141,21 @@ export async function indexAllPatientsDocuments(
   }
   return { indexed, failures };
 }
+/** The generation counter of the passages (migration 047), or null when it cannot be read. */
+async function readPassageGeneration(db: SearchDatabase) {
+  try {
+    const [row] = await db.select<Array<{ generation: number }>>(
+      "SELECT generation FROM search_index_state WHERE id = 1"
+    );
+    return typeof row?.generation === "number" ? row.generation : null;
+  } catch {
+    return null;
+  }
+}
+/** Brings the SOAP word index up to date before the bar reads the notes; false when it cannot be used. */
+function prepareSoapLexicalIndex() {
+  return runDbTransaction((db) => syncSoapLexicalIndex(db)).catch(() => false);
+}
 /** Brings the word index up to date before a search; false when it cannot be used (the search then reads every passage). */
 function prepareLexicalIndex() {
   return runDbTransaction((db) => syncLexicalIndex(db)).catch(() => false);
@@ -1593,6 +1608,9 @@ export async function searchAllPatientsFastLexical(
     return [];
   }
   const lexicalIndex = await prepareLexicalIndex();
+  const soapIndex = filters.sourceTypes.includes("soap")
+    ? await prepareSoapLexicalIndex()
+    : false;
 
   return runDbRead(async (db) => {
     const matches: Array<
@@ -1679,6 +1697,12 @@ export async function searchAllPatientsFastLexical(
       ].includes(s)
     );
 
+    // What the passage reading has examined, so the SOAP reading below can leave out the notes it already judged:
+    // the active index key, the generation counter of the passages when the reading started (migration 047), and
+    // whether every candidate passage was read.
+    let passageKey: string | null = null;
+    let passageGeneration: number | null = null;
+    let passagesExamined = false;
     if (embeddingTypes.length > 0 && embeddingSections.length > 0) {
       try {
         const passagesSql = `SELECT
@@ -1704,6 +1728,8 @@ export async function searchAllPatientsFastLexical(
           ...embeddingTypes,
           ...embeddingSections,
         ];
+        passageKey = params[0];
+        passageGeneration = await readPassageGeneration(db);
         // The order is written out to the last column: before, the ties (sections of one passage) came out in the order
         // of whichever index the planner picked; this is that order (idx_embeddings_v2_scope), now independent of the plan.
         // With the word index, only the passages its expansion of the query selects are read; matchesSearchTerms
@@ -1772,7 +1798,9 @@ export async function searchAllPatientsFastLexical(
           offset += rows.length;
           size = Math.min(size * 2, 3200);
         }
+        passagesExamined = !signal.aborted;
       } catch {
+        passagesExamined = false;
         /* proceed to direct table queries */
       }
     }
@@ -1791,43 +1819,129 @@ export async function searchAllPatientsFastLexical(
       );
       if (soapSections.length > 0) {
         try {
-          const soaps = await db.select<
-            Array<{
-              id: string;
-              patientId: string;
-              patientName: string;
-              subjective: string;
-              objective: string;
-              assessment: string;
-              plan: string;
-            }>
-          >(
-            `SELECT s.id, s.patient_id AS patientId, p.name AS patientName,
+          interface SoapRow {
+            assessment: string;
+            id: string;
+            objective: string;
+            patientId: string;
+            patientName: string;
+            plan: string;
+            subjective: string;
+          }
+          // The order is written out: it is the one the planner gave this query before the index (patients scanned,
+          // then each patient's notes by idx_consultation_soaps_patient_id), now independent of the plan. CROSS JOIN
+          // and the unary + keep that plan with the index: the scan already comes in this order, so a page is read
+          // without sorting every candidate note (1.1 s a page at 3 000 patients otherwise) and stops at its LIMIT.
+          const soapSql = `SELECT s.id, s.patient_id AS patientId, p.name AS patientName,
                     s.subjective, s.objective, s.assessment, s.plan
-             FROM consultation_soaps s
-             JOIN patients p ON p.id = s.patient_id`
-          );
-
-          for (const s of soaps) {
-            for (const sec of soapSections as Array<
-              "subjective" | "objective" | "assessment" | "plan"
-            >) {
-              const text = s[sec];
-              if (text && matchesSearchTerms(trimmed, text)) {
-                addMatch({
-                  patientId: s.patientId,
-                  patientName: s.patientName,
-                  sourceId: s.id,
-                  sourceType: "soap",
-                  documentType: "consultation",
-                  section: sec,
-                  chunkIndex: 0,
-                  text,
-                  sourceKey: s.id,
-                  score: 0.95,
-                });
+             FROM patients p
+             CROSS JOIN consultation_soaps s ON s.patient_id = p.id`;
+          const soapOrder = " ORDER BY p.rowid, s.rowid";
+          // With the SOAP word index, only the notes whose sections its expansion of the query selects are read;
+          // matchesSearchTerms below still decides, so the matches are the same. Without it (or if it fails), every
+          // note is read. Null: no section can match.
+          const soapExpression = soapIndex
+            ? lexicalMatchExpression(trimmed)
+            : undefined;
+          // A note can be left out only when each of its sections has a passage of the active index with exactly the
+          // same text (a short section is one passage) and the passage reading above examined every candidate with no
+          // passage written since: that reading has then already given the same verdict on the same text. Any doubt
+          // (long section split in passages, note not indexed, index or counter unavailable) and the note is read.
+          const skipExamined =
+            passagesExamined &&
+            passageKey !== null &&
+            passageGeneration !== null &&
+            passageGeneration === (await readPassageGeneration(db));
+          const examinedSql = skipExamined
+            ? ` AND NOT (${soapSections
+                .map(
+                  (section) =>
+                    `(s.${section} = '' OR EXISTS (SELECT 1 FROM embeddings e WHERE e.source_type = 'soap' AND e.source_id = s.id AND e.patient_id = s.patient_id AND e.model_key = ? AND e.section = '${section}' AND e.chunk_text = s.${section}))`
+                )
+                .join(" AND ")})`
+            : "";
+          const examinedParams = skipExamined
+            ? soapSections.map(() => passageKey)
+            : [];
+          const addSoapMatches = (soaps: SoapRow[]) => {
+            for (const s of soaps) {
+              for (const sec of soapSections as Array<
+                "subjective" | "objective" | "assessment" | "plan"
+              >) {
+                const text = s[sec];
+                if (text && matchesSearchTerms(trimmed, text)) {
+                  addMatch({
+                    patientId: s.patientId,
+                    patientName: s.patientName,
+                    sourceId: s.id,
+                    sourceType: "soap",
+                    documentType: "consultation",
+                    section: sec,
+                    chunkIndex: 0,
+                    text,
+                    sourceKey: s.id,
+                    score: 0.95,
+                  });
+                }
               }
             }
+          };
+          // Notes are read page by page, in order, and reading stops once the answer is settled (resultSettled), as
+          // for the passages: later notes could only add sources after the first RESULT_LIMIT.
+          let useSoapIndex = soapExpression !== undefined;
+          const readSoaps = async (
+            offset: number,
+            size: number
+          ): Promise<{ restarted: boolean; rows: SoapRow[] }> => {
+            if (useSoapIndex) {
+              try {
+                return {
+                  restarted: false,
+                  rows: await db.select<SoapRow[]>(
+                    `${soapSql} WHERE +s.rowid IN (SELECT rowid / 4 FROM soap_lexical WHERE soap_lexical MATCH ?)${examinedSql}${soapOrder} LIMIT ? OFFSET ?`,
+                    [soapExpression, ...examinedParams, size, offset]
+                  ),
+                };
+              } catch {
+                // The index failed: every note is read from the start; addMatch ignores those already matched.
+                useSoapIndex = false;
+                return {
+                  restarted: true,
+                  rows: await db.select<SoapRow[]>(
+                    `${soapSql} WHERE 1 = 1${examinedSql}${soapOrder} LIMIT ? OFFSET ?`,
+                    [...examinedParams, size, 0]
+                  ),
+                };
+              }
+            }
+            return {
+              restarted: false,
+              rows: await db.select<SoapRow[]>(
+                `${soapSql} WHERE 1 = 1${examinedSql}${soapOrder} LIMIT ? OFFSET ?`,
+                [...examinedParams, size, offset]
+              ),
+            };
+          };
+          let soapOffset = 0;
+          let soapPage = 200;
+          while (
+            soapExpression !== null &&
+            !signal.aborted &&
+            !resultSettled()
+          ) {
+            const { restarted, rows: soaps } = await readSoaps(
+              soapOffset,
+              soapPage
+            );
+            if (restarted) {
+              soapOffset = 0;
+            }
+            addSoapMatches(soaps);
+            if (soaps.length < soapPage) {
+              break;
+            }
+            soapOffset += soaps.length;
+            soapPage = Math.min(soapPage * 2, 3200);
           }
         } catch {
           /* table might not have rows */
