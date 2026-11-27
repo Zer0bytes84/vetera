@@ -399,6 +399,32 @@ describe("Une clinique avec un historique : les cas similaires ne restent pas vi
     );
   });
 
+  it("la barre lit toutes les notes SOAP, au-delà des 100 premières", async () => {
+    addPatient("rex", "Rex");
+    for (let i = 0; i < 120; i++) {
+      addSoap("rex", "validated", {
+        subjective: `Contrôle annuel ${i}.`,
+        objective: "Examen normal.",
+        assessment: "Bonne santé.",
+        plan: "Rappel dans un an.",
+      });
+    }
+    addPatient("zora", "Zora");
+    const late = addSoap("zora", "old", {
+      ...FIELDS,
+      subjective: "Épistaxis récidivante.",
+    });
+
+    const found = await searchAllPatientsFastLexical(
+      {
+        sourceTypes: ["soap"],
+        sections: ["subjective", "objective", "assessment", "plan"],
+      },
+      "épistaxis"
+    );
+
+    expect(found.map(({ sourceId }) => sourceId)).toContain(late);
+  });
 });
 
 describe("Indexation à la validation et rattrapage en arrière-plan", () => {

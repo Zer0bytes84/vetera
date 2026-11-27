@@ -1805,8 +1805,7 @@ export async function searchAllPatientsFastLexical(
             `SELECT s.id, s.patient_id AS patientId, p.name AS patientName,
                     s.subjective, s.objective, s.assessment, s.plan
              FROM consultation_soaps s
-             JOIN patients p ON p.id = s.patient_id
-             LIMIT 100`
+             JOIN patients p ON p.id = s.patient_id`
           );
 
           for (const s of soaps) {
