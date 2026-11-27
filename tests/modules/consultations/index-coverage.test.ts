@@ -5,6 +5,7 @@ import { DatabaseSync } from "node:sqlite";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { mustExist } from "@/lib/must-exist";
 import { reviewedSoapContent } from "../../../src/modules/consultations/local-ai/soap-review";
+import { emptyPatientScopeMessage } from "../../../src/modules/consultations/search-scope";
 import {
   isValidationLost,
   VALIDATION_LOST_MESSAGE,
@@ -22,6 +23,8 @@ const fixture = vi.hoisted(() => ({
   /** Any text containing this word makes the embedding fail (a model error on one patient). */
   poison: null as string | null,
   failQueries: false,
+  /** Questions far from every note (no semantic neighbour), as with a real model for an unrelated question. */
+  distantQueries: false,
   /** While set, every embedding waits for it: lets a test act while the catch-up holds the model. */
   hold: null as Promise<void> | null,
   started: null as (() => void) | null,
@@ -126,9 +129,12 @@ vi.mock("@/modules/consultations/local-ai/inference-client", async () => {
                 resolve({
                   type: "embedded",
                   vectors: message.texts.map((_, i) =>
-                    Array.from({ length: 768 }, (__, d) =>
-                      d === i % 768 ? 1 : 0.01
-                    )
+                    Array.from({ length: 768 }, (__, d) => {
+                      if (message.query && fixture.distantQueries) {
+                        return d === 767 ? 1 : 0;
+                      }
+                      return d === i % 768 ? 1 : 0.01;
+                    })
                   ),
                 });
               };
@@ -147,6 +153,7 @@ vi.mock("@/modules/consultations/local-ai/inference-client", async () => {
 });
 
 import {
+  countMatchesOutsidePatient,
   findPatientUnreviewedMatches,
   findUnreviewedSources,
   indexAllPatientsDocuments,
@@ -282,6 +289,7 @@ beforeEach(async () => {
   fixture.embeds = 0;
   fixture.poison = null;
   fixture.failQueries = false;
+  fixture.distantQueries = false;
   fixture.hold = null;
   fixture.started = null;
   visit = 0;
@@ -555,5 +563,78 @@ describe("Une modification qui fait perdre la validation est signalée", () => {
       true
     );
     expect(VALIDATION_LOST_MESSAGE).toContain("cas similaires");
+  });
+});
+
+describe("Cas similaires limité à un dossier : une réponse vide nomme le périmètre et ce que contiennent les autres", () => {
+  it("rien dans ce dossier, des passages existent dans les autres", async () => {
+    addPatient("nika", "Nika");
+    addSoap("nika", "validated", {
+      subjective: "Toux sèche.",
+      objective: "Auscultation normale.",
+      assessment: "Trachéite.",
+      plan: "Contrôle.",
+    });
+    addPatient("dora", "Dora");
+    const dora = addSoap("dora", "validated");
+    await runIndexCatchUp();
+    fixture.distantQueries = true;
+    const scope = {
+      patientId: "nika",
+      sourceTypes: [...ALL.sourceTypes],
+      sections: [...ALL.sections],
+    };
+
+    // In Nika's record only: nothing, not even among the notes that are not validated.
+    expect(await searchPatientDocuments(scope, "Boitement")).toEqual([]);
+    expect(await findPatientUnreviewedMatches(scope, "Boitement")).toEqual([]);
+
+    // What the other records hold, said with the empty answer.
+    const outside = await countMatchesOutsidePatient(
+      { sourceTypes: [...ALL.sourceTypes], sections: [...ALL.sections] },
+      "Boitement",
+      "nika"
+    );
+    expect(outside).toEqual({ results: 1, patients: 1, capped: false });
+    const message = emptyPatientScopeMessage("Nika", "Boitement", outside);
+    expect(message).toContain(
+      "Rien dans le dossier de Nika pour « Boitement »"
+    );
+    expect(message).toContain("la recherche est limitée à ce dossier");
+    expect(message).toContain("1 résultat par mots dans 1 autre dossier.");
+
+    // The one-click widening runs the same question on every record, and finds Dora's note.
+    const widened = await searchAllPatientsClinical(
+      { sourceTypes: [...ALL.sourceTypes], sections: [...ALL.sections] },
+      "Boitement"
+    );
+    expect(widened.map(({ sourceId }) => sourceId)).toContain(dora);
+  });
+
+  it("dit aussi quand les autres dossiers n'ont rien par mots, ou quand le compte est plafonné", () => {
+    expect(
+      emptyPatientScopeMessage("Nika", "zzz", {
+        results: 0,
+        patients: 0,
+        capped: false,
+      })
+    ).toContain("ne trouve rien non plus dans les autres dossiers");
+    expect(
+      emptyPatientScopeMessage(null, "otite", {
+        results: 15,
+        patients: 9,
+        capped: true,
+      })
+    ).toContain("Rien dans ce dossier pour « otite »");
+    expect(
+      emptyPatientScopeMessage(null, "otite", {
+        results: 15,
+        patients: 9,
+        capped: true,
+      })
+    ).toContain("15 ou plus résultats par mots dans 9 autres dossiers.");
+    expect(emptyPatientScopeMessage("Nika", "otite", null)).toContain(
+      "Elle peut chercher dans tous les dossiers."
+    );
   });
 });

@@ -881,6 +881,33 @@ async function unreviewedNoteMatches(
   }
   return found;
 }
+/**
+ * What the bar finds by words outside one patient's record, for the assistant's empty answer: the number of results
+ * (the bar returns at most RESULT_LIMIT, so `capped` says there may be more) and of other records they come from.
+ */
+export async function countMatchesOutsidePatient(
+  filters: Pick<SearchScope, "sourceTypes" | "sections">,
+  query: string,
+  patientId: string,
+  signal = new AbortController().signal
+) {
+  const found = await searchAllPatientsFastLexical(filters, query, signal);
+  const outside = found.filter((match) => match.patientId !== patientId);
+  return {
+    results: outside.length,
+    patients: new Set(outside.map((match) => match.patientId)).size,
+    capped: found.length >= RESULT_LIMIT,
+  };
+}
+/** The name of a patient, for the scope shown in the assistant; null when unknown. */
+export async function readPatientName(patientId: string) {
+  const [row] = await runDbRead((db) =>
+    db.select<Array<{ name: string }>>("SELECT name FROM patients WHERE id=?", [
+      patientId,
+    ])
+  );
+  return row?.name ?? null;
+}
 /** readPatientUnreviewedMatches on the database. */
 export function findPatientUnreviewedMatches(
   scope: SearchScope,

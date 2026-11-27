@@ -96,6 +96,27 @@ Le retrait seul (commit `3e3579e9`) gardait les résultats identiques, mais il f
   - la barre rend exactement la même chose avec et sans index et compteur, y compris pour une rubrique longue dont les deux mots tombent dans deux passages.
 - **Mutations :** retirer l'égalité de texte du saut ou le déclencheur d'insertion fait échouer le test correspondant.
 
+## Correctif d'usage : le périmètre de Cas similaires (après l'essai réel)
+
+**Défaut constaté sur la vraie base.** Dès qu'un patient est ouvert, Cas similaires cherche dans « Ce dossier », et seul le résumé discret des filtres le disait. Sur Nika, « Boitement » rendait zéro sans le dire. On croyait à une panne.
+
+**Correctif :**
+- **Périmètre visible d'emblée.** Un sélecteur au-dessus du champ, « Dossier de Nika | Tous les dossiers », remplace le choix caché dans le menu des filtres. Changer de périmètre relance la recherche déjà faite.
+- **Réponse vide qui nomme le périmètre.** « Rien dans le dossier de Nika pour « Boitement » : la recherche est limitée à ce dossier. »
+- **Ce que contiennent les autres dossiers**, ajouté au message. La barre de recherche compte ses résultats par mots hors de ce dossier, par exemple « 1 résultat par mots dans 1 autre dossier », et dit « ou plus » quand elle plafonne à 15. Si elle ne trouve rien ailleurs, le message le dit et rappelle que la recherche par le sens peut encore trouver des cas proches.
+- **Élargir en un clic.** Le bouton « Chercher dans tous les dossiers » passe le périmètre à tous les dossiers et relance la même question.
+
+**Autre mécanisme, en plus du bouton demandé.** Le compte de ce que contiennent les autres dossiers dit, avant de cliquer, si élargir servira à quelque chose. C'est ce qui manquait le plus pour ne pas croire à une panne. Il coûte une recherche par mots de plus (environ 100 ms à 1 000 patients), et seulement quand le dossier ne rend rien. Je n'élargis pas automatiquement : sur un dossier ouvert, le vétérinaire cherche d'abord dans ce dossier, et un élargissement silencieux mélangerait les patients sans qu'il le voie.
+
+**Ce que le cas de Nika révèle aussi.** D'après le diagnostic de la base réelle, la barre trouvait Nika par une fiche de **consultation** (un rendez-vous), pas par une note SOAP. Or « Ce dossier » ne cherche que dans les notes SOAP, les documents et les protocoles : même la liste des notes non validées restait vide. Je propose d'ajouter au périmètre « Ce dossier » les consultations et la fiche du patient, comme les cherche la barre. Ce n'est pas fait ici.
+
+**Preuves :**
+- Test « rien dans ce dossier, des passages existent dans les autres » (`index-coverage.test.ts`). Le dossier de Nika ne rend rien, ni par le sens ni parmi les notes non validées. Le compte hors dossier donne 1 résultat dans 1 autre dossier. Le message nomme le dossier et le périmètre. L'élargissement retrouve la note de Dora.
+- Un second test couvre les variantes du message : rien ailleurs, compte plafonné, patient sans nom.
+- **Mutation :** un compte hors dossier toujours vide fait échouer le test.
+- Suite complète 2 453 tests verts, typecheck et lint à 0, biome sans hausse, démarrage 283,5 ko gzip.
+- **Non vu dans la vraie fenêtre :** le sélecteur, le message et le bouton. Il n'y a pas de test d'interface dans le projet (pas de testing-library) ; la logique est testée, l'affichage non.
+
 ## Ce qui n'est pas prouvé
 
 - **L'erreur réelle de l'app sur ta base** : on la verra dans l'assistant au prochain essai.

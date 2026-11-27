@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { PromptSuggestions } from "@/components/ui/prompt-suggestions";
+import { Segmented } from "@/components/ui/segmented-control";
 import { SourceList } from "@/components/ui/source-list";
 import { ToolCallBlock } from "@/components/ui/tool-call-block";
 import {
@@ -42,10 +43,12 @@ import type {
   SourceType,
 } from "../local-ai/embedding-index";
 import {
+  countMatchesOutsidePatient,
   findPatientUnreviewedMatches,
   findUnreviewedSources,
   indexAllPatientsDocuments,
   indexPatientDocuments,
+  readPatientName,
   searchAllPatientsClinical,
   searchPatientDocuments,
 } from "../local-ai/embedding-store";
@@ -58,6 +61,11 @@ import {
 import { getLocalModels, importLocalModel } from "../local-ai/models";
 import { bestPassage } from "../local-ai/passage-search";
 import { highlightPassage } from "../local-ai/search-highlight";
+import {
+  emptyPatientScopeMessage,
+  type OutsideMatches,
+  patientScopeLabel,
+} from "../search-scope";
 import "./assistant-thinking.css";
 import { guard } from "@/lib/guard";
 
@@ -254,6 +262,29 @@ export function PatientDocumentSearch({
     getIndexCoverage
   );
   const [unreviewed, setUnreviewed] = useState<UnreviewedMatch[]>([]);
+  // The record the search is limited to, named; and, after an empty answer in that record, what the others hold.
+  const [patientName, setPatientName] = useState<string | null>(null);
+  const [emptyScope, setEmptyScope] = useState<{
+    query: string;
+    outside: OutsideMatches | null;
+  } | null>(null);
+  useEffect(() => {
+    let alive = true;
+    if (patientId) {
+      void readPatientName(patientId)
+        .then((name) => {
+          if (alive) {
+            setPatientName(name);
+          }
+        })
+        .catch(() => {
+          // Sans nom lisible, le périmètre reste « Ce dossier ».
+        });
+    }
+    return () => {
+      alive = false;
+    };
+  }, [patientId]);
   // The last operation the assistant ran, shown as one folded row: what it did, how long it took, what it found.
   const [lastRun, setLastRun] = useState<{
     id: number;
@@ -314,8 +345,13 @@ export function PatientDocumentSearch({
     return () => window.removeEventListener("sqlite-row-saved", invalidate);
   }, []);
 
-  const run = async (indexOnly: boolean, forcedQuery?: string) => {
+  const run = async (
+    indexOnly: boolean,
+    forcedQuery?: string,
+    forcedAudience?: "patient" | "all"
+  ) => {
     const searchQuery = forcedQuery === undefined ? query : forcedQuery;
+    const allRecords = (forcedAudience ?? audience) === "all" || !patientId;
     active.current?.abort();
     const controller = new AbortController();
     active.current = controller;
@@ -323,6 +359,7 @@ export function PatientDocumentSearch({
     setError("");
     setResults([]);
     setUnreviewed([]);
+    setEmptyScope(null);
     setMessage(indexOnly ? "Indexation des documents…" : "Recherche en cours…");
     const startedAt = Date.now();
     setLastRun({
@@ -336,19 +373,18 @@ export function PatientDocumentSearch({
     return await guard(
       async () => {
         if (indexOnly) {
-          const report =
-            audience === "all" || !patientId
-              ? await indexAllPatientsDocuments(controller.signal, (event) =>
-                  setMessage(event.message)
-                )
-              : {
-                  indexed: await indexPatientDocuments(
-                    patientId,
-                    controller.signal,
-                    (event) => setMessage(event.message)
-                  ),
-                  failures: [],
-                };
+          const report = allRecords
+            ? await indexAllPatientsDocuments(controller.signal, (event) =>
+                setMessage(event.message)
+              )
+            : {
+                indexed: await indexPatientDocuments(
+                  patientId,
+                  controller.signal,
+                  (event) => setMessage(event.message)
+                ),
+                failures: [],
+              };
           if (!controller.signal.aborted) {
             const done = report.indexed
               ? `${report.indexed.toLocaleString("fr-FR")} extraits validés et indexés.`
@@ -402,42 +438,15 @@ export function PatientDocumentSearch({
             sourceTypes: targetSources,
             sections: targetSections,
           };
-          const found =
-            audience === "all" || !patientId
-              ? await searchAllPatientsClinical(
-                  filters,
-                  searchQuery,
-                  controller.signal,
-                  (event) => setMessage(event.message)
-                )
-              : await searchPatientDocuments(
-                  {
-                    patientId,
-                    sourceTypes: targetSources.filter((t) =>
-                      ["soap", "document", "protocol"].includes(t)
-                    ) as SourceType[],
-                    sections: targetSections.filter((s) =>
-                      [
-                        "subjective",
-                        "objective",
-                        "assessment",
-                        "plan",
-                        "document",
-                        "protocol",
-                      ].includes(s)
-                    ) as SearchSection[],
-                  },
-                  searchQuery,
-                  controller.signal,
-                  (event) => setMessage(event.message)
-                );
-
-          // The assistant does not find less than the bar: what the bar finds by words in notes and documents that
-          // are not validated is shown too, apart and labelled, since those have no passage to rank.
-          const patientScope =
-            audience === "all" || !patientId
-              ? null
-              : {
+          const found = allRecords
+            ? await searchAllPatientsClinical(
+                filters,
+                searchQuery,
+                controller.signal,
+                (event) => setMessage(event.message)
+              )
+            : await searchPatientDocuments(
+                {
                   patientId,
                   sourceTypes: targetSources.filter((t) =>
                     ["soap", "document", "protocol"].includes(t)
@@ -452,7 +461,32 @@ export function PatientDocumentSearch({
                       "protocol",
                     ].includes(s)
                   ) as SearchSection[],
-                };
+                },
+                searchQuery,
+                controller.signal,
+                (event) => setMessage(event.message)
+              );
+
+          // The assistant does not find less than the bar: what the bar finds by words in notes and documents that
+          // are not validated is shown too, apart and labelled, since those have no passage to rank.
+          const patientScope = allRecords
+            ? null
+            : {
+                patientId,
+                sourceTypes: targetSources.filter((t) =>
+                  ["soap", "document", "protocol"].includes(t)
+                ) as SourceType[],
+                sections: targetSections.filter((s) =>
+                  [
+                    "subjective",
+                    "objective",
+                    "assessment",
+                    "plan",
+                    "document",
+                    "protocol",
+                  ].includes(s)
+                ) as SearchSection[],
+              };
           const notValidated = patientScope
             ? await findPatientUnreviewedMatches(patientScope, searchQuery)
             : [];
@@ -470,6 +504,27 @@ export function PatientDocumentSearch({
             setUnreviewed(notValidated);
             setSearchedQuery(searchQuery);
             setMessage(searchOutcome(found.length, notValidated.length));
+          }
+          // Nothing in this record: say that the search was limited to it, and what the other records hold by
+          // words, so an empty answer does not look like a failure; one click widens it (see the empty state).
+          if (
+            patientScope &&
+            !found.length &&
+            !notValidated.length &&
+            !controller.signal.aborted
+          ) {
+            const outside = await countMatchesOutsidePatient(
+              filters,
+              searchQuery,
+              patientScope.patientId,
+              controller.signal
+            ).catch(() => null);
+            if (!controller.signal.aborted) {
+              setEmptyScope({ query: searchQuery, outside });
+              setMessage(
+                emptyPatientScopeMessage(patientName, searchQuery, outside)
+              );
+            }
           }
         }
       },
@@ -549,6 +604,8 @@ export function PatientDocumentSearch({
     active.current?.abort();
     setLastRun(null);
     setResults([]);
+    setUnreviewed([]);
+    setEmptyScope(null);
     setMessage("");
     setError("");
   };
@@ -596,6 +653,25 @@ export function PatientDocumentSearch({
 
   return (
     <div className="flex h-full min-h-0 flex-1 flex-col gap-2.5 overflow-hidden text-foreground">
+      {patientId ? (
+        <Segmented<"patient" | "all">
+          className="flex w-full shrink-0 [&>button]:flex-1"
+          label="Où chercher"
+          onValueChange={(value) => {
+            setAudience(value);
+            resetResults();
+            // A search already made is run again in the new scope.
+            if (searchedQuery.trim() && !locked) {
+              void run(false, searchedQuery, value);
+            }
+          }}
+          options={[
+            { value: "patient", label: patientScopeLabel(patientName) },
+            { value: "all", label: "Tous les dossiers" },
+          ]}
+          value={audience}
+        />
+      ) : null}
       <form
         className="flex shrink-0 items-center gap-2"
         onSubmit={(event) => {
@@ -693,26 +769,6 @@ export function PatientDocumentSearch({
             }
           />
           <DropdownMenuContent align="start" className="w-60">
-            <DropdownMenuLabel>Rechercher dans</DropdownMenuLabel>
-            <DropdownMenuRadioGroup
-              onValueChange={(value) => {
-                setAudience(value as "patient" | "all");
-                resetResults();
-              }}
-              value={patientId ? audience : "all"}
-            >
-              <DropdownMenuRadioItem
-                className="t-12"
-                disabled={!patientId}
-                value="patient"
-              >
-                Ce dossier patient
-              </DropdownMenuRadioItem>
-              <DropdownMenuRadioItem className="t-12" value="all">
-                Tous les patients
-              </DropdownMenuRadioItem>
-            </DropdownMenuRadioGroup>
-            <DropdownMenuSeparator />
             <DropdownMenuLabel>Source</DropdownMenuLabel>
             <DropdownMenuRadioGroup
               onValueChange={(value) => {
@@ -822,30 +878,59 @@ export function PatientDocumentSearch({
       <CoverageNotice coverage={coverage} />
 
       <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
-        {results.length === 0 && unreviewed.length === 0 && !busy && !error && (
+        {emptyScope && audience === "patient" && !busy && !error && (
           <div className="flex flex-col items-center gap-3 px-4 py-8 text-center">
-            <p className="t-12 max-w-[320px] text-muted-foreground">
-              {query.trim()
-                ? "Aucun passage trouvé. Essayez un synonyme, une reformulation ou élargissez les filtres."
-                : "Retrouvez le passage utile dans les notes, documents et protocoles validés : symptômes, pathologies, molécules ou synonymes."}
+            <p
+              className="t-12 max-w-[320px] text-muted-foreground"
+              role="status"
+            >
+              {emptyPatientScopeMessage(
+                patientName,
+                emptyScope.query,
+                emptyScope.outside
+              )}
             </p>
-            {!query.trim() && (
-              <PromptSuggestions
-                className="items-center"
-                data={SUGGESTED_QUERIES.map((suggested) => ({
-                  id: suggested,
-                  title: suggested,
-                }))}
-                heading="Suggestions"
-                onSelect={(_, prompt) => {
-                  setQuery(prompt);
-                  void run(false, prompt);
-                }}
-                variant="chips"
-              />
-            )}
+            <Button
+              className="gap-2"
+              onClick={() => {
+                setAudience("all");
+                void run(false, emptyScope.query, "all");
+              }}
+              size="sm"
+            >
+              <Search className="size-3.5" />
+              Chercher dans tous les dossiers
+            </Button>
           </div>
         )}
+        {!emptyScope &&
+          results.length === 0 &&
+          unreviewed.length === 0 &&
+          !busy &&
+          !error && (
+            <div className="flex flex-col items-center gap-3 px-4 py-8 text-center">
+              <p className="t-12 max-w-[320px] text-muted-foreground">
+                {query.trim()
+                  ? "Aucun passage trouvé. Essayez un synonyme, une reformulation ou élargissez les filtres."
+                  : "Retrouvez le passage utile dans les notes, documents et protocoles validés : symptômes, pathologies, molécules ou synonymes."}
+              </p>
+              {!query.trim() && (
+                <PromptSuggestions
+                  className="items-center"
+                  data={SUGGESTED_QUERIES.map((suggested) => ({
+                    id: suggested,
+                    title: suggested,
+                  }))}
+                  heading="Suggestions"
+                  onSelect={(_, prompt) => {
+                    setQuery(prompt);
+                    void run(false, prompt);
+                  }}
+                  variant="chips"
+                />
+              )}
+            </div>
+          )}
 
         {results.length > 0 && (
           <SourceList
