@@ -82,9 +82,17 @@ it("barre de recherche, sortie et temps", async () => {
       query
     );
   // La première recherche peut construire l'index de mots : elle ne compte pas.
+  const firstStart = performance.now();
   await search(LEXICAL_QUERIES[0]);
+  const firstMs = Math.round((performance.now() - firstStart) * 10) / 10;
   const runs: Array<{ query: string; ms: number; results: unknown[] }> = [];
-  for (const query of LEXICAL_QUERIES) {
+  // BARRE_ONLY (questions séparées par « | ») et BARRE_REPEAT : rejouer quelques questions, plusieurs fois.
+  const only = process.env.BARRE_ONLY?.split("|");
+  const repeat = Number(process.env.BARRE_REPEAT ?? 1);
+  const queries = (only ?? LEXICAL_QUERIES).flatMap((query) =>
+    Array.from({ length: repeat }, () => query)
+  );
+  for (const query of queries) {
     const start = performance.now();
     const results = await search(query);
     runs.push({
@@ -94,6 +102,9 @@ it("barre de recherche, sortie et temps", async () => {
     });
   }
   writeFileSync(process.env.BARRE_OUT ?? "/dev/stdout", JSON.stringify(runs));
+  if (process.env.BARRE_FIRST_OUT) {
+    writeFileSync(process.env.BARRE_FIRST_OUT, JSON.stringify({ firstMs }));
+  }
   fixture.db.close();
-  expect(runs.length).toBe(LEXICAL_QUERIES.length);
+  expect(runs.length).toBe(queries.length);
 });
