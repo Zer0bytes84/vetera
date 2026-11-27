@@ -4,7 +4,7 @@
 // de chaque résultat. Aucun texte clinique n'est écrit, seulement des longueurs et des noms de rubriques.
 // DIAG_BASE=<copie.db> DIAG_OUT=<sortie.json> DIAG_QUERY="Boitement de l'animal" \
 //   npx vitest run --config docs/recus/2026-11-26-fondations/outils/vitest.banc.config.ts diagnostic
-import { writeFileSync } from "node:fs";
+import { existsSync, writeFileSync } from "node:fs";
 import { DatabaseSync } from "node:sqlite";
 import { expect, it, vi } from "vitest";
 
@@ -227,6 +227,13 @@ it("diagnostic de couverture", async () => {
     })
   );
 
+  // A copy made without its -wal file misses the latest writes (migrations, passages): say so in the output.
+  const state = {
+    userVersion: (
+      db.prepare("PRAGMA user_version").get() as { user_version: number }
+    ).user_version,
+    walAcote: existsSync(`${base}-wal`),
+  };
   const query = process.env.DIAG_QUERY ?? "Boitement de l'animal";
   const ALL = {
     sourceTypes: [
@@ -262,6 +269,7 @@ it("diagnostic de couverture", async () => {
 
   const out = {
     base,
+    state,
     query,
     soaps: soapReport,
     documents: noteReport,
@@ -275,6 +283,7 @@ it("diagnostic de couverture", async () => {
   console.log(
     JSON.stringify(
       {
+        state,
         soaps: soapReport.map((s) => [
           s.patient,
           s.eligible ? "indexable" : s.reason,
