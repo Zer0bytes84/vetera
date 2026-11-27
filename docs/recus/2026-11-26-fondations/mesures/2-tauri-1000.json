@@ -1,0 +1,171 @@
+{
+ "note": "Vraie fenêtre Tauri (WKWebView), Rust en release (tauri dev --release), Mac M1 8 Go, HOME d'emprunt sur la clinique synthétique. Chemins : actuel = boucle par patient d'origine ; repare = rankAllPatientsPassages avec index lexical (fin de phase 1) ; natif = rankAllPatientsPassagesNatively (recherche_vecteurs).",
+ "premiereSerie": {
+  "patients": 1000,
+  "partie": "temps",
+  "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko)",
+  "invokeVideMs": 0.2,
+  "select1Ms": 0.3,
+  "fiche": {
+   "grosDossier": {
+    "avantMs": 157.2,
+    "avantLignes": 17574,
+    "apresMs": 21.9,
+    "apresLignes": 2287
+   },
+   "dossierCourant": {
+    "avantMs": 161.9,
+    "avantLignes": 17574,
+    "apresMs": 17.9,
+    "apresLignes": 1682
+   }
+  },
+  "actuelMs": 5570.4,
+  "repare": {
+   "runs": [
+    1263.1,
+    2661.4,
+    1325.3,
+    2481.6,
+    1829.4
+   ],
+   "medianMs": 1829.4
+  },
+  "premierRust": {
+   "loaded": true,
+   "loadMs": 306.8,
+   "searchMs": 16.6,
+   "indexed": 20780,
+   "lignes": 1
+  },
+  "premierAppelMs": 346.6,
+  "natifChaud": {
+   "questions": 40,
+   "medianMs": 1218.7,
+   "p95Ms": 1713.4,
+   "maxMs": 2047.5,
+   "invokeMedianMs": 22.4,
+   "rustMedianMs": 15.1,
+   "lignesMedian": 10123,
+   "lignesMax": 18648
+  },
+  "commandeSeule": {
+   "medianMs": 18.6,
+   "p95Ms": 19
+  },
+  "lexical": {
+   "runs": [
+    196,
+    122.2,
+    112.5,
+    109.9,
+    1172.7,
+    94,
+    2207.2,
+    136.1,
+    127.4,
+    105.3
+   ],
+   "medianMs": 127.4
+  }
+ },
+ "serieFinale": {
+  "patients": 1000,
+  "partie": "temps",
+  "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko)",
+  "invokeVideMs": 0.2,
+  "select1Ms": 0.3,
+  "fiche": {
+   "grosDossier": {
+    "avantMs": 161.8,
+    "avantLignes": 17574,
+    "apresMs": 22.7,
+    "apresLignes": 2287
+   },
+   "dossierCourant": {
+    "avantMs": 158.6,
+    "avantLignes": 17574,
+    "apresMs": 17.1,
+    "apresLignes": 1682
+   }
+  },
+  "repare": {
+   "runs": [
+    1109.1,
+    2582.7,
+    1145.4,
+    2365.7,
+    1953.7
+   ],
+   "medianMs": 1953.7
+  },
+  "premierRust": {
+   "loaded": false,
+   "loadMs": 0,
+   "searchMs": 28.6,
+   "indexed": 20780,
+   "lignes": 1
+  },
+  "premierAppelMs": 45.7,
+  "natifChaud": {
+   "questions": 40,
+   "medianMs": 87.9,
+   "p95Ms": 96.7,
+   "maxMs": 108.7,
+   "invokeMedianMs": 20,
+   "rustMedianMs": 15,
+   "lignesMedian": 4,
+   "lignesMax": 18648
+  },
+  "commandeSeule": {
+   "medianMs": 18.8,
+   "p95Ms": 22.1
+  },
+  "lexical": {
+   "runs": [
+    354.7,
+    110.8,
+    118.6,
+    120.1,
+    1268,
+    94.3,
+    2264,
+    136,
+    110,
+    108.3
+   ],
+   "medianMs": 120.1
+  }
+ },
+ "froid": {
+  "patients": 1000,
+  "partie": "froid",
+  "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko)",
+  "premierAppelMs": 290.3,
+  "rust": {
+   "loaded": true,
+   "loadMs": 241.3,
+   "searchMs": 18.2,
+   "indexed": 20780
+  },
+  "rssAvantKo": 112736,
+  "rssApresKo": 166560
+ },
+ "egaliteReference": {
+  "patients": 1000,
+  "partie": "reference",
+  "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko)",
+  "questions": 200,
+  "identiques": 200,
+  "ecartScoreMax": 2.4424906541753444e-15,
+  "differences": []
+ },
+ "egaliteDirecte": {
+  "patients": 1000,
+  "partie": "directe",
+  "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko)",
+  "questions": 40,
+  "identiques": 40,
+  "ecartScoreMax": 2.220446049250313e-16
+ }
+}

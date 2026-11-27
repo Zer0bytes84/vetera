@@ -163,7 +163,9 @@ async fn start_host(app: &AppHandle, network: &ClinicNetwork, settings: &Network
     if let Some(previous) = running.take() {
         previous.server.stop().await;
     }
-    let config = HostConfig::new(database_path, key, settings.workstation_name.clone());
+    let mut config = HostConfig::new(database_path, key, settings.workstation_name.clone());
+    // One index for this workstation's own searches and for those it runs for the secondary workstations.
+    config.vectors = app.state::<crate::vector_search::VectorState>().0.clone();
     let server = HostServer::start(config, SocketAddr::from((Ipv4Addr::UNSPECIFIED, settings.port))).await?;
     let (advertiser, advertise_error) = match Advertiser::start(&settings.workstation_name, server.address().port()) {
         Ok(advertiser) => (Some(advertiser), None),
@@ -378,6 +380,21 @@ pub async fn clinic_network_connect(
     let reply = client.hello().await?;
     *network.client.lock().await = Some(client);
     Ok(RemoteHostInfo { address, app_version: reply.app_version, workstation_name: reply.workstation_name })
+}
+
+impl ClinicNetwork {
+    /// This workstation reads the main workstation's database (mode chosen at launch).
+    pub fn is_client(&self) -> bool {
+        *self.launch_mode.lock().unwrap() == NetworkMode::Client
+    }
+}
+
+/// The semantic search of a secondary workstation runs on the main workstation.
+pub async fn remote_vectors(
+    network: &ClinicNetwork,
+    query: crate::vector_search::VectorQuery,
+) -> Result<crate::vector_search::VectorReply, String> {
+    remote(network).await?.vectors(query).await
 }
 
 async fn remote(network: &ClinicNetwork) -> Result<Arc<RemoteClient>, String> {

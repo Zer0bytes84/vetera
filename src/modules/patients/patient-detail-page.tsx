@@ -254,18 +254,18 @@ export function PatientDetailPage({
   const { currentUser } = useAuth();
   const { requestFocus } = useFocus();
   const patientsRepo = usePatientsRepository();
-  const appointmentsRepo = useAppointmentsRepository();
-  const prescriptionsRepo = usePrescriptionsRepository();
+  const appointmentsRepo = useAppointmentsRepository({ patientId });
+  const prescriptionsRepo = usePrescriptionsRepository({ patientId });
   const prescriptionItemsRepo = usePrescriptionItemsRepository();
-  const vaccinationsRepo = useVaccinationsRepository();
-  const weightsRepo = useWeightEntriesRepository();
-  const soapsRepo = useConsultationSoapsRepository();
-  const notesRepo = useNotesRepository();
+  const vaccinationsRepo = useVaccinationsRepository({ patientId });
+  const weightsRepo = useWeightEntriesRepository({ patientId });
+  const soapsRepo = useConsultationSoapsRepository({ patientId });
+  const notesRepo = useNotesRepository({ patientId });
   const ownersRepo = useOwnersRepository();
-  const tasksRepo = useTasksRepository();
-  const hospitalizationsRepo = useHospitalizationsRepository();
-  const anesthesiaRepo = useAnesthesiaSheetsRepository();
-  const documentsRepo = useConsultationDocumentsRepository();
+  const tasksRepo = useTasksRepository({ patientId });
+  const hospitalizationsRepo = useHospitalizationsRepository({ patientId });
+  const anesthesiaRepo = useAnesthesiaSheetsRepository({ patientId });
+  const documentsRepo = useConsultationDocumentsRepository({ patientId });
   // First read of the record's sources (all of them, read side by side): the page draws the record's skeleton (header, key figures, record) at the height the record
   // took last time, instead of a spinner in an empty page. Revealed after 150 ms, kept 300 ms.
   const recordLoading = [

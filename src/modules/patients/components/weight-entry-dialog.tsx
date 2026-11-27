@@ -70,7 +70,7 @@ export function WeightEntryDialog({
 }: WeightEntryDialogProps) {
   const { t } = useTranslation();
   const { currentUser } = useAuth();
-  const repo = useWeightEntriesRepository();
+  const repo = useWeightEntriesRepository({ patientId });
   const isEditing = Boolean(weightEntry?.id);
 
   const [weight, setWeight] = useState("");

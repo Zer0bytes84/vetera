@@ -125,7 +125,7 @@ describe("runSqliteMigrations", () => {
     expect(noteColumns).toContain("patient_id");
     expect(
       database.connection.prepare("PRAGMA user_version").get()?.user_version
-    ).toBe(45);
+    ).toBe(47);
   });
 
   it("rolls back an entire migration when one statement fails", async () => {
@@ -249,6 +249,8 @@ describe("runSqliteMigrations", () => {
       "043",
       "044",
       "045",
+      "046",
+      "047",
     ]);
 
     const state = database.connection
@@ -380,6 +382,8 @@ describe("runSqliteMigrations", () => {
       "043",
       "044",
       "045",
+      "046",
+      "047",
     ]);
     await database.execute(
       `UPDATE owners
@@ -481,10 +485,12 @@ describe("runSqliteMigrations", () => {
       "043",
       "044",
       "045",
+      "046",
+      "047",
     ]);
     expect(
       database.connection.prepare("PRAGMA user_version").get()?.user_version
-    ).toBe(45);
+    ).toBe(47);
 
     expect(
       database.connection
@@ -750,6 +756,8 @@ describe("runSqliteMigrations", () => {
       "043",
       "044",
       "045",
+      "046",
+      "047",
     ]);
 
     expect(
@@ -1047,6 +1055,8 @@ describe("runSqliteMigrations", () => {
       "043",
       "044",
       "045",
+      "046",
+      "047",
     ]);
     expect(await runSqliteMigrations(database, SQLITE_MIGRATIONS)).toEqual([]);
     expect(await database.select("SELECT id FROM owners")).toEqual([
@@ -1136,6 +1146,6 @@ describe("la bibliothèque des Documents (migrations 044 et 045)", () => {
     );
     await expect(
       runSqliteMigrations(database, SQLITE_MIGRATIONS)
-    ).resolves.toEqual(["045"]);
+    ).resolves.toEqual(["045", "046", "047"]);
   });
 });

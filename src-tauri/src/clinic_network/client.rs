@@ -220,6 +220,39 @@ impl RemoteClient {
         Ok(self.query(QueryKind::Select, sql, values).await?.rows.unwrap_or_default())
     }
 
+    /// Runs the semantic search on the main workstation. An older host has no such route: the error makes the page
+    /// fall back on its TypeScript search.
+    pub async fn vectors(
+        &self,
+        query: crate::vector_search::VectorQuery,
+    ) -> Result<crate::vector_search::VectorReply, String> {
+        let mut session = self.session.lock().await;
+        let mut reopened = false;
+        loop {
+            let id = match session.id.clone() {
+                Some(id) => id,
+                None => {
+                    let reply = self.open_session().await.map_err(|f| self.explain(f))?;
+                    session.id = Some(reply.session_id.clone());
+                    reply.session_id
+                }
+            };
+            let request = VectorsRequest { session_id: id, query: query.clone() };
+            match self.post("/v1/vectors", &request).await {
+                Ok(reply) => return Ok(reply),
+                // Unknown session, or a host without the route (404 too): one fresh session, then give up.
+                Err(Failure::Session) if !reopened && !session.in_transaction => {
+                    session.id = None;
+                    reopened = true;
+                }
+                Err(Failure::Session) => {
+                    return Err("Le poste principal ne propose pas la recherche native.".into());
+                }
+                Err(failure) => return Err(self.explain(failure)),
+            }
+        }
+    }
+
     pub async fn close(&self) {
         let mut session = self.session.lock().await;
         if let Some(id) = session.id.take() {

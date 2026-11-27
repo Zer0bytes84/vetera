@@ -9,7 +9,11 @@ import {
   assertNoAppointmentConflict,
   normalizeAppointmentInterval,
 } from "@/domain/clinical/scheduling";
-import { useSQLite } from "@/hooks/useSQLite";
+import {
+  mapTableRow,
+  type UseSQLiteOptions,
+  useSQLite,
+} from "@/hooks/useSQLite";
 import { withSanitizedContent } from "@/lib/sanitize-html";
 import { PATIENTS_WITH_REFERENCE_SQL } from "@/modules/patients/reference/reference";
 import { roomsService } from "@/modules/rooms/service";
@@ -188,8 +192,36 @@ export function useOwnersRepository() {
   return { ...store, update };
 }
 
-export function useAppointmentsRepository() {
-  const appointmentsStore = useSQLite<Appointment>("appointments");
+/**
+ * Les rendez-vous qui peuvent entrer en conflit avec un créneau : un conflit ne naît que du même vétérinaire ou de la
+ * même salle (findAppointmentConflicts). Une lecture par patient n'a pas les rendez-vous des autres patients ; on lit
+ * alors ces seuls candidats, auxquels s'ajoutent les lignes visibles du patient (écritures optimistes comprises).
+ */
+export async function appointmentConflictCandidates(
+  vetId: string,
+  room: string | undefined,
+  visible: readonly Appointment[]
+): Promise<Appointment[]> {
+  const stored = isTauriRuntime()
+    ? (
+        await runDbRead((db) =>
+          db.select<Record<string, unknown>[]>(
+            "SELECT * FROM appointments WHERE vet_id = ? OR (? IS NOT NULL AND room = ?)",
+            [vetId, room ?? null, room ?? null]
+          )
+        )
+      ).map((row) => mapTableRow("appointments", row) as unknown as Appointment)
+    : getBrowserTable<Appointment>("appointments");
+  const byId = new Map(stored.map((row) => [row.id, row]));
+  for (const row of visible) {
+    byId.set(row.id, row);
+  }
+  return [...byId.values()];
+}
+
+export function useAppointmentsRepository(options?: UseSQLiteOptions) {
+  const appointmentsStore = useSQLite<Appointment>("appointments", options);
+  const scoped = Boolean(options?.patientId);
   const patientsStore = useSQLite<Patient>("patients");
   const usersStore = useSQLite<User>("users");
   const transactionsStore = useSQLite<Transaction>("transactions");
@@ -270,7 +302,13 @@ export function useAppointmentsRepository() {
         room,
         ...interval,
       },
-      appointmentsStore.data
+      scoped
+        ? await appointmentConflictCandidates(
+            finalVetId,
+            room,
+            appointmentsStore.data
+          )
+        : appointmentsStore.data
     );
 
     const payload = {
@@ -951,8 +989,8 @@ export function useProductsRepository() {
   };
 }
 
-export function useTasksRepository() {
-  const tasksStore = useSQLite<Task>("tasks");
+export function useTasksRepository(options?: UseSQLiteOptions) {
+  const tasksStore = useSQLite<Task>("tasks", options);
   const usersStore = useSQLite<User>("users");
 
   const assignTask = async (taskId: string, userId: string | null) => {
@@ -978,8 +1016,8 @@ export function useTasksRepository() {
  * d'un import ou d'un poste pair sans être passée par l'éditeur ; à l'écriture, pour que la base n'en reçoive pas de
  * l'application. Le contenu d'une note propre est rendu tel quel (même objet).
  */
-export function useNotesRepository() {
-  const notesStore = useSQLite<Note>("notes");
+export function useNotesRepository(options?: UseSQLiteOptions) {
+  const notesStore = useSQLite<Note>("notes", options);
   const data = useMemo(
     () => notesStore.data.map(withSanitizedContent),
     [notesStore.data]
@@ -1010,12 +1048,12 @@ export function useLibraryItemsRepository() {
   return useSQLite<LibraryItem>("library_items");
 }
 
-export function useConsultationDocumentsRepository() {
-  return useSQLite<ConsultationDocument>("consultation_documents");
+export function useConsultationDocumentsRepository(options?: UseSQLiteOptions) {
+  return useSQLite<ConsultationDocument>("consultation_documents", options);
 }
 
-export function useWeightEntriesRepository() {
-  const store = useSQLite<WeightEntry>("weight_entries");
+export function useWeightEntriesRepository(options?: UseSQLiteOptions) {
+  const store = useSQLite<WeightEntry>("weight_entries", options);
   return {
     ...store,
     /** Toutes les pesées d'un patient, triées par date croissante */
@@ -1039,8 +1077,8 @@ export function useWeightEntriesRepository() {
   };
 }
 
-export function useVaccinationsRepository() {
-  const store = useSQLite<Vaccination>("vaccinations");
+export function useVaccinationsRepository(options?: UseSQLiteOptions) {
+  const store = useSQLite<Vaccination>("vaccinations", options);
   return {
     ...store,
     /** Carnet de vaccination d'un patient, trié par date d'administration décroissante */
@@ -1055,8 +1093,8 @@ export function useVaccinationsRepository() {
   };
 }
 
-export function useConsultationSoapsRepository() {
-  const store = useSQLite<ConsultationSoap>("consultation_soaps");
+export function useConsultationSoapsRepository(options?: UseSQLiteOptions) {
+  const store = useSQLite<ConsultationSoap>("consultation_soaps", options);
   return {
     ...store,
     /** SOAP d'une consultation (par appointmentId, 1-1). */
@@ -1123,8 +1161,8 @@ export function useConsultationSoapsRepository() {
   };
 }
 
-export function usePrescriptionsRepository() {
-  const store = useSQLite<Prescription>("prescriptions");
+export function usePrescriptionsRepository(options?: UseSQLiteOptions) {
+  const store = useSQLite<Prescription>("prescriptions", options);
   return {
     ...store,
     forAppointment: (appointmentId: string) =>
@@ -1163,8 +1201,8 @@ export function usePrescriptionItemsRepository() {
   };
 }
 
-export function useHospitalizationsRepository() {
-  const store = useSQLite<Hospitalization>("hospitalizations");
+export function useHospitalizationsRepository(options?: UseSQLiteOptions) {
+  const store = useSQLite<Hospitalization>("hospitalizations", options);
   return {
     ...store,
     forPatient: (patientId: string) =>
@@ -1202,9 +1240,10 @@ export function useHospitalizationVitalsRepository() {
   };
 }
 
-export function useAnesthesiaSheetsRepository() {
-  const store = useSQLite<AnesthesiaSheet>("anesthesia_sheets");
-  const tasksStore = useSQLite<Task>("tasks");
+export function useAnesthesiaSheetsRepository(options?: UseSQLiteOptions) {
+  const store = useSQLite<AnesthesiaSheet>("anesthesia_sheets", options);
+  // Les tâches post-opératoires d'une fiche sont celles de son patient : même portée que les fiches.
+  const tasksStore = useSQLite<Task>("tasks", options);
   const ensurePostOpTasks = async (sheet: AnesthesiaSheet) => {
     if (sheet.status !== "completed" || !sheet.endedAt) {
       return;

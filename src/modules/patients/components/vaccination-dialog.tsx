@@ -49,7 +49,7 @@ export function VaccinationDialog({
 }: VaccinationDialogProps) {
   const { t } = useTranslation();
   const { currentUser } = useAuth();
-  const repo = useVaccinationsRepository();
+  const repo = useVaccinationsRepository({ patientId });
   const isEditing = Boolean(vaccination?.id);
 
   const [vaccineName, setVaccineName] = useState("");

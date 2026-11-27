@@ -39,9 +39,9 @@ export function PatientPeek({
 }) {
   const patients = usePatientsRepository();
   const owners = useOwnersRepository();
-  const appointments = useAppointmentsRepository();
-  const vaccinations = useVaccinationsRepository();
-  const weights = useWeightEntriesRepository();
+  const appointments = useAppointmentsRepository({ patientId });
+  const vaccinations = useVaccinationsRepository({ patientId });
+  const weights = useWeightEntriesRepository({ patientId });
   const profileLoading = patients.loading || owners.loading;
   const historyLoading = appointments.loading;
   const followUpLoading = vaccinations.loading || weights.loading;

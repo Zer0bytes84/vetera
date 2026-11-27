@@ -49,7 +49,7 @@ export function AnesthesiaSheetDialog({
   onCreated?: (sheet: AnesthesiaSheet) => void;
 }) {
   const { t } = useTranslation();
-  const repo = useAnesthesiaSheetsRepository();
+  const repo = useAnesthesiaSheetsRepository({ patientId: patient.id });
   const initial = defaultState();
   const [procedureName, setProcedureName] = useState(initial.procedureName);
   const [asaStatus, setAsaStatus] = useState<number>(initial.asaStatus);

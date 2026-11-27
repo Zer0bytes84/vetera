@@ -107,8 +107,8 @@ export function PatientDocumentsList({
   patientId,
 }: PatientDocumentsListProps) {
   const { t } = useTranslation();
-  const repo = useConsultationDocumentsRepository();
-  const notesRepo = useNotesRepository();
+  const repo = useConsultationDocumentsRepository({ patientId });
+  const notesRepo = useNotesRepository({ patientId });
   const { currentUser } = useAuth();
   const uploadControl = useRef<{ open: () => void }>(null);
   const [deleteTarget, setDeleteTarget] = useState<ConsultationDocument | null>(

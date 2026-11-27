@@ -255,9 +255,13 @@ export function PrescriptionBuilder({
   const [signConfirmOpen, setSignConfirmOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
-  const prescriptionsRepo = usePrescriptionsRepository();
+  const prescriptionsRepo = usePrescriptionsRepository({
+    patientId: patient.id,
+  });
   const itemsRepo = usePrescriptionItemsRepository();
-  const weightEntriesRepo = useWeightEntriesRepository();
+  const weightEntriesRepo = useWeightEntriesRepository({
+    patientId: patient.id,
+  });
   const audit = useAudit();
   const templates = usePrescriptionTemplates();
   const [templatesDialog, setTemplatesDialog] = useState<

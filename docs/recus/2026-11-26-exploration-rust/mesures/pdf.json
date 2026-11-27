@@ -1,0 +1,25 @@
+[
+ {
+  "label": "dossier 10 consultations",
+  "medianMs": 164,
+  "kB": 74
+ },
+ {
+  "label": "dossier 200 consultations",
+  "medianMs": 1868,
+  "kB": 326
+ },
+ {
+  "label": "dossier 10 consultations + pièce jointe de 40 pages",
+  "medianMs": 1144,
+  "kB": 1051
+ },
+ {
+  "label": "facture 1 ligne(s)",
+  "medianMs": 4
+ },
+ {
+  "label": "facture 60 ligne(s)",
+  "medianMs": 10
+ }
+]

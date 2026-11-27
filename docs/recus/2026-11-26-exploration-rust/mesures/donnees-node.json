@@ -1,0 +1,142 @@
+{
+ "tables": {
+  "patients": {
+   "rows": 1011,
+   "sqlMs": 16.1,
+   "kB": 781,
+   "stringifyMs": 3.3,
+   "parseMs": 3.2,
+   "mapMs": 12.3
+  },
+  "owners": {
+   "rows": 676,
+   "sqlMs": 1.7,
+   "kB": 238,
+   "stringifyMs": 0.8,
+   "parseMs": 0.8,
+   "mapMs": 4.1
+  },
+  "appointments": {
+   "rows": 5249,
+   "sqlMs": 239.4,
+   "kB": 4912,
+   "stringifyMs": 24.5,
+   "parseMs": 11.8,
+   "mapMs": 24.2
+  },
+  "consultation_soaps": {
+   "rows": 5209,
+   "sqlMs": 735.3,
+   "kB": 16774,
+   "stringifyMs": 47.8,
+   "parseMs": 42.2,
+   "mapMs": 23.2
+  },
+  "notes": {
+   "rows": 343,
+   "sqlMs": 27.6,
+   "kB": 574,
+   "stringifyMs": 1.5,
+   "parseMs": 1.4,
+   "mapMs": 0.9
+  },
+  "weight_entries": {
+   "rows": 5197,
+   "sqlMs": 34.5,
+   "kB": 1363,
+   "stringifyMs": 3.7,
+   "parseMs": 4.2,
+   "mapMs": 15.5
+  },
+  "transactions": {
+   "rows": 60,
+   "sqlMs": 1.2,
+   "kB": 23,
+   "stringifyMs": 0.1,
+   "parseMs": 0.1,
+   "mapMs": 0.2
+  },
+  "users": {
+   "rows": 2,
+   "sqlMs": 1,
+   "kB": 61,
+   "stringifyMs": 0.2,
+   "parseMs": 0,
+   "mapMs": 0
+  },
+  "prescriptions": {
+   "rows": 0,
+   "sqlMs": 0.2,
+   "kB": 0,
+   "stringifyMs": 0,
+   "parseMs": 0,
+   "mapMs": 0
+  },
+  "prescription_items": {
+   "rows": 0,
+   "sqlMs": 0.2,
+   "kB": 0,
+   "stringifyMs": 0,
+   "parseMs": 0,
+   "mapMs": 0
+  },
+  "vaccinations": {
+   "rows": 0,
+   "sqlMs": 0.3,
+   "kB": 0,
+   "stringifyMs": 0,
+   "parseMs": 0,
+   "mapMs": 0
+  },
+  "hospitalizations": {
+   "rows": 0,
+   "sqlMs": 0,
+   "kB": 0,
+   "stringifyMs": 0,
+   "parseMs": 0,
+   "mapMs": 0
+  }
+ },
+ "tablesTotal": {
+  "sqlMs": 1057.5,
+  "stringifyMs": 81.9,
+  "parseMs": 63.7,
+  "mapMs": 80.4,
+  "rows": 17747,
+  "MB": 24.7
+ },
+ "grosDossierCible": {
+  "rows": 820,
+  "kB": 1008,
+  "totalMs": 57.7
+ },
+ "rechercheSemantiqueActuelle": {
+  "sqlMs": 3378,
+  "stringifyMs": 590,
+  "parseMs": 134,
+  "hexMs": 8166,
+  "rankMs": 3438,
+  "rows": 20780,
+  "roundTrips": 1012,
+  "totalMs": 15687.1,
+  "MB": 148
+ },
+ "rechercheSemantiqueRegroupee": {
+  "rows": 20780,
+  "sqlMs": 482.1,
+  "scoreMs": 70,
+  "sortieKB": 0.8,
+  "totalMs": 552.4,
+  "roundTrips": 1
+ },
+ "rechercheLexicale": {
+  "rows": 20780,
+  "sqlMs": 337.4,
+  "MB": 20.6,
+  "stringifyMs": 86.2,
+  "parseMs": 74.5,
+  "matchMs": 2036.8,
+  "hits": 0,
+  "totalMs": 2534.9
+ }
+}

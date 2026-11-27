@@ -9,6 +9,7 @@ mod license_installation;
 mod local_ai_models;
 mod local_ai_download;
 mod dictation;
+mod vector_search;
 
 fn main() {
     let builder = tauri::Builder::default();
@@ -26,6 +27,7 @@ fn main() {
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .manage(clinic_network::ClinicNetwork::new())
+        .manage(vector_search::VectorState::default())
         .setup(|_app| {
             clinic_network::init(_app.handle());
 
@@ -74,6 +76,7 @@ fn main() {
             local_ai_download::cancel_local_ai_download,
             dictation::dictee_status,
             dictation::transcrire_dictee,
+            vector_search::recherche_vecteurs,
             greet,
             test_sqlite_write,
             test_sqlite_read

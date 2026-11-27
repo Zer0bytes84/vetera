@@ -1,0 +1,15 @@
+{
+ "1000": {
+  "questions": 200,
+  "identiques": 200,
+  "resultats": 780,
+  "ecartScoreMax": 2.4424906541753444e-15
+ },
+ "3000": {
+  "questions": 200,
+  "identiques": 200,
+  "resultats": 784,
+  "ecartScoreMax": 2.9976021664879227e-15
+ },
+ "note": "Chemin réparé contre la référence enregistrée avant le changement (200 questions). Cosinus typé en double précision."
+}

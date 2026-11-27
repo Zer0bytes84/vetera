@@ -110,6 +110,8 @@ it("répare une base 033 sans archived_at et charge les lots et opérations sans
     "043",
     "044",
     "045",
+    "046",
+    "047",
   ]);
   expect(history(connection)).toEqual(before);
   expect(connection.prepare("SELECT * FROM products").get()).toEqual({
@@ -121,7 +123,7 @@ it("répare une base 033 sans archived_at et charge les lots et opérations sans
     connection.prepare("PRAGMA integrity_check").get()?.integrity_check
   ).toBe("ok");
   expect(connection.prepare("PRAGMA user_version").get()?.user_version).toBe(
-    45
+    47
   );
 
   const inventory = await inventorySnapshotInDatabase(db);
@@ -176,6 +178,8 @@ it("conserve une colonne d’archivage déjà présente et ses valeurs à la mis
     "043",
     "044",
     "045",
+    "046",
+    "047",
   ]);
   expect(connection.prepare("SELECT * FROM products").get()).toEqual(
     productBefore
@@ -214,6 +218,8 @@ it("met aussi à niveau une ancienne base avant les lots sans changer les quanti
     "043",
     "044",
     "045",
+    "046",
+    "047",
   ]);
   expect((await inventorySnapshotInDatabase(db)).balances).toMatchObject([
     { productId: "old", quantity: 4.5, lotId: null, productArchived: false },

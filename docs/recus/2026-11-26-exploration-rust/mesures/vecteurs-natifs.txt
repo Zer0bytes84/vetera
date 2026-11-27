@@ -1,0 +1,4 @@
+{"lectureSqliteBlobsMs":363.6,"rows":20780}
+rustc 1.99.1 (58cf8f9c3 2026-10-13)
+compile 0.72 s 126948 kB
+{"vecteurs":20780,"chargementMs":87.2,"rechercheMs":13.76,"meilleur":19002}

@@ -34,7 +34,7 @@ export function PrescriptionList({
   onNew,
 }: PrescriptionListProps) {
   const { t } = useTranslation();
-  const prescriptions = usePrescriptionsRepository();
+  const prescriptions = usePrescriptionsRepository({ patientId: patient.id });
   const items = usePrescriptionItemsRepository();
 
   const list = (

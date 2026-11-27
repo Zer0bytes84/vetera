@@ -1,0 +1,808 @@
+{
+ "summary": {
+  "packages": 2,
+  "source_files": 543,
+  "test_files": 255,
+  "ui_files": 328,
+  "loc": 162098,
+  "units": 151,
+  "ready": 67,
+  "caution": 14,
+  "blocked": 2,
+  "keep": 68,
+  "parse_errors": 11
+ },
+ "start_here": [
+  "src/modules/consultations/lib/",
+  "src/modules/finances/lib/",
+  "src/modules/agenda/model/",
+  "src/modules/agenda/",
+  "docs/recus/2026-11-19/hospitalisation/outils/",
+  "src/modules/patients/reference/",
+  "src/domain/billing/",
+  "docs/recus/2026-11-26-exploration-rust/outils/",
+  "docs/recus/2026-11-24/quoi-de-neuf-et-squelettes/outils/",
+  "src/domain/clinical/"
+ ],
+ "units_src": [
+  {
+   "id": "src/App.tsx",
+   "loc": 295,
+   "status": "keep",
+   "bridge": "keep-in-js",
+   "readiness": 87
+  },
+  {
+   "id": "src/app/config/",
+   "loc": 279,
+   "status": "keep",
+   "bridge": "keep-in-js",
+   "readiness": 87
+  },
+  {
+   "id": "src/app/hooks/",
+   "loc": 19,
+   "status": "keep",
+   "bridge": "keep-in-js",
+   "readiness": 100
+  },
+  {
+   "id": "src/components/",
+   "loc": 13170,
+   "status": "keep",
+   "bridge": "keep-in-js",
+   "readiness": 0
+  },
+  {
+   "id": "src/components/mascot/",
+   "loc": 1383,
+   "status": "keep",
+   "bridge": "keep-in-js",
+   "readiness": 47
+  },
+  {
+   "id": "src/components/stock/",
+   "loc": 1366,
+   "status": "keep",
+   "bridge": "keep-in-js",
+   "readiness": 35
+  },
+  {
+   "id": "src/components/ui/",
+   "loc": 13748,
+   "status": "keep",
+   "bridge": "keep-in-js",
+   "readiness": 0
+  },
+  {
+   "id": "src/config/",
+   "loc": 306,
+   "status": "ready",
+   "bridge": "wasm-bindgen",
+   "readiness": 84
+  },
+  {
+   "id": "src/contexts/",
+   "loc": 411,
+   "status": "keep",
+   "bridge": "keep-in-js",
+   "readiness": 59
+  },
+  {
+   "id": "src/data/repositories/",
+   "loc": 1331,
+   "status": "keep",
+   "bridge": "keep-in-js",
+   "readiness": 20
+  },
+  {
+   "id": "src/design-system/",
+   "loc": 29,
+   "status": "ready",
+   "bridge": "wasm-bindgen",
+   "readiness": 100
+  },
+  {
+   "id": "src/design-system/patterns/",
+   "loc": 333,
+   "status": "keep",
+   "bridge": "keep-in-js",
+   "readiness": 73
+  },
+  {
+   "id": "src/design-system/primitives/",
+   "loc": 199,
+   "status": "keep",
+   "bridge": "keep-in-js",
+   "readiness": 89
+  },
+  {
+   "id": "src/domain/",
+   "loc": 296,
+   "status": "ready",
+   "bridge": "wasm-bindgen",
+   "readiness": 71
+  },
+  {
+   "id": "src/domain/billing/",
+   "loc": 337,
+   "status": "ready",
+   "bridge": "wasm-bindgen",
+   "readiness": 92
+  },
+  {
+   "id": "src/domain/clinical/",
+   "loc": 327,
+   "status": "ready",
+   "bridge": "wasm-bindgen",
+   "readiness": 87
+  },
+  {
+   "id": "src/hooks/",
+   "loc": 1546,
+   "status": "keep",
+   "bridge": "keep-in-js",
+   "readiness": 5
+  },
+  {
+   "id": "src/i18n/",
+   "loc": 3436,
+   "status": "caution",
+   "bridge": "wasm-bindgen",
+   "readiness": 4
+  },
+  {
+   "id": "src/lib/",
+   "loc": 3730,
+   "status": "keep",
+   "bridge": "keep-in-js",
+   "readiness": 0
+  },
+  {
+   "id": "src/main.tsx",
+   "loc": 103,
+   "status": "keep",
+   "bridge": "keep-in-js",
+   "readiness": 91
+  },
+  {
+   "id": "src/modules/activation-admin/",
+   "loc": 1964,
+   "status": "keep",
+   "bridge": "keep-in-js",
+   "readiness": 15
+  },
+  {
+   "id": "src/modules/agenda/",
+   "loc": 69,
+   "status": "ready",
+   "bridge": "wasm-bindgen",
+   "readiness": 100
+  },
+  {
+   "id": "src/modules/agenda/components/",
+   "loc": 3995,
+   "status": "keep",
+   "bridge": "keep-in-js",
+   "readiness": 0
+  },
+  {
+   "id": "src/modules/agenda/hooks/",
+   "loc": 1203,
+   "status": "keep",
+   "bridge": "keep-in-js",
+   "readiness": 36
+  },
+  {
+   "id": "src/modules/agenda/model/",
+   "loc": 289,
+   "status": "ready",
+   "bridge": "wasm-bindgen",
+   "readiness": 87
+  },
+  {
+   "id": "src/modules/agenda/pages/",
+   "loc": 8,
+   "status": "keep",
+   "bridge": "keep-in-js",
+   "readiness": 100
+  },
+  {
+   "id": "src/modules/anesthesia/",
+   "loc": 9,
+   "status": "ready",
+   "bridge": "wasm-bindgen",
+   "readiness": 100
+  },
+  {
+   "id": "src/modules/anesthesia/components/",
+   "loc": 1490,
+   "status": "keep",
+   "bridge": "keep-in-js",
+   "readiness": 46
+  },
+  {
+   "id": "src/modules/anesthesia/lib/",
+   "loc": 52,
+   "status": "ready",
+   "bridge": "wasm-bindgen",
+   "readiness": 99
+  },
+  {
+   "id": "src/modules/assistant-answers/",
+   "loc": 3128,
+   "status": "keep",
+   "bridge": "keep-in-js",
+   "readiness": 0
+  },
+  {
+   "id": "src/modules/billing/",
+   "loc": 304,
+   "status": "keep",
+   "bridge": "keep-in-js",
+   "readiness": 83
+  },
+  {
+   "id": "src/modules/care-tasks/",
+   "loc": 2802,
+   "status": "keep",
+   "bridge": "keep-in-js",
+   "readiness": 0
+  },
+  {
+   "id": "src/modules/clinic-network/",
+   "loc": 630,
+   "status": "keep",
+   "bridge": "keep-in-js",
+   "readiness": 59
+  },
+  {
+   "id": "src/modules/clinique/",
+   "loc": 81,
+   "status": "keep",
+   "bridge": "keep-in-js",
+   "readiness": 93
+  },
+  {
+   "id": "src/modules/clinique/components/",
+   "loc": 1596,
+   "status": "keep",
+   "bridge": "keep-in-js",
+   "readiness": 20
+  },
+  {
+   "id": "src/modules/clinique/pages/",
+   "loc": 173,
+   "status": "keep",
+   "bridge": "keep-in-js",
+   "readiness": 100
+  },
+  {
+   "id": "src/modules/consultation-workspace/",
+   "loc": 474,
+   "status": "keep",
+   "bridge": "keep-in-js",
+   "readiness": 67
+  },
+  {
+   "id": "src/modules/consultations/",
+   "loc": 213,
+   "status": "ready",
+   "bridge": "wasm-bindgen",
+   "readiness": 84
+  },
+  {
+   "id": "src/modules/consultations/components/",
+   "loc": 3852,
+   "status": "keep",
+   "bridge": "keep-in-js",
+   "readiness": 0
+  },
+  {
+   "id": "src/modules/consultations/hooks/",
+   "loc": 473,
+   "status": "keep",
+   "bridge": "keep-in-js",
+   "readiness": 83
+  },
+  {
+   "id": "src/modules/consultations/lib/",
+   "loc": 179,
+   "status": "ready",
+   "bridge": "wasm-bindgen",
+   "readiness": 96
+  },
+  {
+   "id": "src/modules/consultations/local-ai/",
+   "loc": 5339,
+   "status": "caution",
+   "bridge": "wasm-bindgen",
+   "readiness": 0
+  },
+  {
+   "id": "src/modules/consultations/services/",
+   "loc": 364,
+   "status": "keep",
+   "bridge": "keep-in-js",
+   "readiness": 78
+  },
+  {
+   "id": "src/modules/consultations/workers/",
+   "loc": 622,
+   "status": "ready",
+   "bridge": "wasm-bindgen",
+   "readiness": 62
+  },
+  {
+   "id": "src/modules/dashboard/",
+   "loc": 60,
+   "status": "keep",
+   "bridge": "keep-in-js",
+   "readiness": 93
+  },
+  {
+   "id": "src/modules/dashboard/components/",
+   "loc": 3436,
+   "status": "keep",
+   "bridge": "keep-in-js",
+   "readiness": 0
+  },
+  {
+   "id": "src/modules/dashboard/components/clinical/",
+   "loc": 1104,
+   "status": "keep",
+   "bridge": "keep-in-js",
+   "readiness": 32
+  },
+  {
+   "id": "src/modules/dashboard/hooks/",
+   "loc": 337,
+   "status": "keep",
+   "bridge": "keep-in-js",
+   "readiness": 71
+  },
+  {
+   "id": "src/modules/dashboard/model/",
+   "loc": 2712,
+   "status": "caution",
+   "bridge": "wasm-bindgen",
+   "readiness": 0
+  },
+  {
+   "id": "src/modules/dashboard/pages/",
+   "loc": 579,
+   "status": "keep",
+   "bridge": "keep-in-js",
+   "readiness": 67
+  },
+  {
+   "id": "src/modules/dashboard/v2/",
+   "loc": 2396,
+   "status": "keep",
+   "bridge": "keep-in-js",
+   "readiness": 4
+  },
+  {
+   "id": "src/modules/documents/",
+   "loc": 1594,
+   "status": "caution",
+   "bridge": "wasm-bindgen",
+   "readiness": 14
+  },
+  {
+   "id": "src/modules/documents/components/",
+   "loc": 3221,
+   "status": "keep",
+   "bridge": "keep-in-js",
+   "readiness": 0
+  },
+  {
+   "id": "src/modules/documents/hooks/",
+   "loc": 100,
+   "status": "keep",
+   "bridge": "keep-in-js",
+   "readiness": 90
+  },
+  {
+   "id": "src/modules/documents/lib/",
+   "loc": 1717,
+   "status": "caution",
+   "bridge": "wasm-bindgen",
+   "readiness": 0
+  },
+  {
+   "id": "src/modules/finances/",
+   "loc": 256,
+   "status": "keep",
+   "bridge": "keep-in-js",
+   "readiness": 92
+  },
+  {
+   "id": "src/modules/finances/components/",
+   "loc": 2884,
+   "status": "keep",
+   "bridge": "keep-in-js",
+   "readiness": 0
+  },
+  {
+   "id": "src/modules/finances/hooks/",
+   "loc": 1232,
+   "status": "keep",
+   "bridge": "keep-in-js",
+   "readiness": 35
+  },
+  {
+   "id": "src/modules/finances/lib/",
+   "loc": 48,
+   "status": "ready",
+   "bridge": "wasm-bindgen",
+   "readiness": 99
+  },
+  {
+   "id": "src/modules/finances/pages/",
+   "loc": 8,
+   "status": "keep",
+   "bridge": "keep-in-js",
+   "readiness": 100
+  },
+  {
+   "id": "src/modules/flow-board/",
+   "loc": 2177,
+   "status": "keep",
+   "bridge": "keep-in-js",
+   "readiness": 0
+  },
+  {
+   "id": "src/modules/hospitalizations/",
+   "loc": 10,
+   "status": "ready",
+   "bridge": "wasm-bindgen",
+   "readiness": 100
+  },
+  {
+   "id": "src/modules/hospitalizations/components/",
+   "loc": 1791,
+   "status": "keep",
+   "bridge": "keep-in-js",
+   "readiness": 35
+  },
+  {
+   "id": "src/modules/hospitalizations/lib/",
+   "loc": 115,
+   "status": "ready",
+   "bridge": "wasm-bindgen",
+   "readiness": 96
+  },
+  {
+   "id": "src/modules/hospitalizations/stays/",
+   "loc": 4048,
+   "status": "keep",
+   "bridge": "keep-in-js",
+   "readiness": 0
+  },
+  {
+   "id": "src/modules/invoices/components/",
+   "loc": 716,
+   "status": "keep",
+   "bridge": "keep-in-js",
+   "readiness": 51
+  },
+  {
+   "id": "src/modules/patient-reminders/",
+   "loc": 2301,
+   "status": "keep",
+   "bridge": "keep-in-js",
+   "readiness": 0
+  },
+  {
+   "id": "src/modules/patients/",
+   "loc": 1681,
+   "status": "keep",
+   "bridge": "keep-in-js",
+   "readiness": 36
+  },
+  {
+   "id": "src/modules/patients/components/",
+   "loc": 7609,
+   "status": "keep",
+   "bridge": "keep-in-js",
+   "readiness": 0
+  },
+  {
+   "id": "src/modules/patients/export/",
+   "loc": 3441,
+   "status": "keep",
+   "bridge": "keep-in-js",
+   "readiness": 0
+  },
+  {
+   "id": "src/modules/patients/health-card/",
+   "loc": 1564,
+   "status": "keep",
+   "bridge": "keep-in-js",
+   "readiness": 4
+  },
+  {
+   "id": "src/modules/patients/hooks/",
+   "loc": 539,
+   "status": "keep",
+   "bridge": "keep-in-js",
+   "readiness": 62
+  },
+  {
+   "id": "src/modules/patients/lib/",
+   "loc": 664,
+   "status": "ready",
+   "bridge": "wasm-bindgen",
+   "readiness": 59
+  },
+  {
+   "id": "src/modules/patients/pages/",
+   "loc": 91,
+   "status": "keep",
+   "bridge": "keep-in-js",
+   "readiness": 89
+  },
+  {
+   "id": "src/modules/patients/reference/",
+   "loc": 93,
+   "status": "ready",
+   "bridge": "wasm-bindgen",
+   "readiness": 86
+  },
+  {
+   "id": "src/modules/prescriptions/",
+   "loc": 37,
+   "status": "ready",
+   "bridge": "wasm-bindgen",
+   "readiness": 99
+  },
+  {
+   "id": "src/modules/prescriptions/components/",
+   "loc": 3170,
+   "status": "keep",
+   "bridge": "keep-in-js",
+   "readiness": 0
+  },
+  {
+   "id": "src/modules/prescriptions/lib/",
+   "loc": 2427,
+   "status": "caution",
+   "bridge": "wasm-bindgen",
+   "readiness": 5
+  },
+  {
+   "id": "src/modules/release-notes/",
+   "loc": 531,
+   "status": "keep",
+   "bridge": "keep-in-js",
+   "readiness": 87
+  },
+  {
+   "id": "src/modules/rooms/",
+   "loc": 624,
+   "status": "keep",
+   "bridge": "keep-in-js",
+   "readiness": 53
+  },
+  {
+   "id": "src/modules/shell/",
+   "loc": 1508,
+   "status": "keep",
+   "bridge": "keep-in-js",
+   "readiness": 19
+  },
+  {
+   "id": "src/modules/shell/components/",
+   "loc": 527,
+   "status": "keep",
+   "bridge": "keep-in-js",
+   "readiness": 70
+  },
+  {
+   "id": "src/modules/shell/model/",
+   "loc": 163,
+   "status": "keep",
+   "bridge": "keep-in-js",
+   "readiness": 76
+  },
+  {
+   "id": "src/modules/stock/",
+   "loc": 212,
+   "status": "ready",
+   "bridge": "wasm-bindgen",
+   "readiness": 100
+  },
+  {
+   "id": "src/modules/stock/components/",
+   "loc": 4551,
+   "status": "keep",
+   "bridge": "keep-in-js",
+   "readiness": 0
+  },
+  {
+   "id": "src/modules/stock/hooks/",
+   "loc": 602,
+   "status": "keep",
+   "bridge": "keep-in-js",
+   "readiness": 56
+  },
+  {
+   "id": "src/modules/stock/pages/",
+   "loc": 5,
+   "status": "keep",
+   "bridge": "keep-in-js",
+   "readiness": 100
+  },
+  {
+   "id": "src/modules/stock/services/",
+   "loc": 3610,
+   "status": "caution",
+   "bridge": "wasm-bindgen",
+   "readiness": 0
+  },
+  {
+   "id": "src/modules/tour/",
+   "loc": 991,
+   "status": "keep",
+   "bridge": "keep-in-js",
+   "readiness": 53
+  },
+  {
+   "id": "src/modules/visit-flow/",
+   "loc": 570,
+   "status": "keep",
+   "bridge": "keep-in-js",
+   "readiness": 62
+  },
+  {
+   "id": "src/services/",
+   "loc": 6892,
+   "status": "keep",
+   "bridge": "keep-in-js",
+   "readiness": 0
+  },
+  {
+   "id": "src/services/notifications/",
+   "loc": 440,
+   "status": "keep",
+   "bridge": "keep-in-js",
+   "readiness": 87
+  },
+  {
+   "id": "src/services/sqlite/",
+   "loc": 3219,
+   "status": "caution",
+   "bridge": "wasm-bindgen",
+   "readiness": 0
+  },
+  {
+   "id": "src/types.ts",
+   "loc": 36,
+   "status": "keep",
+   "bridge": "keep-in-js",
+   "readiness": 88
+  },
+  {
+   "id": "src/types/",
+   "loc": 630,
+   "status": "ready",
+   "bridge": "wasm-bindgen",
+   "readiness": 79
+  },
+  {
+   "id": "src/utils/",
+   "loc": 98,
+   "status": "ready",
+   "bridge": "wasm-bindgen",
+   "readiness": 76
+  }
+ ],
+ "dependencies": [
+  {
+   "name": "",
+   "fit": "unknown",
+   "note": ""
+  },
+  {
+   "name": "@tauri-apps/api",
+   "fit": "unknown",
+   "note": ""
+  },
+  {
+   "name": "@huggingface/transformers",
+   "fit": "unknown",
+   "note": ""
+  },
+  {
+   "name": "jspdf",
+   "fit": "unknown",
+   "note": ""
+  },
+  {
+   "name": "hyparquet",
+   "fit": "unknown",
+   "note": ""
+  },
+  {
+   "name": "@mediapipe/tasks-genai",
+   "fit": "unknown",
+   "note": ""
+  },
+  {
+   "name": "@tauri-apps/plugin-dialog",
+   "fit": "unknown",
+   "note": ""
+  },
+  {
+   "name": "@tauri-apps/plugin-fs",
+   "fit": "unknown",
+   "note": ""
+  },
+  {
+   "name": "@tauri-apps/plugin-sql",
+   "fit": "unknown",
+   "note": ""
+  },
+  {
+   "name": "i18next",
+   "fit": "unknown",
+   "note": ""
+  },
+  {
+   "name": "pdfjs-dist",
+   "fit": "unknown",
+   "note": ""
+  },
+  {
+   "name": "postcss",
+   "fit": "unknown",
+   "note": ""
+  },
+  {
+   "name": "react-i18next",
+   "fit": "unknown",
+   "note": ""
+  },
+  {
+   "name": "tjs4",
+   "fit": "unknown",
+   "note": ""
+  },
+  {
+   "name": "transformers-v4",
+   "fit": "unknown",
+   "note": ""
+  },
+  {
+   "name": "vitest",
+   "fit": "unknown",
+   "note": ""
+  },
+  {
+   "name": "zod",
+   "fit": "partial",
+   "note": "Schemas become types plus validation; error messages will differ."
+  },
+  {
+   "name": "playwright",
+   "fit": "partial",
+   "note": "drives Chrome over CDP; the page API differs"
+  },
+  {
+   "name": "bcryptjs",
+   "fit": "good",
+   "note": ""
+  },
+  {
+   "name": "pg",
+   "fit": "good",
+   "note": ""
+  },
+  {
+   "name": "sharp",
+   "fit": "good",
+   "note": ""
+  }
+ ]
+}

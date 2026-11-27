@@ -1,0 +1,77 @@
+{
+ "1000": {
+  "base": "clinique-1000.db",
+  "mode": "actuel",
+  "questions": 3,
+  "medianMs": 7834.5,
+  "premierMs": 8159.1,
+  "runs": [
+   {
+    "totalMs": 8159.1,
+    "selects": 1001,
+    "MB": 148.08,
+    "sqlMs": 740,
+    "jsonMs": 353
+   },
+   {
+    "totalMs": 7834.5,
+    "selects": 1001,
+    "MB": 148.08,
+    "sqlMs": 373,
+    "jsonMs": 349
+   },
+   {
+    "totalMs": 7486.8,
+    "selects": 1001,
+    "MB": 148.08,
+    "sqlMs": 264,
+    "jsonMs": 347
+   }
+  ],
+  "dernier": [
+   [
+    "d2586d90-16b6-bf61-f68c-62e6e2a45909",
+    "d88130c4-0af9-3e49-b3f5-4ac19e728e75",
+    0.7644268139013954
+   ]
+  ]
+ },
+ "3000": {
+  "base": "clinique-3000.db",
+  "mode": "actuel",
+  "questions": 3,
+  "medianMs": 25154,
+  "premierMs": 24663.3,
+  "runs": [
+   {
+    "totalMs": 24663.3,
+    "selects": 3001,
+    "MB": 433.16,
+    "sqlMs": 1305,
+    "jsonMs": 1184
+   },
+   {
+    "totalMs": 25154,
+    "selects": 3001,
+    "MB": 433.16,
+    "sqlMs": 1560,
+    "jsonMs": 1145
+   },
+   {
+    "totalMs": 26934,
+    "selects": 3001,
+    "MB": 433.16,
+    "sqlMs": 3590,
+    "jsonMs": 1179
+   }
+  ],
+  "dernier": [
+   [
+    "5027b309-cedb-5488-3623-87b49be9ec86",
+    "c71acf31-eb37-1cec-ebd6-2610dde33a2c",
+    0.7659848255808223
+   ]
+  ]
+ },
+ "note": "Chemin actuel (boucle par patient de searchAllPatientsDocuments), banc Node, aller-retour JSON compris, IPC réel non compté. Embedding de la question exclu."
+}

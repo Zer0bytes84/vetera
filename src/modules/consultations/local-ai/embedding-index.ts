@@ -382,6 +382,61 @@ export function embeddingToHex(vector: number[]) {
     value.toString(16).padStart(2, "0")
   ).join("");
 }
+// 255 marks a character that is not a hexadecimal digit.
+const HEX_DIGIT = new Uint8Array(256).fill(255);
+for (let digit = 0; digit < 16; digit++) {
+  HEX_DIGIT["0123456789abcdef".charCodeAt(digit)] = digit;
+  HEX_DIGIT["0123456789ABCDEF".charCodeAt(digit)] = digit;
+}
+const LITTLE_ENDIAN = new Uint8Array(new Uint16Array([1]).buffer)[0] === 1;
+/**
+ * Le vecteur d'un extrait tel qu'il est stocké (768 float32 little-endian), décodé en binaire, sans normalisation.
+ * Mêmes refus que embeddingFromHex : texte invalide, valeur non finie ou vecteur nul rendent null.
+ */
+export function embeddingBytesFromHex(hex: string): Float32Array | null {
+  if (hex.length !== 6144) {
+    return null;
+  }
+  const bytes = new Uint8Array(3072);
+  for (let index = 0; index < 3072; index++) {
+    const highCode = hex.charCodeAt(2 * index);
+    const lowCode = hex.charCodeAt(2 * index + 1);
+    const high = highCode < 256 ? HEX_DIGIT[highCode] : 255;
+    const low = lowCode < 256 ? HEX_DIGIT[lowCode] : 255;
+    if (high === 255 || low === 255) {
+      return null;
+    }
+    bytes[index] = high * 16 + low;
+  }
+  const vector = LITTLE_ENDIAN
+    ? new Float32Array(bytes.buffer)
+    : Float32Array.from({ length: 768 }, (_, index) =>
+        new DataView(bytes.buffer).getFloat32(index * 4, true)
+      );
+  let squares = 0;
+  for (const value of vector) {
+    if (!Number.isFinite(value)) {
+      return null;
+    }
+    squares += value * value;
+  }
+  return squares > 0 ? vector : null;
+}
+/**
+ * Le cosinus entre un extrait brut et une question déjà unitaire, en double précision sur des tableaux typés :
+ * produit scalaire divisé par la norme de l'extrait. rankPassages normalise l'extrait deux fois avec Math.hypot ; le
+ * résultat ne diffère que dans les derniers bits (écart mesuré et publié dans le bilan de la phase 1).
+ */
+export function passageCosine(raw: Float32Array, unitQuery: Float64Array) {
+  let dot = 0;
+  let squares = 0;
+  for (let index = 0; index < 768; index++) {
+    const value = raw[index];
+    dot += value * unitQuery[index];
+    squares += value * value;
+  }
+  return dot / Math.sqrt(squares);
+}
 export function embeddingFromHex(hex: string) {
   if (!EMBEDDING_HEX.test(hex)) {
     throw new Error("Un extrait de recherche est invalide.");

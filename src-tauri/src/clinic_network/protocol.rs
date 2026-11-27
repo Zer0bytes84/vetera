@@ -56,6 +56,14 @@ pub struct QueryReply {
     pub rows_affected: Option<u64>,
 }
 
+/// A semantic search run on the main workstation, against its own copy of the vector index.
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct VectorsRequest {
+    pub session_id: String,
+    pub query: crate::vector_search::VectorQuery,
+}
+
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct CloseRequest {

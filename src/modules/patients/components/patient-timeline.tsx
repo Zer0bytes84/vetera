@@ -460,14 +460,14 @@ export function PatientTimeline({
   summarizedVisitId,
 }: PatientTimelineProps) {
   const { t } = useTranslation();
-  const appointmentsRepo = useAppointmentsRepository();
-  const vaccinationsRepo = useVaccinationsRepository();
-  const weightsRepo = useWeightEntriesRepository();
-  const notesRepo = useNotesRepository();
+  const appointmentsRepo = useAppointmentsRepository({ patientId });
+  const vaccinationsRepo = useVaccinationsRepository({ patientId });
+  const weightsRepo = useWeightEntriesRepository({ patientId });
+  const notesRepo = useNotesRepository({ patientId });
   // The same source as the Synthèse tab: the visit's consultation note.
-  const soapsRepo = useConsultationSoapsRepository();
-  const prescriptionsRepo = usePrescriptionsRepository();
-  const attachmentsRepo = useConsultationDocumentsRepository();
+  const soapsRepo = useConsultationSoapsRepository({ patientId });
+  const prescriptionsRepo = usePrescriptionsRepository({ patientId });
+  const attachmentsRepo = useConsultationDocumentsRepository({ patientId });
   const { documents } = usePatientDocuments(patientId);
   const invoices = usePatientInvoices(patientId);
 

@@ -108,7 +108,7 @@ export function SoapPanel({
 }) {
   const { t } = useTranslation();
   const { currentUser } = useAuth();
-  const repo = useConsultationSoapsRepository();
+  const repo = useConsultationSoapsRepository({ patientId });
   const existing = repo.forAppointment(appointmentId);
   const [payload, setPayload] = useState<Payload>(emptyPayload);
   const [initialised, setInitialised] = useState(false);

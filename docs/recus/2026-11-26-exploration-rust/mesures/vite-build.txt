@@ -1,0 +1,4 @@
+✓ built in 8.72s
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:09.59
+	Maximum resident set size (kbytes): 1503548
+251M	.
