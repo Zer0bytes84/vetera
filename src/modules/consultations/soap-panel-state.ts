@@ -48,3 +48,16 @@ export function isSoapAutosaveDue(a: {
     samePayload(a.saved, a.payload)
   );
 }
+
+export const VALIDATION_LOST_MESSAGE =
+  "Note modifiée depuis sa validation : elle n’est plus validée, ni proposée dans les cas similaires. Revalidez-la.";
+/** La note a-t-elle quitté sa version validée ? Revenir au texte validé rend la validation (même clé de source). */
+export function isValidationLost(
+  validated: Pick<Payload, (typeof SOAP_SECTIONS)[number]["key"]> | null,
+  current: Pick<Payload, (typeof SOAP_SECTIONS)[number]["key"]>
+) {
+  return (
+    validated !== null &&
+    SOAP_SECTIONS.some(({ key }) => current[key] !== validated[key])
+  );
+}

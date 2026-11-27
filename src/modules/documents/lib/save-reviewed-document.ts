@@ -1,3 +1,4 @@
+import { indexAfterValidation } from "@/modules/consultations/local-ai/index-on-validation";
 import {
   isSoapReviewed,
   soapSourceKey,
@@ -133,5 +134,6 @@ export async function saveReviewedDocument(
   window.dispatchEvent(
     new CustomEvent("sqlite-data-changed", { detail: { tableName: "notes" } })
   );
+  indexAfterValidation({ kind: "note", id: note.id });
   return note;
 }

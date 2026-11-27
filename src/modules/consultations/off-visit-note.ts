@@ -16,6 +16,7 @@ import {
 import { generateId, runDbTransaction } from "@/services/sqlite/database";
 import type { Note, Patient } from "@/types/db";
 import type { SoapNoteOrigin } from "./components/local-consultation-assistant";
+import { indexAfterValidation } from "./local-ai/index-on-validation";
 import { soapNoteText } from "./local-ai/soap-layout";
 import { type LocalSoapNote, localSoapSchema } from "./local-ai/soap-schema";
 
@@ -150,5 +151,6 @@ export async function saveOffVisitNote(
   window.dispatchEvent(
     new CustomEvent("sqlite-data-changed", { detail: { tableName: "notes" } })
   );
+  indexAfterValidation({ kind: "note", id: note.id });
   return note;
 }

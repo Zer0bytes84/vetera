@@ -1,5 +1,6 @@
 // biome-ignore-all assist/source/organizeImports: ranger ces imports déplace une feuille CSS vers un autre morceau (A2, CSS_CHANGE, décision du 25/11) ; l'ordre actuel est celui que l'app affiche
 import { useRowSaveFlash } from "@/hooks/useRowSaveFlash";
+import { startIndexCoverageSoon } from "@/modules/consultations/local-ai/index-on-validation";
 import { MedicalActReminderPrompt } from "@/modules/patient-reminders/medical-act-reminder-prompt";
 import { ThemeControl } from "./components/theme-control";
 import { ShortcutTooltip } from "@/design-system/patterns/shortcut-tooltip";
@@ -176,6 +177,10 @@ function AppShellInner() {
   const [peekFollows, setPeekFollows] = useState(false);
   const saveState = useSaveIndicator();
   useRowSaveFlash();
+  // Background catch-up of the semantic index (validated notes and documents), started a little after launch.
+  useEffect(() => {
+    startIndexCoverageSoon();
+  }, []);
   useEffect(() => {
     const open = (event: Event) => {
       const {
