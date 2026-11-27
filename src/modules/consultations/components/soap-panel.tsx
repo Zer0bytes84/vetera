@@ -44,15 +44,18 @@ import {
   hasNote,
   isSoapAutosaveDue,
   isSoapUnsaved,
+  isValidationLost,
   type Payload,
   type SaveStatus,
   samePayload,
+  VALIDATION_LOST_MESSAGE,
 } from "../soap-panel-state";
 import { AssistantBrandAvatar } from "./assistant-brand-avatar";
 import { SoapSectionEditor } from "./soap-section-editor";
 import "./soap-surface.css";
 import { guard } from "@/lib/guard";
 import { OPEN_SOAP_ASSISTANT_EVENT } from "@/modules/consultation-workspace/consultation-closure";
+import { indexAfterValidation } from "../local-ai/index-on-validation";
 import { isSoapReviewed, reviewedSoapContent } from "../local-ai/soap-review";
 import { ConsultationAssistantPanel } from "./consultation-assistant-panel";
 import type { SoapNoteOrigin } from "./local-consultation-assistant";
@@ -127,6 +130,13 @@ export function SoapPanel({
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pendingSave = useRef<Promise<void> | null>(null);
   const repoRef = useRef(repo);
+  // The id of the last saved row: a validation indexes that note right away.
+  const savedId = useRef<string | null>(null);
+  // The four sections as last validated (stored validation, or validated here): editing away from them drops the
+  // validation, and the panel says so instead of losing it silently.
+  const [validatedSnapshot, setValidatedSnapshot] = useState<Payload | null>(
+    null
+  );
   // The assistant is the consultation's main tool: warm its chunk on mount.
   useEffect(() => {
     preloadLocalConsultationAssistant();
@@ -166,6 +176,7 @@ export function SoapPanel({
       : emptyPayload;
     setPayload(value);
     setSavedSnapshot(existing ? value : null);
+    setValidatedSnapshot(existing && isSoapReviewed(existing) ? value : null);
     setInitialised(true);
     setSaveStatus(existing ? "saved" : "idle");
   }
@@ -197,6 +208,7 @@ export function SoapPanel({
                 "La base locale n’a pas confirmé l’enregistrement."
               );
             }
+            savedId.current = saved.id ?? savedId.current;
             lastSaved.current = snapshot;
             setSavedSnapshot(snapshot);
             setSaveStatus("saved");
@@ -313,6 +325,8 @@ export function SoapPanel({
     await persist(approved);
     latest.current = approved;
     setPayload(approved);
+    setValidatedSnapshot(approved);
+    indexAfterValidation({ kind: "soap", id: savedId.current });
   };
   const saveNow = async () => {
     clearTimer();
@@ -337,12 +351,26 @@ export function SoapPanel({
       await persist(approved);
       latest.current = approved;
       setPayload(approved);
+      setValidatedSnapshot(approved);
+      indexAfterValidation({ kind: "soap", id: savedId.current });
       toast.success("Note validée. Vous pouvez préparer les documents.");
     } catch {
       reportSaveError();
     }
   };
   const dirty = isSoapUnsaved(initialised, savedSnapshot, payload);
+  const validationLost = isValidationLost(validatedSnapshot, payload);
+  const lostWarned = useRef(false);
+  useEffect(() => {
+    if (!validationLost) {
+      lostWarned.current = false;
+      return;
+    }
+    if (!lostWarned.current) {
+      lostWarned.current = true;
+      toast.warning(VALIDATION_LOST_MESSAGE);
+    }
+  }, [validationLost]);
   return (
     <Shell className={cn("soap-panel", className)}>
       <ShellHeader
@@ -448,9 +476,18 @@ export function SoapPanel({
             </span>
           ) : (
             <>
-              <span className="mr-auto text-[0.8125rem] text-muted-foreground">
-                Validez la version actuelle avant de préparer un document.
-              </span>
+              {validationLost ? (
+                <span
+                  className="mr-auto text-[0.8125rem] text-[var(--tone-amber)]"
+                  role="status"
+                >
+                  {VALIDATION_LOST_MESSAGE}
+                </span>
+              ) : (
+                <span className="mr-auto text-[0.8125rem] text-muted-foreground">
+                  Validez la version actuelle avant de préparer un document.
+                </span>
+              )}
               <Button
                 className="rounded-full px-4"
                 disabled={saveStatus === "saving"}

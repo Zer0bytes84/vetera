@@ -1,0 +1,91 @@
+{
+ "note": "Barre (searchAllPatientsFastLexical), 153 questions, cliniques synthétiques (1 000 patients / 5 195 notes SOAP, 3 000 / 15 195), Node, Mac M1 8 Go. Paires mesurées en alternance dans le même état de la machine : version avec LIMIT 100 (avant le retrait) puis version finale avec l'index des rubriques SOAP (migration 048).",
+ "paires": {
+  "1000-1": {
+   "avecLimit100": {
+    "med": 106,
+    "p95": 173.8,
+    "over300": 5
+   },
+   "avecIndex": {
+    "med": 108.2,
+    "p95": 185.8,
+    "over300": 5
+   },
+   "identiques": 153
+  },
+  "1000-2": {
+   "avecLimit100": {
+    "med": 108.6,
+    "p95": 154.2,
+    "over300": 5
+   },
+   "avecIndex": {
+    "med": 107.6,
+    "p95": 163.2,
+    "over300": 5
+   },
+   "identiques": 153
+  },
+  "3000-1": {
+   "avecLimit100": {
+    "med": 360.4,
+    "p95": 4284.5,
+    "over300": 127
+   },
+   "avecIndex": {
+    "med": 369.4,
+    "p95": 1939.2,
+    "over300": 133
+   },
+   "identiques": 153
+  },
+  "3000-2": {
+   "avecLimit100": {
+    "med": 348.6,
+    "p95": 1419.3,
+    "over300": 114
+   },
+   "avecIndex": {
+    "med": 367.6,
+    "p95": 2127.3,
+    "over300": 133
+   },
+   "identiques": 153
+  }
+ },
+ "premiereRechercheAvecRemplissageDeLIndexMs": {
+  "1000": 1908.7,
+  "3000": 7596.5
+ },
+ "sansIndexApresRetraitDuLimit": {
+  "1000": {
+   "avantMed": 100.9,
+   "apresMed": 103.3,
+   "avantP95": 134.7,
+   "apresP95": 1696.4,
+   "avantMax": 2278.4,
+   "apresMax": 3547.7
+  },
+  "3000": {
+   "avantMed": 292.7,
+   "apresMed": 596.2,
+   "avantP95": 815.5,
+   "apresP95": 7779.9,
+   "avantMax": 14678.3,
+   "apresMax": 26011.4
+  }
+ },
+ "versionsIntermediaires1000": {
+  "indexSansLectureParPages": {
+   "p95Ms": 204.5
+  },
+  "indexParPagesTriCompletAChaquePage": {
+   "p95Ms": 140.7
+  },
+  "indexParPagesSansTri": {
+   "p95Ms": 133.3,
+   "p95AvecLimit100MemeSession": 134.7
+  }
+ }
+}

@@ -1,0 +1,34 @@
+{
+ "note": "Copie de travail de la base réelle (.backup, version 47), faux moteur d'embeddings : seule la logique d'indexation est mesurée, pas les modèles. Aucun nom de patient.",
+ "parcoursTousPatientsAvantCorrection": {
+  "passagesAvant": 68,
+  "passagesApres": 203,
+  "indexes": 135,
+  "erreur": null
+ },
+ "rattrapage": {
+  "passagesAvant": 68,
+  "passagesApres": 203,
+  "premierePasse": {
+   "status": "complete",
+   "checkedPatients": 11,
+   "patientCount": 11,
+   "indexedPatients": 7,
+   "totalPatients": 7,
+   "pendingSources": 0,
+   "failures": [],
+   "lastSearchIssue": null
+  },
+  "secondePasse": {
+   "status": "complete",
+   "checkedPatients": 11,
+   "patientCount": 11,
+   "indexedPatients": 7,
+   "totalPatients": 7,
+   "pendingSources": 0,
+   "failures": [],
+   "lastSearchIssue": null
+  },
+  "textesCalcules": 36
+ }
+}

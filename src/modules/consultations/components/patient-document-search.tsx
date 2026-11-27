@@ -3,7 +3,7 @@ import {
   Copy as CopyIcon,
   Plus as PlusIcon,
 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { toast } from "sonner";
 import { Button as ActionButton } from "@/components/ui/action-button";
 import { Button } from "@/components/ui/button";
@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { PromptSuggestions } from "@/components/ui/prompt-suggestions";
+import { Segmented } from "@/components/ui/segmented-control";
 import { SourceList } from "@/components/ui/source-list";
 import { ToolCallBlock } from "@/components/ui/tool-call-block";
 import {
@@ -42,14 +43,29 @@ import type {
   SourceType,
 } from "../local-ai/embedding-index";
 import {
+  countMatchesOutsidePatient,
+  findPatientUnreviewedMatches,
+  findUnreviewedSources,
   indexAllPatientsDocuments,
   indexPatientDocuments,
+  readPatientName,
   searchAllPatientsClinical,
   searchPatientDocuments,
 } from "../local-ai/embedding-store";
+import { scheduleIndexCatchUp } from "../local-ai/index-coverage";
+import {
+  getIndexCoverage,
+  type IndexCoverage,
+  subscribeIndexCoverage,
+} from "../local-ai/index-coverage-state";
 import { getLocalModels, importLocalModel } from "../local-ai/models";
 import { bestPassage } from "../local-ai/passage-search";
 import { highlightPassage } from "../local-ai/search-highlight";
+import {
+  emptyPatientScopeMessage,
+  type OutsideMatches,
+  patientScopeLabel,
+} from "../search-scope";
 import "./assistant-thinking.css";
 import { guard } from "@/lib/guard";
 
@@ -102,7 +118,94 @@ type SearchResult = SearchChunk & {
   patientName?: string;
   score: number;
   match?: "text" | "semantic";
+  /** Found by words in a note or document that is not validated (it has no passage). */
+  unreviewed?: boolean;
 };
+type UnreviewedMatch = SearchChunk & { reason: string };
+
+/** What the index covers, in one line; the failures with their patient and error. */
+export function coverageSummary(coverage: IndexCoverage): string | null {
+  const counted = `${coverage.indexedPatients} patient${coverage.indexedPatients > 1 ? "s" : ""} indexé${coverage.indexedPatients > 1 ? "s" : ""} sur ${coverage.totalPatients}`;
+  switch (coverage.status) {
+    case "running":
+      return `Indexation en arrière-plan : ${counted} (${coverage.checkedPatients} dossiers vérifiés sur ${coverage.patientCount}).`;
+    case "paused":
+      return `Indexation en pause, le modèle sert à une autre tâche : ${counted}. Reprise automatique.`;
+    case "complete":
+      return `Index à jour : ${counted}.`;
+    case "idle":
+      return `Index incomplet : ${counted}.`;
+    case "remote":
+      return "L’index est tenu à jour par le poste principal.";
+    default:
+      return null;
+  }
+}
+
+/** The result's tag: its section when the title is the patient's name, and « Non validée » when it is not validated. */
+function resultTag(result: SearchResult, titledByPatient: boolean) {
+  const parts: string[] = [];
+  if (titledByPatient) {
+    parts.push(SECTION_LABELS[result.section] ?? result.section);
+  }
+  if (result.unreviewed) {
+    parts.push("Non validée");
+  }
+  return parts.join(" · ") || undefined;
+}
+function plural(count: number, word: string) {
+  return `${count} ${word}${count > 1 ? "s" : ""}`;
+}
+/** The line shown after a search: never an empty answer without saying why. */
+function searchOutcome(found: number, notValidated: number) {
+  if (found) {
+    return notValidated
+      ? `${plural(found, "passage")} trouvé${found > 1 ? "s" : ""}, et ${notValidated} par mots hors recherche par le sens.`
+      : `${plural(found, "passage")} trouvé${found > 1 ? "s" : ""}`;
+  }
+  if (notValidated) {
+    return `Aucun passage validé proche ; ${plural(notValidated, "passage")} trouvé${notValidated > 1 ? "s" : ""} par mots, ci-dessous.`;
+  }
+  const coverage = getIndexCoverage();
+  if (
+    coverage.totalPatients &&
+    coverage.indexedPatients < coverage.totalPatients
+  ) {
+    return `Aucun passage validé suffisamment proche. L’index couvre ${coverage.indexedPatients} patients sur ${coverage.totalPatients} : la recherche s’élargira à mesure de l’indexation.`;
+  }
+  return "Aucun passage validé suffisamment proche pour cette recherche.";
+}
+
+/** The index coverage, its failures (patient and error) and the last semantic search that fell back to words. */
+function CoverageNotice({ coverage }: { coverage: IndexCoverage }) {
+  const summary = coverageSummary(coverage);
+  if (!(summary || coverage.failures.length || coverage.lastSearchIssue)) {
+    return null;
+  }
+  return (
+    <div
+      className="t-12 shrink-0 space-y-1 text-muted-foreground"
+      role="status"
+    >
+      {summary ? <p>{summary}</p> : null}
+      {coverage.failures.length ? (
+        <ul className="space-y-0.5 text-[var(--tone-amber)]">
+          {coverage.failures.map((failure) => (
+            <li key={failure.patientId}>
+              Non indexé : {failure.patientName} ({failure.message})
+            </li>
+          ))}
+        </ul>
+      ) : null}
+      {coverage.lastSearchIssue ? (
+        <p className="text-[var(--tone-amber)]">
+          La recherche par le sens a échoué ({coverage.lastSearchIssue}) :
+          résultats par mots seulement.
+        </p>
+      ) : null}
+    </div>
+  );
+}
 
 export interface PatientDocumentSearchProps {
   onInsertExcerpt?: (excerpt: string, section?: SearchSection) => void;
@@ -154,6 +257,34 @@ export function PatientDocumentSearch({
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [results, setResults] = useState<SearchResult[]>([]);
   const active = useRef<AbortController | null>(null);
+  const coverage = useSyncExternalStore(
+    subscribeIndexCoverage,
+    getIndexCoverage
+  );
+  const [unreviewed, setUnreviewed] = useState<UnreviewedMatch[]>([]);
+  // The record the search is limited to, named; and, after an empty answer in that record, what the others hold.
+  const [patientName, setPatientName] = useState<string | null>(null);
+  const [emptyScope, setEmptyScope] = useState<{
+    query: string;
+    outside: OutsideMatches | null;
+  } | null>(null);
+  useEffect(() => {
+    let alive = true;
+    if (patientId) {
+      void readPatientName(patientId)
+        .then((name) => {
+          if (alive) {
+            setPatientName(name);
+          }
+        })
+        .catch(() => {
+          // Sans nom lisible, le périmètre reste « Ce dossier ».
+        });
+    }
+    return () => {
+      alive = false;
+    };
+  }, [patientId]);
   // The last operation the assistant ran, shown as one folded row: what it did, how long it took, what it found.
   const [lastRun, setLastRun] = useState<{
     id: number;
@@ -175,6 +306,12 @@ export function PatientDocumentSearch({
     }
   }
 
+  // Opening the tab refreshes the counter soon (the pass yields the model to any search started meanwhile).
+  useEffect(() => {
+    if (getIndexCoverage().status === "unknown") {
+      scheduleIndexCatchUp(2000);
+    }
+  }, []);
   useEffect(() => {
     let alive = true;
     void getLocalModels()
@@ -208,14 +345,21 @@ export function PatientDocumentSearch({
     return () => window.removeEventListener("sqlite-row-saved", invalidate);
   }, []);
 
-  const run = async (indexOnly: boolean, forcedQuery?: string) => {
+  const run = async (
+    indexOnly: boolean,
+    forcedQuery?: string,
+    forcedAudience?: "patient" | "all"
+  ) => {
     const searchQuery = forcedQuery === undefined ? query : forcedQuery;
+    const allRecords = (forcedAudience ?? audience) === "all" || !patientId;
     active.current?.abort();
     const controller = new AbortController();
     active.current = controller;
     setBusy(true);
     setError("");
     setResults([]);
+    setUnreviewed([]);
+    setEmptyScope(null);
     setMessage(indexOnly ? "Indexation des documents…" : "Recherche en cours…");
     const startedAt = Date.now();
     setLastRun({
@@ -229,22 +373,28 @@ export function PatientDocumentSearch({
     return await guard(
       async () => {
         if (indexOnly) {
-          const count =
-            audience === "all" || !patientId
-              ? await indexAllPatientsDocuments(controller.signal, (event) =>
-                  setMessage(event.message)
-                )
-              : await indexPatientDocuments(
+          const report = allRecords
+            ? await indexAllPatientsDocuments(controller.signal, (event) =>
+                setMessage(event.message)
+              )
+            : {
+                indexed: await indexPatientDocuments(
                   patientId,
                   controller.signal,
                   (event) => setMessage(event.message)
-                );
+                ),
+                failures: [],
+              };
           if (!controller.signal.aborted) {
+            const done = report.indexed
+              ? `${report.indexed.toLocaleString("fr-FR")} extraits validés et indexés.`
+              : "L’index des sources validées est à jour.";
             setMessage(
-              count
-                ? `${count.toLocaleString("fr-FR")} extraits validés et indexés.`
-                : "L’index des sources validées est à jour."
+              report.failures.length
+                ? `${done} ${report.failures.length} dossier${report.failures.length > 1 ? "s" : ""} non indexé${report.failures.length > 1 ? "s" : ""}, voir ci-dessous.`
+                : done
             );
+            scheduleIndexCatchUp(1000);
           }
         } else {
           if (!searchQuery.trim()) {
@@ -288,44 +438,114 @@ export function PatientDocumentSearch({
             sourceTypes: targetSources,
             sections: targetSections,
           };
-          const found =
-            audience === "all" || !patientId
-              ? await searchAllPatientsClinical(
-                  filters,
-                  searchQuery,
-                  controller.signal,
-                  (event) => setMessage(event.message)
-                )
-              : await searchPatientDocuments(
-                  {
-                    patientId,
-                    sourceTypes: targetSources.filter((t) =>
-                      ["soap", "document", "protocol"].includes(t)
-                    ) as SourceType[],
-                    sections: targetSections.filter((s) =>
-                      [
-                        "subjective",
-                        "objective",
-                        "assessment",
-                        "plan",
-                        "document",
-                        "protocol",
-                      ].includes(s)
-                    ) as SearchSection[],
-                  },
-                  searchQuery,
-                  controller.signal,
-                  (event) => setMessage(event.message)
-                );
-
-          if (!controller.signal.aborted) {
-            setResults(found);
-            setSearchedQuery(searchQuery);
-            setMessage(
-              found.length
-                ? `${found.length} passage${found.length > 1 ? "s" : ""} trouvé${found.length > 1 ? "s" : ""}`
-                : "Aucun passage validé suffisamment proche pour cette recherche."
+          // In one record: the semantic search reads the validated notes and documents; the word list below reads, in
+          // the same record, everything the bar reads there (notes not validated, consultation records, profile).
+          const semanticScope = allRecords
+            ? null
+            : {
+                patientId,
+                sourceTypes: targetSources.filter((t) =>
+                  ["soap", "document", "protocol"].includes(t)
+                ) as SourceType[],
+                sections: targetSections.filter((s) =>
+                  [
+                    "subjective",
+                    "objective",
+                    "assessment",
+                    "plan",
+                    "document",
+                    "protocol",
+                  ].includes(s)
+                ) as SearchSection[],
+              };
+          let found: SearchResult[] = [];
+          if (!semanticScope) {
+            found = await searchAllPatientsClinical(
+              filters,
+              searchQuery,
+              controller.signal,
+              (event) => setMessage(event.message)
             );
+          } else if (
+            semanticScope.sourceTypes.length &&
+            semanticScope.sections.length
+          ) {
+            found = await searchPatientDocuments(
+              semanticScope,
+              searchQuery,
+              controller.signal,
+              (event) => setMessage(event.message)
+            );
+          }
+
+          // The assistant does not find less than the bar: what the bar finds by words in this record (notes and
+          // documents not validated, consultation records, the patient's profile) is shown too, apart and labelled,
+          // since those have no passage to rank.
+          const patientScope = allRecords
+            ? null
+            : {
+                patientId,
+                sourceTypes: targetSources.filter((t) =>
+                  [
+                    "soap",
+                    "document",
+                    "protocol",
+                    "consultation",
+                    "patient",
+                  ].includes(t)
+                ) as SourceType[],
+                sections: targetSections.filter((s) =>
+                  [
+                    "subjective",
+                    "objective",
+                    "assessment",
+                    "plan",
+                    "document",
+                    "protocol",
+                    "consultation",
+                    "patient",
+                  ].includes(s)
+                ) as SearchSection[],
+              };
+          const notValidated =
+            patientScope?.sourceTypes.length && patientScope.sections.length
+              ? await findPatientUnreviewedMatches(patientScope, searchQuery)
+              : [];
+          const unreviewedIds = patientScope
+            ? new Set<string>()
+            : await findUnreviewedSources(found);
+          if (!controller.signal.aborted) {
+            setResults(
+              found.map((result) =>
+                unreviewedIds.has(result.sourceId)
+                  ? { ...result, unreviewed: true }
+                  : result
+              )
+            );
+            setUnreviewed(notValidated);
+            setSearchedQuery(searchQuery);
+            setMessage(searchOutcome(found.length, notValidated.length));
+          }
+          // Nothing in this record: say that the search was limited to it, and what the other records hold by
+          // words, so an empty answer does not look like a failure; one click widens it (see the empty state).
+          if (
+            patientScope &&
+            !found.length &&
+            !notValidated.length &&
+            !controller.signal.aborted
+          ) {
+            const outside = await countMatchesOutsidePatient(
+              filters,
+              searchQuery,
+              patientScope.patientId,
+              controller.signal
+            ).catch(() => null);
+            if (!controller.signal.aborted) {
+              setEmptyScope({ query: searchQuery, outside });
+              setMessage(
+                emptyPatientScopeMessage(patientName, searchQuery, outside)
+              );
+            }
           }
         }
       },
@@ -405,6 +625,8 @@ export function PatientDocumentSearch({
     active.current?.abort();
     setLastRun(null);
     setResults([]);
+    setUnreviewed([]);
+    setEmptyScope(null);
     setMessage("");
     setError("");
   };
@@ -452,6 +674,25 @@ export function PatientDocumentSearch({
 
   return (
     <div className="flex h-full min-h-0 flex-1 flex-col gap-2.5 overflow-hidden text-foreground">
+      {patientId ? (
+        <Segmented<"patient" | "all">
+          className="flex w-full shrink-0 [&>button]:flex-1"
+          label="Où chercher"
+          onValueChange={(value) => {
+            setAudience(value);
+            resetResults();
+            // A search already made is run again in the new scope.
+            if (searchedQuery.trim() && !locked) {
+              void run(false, searchedQuery, value);
+            }
+          }}
+          options={[
+            { value: "patient", label: patientScopeLabel(patientName) },
+            { value: "all", label: "Tous les dossiers" },
+          ]}
+          value={audience}
+        />
+      ) : null}
       <form
         className="flex shrink-0 items-center gap-2"
         onSubmit={(event) => {
@@ -549,26 +790,6 @@ export function PatientDocumentSearch({
             }
           />
           <DropdownMenuContent align="start" className="w-60">
-            <DropdownMenuLabel>Rechercher dans</DropdownMenuLabel>
-            <DropdownMenuRadioGroup
-              onValueChange={(value) => {
-                setAudience(value as "patient" | "all");
-                resetResults();
-              }}
-              value={patientId ? audience : "all"}
-            >
-              <DropdownMenuRadioItem
-                className="t-12"
-                disabled={!patientId}
-                value="patient"
-              >
-                Ce dossier patient
-              </DropdownMenuRadioItem>
-              <DropdownMenuRadioItem className="t-12" value="all">
-                Tous les patients
-              </DropdownMenuRadioItem>
-            </DropdownMenuRadioGroup>
-            <DropdownMenuSeparator />
             <DropdownMenuLabel>Source</DropdownMenuLabel>
             <DropdownMenuRadioGroup
               onValueChange={(value) => {
@@ -675,31 +896,62 @@ export function PatientDocumentSearch({
         </div>
       )}
 
+      <CoverageNotice coverage={coverage} />
+
       <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
-        {results.length === 0 && !busy && !error && (
+        {emptyScope && audience === "patient" && !busy && !error && (
           <div className="flex flex-col items-center gap-3 px-4 py-8 text-center">
-            <p className="t-12 max-w-[320px] text-muted-foreground">
-              {query.trim()
-                ? "Aucun passage trouvé. Essayez un synonyme, une reformulation ou élargissez les filtres."
-                : "Retrouvez le passage utile dans les notes, documents et protocoles validés : symptômes, pathologies, molécules ou synonymes."}
+            <p
+              className="t-12 max-w-[320px] text-muted-foreground"
+              role="status"
+            >
+              {emptyPatientScopeMessage(
+                patientName,
+                emptyScope.query,
+                emptyScope.outside
+              )}
             </p>
-            {!query.trim() && (
-              <PromptSuggestions
-                className="items-center"
-                data={SUGGESTED_QUERIES.map((suggested) => ({
-                  id: suggested,
-                  title: suggested,
-                }))}
-                heading="Suggestions"
-                onSelect={(_, prompt) => {
-                  setQuery(prompt);
-                  void run(false, prompt);
-                }}
-                variant="chips"
-              />
-            )}
+            <Button
+              className="gap-2"
+              onClick={() => {
+                setAudience("all");
+                void run(false, emptyScope.query, "all");
+              }}
+              size="sm"
+            >
+              <Search className="size-3.5" />
+              Chercher dans tous les dossiers
+            </Button>
           </div>
         )}
+        {!emptyScope &&
+          results.length === 0 &&
+          unreviewed.length === 0 &&
+          !busy &&
+          !error && (
+            <div className="flex flex-col items-center gap-3 px-4 py-8 text-center">
+              <p className="t-12 max-w-[320px] text-muted-foreground">
+                {query.trim()
+                  ? "Aucun passage trouvé. Essayez un synonyme, une reformulation ou élargissez les filtres."
+                  : "Retrouvez le passage utile dans les notes, documents et protocoles validés : symptômes, pathologies, molécules ou synonymes."}
+              </p>
+              {!query.trim() && (
+                <PromptSuggestions
+                  className="items-center"
+                  data={SUGGESTED_QUERIES.map((suggested) => ({
+                    id: suggested,
+                    title: suggested,
+                  }))}
+                  heading="Suggestions"
+                  onSelect={(_, prompt) => {
+                    setQuery(prompt);
+                    void run(false, prompt);
+                  }}
+                  variant="chips"
+                />
+              )}
+            </div>
+          )}
 
         {results.length > 0 && (
           <SourceList
@@ -716,10 +968,10 @@ export function PatientDocumentSearch({
                   (audience === "all" || !patientId) && result.patientName
                     ? result.patientName
                     : (SECTION_LABELS[result.section] ?? result.section),
-                tag:
-                  (audience === "all" || !patientId) && result.patientName
-                    ? (SECTION_LABELS[result.section] ?? result.section)
-                    : undefined,
+                tag: resultTag(
+                  result,
+                  (audience === "all" || !patientId) && !!result.patientName
+                ),
                 passage: <Passage query={searchedQuery} text={passage} />,
                 actions: (
                   <>
@@ -749,6 +1001,36 @@ export function PatientDocumentSearch({
               };
             })}
             subtitle={searchedQuery ? `Pour « ${searchedQuery} »` : undefined}
+          />
+        )}
+
+        {unreviewed.length > 0 && (
+          <SourceList
+            heading={`${plural(unreviewed.length, "passage")} trouvé${unreviewed.length > 1 ? "s" : ""} par mots, hors recherche par le sens`}
+            sources={unreviewed.map((match) => {
+              const uniqueKey = `unreviewed-${match.sourceType}-${match.sourceId}-${match.section}`;
+              const passage = bestPassage(match.text, searchedQuery);
+              return {
+                id: uniqueKey,
+                group:
+                  SOURCES.find((item) => item.key === match.sourceType)
+                    ?.label ?? "Source",
+                title: SECTION_LABELS[match.section] ?? match.section,
+                tag: match.reason,
+                passage: <Passage query={searchedQuery} text={passage} />,
+                actions: (
+                  <ActionButton
+                    aria-label="Copier le passage"
+                    icon={copiedId === uniqueKey ? CheckIcon : CopyIcon}
+                    onClick={() => handleCopy(passage, uniqueKey)}
+                    variant="quiet"
+                  >
+                    {copiedId === uniqueKey ? "Copié" : "Copier"}
+                  </ActionButton>
+                ),
+              };
+            })}
+            subtitle="Trouvés par leurs mots, comme dans la barre de recherche : notes non validées (validées, elles entreront aussi dans la recherche par le sens), fiches de consultation et fiche du patient, qui n'y entrent pas."
           />
         )}
       </div>

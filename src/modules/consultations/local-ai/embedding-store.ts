@@ -29,8 +29,18 @@ import {
   type SourceType,
   soapSearchChunks,
 } from "./embedding-index";
+import {
+  type IndexingFailure,
+  recordIndexingOutcome,
+  recordSearchIssue,
+} from "./index-coverage-state";
 import { LocalInferenceSession } from "./inference-client";
-import { syncLexicalIndex } from "./lexical-index";
+import {
+  syncAppointmentLexicalIndex,
+  syncLexicalIndex,
+  syncPatientLexicalIndex,
+  syncSoapLexicalIndex,
+} from "./lexical-index";
 import {
   getLocalModels,
   getLocalModelUrls,
@@ -54,7 +64,8 @@ import {
   type SearchGeneration,
 } from "./passage-search";
 import { getActiveSearchGeneration } from "./search-generation";
-import { isSoapReviewed } from "./soap-review";
+import { isSoapReviewed, soapMetadata } from "./soap-review";
+import { SOAP_SECTIONS } from "./soap-schema";
 import {
   exactTermsExpression,
   lexicalMatchExpression,
@@ -256,7 +267,8 @@ export async function embedTexts(
   signal: AbortSignal,
   onProgress: (event: LocalAiProgress) => void,
   query = false,
-  model: SearchModel = "embeddinggemma"
+  model: SearchModel = "embeddinggemma",
+  options: IndexingOptions = {}
 ) {
   const ready = {
     embeddinggemma: models.embeddingReady,
@@ -272,7 +284,8 @@ export async function embedTexts(
   const session = await takeEmbeddingSession(
     urls.modelRoot,
     signal,
-    onProgress
+    onProgress,
+    options.onPreempt
   );
   let succeeded = false;
   try {
@@ -313,7 +326,8 @@ async function embedInBatches(
   texts: string[],
   signal: AbortSignal,
   onProgress: (event: LocalAiProgress) => void,
-  model: SearchModel = "embeddinggemma"
+  model: SearchModel = "embeddinggemma",
+  options: IndexingOptions = {}
 ) {
   const vectors: number[][] = [];
   for (let start = 0; start < texts.length; start += 100) {
@@ -324,7 +338,8 @@ async function embedInBatches(
         signal,
         onProgress,
         false,
-        model
+        model,
+        options
       ))
     );
   }
@@ -344,7 +359,8 @@ let idleEmbedding: {
 async function takeEmbeddingSession(
   modelRoot: string,
   signal: AbortSignal,
-  onProgress: (event: LocalAiProgress) => void
+  onProgress: (event: LocalAiProgress) => void,
+  onPreempt?: () => void
 ) {
   const idle = idleEmbedding;
   idleEmbedding = null;
@@ -352,7 +368,7 @@ async function takeEmbeddingSession(
     clearTimeout(idle.timer);
     if (!idle.session.isClosed && idle.modelRoot === modelRoot) {
       try {
-        idle.session.resume(signal, onProgress);
+        idle.session.resume(signal, onProgress, onPreempt);
       } catch (error) {
         idle.session.close();
         throw error;
@@ -361,7 +377,12 @@ async function takeEmbeddingSession(
     }
     idle.session.close();
   }
-  return LocalInferenceSession.create("embedding", signal, onProgress);
+  return LocalInferenceSession.create(
+    "embedding",
+    signal,
+    onProgress,
+    onPreempt
+  );
 }
 function parkEmbeddingSession(
   session: LocalInferenceSession,
@@ -380,13 +401,18 @@ function parkEmbeddingSession(
   }, EMBEDDING_IDLE_MS);
   idleEmbedding = { session, modelRoot, timer };
 }
+/** How an indexing run takes the model lease: with `onPreempt`, any other local task stops it first (background catch-up). */
+export interface IndexingOptions {
+  onPreempt?: () => void;
+}
 export async function indexReviewedSource(
   source: ConsultationSoap | Note,
   type: DocumentType = "consultation",
   signal = new AbortController().signal,
   onProgress: (event: LocalAiProgress) => void = () => {
     // Sans suivi demandé, la progression n’est pas signalée.
-  }
+  },
+  options: IndexingOptions = {}
 ) {
   const chunks =
     type === "consultation"
@@ -397,9 +423,10 @@ export async function indexReviewedSource(
           type
         );
   if (!chunks.length) {
-    return;
+    return 0;
   }
   const models = await getLocalModels();
+  let count = 0;
   for (const generation of indexedGenerations(models)) {
     const rows = forGeneration(chunks, generation);
     const vectors = await embedInBatches(
@@ -407,12 +434,67 @@ export async function indexReviewedSource(
       rows.map((chunk) => chunk.text),
       signal,
       onProgress,
-      GENERATION_MODEL[generation]
+      GENERATION_MODEL[generation],
+      options
     );
     await runDbTransaction((db) =>
       persistSearchChunks(db, rows, vectors, generation)
     );
+    count += rows.length;
   }
+  return count;
+}
+/** Indexes one SOAP note right after its validation; 0 when it is not (or no longer) validated. */
+export async function indexValidatedSoap(
+  soapId: string,
+  signal = new AbortController().signal,
+  options: IndexingOptions = {}
+) {
+  const [row] = await runDbRead((db) =>
+    db.select<ConsultationSoap[]>(
+      `SELECT ${SOAP_COLUMNS} FROM consultation_soaps WHERE id=?`,
+      [soapId]
+    )
+  );
+  if (!(row && isSoapReviewed(row))) {
+    return 0;
+  }
+  return indexReviewedSource(
+    row,
+    "consultation",
+    signal,
+    () => {
+      // Indexation en arrière-plan : pas de progression affichée.
+    },
+    options
+  );
+}
+/** Indexes one document right after it was saved validated; 0 when it is not eligible. */
+export async function indexValidatedNote(
+  noteId: string,
+  signal = new AbortController().signal,
+  options: IndexingOptions = {}
+) {
+  const [row] = await runDbRead((db) =>
+    db.select<Note[]>(`SELECT ${NOTE_COLUMNS} FROM notes WHERE id=?`, [noteId])
+  );
+  if (!row) {
+    return 0;
+  }
+  try {
+    documentSearchChunks(row, plainDocumentText(row.content), noteType(row));
+  } catch {
+    return 0;
+  }
+  return indexReviewedSource(
+    row,
+    noteType(row),
+    signal,
+    () => {
+      // Indexation en arrière-plan : pas de progression affichée.
+    },
+    options
+  );
 }
 // biome-ignore lint/suspicious/useAwait: lève « Le patient est requis » avant db.select ; async garde ce refus en rejet
 export async function detectSearchOrphans(
@@ -482,69 +564,99 @@ function noteType(note: Note): Exclude<DocumentType, "consultation"> {
   }
   return "document";
 }
+/**
+ * The validated sources of one patient (reviewed SOAP notes, validated documents) and, per indexed generation, those
+ * whose passages are missing or outdated. Reads only; the catch-up measures its coverage with it.
+ */
+export async function readPatientBacklog(
+  db: SearchDatabase,
+  patientId: string,
+  models: Awaited<ReturnType<typeof getLocalModels>>
+) {
+  const soaps = await db.select<ConsultationSoap[]>(
+    `SELECT ${SOAP_COLUMNS} FROM consultation_soaps WHERE patient_id=?`,
+    [patientId]
+  );
+  const notes = await db.select<Note[]>(
+    `SELECT ${NOTE_COLUMNS} FROM notes WHERE patient_id=?`,
+    [patientId]
+  );
+  const groups = soaps.filter(isSoapReviewed).map(soapSearchChunks);
+  for (const note of notes) {
+    try {
+      groups.push(
+        documentSearchChunks(
+          note,
+          plainDocumentText(note.content),
+          noteType(note)
+        )
+      );
+    } catch {
+      /* Only validated sources. */
+    }
+  }
+  const sources = groups.filter((group) => group.length);
+  // One read of the patient's passages: per source and model, its versions (source_key) and their passage counts.
+  const existing = new Map<
+    string,
+    Array<{ sourceKey: string; count: number }>
+  >();
+  for (const row of await db.select<
+    Array<{
+      sourceType: string;
+      sourceId: string;
+      modelKey: string;
+      sourceKey: string;
+      count: number;
+    }>
+  >(
+    "SELECT source_type AS sourceType,source_id AS sourceId,model_key AS modelKey,source_key AS sourceKey,COUNT(*) AS count FROM embeddings WHERE patient_id=? GROUP BY source_type,source_id,model_key,source_key",
+    [patientId]
+  )) {
+    const key = `${row.sourceType}|${row.sourceId}|${row.modelKey}`;
+    existing.set(key, [...(existing.get(key) ?? []), row]);
+  }
+  const stale: Array<{
+    generation: SearchGeneration;
+    chunks: SearchChunk[];
+  }> = [];
+  for (const generation of indexedGenerations(models)) {
+    for (const chunks of sources.map((group) =>
+      forGeneration(group, generation)
+    )) {
+      const first = chunks[0];
+      const versions =
+        existing.get(
+          `${first.sourceType}|${first.sourceId}|${SEARCH_INDEX_KEYS[generation]}`
+        ) ?? [];
+      if (
+        versions.length !== 1 ||
+        versions[0].sourceKey !== first.sourceKey ||
+        versions[0].count !== chunks.length
+      ) {
+        stale.push({ generation, chunks });
+      }
+    }
+  }
+  return {
+    sources: sources.length,
+    staleSources: new Set(stale.map(({ chunks }) => chunks[0].sourceId)).size,
+    stale,
+  };
+}
 export async function indexPatientDocuments(
   patientId: string,
   signal: AbortSignal,
-  onProgress: (event: LocalAiProgress) => void
+  onProgress: (event: LocalAiProgress) => void,
+  options: IndexingOptions = {}
 ) {
   if (!patientId) {
     throw new Error("Ouvrez une fiche patient avant de préparer la recherche.");
   }
   const models = await getLocalModels();
-  const sources = await runDbRead(async (db) => {
-    const soaps = await db.select<ConsultationSoap[]>(
-      `SELECT ${SOAP_COLUMNS} FROM consultation_soaps WHERE patient_id=?`,
-      [patientId]
-    );
-    const notes = await db.select<Note[]>(
-      `SELECT ${NOTE_COLUMNS} FROM notes WHERE patient_id=?`,
-      [patientId]
-    );
-    const groups = soaps.filter(isSoapReviewed).map(soapSearchChunks);
-    for (const note of notes) {
-      try {
-        groups.push(
-          documentSearchChunks(
-            note,
-            plainDocumentText(note.content),
-            noteType(note)
-          )
-        );
-      } catch {
-        /* Only validated sources. */
-      }
-    }
-    const stale: Array<{
-      generation: SearchGeneration;
-      chunks: SearchChunk[];
-    }> = [];
-    for (const generation of indexedGenerations(models)) {
-      for (const chunks of groups
-        .filter((group) => group.length)
-        .map((group) => forGeneration(group, generation))) {
-        const first = chunks[0];
-        const existing = await db.select<
-          Array<{ sourceKey: string; count: number }>
-        >(
-          "SELECT source_key AS sourceKey,COUNT(*) AS count FROM embeddings WHERE patient_id=? AND source_type=? AND source_id=? AND model_key=? GROUP BY source_key",
-          [
-            patientId,
-            first.sourceType,
-            first.sourceId,
-            SEARCH_INDEX_KEYS[generation],
-          ]
-        );
-        if (
-          existing.length !== 1 ||
-          existing[0].sourceKey !== first.sourceKey ||
-          existing[0].count !== chunks.length
-        ) {
-          stale.push({ generation, chunks });
-        }
-      }
-    }
-    return stale;
-  });
+  const sources = (
+    await runDbRead((db) => readPatientBacklog(db, patientId, models))
+  ).stale;
   const orphans = await runDbRead((db) => detectSearchOrphans(db, patientId));
   if (orphans.length) {
     await runDbTransaction(async (db) => {
@@ -578,7 +690,8 @@ export async function indexPatientDocuments(
           group.chunks.map((chunk) => chunk.text),
           signal,
           onProgress,
-          GENERATION_MODEL[group.generation]
+          GENERATION_MODEL[group.generation],
+          options
         ))
       );
     }
@@ -663,6 +776,269 @@ export async function readPatientLexicalMatches(
     )
     .map((chunk) => ({ ...chunk, score: 0.95, match: "text" as const }));
 }
+/**
+ * Notes and documents of one patient that contain the query's words but are not validated (never reviewed, changed
+ * since their validation, documents without a validation mark). The word search of the bar finds them; the assistant
+ * shows them apart, as not validated, so it does not find less than the bar. They never enter the semantic ranking.
+ */
+export async function readPatientUnreviewedMatches(
+  db: SearchDatabase,
+  scope: SearchScope,
+  query: string
+) {
+  assertSearchScope(scope);
+  return [
+    ...(scope.sourceTypes.includes("soap")
+      ? await unreviewedSoapMatches(db, scope, query)
+      : []),
+    ...(scope.sourceTypes.some(
+      (type) => type === "document" || type === "protocol"
+    )
+      ? await unreviewedNoteMatches(db, scope, query)
+      : []),
+    ...(await patientRecordMatches(db, scope, query)),
+  ];
+}
+/**
+ * The patient's consultation records (appointments) and profile, read with the same texts as the bar
+ * (consultationSearchChunks, patientSearchChunks) but limited to this patient, all of them: the assistant does not
+ * miss in a record what the bar finds there for the same question. They carry no validation and no passage, so they
+ * enter by words only, shown for what they are.
+ */
+async function patientRecordMatches(
+  db: SearchDatabase,
+  scope: SearchScope,
+  query: string
+) {
+  const found: UnreviewedMatch[] = [];
+  const wanted = (type: "consultation" | "patient") =>
+    scope.sourceTypes.includes(type) && scope.sections.includes(type);
+  if (wanted("consultation")) {
+    const appointments = await db.select<
+      Array<{
+        id: string;
+        patientId: string;
+        patientName: string;
+        title: string;
+        type: string;
+        reason: string | null;
+        diagnosis: string | null;
+        treatment: string | null;
+        notes: string | null;
+      }>
+    >(
+      "SELECT a.id, a.patient_id AS patientId, p.name AS patientName, a.title, a.type, a.reason, a.diagnosis, a.treatment, a.notes FROM appointments a JOIN patients p ON p.id = a.patient_id WHERE a.patient_id = ? ORDER BY a.start_time DESC",
+      [scope.patientId]
+    );
+    for (const appointment of appointments) {
+      for (const chunk of consultationSearchChunks(
+        appointment,
+        appointment.patientName
+      )) {
+        if (matchesSearchTerms(query, chunk.text)) {
+          found.push({ ...chunk, reason: "fiche de consultation" });
+        }
+      }
+    }
+  }
+  if (wanted("patient")) {
+    const patients = await db.select<
+      Array<{
+        id: string;
+        name: string;
+        species: string;
+        breed: string | null;
+        chip_number: string | null;
+        allergies: string | null;
+        chronic_conditions: string | null;
+        general_notes: string | null;
+      }>
+    >(
+      "SELECT id, name, species, breed, chip_number, allergies, chronic_conditions, general_notes FROM patients WHERE id = ?",
+      [scope.patientId]
+    );
+    for (const patient of patients) {
+      for (const chunk of patientSearchChunks(patient)) {
+        if (matchesSearchTerms(query, chunk.text)) {
+          found.push({ ...chunk, reason: "fiche du patient" });
+        }
+      }
+    }
+  }
+  return found;
+}
+type UnreviewedMatch = SearchChunk & { reason: string };
+async function unreviewedSoapMatches(
+  db: SearchDatabase,
+  scope: SearchScope,
+  query: string
+) {
+  const found: UnreviewedMatch[] = [];
+  const soaps = await db.select<ConsultationSoap[]>(
+    `SELECT ${SOAP_COLUMNS} FROM consultation_soaps WHERE patient_id=?`,
+    [scope.patientId]
+  );
+  for (const note of soaps.filter((soap) => !isSoapReviewed(soap))) {
+    const reason = soapMetadata(note.content ?? "{}").soapReview
+      ? "modifiée depuis sa validation"
+      : "jamais validée";
+    SOAP_SECTIONS.forEach(({ key }, chunkIndex) => {
+      const text = note[key] ?? "";
+      if (
+        scope.sections.includes(key) &&
+        text.trim() &&
+        matchesSearchTerms(query, text)
+      ) {
+        found.push({
+          patientId: scope.patientId,
+          sourceId: note.id,
+          sourceType: "soap",
+          documentType: "consultation",
+          section: key,
+          chunkIndex,
+          text,
+          sourceKey: note.id,
+          reason,
+        });
+      }
+    });
+  }
+  return found;
+}
+function isValidatedDocument(note: Note, plain: string) {
+  try {
+    documentSearchChunks(note, plain, noteType(note));
+    return true;
+  } catch {
+    return false;
+  }
+}
+async function unreviewedNoteMatches(
+  db: SearchDatabase,
+  scope: SearchScope,
+  query: string
+) {
+  const found: UnreviewedMatch[] = [];
+  const notes = await db.select<Array<Note & { title: string | null }>>(
+    `SELECT ${NOTE_COLUMNS},title FROM notes WHERE patient_id=?`,
+    [scope.patientId]
+  );
+  for (const note of notes) {
+    const type = noteType(note);
+    const sourceType = type === "protocol" ? "protocol" : "document";
+    const plain = plainDocumentText(note.content ?? "");
+    if (
+      !(
+        plain &&
+        scope.sourceTypes.includes(sourceType) &&
+        scope.sections.includes(sourceType)
+      ) ||
+      isValidatedDocument(note, plain)
+    ) {
+      continue;
+    }
+    // The same text as the bar reads (title, then the document).
+    const text = `${note.title ? `${note.title} — ` : ""}${plain}`;
+    if (matchesSearchTerms(query, text)) {
+      found.push({
+        patientId: scope.patientId,
+        sourceId: note.id,
+        sourceType,
+        documentType: type,
+        section: sourceType,
+        chunkIndex: 0,
+        text,
+        sourceKey: note.id,
+        reason: "document sans validation",
+      });
+    }
+  }
+  return found;
+}
+/**
+ * What the bar finds by words outside one patient's record, for the assistant's empty answer: the number of results
+ * (the bar returns at most RESULT_LIMIT, so `capped` says there may be more) and of other records they come from.
+ */
+export async function countMatchesOutsidePatient(
+  filters: Pick<SearchScope, "sourceTypes" | "sections">,
+  query: string,
+  patientId: string,
+  signal = new AbortController().signal
+) {
+  const found = await searchAllPatientsFastLexical(filters, query, signal);
+  const outside = found.filter((match) => match.patientId !== patientId);
+  return {
+    results: outside.length,
+    patients: new Set(outside.map((match) => match.patientId)).size,
+    capped: found.length >= RESULT_LIMIT,
+  };
+}
+/** The name of a patient, for the scope shown in the assistant; null when unknown. */
+export async function readPatientName(patientId: string) {
+  const [row] = await runDbRead((db) =>
+    db.select<Array<{ name: string }>>("SELECT name FROM patients WHERE id=?", [
+      patientId,
+    ])
+  );
+  return row?.name ?? null;
+}
+/** readPatientUnreviewedMatches on the database. */
+export function findPatientUnreviewedMatches(
+  scope: SearchScope,
+  query: string
+) {
+  return runDbRead((db) => readPatientUnreviewedMatches(db, scope, query));
+}
+/** readUnreviewedSources on the database. */
+export function findUnreviewedSources(
+  sources: Pick<SearchChunk, "sourceId" | "sourceType">[]
+) {
+  return runDbRead((db) => readUnreviewedSources(db, sources));
+}
+/** Among SOAP notes and documents found by words, those that are not validated (they carry no passage). */
+export async function readUnreviewedSources(
+  db: SearchDatabase,
+  sources: Pick<SearchChunk, "sourceId" | "sourceType">[]
+) {
+  const soapIds = sources
+    .filter(({ sourceType }) => sourceType === "soap")
+    .map(({ sourceId }) => sourceId);
+  const noteIds = sources
+    .filter(
+      ({ sourceType }) => sourceType === "document" || sourceType === "protocol"
+    )
+    .map(({ sourceId }) => sourceId);
+  const unreviewed = new Set<string>();
+  if (soapIds.length) {
+    const soaps = await db.select<ConsultationSoap[]>(
+      `SELECT ${SOAP_COLUMNS} FROM consultation_soaps WHERE id IN (${soapIds.map(() => "?").join(",")})`,
+      soapIds
+    );
+    for (const note of soaps) {
+      if (!isSoapReviewed(note)) {
+        unreviewed.add(note.id);
+      }
+    }
+  }
+  if (noteIds.length) {
+    const notes = await db.select<Note[]>(
+      `SELECT ${NOTE_COLUMNS} FROM notes WHERE id IN (${noteIds.map(() => "?").join(",")})`,
+      noteIds
+    );
+    for (const note of notes) {
+      try {
+        documentSearchChunks(
+          note,
+          plainDocumentText(note.content),
+          noteType(note)
+        );
+      } catch {
+        unreviewed.add(note.id);
+      }
+    }
+  }
+  return unreviewed;
+}
 export async function searchPatientDocuments(
   scope: SearchScope,
   query: string,
@@ -719,6 +1095,7 @@ async function searchPatientSections(
       MIN_SEARCH_SCORE,
       query
     );
+    recordSearchIssue(null);
     return mergeLexicalFirst<
       SearchChunk & { score: number; match: "text" | "semantic" }
     >(await readLexical(), semantic);
@@ -729,6 +1106,7 @@ async function searchPatientSections(
     ) {
       throw error;
     }
+    recordSearchIssue(error instanceof Error ? error.message : String(error));
     const current = await readLexical();
     if (current.length) {
       return current.slice(0, 5);
@@ -782,7 +1160,7 @@ async function searchPatientPassages(
     const currentRows = await runDbRead((db) =>
       readPatientSearchRows(db, scope, generation)
     );
-    return rankPassages(
+    const ranked = rankPassages(
       currentRows,
       vector,
       scope,
@@ -791,6 +1169,8 @@ async function searchPatientPassages(
       await lexicalOnly(),
       MODEL_CALIBRATION[GENERATION_MODEL[generation]]
     );
+    recordSearchIssue(null);
+    return ranked;
   } catch (error) {
     if (
       signal.aborted ||
@@ -798,6 +1178,7 @@ async function searchPatientPassages(
     ) {
       throw error;
     }
+    recordSearchIssue(error instanceof Error ? error.message : String(error));
     const current = await lexicalFallback();
     if (current.length) {
       return current;
@@ -806,28 +1187,209 @@ async function searchPatientPassages(
   }
 }
 
-/** Explicit cross-patient mode. Each source remains indexed and read in its own scope. */
+export interface IndexingReport {
+  failures: IndexingFailure[];
+  indexed: number;
+}
+const isAbort = (error: unknown) =>
+  error instanceof Error && error.name === "AbortError";
+/**
+ * Explicit cross-patient mode. Each source remains indexed and read in its own scope. Each patient is indexed on its
+ * own: a failure is reported with the patient and the others are still indexed; only a cancellation stops the run.
+ */
 export async function indexAllPatientsDocuments(
   signal: AbortSignal,
   onProgress: (event: LocalAiProgress) => void = () => {
     // Sans suivi demandé, la progression n’est pas signalée.
+  },
+  options: IndexingOptions = {}
+): Promise<IndexingReport> {
+  const patients = await runDbRead((db) =>
+    db.select<Array<{ id: string; name: string }>>(
+      "SELECT id,name FROM patients ORDER BY id"
+    )
+  );
+  let indexed = 0;
+  const failures: IndexingFailure[] = [];
+  const succeeded: string[] = [];
+  try {
+    for (const patient of patients) {
+      if (signal.aborted) {
+        throw new DOMException("Tâche annulée.", "AbortError");
+      }
+      try {
+        indexed += await indexPatientDocuments(
+          patient.id,
+          signal,
+          onProgress,
+          options
+        );
+        succeeded.push(patient.id);
+      } catch (error) {
+        if (signal.aborted || isAbort(error)) {
+          throw error;
+        }
+        failures.push({
+          patientId: patient.id,
+          patientName: patient.name,
+          message:
+            error instanceof Error ? error.message : String(error ?? "Erreur"),
+        });
+      }
+    }
+  } finally {
+    recordIndexingOutcome(failures, succeeded);
+  }
+  return { indexed, failures };
+}
+/**
+ * Reads the rows of a bar block page by page, in the given order, and stops once the answer is settled (later rows
+ * could only add sources after the first RESULT_LIMIT). With a word index, only the rows its expansion of the query
+ * selects are read; the unary + keeps the plan of the order, so a page needs no sort. If the index fails, every row
+ * is read from the start (addMatch ignores those already matched). A null expression: no row can match.
+ */
+async function readRecordPages<T>(
+  db: SearchDatabase,
+  options: {
+    baseSql: string;
+    order: string;
+    rowid: string;
+    table: "appointment_lexical" | "patient_lexical" | null;
+    expression: string | null;
+    settled: () => boolean;
+    signal: AbortSignal;
+    onRows: (rows: T[]) => void;
   }
 ) {
-  const patients = await runDbRead((db) =>
-    db.select<Array<{ id: string }>>("SELECT id FROM patients ORDER BY id")
-  );
-  let count = 0;
-  for (const patient of patients) {
-    if (signal.aborted) {
-      throw new DOMException("Tâche annulée.", "AbortError");
-    }
-    count += await indexPatientDocuments(patient.id, signal, onProgress);
+  if (options.expression === null) {
+    return;
   }
-  return count;
+  let useIndex = options.table !== null;
+  const read = async (offset: number, size: number) => {
+    if (useIndex) {
+      try {
+        return {
+          restarted: false,
+          rows: await db.select<T[]>(
+            `${options.baseSql} WHERE +${options.rowid} IN (SELECT rowid FROM ${options.table} WHERE ${options.table} MATCH ?) ${options.order} LIMIT ? OFFSET ?`,
+            [options.expression, size, offset]
+          ),
+        };
+      } catch {
+        useIndex = false;
+        return {
+          restarted: true,
+          rows: await db.select<T[]>(
+            `${options.baseSql} ${options.order} LIMIT ? OFFSET ?`,
+            [size, 0]
+          ),
+        };
+      }
+    }
+    return {
+      restarted: false,
+      rows: await db.select<T[]>(
+        `${options.baseSql} ${options.order} LIMIT ? OFFSET ?`,
+        [size, offset]
+      ),
+    };
+  };
+  let offset = 0;
+  let size = 200;
+  while (!(options.signal.aborted || options.settled())) {
+    const { restarted, rows } = await read(offset, size);
+    if (restarted) {
+      offset = 0;
+    }
+    options.onRows(rows);
+    if (rows.length < size) {
+      break;
+    }
+    offset += rows.length;
+    size = Math.min(size * 2, 3200);
+  }
+}
+/** Brings the consultation-record and patient-profile word indexes up to date; false for one that cannot be used. */
+async function prepareRecordLexicalIndexes(
+  filters: Pick<SearchScope, "sourceTypes">
+) {
+  return {
+    appointments: filters.sourceTypes.includes("consultation")
+      ? await syncWhenChanged(
+          "appointments",
+          "record_index_state",
+          syncAppointmentLexicalIndex
+        )
+      : false,
+    patients: filters.sourceTypes.includes("patient")
+      ? await syncWhenChanged(
+          "patients",
+          "record_index_state",
+          syncPatientLexicalIndex
+        )
+      : false,
+  };
+}
+/** The generation counter of the passages (migration 047), or null when it cannot be read. */
+async function readPassageGeneration(db: SearchDatabase) {
+  try {
+    const [row] = await db.select<Array<{ generation: number }>>(
+      "SELECT generation FROM search_index_state WHERE id = 1"
+    );
+    return typeof row?.generation === "number" ? row.generation : null;
+  } catch {
+    return null;
+  }
+}
+/**
+ * The bar's word indexes are checked (a NOT EXISTS over every row) only when their counter moved since the last check
+ * that succeeded: the passages' counter (migration 047) for the passage index, record_index_state (migration 049) for
+ * the SOAP, consultation-record and patient indexes. Without a counter (older database), every search checks.
+ */
+const syncedAt = new Map<string, string>();
+async function readCounter(table: "search_index_state" | "record_index_state") {
+  try {
+    const [row] = await runDbRead((db) =>
+      db.select<Array<{ generation: number; token: string }>>(
+        `SELECT c.generation AS generation, r.token AS token FROM ${table} c, record_index_state r WHERE c.id = 1 AND r.id = 1`
+      )
+    );
+    return typeof row?.generation === "number" && row.token
+      ? `${row.token}:${row.generation}`
+      : null;
+  } catch {
+    return null;
+  }
+}
+async function syncWhenChanged(
+  name: string,
+  counter: "search_index_state" | "record_index_state",
+  fill: (db: SearchDatabase) => Promise<boolean>
+) {
+  // Read before the check: a write during it moves the counter, and the next search checks again.
+  const generation = await readCounter(counter);
+  if (generation !== null && syncedAt.get(name) === generation) {
+    return true;
+  }
+  const usable = await runDbTransaction((db) => fill(db)).catch(() => false);
+  if (usable && generation !== null) {
+    syncedAt.set(name, generation);
+  } else {
+    syncedAt.delete(name);
+  }
+  return usable;
+}
+/** Tests only: forget which indexes were checked. */
+export function resetLexicalIndexChecks() {
+  syncedAt.clear();
+}
+/** Brings the SOAP word index up to date before the bar reads the notes; false when it cannot be used. */
+function prepareSoapLexicalIndex() {
+  return syncWhenChanged("soap", "record_index_state", syncSoapLexicalIndex);
 }
 /** Brings the word index up to date before a search; false when it cannot be used (the search then reads every passage). */
 function prepareLexicalIndex() {
-  return runDbTransaction((db) => syncLexicalIndex(db)).catch(() => false);
+  return syncWhenChanged("passages", "search_index_state", syncLexicalIndex);
 }
 type PassageCandidate = SearchChunk & {
   cosine: number;
@@ -1277,6 +1839,10 @@ export async function searchAllPatientsFastLexical(
     return [];
   }
   const lexicalIndex = await prepareLexicalIndex();
+  const soapIndex = filters.sourceTypes.includes("soap")
+    ? await prepareSoapLexicalIndex()
+    : false;
+  const recordIndexes = await prepareRecordLexicalIndexes(filters);
 
   return runDbRead(async (db) => {
     const matches: Array<
@@ -1363,6 +1929,12 @@ export async function searchAllPatientsFastLexical(
       ].includes(s)
     );
 
+    // What the passage reading has examined, so the SOAP reading below can leave out the notes it already judged:
+    // the active index key, the generation counter of the passages when the reading started (migration 047), and
+    // whether every candidate passage was read.
+    let passageKey: string | null = null;
+    let passageGeneration: number | null = null;
+    let passagesExamined = false;
     if (embeddingTypes.length > 0 && embeddingSections.length > 0) {
       try {
         const passagesSql = `SELECT
@@ -1388,6 +1960,8 @@ export async function searchAllPatientsFastLexical(
           ...embeddingTypes,
           ...embeddingSections,
         ];
+        passageKey = params[0];
+        passageGeneration = await readPassageGeneration(db);
         // The order is written out to the last column: before, the ties (sections of one passage) came out in the order
         // of whichever index the planner picked; this is that order (idx_embeddings_v2_scope), now independent of the plan.
         // With the word index, only the passages its expansion of the query selects are read; matchesSearchTerms
@@ -1456,7 +2030,9 @@ export async function searchAllPatientsFastLexical(
           offset += rows.length;
           size = Math.min(size * 2, 3200);
         }
+        passagesExamined = !signal.aborted;
       } catch {
+        passagesExamined = false;
         /* proceed to direct table queries */
       }
     }
@@ -1475,44 +2051,129 @@ export async function searchAllPatientsFastLexical(
       );
       if (soapSections.length > 0) {
         try {
-          const soaps = await db.select<
-            Array<{
-              id: string;
-              patientId: string;
-              patientName: string;
-              subjective: string;
-              objective: string;
-              assessment: string;
-              plan: string;
-            }>
-          >(
-            `SELECT s.id, s.patient_id AS patientId, p.name AS patientName,
+          interface SoapRow {
+            assessment: string;
+            id: string;
+            objective: string;
+            patientId: string;
+            patientName: string;
+            plan: string;
+            subjective: string;
+          }
+          // The order is written out: it is the one the planner gave this query before the index (patients scanned,
+          // then each patient's notes by idx_consultation_soaps_patient_id), now independent of the plan. CROSS JOIN
+          // and the unary + keep that plan with the index: the scan already comes in this order, so a page is read
+          // without sorting every candidate note (1.1 s a page at 3 000 patients otherwise) and stops at its LIMIT.
+          const soapSql = `SELECT s.id, s.patient_id AS patientId, p.name AS patientName,
                     s.subjective, s.objective, s.assessment, s.plan
-             FROM consultation_soaps s
-             JOIN patients p ON p.id = s.patient_id
-             LIMIT 100`
-          );
-
-          for (const s of soaps) {
-            for (const sec of soapSections as Array<
-              "subjective" | "objective" | "assessment" | "plan"
-            >) {
-              const text = s[sec];
-              if (text && matchesSearchTerms(trimmed, text)) {
-                addMatch({
-                  patientId: s.patientId,
-                  patientName: s.patientName,
-                  sourceId: s.id,
-                  sourceType: "soap",
-                  documentType: "consultation",
-                  section: sec,
-                  chunkIndex: 0,
-                  text,
-                  sourceKey: s.id,
-                  score: 0.95,
-                });
+             FROM patients p
+             CROSS JOIN consultation_soaps s ON s.patient_id = p.id`;
+          const soapOrder = " ORDER BY p.rowid, s.rowid";
+          // With the SOAP word index, only the notes whose sections its expansion of the query selects are read;
+          // matchesSearchTerms below still decides, so the matches are the same. Without it (or if it fails), every
+          // note is read. Null: no section can match.
+          const soapExpression = soapIndex
+            ? lexicalMatchExpression(trimmed)
+            : undefined;
+          // A note can be left out only when each of its sections has a passage of the active index with exactly the
+          // same text (a short section is one passage) and the passage reading above examined every candidate with no
+          // passage written since: that reading has then already given the same verdict on the same text. Any doubt
+          // (long section split in passages, note not indexed, index or counter unavailable) and the note is read.
+          const skipExamined =
+            passagesExamined &&
+            passageKey !== null &&
+            passageGeneration !== null &&
+            passageGeneration === (await readPassageGeneration(db));
+          const examinedSql = skipExamined
+            ? ` AND NOT (${soapSections
+                .map(
+                  (section) =>
+                    `(s.${section} = '' OR EXISTS (SELECT 1 FROM embeddings e WHERE e.source_type = 'soap' AND e.source_id = s.id AND e.patient_id = s.patient_id AND e.model_key = ? AND e.section = '${section}' AND e.chunk_text = s.${section}))`
+                )
+                .join(" AND ")})`
+            : "";
+          const examinedParams = skipExamined
+            ? soapSections.map(() => passageKey)
+            : [];
+          const addSoapMatches = (soaps: SoapRow[]) => {
+            for (const s of soaps) {
+              for (const sec of soapSections as Array<
+                "subjective" | "objective" | "assessment" | "plan"
+              >) {
+                const text = s[sec];
+                if (text && matchesSearchTerms(trimmed, text)) {
+                  addMatch({
+                    patientId: s.patientId,
+                    patientName: s.patientName,
+                    sourceId: s.id,
+                    sourceType: "soap",
+                    documentType: "consultation",
+                    section: sec,
+                    chunkIndex: 0,
+                    text,
+                    sourceKey: s.id,
+                    score: 0.95,
+                  });
+                }
               }
             }
+          };
+          // Notes are read page by page, in order, and reading stops once the answer is settled (resultSettled), as
+          // for the passages: later notes could only add sources after the first RESULT_LIMIT.
+          let useSoapIndex = soapExpression !== undefined;
+          const readSoaps = async (
+            offset: number,
+            size: number
+          ): Promise<{ restarted: boolean; rows: SoapRow[] }> => {
+            if (useSoapIndex) {
+              try {
+                return {
+                  restarted: false,
+                  rows: await db.select<SoapRow[]>(
+                    `${soapSql} WHERE +s.rowid IN (SELECT rowid / 4 FROM soap_lexical WHERE soap_lexical MATCH ?)${examinedSql}${soapOrder} LIMIT ? OFFSET ?`,
+                    [soapExpression, ...examinedParams, size, offset]
+                  ),
+                };
+              } catch {
+                // The index failed: every note is read from the start; addMatch ignores those already matched.
+                useSoapIndex = false;
+                return {
+                  restarted: true,
+                  rows: await db.select<SoapRow[]>(
+                    `${soapSql} WHERE 1 = 1${examinedSql}${soapOrder} LIMIT ? OFFSET ?`,
+                    [...examinedParams, size, 0]
+                  ),
+                };
+              }
+            }
+            return {
+              restarted: false,
+              rows: await db.select<SoapRow[]>(
+                `${soapSql} WHERE 1 = 1${examinedSql}${soapOrder} LIMIT ? OFFSET ?`,
+                [...examinedParams, size, offset]
+              ),
+            };
+          };
+          let soapOffset = 0;
+          let soapPage = 200;
+          while (
+            soapExpression !== null &&
+            !signal.aborted &&
+            !resultSettled()
+          ) {
+            const { restarted, rows: soaps } = await readSoaps(
+              soapOffset,
+              soapPage
+            );
+            if (restarted) {
+              soapOffset = 0;
+            }
+            addSoapMatches(soaps);
+            if (soaps.length < soapPage) {
+              break;
+            }
+            soapOffset += soaps.length;
+            soapPage = Math.min(soapPage * 2, 3200);
           }
         } catch {
           /* table might not have rows */
@@ -1524,38 +2185,48 @@ export async function searchAllPatientsFastLexical(
       return [];
     }
 
-    // 3. Consultations & Appointments (title, type, reason, diagnosis, treatment, notes)
+    // 3. Consultations & Appointments (title, type, reason, diagnosis, treatment, notes). Every record is read, most
+    // recent first: the former cap of 100 lost the older ones. Through the word index (migration 049) when it can,
+    // page by page, until the answer is settled; matchesSearchTerms still decides. The order is the one the planner
+    // gave the capped query (idx_appointments_start_time scanned backwards), written out to the last column.
     if (allowedSources.has("consultation")) {
       try {
-        const appts = await db.select<
-          Array<{
-            id: string;
-            patientId: string;
-            patientName: string;
-            title: string;
-            type: string;
-            reason: string | null;
-            diagnosis: string | null;
-            treatment: string | null;
-            notes: string | null;
-          }>
-        >(
-          `SELECT a.id, a.patient_id AS patientId, p.name AS patientName,
+        await readRecordPages<{
+          id: string;
+          patientId: string;
+          patientName: string;
+          title: string;
+          type: string;
+          reason: string | null;
+          diagnosis: string | null;
+          treatment: string | null;
+          notes: string | null;
+        }>(db, {
+          baseSql: `SELECT a.id, a.patient_id AS patientId, p.name AS patientName,
                   a.title, a.type, a.reason, a.diagnosis, a.treatment, a.notes
            FROM appointments a
-           JOIN patients p ON p.id = a.patient_id
-           ORDER BY a.start_time DESC
-           LIMIT 100`
-        );
-
-        for (const a of appts) {
-          const chunks = consultationSearchChunks(a, a.patientName);
-          for (const chunk of chunks) {
-            if (matchesSearchTerms(trimmed, chunk.text)) {
-              addMatch({ ...chunk, patientName: a.patientName, score: 0.95 });
+           JOIN patients p ON p.id = a.patient_id`,
+          order: "ORDER BY a.start_time DESC, a.rowid DESC",
+          rowid: "a.rowid",
+          table: recordIndexes.appointments ? "appointment_lexical" : null,
+          expression: lexicalMatchExpression(trimmed),
+          settled: resultSettled,
+          signal,
+          onRows: (appts) => {
+            for (const a of appts) {
+              const chunks = consultationSearchChunks(a, a.patientName);
+              for (const chunk of chunks) {
+                if (matchesSearchTerms(trimmed, chunk.text)) {
+                  addMatch({
+                    ...chunk,
+                    patientName: a.patientName,
+                    score: 0.95,
+                  });
+                }
+              }
             }
-          }
-        }
+          },
+        });
       } catch {
         /* table query ignored on error */
       }
@@ -1606,34 +2277,39 @@ export async function searchAllPatientsFastLexical(
       return [];
     }
 
-    // 5. Patient profiles (signalement, allergies, chronic conditions, medical notes)
+    // 5. Patient profiles (signalement, allergies, chronic conditions, medical notes). Every patient is read, in rowid
+    // order (the order the capped query came in), through the word index when it can (migration 049).
     if (allowedSources.has("patient")) {
       try {
-        const pts = await db.select<
-          Array<{
-            id: string;
-            name: string;
-            species: string;
-            breed: string | null;
-            chip_number: string | null;
-            allergies: string | null;
-            chronic_conditions: string | null;
-            general_notes: string | null;
-          }>
-        >(
-          `SELECT id, name, species, breed, chip_number, allergies, chronic_conditions, general_notes
-           FROM patients
-           LIMIT 100`
-        );
-
-        for (const p of pts) {
-          const chunks = patientSearchChunks(p);
-          for (const chunk of chunks) {
-            if (matchesSearchTerms(trimmed, chunk.text)) {
-              addMatch({ ...chunk, patientName: p.name, score: 0.95 });
+        await readRecordPages<{
+          id: string;
+          name: string;
+          species: string;
+          breed: string | null;
+          chip_number: string | null;
+          allergies: string | null;
+          chronic_conditions: string | null;
+          general_notes: string | null;
+        }>(db, {
+          baseSql: `SELECT id, name, species, breed, chip_number, allergies, chronic_conditions, general_notes
+           FROM patients`,
+          order: "ORDER BY rowid",
+          rowid: "rowid",
+          table: recordIndexes.patients ? "patient_lexical" : null,
+          expression: lexicalMatchExpression(trimmed),
+          settled: resultSettled,
+          signal,
+          onRows: (pts) => {
+            for (const p of pts) {
+              const chunks = patientSearchChunks(p);
+              for (const chunk of chunks) {
+                if (matchesSearchTerms(trimmed, chunk.text)) {
+                  addMatch({ ...chunk, patientName: p.name, score: 0.95 });
+                }
+              }
             }
-          }
-        }
+          },
+        });
       } catch {
         /* table query ignored on error */
       }
@@ -1712,6 +2388,9 @@ export async function searchAllPatientsClinical(
   signal = new AbortController().signal,
   onProgress: (event: LocalAiProgress) => void = () => {
     // Sans suivi demandé, la progression n’est pas signalée.
+  },
+  onIssue: (message: string) => void = () => {
+    // The issue is recorded for the assistant in any case (recordSearchIssue).
   }
 ): Promise<
   Array<
@@ -1765,6 +2444,7 @@ export async function searchAllPatientsClinical(
         if (signal.aborted) {
           return instantMatches;
         }
+        recordSearchIssue(null);
 
         const map = new Map<
           string,
@@ -1841,8 +2521,15 @@ export async function searchAllPatientsClinical(
           .slice(0, 15);
       }
     }
-  } catch {
-    // Graceful fallback to instant lexical matches on model busy or worker error
+  } catch (error) {
+    // The word matches are still returned (the bar keeps its recall), but the failure is no longer silent: it is
+    // logged, recorded for the assistant, and given to the caller.
+    if (!(signal.aborted || isAbort(error))) {
+      const message =
+        error instanceof Error ? error.message : String(error ?? "Erreur");
+      recordSearchIssue(message);
+      onIssue(message);
+    }
   }
 
   return instantMatches;

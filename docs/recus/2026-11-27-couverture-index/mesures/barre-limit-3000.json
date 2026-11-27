@@ -1,0 +1,25 @@
+{
+ "note": "Idem, 3 000 patients (15 195 notes SOAP).",
+ "comparaison": {
+  "n": 153,
+  "identical": 153,
+  "differ": 0,
+  "lostTotal": 0,
+  "lostByType": {},
+  "gainedByType": {},
+  "sample": [],
+  "ms": {
+   "avantMed": 292.7,
+   "apresMed": 596.2,
+   "avantP95": 815.5,
+   "apresP95": 7779.9,
+   "avantMax": 14678.3,
+   "apresMax": 26011.4
+  }
+ },
+ "questionsAuDessusDe300ms": {
+  "avant": 52,
+  "apres": 116,
+  "apresSansResultat": 52
+ }
+}
