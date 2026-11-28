@@ -1,4 +1,5 @@
 import {
+  AppWindow,
   Archive,
   Banknote,
   Building2,
@@ -11,6 +12,7 @@ import {
   type LucideIcon,
   MessageCircle,
   MessageSquareText,
+  Monitor,
   Palette,
   PanelLeft,
   PawPrint,
@@ -54,6 +56,28 @@ export interface ReleaseNote {
 
 /** Les plus récentes en premier. */
 export const RELEASE_NOTES: ReleaseNote[] = [
+  {
+    version: "5.4.2",
+    status: "published",
+    date: "2026-11-27",
+    highlights: [
+      {
+        icon: AppWindow,
+        title: "Une fenêtre nette sous Windows",
+        text: "L'application remplit sa fenêtre d'un bord à l'autre, avec des coins carrés : plus de bande sombre autour de la page.",
+      },
+      {
+        icon: Monitor,
+        title: "La même fenêtre nette sous Linux",
+        text: "Sous Linux aussi, la page va jusqu'au bord de la fenêtre, avec des coins carrés.",
+      },
+      {
+        icon: Palette,
+        title: "Sur Mac, rien ne change",
+        text: "Sur Mac, la page garde son cadre et ses coins arrondis.",
+      },
+    ],
+  },
   {
     version: "5.4.1",
     status: "published",
