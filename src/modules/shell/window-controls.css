@@ -162,23 +162,5 @@
   margin-inline: -10px 10px;
 }
 
-/* The light sheet reaches the window's top and right edges (Clean leaves an 8 px dark frame there): the close button sits in
-   the very corner, where Windows users aim, and the dark sidebar still rises to the top-left corner. The skins pad the inset
-   with important rules of their own: these sit in the `base` layer, whose important declarations come first. */
-@layer base {
-  :root[data-window-controls="decorum"]:not([data-window-fullscreen="true"])
-    [data-slot="sidebar-inset"] {
-    padding-inline-end: 0 !important;
-    padding-top: 0 !important;
-  }
-  /* #root is rounded for the Mac window; Windows rounds (or squares, when maximized) its own window. */
-  :root[data-window-controls="decorum"] #root {
-    border-radius: 0 !important;
-  }
-  :root[data-window-controls="decorum"]:not([data-window-fullscreen="true"])
-    [data-slot="shell-scroll-panel"],
-  :root[data-window-controls="decorum"]:not([data-window-fullscreen="true"])
-    [data-slot="app-header"] {
-    border-start-end-radius: 0 !important;
-  }
-}
+/* Windows and Linux fill their window edge-to-edge with square corners; only macOS opts into the rounded inset frame
+   (src/design-system/clean.css, src/index.css). */

@@ -215,11 +215,14 @@
   #root {
     height: 100%;
     overflow: hidden;
+    isolation: isolate;
+  }
+  /* Only the macOS overlay window rounds #root; Windows and Linux fill their window edge-to-edge. */
+  :root[data-window-platform="macos"] #root {
     border-radius: 14px;
     box-shadow:
       0 0 0 0.5px rgba(0, 0, 0, 0.12),
       0 18px 48px -22px rgba(0, 0, 0, 0.28);
-    isolation: isolate;
   }
 }
 

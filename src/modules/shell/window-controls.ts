@@ -1,7 +1,10 @@
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { isTauriRuntime } from "@/services/browser-store";
 
+const MAC_USER_AGENT = /Macintosh|Mac OS X/i;
 const WINDOWS_USER_AGENT = /Windows/i;
+const LINUX_USER_AGENT = /Linux/i;
+const ANDROID_USER_AGENT = /Android/i;
 
 /*
  * Windows: the application's header is the title bar. The native bar is removed by tauri-plugin-decorum (Rust side, Windows
@@ -27,8 +30,38 @@ export function windowControlsActive() {
   return ROOT.dataset.windowControls === "decorum";
 }
 
+export type WindowPlatform = "macos" | "windows" | "linux";
+
+function detectWindowPlatform(): WindowPlatform | null {
+  if (!isTauriRuntime()) {
+    return null;
+  }
+  const userAgent = navigator.userAgent;
+  if (MAC_USER_AGENT.test(userAgent)) {
+    return "macos";
+  }
+  if (WINDOWS_USER_AGENT.test(userAgent)) {
+    return "windows";
+  }
+  if (LINUX_USER_AGENT.test(userAgent) && !ANDROID_USER_AGENT.test(userAgent)) {
+    return "linux";
+  }
+  return null;
+}
+
 function isWindowsDesktop() {
-  return isTauriRuntime() && WINDOWS_USER_AGENT.test(navigator.userAgent);
+  return detectWindowPlatform() === "windows";
+}
+
+/** Writes `data-window-platform` on <html> (Tauri only): the CSS keeps the rounded inset frame for macOS alone. */
+export function initWindowPlatform(): WindowPlatform | null {
+  const platform = detectWindowPlatform();
+  if (platform) {
+    ROOT.dataset.windowPlatform = platform;
+  } else {
+    delete ROOT.dataset.windowPlatform;
+  }
+  return platform;
 }
 
 /** In development only, `localStorage["baitari:window-controls-preview"] = "1"` draws the bar in a browser, with inert buttons. */
@@ -89,6 +122,7 @@ function addPreviewButtons(host: HTMLElement) {
 }
 
 export function initWindowControls() {
+  initWindowPlatform();
   const host = document.getElementById("window-controls");
   if (!host) {
     return;
